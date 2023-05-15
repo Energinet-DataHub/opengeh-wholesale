@@ -32,6 +32,7 @@ public static class BatchDtoMapper
             BatchStateMapper.MapState(batchDto.ExecutionState),
             batchDto.AreSettlementReportsCreated,
             batchDto.GridAreaCodes,
-            ProcessTypeMapper.Map(batchDto.ProcessType));
+            ProcessTypeMapper.Map(batchDto.ProcessType),
+            batchDto.CreatedByUserId);
     }
 }

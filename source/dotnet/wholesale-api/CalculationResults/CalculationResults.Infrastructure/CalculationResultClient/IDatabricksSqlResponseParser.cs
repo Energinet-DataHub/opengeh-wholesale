@@ -12,22 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
-/// <summary>
-/// An immutable batch.
-/// </summary>
-public sealed record BatchDto(
-    long? RunId,
-    Guid BatchId,
-    DateTimeOffset PeriodStart,
-    DateTimeOffset PeriodEnd,
-    string Resolution,
-    string Unit,
-    DateTimeOffset? ExecutionTimeStart,
-    DateTimeOffset? ExecutionTimeEnd,
-    BatchState ExecutionState,
-    bool AreSettlementReportsCreated,
-    string[] GridAreaCodes,
-    ProcessType ProcessType,
-    Guid CreatedByUserId);
+public interface IDatabricksSqlResponseParser
+{
+    DatabricksSqlResponse Parse(string jsonResponse);
+}

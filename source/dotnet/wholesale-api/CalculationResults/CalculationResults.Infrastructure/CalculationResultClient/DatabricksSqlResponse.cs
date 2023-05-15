@@ -12,24 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json;
-
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
-public class ProcessResultPointFactory : IProcessResultPointFactory
-{
- public IEnumerable<ProcessResultPoint> Create(string input)
- {
-     dynamic jsonObject = JsonConvert.DeserializeObject(input) ?? throw new InvalidOperationException();
-     var result = jsonObject.result.data_array;
-
-     var list = new List<ProcessResultPoint>();
-     foreach (var res in result)
-     {
-         // the sql statement dictates order of the columns
-         list.Add(new ProcessResultPoint(res[1], res[2], res[0]));
-     }
-
-     return list;
- }
-}
+public sealed record DatabricksSqlResponse(string State, IEnumerable<string[]> Rows);

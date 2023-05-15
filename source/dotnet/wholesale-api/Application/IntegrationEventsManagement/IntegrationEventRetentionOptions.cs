@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+namespace Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
 
-public record BatchCreatedDomainEventDto(Guid BatchId) : DomainEventDto;
+public class IntegrationEventRetentionOptions
+{
+    public int RetentionDays { get; set; }
+}

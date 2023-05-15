@@ -18,5 +18,5 @@ public interface IIntegrationEventService
 {
     Task DispatchIntegrationEventsAsync();
 
-    Task DeleteOlderDispatchedIntegrationEventsAsync(int daysOld);
+    Task DeleteOlderDispatchedIntegrationEventsAsync();
 }

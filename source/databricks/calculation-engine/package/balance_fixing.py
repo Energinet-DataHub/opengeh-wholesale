@@ -165,9 +165,9 @@ def _calculate_grid_loss(
 ) -> Tuple[DataFrame, DataFrame]:
     grid_loss = agg_steps.calculate_grid_loss(
         net_exchange_per_ga,
-        temporay_production_per_ga_and_brp_and_es,
-        temporay_flex_consumption_per_ga_and_brp_and_es,
         consumption_per_ga_and_brp_and_es,
+        temporay_flex_consumption_per_ga_and_brp_and_es,
+        temporay_production_per_ga_and_brp_and_es,
     )
     result_writer.write(
         grid_loss,

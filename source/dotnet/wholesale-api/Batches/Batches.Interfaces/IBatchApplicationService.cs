@@ -19,9 +19,9 @@ namespace Energinet.DataHub.Wholesale.Batches.Interfaces;
 public interface IBatchApplicationService
 {
     /// <summary>
-    /// Create and start all processes of batches with state submitted.
+    /// Start calculations for all created batches.
     /// </summary>
-    Task StartCalculationAsync(Guid batchId);
+    Task StartCalculationsAsync();
 
     Task UpdateExecutionStateAsync();
 

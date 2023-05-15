@@ -21,25 +21,6 @@ using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
-using Energinet.DataHub.Wholesale.Batches.Application;
-using Energinet.DataHub.Wholesale.Batches.Application.Model;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchExecutionStateDomainService;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationDomainService;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
-using Energinet.DataHub.Wholesale.Batches.Interfaces;
-using Energinet.DataHub.Wholesale.CalculationResults.Application;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.BatchActor;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineSerializer;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Processes;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep.Model;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
@@ -80,48 +61,17 @@ internal static class ServiceCollectionExtensions
                     o.EnableRetryOnFailure();
                 }));
 
-        serviceCollection.AddDbContext<DatabaseContext>(
-            options => options.UseSqlServer(
-                configuration
-                    .GetSection(ConnectionStringsOptions.ConnectionStrings)
-                    .Get<ConnectionStringsOptions>()!.DB_CONNECTION_STRING,
-                o =>
-                {
-                    o.UseNodaTime();
-                    o.EnableRetryOnFailure();
-                }));
-
         serviceCollection.AddScoped<IClock>(_ => SystemClock.Instance);
         serviceCollection.AddScoped<IIntegrationEventPublishingDatabaseContext, IntegrationEventPublishingDatabaseContext>();
-        serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
         // This is a temporary fix until we move registration out to each of the modules
         serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
         serviceCollection.AddScoped<Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.IUnitOfWork, Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.UnitOfWork>();
-        serviceCollection.AddScoped<IBatchApplicationService, BatchApplicationService>();
         serviceCollection.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
-        serviceCollection.AddScoped<ISettlementReportRepository, SettlementReportRepository>();
-        serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
-        serviceCollection.AddScoped<HttpClient>(_ => null!);
-        serviceCollection.AddScoped<IBatchFactory, BatchFactory>();
-        serviceCollection.AddScoped<IBatchRepository, BatchRepository>();
-        serviceCollection.AddScoped<IBatchExecutionStateDomainService>(_ => null!); // Unused in the use cases of this app
-        serviceCollection.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
         serviceCollection.AddScoped<IProcessTypeMapper, ProcessTypeMapper>();
-        serviceCollection.AddScoped<ICalculationDomainService, CalculationDomainService>();
-        serviceCollection.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
-        serviceCollection.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
-        serviceCollection.AddScoped<ICalculationParametersFactory>(_ => null!); // Unused in the use cases of this app
-        serviceCollection.AddScoped<IProcessStepApplicationService, ProcessStepApplicationService>();
-        serviceCollection.AddScoped<IProcessStepResultMapper, ProcessStepResultMapper>();
-        serviceCollection.AddScoped<IProcessStepResultRepository, ProcessStepResultRepository>();
-        serviceCollection.AddScoped<IDataLakeClient, DataLakeClient>();
-        serviceCollection.AddScoped<IActorRepository, ActorRepository>();
-        serviceCollection.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
         serviceCollection.AddScoped<ICorrelationContext, CorrelationContext>();
         serviceCollection.AddScoped<IJsonSerializer, JsonSerializer>();
         serviceCollection.AddScoped<IProcessStepResultFactory, ProcessStepResultFactory>();
         serviceCollection.AddScoped<IProcessCompletedEventDtoFactory, ProcessCompletedEventDtoFactory>();
-        serviceCollection.AddScoped<ICreateBatchHandler, CreateBatchHandler>();
 
         serviceCollection.AddSingleton<IDatabricksWheelClient, DatabricksWheelClient>();
 
@@ -164,27 +114,32 @@ internal static class ServiceCollectionExtensions
     private static void AddDomainEventPublisher(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         var options = configuration.Get<ServiceBusOptions>()!;
+        // TODO BJM: These hardcoded values ought to be read from app settings, but it's not worth the effort as they are about to be removed
         var messageTypes = new Dictionary<Type, string>
         {
-            { typeof(BatchCreatedDomainEventDto), options.BATCH_CREATED_EVENT_NAME },
+            { typeof(BatchCompletedEventDto), "BatchCompleted" },
+            { typeof(ProcessCompletedEventDto), "ProcessCompleted" },
         };
-
         serviceCollection.AddDomainEventPublisher(options.SERVICE_BUS_SEND_CONNECTION_STRING, options.DOMAIN_EVENTS_TOPIC_NAME, new MessageTypeDictionary(messageTypes));
     }
 
     private static void AddDataLakeFileSystemClient(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         var options = configuration.Get<DataLakeOptions>()!;
-        var dataLakeServiceClient = new DataLakeServiceClient(new Uri(options.STORAGE_ACCOUNT_URI), new DefaultAzureCredential());
-        var dataLakeFileSystemClient = dataLakeServiceClient.GetFileSystemClient(options.STORAGE_CONTAINER_NAME);
-        serviceCollection.AddSingleton(dataLakeFileSystemClient);
+        serviceCollection.AddSingleton<DataLakeFileSystemClient>(_ =>
+        {
+            var dataLakeServiceClient = new DataLakeServiceClient(new Uri(options.STORAGE_ACCOUNT_URI), new DefaultAzureCredential());
+            return dataLakeServiceClient.GetFileSystemClient(options.STORAGE_CONTAINER_NAME);
+        });
     }
 
     private static void AddDateTimeConfiguration(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         var options = configuration.Get<DateTimeOptions>()!;
-        var dateTimeZoneId = options.TIME_ZONE;
-        var dateTimeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull(dateTimeZoneId)!;
-        serviceCollection.AddSingleton(dateTimeZone);
+        serviceCollection.AddSingleton<DateTimeZone>(_ =>
+        {
+            var dateTimeZoneId = options.TIME_ZONE;
+            return DateTimeZoneProviders.Tzdb.GetZoneOrNull(dateTimeZoneId)!;
+        });
     }
 }

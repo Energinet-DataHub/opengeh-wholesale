@@ -12,9 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Batches.Application.BatchExecutionStateUpdateService;
+namespace Energinet.DataHub.Wholesale.Application.Security;
 
-public interface IBatchExecutionStateUpdateService
+public sealed class FrontendUser
 {
-    Task UpdateBatchExecutionStatesAsync();
+    public FrontendUser(Guid userId, Guid actorId, bool isFas)
+    {
+        UserId = userId;
+        ActorId = actorId;
+        IsFas = isFas;
+    }
+
+    public Guid UserId { get; }
+
+    public Guid ActorId { get; }
+
+    public bool IsFas { get; }
 }

@@ -56,5 +56,5 @@
     <ItemGroup>
       <Folder Include="Application" />
       <Folder Include="Infrastructure" />
-    </ItemGroup>
+    </ItemGroup>   
 </Project>

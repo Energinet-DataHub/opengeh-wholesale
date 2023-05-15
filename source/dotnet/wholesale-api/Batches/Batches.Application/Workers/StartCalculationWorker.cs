@@ -12,23 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
+using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Energinet.DataHub.Wholesale.Batches.Application.BatchExecutionStateUpdateService;
+namespace Energinet.DataHub.Wholesale.Batches.Application.Workers;
 
 /// <summary>
 /// Timer triggered hosted service to invoke the service for updating batch execution states.
 /// </summary>
-public class UpdateBatchExecutionStateWorker : BackgroundService
+public class StartCalculationWorker : BackgroundService
 {
     private const int DelayInSecondsBeforeNextExecution = 20;
 
     private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger<UpdateBatchExecutionStateWorker> _logger;
+    private readonly ILogger<StartCalculationWorker> _logger;
 
-    public UpdateBatchExecutionStateWorker(IServiceProvider serviceProvider, ILogger<UpdateBatchExecutionStateWorker> logger)
+    public StartCalculationWorker(IServiceProvider serviceProvider, ILogger<StartCalculationWorker> logger)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;
@@ -49,8 +51,12 @@ public class UpdateBatchExecutionStateWorker : BackgroundService
     private async Task ExecuteInScopeAsync()
     {
         using var scope = _serviceProvider.CreateScope();
-        var updateService = scope.ServiceProvider.GetRequiredService<IBatchExecutionStateUpdateService>();
 
-        await updateService.UpdateBatchExecutionStatesAsync().ConfigureAwait(false);
+        // CorrelationIdMiddleware does not support IHostedService, so we need to add a correlation ID ourselves
+        var correlationContext = scope.ServiceProvider.GetRequiredService<ICorrelationContext>();
+        correlationContext.SetId(Guid.NewGuid().ToString());
+
+        var batchApplicationService = scope.ServiceProvider.GetRequiredService<IBatchApplicationService>();
+        await batchApplicationService.StartCalculationsAsync().ConfigureAwait(false);
     }
 }

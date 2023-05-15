@@ -26,22 +26,6 @@ using Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
-using Energinet.DataHub.Wholesale.Batches.Application;
-using Energinet.DataHub.Wholesale.Batches.Application.Model;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchExecutionStateDomainService;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationDomainService;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
-using Energinet.DataHub.Wholesale.Batches.Interfaces;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.BatchActor;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineSerializer;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Processes;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
@@ -53,6 +37,7 @@ using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Energinet.DataHub.Wholesale.ProcessManager.Monitor;
+using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -77,12 +62,20 @@ public static class Program
                 builder.UseMiddleware<FunctionTelemetryScopeMiddleware>();
                 builder.UseMiddleware<IntegrationEventMetadataMiddleware>();
             })
+            .ConfigureServices(Modules)
             .ConfigureServices(Middlewares)
             .ConfigureServices(Applications)
-            .ConfigureServices(Domains)
             .ConfigureServices(Infrastructure)
             .ConfigureServices(DateTime)
             .ConfigureServices(HealthCheck);
+    }
+
+    private static void Modules(IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddBatchesModule(
+            () => EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabaseConnectionString));
+        serviceCollection.AddCalculationResultsModule();
+        serviceCollection.AddIntegrationEventPublishingModule();
     }
 
     private static void Middlewares(IServiceCollection serviceCollection)
@@ -95,17 +88,11 @@ public static class Program
 
     private static void Applications(IServiceCollection services)
     {
-        services.AddScoped<IBatchApplicationService, BatchApplicationService>();
-        services.AddScoped<IBatchExecutionStateDomainService, BatchExecutionStateDomainService>();
-        services.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
         services.AddScoped<IProcessApplicationService, ProcessApplicationService>();
         services.AddScoped<IProcessCompletedEventDtoFactory, ProcessCompletedEventDtoFactory>();
         services.AddScoped<IProcessTypeMapper, Application.Processes.Model.ProcessTypeMapper>();
-        services.AddScoped<ICalculationDomainService, CalculationDomainService>();
-        services.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
         // This is a temporary fix until we move registration out to each of the modules
-        services.AddScoped<Energinet.DataHub.Wholesale.Application.IUnitOfWork, Energinet.DataHub.Wholesale.Infrastructure.Persistence.UnitOfWork>();
-        services.AddScoped<Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.IUnitOfWork, Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.UnitOfWork>();
+        services.AddScoped<Application.IUnitOfWork, UnitOfWork>();
         services.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
         services
             .AddScoped<ICalculationResultCompletedIntegrationEventFactory,
@@ -113,28 +100,19 @@ public static class Program
         services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
     }
 
-    private static void Domains(IServiceCollection services)
-    {
-        services.AddScoped<IBatchFactory, BatchFactory>();
-        services.AddScoped<IBatchRepository, BatchRepository>();
-        services.AddSingleton(new BatchStateMapper());
-    }
-
     private static void Infrastructure(IServiceCollection serviceCollection)
     {
         serviceCollection.AddApplicationInsights();
 
         serviceCollection.AddScoped<IIntegrationEventPublishingDatabaseContext, IntegrationEventPublishingDatabaseContext>();
-        serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
         serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
 
         serviceCollection.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
 
-        var dataLakeServiceClient = new DataLakeServiceClient(new Uri(EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageAccountUri)!), new DefaultAzureCredential());
-        var dataLakeFileSystemClient = dataLakeServiceClient.GetFileSystemClient(EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName)!);
+        var dataLakeServiceClient = new DataLakeServiceClient(new Uri(EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageAccountUri)), new DefaultAzureCredential());
+        var dataLakeFileSystemClient = dataLakeServiceClient.GetFileSystemClient(EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName));
 
         serviceCollection.AddSingleton(dataLakeFileSystemClient);
-        serviceCollection.AddScoped<IDataLakeClient, DataLakeClient>();
 
         var connectionString =
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabaseConnectionString);
@@ -144,17 +122,8 @@ public static class Program
                 o.UseNodaTime();
                 o.EnableRetryOnFailure();
             }));
-        serviceCollection.AddDbContext<DatabaseContext>(options =>
-            options.UseSqlServer(connectionString, o =>
-            {
-                o.UseNodaTime();
-                o.EnableRetryOnFailure();
-            }));
 
         RegisterEventPublishers(serviceCollection);
-
-        serviceCollection.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
-        serviceCollection.AddScoped<ICalculationParametersFactory, DatabricksCalculationParametersFactory>();
 
         serviceCollection.AddSingleton(_ =>
             {
@@ -162,15 +131,6 @@ public static class Program
                 var dbwToken = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceToken);
                 return DatabricksWheelClient.CreateClient(dbwUrl, dbwToken);
             });
-
-        serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
-        serviceCollection.AddScoped<IProcessStepResultRepository, ProcessStepResultRepository>();
-        serviceCollection.AddScoped<IActorRepository, ActorRepository>();
-        serviceCollection.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
-        serviceCollection.AddScoped<ISettlementReportRepository>(
-            provider => new SettlementReportRepository(
-                provider.GetRequiredService<IDataLakeClient>(),
-                provider.GetRequiredService<IStreamZipper>()));
 
         serviceCollection.AddScoped<ICalculationResultCompletedFactory, CalculationResultCompletedToIntegrationEventFactory>();
         serviceCollection.AddScoped<IOutboxMessageRepository, OutboxMessageRepository>();
@@ -225,8 +185,6 @@ public static class Program
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusManageConnectionString);
         var domainEventsTopicName =
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
-        var batchCreatedSubscriptionStartCalculation =
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.StartCalculationWhenBatchCreatedSubscriptionName);
         var batchCompletedSubscriptionPublishProcessesCompleted =
             EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName);
         var batchCompletedSubscriptionZipBasisData =
@@ -242,11 +200,6 @@ public static class Program
                 connectionString: serviceBusConnectionString,
                 topicName: domainEventsTopicName,
                 name: "DomainEventsTopicExists")
-            .AddAzureServiceBusSubscription(
-                connectionString: serviceBusConnectionString,
-                topicName: domainEventsTopicName,
-                subscriptionName: batchCreatedSubscriptionStartCalculation,
-                name: "BatchCreatedSubscriptionStartCalculation")
             .AddAzureServiceBusSubscription(
                 connectionString: serviceBusConnectionString,
                 topicName: domainEventsTopicName,

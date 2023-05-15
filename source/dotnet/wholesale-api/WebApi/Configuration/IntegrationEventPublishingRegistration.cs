@@ -12,9 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
+using Microsoft.Extensions.DependencyInjection;
 
-public interface IProcessResultPointFactory
+namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
+
+/// <summary>
+/// Registration of services required for the Batches module.
+/// </summary>
+public static class IntegrationEventPublishingRegistration
 {
-    IEnumerable<ProcessResultPoint> Create(string input);
+    public static void AddIntegrationEventPublishingModule(
+        this IServiceCollection serviceCollection)
+    {
+    }
 }
