@@ -16,10 +16,9 @@ using Energinet.DataHub.Wholesale.Application.SettlementReport.Model;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Application.SettlementReport;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Application;
 
 public class SettlementReportApplicationService : ISettlementReportApplicationService
 {
