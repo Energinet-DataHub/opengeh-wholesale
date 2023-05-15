@@ -25,7 +25,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 public class SqlForSettlementReportTests
 {
     [Fact]
-    public void Create_ReturnsResponseWithCorrectState()
+    public void CreateSqlStatement_ReturnsExpectedSqlStatement()
     {
         // Arrange
         var gridAreasCodes = new[] { "123", "234", "345" };
