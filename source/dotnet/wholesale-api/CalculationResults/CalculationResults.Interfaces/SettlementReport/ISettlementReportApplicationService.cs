@@ -13,11 +13,9 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application.SettlementReport.Model;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
-namespace Energinet.DataHub.Wholesale.Application.SettlementReport;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
 
-// TODO: Move to calculation results module?
 public interface ISettlementReportApplicationService
 {
     Task<SettlementReportDto> GetSettlementReportAsync(Guid batchId);
