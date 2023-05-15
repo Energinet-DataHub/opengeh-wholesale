@@ -446,7 +446,7 @@ resource "azuread_application_password" "secret" {
 }
 
 resource "databricks_secret_scope" "migration_scope" {
-  name = "migration_scope"
+  name = "migration-scope"
 }
 
 resource "databricks_secret" "spn_app_id" {
