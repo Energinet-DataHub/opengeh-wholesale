@@ -14,42 +14,55 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using NodaTime;
+using NodaTime.Text;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
-public class SqlForBalanceFixingReport
+public static class SqlForSettlementReport
 {
-    public string CreateSqlForBalanceFixing(
+    public static string CreateSqlStatement(
         string[] gridAreaCodes,
         ProcessType processType,
         Instant periodStart,
         Instant periodEnd,
         string? energySupplier)
     {
-        return "";
-//         return $@"select time, quantity, quantity_quality
-// from wholesale_output.result
-//   and grid_area = '{gridAreaCode}'
-//   and time_series_type = '{ToDeltaValue(timeSeriesType)}'
-//   and aggregation_level = '{GetAggregationLevelDeltaValue(timeSeriesType, energySupplierGln, balanceResponsiblePartyGln)}'
-// order by time
-// "
+        var selectColumns = string.Join(", ", GetSelectColumnNames());
+        var gridAreas = string.Join(",", gridAreaCodes);
+        var pattern = InstantPattern.CreateWithInvariantCulture("yyyy-MM-dd HH:mm:ss");
+        var startTimeString = pattern.Format(periodStart);
+        var endTimeString = pattern.Format(periodEnd);
+
+        return $@"SELECT {selectColumns} FROM wholesale_output.result
+                       WHERE {ResultColumnNames.GridArea} IN ({gridAreas})
+                       WHERE {ResultColumnNames.Time} BETWEEN '{startTimeString}' AND '{endTimeString}'
+                       order by time";
     }
 
-    public SettlementReportResultRow CreateSettlementReportRow(DatabricksSqlResponse databricksSqlResponse)
+    public static IEnumerable<SettlementReportResultRow> CreateSettlementReportData(DatabricksSqlResponse databricksSqlResponse)
     {
-        return new SettlementReportResultRow(
-            databricksSqlResponse.Rows[],
-            databricksSqlResponse.ProcessType,
-            databricksSqlResponse.Time,
-            databricksSqlResponse.Resolution,
-            databricksSqlResponse.MeteringPointType,
-            databricksSqlResponse.SettlementMethod,
-            databricksSqlResponse.Quantity);
+        return new List<SettlementReportResultRow>()
+        {
+            new(
+                "553",
+                ProcessType.Aggregation,
+                Instant.FromUtc(1, 1, 1, 1, 1),
+                "PT1H",
+                MeteringPointType.Consumption,
+                SettlementMethod.Flex,
+                1),
+        };
     }
+
+    private static IEnumerable<string> GetSelectColumnNames()
     {
-
+        return new[]
+        {
+            ResultColumnNames.GridArea,
+            ResultColumnNames.BatchProcessType,
+            ResultColumnNames.Time,
+            ResultColumnNames.TimeSeriesType,
+            ResultColumnNames.Quantity,
+        };
     }
-
 }
-

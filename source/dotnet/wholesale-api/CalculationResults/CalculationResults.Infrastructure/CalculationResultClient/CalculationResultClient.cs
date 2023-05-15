@@ -49,11 +49,11 @@ public class CalculationResultClient : ICalculationResultClient
         Instant periodEnd,
         string? energySupplier)
     {
-        var sql = CreateSqlStatement(gridAreaCodes, processType, timeSeriesType, energySupplierGln, balanceResponsiblePartyGln);
+        var sql = SqlForSettlementReport.CreateSqlStatement(gridAreaCodes, processType, periodStart, periodEnd, energySupplier);
 
         var databricksSqlResponse = await SendSqlStatementAsync(sql).ConfigureAwait(false);
 
-        return CreateProcessStepResult(timeSeriesType, databricksSqlResponse);
+        return SqlForSettlementReport.CreateSettlementReportData(databricksSqlResponse);
     }
 
     public async Task<ProcessStepResult> GetAsync(
@@ -63,11 +63,9 @@ public class CalculationResultClient : ICalculationResultClient
         string? energySupplierGln,
         string? balanceResponsiblePartyGln)
     {
-        var sql = CreateSqlStatement(batchId, gridAreaCode, timeSeriesType, energySupplierGln, balanceResponsiblePartyGln);
+        await Task.Delay(1000).ConfigureAwait(false);
 
-        var databricksSqlResponse = await SendSqlStatementAsync(sql).ConfigureAwait(false);
-
-        return CreateProcessStepResult(timeSeriesType, databricksSqlResponse);
+        throw new NotImplementedException("GetAsync is not implemented yet");
     }
 
     private async Task<DatabricksSqlResponse> SendSqlStatementAsync(string sqlStatement)
@@ -115,9 +113,6 @@ public class CalculationResultClient : ICalculationResultClient
         httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
         httpClient.BaseAddress = new Uri(options.Value.DATABRICKS_WORKSPACE_URL);
     }
-
-    // TODO: Unit test the SQL (ensure it works as expected)
-
 
     // TODO: Unit test and move to mapper
     private string GetAggregationLevelDeltaValue(TimeSeriesType timeSeriesType, string? energySupplierGln, string? balanceResponsiblePartyGln)
