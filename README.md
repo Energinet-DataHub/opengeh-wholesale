@@ -78,7 +78,7 @@ For people on the project please read on for details on how to contribute or int
 In team Mandolorian we have agreed on a test strategy which is located [here](docs/test-strategy.md)
 
 When writing unit tests we strive to write the test method names the following way: `MemberName_WhenSomething_IsOrDoes`. Where member name is usually a method name but can also be a property name. The "WhenSomething" part can be left out in cases where it doesn't add any meaningful value. "IsOrDoes" represents the expected behavior like "returning", "throwing" or a side-effect.
-an example can be found [here](source/dotnet/wholesale-api/WebApi.UnitTests/Domain/BatchAggregate/BatchTests.cs)
+an example can be found [here](source/dotnet/wholesale-api/Batches/Batches.UnitTests/Infrastructure/BatchAggregate/BatchTests.cs)
 
 Read about general QA that applies to the entire Green Energy Hub [here](https://github.com/Energinet-DataHub/green-energy-hub/blob/main/docs/quality-assurance-and-test.md).
 
