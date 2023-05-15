@@ -9,7 +9,10 @@
         "vscode-icons-team.vscode-icons",
         "davidanson.vscode-markdownlint",
         "ms-vscode.powershell",
-        "redhat.vscode-yaml"
+        "redhat.vscode-yaml",
+        "github.vscode-github-actions",
+        "systemticks.c4-dsl-extension",
+        "ms-azuretools.vscode-docker"
     ],
     // List of extensions recommended by VS Code that should not be recommended for users of this workspace.
     "unwantedRecommendations": []

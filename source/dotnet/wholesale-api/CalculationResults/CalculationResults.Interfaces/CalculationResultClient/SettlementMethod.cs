@@ -19,6 +19,6 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationR
 /// </summary>
 public enum SettlementMethod
 {
-    Flex = 0, // D01
-    NonProfiled = 1, // E02
+    Flex = 0,
+    NonProfiled = 1,
 }

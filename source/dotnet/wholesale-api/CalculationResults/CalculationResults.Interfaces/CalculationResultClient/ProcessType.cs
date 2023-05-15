@@ -19,6 +19,6 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationR
 /// </summary>
 public enum ProcessType
 {
-    BalanceFixing = 0, // D04
-    Aggregation = 1, // D03 (no settlement report)
+    BalanceFixing = 0,
+    Aggregation = 1,
 }
