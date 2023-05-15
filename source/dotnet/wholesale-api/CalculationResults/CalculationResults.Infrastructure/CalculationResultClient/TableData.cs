@@ -11,7 +11,22 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+// namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
-public sealed record DatabricksSqlResponse(string State, TableData TableData);
+public class TableData
+{
+    private readonly List<string[]> _data;
+    private readonly Dictionary<string, int> _columnIndex;
+
+    public TableData(IEnumerable<string> columnNames, IEnumerable<string[]> data)
+    {
+        _columnIndex = columnNames.Select((name, i) => (name, i)).ToDictionary(x => x.name, x => x.i);
+        _data = data.ToList();
+    }
+
+    public string this[string columnName, int rowIndex] =>
+        _data[rowIndex][_columnIndex[columnName]] ??
+        throw new InvalidOperationException();
+}

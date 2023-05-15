@@ -167,7 +167,7 @@ order by time
         TimeSeriesType timeSeriesType,
         DatabricksSqlResponse databricksSqlResponse)
     {
-        var pointsDto = databricksSqlResponse.Rows.Select(
+        var pointsDto = databricksSqlResponse.TableData.Select(
                 res => new TimeSeriesPoint(
                     DateTimeOffset.Parse(res[0]),
                     decimal.Parse(res[1], CultureInfo.InvariantCulture),
