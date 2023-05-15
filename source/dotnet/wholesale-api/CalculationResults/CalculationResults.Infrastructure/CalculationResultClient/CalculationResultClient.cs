@@ -53,7 +53,7 @@ public class CalculationResultClient : ICalculationResultClient
 
         var databricksSqlResponse = await SendSqlStatementAsync(sql).ConfigureAwait(false);
 
-        return SqlForSettlementReport.CreateSettlementReportData(databricksSqlResponse);
+        return SqlForSettlementReport.CreateSettlementReportRows(databricksSqlResponse);
     }
 
     public async Task<ProcessStepResult> GetAsync(

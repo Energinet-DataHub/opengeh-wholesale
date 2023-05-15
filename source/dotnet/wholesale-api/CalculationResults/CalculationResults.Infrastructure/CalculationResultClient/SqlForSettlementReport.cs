@@ -33,13 +33,10 @@ public static class SqlForSettlementReport
         var startTimeString = pattern.Format(periodStart);
         var endTimeString = pattern.Format(periodEnd);
 
-        return $@"SELECT {selectColumns} FROM wholesale_output.result
-                       WHERE {ResultColumnNames.GridArea} IN ({gridAreas})
-                       WHERE {ResultColumnNames.Time} BETWEEN '{startTimeString}' AND '{endTimeString}'
-                       order by time";
+        return $@"SELECT {selectColumns} FROM wholesale_output.result WHERE {ResultColumnNames.GridArea} IN ({gridAreas}) WHERE {ResultColumnNames.Time} BETWEEN '{startTimeString}' AND '{endTimeString}' order by time";
     }
 
-    public static IEnumerable<SettlementReportResultRow> CreateSettlementReportData(DatabricksSqlResponse databricksSqlResponse)
+    public static IEnumerable<SettlementReportResultRow> CreateSettlementReportRows(DatabricksSqlResponse databricksSqlResponse)
     {
         return new List<SettlementReportResultRow>()
         {
