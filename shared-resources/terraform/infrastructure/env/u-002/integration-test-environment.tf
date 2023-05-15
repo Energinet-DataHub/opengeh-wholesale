@@ -204,22 +204,6 @@ resource "azurerm_key_vault_access_policy" "integration-test-kv-ci-test-spn" {
 #
 # Keyvault secrets
 #
-resource "azurerm_key_vault_secret" "kvs-appi-instrumentation-key" {
-  name         = "AZURE-APPINSIGHTS-INSTRUMENTATIONKEY"
-  value        = azurerm_application_insights.integration-test-appi.instrumentation_key
-  key_vault_id = azurerm_key_vault.integration-test-kv.id
-
-  lifecycle {
-    ignore_changes = [
-      tags,
-    ]
-  }
-
-  depends_on = [
-    azurerm_key_vault_access_policy.integration-test-kv-selfpermissions
-  ]
-}
-
 resource "azurerm_key_vault_secret" "kvs-evhns-connection-string" {
   name         = "AZURE-EVENTHUB-CONNECTIONSTRING"
   value        = azurerm_eventhub_namespace.integration-test-evhns.default_primary_connection_string
@@ -461,24 +445,50 @@ resource "azuread_application_password" "secret" {
   application_object_id = azuread_application.app_databricks_migration.object_id
 }
 
-resource "databricks_secret_scope" "spn_app_id" {
-  name = "spn-id-scope"
+resource "databricks_secret_scope" "migration_scope" {
+  name = "migration_scope"
 }
 
 resource "databricks_secret" "spn_app_id" {
   key          = "spn_app_id"
   string_value = azuread_application.app_databricks_migration.application_id
-  scope        = databricks_secret_scope.spn_app_id.id
-}
-
-resource "databricks_secret_scope" "spn_app_secret" {
-  name = "spn-secret-scope"
+  scope        = databricks_secret_scope.migration_scope.id
 }
 
 resource "databricks_secret" "spn_app_secret" {
   key          = "spn_app_secret"
   string_value = azuread_application_password.secret.value
-  scope        = databricks_secret_scope.spn_app_secret.id
+  scope        = databricks_secret_scope.migration_scope.id
+}
+
+resource "databricks_secret" "appi_instrumentation_key" {
+  key          = "appi_instrumentation_key"
+  string_value = module.appi_shared.instrumentation_key
+  scope        = databricks_secret_scope.migration_scope.id
+}
+
+resource "databricks_secret" "st_dropzone_storage_account" {
+  key          = "st_dropzone_storage_account"
+  string_value = azurerm_storage_account.playground.name
+  scope        = databricks_secret_scope.migration_scope.id
+}
+
+resource "databricks_secret" "st_shared_datalake_account" {
+  key          = "st_shared_datalake_account"
+  string_value = azurerm_storage_account.playground.name
+  scope        = databricks_secret_scope.migration_scope.id
+}
+
+resource "databricks_secret" "st_migration_datalake_account" {
+  key          = "st_migration_datalake_account"
+  string_value = azurerm_storage_account.playground.name
+  scope        = databricks_secret_scope.migration_scope.id
+}
+
+resource "databricks_secret" "tenant_id" {
+  key          = "tenant_id"
+  string_value = data.azurerm_client_config.this.tenant_id
+  scope        = databricks_secret_scope.migration_scope.id
 }
 
 data "external" "databricks_token_playground" {
@@ -533,10 +543,10 @@ resource "databricks_instance_pool" "my_pool" {
 }
 
 resource "databricks_cluster" "shared_all_purpose" {
-  cluster_name            = "Shared all-purpose"
-  num_workers             = 1
-  instance_pool_id        = databricks_instance_pool.my_pool.id
-  spark_version           = data.databricks_spark_version.latest_lts.id
+  cluster_name     = "Shared all-purpose"
+  num_workers      = 1
+  instance_pool_id = databricks_instance_pool.my_pool.id
+  spark_version    = data.databricks_spark_version.latest_lts.id
   spark_conf = {
     "fs.azure.account.oauth2.client.endpoint.${azurerm_storage_account.playground.name}.dfs.core.windows.net" : "https://login.microsoftonline.com/${data.azurerm_client_config.this.tenant_id}/oauth2/token"
     "fs.azure.account.auth.type.${azurerm_storage_account.playground.name}.dfs.core.windows.net" : "OAuth"
@@ -548,7 +558,7 @@ resource "databricks_cluster" "shared_all_purpose" {
     "spark.master" : "local[*, 4]"
   }
   spark_env_vars = {
-    "APPI_INSTRUMENTATION_KEY"        = azurerm_key_vault_secret.kvs-appi-instrumentation-key.value
+    "APPI_INSTRUMENTATION_KEY"        = module.appi_shared.instrumentation_key
     "LANDING_STORAGE_ACCOUNT"         = azurerm_storage_account.playground.name
     "DATALAKE_STORAGE_ACCOUNT"        = azurerm_storage_account.playground.name
     "DATALAKE_SHARED_STORAGE_ACCOUNT" = azurerm_storage_account.playground.name
@@ -563,18 +573,8 @@ resource "databricks_job" "migration_playground_workflow" {
     new_cluster {
       instance_pool_id = databricks_instance_pool.my_pool.id
       spark_version    = data.databricks_spark_version.latest_lts.id
-      spark_conf = {
-        "fs.azure.account.oauth2.client.endpoint.${azurerm_storage_account.playground.name}.dfs.core.windows.net" : "https://login.microsoftonline.com/${data.azurerm_client_config.this.tenant_id}/oauth2/token"
-        "fs.azure.account.auth.type.${azurerm_storage_account.playground.name}.dfs.core.windows.net" : "OAuth"
-        "fs.azure.account.oauth.provider.type.${azurerm_storage_account.playground.name}.dfs.core.windows.net" : "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
-        "fs.azure.account.oauth2.client.id.${azurerm_storage_account.playground.name}.dfs.core.windows.net" : databricks_secret.spn_app_id.config_reference
-        "fs.azure.account.oauth2.client.secret.${azurerm_storage_account.playground.name}.dfs.core.windows.net" : databricks_secret.spn_app_secret.config_reference
-        "spark.databricks.delta.preview.enabled" : true
-        "spark.databricks.io.cache.enabled" : true
-        "spark.master" : "local[*, 4]"
-      }
       spark_env_vars = {
-        "APPI_INSTRUMENTATION_KEY"        = azurerm_key_vault_secret.kvs-appi-instrumentation-key.value
+        "APPI_INSTRUMENTATION_KEY"        = module.appi_shared.instrumentation_key
         "LANDING_STORAGE_ACCOUNT"         = azurerm_storage_account.playground.name
         "DATALAKE_STORAGE_ACCOUNT"        = azurerm_storage_account.playground.name
         "DATALAKE_SHARED_STORAGE_ACCOUNT" = azurerm_storage_account.playground.name
