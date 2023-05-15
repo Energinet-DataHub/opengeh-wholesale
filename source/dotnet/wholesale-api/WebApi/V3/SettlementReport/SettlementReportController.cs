@@ -14,6 +14,7 @@
 
 using System.ComponentModel.DataAnnotations;
 using Energinet.DataHub.Wholesale.Application.SettlementReport;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Energinet.DataHub.Wholesale.WebApi.V3.SettlementReport;
