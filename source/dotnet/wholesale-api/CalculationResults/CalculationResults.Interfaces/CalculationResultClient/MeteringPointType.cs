@@ -19,7 +19,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationR
 /// </summary>
 public enum MeteringPointType
 {
-    Consumption = 0, // E17
-    Production = 1, // E18
-    Exchange = 2, // E20
+    Consumption = 0,
+    Production = 1,
+    Exchange = 2,
 }
