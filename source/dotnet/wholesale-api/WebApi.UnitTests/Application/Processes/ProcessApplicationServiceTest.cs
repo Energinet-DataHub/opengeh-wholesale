@@ -18,13 +18,13 @@ using Energinet.DataHub.Wholesale.Application;
 using Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
-using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Moq;
 using NodaTime;
 using Xunit;
+using ProcessType = Energinet.DataHub.Wholesale.Batches.Interfaces.Models.ProcessType;
 using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Application.Processes;

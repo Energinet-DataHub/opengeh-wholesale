@@ -15,10 +15,13 @@
 using System.Globalization;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
 // TODO: Should we avoid referencing the DatabricksClient project "just" to get access to the DatabricksOptions?
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using Microsoft.Extensions.Options;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
@@ -37,6 +40,18 @@ public class CalculationResultClient : ICalculationResultClient
         _options = options;
         _databricksSqlResponseParser = databricksSqlResponseParser;
         ConfigureHttpClient(_httpClient, _options);
+    }
+
+    public async Task<IEnumerable<SettlementReportResultRow>> GetSettlementReportResultAsync(
+        string[] gridAreaCodes,
+        ProcessType processType,
+        Instant periodStart,
+        Instant periodEnd,
+        string? energySupplier)
+    {
+        await Task.Delay(1000).ConfigureAwait(false);
+
+        throw new NotImplementedException("GetSettlementReportResultAsync is not implemented yet");
     }
 
     public async Task<ProcessStepResult> GetAsync(
