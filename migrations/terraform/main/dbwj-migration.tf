@@ -1,45 +1,41 @@
-resource "databricks_secret_scope" "spn_app_id" {
-  name = "spn-id-${lower(var.domain_name_short)}-${lower(var.environment_short)}-${lower(var.environment_instance)}"
+resource "databricks_secret_scope" "migration_scope" {
+  name = "migration-scope"
 }
 
 resource "databricks_secret" "spn_app_id" {
   key          = "spn_app_id"
   string_value = azuread_application.app_databricks.application_id
-  scope        = databricks_secret_scope.spn_app_id.id
-}
-
-resource "databricks_secret_scope" "spn_app_secret" {
-  name = "spn-secret-${lower(var.domain_name_short)}-${lower(var.environment_short)}-${lower(var.environment_instance)}"
+  scope        = databricks_secret_scope.migration_scope.id
 }
 
 resource "databricks_secret" "spn_app_secret" {
   key          = "spn_app_secret"
   string_value = azuread_application_password.secret.value
-  scope        = databricks_secret_scope.spn_app_secret.id
+  scope        = databricks_secret_scope.migration_scope.id
 }
 
 resource "databricks_secret" "appi_instrumentation_key" {
   key          = "appi_instrumentation_key"
   string_value = data.azurerm_key_vault_secret.appi_instrumentation_key.value
-  scope        = databricks_secret_scope.spn_app_secret.id
+  scope        = databricks_secret_scope.migration_scope.id
 }
 
 resource "databricks_secret" "st_dropzone_storage_account" {
   key          = "st_dropzone_storage_account"
   string_value = data.azurerm_storage_account.drop.name
-  scope        = databricks_secret_scope.spn_app_secret.id
+  scope        = databricks_secret_scope.migration_scope.id
 }
 
 resource "databricks_secret" "st_shared_datalake_account" {
   key          = "st_shared_datalake_account"
   string_value = data.azurerm_key_vault_secret.st_data_lake_name.value
-  scope        = databricks_secret_scope.spn_app_secret.id
+  scope        = databricks_secret_scope.migration_scope.id
 }
 
 resource "databricks_secret" "st_migration_datalake_account" {
   key          = "st_migration_datalake_account"
   string_value = module.st_migrations.name
-  scope        = databricks_secret_scope.spn_app_secret.id
+  scope        = databricks_secret_scope.migration_scope.id
 }
 
 resource "databricks_sql_global_config" "this" {
