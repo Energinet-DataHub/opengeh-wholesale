@@ -33,15 +33,15 @@ public class PublishCalculationResultCompletedEndpoint
         _processApplicationService = processApplicationService;
     }
 
-    // [Function(FunctionName)]
-    // public async Task RunAsync(
-    //     [ServiceBusTrigger(
-    //         "%" + EnvironmentSettingNames.DomainEventsTopicName + "%",
-    //         "%" + EnvironmentSettingNames.PublishProcessesCompletedIntegrationEventWhenProcessCompletedSubscriptionName + "%",
-    //         Connection = EnvironmentSettingNames.ServiceBusListenConnectionString)]
-    //     byte[] message)
-    // {
-    //     var processCompletedEvent = await _jsonSerializer.DeserializeAsync<ProcessCompletedEventDto>(message).ConfigureAwait(false);
-    //     await _processApplicationService.PublishCalculationResultCompletedIntegrationEventsAsync(processCompletedEvent).ConfigureAwait(false);
-    // }
+    [Function(FunctionName)]
+    public async Task RunAsync(
+        [ServiceBusTrigger(
+            "%" + EnvironmentSettingNames.DomainEventsTopicName + "%",
+            "%" + EnvironmentSettingNames.PublishProcessesCompletedIntegrationEventWhenProcessCompletedSubscriptionName + "%",
+            Connection = EnvironmentSettingNames.ServiceBusListenConnectionString)]
+        byte[] message)
+    {
+        var processCompletedEvent = await _jsonSerializer.DeserializeAsync<ProcessCompletedEventDto>(message).ConfigureAwait(false);
+        //await _processApplicationService.PublishCalculationResultCompletedIntegrationEventsAsync(processCompletedEvent).ConfigureAwait(false);
+    }
 }

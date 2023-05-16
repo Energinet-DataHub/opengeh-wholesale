@@ -31,15 +31,15 @@ public class PublishProcessCompletedEventsEndpoint //TODO: LRN check for tests
         _processApplicationService = processApplicationService;
     }
 
-    // [Function(FunctionName)]
-    // public async Task RunAsync(
-    //     [ServiceBusTrigger(
-    //         "%" + EnvironmentSettingNames.DomainEventsTopicName + "%",
-    //         "%" + EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName + "%",
-    //         Connection = EnvironmentSettingNames.ServiceBusListenConnectionString)]
-    //     byte[] message)
-    // {
-    //     var batchCompletedEvent = await _jsonSerializer.DeserializeAsync<BatchCompletedEventDto>(message).ConfigureAwait(false);
-    //     await _processApplicationService.PublishProcessCompletedEventsAsync(batchCompletedEvent).ConfigureAwait(false);
-    // }
+    [Function(FunctionName)]
+    public async Task RunAsync(
+        [ServiceBusTrigger(
+            "%" + EnvironmentSettingNames.DomainEventsTopicName + "%",
+            "%" + EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName + "%",
+            Connection = EnvironmentSettingNames.ServiceBusListenConnectionString)]
+        byte[] message)
+    {
+        var batchCompletedEvent = await _jsonSerializer.DeserializeAsync<BatchCompletedEventDto>(message).ConfigureAwait(false);
+        //await _processApplicationService.PublishProcessCompletedEventsAsync(batchCompletedEvent).ConfigureAwait(false);
+    }
 }

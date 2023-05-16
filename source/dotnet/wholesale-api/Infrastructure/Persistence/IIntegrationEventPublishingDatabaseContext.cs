@@ -20,7 +20,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 
 public interface IIntegrationEventPublishingDatabaseContext
 {
-    public DbSet<CompletedBatch> Batches { get; }
+    DbSet<CompletedBatch> Batches { get; }
 
     DbSet<OutboxMessage> OutboxMessages { get; }
 
