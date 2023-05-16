@@ -172,14 +172,13 @@ order by time
         DatabricksSqlResponse databricksSqlResponse)
     {
         var tableData = databricksSqlResponse.TableData;
-        var pointsDto = new List<TimeSeriesPoint>();
-        for (var row = 0; row < databricksSqlResponse.TableData.RowCount; row++)
-        {
-            pointsDto.Add(new TimeSeriesPoint(
+
+        var pointsDto = Enumerable.Range(0, databricksSqlResponse.TableData.RowCount)
+            .Select(row => new TimeSeriesPoint(
                 DateTimeOffset.Parse(tableData[row, ResultColumnNames.Time]),
                 decimal.Parse(tableData[row, ResultColumnNames.Quantity], CultureInfo.InvariantCulture),
-                QuantityQualityMapper.MapQuality(tableData[row, ResultColumnNames.QuantityQuality])));
-        }
+                QuantityQualityMapper.MapQuality(tableData[row, ResultColumnNames.QuantityQuality])))
+            .ToList();
 
         return new ProcessStepResult(timeSeriesType, pointsDto.ToArray());
     }
