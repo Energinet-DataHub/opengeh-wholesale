@@ -8,8 +8,6 @@ name: Detect changes
 on:
   workflow_call:
     outputs:
-      c4_model:
-        value: ${{ jobs.changes.outputs.c4_model }}
       edi_ci:
         value: ${{ jobs.changes.outputs.edi_ci }}
       market_participant_ci:
@@ -22,19 +20,21 @@ on:
         value: ${{ jobs.changes.outputs.ui_ci }}
       wholesale_ci:
         value: ${{ jobs.changes.outputs.wholesale_ci }}
+      render_c4model_deployment:
+        value: ${{ jobs.changes.outputs.render_c4model_deployment }}
 
 jobs:
   changes:
     name: Determine relevant jobs
     runs-on: ubuntu-latest
     outputs:
-      c4_model: ${{ steps.filter.outputs.c4_model }}
       edi_ci: ${{ steps.filter.outputs.edi_ci }}
       market_participant_ci: ${{ steps.filter.outputs.market_participant_ci }}
       migrations_ci: ${{ steps.filter.outputs.migrations_ci }}
       shared_resources_ci: ${{ steps.filter.outputs.shared_resources_ci }}
       ui_ci: ${{ steps.filter.outputs.ui_ci }}
       wholesale_ci: ${{ steps.filter.outputs.wholesale_ci }}
+      render_c4model_deployment: ${{ steps.filter.outputs.render_c4model_deployment }}
     steps:
       - name: Checkout repository
         if: ${{ github.event_name != 'pull_request' }}
@@ -45,9 +45,6 @@ jobs:
         id: filter
         with:
           filters: |
-            c4_model:
-              - c4-model/**
-              - .github/workflows/c4-model-*.yml
             edi_ci:
               - edi/**
               - .github/workflows/edi-*.yml
@@ -84,3 +81,6 @@ jobs:
               - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*
+            render_c4model_deployment:
+              - 'docs/diagrams/c4-model/deployment.dsl'
+              - 'docs/diagrams/c4-model/deployment.json'

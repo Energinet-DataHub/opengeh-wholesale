@@ -23,23 +23,29 @@ module "app_wholesale_api" {
   ]
 
   app_settings = {
-    TIME_ZONE                 = local.TIME_ZONE
-    EXTERNAL_OPEN_ID_URL      = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-open-id-url)"
-    INTERNAL_OPEN_ID_URL      = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-open-id-url)"
-    BACKEND_BFF_APP_ID        = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-bff-app-id)"
-    STORAGE_CONTAINER_NAME    = local.STORAGE_CONTAINER_NAME
-    STORAGE_ACCOUNT_URI      = local.STORAGE_ACCOUNT_URI
+    TIME_ZONE                            = local.TIME_ZONE
+    EXTERNAL_OPEN_ID_URL                 = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-open-id-url)"
+    INTERNAL_OPEN_ID_URL                 = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-open-id-url)"
+    BACKEND_BFF_APP_ID                   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-bff-app-id)"
+    STORAGE_CONTAINER_NAME               = local.STORAGE_CONTAINER_NAME
+    STORAGE_ACCOUNT_URI                  = local.STORAGE_ACCOUNT_URI
 
     # Service Bus
     SERVICE_BUS_SEND_CONNECTION_STRING   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-send-connection-string)"
+    SERVICE_BUS_LISTEN_CONNECTION_STRING = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-listen-connection-string)"
     SERVICE_BUS_MANAGE_CONNECTION_STRING = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-manage-connection-string)"
+    INTEGRATIONEVENTS_TOPIC_NAME         = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbt-sharedres-integrationevent-received-name)"
     DOMAIN_EVENTS_TOPIC_NAME             = module.sbt_domain_events.name
+
+    # Domain events
     BATCH_CREATED_EVENT_NAME             = local.BATCH_CREATED_EVENT_NAME
+    BATCH_COMPLETED_EVENT_NAME           = local.BATCH_COMPLETED_EVENT_NAME
+    PROCESS_COMPLETED_EVENT_NAME         = local.PROCESS_COMPLETED_EVENT_NAME
 
     # Databricks
-    DATABRICKS_WORKSPACE_TOKEN = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=dbw-shared-workspace-token)"
-    DATABRICKS_WORKSPACE_URL   = "https://${data.azurerm_key_vault_secret.dbw_databricks_workspace_url.value}"
-    DATABRICKS_WAREHOUSE_ID = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-databricks-sql-endpoint-id)"
+    DATABRICKS_WORKSPACE_TOKEN           = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=dbw-shared-workspace-token)"
+    DATABRICKS_WORKSPACE_URL             = "https://${data.azurerm_key_vault_secret.dbw_databricks_workspace_url.value}"
+    DATABRICKS_WAREHOUSE_ID              = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-databricks-sql-endpoint-id)"
   }
 
   connection_strings = [

@@ -10,7 +10,7 @@ resource "azurerm_resource_group" "integration-test-rg" {
 }
 
 #
-# Service principal running integration tests in CI pipelines
+# Service principal running integration tests in CI pipelines.
 #
 variable "spn_ci_object_id" {
   type        = string
