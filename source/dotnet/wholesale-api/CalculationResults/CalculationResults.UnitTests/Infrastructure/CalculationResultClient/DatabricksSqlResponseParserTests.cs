@@ -35,7 +35,7 @@ public class DatabricksSqlResponseParserTests
 
     [Theory]
     [AutoMoqData]
-    public void Create_ReturnsResponseWithCorrectState(DatabricksSqlResponseParser sut)
+    public void Parse_ReturnsResponseWithExpectedState(DatabricksSqlResponseParser sut)
     {
         // Arrange
         const string expectedState = "SUCCEEDED";
@@ -49,7 +49,7 @@ public class DatabricksSqlResponseParserTests
 
     [Theory]
     [AutoMoqData]
-    public void Create_ReturnsResponseWithCorrectArrayLength(DatabricksSqlResponseParser sut)
+    public void Parse_ReturnsResponseWithExpectedArrayLength(DatabricksSqlResponseParser sut)
     {
         // Arrange
         const int expectedLength = 96;
@@ -58,12 +58,12 @@ public class DatabricksSqlResponseParserTests
         var actual = sut.Parse(_sampleJson);
 
         // Assert
-        actual.Rows.Count().Should().Be(expectedLength);
+        actual.Table.Count.Should().Be(expectedLength);
     }
 
     [Theory]
     [AutoMoqData]
-    public void Create_ReturnsDataArrayWithCorrectContent(DatabricksSqlResponseParser sut)
+    public void Parse_ReturnsDataArrayWithExpectedContent(DatabricksSqlResponseParser sut)
     {
         // Arrange
         var expectedFirstArray = new[]
@@ -79,32 +79,37 @@ public class DatabricksSqlResponseParserTests
         var actual = sut.Parse(_sampleJson);
 
         // Assert
-        actual.Rows.First().Should().Equal(expectedFirstArray);
+        actual.Table[0].Should().Equal(expectedFirstArray);
+        actual.Table[^1].Should().Equal(expectedLastArray);
     }
 
     [Theory]
     [AutoMoqData]
-    public void Create_WhenValidJson_ThrowsNoException(DatabricksSqlResponseParser sut)
+    public void Parse_WhenValidJson_ReturnsResult(DatabricksSqlResponseParser sut)
     {
         // Arrange
-        var obj = new JObject(
-            new JProperty("status", new JObject(new JProperty("state", "PENDING"))),
-            new JProperty("result", new JObject(new JProperty("data_array", new List<string[]>()))));
+        var status = new JProperty("status", new JObject(new JProperty("state", "PENDING")));
+        var manifest = new JProperty("manifest", new JObject(new JProperty("schema", new JObject(new JProperty("columns", new JArray(new JObject(new JProperty("name", "grid_area"))))))));
+        var result = new JProperty("result", new JObject(new JProperty("data_array", new List<string[]>())));
+        var obj = new JObject(status, manifest, result);
+        var jsonString = obj.ToString();
 
         // Act + Assert
-        sut.Parse(obj.ToString()!);
+        sut.Parse(jsonString).Should().NotBeNull();
     }
 
     [Theory]
     [AutoMoqData]
-    public void Create_WhenInvalidJson_ThrowsException(DatabricksSqlResponseParser sut)
+    public void Parse_WhenInvalidJson_ThrowsException(DatabricksSqlResponseParser sut)
     {
         // Arrange
-        var obj = new JObject(
-            new JProperty("not_status", new JObject(new JProperty("state", "PENDING"))),
-            new JProperty("result", new JObject(new JProperty("data_array", new List<string[]>()))));
+        var status = new JProperty("not_status", new JObject(new JProperty("state", "PENDING")));
+        var manifest = new JProperty("manifest", new JObject(new JProperty("schema", new JObject(new JProperty("columns", new JArray(new JObject(new JProperty("name", "grid_area"))))))));
+        var result = new JProperty("result", new JObject(new JProperty("data_array", new List<string[]>())));
+        var obj = new JObject(status, manifest, result);
+        var jsonString = obj.ToString();
 
         // Act + Assert
-        Assert.Throws<InvalidOperationException>(() => sut.Parse(obj.ToString()));
+        Assert.Throws<InvalidOperationException>(() => sut.Parse(jsonString));
     }
 }
