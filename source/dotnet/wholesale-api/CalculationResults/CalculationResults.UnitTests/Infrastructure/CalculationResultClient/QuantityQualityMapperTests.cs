@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using FluentAssertions;
 using Xunit;
@@ -31,7 +32,7 @@ public class QuantityQualityMapperTests
             var input = expected.ToString().ToLower();
 
             // Act & Assert
-            QuantityQualityMapper.MapQuality(input).Should().Be(expected);
+            QuantityQualityMapper.FromDeltaTable(input).Should().Be(expected);
         }
     }
 }
