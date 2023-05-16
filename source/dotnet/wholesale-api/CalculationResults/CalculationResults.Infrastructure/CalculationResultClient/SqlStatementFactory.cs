@@ -39,17 +39,4 @@ public static class SqlStatementFactory
         return
             $@"SELECT {selectColumns} FROM wholesale_output.result WHERE {ResultColumnNames.GridArea} IN ({gridAreas}) WHERE {ResultColumnNames.BatchProcessType} = {processTypeString} WHERE {ResultColumnNames.Time} BETWEEN '{startTimeString}' AND '{endTimeString}' order by time";
     }
-
-    public static IEnumerable<SettlementReportResultRow> CreateSettlementReportRows(Table rows)
-    {
-        return Enumerable.Range(0, rows.Count)
-            .Select(i => new SettlementReportResultRow(
-                rows[i, ResultColumnNames.GridArea],
-                ProcessType.FromDeltaTable(rows[i, ResultColumnNames.BatchProcessType]),
-                InstantPattern.ExtendedIso.Parse(rows[i, ResultColumnNames.Time]).Value,
-                "PT15M", // TODO: store resolution in delta table?
-                MeteringPointTypeMapper.FromDeltaTable(rows[i, ResultColumnNames.TimeSeriesType]),
-                SettlementMethodMapper.FromDeltaTable(rows[i, ResultColumnNames.TimeSeriesType]),
-                decimal.Parse(rows[i, ResultColumnNames.Quantity])));
-    }
 }
