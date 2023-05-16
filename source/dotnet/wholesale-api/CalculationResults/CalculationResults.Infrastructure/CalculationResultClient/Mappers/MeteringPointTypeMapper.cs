@@ -14,20 +14,16 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
 
-public static class QuantityQualityMapper
+public class MeteringPointTypeMapper
 {
-        public static QuantityQuality MapQuality(string pointQuality)
+    private static MeteringPointType? Map(TimeSeriesType timeSeriesType) =>
+        timeSeriesType switch
         {
-            return pointQuality switch
-            {
-                "measured" => QuantityQuality.Measured,
-                "calculated" => QuantityQuality.Calculated,
-                "estimated" => QuantityQuality.Estimated,
-                "incomplete" => QuantityQuality.Incomplete,
-                "missing" => QuantityQuality.Missing,
-                _ =>throw new ArgumentException($"quality of unknown type:{pointQuality}"),
-            };
-        }
+            TimeSeriesType.Production => MeteringPointType.Production,
+            TimeSeriesType.FlexConsumption => MeteringPointType.Consumption,
+            TimeSeriesType.NonProfiledConsumption => MeteringPointType.Consumption,
+            _ => throw new NotImplementedException($"Cannot map timeSeriesType type '{timeSeriesType}"),
+        };
 }

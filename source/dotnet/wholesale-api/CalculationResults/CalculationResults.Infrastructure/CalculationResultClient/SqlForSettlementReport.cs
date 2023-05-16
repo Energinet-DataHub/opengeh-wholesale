@@ -29,7 +29,7 @@ public static class SqlForSettlementReport
     {
         // TODO: Handle energy supplier
         var selectColumns = string.Join(", ", ResultColumnNames.GridArea, ResultColumnNames.BatchProcessType, ResultColumnNames.Time, ResultColumnNames.TimeSeriesType, ResultColumnNames.Quantity);
-        var processTypeString = MapFrom(processType);
+        var processTypeString = MapToDeltaTableFormat(processType);
         var gridAreas = string.Join(",", gridAreaCodes);
         var startTimeString = periodStart.ToString();
         var endTimeString = periodEnd.ToString();
@@ -44,19 +44,10 @@ public static class SqlForSettlementReport
         return Enumerable.Range(0, rows.Count)
             .Select(i => new SettlementReportResultRow(
                 rows[i, ResultColumnNames.GridArea],
-                MapToProcessType(rows[i, ResultColumnNames.BatchProcessType]),
+                MapFromDeltaTableFormat(rows[i, ResultColumnNames.BatchProcessType]),
                 InstantPattern.ExtendedIso.Parse(rows[i, ResultColumnNames.Time]).Value,
                 "PT15M", // TODO: store resolution in delta table?
                 MapToMeteringPointType(rows[i, ResultColumnNames.TimeSeriesType]),
                 MapToSettlementMethod(rows[i, ResultColumnNames.TimeSeriesType])));
     }
-
-    // TODO: Move to mapper
-    private static string MapFrom(ProcessType processType) =>
-        processType switch
-        {
-            ProcessType.BalanceFixing => "BalanceFixing",
-            ProcessType.Aggregation => "Aggregation",
-            _ => throw new NotImplementedException($"Cannot map process type '{processType}"),
-        };
 }
