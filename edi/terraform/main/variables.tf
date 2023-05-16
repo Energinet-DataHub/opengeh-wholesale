@@ -38,3 +38,9 @@ variable developer_ad_group_name {
   description   = "(Optional) Name of the AD group containing developers to have read access to SQL database."
   default       = ""
 }
+
+variable allow_test_tokens {
+  type          = bool
+  description   = "(Optional) Enables use of test tokens"
+  default       = false
+}
