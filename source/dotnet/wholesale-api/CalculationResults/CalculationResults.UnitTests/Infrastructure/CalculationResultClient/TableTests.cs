@@ -20,12 +20,16 @@ using Xunit.Categories;
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.CalculationResultClient;
 
 [UnitTest]
-public class TableRowsTests
+public class TableTests
 {
+    private const int InvalidRowIndex = 100;
+    private const int ValidRowIndex = 1;
+    private const string ValidColumnName = "col2";
+    private const string InvalidColumnName = "invalid_column_name";
     private readonly List<string> _columnNames;
     private readonly List<string[]> _rowData;
 
-    public TableRowsTests()
+    public TableTests()
     {
         _columnNames = new List<string>() { "col1", "col2", "col3", };
         _rowData = new List<string[]>() { new[] { "cell11", "cell12", "cell13" }, new[] { "cell21", "cell22", "cell23" }, };
@@ -35,7 +39,7 @@ public class TableRowsTests
     public void Count_ReturnsNumberOfRows()
     {
         // Arrange
-        var sut = new TableRows(_columnNames, _rowData);
+        var sut = new Table(_columnNames, _rowData);
 
         // Act
         var rowCount = sut.Count;
@@ -48,8 +52,8 @@ public class TableRowsTests
     public void IndexerWithRowIndex_ReturnsCorrectRow()
     {
         // Arrange
-        var expectedRow = new string[] { "cell21", "cell22", "cell23" };
-        var sut = new TableRows(_columnNames, _rowData);
+        var expectedRow = new[] { "cell21", "cell22", "cell23" };
+        var sut = new Table(_columnNames, _rowData);
 
         // Act
         var actualRow = sut[1];
@@ -59,10 +63,10 @@ public class TableRowsTests
     }
 
     [Fact]
-    public void IndexerWithColumnName_ReturnsCorrectCell()
+    public void IndexerWithColumnName_ReturnsExpectedCell()
     {
         // Arrange
-        var sut = new TableRows(_columnNames, _rowData);
+        var sut = new Table(_columnNames, _rowData);
 
         // Act
         var actual = sut[1, "col2"];
@@ -75,19 +79,19 @@ public class TableRowsTests
     public void IndexerWithInvalidColumnName_ThrowsException()
     {
         // Arrange
-        var sut = new TableRows(_columnNames, _rowData);
+        var sut = new Table(_columnNames, _rowData);
 
         // Act + Assert
-        Assert.ThrowsAny<Exception>(() => sut[1, "invalid_column_name"]);
+        Assert.ThrowsAny<Exception>(() => sut[ValidRowIndex, InvalidColumnName]);
     }
 
     [Fact]
     public void IndexerWithInvalidRowIndex_ThrowsException()
     {
         // Arrange
-        var sut = new TableRows(_columnNames, _rowData);
+        var sut = new Table(_columnNames, _rowData);
 
         // Act + Assert
-        Assert.ThrowsAny<Exception>(() => sut[100, "col2"]);
+        Assert.ThrowsAny<Exception>(() => sut[InvalidRowIndex, ValidColumnName]);
     }
 }

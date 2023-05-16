@@ -28,7 +28,7 @@ public class DatabricksSqlResponseParser : IDatabricksSqlResponseParser
         var state = GetState(jsonObject);
         var columnNames = GetColumnNames(jsonObject);
         var dataArray = GetDataArray(jsonObject);
-        return new DatabricksSqlResponse(state, new TableRows(columnNames, dataArray));
+        return new DatabricksSqlResponse(state, new Table(columnNames, dataArray));
     }
 
     private static string GetState(JObject responseJsonObject)

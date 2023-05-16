@@ -165,13 +165,13 @@ order by time
         TimeSeriesType timeSeriesType,
         DatabricksSqlResponse databricksSqlResponse)
     {
-        var tableRows = databricksSqlResponse.TableRows;
+        var table = databricksSqlResponse.Table;
 
-        var pointsDto = Enumerable.Range(0, databricksSqlResponse.TableRows.Count)
+        var pointsDto = Enumerable.Range(0, databricksSqlResponse.Table.Count)
             .Select(row => new TimeSeriesPoint(
-                DateTimeOffset.Parse(tableRows[row, ResultColumnNames.Time]),
-                decimal.Parse(tableRows[row, ResultColumnNames.Quantity], CultureInfo.InvariantCulture),
-                QuantityQualityMapper.MapQuality(tableRows[row, ResultColumnNames.QuantityQuality])))
+                DateTimeOffset.Parse(table[row, ResultColumnNames.Time]),
+                decimal.Parse(table[row, ResultColumnNames.Quantity], CultureInfo.InvariantCulture),
+                QuantityQualityMapper.MapQuality(table[row, ResultColumnNames.QuantityQuality])))
             .ToList();
 
         return new ProcessStepResult(timeSeriesType, pointsDto.ToArray());

@@ -11,24 +11,23 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-// namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
-public class TableRows
+public class Table
 {
-    private readonly List<string[]> _rowData;
+    private readonly List<string[]> _rows;
     private readonly Dictionary<string, int> _columnIndex;
 
-    public TableRows(IEnumerable<string> columnNames, IEnumerable<string[]> rowData)
+    public Table(IEnumerable<string> columnNames, IEnumerable<string[]> rows)
     {
         _columnIndex = columnNames.Select((name, i) => (name, i)).ToDictionary(x => x.name, x => x.i);
-        _rowData = rowData.ToList();
+        _rows = rows.ToList();
     }
 
-    public string this[int rowIndex, string columnName] => _rowData[rowIndex][_columnIndex[columnName]];
+    public string this[int rowIndex, string columnName] => _rows[rowIndex][_columnIndex[columnName]];
 
-    public IEnumerable<string> this[int rowIndex] => _rowData[rowIndex];
+    public IEnumerable<string> this[int rowIndex] => _rows[rowIndex];
 
-    public int Count => _rowData.Count;
+    public int Count => _rows.Count;
 }

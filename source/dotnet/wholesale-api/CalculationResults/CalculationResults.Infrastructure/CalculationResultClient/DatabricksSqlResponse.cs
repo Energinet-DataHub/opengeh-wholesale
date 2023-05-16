@@ -14,4 +14,4 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
-public sealed record DatabricksSqlResponse(string State, TableRows TableRows);
+public sealed record DatabricksSqlResponse(string State, Table Table);
