@@ -24,10 +24,29 @@ public class DatabricksSqlResponseParser : IDatabricksSqlResponseParser
         var settings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None, };
         var jsonObject = JsonConvert.DeserializeObject<JObject>(jsonResponse, settings) ??
                          throw new InvalidOperationException();
-        var state = jsonObject["status"]?["state"]?.ToString() ?? throw new InvalidOperationException();
-        var dataArray = jsonObject["result"]?["data_array"]?.ToObject<List<string[]>>() ??
-                        throw new InvalidOperationException();
 
-        return new DatabricksSqlResponse(state, dataArray);
+        var state = GetState(jsonObject);
+        var columnNames = GetColumnNames(jsonObject);
+        var dataArray = GetDataArray(jsonObject);
+        return new DatabricksSqlResponse(state, new Table(columnNames, dataArray));
+    }
+
+    private static string GetState(JObject responseJsonObject)
+    {
+        return responseJsonObject["status"]?["state"]?.ToString() ?? throw new InvalidOperationException("Unable to retrieve 'state' from the responseJsonObject");
+    }
+
+    private static IEnumerable<string> GetColumnNames(JObject responseJsonObject)
+    {
+        var columnNames = responseJsonObject["manifest"]?["schema"]?["columns"]?.Select(x => x["name"]?.ToString()) ??
+                          throw new InvalidOperationException("Unable to retrieve 'columns' from the responseJsonObject.");
+        return columnNames!;
+    }
+
+    private static IEnumerable<string[]> GetDataArray(JObject responseJsonObject)
+    {
+        var dataArray = responseJsonObject["result"]?["data_array"]?.ToObject<List<string[]>>() ??
+                        throw new InvalidOperationException("Unable to retrieve 'data_array' from the responseJsonObject");
+        return dataArray;
     }
 }
