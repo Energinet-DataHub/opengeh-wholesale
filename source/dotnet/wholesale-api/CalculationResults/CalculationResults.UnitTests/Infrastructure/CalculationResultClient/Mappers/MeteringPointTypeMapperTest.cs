@@ -21,16 +21,16 @@ using Xunit.Categories;
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.CalculationResultClient.Mappers;
 
 [UnitTest]
-public class AggregationLevelMapperTests
+public class MeteringPointTypeMapperTests
 {
     [Theory]
-    [InlineData("flex_consumption", SettlementMethod.Flex)]
-    [InlineData("production", null)]
-    [InlineData("non_profiled_consumption", SettlementMethod.NonProfiled)]
-    public void ToDeltaTable_ReturnsExpectedSettlementMethod(string timeSeriesType, SettlementMethod? expected)
+    [InlineData("flex_consumption", MeteringPointType.Consumption)]
+    [InlineData("production", MeteringPointType.Production)]
+    [InlineData("non_profiled_consumption", MeteringPointType.Consumption)]
+    public void ToDeltaTable_ReturnsExpectedString(string timeSeriesType, MeteringPointType expected)
     {
         // Act
-        var actual = SettlementMethodMapper.FromDeltaTable(timeSeriesType);
+        var actual = MeteringPointTypeMapper.FromDeltaTable(timeSeriesType);
 
         // Assert
         actual.Should().Be(expected);
