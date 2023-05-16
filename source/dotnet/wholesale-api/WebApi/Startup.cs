@@ -40,10 +40,15 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection serviceCollection)
     {
-        serviceCollection.AddBatchesModule(
-            () => Configuration.GetSection(ConnectionStringsOptions.ConnectionStrings).Get<ConnectionStringsOptions>()!.DB_CONNECTION_STRING);
+        var connectionStringOptions = Configuration.GetSection(ConnectionStringsOptions.ConnectionStrings).Get<ConnectionStringsOptions>();
+        serviceCollection.AddBatchesModule(connectionStringOptions!.DB_CONNECTION_STRING);
+
         serviceCollection.AddCalculationResultsModule();
-        serviceCollection.AddIntegrationEventPublishingModule();
+
+        var serviceBusOptions = Configuration.Get<ServiceBusOptions>()!;
+        serviceCollection.AddIntegrationEventPublishingModule(
+            serviceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING,
+            serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME);
 
         serviceCollection.AddControllers(options => options.Filters.Add<BusinessValidationExceptionFilter>()).AddJsonOptions(
             options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
