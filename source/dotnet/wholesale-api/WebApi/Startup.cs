@@ -41,7 +41,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection serviceCollection)
     {
         var connectionStringOptions = Configuration.GetSection(ConnectionStringsOptions.ConnectionStrings).Get<ConnectionStringsOptions>();
-        serviceCollection.AddBatchesModule(connectionStringOptions!.DB_CONNECTION_STRING);
+        serviceCollection.AddBatchesModule(() => connectionStringOptions!.DB_CONNECTION_STRING);
 
         serviceCollection.AddCalculationResultsModule();
 

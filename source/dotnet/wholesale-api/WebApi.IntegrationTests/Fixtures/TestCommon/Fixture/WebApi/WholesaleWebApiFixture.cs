@@ -81,6 +81,10 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
                 .BuildTopic("domain-events")
                 .SetEnvironmentVariableToTopicName(nameof(ServiceBusOptions.DOMAIN_EVENTS_TOPIC_NAME))
                 .CreateAsync();
+            await ServiceBusResourceProvider
+                .BuildTopic("integration-events")
+                .SetEnvironmentVariableToTopicName(nameof(ServiceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME))
+                .CreateAsync();
 
             Environment.SetEnvironmentVariable(nameof(ServiceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING), ServiceBusResourceProvider.ConnectionString);
             Environment.SetEnvironmentVariable(nameof(ServiceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING), ServiceBusResourceProvider.ConnectionString);

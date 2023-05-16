@@ -21,7 +21,6 @@ using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.App.FunctionApp.FunctionTelemetryScope;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
-using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
@@ -64,7 +63,7 @@ public static class Program
     private static void Modules(IServiceCollection serviceCollection)
     {
         serviceCollection.AddBatchesModule(
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabaseConnectionString));
+            () => EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabaseConnectionString));
 
         serviceCollection.AddCalculationResultsModule();
 
@@ -109,8 +108,6 @@ public static class Program
                 var dbwToken = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceToken);
                 return DatabricksWheelClient.CreateClient(dbwUrl, dbwToken);
             });
-
-        serviceCollection.AddScoped<ICalculationResultCompletedFactory, CalculationResultCompletedToIntegrationEventFactory>();
     }
 
     private static void RegisterEventPublishers(IServiceCollection serviceCollection)

@@ -29,7 +29,7 @@ public class OptionsTests
     [InlineAutoMoqData(typeof(AppInsightOptions), 1, "APPINSIGHTS_INSTRUMENTATIONKEY")]
     [InlineAutoMoqData(
         typeof(ServiceBusOptions),
-        4,
+        7,
         "SERVICE_BUS_SEND_CONNECTION_STRING",
         "SERVICE_BUS_MANAGE_CONNECTION_STRING",
         "BATCH_CREATED_EVENT_NAME",

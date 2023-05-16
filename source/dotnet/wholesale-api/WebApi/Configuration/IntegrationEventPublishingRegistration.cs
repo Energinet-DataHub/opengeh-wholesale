@@ -52,6 +52,8 @@ public static class IntegrationEventPublishingRegistration
         serviceCollection.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
         serviceCollection.AddIntegrationEventPublisher(serviceBusConnectionString, integrationEventTopicName);
 
+        serviceCollection.AddScoped<ICalculationResultCompletedFactory, CalculationResultCompletedToIntegrationEventFactory>();
+
         serviceCollection.AddApplications();
         serviceCollection.AddInfrastructure();
     }

@@ -35,7 +35,7 @@ public static class BatchesRegistration
 {
     public static void AddBatchesModule(
         this IServiceCollection serviceCollection,
-        string databaseConnectionString)
+        Func<string> databaseConnectionStringProvider)
     {
         serviceCollection.AddScoped<IBatchExecutionStateDomainService, BatchExecutionStateDomainService>();
         serviceCollection.AddScoped<ICalculationDomainService, CalculationDomainService>();
@@ -52,7 +52,7 @@ public static class BatchesRegistration
         serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();
         serviceCollection.AddDbContext<DatabaseContext>(
             options => options.UseSqlServer(
-                databaseConnectionString,
+                databaseConnectionStringProvider(),
                 o =>
                 {
                     o.UseNodaTime();
