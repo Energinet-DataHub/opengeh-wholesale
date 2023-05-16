@@ -17,24 +17,24 @@ using System.Collections;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
-public class TableData : IEnumerable
+public class TableData : IEnumerable<string[]>
 {
-    private readonly string[][] _data;
+    private readonly List<string[]> _data;
     private readonly Dictionary<string, int> _columnIndex;
 
     public TableData(IEnumerable<string> columnNames, IEnumerable<string[]> data)
     {
         _columnIndex = columnNames.Select((name, i) => (name, i)).ToDictionary(x => x.name, x => x.i);
-        _data = data.ToArray();
+        _data = data.ToList();
     }
 
     public string this[int rowIndex, string columnName] => _data[rowIndex][_columnIndex[columnName]];
 
-    public string[] GetRow(int rowIndex) => _data[rowIndex];
+    public string[][] Rows => _data.ToArray();
 
-    public int RowCount => _data.Length;
+    public int RowCount => _data.Count();
 
-    public IEnumerator GetEnumerator()
+    public IEnumerator<string[]> GetEnumerator()
     {
         return _data.GetEnumerator();
     }

@@ -79,8 +79,8 @@ public class DatabricksSqlResponseParserTests
         var actual = sut.Parse(_sampleJson);
 
         // Assert
-        actual.TableData.GetRow(0).Should().Equal(expectedFirstArray);
-        actual.TableData.GetRow(actual.TableData.RowCount - 1).Should().Equal(expectedLastArray);
+        actual.TableData.Rows[0].Should().Equal(expectedFirstArray);
+        actual.TableData.Rows[actual.TableData.RowCount - 1].Should().Equal(expectedLastArray);
     }
 
     [Theory]
