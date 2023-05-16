@@ -12,10 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using NodaTime;
-using NodaTime.Text;
 using ProcessType = Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
