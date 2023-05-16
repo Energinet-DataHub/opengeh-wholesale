@@ -27,6 +27,7 @@ public static class SqlForSettlementReport
         Instant periodEnd,
         string? energySupplier)
     {
+        // TODO: Handle energy supplier
         var processTypeString = MapFrom(processType);
         var selectColumns = string.Join(", ", GetSelectColumnNames());
         var gridAreas = string.Join(",", gridAreaCodes);
