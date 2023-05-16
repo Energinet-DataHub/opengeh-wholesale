@@ -87,7 +87,7 @@ public class CalculationResultClient : ICalculationResultClient
             if (!response.IsSuccessStatusCode)
                 throw new Exception($"Unable to get calculation result from Databricks. Status code: {response.StatusCode}");
 
-            var jsonResponse = response.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             var databricksSqlResponse = _databricksSqlResponseParser.Parse(jsonResponse);
 
