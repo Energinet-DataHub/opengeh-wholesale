@@ -84,8 +84,7 @@ public class CalculationResultClient : ICalculationResultClient
         // TODO (JMG): Unit test this method
         for (var attempt = 0; attempt < maxAttempts; attempt++)
         {
-            var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject)
-                .ConfigureAwait(false);
+            var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
 
             if (!response.IsSuccessStatusCode)
                 throw new Exception($"Unable to get calculation result from Databricks. Status code: {response.StatusCode}");
@@ -101,8 +100,7 @@ public class CalculationResultClient : ICalculationResultClient
                 throw new Exception($"Unable to get calculation result from Databricks. State: {databricksSqlResponse.State}");
         }
 
-        throw new Exception(
-            $"Unable to get calculation result from Databricks. Max attempts reached ({maxAttempts}) and the state is still not SUCCEEDED.");
+        throw new Exception($"Unable to get calculation result from Databricks. Max attempts reached ({maxAttempts}) and the state is still not SUCCEEDED.");
     }
 
     private static void ConfigureHttpClient(HttpClient httpClient, IOptions<DatabricksOptions> options)

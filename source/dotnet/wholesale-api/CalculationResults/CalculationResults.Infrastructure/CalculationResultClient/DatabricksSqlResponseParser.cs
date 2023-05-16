@@ -28,23 +28,22 @@ public class DatabricksSqlResponseParser : IDatabricksSqlResponseParser
         var state = GetState(jsonObject);
         var columnNames = GetColumnNames(jsonObject);
         var dataArray = GetDataArray(jsonObject);
-
         return new DatabricksSqlResponse(state, new TableRows(columnNames, dataArray));
     }
 
-    private string GetState(JObject responseJsonObject)
+    private static string GetState(JObject responseJsonObject)
     {
         return responseJsonObject["status"]?["state"]?.ToString() ?? throw new InvalidOperationException();
     }
 
-    private IEnumerable<string> GetColumnNames(JObject responseJsonObject)
+    private static IEnumerable<string> GetColumnNames(JObject responseJsonObject)
     {
-        var columnNames = responseJsonObject["manifest"]?["columns"]?.Select(x => x["name"]?.ToString()) ??
+        var columnNames = responseJsonObject["manifest"]?["schema"]?["columns"]?.Select(x => x["name"]?.ToString()) ??
                           throw new InvalidOperationException();
         return columnNames!;
     }
 
-    private IEnumerable<string[]> GetDataArray(JObject responseJsonObject)
+    private static IEnumerable<string[]> GetDataArray(JObject responseJsonObject)
     {
         var dataArray = responseJsonObject["result"]?["data_array"]?.ToObject<List<string[]>>() ??
                         throw new InvalidOperationException();
