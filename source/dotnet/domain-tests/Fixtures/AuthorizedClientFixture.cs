@@ -28,7 +28,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
     public sealed class AuthorizedClientFixture : IAsyncLifetime
     {
         private readonly string _topicName = "sbt-sharedres-integrationevent-received";
-        private readonly string _subscriptionName = "test-sub";
+        private readonly string _subscriptionName = Guid.NewGuid().ToString();
 
         public AuthorizedClientFixture()
         {
