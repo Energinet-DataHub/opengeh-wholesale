@@ -10,11 +10,9 @@ jobs:
   # License and Markdown Check
   #
   ci_base:
-    uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@v10
+    uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@v11
     with:
       skip_license_check: true
-      skip_yaml_lint: false
-      skip_input_name_validation: false
 
   #
   # Detect changes to start relevant workflows
