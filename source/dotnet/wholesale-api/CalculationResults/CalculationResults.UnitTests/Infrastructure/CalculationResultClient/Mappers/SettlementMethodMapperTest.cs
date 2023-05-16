@@ -21,7 +21,7 @@ using Xunit.Categories;
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.CalculationResultClient.Mappers;
 
 [UnitTest]
-public class AggregationLevelMapperTests
+public class SettlementMethodMapperTests
 {
     [Theory]
     [InlineData("flex_consumption", SettlementMethod.Flex)]
