@@ -23,15 +23,15 @@ namespace Energinet.DataHub.Wholesale.Application.Workers;
 /// <summary>
 /// Timer triggered hosted service to invoke the service for integration events retention.
 /// </summary>
-public class FetchBatchesReadyForExecutionWorker : BackgroundService
+public class RegisterCompletedBatchesWorker : BackgroundService
 {
     // Execute once per day (86400 seconds)
     private const int DelayInSecondsBeforeNextExecution = 10;
 
     private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger<FetchBatchesReadyForExecutionWorker> _logger;
+    private readonly ILogger<RegisterCompletedBatchesWorker> _logger;
 
-    public FetchBatchesReadyForExecutionWorker(IServiceProvider serviceProvider, ILogger<FetchBatchesReadyForExecutionWorker> logger)
+    public RegisterCompletedBatchesWorker(IServiceProvider serviceProvider, ILogger<RegisterCompletedBatchesWorker> logger)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;
@@ -41,7 +41,7 @@ public class FetchBatchesReadyForExecutionWorker : BackgroundService
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            _logger.LogInformation("{Worker} running at: {Time}", nameof(FetchBatchesReadyForExecutionWorker), DateTimeOffset.Now);
+            _logger.LogInformation("{Worker} running at: {Time}", nameof(RegisterCompletedBatchesWorker), DateTimeOffset.Now);
 
             await ExecuteInScopeAsync().ConfigureAwait(false);
 

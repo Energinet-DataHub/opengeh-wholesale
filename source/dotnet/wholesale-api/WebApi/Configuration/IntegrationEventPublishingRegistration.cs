@@ -44,9 +44,10 @@ public static class IntegrationEventPublishingRegistration
     {
         serviceCollection.AddHostedService<DispatchIntegrationEventsWorker>();
         serviceCollection.AddHostedService<IntegrationEventsRetentionWorker>();
-        serviceCollection.AddHostedService<FetchBatchesReadyForExecutionWorker>();
+        serviceCollection.AddHostedService<RegisterCompletedBatchesWorker>();
         serviceCollection.AddHostedService<PublishCalculationResultsWorker>();
 
+        serviceCollection.AddScoped<IPublishCalculationResultsHandler, PublishCalculationResultsHandler>();
         serviceCollection.AddScoped<ICompletedBatchRepository, CompletedBatchRepository>();
         serviceCollection.AddScoped<ICompletedBatchMapper, CompletedBatchMapper>();
         serviceCollection.AddScoped<IRegisterCompletedBatchesHandler, RegisterCompletedBatchesHandler>();

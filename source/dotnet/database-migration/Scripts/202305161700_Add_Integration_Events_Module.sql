@@ -3,8 +3,9 @@ GO
 
 CREATE TABLE [integrationevents].[CompletedBatch]
 (
-    [Id] [uniqueidentifier] NOT NULL,
-    [GridAreaCodes] [varchar](MAX) NOT NULL, -- JSON array of grid area code strings, e.g. ["004","805"]
+    Id UNIQUEIDENTIFIER NOT NULL,
+    ProcessType INT NOT NULL,
+    GridAreaCodes [varchar](MAX) NOT NULL, -- JSON array of grid area code strings, e.g. ["004","805"]
     PeriodStart DATETIME2 NOT NULL,
     PeriodEnd DATETIME2 NOT NULL,
     CompletedTime DATETIME2 NOT NULL,
