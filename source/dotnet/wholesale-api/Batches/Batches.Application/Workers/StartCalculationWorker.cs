@@ -40,7 +40,7 @@ public class StartCalculationWorker : BackgroundService
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            _logger.LogInformation("{Worker} running at: {Time}", nameof(UpdateBatchExecutionStateWorker), DateTimeOffset.Now);
+            _logger.LogInformation("{Worker} running at: {Time}", nameof(StartCalculationWorker), DateTimeOffset.Now);
 
             await ExecuteInScopeAsync().ConfigureAwait(false);
 
