@@ -88,9 +88,10 @@ public class DatabricksSqlResponseParserTests
     public void Create_WhenValidJson_ThrowsNoException(DatabricksSqlResponseParser sut)
     {
         // Arrange
-        var obj = new JObject(
-            new JProperty("status", new JObject(new JProperty("state", "PENDING"))),
-            new JProperty("result", new JObject(new JProperty("data_array", new List<string[]>()))));
+        var status = new JProperty("status", new JObject(new JProperty("state", "PENDING")));
+        var manifest = new JProperty("manifest", new JObject(new JProperty("schema", new JObject(new JProperty("columns", new JArray(new JObject(new JProperty("name", "grid_area"))))))));
+        var result = new JProperty("result", new JObject(new JProperty("data_array", new List<string[]>())));
+        var obj = new JObject(status, manifest, result);
 
         // Act + Assert
         sut.Parse(obj.ToString()!);

@@ -17,7 +17,7 @@ using System.Collections;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
-public class TableRows : IEnumerable<string[]>
+public class TableRows
 {
     private readonly List<string[]> _rowData;
     private readonly Dictionary<string, int> _columnIndex;
@@ -30,17 +30,7 @@ public class TableRows : IEnumerable<string[]>
 
     public string this[int rowIndex, string columnName] => _rowData[rowIndex][_columnIndex[columnName]];
 
-    public string[] this[int rowIndex] => _rowData[rowIndex];
+    public IEnumerable<string> this[int rowIndex] => _rowData[rowIndex];
 
-    public int Count => _rowData.Count();
-
-    public IEnumerator<string[]> GetEnumerator()
-    {
-        return _rowData.GetEnumerator();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
+    public int Count => _rowData.Count;
 }
