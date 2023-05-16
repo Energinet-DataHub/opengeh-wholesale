@@ -13,7 +13,8 @@
 // limitations under the License.
 
 using System.ComponentModel.DataAnnotations;
-using Energinet.DataHub.Wholesale.Application.SettlementReport;
+using System.IO.Compression;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,6 +31,40 @@ public class SettlementReportController : V3ControllerBase
         _settlementReportApplicationService = settlementReportApplicationService;
     }
 
+    [HttpGet]
+    [MapToApiVersion(Version)]
+    [BinaryContent]
+    public async Task DownloadAsync(
+        [Required, FromQuery] string[] gridAreaCodes,
+        [Required, FromQuery] ProcessType processType,
+        [Required, FromQuery] DateTimeOffset periodStart,
+        [Required, FromQuery] DateTimeOffset periodEnd,
+        [FromQuery] string? energySupplier)
+    {
+        var responseStream = Response.BodyWriter.AsStream();
+
+        await using (responseStream.ConfigureAwait(false))
+        {
+            using var archive = new ZipArchive(responseStream, ZipArchiveMode.Create);
+
+            var zipArchiveEntry = archive.CreateEntry("Results.csv");
+            var zipEntryStream = zipArchiveEntry.Open();
+
+            await using (zipEntryStream.ConfigureAwait(false))
+            {
+                await _settlementReportApplicationService
+                    .WriteSettlementReportAsync(
+                        zipEntryStream,
+                        gridAreaCodes,
+                        processType,
+                        periodStart,
+                        periodEnd,
+                        energySupplier)
+                    .ConfigureAwait(false);
+            }
+        }
+    }
+
     /// <summary>
     /// Returns a stream containing the settlement report for batch with <paramref name="batchId" /> and <paramref name="gridAreaCode" />.
     /// </summary>
@@ -38,7 +73,7 @@ public class SettlementReportController : V3ControllerBase
     [HttpGet(Name = "GetSettlementReportAsStreamAsync")]
     [MapToApiVersion(Version)]
     [BinaryContent]
-    public async Task GetAsync([Required]Guid batchId, [Required]string gridAreaCode)
+    public async Task GetAsync([Required] Guid batchId, [Required] string gridAreaCode)
     {
         var outputStream = Response.BodyWriter.AsStream();
 

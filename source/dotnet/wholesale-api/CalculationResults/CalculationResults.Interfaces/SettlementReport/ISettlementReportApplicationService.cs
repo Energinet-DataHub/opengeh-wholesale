@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application.SettlementReport.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
 
@@ -21,4 +22,12 @@ public interface ISettlementReportApplicationService
     Task<SettlementReportDto> GetSettlementReportAsync(Guid batchId);
 
     Task GetSettlementReportAsync(Guid batchId, string gridAreaCode, Stream outputStream);
+
+    Task WriteSettlementReportAsync(
+        Stream destination,
+        string[] gridAreaCodes,
+        ProcessType processType,
+        DateTimeOffset periodStart,
+        DateTimeOffset periodEnd,
+        string? energySupplier);
 }
