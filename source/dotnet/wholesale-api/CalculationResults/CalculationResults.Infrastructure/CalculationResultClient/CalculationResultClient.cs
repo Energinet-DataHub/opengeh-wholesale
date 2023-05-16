@@ -71,9 +71,7 @@ public class CalculationResultClient : ICalculationResultClient
     private async Task<DatabricksSqlResponse> SendSqlStatementAsync(string sqlStatement)
     {
         const int timeOutPerAttemptSeconds = 30;
-        const int
-            maxAttempts =
-                16; // 8 minutes in total (16 * 30 seconds). The warehouse takes around 5 minutes to start if it has been stopped.
+        const int maxAttempts = 16; // 8 minutes in total (16 * 30 seconds). The warehouse takes around 5 minutes to start if it has been stopped.
 
         var requestObject = new
         {
@@ -171,13 +169,13 @@ order by time
         TimeSeriesType timeSeriesType,
         DatabricksSqlResponse databricksSqlResponse)
     {
-        var tableData = databricksSqlResponse.TableData;
+        var tableRows = databricksSqlResponse.TableRows;
 
-        var pointsDto = Enumerable.Range(0, databricksSqlResponse.TableData.RowCount)
+        var pointsDto = Enumerable.Range(0, databricksSqlResponse.TableRows.Count)
             .Select(row => new TimeSeriesPoint(
-                DateTimeOffset.Parse(tableData[row, ResultColumnNames.Time]),
-                decimal.Parse(tableData[row, ResultColumnNames.Quantity], CultureInfo.InvariantCulture),
-                QuantityQualityMapper.MapQuality(tableData[row, ResultColumnNames.QuantityQuality])))
+                DateTimeOffset.Parse(tableRows[row, ResultColumnNames.Time]),
+                decimal.Parse(tableRows[row, ResultColumnNames.Quantity], CultureInfo.InvariantCulture),
+                QuantityQualityMapper.MapQuality(tableRows[row, ResultColumnNames.QuantityQuality])))
             .ToList();
 
         return new ProcessStepResult(timeSeriesType, pointsDto.ToArray());

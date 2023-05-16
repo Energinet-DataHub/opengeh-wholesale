@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Linq.Expressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -30,7 +29,7 @@ public class DatabricksSqlResponseParser : IDatabricksSqlResponseParser
         var columnNames = GetColumnNames(jsonObject);
         var dataArray = GetDataArray(jsonObject);
 
-        return new DatabricksSqlResponse(state, new TableData(columnNames, dataArray));
+        return new DatabricksSqlResponse(state, new TableRows(columnNames, dataArray));
     }
 
     private string GetState(JObject responseJsonObject)

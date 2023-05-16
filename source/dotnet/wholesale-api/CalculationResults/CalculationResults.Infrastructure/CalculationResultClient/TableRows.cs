@@ -17,26 +17,26 @@ using System.Collections;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
-public class TableData : IEnumerable<string[]>
+public class TableRows : IEnumerable<string[]>
 {
-    private readonly List<string[]> _data;
+    private readonly List<string[]> _rowData;
     private readonly Dictionary<string, int> _columnIndex;
 
-    public TableData(IEnumerable<string> columnNames, IEnumerable<string[]> data)
+    public TableRows(IEnumerable<string> columnNames, IEnumerable<string[]> rowData)
     {
         _columnIndex = columnNames.Select((name, i) => (name, i)).ToDictionary(x => x.name, x => x.i);
-        _data = data.ToList();
+        _rowData = rowData.ToList();
     }
 
-    public string this[int rowIndex, string columnName] => _data[rowIndex][_columnIndex[columnName]];
+    public string this[int rowIndex, string columnName] => _rowData[rowIndex][_columnIndex[columnName]];
 
-    public string[][] Rows => _data.ToArray();
+    public string[] this[int rowIndex] => _rowData[rowIndex];
 
-    public int RowCount => _data.Count();
+    public int Count => _rowData.Count();
 
     public IEnumerator<string[]> GetEnumerator()
     {
-        return _data.GetEnumerator();
+        return _rowData.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
