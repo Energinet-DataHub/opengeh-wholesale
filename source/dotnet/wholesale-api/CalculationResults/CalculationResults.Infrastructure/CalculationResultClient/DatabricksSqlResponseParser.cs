@@ -33,20 +33,20 @@ public class DatabricksSqlResponseParser : IDatabricksSqlResponseParser
 
     private static string GetState(JObject responseJsonObject)
     {
-        return responseJsonObject["status"]?["state"]?.ToString() ?? throw new InvalidOperationException();
+        return responseJsonObject["status"]?["state"]?.ToString() ?? throw new InvalidOperationException("Unable to retrieve 'state' from the responseJsonObject");
     }
 
     private static IEnumerable<string> GetColumnNames(JObject responseJsonObject)
     {
         var columnNames = responseJsonObject["manifest"]?["schema"]?["columns"]?.Select(x => x["name"]?.ToString()) ??
-                          throw new InvalidOperationException();
+                          throw new InvalidOperationException("Unable to retrieve 'columns' from the responseJsonObject.");
         return columnNames!;
     }
 
     private static IEnumerable<string[]> GetDataArray(JObject responseJsonObject)
     {
         var dataArray = responseJsonObject["result"]?["data_array"]?.ToObject<List<string[]>>() ??
-                        throw new InvalidOperationException();
+                        throw new InvalidOperationException("Unable to retrieve 'data_array' from the responseJsonObject");
         return dataArray;
     }
 }
