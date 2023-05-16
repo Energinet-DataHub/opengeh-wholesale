@@ -77,7 +77,7 @@ public class ServiceBusMessageFactory : IServiceBusMessageFactory
             Subject = messageType,
         };
         serviceBusMessage.SetOperationCorrelationId(operationCorrelationId);
-        serviceBusMessage.SetMessageType(messageType); // TODO: This does not work with the subscription filters in terraform
+        serviceBusMessage.SetMessageType(messageType); // TODO LRN/BJM: This does not work with the subscription filters in terraform
         return serviceBusMessage;
     }
 
