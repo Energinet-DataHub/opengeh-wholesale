@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <AssemblyName>Energinet.DataHub.Wholesale.IntegrationEventsPublising.Application</AssemblyName>
-    <RootNamespace>Energinet.DataHub.Wholesale.IntegrationEventsPublising.Application</RootNamespace>
+    <AssemblyName>Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="7.4.3" />
@@ -9,6 +9,6 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Workers" />
+    <ProjectReference Include="..\..\Batches\Batches.Interfaces\Batches.Interfaces.csproj" />
   </ItemGroup>
 </Project>

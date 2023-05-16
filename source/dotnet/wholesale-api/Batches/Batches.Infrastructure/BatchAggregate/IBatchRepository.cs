@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.GridAreaAggregate;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
@@ -26,13 +25,9 @@ public interface IBatchRepository
 
     Task<List<Batch>> GetCreatedAsync();
 
-    Task<List<Batch>> GetPendingAsync();
-
-    Task<List<Batch>> GetExecutingAsync();
-
     Task<List<Batch>> GetByStatesAsync(IEnumerable<BatchExecutionState> states);
 
-    Task<List<Batch>> GetCompletedAsync();
+    Task<List<Batch>> GetCompletedAfterAsync(Instant? completedTime);
 
     Task<IReadOnlyCollection<Batch>> SearchAsync(
         IReadOnlyCollection<GridAreaCode> filterByGridAreaCode,

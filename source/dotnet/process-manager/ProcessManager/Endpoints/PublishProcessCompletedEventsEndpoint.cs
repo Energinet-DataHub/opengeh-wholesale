@@ -1,4 +1,4 @@
-﻿﻿// Copyright 2020 Energinet DataHub A/S
+﻿// Copyright 2020 Energinet DataHub A/S
 //
 // Licensed under the Apache License, Version 2.0 (the "License2");
 // you may not use this file except in compliance with the License.
@@ -31,15 +31,15 @@ public class PublishProcessCompletedEventsEndpoint //TODO: LRN check for tests
         _processApplicationService = processApplicationService;
     }
 
-    [Function(FunctionName)]
-    public async Task RunAsync(
-        [ServiceBusTrigger(
-            "%" + EnvironmentSettingNames.DomainEventsTopicName + "%",
-            "%" + EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName + "%",
-            Connection = EnvironmentSettingNames.ServiceBusListenConnectionString)]
-        byte[] message)
-    {
-        var batchCompletedEvent = await _jsonSerializer.DeserializeAsync<BatchCompletedEventDto>(message).ConfigureAwait(false);
-        await _processApplicationService.PublishProcessCompletedEventsAsync(batchCompletedEvent).ConfigureAwait(false);
-    }
+    // [Function(FunctionName)]
+    // public async Task RunAsync(
+    //     [ServiceBusTrigger(
+    //         "%" + EnvironmentSettingNames.DomainEventsTopicName + "%",
+    //         "%" + EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName + "%",
+    //         Connection = EnvironmentSettingNames.ServiceBusListenConnectionString)]
+    //     byte[] message)
+    // {
+    //     var batchCompletedEvent = await _jsonSerializer.DeserializeAsync<BatchCompletedEventDto>(message).ConfigureAwait(false);
+    //     await _processApplicationService.PublishProcessCompletedEventsAsync(batchCompletedEvent).ConfigureAwait(false);
+    // }
 }

@@ -12,20 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
-using Microsoft.EntityFrameworkCore;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
+namespace Energinet.DataHub.Wholesale.Application.UseCases.Mappers;
 
-public interface IIntegrationEventPublishingDatabaseContext
+public interface ICompletedBatchMapper
 {
-    public DbSet<CompletedBatch> Batches { get; }
-
-    DbSet<OutboxMessage> OutboxMessages { get; }
-
-    /// <summary>
-    /// Saves changes to the database.
-    /// </summary>
-    Task<int> SaveChangesAsync();
+    IEnumerable<CompletedBatch> Map(IEnumerable<BatchDto> completedBatchDtos);
 }

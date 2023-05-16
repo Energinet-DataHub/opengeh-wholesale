@@ -13,19 +13,14 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
-using Microsoft.EntityFrameworkCore;
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
+namespace Energinet.DataHub.Wholesale.Domain;
 
-public interface IIntegrationEventPublishingDatabaseContext
+public interface ICompletedBatchRepository
 {
-    public DbSet<CompletedBatch> Batches { get; }
+    Task AddAsync(IEnumerable<CompletedBatch> completedBatches);
 
-    DbSet<OutboxMessage> OutboxMessages { get; }
+    Task<CompletedBatch?> GetLastCompletedOrNullAsync();
 
-    /// <summary>
-    /// Saves changes to the database.
-    /// </summary>
-    Task<int> SaveChangesAsync();
+    Task<CompletedBatch?> GetNextUnpublishedOrNullAsync();
 }

@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using System.Diagnostics.CodeAnalysis;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,6 +23,8 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local", Justification = "Private setters are needed by EF Core")]
 public class IntegrationEventPublishingDatabaseContext : DbContext, IIntegrationEventPublishingDatabaseContext
 {
+    private const string Schema = "integrationevents";
+
     public IntegrationEventPublishingDatabaseContext(DbContextOptions<IntegrationEventPublishingDatabaseContext> options)
         : base(options)
     {
@@ -31,12 +35,16 @@ public class IntegrationEventPublishingDatabaseContext : DbContext, IIntegration
     {
     }
 
+    public DbSet<CompletedBatch> Batches { get; private set; } = null!;
+
     public DbSet<OutboxMessage> OutboxMessages { get; private set; } = null!;
 
     public Task<int> SaveChangesAsync() => base.SaveChangesAsync();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.HasDefaultSchema(Schema);
+        modelBuilder.ApplyConfiguration(new CompletedBatchEntityConfiguration());
         modelBuilder.ApplyConfiguration(new OutboxMessageEntityConfiguration());
         base.OnModelCreating(modelBuilder);
     }
