@@ -16,7 +16,7 @@ using System.Reflection;
 
 namespace Energinet.DataHub.Wholesale.Batches.UnitTests;
 
-// TODO: Copied from other project. Can we share instead? Possibly in Test.Core?
+// TODO BJM: Copied from other project. Can we share instead? Possibly in Test.Core?
 public static class EmbeddedResources
 {
     /// <summary>

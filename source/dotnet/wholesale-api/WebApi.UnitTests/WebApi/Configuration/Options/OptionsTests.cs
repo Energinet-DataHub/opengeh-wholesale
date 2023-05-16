@@ -27,7 +27,16 @@ public class OptionsTests
     [InlineAutoMoqData(typeof(JwtOptions), 3, "EXTERNAL_OPEN_ID_URL", "INTERNAL_OPEN_ID_URL", "BACKEND_BFF_APP_ID")]
     [InlineAutoMoqData(typeof(DataLakeOptions), 2, "STORAGE_ACCOUNT_URI", "STORAGE_CONTAINER_NAME")]
     [InlineAutoMoqData(typeof(AppInsightOptions), 1, "APPINSIGHTS_INSTRUMENTATIONKEY")]
-    [InlineAutoMoqData(typeof(ServiceBusOptions), 4, "SERVICE_BUS_SEND_CONNECTION_STRING", "SERVICE_BUS_MANAGE_CONNECTION_STRING", "BATCH_CREATED_EVENT_NAME", "DOMAIN_EVENTS_TOPIC_NAME")]
+    [InlineAutoMoqData(
+        typeof(ServiceBusOptions),
+        7,
+        "SERVICE_BUS_SEND_CONNECTION_STRING",
+        "SERVICE_BUS_MANAGE_CONNECTION_STRING",
+        "BATCH_CREATED_EVENT_NAME",
+        "DOMAIN_EVENTS_TOPIC_NAME",
+        "INTEGRATIONEVENTS_TOPIC_NAME",
+        "BATCH_COMPLETED_EVENT_NAME",
+        "PROCESS_COMPLETED_EVENT_NAME")]
     [InlineAutoMoqData(typeof(DateTimeOptions), 1, "TIME_ZONE")]
     [InlineAutoMoqData(typeof(ConnectionStringsOptions), 1, "DB_CONNECTION_STRING")]
     [InlineAutoMoqData(typeof(DatabricksOptions), 3, "DATABRICKS_WORKSPACE_URL", "DATABRICKS_WORKSPACE_TOKEN", "DATABRICKS_WAREHOUSE_ID")]
@@ -37,8 +46,8 @@ public class OptionsTests
         var properties = sut.GetProperties();
 
         // Assert
-        settingsCount.Should().Be(properties.Length, $"the type {sut.Name}.");
-        expectedNames.Length.Should().Be(properties.Length);
+        properties.Length.Should().Be(settingsCount, $"the type {sut.Name}.");
+        properties.Length.Should().Be(expectedNames.Length);
         foreach (var property in properties)
         {
             property.Name.Should().BeOneOf(expectedNames);
