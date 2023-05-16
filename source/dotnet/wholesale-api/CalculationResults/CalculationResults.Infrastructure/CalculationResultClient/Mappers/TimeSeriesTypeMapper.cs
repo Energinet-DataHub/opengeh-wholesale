@@ -22,8 +22,8 @@ public static class TimeSeriesTypeMapper
         timeSeriesType switch
         {
             "production" => TimeSeriesType.Production,
-            "non_profiled_consumption" => TimeSeriesType.FlexConsumption,
-            "flex_consumption" => TimeSeriesType.NonProfiledConsumption,
+            "flex_consumption" => TimeSeriesType.FlexConsumption,
+            "non_profiled_consumption" => TimeSeriesType.NonProfiledConsumption,
             _ => throw new NotImplementedException($"Cannot map timeSeriesType type '{timeSeriesType}"),
         };
 
