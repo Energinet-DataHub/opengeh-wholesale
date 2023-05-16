@@ -71,7 +71,9 @@ public class CalculationResultClient : ICalculationResultClient
     private async Task<DatabricksSqlResponse> SendSqlStatementAsync(string sqlStatement)
     {
         const int timeOutPerAttemptSeconds = 30;
-        const int maxAttempts = 16; // 8 minutes in total (16 * 30 seconds). The warehouse takes around 5 minutes to start if it has been stopped.
+        const int
+            maxAttempts =
+                16; // 8 minutes in total (16 * 30 seconds). The warehouse takes around 5 minutes to start if it has been stopped.
 
         var requestObject = new
         {
@@ -84,7 +86,8 @@ public class CalculationResultClient : ICalculationResultClient
         // TODO (JMG): Unit test this method
         for (var attempt = 0; attempt < maxAttempts; attempt++)
         {
-            var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
+            var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject)
+                .ConfigureAwait(false);
 
             if (!response.IsSuccessStatusCode)
                 throw new Exception($"Unable to get calculation result from Databricks. Status code: {response.StatusCode}");
@@ -100,7 +103,8 @@ public class CalculationResultClient : ICalculationResultClient
                 throw new Exception($"Unable to get calculation result from Databricks. State: {databricksSqlResponse.State}");
         }
 
-        throw new Exception($"Unable to get calculation result from Databricks. Max attempts reached ({maxAttempts}) and the state is still not SUCCEEDED.");
+        throw new Exception(
+            $"Unable to get calculation result from Databricks. Max attempts reached ({maxAttempts}) and the state is still not SUCCEEDED.");
     }
 
     private static void ConfigureHttpClient(HttpClient httpClient, IOptions<DatabricksOptions> options)
@@ -167,13 +171,16 @@ order by time
         TimeSeriesType timeSeriesType,
         DatabricksSqlResponse databricksSqlResponse)
     {
-        var pointsDto = databricksSqlResponse.TableData.Select(
-                res => new TimeSeriesPoint(
-                    DateTimeOffset.Parse(res[0]),
-                    decimal.Parse(res[1], CultureInfo.InvariantCulture),
-                    QuantityQualityMapper.MapQuality(res[2])))
-            .ToArray();
+        var tableData = databricksSqlResponse.TableData;
+        var pointsDto = new List<TimeSeriesPoint>();
+        for (var row = 0; row < databricksSqlResponse.TableData.RowCount; row++)
+        {
+            pointsDto.Add(new TimeSeriesPoint(
+                DateTimeOffset.Parse(tableData[row, "Time"]),
+                decimal.Parse(tableData[row, "Quantity"], CultureInfo.InvariantCulture),
+                QuantityQualityMapper.MapQuality(tableData[row, "Quant"])));
+        }
 
-        return new ProcessStepResult(timeSeriesType, pointsDto);
+        return new ProcessStepResult(timeSeriesType, pointsDto.ToArray());
     }
 }

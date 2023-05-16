@@ -13,20 +13,34 @@
 // limitations under the License.
 // namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
+using System.Collections;
+
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
-public class TableData
+public class TableData : IEnumerable
 {
-    private readonly List<string[]> _data;
+    private readonly string[][] _data;
     private readonly Dictionary<string, int> _columnIndex;
 
     public TableData(IEnumerable<string> columnNames, IEnumerable<string[]> data)
     {
         _columnIndex = columnNames.Select((name, i) => (name, i)).ToDictionary(x => x.name, x => x.i);
-        _data = data.ToList();
+        _data = data.ToArray();
     }
 
-    public string this[string columnName, int rowIndex] =>
-        _data[rowIndex][_columnIndex[columnName]] ??
-        throw new InvalidOperationException();
+    public string this[int rowIndex, string columnName] => _data[rowIndex][_columnIndex[columnName]];
+
+    public string[] GetRow(int rowIndex) => _data[rowIndex];
+
+    public int RowCount => _data.Length;
+
+    public IEnumerator GetEnumerator()
+    {
+        return _data.GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
 }
