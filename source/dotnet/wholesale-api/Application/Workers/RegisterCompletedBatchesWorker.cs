@@ -25,7 +25,6 @@ namespace Energinet.DataHub.Wholesale.Application.Workers;
 /// </summary>
 public class RegisterCompletedBatchesWorker : BackgroundService
 {
-    // Execute once per day (86400 seconds)
     private const int DelayInSecondsBeforeNextExecution = 10;
 
     private readonly IServiceProvider _serviceProvider;
