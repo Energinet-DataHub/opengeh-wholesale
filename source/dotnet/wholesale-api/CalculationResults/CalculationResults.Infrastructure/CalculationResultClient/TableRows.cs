@@ -13,8 +13,6 @@
 // limitations under the License.
 // namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
-using System.Collections;
-
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
 public class TableRows
