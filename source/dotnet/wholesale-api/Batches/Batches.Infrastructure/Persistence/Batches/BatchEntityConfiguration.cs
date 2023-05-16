@@ -22,11 +22,9 @@ namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches
 
 public class BatchEntityConfiguration : IEntityTypeConfiguration<Batch>
 {
-    private static readonly string _aggregateTableName = nameof(Batch);
-
     public void Configure(EntityTypeBuilder<Batch> builder)
     {
-        builder.ToTable(_aggregateTableName);
+        builder.ToTable(nameof(Batch));
 
         builder.HasKey(b => b.Id);
         builder

@@ -101,7 +101,7 @@ public class Batch
 
     public BatchExecutionState ExecutionState { get; private set; }
 
-    public Instant ExecutionTimeStart { get; }
+    public Instant? ExecutionTimeStart { get; }
 
     public Guid CreatedByUserId { get; }
 

@@ -35,7 +35,7 @@ public class IntegrationEventPublishingDatabaseContext : DbContext, IIntegration
     {
     }
 
-    public DbSet<CompletedBatch> Batches { get; private set; } = null!;
+    public DbSet<CompletedBatch> CompletedBatches { get; private set; } = null!;
 
     public DbSet<OutboxMessage> OutboxMessages { get; private set; } = null!;
 

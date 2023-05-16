@@ -29,12 +29,12 @@ public class CompletedBatchRepository : ICompletedBatchRepository
 
     public async Task AddAsync(IEnumerable<CompletedBatch> completedBatches)
     {
-        await _context.Batches.AddRangeAsync(completedBatches).ConfigureAwait(false);
+        await _context.CompletedBatches.AddRangeAsync(completedBatches).ConfigureAwait(false);
     }
 
     public async Task<CompletedBatch?> GetLastCompletedOrNullAsync()
     {
-        return await _context.Batches
+        return await _context.CompletedBatches
             .OrderByDescending(x => x.CompletedTime)
             .FirstOrDefaultAsync()
             .ConfigureAwait(false);
@@ -42,7 +42,7 @@ public class CompletedBatchRepository : ICompletedBatchRepository
 
     public async Task<CompletedBatch?> GetNextUnpublishedOrNullAsync()
     {
-        return await _context.Batches
+        return await _context.CompletedBatches
             .OrderBy(x => x.CompletedTime)
             .Where(x => !x.IsPublished)
             .FirstOrDefaultAsync()

@@ -21,11 +21,9 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 
 public class CompletedBatchEntityConfiguration : IEntityTypeConfiguration<CompletedBatch>
 {
-    private static readonly string _aggregateTableName = nameof(CompletedBatch);
-
     public void Configure(EntityTypeBuilder<CompletedBatch> builder)
     {
-        builder.ToTable(_aggregateTableName);
+        builder.ToTable(nameof(CompletedBatch));
 
         builder.HasKey(b => b.Id);
         builder
