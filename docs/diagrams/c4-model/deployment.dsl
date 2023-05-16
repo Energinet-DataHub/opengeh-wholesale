@@ -24,10 +24,10 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-wholesale/main/docs/diagrams/c4-model/model.dsl
 
             # Include Frontend model
-            !include https://raw.githubusercontent.com/Energinet-DataHub/greenforce-frontend/dstenroejl/take-2/docs/diagrams/c4-model/model.dsl
+            !include https://raw.githubusercontent.com/Energinet-DataHub/greenforce-frontend/main/docs/diagrams/c4-model/model.dsl
 
             # Include Migration model - requires a token because its located in a private repository
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAABXFU5EL6MZDHWW7LF2WLFOUZDCIS7Q
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAABXFU5EKBSE5BUY4ERAZK424ZDDGWHQ
         }
 
         # Deployment model
