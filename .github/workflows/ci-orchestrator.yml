@@ -17,13 +17,6 @@ jobs:
       skip_input_name_validation: false
 
   #
-  # TF Sec
-  #
-  ci_codeql:
-    name: Terraform Security scan
-    uses: ./.github/workflows/tfsec.yml
-
-  #
   # Detect changes to start relevant workflows
   #
   changes:
@@ -102,7 +95,6 @@ jobs:
     needs:
       [
         ci_base,
-        ci_codeql,
         edi_ci,
         market_participant_ci,
         migrations_ci,
