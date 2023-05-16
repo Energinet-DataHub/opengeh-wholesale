@@ -176,9 +176,9 @@ order by time
         for (var row = 0; row < databricksSqlResponse.TableData.RowCount; row++)
         {
             pointsDto.Add(new TimeSeriesPoint(
-                DateTimeOffset.Parse(tableData[row, "Time"]),
-                decimal.Parse(tableData[row, "Quantity"], CultureInfo.InvariantCulture),
-                QuantityQualityMapper.MapQuality(tableData[row, "Quant"])));
+                DateTimeOffset.Parse(tableData[row, ResultColumnNames.Time]),
+                decimal.Parse(tableData[row, ResultColumnNames.Quantity], CultureInfo.InvariantCulture),
+                QuantityQualityMapper.MapQuality(tableData[row, ResultColumnNames.QuantityQuality])));
         }
 
         return new ProcessStepResult(timeSeriesType, pointsDto.ToArray());
