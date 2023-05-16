@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Identity;
+using Azure.Messaging.ServiceBus;
+using Azure.Messaging.ServiceBus.Administration;
+using Azure.Security.KeyVault.Secrets;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
 using Moq;
 using Xunit;
@@ -23,6 +27,9 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
     /// </summary>
     public sealed class AuthorizedClientFixture : IAsyncLifetime
     {
+        private readonly string _topicName = "sbt-sharedres-integrationevent-received";
+        private readonly string _subscriptionName = "test-sub";
+
         public AuthorizedClientFixture()
         {
             Configuration = new WholesaleDomainConfiguration();
@@ -39,18 +46,21 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         /// </summary>
         public WholesaleClient_V3 WholesaleClient { get; private set; } = null!;
 
+        public ServiceBusReceiver Receiver { get;  private set; } = null!;
+
         private B2CUserTokenAuthenticationClient UserAuthenticationClient { get; }
 
         async Task IAsyncLifetime.InitializeAsync()
         {
             WholesaleClient = await CreateWholesaleClientAsync();
+            Receiver = await CreateSubscriptionAndServiceBusReceiver();
         }
 
-        Task IAsyncLifetime.DisposeAsync()
+        async Task IAsyncLifetime.DisposeAsync()
         {
             UserAuthenticationClient.Dispose();
-
-            return Task.CompletedTask;
+            var serviceBusAdministrationClient = await CreateServiceBusAdministrationClient(GetSecretClient());
+            await serviceBusAdministrationClient.DeleteSubscriptionAsync(_topicName, _subscriptionName);
         }
 
         /// <summary>
@@ -73,6 +83,38 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                 new AuthorizedHttpClientFactory(
                     httpClientFactoryMock.Object,
                     () => $"Bearer {accessToken}").CreateClient(Configuration.WebApiBaseAddress));
+        }
+
+        private async Task<ServiceBusReceiver> CreateSubscriptionAndServiceBusReceiver()
+        {
+            var secretClient = GetSecretClient();
+            var serviceBusAdministrationClient = await CreateServiceBusAdministrationClient(secretClient);
+            var serviceBusConnectionString = (await secretClient.GetSecretAsync("sb-domain-relay-listen-connection-string")).Value.Value;
+            var client = new ServiceBusClient(serviceBusConnectionString);
+            if (await serviceBusAdministrationClient.SubscriptionExistsAsync(_topicName, _subscriptionName))
+            {
+                await serviceBusAdministrationClient.DeleteSubscriptionAsync(_topicName, _subscriptionName);
+            }
+
+            await serviceBusAdministrationClient.CreateSubscriptionAsync(_topicName, _subscriptionName);
+            var serviceBusReceiverOptions = new ServiceBusReceiverOptions { ReceiveMode = ServiceBusReceiveMode.ReceiveAndDelete };
+            var receiver = client.CreateReceiver(_topicName, _subscriptionName, serviceBusReceiverOptions);
+            return receiver;
+        }
+
+        private async Task<ServiceBusAdministrationClient> CreateServiceBusAdministrationClient(SecretClient secretClient)
+        {
+            var serviceBusNamespace = (await secretClient.GetSecretAsync("sb-domain-relay-namespace-name")).Value.Value;
+            var fullyQualifiedNamespace = $"{serviceBusNamespace}.servicebus.windows.net";
+            return new ServiceBusAdministrationClient(fullyQualifiedNamespace, new DefaultAzureCredential());
+        }
+
+        private SecretClient GetSecretClient()
+        {
+            var kv = new SecretClient(
+                Configuration.SharedKeyVaultUri,
+                new DefaultAzureCredential());
+            return kv;
         }
     }
 }

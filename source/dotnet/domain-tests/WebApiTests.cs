@@ -13,10 +13,15 @@
 // limitations under the License.
 
 using System.Net;
+using Azure.Identity;
+using Azure.Messaging.ServiceBus;
+using Azure.Messaging.ServiceBus.Administration;
+using Azure.Security.KeyVault.Secrets;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures;
 using FluentAssertions;
+using Microsoft.Extensions.Configuration;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.DomainTests
@@ -113,7 +118,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             }
 
             [DomainFact]
-            public async Task When_CreatingBatch_Then_BatchIsEventuallyCompleted()
+            public async Task When_CreatingBatch_Then_BatchIsEventuallyCompletedAndReceivedOnTopicSubscription()
             {
                 // Arrange
                 var startDate = new DateTimeOffset(2020, 1, 28, 23, 0, 0, TimeSpan.Zero);
@@ -138,8 +143,28 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                     },
                     _defaultTimeout,
                     _defaultDelay);
+                var messageHasValue = true;
+                var match = false;
+
+                while (messageHasValue)
+                {
+                    var message = await Fixture.Receiver.ReceiveMessageAsync();
+                    if (message != null)
+                    {
+                        match = message.Body.ToString().Contains(batchId.ToString());
+                        if (match)
+                        {
+                            messageHasValue = false;
+                        }
+                    }
+                    else
+                    {
+                        messageHasValue = false;
+                    }
+                }
 
                 isCompleted.Should().BeTrue();
+                match.Should().BeTrue();
             }
         }
     }

@@ -28,6 +28,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         {
             UserTokenConfiguration = B2CUserTokenConfiguration.CreateFromConfiguration(Root);
             WebApiBaseAddress = new Uri(Root.GetValue<string>("WEBAPI_BASEADDRESS")!);
+            SharedKeyVaultUri = new Uri($"https://{Root.GetValue<string>("SHARED_KEYVAULT_NAME")!}.vault.azure.net/");
         }
 
         /// <summary>
@@ -39,5 +40,10 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         /// Base address setting for Wholesale Web API in live environment.
         /// </summary>
         public Uri WebApiBaseAddress { get; }
+
+        /// <summary>
+        /// Shared key vault uri
+        /// </summary>
+        public Uri SharedKeyVaultUri { get; }
     }
 }
