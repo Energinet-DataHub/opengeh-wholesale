@@ -65,6 +65,7 @@ public static class BatchesRegistration
 
         serviceCollection.AddScoped<ICreateBatchHandler, CreateBatchHandler>();
 
+        serviceCollection.AddHostedService<StartCalculationWorker>();
         serviceCollection.AddHostedService<UpdateBatchExecutionStateWorker>();
     }
 }
