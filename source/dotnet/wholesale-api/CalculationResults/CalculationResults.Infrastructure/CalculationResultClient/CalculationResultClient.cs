@@ -87,7 +87,7 @@ public class CalculationResultClient : ICalculationResultClient
             if (!response.IsSuccessStatusCode)
                 throw new Exception($"Unable to get calculation result from Databricks. Status code: {response.StatusCode}");
 
-            var jsonResponse = response.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             var databricksSqlResponse = _databricksSqlResponseParser.Parse(jsonResponse);
 
@@ -165,13 +165,15 @@ order by time
         TimeSeriesType timeSeriesType,
         DatabricksSqlResponse databricksSqlResponse)
     {
-        var pointsDto = databricksSqlResponse.Rows.Select(
-                res => new TimeSeriesPoint(
-                    DateTimeOffset.Parse(res[0]),
-                    decimal.Parse(res[1], CultureInfo.InvariantCulture),
-                    QuantityQualityMapper.MapQuality(res[2])))
-            .ToArray();
+        var table = databricksSqlResponse.Table;
 
-        return new ProcessStepResult(timeSeriesType, pointsDto);
+        var pointsDto = Enumerable.Range(0, databricksSqlResponse.Table.Count)
+            .Select(row => new TimeSeriesPoint(
+                DateTimeOffset.Parse(table[row, ResultColumnNames.Time]),
+                decimal.Parse(table[row, ResultColumnNames.Quantity], CultureInfo.InvariantCulture),
+                QuantityQualityMapper.MapQuality(table[row, ResultColumnNames.QuantityQuality])))
+            .ToList();
+
+        return new ProcessStepResult(timeSeriesType, pointsDto.ToArray());
     }
 }
