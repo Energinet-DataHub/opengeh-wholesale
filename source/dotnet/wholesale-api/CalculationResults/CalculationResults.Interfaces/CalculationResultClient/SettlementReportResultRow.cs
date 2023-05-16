@@ -22,5 +22,5 @@ public sealed record SettlementReportResultRow(
     Instant Time,
     string Resolution,
     MeteringPointType MeteringPointType,
-    SettlementMethod SettlementMethod,
+    SettlementMethod? SettlementMethod,
     decimal Quantity);

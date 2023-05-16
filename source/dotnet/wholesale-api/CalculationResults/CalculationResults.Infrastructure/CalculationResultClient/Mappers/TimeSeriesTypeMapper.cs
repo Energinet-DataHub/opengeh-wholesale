@@ -18,19 +18,21 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 
 public static class TimeSeriesTypeMapper
 {
-    public static string MapToDeltaTableFormat(ProcessType processType) =>
-        processType switch
+    public static TimeSeriesType FromDeltaTable(string timeSeriesType) =>
+        timeSeriesType switch
         {
-            ProcessType.BalanceFixing => "BalanceFixing",
-            ProcessType.Aggregation => "Aggregation",
-            _ => throw new NotImplementedException($"Cannot map process type '{processType}"),
+            "production" => TimeSeriesType.Production,
+            "non_profiled_consumption" => TimeSeriesType.FlexConsumption,
+            "flex_consumption" => TimeSeriesType.NonProfiledConsumption,
+            _ => throw new NotImplementedException($"Cannot map timeSeriesType type '{timeSeriesType}"),
         };
 
-    public static ProcessType MapFromDeltaTableFormat(string processType) =>
-        processType switch
+    public static string ToDeltaTable(TimeSeriesType timeSeriesType) =>
+        timeSeriesType switch
         {
-            "BalanceFixing" => ProcessType.BalanceFixing,
-            "Aggregation" => ProcessType.Aggregation,
-            _ => throw new NotImplementedException($"Cannot map process type '{processType}"),
+            TimeSeriesType.NonProfiledConsumption => "non_profiled_consumption",
+            TimeSeriesType.Production => "production",
+            TimeSeriesType.FlexConsumption => "flex_consumption",
+            _ => throw new NotImplementedException($"Mapping of '{timeSeriesType}' not implemented."),
         };
 }

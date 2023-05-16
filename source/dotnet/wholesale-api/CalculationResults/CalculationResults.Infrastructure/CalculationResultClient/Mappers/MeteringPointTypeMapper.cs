@@ -16,10 +16,10 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
 
-public class MeteringPointTypeMapper
+public static class MeteringPointTypeMapper
 {
-    private static MeteringPointType? Map(TimeSeriesType timeSeriesType) =>
-        timeSeriesType switch
+    public static MeteringPointType FromDeltaTable(string timeSeriesType) =>
+        TimeSeriesTypeMapper.FromDeltaTable(timeSeriesType) switch
         {
             TimeSeriesType.Production => MeteringPointType.Production,
             TimeSeriesType.FlexConsumption => MeteringPointType.Consumption,

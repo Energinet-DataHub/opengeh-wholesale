@@ -21,6 +21,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using Microsoft.Extensions.Options;
 using NodaTime;
+using ProcessType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
@@ -48,11 +49,11 @@ public class CalculationResultClient : ICalculationResultClient
         Instant periodEnd,
         string? energySupplier)
     {
-        var sql = SqlForSettlementReport.CreateSqlStatement(gridAreaCodes, processType, periodStart, periodEnd, energySupplier);
+        var sql = SqlStatementFactory.CreateForSettlementReport(gridAreaCodes, processType, periodStart, periodEnd, energySupplier);
 
         var databricksSqlResponse = await SendSqlStatementAsync(sql).ConfigureAwait(false);
 
-        return SqlForSettlementReport.CreateSettlementReportRows(databricksSqlResponse.Rows);
+        return SqlStatementFactory.CreateSettlementReportRows(databricksSqlResponse.Table);
     }
 
     public async Task<ProcessStepResult> GetAsync(
@@ -113,42 +114,6 @@ public class CalculationResultClient : ICalculationResultClient
         httpClient.BaseAddress = new Uri(options.Value.DATABRICKS_WORKSPACE_URL);
     }
 
-    // TODO: Unit test and move to mapper
-    private string GetAggregationLevelDeltaValue(TimeSeriesType timeSeriesType, string? energySupplierGln, string? balanceResponsiblePartyGln)
-    {
-        switch (timeSeriesType)
-        {
-            case TimeSeriesType.NonProfiledConsumption:
-            case TimeSeriesType.Production:
-            case TimeSeriesType.FlexConsumption:
-                if (energySupplierGln != null && balanceResponsiblePartyGln != null)
-                    return "es_brp_ga";
-                if (energySupplierGln != null)
-                    return "es_ga";
-                if (balanceResponsiblePartyGln != null)
-                    return "brp_ga";
-                return "total_ga";
-            default:
-                throw new NotImplementedException($"Mapping of '{timeSeriesType}' not implemented.");
-        }
-    }
-
-    // TODO: Unit test
-    private string ToDeltaValue(TimeSeriesType timeSeriesType)
-    {
-        switch (timeSeriesType)
-        {
-            case TimeSeriesType.NonProfiledConsumption:
-                return "non_profiled_consumption";
-            case TimeSeriesType.Production:
-                return "production";
-            case TimeSeriesType.FlexConsumption:
-                return "flex_consumption";
-            default:
-                throw new NotImplementedException($"Mapping of '{timeSeriesType}' not implemented.");
-        }
-    }
-
     private static ProcessStepResult CreateProcessStepResult(
         TimeSeriesType timeSeriesType,
         DatabricksSqlResponse databricksSqlResponse)
@@ -159,7 +124,7 @@ public class CalculationResultClient : ICalculationResultClient
             .Select(row => new TimeSeriesPoint(
                 DateTimeOffset.Parse(table[row, ResultColumnNames.Time]),
                 decimal.Parse(table[row, ResultColumnNames.Quantity], CultureInfo.InvariantCulture),
-                QuantityQualityMapper.MapQuality(table[row, ResultColumnNames.QuantityQuality])))
+                QuantityQualityMapper.FromDeltaTable(table[row, ResultColumnNames.QuantityQuality])))
             .ToList();
 
         return new ProcessStepResult(timeSeriesType, pointsDto.ToArray());

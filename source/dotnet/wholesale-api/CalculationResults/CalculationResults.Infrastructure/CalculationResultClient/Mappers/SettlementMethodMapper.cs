@@ -16,10 +16,10 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
 
-public class SettlementMethodMapper
+public static class SettlementMethodMapper
 {
-    public static SettlementMethod? Map(TimeSeriesType timeSeriesType) =>
-        timeSeriesType switch
+    public static SettlementMethod? FromDeltaTable(string timeSeriesType) =>
+        TimeSeriesTypeMapper.FromDeltaTable(timeSeriesType) switch
         {
             TimeSeriesType.Production => null,
             TimeSeriesType.FlexConsumption => SettlementMethod.Flex,

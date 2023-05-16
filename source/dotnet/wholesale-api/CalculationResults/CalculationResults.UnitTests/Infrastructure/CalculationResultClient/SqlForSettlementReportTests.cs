@@ -34,7 +34,7 @@ public class SqlForSettlementReportTests
         const string expectedSql = "SELECT grid_area, batch_process_type, time, time_series_type, quantity FROM wholesale_output.result WHERE grid_area IN (123,234,345) WHERE batch_process_type = BalanceFixing WHERE time BETWEEN '2022-10-12T01:00:00Z' AND '2022-10-12T03:00:00Z' order by time";
 
         // Act
-        var actual = SqlForSettlementReport.CreateSqlStatement(gridAreasCodes, ProcessType.BalanceFixing, periodStart, periodEnd, null);
+        var actual = SqlStatementFactory.CreateForSettlementReport(gridAreasCodes, ProcessType.BalanceFixing, periodStart, periodEnd, null);
 
         // Assert
         actual.Should().Be(expectedSql);

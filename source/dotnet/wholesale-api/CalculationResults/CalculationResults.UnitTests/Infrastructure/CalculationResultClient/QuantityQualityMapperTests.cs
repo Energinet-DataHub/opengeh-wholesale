@@ -32,7 +32,7 @@ public class QuantityQualityMapperTests
             var input = expected.ToString().ToLower();
 
             // Act & Assert
-            QuantityQualityMapper.MapQuality(input).Should().Be(expected);
+            QuantityQualityMapper.FromDeltaTable(input).Should().Be(expected);
         }
     }
 }

@@ -12,24 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using NodaTime;
 using NodaTime.Text;
+using ProcessType = Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
-public static class SqlForSettlementReport
+public static class SqlStatementFactory
 {
-    public static string CreateSqlStatement(
+    public static string CreateForSettlementReport(
         string[] gridAreaCodes,
-        ProcessType processType,
+        Interfaces.CalculationResultClient.ProcessType processType,
         Instant periodStart,
         Instant periodEnd,
         string? energySupplier)
     {
         // TODO: Handle energy supplier
         var selectColumns = string.Join(", ", ResultColumnNames.GridArea, ResultColumnNames.BatchProcessType, ResultColumnNames.Time, ResultColumnNames.TimeSeriesType, ResultColumnNames.Quantity);
-        var processTypeString = MapToDeltaTableFormat(processType);
+        var processTypeString = ProcessType.ToDeltaTable(processType);
         var gridAreas = string.Join(",", gridAreaCodes);
         var startTimeString = periodStart.ToString();
         var endTimeString = periodEnd.ToString();
@@ -38,16 +40,16 @@ public static class SqlForSettlementReport
             $@"SELECT {selectColumns} FROM wholesale_output.result WHERE {ResultColumnNames.GridArea} IN ({gridAreas}) WHERE {ResultColumnNames.BatchProcessType} = {processTypeString} WHERE {ResultColumnNames.Time} BETWEEN '{startTimeString}' AND '{endTimeString}' order by time";
     }
 
-    public static IEnumerable<SettlementReportResultRow> CreateSettlementReportRows(
-        TableRows rows)
+    public static IEnumerable<SettlementReportResultRow> CreateSettlementReportRows(Table rows)
     {
         return Enumerable.Range(0, rows.Count)
             .Select(i => new SettlementReportResultRow(
                 rows[i, ResultColumnNames.GridArea],
-                MapFromDeltaTableFormat(rows[i, ResultColumnNames.BatchProcessType]),
+                ProcessType.FromDeltaTable(rows[i, ResultColumnNames.BatchProcessType]),
                 InstantPattern.ExtendedIso.Parse(rows[i, ResultColumnNames.Time]).Value,
                 "PT15M", // TODO: store resolution in delta table?
-                MapToMeteringPointType(rows[i, ResultColumnNames.TimeSeriesType]),
-                MapToSettlementMethod(rows[i, ResultColumnNames.TimeSeriesType])));
+                MeteringPointTypeMapper.FromDeltaTable(rows[i, ResultColumnNames.TimeSeriesType]),
+                SettlementMethodMapper.FromDeltaTable(rows[i, ResultColumnNames.TimeSeriesType]),
+                decimal.Parse(rows[i, ResultColumnNames.Quantity])));
     }
 }
