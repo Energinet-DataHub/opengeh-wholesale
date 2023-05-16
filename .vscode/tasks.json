@@ -1,0 +1,35 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Structurizr Lite: Load 'deployment'",
+            "type": "docker-run",
+            "dockerRun": {
+                "image": "structurizr/lite:latest",
+                "ports": [
+                    {
+                        "containerPort": 8080,
+                        "hostPort": 8080
+                    }
+                ],
+                "volumes": [
+                    {
+                        "localPath": "${workspaceFolder}/docs/diagrams/c4-model",
+                        "containerPath": "/usr/local/structurizr"
+                    }
+                ],
+                "env": {
+                    "STRUCTURIZR_WORKSPACE_FILENAME": "deployment"
+                },
+                "remove": true
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

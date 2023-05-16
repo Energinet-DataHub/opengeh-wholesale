@@ -29,11 +29,6 @@ jobs:
   changes:
     uses: ./.github/workflows/detect-changes.yml
 
-  c4_model_ci:
-    needs: changes
-    if: ${{ needs.changes.outputs.c4_model == 'true' }}
-    uses: ./.github/workflows/c4-model-status-check.yml
-
   edi_ci:
     needs: changes
     if: ${{ needs.changes.outputs.edi_ci == 'true' }}
@@ -89,6 +84,15 @@ jobs:
       infrastructure_path: ./wholesale/terraform
     secrets: inherit
 
+  render_c4model_deployment:
+    needs: changes
+    if: ${{ needs.changes.outputs.render_c4model_deployment == 'true' }}
+    uses: Energinet-DataHub/.github/.github/workflows/structurizr-render-diagrams.yml@v11
+    with:
+      structurizr_workspace_filename: deployment
+    secrets:
+      pat_token_retrigger_workflow: ${{ secrets.pat_token_repo_workflow }}
+
   #
   # Branch policy status check
   #
@@ -98,13 +102,14 @@ jobs:
     needs:
       [
         ci_base,
-        c4_model_ci,
+        ci_codeql,
         edi_ci,
         market_participant_ci,
         migrations_ci,
         shared_resources_ci,
         ui_ci,
         wholesale_ci,
+        render_c4model_deployment
       ]
     if: |
       always()
