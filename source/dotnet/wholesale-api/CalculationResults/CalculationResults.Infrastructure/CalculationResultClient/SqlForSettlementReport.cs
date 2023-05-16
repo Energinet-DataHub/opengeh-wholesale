@@ -28,8 +28,8 @@ public static class SqlForSettlementReport
         string? energySupplier)
     {
         // TODO: Handle energy supplier
+        var selectColumns = string.Join(", ", ResultColumnNames.GridArea, ResultColumnNames.BatchProcessType, ResultColumnNames.Time, ResultColumnNames.TimeSeriesType, ResultColumnNames.Quantity);
         var processTypeString = MapFrom(processType);
-        var selectColumns = string.Join(", ", GetSelectColumnNames());
         var gridAreas = string.Join(",", gridAreaCodes);
         var startTimeString = periodStart.ToString();
         var endTimeString = periodEnd.ToString();
@@ -39,28 +39,16 @@ public static class SqlForSettlementReport
     }
 
     public static IEnumerable<SettlementReportResultRow> CreateSettlementReportRows(
-        DatabricksSqlResponse databricksSqlResponse)
+        TableRows rows)
     {
-        return new List<SettlementReportResultRow>()
-        {
-            new(
-                "553",
-                ProcessType.Aggregation,
-                Instant.FromUtc(1, 1, 1, 1, 1),
-                "PT1H",
-                MeteringPointType.Consumption,
-                SettlementMethod.Flex,
-                1),
-        };
-    }
-
-    private static IEnumerable<string> GetSelectColumnNames()
-    {
-        return new[]
-        {
-            ResultColumnNames.GridArea, ResultColumnNames.BatchProcessType, ResultColumnNames.Time,
-            ResultColumnNames.TimeSeriesType, ResultColumnNames.Quantity,
-        };
+        return Enumerable.Range(0, rows.Count)
+            .Select(i => new SettlementReportResultRow(
+                rows[i, ResultColumnNames.GridArea],
+                MapToProcessType(rows[i, ResultColumnNames.BatchProcessType]),
+                InstantPattern.ExtendedIso.Parse(rows[i, ResultColumnNames.Time]).Value,
+                "PT15M", // TODO: store resolution in delta table?
+                MapToMeteringPointType(rows[i, ResultColumnNames.TimeSeriesType]),
+                MapToSettlementMethod(rows[i, ResultColumnNames.TimeSeriesType])));
     }
 
     // TODO: Move to mapper
