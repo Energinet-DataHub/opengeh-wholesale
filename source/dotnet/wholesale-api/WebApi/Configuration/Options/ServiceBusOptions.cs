@@ -29,4 +29,10 @@ public class ServiceBusOptions
     public string BATCH_CREATED_EVENT_NAME { get; set; } = string.Empty;
 
     public string DOMAIN_EVENTS_TOPIC_NAME { get; set; } = string.Empty;
+
+    public string INTEGRATIONEVENTS_TOPIC_NAME { get; set; } = string.Empty;
+
+    public string BATCH_COMPLETED_EVENT_NAME { get; set; } = string.Empty;
+
+    public string PROCESS_COMPLETED_EVENT_NAME { get; set; } = string.Empty;
 }

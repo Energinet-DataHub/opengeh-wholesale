@@ -112,11 +112,10 @@ internal static class ServiceCollectionExtensions
     private static void AddDomainEventPublisher(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         var options = configuration.Get<ServiceBusOptions>()!;
-        // TODO BJM: These hardcoded values ought to be read from app settings, but it's not worth the effort as they are about to be removed
         var messageTypes = new Dictionary<Type, string>
         {
-            { typeof(BatchCompletedEventDto), "BatchCompleted" },
-            { typeof(ProcessCompletedEventDto), "ProcessCompleted" },
+            { typeof(BatchCompletedEventDto), options.BATCH_COMPLETED_EVENT_NAME },
+            { typeof(ProcessCompletedEventDto), options.PROCESS_COMPLETED_EVENT_NAME },
         };
         serviceCollection.AddDomainEventPublisher(options.SERVICE_BUS_SEND_CONNECTION_STRING, options.DOMAIN_EVENTS_TOPIC_NAME, new MessageTypeDictionary(messageTypes));
     }

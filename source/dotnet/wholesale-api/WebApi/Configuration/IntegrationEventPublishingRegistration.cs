@@ -12,6 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.JsonSerialization;
+using Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
+using Energinet.DataHub.Wholesale.Application.Processes;
+using Energinet.DataHub.Wholesale.Application.Processes.Model;
+using Energinet.DataHub.Wholesale.Application.Workers;
+using Energinet.DataHub.Wholesale.Contracts.Events;
+using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
+using Energinet.DataHub.Wholesale.Infrastructure.Integration;
+using Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching;
+using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
+using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
@@ -22,7 +34,48 @@ namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 public static class IntegrationEventPublishingRegistration
 {
     public static void AddIntegrationEventPublishingModule(
+        this IServiceCollection serviceCollection,
+        string serviceBusConnectionString,
+        string integrationEventTopicName)
+    {
+        serviceCollection.AddHostedService<DispatchIntegrationEventsWorker>();
+        serviceCollection.AddHostedService<IntegrationEventsRetentionWorker>();
+
+        serviceCollection.AddScoped<IOutboxMessageRepository, OutboxMessageRepository>();
+        serviceCollection.AddScoped<IIntegrationEventCleanUpService, IntegrationEventCleanUpService>();
+        serviceCollection.AddScoped<IIntegrationEventDispatcher, IntegrationEventDispatcher>();
+        serviceCollection.AddScoped<IIntegrationEventTypeMapper>(_ => new IntegrationEventTypeMapper(new Dictionary<Type, string>
+        {
+            { typeof(CalculationResultCompleted), CalculationResultCompleted.BalanceFixingEventName },
+        }));
+        serviceCollection.AddScoped<IIntegrationEventService, IntegrationEventService>();
+        serviceCollection.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
+        serviceCollection.AddIntegrationEventPublisher(serviceBusConnectionString, integrationEventTopicName);
+
+        serviceCollection.AddScoped<ICalculationResultCompletedFactory, CalculationResultCompletedToIntegrationEventFactory>();
+
+        serviceCollection.AddApplications();
+        serviceCollection.AddInfrastructure();
+    }
+
+    private static void AddApplications(this IServiceCollection services)
+    {
+        services.AddScoped<IProcessApplicationService, ProcessApplicationService>();
+        services.AddScoped<IProcessCompletedEventDtoFactory, ProcessCompletedEventDtoFactory>();
+        services.AddScoped<IProcessTypeMapper, Application.Processes.Model.ProcessTypeMapper>();
+        // This is a temporary fix until we move registration out to each of the modules
+        services.AddScoped<Application.IUnitOfWork, UnitOfWork>();
+        services
+            .AddScoped<ICalculationResultCompletedIntegrationEventFactory,
+                CalculationResultCompletedIntegrationEventFactory>();
+    }
+
+    private static void AddInfrastructure(
         this IServiceCollection serviceCollection)
     {
+        serviceCollection.AddScoped<IIntegrationEventPublishingDatabaseContext, IntegrationEventPublishingDatabaseContext>();
+        serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
+
+        serviceCollection.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
     }
 }

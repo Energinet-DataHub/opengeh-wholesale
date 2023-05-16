@@ -21,20 +21,12 @@ using Energinet.DataHub.Core.App.FunctionApp.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.App.FunctionApp.FunctionTelemetryScope;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
-using Energinet.DataHub.Core.JsonSerialization;
-using Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
-using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
-using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
-using Energinet.DataHub.Wholesale.Infrastructure.Integration;
-using Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
-using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Energinet.DataHub.Wholesale.ProcessManager.Monitor;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Microsoft.EntityFrameworkCore;
@@ -63,7 +55,6 @@ public static class Program
             })
             .ConfigureServices(Modules)
             .ConfigureServices(Middlewares)
-            .ConfigureServices(Applications)
             .ConfigureServices(Infrastructure)
             .ConfigureServices(DateTime)
             .ConfigureServices(HealthCheck);
@@ -73,8 +64,14 @@ public static class Program
     {
         serviceCollection.AddBatchesModule(
             () => EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabaseConnectionString));
+
         serviceCollection.AddCalculationResultsModule();
-        serviceCollection.AddIntegrationEventPublishingModule();
+
+        var serviceBusConnectionString =
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusManageConnectionString);
+        var integrationEventTopicName =
+            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventsTopicName);
+        serviceCollection.AddIntegrationEventPublishingModule(serviceBusConnectionString, integrationEventTopicName);
     }
 
     private static void Middlewares(IServiceCollection serviceCollection)
@@ -85,27 +82,9 @@ public static class Program
         serviceCollection.AddScoped<IntegrationEventMetadataMiddleware>();
     }
 
-    private static void Applications(IServiceCollection services)
-    {
-        services.AddScoped<IProcessApplicationService, ProcessApplicationService>();
-        services.AddScoped<IProcessCompletedEventDtoFactory, ProcessCompletedEventDtoFactory>();
-        services.AddScoped<IProcessTypeMapper, Application.Processes.Model.ProcessTypeMapper>();
-        // This is a temporary fix until we move registration out to each of the modules
-        services.AddScoped<Application.IUnitOfWork, UnitOfWork>();
-        services
-            .AddScoped<ICalculationResultCompletedIntegrationEventFactory,
-                CalculationResultCompletedIntegrationEventFactory>();
-        services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
-    }
-
     private static void Infrastructure(IServiceCollection serviceCollection)
     {
         serviceCollection.AddApplicationInsights();
-
-        serviceCollection.AddScoped<IIntegrationEventPublishingDatabaseContext, IntegrationEventPublishingDatabaseContext>();
-        serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
-
-        serviceCollection.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
 
         var dataLakeServiceClient = new DataLakeServiceClient(new Uri(EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageAccountUri)), new DefaultAzureCredential());
         var dataLakeFileSystemClient = dataLakeServiceClient.GetFileSystemClient(EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName));
@@ -129,16 +108,6 @@ public static class Program
                 var dbwToken = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceToken);
                 return DatabricksWheelClient.CreateClient(dbwUrl, dbwToken);
             });
-
-        serviceCollection.AddScoped<ICalculationResultCompletedFactory, CalculationResultCompletedToIntegrationEventFactory>();
-        serviceCollection.AddScoped<IOutboxMessageRepository, OutboxMessageRepository>();
-        serviceCollection.AddScoped<IIntegrationEventCleanUpService, IntegrationEventCleanUpService>();
-        serviceCollection.AddScoped<IIntegrationEventDispatcher, IntegrationEventDispatcher>();
-        serviceCollection.AddScoped<IIntegrationEventTypeMapper>(_ => new IntegrationEventTypeMapper(new Dictionary<Type, string>
-        {
-            { typeof(CalculationResultCompleted), CalculationResultCompleted.BalanceFixingEventName },
-        }));
-        serviceCollection.AddScoped<IIntegrationEventService, IntegrationEventService>();
     }
 
     private static void RegisterEventPublishers(IServiceCollection serviceCollection)
@@ -158,10 +127,6 @@ public static class Program
         };
         var domainEventTopicName = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
         serviceCollection.AddDomainEventPublisher(serviceBusConnectionString, domainEventTopicName, new MessageTypeDictionary(messageTypes));
-
-        var integrationEventTopicName =
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventsTopicName);
-        serviceCollection.AddIntegrationEventPublisher(serviceBusConnectionString, integrationEventTopicName);
     }
 
     private static void DateTime(IServiceCollection serviceCollection)
