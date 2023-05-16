@@ -21,29 +21,27 @@ using Xunit.Categories;
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.CalculationResultClient.Mappers;
 
 [UnitTest]
-public class TimeSeriesTypeMapperTests
+public class ProcessTypeMapperTests
 {
     [Theory]
-    [InlineData(TimeSeriesType.FlexConsumption, "flex_consumption")]
-    [InlineData(TimeSeriesType.Production, "production")]
-    [InlineData(TimeSeriesType.NonProfiledConsumption, "non_profiled_consumption")]
-    public void ToDeltaTable_ReturnsExpectedString(TimeSeriesType type, string expected)
+    [InlineData(ProcessType.Aggregation, "Aggregation")]
+    [InlineData(ProcessType.BalanceFixing, "BalanceFixing")]
+    public void ToDeltaTable_ReturnsExpectedString(ProcessType type, string expected)
     {
         // Act
-        var actual = TimeSeriesTypeMapper.ToDeltaTable(type);
+        var actual = ProcessTypeMapper.ToDeltaTable(type);
 
         // Assert
         actual.Should().Be(expected);
     }
 
     [Theory]
-    [InlineData("flex_consumption", TimeSeriesType.FlexConsumption)]
-    [InlineData("production", TimeSeriesType.Production)]
-    [InlineData("non_profiled_consumption", TimeSeriesType.NonProfiledConsumption)]
-    public void FromDeltaTable_ReturnsExpectedType(string deltaTableValue, TimeSeriesType expected)
+    [InlineData("Aggregation", ProcessType.Aggregation)]
+    [InlineData("BalanceFixing", ProcessType.BalanceFixing)]
+    public void FromDeltaTable_ReturnsExpectedType(string deltaTableValue, ProcessType expected)
     {
         // Act
-        var actual = TimeSeriesTypeMapper.FromDeltaTable(deltaTableValue);
+        var actual = ProcessTypeMapper.FromDeltaTable(deltaTableValue);
 
         // Assert
         actual.Should().Be(expected);
