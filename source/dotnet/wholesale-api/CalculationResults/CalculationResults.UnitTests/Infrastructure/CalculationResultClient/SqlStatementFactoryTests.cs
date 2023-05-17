@@ -22,10 +22,10 @@ using Xunit.Categories;
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.CalculationResultClient;
 
 [UnitTest]
-public class SqlForSettlementReportTests
+public class SqlStatementFactoryTests
 {
     [Fact]
-    public void CreateSqlStatement_ReturnsExpectedSqlStatement()
+    public void CreateForSettlementReport_ReturnsExpectedSqlStatement()
     {
         // Arrange
         var gridAreasCodes = new[] { "123", "234", "345" };
