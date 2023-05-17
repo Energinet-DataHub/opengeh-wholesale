@@ -43,7 +43,7 @@ limitations under the License.
       <EmbeddedResource Include="Scripts\202303081500_Create_Outbox_Table.sql" />
       <EmbeddedResource Include="Scripts\202304041500_Add_CreatedByUserId_to_Batch.sql" />
       <EmbeddedResource Include="Scripts\202305161700_Add_Integration_Events_Module.sql" />
-      <EmbeddedResource Include="Scripts\202305162200_Delete_Bad_Batches.sql" />
+      <EmbeddedResource Include="Scripts\202305170600_Delete_Bad_Batches.sql" />
     </ItemGroup>
 
     <ItemGroup>
