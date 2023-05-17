@@ -24,6 +24,11 @@ public static class TimeSeriesTypeMapper
             "production" => TimeSeriesType.Production,
             "flex_consumption" => TimeSeriesType.FlexConsumption,
             "non_profiled_consumption" => TimeSeriesType.NonProfiledConsumption,
+            "net_exchange_per_neighboring_ga" => TimeSeriesType.NetExchangePerNeighboringGa,
+            "net_exchange_per_ga" => TimeSeriesType.NetExchangePerGa,
+            "grid_loss" => TimeSeriesType.GridLoss,
+            "negative_grid_loss" => TimeSeriesType.NegativeGridLoss,
+            "positive_grid_loss" => TimeSeriesType.PositiveGridLoss,
             _ => throw new NotImplementedException($"Cannot map timeSeriesType type '{timeSeriesType}"),
         };
 

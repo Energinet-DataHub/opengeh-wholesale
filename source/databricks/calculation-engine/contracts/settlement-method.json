@@ -1,0 +1,16 @@
+{
+  "literals": [
+    {
+      "name": "flex",
+      "value": "D01"
+    },
+    {
+      "name": "profiled",
+      "value": "E01"
+    },
+    {
+      "name": "non_profiled",
+      "value": "E02"
+    }
+  ]
+}
