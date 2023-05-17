@@ -12,34 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.JsonSerialization;
-using Energinet.DataHub.Wholesale.Application.Processes;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
-using Microsoft.Azure.Functions.Worker;
-
-namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
-
-public class PublishProcessCompletedEventsEndpoint //TODO: LRN check for tests
-{
-    private const string FunctionName = nameof(PublishProcessCompletedEventsEndpoint);
-    private readonly IJsonSerializer _jsonSerializer;
-    private readonly IProcessApplicationService _processApplicationService;
-
-    public PublishProcessCompletedEventsEndpoint(IJsonSerializer jsonSerializer, IProcessApplicationService processApplicationService)
-    {
-        _jsonSerializer = jsonSerializer;
-        _processApplicationService = processApplicationService;
-    }
-
-    // [Function(FunctionName)]
-    // public async Task RunAsync(
-    //     [ServiceBusTrigger(
-    //         "%" + EnvironmentSettingNames.DomainEventsTopicName + "%",
-    //         "%" + EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName + "%",
-    //         Connection = EnvironmentSettingNames.ServiceBusListenConnectionString)]
-    //     byte[] message)
-    // {
-    //     var batchCompletedEvent = await _jsonSerializer.DeserializeAsync<BatchCompletedEventDto>(message).ConfigureAwait(false);
-    //     await _processApplicationService.PublishProcessCompletedEventsAsync(batchCompletedEvent).ConfigureAwait(false);
-    // }
-}
+// using Energinet.DataHub.Core.JsonSerialization;
+// using Energinet.DataHub.Wholesale.Application.Processes;
+// using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
+// using Microsoft.Azure.Functions.Worker;
+//
+// namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
+//
+// public class PublishProcessCompletedEventsEndpoint //TODO: LRN check for tests
+// {
+//     private const string FunctionName = nameof(PublishProcessCompletedEventsEndpoint);
+//     private readonly IJsonSerializer _jsonSerializer;
+//     private readonly IProcessApplicationService _processApplicationService;
+//
+//     public PublishProcessCompletedEventsEndpoint(IJsonSerializer jsonSerializer, IProcessApplicationService processApplicationService)
+//     {
+//         _jsonSerializer = jsonSerializer;
+//         _processApplicationService = processApplicationService;
+//     }
+//
+//     [Function(FunctionName)]
+//     public async Task RunAsync(
+//         [ServiceBusTrigger(
+//             "%" + EnvironmentSettingNames.DomainEventsTopicName + "%",
+//             "%" + EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName + "%",
+//             Connection = EnvironmentSettingNames.ServiceBusListenConnectionString)]
+//         byte[] message)
+//     {
+//         var batchCompletedEvent = await _jsonSerializer.DeserializeAsync<BatchCompletedEventDto>(message).ConfigureAwait(false);
+//         await _processApplicationService.PublishProcessCompletedEventsAsync(batchCompletedEvent).ConfigureAwait(false);
+//     }
+// }

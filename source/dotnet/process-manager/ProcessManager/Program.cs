@@ -47,15 +47,16 @@ public static class Program
     public static IHostBuilder CreateHostBuilder()
     {
         return new HostBuilder()
-            .ConfigureFunctionsWorkerDefaults(builder =>
-            {
-                builder.UseMiddleware<CorrelationIdMiddleware>();
-                builder.UseMiddleware<FunctionTelemetryScopeMiddleware>();
-                builder.UseMiddleware<IntegrationEventMetadataMiddleware>();
-            })
+            .ConfigureFunctionsWorkerDefaults()
+            //     builder =>
+            // {
+            //     builder.UseMiddleware<CorrelationIdMiddleware>();
+            //     builder.UseMiddleware<FunctionTelemetryScopeMiddleware>();
+            //     builder.UseMiddleware<IntegrationEventMetadataMiddleware>();
+            // }
             // .ConfigureServices(Modules)
-            // .ConfigureServices(Middlewares)
-            // .ConfigureServices(Infrastructure)
+            //.ConfigureServices(Middlewares)
+            .ConfigureServices(Infrastructure)
             // .ConfigureServices(DateTime)
             .ConfigureServices(HealthCheck);
     }
@@ -86,28 +87,28 @@ public static class Program
     {
         serviceCollection.AddApplicationInsights();
 
-        var dataLakeServiceClient = new DataLakeServiceClient(new Uri(EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageAccountUri)), new DefaultAzureCredential());
-        var dataLakeFileSystemClient = dataLakeServiceClient.GetFileSystemClient(EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName));
-
-        serviceCollection.AddSingleton(dataLakeFileSystemClient);
-
-        var connectionString =
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabaseConnectionString);
-        serviceCollection.AddDbContext<IntegrationEventPublishingDatabaseContext>(options =>
-            options.UseSqlServer(connectionString, o =>
-            {
-                o.UseNodaTime();
-                o.EnableRetryOnFailure();
-            }));
-
-        RegisterEventPublishers(serviceCollection);
-
-        serviceCollection.AddSingleton(_ =>
-            {
-                var dbwUrl = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl);
-                var dbwToken = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceToken);
-                return DatabricksWheelClient.CreateClient(dbwUrl, dbwToken);
-            });
+        // var dataLakeServiceClient = new DataLakeServiceClient(new Uri(EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageAccountUri)), new DefaultAzureCredential());
+        // var dataLakeFileSystemClient = dataLakeServiceClient.GetFileSystemClient(EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName));
+        //
+        // serviceCollection.AddSingleton(dataLakeFileSystemClient);
+        //
+        // var connectionString =
+        //     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabaseConnectionString);
+        // serviceCollection.AddDbContext<IntegrationEventPublishingDatabaseContext>(options =>
+        //     options.UseSqlServer(connectionString, o =>
+        //     {
+        //         o.UseNodaTime();
+        //         o.EnableRetryOnFailure();
+        //     }));
+        //
+        // RegisterEventPublishers(serviceCollection);
+        //
+        // serviceCollection.AddSingleton(_ =>
+        //     {
+        //         var dbwUrl = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl);
+        //         var dbwToken = EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceToken);
+        //         return DatabricksWheelClient.CreateClient(dbwUrl, dbwToken);
+        //     });
     }
 
     private static void RegisterEventPublishers(IServiceCollection serviceCollection)
@@ -153,7 +154,7 @@ public static class Program
         // var batchCompletedSubscriptionZipBasisData =
         //     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CreateSettlementReportsWhenCompletedBatchSubscriptionName);
         // var integrationEventsTopicName =
-        //     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
+        //     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.IntegrationEventsTopicName);
         serviceCollection
             .AddHealthChecks()
             .AddLiveCheck();
