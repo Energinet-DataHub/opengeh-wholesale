@@ -12,36 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.JsonSerialization;
-using Energinet.DataHub.Wholesale.Application.Processes;
-using Energinet.DataHub.Wholesale.Application.Processes.Model;
-using Microsoft.Azure.Functions.Worker;
-
-namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
-
-public class PublishCalculationResultCompletedEndpoint
-{
-    private const string FunctionName = nameof(PublishCalculationResultCompletedEndpoint);
-    private readonly IJsonSerializer _jsonSerializer;
-    private readonly IProcessApplicationService _processApplicationService;
-
-    public PublishCalculationResultCompletedEndpoint(
-        IJsonSerializer jsonSerializer,
-        IProcessApplicationService processApplicationService)
-    {
-        _jsonSerializer = jsonSerializer;
-        _processApplicationService = processApplicationService;
-    }
-
-    [Function(FunctionName)]
-    public async Task RunAsync(
-        [ServiceBusTrigger(
-            "%" + EnvironmentSettingNames.DomainEventsTopicName + "%",
-            "%" + EnvironmentSettingNames.PublishProcessesCompletedIntegrationEventWhenProcessCompletedSubscriptionName + "%",
-            Connection = EnvironmentSettingNames.ServiceBusListenConnectionString)]
-        byte[] message)
-    {
-        var processCompletedEvent = await _jsonSerializer.DeserializeAsync<ProcessCompletedEventDto>(message).ConfigureAwait(false);
-        await _processApplicationService.PublishCalculationResultCompletedIntegrationEventsAsync(processCompletedEvent).ConfigureAwait(false);
-    }
-}
+// using Energinet.DataHub.Core.JsonSerialization;
+// using Energinet.DataHub.Wholesale.Application.Processes;
+// using Energinet.DataHub.Wholesale.Application.Processes.Model;
+// using Microsoft.Azure.Functions.Worker;
+//
+// namespace Energinet.DataHub.Wholesale.ProcessManager.Endpoints;
+//
+// public class PublishCalculationResultCompletedEndpoint
+// {
+//     private const string FunctionName = nameof(PublishCalculationResultCompletedEndpoint);
+//     private readonly IJsonSerializer _jsonSerializer;
+//     private readonly IProcessApplicationService _processApplicationService;
+//
+//     public PublishCalculationResultCompletedEndpoint(
+//         IJsonSerializer jsonSerializer,
+//         IProcessApplicationService processApplicationService)
+//     {
+//         _jsonSerializer = jsonSerializer;
+//         _processApplicationService = processApplicationService;
+//     }
+//
+//     [Function(FunctionName)]
+//     public async Task RunAsync(
+//         [ServiceBusTrigger(
+//             "%" + EnvironmentSettingNames.DomainEventsTopicName + "%",
+//             "%" + EnvironmentSettingNames.PublishProcessesCompletedIntegrationEventWhenProcessCompletedSubscriptionName + "%",
+//             Connection = EnvironmentSettingNames.ServiceBusListenConnectionString)]
+//         byte[] message)
+//     {
+//         var processCompletedEvent = await _jsonSerializer.DeserializeAsync<ProcessCompletedEventDto>(message).ConfigureAwait(false);
+//         await _processApplicationService.PublishCalculationResultCompletedIntegrationEventsAsync(processCompletedEvent).ConfigureAwait(false);
+//     }
+// }

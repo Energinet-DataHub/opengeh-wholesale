@@ -29,7 +29,7 @@ public class BatchDtoMapper : IBatchDtoMapper
             batch.PeriodEnd.ToDateTimeOffset(),
             batch.GetResolution(),
             batch.GetQuantityUnit(),
-            batch.ExecutionTimeStart.ToDateTimeOffset(),
+            batch.ExecutionTimeStart?.ToDateTimeOffset(),
             batch.ExecutionTimeEnd?.ToDateTimeOffset() ?? null,
             MapState(batch.ExecutionState),
             batch.AreSettlementReportsCreated,
