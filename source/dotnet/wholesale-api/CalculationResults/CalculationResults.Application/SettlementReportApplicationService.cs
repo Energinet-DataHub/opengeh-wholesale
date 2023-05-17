@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.IO.Compression;
 using Energinet.DataHub.Wholesale.Application.SettlementReport.Model;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
@@ -26,18 +27,18 @@ public class SettlementReportApplicationService : ISettlementReportApplicationSe
 {
     private readonly IBatchApplicationService _batchRepository;
     private readonly ICalculationResultClient _calculationResultClient;
-    private readonly ICsvWriter _csvWriter;
+    private readonly ISettlementReportResultsCsvWriter _settlementReportResultsCsvWriter;
     private readonly ISettlementReportRepository _settlementReportRepository;
 
     public SettlementReportApplicationService(
         IBatchApplicationService batchRepository,
         ICalculationResultClient calculationResultClient,
-        ICsvWriter csvWriter,
+        ISettlementReportResultsCsvWriter settlementReportResultsCsvWriter,
         ISettlementReportRepository settlementReportRepository)
     {
         _batchRepository = batchRepository;
         _calculationResultClient = calculationResultClient;
-        _csvWriter = csvWriter;
+        _settlementReportResultsCsvWriter = settlementReportResultsCsvWriter;
         _settlementReportRepository = settlementReportRepository;
     }
 
@@ -48,7 +49,7 @@ public class SettlementReportApplicationService : ISettlementReportApplicationSe
         return new SettlementReportDto(report.Stream);
     }
 
-    public async Task WriteSettlementReportAsync(
+    public async Task CreateCompressedSettlementReportAsync(
         Stream destination,
         string[] gridAreaCodes,
         ProcessType processType,
@@ -56,7 +57,7 @@ public class SettlementReportApplicationService : ISettlementReportApplicationSe
         DateTimeOffset periodEnd,
         string? energySupplier)
     {
-        var calculationResults = await _calculationResultClient
+        var resultRows = await _calculationResultClient
             .GetSettlementReportResultAsync(
                 gridAreaCodes,
                 processType,
@@ -65,9 +66,17 @@ public class SettlementReportApplicationService : ISettlementReportApplicationSe
                 energySupplier)
             .ConfigureAwait(false);
 
-        await _csvWriter
-            .WriteRecordsAsync(destination, calculationResults)
-            .ConfigureAwait(false);
+        using var archive = new ZipArchive(destination, ZipArchiveMode.Create);
+
+        var zipArchiveEntry = archive.CreateEntry("Results.csv");
+        var zipEntryStream = zipArchiveEntry.Open();
+
+        await using (zipEntryStream.ConfigureAwait(false))
+        {
+            await _settlementReportResultsCsvWriter
+                .WriteAsync(zipEntryStream, resultRows)
+                .ConfigureAwait(false);
+        }
     }
 
     public async Task GetSettlementReportAsync(Guid batchId, string gridAreaCode, Stream outputStream)

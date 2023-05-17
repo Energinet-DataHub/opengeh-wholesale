@@ -13,9 +13,8 @@
 // limitations under the License.
 
 using System.ComponentModel.DataAnnotations;
-using System.IO.Compression;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
+using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Energinet.DataHub.Wholesale.WebApi.V3.SettlementReport;
@@ -31,7 +30,7 @@ public class SettlementReportController : V3ControllerBase
         _settlementReportApplicationService = settlementReportApplicationService;
     }
 
-    [HttpGet]
+    [HttpGet("Download")]
     [MapToApiVersion(Version)]
     [BinaryContent]
     public async Task DownloadAsync(
@@ -41,27 +40,29 @@ public class SettlementReportController : V3ControllerBase
         [Required, FromQuery] DateTimeOffset periodEnd,
         [FromQuery] string? energySupplier)
     {
+        var settlementReportFileName = GetSettlementReportFileName(
+            gridAreaCodes,
+            processType,
+            periodStart,
+            periodEnd,
+            energySupplier);
+
+        Response.Headers.Add("Content-Type", "application/zip");
+        Response.Headers.Add("Content-Disposition", $"attachment; filename={settlementReportFileName}");
+
         var responseStream = Response.BodyWriter.AsStream();
 
         await using (responseStream.ConfigureAwait(false))
         {
-            using var archive = new ZipArchive(responseStream, ZipArchiveMode.Create);
-
-            var zipArchiveEntry = archive.CreateEntry("Results.csv");
-            var zipEntryStream = zipArchiveEntry.Open();
-
-            await using (zipEntryStream.ConfigureAwait(false))
-            {
-                await _settlementReportApplicationService
-                    .WriteSettlementReportAsync(
-                        zipEntryStream,
-                        gridAreaCodes,
-                        processType,
-                        periodStart,
-                        periodEnd,
-                        energySupplier)
-                    .ConfigureAwait(false);
-            }
+            await _settlementReportApplicationService
+                .CreateCompressedSettlementReportAsync(
+                    responseStream,
+                    gridAreaCodes,
+                    ProcessTypeMapper.Map(processType),
+                    periodStart,
+                    periodEnd,
+                    energySupplier)
+                .ConfigureAwait(false);
         }
     }
 
@@ -96,5 +97,24 @@ public class SettlementReportController : V3ControllerBase
     {
         var report = await _settlementReportApplicationService.GetSettlementReportAsync(batchId).ConfigureAwait(false);
         return Ok(report.Stream);
+    }
+
+    private static string GetSettlementReportFileName(
+        string[] gridAreaCode,
+        ProcessType processType,
+        DateTimeOffset periodStart,
+        DateTimeOffset periodEnd,
+        string? energySupplier)
+    {
+        var energySupplierString = energySupplier is null ? string.Empty : $"_{energySupplier}";
+        var gridAreaCodeString = string.Join("+", gridAreaCode);
+        var processTypeString = processType switch
+        {
+            ProcessType.BalanceFixing => "D04",
+            ProcessType.Aggregation => throw new NotSupportedException(),
+            _ => throw new ArgumentOutOfRangeException(nameof(processType)),
+        };
+
+        return $"Result_{gridAreaCodeString}{energySupplierString}_{periodStart:dd-MM-yyyy}_{periodEnd:dd-MM-yyyy}_{processTypeString}.zip";
     }
 }

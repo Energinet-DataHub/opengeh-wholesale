@@ -40,6 +40,7 @@ public static class CalculationResultsRegistration
         serviceCollection.AddHttpClient<ICalculationResultClient>();
         serviceCollection.AddScoped<ICalculationResultClient, CalculationResultClient>();
         serviceCollection.AddScoped<IProcessStepApplicationService, ProcessStepApplicationService>();
+        serviceCollection.AddScoped<ISettlementReportResultsCsvWriter, SettlementReportResultsCsvWriter>();
         serviceCollection.AddScoped<IProcessStepResultMapper, ProcessStepResultMapper>();
         serviceCollection.AddScoped<IDatabricksSqlResponseParser, DatabricksSqlResponseParser>();
         serviceCollection.AddScoped<IDataLakeClient, DataLakeClient>();

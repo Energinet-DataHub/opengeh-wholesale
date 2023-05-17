@@ -23,7 +23,7 @@ public interface ISettlementReportApplicationService
 
     Task GetSettlementReportAsync(Guid batchId, string gridAreaCode, Stream outputStream);
 
-    Task WriteSettlementReportAsync(
+    Task CreateCompressedSettlementReportAsync(
         Stream destination,
         string[] gridAreaCodes,
         ProcessType processType,
