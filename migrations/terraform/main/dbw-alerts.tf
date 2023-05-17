@@ -1,19 +1,10 @@
 /*
 setting up Databricks Alerts
 
-adding a sql warehouse
-adding a query using the sql warehouse
+adding a query using the Migration endpoint sql warehouse
 adding an alert using the query
 adding a job to schedule the alert
 */
-
-resource "databricks_sql_endpoint" "this" {
-  name             = "Migration endpoint"
-  cluster_size     = "Small"
-  max_num_clusters = 1
-  auto_stop_mins   = 60
-  warehouse_type   = "PRO"
-}
 
 # query for duplicates in silver.time_series
 resource "databricks_sql_query" "duplicates_time_series_silver" {
