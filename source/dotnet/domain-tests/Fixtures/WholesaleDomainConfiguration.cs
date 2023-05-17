@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Microsoft.Extensions.Configuration;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
@@ -28,7 +29,11 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         {
             UserTokenConfiguration = B2CUserTokenConfiguration.CreateFromConfiguration(Root);
             WebApiBaseAddress = new Uri(Root.GetValue<string>("WEBAPI_BASEADDRESS")!);
-            SharedKeyVaultUri = new Uri($"https://{Root.GetValue<string>("SHARED_KEYVAULT_NAME")!}.vault.azure.net/");
+
+            var secretsConfiguration = BuildSecretsConfiguration(Root);
+            var serviceBusNamespace = secretsConfiguration.GetValue<string>("sb-domain-relay-namespace-name")!;
+            ServiceBusFullyQualifiedNamespace = $"{serviceBusNamespace}.servicebus.windows.net";
+            ServiceBusConnectionString = secretsConfiguration.GetValue<string>("sb-domain-relay-listen-connection-string")!;
         }
 
         /// <summary>
@@ -42,8 +47,26 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         public Uri WebApiBaseAddress { get; }
 
         /// <summary>
-        /// Shared key vault uri
+        /// TODO: Add documentation
         /// </summary>
-        public Uri SharedKeyVaultUri { get; }
+        public string ServiceBusFullyQualifiedNamespace { get; }
+
+        /// <summary>
+        /// TODO: Add documentation
+        /// </summary>
+        public string ServiceBusConnectionString { get; }
+
+        /// <summary>
+        /// Load settings from key vault secrets.
+        /// </summary>
+        private static IConfigurationRoot BuildSecretsConfiguration(IConfigurationRoot root)
+        {
+            var sharedKeyVaultName = root.GetValue<string>("SHARED_KEYVAULT_NAME");
+            var sharedKeyVaultUrl = $"https://{sharedKeyVaultName}.vault.azure.net/";
+
+            return new ConfigurationBuilder()
+                .AddAuthenticatedAzureKeyVault(sharedKeyVaultUrl)
+                .Build();
+        }
     }
 }

@@ -13,15 +13,10 @@
 // limitations under the License.
 
 using System.Net;
-using Azure.Identity;
-using Azure.Messaging.ServiceBus;
-using Azure.Messaging.ServiceBus.Administration;
-using Azure.Security.KeyVault.Secrets;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures;
 using FluentAssertions;
-using Microsoft.Extensions.Configuration;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.DomainTests
