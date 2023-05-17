@@ -39,12 +39,6 @@ variable developer_ad_group_name {
   default       = ""
 }
 
-variable performance_test_enabled {
-  type          = bool
-  description   = "(Optional) Enables deployment of the Performance Test"
-  default       = false
-}
-
 variable allow_test_tokens {
   type          = bool
   description   = "(Optional) Enables use of test tokens"
