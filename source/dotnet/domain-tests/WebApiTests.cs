@@ -89,7 +89,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             private static readonly TimeSpan _defaultTimeout = TimeSpan.FromMinutes(15);
             private static readonly TimeSpan _defaultDelay = TimeSpan.FromSeconds(30);
 
-            private static readonly Guid _existingBatchId = new("a68d4452-943b-4f45-b32f-5f84607c6b6b");
+            private static readonly Guid _existingBatchId = new("ed39dbc5-bdc5-41b9-922a-08d3b12d4538");
             private static readonly string ExistingGridAreaCode = "543";
 
             public Given_Authorized(AuthorizedClientFixture fixture)

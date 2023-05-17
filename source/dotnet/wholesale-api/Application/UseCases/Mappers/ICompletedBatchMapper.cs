@@ -12,10 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
+using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
-// TODO BJM: Remove this (now) confusing indirection
-public interface IIntegrationEventPublisher
+namespace Energinet.DataHub.Wholesale.Application.UseCases.Mappers;
+
+public interface ICompletedBatchMapper
 {
-    Task PublishAsync(IntegrationEventDto integrationEventDto);
+    IEnumerable<CompletedBatch> Map(IEnumerable<BatchDto> completedBatchDtos);
 }
