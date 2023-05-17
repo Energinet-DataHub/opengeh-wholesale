@@ -18,7 +18,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 
 public static class TimeSeriesTypeMapper
 {
-    public static TimeSeriesType FromDeltaTable(string timeSeriesType) =>
+    public static TimeSeriesType FromDeltaTableValue(string timeSeriesType) =>
         timeSeriesType switch
         {
             "production" => TimeSeriesType.Production,
@@ -27,7 +27,7 @@ public static class TimeSeriesTypeMapper
             _ => throw new NotImplementedException($"Cannot map timeSeriesType type '{timeSeriesType}"),
         };
 
-    public static string ToDeltaTable(TimeSeriesType timeSeriesType) =>
+    public static string ToDeltaTableValue(TimeSeriesType timeSeriesType) =>
         timeSeriesType switch
         {
             TimeSeriesType.NonProfiledConsumption => "non_profiled_consumption",

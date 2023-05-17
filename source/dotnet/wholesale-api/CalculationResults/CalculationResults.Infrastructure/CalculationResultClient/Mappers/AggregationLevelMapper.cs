@@ -18,7 +18,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 
 public static class AggregationLevelMapper
 {
-    public static string ToDeltaTable(TimeSeriesType timeSeriesType, string? energySupplierGln, string? balanceResponsiblePartyGln)
+    public static string ToDeltaTableValue(TimeSeriesType timeSeriesType, string? energySupplierGln, string? balanceResponsiblePartyGln)
     {
         switch (timeSeriesType)
         {

@@ -18,8 +18,8 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 
 public static class MeteringPointTypeMapper
 {
-    public static MeteringPointType FromDeltaTable(string timeSeriesType) =>
-        TimeSeriesTypeMapper.FromDeltaTable(timeSeriesType) switch
+    public static MeteringPointType FromDeltaTableValue(string timeSeriesType) =>
+        TimeSeriesTypeMapper.FromDeltaTableValue(timeSeriesType) switch
         {
             TimeSeriesType.Production => MeteringPointType.Production,
             TimeSeriesType.FlexConsumption => MeteringPointType.Consumption,

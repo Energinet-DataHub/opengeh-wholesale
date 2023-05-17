@@ -121,8 +121,8 @@ public class CalculationResultClient : ICalculationResultClient
 from wholesale_output.result
 where batch_id = '{batchId}'
   and grid_area = '{gridAreaCode}'
-  and time_series_type = '{TimeSeriesTypeMapper.ToDeltaTable(timeSeriesType)}'
-  and aggregation_level = '{AggregationLevelMapper.ToDeltaTable(timeSeriesType, energySupplierGln, balanceResponsiblePartyGln)}'
+  and time_series_type = '{TimeSeriesTypeMapper.ToDeltaTableValue(timeSeriesType)}'
+  and aggregation_level = '{AggregationLevelMapper.ToDeltaTableValue(timeSeriesType, energySupplierGln, balanceResponsiblePartyGln)}'
 order by time
 ";
     }
@@ -137,7 +137,7 @@ order by time
             .Select(row => new TimeSeriesPoint(
                 DateTimeOffset.Parse(table[row, ResultColumnNames.Time]),
                 decimal.Parse(table[row, ResultColumnNames.Quantity], CultureInfo.InvariantCulture),
-                QuantityQualityMapper.FromDeltaTable(table[row, ResultColumnNames.QuantityQuality])))
+                QuantityQualityMapper.FromDeltaTableValue(table[row, ResultColumnNames.QuantityQuality])))
             .ToList();
 
         return new ProcessStepResult(timeSeriesType, pointsDto.ToArray());

@@ -27,10 +27,10 @@ public class TimeSeriesTypeMapperTests
     [InlineData(TimeSeriesType.FlexConsumption, "flex_consumption")]
     [InlineData(TimeSeriesType.Production, "production")]
     [InlineData(TimeSeriesType.NonProfiledConsumption, "non_profiled_consumption")]
-    public void ToDeltaTable_ReturnsExpectedString(TimeSeriesType type, string expected)
+    public void ToDeltaTableValue_ReturnsExpectedString(TimeSeriesType type, string expected)
     {
         // Act
-        var actual = TimeSeriesTypeMapper.ToDeltaTable(type);
+        var actual = TimeSeriesTypeMapper.ToDeltaTableValue(type);
 
         // Assert
         actual.Should().Be(expected);
@@ -40,10 +40,10 @@ public class TimeSeriesTypeMapperTests
     [InlineData("flex_consumption", TimeSeriesType.FlexConsumption)]
     [InlineData("production", TimeSeriesType.Production)]
     [InlineData("non_profiled_consumption", TimeSeriesType.NonProfiledConsumption)]
-    public void FromDeltaTable_ReturnsExpectedType(string deltaTableValue, TimeSeriesType expected)
+    public void FromDeltaTableValue_ReturnsExpectedType(string deltaTableValue, TimeSeriesType expected)
     {
         // Act
-        var actual = TimeSeriesTypeMapper.FromDeltaTable(deltaTableValue);
+        var actual = TimeSeriesTypeMapper.FromDeltaTableValue(deltaTableValue);
 
         // Assert
         actual.Should().Be(expected);

@@ -16,7 +16,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 
 public static class ProcessTypeMapper
 {
-    public static string ToDeltaTable(Interfaces.CalculationResultClient.ProcessType processType) =>
+    public static string ToDeltaTableValue(Interfaces.CalculationResultClient.ProcessType processType) =>
         processType switch
         {
             Interfaces.CalculationResultClient.ProcessType.BalanceFixing => "BalanceFixing",
@@ -24,7 +24,7 @@ public static class ProcessTypeMapper
             _ => throw new NotImplementedException($"Cannot map process type '{processType}"),
         };
 
-    public static Interfaces.CalculationResultClient.ProcessType FromDeltaTable(string processType) =>
+    public static Interfaces.CalculationResultClient.ProcessType FromDeltaTableValue(string processType) =>
         processType switch
         {
             "BalanceFixing" => Interfaces.CalculationResultClient.ProcessType.BalanceFixing,

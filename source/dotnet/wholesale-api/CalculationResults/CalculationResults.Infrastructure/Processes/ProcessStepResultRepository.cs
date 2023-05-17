@@ -87,7 +87,7 @@ public class ProcessStepResultRepository : IProcessStepResultRepository
                 point => new TimeSeriesPoint(
                     DateTimeOffset.Parse(point.quarter_time),
                     decimal.Parse(point.quantity, CultureInfo.InvariantCulture),
-                    QuantityQualityMapper.FromDeltaTable(point.quality)))
+                    QuantityQualityMapper.FromDeltaTableValue(point.quality)))
             .ToList();
 
         return new ProcessStepResult(timeSeriesType, pointsDto.ToArray());

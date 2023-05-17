@@ -26,10 +26,10 @@ public class ProcessTypeMapperTests
     [Theory]
     [InlineData(ProcessType.Aggregation, "Aggregation")]
     [InlineData(ProcessType.BalanceFixing, "BalanceFixing")]
-    public void ToDeltaTable_ReturnsExpectedString(ProcessType type, string expected)
+    public void ToDeltaTableValue_ReturnsExpectedString(ProcessType type, string expected)
     {
         // Act
-        var actual = ProcessTypeMapper.ToDeltaTable(type);
+        var actual = ProcessTypeMapper.ToDeltaTableValue(type);
 
         // Assert
         actual.Should().Be(expected);
@@ -38,10 +38,10 @@ public class ProcessTypeMapperTests
     [Theory]
     [InlineData("Aggregation", ProcessType.Aggregation)]
     [InlineData("BalanceFixing", ProcessType.BalanceFixing)]
-    public void FromDeltaTable_ReturnsExpectedType(string deltaTableValue, ProcessType expected)
+    public void FromDeltaTableValue_ReturnsExpectedType(string deltaTableValue, ProcessType expected)
     {
         // Act
-        var actual = ProcessTypeMapper.FromDeltaTable(deltaTableValue);
+        var actual = ProcessTypeMapper.FromDeltaTableValue(deltaTableValue);
 
         // Assert
         actual.Should().Be(expected);

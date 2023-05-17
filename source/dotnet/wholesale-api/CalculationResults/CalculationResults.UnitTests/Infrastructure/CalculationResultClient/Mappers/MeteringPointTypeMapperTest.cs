@@ -27,10 +27,10 @@ public class MeteringPointTypeMapperTests
     [InlineData("flex_consumption", MeteringPointType.Consumption)]
     [InlineData("production", MeteringPointType.Production)]
     [InlineData("non_profiled_consumption", MeteringPointType.Consumption)]
-    public void ToDeltaTable_ReturnsExpectedString(string timeSeriesType, MeteringPointType expected)
+    public void ToDeltaTableValue_ReturnsExpectedString(string timeSeriesType, MeteringPointType expected)
     {
         // Act
-        var actual = MeteringPointTypeMapper.FromDeltaTable(timeSeriesType);
+        var actual = MeteringPointTypeMapper.FromDeltaTableValue(timeSeriesType);
 
         // Assert
         actual.Should().Be(expected);

@@ -27,11 +27,11 @@ public class AggregationLevelMapperTests
     [InlineData(TimeSeriesType.Production)]
     [InlineData(TimeSeriesType.FlexConsumption)]
     [InlineData(TimeSeriesType.NonProfiledConsumption)]
-    public void ToDeltaTable_WhenNoActorsSpecified_ReturnsExpectedAggLevel(TimeSeriesType type)
+    public void ToDeltaTableValue_WhenNoActorsSpecified_ReturnsExpectedAggLevel(TimeSeriesType type)
     {
         // Act
         const string expected = "total_ga";
-        var actual = AggregationLevelMapper.ToDeltaTable(type, null, null);
+        var actual = AggregationLevelMapper.ToDeltaTableValue(type, null, null);
 
         // Assert
         actual.Should().Be(expected);
@@ -41,11 +41,11 @@ public class AggregationLevelMapperTests
     [InlineData(TimeSeriesType.Production)]
     [InlineData(TimeSeriesType.FlexConsumption)]
     [InlineData(TimeSeriesType.NonProfiledConsumption)]
-    public void ToDeltaTable_WhenEnergySupplierIsNotNull_ReturnsExpectedAggLevel(TimeSeriesType type)
+    public void ToDeltaTableValue_WhenEnergySupplierIsNotNull_ReturnsExpectedAggLevel(TimeSeriesType type)
     {
         // Act
         const string expected = "es_ga";
-        var actual = AggregationLevelMapper.ToDeltaTable(type, "someEnergySupplier", null);
+        var actual = AggregationLevelMapper.ToDeltaTableValue(type, "someEnergySupplier", null);
 
         // Assert
         actual.Should().Be(expected);
@@ -55,11 +55,11 @@ public class AggregationLevelMapperTests
     [InlineData(TimeSeriesType.Production)]
     [InlineData(TimeSeriesType.FlexConsumption)]
     [InlineData(TimeSeriesType.NonProfiledConsumption)]
-    public void ToDeltaTable_WhenBalanceResponsibleIsNotNull_ReturnsExpectedAggLevel(TimeSeriesType type)
+    public void ToDeltaTableValue_WhenBalanceResponsibleIsNotNull_ReturnsExpectedAggLevel(TimeSeriesType type)
     {
         // Act
         const string expected = "brp_ga";
-        var actual = AggregationLevelMapper.ToDeltaTable(type, null, "somBalanceResponsible");
+        var actual = AggregationLevelMapper.ToDeltaTableValue(type, null, "somBalanceResponsible");
 
         // Assert
         actual.Should().Be(expected);
@@ -69,11 +69,11 @@ public class AggregationLevelMapperTests
     [InlineData(TimeSeriesType.Production)]
     [InlineData(TimeSeriesType.FlexConsumption)]
     [InlineData(TimeSeriesType.NonProfiledConsumption)]
-    public void ToDeltaTable_WhenNeitherEnergySupplierAndBalanceResponsibleIsNull_ReturnsExpectedAggLevel(TimeSeriesType type)
+    public void ToDeltaTableValue_WhenNeitherEnergySupplierAndBalanceResponsibleIsNull_ReturnsExpectedAggLevel(TimeSeriesType type)
     {
         // Act
         const string expected = "es_brp_ga";
-        var actual = AggregationLevelMapper.ToDeltaTable(type, "someEnergySupplier", "somBalanceResponsible");
+        var actual = AggregationLevelMapper.ToDeltaTableValue(type, "someEnergySupplier", "somBalanceResponsible");
 
         // Assert
         actual.Should().Be(expected);

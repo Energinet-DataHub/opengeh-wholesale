@@ -18,7 +18,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 
 public static class QuantityQualityMapper
 {
-        public static QuantityQuality FromDeltaTable(string pointQuality)
+        public static QuantityQuality FromDeltaTableValue(string pointQuality)
         {
             return pointQuality switch
             {

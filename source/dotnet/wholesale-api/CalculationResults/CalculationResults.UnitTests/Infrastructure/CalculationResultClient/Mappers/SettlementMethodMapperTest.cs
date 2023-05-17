@@ -27,10 +27,10 @@ public class SettlementMethodMapperTests
     [InlineData("flex_consumption", SettlementMethod.Flex)]
     [InlineData("production", null)]
     [InlineData("non_profiled_consumption", SettlementMethod.NonProfiled)]
-    public void ToDeltaTable_ReturnsExpectedSettlementMethod(string timeSeriesType, SettlementMethod? expected)
+    public void ToDeltaTableValue_ReturnsExpectedSettlementMethod(string timeSeriesType, SettlementMethod? expected)
     {
         // Act
-        var actual = SettlementMethodMapper.FromDeltaTable(timeSeriesType);
+        var actual = SettlementMethodMapper.FromDeltaTableValue(timeSeriesType);
 
         // Assert
         actual.Should().Be(expected);

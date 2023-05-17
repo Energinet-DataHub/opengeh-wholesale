@@ -18,8 +18,8 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 
 public static class SettlementMethodMapper
 {
-    public static SettlementMethod? FromDeltaTable(string timeSeriesType) =>
-        TimeSeriesTypeMapper.FromDeltaTable(timeSeriesType) switch
+    public static SettlementMethod? FromDeltaTableValue(string timeSeriesType) =>
+        TimeSeriesTypeMapper.FromDeltaTableValue(timeSeriesType) switch
         {
             TimeSeriesType.Production => null,
             TimeSeriesType.FlexConsumption => SettlementMethod.Flex,
