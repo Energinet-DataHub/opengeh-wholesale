@@ -66,13 +66,13 @@ public class BatchDtoMapperTests
         // Arrange
         var batch = new BatchBuilder().Build();
         batch.MarkAsExecuting(); // this sets ExecutionTimeStart
-        batch.MarkAsCompleted(batch.ExecutionTimeStart.Plus(Duration.FromDays(2))); // this sets ExecutionTimeEnd
+        batch.MarkAsCompleted(batch.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2))); // this sets ExecutionTimeEnd
 
         // Act
         var batchDto = sut.Map(batch);
 
         // Assert
-        batchDto.ExecutionTimeStart.Should().Be(batch.ExecutionTimeStart.ToDateTimeOffset());
+        batchDto.ExecutionTimeStart.Should().Be(batch.ExecutionTimeStart.Value.ToDateTimeOffset());
         batchDto.ExecutionTimeEnd.Should().Be(batch.ExecutionTimeEnd!.Value.ToDateTimeOffset());
     }
 

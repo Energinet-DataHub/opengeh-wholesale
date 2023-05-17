@@ -14,6 +14,7 @@
 
 namespace Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
 
+// TODO BJM: Remove this (now) confusing indirection
 public interface IIntegrationEventPublisher
 {
     Task PublishAsync(IntegrationEventDto integrationEventDto);

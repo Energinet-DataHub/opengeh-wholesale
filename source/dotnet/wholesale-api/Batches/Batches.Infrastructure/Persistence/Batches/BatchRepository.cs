@@ -40,10 +40,6 @@ public class BatchRepository : IBatchRepository
 
     public Task<List<Batch>> GetCreatedAsync() => GetByStateAsync(BatchExecutionState.Created);
 
-    public Task<List<Batch>> GetPendingAsync() => GetByStateAsync(BatchExecutionState.Pending);
-
-    public Task<List<Batch>> GetExecutingAsync() => GetByStateAsync(BatchExecutionState.Executing);
-
     public async Task<List<Batch>> GetByStatesAsync(IEnumerable<BatchExecutionState> states)
     {
         return await _context
@@ -53,7 +49,15 @@ public class BatchRepository : IBatchRepository
             .ConfigureAwait(false);
     }
 
-    public Task<List<Batch>> GetCompletedAsync() => GetByStateAsync(BatchExecutionState.Completed);
+    public async Task<List<Batch>> GetCompletedAfterAsync(Instant? completedTime)
+    {
+        return await _context
+            .Batches
+            .Where(b => b.ExecutionState == BatchExecutionState.Completed)
+            .Where(b => completedTime == null || b.ExecutionTimeEnd > completedTime)
+            .ToListAsync()
+            .ConfigureAwait(false);
+    }
 
     public async Task<IReadOnlyCollection<Batch>> SearchAsync(
         IReadOnlyCollection<GridAreaCode> filterByGridAreaCode,

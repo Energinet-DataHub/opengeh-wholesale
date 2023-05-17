@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using System.Globalization;
-using Energinet.DataHub.Wholesale.CalculationResults.Application;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineSerializer;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
@@ -87,7 +87,7 @@ public class ProcessStepResultRepository : IProcessStepResultRepository
                 point => new TimeSeriesPoint(
                     DateTimeOffset.Parse(point.quarter_time),
                     decimal.Parse(point.quantity, CultureInfo.InvariantCulture),
-                    QuantityQualityMapper.MapQuality(point.quality)))
+                    QuantityQualityMapper.FromDeltaTableValue(point.quality)))
             .ToList();
 
         return new ProcessStepResult(timeSeriesType, pointsDto.ToArray());

@@ -40,6 +40,7 @@ limitations under the License.
     <ProjectReference Include="..\CalculationResults\CalculationResults.Application\CalculationResults.Application.csproj" />
     <ProjectReference Include="..\Infrastructure.Core\Infrastructure.Core.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\IntegrationEventPublishing\IntegrationEventPublishing.Application\IntegrationEventPublishing.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>

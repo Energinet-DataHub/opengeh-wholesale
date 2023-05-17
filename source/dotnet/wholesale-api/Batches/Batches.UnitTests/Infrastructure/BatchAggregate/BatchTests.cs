@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
@@ -192,7 +191,7 @@ public class BatchTests
     {
         // Arrange
         var sut = new BatchBuilder().WithStateExecuting().Build();
-        var executionTimeEndGreaterThanStart = sut.ExecutionTimeStart.Plus(Duration.FromDays(2));
+        var executionTimeEndGreaterThanStart = sut.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2));
 
         // Act
         sut.MarkAsCompleted(executionTimeEndGreaterThanStart);
@@ -206,7 +205,7 @@ public class BatchTests
     {
         // Arrange
         var sut = new BatchBuilder().WithStateExecuting().Build();
-        var executionTimeEndGreaterThanStart = sut.ExecutionTimeStart.Plus(Duration.FromDays(2));
+        var executionTimeEndGreaterThanStart = sut.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2));
 
         // Act
         sut.MarkAsCompleted(executionTimeEndGreaterThanStart);
@@ -220,7 +219,7 @@ public class BatchTests
     {
         // Arrange
         var sut = new BatchBuilder().WithStateExecuting().Build();
-        var executionTimeEndLessThanStart = sut.ExecutionTimeStart.Minus(Duration.FromDays(2));
+        var executionTimeEndLessThanStart = sut.ExecutionTimeStart!.Value.Minus(Duration.FromDays(2));
 
         // Act
         var actual = Assert.Throws<BusinessValidationException>(() => sut.MarkAsCompleted(executionTimeEndLessThanStart));
