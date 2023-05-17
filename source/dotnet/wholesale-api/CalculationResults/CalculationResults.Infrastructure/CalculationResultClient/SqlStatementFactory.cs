@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
@@ -21,19 +22,31 @@ public static class SqlStatementFactory
 {
     public static string CreateForSettlementReport(
         string[] gridAreaCodes,
-        Interfaces.CalculationResultClient.ProcessType processType,
+        ProcessType processType,
         Instant periodStart,
         Instant periodEnd,
         string? energySupplier)
     {
         // TODO: Handle energy supplier
         var selectColumns = string.Join(", ", ResultColumnNames.GridArea, ResultColumnNames.BatchProcessType, ResultColumnNames.Time, ResultColumnNames.TimeSeriesType, ResultColumnNames.Quantity);
+        var timeSeriesTypes = string.Join(",", GetTimeSeriesTypesForSettlementReport().Select(x => $"\'{x}\'"));
         var processTypeString = ProcessTypeMapper.ToDeltaTableValue(processType);
         var gridAreas = string.Join(",", gridAreaCodes);
         var startTimeString = periodStart.ToString();
         var endTimeString = periodEnd.ToString();
 
         return
-            $@"SELECT {selectColumns} FROM wholesale_output.result WHERE {ResultColumnNames.GridArea} IN ({gridAreas}) WHERE {ResultColumnNames.BatchProcessType} = {processTypeString} WHERE {ResultColumnNames.Time} BETWEEN '{startTimeString}' AND '{endTimeString}' order by time";
+            $@"SELECT {selectColumns} FROM wholesale_output.result WHERE {ResultColumnNames.GridArea} IN ({gridAreas}) AND {ResultColumnNames.TimeSeriesType} IN ({timeSeriesTypes}) AND {ResultColumnNames.BatchProcessType} = '{processTypeString}' AND {ResultColumnNames.Time} BETWEEN '{startTimeString}' AND '{endTimeString}' order by time";
+    }
+
+    private static IEnumerable<string> GetTimeSeriesTypesForSettlementReport()
+    {
+        return new List<string>
+        {
+            TimeSeriesTypeMapper.ToDeltaTableValue(TimeSeriesType.Production),
+            TimeSeriesTypeMapper.ToDeltaTableValue(TimeSeriesType.FlexConsumption),
+            TimeSeriesTypeMapper.ToDeltaTableValue(TimeSeriesType.NonProfiledConsumption),
+            TimeSeriesTypeMapper.ToDeltaTableValue(TimeSeriesType.ExchangePerGridArea),
+        };
     }
 }

@@ -24,6 +24,7 @@ public static class TimeSeriesTypeMapper
             "production" => TimeSeriesType.Production,
             "flex_consumption" => TimeSeriesType.FlexConsumption,
             "non_profiled_consumption" => TimeSeriesType.NonProfiledConsumption,
+            "net_exchange_per_ga" => TimeSeriesType.ExchangePerGridArea,
             _ => throw new NotImplementedException($"Cannot map timeSeriesType type '{timeSeriesType}"),
         };
 
@@ -33,6 +34,7 @@ public static class TimeSeriesTypeMapper
             TimeSeriesType.NonProfiledConsumption => "non_profiled_consumption",
             TimeSeriesType.Production => "production",
             TimeSeriesType.FlexConsumption => "flex_consumption",
+            TimeSeriesType.ExchangePerGridArea => "net_exchange_per_ga",
             _ => throw new NotImplementedException($"Mapping of '{timeSeriesType}' not implemented."),
         };
 }
