@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
 using NodaTime;
-using ProcessType = Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
@@ -28,7 +28,7 @@ public static class SqlStatementFactory
     {
         // TODO: Handle energy supplier
         var selectColumns = string.Join(", ", ResultColumnNames.GridArea, ResultColumnNames.BatchProcessType, ResultColumnNames.Time, ResultColumnNames.TimeSeriesType, ResultColumnNames.Quantity);
-        var processTypeString = ProcessType.ToDeltaTable(processType);
+        var processTypeString = ProcessTypeMapper.ToDeltaTableValue(processType);
         var gridAreas = string.Join(",", gridAreaCodes);
         var startTimeString = periodStart.ToString();
         var endTimeString = periodEnd.ToString();

@@ -17,7 +17,6 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using FluentAssertions;
 using Xunit;
 using Xunit.Categories;
-using ProcessType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.CalculationResultClient.Mappers;
 

@@ -15,7 +15,6 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using NodaTime.Text;
-using ProcessType = Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
@@ -26,7 +25,7 @@ public static class SettlementReportDataFactory
         return Enumerable.Range(0, table.Count)
             .Select(i => new SettlementReportResultRow(
                 table[i, ResultColumnNames.GridArea],
-                ProcessType.FromDeltaTable(table[i, ResultColumnNames.BatchProcessType]),
+                ProcessTypeMapper.FromDeltaTableValue(table[i, ResultColumnNames.BatchProcessType]),
                 InstantPattern.ExtendedIso.Parse(table[i, ResultColumnNames.Time]).Value,
                 "PT15M", // TODO: store resolution in delta table?
                 MeteringPointTypeMapper.FromDeltaTableValue(table[i, ResultColumnNames.TimeSeriesType]),
