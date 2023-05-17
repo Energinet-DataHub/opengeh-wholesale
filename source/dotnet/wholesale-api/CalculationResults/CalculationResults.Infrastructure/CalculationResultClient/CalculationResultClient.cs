@@ -120,7 +120,7 @@ public class CalculationResultClient : ICalculationResultClient
     {
         var table = databricksSqlResponse.Table;
 
-        var pointsDto = Enumerable.Range(0, databricksSqlResponse.Table.Count)
+        var pointsDto = Enumerable.Range(0, databricksSqlResponse.Table.RowCount)
             .Select(row => new TimeSeriesPoint(
                 DateTimeOffset.Parse(table[row, ResultColumnNames.Time]),
                 decimal.Parse(table[row, ResultColumnNames.Quantity], CultureInfo.InvariantCulture),

@@ -58,7 +58,7 @@ public class DatabricksSqlResponseParserTests
         var actual = sut.Parse(_sampleJson);
 
         // Assert
-        actual.Table.Count.Should().Be(expectedLength);
+        actual.Table.RowCount.Should().Be(expectedLength);
     }
 
     [Theory]

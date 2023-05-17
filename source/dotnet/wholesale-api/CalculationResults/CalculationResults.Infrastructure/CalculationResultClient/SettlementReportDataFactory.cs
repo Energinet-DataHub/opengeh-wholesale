@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Globalization;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using NodaTime.Text;
@@ -22,7 +23,7 @@ public static class SettlementReportDataFactory
 {
     public static IEnumerable<SettlementReportResultRow> Create(Table table)
     {
-        return Enumerable.Range(0, table.Count)
+        return Enumerable.Range(0, table.RowCount)
             .Select(i => new SettlementReportResultRow(
                 table[i, ResultColumnNames.GridArea],
                 ProcessTypeMapper.FromDeltaTableValue(table[i, ResultColumnNames.BatchProcessType]),
@@ -30,6 +31,6 @@ public static class SettlementReportDataFactory
                 "PT15M", // TODO: store resolution in delta table?
                 MeteringPointTypeMapper.FromDeltaTableValue(table[i, ResultColumnNames.TimeSeriesType]),
                 SettlementMethodMapper.FromDeltaTableValue(table[i, ResultColumnNames.TimeSeriesType]),
-                decimal.Parse(table[i, ResultColumnNames.Quantity])));
+                decimal.Parse(table[i, ResultColumnNames.Quantity], CultureInfo.InvariantCulture)));
     }
 }
