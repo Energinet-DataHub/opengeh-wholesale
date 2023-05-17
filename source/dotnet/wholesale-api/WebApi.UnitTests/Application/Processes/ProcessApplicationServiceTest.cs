@@ -20,7 +20,6 @@ using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Moq;
 using NodaTime;
 using Xunit;
@@ -31,17 +30,6 @@ namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Application.Processes;
 
 public class ProcessApplicationServiceTest
 {
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task PublishProcessCompletedEventsAsync_Publishes(
-        BatchCompletedEventDto batchCompleted,
-        [Frozen] Mock<IDomainEventPublisher> publisherMock,
-        ProcessApplicationService sut)
-    {
-        await sut.PublishProcessCompletedEventsAsync(batchCompleted);
-        publisherMock.Verify(publisher => publisher.PublishAsync(It.IsAny<List<ProcessCompletedEventDto>>()), Times.Once);
-    }
-
     [Theory]
     [InlineAutoMoqData]
     public async Task

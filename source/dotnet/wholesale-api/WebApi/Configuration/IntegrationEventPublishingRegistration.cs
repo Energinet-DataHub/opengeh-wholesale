@@ -28,7 +28,6 @@ using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 
@@ -71,7 +70,6 @@ public static class IntegrationEventPublishingRegistration
     private static void AddApplications(this IServiceCollection services)
     {
         services.AddScoped<IProcessApplicationService, ProcessApplicationService>();
-        services.AddScoped<IProcessCompletedEventDtoFactory, ProcessCompletedEventDtoFactory>();
         services.AddScoped<IProcessTypeMapper, Application.Processes.Model.ProcessTypeMapper>();
         // This is a temporary fix until we move registration out to each of the modules
         services.AddScoped<Application.IUnitOfWork, UnitOfWork>();
