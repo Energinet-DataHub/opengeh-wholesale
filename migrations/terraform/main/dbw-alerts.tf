@@ -1,23 +1,14 @@
 /*
 setting up Databricks Alerts
 
-adding a sql warehouse
-adding a query using the sql warehouse
+adding a query using the Migration endpoint sql warehouse
 adding an alert using the query
 adding a job to schedule the alert
 */
 
-resource "databricks_sql_endpoint" "this" {
-  name             = "Migration endpoint"
-  cluster_size     = "Small"
-  max_num_clusters = 1
-  auto_stop_mins   = 60
-  warehouse_type   = "PRO"
-}
-
 # query for duplicates in silver.time_series
 resource "databricks_sql_query" "duplicates_time_series_silver" {
-  data_source_id = databricks_sql_endpoint.this.data_source_id
+  data_source_id = databricks_sql_endpoint.migration_sql_endpoint.data_source_id
   name           = "QCTS07-01_duplicates_in_time_series_silver"
   query          = <<EOT
     select * from
@@ -58,7 +49,7 @@ resource "databricks_job" "duplicates_time_series_silver" {
     task_key = "check"
 
     sql_task {
-      warehouse_id = databricks_sql_endpoint.this.id
+      warehouse_id = databricks_sql_endpoint.migration_sql_endpoint.id
       alert {
         alert_id = databricks_sql_alert.duplicates_time_series_silver.id
       }
@@ -68,7 +59,7 @@ resource "databricks_job" "duplicates_time_series_silver" {
 
 # query for duplicates in gold.time_series_points
 resource "databricks_sql_query" "duplicates_time_series_gold" {
-  data_source_id = databricks_sql_endpoint.this.data_source_id
+  data_source_id = databricks_sql_endpoint.migration_sql_endpoint.data_source_id
   name           = "QCTS15-02_duplicates_in_time_series_gold"
   query          = <<EOT
     select *
@@ -108,7 +99,7 @@ resource "databricks_job" "duplicates_time_series_gold" {
     task_key = "check"
 
     sql_task {
-      warehouse_id = databricks_sql_endpoint.this.id
+      warehouse_id = databricks_sql_endpoint.migration_sql_endpoint.id
       alert {
         alert_id = databricks_sql_alert.duplicates_time_series_gold.id
       }
@@ -118,7 +109,7 @@ resource "databricks_job" "duplicates_time_series_gold" {
 
 # query for duplicates in wholesale.time_series_points
 resource "databricks_sql_query" "duplicates_time_series_wholesale" {
-  data_source_id = databricks_sql_endpoint.this.data_source_id
+  data_source_id = databricks_sql_endpoint.migration_sql_endpoint.data_source_id
   name           = "QCTS23-01_duplicates_in_time_series_wholesale"
   query          = <<EOT
     select *
@@ -158,7 +149,7 @@ resource "databricks_job" "duplicates_time_series_wholesale" {
     task_key = "check"
 
     sql_task {
-      warehouse_id = databricks_sql_endpoint.this.id
+      warehouse_id = databricks_sql_endpoint.migration_sql_endpoint.id
       alert {
         alert_id = databricks_sql_alert.duplicates_time_series_wholesale.id
       }
@@ -168,7 +159,7 @@ resource "databricks_job" "duplicates_time_series_wholesale" {
 
 # query for duplicates in eloverblik.time_series_points
 resource "databricks_sql_query" "duplicates_time_series_eloverblik" {
-  data_source_id = databricks_sql_endpoint.this.data_source_id
+  data_source_id = databricks_sql_endpoint.migration_sql_endpoint.data_source_id
   name           = "QCTS31-01_duplicates_in_time_series_eloverblik"
   query          = <<EOT
   select * from (select ets.metering_point_id, ets.observation_time, ROW_NUMBER()
@@ -207,7 +198,7 @@ resource "databricks_job" "duplicates_time_series_eloverblik" {
     task_key = "check"
 
     sql_task {
-      warehouse_id = databricks_sql_endpoint.this.id
+      warehouse_id = databricks_sql_endpoint.migration_sql_endpoint.id
       alert {
         alert_id = databricks_sql_alert.duplicates_time_series_eloverblik.id
       }
@@ -217,7 +208,7 @@ resource "databricks_job" "duplicates_time_series_eloverblik" {
 
 # query for duplicates in gold.metering_points
 resource "databricks_sql_query" "duplicates_metering_points_gold" {
-  data_source_id = databricks_sql_endpoint.this.data_source_id
+  data_source_id = databricks_sql_endpoint.migration_sql_endpoint.data_source_id
   name           = "QCMP16-01_duplicates_in_metering_points_gold"
   query          = <<EOT
   select * from (select mp.metering_point_id, mp.valid_from_date, mp.valid_to_date, ROW_NUMBER()
@@ -256,7 +247,7 @@ resource "databricks_job" "duplicates_metering_points_gold" {
     task_key = "check"
 
     sql_task {
-      warehouse_id = databricks_sql_endpoint.this.id
+      warehouse_id = databricks_sql_endpoint.migration_sql_endpoint.id
       alert {
         alert_id = databricks_sql_alert.duplicates_metering_points_gold.id
       }
@@ -266,7 +257,7 @@ resource "databricks_job" "duplicates_metering_points_gold" {
 
 # query for duplicates in wholesale.metering_point_periods
 resource "databricks_sql_query" "duplicates_metering_point_periods_wholesale" {
-  data_source_id = databricks_sql_endpoint.this.data_source_id
+  data_source_id = databricks_sql_endpoint.migration_sql_endpoint.data_source_id
   name           = "QCMP24-01_duplicates_in_metering_point_periods_wholesale"
   query          = <<EOT
   select * from (select mp.metering_point_id, mp.from_date, mp.to_date, ROW_NUMBER()
@@ -305,7 +296,7 @@ resource "databricks_job" "duplicates_metering_point_periods_wholesale" {
     task_key = "check"
 
     sql_task {
-      warehouse_id = databricks_sql_endpoint.this.id
+      warehouse_id = databricks_sql_endpoint.migration_sql_endpoint.id
       alert {
         alert_id = databricks_sql_alert.duplicates_metering_point_periods_wholesale.id
       }
