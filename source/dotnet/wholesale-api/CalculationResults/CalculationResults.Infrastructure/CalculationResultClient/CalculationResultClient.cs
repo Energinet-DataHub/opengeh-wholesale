@@ -124,7 +124,7 @@ public class CalculationResultClient : ICalculationResultClient
             .Select(row => new TimeSeriesPoint(
                 DateTimeOffset.Parse(table[row, ResultColumnNames.Time]),
                 decimal.Parse(table[row, ResultColumnNames.Quantity], CultureInfo.InvariantCulture),
-                QuantityQualityMapper.FromDeltaTable(table[row, ResultColumnNames.QuantityQuality])))
+                QuantityQualityMapper.FromDeltaTableValue(table[row, ResultColumnNames.QuantityQuality])))
             .ToList();
 
         return new ProcessStepResult(timeSeriesType, pointsDto.ToArray());

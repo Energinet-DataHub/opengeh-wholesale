@@ -12,18 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using FluentAssertions;
+using Xunit;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
+namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.CalculationResultClient.Mappers;
 
-public static class SettlementMethodMapper
+public class QuantityQualityMapperTests
 {
-    public static SettlementMethod? FromDeltaTableValue(string timeSeriesType) =>
-        TimeSeriesTypeMapper.FromDeltaTableValue(timeSeriesType) switch
+    [Fact]
+    public void MapQuality_ReturnsMappedQuality()
+    {
+        // Arrange
+        foreach (var type in Enum.GetValues(typeof(QuantityQuality)))
         {
-            TimeSeriesType.Production => null,
-            TimeSeriesType.FlexConsumption => SettlementMethod.Flex,
-            TimeSeriesType.NonProfiledConsumption => SettlementMethod.NonProfiled,
-            _ => throw new NotImplementedException($"Cannot map timeSeriesType type '{timeSeriesType}"),
-        };
+            var expected = (QuantityQuality)type;
+            var input = expected.ToString().ToLower();
+
+            // Act & Assert
+            QuantityQualityMapper.FromDeltaTableValue(input).Should().Be(expected);
+        }
+    }
 }
