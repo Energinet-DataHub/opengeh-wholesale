@@ -16,12 +16,16 @@ using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
 using Energinet.DataHub.Wholesale.Application.Processes;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
+using Energinet.DataHub.Wholesale.Application.UseCases;
+using Energinet.DataHub.Wholesale.Application.UseCases.Mappers;
 using Energinet.DataHub.Wholesale.Application.Workers;
 using Energinet.DataHub.Wholesale.Contracts.Events;
+using Energinet.DataHub.Wholesale.Domain;
 using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Infrastructure.Integration;
 using Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,7 +44,13 @@ public static class IntegrationEventPublishingRegistration
     {
         serviceCollection.AddHostedService<DispatchIntegrationEventsWorker>();
         serviceCollection.AddHostedService<IntegrationEventsRetentionWorker>();
+        serviceCollection.AddHostedService<RegisterCompletedBatchesWorker>();
+        serviceCollection.AddHostedService<PublishCalculationResultsWorker>();
 
+        serviceCollection.AddScoped<IPublishCalculationResultsHandler, PublishCalculationResultsHandler>();
+        serviceCollection.AddScoped<ICompletedBatchRepository, CompletedBatchRepository>();
+        serviceCollection.AddScoped<ICompletedBatchMapper, CompletedBatchMapper>();
+        serviceCollection.AddScoped<IRegisterCompletedBatchesHandler, RegisterCompletedBatchesHandler>();
         serviceCollection.AddScoped<IOutboxMessageRepository, OutboxMessageRepository>();
         serviceCollection.AddScoped<IIntegrationEventCleanUpService, IntegrationEventCleanUpService>();
         serviceCollection.AddScoped<IIntegrationEventDispatcher, IntegrationEventDispatcher>();

@@ -37,6 +37,7 @@ public static class BatchesRegistration
         this IServiceCollection serviceCollection,
         Func<string> databaseConnectionStringProvider)
     {
+        serviceCollection.AddScoped<IBatchesClient, BatchesClient>();
         serviceCollection.AddScoped<IBatchExecutionStateDomainService, BatchExecutionStateDomainService>();
         serviceCollection.AddScoped<ICalculationDomainService, CalculationDomainService>();
         serviceCollection.AddScoped<IBatchFactory, BatchFactory>();
