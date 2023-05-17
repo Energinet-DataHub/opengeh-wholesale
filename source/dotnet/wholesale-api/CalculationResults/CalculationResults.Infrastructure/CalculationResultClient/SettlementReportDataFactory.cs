@@ -29,8 +29,8 @@ public static class SettlementReportDataFactory
                 ProcessType.FromDeltaTable(table[i, ResultColumnNames.BatchProcessType]),
                 InstantPattern.ExtendedIso.Parse(table[i, ResultColumnNames.Time]).Value,
                 "PT15M", // TODO: store resolution in delta table?
-                MeteringPointTypeMapper.FromDeltaTable(table[i, ResultColumnNames.TimeSeriesType]),
-                SettlementMethodMapper.FromDeltaTable(table[i, ResultColumnNames.TimeSeriesType]),
+                MeteringPointTypeMapper.FromDeltaTableValue(table[i, ResultColumnNames.TimeSeriesType]),
+                SettlementMethodMapper.FromDeltaTableValue(table[i, ResultColumnNames.TimeSeriesType]),
                 decimal.Parse(table[i, ResultColumnNames.Quantity])));
     }
 }
