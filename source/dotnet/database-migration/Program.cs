@@ -22,7 +22,7 @@ namespace Energinet.DataHub.Wholesale.DatabaseMigration
         {
             var connectionString =
                 args.FirstOrDefault()
-                ?? "Server=localhost;Database=Wholesale;Trusted_Connection=True;";
+                ?? "Server=localhost;Database=Wholesale;Trusted_Connection=True;Encrypt=No;";
 
             SqlAuthenticationProvider.SetProvider(SqlAuthenticationMethod.ActiveDirectoryInteractive, new SqlAppAuthenticationProvider());
 

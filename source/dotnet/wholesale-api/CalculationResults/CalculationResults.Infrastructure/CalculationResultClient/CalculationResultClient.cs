@@ -15,11 +15,13 @@
 using System.Globalization;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 // TODO BJM: Should we avoid referencing the DatabricksClient project "just" to get access to the DatabricksOptions?
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using Microsoft.Extensions.Options;
 using NodaTime;
+using ProcessType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
@@ -87,7 +89,7 @@ public class CalculationResultClient : ICalculationResultClient
             if (!response.IsSuccessStatusCode)
                 throw new Exception($"Unable to get calculation result from Databricks. Status code: {response.StatusCode}");
 
-            var jsonResponse = response.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             var databricksSqlResponse = _databricksSqlResponseParser.Parse(jsonResponse);
 
@@ -119,59 +121,25 @@ public class CalculationResultClient : ICalculationResultClient
 from wholesale_output.result
 where batch_id = '{batchId}'
   and grid_area = '{gridAreaCode}'
-  and time_series_type = '{ToDeltaValue(timeSeriesType)}'
-  and aggregation_level = '{GetAggregationLevelDeltaValue(timeSeriesType, energySupplierGln, balanceResponsiblePartyGln)}'
+  and time_series_type = '{TimeSeriesTypeMapper.ToDeltaTableValue(timeSeriesType)}'
+  and aggregation_level = '{AggregationLevelMapper.ToDeltaTableValue(timeSeriesType, energySupplierGln, balanceResponsiblePartyGln)}'
 order by time
 ";
-    }
-
-    // TODO: Unit test and move to mapper
-    private string GetAggregationLevelDeltaValue(TimeSeriesType timeSeriesType, string? energySupplierGln, string? balanceResponsiblePartyGln)
-    {
-        switch (timeSeriesType)
-        {
-            case TimeSeriesType.NonProfiledConsumption:
-            case TimeSeriesType.Production:
-            case TimeSeriesType.FlexConsumption:
-                if (energySupplierGln != null && balanceResponsiblePartyGln != null)
-                    return "es_brp_ga";
-                if (energySupplierGln != null)
-                    return "es_ga";
-                if (balanceResponsiblePartyGln != null)
-                    return "brp_ga";
-                return "total_ga";
-            default:
-                throw new NotImplementedException($"Mapping of '{timeSeriesType}' not implemented.");
-        }
-    }
-
-    // TODO: Unit test
-    private string ToDeltaValue(TimeSeriesType timeSeriesType)
-    {
-        switch (timeSeriesType)
-        {
-            case TimeSeriesType.NonProfiledConsumption:
-                return "non_profiled_consumption";
-            case TimeSeriesType.Production:
-                return "production";
-            case TimeSeriesType.FlexConsumption:
-                return "flex_consumption";
-            default:
-                throw new NotImplementedException($"Mapping of '{timeSeriesType}' not implemented.");
-        }
     }
 
     private static ProcessStepResult CreateProcessStepResult(
         TimeSeriesType timeSeriesType,
         DatabricksSqlResponse databricksSqlResponse)
     {
-        var pointsDto = databricksSqlResponse.Rows.Select(
-                res => new TimeSeriesPoint(
-                    DateTimeOffset.Parse(res[0]),
-                    decimal.Parse(res[1], CultureInfo.InvariantCulture),
-                    QuantityQualityMapper.MapQuality(res[2])))
-            .ToArray();
+        var table = databricksSqlResponse.Table;
 
-        return new ProcessStepResult(timeSeriesType, pointsDto);
+        var pointsDto = Enumerable.Range(0, databricksSqlResponse.Table.Count)
+            .Select(row => new TimeSeriesPoint(
+                DateTimeOffset.Parse(table[row, ResultColumnNames.Time]),
+                decimal.Parse(table[row, ResultColumnNames.Quantity], CultureInfo.InvariantCulture),
+                QuantityQualityMapper.FromDeltaTableValue(table[row, ResultColumnNames.QuantityQuality])))
+            .ToList();
+
+        return new ProcessStepResult(timeSeriesType, pointsDto.ToArray());
     }
 }
