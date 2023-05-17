@@ -22,6 +22,8 @@ namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local", Justification = "Private setters are needed by EF Core")]
 public class DatabaseContext : DbContext, IDatabaseContext
 {
+    private const string Schema = "batches";
+
     public DatabaseContext(DbContextOptions<DatabaseContext> options)
         : base(options)
     {
@@ -38,6 +40,7 @@ public class DatabaseContext : DbContext, IDatabaseContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.HasDefaultSchema(Schema);
         modelBuilder.ApplyConfiguration(new BatchEntityConfiguration());
         base.OnModelCreating(modelBuilder);
     }

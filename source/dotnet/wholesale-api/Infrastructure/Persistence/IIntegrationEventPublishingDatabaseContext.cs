@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +20,8 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 
 public interface IIntegrationEventPublishingDatabaseContext
 {
+    DbSet<CompletedBatch> CompletedBatches { get; }
+
     DbSet<OutboxMessage> OutboxMessages { get; }
 
     /// <summary>
