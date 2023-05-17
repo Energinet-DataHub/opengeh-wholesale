@@ -53,10 +53,10 @@ public static class Program
                 builder.UseMiddleware<FunctionTelemetryScopeMiddleware>();
                 builder.UseMiddleware<IntegrationEventMetadataMiddleware>();
             })
-            .ConfigureServices(Modules)
-            .ConfigureServices(Middlewares)
-            .ConfigureServices(Infrastructure)
-            .ConfigureServices(DateTime)
+            // .ConfigureServices(Modules)
+            // .ConfigureServices(Middlewares)
+            // .ConfigureServices(Infrastructure)
+            // .ConfigureServices(DateTime)
             .ConfigureServices(HealthCheck);
     }
 
@@ -144,44 +144,43 @@ public static class Program
         serviceCollection.AddScoped<IHealthCheckEndpointHandler, HealthCheckEndpointHandler>();
         serviceCollection.AddScoped<HealthCheckEndpoint>();
 
-        var serviceBusConnectionString =
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusManageConnectionString);
-        var domainEventsTopicName =
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
-        var batchCompletedSubscriptionPublishProcessesCompleted =
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName);
-        var batchCompletedSubscriptionZipBasisData =
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CreateSettlementReportsWhenCompletedBatchSubscriptionName);
-        var integrationEventsTopicName =
-            EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
-
+        // var serviceBusConnectionString =
+        //     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.ServiceBusManageConnectionString);
+        // var domainEventsTopicName =
+        //     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
+        // var batchCompletedSubscriptionPublishProcessesCompleted =
+        //     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.PublishProcessesCompletedWhenCompletedBatchSubscriptionName);
+        // var batchCompletedSubscriptionZipBasisData =
+        //     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CreateSettlementReportsWhenCompletedBatchSubscriptionName);
+        // var integrationEventsTopicName =
+        //     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DomainEventsTopicName);
         serviceCollection
             .AddHealthChecks()
-            .AddLiveCheck()
-            .AddDbContextCheck<IntegrationEventPublishingDatabaseContext>(name: "SqlDatabaseContextCheck")
-            .AddAzureServiceBusTopic(
-                connectionString: serviceBusConnectionString,
-                topicName: domainEventsTopicName,
-                name: "DomainEventsTopicExists")
-            .AddAzureServiceBusSubscription(
-                connectionString: serviceBusConnectionString,
-                topicName: domainEventsTopicName,
-                subscriptionName: batchCompletedSubscriptionPublishProcessesCompleted,
-                name: "BatchCompletedSubscriptionPublishProcessesCompleted")
-            .AddAzureServiceBusSubscription(
-                connectionString: serviceBusConnectionString,
-                topicName: domainEventsTopicName,
-                subscriptionName: batchCompletedSubscriptionZipBasisData,
-                name: "BatchCompletedSubscriptionZipBasisData")
-            .AddDatabricksCheck(
-                EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl),
-                EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceToken))
-            .AddDataLakeContainerCheck(
-                EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageAccountUri),
-                EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName))
-            .AddAzureServiceBusTopic(
-                connectionString: serviceBusConnectionString,
-                topicName: integrationEventsTopicName,
-                name: "IntegrationEventsTopicExists");
+            .AddLiveCheck();
+        // .AddDbContextCheck<IntegrationEventPublishingDatabaseContext>(name: "SqlDatabaseContextCheck")
+        // .AddAzureServiceBusTopic(
+        //     connectionString: serviceBusConnectionString,
+        //     topicName: domainEventsTopicName,
+        //     name: "DomainEventsTopicExists")
+        // .AddAzureServiceBusSubscription(
+        //     connectionString: serviceBusConnectionString,
+        //     topicName: domainEventsTopicName,
+        //     subscriptionName: batchCompletedSubscriptionPublishProcessesCompleted,
+        //     name: "BatchCompletedSubscriptionPublishProcessesCompleted")
+        // .AddAzureServiceBusSubscription(
+        //     connectionString: serviceBusConnectionString,
+        //     topicName: domainEventsTopicName,
+        //     subscriptionName: batchCompletedSubscriptionZipBasisData,
+        //     name: "BatchCompletedSubscriptionZipBasisData")
+        // .AddDatabricksCheck(
+        //     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceUrl),
+        //     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.DatabricksWorkspaceToken))
+        // .AddDataLakeContainerCheck(
+        //     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageAccountUri),
+        //     EnvironmentVariableHelper.GetEnvVariable(EnvironmentSettingNames.CalculationStorageContainerName))
+        // .AddAzureServiceBusTopic(
+        //     connectionString: serviceBusConnectionString,
+        //     topicName: integrationEventsTopicName,
+        //     name: "IntegrationEventsTopicExists");
     }
 }
