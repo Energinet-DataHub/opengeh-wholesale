@@ -35,8 +35,9 @@ public static class SqlStatementFactory
         var startTimeString = periodStart.ToString();
         var endTimeString = periodEnd.ToString();
 
+        // TODO (JGM): use string builder?
         return
-            $@"SELECT {selectColumns} FROM wholesale_output.result WHERE {ResultColumnNames.GridArea} IN ({gridAreas}) AND {ResultColumnNames.TimeSeriesType} IN ({timeSeriesTypes}) AND {ResultColumnNames.BatchProcessType} = '{processTypeString}' AND {ResultColumnNames.Time} BETWEEN '{startTimeString}' AND '{endTimeString}' order by time";
+            $@"SELECT {selectColumns} FROM wholesale_output.result WHERE {ResultColumnNames.GridArea} IN ({gridAreas}) AND {ResultColumnNames.TimeSeriesType} IN ({timeSeriesTypes}) AND {ResultColumnNames.BatchProcessType} = '{processTypeString}' AND {ResultColumnNames.Time} BETWEEN '{startTimeString}' AND '{endTimeString}' AND aggregation_level = 'total_ga' order by time";
     }
 
     private static IEnumerable<string> GetTimeSeriesTypesForSettlementReport()
