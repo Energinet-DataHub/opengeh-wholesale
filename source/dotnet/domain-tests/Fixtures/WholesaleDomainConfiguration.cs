@@ -47,12 +47,12 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         public Uri WebApiBaseAddress { get; }
 
         /// <summary>
-        /// TODO: Add documentation
+        /// Fully qualified namespace for the service bus used for domain relay.
         /// </summary>
         public string ServiceBusFullyQualifiedNamespace { get; }
 
         /// <summary>
-        /// TODO: Add documentation
+        /// Connection string for the service bus used for domain relay.
         /// </summary>
         public string ServiceBusConnectionString { get; }
 
