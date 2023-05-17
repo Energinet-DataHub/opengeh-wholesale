@@ -12,3 +12,6 @@ GO
 -- The exact time isn't important as this will only affect development and test environments.
 delete from batches.Batch
 where executiontimestart < DATEADD(day, -50, GETDATE())
+GO
+delete from integrationevents.CompletedBatch
+where executiontimestart < DATEADD(day, -50, GETDATE())
