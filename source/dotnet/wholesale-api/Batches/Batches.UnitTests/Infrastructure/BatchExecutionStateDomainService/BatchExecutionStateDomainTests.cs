@@ -17,7 +17,6 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationDomainService;
 using Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchAggregate;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using FluentAssertions;
 using Moq;
 using NodaTime;
@@ -129,11 +128,10 @@ public class BatchExecutionStateDomainServiceTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task UpdateExecutionState_WhenCompleting_PublishedEvent(
+    public async Task UpdateExecutionState_WhenCompleting_CompletedBatch(
         [Frozen] Mock<IClock> clockMock,
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationDomainService> calculatorJobRunnerMock,
-        [Frozen] Mock<IDomainEventPublisher> batchCompletedPublisherMock,
         Batches.Infrastructure.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
     {
         // Arrange
@@ -151,10 +149,7 @@ public class BatchExecutionStateDomainServiceTests
         await sut.UpdateExecutionStateAsync();
 
         // Assert
-        batchCompletedPublisherMock
-            .Verify(
-                publisher => publisher.PublishAsync(It.Is<List<BatchCompletedEventDto>>(events => events.Single().BatchId == batch2.Id)),
-                Times.Once);
+        batch2.ExecutionState.Should().Be(BatchExecutionState.Completed);
     }
 
     [Theory]
@@ -163,7 +158,6 @@ public class BatchExecutionStateDomainServiceTests
         [Frozen] Mock<IClock> clockMock,
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationDomainService> calculatorJobRunnerMock,
-        [Frozen] Mock<IDomainEventPublisher> batchCompletedPublisherMock,
         Batches.Infrastructure.BatchExecutionStateDomainService.BatchExecutionStateDomainService sut)
     {
         // Arrange
@@ -186,10 +180,8 @@ public class BatchExecutionStateDomainServiceTests
         await sut.UpdateExecutionStateAsync();
 
         // Assert: Events was published for batch1 and batch3, but not for batch2
-        batchCompletedPublisherMock
-            .Verify(
-                publisher => publisher.PublishAsync(It.Is<IList<BatchCompletedEventDto>>(
-                    events => events.Any(e => e.BatchId == batch1.Id) && events.Any(e => e.BatchId == batch3.Id) && events.All(e => e.BatchId != batch2.Id))),
-                Times.Once);
+        batch1.ExecutionState.Should().Be(BatchExecutionState.Completed);
+        batch2.ExecutionState.Should().Be(BatchExecutionState.Submitted);
+        batch3.ExecutionState.Should().Be(BatchExecutionState.Completed);
     }
 }

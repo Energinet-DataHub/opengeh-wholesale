@@ -21,17 +21,13 @@ using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
-using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
-using IUnitOfWork = Energinet.DataHub.Wholesale.Application.IUnitOfWork;
 using ProcessTypeMapper = Energinet.DataHub.Wholesale.Application.Processes.Model.ProcessTypeMapper;
-using UnitOfWork = Energinet.DataHub.Wholesale.Infrastructure.Persistence.UnitOfWork;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 
@@ -65,11 +61,9 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddScoped<ICorrelationContext, CorrelationContext>();
         serviceCollection.AddScoped<IJsonSerializer, JsonSerializer>();
         serviceCollection.AddScoped<IProcessStepResultFactory, ProcessStepResultFactory>();
-        serviceCollection.AddScoped<IProcessCompletedEventDtoFactory, ProcessCompletedEventDtoFactory>();
 
         serviceCollection.AddSingleton<IDatabricksWheelClient, DatabricksWheelClient>();
 
-        serviceCollection.AddDomainEventPublisher(configuration);
         serviceCollection.AddDateTimeConfiguration(configuration);
         serviceCollection.AddDataLakeFileSystemClient(configuration);
     }
@@ -84,8 +78,8 @@ internal static class ServiceCollectionExtensions
             .AddDataLakeContainerCheck(dataLakeOptions.STORAGE_ACCOUNT_URI, dataLakeOptions.STORAGE_CONTAINER_NAME)
             .AddAzureServiceBusTopic(
                 serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
-                serviceBusOptions.DOMAIN_EVENTS_TOPIC_NAME,
-                name: "DomainEventsTopicExists");
+                serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
+                name: "IntegrationEventsTopicExists");
     }
 
     /// <summary>
@@ -103,17 +97,6 @@ internal static class ServiceCollectionExtensions
             correlationContext.SetId(Guid.NewGuid().ToString());
             return correlationContext;
         });
-    }
-
-    private static void AddDomainEventPublisher(this IServiceCollection serviceCollection, IConfiguration configuration)
-    {
-        var options = configuration.Get<ServiceBusOptions>()!;
-        var messageTypes = new Dictionary<Type, string>
-        {
-            { typeof(BatchCompletedEventDto), options.BATCH_COMPLETED_EVENT_NAME },
-            { typeof(ProcessCompletedEventDto), options.PROCESS_COMPLETED_EVENT_NAME },
-        };
-        serviceCollection.AddDomainEventPublisher(options.SERVICE_BUS_SEND_CONNECTION_STRING, options.DOMAIN_EVENTS_TOPIC_NAME, new MessageTypeDictionary(messageTypes));
     }
 
     private static void AddDataLakeFileSystemClient(this IServiceCollection serviceCollection, IConfiguration configuration)

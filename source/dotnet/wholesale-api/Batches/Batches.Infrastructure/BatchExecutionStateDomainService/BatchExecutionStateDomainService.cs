@@ -14,8 +14,6 @@
 
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationDomainService;
-using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 
@@ -26,21 +24,18 @@ public class BatchExecutionStateDomainService : IBatchExecutionStateDomainServic
     private readonly IBatchRepository _batchRepository;
     private readonly ICalculationDomainService _calculationDomainService;
     private readonly IClock _clock;
-    private readonly IDomainEventPublisher _domainEventPublisher;
     private readonly ILogger _logger;
 
     public BatchExecutionStateDomainService(
         IBatchRepository batchRepository,
         ICalculationDomainService calculationDomainService,
         ILogger<BatchExecutionStateDomainService> logger,
-        IClock clock,
-        IDomainEventPublisher domainEventPublisher)
+        IClock clock)
     {
         _batchRepository = batchRepository;
         _calculationDomainService = calculationDomainService;
         _logger = logger;
         _clock = clock;
-        _domainEventPublisher = domainEventPublisher;
     }
 
     /// <summary>
@@ -73,25 +68,6 @@ public class BatchExecutionStateDomainService : IBatchExecutionStateDomainServic
             {
                 _logger.LogError(e, "Exception caught while trying to update execution state for run ID {BatchRunId}", batch.CalculationId);
             }
-        }
-
-        var batchCompletedEvents = completedBatches
-            .Select(b => new BatchCompletedEventDto(b.Id, b.GridAreaCodes.Select(c => c.Code).ToList(), SwitchProcessType(b.ProcessType), b.PeriodStart, b.PeriodEnd))
-            .ToList();
-        await _domainEventPublisher.PublishAsync(batchCompletedEvents).ConfigureAwait(false);
-    }
-
-    // This is a temporary solution until we cut ties with the old domain stack and use the IntegrationEventPublisher module.
-    private Domain.ProcessAggregate.ProcessType SwitchProcessType(ProcessType processType)
-    {
-        switch (processType)
-        {
-            case ProcessType.BalanceFixing:
-                return Domain.ProcessAggregate.ProcessType.BalanceFixing;
-            case ProcessType.Aggregation:
-                return Domain.ProcessAggregate.ProcessType.Aggregation;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(processType), processType, null);
         }
     }
 
