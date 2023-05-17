@@ -4,7 +4,6 @@ resource "databricks_sql_endpoint" "this" {
   cluster_size = "Small"
   max_num_clusters = 1
   auto_stop_mins = 120
-  enable_serverless_compute = true
   warehouse_type = "PRO"
   # Enable preview as the statement API is currently in public preview
   channel {
