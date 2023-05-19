@@ -11,10 +11,10 @@ resource "databricks_sql_query" "duplicates_time_series_silver" {
   data_source_id = databricks_sql_endpoint.migration_sql_endpoint.data_source_id
   name           = "QCTS07-01_duplicates_in_time_series_silver"
   query          = <<EOT
-    select * from
+    select count(*) as duplicates from
     (select ts.metering_point_id, ts.transaction_id, ts.transaction_insert_date, ts.historical_flag, ts.valid_from_date, ts.valid_to_date, ROW_NUMBER()
-    OVER (PARTITION BY ts.metering_point_id, ts.transaction_id, ts.transaction_insert_date, ts.historical_flag, ts.valid_from_date, ts.valid_to_date ORDER BY ts.metering_point_id DESC, ts.valid_from_date DESC) as rownumber
-    from silver.time_series as ts) as withRownumber
+      OVER (PARTITION BY ts.metering_point_id, ts.transaction_id, ts.transaction_insert_date, ts.historical_flag, ts.valid_from_date, ts.valid_to_date ORDER BY ts.metering_point_id DESC, ts.valid_from_date DESC) as rownumber
+      from silver.time_series as ts) as withRownumber
     where withRownumber.rownumber > 1
   EOT
 }
@@ -25,7 +25,7 @@ resource "databricks_sql_alert" "duplicates_time_series_silver" {
   query_id = databricks_sql_query.duplicates_time_series_silver.id
   rearm    = 1
   options {
-    column = "rownumber"
+    column = "duplicates"
     op     = "!="
     value  = "0"
     muted  = false
@@ -62,9 +62,10 @@ resource "databricks_sql_query" "duplicates_time_series_gold" {
   data_source_id = databricks_sql_endpoint.migration_sql_endpoint.data_source_id
   name           = "QCTS15-02_duplicates_in_time_series_gold"
   query          = <<EOT
-    select *
+    select count(*) as duplicates
     from (select ts.metering_point_id, ts.observation_time, ROW_NUMBER()
-    OVER (PARTITION BY ts.metering_point_id, ts.observation_time ORDER BY ts.metering_point_id DESC, ts.observation_time DESC) as rownumber from gold.time_series_points as ts) as withRownumber
+      OVER (PARTITION BY ts.metering_point_id, ts.observation_time ORDER BY ts.metering_point_id DESC, ts.observation_time DESC) as rownumber
+      from gold.time_series_points as ts) as withRownumber
     where withRownumber.rownumber > 1
   EOT
 }
@@ -75,7 +76,7 @@ resource "databricks_sql_alert" "duplicates_time_series_gold" {
   query_id = databricks_sql_query.duplicates_time_series_gold.id
   rearm    = 1
   options {
-    column = "rownumber"
+    column = "duplicates"
     op     = "!="
     value  = "0"
     muted  = false
@@ -112,9 +113,10 @@ resource "databricks_sql_query" "duplicates_time_series_wholesale" {
   data_source_id = databricks_sql_endpoint.migration_sql_endpoint.data_source_id
   name           = "QCTS23-01_duplicates_in_time_series_wholesale"
   query          = <<EOT
-    select *
+    select count(*) as duplicates
     from (select ts.metering_point_id, ts.observation_time, ROW_NUMBER()
-    OVER (PARTITION BY ts.metering_point_id, ts.observation_time ORDER BY ts.metering_point_id DESC, ts.observation_time DESC) as rownumber from wholesale.time_series_points as ts) as withRownumber
+      OVER (PARTITION BY ts.metering_point_id, ts.observation_time ORDER BY ts.metering_point_id DESC, ts.observation_time DESC) as rownumber
+      from wholesale.time_series_points as ts) as withRownumber
     where withRownumber.rownumber > 1
   EOT
 }
@@ -125,7 +127,7 @@ resource "databricks_sql_alert" "duplicates_time_series_wholesale" {
   query_id = databricks_sql_query.duplicates_time_series_wholesale.id
   rearm    = 1
   options {
-    column = "rownumber"
+    column = "duplicates"
     op     = "!="
     value  = "0"
     muted  = false
@@ -162,9 +164,11 @@ resource "databricks_sql_query" "duplicates_time_series_eloverblik" {
   data_source_id = databricks_sql_endpoint.migration_sql_endpoint.data_source_id
   name           = "QCTS31-01_duplicates_in_time_series_eloverblik"
   query          = <<EOT
-  select * from (select ets.metering_point_id, ets.observation_time, ROW_NUMBER()
-  OVER (PARTITION BY ets.metering_point_id, ets.observation_time ORDER BY ets.metering_point_id DESC, ets.observation_time DESC) as rownumber
-  from eloverblik.eloverblik_time_series_points as ets) as withRownumber where withRownumber.rownumber > 1
+  select count(*) as duplicates
+  from (select ets.metering_point_id, ets.observation_time, ROW_NUMBER()
+    OVER (PARTITION BY ets.metering_point_id, ets.observation_time ORDER BY ets.metering_point_id DESC, ets.observation_time DESC) as rownumber
+    from eloverblik.eloverblik_time_series_points as ets) as withRownumber
+  where withRownumber.rownumber > 1
   EOT
 }
 
@@ -174,7 +178,7 @@ resource "databricks_sql_alert" "duplicates_time_series_eloverblik" {
   query_id = databricks_sql_query.duplicates_time_series_eloverblik.id
   rearm    = 1
   options {
-    column = "rownumber"
+    column = "duplicates"
     op     = "!="
     value  = "0"
     muted  = false
@@ -211,9 +215,11 @@ resource "databricks_sql_query" "duplicates_metering_points_gold" {
   data_source_id = databricks_sql_endpoint.migration_sql_endpoint.data_source_id
   name           = "QCMP16-01_duplicates_in_metering_points_gold"
   query          = <<EOT
-  select * from (select mp.metering_point_id, mp.valid_from_date, mp.valid_to_date, ROW_NUMBER()
+  select count(*) as duplicates
+  from (select mp.metering_point_id, mp.valid_from_date, mp.valid_to_date, ROW_NUMBER()
     OVER (PARTITION BY mp.metering_point_id, mp.valid_from_date, mp.valid_to_date ORDER BY mp.metering_point_id DESC, mp.valid_from_date DESC, mp.valid_to_date DESC) as rownumber
-  from gold.metering_points as mp) as withRownumber where withRownumber.rownumber > 1
+    from gold.metering_points as mp) as withRownumber
+  where withRownumber.rownumber > 1
   EOT
 }
 
@@ -223,7 +229,7 @@ resource "databricks_sql_alert" "duplicates_metering_points_gold" {
   query_id = databricks_sql_query.duplicates_metering_points_gold.id
   rearm    = 1
   options {
-    column = "rownumber"
+    column = "duplicates"
     op     = "!="
     value  = "0"
     muted  = false
@@ -260,9 +266,11 @@ resource "databricks_sql_query" "duplicates_metering_point_periods_wholesale" {
   data_source_id = databricks_sql_endpoint.migration_sql_endpoint.data_source_id
   name           = "QCMP24-01_duplicates_in_metering_point_periods_wholesale"
   query          = <<EOT
-  select * from (select mp.metering_point_id, mp.from_date, mp.to_date, ROW_NUMBER()
+  select count(*) as duplicates
+  from (select mp.metering_point_id, mp.from_date, mp.to_date, ROW_NUMBER()
     OVER (PARTITION BY mp.metering_point_id, mp.from_date, mp.to_date ORDER BY mp.metering_point_id DESC, mp.from_date DESC, mp.to_date DESC) as rownumber
-  from wholesale.metering_point_periods as mp) as withRownumber where withRownumber.rownumber > 1
+    from wholesale.metering_point_periods as mp) as withRownumber
+    where withRownumber.rownumber > 1
   EOT
 }
 
@@ -272,7 +280,7 @@ resource "databricks_sql_alert" "duplicates_metering_point_periods_wholesale" {
   query_id = databricks_sql_query.duplicates_metering_point_periods_wholesale.id
   rearm    = 1
   options {
-    column = "rownumber"
+    column = "duplicates"
     op     = "!="
     value  = "0"
     muted  = false
