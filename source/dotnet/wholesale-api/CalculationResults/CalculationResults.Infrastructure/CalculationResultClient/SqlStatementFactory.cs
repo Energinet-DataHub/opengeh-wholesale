@@ -56,7 +56,7 @@ public static class SqlStatementFactory
             TimeSeriesTypeMapper.ToDeltaTableValue(TimeSeriesType.Production),
             TimeSeriesTypeMapper.ToDeltaTableValue(TimeSeriesType.FlexConsumption),
             TimeSeriesTypeMapper.ToDeltaTableValue(TimeSeriesType.NonProfiledConsumption),
-            TimeSeriesTypeMapper.ToDeltaTableValue(TimeSeriesType.ExchangePerGridArea),
+            TimeSeriesTypeMapper.ToDeltaTableValue(TimeSeriesType.NetExchangePerGridArea),
         };
     }
 }
