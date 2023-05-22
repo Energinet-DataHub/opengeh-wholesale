@@ -25,9 +25,9 @@ public class Table
         _rows = rows.ToList();
     }
 
-    public string this[int rowIndex, string columnName] => _rows[rowIndex][_columnIndex[columnName]];
+    public string this[Index rowIndex, string columnName] => _rows[rowIndex][_columnIndex[columnName]];
 
-    public IEnumerable<string> this[int rowIndex] => _rows[rowIndex];
+    public IEnumerable<string> this[Index rowIndex] => _rows[rowIndex];
 
-    public int Count => _rows.Count;
+    public int RowCount => _rows.Count;
 }
