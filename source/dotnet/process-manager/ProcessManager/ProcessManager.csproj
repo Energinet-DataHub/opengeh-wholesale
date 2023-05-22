@@ -58,15 +58,4 @@ limitations under the License.
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
     </ItemGroup>
-    <ItemGroup>
-      <Compile Include="..\..\wholesale-api\WebApi\Configuration\BatchesRegistration.cs">
-        <Link>Configuration\BatchesRegistration.cs</Link>
-      </Compile>
-      <Compile Include="..\..\wholesale-api\WebApi\Configuration\CalculationResultsRegistration.cs">
-        <Link>Configuration\CalculationResultsRegistration.cs</Link>
-      </Compile>
-      <Compile Include="..\..\wholesale-api\WebApi\Configuration\IntegrationEventPublishingRegistration.cs">
-        <Link>Configuration\IntegrationEventPublishingRegistration.cs</Link>
-      </Compile>
-    </ItemGroup>
 </Project>

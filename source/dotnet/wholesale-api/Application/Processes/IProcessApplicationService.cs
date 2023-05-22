@@ -13,14 +13,11 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.Processes;
 
 public interface IProcessApplicationService
 {
-    Task PublishProcessCompletedEventsAsync(BatchCompletedEventDto batchCompletedEvent);
-
     /// <summary>
     /// Publish a calculation ready result event for each result in a grid area.
     /// </summary>

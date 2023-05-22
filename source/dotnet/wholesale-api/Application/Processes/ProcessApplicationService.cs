@@ -16,14 +16,11 @@ using Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
 using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 
 namespace Energinet.DataHub.Wholesale.Application.Processes;
 
 public class ProcessApplicationService : IProcessApplicationService
 {
-    private readonly IProcessCompletedEventDtoFactory _processCompletedEventDtoFactory;
-    private readonly IDomainEventPublisher _domainEventPublisher;
     private readonly IProcessStepResultRepository _processStepResultRepository;
     private readonly IActorRepository _actorRepository;
     private readonly ICalculationResultCompletedFactory _calculationResultCompletedFactory;
@@ -31,27 +28,17 @@ public class ProcessApplicationService : IProcessApplicationService
     private readonly IUnitOfWork _unitOfWork;
 
     public ProcessApplicationService(
-        IProcessCompletedEventDtoFactory processCompletedEventDtoFactory,
-        IDomainEventPublisher domainEventPublisher,
         IProcessStepResultRepository processStepResultRepository,
         IActorRepository actorRepository,
         ICalculationResultCompletedFactory integrationEventFactory,
         IIntegrationEventPublisher integrationEventPublisher,
         IUnitOfWork unitOfWork)
     {
-        _processCompletedEventDtoFactory = processCompletedEventDtoFactory;
-        _domainEventPublisher = domainEventPublisher;
         _processStepResultRepository = processStepResultRepository;
         _actorRepository = actorRepository;
         _calculationResultCompletedFactory = integrationEventFactory;
         _integrationEventPublisher = integrationEventPublisher;
         _unitOfWork = unitOfWork;
-    }
-
-    public async Task PublishProcessCompletedEventsAsync(BatchCompletedEventDto batchCompletedEvent)
-    {
-        var processCompletedEvents = _processCompletedEventDtoFactory.CreateFromBatchCompletedEvent(batchCompletedEvent);
-        await _domainEventPublisher.PublishAsync(processCompletedEvents).ConfigureAwait(false);
     }
 
     public async Task PublishCalculationResultCompletedIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEvent)

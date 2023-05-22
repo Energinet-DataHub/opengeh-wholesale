@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.Wholesale.Domain.BatchAggregate;
 using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -21,25 +20,6 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddDomainEventPublisher(
-        this IServiceCollection serviceCollection,
-        string serviceBusConnectionString,
-        string topicName,
-        MessageTypeDictionary messageTypes)
-    {
-        ServiceBusClientAndAndMessageFactoryRegistry(serviceCollection, serviceBusConnectionString, messageTypes);
-
-        serviceCollection.AddScoped<IDomainEventPublisher, DomainEventPublisher>();
-        serviceCollection.AddSingleton<IDomainEventTopicServiceBusSender>(provider =>
-        {
-            var client = provider.GetRequiredService<ServiceBusClient>();
-            var sender = client.CreateSender(topicName);
-            return new DomainEventTopicServiceBusSender(sender);
-        });
-
-        return serviceCollection;
-    }
-
     public static IServiceCollection AddIntegrationEventPublisher(
         this IServiceCollection serviceCollection,
         string serviceBusConnectionString,

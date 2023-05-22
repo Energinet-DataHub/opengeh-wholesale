@@ -69,8 +69,6 @@ public sealed class WebApiIntegrationTestHost : IDisposable
         Environment.SetEnvironmentVariable(nameof(DataLakeOptions.STORAGE_CONTAINER_NAME), anyValue);
         Environment.SetEnvironmentVariable(nameof(ServiceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING), anyServiceBusConnectionString);
         Environment.SetEnvironmentVariable(nameof(ServiceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING), anyServiceBusConnectionString);
-        Environment.SetEnvironmentVariable(nameof(ServiceBusOptions.BATCH_CREATED_EVENT_NAME), "batch-created");
-        Environment.SetEnvironmentVariable(nameof(ServiceBusOptions.DOMAIN_EVENTS_TOPIC_NAME), anyValue);
         Environment.SetEnvironmentVariable(nameof(DateTimeOptions.TIME_ZONE), "Europe/Copenhagen");
         Environment.SetEnvironmentVariable(nameof(DatabricksOptions.DATABRICKS_WORKSPACE_URL), "http://localhost/");
         Environment.SetEnvironmentVariable(nameof(DatabricksOptions.DATABRICKS_WORKSPACE_TOKEN), "no_token");
