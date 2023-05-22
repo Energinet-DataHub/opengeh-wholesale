@@ -1,0 +1,77 @@
+﻿// Copyright 2020 Energinet DataHub A/S
+//
+// Licensed under the Apache License, Version 2.0 (the "License2");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using System.IO.Compression;
+using System.Text;
+using AutoFixture.Xunit2;
+using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.Batches.Interfaces;
+using Energinet.DataHub.Wholesale.CalculationResults.Application;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using Moq;
+using Xunit;
+using Xunit.Categories;
+
+namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SettlementReport;
+
+[UnitTest]
+public class SettlementReportApplicationServiceTests
+{
+    [Theory]
+    [AutoMoqData]
+    public static async Task CreateCompressedSettlementReportAsync_GivenRows_CreatesValidZipArchive(
+        [Frozen] Mock<IBatchApplicationService> batchApplicationServiceMock,
+        [Frozen] Mock<ISettlementReportResultsCsvWriter> settlementReportResultsCsvWriterMock,
+        [Frozen] Mock<ISettlementReportRepository> settlementReportRepositoryMock,
+        [Frozen] Mock<ICalculationResultClient> calculationResultClientMock)
+    {
+        // Arrange
+        await using var memoryStream = new MemoryStream();
+        var sut = new SettlementReportApplicationService(
+            batchApplicationServiceMock.Object,
+            calculationResultClientMock.Object,
+            settlementReportResultsCsvWriterMock.Object,
+            settlementReportRepositoryMock.Object);
+
+        const string fileContent = "Unit Test File Contents";
+
+        settlementReportResultsCsvWriterMock
+            .Setup(x => x.WriteAsync(It.IsAny<Stream>(), It.IsAny<IEnumerable<SettlementReportResultRow>>()))
+            .Returns<Stream, IEnumerable<SettlementReportResultRow>>((stream, _) =>
+            {
+                using var textWriter = new StreamWriter(stream, Encoding.UTF8);
+                return textWriter.WriteAsync(fileContent);
+            });
+
+        // Act
+        await sut.CreateCompressedSettlementReportAsync(
+            memoryStream,
+            new[] { "500" },
+            ProcessType.BalanceFixing,
+            DateTimeOffset.MinValue,
+            DateTimeOffset.MaxValue,
+            null);
+
+        // Assert
+        memoryStream.Position = 0;
+
+        using var archive = new ZipArchive(memoryStream, ZipArchiveMode.Read);
+        Assert.Single(archive.Entries);
+        Assert.Equal("Results.csv", archive.Entries[0].Name);
+
+        using var streamReader = new StreamReader(archive.Entries[0].Open());
+        var contents = await streamReader.ReadToEndAsync();
+        Assert.Equal(fileContent, contents);
+    }
+}

@@ -66,7 +66,7 @@ public class SettlementReportApplicationService : ISettlementReportApplicationSe
                 energySupplier)
             .ConfigureAwait(false);
 
-        using var archive = new ZipArchive(destination, ZipArchiveMode.Create);
+        using var archive = new ZipArchive(destination, ZipArchiveMode.Create, true);
 
         var zipArchiveEntry = archive.CreateEntry("Results.csv");
         var zipEntryStream = zipArchiveEntry.Open();

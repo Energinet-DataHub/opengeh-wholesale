@@ -26,7 +26,7 @@ public sealed class SettlementReportResultsCsvWriter : ISettlementReportResultsC
 
     public async Task WriteAsync(Stream destination, IEnumerable<SettlementReportResultRow> rows)
     {
-        var writer = new StreamWriter(destination);
+        var writer = new StreamWriter(destination, leaveOpen: true);
 
         await using (writer.ConfigureAwait(false))
         {
@@ -95,8 +95,9 @@ public sealed class SettlementReportResultsCsvWriter : ISettlementReportResultsC
         {
             return row.Value.SettlementMethod switch
             {
-                SettlementMethod.Flex => "E02",
+                null => string.Empty,
                 SettlementMethod.NonProfiled => string.Empty,
+                SettlementMethod.Flex => "E02",
                 _ => throw new ArgumentOutOfRangeException(nameof(row)),
             };
         }
