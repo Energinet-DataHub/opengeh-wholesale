@@ -19,5 +19,5 @@ public enum TimeSeriesType
     NonProfiledConsumption = 1,
     FlexConsumption = 2,
     Production = 3,
-    ExchangePerGridArea = 4,
+    NetExchangePerGridArea = 4,
 }

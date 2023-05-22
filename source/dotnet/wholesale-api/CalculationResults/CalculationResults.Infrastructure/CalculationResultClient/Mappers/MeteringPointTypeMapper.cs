@@ -24,6 +24,7 @@ public static class MeteringPointTypeMapper
             TimeSeriesType.Production => MeteringPointType.Production,
             TimeSeriesType.FlexConsumption => MeteringPointType.Consumption,
             TimeSeriesType.NonProfiledConsumption => MeteringPointType.Consumption,
+            TimeSeriesType.NetExchangePerGridArea => MeteringPointType.Exchange,
             _ => throw new NotImplementedException($"Cannot map timeSeriesType type '{timeSeriesType}"),
         };
 }

@@ -18,23 +18,30 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 
 public static class TimeSeriesTypeMapper
 {
+    // These strings represents how write our results from spark to the delta table.
+    // They should only be changed with changing how we write to the delta table.
+    private const string NonProfiledConsumption = "non_profiled_consumption";
+    private const string FlexConsumption = "flex_consumption";
+    private const string Production = "production";
+    private const string NetExchangePerGridArea = "net_exchange_per_ga";
+
     public static TimeSeriesType FromDeltaTableValue(string timeSeriesType) =>
         timeSeriesType switch
         {
-            "production" => TimeSeriesType.Production,
-            "flex_consumption" => TimeSeriesType.FlexConsumption,
-            "non_profiled_consumption" => TimeSeriesType.NonProfiledConsumption,
-            "net_exchange_per_ga" => TimeSeriesType.ExchangePerGridArea,
+            Production => TimeSeriesType.Production,
+            FlexConsumption => TimeSeriesType.FlexConsumption,
+            NonProfiledConsumption => TimeSeriesType.NonProfiledConsumption,
+            NetExchangePerGridArea => TimeSeriesType.NetExchangePerGridArea,
             _ => throw new NotImplementedException($"Cannot map timeSeriesType type '{timeSeriesType}"),
         };
 
     public static string ToDeltaTableValue(TimeSeriesType timeSeriesType) =>
         timeSeriesType switch
         {
-            TimeSeriesType.NonProfiledConsumption => "non_profiled_consumption",
-            TimeSeriesType.Production => "production",
-            TimeSeriesType.FlexConsumption => "flex_consumption",
-            TimeSeriesType.ExchangePerGridArea => "net_exchange_per_ga",
+            TimeSeriesType.NonProfiledConsumption => NonProfiledConsumption,
+            TimeSeriesType.Production => Production,
+            TimeSeriesType.FlexConsumption => FlexConsumption,
+            TimeSeriesType.NetExchangePerGridArea => NetExchangePerGridArea,
             _ => throw new NotImplementedException($"Mapping of '{timeSeriesType}' not implemented."),
         };
 }
