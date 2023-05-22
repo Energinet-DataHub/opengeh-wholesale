@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using NodaTime;
@@ -35,9 +36,17 @@ public static class SqlStatementFactory
         var startTimeString = periodStart.ToString();
         var endTimeString = periodEnd.ToString();
 
-        // TODO (JGM): use string builder?
-        return
-            $@"SELECT {selectColumns} FROM wholesale_output.result WHERE {ResultColumnNames.GridArea} IN ({gridAreas}) AND {ResultColumnNames.TimeSeriesType} IN ({timeSeriesTypes}) AND {ResultColumnNames.BatchProcessType} = '{processTypeString}' AND {ResultColumnNames.Time} BETWEEN '{startTimeString}' AND '{endTimeString}' AND aggregation_level = 'total_ga' order by time";
+        var sb = new StringBuilder();
+        sb.Append($@"SELECT {selectColumns} ");
+        sb.Append("FROM wholesale_output.result ");
+        sb.Append($@"WHERE {ResultColumnNames.GridArea} IN ({gridAreas}) ");
+        sb.Append($@"AND {ResultColumnNames.TimeSeriesType} IN ({timeSeriesTypes}) ");
+        sb.Append($@"AND {ResultColumnNames.BatchProcessType} = '{processTypeString}' ");
+        sb.Append($@"AND {ResultColumnNames.Time} BETWEEN '{startTimeString}' AND '{endTimeString}' ");
+        sb.Append($@"AND {ResultColumnNames.AggregationLevel} = 'total_ga' ");
+        sb.Append("ORDER by time");
+
+        return sb.ToString();
     }
 
     private static IEnumerable<string> GetTimeSeriesTypesForSettlementReport()
