@@ -48,8 +48,6 @@ WHERE
     AND aggregation_level = 'total_ga'
 ORDER by time
 ";
-
-        // return sb.ToString();
     }
 
     private static IEnumerable<string> GetTimeSeriesTypesForSettlementReport()

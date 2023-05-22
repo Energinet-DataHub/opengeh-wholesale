@@ -66,8 +66,8 @@ public class SettlementReportDataFactoryTests
         var actual = SettlementReportDataFactory.Create(_table);
 
         // Assert
-        var settlementReportResultRows = actual.ToList();
-        settlementReportResultRows.First().Should().BeEquivalentTo(_firstRow);
-        settlementReportResultRows.ToList().Last().Should().BeEquivalentTo(_lastRow);
+        var actualRows = actual.ToList();
+        actualRows.First().Should().BeEquivalentTo(_firstRow);
+        actualRows.ToList().Last().Should().BeEquivalentTo(_lastRow);
     }
 }
