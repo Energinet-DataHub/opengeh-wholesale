@@ -24,6 +24,7 @@ public static class SettlementMethodMapper
             TimeSeriesType.Production => null,
             TimeSeriesType.FlexConsumption => SettlementMethod.Flex,
             TimeSeriesType.NonProfiledConsumption => SettlementMethod.NonProfiled,
+            TimeSeriesType.NetExchangePerGridArea => null,
             _ => throw new NotImplementedException($"Cannot map timeSeriesType type '{timeSeriesType}"),
         };
 }
