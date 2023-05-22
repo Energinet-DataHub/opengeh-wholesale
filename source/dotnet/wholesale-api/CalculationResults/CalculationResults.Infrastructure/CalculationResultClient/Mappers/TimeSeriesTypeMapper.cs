@@ -35,8 +35,8 @@ public static class TimeSeriesTypeMapper
             Production => TimeSeriesType.Production,
             FlexConsumption => TimeSeriesType.FlexConsumption,
             NonProfiledConsumption => TimeSeriesType.NonProfiledConsumption,
-            NetExchangePerGridArea => TimeSeriesType.NetExchangePerGridArea,
-            NetExchangePerNeighboringGridArea => TimeSeriesType.NetExchangePerNeighboringGridArea,
+            NetExchangePerGridArea => TimeSeriesType.NetExchangePerGa,
+            NetExchangePerNeighboringGridArea => TimeSeriesType.NetExchangePerNeighboringGa,
             GridLoss => TimeSeriesType.GridLoss,
             NegativeGridLoss => TimeSeriesType.NegativeGridLoss,
             PositiveGridLoss => TimeSeriesType.PositiveGridLoss,
@@ -49,7 +49,7 @@ public static class TimeSeriesTypeMapper
             TimeSeriesType.NonProfiledConsumption => NonProfiledConsumption,
             TimeSeriesType.Production => Production,
             TimeSeriesType.FlexConsumption => FlexConsumption,
-            TimeSeriesType.NetExchangePerGridArea => NetExchangePerGridArea,
+            TimeSeriesType.NetExchangePerGa => NetExchangePerGridArea,
             _ => throw new NotImplementedException($"Mapping of '{timeSeriesType}' not implemented."),
         };
 }

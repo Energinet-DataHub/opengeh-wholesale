@@ -23,7 +23,7 @@ public static class TimeSeriesTypeMapper
             TimeSeriesType.NonProfiledConsumption => CalculationResultClient.TimeSeriesType.NonProfiledConsumption,
             TimeSeriesType.FlexConsumption => CalculationResultClient.TimeSeriesType.FlexConsumption,
             TimeSeriesType.Production => CalculationResultClient.TimeSeriesType.Production,
-            TimeSeriesType.NetExchangePerGridArea => CalculationResultClient.TimeSeriesType.NetExchangePerGridArea,
+            TimeSeriesType.NetExchangePerGridArea => CalculationResultClient.TimeSeriesType.NetExchangePerGa,
             _ => throw new ArgumentOutOfRangeException(nameof(timeSeriesType), timeSeriesType, null),
         };
     }
@@ -35,7 +35,7 @@ public static class TimeSeriesTypeMapper
             CalculationResultClient.TimeSeriesType.NonProfiledConsumption => TimeSeriesType.NonProfiledConsumption,
             CalculationResultClient.TimeSeriesType.FlexConsumption => TimeSeriesType.FlexConsumption,
             CalculationResultClient.TimeSeriesType.Production => TimeSeriesType.Production,
-            CalculationResultClient.TimeSeriesType.NetExchangePerGridArea => TimeSeriesType.NetExchangePerGridArea,
+            CalculationResultClient.TimeSeriesType.NetExchangePerGa => TimeSeriesType.NetExchangePerGridArea,
             _ => throw new ArgumentOutOfRangeException(nameof(timeSeriesType), timeSeriesType, null),
         };
     }
