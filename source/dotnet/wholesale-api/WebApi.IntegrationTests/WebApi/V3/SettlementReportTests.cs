@@ -15,7 +15,7 @@
 using System.Net;
 using System.Text;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application.SettlementReport;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
@@ -90,5 +90,53 @@ public sealed class SettlementReportTests : WebApiTestBase
         var actualContent = Encoding.UTF8.GetString(actualBytes);
 
         actualContent.Should().Be(expectedContent);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task HTTP_GET_V3_Download_ReturnsExpectedContent(
+        Mock<ISettlementReportApplicationService> settlementReportApplicationService)
+    {
+        // Arrange
+        const string gridAreaCode = "567";
+        const string processType = "BalanceFixing";
+        var periodStart = DateTime.Parse("2021-01-01T00:00:00Z").ToUniversalTime();
+        var periodEnd = DateTime.Parse("2021-06-15T00:00:00Z").ToUniversalTime();
+
+        var url = "/v3/SettlementReport/Download"
+                  + $"?gridAreaCodes={gridAreaCode}"
+                  + $"&processType={processType}"
+                  + $"&periodStart={periodStart:O}"
+                  + $"&periodEnd={periodEnd:O}";
+
+        var expectedFileName = $"Result_{gridAreaCode}_{periodStart:dd-MM-yyyy}_{periodEnd:dd-MM-yyyy}_D04.zip";
+        const string expectedMockedContent = "0305C8A0-5E42-4174-85DE-B7737E8C66C4";
+
+        settlementReportApplicationService
+            .Setup(service => service.CreateCompressedSettlementReportAsync(
+                It.IsAny<Stream>(),
+                new[] { gridAreaCode },
+                ProcessType.BalanceFixing,
+                periodStart,
+                periodEnd,
+                null))
+            .Returns<Stream, string[], ProcessType, DateTimeOffset, DateTimeOffset, string?>((stream, _, _, _, _, _) =>
+            {
+                stream.Write(Encoding.UTF8.GetBytes(expectedMockedContent));
+                return Task.CompletedTask;
+            });
+
+        Factory.SettlementReportApplicationServiceMock = settlementReportApplicationService;
+
+        // Act
+        var actual = await Client.GetAsync(url);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, actual.StatusCode);
+        Assert.Equal("application/zip", actual.Content.Headers.ContentType?.MediaType);
+        Assert.Equal(expectedFileName, actual.Content.Headers.ContentDisposition?.FileName);
+
+        var mockedResponse = await actual.Content.ReadAsStringAsync();
+        Assert.Equal(expectedMockedContent, mockedResponse);
     }
 }
