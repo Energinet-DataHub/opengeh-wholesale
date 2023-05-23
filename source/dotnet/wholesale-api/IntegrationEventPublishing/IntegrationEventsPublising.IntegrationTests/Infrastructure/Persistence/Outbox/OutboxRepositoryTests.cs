@@ -13,13 +13,13 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.Persistence.Outbox;
-using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.Database;
+using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.IntegrationTests.Infrastructure.TestCommon.Fixture.Database;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Infrastructure.Persistence.Outbox;
+namespace Energinet.DataHub.Wholesale.IntegrationEventsPublishing.IntegrationTests.Infrastructure.Persistence.Outbox;
 
 public class OutboxRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
 {
