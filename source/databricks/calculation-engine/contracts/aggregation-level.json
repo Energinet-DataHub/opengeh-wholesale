@@ -1,0 +1,20 @@
+{
+  "literals": [
+    {
+      "name": "total_ga",
+      "value": "total_ga"
+    },
+    {
+      "name": "es_per_brp_per_ga",
+      "value": "es_brp_ga"
+    },
+    {
+      "name": "es_per_ga",
+      "value": "es_ga"
+    },
+    {
+      "name": "brp_per_ga",
+      "value": "brp_ga"
+    }
+  ]
+}

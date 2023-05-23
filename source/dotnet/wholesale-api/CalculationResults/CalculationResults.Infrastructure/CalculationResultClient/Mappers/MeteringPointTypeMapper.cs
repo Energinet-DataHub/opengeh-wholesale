@@ -24,7 +24,11 @@ public static class MeteringPointTypeMapper
             TimeSeriesType.Production => MeteringPointType.Production,
             TimeSeriesType.FlexConsumption => MeteringPointType.Consumption,
             TimeSeriesType.NonProfiledConsumption => MeteringPointType.Consumption,
-            TimeSeriesType.NetExchangePerGridArea => MeteringPointType.Exchange,
+            TimeSeriesType.NetExchangePerNeighboringGa => MeteringPointType.Exchange,
+            TimeSeriesType.NetExchangePerGa => MeteringPointType.Exchange,
+            TimeSeriesType.GridLoss => MeteringPointType.Consumption,
+            TimeSeriesType.NegativeGridLoss => MeteringPointType.Production,
+            TimeSeriesType.PositiveGridLoss => MeteringPointType.Consumption,
             _ => throw new NotImplementedException($"Cannot map timeSeriesType type '{timeSeriesType}"),
         };
 }
