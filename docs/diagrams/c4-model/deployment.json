@@ -597,7 +597,31 @@
         "group" : "Migration",
         "technology" : "Asp.Net Core Web API",
         "documentation" : { }
-      },{
+      }, {
+        "id" : "72",
+        "tags" : "Element,Container,Microsoft Azure - Function Apps",
+        "properties" : {
+          "structurizr.dsl.identifier" : "wholesaleprocessmanager"
+        },
+        "name" : "Process Manager",
+        "description" : "<add description>",
+        "relationships" : [ {
+          "id" : "73",
+          "tags" : "Relationship",
+          "sourceId" : "72",
+          "destinationId" : "10",
+          "description" : "listens to events"
+        }, {
+          "id" : "74",
+          "tags" : "Relationship",
+          "sourceId" : "72",
+          "destinationId" : "65",
+          "description" : "uses (directly)"
+        } ],
+        "group" : "Wholesale",
+        "technology" : "Azure function, C#",
+        "documentation" : { }
+      }, {
         "id" : "24",
         "tags" : "Element,Container,Microsoft Azure - Azure AD B2C",
         "properties" : {
@@ -1253,6 +1277,37 @@
             "deploymentGroups" : [ "Default" ],
             "instanceId" : 1,
             "containerId" : "29"
+          } ]
+        }, {
+          "id" : "131",
+          "tags" : "Element,Deployment Node,Microsoft Azure - Function Apps",
+          "name" : "Wholesale Process Manager",
+          "environment" : "Production",
+          "technology" : "App Service",
+          "instances" : "1",
+          "containerInstances" : [ {
+            "id" : "132",
+            "tags" : "Container Instance",
+            "properties" : {
+              "structurizr.dsl.identifier" : "wholesaleprocessmanagerinstance"
+            },
+            "relationships" : [ {
+              "id" : "133",
+              "sourceId" : "132",
+              "destinationId" : "119",
+              "description" : "listens to events",
+              "linkedRelationshipId" : "73"
+            }, {
+              "id" : "134",
+              "sourceId" : "132",
+              "destinationId" : "128",
+              "description" : "uses (directly)",
+              "linkedRelationshipId" : "74"
+            } ],
+            "environment" : "Production",
+            "deploymentGroups" : [ "Default" ],
+            "instanceId" : 1,
+            "containerId" : "72"
           } ]
         }, {
           "id" : "136",
