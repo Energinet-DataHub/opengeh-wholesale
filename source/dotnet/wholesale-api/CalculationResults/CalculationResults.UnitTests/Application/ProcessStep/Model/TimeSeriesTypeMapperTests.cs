@@ -25,6 +25,7 @@ public class TimeSeriesTypeMapperTests
     [InlineAutoMoqData(TimeSeriesType.Production, Interfaces.CalculationResultClient.TimeSeriesType.Production)]
     [InlineAutoMoqData(TimeSeriesType.FlexConsumption, Interfaces.CalculationResultClient.TimeSeriesType.FlexConsumption)]
     [InlineAutoMoqData(TimeSeriesType.NonProfiledConsumption, Interfaces.CalculationResultClient.TimeSeriesType.NonProfiledConsumption)]
+    [InlineAutoMoqData(TimeSeriesType.NetExchangePerGridArea, Interfaces.CalculationResultClient.TimeSeriesType.NetExchangePerGridArea)]
     public void MapContractType_ReturnsExpectedDomainType(TimeSeriesType source, Interfaces.CalculationResultClient.TimeSeriesType expected)
     {
         var actual = TimeSeriesTypeMapper.Map(source);
@@ -35,6 +36,7 @@ public class TimeSeriesTypeMapperTests
     [InlineAutoMoqData(Interfaces.CalculationResultClient.TimeSeriesType.Production, TimeSeriesType.Production)]
     [InlineAutoMoqData(Interfaces.CalculationResultClient.TimeSeriesType.FlexConsumption, TimeSeriesType.FlexConsumption)]
     [InlineAutoMoqData(Interfaces.CalculationResultClient.TimeSeriesType.NonProfiledConsumption, TimeSeriesType.NonProfiledConsumption)]
+    [InlineAutoMoqData(Interfaces.CalculationResultClient.TimeSeriesType.NetExchangePerGridArea, TimeSeriesType.NetExchangePerGridArea)]
     public void MapDomainType_ReturnsExpectedContractType(Interfaces.CalculationResultClient.TimeSeriesType source, TimeSeriesType expected)
     {
         var actual = TimeSeriesTypeMapper.Map(source);

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
-using Energinet.DataHub.Wholesale.Domain;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Application.Processes.Model;
@@ -23,4 +22,4 @@ public sealed record ProcessCompletedEventDto(
     Guid BatchId,
     ProcessType ProcessType,
     Instant PeriodStart,
-    Instant PeriodEnd) : DomainEventDto;
+    Instant PeriodEnd);

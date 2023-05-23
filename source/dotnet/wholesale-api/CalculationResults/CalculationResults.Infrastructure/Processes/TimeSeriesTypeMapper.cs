@@ -23,6 +23,7 @@ public static class TimeSeriesTypeMapper
     private const string NonProfiledConsumption = "non_profiled_consumption";
     private const string Consumption = "consumption";
     private const string Production = "production";
+    private const string NetExchangePerGridArea = "net_exchange_per_ga";
 
     public static string Map(TimeSeriesType timeSeriesType)
     {
@@ -31,6 +32,7 @@ public static class TimeSeriesTypeMapper
             TimeSeriesType.NonProfiledConsumption => NonProfiledConsumption,
             TimeSeriesType.FlexConsumption => Consumption,
             TimeSeriesType.Production => Production,
+            TimeSeriesType.NetExchangePerGridArea => NetExchangePerGridArea,
             _ => throw new ArgumentOutOfRangeException(nameof(timeSeriesType), timeSeriesType, null),
         };
     }
