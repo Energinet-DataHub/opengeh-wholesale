@@ -1,0 +1,16 @@
+{
+  "literals": [
+    {
+      "name": "production",
+      "value": "E18"
+    },
+    {
+      "name": "consumption",
+      "value": "E17"
+    },
+    {
+      "name": "exchange",
+      "value": "E20"
+    }
+  ]
+}
