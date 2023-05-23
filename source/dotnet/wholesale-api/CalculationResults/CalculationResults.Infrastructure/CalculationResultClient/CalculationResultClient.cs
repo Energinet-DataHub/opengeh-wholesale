@@ -53,7 +53,7 @@ public class CalculationResultClient : ICalculationResultClient
 
         var databricksSqlResponse = await SendSqlStatementAsync(sql).ConfigureAwait(false);
 
-        return SettlementReportDataFactory.Create(databricksSqlResponse.Table);
+        return SettlementReportDataFactory.Create(databricksSqlResponse.Table!);
     }
 
     public async Task<ProcessStepResult> GetAsync(
@@ -116,15 +116,13 @@ public class CalculationResultClient : ICalculationResultClient
 
     private static ProcessStepResult CreateProcessStepResult(
         TimeSeriesType timeSeriesType,
-        DatabricksSqlResponse databricksSqlResponse)
+        Table resultTable)
     {
-        var table = databricksSqlResponse.Table;
-
-        var pointsDto = Enumerable.Range(0, databricksSqlResponse.Table.RowCount)
+        var pointsDto = Enumerable.Range(0, resultTable.RowCount)
             .Select(row => new TimeSeriesPoint(
-                DateTimeOffset.Parse(table[row, ResultColumnNames.Time]),
-                decimal.Parse(table[row, ResultColumnNames.Quantity], CultureInfo.InvariantCulture),
-                QuantityQualityMapper.FromDeltaTableValue(table[row, ResultColumnNames.QuantityQuality])))
+                DateTimeOffset.Parse(resultTable[row, ResultColumnNames.Time]),
+                decimal.Parse(resultTable[row, ResultColumnNames.Quantity], CultureInfo.InvariantCulture),
+                QuantityQualityMapper.FromDeltaTableValue(resultTable[row, ResultColumnNames.QuantityQuality])))
             .ToList();
 
         return new ProcessStepResult(timeSeriesType, pointsDto.ToArray());

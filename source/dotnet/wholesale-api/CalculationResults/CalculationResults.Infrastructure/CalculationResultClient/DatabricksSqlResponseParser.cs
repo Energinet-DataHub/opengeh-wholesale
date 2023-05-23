@@ -26,9 +26,19 @@ public class DatabricksSqlResponseParser : IDatabricksSqlResponseParser
                          throw new InvalidOperationException();
 
         var state = GetState(jsonObject);
-        var columnNames = GetColumnNames(jsonObject);
-        var dataArray = GetDataArray(jsonObject);
-        return new DatabricksSqlResponse(state, new Table(columnNames, dataArray));
+        switch (state)
+        {
+            case "PENDING":
+                return new DatabricksSqlResponse(state, null);
+            case "RUNNING":
+                return new DatabricksSqlResponse("PENDING", null); // We currently don't distinguish between PENDING and RUNNING
+            case "SUCCEEDED":
+                var columnNames = GetColumnNames(jsonObject);
+                var dataArray = GetDataArray(jsonObject);
+                return new DatabricksSqlResponse(state, new Table(columnNames, dataArray));
+            default:
+                throw new Exception($@"Databricks SQL statement execution failed. State: {state}");
+        }
     }
 
     private static string GetState(JObject responseJsonObject)

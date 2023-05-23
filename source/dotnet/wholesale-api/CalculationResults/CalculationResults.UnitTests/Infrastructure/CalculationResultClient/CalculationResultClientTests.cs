@@ -12,49 +12,61 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Net;
+using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
-using FluentAssertions;
+using Energinet.DataHub.Wholesale.Components.DatabricksClient;
+using Microsoft.Extensions.Options;
+using Moq;
+using Moq.Protected;
+using NodaTime;
 using Xunit;
 using Xunit.Categories;
+using static Moq.Protected.ItExpr;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.CalculationResultClient;
 
 [UnitTest]
 public class CalculationResultClientTests
 {
-    // TODO: LRN reintroduce test after implementation of CalculationResultClient
-    // [Theory]
-    // [InlineAutoMoqData]
-    // public async Task DeserializeJson_ShouldReturnValidObject(
-    //     Guid batchId,
-    //     string gridAreaCode,
-    //     TimeSeriesType timeSeriesType,
-    //     string energySupplierGln,
-    //     string balanceResponsiblePartyGln,
-    //     CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient sut)
-    // {
-    //     // Arrange
-    //     int expectedRowCount = 96;
-    //     var expectedFirstTimeSeriesPoint = new TimeSeriesPoint(
-    //         DateTimeOffset.Parse("2023-04-04T22:00:00.000Z"),
-    //         0.000m,
-    //         QuantityQuality.Missing);
-    //     var expectedLastTimeSeriesPoint = new TimeSeriesPoint(
-    //         DateTimeOffset.Parse("2023-04-05T08:47:41.000Z"),
-    //         1.235m,
-    //         QuantityQuality.Estimated);
-    //
-    //     var stream = EmbeddedResources.GetStream("Infrastructure.CalculationResultClient.CalculationResult.json");
-    //     using var reader = new StreamReader(stream);
-    //
-    //     // Act
-    //     var actual = await sut.GetAsync(batchId, gridAreaCode, timeSeriesType, energySupplierGln, balanceResponsiblePartyGln);
-    //
-    //     // Assert
-    //     actual.TimeSeriesType.Should().Be(timeSeriesType);
-    //     actual.TimeSeriesPoints.Length.Should().Be(expectedRowCount);
-    //     actual.TimeSeriesPoints.First().Should().Be(expectedFirstTimeSeriesPoint);
-    //     actual.TimeSeriesPoints.Last().Should().Be(expectedLastTimeSeriesPoint);
-    // }
+    private readonly string[] _gridAreas = { "123", "456", };
+    private readonly DatabricksOptions _anyDatabricksOptions = new() { DATABRICKS_WAREHOUSE_ID = "anyDatabricksId", DATABRICKS_WORKSPACE_URL = "https://anyDatabricksUrl", DATABRICKS_WORKSPACE_TOKEN = "myToken" };
+    private readonly Instant _validPeriodStart = Instant.FromUtc(2021, 3, 1, 10, 15);
+    private readonly Instant _validPeriodEnd = Instant.FromUtc(2021, 3, 31, 10, 15);
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetSettlementReportResultAsync_XXXXXXXXXXXXXXX(
+        [Frozen]Mock<IDatabricksSqlResponseParser> databricksSqlResponseParserMock,
+        [Frozen]Mock<HttpMessageHandler> mockMessageHandler,
+        [Frozen]Mock<IOptions<DatabricksOptions>> mockOptions)
+    {
+        // Arrange
+        mockOptions.Setup(o => o.Value).Returns(_anyDatabricksOptions);
+        mockMessageHandler.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", IsAny<HttpRequestMessage>(), IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = GetValidHttpResponseContent(),
+            });
+        var httpClient = new HttpClient(mockMessageHandler.Object);
+        // var dbResponse = new DatabricksSqlResponse("PENDING", null);
+        // databricksSqlResponseParserMock.Setup(p => p.Parse(It.IsAny<string>())).Returns(dbResponse)
+        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
+
+        // Act
+        var actual = await sut.GetSettlementReportResultAsync(_gridAreas, ProcessType.BalanceFixing, _validPeriodStart, _validPeriodEnd, null);
+
+        // Assert
+    }
+
+    private static StringContent GetValidHttpResponseContent()
+    {
+        var stream = EmbeddedResources.GetStream("Infrastructure.CalculationResultClient.CalculationResult.json");
+        using var reader = new StreamReader(stream);
+        return new StringContent(reader.ReadToEnd());
+    }
 }
