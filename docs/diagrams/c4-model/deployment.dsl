@@ -111,13 +111,6 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
 
                         wholesaleApiInstance = containerInstance wholesaleApi
                     }
-                    deploymentNode "Wholesale Process Manager" {
-                        description ""
-                        technology "App Service"
-                        tags "Microsoft Azure - Function Apps"
-
-                        wholesaleProcessManagerInstance = containerInstance wholesaleProcessManager
-                    }
                     deploymentNode "Market Participant API" {
                         description ""
                         technology "App Service"
