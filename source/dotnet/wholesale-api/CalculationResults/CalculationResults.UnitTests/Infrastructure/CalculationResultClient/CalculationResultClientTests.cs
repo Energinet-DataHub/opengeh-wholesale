@@ -18,6 +18,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
+using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Moq;
 using Moq.Protected;
@@ -31,42 +32,101 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 [UnitTest]
 public class CalculationResultClientTests
 {
-    private readonly string[] _gridAreas = { "123", "456", };
-    private readonly DatabricksOptions _anyDatabricksOptions = new() { DATABRICKS_WAREHOUSE_ID = "anyDatabricksId", DATABRICKS_WORKSPACE_URL = "https://anyDatabricksUrl", DATABRICKS_WORKSPACE_TOKEN = "myToken" };
-    private readonly Instant _validPeriodStart = Instant.FromUtc(2021, 3, 1, 10, 15);
-    private readonly Instant _validPeriodEnd = Instant.FromUtc(2021, 3, 31, 10, 15);
+    private readonly string[] _someGridAreas = { "123", "456", };
+    private readonly DatabricksOptions _someDatabricksOptions = new() { DATABRICKS_WAREHOUSE_ID = "anyDatabricksId", DATABRICKS_WORKSPACE_URL = "https://anyDatabricksUrl", DATABRICKS_WORKSPACE_TOKEN = "myToken" };
+    private readonly Instant _somePeriodStart = Instant.FromUtc(2021, 3, 1, 10, 15);
+    private readonly Instant _somePeriodEnd = Instant.FromUtc(2021, 3, 31, 10, 15);
+    private readonly DatabricksSqlResponse _pendingDatabricksSqlResponse = new("PENDING", null);
+    private readonly DatabricksSqlResponse _succeededDatabricksSqlResponse = new("SUCCEEDED", TableTestHelper.CreateTableForSettlementReport());
+    private readonly DatabricksSqlResponse _failedDatabricksSqlResponse = new("FAILED", null);
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetSettlementReportResultAsync_XXXXXXXXXXXXXXX(
+    public async Task GetSettlementReportResultAsync_WhenDatabricksReturnsFailed_ThrowsException(
         [Frozen]Mock<IDatabricksSqlResponseParser> databricksSqlResponseParserMock,
         [Frozen]Mock<HttpMessageHandler> mockMessageHandler,
         [Frozen]Mock<IOptions<DatabricksOptions>> mockOptions)
     {
         // Arrange
-        mockOptions.Setup(o => o.Value).Returns(_anyDatabricksOptions);
-        mockMessageHandler.Protected()
-            .Setup<Task<HttpResponseMessage>>("SendAsync", IsAny<HttpRequestMessage>(), IsAny<CancellationToken>())
+        mockOptions.Setup(o => o.Value).Returns(_someDatabricksOptions);
+        mockMessageHandler.Protected().Setup<Task<HttpResponseMessage>>("SendAsync", IsAny<HttpRequestMessage>(), IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.OK, Content = new StringContent("someContent"), });
+        var httpClient = new HttpClient(mockMessageHandler.Object);
+        databricksSqlResponseParserMock.Setup(p => p.Parse(It.IsAny<string>())).Returns(_failedDatabricksSqlResponse);
+
+        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
+
+        // Act + Assert
+        await Assert.ThrowsAsync<DatabricksSqlException>(() => sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null));
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetSettlementReportResultAsync_WhenDatabricksRemainsInPending_ThrowException(
+        [Frozen]Mock<IDatabricksSqlResponseParser> databricksSqlResponseParserMock,
+        [Frozen]Mock<HttpMessageHandler> mockMessageHandler,
+        [Frozen]Mock<IOptions<DatabricksOptions>> mockOptions)
+    {
+        // Arrange
+        mockOptions.Setup(o => o.Value).Returns(_someDatabricksOptions);
+        mockMessageHandler.Protected().Setup<Task<HttpResponseMessage>>("SendAsync", IsAny<HttpRequestMessage>(), IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.OK, Content = new StringContent("someContent"), });
+        var httpClient = new HttpClient(mockMessageHandler.Object);
+        databricksSqlResponseParserMock.Setup(p => p.Parse(It.IsAny<string>())).Returns(_pendingDatabricksSqlResponse);
+
+        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
+
+        // Act + Assert
+        await Assert.ThrowsAsync<DatabricksSqlException>(() => sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null));
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetSettlementReportResultAsync_WhenDatabricksFirstPendingThenSucceeded_ReturnsExpectedResponse(
+        [Frozen]Mock<IDatabricksSqlResponseParser> databricksSqlResponseParserMock,
+        [Frozen]Mock<HttpMessageHandler> mockMessageHandler,
+        [Frozen]Mock<IOptions<DatabricksOptions>> mockOptions)
+    {
+        // Arrange
+        mockOptions.Setup(o => o.Value).Returns(_someDatabricksOptions);
+        mockMessageHandler.Protected().Setup<Task<HttpResponseMessage>>("SendAsync", IsAny<HttpRequestMessage>(), IsAny<CancellationToken>())
             .ReturnsAsync(new HttpResponseMessage
             {
                 StatusCode = HttpStatusCode.OK,
-                Content = GetValidHttpResponseContent(),
+                Content = new StringContent("someContent"),
             });
         var httpClient = new HttpClient(mockMessageHandler.Object);
-        // var dbResponse = new DatabricksSqlResponse("PENDING", null);
-        // databricksSqlResponseParserMock.Setup(p => p.Parse(It.IsAny<string>())).Returns(dbResponse)
+        databricksSqlResponseParserMock.SetupSequence(p => p.Parse(It.IsAny<string>())).Returns(_pendingDatabricksSqlResponse).Returns(_succeededDatabricksSqlResponse);
+
         var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
 
         // Act
-        var actual = await sut.GetSettlementReportResultAsync(_gridAreas, ProcessType.BalanceFixing, _validPeriodStart, _validPeriodEnd, null);
+        var actual = await sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null);
 
         // Assert
+        actual.Count().Should().Be(_succeededDatabricksSqlResponse.Table!.RowCount);
     }
 
-    private static StringContent GetValidHttpResponseContent()
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetSettlementReportResultAsync_WhenSuccessfulResponse_ReturnsExpectedNumberOfRows(
+        [Frozen]Mock<IDatabricksSqlResponseParser> databricksSqlResponseParserMock,
+        [Frozen]Mock<HttpMessageHandler> mockMessageHandler,
+        [Frozen]Mock<IOptions<DatabricksOptions>> mockOptions)
     {
-        var stream = EmbeddedResources.GetStream("Infrastructure.CalculationResultClient.CalculationResult.json");
-        using var reader = new StreamReader(stream);
-        return new StringContent(reader.ReadToEnd());
+        // Arrange
+        mockOptions.Setup(o => o.Value).Returns(_someDatabricksOptions);
+        mockMessageHandler.Protected().Setup<Task<HttpResponseMessage>>("SendAsync", IsAny<HttpRequestMessage>(), IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.OK, Content = new StringContent("someContent"), });
+        var httpClient = new HttpClient(mockMessageHandler.Object);
+        databricksSqlResponseParserMock.Setup(p => p.Parse(It.IsAny<string>())).Returns(_succeededDatabricksSqlResponse);
+
+        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
+
+        // Act
+        var actual = await sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null);
+
+        // Assert
+        actual.Count().Should().Be(_succeededDatabricksSqlResponse.Table!.RowCount);
     }
 }

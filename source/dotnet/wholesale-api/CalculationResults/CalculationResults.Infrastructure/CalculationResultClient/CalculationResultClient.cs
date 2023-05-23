@@ -87,7 +87,7 @@ public class CalculationResultClient : ICalculationResultClient
             var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
 
             if (!response.IsSuccessStatusCode)
-                throw new Exception($"Unable to get calculation result from Databricks. Status code: {response.StatusCode}");
+                throw new DatabricksSqlException($"Unable to get calculation result from Databricks. Status code: {response.StatusCode}");
 
             var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
@@ -97,10 +97,10 @@ public class CalculationResultClient : ICalculationResultClient
                 return databricksSqlResponse;
 
             if (databricksSqlResponse.State != "PENDING")
-                throw new Exception($"Unable to get calculation result from Databricks. State: {databricksSqlResponse.State}");
+                throw new DatabricksSqlException($"Unable to get calculation result from Databricks. State: {databricksSqlResponse.State}");
         }
 
-        throw new Exception($"Unable to get calculation result from Databricks. Max attempts reached ({maxAttempts}) and the state is still not SUCCEEDED.");
+        throw new DatabricksSqlException($"Unable to get calculation result from Databricks. Max attempts reached ({maxAttempts}) and the state is still not SUCCEEDED.");
     }
 
     private static void ConfigureHttpClient(HttpClient httpClient, IOptions<DatabricksOptions> options)
