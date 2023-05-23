@@ -33,75 +33,159 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 public class CalculationResultClientTests
 {
     private readonly string[] _someGridAreas = { "123", "456", };
-    private readonly DatabricksOptions _someDatabricksOptions = new() { DATABRICKS_WAREHOUSE_ID = "anyDatabricksId", DATABRICKS_WORKSPACE_URL = "https://anyDatabricksUrl", DATABRICKS_WORKSPACE_TOKEN = "myToken" };
+
+    private readonly DatabricksOptions _someDatabricksOptions = new()
+    {
+        DATABRICKS_WAREHOUSE_ID = "anyDatabricksId",
+        DATABRICKS_WORKSPACE_URL = "https://anyDatabricksUrl",
+        DATABRICKS_WORKSPACE_TOKEN = "myToken"
+    };
+
     private readonly Instant _somePeriodStart = Instant.FromUtc(2021, 3, 1, 10, 15);
     private readonly Instant _somePeriodEnd = Instant.FromUtc(2021, 3, 31, 10, 15);
     private readonly DatabricksSqlResponse _pendingDatabricksSqlResponse = new("PENDING", null);
-    private readonly DatabricksSqlResponse _succeededDatabricksSqlResponse = new("SUCCEEDED", TableTestHelper.CreateTableForSettlementReport());
+
+    private readonly DatabricksSqlResponse _succeededDatabricksSqlResponse =
+        new("SUCCEEDED", TableTestHelper.CreateTableForSettlementReport());
+
     private readonly DatabricksSqlResponse _failedDatabricksSqlResponse = new("FAILED", null);
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetSettlementReportResultAsync_WhenDatabricksReturnsFailed_ThrowsException(
-        [Frozen]Mock<IDatabricksSqlResponseParser> databricksSqlResponseParserMock,
-        [Frozen]Mock<HttpMessageHandler> mockMessageHandler,
-        [Frozen]Mock<IOptions<DatabricksOptions>> mockOptions)
+    public async Task GetSettlementReportResultAsync_WhenHttpStatusCodeNotOK_ThrowsException(
+        [Frozen] Mock<IDatabricksSqlResponseParser> databricksSqlResponseParserMock,
+        [Frozen] Mock<HttpMessageHandler> mockMessageHandler,
+        [Frozen] Mock<IOptions<DatabricksOptions>> mockOptions)
     {
         // Arrange
         mockOptions.Setup(o => o.Value).Returns(_someDatabricksOptions);
-        mockMessageHandler.Protected().Setup<Task<HttpResponseMessage>>("SendAsync", IsAny<HttpRequestMessage>(), IsAny<CancellationToken>())
-            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.OK, Content = new StringContent("someContent"), });
+        mockMessageHandler.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", IsAny<HttpRequestMessage>(), IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.BadRequest, Content = new StringContent("someContent"),
+            });
+        var httpClient = new HttpClient(mockMessageHandler.Object);
+
+        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient,
+            mockOptions.Object, databricksSqlResponseParserMock.Object);
+
+        // Act + Assert
+        await Assert.ThrowsAsync<DatabricksSqlException>(() =>
+            sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart,
+                _somePeriodEnd, null));
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetSettlementReportResultAsync_WhenDatabricksReturnsFailed_ThrowsException(
+        [Frozen] Mock<IDatabricksSqlResponseParser> databricksSqlResponseParserMock,
+        [Frozen] Mock<HttpMessageHandler> mockMessageHandler,
+        [Frozen] Mock<IOptions<DatabricksOptions>> mockOptions)
+    {
+        // Arrange
+        mockOptions.Setup(o => o.Value).Returns(_someDatabricksOptions);
+        mockMessageHandler.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", IsAny<HttpRequestMessage>(), IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK, Content = new StringContent("someContent"),
+            });
         var httpClient = new HttpClient(mockMessageHandler.Object);
         databricksSqlResponseParserMock.Setup(p => p.Parse(It.IsAny<string>())).Returns(_failedDatabricksSqlResponse);
 
-        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
+        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient,
+            mockOptions.Object, databricksSqlResponseParserMock.Object);
 
         // Act + Assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(() => sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null));
+        await Assert.ThrowsAsync<DatabricksSqlException>(() =>
+            sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart,
+                _somePeriodEnd, null));
     }
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetSettlementReportResultAsync_WhenDatabricksRemainsInPending_ThrowException(
-        [Frozen]Mock<IDatabricksSqlResponseParser> databricksSqlResponseParserMock,
-        [Frozen]Mock<HttpMessageHandler> mockMessageHandler,
-        [Frozen]Mock<IOptions<DatabricksOptions>> mockOptions)
+    public async Task GetSettlementReportResultAsync_WhenDatabricksKeepsReturningPending_ThrowException(
+        [Frozen] Mock<IDatabricksSqlResponseParser> databricksSqlResponseParserMock,
+        [Frozen] Mock<HttpMessageHandler> mockMessageHandler,
+        [Frozen] Mock<IOptions<DatabricksOptions>> mockOptions)
     {
         // Arrange
         mockOptions.Setup(o => o.Value).Returns(_someDatabricksOptions);
-        mockMessageHandler.Protected().Setup<Task<HttpResponseMessage>>("SendAsync", IsAny<HttpRequestMessage>(), IsAny<CancellationToken>())
-            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.OK, Content = new StringContent("someContent"), });
+        mockMessageHandler.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", IsAny<HttpRequestMessage>(), IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK, Content = new StringContent("someContent"),
+            });
         var httpClient = new HttpClient(mockMessageHandler.Object);
         databricksSqlResponseParserMock.Setup(p => p.Parse(It.IsAny<string>())).Returns(_pendingDatabricksSqlResponse);
 
-        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
+        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient,
+            mockOptions.Object, databricksSqlResponseParserMock.Object);
 
         // Act + Assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(() => sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null));
+        await Assert.ThrowsAsync<DatabricksSqlException>(() =>
+            sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart,
+                _somePeriodEnd, null));
     }
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetSettlementReportResultAsync_WhenDatabricksFirstPendingThenSucceeded_ReturnsExpectedResponse(
-        [Frozen]Mock<IDatabricksSqlResponseParser> databricksSqlResponseParserMock,
-        [Frozen]Mock<HttpMessageHandler> mockMessageHandler,
-        [Frozen]Mock<IOptions<DatabricksOptions>> mockOptions)
+    public async Task GetSettlementReportResultAsync_WhenDatabricksReturnsSucceeded_ReturnsExpectedNumberOfRows(
+        [Frozen] Mock<IDatabricksSqlResponseParser> databricksSqlResponseParserMock,
+        [Frozen] Mock<HttpMessageHandler> mockMessageHandler,
+        [Frozen] Mock<IOptions<DatabricksOptions>> mockOptions)
     {
         // Arrange
         mockOptions.Setup(o => o.Value).Returns(_someDatabricksOptions);
-        mockMessageHandler.Protected().Setup<Task<HttpResponseMessage>>("SendAsync", IsAny<HttpRequestMessage>(), IsAny<CancellationToken>())
+        mockMessageHandler.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", IsAny<HttpRequestMessage>(), IsAny<CancellationToken>())
             .ReturnsAsync(new HttpResponseMessage
             {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent("someContent"),
+                StatusCode = HttpStatusCode.OK, Content = new StringContent("someContent"),
             });
         var httpClient = new HttpClient(mockMessageHandler.Object);
-        databricksSqlResponseParserMock.SetupSequence(p => p.Parse(It.IsAny<string>())).Returns(_pendingDatabricksSqlResponse).Returns(_succeededDatabricksSqlResponse);
+        databricksSqlResponseParserMock.Setup(p => p.Parse(It.IsAny<string>()))
+            .Returns(_succeededDatabricksSqlResponse);
 
-        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
+        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient,
+            mockOptions.Object, databricksSqlResponseParserMock.Object);
 
         // Act
-        var actual = await sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null);
+        var actual = await sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing,
+            _somePeriodStart, _somePeriodEnd, null);
+
+        // Assert
+        actual.Count().Should().Be(_succeededDatabricksSqlResponse.Table!.RowCount);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task
+        GetSettlementReportResultAsync_WhenDatabricksReturnsPendingAndThenSucceeded_ReturnsExpectedResponse(
+            [Frozen] Mock<IDatabricksSqlResponseParser> databricksSqlResponseParserMock,
+            [Frozen] Mock<HttpMessageHandler> mockMessageHandler,
+            [Frozen] Mock<IOptions<DatabricksOptions>> mockOptions)
+    {
+        // Arrange
+        mockOptions.Setup(o => o.Value).Returns(_someDatabricksOptions);
+        mockMessageHandler.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", IsAny<HttpRequestMessage>(), IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK, Content = new StringContent("someContent"),
+            });
+        var httpClient = new HttpClient(mockMessageHandler.Object);
+        databricksSqlResponseParserMock.SetupSequence(p => p.Parse(It.IsAny<string>()))
+            .Returns(_pendingDatabricksSqlResponse).Returns(_succeededDatabricksSqlResponse);
+
+        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient,
+            mockOptions.Object, databricksSqlResponseParserMock.Object);
+
+        // Act
+        var actual = await sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing,
+            _somePeriodStart, _somePeriodEnd, null);
 
         // Assert
         actual.Count().Should().Be(_succeededDatabricksSqlResponse.Table!.RowCount);
@@ -110,23 +194,70 @@ public class CalculationResultClientTests
     [Theory]
     [InlineAutoMoqData]
     public async Task GetSettlementReportResultAsync_WhenSuccessfulResponse_ReturnsExpectedNumberOfRows(
-        [Frozen]Mock<IDatabricksSqlResponseParser> databricksSqlResponseParserMock,
-        [Frozen]Mock<HttpMessageHandler> mockMessageHandler,
-        [Frozen]Mock<IOptions<DatabricksOptions>> mockOptions)
+        [Frozen] Mock<IDatabricksSqlResponseParser> databricksSqlResponseParserMock,
+        [Frozen] Mock<HttpMessageHandler> mockMessageHandler,
+        [Frozen] Mock<IOptions<DatabricksOptions>> mockOptions)
     {
         // Arrange
         mockOptions.Setup(o => o.Value).Returns(_someDatabricksOptions);
-        mockMessageHandler.Protected().Setup<Task<HttpResponseMessage>>("SendAsync", IsAny<HttpRequestMessage>(), IsAny<CancellationToken>())
-            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.OK, Content = new StringContent("someContent"), });
-        var httpClient = new HttpClient(mockMessageHandler.Object);
-        databricksSqlResponseParserMock.Setup(p => p.Parse(It.IsAny<string>())).Returns(_succeededDatabricksSqlResponse);
+        mockMessageHandler.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", IsAny<HttpRequestMessage>(), IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK, Content = new StringContent("someContent"),
+            });
 
-        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
+        var httpClient = new HttpClient(mockMessageHandler.Object);
+        databricksSqlResponseParserMock.Setup(p => p.Parse(It.IsAny<string>()))
+            .Returns(_succeededDatabricksSqlResponse);
+
+        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient,
+            mockOptions.Object, databricksSqlResponseParserMock.Object);
 
         // Act
-        var actual = await sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null);
+        var actual = await sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing,
+            _somePeriodStart, _somePeriodEnd, null);
 
         // Assert
         actual.Count().Should().Be(_succeededDatabricksSqlResponse.Table!.RowCount);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetSettlementReportResultAsync_WhenHttpEndpointReturnsRealSampleData_ReturnsExpectedResponse(
+        [Frozen] Mock<HttpMessageHandler> mockMessageHandler,
+        [Frozen] Mock<IOptions<DatabricksOptions>> mockOptions)
+    {
+        // Arrange
+        const int expectedRowCount = 96;
+        const decimal expectedFirstQuantity = 0.000m;
+        const decimal expectedLastQuantity = 1.235m;
+        mockOptions.Setup(o => o.Value).Returns(_someDatabricksOptions);
+        mockMessageHandler.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", IsAny<HttpRequestMessage>(), IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK, Content = GetValidHttpResponseContent(),
+            });
+        var httpClient = new HttpClient(mockMessageHandler.Object);
+        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient,
+            mockOptions.Object, new DatabricksSqlResponseParser()); // here we use the real parser
+
+        // Act
+        var actual = await sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing,
+            _somePeriodStart, _somePeriodEnd, null);
+
+        // Assert
+        var actualArray = actual as SettlementReportResultRow[] ?? actual.ToArray();
+        actualArray.Length.Should().Be(expectedRowCount);
+        actualArray.First().Quantity.Should().Be(expectedFirstQuantity);
+        actualArray.Last().Quantity.Should().Be(expectedLastQuantity);
+    }
+
+    private static StringContent GetValidHttpResponseContent()
+    {
+        var stream = EmbeddedResources.GetStream("Infrastructure.CalculationResultClient.CalculationResult.json");
+        using var reader = new StreamReader(stream);
+        return new StringContent(reader.ReadToEnd());
     }
 }
