@@ -38,7 +38,7 @@ public class CalculationResultClientTests
     {
         DATABRICKS_WAREHOUSE_ID = "anyDatabricksId",
         DATABRICKS_WORKSPACE_URL = "https://anyDatabricksUrl",
-        DATABRICKS_WORKSPACE_TOKEN = "myToken"
+        DATABRICKS_WORKSPACE_TOKEN = "myToken",
     };
 
     private readonly Instant _somePeriodStart = Instant.FromUtc(2021, 3, 1, 10, 15);
@@ -67,13 +67,11 @@ public class CalculationResultClientTests
             });
         var httpClient = new HttpClient(mockMessageHandler.Object);
 
-        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient,
-            mockOptions.Object, databricksSqlResponseParserMock.Object);
+        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
 
         // Act + Assert
         await Assert.ThrowsAsync<DatabricksSqlException>(() =>
-            sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart,
-                _somePeriodEnd, null));
+            sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null));
     }
 
     [Theory]
@@ -94,13 +92,10 @@ public class CalculationResultClientTests
         var httpClient = new HttpClient(mockMessageHandler.Object);
         databricksSqlResponseParserMock.Setup(p => p.Parse(It.IsAny<string>())).Returns(_failedDatabricksSqlResponse);
 
-        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient,
-            mockOptions.Object, databricksSqlResponseParserMock.Object);
+        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
 
         // Act + Assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(() =>
-            sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart,
-                _somePeriodEnd, null));
+        await Assert.ThrowsAsync<DatabricksSqlException>(() => sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null));
     }
 
     [Theory]
@@ -121,13 +116,11 @@ public class CalculationResultClientTests
         var httpClient = new HttpClient(mockMessageHandler.Object);
         databricksSqlResponseParserMock.Setup(p => p.Parse(It.IsAny<string>())).Returns(_pendingDatabricksSqlResponse);
 
-        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient,
-            mockOptions.Object, databricksSqlResponseParserMock.Object);
+        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
 
         // Act + Assert
         await Assert.ThrowsAsync<DatabricksSqlException>(() =>
-            sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart,
-                _somePeriodEnd, null));
+            sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null));
     }
 
     [Theory]
@@ -149,12 +142,10 @@ public class CalculationResultClientTests
         databricksSqlResponseParserMock.Setup(p => p.Parse(It.IsAny<string>()))
             .Returns(_succeededDatabricksSqlResponse);
 
-        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient,
-            mockOptions.Object, databricksSqlResponseParserMock.Object);
+        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
 
         // Act
-        var actual = await sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing,
-            _somePeriodStart, _somePeriodEnd, null);
+        var actual = await sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null);
 
         // Assert
         actual.Count().Should().Be(_succeededDatabricksSqlResponse.Table!.RowCount);
@@ -180,12 +171,10 @@ public class CalculationResultClientTests
         databricksSqlResponseParserMock.SetupSequence(p => p.Parse(It.IsAny<string>()))
             .Returns(_pendingDatabricksSqlResponse).Returns(_succeededDatabricksSqlResponse);
 
-        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient,
-            mockOptions.Object, databricksSqlResponseParserMock.Object);
+        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
 
         // Act
-        var actual = await sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing,
-            _somePeriodStart, _somePeriodEnd, null);
+        var actual = await sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null);
 
         // Assert
         actual.Count().Should().Be(_succeededDatabricksSqlResponse.Table!.RowCount);
@@ -211,12 +200,10 @@ public class CalculationResultClientTests
         databricksSqlResponseParserMock.Setup(p => p.Parse(It.IsAny<string>()))
             .Returns(_succeededDatabricksSqlResponse);
 
-        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient,
-            mockOptions.Object, databricksSqlResponseParserMock.Object);
+        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
 
         // Act
-        var actual = await sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing,
-            _somePeriodStart, _somePeriodEnd, null);
+        var actual = await sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null);
 
         // Assert
         actual.Count().Should().Be(_succeededDatabricksSqlResponse.Table!.RowCount);
@@ -240,12 +227,10 @@ public class CalculationResultClientTests
                 StatusCode = HttpStatusCode.OK, Content = GetValidHttpResponseContent(),
             });
         var httpClient = new HttpClient(mockMessageHandler.Object);
-        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient,
-            mockOptions.Object, new DatabricksSqlResponseParser()); // here we use the real parser
+        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient, mockOptions.Object, new DatabricksSqlResponseParser()); // here we use the real parser
 
         // Act
-        var actual = await sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing,
-            _somePeriodStart, _somePeriodEnd, null);
+        var actual = await sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null);
 
         // Assert
         var actualArray = actual as SettlementReportResultRow[] ?? actual.ToArray();
