@@ -56,7 +56,7 @@ public class SettlementReportApplicationServiceTests
 
         // Act
         await sut.CreateCompressedSettlementReportAsync(
-            memoryStream,
+            () => memoryStream,
             new[] { "500" },
             ProcessType.BalanceFixing,
             DateTimeOffset.MinValue,
@@ -64,14 +64,37 @@ public class SettlementReportApplicationServiceTests
             null);
 
         // Assert
-        memoryStream.Position = 0;
-
-        using var archive = new ZipArchive(memoryStream, ZipArchiveMode.Read);
+        using var archive = new ZipArchive(new MemoryStream(memoryStream.ToArray()), ZipArchiveMode.Read);
         Assert.Single(archive.Entries);
         Assert.Equal("Results.csv", archive.Entries[0].Name);
 
         using var streamReader = new StreamReader(archive.Entries[0].Open());
         var contents = await streamReader.ReadToEndAsync();
         Assert.Equal(fileContent, contents);
+    }
+
+    [Theory]
+    [AutoMoqData]
+    public static async Task CreateCompressedSettlementReportAsync_GivenUnsupportedProcessType_ThrowValidationException(
+        [Frozen] Mock<IBatchApplicationService> batchApplicationServiceMock,
+        [Frozen] Mock<ISettlementReportResultsCsvWriter> settlementReportResultsCsvWriterMock,
+        [Frozen] Mock<ISettlementReportRepository> settlementReportRepositoryMock,
+        [Frozen] Mock<ICalculationResultClient> calculationResultClientMock)
+    {
+        // Arrange
+        var sut = new SettlementReportApplicationService(
+            batchApplicationServiceMock.Object,
+            calculationResultClientMock.Object,
+            settlementReportResultsCsvWriterMock.Object,
+            settlementReportRepositoryMock.Object);
+
+        // Act + Assert
+        await Assert.ThrowsAsync<BusinessValidationException>(() => sut.CreateCompressedSettlementReportAsync(
+            () => Stream.Null,
+            new[] { "500" },
+            ProcessType.Aggregation,
+            DateTimeOffset.MinValue,
+            DateTimeOffset.MaxValue,
+            null));
     }
 }

@@ -50,13 +50,16 @@ public class SettlementReportApplicationService : ISettlementReportApplicationSe
     }
 
     public async Task CreateCompressedSettlementReportAsync(
-        Stream destination,
+        Func<Stream> openDestinationStream,
         string[] gridAreaCodes,
         ProcessType processType,
         DateTimeOffset periodStart,
         DateTimeOffset periodEnd,
         string? energySupplier)
     {
+        if (processType == ProcessType.Aggregation)
+            throw new BusinessValidationException($"{ProcessType.Aggregation} is not a valid process type for settlement reports.");
+
         var resultRows = await _calculationResultClient
             .GetSettlementReportResultAsync(
                 gridAreaCodes,
@@ -66,16 +69,21 @@ public class SettlementReportApplicationService : ISettlementReportApplicationSe
                 energySupplier)
             .ConfigureAwait(false);
 
-        using var archive = new ZipArchive(destination, ZipArchiveMode.Create, true);
+        var destination = openDestinationStream();
 
-        var zipArchiveEntry = archive.CreateEntry("Results.csv");
-        var zipEntryStream = zipArchiveEntry.Open();
-
-        await using (zipEntryStream.ConfigureAwait(false))
+        await using (destination.ConfigureAwait(false))
         {
-            await _settlementReportResultsCsvWriter
-                .WriteAsync(zipEntryStream, resultRows)
-                .ConfigureAwait(false);
+            using var archive = new ZipArchive(destination, ZipArchiveMode.Create, true);
+
+            var zipArchiveEntry = archive.CreateEntry("Results.csv");
+            var zipEntryStream = zipArchiveEntry.Open();
+
+            await using (zipEntryStream.ConfigureAwait(false))
+            {
+                await _settlementReportResultsCsvWriter
+                    .WriteAsync(zipEntryStream, resultRows)
+                    .ConfigureAwait(false);
+            }
         }
     }
 

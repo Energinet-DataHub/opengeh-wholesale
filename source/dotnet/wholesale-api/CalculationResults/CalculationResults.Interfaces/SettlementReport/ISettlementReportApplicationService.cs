@@ -24,7 +24,7 @@ public interface ISettlementReportApplicationService
     Task GetSettlementReportAsync(Guid batchId, string gridAreaCode, Stream outputStream);
 
     Task CreateCompressedSettlementReportAsync(
-        Stream destination,
+        Func<Stream> openDestinationStream,
         string[] gridAreaCodes,
         ProcessType processType,
         DateTimeOffset periodStart,

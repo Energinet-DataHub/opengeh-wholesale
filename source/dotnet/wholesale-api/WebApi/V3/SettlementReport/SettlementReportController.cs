@@ -33,37 +33,34 @@ public class SettlementReportController : V3ControllerBase
     [HttpGet("Download")]
     [MapToApiVersion(Version)]
     [BinaryContent]
-    public async Task DownloadAsync(
+    public Task DownloadAsync(
         [Required, FromQuery] string[] gridAreaCodes,
         [Required, FromQuery] ProcessType processType,
         [Required, FromQuery] DateTimeOffset periodStart,
         [Required, FromQuery] DateTimeOffset periodEnd,
         [FromQuery] string? energySupplier)
     {
-        var settlementReportFileName = GetSettlementReportFileName(
-            gridAreaCodes,
-            processType,
-            periodStart,
-            periodEnd,
-            energySupplier);
+        return _settlementReportApplicationService
+            .CreateCompressedSettlementReportAsync(
+                () =>
+                {
+                    var settlementReportFileName = GetSettlementReportFileName(
+                        gridAreaCodes,
+                        processType,
+                        periodStart,
+                        periodEnd,
+                        energySupplier);
 
-        Response.Headers.Add("Content-Type", "application/zip");
-        Response.Headers.Add("Content-Disposition", $"attachment; filename={settlementReportFileName}");
+                    Response.Headers.Add("Content-Type", "application/zip");
+                    Response.Headers.Add("Content-Disposition", $"attachment; filename={settlementReportFileName}");
 
-        var responseStream = Response.BodyWriter.AsStream();
-
-        await using (responseStream.ConfigureAwait(false))
-        {
-            await _settlementReportApplicationService
-                .CreateCompressedSettlementReportAsync(
-                    responseStream,
-                    gridAreaCodes,
-                    ProcessTypeMapper.Map(processType),
-                    periodStart,
-                    periodEnd,
-                    energySupplier)
-                .ConfigureAwait(false);
-        }
+                    return Response.BodyWriter.AsStream();
+                },
+                gridAreaCodes,
+                ProcessTypeMapper.Map(processType),
+                periodStart,
+                periodEnd,
+                energySupplier);
     }
 
     /// <summary>
@@ -111,8 +108,7 @@ public class SettlementReportController : V3ControllerBase
         var processTypeString = processType switch
         {
             ProcessType.BalanceFixing => "D04",
-            ProcessType.Aggregation => throw new NotSupportedException(),
-            _ => throw new ArgumentOutOfRangeException(nameof(processType)),
+            _ => string.Empty,
         };
 
         return $"Result_{gridAreaCodeString}{energySupplierString}_{periodStart:dd-MM-yyyy}_{periodEnd:dd-MM-yyyy}_{processTypeString}.zip";
