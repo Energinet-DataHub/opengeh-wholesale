@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application.BatchAggregate;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.BatchAggregate;
 
-namespace Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application.UseCases.Mappers;
+namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.UseCases.Mappers;
 
 public interface ICompletedBatchMapper
 {

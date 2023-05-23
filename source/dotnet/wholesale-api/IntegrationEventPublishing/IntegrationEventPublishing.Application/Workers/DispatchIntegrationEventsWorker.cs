@@ -13,12 +13,12 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application.IntegrationEventsManagement;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.IntegrationEventsManagement;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application.Workers;
+namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Workers;
 
 /// <summary>
 /// Timer triggered hosted service to invoke the service for updating batch execution states.

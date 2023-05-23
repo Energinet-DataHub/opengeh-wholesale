@@ -15,7 +15,7 @@
 using Google.Protobuf.WellKnownTypes;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure
+namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure
 {
     public static class InstantExtensions
     {

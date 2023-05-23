@@ -14,20 +14,19 @@
 
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Contracts.Events;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application.IntegrationEventsManagement;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application.Processes;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application.UseCases;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application.UseCases.Mappers;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application.Workers;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.EventPublishers;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.Integration;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.IntegrationEventDispatching;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.Persistence.Batches;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.Persistence.Outbox;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.ServiceBus;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.IntegrationEventsManagement;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Processes;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.UseCases;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.UseCases.Mappers;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Workers;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.EventPublishers;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Integration;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.IntegrationEventDispatching;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence.Batches;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence.Outbox;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.ServiceBus;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 

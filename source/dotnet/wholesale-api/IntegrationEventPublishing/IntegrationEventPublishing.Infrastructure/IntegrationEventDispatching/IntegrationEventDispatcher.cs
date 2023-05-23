@@ -14,13 +14,13 @@
 
 using System.Diagnostics;
 using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application.IntegrationEventsManagement;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.Persistence.Outbox;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.ServiceBus;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.IntegrationEventsManagement;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence.Outbox;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.ServiceBus;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.IntegrationEventDispatching
+namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.IntegrationEventDispatching
 {
     public class IntegrationEventDispatcher : IIntegrationEventDispatcher
     {

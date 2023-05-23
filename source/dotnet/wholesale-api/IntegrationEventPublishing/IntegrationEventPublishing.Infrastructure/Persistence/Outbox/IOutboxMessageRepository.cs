@@ -14,7 +14,7 @@
 
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.Persistence.Outbox;
+namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence.Outbox;
 
 public interface IOutboxMessageRepository
 {

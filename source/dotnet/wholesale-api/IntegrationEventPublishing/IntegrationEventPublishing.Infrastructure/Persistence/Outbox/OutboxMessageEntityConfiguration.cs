@@ -15,7 +15,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.Persistence.Outbox
+namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence.Outbox
 {
     public class OutboxMessageEntityConfiguration : IEntityTypeConfiguration<OutboxMessage>
     {

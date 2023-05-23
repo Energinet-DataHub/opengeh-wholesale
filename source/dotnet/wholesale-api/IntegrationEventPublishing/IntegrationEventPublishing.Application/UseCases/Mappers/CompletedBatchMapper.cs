@@ -13,11 +13,11 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application.BatchAggregate;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application.Processes.Model;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.BatchAggregate;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Processes.Model;
 using NodaTime.Extensions;
 
-namespace Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application.UseCases.Mappers;
+namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.UseCases.Mappers;
 
 public class CompletedBatchMapper : ICompletedBatchMapper
 {

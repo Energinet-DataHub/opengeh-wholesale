@@ -14,7 +14,7 @@
 
 using Microsoft.Extensions.Options;
 
-namespace Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application.IntegrationEventsManagement;
+namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.IntegrationEventsManagement;
 
 public class IntegrationEventService : IIntegrationEventService
 {

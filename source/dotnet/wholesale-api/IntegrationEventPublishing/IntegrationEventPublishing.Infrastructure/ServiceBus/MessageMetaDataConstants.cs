@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.ServiceBus
+namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.ServiceBus
 {
     /// <summary>
     /// These constants represents the required meta data for integration events described here:

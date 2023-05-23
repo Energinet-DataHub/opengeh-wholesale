@@ -15,7 +15,7 @@
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application.Processes.Model;
+namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Processes.Model;
 
 public sealed record ProcessCompletedEventDto(
     string GridAreaCode,

@@ -14,7 +14,7 @@
 
 using Azure.Messaging.ServiceBus;
 
-namespace Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.ServiceBus;
+namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.ServiceBus;
 
 public class IntegrationEventTopicServiceBusSender : IIntegrationEventTopicServiceBusSender
 {

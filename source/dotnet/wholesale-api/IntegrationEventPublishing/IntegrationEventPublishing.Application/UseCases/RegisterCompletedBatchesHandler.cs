@@ -13,11 +13,10 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application.BatchAggregate;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application.UseCases.Mappers;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.BatchAggregate;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.UseCases.Mappers;
 
-namespace Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application.UseCases;
+namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.UseCases;
 
 public class RegisterCompletedBatchesHandler : IRegisterCompletedBatchesHandler
 {

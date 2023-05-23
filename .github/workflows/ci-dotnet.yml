@@ -99,3 +99,23 @@ jobs:
     with:
       tests_dll_file_path: \source\dotnet\wholesale-api\Batches\Batches.UnitTests\bin\Release\net7.0\Energinet.DataHub.Wholesale.Batches.UnitTests.dll
       download_attempt_limit: 20
+
+  dotnet_ci_test_integrationtests_IntegrationEventPublishing:
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v10
+    with:
+      tests_dll_file_path: \source\dotnet\wholesale-api\IntegrationEventPublishing\IntegrationEventPublishing.IntegrationTests\bin\Release\net7.0\Energinet.DataHub.Wholesale.IntegrationEventPublishing.IntegrationTests.dll
+      download_attempt_limit: 20
+      use_azure_functions_tools: true
+      environment: AzureAuth
+    secrets:
+      azure_tenant_id: ${{ secrets.azure_tenant_id }}
+      azure_subscription_id: ${{ secrets.azure_subscription_id }}
+      azure_spn_id: ${{ secrets.azure_spn_id_oidc }}
+      azure_keyvault_url: ${{ secrets.azure_keyvault_url }}
+      azure_b2csecrets_keyvault_url: ${{ secrets.azure_b2csecrets_keyvault_url }}
+
+  dotnet_ci_test_IntegrationEventPublishing:
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v10
+    with:
+      tests_dll_file_path: \source\dotnet\wholesale-api\IntegrationEventPublishing\IntegrationEventPublishing.UnitTests\bin\Release\net7.0\Energinet.DataHub.Wholesale.IntegrationEventPublishing.UnitTests.dll
+      download_attempt_limit: 20

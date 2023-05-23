@@ -14,9 +14,9 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using Energinet.DataHub.Wholesale.Contracts.Events;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application.Processes.Model;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Processes.Model;
 
-namespace Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.Integration;
+namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Integration;
 
 public interface ICalculationResultCompletedIntegrationEventFactory
 {

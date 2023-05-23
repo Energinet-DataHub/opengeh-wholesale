@@ -12,10 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application.BatchAggregate;
-
-namespace Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application.Processes.Model;
-
+namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Processes.Model;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.BatchAggregate;
 using BatchProcessType = Energinet.DataHub.Wholesale.Batches.Interfaces.Models.ProcessType;
 
 public static class ProcessTypeMapper

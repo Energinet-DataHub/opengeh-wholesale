@@ -13,14 +13,14 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application.IntegrationEventsManagement;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application.Processes;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application.Processes.Model;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.Integration;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.IntegrationEventsManagement;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Processes;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Processes.Model;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Integration;
 using Google.Protobuf;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.EventPublishers
+namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.EventPublishers
 {
     public class CalculationResultCompletedToIntegrationEventFactory : ICalculationResultCompletedFactory
     {

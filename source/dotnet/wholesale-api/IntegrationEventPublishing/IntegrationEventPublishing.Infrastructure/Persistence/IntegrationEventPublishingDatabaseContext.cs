@@ -13,12 +13,12 @@
 // limitations under the License.
 
 using System.Diagnostics.CodeAnalysis;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application.BatchAggregate;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.Persistence.Batches;
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.Persistence.Outbox;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.BatchAggregate;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence.Batches;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence.Outbox;
 using Microsoft.EntityFrameworkCore;
 
-namespace Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.Persistence;
+namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence;
 
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local", Justification = "Private setters are needed by EF Core")]
 public class IntegrationEventPublishingDatabaseContext : DbContext, IIntegrationEventPublishingDatabaseContext

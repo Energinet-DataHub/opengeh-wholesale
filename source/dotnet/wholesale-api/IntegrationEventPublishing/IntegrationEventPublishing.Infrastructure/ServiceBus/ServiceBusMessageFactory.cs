@@ -15,7 +15,7 @@
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 
-namespace Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.ServiceBus;
+namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.ServiceBus;
 
 public class ServiceBusMessageFactory : IServiceBusMessageFactory
 {

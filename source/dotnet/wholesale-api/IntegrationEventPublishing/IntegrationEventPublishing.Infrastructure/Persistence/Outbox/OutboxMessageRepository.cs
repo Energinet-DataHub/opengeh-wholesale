@@ -15,7 +15,7 @@
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.Persistence.Outbox
+namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence.Outbox
 {
     public class OutboxMessageRepository : IOutboxMessageRepository
     {

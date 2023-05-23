@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application.BatchAggregate;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.BatchAggregate;
 using Microsoft.EntityFrameworkCore;
 
-namespace Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.Persistence.Batches;
+namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence.Batches;
 
 public class CompletedBatchRepository : ICompletedBatchRepository
 {

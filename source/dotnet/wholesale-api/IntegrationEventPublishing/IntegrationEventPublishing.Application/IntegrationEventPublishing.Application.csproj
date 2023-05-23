@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <AssemblyName>Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application</AssemblyName>
-    <RootNamespace>Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application</RootNamespace>
+    <AssemblyName>Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="7.4.3" />

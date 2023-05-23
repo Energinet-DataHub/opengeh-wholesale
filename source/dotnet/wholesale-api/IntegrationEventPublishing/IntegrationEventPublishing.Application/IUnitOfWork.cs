@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application;
+namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application;
 
 public interface IUnitOfWork
 {
