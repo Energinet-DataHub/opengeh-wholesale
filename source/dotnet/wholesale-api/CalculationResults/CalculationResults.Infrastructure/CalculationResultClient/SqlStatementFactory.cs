@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using NodaTime;
@@ -28,7 +27,7 @@ public static class SqlStatementFactory
         Instant periodEnd,
         string? energySupplier)
     {
-        // TODO: Handle energy supplier
+        // TODO JMG: Handle energy supplier
         var selectColumns = string.Join(", ", ResultColumnNames.GridArea, ResultColumnNames.BatchProcessType, ResultColumnNames.Time, ResultColumnNames.TimeSeriesType, ResultColumnNames.Quantity);
         var timeSeriesTypes = string.Join(",", GetTimeSeriesTypesForSettlementReport().Select(x => $"\'{x}\'"));
         var processTypeString = ProcessTypeMapper.ToDeltaTableValue(processType);
@@ -57,7 +56,7 @@ ORDER by time
             TimeSeriesTypeMapper.ToDeltaTableValue(TimeSeriesType.Production),
             TimeSeriesTypeMapper.ToDeltaTableValue(TimeSeriesType.FlexConsumption),
             TimeSeriesTypeMapper.ToDeltaTableValue(TimeSeriesType.NonProfiledConsumption),
-            TimeSeriesTypeMapper.ToDeltaTableValue(TimeSeriesType.NetExchangePerGridArea),
+            TimeSeriesTypeMapper.ToDeltaTableValue(TimeSeriesType.NetExchangePerGa),
         };
     }
 }
