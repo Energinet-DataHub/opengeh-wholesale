@@ -27,7 +27,7 @@ public class TimeSeriesTypeMapperTests
     [InlineData(TimeSeriesType.FlexConsumption, "flex_consumption")]
     [InlineData(TimeSeriesType.Production, "production")]
     [InlineData(TimeSeriesType.NonProfiledConsumption, "non_profiled_consumption")]
-    [InlineData(TimeSeriesType.NetExchangePerGridArea, "net_exchange_per_ga")]
+    [InlineData(TimeSeriesType.NetExchangePerGa, "net_exchange_per_ga")]
     public void ToDeltaTableValue_ReturnsExpectedString(TimeSeriesType type, string expected)
     {
         // Act
@@ -41,7 +41,7 @@ public class TimeSeriesTypeMapperTests
     [InlineData("flex_consumption", TimeSeriesType.FlexConsumption)]
     [InlineData("production", TimeSeriesType.Production)]
     [InlineData("non_profiled_consumption", TimeSeriesType.NonProfiledConsumption)]
-    [InlineData("net_exchange_per_ga", TimeSeriesType.NetExchangePerGridArea)]
+    [InlineData("net_exchange_per_ga", TimeSeriesType.NetExchangePerGa)]
     public void FromDeltaTableValue_ReturnsExpectedType(string deltaTableValue, TimeSeriesType expected)
     {
         // Act

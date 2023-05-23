@@ -1,0 +1,12 @@
+{
+  "literals": [
+    {
+      "name": "BALANCE_FIXING",
+      "value": "BalanceFixing"
+    },
+    {
+      "name": "AGGREGATION",
+      "value": "Aggregation"
+    }
+  ]
+}
