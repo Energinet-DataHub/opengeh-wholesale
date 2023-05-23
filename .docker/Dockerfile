@@ -36,8 +36,9 @@ RUN mamba install --quiet --yes --satisfied-skip-solve \
 # Install python packages used in pyspark development (keep spark dependent packages alligned)
 # delta-spark version has to have compatibility with spark version (https://docs.delta.io/latest/releases.html)
 # example (delta 2.2.x = spark 3.3.x)
-RUN pip --no-cache-dir install pyspelling azure-eventhub azure-identity azure-storage-file-datalake coverage-threshold types-python-dateutil \
-    ptvsd azure-servicebus pytest-asyncio flake8 black dataclasses-json pytest-xdist databricks-cli mypy delta-spark==2.2.0 \
+RUN pip --no-cache-dir install pyspelling azure-eventhub azure-identity==1.12.0 azure-storage-file-datalake==12.11.0 coverage-threshold types-python-dateutil \
+    ptvsd azure-servicebus pytest-asyncio flake8 black dataclasses-json pytest-xdist databricks-cli==0.17.6 mypy delta-spark==2.2.0 \
+    python-dateutil==2.8.2 \
     build
 
 # Below will make everything in the directory owned by the group ${NB_GID}
