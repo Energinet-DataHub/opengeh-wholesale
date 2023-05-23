@@ -42,7 +42,7 @@ public class TableTests
         var sut = new Table(_columnNames, _rowData);
 
         // Act
-        var rowCount = sut.Count;
+        var rowCount = sut.RowCount;
 
         // Assert
         rowCount.Should().Be(2);

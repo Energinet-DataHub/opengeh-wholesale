@@ -1,8 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
       <AssemblyName>Energinet.DataHub.Wholesale.IntegrationEventPublishing.IntegrationTests</AssemblyName>
       <RootNamespace>Energinet.DataHub.Wholesale.IntegrationEventPublishing.IntegrationTests</RootNamespace>
     </PropertyGroup>
@@ -14,6 +11,16 @@
         <PackageReference Include="NUnit3TestAdapter" Version="4.4.2" />
         <PackageReference Include="NUnit.Analyzers" Version="3.6.1" />
         <PackageReference Include="coverlet.collector" Version="3.2.0" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\database-migration\DatabaseMigration.csproj" />
+      <ProjectReference Include="..\IntegrationEventPublishing.Infrastructure\IntegrationEventPublishing.Infrastructure.csproj" />
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+      <AssemblyName>Energinet.DataHub.Wholesale.IntegrationEventPublishing.IntegrationTests</AssemblyName>
+      <RootNamespace>Energinet.DataHub.Wholesale.IntegrationEventPublishing.IntegrationTests</RootNamespace>
+        <PackageReference Include="Energinet.DataHub.Core.FunctionApp.TestCommon" Version="4.1.0" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\..\..\database-migration\DatabaseMigration.csproj" />

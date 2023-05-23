@@ -19,5 +19,9 @@ public enum TimeSeriesType
     NonProfiledConsumption = 1,
     FlexConsumption = 2,
     Production = 3,
-    NetExchangePerGridArea = 4,
+    NetExchangePerGa = 4,
+    NetExchangePerNeighboringGa = 5,
+    GridLoss = 6,
+    NegativeGridLoss = 7,
+    PositiveGridLoss = 8,
 }

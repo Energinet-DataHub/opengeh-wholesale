@@ -32,6 +32,9 @@
     </ItemGroup>
   
     <ItemGroup>
+      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\aggregation-level.json">
+        <Link>DeltaTableContracts\Contracts\aggregation-level.json</Link>
+      </EmbeddedResource>
       <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\calculation-file-paths.yml">
         <Link>BasisData\calculation-file-paths.yml</Link>
       </EmbeddedResource>
@@ -41,8 +44,14 @@
       <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\calculator-result.json">
         <Link>Integration\CalculationOutput\calculator-result.json</Link>
       </EmbeddedResource>
-      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\time-series-point-quality.json">
-        <Link>Integration\CalculationOutput\time-series-point-quality.json</Link>
+      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\process-type.json">
+        <Link>DeltaTableContracts\Contracts\process-type.json</Link>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\quantity-quality.json">
+        <Link>DeltaTableContracts\Contracts\quantity-quality.json</Link>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\time-series-type.json">
+        <Link>DeltaTableContracts\Contracts\time-series-type.json</Link>
       </EmbeddedResource>
       <EmbeddedResource Include="Application\ProcessStep\Model\ProcessResult.json" />
       <EmbeddedResource Include="Infrastructure\Actor\actor-list.json" />
@@ -55,6 +64,5 @@
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Application" />
-      <Folder Include="Infrastructure" />
     </ItemGroup>   
 </Project>

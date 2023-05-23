@@ -24,6 +24,10 @@ public static class TimeSeriesTypeMapper
     private const string FlexConsumption = "flex_consumption";
     private const string Production = "production";
     private const string NetExchangePerGridArea = "net_exchange_per_ga";
+    private const string NetExchangePerNeighboringGridArea = "net_exchange_per_neighboring_ga";
+    private const string GridLoss = "grid_loss";
+    private const string NegativeGridLoss = "negative_grid_loss";
+    private const string PositiveGridLoss = "positive_grid_loss";
 
     public static TimeSeriesType FromDeltaTableValue(string timeSeriesType) =>
         timeSeriesType switch
@@ -31,7 +35,11 @@ public static class TimeSeriesTypeMapper
             Production => TimeSeriesType.Production,
             FlexConsumption => TimeSeriesType.FlexConsumption,
             NonProfiledConsumption => TimeSeriesType.NonProfiledConsumption,
-            NetExchangePerGridArea => TimeSeriesType.NetExchangePerGridArea,
+            NetExchangePerGridArea => TimeSeriesType.NetExchangePerGa,
+            NetExchangePerNeighboringGridArea => TimeSeriesType.NetExchangePerNeighboringGa,
+            GridLoss => TimeSeriesType.GridLoss,
+            NegativeGridLoss => TimeSeriesType.NegativeGridLoss,
+            PositiveGridLoss => TimeSeriesType.PositiveGridLoss,
             _ => throw new NotImplementedException($"Cannot map timeSeriesType type '{timeSeriesType}"),
         };
 
@@ -41,7 +49,7 @@ public static class TimeSeriesTypeMapper
             TimeSeriesType.NonProfiledConsumption => NonProfiledConsumption,
             TimeSeriesType.Production => Production,
             TimeSeriesType.FlexConsumption => FlexConsumption,
-            TimeSeriesType.NetExchangePerGridArea => NetExchangePerGridArea,
+            TimeSeriesType.NetExchangePerGa => NetExchangePerGridArea,
             _ => throw new NotImplementedException($"Mapping of '{timeSeriesType}' not implemented."),
         };
 }
