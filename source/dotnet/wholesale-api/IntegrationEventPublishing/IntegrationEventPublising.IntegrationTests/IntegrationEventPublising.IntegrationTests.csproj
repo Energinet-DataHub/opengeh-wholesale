@@ -15,15 +15,5 @@
     <ItemGroup>
       <ProjectReference Include="..\..\..\database-migration\DatabaseMigration.csproj" />
       <ProjectReference Include="..\IntegrationEventPublishing.Infrastructure\IntegrationEventPublishing.Infrastructure.csproj" />
-        <TargetFramework>net7.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-      <AssemblyName>Energinet.DataHub.Wholesale.IntegrationEventPublishing.IntegrationTests</AssemblyName>
-      <RootNamespace>Energinet.DataHub.Wholesale.IntegrationEventPublishing.IntegrationTests</RootNamespace>
-        <PackageReference Include="Energinet.DataHub.Core.FunctionApp.TestCommon" Version="4.1.0" />
-    </ItemGroup>
-    <ItemGroup>
-      <ProjectReference Include="..\..\..\database-migration\DatabaseMigration.csproj" />
-      <ProjectReference Include="..\IntegrationEventPublishing.Infrastructure\IntegrationEventPublishing.Infrastructure.csproj" />
     </ItemGroup>
 </Project>
