@@ -18,7 +18,6 @@ limitations under the License.
   <PropertyGroup>
     <AssemblyName>Energinet.DataHub.Wholesale.Components.DatabricksClient</AssemblyName>
     <RootNamespace>Energinet.DataHub.Wholesale.Components.DatabricksClient</RootNamespace>
-    <Nullable>disable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
