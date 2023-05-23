@@ -49,9 +49,11 @@ public class CalculationResultClient : ICalculationResultClient
         Instant periodEnd,
         string? energySupplier)
     {
-        await Task.Delay(1000).ConfigureAwait(false);
+        var sql = SqlStatementFactory.CreateForSettlementReport(gridAreaCodes, processType, periodStart, periodEnd, energySupplier);
 
-        throw new NotImplementedException("GetSettlementReportResultAsync is not implemented yet");
+        var databricksSqlResponse = await SendSqlStatementAsync(sql).ConfigureAwait(false);
+
+        return SettlementReportDataFactory.Create(databricksSqlResponse.Table);
     }
 
     public async Task<ProcessStepResult> GetAsync(
@@ -61,11 +63,9 @@ public class CalculationResultClient : ICalculationResultClient
         string? energySupplierGln,
         string? balanceResponsiblePartyGln)
     {
-        var sql = CreateSqlStatement(batchId, gridAreaCode, timeSeriesType, energySupplierGln, balanceResponsiblePartyGln);
+        await Task.Delay(1000).ConfigureAwait(false);
 
-        var databricksSqlResponse = await SendSqlStatementAsync(sql).ConfigureAwait(false);
-
-        return CreateProcessStepResult(timeSeriesType, databricksSqlResponse);
+        throw new NotImplementedException("GetAsync is not implemented yet");
     }
 
     private async Task<DatabricksSqlResponse> SendSqlStatementAsync(string sqlStatement)
@@ -114,26 +114,13 @@ public class CalculationResultClient : ICalculationResultClient
         httpClient.BaseAddress = new Uri(options.Value.DATABRICKS_WORKSPACE_URL);
     }
 
-    // TODO: Unit test the SQL (ensure it works as expected)
-    private string CreateSqlStatement(Guid batchId, string gridAreaCode, TimeSeriesType timeSeriesType, string? energySupplierGln, string? balanceResponsiblePartyGln)
-    {
-        return $@"select time, quantity, quantity_quality
-from wholesale_output.result
-where batch_id = '{batchId}'
-  and grid_area = '{gridAreaCode}'
-  and time_series_type = '{TimeSeriesTypeMapper.ToDeltaTableValue(timeSeriesType)}'
-  and aggregation_level = '{AggregationLevelMapper.ToDeltaTableValue(timeSeriesType, energySupplierGln, balanceResponsiblePartyGln)}'
-order by time
-";
-    }
-
     private static ProcessStepResult CreateProcessStepResult(
         TimeSeriesType timeSeriesType,
         DatabricksSqlResponse databricksSqlResponse)
     {
         var table = databricksSqlResponse.Table;
 
-        var pointsDto = Enumerable.Range(0, databricksSqlResponse.Table.Count)
+        var pointsDto = Enumerable.Range(0, databricksSqlResponse.Table.RowCount)
             .Select(row => new TimeSeriesPoint(
                 DateTimeOffset.Parse(table[row, ResultColumnNames.Time]),
                 decimal.Parse(table[row, ResultColumnNames.Quantity], CultureInfo.InvariantCulture),
