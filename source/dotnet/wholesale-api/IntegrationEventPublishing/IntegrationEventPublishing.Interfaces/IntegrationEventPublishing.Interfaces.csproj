@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <AssemblyName>Energinet.DataHub.Wholesale.IntegrationEventsPublising.Interfaces</AssemblyName>
-    <RootNamespace>Energinet.DataHub.Wholesale.IntegrationEventsPublising.Interfaces</RootNamespace>
+    <AssemblyName>Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Interfaces</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Interfaces</RootNamespace>
   </PropertyGroup>
 </Project>

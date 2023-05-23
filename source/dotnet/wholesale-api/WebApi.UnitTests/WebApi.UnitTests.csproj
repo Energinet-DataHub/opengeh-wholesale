@@ -30,9 +30,8 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\Infrastructure.Core\Infrastructure.Core.csproj" />
-    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\IntegrationEventPublishing\IntegrationEventPublishing.Infrastructure\IntegrationEventPublishing.Infrastructure.csproj" />
     <ProjectReference Include="..\Test.Core\Test.Core.csproj" />
     <ProjectReference Include="..\WebApi\WebApi.csproj" />
   </ItemGroup>

@@ -14,7 +14,7 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Wholesale.Contracts.Events;
-using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
+using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.EventPublishers;
 using FluentAssertions;
 using Xunit;
 

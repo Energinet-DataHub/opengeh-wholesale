@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Infrastructure.Integration;
+using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.Integration;
 using FluentAssertions;
 using Xunit;
 using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.QuantityQuality;

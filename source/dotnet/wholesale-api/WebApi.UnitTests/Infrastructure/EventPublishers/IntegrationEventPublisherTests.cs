@@ -14,9 +14,9 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
-using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
+using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application.IntegrationEventsManagement;
+using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.EventPublishers;
+using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.Persistence.Outbox;
 using Moq;
 using Xunit;
 

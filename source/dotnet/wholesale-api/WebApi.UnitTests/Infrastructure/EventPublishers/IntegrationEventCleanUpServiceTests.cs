@@ -14,7 +14,7 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
+using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.Persistence.Outbox;
 using Moq;
 using NodaTime;
 using Xunit;

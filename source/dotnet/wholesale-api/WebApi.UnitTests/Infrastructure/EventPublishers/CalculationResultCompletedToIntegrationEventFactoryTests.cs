@@ -14,11 +14,11 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using Energinet.DataHub.Wholesale.Contracts.Events;
-using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
-using Energinet.DataHub.Wholesale.Infrastructure.Integration;
+using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application.Processes.Model;
+using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.EventPublishers;
+using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.Integration;
 using Google.Protobuf;
 using Moq;
 using NodaTime;

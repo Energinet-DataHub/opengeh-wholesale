@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Processes;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep.Model;
 using FluentAssertions;
 using Xunit;
 using Xunit.Categories;
+using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Processes;
 
@@ -35,7 +34,7 @@ public class TimeSeriesTypeMapperTests
         {
             var actual = TimeSeriesTypeMapper.Map(timeSeriesType);
             if (timeSeriesType == type)
-                actual.Should().Be(expected);
+                actual.ToString().Should().Be(expected);
         }
     }
 }

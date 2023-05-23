@@ -12,44 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using AutoFixture.Xunit2;
-using Energinet.DataHub.Wholesale.Application.Processes.Model;
-using Energinet.DataHub.Wholesale.Domain.ProcessAggregate;
-using FluentAssertions;
+using Energinet.DataHub.Wholesale.Contracts.Events;
+using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application.Processes.Model;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Application.Processes.Model;
 
 public class ProcessMapperTests
 {
-    [Theory]
-    [AutoData]
-    public void Must_Map_From_Contract_ProcessType(ProcessTypeMapper sut)
+    [Fact]
+    public void Must_Map_From_Contract_ProcessType()
     {
         // Arrange
         foreach (var type in Enum.GetValues(typeof(Batches.Interfaces.Models.ProcessType)))
         {
-            var expected = (Batches.Interfaces.Models.ProcessType)type;
+            var expected = (IntegrationEventsPublishing.Application.BatchAggregate.ProcessType)type;
 
             // Act
-            var actual = sut.MapFrom(expected);
+            var actual = ProcessTypeMapper.MapFrom(expected);
 
             // Assert
             Assert.Equal(expected.ToString(), actual.ToString());
         }
     }
 
-    [Theory]
-    [AutoData]
-    public void Must_Map_From_ProcessType(ProcessTypeMapper sut)
+    [Fact]
+    public void Must_Map_From_ProcessType()
     {
         // Arrange
         foreach (var type in Enum.GetValues(typeof(ProcessType)))
         {
-            var expected = (ProcessType)type;
+            var expected = (Batches.Interfaces.Models.ProcessType)type;
 
             // Act
-            var actual = sut.MapFrom(expected);
+            var actual = ProcessTypeMapper.MapFrom(expected);
 
             // Assert
             Assert.Equal(expected.ToString(), actual.ToString());

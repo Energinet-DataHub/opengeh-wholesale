@@ -19,15 +19,14 @@ using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
 using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Core.JsonSerialization;
-using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
 using Energinet.DataHub.Wholesale.Infrastructure.Core;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
-using ProcessTypeMapper = Energinet.DataHub.Wholesale.Application.Processes.Model.ProcessTypeMapper;
+using ProcessTypeMapper = Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application.Processes.Model.ProcessTypeMapper;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 
@@ -57,7 +56,6 @@ internal static class ServiceCollectionExtensions
                 }));
 
         serviceCollection.AddScoped<IClock>(_ => SystemClock.Instance);
-        serviceCollection.AddScoped<IProcessTypeMapper, ProcessTypeMapper>();
         serviceCollection.AddScoped<ICorrelationContext, CorrelationContext>();
         serviceCollection.AddScoped<IJsonSerializer, JsonSerializer>();
         serviceCollection.AddScoped<IProcessStepResultFactory, ProcessStepResultFactory>();

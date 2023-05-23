@@ -13,14 +13,10 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
-using Energinet.DataHub.Wholesale.Infrastructure.Integration;
+using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.Integration;
 using FluentAssertions;
 using Xunit;
-using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.QuantityQuality;
-using QuantityQualityMapper = Energinet.DataHub.Wholesale.Infrastructure.Integration.QuantityQualityMapper;
-using TimeSeriesTypeMapper = Energinet.DataHub.Wholesale.Infrastructure.Integration.TimeSeriesTypeMapper;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure.Integration;
 

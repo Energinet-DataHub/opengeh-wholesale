@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using Energinet.DataHub.Wholesale.Contracts.Events;
-using Energinet.DataHub.Wholesale.Infrastructure;
-using Energinet.DataHub.Wholesale.Infrastructure.Integration;
+using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Application.Processes.Model;
+using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure;
+using Energinet.DataHub.Wholesale.IntegrationEventsPublishing.Infrastructure.Integration;
 using FluentAssertions;
 using Google.Protobuf.WellKnownTypes;
 using NodaTime;
