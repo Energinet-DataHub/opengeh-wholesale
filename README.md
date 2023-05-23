@@ -15,6 +15,7 @@
     * [Consuming Integration Events](#consuming-integration-events)
     * [Web API](#web-api)
     * [Calculation Input Data Format](#calculation-input-data-format)
+    * [FAQ](#faq)
 * [Where can I get more help?](#where-can-i-get-more-help)
 * [Domain C4 model](#domain-c4-model)
 
@@ -106,6 +107,10 @@ We expose a swagger.json from which a client can be generated using [NSwag](http
 ### Calculation Input Data Format
 
 Read about the contracts [here](docs/inter-domain-integration/README.md).
+
+### FAQ
+
+Read the FAQ for developers [here](docs/developer-faq.md).
 
 ## Where can I get more help?
 
