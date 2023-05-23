@@ -65,5 +65,10 @@
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Application" />
+    </ItemGroup>
+    <ItemGroup>
+      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\settlement-method.json">
+        <Link>DeltaTableContracts\Contracts\settlement-method.json</Link>
+      </EmbeddedResource>
     </ItemGroup>   
 </Project>

@@ -20,14 +20,8 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.DeltaTableContracts;
 
-public class DeltaTableValueMapperTests
+public class AggregationLevelMapperTests
 {
-    // TODO BJM: Also test mapping of (remember both to and from delta values)
-    // - process type
-    // - settlement method
-    // - time series type
-    // - actor
-    // - quality
     [Theory]
     [InlineData(TimeSeriesType.Production, null, null)]
     [InlineData(TimeSeriesType.Production, "es_id", null)]
@@ -52,22 +46,5 @@ public class DeltaTableValueMapperTests
 
         // Assert
         actual.Should().BeOneOf(validDeltaValues);
-    }
-
-    [Fact]
-    public async Task MeteringPointTypeMapper_ReturnsValidMeteringPointType()
-    {
-        // Arrange
-        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.time-series-type.json");
-        var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
-
-        foreach (var validDeltaValue in validDeltaValues)
-        {
-            // Act
-            var actual = MeteringPointTypeMapper.FromDeltaTableValue(validDeltaValue);
-
-            // Assert it's a defined enum value (and not null)
-            actual.Should().BeDefined();
-        }
     }
 }
