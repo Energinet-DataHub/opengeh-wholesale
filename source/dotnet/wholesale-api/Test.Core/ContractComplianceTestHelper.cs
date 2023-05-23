@@ -49,8 +49,9 @@ public static class ContractComplianceTestHelper
 
         foreach (var expectedLiteral in expectedLiterals)
         {
-            string expectedName = expectedLiteral.name;
-            T expectedValue = expectedLiteral.value;
+            // Ignore underscores in names and values
+            var expectedName = ((string)expectedLiteral.name).Replace("_", string.Empty);
+            var expectedValue = Enum.Parse<T>(((string)expectedLiteral.value).Replace("_", string.Empty), true);
 
             // Assert: Lookup literal by name
             var actualLiteral = Enum.Parse<T>(expectedName, true);
@@ -86,6 +87,21 @@ public static class ContractComplianceTestHelper
             var actualPropertyType = MapToContractType(actualProp.PropertyType);
             actualPropertyType.Should().Contain(expectedPropType);
         }
+    }
+
+    public static async Task<List<string>> GetCodeListValuesAsync(Stream contractStream)
+    {
+        using var streamReader = new StreamReader(contractStream);
+        var contractJson = await streamReader.ReadToEndAsync().ConfigureAwait(false);
+        var contractDescription = JsonConvert.DeserializeObject<dynamic>(contractJson)!;
+
+        var values = new List<string>();
+        foreach (var expectedLiteral in contractDescription.literals)
+        {
+            values.Add((string)expectedLiteral.value);
+        }
+
+        return values;
     }
 
     private static string[] MapToContractType(Type propertyType)

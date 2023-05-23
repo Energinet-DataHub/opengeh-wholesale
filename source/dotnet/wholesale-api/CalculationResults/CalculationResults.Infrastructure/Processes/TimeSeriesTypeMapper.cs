@@ -24,6 +24,10 @@ public static class TimeSeriesTypeMapper
     private const string Consumption = "consumption";
     private const string Production = "production";
     private const string NetExchangePerGridArea = "net_exchange_per_ga";
+    private const string NetExchangePerNeighboringGridArea = "net_exchange_per_neighboring_ga";
+    private const string GridLoss = "grid_loss";
+    private const string NegativeGridLoss = "negative_grid_loss";
+    private const string PositiveGridLoss = "positive_grid_loss";
 
     public static string Map(TimeSeriesType timeSeriesType)
     {
@@ -32,7 +36,11 @@ public static class TimeSeriesTypeMapper
             TimeSeriesType.NonProfiledConsumption => NonProfiledConsumption,
             TimeSeriesType.FlexConsumption => Consumption,
             TimeSeriesType.Production => Production,
-            TimeSeriesType.NetExchangePerGridArea => NetExchangePerGridArea,
+            TimeSeriesType.NetExchangePerGa => NetExchangePerGridArea,
+            TimeSeriesType.NetExchangePerNeighboringGa => NetExchangePerNeighboringGridArea,
+            TimeSeriesType.GridLoss => GridLoss,
+            TimeSeriesType.NegativeGridLoss => NegativeGridLoss,
+            TimeSeriesType.PositiveGridLoss => PositiveGridLoss,
             _ => throw new ArgumentOutOfRangeException(nameof(timeSeriesType), timeSeriesType, null),
         };
     }

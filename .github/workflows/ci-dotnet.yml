@@ -20,12 +20,12 @@ on:
 jobs:
   # Build all projects within solution
   dotnet_ci_build:
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-build-prerelease.yml@v10
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-build-prerelease.yml@v11
     with:
       solution_file_path: source/dotnet/Wholesale.sln
 
   dotnet_ci_test_integrationtests_webapi:
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v10
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v11
     with:
       tests_dll_file_path: \source\dotnet\wholesale-api\WebApi.IntegrationTests\bin\Release\net7.0\Energinet.DataHub.Wholesale.WebApi.IntegrationTests.dll
       aspnetcore_test_contentroot_variable_name: ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_WEBAPI
@@ -41,7 +41,7 @@ jobs:
       azure_b2csecrets_keyvault_url: ${{ secrets.azure_b2csecrets_keyvault_url }}
 
   dotnet_ci_test_integrationtests_processmanager:
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v10
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v11
     with:
       tests_dll_file_path: \source\dotnet\process-manager\ProcessManager.IntegrationTests\bin\Release\net7.0\Energinet.DataHub.Wholesale.ProcessManager.IntegrationTests.dll
       download_attempt_limit: 20
@@ -55,13 +55,13 @@ jobs:
       azure_b2csecrets_keyvault_url: ${{ secrets.azure_b2csecrets_keyvault_url }}
 
   dotnet_ci_test_webapi:
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v10
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v11
     with:
       tests_dll_file_path: \source\dotnet\wholesale-api\WebApi.UnitTests\bin\Release\net7.0\Energinet.DataHub.Wholesale.WebApi.UnitTests.dll
       download_attempt_limit: 20
 
   dotnet_ci_test_integrationtests_calculation_results:
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v10
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v11
     with:
       tests_dll_file_path: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net7.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
       download_attempt_limit: 20
@@ -75,13 +75,13 @@ jobs:
       azure_b2csecrets_keyvault_url: ${{ secrets.azure_b2csecrets_keyvault_url }}
 
   dotnet_ci_test_calculation_results:
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v10
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v11
     with:
       tests_dll_file_path: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.UnitTests\bin\Release\net7.0\Energinet.DataHub.Wholesale.CalculationResults.UnitTests.dll
       download_attempt_limit: 20
 
   dotnet_ci_test_integrationtests_batches:
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v10
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v11
     with:
       tests_dll_file_path: \source\dotnet\wholesale-api\Batches\Batches.IntegrationTests\bin\Release\net7.0\Energinet.DataHub.Wholesale.Batches.IntegrationTests.dll
       download_attempt_limit: 20
@@ -95,7 +95,7 @@ jobs:
       azure_b2csecrets_keyvault_url: ${{ secrets.azure_b2csecrets_keyvault_url }}
 
   dotnet_ci_test_calculation_batches:
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v10
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v11
     with:
       tests_dll_file_path: \source\dotnet\wholesale-api\Batches\Batches.UnitTests\bin\Release\net7.0\Energinet.DataHub.Wholesale.Batches.UnitTests.dll
       download_attempt_limit: 20
