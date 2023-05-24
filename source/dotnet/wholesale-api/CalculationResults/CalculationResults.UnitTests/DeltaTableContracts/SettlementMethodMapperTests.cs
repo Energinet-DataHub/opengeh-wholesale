@@ -23,10 +23,6 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.DeltaTableCon
 
 public class SettlementMethodMapperTests
 {
-    // TODO BJM: Also test mapping of (remember both to and from delta values)
-    // - time series type
-    // - actor
-    // - quality
     [Fact]
     public async Task SettlementMethodMapper_AcceptsAllValidDeltaTableValues()
     {
@@ -47,14 +43,11 @@ public class SettlementMethodMapperTests
     [InlineAutoMoqData("net_exchange_per_neighboring_ga", null!)]
     [InlineAutoMoqData("net_exchange_per_ga", null!)]
     [InlineAutoMoqData("flex_consumption", SettlementMethod.Flex)]
-    [InlineAutoMoqData("grid_loss", SettlementMethod.NonProfiled)]
+    [InlineAutoMoqData("grid_loss", null!)]
     [InlineAutoMoqData("negative_grid_loss", null!)]
-    [InlineAutoMoqData("positive_grid_loss", SettlementMethod.NonProfiled)]
-    public async Task SettlementMethodMapper_ReturnsValidSettlementMethod(string deltaValue, SettlementMethod? expected)
+    [InlineAutoMoqData("positive_grid_loss", SettlementMethod.Flex)]
+    public void SettlementMethodMapper_ReturnsValidSettlementMethod(string deltaValue, SettlementMethod? expected)
     {
-        // Arrange
-        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.time-series-type.json");
-
         // Act
         var actual = SettlementMethodMapper.FromDeltaTableValue(deltaValue);
 

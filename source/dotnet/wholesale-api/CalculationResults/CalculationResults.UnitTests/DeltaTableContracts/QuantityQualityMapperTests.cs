@@ -21,26 +21,26 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.DeltaTableContracts;
 
-public class TimeSeriesTypeMapperTests
+public class QuantityQualityMapperTests
 {
     [Fact]
-    public async Task TimeSeriesType_Matches_Contract()
+    public async Task QuantityQuality_Matches_Contract()
     {
-        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.time-series-type.json");
-        await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<TimeSeriesType>(stream);
+        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.quantity-quality.json");
+        await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<QuantityQuality>(stream);
     }
 
     [Fact]
-    public async Task TimeSeriesTypeMapper_MapsAllValidDeltaTableValues()
+    public async Task QuantityQualityMapper_MapsAllValidDeltaTableValues()
     {
         // Arrange
-        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.time-series-type.json");
+        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.quantity-quality.json");
         var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
 
         foreach (var validDeltaValue in validDeltaValues)
         {
             // Act
-            var actual = TimeSeriesTypeMapper.FromDeltaTableValue(validDeltaValue);
+            var actual = QuantityQualityMapper.FromDeltaTableValue(validDeltaValue);
 
             // Assert it's a defined enum value (and not null)
             actual.Should().BeDefined();
@@ -48,18 +48,15 @@ public class TimeSeriesTypeMapperTests
     }
 
     [Theory]
-    [InlineAutoMoqData("production", TimeSeriesType.Production)]
-    [InlineAutoMoqData("non_profiled_consumption", TimeSeriesType.NonProfiledConsumption)]
-    [InlineAutoMoqData("net_exchange_per_neighboring_ga", TimeSeriesType.NetExchangePerNeighboringGa)]
-    [InlineAutoMoqData("net_exchange_per_ga", TimeSeriesType.NetExchangePerGa)]
-    [InlineAutoMoqData("flex_consumption", TimeSeriesType.FlexConsumption)]
-    [InlineAutoMoqData("grid_loss", TimeSeriesType.GridLoss)]
-    [InlineAutoMoqData("negative_grid_loss", TimeSeriesType.NegativeGridLoss)]
-    [InlineAutoMoqData("positive_grid_loss", TimeSeriesType.PositiveGridLoss)]
-    public void TimeSeriesTypeMapper_ReturnsValidTimeSeriesType(string deltaValue, TimeSeriesType? expected)
+    [InlineAutoMoqData("calculated", QuantityQuality.Calculated)]
+    [InlineAutoMoqData("estimated", QuantityQuality.Estimated)]
+    [InlineAutoMoqData("incomplete", QuantityQuality.Incomplete)]
+    [InlineAutoMoqData("measured", QuantityQuality.Measured)]
+    [InlineAutoMoqData("missing", QuantityQuality.Missing)]
+    public void QuantityQualityMapper_ReturnsValidQuantityQuality(string deltaValue, QuantityQuality? expected)
     {
         // Act
-        var actual = TimeSeriesTypeMapper.FromDeltaTableValue(deltaValue);
+        var actual = QuantityQualityMapper.FromDeltaTableValue(deltaValue);
 
         // Assert
         actual.Should().Be(expected);

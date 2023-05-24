@@ -22,11 +22,13 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.DeltaTableCon
 
 public class ProcessTypeMapperTests
 {
-    // TODO BJM: Also test mapping of (remember both to and from delta values)
-    // - settlement method
-    // - time series type
-    // - actor
-    // - quality
+    [Fact]
+    public async Task ProcessType_Matches_Contract()
+    {
+        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.process-type.json");
+        await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<ProcessType>(stream);
+    }
+
     [Theory]
     [InlineData(ProcessType.Aggregation)]
     [InlineData(ProcessType.BalanceFixing)]

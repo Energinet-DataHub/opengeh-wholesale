@@ -26,10 +26,9 @@ public static class SettlementMethodMapper
             TimeSeriesType.NonProfiledConsumption => SettlementMethod.NonProfiled,
             TimeSeriesType.NetExchangePerGa => null,
             TimeSeriesType.NetExchangePerNeighboringGa => null,
-            // TODO BJM: Correct?
-            TimeSeriesType.GridLoss => SettlementMethod.NonProfiled,
+            TimeSeriesType.GridLoss => null,
             TimeSeriesType.NegativeGridLoss => null,
-            TimeSeriesType.PositiveGridLoss => SettlementMethod.NonProfiled,
+            TimeSeriesType.PositiveGridLoss => SettlementMethod.Flex,
             _ => throw new NotImplementedException($"Cannot map timeSeriesType type '{timeSeriesType}"),
         };
 }
