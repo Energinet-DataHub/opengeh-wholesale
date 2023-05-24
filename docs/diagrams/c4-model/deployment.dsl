@@ -97,12 +97,26 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
 
                         bffAppInstance = containerInstance bffApp
                     }
+                    deploymentNode "Migration Time Series API" {
+                        description ""
+                        technology "App Service"
+                        tags "Microsoft Azure - App Services"
+
+                        migrationTimeSeriesApiInstance = containerInstance migrationTimeSeriesApi
+                    }
                     deploymentNode "Wholesale API" {
                         description ""
                         technology "App Service"
                         tags "Microsoft Azure - App Services"
 
                         wholesaleApiInstance = containerInstance wholesaleApi
+                    }
+                    deploymentNode "Wholesale Process Manager" {
+                        description ""
+                        technology "App Service"
+                        tags "Microsoft Azure - Function Apps"
+
+                        wholesaleProcessManagerInstance = containerInstance wholesaleProcessManager
                     }
                     deploymentNode "Market Participant API" {
                         description ""
@@ -160,6 +174,21 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
                         }
                     }
                 }
+
+                deploymentNode "Drop Zone" {
+                    description ""
+                    technology "Azure Storage Account"
+                    tags "Microsoft Azure - Storage Accounts"
+
+                    dropZoneStorageInstance = containerInstance dropZoneStorage
+                }
+                deploymentNode "Data Lake (Migration)" {
+                    description ""
+                    technology "Azure Storage Account"
+                    tags "Microsoft Azure - Storage Accounts"
+
+                    migrationDataLakeInstance = containerInstance migrationDataLake
+                }
                 deploymentNode "Data Lake (Wholesale)" {
                     description ""
                     technology "Azure Storage Account"
@@ -173,6 +202,7 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
                     technology "Azure Databricks Service"
                     tags "Microsoft Azure - Azure Databricks"
 
+                    migrationDatabricksInstance = containerInstance migrationDatabricks
                     wholesaleCalculatorInstance = containerInstance wholesaleCalculator
                 }
             }
@@ -201,6 +231,13 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
         container dh3 "Frontend" {
             title "[Container] DataHub 3.0 - Frontend (Detailed with OAuth)"
             include ->frontendDomain->
+            exclude "relationship.tag==Deployment Diagram"
+            exclude "relationship.tag==Simple View"
+        }
+
+        container dh3 "Migration" {
+            title "[Container] DataHub 3.0 - Migration (Detailed with OAuth)"
+            include ->migrationDomain->
             exclude "relationship.tag==Deployment Diagram"
             exclude "relationship.tag==Simple View"
         }
