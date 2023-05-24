@@ -13,22 +13,12 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
-using FluentAssertions;
-using NodaTime;
-using Xunit;
-using Xunit.Categories;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.CalculationResultClient;
 
-[UnitTest]
-public class SettlementReportDataFactoryTests
+public static class TableTestHelper
 {
-    private readonly Table _table;
-    private readonly SettlementReportResultRow _firstRow;
-    private readonly SettlementReportResultRow _lastRow;
-
-    public SettlementReportDataFactoryTests()
+    public static Table CreateTableForSettlementReport()
     {
         var columnNames = new List<string>()
         {
@@ -44,30 +34,6 @@ public class SettlementReportDataFactoryTests
             new[] { "234", "BalanceFixing", "2022-05-16T01:15:00.000Z", "production", "2.2" },
             new[] { "234", "BalanceFixing", "2022-05-16T01:30:00.000Z", "production", "3.3" },
         };
-        _table = new Table(columnNames, rows);
-        _firstRow = new SettlementReportResultRow("123", ProcessType.BalanceFixing, Instant.FromUtc(2022, 5, 16, 1, 0, 0), "PT15M", MeteringPointType.Consumption, SettlementMethod.NonProfiled, new decimal(1.1));
-        _lastRow = new SettlementReportResultRow("234", ProcessType.BalanceFixing, Instant.FromUtc(2022, 5, 16, 1, 30, 0), "PT15M", MeteringPointType.Production, null, new decimal(3.3));
-    }
-
-    [Fact]
-    public void Create_ReturnExpectedNumberOfRows()
-    {
-        // Act
-        var actual = SettlementReportDataFactory.Create(_table);
-
-        // Assert
-        actual.Count().Should().Be(_table.RowCount);
-    }
-
-    [Fact]
-    public void Create_ReturnExpectedContent()
-    {
-        // Act
-        var actual = SettlementReportDataFactory.Create(_table);
-
-        // Assert
-        var actualRows = actual.ToList();
-        actualRows.First().Should().BeEquivalentTo(_firstRow);
-        actualRows.ToList().Last().Should().BeEquivalentTo(_lastRow);
+        return new Table(columnNames, rows);
     }
 }

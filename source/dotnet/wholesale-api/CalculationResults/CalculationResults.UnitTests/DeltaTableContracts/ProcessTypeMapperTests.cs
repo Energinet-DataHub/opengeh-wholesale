@@ -12,15 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using FluentAssertions;
 using Test.Core;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.DeltaTableContracts;
 
-public class DeltaTableEnumContractTests
+public class ProcessTypeMapperTests
 {
-    // TODO BJM: How about aggregation level, metering point type and settlement method?
     [Fact]
     public async Task ProcessType_Matches_Contract()
     {
@@ -28,17 +29,19 @@ public class DeltaTableEnumContractTests
         await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<ProcessType>(stream);
     }
 
-    [Fact]
-    public async Task QuantityQuality_Matches_Contract()
+    [Theory]
+    [InlineData(ProcessType.Aggregation)]
+    [InlineData(ProcessType.BalanceFixing)]
+    public async Task AggregationLevelMapper_ReturnsValidDeltaValue(ProcessType processType)
     {
-        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.quantity-quality.json");
-        await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<QuantityQuality>(stream);
-    }
+        // Arrange
+        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.process-type.json");
+        var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
 
-    [Fact]
-    public async Task TimeSeriesType_Matches_Contract()
-    {
-        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.time-series-type.json");
-        await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<TimeSeriesType>(stream);
+        // Act
+        var actual = ProcessTypeMapper.ToDeltaTableValue(processType);
+
+        // Assert
+        actual.Should().BeOneOf(validDeltaValues);
     }
 }
