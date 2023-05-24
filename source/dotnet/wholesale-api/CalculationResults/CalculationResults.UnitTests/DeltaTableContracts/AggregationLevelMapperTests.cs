@@ -38,7 +38,7 @@ public class AggregationLevelMapperTests
     public async Task AggregationLevelMapper_ReturnsValidDeltaValue(TimeSeriesType timeSeriesType, string? energySupplierId, string? balanceResponsibleId)
     {
         // Arrange
-        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.aggregation-level.json");
+        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.Enums.aggregation-level.json");
         var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
 
         // Act
