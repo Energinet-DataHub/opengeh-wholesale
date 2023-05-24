@@ -24,7 +24,6 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 

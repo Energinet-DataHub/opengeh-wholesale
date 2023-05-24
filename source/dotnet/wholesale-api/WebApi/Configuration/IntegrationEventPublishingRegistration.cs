@@ -13,21 +13,20 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.JsonSerialization;
-using Energinet.DataHub.Wholesale.Application.IntegrationEventsManagement;
-using Energinet.DataHub.Wholesale.Application.Processes;
-using Energinet.DataHub.Wholesale.Application.Processes.Model;
-using Energinet.DataHub.Wholesale.Application.UseCases;
-using Energinet.DataHub.Wholesale.Application.UseCases.Mappers;
-using Energinet.DataHub.Wholesale.Application.Workers;
 using Energinet.DataHub.Wholesale.Contracts.Events;
-using Energinet.DataHub.Wholesale.Domain;
-using Energinet.DataHub.Wholesale.Infrastructure.EventPublishers;
-using Energinet.DataHub.Wholesale.Infrastructure.Integration;
-using Energinet.DataHub.Wholesale.Infrastructure.IntegrationEventDispatching;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Batches;
-using Energinet.DataHub.Wholesale.Infrastructure.Persistence.Outbox;
-using Energinet.DataHub.Wholesale.Infrastructure.ServiceBus;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.IntegrationEventsManagement;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Processes;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.UseCases;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.UseCases.Mappers;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Workers;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.EventPublishers;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Integration;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.IntegrationEventDispatching;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence.Batches;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence.Outbox;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.ServiceBus;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 
@@ -70,9 +69,8 @@ public static class IntegrationEventPublishingRegistration
     private static void AddApplications(this IServiceCollection services)
     {
         services.AddScoped<IProcessApplicationService, ProcessApplicationService>();
-        services.AddScoped<IProcessTypeMapper, Application.Processes.Model.ProcessTypeMapper>();
         // This is a temporary fix until we move registration out to each of the modules
-        services.AddScoped<Application.IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
         services
             .AddScoped<ICalculationResultCompletedIntegrationEventFactory,
                 CalculationResultCompletedIntegrationEventFactory>();
@@ -83,7 +81,6 @@ public static class IntegrationEventPublishingRegistration
     {
         serviceCollection.AddScoped<IIntegrationEventPublishingDatabaseContext, IntegrationEventPublishingDatabaseContext>();
         serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
-
         serviceCollection.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
     }
 }

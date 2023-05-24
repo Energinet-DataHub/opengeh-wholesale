@@ -31,6 +31,7 @@ limitations under the License.
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="7.0.4" />
+    <PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" Version="7.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
@@ -38,9 +39,10 @@ limitations under the License.
     <ProjectReference Include="..\Application\Application.csproj" />
     <ProjectReference Include="..\Batches\Batches.Application\Batches.Application.csproj" />
     <ProjectReference Include="..\CalculationResults\CalculationResults.Application\CalculationResults.Application.csproj" />
+    <ProjectReference Include="..\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" />
     <ProjectReference Include="..\Infrastructure.Core\Infrastructure.Core.csproj" />
-    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     <ProjectReference Include="..\IntegrationEventPublishing\IntegrationEventPublishing.Application\IntegrationEventPublishing.Application.csproj" />
+    <ProjectReference Include="..\IntegrationEventPublishing\IntegrationEventPublishing.Infrastructure\IntegrationEventPublishing.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
