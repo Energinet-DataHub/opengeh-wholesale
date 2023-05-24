@@ -27,7 +27,7 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             !include https://raw.githubusercontent.com/Energinet-DataHub/greenforce-frontend/main/docs/diagrams/c4-model/model.dsl
 
             # Include Migration model - requires a token because its located in a private repository
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAABXFU5EKBSE5BUY4ERAZK424ZDDGWHQ
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAABXFUYEF2LVRVDDN6UIZOQZ2ZDOA4WA
         }
 
         # Deployment model
@@ -110,13 +110,6 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
                         tags "Microsoft Azure - App Services"
 
                         wholesaleApiInstance = containerInstance wholesaleApi
-                    }
-                    deploymentNode "Wholesale Process Manager" {
-                        description ""
-                        technology "App Service"
-                        tags "Microsoft Azure - Function Apps"
-
-                        wholesaleProcessManagerInstance = containerInstance wholesaleProcessManager
                     }
                     deploymentNode "Market Participant API" {
                         description ""
