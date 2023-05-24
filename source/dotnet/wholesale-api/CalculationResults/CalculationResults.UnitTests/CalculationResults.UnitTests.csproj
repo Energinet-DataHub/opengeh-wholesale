@@ -58,12 +58,16 @@
       <EmbeddedResource Include="Infrastructure\CalculationResultClient\CalculationResult.json" />
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\..\Infrastructure\Infrastructure.csproj" />
       <ProjectReference Include="..\..\Test.Core\Test.Core.csproj" />
       <ProjectReference Include="..\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" />
       <ProjectReference Include="..\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Application" />
+    </ItemGroup>
+    <ItemGroup>
+      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\settlement-method.json">
+        <Link>DeltaTableContracts\Contracts\settlement-method.json</Link>
+      </EmbeddedResource>
     </ItemGroup>   
 </Project>

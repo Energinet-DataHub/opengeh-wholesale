@@ -33,7 +33,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Wholesale.Contracts</PackageId>
-    <PackageVersion>2.2.7$(VersionSuffix)</PackageVersion>
+    <PackageVersion>2.2.9$(VersionSuffix)</PackageVersion>
     <Title>Wholesale Contracts</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -73,7 +73,7 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
-    <Protobuf Include="../../wholesale-api/Infrastructure/IntegrationEvents/*.proto">
+    <Protobuf Include="../../wholesale-api/IntegrationEventPublishing/IntegrationEventPublishing.Infrastructure/IntegrationEvents/*.proto">
       <GrpcServices>None</GrpcServices>
       <Access>Public</Access>
       <ProtoCompile>True</ProtoCompile>
@@ -84,7 +84,7 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\wholesale-api\Infrastructure\IntegrationEvents\CalculationResultCompleted.cs">
+    <Compile Include="..\..\wholesale-api\IntegrationEventPublishing\IntegrationEventPublishing.Infrastructure\IntegrationEvents\CalculationResultCompleted.cs">
       <Link>IntegrationEvents\CalculationResultCompleted.cs</Link>
     </Compile>
   </ItemGroup>
