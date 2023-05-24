@@ -51,7 +51,7 @@ public class CalculationResultClient : ICalculationResultClient
     {
         var sql = SqlStatementFactory.CreateForSettlementReport(gridAreaCodes, processType, periodStart, periodEnd, energySupplier);
 
-        var resultTable = await SendSqlStatementAsync(sql).ConfigureAwait(false);
+        var resultTable = await ExecuteSqlStatementAsync(sql).ConfigureAwait(false);
 
         return SettlementReportDataFactory.Create(resultTable);
     }
@@ -68,7 +68,7 @@ public class CalculationResultClient : ICalculationResultClient
         throw new NotImplementedException("GetAsync is not implemented yet");
     }
 
-    private async Task<Table> SendSqlStatementAsync(string sqlStatement)
+    private async Task<Table> ExecuteSqlStatementAsync(string sqlStatement)
     {
         const int timeOutPerAttemptSeconds = 30;
         const int maxAttempts = 16; // 8 minutes in total (16 * 30 seconds). The warehouse takes around 5 minutes to start if it has been stopped.
