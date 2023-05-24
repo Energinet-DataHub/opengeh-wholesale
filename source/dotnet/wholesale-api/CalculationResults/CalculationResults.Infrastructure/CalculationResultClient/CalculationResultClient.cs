@@ -51,9 +51,9 @@ public class CalculationResultClient : ICalculationResultClient
     {
         var sql = SqlStatementFactory.CreateForSettlementReport(gridAreaCodes, processType, periodStart, periodEnd, energySupplier);
 
-        var databricksSqlResponse = await SendSqlStatementAsync(sql).ConfigureAwait(false);
+        var resultTable = await ExecuteSqlStatementAsync(sql).ConfigureAwait(false);
 
-        return SettlementReportDataFactory.Create(databricksSqlResponse.Table);
+        return SettlementReportDataFactory.Create(resultTable);
     }
 
     public async Task<ProcessStepResult> GetAsync(
@@ -68,7 +68,7 @@ public class CalculationResultClient : ICalculationResultClient
         throw new NotImplementedException("GetAsync is not implemented yet");
     }
 
-    private async Task<DatabricksSqlResponse> SendSqlStatementAsync(string sqlStatement)
+    private async Task<Table> ExecuteSqlStatementAsync(string sqlStatement)
     {
         const int timeOutPerAttemptSeconds = 30;
         const int maxAttempts = 16; // 8 minutes in total (16 * 30 seconds). The warehouse takes around 5 minutes to start if it has been stopped.
@@ -81,26 +81,25 @@ public class CalculationResultClient : ICalculationResultClient
             warehouse_id = _options.Value.DATABRICKS_WAREHOUSE_ID,
         };
         // TODO (JMG): Should we use Polly for retrying?
-        // TODO (JMG): Unit test this method
         for (var attempt = 0; attempt < maxAttempts; attempt++)
         {
             var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
 
             if (!response.IsSuccessStatusCode)
-                throw new Exception($"Unable to get calculation result from Databricks. Status code: {response.StatusCode}");
+                throw new DatabricksSqlException($"Unable to get calculation result from Databricks. Status code: {response.StatusCode}");
 
             var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             var databricksSqlResponse = _databricksSqlResponseParser.Parse(jsonResponse);
 
             if (databricksSqlResponse.State == "SUCCEEDED")
-                return databricksSqlResponse;
+                return databricksSqlResponse.Table!;
 
             if (databricksSqlResponse.State != "PENDING")
-                throw new Exception($"Unable to get calculation result from Databricks. State: {databricksSqlResponse.State}");
+                throw new DatabricksSqlException($"Unable to get calculation result from Databricks. State: {databricksSqlResponse.State}");
         }
 
-        throw new Exception($"Unable to get calculation result from Databricks. Max attempts reached ({maxAttempts}) and the state is still not SUCCEEDED.");
+        throw new DatabricksSqlException($"Unable to get calculation result from Databricks. Max attempts reached ({maxAttempts}) and the state is still not SUCCEEDED.");
     }
 
     private static void ConfigureHttpClient(HttpClient httpClient, IOptions<DatabricksOptions> options)
@@ -116,15 +115,13 @@ public class CalculationResultClient : ICalculationResultClient
 
     private static ProcessStepResult CreateProcessStepResult(
         TimeSeriesType timeSeriesType,
-        DatabricksSqlResponse databricksSqlResponse)
+        Table resultTable)
     {
-        var table = databricksSqlResponse.Table;
-
-        var pointsDto = Enumerable.Range(0, databricksSqlResponse.Table.RowCount)
+        var pointsDto = Enumerable.Range(0, resultTable.RowCount)
             .Select(row => new TimeSeriesPoint(
-                DateTimeOffset.Parse(table[row, ResultColumnNames.Time]),
-                decimal.Parse(table[row, ResultColumnNames.Quantity], CultureInfo.InvariantCulture),
-                QuantityQualityMapper.FromDeltaTableValue(table[row, ResultColumnNames.QuantityQuality])))
+                DateTimeOffset.Parse(resultTable[row, ResultColumnNames.Time]),
+                decimal.Parse(resultTable[row, ResultColumnNames.Quantity], CultureInfo.InvariantCulture),
+                QuantityQualityMapper.FromDeltaTableValue(resultTable[row, ResultColumnNames.QuantityQuality])))
             .ToList();
 
         return new ProcessStepResult(timeSeriesType, pointsDto.ToArray());
