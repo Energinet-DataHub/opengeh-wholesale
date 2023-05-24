@@ -14,21 +14,26 @@
 
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.IntegrationEventsManagement;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence.Outbox;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.ServiceBus;
 
 namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.EventPublishers;
 
 public class IntegrationEventPublisher : IIntegrationEventPublisher
 {
-    private readonly IOutboxMessageRepository _outboxMessageRepository;
+    private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
+    private readonly IIntegrationEventTopicServiceBusSender _integrationEventTopicServiceBusSender;
 
-    public IntegrationEventPublisher(IOutboxMessageRepository outboxMessageRepository)
+    public IntegrationEventPublisher(
+        IServiceBusMessageFactory serviceBusMessageFactory,
+        IIntegrationEventTopicServiceBusSender integrationEventTopicServiceBusSender)
     {
-        _outboxMessageRepository = outboxMessageRepository;
+        _serviceBusMessageFactory = serviceBusMessageFactory;
+        _integrationEventTopicServiceBusSender = integrationEventTopicServiceBusSender;
     }
 
     public async Task PublishAsync(IntegrationEventDto integrationEventDto)
     {
-        var outboxMessage = new OutboxMessage(integrationEventDto.EventData, integrationEventDto.MessageType, integrationEventDto.CreationDate);
-        await _outboxMessageRepository.AddAsync(outboxMessage).ConfigureAwait(false);
+        var serviceBusMessage = _serviceBusMessageFactory.CreateServiceBusMessage(integrationEventDto.EventData, integrationEventDto.MessageType);
+        await _integrationEventTopicServiceBusSender.SendAsync(serviceBusMessage).ConfigureAwait(false);
     }
 }
