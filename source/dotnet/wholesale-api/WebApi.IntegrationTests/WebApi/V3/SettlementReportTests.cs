@@ -119,8 +119,54 @@ public sealed class SettlementReportTests : WebApiTestBase
                 ProcessType.BalanceFixing,
                 periodStart,
                 periodEnd,
+                null,
                 null))
-            .Returns<Func<Stream>, string[], ProcessType, DateTimeOffset, DateTimeOffset, string?>((openStream, _, _, _, _, _) =>
+            .Returns<Func<Stream>, string[], ProcessType, DateTimeOffset, DateTimeOffset, string?, string?>((openStream, _, _, _, _, _, _) =>
+            {
+                openStream().Write(Encoding.UTF8.GetBytes(expectedMockedContent));
+                return Task.CompletedTask;
+            });
+
+        Factory.SettlementReportApplicationServiceMock = settlementReportApplicationService;
+
+        // Act
+        var actual = await Client.GetAsync(url);
+
+        // Assert
+        Assert.Equal(expectedMockedContent, await actual.Content.ReadAsStringAsync());
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task HTTP_GET_V3_Download_DkLanguage_ReturnsExpectedContent(
+        Mock<ISettlementReportApplicationService> settlementReportApplicationService)
+    {
+        // Arrange
+        const string gridAreaCode = "567";
+        const string processType = "BalanceFixing";
+        const string language = "da-DK";
+        var periodStart = DateTime.Parse("2021-01-01T00:00:00Z").ToUniversalTime();
+        var periodEnd = DateTime.Parse("2021-06-15T00:00:00Z").ToUniversalTime();
+
+        var url = "/v3/SettlementReport/Download"
+                  + $"?gridAreaCodes={gridAreaCode}"
+                  + $"&processType={processType}"
+                  + $"&periodStart={periodStart:O}"
+                  + $"&periodEnd={periodEnd:O}"
+                  + $"&csvLanguage={language}";
+
+        const string expectedMockedContent = "0305C8A0-5E42-4174-85DE-B7737E8C66C4";
+
+        settlementReportApplicationService
+            .Setup(service => service.CreateCompressedSettlementReportAsync(
+                It.IsAny<Func<Stream>>(),
+                new[] { gridAreaCode },
+                ProcessType.BalanceFixing,
+                periodStart,
+                periodEnd,
+                null,
+                language))
+            .Returns<Func<Stream>, string[], ProcessType, DateTimeOffset, DateTimeOffset, string?, string?>((openStream, _, _, _, _, _, _) =>
             {
                 openStream().Write(Encoding.UTF8.GetBytes(expectedMockedContent));
                 return Task.CompletedTask;
@@ -161,8 +207,9 @@ public sealed class SettlementReportTests : WebApiTestBase
                 ProcessType.BalanceFixing,
                 periodStart,
                 periodEnd,
+                null,
                 null))
-            .Returns<Func<Stream>, string[], ProcessType, DateTimeOffset, DateTimeOffset, string?>((openStream, _, _, _, _, _) =>
+            .Returns<Func<Stream>, string[], ProcessType, DateTimeOffset, DateTimeOffset, string?, string?>((openStream, _, _, _, _, _, _) =>
             {
                 openStream();
                 return Task.CompletedTask;
@@ -203,8 +250,9 @@ public sealed class SettlementReportTests : WebApiTestBase
                 ProcessType.Aggregation,
                 periodStart,
                 periodEnd,
+                null,
                 null))
-            .Returns<Func<Stream>, string[], ProcessType, DateTimeOffset, DateTimeOffset, string?>((_, _, _, _, _, _) =>
+            .Returns<Func<Stream>, string[], ProcessType, DateTimeOffset, DateTimeOffset, string?, string?>((_, _, _, _, _, _, _) =>
                 throw new BusinessValidationException("Tested Validation Exception"));
 
         Factory.SettlementReportApplicationServiceMock = settlementReportApplicationService;

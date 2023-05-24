@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Globalization;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using NodaTime;
@@ -23,6 +24,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 [UnitTest]
 public class SettlementReportResultsCsvWriterTests
 {
+    private static readonly CultureInfo _testCulture = new("da-DK");
     private static readonly SettlementReportResultRow _validRow = new(
         "500",
         ProcessType.BalanceFixing,
@@ -30,10 +32,10 @@ public class SettlementReportResultsCsvWriterTests
         "PT15M",
         MeteringPointType.Consumption,
         SettlementMethod.Flex,
-        1000.52m);
+        1000.521m);
 
     [Fact]
-    public static async Task WriteAsync_GivenTwoRows_WritesValidCsv()
+    public static async Task WriteAsync_GivenTwoRows_WritesValidDaDkCsv()
     {
         // Arrange
         await using var memoryStream = new MemoryStream();
@@ -46,15 +48,40 @@ public class SettlementReportResultsCsvWriterTests
         };
 
         // Act
-        await sut.WriteAsync(memoryStream, rows);
+        await sut.WriteAsync(memoryStream, rows, new CultureInfo("da-DK"));
 
         // Assert
         var text = await ReadStreamAsStringAsync(memoryStream);
         var lines = text.Split(Environment.NewLine);
 
         Assert.Equal("METERINGGRIDAREAID;ENERGYBUSINESSPROCESS;STARTDATETIME;RESOLUTIONDURATION;TYPEOFMP;SETTLEMENTMETHOD;ENERGYQUANTITY", lines[0]);
-        Assert.Equal("500;D04;2021-01-01T00:00:00Z;PT15M;E17;E02;1.000,52", lines[1]);
-        Assert.Equal("500;D04;2021-01-01T00:00:00Z;PT15M;E17;E02;1.000,52", lines[2]);
+        Assert.Equal("500;D04;2021-01-01T00:00:00Z;PT15M;E17;E02;1000,521", lines[1]);
+        Assert.Equal("500;D04;2021-01-01T00:00:00Z;PT15M;E17;E02;1000,521", lines[2]);
+    }
+
+    [Fact]
+    public static async Task WriteAsync_GivenTwoRows_WritesValidEnUsCsv()
+    {
+        // Arrange
+        await using var memoryStream = new MemoryStream();
+        var sut = new SettlementReportResultsCsvWriter();
+
+        var rows = new[]
+        {
+            _validRow,
+            _validRow,
+        };
+
+        // Act
+        await sut.WriteAsync(memoryStream, rows, new CultureInfo("en-US"));
+
+        // Assert
+        var text = await ReadStreamAsStringAsync(memoryStream);
+        var lines = text.Split(Environment.NewLine);
+
+        Assert.Equal("METERINGGRIDAREAID,ENERGYBUSINESSPROCESS,STARTDATETIME,RESOLUTIONDURATION,TYPEOFMP,SETTLEMENTMETHOD,ENERGYQUANTITY", lines[0]);
+        Assert.Equal("500,D04,2021-01-01T00:00:00Z,PT15M,E17,E02,1000.521", lines[1]);
+        Assert.Equal("500,D04,2021-01-01T00:00:00Z,PT15M,E17,E02,1000.521", lines[2]);
     }
 
     [Fact]
@@ -70,7 +97,7 @@ public class SettlementReportResultsCsvWriterTests
         };
 
         // Act
-        await sut.WriteAsync(memoryStream, rows);
+        await sut.WriteAsync(memoryStream, rows, _testCulture);
 
         // Assert
         var text = await ReadStreamAsStringAsync(memoryStream);
@@ -90,7 +117,7 @@ public class SettlementReportResultsCsvWriterTests
         };
 
         // Act
-        await sut.WriteAsync(memoryStream, rows);
+        await sut.WriteAsync(memoryStream, rows, _testCulture);
 
         // Assert
         var text = await ReadStreamAsStringAsync(memoryStream);
@@ -110,7 +137,7 @@ public class SettlementReportResultsCsvWriterTests
         };
 
         // Act
-        await sut.WriteAsync(memoryStream, rows);
+        await sut.WriteAsync(memoryStream, rows, _testCulture);
 
         // Assert
         var text = await ReadStreamAsStringAsync(memoryStream);
@@ -130,7 +157,7 @@ public class SettlementReportResultsCsvWriterTests
         };
 
         // Act
-        await sut.WriteAsync(memoryStream, rows);
+        await sut.WriteAsync(memoryStream, rows, _testCulture);
 
         // Assert
         var text = await ReadStreamAsStringAsync(memoryStream);
@@ -153,7 +180,7 @@ public class SettlementReportResultsCsvWriterTests
         };
 
         // Act
-        await sut.WriteAsync(memoryStream, rows);
+        await sut.WriteAsync(memoryStream, rows, _testCulture);
 
         // Assert
         var text = await ReadStreamAsStringAsync(memoryStream);
@@ -176,7 +203,7 @@ public class SettlementReportResultsCsvWriterTests
         };
 
         // Act
-        await sut.WriteAsync(memoryStream, rows);
+        await sut.WriteAsync(memoryStream, rows, _testCulture);
 
         // Assert
         var text = await ReadStreamAsStringAsync(memoryStream);
@@ -184,10 +211,10 @@ public class SettlementReportResultsCsvWriterTests
     }
 
     [Theory]
-    [InlineData(0, "0,00")]
-    [InlineData(0.01, "0,01")]
-    [InlineData(1.23, "1,23")]
-    [InlineData(1000.23, "1.000,23")]
+    [InlineData(0, "0,000")]
+    [InlineData(0.01, "0,010")]
+    [InlineData(1.234, "1,234")]
+    [InlineData(1000.234, "1000,234")]
     public static async Task WriteAsync_GivenValidRow_WritesCorrectlyFormattedQuantity(decimal input, string expected)
     {
         // Arrange
@@ -200,7 +227,7 @@ public class SettlementReportResultsCsvWriterTests
         };
 
         // Act
-        await sut.WriteAsync(memoryStream, rows);
+        await sut.WriteAsync(memoryStream, rows, _testCulture);
 
         // Assert
         var text = await ReadStreamAsStringAsync(memoryStream);

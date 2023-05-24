@@ -29,5 +29,6 @@ public interface ISettlementReportApplicationService
         ProcessType processType,
         DateTimeOffset periodStart,
         DateTimeOffset periodEnd,
-        string? energySupplier);
+        string? energySupplier,
+        string? csvLanguage);
 }

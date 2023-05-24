@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Globalization;
 using System.IO.Compression;
 using Energinet.DataHub.Wholesale.Application.SettlementReport.Model;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
@@ -55,7 +56,8 @@ public class SettlementReportApplicationService : ISettlementReportApplicationSe
         ProcessType processType,
         DateTimeOffset periodStart,
         DateTimeOffset periodEnd,
-        string? energySupplier)
+        string? energySupplier,
+        string? csvLanguage)
     {
         if (processType == ProcessType.Aggregation)
             throw new BusinessValidationException($"{ProcessType.Aggregation} is not a valid process type for settlement reports.");
@@ -75,13 +77,14 @@ public class SettlementReportApplicationService : ISettlementReportApplicationSe
         {
             using var archive = new ZipArchive(destination, ZipArchiveMode.Create, true);
 
-            var zipArchiveEntry = archive.CreateEntry("Results.csv");
+            var zipArchiveEntry = archive.CreateEntry("Result.csv");
             var zipEntryStream = zipArchiveEntry.Open();
+            var targetLanguage = new CultureInfo(csvLanguage ?? "en-US");
 
             await using (zipEntryStream.ConfigureAwait(false))
             {
                 await _settlementReportResultsCsvWriter
-                    .WriteAsync(zipEntryStream, resultRows)
+                    .WriteAsync(zipEntryStream, resultRows, targetLanguage)
                     .ConfigureAwait(false);
             }
         }

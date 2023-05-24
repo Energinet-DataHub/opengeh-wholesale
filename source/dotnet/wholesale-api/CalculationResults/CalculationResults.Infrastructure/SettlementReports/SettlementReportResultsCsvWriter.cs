@@ -22,15 +22,16 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public sealed class SettlementReportResultsCsvWriter : ISettlementReportResultsCsvWriter
 {
-    private static readonly CultureInfo _outputCulture = new("da-DK");
-
-    public async Task WriteAsync(Stream destination, IEnumerable<SettlementReportResultRow> rows)
+    public async Task WriteAsync(
+        Stream destination,
+        IEnumerable<SettlementReportResultRow> rows,
+        CultureInfo csvLanguageFormat)
     {
         var writer = new StreamWriter(destination, leaveOpen: true);
 
         await using (writer.ConfigureAwait(false))
         {
-            var csvHelper = new CsvWriter(writer, _outputCulture);
+            var csvHelper = new CsvWriter(writer, csvLanguageFormat);
             csvHelper.Context.RegisterClassMap<SettlementReportResultRowMap>();
 
             await using (csvHelper.ConfigureAwait(false))
@@ -67,7 +68,7 @@ public sealed class SettlementReportResultsCsvWriter : ISettlementReportResultsC
 
             Map(r => r.Quantity)
                 .Name("ENERGYQUANTITY")
-                .Convert(ConvertQuantityToCsvField);
+                .Data.TypeConverterOptions.Formats = new[] { "0.000" };
         }
 
         private static string ConvertProcessTypeToCsvField(ConvertToStringArgs<SettlementReportResultRow> row)
@@ -100,11 +101,6 @@ public sealed class SettlementReportResultsCsvWriter : ISettlementReportResultsC
                 SettlementMethod.Flex => "E02",
                 _ => throw new ArgumentOutOfRangeException(nameof(row)),
             };
-        }
-
-        private static string ConvertQuantityToCsvField(ConvertToStringArgs<SettlementReportResultRow> row)
-        {
-            return row.Value.Quantity.ToString("#,##0.00", _outputCulture);
         }
     }
 }

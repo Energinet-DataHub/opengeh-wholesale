@@ -38,7 +38,8 @@ public class SettlementReportController : V3ControllerBase
         [Required, FromQuery] ProcessType processType,
         [Required, FromQuery] DateTimeOffset periodStart,
         [Required, FromQuery] DateTimeOffset periodEnd,
-        [FromQuery] string? energySupplier)
+        [FromQuery] string? energySupplier,
+        [FromQuery] string? csvLanguage)
     {
         return _settlementReportApplicationService
             .CreateCompressedSettlementReportAsync(
@@ -60,7 +61,8 @@ public class SettlementReportController : V3ControllerBase
                 ProcessTypeMapper.Map(processType),
                 periodStart,
                 periodEnd,
-                energySupplier);
+                energySupplier,
+                csvLanguage);
     }
 
     /// <summary>
