@@ -25,7 +25,7 @@ public class MeteringPointTypeMapperTests
     public async Task MeteringPointTypeMapper_ReturnsValidMeteringPointType()
     {
         // Arrange
-        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.time-series-type.json");
+        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.Enums.time-series-type.json");
         var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
 
         foreach (var validDeltaValue in validDeltaValues)

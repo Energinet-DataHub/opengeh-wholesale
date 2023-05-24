@@ -31,6 +31,7 @@ from package.codelists import (
 )
 from package.constants import Colname, ResultTableColName
 from package.file_writers.process_step_result_writer import ProcessStepResultWriter
+from tests.contract_utils import read_contract
 from tests.helpers.assert_calculation_file_path import (
     CalculationFileType,
     assert_file_path_match_contract,
@@ -300,3 +301,35 @@ def test__write__writes_column(
         col(ResultTableColName.batch_id) == batch_id
     )
     assert actual_df.collect()[0][column_name] == column_value
+
+
+def test__write__writes_columns_matching_contract(
+    spark: SparkSession,
+    contracts_path: str,
+    tmpdir: Path,
+    migrations_executed: None,
+) -> None:
+    # Arrange
+    contract_path = f"{contracts_path}/result-table-column-names.json"
+    expected_column_names = read_contract(contract_path)
+    row = [_create_result_row()]
+    result_df = _create_result_df(spark, row)
+    sut = ProcessStepResultWriter(
+        str(tmpdir),
+        batch_id,
+        DEFAULT_PROCESS_TYPE,
+        DEFAULT_BATCH_EXECUTION_START,
+    )
+
+    # Act
+    sut.write(
+        result_df,
+        DEFAULT_TIME_SERIES_TYPE,
+        DEFAULT_AGGREGATION_LEVEL,
+    )
+
+    # Assert
+    actual_df = spark.read.table(TABLE_NAME).where(
+        col(ResultTableColName.batch_id) == batch_id
+    )
+    assert sorted(actual_df.columns) == sorted(expected_column_names)
