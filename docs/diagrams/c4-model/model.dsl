@@ -37,21 +37,5 @@ wholesaleDomain = group "Wholesale" {
             tags "Simple View"
         }
     }
-    wholesaleProcessManager = container "Process Manager" {
-        description "<add description>"
-        technology "Azure function, C#"
-        tags "Microsoft Azure - Function Apps"
-
-        # Base model relationships
-        this -> dh3.sharedServiceBus "listens to events"
-
-        # Domain relationships
-        this -> wholesaleApi "uses (directly)"
-    }
-
-    # Domain relationships (circular references)
-    wholesaleApi -> wholesaleProcessManager "notify of <event>" "message/amqp" {
-        tags "Simple View"
-    }
 }
 
