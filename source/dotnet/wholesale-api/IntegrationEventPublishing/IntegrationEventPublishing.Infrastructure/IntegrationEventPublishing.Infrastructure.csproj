@@ -1,6 +1,33 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <AssemblyName>Energinet.DataHub.Wholesale.IntegrationEventsPublising.Infrastructure</AssemblyName>
-    <RootNamespace>Energinet.DataHub.Wholesale.IntegrationEventsPublising.Infrastructure</RootNamespace>
+    <AssemblyName>Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.13.1" />
+    <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.13.0" />
+    <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="7.4.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.4" />
+    <PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" Version="7.0.0" />
+    <PackageReference Include="Google.Protobuf" Version="3.22.1" />
+    <PackageReference Include="Grpc.Tools" Version="2.54.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Protobuf Include="IntegrationEvents/*.proto">
+      <GrpcServices>None</GrpcServices>
+      <Access>Public</Access>
+      <ProtoCompile>True</ProtoCompile>
+      <CompileOutputs>True</CompileOutputs>
+      <OutputDir>obj\contracts</OutputDir>
+      <Generator>MSBuild:Compile</Generator>
+    </Protobuf>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
+    <ProjectReference Include="..\IntegrationEventPublishing.Application\IntegrationEventPublishing.Application.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ProcessAggregate" />
+  </ItemGroup>
 </Project>
