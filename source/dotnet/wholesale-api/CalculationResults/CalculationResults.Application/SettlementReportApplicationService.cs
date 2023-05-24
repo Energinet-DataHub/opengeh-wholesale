@@ -12,24 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Globalization;
+using System.IO.Compression;
 using Energinet.DataHub.Wholesale.Application.SettlementReport.Model;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
 using NodaTime;
+using ProcessType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application;
 
 public class SettlementReportApplicationService : ISettlementReportApplicationService
 {
     private readonly IBatchApplicationService _batchRepository;
+    private readonly ICalculationResultClient _calculationResultClient;
+    private readonly ISettlementReportResultsCsvWriter _settlementReportResultsCsvWriter;
     private readonly ISettlementReportRepository _settlementReportRepository;
 
     public SettlementReportApplicationService(
         IBatchApplicationService batchRepository,
+        ICalculationResultClient calculationResultClient,
+        ISettlementReportResultsCsvWriter settlementReportResultsCsvWriter,
         ISettlementReportRepository settlementReportRepository)
     {
         _batchRepository = batchRepository;
+        _calculationResultClient = calculationResultClient;
+        _settlementReportResultsCsvWriter = settlementReportResultsCsvWriter;
         _settlementReportRepository = settlementReportRepository;
     }
 
@@ -38,6 +48,46 @@ public class SettlementReportApplicationService : ISettlementReportApplicationSe
         var batch = await _batchRepository.GetAsync(batchId).ConfigureAwait(false);
         var report = await _settlementReportRepository.GetSettlementReportAsync(Map(batch)).ConfigureAwait(false);
         return new SettlementReportDto(report.Stream);
+    }
+
+    public async Task CreateCompressedSettlementReportAsync(
+        Func<Stream> openDestinationStream,
+        string[] gridAreaCodes,
+        ProcessType processType,
+        DateTimeOffset periodStart,
+        DateTimeOffset periodEnd,
+        string? energySupplier,
+        string? csvLanguage)
+    {
+        if (processType == ProcessType.Aggregation)
+            throw new BusinessValidationException($"{ProcessType.Aggregation} is not a valid process type for settlement reports.");
+
+        var resultRows = await _calculationResultClient
+            .GetSettlementReportResultAsync(
+                gridAreaCodes,
+                processType,
+                Instant.FromDateTimeOffset(periodStart),
+                Instant.FromDateTimeOffset(periodEnd),
+                energySupplier)
+            .ConfigureAwait(false);
+
+        var destination = openDestinationStream();
+
+        await using (destination.ConfigureAwait(false))
+        {
+            using var archive = new ZipArchive(destination, ZipArchiveMode.Create, true);
+
+            var zipArchiveEntry = archive.CreateEntry("Result.csv");
+            var zipEntryStream = zipArchiveEntry.Open();
+            var targetLanguage = new CultureInfo(csvLanguage ?? "en-US");
+
+            await using (zipEntryStream.ConfigureAwait(false))
+            {
+                await _settlementReportResultsCsvWriter
+                    .WriteAsync(zipEntryStream, resultRows, targetLanguage)
+                    .ConfigureAwait(false);
+            }
+        }
     }
 
     public async Task GetSettlementReportAsync(Guid batchId, string gridAreaCode, Stream outputStream)

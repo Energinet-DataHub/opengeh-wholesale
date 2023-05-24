@@ -15,7 +15,8 @@
 using System.Net;
 using System.Text;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Application.SettlementReport;
+using Energinet.DataHub.Wholesale.Batches.Interfaces;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
@@ -90,5 +91,176 @@ public sealed class SettlementReportTests : WebApiTestBase
         var actualContent = Encoding.UTF8.GetString(actualBytes);
 
         actualContent.Should().Be(expectedContent);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task HTTP_GET_V3_Download_ReturnsExpectedContent(
+        Mock<ISettlementReportApplicationService> settlementReportApplicationService)
+    {
+        // Arrange
+        const string gridAreaCode = "567";
+        const string processType = "BalanceFixing";
+        var periodStart = DateTime.Parse("2021-01-01T00:00:00Z").ToUniversalTime();
+        var periodEnd = DateTime.Parse("2021-06-15T00:00:00Z").ToUniversalTime();
+
+        var url = "/v3/SettlementReport/Download"
+                  + $"?gridAreaCodes={gridAreaCode}"
+                  + $"&processType={processType}"
+                  + $"&periodStart={periodStart:O}"
+                  + $"&periodEnd={periodEnd:O}";
+
+        const string expectedMockedContent = "0305C8A0-5E42-4174-85DE-B7737E8C66C4";
+
+        settlementReportApplicationService
+            .Setup(service => service.CreateCompressedSettlementReportAsync(
+                It.IsAny<Func<Stream>>(),
+                new[] { gridAreaCode },
+                ProcessType.BalanceFixing,
+                periodStart,
+                periodEnd,
+                null,
+                null))
+            .Returns<Func<Stream>, string[], ProcessType, DateTimeOffset, DateTimeOffset, string?, string?>((openStream, _, _, _, _, _, _) =>
+            {
+                openStream().Write(Encoding.UTF8.GetBytes(expectedMockedContent));
+                return Task.CompletedTask;
+            });
+
+        Factory.SettlementReportApplicationServiceMock = settlementReportApplicationService;
+
+        // Act
+        var actual = await Client.GetAsync(url);
+
+        // Assert
+        Assert.Equal(expectedMockedContent, await actual.Content.ReadAsStringAsync());
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task HTTP_GET_V3_Download_DkLanguage_ReturnsExpectedContent(
+        Mock<ISettlementReportApplicationService> settlementReportApplicationService)
+    {
+        // Arrange
+        const string gridAreaCode = "567";
+        const string processType = "BalanceFixing";
+        const string language = "da-DK";
+        var periodStart = DateTime.Parse("2021-01-01T00:00:00Z").ToUniversalTime();
+        var periodEnd = DateTime.Parse("2021-06-15T00:00:00Z").ToUniversalTime();
+
+        var url = "/v3/SettlementReport/Download"
+                  + $"?gridAreaCodes={gridAreaCode}"
+                  + $"&processType={processType}"
+                  + $"&periodStart={periodStart:O}"
+                  + $"&periodEnd={periodEnd:O}"
+                  + $"&csvLanguage={language}";
+
+        const string expectedMockedContent = "0305C8A0-5E42-4174-85DE-B7737E8C66C4";
+
+        settlementReportApplicationService
+            .Setup(service => service.CreateCompressedSettlementReportAsync(
+                It.IsAny<Func<Stream>>(),
+                new[] { gridAreaCode },
+                ProcessType.BalanceFixing,
+                periodStart,
+                periodEnd,
+                null,
+                language))
+            .Returns<Func<Stream>, string[], ProcessType, DateTimeOffset, DateTimeOffset, string?, string?>((openStream, _, _, _, _, _, _) =>
+            {
+                openStream().Write(Encoding.UTF8.GetBytes(expectedMockedContent));
+                return Task.CompletedTask;
+            });
+
+        Factory.SettlementReportApplicationServiceMock = settlementReportApplicationService;
+
+        // Act
+        var actual = await Client.GetAsync(url);
+
+        // Assert
+        Assert.Equal(expectedMockedContent, await actual.Content.ReadAsStringAsync());
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task HTTP_GET_V3_Download_ReturnsCorrectHeaders(
+        Mock<ISettlementReportApplicationService> settlementReportApplicationService)
+    {
+        // Arrange
+        const string gridAreaCode = "567";
+        const string processType = "BalanceFixing";
+        var periodStart = DateTime.Parse("2021-01-01T00:00:00Z").ToUniversalTime();
+        var periodEnd = DateTime.Parse("2021-06-15T00:00:00Z").ToUniversalTime();
+
+        var url = "/v3/SettlementReport/Download"
+                  + $"?gridAreaCodes={gridAreaCode}"
+                  + $"&processType={processType}"
+                  + $"&periodStart={periodStart:O}"
+                  + $"&periodEnd={periodEnd:O}";
+
+        var expectedFileName = $"Result_{gridAreaCode}_{periodStart:dd-MM-yyyy}_{periodEnd:dd-MM-yyyy}_D04.zip";
+
+        settlementReportApplicationService
+            .Setup(service => service.CreateCompressedSettlementReportAsync(
+                It.IsAny<Func<Stream>>(),
+                new[] { gridAreaCode },
+                ProcessType.BalanceFixing,
+                periodStart,
+                periodEnd,
+                null,
+                null))
+            .Returns<Func<Stream>, string[], ProcessType, DateTimeOffset, DateTimeOffset, string?, string?>((openStream, _, _, _, _, _, _) =>
+            {
+                openStream();
+                return Task.CompletedTask;
+            });
+
+        Factory.SettlementReportApplicationServiceMock = settlementReportApplicationService;
+
+        // Act
+        var actual = await Client.GetAsync(url);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, actual.StatusCode);
+        Assert.Equal("application/zip", actual.Content.Headers.ContentType?.MediaType);
+        Assert.Equal(expectedFileName, actual.Content.Headers.ContentDisposition?.FileName);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task HTTP_GET_V3_Download_WithAggregationProcessType_ReturnsBadRequest(
+        Mock<ISettlementReportApplicationService> settlementReportApplicationService)
+    {
+        // Arrange
+        const string gridAreaCode = "567";
+        const string processType = "Aggregation";
+        var periodStart = DateTime.Parse("2021-01-01T00:00:00Z").ToUniversalTime();
+        var periodEnd = DateTime.Parse("2021-06-15T00:00:00Z").ToUniversalTime();
+
+        var url = "/v3/SettlementReport/Download"
+                  + $"?gridAreaCodes={gridAreaCode}"
+                  + $"&processType={processType}"
+                  + $"&periodStart={periodStart:O}"
+                  + $"&periodEnd={periodEnd:O}";
+
+        settlementReportApplicationService
+            .Setup(service => service.CreateCompressedSettlementReportAsync(
+                It.IsAny<Func<Stream>>(),
+                new[] { gridAreaCode },
+                ProcessType.Aggregation,
+                periodStart,
+                periodEnd,
+                null,
+                null))
+            .Returns<Func<Stream>, string[], ProcessType, DateTimeOffset, DateTimeOffset, string?, string?>((_, _, _, _, _, _, _) =>
+                throw new BusinessValidationException("Tested Validation Exception"));
+
+        Factory.SettlementReportApplicationServiceMock = settlementReportApplicationService;
+
+        // Act
+        var actual = await Client.GetAsync(url);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, actual.StatusCode);
     }
 }
