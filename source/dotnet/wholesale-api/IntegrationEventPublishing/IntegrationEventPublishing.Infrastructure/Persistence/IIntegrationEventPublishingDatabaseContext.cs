@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.BatchAggregate;
-using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence.Outbox;
 using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence;
@@ -21,8 +20,6 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.
 public interface IIntegrationEventPublishingDatabaseContext
 {
     DbSet<CompletedBatch> CompletedBatches { get; }
-
-    DbSet<OutboxMessage> OutboxMessages { get; }
 
     /// <summary>
     /// Saves changes to the database.

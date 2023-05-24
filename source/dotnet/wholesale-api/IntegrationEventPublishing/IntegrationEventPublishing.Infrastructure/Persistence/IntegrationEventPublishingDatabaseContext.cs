@@ -15,7 +15,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.BatchAggregate;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence.Batches;
-using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence.Outbox;
 using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence;
@@ -37,15 +36,12 @@ public class IntegrationEventPublishingDatabaseContext : DbContext, IIntegration
 
     public DbSet<CompletedBatch> CompletedBatches { get; private set; } = null!;
 
-    public DbSet<OutboxMessage> OutboxMessages { get; private set; } = null!;
-
     public Task<int> SaveChangesAsync() => base.SaveChangesAsync();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema(Schema);
         modelBuilder.ApplyConfiguration(new CompletedBatchEntityConfiguration());
-        modelBuilder.ApplyConfiguration(new OutboxMessageEntityConfiguration());
         base.OnModelCreating(modelBuilder);
     }
 }
