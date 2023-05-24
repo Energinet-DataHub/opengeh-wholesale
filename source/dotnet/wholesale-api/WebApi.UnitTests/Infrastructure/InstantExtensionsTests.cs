@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Infrastructure;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure;
 using FluentAssertions;
 using NodaTime;
 using Xunit;

@@ -26,7 +26,6 @@
   
     <ItemGroup>
       <ProjectReference Include="..\..\..\database-migration\DatabaseMigration.csproj" />
-      <ProjectReference Include="..\..\Infrastructure\Infrastructure.csproj" />
       <ProjectReference Include="..\..\Test.Core\Test.Core.csproj" />
       <ProjectReference Include="..\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
     </ItemGroup>

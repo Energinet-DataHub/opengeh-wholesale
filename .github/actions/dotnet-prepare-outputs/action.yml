@@ -32,16 +32,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Publish ProcessManager
-      shell: bash
-      run: |
-        dotnet publish \
-          '.\source\dotnet\process-manager\ProcessManager\ProcessManager.csproj' \
-          --no-build \
-          --no-restore \
-          --configuration Release \
-          --output '${{ inputs.output_path }}\functions\processmanager'
-
     - name: Publish Web API
       shell: bash
       run: |
