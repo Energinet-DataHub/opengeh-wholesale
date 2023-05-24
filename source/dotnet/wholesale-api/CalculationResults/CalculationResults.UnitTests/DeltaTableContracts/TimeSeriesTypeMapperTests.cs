@@ -26,7 +26,7 @@ public class TimeSeriesTypeMapperTests
     [Fact]
     public async Task TimeSeriesType_Matches_Contract()
     {
-        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.time-series-type.json");
+        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.Enums.time-series-type.json");
         await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<TimeSeriesType>(stream);
     }
 
@@ -34,7 +34,7 @@ public class TimeSeriesTypeMapperTests
     public async Task TimeSeriesTypeMapper_MapsAllValidDeltaTableValues()
     {
         // Arrange
-        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.time-series-type.json");
+        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.Enums.time-series-type.json");
         var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
 
         foreach (var validDeltaValue in validDeltaValues)

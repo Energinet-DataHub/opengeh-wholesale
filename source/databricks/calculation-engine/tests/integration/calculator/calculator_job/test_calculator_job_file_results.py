@@ -135,7 +135,7 @@ def test__production_total_ga__schema_must_match_contract_with_dotnet(
     result_805 = spark.read.json(result_path)
 
     assert_contract_matches_schema(
-        f"{contracts_path}/calculator-result.json",
+        f"{contracts_path}/calculator-file-result.json",
         result_805.schema,
     )
 
@@ -163,7 +163,7 @@ def test__non_profiled_consumption_per_es__schema_must_match_contract_with_dotne
     result_805 = spark.read.json(result_path)
 
     assert_contract_matches_schema(
-        f"{contracts_path}/calculator-result.json",
+        f"{contracts_path}/calculator-file-result.json",
         result_805.schema,
     )
 

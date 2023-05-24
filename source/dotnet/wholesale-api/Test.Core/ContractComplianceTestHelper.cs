@@ -19,11 +19,16 @@ namespace Test.Core;
 
 public static class ContractComplianceTestHelper
 {
-    public static async Task<string> GetRequiredMessageTypeAsync(Stream contractStream)
+    public static async Task<dynamic> GetJsonObjectAsync(Stream contractStream)
     {
         using var streamReader = new StreamReader(contractStream);
         var contractJson = await streamReader.ReadToEndAsync().ConfigureAwait(false);
-        var contractDescription = JsonConvert.DeserializeObject<dynamic>(contractJson)!;
+        return JsonConvert.DeserializeObject<dynamic>(contractJson)!;
+    }
+
+    public static async Task<string> GetRequiredMessageTypeAsync(Stream contractStream)
+    {
+        var contractDescription = await GetJsonObjectAsync(contractStream).ConfigureAwait(false);
 
         foreach (var fieldDescriptor in contractDescription.fields)
         {
@@ -37,9 +42,7 @@ public static class ContractComplianceTestHelper
     public static async Task VerifyEnumCompliesWithContractAsync<T>(Stream contractStream)
         where T : struct, Enum
     {
-        using var streamReader = new StreamReader(contractStream);
-        var contractJson = await streamReader.ReadToEndAsync().ConfigureAwait(false);
-        var contractDescription = JsonConvert.DeserializeObject<dynamic>(contractJson)!;
+        var contractDescription = await GetJsonObjectAsync(contractStream).ConfigureAwait(false);
 
         var expectedLiterals = contractDescription.literals;
         var actualNames = Enum.GetNames<T>();
@@ -63,9 +66,7 @@ public static class ContractComplianceTestHelper
 
     public static async Task VerifyTypeCompliesWithContractAsync<T>(Stream contractStream)
     {
-        using var streamReader = new StreamReader(contractStream);
-        var contractJson = await streamReader.ReadToEndAsync().ConfigureAwait(false);
-        var contractDescription = JsonConvert.DeserializeObject<dynamic>(contractJson)!;
+        var contractDescription = await GetJsonObjectAsync(contractStream).ConfigureAwait(false);
 
         var expectedProps = contractDescription.fields;
         var actualProps = typeof(T)
@@ -91,9 +92,7 @@ public static class ContractComplianceTestHelper
 
     public static async Task<List<string>> GetCodeListValuesAsync(Stream contractStream)
     {
-        using var streamReader = new StreamReader(contractStream);
-        var contractJson = await streamReader.ReadToEndAsync().ConfigureAwait(false);
-        var contractDescription = JsonConvert.DeserializeObject<dynamic>(contractJson)!;
+        var contractDescription = await GetJsonObjectAsync(contractStream).ConfigureAwait(false);
 
         var values = new List<string>();
         foreach (var expectedLiteral in contractDescription.literals)

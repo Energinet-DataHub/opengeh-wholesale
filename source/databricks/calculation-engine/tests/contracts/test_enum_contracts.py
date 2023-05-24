@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from enum import Enum
 import pytest
 from package.codelists import (
     AggregationLevel,
@@ -35,6 +36,8 @@ from tests.contract_utils import assert_codelist_matches_contract
         ("settlement-method.json", SettlementMethod),
     ],
 )
-def test_codelist_matches_contract(contracts_path, contract_file, code_list):
-    contract_path = f"{contracts_path}/{contract_file}"
+def test_codelist_matches_contract(
+    contracts_path: str, contract_file: str, code_list: Enum
+) -> None:
+    contract_path = f"{contracts_path}/enums/{contract_file}"
     assert_codelist_matches_contract(code_list, contract_path)
