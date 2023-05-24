@@ -18,9 +18,5 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.
 
 public interface IIntegrationEventTopicServiceBusSender
 {
-    Task<ServiceBusMessageBatch> CreateBusMessageBatchAsync();
-
-    Task SendAsync(ServiceBusMessageBatch serviceBusMessageBatch);
-
     Task SendAsync(ServiceBusMessage serviceBusMessage);
 }
