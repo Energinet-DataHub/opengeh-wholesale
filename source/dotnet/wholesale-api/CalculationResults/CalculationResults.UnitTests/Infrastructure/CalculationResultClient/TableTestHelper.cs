@@ -18,7 +18,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 
 public static class TableTestHelper
 {
-    public static Table CreateTableForSettlementReport()
+    public static Table CreateTableForSettlementReport(int rowCount)
     {
         var columnNames = new List<string>()
         {
@@ -28,12 +28,13 @@ public static class TableTestHelper
             ResultColumnNames.TimeSeriesType,
             ResultColumnNames.Quantity,
         };
-        var rows = new List<string[]>()
+        var rows = new List<string[]>();
+        for (var row = 0; row < rowCount; row++)
         {
-            new[] { "123", "BalanceFixing", "2022-05-16T01:00:00.000Z", "non_profiled_consumption", "1.1" },
-            new[] { "234", "BalanceFixing", "2022-05-16T01:15:00.000Z", "production", "2.2" },
-            new[] { "234", "BalanceFixing", "2022-05-16T01:30:00.000Z", "production", "3.3" },
-        };
+            var dummyQuantity = $@"{row}.1";
+            rows.Add(new[] { "123", "BalanceFixing", "2022-05-16T01:00:00.000Z", "non_profiled_consumption", $@"{dummyQuantity}" });
+        }
+
         return new Table(columnNames, rows);
     }
 }
