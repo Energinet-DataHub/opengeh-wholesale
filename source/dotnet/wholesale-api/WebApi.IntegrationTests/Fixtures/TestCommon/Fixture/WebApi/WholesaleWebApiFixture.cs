@@ -18,7 +18,6 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
-using Energinet.DataHub.Wholesale.ProcessManager;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.Components;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.Database;
@@ -107,7 +106,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
                 credential: new DefaultAzureCredential());
 
             var fileSystemClient = dataLakeServiceClient.GetFileSystemClient(
-                Environment.GetEnvironmentVariable(EnvironmentSettingNames.CalculationStorageContainerName));
+                Environment.GetEnvironmentVariable("STORAGE_CONTAINER_NAME"));
 
             await fileSystemClient.CreateIfNotExistsAsync();
         }

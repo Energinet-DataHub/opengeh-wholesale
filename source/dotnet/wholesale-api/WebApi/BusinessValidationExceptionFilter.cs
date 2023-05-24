@@ -13,9 +13,7 @@
 // limitations under the License.
 
 using System.Net;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
-using Energinet.DataHub.Wholesale.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
