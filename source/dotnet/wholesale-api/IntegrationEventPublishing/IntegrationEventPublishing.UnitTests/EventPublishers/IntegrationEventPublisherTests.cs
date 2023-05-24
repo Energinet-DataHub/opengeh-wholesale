@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using AutoFixture.Xunit2;
-using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.IntegrationEventsManagement;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.EventPublishers;
-using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence.Outbox;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.ServiceBus;
 using Moq;
 using Xunit;
 
@@ -24,20 +23,24 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.UnitTests.Event
 
 public class IntegrationEventPublisherTests
 {
-    [Theory]
-    [AutoMoqData]
-    public async Task AddAsync_WhenCreatingOutboxMessage(
-        [Frozen] Mock<IOutboxMessageRepository> outboxMessageRepositoryMock,
-        IntegrationEventDto integrationEventDto,
-        IntegrationEventPublisher sut)
+    [Fact]
+    public async Task PublishAsync_WhenCalled_UsesIntegrationEventTopicServiceSender()
     {
-        // Arrange & Act
-        await sut.PublishAsync(integrationEventDto);
+        // Arrange
+        var serviceBusMessageFactory = new Mock<IServiceBusMessageFactory>();
+        var integrationEventTopicServiceBusSender = new Mock<IIntegrationEventTopicServiceBusSender>();
+        var integrationEventPublisher = new IntegrationEventPublisher(
+            serviceBusMessageFactory.Object,
+            integrationEventTopicServiceBusSender.Object);
+
+        var integrationEventDto = new IntegrationEventDto();
+
+        // Act
+        await integrationEventPublisher.PublishAsync(integrationEventDto);
 
         // Assert
-        outboxMessageRepositoryMock.Verify(x => x.AddAsync(It.Is<OutboxMessage>(message =>
-            message.MessageType == integrationEventDto.MessageType
-            && message.Data == integrationEventDto.EventData
-            && message.CreationDate == integrationEventDto.CreationDate)));
+        integrationEventTopicServiceBusSender.Verify(
+            x => x.SendAsync(It.IsAny<ServiceBusMessage>()),
+            Times.Once);
     }
 }
