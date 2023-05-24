@@ -14,4 +14,10 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
-public sealed record DatabricksSqlResponse(string State, Table? Table);
+public class DatabricksSqlException : Exception
+{
+    public DatabricksSqlException(string message)
+        : base(message)
+    {
+    }
+}

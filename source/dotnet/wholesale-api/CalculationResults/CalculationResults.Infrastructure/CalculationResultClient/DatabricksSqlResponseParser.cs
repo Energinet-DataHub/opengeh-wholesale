@@ -26,9 +26,19 @@ public class DatabricksSqlResponseParser : IDatabricksSqlResponseParser
                          throw new InvalidOperationException();
 
         var state = GetState(jsonObject);
-        var columnNames = GetColumnNames(jsonObject);
-        var dataArray = GetDataArray(jsonObject);
-        return new DatabricksSqlResponse(state, new Table(columnNames, dataArray));
+        switch (state)
+        {
+            case "PENDING":
+                return new DatabricksSqlResponse(state, null);
+            case "RUNNING":
+                return new DatabricksSqlResponse("PENDING", null); // We currently don't distinguish between PENDING and RUNNING
+            case "SUCCEEDED":
+                var columnNames = GetColumnNames(jsonObject);
+                var dataArray = GetDataArray(jsonObject);
+                return new DatabricksSqlResponse(state, new Table(columnNames, dataArray));
+            default:
+                throw new DatabricksSqlException($@"Databricks SQL statement execution failed. State: {state}");
+        }
     }
 
     private static string GetState(JObject responseJsonObject)
@@ -39,14 +49,14 @@ public class DatabricksSqlResponseParser : IDatabricksSqlResponseParser
     private static IEnumerable<string> GetColumnNames(JObject responseJsonObject)
     {
         var columnNames = responseJsonObject["manifest"]?["schema"]?["columns"]?.Select(x => x["name"]?.ToString()) ??
-                          throw new InvalidOperationException("Unable to retrieve 'columns' from the responseJsonObject.");
+                          throw new DatabricksSqlException("Unable to retrieve 'columns' from the responseJsonObject.");
         return columnNames!;
     }
 
     private static IEnumerable<string[]> GetDataArray(JObject responseJsonObject)
     {
         var dataArray = responseJsonObject["result"]?["data_array"]?.ToObject<List<string[]>>() ??
-                        throw new InvalidOperationException("Unable to retrieve 'data_array' from the responseJsonObject");
+                        throw new DatabricksSqlException("Unable to retrieve 'data_array' from the responseJsonObject");
         return dataArray;
     }
 }

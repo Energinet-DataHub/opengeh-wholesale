@@ -15,6 +15,7 @@
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 using FluentAssertions;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Categories;
@@ -24,24 +25,49 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 [UnitTest]
 public class DatabricksSqlResponseParserTests
 {
-    private readonly string _sampleJson;
+    private readonly string _succeededResultJson;
+    private readonly string _pendingResultJson;
 
     public DatabricksSqlResponseParserTests()
     {
         var stream = EmbeddedResources.GetStream("Infrastructure.CalculationResultClient.CalculationResult.json");
         using var reader = new StreamReader(stream);
-        _sampleJson = reader.ReadToEnd();
+        _succeededResultJson = reader.ReadToEnd();
+
+        var statement = new
+        {
+            statement_id = "01edef23-0d2c-10dd-879b-26b5e97b3796",
+            status = new
+            {
+                state = "PENDING",
+            },
+        };
+        _pendingResultJson = JsonConvert.SerializeObject(statement, Formatting.Indented);
     }
 
     [Theory]
     [AutoMoqData]
-    public void Parse_ReturnsResponseWithExpectedState(DatabricksSqlResponseParser sut)
+    public void Parse_WhenStateIsPending_ReturnsResponseWithExpectedState(DatabricksSqlResponseParser sut)
+    {
+        // Arrange
+        const string expectedState = "PENDING";
+
+        // Act
+        var actual = sut.Parse(_pendingResultJson);
+
+        // Assert
+        actual.State.Should().Be(expectedState);
+    }
+
+    [Theory]
+    [AutoMoqData]
+    public void Parse_WhenStateIsSucceeded_ReturnsResponseWithExpectedState(DatabricksSqlResponseParser sut)
     {
         // Arrange
         const string expectedState = "SUCCEEDED";
 
         // Act
-        var actual = sut.Parse(_sampleJson);
+        var actual = sut.Parse(_succeededResultJson);
 
         // Assert
         actual.State.Should().Be(expectedState);
@@ -55,10 +81,10 @@ public class DatabricksSqlResponseParserTests
         const int expectedLength = 96;
 
         // Act
-        var actual = sut.Parse(_sampleJson);
+        var actual = sut.Parse(_succeededResultJson);
 
         // Assert
-        actual.Table.RowCount.Should().Be(expectedLength);
+        actual.Table!.RowCount.Should().Be(expectedLength);
     }
 
     [Theory]
@@ -76,11 +102,11 @@ public class DatabricksSqlResponseParserTests
         };
 
         // Act
-        var actual = sut.Parse(_sampleJson);
+        var actual = sut.Parse(_succeededResultJson);
 
         // Assert
-        actual.Table[0].Should().Equal(expectedFirstArray);
-        actual.Table[^1].Should().Equal(expectedLastArray);
+        actual.Table![0].Should().Equal(expectedFirstArray);
+        actual.Table![^1].Should().Equal(expectedLastArray);
     }
 
     [Theory]
