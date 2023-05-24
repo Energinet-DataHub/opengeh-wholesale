@@ -25,7 +25,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 public class SqlStatementFactoryTests
 {
     [Fact]
-    public void CreateForSettlementReport_ReturnsExpectedSqlStatement()
+    public void CreateForSettlementReport_WhenEnergySupplierIsNull_ReturnsExpectedSqlStatement()
     {
         // Arrange
         var gridAreasCodes = new[] { "123", "234", "345" };
@@ -45,6 +45,23 @@ ORDER by time
 
         // Act
         var actual = SqlStatementFactory.CreateForSettlementReport(gridAreasCodes, ProcessType.BalanceFixing, periodStart, periodEnd, null);
+
+        // Assert
+        actual.Should().Be(expectedSql);
+    }
+
+    [Fact]
+    public void CreateForSettlementReport_WhenEnergySupplierIsNotNull_ReturnsExpectedSqlStatement()
+    {
+        // Arrange
+        const string energySupplier = "1234567890123";
+        var gridAreasCodes = new[] { "123", "234", "345" };
+        var periodStart = Instant.FromUtc(2022, 10, 12, 1, 0);
+        var periodEnd = Instant.FromUtc(2022, 10, 12, 3, 0);
+        const string expectedSql = $@"SELECT grid_area, batch_process_type, time, time_series_type, quantity FROM wholesale_output.result WHERE grid_area IN (123,234,345) AND time_series_type IN ('production','flex_consumption','non_profiled_consumption') AND batch_process_type = 'BalanceFixing' AND time BETWEEN '2022-10-12T01:00:00Z' AND '2022-10-12T03:00:00Z' AND energy_supplier_id = '{energySupplier}' ORDER BY time";
+
+        // Act
+        var actual = SqlStatementFactory.CreateForSettlementReport(gridAreasCodes, ProcessType.BalanceFixing, periodStart, periodEnd, energySupplier);
 
         // Assert
         actual.Should().Be(expectedSql);
