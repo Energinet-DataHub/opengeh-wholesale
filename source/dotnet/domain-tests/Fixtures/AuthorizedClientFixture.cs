@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Identity;
+using Azure.Messaging.ServiceBus;
+using Azure.Messaging.ServiceBus.Administration;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
 using Moq;
 using Xunit;
@@ -23,13 +26,15 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
     /// </summary>
     public sealed class AuthorizedClientFixture : IAsyncLifetime
     {
+        private readonly string _topicName = "sbt-sharedres-integrationevent-received";
+        private readonly string _subscriptionName = Guid.NewGuid().ToString();
+
         public AuthorizedClientFixture()
         {
             Configuration = new WholesaleDomainConfiguration();
             UserAuthenticationClient = new B2CUserTokenAuthenticationClient(Configuration.UserTokenConfiguration);
-
-            // Initially mock client, and set it later when 'InitializeAsync' is called.
-            // WholesaleClient = Mock.Of<IWholesaleClient>();
+            ServiceBusAdministrationClient = new ServiceBusAdministrationClient(Configuration.ServiceBusFullyQualifiedNamespace, new DefaultAzureCredential());
+            ServiceBusClient = new ServiceBusClient(Configuration.ServiceBusConnectionString);
         }
 
         public WholesaleDomainConfiguration Configuration { get; }
@@ -39,18 +44,30 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         /// </summary>
         public WholesaleClient_V3 WholesaleClient { get; private set; } = null!;
 
+        /// <summary>
+        /// The actual client is not created until <see cref="IAsyncLifetime.InitializeAsync"/> has been called by xUnit.
+        /// </summary>
+        public ServiceBusReceiver Receiver { get; private set; } = null!;
+
         private B2CUserTokenAuthenticationClient UserAuthenticationClient { get; }
+
+        private ServiceBusAdministrationClient ServiceBusAdministrationClient { get; }
+
+        private ServiceBusClient ServiceBusClient { get; }
 
         async Task IAsyncLifetime.InitializeAsync()
         {
             WholesaleClient = await CreateWholesaleClientAsync();
+
+            await CreateTopicSubscriptionAsync();
+            Receiver = CreateServiceBusReceiver();
         }
 
-        Task IAsyncLifetime.DisposeAsync()
+        async Task IAsyncLifetime.DisposeAsync()
         {
             UserAuthenticationClient.Dispose();
-
-            return Task.CompletedTask;
+            await ServiceBusAdministrationClient.DeleteSubscriptionAsync(_topicName, _subscriptionName);
+            await ServiceBusClient.DisposeAsync();
         }
 
         /// <summary>
@@ -73,6 +90,26 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                 new AuthorizedHttpClientFactory(
                     httpClientFactoryMock.Object,
                     () => $"Bearer {accessToken}").CreateClient(Configuration.WebApiBaseAddress));
+        }
+
+        private async Task CreateTopicSubscriptionAsync()
+        {
+            if (await ServiceBusAdministrationClient.SubscriptionExistsAsync(_topicName, _subscriptionName))
+            {
+                await ServiceBusAdministrationClient.DeleteSubscriptionAsync(_topicName, _subscriptionName);
+            }
+
+            await ServiceBusAdministrationClient.CreateSubscriptionAsync(_topicName, _subscriptionName);
+        }
+
+        private ServiceBusReceiver CreateServiceBusReceiver()
+        {
+            var serviceBusReceiverOptions = new ServiceBusReceiverOptions
+            {
+                ReceiveMode = ServiceBusReceiveMode.ReceiveAndDelete,
+            };
+
+            return ServiceBusClient.CreateReceiver(_topicName, _subscriptionName, serviceBusReceiverOptions);
         }
     }
 }
