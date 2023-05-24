@@ -1,0 +1,14 @@
+[
+    "batch_id",
+    "batch_execution_time_start",
+    "batch_process_type",
+    "time_series_type",
+    "grid_area",
+    "out_grid_area",
+    "balance_responsible_id",
+    "energy_supplier_id",
+    "time",
+    "quantity",
+    "quantity_quality",
+    "aggregation_level"
+]

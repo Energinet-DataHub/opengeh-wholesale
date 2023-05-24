@@ -27,7 +27,7 @@ public class SettlementMethodMapperTests
     public async Task SettlementMethodMapper_AcceptsAllValidDeltaTableValues()
     {
         // Arrange
-        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.time-series-type.json");
+        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.Enums.time-series-type.json");
         var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
 
         foreach (var validDeltaValue in validDeltaValues)
