@@ -44,15 +44,12 @@ public class CalculationResultClientTests
     private readonly Instant _somePeriodStart = Instant.FromUtc(2021, 3, 1, 10, 15);
     private readonly Instant _somePeriodEnd = Instant.FromUtc(2021, 3, 31, 10, 15);
     private readonly DatabricksSqlResponse _pendingDatabricksSqlResponse = new("PENDING", null);
-
-    private readonly DatabricksSqlResponse _succeededDatabricksSqlResponse =
-        new("SUCCEEDED", TableTestHelper.CreateTableForSettlementReport());
-
+    private readonly DatabricksSqlResponse _succeededDatabricksSqlResponse = new("SUCCEEDED", TableTestHelper.CreateTableForSettlementReport());
     private readonly DatabricksSqlResponse _failedDatabricksSqlResponse = new("FAILED", null);
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetSettlementReportResultAsync_WhenHttpStatusCodeNotOK_ThrowsException(
+    public async Task GetSettlementReportResultAsync_WhenHttpStatusCodeNotOK_ThrowsDatabricksSqlException(
         [Frozen] Mock<IDatabricksSqlResponseParser> databricksSqlResponseParserMock,
         [Frozen] Mock<HttpMessageHandler> mockMessageHandler,
         [Frozen] Mock<IOptions<DatabricksOptions>> mockOptions)
@@ -61,10 +58,7 @@ public class CalculationResultClientTests
         mockOptions.Setup(o => o.Value).Returns(_someDatabricksOptions);
         mockMessageHandler.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync", IsAny<HttpRequestMessage>(), IsAny<CancellationToken>())
-            .ReturnsAsync(new HttpResponseMessage
-            {
-                StatusCode = HttpStatusCode.BadRequest, Content = new StringContent("someContent"),
-            });
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.BadRequest, });
         var httpClient = new HttpClient(mockMessageHandler.Object);
 
         var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
@@ -76,7 +70,7 @@ public class CalculationResultClientTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetSettlementReportResultAsync_WhenDatabricksReturnsFailed_ThrowsException(
+    public async Task GetSettlementReportResultAsync_WhenDatabricksReturnsFailed_ThrowsDatabricksSqlException(
         [Frozen] Mock<IDatabricksSqlResponseParser> databricksSqlResponseParserMock,
         [Frozen] Mock<HttpMessageHandler> mockMessageHandler,
         [Frozen] Mock<IOptions<DatabricksOptions>> mockOptions)
@@ -85,10 +79,7 @@ public class CalculationResultClientTests
         mockOptions.Setup(o => o.Value).Returns(_someDatabricksOptions);
         mockMessageHandler.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync", IsAny<HttpRequestMessage>(), IsAny<CancellationToken>())
-            .ReturnsAsync(new HttpResponseMessage
-            {
-                StatusCode = HttpStatusCode.OK, Content = new StringContent("someContent"),
-            });
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.OK });
         var httpClient = new HttpClient(mockMessageHandler.Object);
         databricksSqlResponseParserMock.Setup(p => p.Parse(It.IsAny<string>())).Returns(_failedDatabricksSqlResponse);
 
@@ -100,7 +91,7 @@ public class CalculationResultClientTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetSettlementReportResultAsync_WhenDatabricksKeepsReturningPending_ThrowException(
+    public async Task GetSettlementReportResultAsync_WhenDatabricksKeepsReturningPending_ThrowDatabricksSqlException(
         [Frozen] Mock<IDatabricksSqlResponseParser> databricksSqlResponseParserMock,
         [Frozen] Mock<HttpMessageHandler> mockMessageHandler,
         [Frozen] Mock<IOptions<DatabricksOptions>> mockOptions)
@@ -109,10 +100,7 @@ public class CalculationResultClientTests
         mockOptions.Setup(o => o.Value).Returns(_someDatabricksOptions);
         mockMessageHandler.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync", IsAny<HttpRequestMessage>(), IsAny<CancellationToken>())
-            .ReturnsAsync(new HttpResponseMessage
-            {
-                StatusCode = HttpStatusCode.OK, Content = new StringContent("someContent"),
-            });
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.OK, });
         var httpClient = new HttpClient(mockMessageHandler.Object);
         databricksSqlResponseParserMock.Setup(p => p.Parse(It.IsAny<string>())).Returns(_pendingDatabricksSqlResponse);
 
@@ -134,10 +122,7 @@ public class CalculationResultClientTests
         mockOptions.Setup(o => o.Value).Returns(_someDatabricksOptions);
         mockMessageHandler.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync", IsAny<HttpRequestMessage>(), IsAny<CancellationToken>())
-            .ReturnsAsync(new HttpResponseMessage
-            {
-                StatusCode = HttpStatusCode.OK, Content = new StringContent("someContent"),
-            });
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.OK, });
         var httpClient = new HttpClient(mockMessageHandler.Object);
         databricksSqlResponseParserMock.Setup(p => p.Parse(It.IsAny<string>()))
             .Returns(_succeededDatabricksSqlResponse);
@@ -163,10 +148,7 @@ public class CalculationResultClientTests
         mockOptions.Setup(o => o.Value).Returns(_someDatabricksOptions);
         mockMessageHandler.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync", IsAny<HttpRequestMessage>(), IsAny<CancellationToken>())
-            .ReturnsAsync(new HttpResponseMessage
-            {
-                StatusCode = HttpStatusCode.OK, Content = new StringContent("someContent"),
-            });
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.OK, });
         var httpClient = new HttpClient(mockMessageHandler.Object);
         databricksSqlResponseParserMock.SetupSequence(p => p.Parse(It.IsAny<string>()))
             .Returns(_pendingDatabricksSqlResponse).Returns(_succeededDatabricksSqlResponse);
@@ -191,10 +173,7 @@ public class CalculationResultClientTests
         mockOptions.Setup(o => o.Value).Returns(_someDatabricksOptions);
         mockMessageHandler.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync", IsAny<HttpRequestMessage>(), IsAny<CancellationToken>())
-            .ReturnsAsync(new HttpResponseMessage
-            {
-                StatusCode = HttpStatusCode.OK, Content = new StringContent("someContent"),
-            });
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.OK });
 
         var httpClient = new HttpClient(mockMessageHandler.Object);
         databricksSqlResponseParserMock.Setup(p => p.Parse(It.IsAny<string>()))
@@ -211,7 +190,7 @@ public class CalculationResultClientTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetSettlementReportResultAsync_WhenHttpEndpointReturnsRealSampleData_ReturnsExpectedResponse(
+    public async Task GetSettlementReportResultAsync_WhenHttpEndpointReturnsRealSampleData_ReturnsExpectedData(
         [Frozen] Mock<HttpMessageHandler> mockMessageHandler,
         [Frozen] Mock<IOptions<DatabricksOptions>> mockOptions)
     {
@@ -222,10 +201,7 @@ public class CalculationResultClientTests
         mockOptions.Setup(o => o.Value).Returns(_someDatabricksOptions);
         mockMessageHandler.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync", IsAny<HttpRequestMessage>(), IsAny<CancellationToken>())
-            .ReturnsAsync(new HttpResponseMessage
-            {
-                StatusCode = HttpStatusCode.OK, Content = GetValidHttpResponseContent(),
-            });
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.OK, Content = GetValidHttpResponseContent(), });
         var httpClient = new HttpClient(mockMessageHandler.Object);
         var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient, mockOptions.Object, new DatabricksSqlResponseParser()); // here we use the real parser
 
