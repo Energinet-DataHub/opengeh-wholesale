@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using System.ComponentModel.DataAnnotations;
-using Energinet.DataHub.Wholesale.Application.SettlementReport;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
+using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Energinet.DataHub.Wholesale.WebApi.V3.SettlementReport;
@@ -30,6 +30,41 @@ public class SettlementReportController : V3ControllerBase
         _settlementReportApplicationService = settlementReportApplicationService;
     }
 
+    [HttpGet("Download")]
+    [MapToApiVersion(Version)]
+    [BinaryContent]
+    public Task DownloadAsync(
+        [Required, FromQuery] string[] gridAreaCodes,
+        [Required, FromQuery] ProcessType processType,
+        [Required, FromQuery] DateTimeOffset periodStart,
+        [Required, FromQuery] DateTimeOffset periodEnd,
+        [FromQuery] string? energySupplier,
+        [FromQuery] string? csvLanguage)
+    {
+        return _settlementReportApplicationService
+            .CreateCompressedSettlementReportAsync(
+                () =>
+                {
+                    var settlementReportFileName = GetSettlementReportFileName(
+                        gridAreaCodes,
+                        processType,
+                        periodStart,
+                        periodEnd,
+                        energySupplier);
+
+                    Response.Headers.Add("Content-Type", "application/zip");
+                    Response.Headers.Add("Content-Disposition", $"attachment; filename={settlementReportFileName}");
+
+                    return Response.BodyWriter.AsStream();
+                },
+                gridAreaCodes,
+                ProcessTypeMapper.Map(processType),
+                periodStart,
+                periodEnd,
+                energySupplier,
+                csvLanguage);
+    }
+
     /// <summary>
     /// Returns a stream containing the settlement report for batch with <paramref name="batchId" /> and <paramref name="gridAreaCode" />.
     /// </summary>
@@ -38,7 +73,7 @@ public class SettlementReportController : V3ControllerBase
     [HttpGet(Name = "GetSettlementReportAsStreamAsync")]
     [MapToApiVersion(Version)]
     [BinaryContent]
-    public async Task GetAsync([Required]Guid batchId, [Required]string gridAreaCode)
+    public async Task GetAsync([Required] Guid batchId, [Required] string gridAreaCode)
     {
         var outputStream = Response.BodyWriter.AsStream();
 
@@ -61,5 +96,23 @@ public class SettlementReportController : V3ControllerBase
     {
         var report = await _settlementReportApplicationService.GetSettlementReportAsync(batchId).ConfigureAwait(false);
         return Ok(report.Stream);
+    }
+
+    private static string GetSettlementReportFileName(
+        string[] gridAreaCode,
+        ProcessType processType,
+        DateTimeOffset periodStart,
+        DateTimeOffset periodEnd,
+        string? energySupplier)
+    {
+        var energySupplierString = energySupplier is null ? string.Empty : $"_{energySupplier}";
+        var gridAreaCodeString = string.Join("+", gridAreaCode);
+        var processTypeString = processType switch
+        {
+            ProcessType.BalanceFixing => "D04",
+            _ => string.Empty,
+        };
+
+        return $"Result_{gridAreaCodeString}{energySupplierString}_{periodStart:dd-MM-yyyy}_{periodEnd:dd-MM-yyyy}_{processTypeString}.zip";
     }
 }
