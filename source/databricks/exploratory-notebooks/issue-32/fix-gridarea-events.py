@@ -140,10 +140,10 @@ old_events_df = (spark.read.parquet("abfss://integration-events@stdatalakeshared
  .mode("overwrite")
  .partitionBy("year", "month", "day")
  #.option("checkpointLocation", "abfss://integration-events@stdatalakesharedresu001.dfs.core.windows.net/events-checkpoint")
- .parquet("abfss://integration-events@stdatalakesharedresu001.dfs.core.windows.net/bjm-test")
+ .parquet("abfss://integration-events@stdatalakesharedresu001.dfs.core.windows.net/notebook-test")
 )
 
-new_events_df = (spark.read.parquet("abfss://integration-events@stdatalakesharedresu001.dfs.core.windows.net/bjm-test"))
+new_events_df = (spark.read.parquet("abfss://integration-events@stdatalakesharedresu001.dfs.core.windows.net/notebook-test"))
 
 display(new_events_df)
 display(new_events_df
@@ -246,4 +246,4 @@ new_df = (spark.read.option("mergeSchema", "true").parquet("abfss://integration-
 )
 
 display(new_df.withColumn("body", col("body").cast("string")))
-new_df.write.mode("overwrite").partitionBy("year", "month", "day").parquet("abfss://integration-events@stdatalakesharedresu001.dfs.core.windows.net/bjm-test")
+new_df.write.mode("overwrite").partitionBy("year", "month", "day").parquet("abfss://integration-events@stdatalakesharedresu001.dfs.core.windows.net/notebook-test")

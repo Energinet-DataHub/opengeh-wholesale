@@ -24,7 +24,6 @@ from package.codelists import (
 from tests.contract_utils import assert_codelist_matches_contract
 
 
-# TODO BJM: Are the metering point type and settlement methods correct?
 @pytest.mark.parametrize(
     "contract_file,code_list",
     [
