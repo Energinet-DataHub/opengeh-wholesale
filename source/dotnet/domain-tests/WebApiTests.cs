@@ -113,7 +113,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             }
 
             [DomainFact]
-            public async Task When_CreatingBatch_Then_BatchIsEventuallyCompleted()
+            public async Task When_CreatingBatch_Then_BatchIsEventuallyCompletedAndReceivedOnTopicSubscription()
             {
                 // Arrange
                 var startDate = new DateTimeOffset(2020, 1, 28, 23, 0, 0, TimeSpan.Zero);
@@ -138,8 +138,28 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                     },
                     _defaultTimeout,
                     _defaultDelay);
+                var messageHasValue = true;
+                var match = false;
+
+                while (messageHasValue)
+                {
+                    var message = await Fixture.Receiver.ReceiveMessageAsync();
+                    if (message != null)
+                    {
+                        match = message.Body.ToString().Contains(batchId.ToString());
+                        if (match)
+                        {
+                            messageHasValue = false;
+                        }
+                    }
+                    else
+                    {
+                        messageHasValue = false;
+                    }
+                }
 
                 isCompleted.Should().BeTrue();
+                match.Should().BeTrue();
             }
         }
     }
