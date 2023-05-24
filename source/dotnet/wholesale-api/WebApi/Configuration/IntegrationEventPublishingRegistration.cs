@@ -22,10 +22,8 @@ using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.UseCase
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Workers;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Integration;
-using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.IntegrationEventDispatching;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence.Batches;
-using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence.Outbox;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.ServiceBus;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
@@ -40,8 +38,6 @@ public static class IntegrationEventPublishingRegistration
         string serviceBusConnectionString,
         string integrationEventTopicName)
     {
-        serviceCollection.AddHostedService<DispatchIntegrationEventsWorker>();
-        serviceCollection.AddHostedService<IntegrationEventsRetentionWorker>();
         serviceCollection.AddHostedService<RegisterCompletedBatchesWorker>();
         serviceCollection.AddHostedService<PublishCalculationResultsWorker>();
 
@@ -49,14 +45,10 @@ public static class IntegrationEventPublishingRegistration
         serviceCollection.AddScoped<ICompletedBatchRepository, CompletedBatchRepository>();
         serviceCollection.AddScoped<ICompletedBatchMapper, CompletedBatchMapper>();
         serviceCollection.AddScoped<IRegisterCompletedBatchesHandler, RegisterCompletedBatchesHandler>();
-        serviceCollection.AddScoped<IOutboxMessageRepository, OutboxMessageRepository>();
-        serviceCollection.AddScoped<IIntegrationEventCleanUpService, IntegrationEventCleanUpService>();
-        serviceCollection.AddScoped<IIntegrationEventDispatcher, IntegrationEventDispatcher>();
         serviceCollection.AddScoped<IIntegrationEventTypeMapper>(_ => new IntegrationEventTypeMapper(new Dictionary<Type, string>
         {
             { typeof(CalculationResultCompleted), CalculationResultCompleted.BalanceFixingEventName },
         }));
-        serviceCollection.AddScoped<IIntegrationEventService, IntegrationEventService>();
         serviceCollection.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
         serviceCollection.AddIntegrationEventPublisher(serviceBusConnectionString, integrationEventTopicName);
 

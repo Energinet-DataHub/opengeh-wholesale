@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.IntegrationEventsManagement;
-using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence.Outbox;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.ServiceBus;
 
 namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.EventPublishers;
