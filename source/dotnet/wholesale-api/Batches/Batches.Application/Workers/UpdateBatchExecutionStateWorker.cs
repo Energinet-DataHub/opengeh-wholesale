@@ -12,51 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Energinet.DataHub.Wholesale.Common.Workers;
 using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Batches.Application.Workers;
 
 /// <summary>
-/// Timer triggered hosted service to invoke the service for updating batch execution states.
+/// Worker invoking updating batch execution states.
 /// </summary>
-public class UpdateBatchExecutionStateWorker : BackgroundService
+public class UpdateBatchExecutionStateWorker : RepeatingWorker
 {
     private const int DelayInSecondsBeforeNextExecution = 20;
 
-    private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger<UpdateBatchExecutionStateWorker> _logger;
+    private readonly IBatchApplicationService _batchApplicationService;
 
-    public UpdateBatchExecutionStateWorker(IServiceProvider serviceProvider, ILogger<UpdateBatchExecutionStateWorker> logger)
+    public UpdateBatchExecutionStateWorker(
+        IServiceProvider serviceProvider,
+        ILogger<UpdateBatchExecutionStateWorker> logger,
+        IBatchApplicationService batchApplicationService)
+        : base(serviceProvider, logger, TimeSpan.FromSeconds(DelayInSecondsBeforeNextExecution))
     {
-        _serviceProvider = serviceProvider;
-        _logger = logger;
+        _batchApplicationService = batchApplicationService;
     }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync()
     {
-        while (!stoppingToken.IsCancellationRequested)
-        {
-            _logger.LogInformation("{Worker} running at: {Time}", nameof(UpdateBatchExecutionStateWorker), DateTimeOffset.Now);
-
-            await ExecuteInScopeAsync().ConfigureAwait(false);
-
-            await Task.Delay(DelayInSecondsBeforeNextExecution * 1000, stoppingToken).ConfigureAwait(false);
-        }
-    }
-
-    private async Task ExecuteInScopeAsync()
-    {
-        using var scope = _serviceProvider.CreateScope();
-
-        // CorrelationIdMiddleware does not support IHostedService, so we need to add a correlation ID ourselves
-        var correlationContext = scope.ServiceProvider.GetRequiredService<ICorrelationContext>();
-        correlationContext.SetId(Guid.NewGuid().ToString());
-
-        var batchApplicationService = scope.ServiceProvider.GetRequiredService<IBatchApplicationService>();
-        await batchApplicationService.UpdateExecutionStateAsync().ConfigureAwait(false);
+        await _batchApplicationService.UpdateExecutionStateAsync().ConfigureAwait(false);
     }
 }

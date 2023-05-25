@@ -12,51 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
+using Energinet.DataHub.Wholesale.Common.Workers;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.UseCases;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Workers;
 
 /// <summary>
-/// Timer triggered hosted service to invoke the service for integration events retention.
+/// Worker invoking fetching completed batches from the batches module and registering them in the module.
 /// </summary>
-public class RegisterCompletedBatchesWorker : BackgroundService
+public class RegisterCompletedBatchesWorker : RepeatingWorker
 {
     private const int DelayInSecondsBeforeNextExecution = 10;
+    private readonly IRegisterCompletedBatchesHandler _handler;
 
-    private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger<RegisterCompletedBatchesWorker> _logger;
-
-    public RegisterCompletedBatchesWorker(IServiceProvider serviceProvider, ILogger<RegisterCompletedBatchesWorker> logger)
+    public RegisterCompletedBatchesWorker(
+        IServiceProvider serviceProvider,
+        ILogger<RegisterCompletedBatchesWorker> logger,
+        IRegisterCompletedBatchesHandler handler)
+        : base(serviceProvider, logger, TimeSpan.FromSeconds(DelayInSecondsBeforeNextExecution))
     {
-        _serviceProvider = serviceProvider;
-        _logger = logger;
+        _handler = handler;
     }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync()
     {
-        while (!stoppingToken.IsCancellationRequested)
-        {
-            _logger.LogInformation("{Worker} running at: {Time}", nameof(RegisterCompletedBatchesWorker), DateTimeOffset.Now);
-
-            await ExecuteInScopeAsync().ConfigureAwait(false);
-
-            await Task.Delay(DelayInSecondsBeforeNextExecution * 1000, stoppingToken).ConfigureAwait(false);
-        }
-    }
-
-    private async Task ExecuteInScopeAsync()
-    {
-        using var scope = _serviceProvider.CreateScope();
-
-        // CorrelationIdMiddleware does not support IHostedService, so we need to add a correlation ID ourselves
-        var correlationContext = scope.ServiceProvider.GetRequiredService<ICorrelationContext>();
-        correlationContext.SetId(Guid.NewGuid().ToString());
-
-        var handler = scope.ServiceProvider.GetRequiredService<IRegisterCompletedBatchesHandler>();
-        await handler.RegisterCompletedBatchesAsync().ConfigureAwait(false);
+        await _handler.RegisterCompletedBatchesAsync().ConfigureAwait(false);
     }
 }
