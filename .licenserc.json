@@ -1,5 +1,0 @@
-{
-  "ignore": [
-    "source/dotnet/domain-tests/Clients/Wholesale/V3/"
-  ]
-}
