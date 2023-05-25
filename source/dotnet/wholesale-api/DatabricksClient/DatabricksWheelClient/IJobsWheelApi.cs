@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Components.DatabricksClient;
-using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
+using Microsoft.Azure.Databricks.Client;
 
-namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
-
-public interface IDatabricksCalculatorJobSelector
+namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient
 {
-    Task<WheelJob> GetAsync();
+    public interface IJobsWheelApi : IJobsApi
+    {
+        Task<WheelJob> GetWheel(long jobId, CancellationToken cancellationToken = default);
+    }
 }

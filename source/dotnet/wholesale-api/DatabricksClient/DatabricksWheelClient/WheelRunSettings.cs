@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Components.DatabricksClient;
-using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
+using Newtonsoft.Json;
 
-namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
-
-public interface IDatabricksCalculatorJobSelector
+namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient
 {
-    Task<WheelJob> GetAsync();
+    public class WheelRunSettings
+    {
+        [JsonProperty(PropertyName = "tasks")]
+        public List<JobWheelTask> Tasks { get; set; }
+    }
 }

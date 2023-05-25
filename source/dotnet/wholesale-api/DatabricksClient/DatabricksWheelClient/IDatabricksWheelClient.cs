@@ -12,11 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Azure.Databricks.Client;
-
 namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
 
 public interface IDatabricksWheelClient
 {
-    IJobsApi Jobs { get; }
+    IJobsWheelApi Jobs { get; }
 }

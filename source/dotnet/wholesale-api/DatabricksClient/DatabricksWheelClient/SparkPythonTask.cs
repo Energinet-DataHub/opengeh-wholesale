@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Components.DatabricksClient;
-using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
+using Newtonsoft.Json;
 
-namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
+namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
 
-public interface IDatabricksCalculatorJobSelector
+public class SparkPythonTask
 {
-    Task<WheelJob> GetAsync();
+    [JsonProperty(PropertyName = "parameters")]
+    public List<string> Parameters { get; set; }
 }
