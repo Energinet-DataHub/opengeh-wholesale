@@ -14,7 +14,6 @@
 
 using Energinet.DataHub.Wholesale.Batches.Application.BatchAggregate;
 using Microsoft.Azure.Databricks.Client;
-using Microsoft.Azure.Databricks.Client.Models;
 
 namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
 
