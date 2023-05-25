@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
+using Microsoft.Azure.Databricks.Client.Models;
 
 namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
 
@@ -26,10 +27,10 @@ public sealed class DatabricksCalculatorJobSelector : IDatabricksCalculatorJobSe
         _wheelClient = wheelClient;
     }
 
-    public async Task<WheelJob> GetAsync()
+    public async Task<Job> GetAsync()
     {
         var jobs = await _wheelClient.Jobs.List().ConfigureAwait(false);
-        var calculatorJob = jobs.Single(j => j.Settings.Name == "CalculatorJob");
-        return await _wheelClient.Jobs.GetWheel(calculatorJob.JobId).ConfigureAwait(false);
+        var calculatorJob = jobs.Jobs.Single(j => j.Settings.Name == "CalculatorJob");
+        return await _wheelClient.Jobs.Get(calculatorJob.JobId).ConfigureAwait(false);
     }
 }

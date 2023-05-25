@@ -17,6 +17,7 @@ using System.Text;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
 using Microsoft.Azure.Databricks.Client;
+using Microsoft.Azure.Databricks.Client.Models;
 using Newtonsoft.Json;
 
 namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.Components;
@@ -139,16 +140,16 @@ public sealed class DatabricksTestHttpListener : IDisposable
         context.Response.Close(Encoding.UTF8.GetBytes(serialized), true);
     }
 
-    private static WheelJob CreateCalculatorJob()
+    private static Job CreateCalculatorJob()
     {
-        var calculatorJob = new WheelJob
+        var calculatorJob = new Job()
         {
             JobId = JobId,
             Settings =
-                new WheelJobSettings
+                new JobSettings()
                 {
                     Name = "CalculatorJob",
-                    Tasks = new List<JobWheelTask>
+                    Tasks = new List<JobTaskSettings>
                     {
                         new()
                         {
@@ -200,7 +201,7 @@ public sealed class DatabricksTestHttpListener : IDisposable
     {
         var reader = new StreamReader(context.Request.InputStream);
         var settings = reader.ReadToEnd();
-        var actualSettings = JsonConvert.DeserializeObject<RunNowSettings>(settings);
+        var actualSettings = JsonConvert.DeserializeObject<Run>(settings);
         if (actualSettings!.JobId != JobId)
         {
             FakeServerErrorAndClose(context);

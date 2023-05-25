@@ -19,6 +19,7 @@ using Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using FluentAssertions;
 using Microsoft.Azure.Databricks.Client;
+using Microsoft.Azure.Databricks.Client.Models;
 using NodaTime;
 using NodaTime.Extensions;
 using Xunit;
