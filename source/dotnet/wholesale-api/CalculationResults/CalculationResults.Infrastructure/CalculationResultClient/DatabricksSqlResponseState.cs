@@ -14,4 +14,13 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
-public sealed record DatabricksSqlResponse(DatabricksSqlResponseState State, Table? Table);
+/// <summary>
+/// Representation of the state of a Databricks SQL response.
+/// </summary>
+public enum DatabricksSqlResponseState
+{
+    Failed = 0,
+    Cancelled = 1,
+    Pending = 2,
+    Succeeded = 3,
+}

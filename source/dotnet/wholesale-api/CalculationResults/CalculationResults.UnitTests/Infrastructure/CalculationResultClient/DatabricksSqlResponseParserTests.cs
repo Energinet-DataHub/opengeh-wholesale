@@ -47,10 +47,10 @@ public class DatabricksSqlResponseParserTests
 
     [Theory]
     [AutoMoqData]
-    public void Parse_WhenStateIsPending_ReturnsResponseWithExpectedState(DatabricksSqlResponseParser sut)
+    public void Parse_WhenStateIsCancelled_ReturnsResponseWithExpectedState(DatabricksSqlResponseParser sut)
     {
         // Arrange
-        const string expectedState = "PENDING";
+        const string expectedState = Data;
 
         // Act
         var actual = sut.Parse(_pendingResultJson);
