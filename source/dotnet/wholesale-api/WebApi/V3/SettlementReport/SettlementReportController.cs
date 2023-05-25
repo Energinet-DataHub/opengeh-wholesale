@@ -30,16 +30,25 @@ public class SettlementReportController : V3ControllerBase
         _settlementReportApplicationService = settlementReportApplicationService;
     }
 
+    /// <summary>
+    /// Downloads a compressed settlement report for the specified parameters.
+    /// </summary>
+    /// <param name="gridAreaCodes">A list of grid areas to create the settlement report for.</param>
+    /// <param name="processType">Currently expects BalanceFixing only.</param>
+    /// <param name="periodStart">The start date and time of the period covered by the settlement report.</param>
+    /// <param name="periodEnd">The end date and time of the period covered by the settlement report.</param>
+    /// <param name="energySupplier">Optional GLN/EIC identifier for an energy supplier.</param>
+    /// <param name="csvFormatLocale">Optional locale used to format the CSV file, e.g. da-DK. Defaults to en-US.</param>
     [HttpGet("Download")]
     [MapToApiVersion(Version)]
     [BinaryContent]
-    public Task DownloadAsync(
+    public Task DownloadSettlementReportAsync(
         [Required, FromQuery] string[] gridAreaCodes,
         [Required, FromQuery] ProcessType processType,
         [Required, FromQuery] DateTimeOffset periodStart,
         [Required, FromQuery] DateTimeOffset periodEnd,
         [FromQuery] string? energySupplier,
-        [FromQuery] string? csvLanguage)
+        [FromQuery] string? csvFormatLocale)
     {
         return _settlementReportApplicationService
             .CreateCompressedSettlementReportAsync(
@@ -62,7 +71,7 @@ public class SettlementReportController : V3ControllerBase
                 periodStart,
                 periodEnd,
                 energySupplier,
-                csvLanguage);
+                csvFormatLocale);
     }
 
     /// <summary>
