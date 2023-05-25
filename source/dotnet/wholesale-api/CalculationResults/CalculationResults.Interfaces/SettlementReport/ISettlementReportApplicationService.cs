@@ -30,5 +30,5 @@ public interface ISettlementReportApplicationService
         DateTimeOffset periodStart,
         DateTimeOffset periodEnd,
         string? energySupplier,
-        string? csvLanguage);
+        string? csvFormatLocale);
 }

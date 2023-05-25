@@ -153,7 +153,7 @@ public sealed class SettlementReportTests : WebApiTestBase
                   + $"&processType={processType}"
                   + $"&periodStart={periodStart:O}"
                   + $"&periodEnd={periodEnd:O}"
-                  + $"&csvLanguage={language}";
+                  + $"&csvFormatLocale={language}";
 
         const string expectedMockedContent = "0305C8A0-5E42-4174-85DE-B7737E8C66C4";
 

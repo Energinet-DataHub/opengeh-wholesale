@@ -26,13 +26,13 @@ public sealed class SettlementReportResultsCsvWriter : ISettlementReportResultsC
     public async Task WriteAsync(
         Stream destination,
         IEnumerable<SettlementReportResultRow> rows,
-        CultureInfo csvLanguageFormat)
+        CultureInfo csvFormatLocale)
     {
         var writer = new StreamWriter(destination, leaveOpen: true);
 
         await using (writer.ConfigureAwait(false))
         {
-            var csvHelper = new CsvWriter(writer, csvLanguageFormat);
+            var csvHelper = new CsvWriter(writer, csvFormatLocale);
             csvHelper.Context.RegisterClassMap<SettlementReportResultRowMap>();
 
             await using (csvHelper.ConfigureAwait(false))
