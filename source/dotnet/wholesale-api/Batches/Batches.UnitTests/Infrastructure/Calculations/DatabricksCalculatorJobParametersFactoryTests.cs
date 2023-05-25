@@ -16,7 +16,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Application.BatchAggregate;
 using Energinet.DataHub.Wholesale.Batches.Application.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
-using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Common.Models;
 using FluentAssertions;
 using Microsoft.Azure.Databricks.Client.Models;
 using NodaTime;

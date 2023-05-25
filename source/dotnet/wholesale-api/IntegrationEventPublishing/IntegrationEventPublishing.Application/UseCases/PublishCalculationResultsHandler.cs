@@ -40,7 +40,7 @@ public class PublishCalculationResultsHandler : IPublishCalculationResultsHandle
             // TODO BJM: Reuse existing functionality of ProcessApplicationService and refactor in upcoming PR
             foreach (var gridAreaCode in batch.GridAreaCodes)
             {
-                var @event = new ProcessCompletedEventDto(gridAreaCode, batch.Id, ProcessTypeMapper.MapFrom(batch.ProcessType), batch.PeriodStart, batch.PeriodEnd);
+                var @event = new ProcessCompletedEventDto(gridAreaCode, batch.Id, batch.ProcessType, batch.PeriodStart, batch.PeriodEnd);
                 await _processApplicationService.PublishCalculationResultCompletedIntegrationEventsAsync(@event).ConfigureAwait(false);
             }
 
