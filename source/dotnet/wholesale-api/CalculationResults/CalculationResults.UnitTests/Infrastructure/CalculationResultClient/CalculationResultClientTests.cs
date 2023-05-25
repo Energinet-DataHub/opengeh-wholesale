@@ -43,7 +43,7 @@ public class CalculationResultClientTests
 
     private readonly Instant _somePeriodStart = Instant.FromUtc(2021, 3, 1, 10, 15);
     private readonly Instant _somePeriodEnd = Instant.FromUtc(2021, 3, 31, 10, 15);
-    private readonly DatabricksSqlResponse _cancelledDatabricksSqlResponse = DatabricksSqlResponseFactory.CreateAsCancelled();
+    private readonly DatabricksSqlResponse _pendingDatabricksSqlResponse = DatabricksSqlResponseFactory.CreateAsPending();
     private readonly DatabricksSqlResponse _succeededDatabricksSqlResponse = DatabricksSqlResponseFactory.CreateAsSucceeded(TableTestHelper.CreateTableForSettlementReport(3));
     private readonly DatabricksSqlResponse _succeededDatabricksSqlResponseWithZeroRows = DatabricksSqlResponseFactory.CreateAsSucceeded(TableTestHelper.CreateTableForSettlementReport(0));
     private readonly DatabricksSqlResponse _failedDatabricksSqlResponse = DatabricksSqlResponseFactory.CreateAsFailed();
@@ -92,7 +92,7 @@ public class CalculationResultClientTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetSettlementReportResultAsync_WhenDatabricksKeepsReturningCancelled_ThrowDatabricksSqlException(
+    public async Task GetSettlementReportResultAsync_WhenDatabricksKeepsReturningPending_ThrowDatabricksSqlException(
         [Frozen] Mock<IDatabricksSqlResponseParser> databricksSqlResponseParserMock,
         [Frozen] Mock<HttpMessageHandler> mockMessageHandler,
         [Frozen] Mock<IOptions<DatabricksOptions>> mockOptions)
@@ -103,7 +103,7 @@ public class CalculationResultClientTests
             .Setup<Task<HttpResponseMessage>>("SendAsync", IsAny<HttpRequestMessage>(), IsAny<CancellationToken>())
             .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.OK, });
         var httpClient = new HttpClient(mockMessageHandler.Object);
-        databricksSqlResponseParserMock.Setup(p => p.Parse(It.IsAny<string>())).Returns(_cancelledDatabricksSqlResponse);
+        databricksSqlResponseParserMock.Setup(p => p.Parse(It.IsAny<string>())).Returns(_pendingDatabricksSqlResponse);
 
         var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
 
@@ -140,7 +140,7 @@ public class CalculationResultClientTests
     [Theory]
     [InlineAutoMoqData]
     public async Task
-        GetSettlementReportResultAsync_WhenDatabricksReturnsCancelledAndThenSucceeded_ReturnsExpectedResponse(
+        GetSettlementReportResultAsync_WhenDatabricksReturnsPendingAndThenSucceeded_ReturnsExpectedResponse(
             [Frozen] Mock<IDatabricksSqlResponseParser> databricksSqlResponseParserMock,
             [Frozen] Mock<HttpMessageHandler> mockMessageHandler,
             [Frozen] Mock<IOptions<DatabricksOptions>> mockOptions)
@@ -152,7 +152,7 @@ public class CalculationResultClientTests
             .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.OK, });
         var httpClient = new HttpClient(mockMessageHandler.Object);
         databricksSqlResponseParserMock.SetupSequence(p => p.Parse(It.IsAny<string>()))
-            .Returns(_cancelledDatabricksSqlResponse).Returns(_succeededDatabricksSqlResponse);
+            .Returns(_pendingDatabricksSqlResponse).Returns(_succeededDatabricksSqlResponse);
 
         var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
 

@@ -75,7 +75,7 @@ public class CalculationResultClient : ICalculationResultClient
 
         var requestObject = new
         {
-            on_wait_timeout = "PENDING",
+            on_wait_timeout = "CANCEL",
             wait_timeout = $"{timeOutPerAttemptSeconds}s", // Make the operation synchronous
             statement = sqlStatement,
             warehouse_id = _options.Value.DATABRICKS_WAREHOUSE_ID,
@@ -95,7 +95,7 @@ public class CalculationResultClient : ICalculationResultClient
             if (databricksSqlResponse.State == DatabricksSqlResponseState.Succeeded)
                 return databricksSqlResponse.Table!;
 
-            if (databricksSqlResponse.State != DatabricksSqlResponseState.Cancelled)
+            if (databricksSqlResponse.State != DatabricksSqlResponseState.Pending)
                 throw new DatabricksSqlException($"Unable to get calculation result from Databricks. State: {databricksSqlResponse.State}");
         }
 
