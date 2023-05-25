@@ -14,6 +14,7 @@
 
 using System.Net;
 using System.Net.Http.Headers;
+using Microsoft.Azure.Databricks.Client;
 using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient
@@ -52,7 +53,7 @@ namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWhee
             var options = optionsFactory.Value;
             var apiUrl = new Uri(new Uri(options.DATABRICKS_WORKSPACE_URL), $"api/{Version}/");
             _httpClient = CreateHttpClient(options.DATABRICKS_WORKSPACE_TOKEN, timeoutSeconds, apiUrl);
-            Jobs = new JobsApiClient21(_httpClient);
+            Jobs = new JobsApiClient(_httpClient);
         }
 
         /// <summary>
@@ -68,7 +69,7 @@ namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWhee
 
             _httpClient = CreateHttpClient(token, timeoutSeconds, apiUrl);
 
-            Jobs = new JobsApiClient21(_httpClient);
+            Jobs = new JobsApiClient(_httpClient);
         }
 
         private static HttpClient CreateHttpClient(string token, long timeoutSeconds, Uri apiUrl)
@@ -90,7 +91,7 @@ namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWhee
             return httpClient;
         }
 
-        public virtual IJobsWheelApi Jobs { get; }
+        public virtual IJobsApi Jobs { get; }
 
         public void Dispose()
         {
