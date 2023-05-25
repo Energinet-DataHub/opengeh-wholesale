@@ -36,7 +36,7 @@ module "mssql_data" {
 
   elastic_pool_per_database_settings = {
     min_capacity = 0
-    max_capacity = 10
+    max_capacity = 50
   }
 }
 
