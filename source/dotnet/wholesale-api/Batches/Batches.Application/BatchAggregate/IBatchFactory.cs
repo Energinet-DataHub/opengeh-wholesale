@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 
-public interface IUnitOfWork
+namespace Energinet.DataHub.Wholesale.Batches.Application.BatchAggregate;
+
+public interface IBatchFactory
 {
-    Task CommitAsync();
+     Batch Create(ProcessType processType, IEnumerable<string> gridAreaCodes, DateTimeOffset startDate, DateTimeOffset endDate, Guid createdByUserId);
 }
