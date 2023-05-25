@@ -34,7 +34,8 @@ public class DatabricksSqlResponseParser : IDatabricksSqlResponseParser
                 return new DatabricksSqlResponse("PENDING", null); // We currently don't distinguish between PENDING and RUNNING
             case "SUCCEEDED":
                 var columnNames = GetColumnNames(jsonObject);
-                var dataArray = GetDataArray(jsonObject);
+                var hasData = GetRowCount(jsonObject) > 0;
+                var dataArray = hasData ? GetDataArray(jsonObject) : new List<string[]>();
                 return new DatabricksSqlResponse(state, new Table(columnNames, dataArray));
             default:
                 throw new DatabricksSqlException($@"Databricks SQL statement execution failed. State: {state}");
@@ -44,6 +45,12 @@ public class DatabricksSqlResponseParser : IDatabricksSqlResponseParser
     private static string GetState(JObject responseJsonObject)
     {
         return responseJsonObject["status"]?["state"]?.ToString() ?? throw new InvalidOperationException("Unable to retrieve 'state' from the responseJsonObject");
+    }
+
+    private static int GetRowCount(JObject responseJsonObject)
+    {
+        var rowCount = responseJsonObject["manifest"]?["total_row_count"]?.ToObject<int>() ?? throw new DatabricksSqlException("Unable to retrieve 'total_row_count' from the responseJsonObject.");
+        return rowCount!;
     }
 
     private static IEnumerable<string> GetColumnNames(JObject responseJsonObject)
