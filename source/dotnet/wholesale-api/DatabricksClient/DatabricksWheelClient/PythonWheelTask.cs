@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient
 {
@@ -21,7 +21,7 @@ namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWhee
         /// <summary>
         /// Command line parameters that will be passed to spark submit.
         /// </summary>
-        [JsonProperty(PropertyName = "parameters")]
+        [JsonPropertyName("parameters")]
         public List<string> Parameters { get; set; }
     }
 }
