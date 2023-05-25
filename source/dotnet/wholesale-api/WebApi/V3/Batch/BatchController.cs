@@ -14,8 +14,8 @@
 
 using System.ComponentModel.DataAnnotations;
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
-using Energinet.DataHub.Wholesale.Application.Security;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
+using Energinet.DataHub.Wholesale.Common.Security;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
