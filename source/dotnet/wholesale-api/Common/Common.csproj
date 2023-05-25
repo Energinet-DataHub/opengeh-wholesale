@@ -16,8 +16,8 @@ limitations under the License.
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <AssemblyName>Energinet.DataHub.Wholesale.Application</AssemblyName>
-    <RootNamespace>Energinet.DataHub.Wholesale.Application</RootNamespace>
+    <AssemblyName>Energinet.DataHub.Wholesale.Common</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Wholesale.Common</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

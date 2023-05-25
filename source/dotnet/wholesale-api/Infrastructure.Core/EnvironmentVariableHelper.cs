@@ -19,7 +19,7 @@ namespace Energinet.DataHub.Wholesale.Infrastructure.Core
         public static string GetEnvVariable(string variableName)
         {
             return Environment.GetEnvironmentVariable(variableName) ??
-                   throw new Exception($"Application is missing required environment variable '{variableName}'");
+                   throw new Exception($"Common is missing required environment variable '{variableName}'");
         }
     }
 }
