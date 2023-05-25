@@ -9,6 +9,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\DatabricksClient\DatabricksClient.csproj" />
-    <ProjectReference Include="..\Batches.Interfaces\Batches.Interfaces.csproj" />
+    <ProjectReference Include="..\Batches.Application\Batches.Application.csproj" />
   </ItemGroup>
 </Project>
