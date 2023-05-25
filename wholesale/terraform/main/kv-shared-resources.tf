@@ -49,16 +49,6 @@ data "azurerm_key_vault_secret" "sb_integration_events_id" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "mssql_data_admin_name" {
-  name         = "mssql-data-admin-user-name"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "mssql_data_admin_password" {
-  name         = "mssql-data-admin-user-password"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
 # Public IP ranges of the large GitHub hosted runners
 data "azurerm_key_vault_secret" "pir_hosted_deployment_agents" {
   name         = "pir-hosted-deployment-agents"
