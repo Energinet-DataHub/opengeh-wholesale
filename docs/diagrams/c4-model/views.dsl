@@ -31,6 +31,18 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
 
             # Include Frontend model
             !include https://raw.githubusercontent.com/Energinet-DataHub/greenforce-frontend/main/docs/diagrams/c4-model/model.dsl
+
+            # Include Migration model - placeholders
+            migrationDomain = group "Migration" {
+                migrationDatabricks = container "Data Migration" {
+                    description "Extract migrated JSON files. Load and transform data using Notebooks"
+                    technology "Azure Databricks"
+                    tags "Microsoft Azure - Azure Databricks"
+
+                    # Domain-to-domain relationships
+                    this -> wholesaleDataLake "Deliver"
+                }
+            }
         }
     }
 
