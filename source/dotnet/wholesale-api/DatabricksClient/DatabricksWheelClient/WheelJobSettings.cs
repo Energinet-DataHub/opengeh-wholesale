@@ -12,9 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text.Json.Serialization;
 using Microsoft.Azure.Databricks.Client;
-using Microsoft.Azure.Databricks.Client.Models;
+using Newtonsoft.Json;
 
 namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient
 {
@@ -26,31 +25,31 @@ namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWhee
         /// <summary>
         /// An optional name for the job. The default value is Untitled.
         /// </summary>
-        [JsonPropertyName("name")]
+        [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
 
         /// <summary>
         /// An optional set of email addresses that will be notified when runs of this job begin or complete as well as when this job is deleted. The default behavior is to not send any emails.
         /// </summary>
-        [JsonPropertyName("email_notifications")]
+        [JsonProperty(PropertyName = "email_notifications")]
         public JobEmailNotifications EmailNotifications { get; set; }
 
         /// <summary>
         /// An optional maximum number of times to retry an unsuccessful run. A run is considered to be unsuccessful if it completes with a FAILED result_state or INTERNAL_ERROR life_cycle_state. The value -1 means to retry indefinitely and the value 0 means to never retry. The default behavior is to never retry.
         /// </summary>
-        [JsonPropertyName("max_retries")]
+        [JsonProperty(PropertyName = "max_retries")]
         public int MaxRetries { get; set; }
 
         /// <summary>
         /// An optional minimal interval in milliseconds between attempts. The default behavior is that unsuccessful runs are immediately retried.
         /// </summary>
-        [JsonPropertyName("min_retry_interval_millis")]
+        [JsonProperty(PropertyName = "min_retry_interval_millis")]
         public int MinRetryIntervalMilliSeconds { get; set; }
 
         /// <summary>
         /// An optional policy to specify whether to retry a job when it times out. The default behavior is to not retry on timeout.
         /// </summary>
-        [JsonPropertyName("retry_on_timeout")]
+        [JsonProperty(PropertyName = "retry_on_timeout")]
         public bool RetryOnTimeout { get; set; }
 
         /// <summary>
@@ -59,7 +58,7 @@ namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWhee
         /// This setting affects only new runs. For example, suppose the job’s concurrency is 4 and there are 4 concurrent active runs. Then setting the concurrency to 3 won’t kill any of the active runs. However, from then on, new runs will be skipped unless there are fewer than 3 active runs.
         /// This value cannot exceed 1000. Setting this value to 0 will cause all new runs to be skipped. The default behavior is to allow only 1 concurrent run.
         /// </summary>
-        [JsonPropertyName("max_concurrent_runs")]
+        [JsonProperty(PropertyName = "max_concurrent_runs")]
         public int? MaxConcurrentRuns { get; set; }
     }
 }

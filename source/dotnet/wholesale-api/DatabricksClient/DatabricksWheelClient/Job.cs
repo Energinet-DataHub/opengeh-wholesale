@@ -12,9 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text.Json.Serialization;
 using Microsoft.Azure.Databricks.Client;
-using Microsoft.Azure.Databricks.Client.Converters;
+using Newtonsoft.Json;
 
 namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient
 {
@@ -23,25 +22,25 @@ namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWhee
         /// <summary>
         /// The canonical identifier for this job.
         /// </summary>
-        [JsonPropertyName("job_id")]
+        [JsonProperty(PropertyName = "job_id")]
         public long JobId { get; set; }
 
         /// <summary>
         /// The creator user name. This field won’t be included in the response if the user has already been deleted.
         /// </summary>
-        [JsonPropertyName("creator_user_name")]
+        [JsonProperty(PropertyName = "creator_user_name")]
         public string CreatorUserName { get; set; }
 
         /// <summary>
         /// Settings for this job and all of its runs. These settings can be updated using the resetJob method.
         /// </summary>
-        [JsonPropertyName("settings")]
+        [JsonProperty(PropertyName = "settings")]
         public WheelJobSettings Settings { get; set; }
 
         /// <summary>
         /// The time at which this job was created in epoch milliseconds (milliseconds since 1/1/1970 UTC).
         /// </summary>
-        [JsonPropertyName("created_time")]
+        [JsonProperty(PropertyName = "created_time")]
         [JsonConverter(typeof(MillisecondEpochDateTimeConverter))]
         public DateTimeOffset CreatedTime { get; set; }
     }
