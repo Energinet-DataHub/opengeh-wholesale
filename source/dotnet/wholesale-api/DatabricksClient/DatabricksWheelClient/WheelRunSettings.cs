@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient
 {
     public class WheelRunSettings
     {
-        [JsonProperty(PropertyName = "tasks")]
+        [JsonPropertyName("tasks")]
         public List<JobWheelTask> Tasks { get; set; }
     }
 }
