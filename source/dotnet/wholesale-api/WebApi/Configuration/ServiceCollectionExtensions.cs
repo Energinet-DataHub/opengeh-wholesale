@@ -25,7 +25,6 @@ using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
-using ProcessTypeMapper = Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Processes.Model.ProcessTypeMapper;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 

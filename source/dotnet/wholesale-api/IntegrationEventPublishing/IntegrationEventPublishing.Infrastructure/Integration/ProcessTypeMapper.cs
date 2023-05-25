@@ -18,12 +18,12 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.
 
 public static class ProcessTypeMapper
 {
-    public static ProcessType MapProcessType(Wholesale.Batches.Interfaces.Models.ProcessType processType)
+    public static ProcessType MapProcessType(Common.Models.ProcessType processType)
     {
         return processType switch
         {
-            Batches.Interfaces.Models.ProcessType.Aggregation => ProcessType.Aggregation,
-            Batches.Interfaces.Models.ProcessType.BalanceFixing => ProcessType.BalanceFixing,
+            Common.Models.ProcessType.Aggregation => ProcessType.Aggregation,
+            Common.Models.ProcessType.BalanceFixing => ProcessType.BalanceFixing,
             _ => throw new ArgumentException($"No matching 'ProcessType' for: {processType.ToString()}"),
         };
     }

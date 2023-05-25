@@ -15,6 +15,7 @@
 using System.Globalization;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using Energinet.DataHub.Wholesale.Common.Models;
 using NodaTime;
 using Xunit;
 using Xunit.Categories;
