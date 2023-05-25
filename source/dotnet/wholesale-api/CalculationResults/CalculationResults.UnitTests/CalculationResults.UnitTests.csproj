@@ -56,6 +56,9 @@
       <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\enums\time-series-type.json">
         <Link>DeltaTableContracts\Contracts\Enums\time-series-type.json</Link>
       </EmbeddedResource>
+      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\result-table-column-names.json">
+        <Link>DeltaTableContracts\Contracts\result-table-column-names.json</Link>
+      </EmbeddedResource>
       <EmbeddedResource Include="Application\ProcessStep\Model\ProcessResult.json" />
       <EmbeddedResource Include="Infrastructure\Actor\actor-list.json" />
       <EmbeddedResource Include="Infrastructure\CalculationResultClient\CalculationResult.json" />
@@ -63,11 +66,5 @@
     <ItemGroup>
       <ProjectReference Include="..\..\Test.Core\Test.Core.csproj" />
       <ProjectReference Include="..\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" />
-      <ProjectReference Include="..\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\result-table-column-names.json">
-        <Link>DeltaTableContracts\Contracts\result-table-column-names.json</Link>
-      </EmbeddedResource>
     </ItemGroup>
 </Project>

@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Batches.Application;
+using Energinet.DataHub.Wholesale.Batches.Application.BatchAggregate;
 using Energinet.DataHub.Wholesale.Batches.Application.Model;
 using Energinet.DataHub.Wholesale.Batches.Application.Workers;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchExecutionStateDomainService;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationDomainService;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
@@ -24,7 +24,6 @@ using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 
