@@ -13,7 +13,8 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
+using Energinet.DataHub.Wholesale.Batches.Application;
+using Energinet.DataHub.Wholesale.Batches.Application.BatchAggregate;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchExecutionStateDomainService;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationDomainService;
 using FluentAssertions;

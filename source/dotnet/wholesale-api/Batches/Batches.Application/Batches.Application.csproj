@@ -13,7 +13,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Common.csproj" />
     <ProjectReference Include="..\Batches.Interfaces\Batches.Interfaces.csproj" />
-    <ProjectReference Include="..\Batches.Infrastructure\Batches.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
