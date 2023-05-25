@@ -21,22 +21,19 @@ namespace Energinet.DataHub.Wholesale.Batches.Application.Workers;
 /// <summary>
 /// Worker invoking starting new batches.
 /// </summary>
-public class StartCalculationWorker : RepeatingWorker
+public class StartCalculationWorker : RepeatingWorker<IBatchApplicationService>
 {
     private const int DelayInSecondsBeforeNextExecution = 10;
-    private readonly IBatchApplicationService _batchApplicationService;
 
     public StartCalculationWorker(
         IServiceProvider serviceProvider,
-        ILogger<StartCalculationWorker> logger,
-        IBatchApplicationService batchApplicationService)
+        ILogger<StartCalculationWorker> logger)
         : base(serviceProvider, logger, TimeSpan.FromSeconds(DelayInSecondsBeforeNextExecution))
     {
-        _batchApplicationService = batchApplicationService;
     }
 
-    protected override async Task ExecuteAsync()
+    protected override async Task ExecuteAsync(IBatchApplicationService instance)
     {
-        await _batchApplicationService.StartCalculationsAsync().ConfigureAwait(false);
+        await instance.StartCalculationsAsync().ConfigureAwait(false);
     }
 }

@@ -22,7 +22,8 @@ namespace Energinet.DataHub.Wholesale.Common.Workers;
 /// <summary>
 /// Hosted service worker repeating a task indefinitely.
 /// </summary>
-public abstract class RepeatingWorker : BackgroundService
+public abstract class RepeatingWorker<TService> : BackgroundService
+    where TService : notnull
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger _logger;
@@ -54,7 +55,7 @@ public abstract class RepeatingWorker : BackgroundService
     /// Method to be implemented by the inheriting class.
     /// The method is invoked repeatedly with a delay between each invocation.
     /// </summary>
-    protected abstract Task ExecuteAsync();
+    protected abstract Task ExecuteAsync(TService instance);
 
     private async Task InvokeAsync()
     {
@@ -64,6 +65,7 @@ public abstract class RepeatingWorker : BackgroundService
         var correlationContext = scope.ServiceProvider.GetRequiredService<ICorrelationContext>();
         correlationContext.SetId(Guid.NewGuid().ToString());
 
-        await ExecuteAsync().ConfigureAwait(false);
+        var service = scope.ServiceProvider.GetRequiredService<TService>();
+        await ExecuteAsync(service).ConfigureAwait(false);
     }
 }

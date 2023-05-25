@@ -21,23 +21,19 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Wor
 /// <summary>
 /// Worker invoking publishing calculation results as integration events.
 /// </summary>
-public class PublishCalculationResultsWorker : RepeatingWorker
+public class PublishCalculationResultsWorker : RepeatingWorker<IPublishCalculationResultsHandler>
 {
     private const int DelayInSecondsBeforeNextExecution = 30;
 
-    private readonly IPublishCalculationResultsHandler _publisher;
-
     public PublishCalculationResultsWorker(
         IServiceProvider serviceProvider,
-        ILogger<PublishCalculationResultsWorker> logger,
-        IPublishCalculationResultsHandler publisher)
+        ILogger<PublishCalculationResultsWorker> logger)
         : base(serviceProvider, logger, TimeSpan.FromSeconds(DelayInSecondsBeforeNextExecution))
     {
-        _publisher = publisher;
     }
 
-    protected override async Task ExecuteAsync()
+    protected override async Task ExecuteAsync(IPublishCalculationResultsHandler instance)
     {
-        await _publisher.PublishCalculationResultsAsync().ConfigureAwait(false);
+        await instance.PublishCalculationResultsAsync().ConfigureAwait(false);
     }
 }

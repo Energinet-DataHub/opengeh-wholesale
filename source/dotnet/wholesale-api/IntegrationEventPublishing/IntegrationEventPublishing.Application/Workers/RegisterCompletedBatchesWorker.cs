@@ -21,22 +21,19 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Wor
 /// <summary>
 /// Worker invoking fetching completed batches from the batches module and registering them in the module.
 /// </summary>
-public class RegisterCompletedBatchesWorker : RepeatingWorker
+public class RegisterCompletedBatchesWorker : RepeatingWorker<IRegisterCompletedBatchesHandler>
 {
     private const int DelayInSecondsBeforeNextExecution = 10;
-    private readonly IRegisterCompletedBatchesHandler _handler;
 
     public RegisterCompletedBatchesWorker(
         IServiceProvider serviceProvider,
-        ILogger<RegisterCompletedBatchesWorker> logger,
-        IRegisterCompletedBatchesHandler handler)
+        ILogger<RegisterCompletedBatchesWorker> logger)
         : base(serviceProvider, logger, TimeSpan.FromSeconds(DelayInSecondsBeforeNextExecution))
     {
-        _handler = handler;
     }
 
-    protected override async Task ExecuteAsync()
+    protected override async Task ExecuteAsync(IRegisterCompletedBatchesHandler instance)
     {
-        await _handler.RegisterCompletedBatchesAsync().ConfigureAwait(false);
+        await instance.RegisterCompletedBatchesAsync().ConfigureAwait(false);
     }
 }

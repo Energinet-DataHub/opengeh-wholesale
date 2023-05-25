@@ -21,23 +21,19 @@ namespace Energinet.DataHub.Wholesale.Batches.Application.Workers;
 /// <summary>
 /// Worker invoking updating batch execution states.
 /// </summary>
-public class UpdateBatchExecutionStateWorker : RepeatingWorker
+public class UpdateBatchExecutionStateWorker : RepeatingWorker<IBatchApplicationService>
 {
     private const int DelayInSecondsBeforeNextExecution = 20;
 
-    private readonly IBatchApplicationService _batchApplicationService;
-
     public UpdateBatchExecutionStateWorker(
         IServiceProvider serviceProvider,
-        ILogger<UpdateBatchExecutionStateWorker> logger,
-        IBatchApplicationService batchApplicationService)
+        ILogger<UpdateBatchExecutionStateWorker> logger)
         : base(serviceProvider, logger, TimeSpan.FromSeconds(DelayInSecondsBeforeNextExecution))
     {
-        _batchApplicationService = batchApplicationService;
     }
 
-    protected override async Task ExecuteAsync()
+    protected override async Task ExecuteAsync(IBatchApplicationService instance)
     {
-        await _batchApplicationService.UpdateExecutionStateAsync().ConfigureAwait(false);
+        await instance.UpdateExecutionStateAsync().ConfigureAwait(false);
     }
 }
