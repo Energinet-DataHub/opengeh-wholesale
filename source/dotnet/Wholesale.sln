@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi", "wholesale-api\Web
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseMigration", "database-migration\DatabaseMigration.csproj", "{ABA195E8-C392-42BA-958E-F03447A2B301}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "wholesale-api\Application\Application.csproj", "{F163CC59-E435-4274-9316-7EF7463BA8E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "wholesale-api\Common\Common.csproj", "{F163CC59-E435-4274-9316-7EF7463BA8E6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi.UnitTests", "wholesale-api\WebApi.UnitTests\WebApi.UnitTests.csproj", "{29B77280-062B-4AB0-A67D-8AF9C346299F}"
 EndProject
