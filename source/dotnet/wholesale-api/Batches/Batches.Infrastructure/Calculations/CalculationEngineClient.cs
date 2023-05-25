@@ -16,7 +16,6 @@ using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationDomainService;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
 using Microsoft.Azure.Databricks.Client;
-using Microsoft.Azure.Databricks.Client.Models;
 
 namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
 
@@ -49,7 +48,7 @@ public sealed class CalculationEngineClient : ICalculationEngineClient
             .RunNow(calculatorJob.JobId, runParameters)
             .ConfigureAwait(false);
 
-        return new CalculationId(runId);
+        return new CalculationId(runId.RunId);
     }
 
     public async Task<CalculationState> GetStatusAsync(CalculationId calculationId)
@@ -59,22 +58,22 @@ public sealed class CalculationEngineClient : ICalculationEngineClient
             .RunsGet(calculationId.Id)
             .ConfigureAwait(false);
 
-        return runState.Item1.State.LifeCycleState switch
+        return runState.State.LifeCycleState switch
         {
             RunLifeCycleState.PENDING => CalculationState.Pending,
             RunLifeCycleState.RUNNING => CalculationState.Running,
             RunLifeCycleState.TERMINATING => CalculationState.Running,
             RunLifeCycleState.SKIPPED => CalculationState.Canceled,
             RunLifeCycleState.INTERNAL_ERROR => CalculationState.Failed,
-            RunLifeCycleState.TERMINATED => runState.Item1.State.ResultState switch
+            RunLifeCycleState.TERMINATED => runState.State.ResultState switch
             {
                 RunResultState.SUCCESS => CalculationState.Completed,
                 RunResultState.FAILED => CalculationState.Failed,
                 RunResultState.CANCELED => CalculationState.Canceled,
                 RunResultState.TIMEDOUT => CalculationState.Canceled,
-                _ => throw new ArgumentOutOfRangeException(nameof(runState.Item1.State)),
+                _ => throw new ArgumentOutOfRangeException(nameof(runState.State)),
             },
-            _ => throw new ArgumentOutOfRangeException(nameof(runState.Item1.State)),
+            _ => throw new ArgumentOutOfRangeException(nameof(runState.State)),
         };
     }
 }

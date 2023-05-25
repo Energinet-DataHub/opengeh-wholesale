@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
 
 public class SparkPythonTask
 {
-    [JsonPropertyName("parameters")]
+    [JsonProperty(PropertyName = "parameters")]
     public List<string> Parameters { get; set; }
 }
