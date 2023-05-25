@@ -14,7 +14,6 @@
 
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.BatchAggregate;
-using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Processes.Model;
 using NodaTime.Extensions;
 
 namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.UseCases.Mappers;
@@ -34,7 +33,7 @@ public class CompletedBatchMapper : ICompletedBatchMapper
         return new CompletedBatch(
             completedBatchDto.BatchId,
             completedBatchDto.GridAreaCodes.ToList(),
-            ProcessTypeMapper.MapFrom(completedBatchDto.ProcessType),
+            completedBatchDto.ProcessType,
             completedBatchDto.PeriodStart.ToInstant(),
             completedBatchDto.PeriodEnd.ToInstant(),
             completedTime: completedBatchDto.ExecutionTimeEnd.Value.ToInstant(),
