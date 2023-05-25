@@ -17,7 +17,9 @@ using System.Text;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
 using Microsoft.Azure.Databricks.Client;
+using Microsoft.Azure.Databricks.Client.Models;
 using Newtonsoft.Json;
+using PythonWheelTask = Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient.PythonWheelTask;
 
 namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.Components;
 
@@ -200,7 +202,7 @@ public sealed class DatabricksTestHttpListener : IDisposable
     {
         var reader = new StreamReader(context.Request.InputStream);
         var settings = reader.ReadToEnd();
-        var actualSettings = JsonConvert.DeserializeObject<RunNowSettings>(settings);
+        var actualSettings = JsonConvert.DeserializeObject<Run>(settings);
         if (actualSettings!.JobId != JobId)
         {
             FakeServerErrorAndClose(context);
