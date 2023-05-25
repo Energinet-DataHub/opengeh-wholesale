@@ -18,7 +18,7 @@ using Energinet.DataHub.Wholesale.Batches.Application.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Common.Models;
 using FluentAssertions;
-using Microsoft.Azure.Databricks.Client.Models;
+using Microsoft.Azure.Databricks.Client;
 using NodaTime;
 using NodaTime.Extensions;
 using Xunit;
