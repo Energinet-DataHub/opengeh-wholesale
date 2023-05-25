@@ -26,7 +26,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 public class DatabricksSqlResponseParserTests
 {
     private readonly string _succeededResultJson;
-    private readonly string _pendingResultJson;
+    private readonly string _cancelledResultJson;
 
     public DatabricksSqlResponseParserTests()
     {
@@ -39,10 +39,10 @@ public class DatabricksSqlResponseParserTests
             statement_id = "01edef23-0d2c-10dd-879b-26b5e97b3796",
             status = new
             {
-                state = "PENDING",
+                state = "CANCELED",
             },
         };
-        _pendingResultJson = JsonConvert.SerializeObject(statement, Formatting.Indented);
+        _cancelledResultJson = JsonConvert.SerializeObject(statement, Formatting.Indented);
     }
 
     [Theory]
@@ -50,10 +50,10 @@ public class DatabricksSqlResponseParserTests
     public void Parse_WhenStateIsCancelled_ReturnsResponseWithExpectedState(DatabricksSqlResponseParser sut)
     {
         // Arrange
-        const string expectedState = Data;
+        const DatabricksSqlResponseState expectedState = DatabricksSqlResponseState.Cancelled;
 
         // Act
-        var actual = sut.Parse(_pendingResultJson);
+        var actual = sut.Parse(_cancelledResultJson);
 
         // Assert
         actual.State.Should().Be(expectedState);
@@ -64,7 +64,7 @@ public class DatabricksSqlResponseParserTests
     public void Parse_WhenStateIsSucceeded_ReturnsResponseWithExpectedState(DatabricksSqlResponseParser sut)
     {
         // Arrange
-        const string expectedState = "SUCCEEDED";
+        const DatabricksSqlResponseState expectedState = DatabricksSqlResponseState.Succeeded;
 
         // Act
         var actual = sut.Parse(_succeededResultJson);
@@ -114,7 +114,7 @@ public class DatabricksSqlResponseParserTests
     public void Parse_WhenValidJson_ReturnsResult(DatabricksSqlResponseParser sut)
     {
         // Arrange
-        var status = new JProperty("status", new JObject(new JProperty("state", "PENDING")));
+        var status = new JProperty("status", new JObject(new JProperty("state", "CANCELED")));
         var manifest = new JProperty("manifest", new JObject(new JProperty("schema", new JObject(new JProperty("columns", new JArray(new JObject(new JProperty("name", "grid_area"))))))));
         var result = new JProperty("result", new JObject(new JProperty("data_array", new List<string[]>())));
         var obj = new JObject(status, manifest, result);
@@ -129,7 +129,7 @@ public class DatabricksSqlResponseParserTests
     public void Parse_WhenInvalidJson_ThrowsException(DatabricksSqlResponseParser sut)
     {
         // Arrange
-        var status = new JProperty("not_status", new JObject(new JProperty("state", "PENDING")));
+        var status = new JProperty("not_status", new JObject(new JProperty("state", "CANCELED")));
         var manifest = new JProperty("manifest", new JObject(new JProperty("schema", new JObject(new JProperty("columns", new JArray(new JObject(new JProperty("name", "grid_area"))))))));
         var result = new JProperty("result", new JObject(new JProperty("data_array", new List<string[]>())));
         var obj = new JObject(status, manifest, result);

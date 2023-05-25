@@ -75,7 +75,7 @@ public class CalculationResultClient : ICalculationResultClient
 
         var requestObject = new
         {
-            on_wait_timeout = "CANCEL",
+            on_wait_timeout = "PENDING",
             wait_timeout = $"{timeOutPerAttemptSeconds}s", // Make the operation synchronous
             statement = sqlStatement,
             warehouse_id = _options.Value.DATABRICKS_WAREHOUSE_ID,
