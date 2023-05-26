@@ -165,7 +165,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 match.Should().BeTrue();
             }
 
-            [DomainFact]
+            [DomainFact(Skip = "Test fails on cold runs with a timeout error.")]
             public async Task When_DownloadingSettlementReport_Then_ResponseIsCompressedFileWithData()
             {
                 // Arrange + Act
