@@ -1,4 +1,4 @@
-<!--
+﻿<!--
 Copyright 2020 Energinet DataHub A/S
 
 Licensed under the Apache License, Version 2.0 (the "License2");
@@ -16,24 +16,22 @@ limitations under the License.
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <AssemblyName>Energinet.DataHub.Wholesale.Infrastructure.Core</AssemblyName>
-    <RootNamespace>Energinet.DataHub.Wholesale.Infrastructure.Core</RootNamespace>
+    <AssemblyName>Energinet.DataHub.Wholesale.Common</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Wholesale.Common</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Identity" Version="1.8.2" />
-    <PackageReference Include="Azure.Messaging.EventHubs" Version="5.8.1" />
-    <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.13.0" />
-    <PackageReference Include="Energinet.DataHub.Core.JsonSerialization" Version="2.2.2" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="7.0.5" />
+    <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="7.4.3" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.5.22">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Energinet.DataHub.Core.App.Common.Abstractions" Version="7.4.3" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
   </ItemGroup>
 
 </Project>

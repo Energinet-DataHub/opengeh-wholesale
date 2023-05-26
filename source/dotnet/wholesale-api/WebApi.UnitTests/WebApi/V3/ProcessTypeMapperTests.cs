@@ -22,18 +22,18 @@ namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.WebApi.V3;
 public static class ProcessTypeMapperTests
 {
     [Theory]
-    [InlineAutoMoqData(Batches.Interfaces.Models.ProcessType.BalanceFixing, ProcessType.BalanceFixing)]
-    [InlineAutoMoqData(Batches.Interfaces.Models.ProcessType.Aggregation, ProcessType.Aggregation)]
-    public static void Map_ReturnsExpectedType(Batches.Interfaces.Models.ProcessType source, ProcessType expected)
+    [InlineAutoMoqData(Common.Models.ProcessType.BalanceFixing, ProcessType.BalanceFixing)]
+    [InlineAutoMoqData(Common.Models.ProcessType.Aggregation, ProcessType.Aggregation)]
+    public static void Map_ReturnsExpectedType(Common.Models.ProcessType source, ProcessType expected)
     {
         var actual = ProcessTypeMapper.Map(source);
         actual.Should().Be(expected);
     }
 
     [Theory]
-    [InlineAutoMoqData(ProcessType.BalanceFixing, Batches.Interfaces.Models.ProcessType.BalanceFixing)]
-    [InlineAutoMoqData(ProcessType.Aggregation, Batches.Interfaces.Models.ProcessType.Aggregation)]
-    public static void MapProcessType_ReturnsExpectedType(ProcessType source, Batches.Interfaces.Models.ProcessType expected)
+    [InlineAutoMoqData(ProcessType.BalanceFixing, Common.Models.ProcessType.BalanceFixing)]
+    [InlineAutoMoqData(ProcessType.Aggregation, Common.Models.ProcessType.Aggregation)]
+    public static void MapProcessType_ReturnsExpectedType(ProcessType source, Common.Models.ProcessType expected)
     {
         var actual = ProcessTypeMapper.Map(source);
         actual.Should().Be(expected);

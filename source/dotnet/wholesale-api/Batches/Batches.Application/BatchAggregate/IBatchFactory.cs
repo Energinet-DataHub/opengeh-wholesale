@@ -12,20 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.BatchAggregate;
+using Energinet.DataHub.Wholesale.Common.Models;
 
-/// <summary>
-/// Defines the wholesale process type
-/// </summary>
-public enum ProcessType
+namespace Energinet.DataHub.Wholesale.Batches.Application.BatchAggregate;
+
+public interface IBatchFactory
 {
-    /// <summary>
-    /// Balance fixing
-    /// </summary>
-    BalanceFixing,
-
-    /// <summary>
-    /// Aggregation.
-    /// </summary>
-    Aggregation,
+     Batch Create(ProcessType processType, IEnumerable<string> gridAreaCodes, DateTimeOffset startDate, DateTimeOffset endDate, Guid createdByUserId);
 }

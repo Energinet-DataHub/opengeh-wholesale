@@ -10,11 +10,15 @@
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
-// limitations under the License.using Energinet.DataHub.Wholesale.Application.JobRunner;
+// limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchExecutionStateDomainService;
+using Energinet.DataHub.Wholesale.Batches.Application.BatchAggregate;
 
-public interface IBatchExecutionStateDomainService
+namespace Energinet.DataHub.Wholesale.Batches.Application;
+
+public interface ICalculationDomainService
 {
-    Task UpdateExecutionStateAsync();
+    Task<CalculationState> GetStatusAsync(CalculationId calculationId);
+
+    Task StartAsync(Guid batchId);
 }

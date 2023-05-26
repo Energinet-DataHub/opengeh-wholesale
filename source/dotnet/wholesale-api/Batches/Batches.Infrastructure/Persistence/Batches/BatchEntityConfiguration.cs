@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using System.Text.Json;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchAggregate;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Batches.Application.BatchAggregate;
+using Energinet.DataHub.Wholesale.Batches.Application.GridAreaAggregate;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

@@ -16,22 +16,22 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 
 public static class ProcessTypeMapper
 {
-    public static Batches.Interfaces.Models.ProcessType Map(ProcessType batchDtoProcessType)
+    public static Common.Models.ProcessType Map(ProcessType batchDtoProcessType)
     {
         return batchDtoProcessType switch
         {
-            ProcessType.Aggregation => Batches.Interfaces.Models.ProcessType.Aggregation,
-            ProcessType.BalanceFixing => Batches.Interfaces.Models.ProcessType.BalanceFixing,
+            ProcessType.Aggregation => Common.Models.ProcessType.Aggregation,
+            ProcessType.BalanceFixing => Common.Models.ProcessType.BalanceFixing,
             _ => throw new ArgumentOutOfRangeException(nameof(batchDtoProcessType), batchDtoProcessType, null),
         };
     }
 
-    public static ProcessType Map(Batches.Interfaces.Models.ProcessType batchDtoProcessType)
+    public static ProcessType Map(Common.Models.ProcessType batchDtoProcessType)
     {
         return batchDtoProcessType switch
         {
-            Batches.Interfaces.Models.ProcessType.Aggregation => ProcessType.Aggregation,
-            Batches.Interfaces.Models.ProcessType.BalanceFixing => ProcessType.BalanceFixing,
+            Common.Models.ProcessType.Aggregation => ProcessType.Aggregation,
+            Common.Models.ProcessType.BalanceFixing => ProcessType.BalanceFixing,
             _ => throw new ArgumentOutOfRangeException(nameof(batchDtoProcessType), batchDtoProcessType, null),
         };
     }

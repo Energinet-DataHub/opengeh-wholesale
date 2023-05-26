@@ -12,6 +12,5 @@
   <ItemGroup>
     <ProjectReference Include="..\..\DatabricksClient\DatabricksClient.csproj" />
     <ProjectReference Include="..\CalculationResults.Application\CalculationResults.Application.csproj" />
-    <ProjectReference Include="..\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
   </ItemGroup>
 </Project>

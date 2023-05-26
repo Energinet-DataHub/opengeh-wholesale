@@ -12,14 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Infrastructure.Core
+using System.Security.Claims;
+using Energinet.DataHub.Core.App.Common.Abstractions.Users;
+
+namespace Energinet.DataHub.Wholesale.Common.Security;
+
+// ReSharper disable once ClassNeverInstantiated.Global
+public sealed class FrontendUserProvider : IUserProvider<FrontendUser>
 {
-    public static class EnvironmentVariableHelper
+    public Task<FrontendUser?> ProvideUserAsync(
+        Guid userId,
+        Guid actorId,
+        bool isFas,
+        IEnumerable<Claim> claims)
     {
-        public static string GetEnvVariable(string variableName)
-        {
-            return Environment.GetEnvironmentVariable(variableName) ??
-                   throw new Exception($"Application is missing required environment variable '{variableName}'");
-        }
+        return Task.FromResult<FrontendUser?>(new FrontendUser(
+            userId,
+            actorId,
+            isFas));
     }
 }

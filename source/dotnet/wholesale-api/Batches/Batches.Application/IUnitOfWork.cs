@@ -12,20 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Application.Security;
+namespace Energinet.DataHub.Wholesale.Batches.Application;
 
-public sealed class FrontendUser
+public interface IUnitOfWork
 {
-    public FrontendUser(Guid userId, Guid actorId, bool isFas)
-    {
-        UserId = userId;
-        ActorId = actorId;
-        IsFas = isFas;
-    }
-
-    public Guid UserId { get; }
-
-    public Guid ActorId { get; }
-
-    public bool IsFas { get; }
+    Task CommitAsync();
 }

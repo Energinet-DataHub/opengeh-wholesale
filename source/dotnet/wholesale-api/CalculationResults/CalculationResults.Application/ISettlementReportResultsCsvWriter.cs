@@ -19,5 +19,5 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Application;
 
 public interface ISettlementReportResultsCsvWriter
 {
-    Task WriteAsync(Stream destination, IEnumerable<SettlementReportResultRow> rows, CultureInfo csvLanguageFormat);
+    Task WriteAsync(Stream destination, IEnumerable<SettlementReportResultRow> rows, CultureInfo csvFormatLocale);
 }

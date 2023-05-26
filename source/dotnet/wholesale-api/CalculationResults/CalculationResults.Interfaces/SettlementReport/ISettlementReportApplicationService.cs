@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Application.SettlementReport.Model;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using Energinet.DataHub.Wholesale.Common.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
 
@@ -30,5 +30,5 @@ public interface ISettlementReportApplicationService
         DateTimeOffset periodStart,
         DateTimeOffset periodEnd,
         string? energySupplier,
-        string? csvLanguage);
+        string? csvFormatLocale);
 }

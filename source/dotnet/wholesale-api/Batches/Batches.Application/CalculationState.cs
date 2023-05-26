@@ -12,20 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
+namespace Energinet.DataHub.Wholesale.Batches.Application;
 
-/// <summary>
-/// Defines the wholesale process type
-/// </summary>
-public enum ProcessType
+public enum CalculationState
 {
-    /// <summary>
-    /// Balance fixing
-    /// </summary>
-    BalanceFixing = 0,
-
-    /// <summary>
-    /// Aggregation.
-    /// </summary>
-    Aggregation = 1,
+    Pending,
+    Running,
+    Completed,
+    Canceled,
+    Failed,
 }
