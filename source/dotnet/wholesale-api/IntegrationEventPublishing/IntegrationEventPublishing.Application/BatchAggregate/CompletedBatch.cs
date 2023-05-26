@@ -50,5 +50,5 @@ public sealed class CompletedBatch
 
     public Instant PeriodEnd { get; init; }
 
-    public Instant CompletedTime { get; init; }
+    public Instant CompletedTime { get; private set; }
 }
