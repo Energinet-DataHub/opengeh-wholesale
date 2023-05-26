@@ -83,6 +83,7 @@ public class BatchBuilder
     public Batch Build()
     {
         var batch = new Batch(
+            SystemClock.Instance.GetCurrentInstant(),
             _processType,
             _gridAreaCodes,
             _periodStart,
