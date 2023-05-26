@@ -68,6 +68,7 @@ public class CreateBatchHandlerTests
     {
         var period = Periods.January_EuropeCopenhagen_Instant;
         return new Batch(
+            SystemClock.Instance.GetCurrentInstant(),
             ProcessType.BalanceFixing,
             command.GridAreaCodes.Select(x => new GridAreaCode(x)).ToList(),
             command.StartDate.ToInstant(),
