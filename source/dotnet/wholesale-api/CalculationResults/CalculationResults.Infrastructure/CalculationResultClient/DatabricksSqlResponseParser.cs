@@ -29,14 +29,12 @@ public class DatabricksSqlResponseParser : IDatabricksSqlResponseParser
         switch (state)
         {
             case "PENDING":
-                return new DatabricksSqlResponse(state, null);
-            case "RUNNING":
-                return new DatabricksSqlResponse("PENDING", null); // We currently don't distinguish between PENDING and RUNNING
+                return DatabricksSqlResponse.CreateAsPending();
             case "SUCCEEDED":
                 var columnNames = GetColumnNames(jsonObject);
                 var hasData = GetRowCount(jsonObject) > 0;
                 var dataArray = hasData ? GetDataArray(jsonObject) : new List<string[]>();
-                return new DatabricksSqlResponse(state, new Table(columnNames, dataArray));
+                return DatabricksSqlResponse.CreateAsSucceeded(new Table(columnNames, dataArray));
             default:
                 throw new DatabricksSqlException($@"Databricks SQL statement execution failed. State: {state}");
         }
