@@ -64,6 +64,7 @@ public class SettlementReportApplicationServiceTests
             DateTimeOffset.MinValue,
             DateTimeOffset.MaxValue,
             null,
+            null,
             null);
 
         // Assert
@@ -110,6 +111,7 @@ public class SettlementReportApplicationServiceTests
             DateTimeOffset.MinValue,
             DateTimeOffset.MaxValue,
             null,
+            null,
             null);
 
         // Assert
@@ -138,6 +140,7 @@ public class SettlementReportApplicationServiceTests
             ProcessType.Aggregation,
             DateTimeOffset.MinValue,
             DateTimeOffset.MaxValue,
+            null,
             null,
             null));
     }

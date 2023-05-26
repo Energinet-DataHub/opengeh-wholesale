@@ -57,6 +57,7 @@ public class SettlementReportApplicationService : ISettlementReportApplicationSe
         DateTimeOffset periodStart,
         DateTimeOffset periodEnd,
         string? energySupplier,
+        string? gridAccessProvider,
         string? csvFormatLocale)
     {
         if (processType == ProcessType.Aggregation)
@@ -68,7 +69,8 @@ public class SettlementReportApplicationService : ISettlementReportApplicationSe
                 processType,
                 Instant.FromDateTimeOffset(periodStart),
                 Instant.FromDateTimeOffset(periodEnd),
-                energySupplier)
+                energySupplier,
+                gridAccessProvider)
             .ConfigureAwait(false);
 
         var destination = openDestinationStream();
