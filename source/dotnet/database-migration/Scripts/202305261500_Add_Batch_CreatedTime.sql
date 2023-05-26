@@ -8,7 +8,9 @@ IF NOT EXISTS (
 BEGIN
     ALTER TABLE batches.Batch
         ADD CreatedTime DATETIME2 NOT NULL DEFAULT GETDATE();
-    
-    UPDATE batches.Batch
-    SET CreatedTime = ExecutionTimeStart;
+
+    -- Prevent timing issues and defer verification of column existence to runtime by using EXEC()
+    EXEC('UPDATE batches.Batch
+          SET CreatedTime = ExecutionTimeStart');
 END
+GO
