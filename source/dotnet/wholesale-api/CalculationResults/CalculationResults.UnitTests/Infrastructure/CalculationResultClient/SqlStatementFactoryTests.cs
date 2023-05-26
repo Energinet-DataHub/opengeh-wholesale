@@ -44,7 +44,7 @@ ORDER by time
 ";
 
         // Act
-        var actual = SqlStatementFactory.CreateForSettlementReport(gridAreasCodes, ProcessType.BalanceFixing, periodStart, periodEnd, null);
+        var actual = SqlStatementFactory.CreateForSettlementReport(gridAreasCodes, ProcessType.BalanceFixing, periodStart, periodEnd, null, null);
 
         // Assert
         actual.Should().Be(expectedSql);

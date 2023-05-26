@@ -26,7 +26,8 @@ public static class SqlStatementFactory
         ProcessType processType,
         Instant periodStart,
         Instant periodEnd,
-        string? energySupplier)
+        string? energySupplier,
+        string? gridAccessProvider)
     {
         // TODO JMG: Handle energy supplier
         var selectColumns = string.Join(", ", ResultColumnNames.GridArea, ResultColumnNames.BatchProcessType, ResultColumnNames.Time, ResultColumnNames.TimeSeriesType, ResultColumnNames.Quantity);

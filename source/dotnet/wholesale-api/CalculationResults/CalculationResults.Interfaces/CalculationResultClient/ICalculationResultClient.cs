@@ -31,5 +31,6 @@ public interface ICalculationResultClient
        ProcessType processType,
        Instant periodStart,
        Instant periodEnd,
-       string? energySupplier);
+       string? energySupplier,
+       string? gridAccessProvider);
 }

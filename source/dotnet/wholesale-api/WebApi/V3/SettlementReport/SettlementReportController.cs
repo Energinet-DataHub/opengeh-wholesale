@@ -38,6 +38,7 @@ public class SettlementReportController : V3ControllerBase
     /// <param name="periodStart">The start date and time of the period covered by the settlement report.</param>
     /// <param name="periodEnd">The end date and time of the period covered by the settlement report.</param>
     /// <param name="energySupplier">Optional GLN/EIC identifier for an energy supplier.</param>
+    /// <param name="gridAccessProvider">Optional GLN/EIC identifier for a grid access provider.</param>
     /// <param name="csvFormatLocale">Optional locale used to format the CSV file, e.g. da-DK. Defaults to en-US.</param>
     [HttpGet("Download")]
     [MapToApiVersion(Version)]
@@ -48,6 +49,7 @@ public class SettlementReportController : V3ControllerBase
         [Required, FromQuery] DateTimeOffset periodStart,
         [Required, FromQuery] DateTimeOffset periodEnd,
         [FromQuery] string? energySupplier,
+        [FromQuery] string? gridAccessProvider,
         [FromQuery] string? csvFormatLocale)
     {
         return _settlementReportApplicationService
@@ -59,7 +61,8 @@ public class SettlementReportController : V3ControllerBase
                         processType,
                         periodStart,
                         periodEnd,
-                        energySupplier);
+                        energySupplier,
+                        gridAccessProvider);
 
                     Response.Headers.Add("Content-Type", "application/zip");
                     Response.Headers.Add("Content-Disposition", $"attachment; filename={settlementReportFileName}");
@@ -71,6 +74,7 @@ public class SettlementReportController : V3ControllerBase
                 periodStart,
                 periodEnd,
                 energySupplier,
+                gridAccessProvider,
                 csvFormatLocale);
     }
 
@@ -112,9 +116,11 @@ public class SettlementReportController : V3ControllerBase
         ProcessType processType,
         DateTimeOffset periodStart,
         DateTimeOffset periodEnd,
-        string? energySupplier)
+        string? energySupplier,
+        string? gridAccessProvider)
     {
         var energySupplierString = energySupplier is null ? string.Empty : $"_{energySupplier}";
+        var gridAccessProviderString = gridAccessProvider is null ? string.Empty : $"_{gridAccessProvider}";
         var gridAreaCodeString = string.Join("+", gridAreaCode);
         var processTypeString = processType switch
         {
@@ -122,6 +128,6 @@ public class SettlementReportController : V3ControllerBase
             _ => string.Empty,
         };
 
-        return $"Result_{gridAreaCodeString}{energySupplierString}_{periodStart:dd-MM-yyyy}_{periodEnd:dd-MM-yyyy}_{processTypeString}.zip";
+        return $"Result_{gridAreaCodeString}{energySupplierString}{gridAccessProviderString}_{periodStart:dd-MM-yyyy}_{periodEnd:dd-MM-yyyy}_{processTypeString}.zip";
     }
 }

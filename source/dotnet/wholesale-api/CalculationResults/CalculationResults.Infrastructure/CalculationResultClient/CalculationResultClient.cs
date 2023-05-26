@@ -47,9 +47,16 @@ public class CalculationResultClient : ICalculationResultClient
         ProcessType processType,
         Instant periodStart,
         Instant periodEnd,
-        string? energySupplier)
+        string? energySupplier,
+        string? gridAccessProvider)
     {
-        var sql = SqlStatementFactory.CreateForSettlementReport(gridAreaCodes, processType, periodStart, periodEnd, energySupplier);
+        var sql = SqlStatementFactory.CreateForSettlementReport(
+            gridAreaCodes,
+            processType,
+            periodStart,
+            periodEnd,
+            energySupplier,
+            gridAccessProvider);
 
         var resultTable = await ExecuteSqlStatementAsync(sql).ConfigureAwait(false);
 

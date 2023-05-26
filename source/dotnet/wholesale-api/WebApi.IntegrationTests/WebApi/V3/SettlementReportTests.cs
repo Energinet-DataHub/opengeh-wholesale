@@ -120,6 +120,7 @@ public sealed class SettlementReportTests : WebApiTestBase
                 periodStart,
                 periodEnd,
                 null,
+                null,
                 null))
             .Returns<Func<Stream>, string[], ProcessType, DateTimeOffset, DateTimeOffset, string?, string?>((openStream, _, _, _, _, _, _) =>
             {
@@ -165,6 +166,7 @@ public sealed class SettlementReportTests : WebApiTestBase
                 periodStart,
                 periodEnd,
                 null,
+                null,
                 language))
             .Returns<Func<Stream>, string[], ProcessType, DateTimeOffset, DateTimeOffset, string?, string?>((openStream, _, _, _, _, _, _) =>
             {
@@ -208,6 +210,7 @@ public sealed class SettlementReportTests : WebApiTestBase
                 periodStart,
                 periodEnd,
                 null,
+                null,
                 null))
             .Returns<Func<Stream>, string[], ProcessType, DateTimeOffset, DateTimeOffset, string?, string?>((openStream, _, _, _, _, _, _) =>
             {
@@ -250,6 +253,7 @@ public sealed class SettlementReportTests : WebApiTestBase
                 ProcessType.Aggregation,
                 periodStart,
                 periodEnd,
+                null,
                 null,
                 null))
             .Returns<Func<Stream>, string[], ProcessType, DateTimeOffset, DateTimeOffset, string?, string?>((_, _, _, _, _, _, _) =>
