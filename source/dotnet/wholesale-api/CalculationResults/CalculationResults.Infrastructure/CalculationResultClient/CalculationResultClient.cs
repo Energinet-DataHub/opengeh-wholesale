@@ -92,10 +92,10 @@ public class CalculationResultClient : ICalculationResultClient
 
             var databricksSqlResponse = _databricksSqlResponseParser.Parse(jsonResponse);
 
-            if (databricksSqlResponse.State == "SUCCEEDED")
+            if (databricksSqlResponse.State == DatabricksSqlResponseState.Succeeded)
                 return databricksSqlResponse.Table!;
 
-            if (databricksSqlResponse.State != "PENDING")
+            if (databricksSqlResponse.State != DatabricksSqlResponseState.Pending)
                 throw new DatabricksSqlException($"Unable to get calculation result from Databricks. State: {databricksSqlResponse.State}");
         }
 
