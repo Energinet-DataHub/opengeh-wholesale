@@ -54,7 +54,7 @@ WHERE
     AND {ResultColumnNames.TimeSeriesType} IN ({timeSeriesTypesString})
     AND {ResultColumnNames.BatchProcessType} = '{processTypeString}'
     AND {ResultColumnNames.Time} BETWEEN '{startTimeString}' AND '{endTimeString}'
-    AND aggregation_level = 'total_ga'
+    AND {ResultColumnNames.AggregationLevel} = 'total_ga'
 ORDER by time
 ";
     }
