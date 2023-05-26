@@ -30,6 +30,8 @@ public class DatabricksSqlResponseParser : IDatabricksSqlResponseParser
         {
             case "PENDING":
                 return DatabricksSqlResponse.CreateAsPending();
+            case "CANCELED":
+                return DatabricksSqlResponse.CreateAsCancelled();
             case "SUCCEEDED":
                 var columnNames = GetColumnNames(jsonObject);
                 var hasData = GetRowCount(jsonObject) > 0;
