@@ -50,7 +50,7 @@ public class DatabricksSqlResponseParserTests
     public void Parse_WhenStateIsPending_ReturnsResponseWithExpectedState(DatabricksSqlResponseParser sut)
     {
         // Arrange
-        const string expectedState = "PENDING";
+        const DatabricksSqlResponseState expectedState = DatabricksSqlResponseState.Pending;
 
         // Act
         var actual = sut.Parse(_pendingResultJson);
@@ -64,7 +64,7 @@ public class DatabricksSqlResponseParserTests
     public void Parse_WhenStateIsSucceeded_ReturnsResponseWithExpectedState(DatabricksSqlResponseParser sut)
     {
         // Arrange
-        const string expectedState = "SUCCEEDED";
+        const DatabricksSqlResponseState expectedState = DatabricksSqlResponseState.Succeeded;
 
         // Act
         var actual = sut.Parse(_succeededResultJson);
