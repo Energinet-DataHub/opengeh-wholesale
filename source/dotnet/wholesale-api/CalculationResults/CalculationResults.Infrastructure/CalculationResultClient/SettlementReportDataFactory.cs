@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Globalization;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using NodaTime.Text;

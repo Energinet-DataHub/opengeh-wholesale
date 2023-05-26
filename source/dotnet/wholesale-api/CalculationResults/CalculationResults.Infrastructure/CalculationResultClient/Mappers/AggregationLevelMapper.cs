@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
@@ -26,12 +27,12 @@ public static class AggregationLevelMapper
             case TimeSeriesType.Production:
             case TimeSeriesType.FlexConsumption:
                 if (energySupplierGln != null && balanceResponsiblePartyGln != null)
-                    return "es_brp_ga";
+                    return AggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea;
                 if (energySupplierGln != null)
-                    return "es_ga";
+                    return AggregationLevel.EnergySupplierAndGridArea;
                 if (balanceResponsiblePartyGln != null)
-                    return "brp_ga";
-                return "total_ga";
+                    return AggregationLevel.BalanceResponsibleAndGridArea;
+                return AggregationLevel.GridArea;
             default:
                 throw new NotImplementedException($"Mapping of '{timeSeriesType}' not implemented.");
         }
