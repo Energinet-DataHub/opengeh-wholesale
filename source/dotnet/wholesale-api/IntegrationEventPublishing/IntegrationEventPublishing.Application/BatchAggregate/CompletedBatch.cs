@@ -22,12 +22,10 @@ public sealed class CompletedBatch
     public CompletedBatch(
         Guid id,
         List<string> gridAreaCodes,
-        // TODO BJM: Is it ok to use this type here?
         ProcessType processType,
         Instant periodStart,
         Instant periodEnd,
-        Instant completedTime,
-        bool isPublished)
+        Instant completedTime)
     {
         Id = id;
         GridAreaCodes = gridAreaCodes;
@@ -35,10 +33,12 @@ public sealed class CompletedBatch
         PeriodStart = periodStart;
         PeriodEnd = periodEnd;
         CompletedTime = completedTime;
-        IsPublished = isPublished;
     }
 
-    public bool IsPublished { get; set; }
+    /// <summary>
+    /// The time when integration events for the batch were published.
+    /// </summary>
+    public Instant? PublishedTime { get; set; }
 
     public Guid Id { get; init; }
 

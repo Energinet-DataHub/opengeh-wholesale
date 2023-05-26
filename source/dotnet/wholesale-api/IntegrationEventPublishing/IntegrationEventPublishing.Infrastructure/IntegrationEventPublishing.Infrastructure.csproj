@@ -27,7 +27,4 @@
     <ProjectReference Include="..\..\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
     <ProjectReference Include="..\IntegrationEventPublishing.Application\IntegrationEventPublishing.Application.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ProcessAggregate" />
-  </ItemGroup>
 </Project>

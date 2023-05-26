@@ -36,10 +36,12 @@ public class BatchFactory : IBatchFactory
         DateTimeOffset endDate,
         Guid createdByUserId)
     {
+        var createdTime = _clock.GetCurrentInstant();
         var gridAreas = gridAreaCodes.Select(c => new GridAreaCode(c)).ToList();
         var periodStart = Instant.FromDateTimeOffset(startDate);
         var periodEnd = Instant.FromDateTimeOffset(endDate);
-        var executionTimeStart = _clock.GetCurrentInstant();
-        return new Batch(processType, gridAreas, periodStart, periodEnd, executionTimeStart, _dateTimeZone, createdByUserId);
+        // As long as scheduling is not implemented, execution time start is the same as created time
+        var executionTimeStart = createdTime;
+        return new Batch(createdTime, processType, gridAreas, periodStart, periodEnd, executionTimeStart, _dateTimeZone, createdByUserId);
     }
 }

@@ -24,6 +24,7 @@ public class Batch
     private readonly List<GridAreaCode> _gridAreaCodes;
 
     public Batch(
+        Instant createdTime,
         ProcessType processType,
         IEnumerable<GridAreaCode> gridAreaCodes,
         Instant periodStart,
@@ -42,6 +43,7 @@ public class Batch
         PeriodStart = periodStart;
         PeriodEnd = periodEnd;
         ExecutionTimeStart = executionTimeStart;
+        CreatedTime = createdTime;
         CreatedByUserId = createdByUserId;
         ExecutionTimeEnd = null;
         AreSettlementReportsCreated = false;
@@ -102,6 +104,8 @@ public class Batch
     public BatchExecutionState ExecutionState { get; private set; }
 
     public Instant? ExecutionTimeStart { get; }
+
+    public Instant CreatedTime { get; }
 
     public Guid CreatedByUserId { get; }
 

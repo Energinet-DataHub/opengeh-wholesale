@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Batches.Application.BatchAggregate;
 using Energinet.DataHub.Wholesale.Batches.Application.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.Batches.IntegrationTests.Fixture.Database;
 using Energinet.DataHub.Wholesale.Common.Models;
@@ -25,11 +26,11 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Batches.IntegrationTests.Infrastructure.Persistence.Batch;
 
-public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
+public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture<DatabaseContext>>
 {
-    private readonly WholesaleDatabaseManager _databaseManager;
+    private readonly WholesaleDatabaseManager<DatabaseContext> _databaseManager;
 
-    public BatchRepositoryTests(WholesaleDatabaseFixture fixture)
+    public BatchRepositoryTests(WholesaleDatabaseFixture<DatabaseContext> fixture)
     {
         _databaseManager = fixture.DatabaseManager;
     }
@@ -40,18 +41,18 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
-        var batch = CreateBatch(ProcessType.Aggregation, someGridAreasIds);
+        var expectedBatch = CreateBatch(ProcessType.Aggregation, someGridAreasIds);
         var sut = new BatchRepository(writeContext);
 
         // Act
-        await sut.AddAsync(batch);
+        await sut.AddAsync(expectedBatch);
         await writeContext.SaveChangesAsync();
 
         // Assert
         await using var readContext = _databaseManager.CreateDbContext();
-        var actual = await readContext.Batches.SingleAsync(b => b.Id == batch.Id);
+        var actual = await readContext.Batches.SingleAsync(b => b.Id == expectedBatch.Id);
 
-        actual.Should().BeEquivalentTo(batch);
+        actual.Should().BeEquivalentTo(expectedBatch);
         actual.GridAreaCodes.Should().BeEquivalentTo(someGridAreasIds);
         actual.ProcessType.Should().Be(ProcessType.Aggregation);
     }
@@ -199,13 +200,14 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
 
         var period = Periods.January_EuropeCopenhagen_Instant;
         var batch = new Application.BatchAggregate.Batch(
-           ProcessType.BalanceFixing,
-           new List<GridAreaCode> { new("004") },
-           period.PeriodStart,
-           period.PeriodEnd,
-           Instant.FromUtc(2022, 5, 1, 0, 0),
-           period.DateTimeZone,
-           Guid.NewGuid());
+            SystemClock.Instance.GetCurrentInstant(),
+            ProcessType.BalanceFixing,
+            new List<GridAreaCode> { new("004") },
+            period.PeriodStart,
+            period.PeriodEnd,
+            Instant.FromUtc(2022, 5, 1, 0, 0),
+            period.DateTimeZone,
+            Guid.NewGuid());
 
         var sut = new BatchRepository(writeContext);
         await sut.AddAsync(batch);
@@ -236,6 +238,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
     {
         var period = Periods.January_EuropeCopenhagen_Instant;
         return new Application.BatchAggregate.Batch(
+            SystemClock.Instance.GetCurrentInstant(),
             processType,
             someGridAreasIds,
             period.PeriodStart,
