@@ -28,9 +28,9 @@ public static class SqlStatementFactory
         Instant periodEnd,
         string? energySupplier)
     {
-        var isGridAreasProvider = string.IsNullOrEmpty(energySupplier);
+        var hasEnergySupplier = string.IsNullOrEmpty(energySupplier);
         var selectColumns = string.Join(", ", ResultColumnNames.GridArea, ResultColumnNames.BatchProcessType, ResultColumnNames.Time, ResultColumnNames.TimeSeriesType, ResultColumnNames.Quantity);
-        var timeSeriesTypes = string.Join(",", GetTimeSeriesTypesForSettlementReport(isGridAreasProvider).Select(x => $"\'{x}\'"));
+        var timeSeriesTypes = string.Join(",", GetTimeSeriesTypesForSettlementReport(hasEnergySupplier).Select(x => $"\'{x}\'"));
         var processTypeString = ProcessTypeMapper.ToDeltaTableValue(processType);
         var gridAreas = string.Join(",", gridAreaCodes);
         var startTimeString = periodStart.ToString();
@@ -42,7 +42,6 @@ public static class SqlStatementFactory
         //     baseQueryString += $@" AND {ResultColumnNames.EnergySupplierId} = '{energySupplier}'";
         //
         // return baseQueryString + " ORDER BY time";
-
         return
             $@"
 SELECT {selectColumns}
@@ -57,23 +56,22 @@ ORDER by time
 ";
     }
 
-    private string GetSqlStatementForGridAccessProvider()
-    {
-        return $@"
-SELECT {selectColumns}
-FROM wholesale_output.result
-WHERE
-    {ResultColumnNames.GridArea} IN ({gridAreas})
-    AND {ResultColumnNames.TimeSeriesType} IN ({timeSeriesTypes})
-    AND {ResultColumnNames.BatchProcessType} = '{processTypeString}'
-    AND {ResultColumnNames.Time} BETWEEN '{startTimeString}' AND '{endTimeString}'
-    AND aggregation_level = 'total_ga'
-ORDER by time
-";
-
-    }
-
-    private static IEnumerable<string> GetTimeSeriesTypesForSettlementReport(bool isGridAreaProvider)
+//     private string GetSqlStatementForGridAccessProvider()
+//     {
+//         return $@"
+// SELECT {selectColumns}
+// FROM wholesale_output.result
+// WHERE
+//     {ResultColumnNames.GridArea} IN ({gridAreas})
+//     AND {ResultColumnNames.TimeSeriesType} IN ({timeSeriesTypes})
+//     AND {ResultColumnNames.BatchProcessType} = '{processTypeString}'
+//     AND {ResultColumnNames.Time} BETWEEN '{startTimeString}' AND '{endTimeString}'
+//     AND aggregation_level = 'total_ga'
+// ORDER by time
+// ";
+//
+//     }
+    private static IEnumerable<string> GetTimeSeriesTypesForSettlementReport(bool isEnergySupplier)
     {
         var timeSeriesTypes = new List<string>
         {
@@ -83,8 +81,8 @@ ORDER by time
             TimeSeriesTypeMapper.ToDeltaTableValue(TimeSeriesType.NetExchangePerGa),
         };
 
-        if (isGridAreaProvider)
-            timeSeriesTypes.Add(TimeSeriesTypeMapper.ToDeltaTableValue(TimeSeriesType.ExchangePerGridArea));
+        if (!isEnergySupplier)
+            timeSeriesTypes.Add(TimeSeriesTypeMapper.ToDeltaTableValue(TimeSeriesType.NetExchangePerGa));
 
         return timeSeriesTypes;
     }

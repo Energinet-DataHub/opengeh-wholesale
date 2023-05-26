@@ -24,27 +24,29 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 [UnitTest]
 public class SqlStatementFactoryTests
 {
+    private readonly string[] _defaultGridAreasCodes = { "123", "234", "345" };
+    private readonly Instant _defaultPeriodStart = Instant.FromUtc(2022, 10, 12, 1, 0);
+    private readonly Instant _defaultPeriodEnd = Instant.FromUtc(2022, 10, 12, 3, 0);
+//     private readonly string _expectedSqlWhenNoEnergySupplier = @"
+// SELECT grid_area, batch_process_type, time, time_series_type, quantity
+// FROM wholesale_output.result
+// WHERE
+//     grid_area IN (123,234,345)
+//     AND time_series_type IN ('production','flex_consumption','non_profiled_consumption','net_exchange_per_ga')
+//     AND batch_process_type = 'BalanceFixing'
+//     AND time BETWEEN '2022-10-12T01:00:00Z' AND '2022-10-12T03:00:00Z'
+//     AND aggregation_level = 'total_ga'
+// ORDER by time
+// ";
+
     [Fact]
     public void CreateForSettlementReport_WhenEnergySupplierIsNull_ReturnsExpectedSqlStatement()
     {
         // Arrange
-        var gridAreasCodes = new[] { "123", "234", "345" };
-        var periodStart = Instant.FromUtc(2022, 10, 12, 1, 0);
-        var periodEnd = Instant.FromUtc(2022, 10, 12, 3, 0);
-        const string expectedSql = $@"
-SELECT grid_area, batch_process_type, time, time_series_type, quantity
-FROM wholesale_output.result
-WHERE
-    grid_area IN (123,234,345)
-    AND time_series_type IN ('production','flex_consumption','non_profiled_consumption','net_exchange_per_ga')
-    AND batch_process_type = 'BalanceFixing'
-    AND time BETWEEN '2022-10-12T01:00:00Z' AND '2022-10-12T03:00:00Z'
-    AND aggregation_level = 'total_ga'
-ORDER by time
-";
+        var expectedSql = GetExpectedSqlWhenNoEnergySupplier();
 
         // Act
-        var actual = SqlStatementFactory.CreateForSettlementReport(gridAreasCodes, ProcessType.BalanceFixing, periodStart, periodEnd, null);
+        var actual = SqlStatementFactory.CreateForSettlementReport(_defaultGridAreasCodes, ProcessType.BalanceFixing, _defaultPeriodStart, _defaultPeriodEnd, null);
 
         // Assert
         actual.Should().Be(expectedSql);
@@ -55,15 +57,42 @@ ORDER by time
     {
         // Arrange
         const string energySupplier = "1234567890123";
-        var gridAreasCodes = new[] { "123", "234", "345" };
-        var periodStart = Instant.FromUtc(2022, 10, 12, 1, 0);
-        var periodEnd = Instant.FromUtc(2022, 10, 12, 3, 0);
         const string expectedSql = $@"SELECT grid_area, batch_process_type, time, time_series_type, quantity FROM wholesale_output.result WHERE grid_area IN (123,234,345) AND time_series_type IN ('production','flex_consumption','non_profiled_consumption') AND batch_process_type = 'BalanceFixing' AND time BETWEEN '2022-10-12T01:00:00Z' AND '2022-10-12T03:00:00Z' AND energy_supplier_id = '{energySupplier}' ORDER BY time";
 
         // Act
-        var actual = SqlStatementFactory.CreateForSettlementReport(gridAreasCodes, ProcessType.BalanceFixing, periodStart, periodEnd, energySupplier);
+        var actual = SqlStatementFactory.CreateForSettlementReport(_defaultGridAreasCodes, ProcessType.BalanceFixing, _defaultPeriodStart, _defaultPeriodEnd, energySupplier);
 
         // Assert
         actual.Should().Be(expectedSql);
+    }
+
+    private static string GetExpectedSqlWhenNoEnergySupplier()
+    {
+        return @"
+SELECT grid_area, batch_process_type, time, time_series_type, quantity
+FROM wholesale_output.result
+WHERE
+    grid_area IN (123,234,345)
+    AND time_series_type IN ('production','flex_consumption','non_profiled_consumption','net_exchange_per_ga')
+    AND batch_process_type = 'BalanceFixing'
+    AND time BETWEEN '2022-10-12T01:00:00Z' AND '2022-10-12T03:00:00Z'
+    AND aggregation_level = 'total_ga'
+ORDER by time
+";
+    }
+
+    private static string GetExpectedSqlWhenWithEnergySupplier()
+    {
+        return @"
+SELECT grid_area, batch_process_type, time, time_series_type, quantity
+FROM wholesale_output.result
+WHERE
+    grid_area IN (123,234,345)
+    AND time_series_type IN ('production','flex_consumption','non_profiled_consumption')
+    AND batch_process_type = 'BalanceFixing'
+    AND time BETWEEN '2022-10-12T01:00:00Z' AND '2022-10-12T03:00:00Z'
+    AND aggregation_level = 'total_ga'
+ORDER by time
+";
     }
 }
