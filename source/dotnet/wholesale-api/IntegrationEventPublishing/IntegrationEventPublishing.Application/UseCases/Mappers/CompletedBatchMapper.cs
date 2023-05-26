@@ -28,7 +28,7 @@ public class CompletedBatchMapper : ICompletedBatchMapper
     public CompletedBatch Map(BatchDto completedBatchDto)
     {
         if (completedBatchDto.ExecutionTimeEnd == null)
-            throw new ArgumentNullException($"{nameof(BatchDto.ExecutionTimeEnd)} should be null for a completed batch.");
+            throw new ArgumentNullException($"{nameof(BatchDto.ExecutionTimeEnd)} should not be null for a completed batch.");
 
         return new CompletedBatch(
             completedBatchDto.BatchId,
@@ -36,7 +36,6 @@ public class CompletedBatchMapper : ICompletedBatchMapper
             completedBatchDto.ProcessType,
             completedBatchDto.PeriodStart.ToInstant(),
             completedBatchDto.PeriodEnd.ToInstant(),
-            completedTime: completedBatchDto.ExecutionTimeEnd.Value.ToInstant(),
-            isPublished: false);
+            completedTime: completedBatchDto.ExecutionTimeEnd.Value.ToInstant());
     }
 }

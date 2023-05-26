@@ -13,13 +13,13 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Database;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.DatabaseMigration;
 using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.Batches.IntegrationTests.Fixture.Database;
 
-public class WholesaleDatabaseManager : SqlServerDatabaseManager<DatabaseContext>
+public class WholesaleDatabaseManager<TDatabaseContext> : SqlServerDatabaseManager<TDatabaseContext>
+where TDatabaseContext : DbContext, new()
 {
     public WholesaleDatabaseManager()
         : base("Wholesale")
@@ -27,22 +27,22 @@ public class WholesaleDatabaseManager : SqlServerDatabaseManager<DatabaseContext
     }
 
     /// <inheritdoc/>
-    public override DatabaseContext CreateDbContext()
+    public override TDatabaseContext CreateDbContext()
     {
-        var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>()
+        var optionsBuilder = new DbContextOptionsBuilder<TDatabaseContext>()
             .UseSqlServer(ConnectionString, options =>
             {
                 options.UseNodaTime();
                 options.EnableRetryOnFailure();
             });
 
-        return new DatabaseContext(optionsBuilder.Options);
+        return (TDatabaseContext)Activator.CreateInstance(typeof(TDatabaseContext), optionsBuilder.Options)!;
     }
 
     /// <summary>
     /// Creates the database schema using DbUp instead of a database context.
     /// </summary>
-    protected override Task<bool> CreateDatabaseSchemaAsync(DatabaseContext context)
+    protected override Task<bool> CreateDatabaseSchemaAsync(TDatabaseContext context)
     {
         return Task.FromResult(CreateDatabaseSchema(context));
     }
@@ -50,7 +50,7 @@ public class WholesaleDatabaseManager : SqlServerDatabaseManager<DatabaseContext
     /// <summary>
     /// Creates the database schema using DbUp instead of a database context.
     /// </summary>
-    protected override bool CreateDatabaseSchema(DatabaseContext context)
+    protected override bool CreateDatabaseSchema(TDatabaseContext context)
     {
         var result = Upgrader.DatabaseUpgrade(ConnectionString);
         if (!result.Successful)
