@@ -33,7 +33,8 @@ public class CompletedBatchEntityConfiguration : IEntityTypeConfiguration<Comple
         builder.Property(b => b.PeriodStart);
         builder.Property(b => b.PeriodEnd);
         builder.Property(b => b.ProcessType);
-        builder.Property(b => b.IsPublished);
+        builder.Property(b => b.CompletedTime);
+        builder.Property(b => b.PublishedTime);
 
         // Grid area codes are stored as a JSON array
         var gridAreaCodes = builder.Metadata

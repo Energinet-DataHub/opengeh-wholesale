@@ -44,7 +44,7 @@ public class CompletedBatchRepository : ICompletedBatchRepository
     {
         return await _context.CompletedBatches
             .OrderBy(x => x.CompletedTime)
-            .Where(x => !x.IsPublished)
+            .Where(x => x.PublishedTime == null)
             .FirstOrDefaultAsync()
             .ConfigureAwait(false);
     }

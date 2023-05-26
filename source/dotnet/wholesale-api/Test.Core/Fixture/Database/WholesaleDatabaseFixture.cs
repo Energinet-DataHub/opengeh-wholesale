@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Batches.IntegrationTests.Fixture.Database;
@@ -24,14 +25,15 @@ namespace Energinet.DataHub.Wholesale.Batches.IntegrationTests.Fixture.Database;
 ///  * The database is created similar to what we expect in a production environment (e.g. collation)
 ///  * Each fixture instance has an unique database instance (connection string).
 /// </summary>
-public sealed class WholesaleDatabaseFixture : IAsyncLifetime
+public sealed class WholesaleDatabaseFixture<TDatabaseContext> : IAsyncLifetime
+    where TDatabaseContext : DbContext, new()
 {
     public WholesaleDatabaseFixture()
     {
-        DatabaseManager = new WholesaleDatabaseManager();
+        DatabaseManager = new WholesaleDatabaseManager<TDatabaseContext>();
     }
 
-    public WholesaleDatabaseManager DatabaseManager { get; }
+    public WholesaleDatabaseManager<TDatabaseContext> DatabaseManager { get; }
 
     public Task InitializeAsync()
     {
