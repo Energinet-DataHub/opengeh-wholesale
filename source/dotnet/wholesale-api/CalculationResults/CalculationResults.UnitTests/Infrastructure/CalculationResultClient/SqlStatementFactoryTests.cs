@@ -58,15 +58,15 @@ public class SqlStatementFactoryTests
     private static string GetExpectedSqlWhenNoEnergySupplier()
     {
         // This string must match the values of the private members that defines grid area codes, period start and period end
-        return @"
+        return $@"
 SELECT grid_area, batch_process_type, time, time_series_type, quantity
 FROM wholesale_output.result
 WHERE
-    grid_area IN (123,234,345)
-    AND time_series_type IN ('production','flex_consumption','non_profiled_consumption','net_exchange_per_ga')
-    AND batch_process_type = 'BalanceFixing'
-    AND time BETWEEN '2022-10-12T01:00:00Z' AND '2022-10-12T03:00:00Z'
-    AND aggregation_level = 'total_ga'
+    {ResultColumnNames.GridArea} IN (123,234,345)
+    AND {ResultColumnNames.TimeSeriesType} IN ('production','flex_consumption','non_profiled_consumption','net_exchange_per_ga')
+    AND {ResultColumnNames.BatchProcessType} = 'BalanceFixing'
+    AND {ResultColumnNames.Time} BETWEEN '2022-10-12T01:00:00Z' AND '2022-10-12T03:00:00Z'
+    AND {ResultColumnNames.AggregationLevel} = 'total_ga'
 ORDER by time
 ";
     }
@@ -78,12 +78,12 @@ ORDER by time
 SELECT grid_area, batch_process_type, time, time_series_type, quantity
 FROM wholesale_output.result
 WHERE
-    grid_area IN (123,234,345)
-    AND time_series_type IN ('production','flex_consumption','non_profiled_consumption')
-    AND batch_process_type = 'BalanceFixing'
-    AND time BETWEEN '2022-10-12T01:00:00Z' AND '2022-10-12T03:00:00Z'
-    AND aggregation_level = 'es_ga'
-    AND energy_supplier_id = '{energySupplier}'
+    {ResultColumnNames.GridArea} IN (123,234,345)
+    AND {ResultColumnNames.TimeSeriesType} IN ('production','flex_consumption','non_profiled_consumption')
+    AND {ResultColumnNames.BatchProcessType} = 'BalanceFixing'
+    AND {ResultColumnNames.Time} BETWEEN '2022-10-12T01:00:00Z' AND '2022-10-12T03:00:00Z'
+    AND {ResultColumnNames.AggregationLevel} = 'es_ga'
+    AND {ResultColumnNames.EnergySupplierId} = '{energySupplier}'
 ORDER by time
 ";
     }
