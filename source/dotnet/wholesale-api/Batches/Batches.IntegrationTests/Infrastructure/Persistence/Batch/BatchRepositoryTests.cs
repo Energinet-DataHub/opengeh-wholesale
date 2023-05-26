@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Batches.Application.BatchAggregate;
 using Energinet.DataHub.Wholesale.Batches.Application.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.Batches.IntegrationTests.Fixture.Database;
 using Energinet.DataHub.Wholesale.Common.Models;
@@ -25,11 +26,11 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Batches.IntegrationTests.Infrastructure.Persistence.Batch;
 
-public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture>
+public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture<DatabaseContext>>
 {
-    private readonly WholesaleDatabaseManager _databaseManager;
+    private readonly WholesaleDatabaseManager<DatabaseContext> _databaseManager;
 
-    public BatchRepositoryTests(WholesaleDatabaseFixture fixture)
+    public BatchRepositoryTests(WholesaleDatabaseFixture<DatabaseContext> fixture)
     {
         _databaseManager = fixture.DatabaseManager;
     }
