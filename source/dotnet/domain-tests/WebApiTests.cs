@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.IO.Compression;
 using System.Net;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
@@ -90,6 +91,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             private static readonly TimeSpan _defaultDelay = TimeSpan.FromSeconds(30);
 
             private static readonly Guid _existingBatchId = new("ed39dbc5-bdc5-41b9-922a-08d3b12d4538");
+            private static readonly DateTimeOffset _existingBatchPeriodStart = DateTimeOffset.Parse("2020-01-28T23:00:00Z");
+            private static readonly DateTimeOffset _existingBatchPeriodEnd = DateTimeOffset.Parse("2020-01-29T23:00:00Z");
             private static readonly string ExistingGridAreaCode = "543";
 
             public Given_Authorized(AuthorizedClientFixture fixture)
@@ -160,6 +163,35 @@ namespace Energinet.DataHub.Wholesale.DomainTests
 
                 isCompleted.Should().BeTrue();
                 match.Should().BeTrue();
+            }
+
+            [DomainFact]
+            public async Task When_DownloadingSettlementReport_Then_ResponseIsCompressedFileWithData()
+            {
+                // Arrange + Act
+                var fileResponse = await Fixture.WholesaleClient.DownloadAsync(
+                    new[] { ExistingGridAreaCode },
+                    ProcessType.BalanceFixing,
+                    _existingBatchPeriodStart,
+                    _existingBatchPeriodEnd);
+
+                // Assert
+                using var compressedSettlementReport = new ZipArchive(fileResponse.Stream, ZipArchiveMode.Read);
+                compressedSettlementReport.Entries.Should().NotBeEmpty();
+
+                var resultEntry = compressedSettlementReport.Entries.Single();
+                resultEntry.Name.Should().Be("Result.csv");
+
+                using var stringReader = new StreamReader(resultEntry.Open());
+                var content = await stringReader.ReadToEndAsync();
+
+                var lines = content.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var line in lines[1..])
+                {
+                    // Check that the line contains the expected grid area code and process type.
+                    Assert.StartsWith("543,D04,", line);
+                }
             }
         }
     }
