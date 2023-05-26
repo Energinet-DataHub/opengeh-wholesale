@@ -14,4 +14,38 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
-public sealed record DatabricksSqlResponse(DatabricksSqlResponseState State, Table? Table);
+public class DatabricksSqlResponse
+{
+    private readonly DatabricksSqlResponseState _state;
+    private readonly Table? _table;
+
+    private DatabricksSqlResponse(DatabricksSqlResponseState state, Table? table)
+    {
+        _state = state;
+        _table = table;
+    }
+
+    public static DatabricksSqlResponse CreateAsCancelled()
+    {
+        return new DatabricksSqlResponse(DatabricksSqlResponseState.Cancelled, null);
+    }
+
+    public static DatabricksSqlResponse CreateAsSucceeded(Table resultTable)
+    {
+        return new DatabricksSqlResponse(DatabricksSqlResponseState.Succeeded, resultTable);
+    }
+
+    public static DatabricksSqlResponse CreateAsFailed()
+    {
+        return new DatabricksSqlResponse(DatabricksSqlResponseState.Failed, null);
+    }
+
+    public static DatabricksSqlResponse CreateAsPending()
+    {
+        return new DatabricksSqlResponse(DatabricksSqlResponseState.Pending, null);
+    }
+
+    public DatabricksSqlResponseState State => _state;
+
+    public Table? Table => _table;
+}

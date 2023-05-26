@@ -44,10 +44,10 @@ public class CalculationResultClientTests
 
     private readonly Instant _somePeriodStart = Instant.FromUtc(2021, 3, 1, 10, 15);
     private readonly Instant _somePeriodEnd = Instant.FromUtc(2021, 3, 31, 10, 15);
-    private readonly DatabricksSqlResponse _pendingDatabricksSqlResponse = DatabricksSqlResponseFactory.CreateAsPending();
-    private readonly DatabricksSqlResponse _succeededDatabricksSqlResponse = DatabricksSqlResponseFactory.CreateAsSucceeded(TableTestHelper.CreateTableForSettlementReport(3));
-    private readonly DatabricksSqlResponse _succeededDatabricksSqlResponseWithZeroRows = DatabricksSqlResponseFactory.CreateAsSucceeded(TableTestHelper.CreateTableForSettlementReport(0));
-    private readonly DatabricksSqlResponse _failedDatabricksSqlResponse = DatabricksSqlResponseFactory.CreateAsFailed();
+    private readonly DatabricksSqlResponse _pendingDatabricksSqlResponse = DatabricksSqlResponse.CreateAsPending();
+    private readonly DatabricksSqlResponse _succeededDatabricksSqlResponse = DatabricksSqlResponse.CreateAsSucceeded(TableTestHelper.CreateTableForSettlementReport(3));
+    private readonly DatabricksSqlResponse _succeededDatabricksSqlResponseWithZeroRows = DatabricksSqlResponse.CreateAsSucceeded(TableTestHelper.CreateTableForSettlementReport(0));
+    private readonly DatabricksSqlResponse _failedDatabricksSqlResponse = DatabricksSqlResponse.CreateAsFailed();
 
     [Theory]
     [InlineAutoMoqData]
