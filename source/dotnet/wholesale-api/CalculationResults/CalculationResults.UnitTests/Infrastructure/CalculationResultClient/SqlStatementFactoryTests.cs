@@ -27,17 +27,6 @@ public class SqlStatementFactoryTests
     private readonly string[] _defaultGridAreasCodes = { "123", "234", "345" };
     private readonly Instant _defaultPeriodStart = Instant.FromUtc(2022, 10, 12, 1, 0);
     private readonly Instant _defaultPeriodEnd = Instant.FromUtc(2022, 10, 12, 3, 0);
-//     private readonly string _expectedSqlWhenNoEnergySupplier = @"
-// SELECT grid_area, batch_process_type, time, time_series_type, quantity
-// FROM wholesale_output.result
-// WHERE
-//     grid_area IN (123,234,345)
-//     AND time_series_type IN ('production','flex_consumption','non_profiled_consumption','net_exchange_per_ga')
-//     AND batch_process_type = 'BalanceFixing'
-//     AND time BETWEEN '2022-10-12T01:00:00Z' AND '2022-10-12T03:00:00Z'
-//     AND aggregation_level = 'total_ga'
-// ORDER by time
-// ";
 
     [Fact]
     public void CreateForSettlementReport_WhenEnergySupplierIsNull_ReturnsExpectedSqlStatement()
@@ -56,11 +45,11 @@ public class SqlStatementFactoryTests
     public void CreateForSettlementReport_WhenEnergySupplierIsNotNull_ReturnsExpectedSqlStatement()
     {
         // Arrange
-        const string energySupplier = "1234567890123";
-        const string expectedSql = $@"SELECT grid_area, batch_process_type, time, time_series_type, quantity FROM wholesale_output.result WHERE grid_area IN (123,234,345) AND time_series_type IN ('production','flex_consumption','non_profiled_consumption') AND batch_process_type = 'BalanceFixing' AND time BETWEEN '2022-10-12T01:00:00Z' AND '2022-10-12T03:00:00Z' AND energy_supplier_id = '{energySupplier}' ORDER BY time";
+        const string someEnergySupplier = "1234567890123";
+        var expectedSql = GetExpectedSqlWhenWithEnergySupplier(someEnergySupplier);
 
         // Act
-        var actual = SqlStatementFactory.CreateForSettlementReport(_defaultGridAreasCodes, ProcessType.BalanceFixing, _defaultPeriodStart, _defaultPeriodEnd, energySupplier);
+        var actual = SqlStatementFactory.CreateForSettlementReport(_defaultGridAreasCodes, ProcessType.BalanceFixing, _defaultPeriodStart, _defaultPeriodEnd, someEnergySupplier);
 
         // Assert
         actual.Should().Be(expectedSql);
@@ -68,6 +57,7 @@ public class SqlStatementFactoryTests
 
     private static string GetExpectedSqlWhenNoEnergySupplier()
     {
+        // This string must match the values of the private members that defines grid area codes, period start and period end
         return @"
 SELECT grid_area, batch_process_type, time, time_series_type, quantity
 FROM wholesale_output.result
@@ -81,9 +71,10 @@ ORDER by time
 ";
     }
 
-    private static string GetExpectedSqlWhenWithEnergySupplier()
+    private static string GetExpectedSqlWhenWithEnergySupplier(string energySupplier)
     {
-        return @"
+        // This string must match the values of the private members that defines grid area codes, period start and period end
+        return $@"
 SELECT grid_area, batch_process_type, time, time_series_type, quantity
 FROM wholesale_output.result
 WHERE
@@ -91,7 +82,8 @@ WHERE
     AND time_series_type IN ('production','flex_consumption','non_profiled_consumption')
     AND batch_process_type = 'BalanceFixing'
     AND time BETWEEN '2022-10-12T01:00:00Z' AND '2022-10-12T03:00:00Z'
-    AND aggregation_level = 'total_ga'
+    AND aggregation_level = 'es_ga'
+    AND energy_supplier_id = '{energySupplier}'
 ORDER by time
 ";
     }
