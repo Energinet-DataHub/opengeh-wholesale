@@ -17,11 +17,11 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using Energinet.DataHub.Wholesale.Common.Models;
 // TODO BJM: Should we avoid referencing the DatabricksClient project "just" to get access to the DatabricksOptions?
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using Microsoft.Extensions.Options;
 using NodaTime;
-using ProcessType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
@@ -92,10 +92,10 @@ public class CalculationResultClient : ICalculationResultClient
 
             var databricksSqlResponse = _databricksSqlResponseParser.Parse(jsonResponse);
 
-            if (databricksSqlResponse.State == "SUCCEEDED")
+            if (databricksSqlResponse.State == DatabricksSqlResponseState.Succeeded)
                 return databricksSqlResponse.Table!;
 
-            if (databricksSqlResponse.State != "PENDING")
+            if (databricksSqlResponse.State != DatabricksSqlResponseState.Pending)
                 throw new DatabricksSqlException($"Unable to get calculation result from Databricks. State: {databricksSqlResponse.State}");
         }
 

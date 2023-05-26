@@ -19,8 +19,8 @@ using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
+using Energinet.DataHub.Wholesale.Common.Models;
 using NodaTime;
-using ProcessType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application;
 
@@ -57,7 +57,7 @@ public class SettlementReportApplicationService : ISettlementReportApplicationSe
         DateTimeOffset periodStart,
         DateTimeOffset periodEnd,
         string? energySupplier,
-        string? csvLanguage)
+        string? csvFormatLocale)
     {
         if (processType == ProcessType.Aggregation)
             throw new BusinessValidationException($"{ProcessType.Aggregation} is not a valid process type for settlement reports.");
@@ -79,12 +79,12 @@ public class SettlementReportApplicationService : ISettlementReportApplicationSe
 
             var zipArchiveEntry = archive.CreateEntry("Result.csv");
             var zipEntryStream = zipArchiveEntry.Open();
-            var targetLanguage = new CultureInfo(csvLanguage ?? "en-US");
+            var targetLocale = new CultureInfo(csvFormatLocale ?? "en-US");
 
             await using (zipEntryStream.ConfigureAwait(false))
             {
                 await _settlementReportResultsCsvWriter
-                    .WriteAsync(zipEntryStream, resultRows, targetLanguage)
+                    .WriteAsync(zipEntryStream, resultRows, targetLocale)
                     .ConfigureAwait(false);
             }
         }

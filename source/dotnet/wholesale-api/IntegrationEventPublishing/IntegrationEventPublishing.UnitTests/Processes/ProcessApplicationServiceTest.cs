@@ -16,6 +16,7 @@ using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.IntegrationEventsManagement;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Processes;
@@ -23,7 +24,6 @@ using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Process
 using Moq;
 using NodaTime;
 using Xunit;
-using ProcessType = Energinet.DataHub.Wholesale.Batches.Interfaces.Models.ProcessType;
 using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.UnitTests.Processes;

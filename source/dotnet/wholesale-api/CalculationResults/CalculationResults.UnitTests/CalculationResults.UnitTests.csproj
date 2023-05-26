@@ -32,8 +32,8 @@
     </ItemGroup>
   
     <ItemGroup>
-      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\aggregation-level.json">
-        <Link>DeltaTableContracts\Contracts\aggregation-level.json</Link>
+      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\enums\aggregation-level.json">
+        <Link>DeltaTableContracts\Contracts\Enums\aggregation-level.json</Link>
       </EmbeddedResource>
       <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\calculation-file-paths.yml">
         <Link>BasisData\calculation-file-paths.yml</Link>
@@ -41,17 +41,23 @@
       <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\calculator-actor.json">
         <Link>Actor\calculator-actor.json</Link>
       </EmbeddedResource>
-      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\calculator-result.json">
-        <Link>Integration\CalculationOutput\calculator-result.json</Link>
+      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\calculator-file-result.json">
+        <Link>Integration\CalculationOutput\calculator-file-result.json</Link>
       </EmbeddedResource>
-      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\process-type.json">
-        <Link>DeltaTableContracts\Contracts\process-type.json</Link>
+      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\enums\process-type.json">
+        <Link>DeltaTableContracts\Contracts\Enums\process-type.json</Link>
       </EmbeddedResource>
-      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\quantity-quality.json">
-        <Link>DeltaTableContracts\Contracts\quantity-quality.json</Link>
+      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\enums\quantity-quality.json">
+        <Link>DeltaTableContracts\Contracts\Enums\quantity-quality.json</Link>
       </EmbeddedResource>
-      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\time-series-type.json">
-        <Link>DeltaTableContracts\Contracts\time-series-type.json</Link>
+      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\enums\settlement-method.json">
+        <Link>DeltaTableContracts\Contracts\Enums\settlement-method.json</Link>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\enums\time-series-type.json">
+        <Link>DeltaTableContracts\Contracts\Enums\time-series-type.json</Link>
+      </EmbeddedResource>
+      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\result-table-column-names.json">
+        <Link>DeltaTableContracts\Contracts\result-table-column-names.json</Link>
       </EmbeddedResource>
       <EmbeddedResource Include="Application\ProcessStep\Model\ProcessResult.json" />
       <EmbeddedResource Include="Infrastructure\Actor\actor-list.json" />
@@ -60,14 +66,5 @@
     <ItemGroup>
       <ProjectReference Include="..\..\Test.Core\Test.Core.csproj" />
       <ProjectReference Include="..\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" />
-      <ProjectReference Include="..\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
     </ItemGroup>
-    <ItemGroup>
-      <Folder Include="Application" />
-    </ItemGroup>
-    <ItemGroup>
-      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\settlement-method.json">
-        <Link>DeltaTableContracts\Contracts\settlement-method.json</Link>
-      </EmbeddedResource>
-    </ItemGroup>   
 </Project>

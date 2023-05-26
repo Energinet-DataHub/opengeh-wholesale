@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using Energinet.DataHub.Wholesale.Common.Models;
 using FluentAssertions;
 using Test.Core;
 using Xunit;
@@ -25,7 +25,7 @@ public class ProcessTypeMapperTests
     [Fact]
     public async Task ProcessType_Matches_Contract()
     {
-        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.process-type.json");
+        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.Enums.process-type.json");
         await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<ProcessType>(stream);
     }
 
@@ -35,7 +35,7 @@ public class ProcessTypeMapperTests
     public async Task AggregationLevelMapper_ReturnsValidDeltaValue(ProcessType processType)
     {
         // Arrange
-        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.process-type.json");
+        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.Enums.process-type.json");
         var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
 
         // Act

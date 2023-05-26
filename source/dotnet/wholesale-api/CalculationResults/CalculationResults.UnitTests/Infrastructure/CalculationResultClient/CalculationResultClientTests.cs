@@ -17,6 +17,7 @@ using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
@@ -43,9 +44,10 @@ public class CalculationResultClientTests
 
     private readonly Instant _somePeriodStart = Instant.FromUtc(2021, 3, 1, 10, 15);
     private readonly Instant _somePeriodEnd = Instant.FromUtc(2021, 3, 31, 10, 15);
-    private readonly DatabricksSqlResponse _pendingDatabricksSqlResponse = new("PENDING", null);
-    private readonly DatabricksSqlResponse _succeededDatabricksSqlResponse = new("SUCCEEDED", TableTestHelper.CreateTableForSettlementReport());
-    private readonly DatabricksSqlResponse _failedDatabricksSqlResponse = new("FAILED", null);
+    private readonly DatabricksSqlResponse _pendingDatabricksSqlResponse = DatabricksSqlResponse.CreateAsPending();
+    private readonly DatabricksSqlResponse _succeededDatabricksSqlResponse = DatabricksSqlResponse.CreateAsSucceeded(TableTestHelper.CreateTableForSettlementReport(3));
+    private readonly DatabricksSqlResponse _succeededDatabricksSqlResponseWithZeroRows = DatabricksSqlResponse.CreateAsSucceeded(TableTestHelper.CreateTableForSettlementReport(0));
+    private readonly DatabricksSqlResponse _failedDatabricksSqlResponse = DatabricksSqlResponse.CreateAsFailed();
 
     [Theory]
     [InlineAutoMoqData]
@@ -213,6 +215,30 @@ public class CalculationResultClientTests
         actualArray.Length.Should().Be(expectedRowCount);
         actualArray.First().Quantity.Should().Be(expectedFirstQuantity);
         actualArray.Last().Quantity.Should().Be(expectedLastQuantity);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetSettlementReportResultAsync_WhenNoRelevantData_ReturnsZeroRows(
+        [Frozen] Mock<IDatabricksSqlResponseParser> databricksSqlResponseParserMock,
+        [Frozen] Mock<HttpMessageHandler> mockMessageHandler,
+        [Frozen] Mock<IOptions<DatabricksOptions>> mockOptions)
+    {
+        // Arrange
+        mockOptions.Setup(o => o.Value).Returns(_someDatabricksOptions);
+        mockMessageHandler.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", IsAny<HttpRequestMessage>(), IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.OK, });
+        var httpClient = new HttpClient(mockMessageHandler.Object);
+        databricksSqlResponseParserMock.Setup(p => p.Parse(It.IsAny<string>()))
+            .Returns(_succeededDatabricksSqlResponseWithZeroRows);
+        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
+
+        // Act
+        var actual = await sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null);
+
+        // Assert
+        actual.Count().Should().Be(0);
     }
 
     private static StringContent GetValidHttpResponseContent()

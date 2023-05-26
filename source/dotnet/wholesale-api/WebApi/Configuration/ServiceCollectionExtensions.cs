@@ -20,13 +20,11 @@ using Energinet.DataHub.Core.App.WebApp.Authentication;
 using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
-using Energinet.DataHub.Wholesale.Infrastructure.Core;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
-using ProcessTypeMapper = Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Processes.Model.ProcessTypeMapper;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 

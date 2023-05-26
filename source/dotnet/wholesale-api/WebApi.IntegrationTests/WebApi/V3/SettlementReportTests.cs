@@ -16,8 +16,8 @@ using System.Net;
 using System.Text;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
+using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 using FluentAssertions;
@@ -153,7 +153,7 @@ public sealed class SettlementReportTests : WebApiTestBase
                   + $"&processType={processType}"
                   + $"&periodStart={periodStart:O}"
                   + $"&periodEnd={periodEnd:O}"
-                  + $"&csvLanguage={language}";
+                  + $"&csvFormatLocale={language}";
 
         const string expectedMockedContent = "0305C8A0-5E42-4174-85DE-B7737E8C66C4";
 

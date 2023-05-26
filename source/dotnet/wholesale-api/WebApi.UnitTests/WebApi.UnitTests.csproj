@@ -30,7 +30,6 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Infrastructure.Core\Infrastructure.Core.csproj" />
     <ProjectReference Include="..\IntegrationEventPublishing\IntegrationEventPublishing.Infrastructure\IntegrationEventPublishing.Infrastructure.csproj" />
     <ProjectReference Include="..\Test.Core\Test.Core.csproj" />
     <ProjectReference Include="..\WebApi\WebApi.csproj" />
@@ -64,10 +63,10 @@ limitations under the License.
     <EmbeddedResource Include="..\..\..\databricks\calculation-engine\contracts\calculation-job-parameters-reference.txt">
       <Link>Infrastructure\JobRunner\calculation-job-parameters-reference.txt</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\databricks\calculation-engine\contracts\calculator-result.json">
-      <Link>Infrastructure\Integration\CalculationOutput\calculator-result.json</Link>
+    <EmbeddedResource Include="..\..\..\databricks\calculation-engine\contracts\calculator-file-result.json">
+      <Link>Infrastructure\Integration\CalculationOutput\calculator-file-result.json</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\databricks\calculation-engine\contracts\quantity-quality.json">
+    <EmbeddedResource Include="..\..\..\databricks\calculation-engine\contracts\enums\quantity-quality.json">
       <Link>Infrastructure\Integration\CalculationOutput\time-series-point-quality.json</Link>
     </EmbeddedResource>
   </ItemGroup>

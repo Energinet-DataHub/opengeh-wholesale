@@ -12,23 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Common.Models;
+
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
 
 public static class ProcessTypeMapper
 {
-    public static string ToDeltaTableValue(Interfaces.CalculationResultClient.ProcessType processType) =>
+    public static string ToDeltaTableValue(ProcessType processType) =>
         processType switch
         {
-            Interfaces.CalculationResultClient.ProcessType.BalanceFixing => "BalanceFixing",
-            Interfaces.CalculationResultClient.ProcessType.Aggregation => "Aggregation",
+            ProcessType.BalanceFixing => "BalanceFixing",
+            ProcessType.Aggregation => "Aggregation",
             _ => throw new NotImplementedException($"Cannot map process type '{processType}"),
         };
 
-    public static Interfaces.CalculationResultClient.ProcessType FromDeltaTableValue(string processType) =>
+    public static ProcessType FromDeltaTableValue(string processType) =>
         processType switch
         {
-            "BalanceFixing" => Interfaces.CalculationResultClient.ProcessType.BalanceFixing,
-            "Aggregation" => Interfaces.CalculationResultClient.ProcessType.Aggregation,
+            "BalanceFixing" => ProcessType.BalanceFixing,
+            "Aggregation" => ProcessType.Aggregation,
             _ => throw new NotImplementedException($"Cannot map process type '{processType}"),
         };
 }

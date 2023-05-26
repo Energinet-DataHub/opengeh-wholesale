@@ -50,7 +50,7 @@ public class DatabricksSqlResponseParserTests
     public void Parse_WhenStateIsPending_ReturnsResponseWithExpectedState(DatabricksSqlResponseParser sut)
     {
         // Arrange
-        const string expectedState = "PENDING";
+        const DatabricksSqlResponseState expectedState = DatabricksSqlResponseState.Pending;
 
         // Act
         var actual = sut.Parse(_pendingResultJson);
@@ -64,7 +64,7 @@ public class DatabricksSqlResponseParserTests
     public void Parse_WhenStateIsSucceeded_ReturnsResponseWithExpectedState(DatabricksSqlResponseParser sut)
     {
         // Arrange
-        const string expectedState = "SUCCEEDED";
+        const DatabricksSqlResponseState expectedState = DatabricksSqlResponseState.Succeeded;
 
         // Act
         var actual = sut.Parse(_succeededResultJson);
@@ -137,5 +137,25 @@ public class DatabricksSqlResponseParserTests
 
         // Act + Assert
         Assert.Throws<InvalidOperationException>(() => sut.Parse(jsonString));
+    }
+
+    [Theory]
+    [AutoMoqData]
+    public void Parse_WhenNoDataMatchesCriteria_ReturnTableWithZeroRows(DatabricksSqlResponseParser sut)
+    {
+        // Arrange
+        var status = new JProperty("status", new JObject(new JProperty("state", "SUCCEEDED")));
+        var manifest = new JProperty("manifest", new JObject(
+            new JProperty("schema", new JObject(new JProperty("columns", new JArray(new JObject(new JProperty("name", "grid_area")))))),
+            new JProperty("total_row_count", 0)));
+        var result = new JProperty("result", new JObject());
+        var obj = new JObject(status, manifest, result);
+        var jsonString = obj.ToString();
+
+        // Act
+        var actual = sut.Parse(jsonString);
+
+        // Assert
+        actual.Table!.RowCount.Should().Be(0);
     }
 }
