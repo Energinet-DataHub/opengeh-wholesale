@@ -9,7 +9,4 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Common.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="CalculationResultClient\Model" />
-  </ItemGroup>
 </Project>

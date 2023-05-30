@@ -59,7 +59,7 @@ public class WebApiFactory : WebApplicationFactory<Startup>
 
             services.AddScoped(_ =>
                 SettlementReportApplicationServiceMock?.Object ??
-                new Mock<ISettlementReportApplicationService>().Object);
+                new Mock<ISettlementReportClient>().Object);
             services.AddScoped(_ =>
                 ProcessStepResultRepositoryMock?.Object ?? new Mock<IProcessStepResultRepository>().Object);
             services.AddScoped(_ =>
@@ -73,10 +73,10 @@ public class WebApiFactory : WebApplicationFactory<Startup>
     }
 
     /// <summary>
-    /// Allow configuring the behaviour of the <see cref="ISettlementReportApplicationService"/> by providing a custom <see cref="Moq.Mock{ISettlementReportApplicationService}" /> mock.
+    /// Allow configuring the behaviour of the <see cref="ISettlementReportClient"/> by providing a custom <see cref="Moq.Mock{ISettlementReportApplicationService}" /> mock.
     /// NOTE: This will only work as expected as long as no tests are executed in parallel.
     /// </summary>
-    public Mock<ISettlementReportApplicationService>? SettlementReportApplicationServiceMock { get; set; }
+    public Mock<ISettlementReportClient>? SettlementReportApplicationServiceMock { get; set; }
 
     public Mock<IProcessStepResultRepository>? ProcessStepResultRepositoryMock { get; set; }
 

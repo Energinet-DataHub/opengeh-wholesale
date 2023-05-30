@@ -19,6 +19,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ActorClient;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ActorClient.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.Model;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.BatchActor;
 

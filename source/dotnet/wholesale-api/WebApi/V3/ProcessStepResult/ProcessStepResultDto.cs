@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.Model;
 using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 
 namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;

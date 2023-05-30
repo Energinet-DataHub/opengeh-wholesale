@@ -20,6 +20,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Application;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.Model;
 using Energinet.DataHub.Wholesale.Common.Models;
 using Moq;
 using Xunit;
@@ -40,7 +41,7 @@ public class SettlementReportApplicationServiceTests
     {
         // Arrange
         await using var memoryStream = new MemoryStream();
-        var sut = new SettlementReportApplicationService(
+        var sut = new SettlementReportClient(
             batchApplicationServiceMock.Object,
             calculationResultClientMock.Object,
             settlementReportResultsCsvWriterMock.Object,
@@ -86,7 +87,7 @@ public class SettlementReportApplicationServiceTests
     {
         // Arrange
         await using var memoryStream = new MemoryStream();
-        var sut = new SettlementReportApplicationService(
+        var sut = new SettlementReportClient(
             batchApplicationServiceMock.Object,
             calculationResultClientMock.Object,
             settlementReportResultsCsvWriterMock.Object,
@@ -125,7 +126,7 @@ public class SettlementReportApplicationServiceTests
         [Frozen] Mock<ICalculationResultClient> calculationResultClientMock)
     {
         // Arrange
-        var sut = new SettlementReportApplicationService(
+        var sut = new SettlementReportClient(
             batchApplicationServiceMock.Object,
             calculationResultClientMock.Object,
             settlementReportResultsCsvWriterMock.Object,

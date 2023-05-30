@@ -34,7 +34,7 @@ public static class CalculationResultsRegistration
     public static void AddCalculationResultsModule(
         this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
+        serviceCollection.AddScoped<ISettlementReportClient, SettlementReportClient>();
         serviceCollection.AddHttpClient<ICalculationResultClient>();
         serviceCollection.AddScoped<ICalculationResultClient, CalculationResultClient>();
         serviceCollection.AddScoped<ISettlementReportResultsCsvWriter, SettlementReportResultsCsvWriter>();

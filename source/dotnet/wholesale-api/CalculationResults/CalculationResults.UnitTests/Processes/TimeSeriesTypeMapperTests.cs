@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Processes;
 using FluentAssertions;
 using Xunit;
 using Xunit.Categories;
-using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.TimeSeriesType;
+using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.Model.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Processes;
 

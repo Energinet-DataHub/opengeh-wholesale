@@ -40,7 +40,7 @@ public sealed class SettlementReportTests : WebApiTestBase
     [Theory]
     [InlineAutoMoqData]
     public async Task HTTP_GET_V3_ReturnsHttpStatusCodeOkAtExpectedUrl(
-        Mock<ISettlementReportApplicationService> settlementReportApplicationService)
+        Mock<ISettlementReportClient> settlementReportApplicationService)
     {
         // arrange
         const string gridAreaCode = "001";
@@ -65,7 +65,7 @@ public sealed class SettlementReportTests : WebApiTestBase
     [Theory]
     [InlineAutoMoqData]
     public async Task HTTP_GET_V3_ReturnsExpectedContent(
-        Mock<ISettlementReportApplicationService> settlementReportApplicationService)
+        Mock<ISettlementReportClient> settlementReportApplicationService)
     {
         // arrange
         const string gridAreaCode = "001";
@@ -96,7 +96,7 @@ public sealed class SettlementReportTests : WebApiTestBase
     [Theory]
     [InlineAutoMoqData]
     public async Task HTTP_GET_V3_Download_ReturnsExpectedContent(
-        Mock<ISettlementReportApplicationService> settlementReportApplicationService)
+        Mock<ISettlementReportClient> settlementReportApplicationService)
     {
         // Arrange
         const string gridAreaCode = "567";
@@ -139,7 +139,7 @@ public sealed class SettlementReportTests : WebApiTestBase
     [Theory]
     [InlineAutoMoqData]
     public async Task HTTP_GET_V3_Download_DkLanguage_ReturnsExpectedContent(
-        Mock<ISettlementReportApplicationService> settlementReportApplicationService)
+        Mock<ISettlementReportClient> settlementReportApplicationService)
     {
         // Arrange
         const string gridAreaCode = "567";
@@ -184,7 +184,7 @@ public sealed class SettlementReportTests : WebApiTestBase
     [Theory]
     [InlineAutoMoqData]
     public async Task HTTP_GET_V3_Download_ReturnsCorrectHeaders(
-        Mock<ISettlementReportApplicationService> settlementReportApplicationService)
+        Mock<ISettlementReportClient> settlementReportApplicationService)
     {
         // Arrange
         const string gridAreaCode = "567";
@@ -229,7 +229,7 @@ public sealed class SettlementReportTests : WebApiTestBase
     [Theory]
     [InlineAutoMoqData]
     public async Task HTTP_GET_V3_Download_WithAggregationProcessType_ReturnsBadRequest(
-        Mock<ISettlementReportApplicationService> settlementReportApplicationService)
+        Mock<ISettlementReportClient> settlementReportApplicationService)
     {
         // Arrange
         const string gridAreaCode = "567";

@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.Model;
 
-public enum QuantityQuality
+/// <summary>
+/// Defines metering point type
+/// </summary>
+public enum MeteringPointType
 {
-    Missing,
-    Estimated,
-    Measured,
-    Incomplete,
-    Calculated,
+    Consumption = 0,
+    Production = 1,
+    Exchange = 2,
 }

@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.Model;
 using Energinet.DataHub.Wholesale.Common.Models;
 using NodaTime;
 

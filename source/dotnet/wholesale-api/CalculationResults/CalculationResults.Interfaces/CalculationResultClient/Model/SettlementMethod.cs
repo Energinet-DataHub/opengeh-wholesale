@@ -12,16 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.Model;
 
-public enum TimeSeriesType
+/// <summary>
+/// Defines the settlement method
+/// </summary>
+public enum SettlementMethod
 {
-    NonProfiledConsumption = 1,
-    FlexConsumption = 2,
-    Production = 3,
-    NetExchangePerGa = 4,
-    NetExchangePerNeighboringGa = 5,
-    GridLoss = 6,
-    NegativeGridLoss = 7,
-    PositiveGridLoss = 8,
+    Flex = 0,
+    NonProfiled = 1,
 }

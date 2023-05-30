@@ -17,6 +17,7 @@ using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.Model;
 using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using FluentAssertions;

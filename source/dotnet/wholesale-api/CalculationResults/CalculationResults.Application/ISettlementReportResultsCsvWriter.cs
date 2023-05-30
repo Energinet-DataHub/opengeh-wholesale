@@ -14,6 +14,7 @@
 
 using System.Globalization;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.Model;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application;
 

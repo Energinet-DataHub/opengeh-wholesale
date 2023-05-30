@@ -12,16 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Common.Models;
-using NodaTime;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.Model;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
-
-public sealed record SettlementReportResultRow(
-    string GridArea,
-    ProcessType ProcessType,
-    Instant Time,
-    string Resolution,
-    MeteringPointType MeteringPointType,
-    SettlementMethod? SettlementMethod,
-    decimal Quantity);
+public enum QuantityQuality
+{
+    Missing,
+    Estimated,
+    Measured,
+    Incomplete,
+    Calculated,
+}

@@ -15,6 +15,7 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ActorClient;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.Model;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepBalanceResponsibleParty;

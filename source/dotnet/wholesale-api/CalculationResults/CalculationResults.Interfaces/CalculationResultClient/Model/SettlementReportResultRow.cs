@@ -12,13 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using Energinet.DataHub.Wholesale.Common.Models;
+using NodaTime;
 
-/// <summary>
-/// Defines the settlement method
-/// </summary>
-public enum SettlementMethod
-{
-    Flex = 0,
-    NonProfiled = 1,
-}
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.Model;
+
+public sealed record SettlementReportResultRow(
+    string GridArea,
+    ProcessType ProcessType,
+    Instant Time,
+    string Resolution,
+    MeteringPointType MeteringPointType,
+    SettlementMethod? SettlementMethod,
+    decimal Quantity);
