@@ -12,22 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using NodaTime;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
-
-public class BatchInfo
-{
-    public BatchInfo()
-    {
-        GridAreaCodes = new List<string>();
-    }
-
-    public Guid Id { get; set; }
-
-    public Instant PeriodStart { get; set; }
-
-    public Instant PeriodEnd { get; set; }
-
-    public List<string> GridAreaCodes { get; set; }
-}
+/// <summary>
+/// Time series point.
+/// Immutable value object.
+/// </summary>
+/// <param name="Time"></param>
+/// <param name="Quantity">In kWh.</param>
+/// <param name="Quality"></param>
+public sealed record TimeSeriesPoint(DateTimeOffset Time, decimal Quantity, QuantityQuality Quality);

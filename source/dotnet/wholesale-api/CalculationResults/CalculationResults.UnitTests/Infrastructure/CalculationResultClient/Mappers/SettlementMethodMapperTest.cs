@@ -13,10 +13,11 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using FluentAssertions;
 using Xunit;
 using Xunit.Categories;
+using DeltaTableConstants = Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.DeltaTableConstants;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.CalculationResultClient.Mappers;
 
@@ -24,9 +25,9 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 public class SettlementMethodMapperTests
 {
     [Theory]
-    [InlineData("flex_consumption", SettlementMethod.Flex)]
-    [InlineData("production", null)]
-    [InlineData("non_profiled_consumption", SettlementMethod.NonProfiled)]
+    [InlineData(DeltaTableConstants.DeltaTableTimeSeriesType.FlexConsumption, SettlementMethod.Flex)]
+    [InlineData(DeltaTableConstants.DeltaTableTimeSeriesType.Production, null)]
+    [InlineData(DeltaTableConstants.DeltaTableTimeSeriesType.NonProfiledConsumption, SettlementMethod.NonProfiled)]
     public void ToDeltaTableValue_ReturnsExpectedSettlementMethod(string timeSeriesType, SettlementMethod? expected)
     {
         // Act

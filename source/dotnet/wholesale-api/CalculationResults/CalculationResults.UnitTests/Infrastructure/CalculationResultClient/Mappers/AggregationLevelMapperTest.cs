@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using FluentAssertions;
 using Xunit;
 using Xunit.Categories;
@@ -30,7 +31,7 @@ public class AggregationLevelMapperTests
     public void ToDeltaTableValue_WhenNoActorsSpecified_ReturnsExpectedAggLevel(TimeSeriesType type)
     {
         // Act
-        const string expected = "total_ga";
+        const string expected = DeltaTableAggregationLevel.GridArea;
         var actual = AggregationLevelMapper.ToDeltaTableValue(type, null, null);
 
         // Assert
@@ -44,7 +45,7 @@ public class AggregationLevelMapperTests
     public void ToDeltaTableValue_WhenEnergySupplierIsNotNull_ReturnsExpectedAggLevel(TimeSeriesType type)
     {
         // Act
-        const string expected = "es_ga";
+        const string expected = DeltaTableAggregationLevel.EnergySupplierAndGridArea;
         var actual = AggregationLevelMapper.ToDeltaTableValue(type, "someEnergySupplier", null);
 
         // Assert
@@ -58,7 +59,7 @@ public class AggregationLevelMapperTests
     public void ToDeltaTableValue_WhenBalanceResponsibleIsNotNull_ReturnsExpectedAggLevel(TimeSeriesType type)
     {
         // Act
-        const string expected = "brp_ga";
+        const string expected = DeltaTableAggregationLevel.BalanceResponsibleAndGridArea;
         var actual = AggregationLevelMapper.ToDeltaTableValue(type, null, "somBalanceResponsible");
 
         // Assert
@@ -72,7 +73,7 @@ public class AggregationLevelMapperTests
     public void ToDeltaTableValue_WhenNeitherEnergySupplierAndBalanceResponsibleIsNull_ReturnsExpectedAggLevel(TimeSeriesType type)
     {
         // Act
-        const string expected = "es_brp_ga";
+        const string expected = DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea;
         var actual = AggregationLevelMapper.ToDeltaTableValue(type, "someEnergySupplier", "somBalanceResponsible");
 
         // Assert

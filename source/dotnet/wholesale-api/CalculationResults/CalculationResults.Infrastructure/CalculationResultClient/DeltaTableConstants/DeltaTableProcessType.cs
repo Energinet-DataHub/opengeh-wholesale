@@ -12,13 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.DeltaTableConstants;
 
-public enum QuantityQuality
+public static class DeltaTableProcessType
 {
-    Missing,
-    Estimated,
-    Measured,
-    Incomplete,
-    Calculated,
+    public const string Aggregation = "Aggregation";
+    public const string BalanceFixing = "BalanceFixing";
 }

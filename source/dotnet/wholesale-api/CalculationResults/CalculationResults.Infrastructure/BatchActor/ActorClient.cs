@@ -15,17 +15,18 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineSerializer;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Processes;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Actors;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Actors.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.BatchActor;
 
-public class ActorRepository : IActorRepository
+public class ActorClient : IActorClient
 {
     private readonly IDataLakeClient _dataLakeClient;
     private readonly IJsonNewlineSerializer _jsonNewlineSerializer;
 
-    public ActorRepository(
+    public ActorClient(
         IDataLakeClient dataLakeClient,
         IJsonNewlineSerializer jsonNewlineSerializer)
     {

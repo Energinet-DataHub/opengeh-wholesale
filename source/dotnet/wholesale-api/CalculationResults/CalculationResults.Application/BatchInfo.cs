@@ -12,17 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Application;
 
-// TODO JMG: To be replaced by ICalculationResultClient when it's ready
-public interface IProcessStepResultRepository
+public class BatchInfo
 {
-    Task<ProcessStepResult> GetAsync(
-        Guid batchId,
-        string gridAreaCode,
-        TimeSeriesType timeSeriesType,
-        string? energySupplierGln,
-        string? balanceResponsiblePartyGln);
+    public BatchInfo()
+    {
+        GridAreaCodes = new List<string>();
+    }
+
+    public Guid Id { get; set; }
+
+    public Instant PeriodStart { get; set; }
+
+    public Instant PeriodEnd { get; set; }
+
+    public List<string> GridAreaCodes { get; set; }
 }

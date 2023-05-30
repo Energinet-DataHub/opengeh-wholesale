@@ -17,13 +17,12 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationR
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineSerializer;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
-using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.TimeSeriesType;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Processes;
 
-public class ProcessStepResultRepository : IProcessStepResultRepository
+public class CalculationResultClient : ICalculationResultClient
 {
     private const string EnergySupplierBalanceResponsiblePartyGridArea = "es_brp_ga";
     private const string EnergySupplierGridArea = "es_ga";
@@ -32,7 +31,7 @@ public class ProcessStepResultRepository : IProcessStepResultRepository
     private readonly IDataLakeClient _dataLakeClient;
     private readonly IJsonNewlineSerializer _jsonNewlineSerializer;
 
-    public ProcessStepResultRepository(
+    public CalculationResultClient(
         IDataLakeClient dataLakeClient,
         IJsonNewlineSerializer jsonNewlineSerializer)
     {

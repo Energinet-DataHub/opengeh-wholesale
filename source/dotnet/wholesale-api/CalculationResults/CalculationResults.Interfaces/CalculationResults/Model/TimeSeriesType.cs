@@ -12,6 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Application.SettlementReport.Model;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
-public record SettlementReportDto(Stream Stream);
+public enum TimeSeriesType
+{
+    NonProfiledConsumption = 1,
+    FlexConsumption = 2,
+    Production = 3,
+    NetExchangePerGa = 4,
+    NetExchangePerNeighboringGa = 5,
+    GridLoss = 6,
+    NegativeGridLoss = 7,
+    PositiveGridLoss = 8,
+}

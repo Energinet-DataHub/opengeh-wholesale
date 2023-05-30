@@ -12,6 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
+using System.Globalization;
 
-public record SettlementReport(Stream Stream);
+namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports;
+
+public interface ISettlementReportResultsCsvWriter
+{
+    Task WriteAsync(Stream destination, IEnumerable<SettlementReportResultRow> rows, CultureInfo csvFormatLocale);
+}

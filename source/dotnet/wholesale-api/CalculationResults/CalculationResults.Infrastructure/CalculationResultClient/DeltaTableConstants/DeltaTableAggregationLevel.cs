@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.DeltaTableConstants;
 
-/// <summary>
-/// Defines the settlement method
-/// </summary>
-public enum SettlementMethod
+public static class DeltaTableAggregationLevel
 {
-    Flex = 0,
-    NonProfiled = 1,
+    public const string GridArea = "total_ga";
+    public const string EnergySupplierAndGridArea = "es_ga";
+    public const string BalanceResponsibleAndGridArea = "brp_ga";
+    public const string EnergySupplierAndBalanceResponsibleAndGridArea = "es_brp_ga";
 }

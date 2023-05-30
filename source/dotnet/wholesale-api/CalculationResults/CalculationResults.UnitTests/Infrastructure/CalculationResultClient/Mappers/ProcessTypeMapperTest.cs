@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
 using Energinet.DataHub.Wholesale.Common.Models;
 using FluentAssertions;
@@ -24,8 +25,8 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 public class ProcessTypeMapperTests
 {
     [Theory]
-    [InlineData(ProcessType.Aggregation, "Aggregation")]
-    [InlineData(ProcessType.BalanceFixing, "BalanceFixing")]
+    [InlineData(ProcessType.Aggregation, DeltaTableProcessType.Aggregation)]
+    [InlineData(ProcessType.BalanceFixing, DeltaTableProcessType.BalanceFixing)]
     public void ToDeltaTableValue_ReturnsExpectedString(ProcessType type, string expected)
     {
         // Act
@@ -36,8 +37,8 @@ public class ProcessTypeMapperTests
     }
 
     [Theory]
-    [InlineData("Aggregation", ProcessType.Aggregation)]
-    [InlineData("BalanceFixing", ProcessType.BalanceFixing)]
+    [InlineData(DeltaTableProcessType.Aggregation, ProcessType.Aggregation)]
+    [InlineData(DeltaTableProcessType.BalanceFixing, ProcessType.BalanceFixing)]
     public void FromDeltaTableValue_ReturnsExpectedType(string deltaTableValue, ProcessType expected)
     {
         // Act

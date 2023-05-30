@@ -12,14 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Actors.Model;
 
-/// <summary>
-/// Defines metering point type
-/// </summary>
-public enum MeteringPointType
-{
-    Consumption = 0,
-    Production = 1,
-    Exchange = 2,
-}
+public record Actor(string Gln);

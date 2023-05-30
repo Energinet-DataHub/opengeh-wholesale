@@ -12,11 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports;
 
-namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
-
-public interface IDatabricksCalculatorJobSelector
-{
-    Task<WheelJob> GetAsync();
-}
+public record SettlementReport(Stream Stream);

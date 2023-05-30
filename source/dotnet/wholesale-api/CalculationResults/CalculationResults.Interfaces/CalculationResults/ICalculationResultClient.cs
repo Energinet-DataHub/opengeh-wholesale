@@ -12,6 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
-public record Actor(string Gln);
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+
+public interface ICalculationResultClient
+{
+    Task<ProcessStepResult> GetAsync(
+        Guid batchId,
+        string gridAreaCode,
+        TimeSeriesType timeSeriesType,
+        string? energySupplierGln,
+        string? balanceResponsiblePartyGln);
+}
