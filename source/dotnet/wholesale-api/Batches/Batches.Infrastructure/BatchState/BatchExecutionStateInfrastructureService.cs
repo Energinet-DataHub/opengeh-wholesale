@@ -13,34 +13,33 @@
 // limitations under the License.using Energinet.DataHub.Wholesale.Common.JobRunner;
 
 using Energinet.DataHub.Wholesale.Batches.Application;
-using Energinet.DataHub.Wholesale.Batches.Application.BatchAggregate;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationDomainService;
+using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchExecutionStateDomainService;
+namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchState;
 
-public class BatchExecutionStateDomainService : IBatchExecutionStateDomainService
+public class BatchExecutionStateInfrastructureService : IBatchExecutionStateInfrastructureService
 {
     private readonly IBatchRepository _batchRepository;
-    private readonly ICalculationDomainService _calculationDomainService;
+    private readonly ICalculationInfrastructureService _calculationInfrastructureService;
     private readonly IClock _clock;
     private readonly ILogger _logger;
 
-    public BatchExecutionStateDomainService(
+    public BatchExecutionStateInfrastructureService(
         IBatchRepository batchRepository,
-        ICalculationDomainService calculationDomainService,
-        ILogger<BatchExecutionStateDomainService> logger,
+        ICalculationInfrastructureService calculationInfrastructureService,
+        ILogger<BatchExecutionStateInfrastructureService> logger,
         IClock clock)
     {
         _batchRepository = batchRepository;
-        _calculationDomainService = calculationDomainService;
+        _calculationInfrastructureService = calculationInfrastructureService;
         _logger = logger;
         _clock = clock;
     }
 
     /// <summary>
-    /// Update the execution states in the batch repository by mapping the job states from the runs <see cref="ICalculationDomainService"/>
+    /// Update the execution states in the batch repository by mapping the job states from the runs <see cref="ICalculationInfrastructureService"/>
     /// </summary>
     /// <returns>Batches that have been completed</returns>
     public async Task UpdateExecutionStateAsync()
@@ -55,7 +54,7 @@ public class BatchExecutionStateDomainService : IBatchExecutionStateDomainServic
         {
             try
             {
-                var jobState = await _calculationDomainService
+                var jobState = await _calculationInfrastructureService
                     .GetStatusAsync(batch.CalculationId!)
                     .ConfigureAwait(false);
 
