@@ -16,9 +16,9 @@ using BatchDto = Energinet.DataHub.Wholesale.WebApi.V3.Batch.BatchDto;
 
 namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 
-public class ProcessStepResultFactory : IProcessStepResultFactory
+public static class ProcessStepResultFactory
 {
-    public ProcessStepResultDto Create(CalculationResults.Interfaces.ProcessStep.Model.ProcessStepResultDto stepResult, BatchDto batch)
+    public static ProcessStepResultDto Create(Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.ProcessStepResult stepResult, BatchDto batch)
     {
         return new ProcessStepResultDto(
             stepResult.Sum,
@@ -33,8 +33,8 @@ public class ProcessStepResultFactory : IProcessStepResultFactory
             stepResult.TimeSeriesType);
     }
 
-    private static Func<CalculationResults.Interfaces.ProcessStep.Model.TimeSeriesPointDto, TimeSeriesPointDto> MapTimeSeriesPoint()
+    private static Func<CalculationResults.Interfaces.CalculationResultClient.TimeSeriesPoint, TimeSeriesPointDto> MapTimeSeriesPoint()
     {
-        return p => new TimeSeriesPointDto(p.Time, p.Quantity, p.Quality);
+        return p => new TimeSeriesPointDto(p.Time, p.Quantity, p.Quality.ToString());
     }
 }

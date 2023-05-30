@@ -49,7 +49,7 @@ public class CalculationResultClient : ICalculationResultClient
         Instant periodEnd,
         string? energySupplier)
     {
-        var sql = SqlStatementFactory.CreateForSettlementReport(gridAreaCodes, processType, periodStart, periodEnd, energySupplier);
+        var sql = SettlementReportSqlStatementFactory.Create(gridAreaCodes, processType, periodStart, periodEnd, energySupplier);
 
         var resultTable = await ExecuteSqlStatementAsync(sql).ConfigureAwait(false);
 
@@ -95,7 +95,7 @@ public class CalculationResultClient : ICalculationResultClient
             if (databricksSqlResponse.State == DatabricksSqlResponseState.Succeeded)
                 return databricksSqlResponse.Table!;
 
-            if (databricksSqlResponse.State != DatabricksSqlResponseState.Pending)
+            if (databricksSqlResponse.State is not (DatabricksSqlResponseState.Pending or DatabricksSqlResponseState.Cancelled))
                 throw new DatabricksSqlException($"Unable to get calculation result from Databricks. State: {databricksSqlResponse.State}");
         }
 

@@ -13,8 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Batches.Application;
-using Energinet.DataHub.Wholesale.Batches.Application.BatchAggregate;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationDomainService;
+using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
 using Microsoft.Azure.Databricks.Client;
 using Microsoft.Azure.Databricks.Client.Models;

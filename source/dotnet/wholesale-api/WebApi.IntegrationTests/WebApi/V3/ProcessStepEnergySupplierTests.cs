@@ -15,8 +15,8 @@
 using System.Net;
 using System.Net.Http.Json;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.V3;
@@ -58,19 +58,19 @@ public class ProcessStepEnergySupplierTests : WebApiTestBase
     [Theory]
     [InlineAutoMoqData]
     public async Task HTTP_GET_V3_ReturnsExpectedActorInJson(
-        Mock<IProcessStepApplicationService> applicationServiceMock,
+        Mock<IActorRepository> actorRepositoryMock,
         Guid batchId,
         string gridAreaCode,
         TimeSeriesType timeSeriesType,
-        WholesaleActorDto expectedActor)
+        Actor expectedActor)
     {
         // Arrange
         var url = $"/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}/energy-suppliers";
 
-        applicationServiceMock
+        actorRepositoryMock
             .Setup(service => service.GetEnergySuppliersAsync(batchId, gridAreaCode, timeSeriesType))
             .ReturnsAsync(() => new[] { expectedActor });
-        Factory.ProcessStepApplicationServiceMock = applicationServiceMock;
+        Factory.ActorRepositoryMock = actorRepositoryMock;
 
         // Act
         var actualContent = await Client.GetAsync(url);
@@ -83,20 +83,20 @@ public class ProcessStepEnergySupplierTests : WebApiTestBase
     [Theory]
     [InlineAutoMoqData]
     public async Task HTTP_GET_V3_WithBalanceResponsibleGln_ReturnsExpectedActorInJson(
-        Mock<IProcessStepApplicationService> applicationServiceMock,
+        Mock<IActorRepository> actorRepositoryMock,
         Guid batchId,
         string gridAreaCode,
         TimeSeriesType timeSeriesType,
         string balanceResponsiblePartyGln,
-        WholesaleActorDto expectedActor)
+        Actor expectedActor)
     {
         // Arrange
         var url = $"/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}/energy-suppliers/?balanceResponsibleParty={balanceResponsiblePartyGln}";
 
-        applicationServiceMock
+        actorRepositoryMock
             .Setup(service => service.GetEnergySuppliersByBalanceResponsiblePartyAsync(batchId, gridAreaCode, timeSeriesType, balanceResponsiblePartyGln))
             .ReturnsAsync(() => new[] { expectedActor });
-        Factory.ProcessStepApplicationServiceMock = applicationServiceMock;
+        Factory.ActorRepositoryMock = actorRepositoryMock;
 
         // Act
         var actualContent = await Client.GetAsync(url);
