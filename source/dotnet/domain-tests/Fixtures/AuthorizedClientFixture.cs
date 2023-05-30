@@ -28,6 +28,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
     {
         private readonly string _topicName = "sbt-sharedres-integrationevent-received";
         private readonly string _subscriptionName = Guid.NewGuid().ToString();
+        private readonly TimeSpan _httpTimeout = TimeSpan.FromMinutes(10); // ISqlStatementClient can take up to 8 minutes to get ready.
 
         public AuthorizedClientFixture()
         {
@@ -81,7 +82,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             var httpClientFactoryMock = new Mock<IHttpClientFactory>();
             httpClientFactoryMock
                 .Setup(m => m.CreateClient(It.IsAny<string>()))
-                .Returns(new HttpClient());
+                .Returns(new HttpClient { Timeout = _httpTimeout });
 
             var accessToken = await UserAuthenticationClient.AcquireAccessTokenAsync();
 
