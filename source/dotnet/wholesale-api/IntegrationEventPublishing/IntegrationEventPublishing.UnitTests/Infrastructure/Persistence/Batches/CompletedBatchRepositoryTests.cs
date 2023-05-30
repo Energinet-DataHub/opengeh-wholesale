@@ -97,6 +97,7 @@ public class CompletedBatchRepositoryTests
         // Arrange
         batchCompletedFirst.PublishedTime = null;
         batchCompletedLast.PublishedTime = null;
+        batchCompletedLast.SetPrivateProperty(b => b.CompletedTime, batchCompletedFirst.CompletedTime.PlusSeconds(1));
 
         databaseContextMock
             .Setup<DbSet<CompletedBatch>>(context => context.CompletedBatches)
