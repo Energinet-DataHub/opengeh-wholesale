@@ -35,17 +35,6 @@ namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWhee
         /// <summary>
         /// Create client object with specified base URL, access token and timeout.
         /// </summary>
-        /// <param name="baseUrl">Base URL for the databricks resource. For example: https://southcentralus.azuredatabricks.net</param>
-        /// <param name="token">The access token. To generate a token, refer to this document: https://docs.databricks.com/api/latest/authentication.html#generate-a-token </param>
-        /// <param name="timeoutSeconds">Web request time out in seconds</param>
-        public static IDatabricksWheelClient CreateClient(string baseUrl, string token, long timeoutSeconds = 30)
-        {
-            return new DatabricksWheelClient(baseUrl, token, timeoutSeconds);
-        }
-
-        /// <summary>
-        /// Create client object with specified base URL, access token and timeout.
-        /// </summary>
         /// <param name="optionsFactory">The databricks settings (options).</param>
         /// <param name="timeoutSeconds">Web request time out in seconds</param>
         public DatabricksWheelClient(IOptions<DatabricksOptions> optionsFactory, long timeoutSeconds = 30)
@@ -53,22 +42,6 @@ namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWhee
             var options = optionsFactory.Value;
             var apiUrl = new Uri(new Uri(options.DATABRICKS_WORKSPACE_URL), $"api/{Version}/");
             _httpClient = CreateHttpClient(options.DATABRICKS_WORKSPACE_TOKEN, timeoutSeconds, apiUrl);
-            Jobs = new JobsApiClient(_httpClient);
-        }
-
-        /// <summary>
-        /// An empty ctor used for mocking this client.
-        /// </summary>
-        protected DatabricksWheelClient()
-        {
-        }
-
-        private DatabricksWheelClient(string baseUrl, string token, long timeoutSeconds = 30)
-        {
-            var apiUrl = new Uri(new Uri(baseUrl), $"api/{Version}/");
-
-            _httpClient = CreateHttpClient(token, timeoutSeconds, apiUrl);
-
             Jobs = new JobsApiClient(_httpClient);
         }
 
