@@ -16,6 +16,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 using Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 using FluentAssertions;
+using Test.Core;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.WebApi.V3;
@@ -25,29 +26,29 @@ public class ProcessStepResultFactoryTests
     [Theory]
     [InlineAutoMoqData]
     public void Create_ReturnsExpectedStepResult(
-        CalculationResults.Interfaces.ProcessStep.Model.ProcessStepResultDto resultDto,
+        CalculationResults.Interfaces.CalculationResultClient.ProcessStepResult result,
         BatchDto batchDto)
     {
         // Arrange
-        var point = resultDto.TimeSeriesPoints.First();
-        resultDto = resultDto with { TimeSeriesPoints = new[] { point } };
+        var point = result.TimeSeriesPoints.First();
+        result.SetPrivateProperty(r => r.TimeSeriesPoints, new[] { point });
         var expected = new ProcessStepResultDto(
-            resultDto.Sum,
-            resultDto.Min,
-            resultDto.Max,
+            result.Sum,
+            result.Min,
+            result.Max,
             batchDto.PeriodStart,
             batchDto.PeriodEnd,
             batchDto.Resolution,
             batchDto.Unit,
             new TimeSeriesPointDto[]
             {
-                new(point.Time, point.Quantity, point.Quality),
+                new(point.Time, point.Quantity, point.Quality.ToString()),
             },
             batchDto.ProcessType,
-            resultDto.TimeSeriesType);
+            result.TimeSeriesType);
 
         // Act
-        var actual = ProcessStepResultFactory.Create(resultDto, batchDto);
+        var actual = ProcessStepResultFactory.Create(result, batchDto);
 
         // Assert
         actual.Should().BeEquivalentTo(expected);

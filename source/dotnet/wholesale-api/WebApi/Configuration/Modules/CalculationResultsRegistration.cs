@@ -21,8 +21,6 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
@@ -38,9 +36,7 @@ public static class CalculationResultsRegistration
         serviceCollection.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
         serviceCollection.AddHttpClient<ICalculationResultClient>();
         serviceCollection.AddScoped<ICalculationResultClient, CalculationResultClient>();
-        serviceCollection.AddScoped<IProcessStepApplicationService, ProcessStepApplicationService>();
         serviceCollection.AddScoped<ISettlementReportResultsCsvWriter, SettlementReportResultsCsvWriter>();
-        serviceCollection.AddScoped<IProcessStepResultMapper, ProcessStepResultMapper>();
         serviceCollection.AddScoped<IDatabricksSqlResponseParser, DatabricksSqlResponseParser>();
         serviceCollection.AddScoped<IDataLakeClient, DataLakeClient>();
         serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
