@@ -34,7 +34,7 @@ public class IntegrationEventPublishingDatabaseContext : DbContext, IIntegration
     {
     }
 
-    public DbSet<CompletedBatch> CompletedBatches { get; private set; } = null!;
+    public virtual DbSet<CompletedBatch> CompletedBatches { get; private set; } = null!;
 
     public Task<int> SaveChangesAsync() => base.SaveChangesAsync();
 

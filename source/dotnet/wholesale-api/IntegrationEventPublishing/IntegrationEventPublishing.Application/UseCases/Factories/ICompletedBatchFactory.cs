@@ -14,28 +14,10 @@
 
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.BatchAggregate;
-using NodaTime.Extensions;
 
 namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.UseCases.Mappers;
 
-public class CompletedBatchMapper : ICompletedBatchMapper
+public interface ICompletedBatchFactory
 {
-    public IEnumerable<CompletedBatch> Map(IEnumerable<BatchDto> completedBatchDtos)
-    {
-        return completedBatchDtos.Select(Map);
-    }
-
-    public CompletedBatch Map(BatchDto completedBatchDto)
-    {
-        if (completedBatchDto.ExecutionTimeEnd == null)
-            throw new ArgumentNullException($"{nameof(BatchDto.ExecutionTimeEnd)} should not be null for a completed batch.");
-
-        return new CompletedBatch(
-            completedBatchDto.BatchId,
-            completedBatchDto.GridAreaCodes.ToList(),
-            completedBatchDto.ProcessType,
-            completedBatchDto.PeriodStart.ToInstant(),
-            completedBatchDto.PeriodEnd.ToInstant(),
-            completedTime: completedBatchDto.ExecutionTimeEnd.Value.ToInstant());
-    }
+    IEnumerable<CompletedBatch> CreateFromBatches(IEnumerable<BatchDto> completedBatchDtos);
 }

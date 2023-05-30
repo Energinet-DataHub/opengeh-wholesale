@@ -18,6 +18,7 @@ using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.IntegrationEventsManagement;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Processes;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.UseCases;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.UseCases.Factories;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.UseCases.Mappers;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Workers;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.EventPublishers;
@@ -43,7 +44,7 @@ public static class IntegrationEventPublishingRegistration
 
         serviceCollection.AddScoped<IPublishCalculationResultsHandler, PublishCalculationResultsHandler>();
         serviceCollection.AddScoped<ICompletedBatchRepository, CompletedBatchRepository>();
-        serviceCollection.AddScoped<ICompletedBatchMapper, CompletedBatchMapper>();
+        serviceCollection.AddScoped<ICompletedBatchFactory, CompletedBatchFactory>();
         serviceCollection.AddScoped<IRegisterCompletedBatchesHandler, RegisterCompletedBatchesHandler>();
         serviceCollection.AddScoped<IIntegrationEventTypeMapper>(_ => new IntegrationEventTypeMapper(new Dictionary<Type, string>
         {

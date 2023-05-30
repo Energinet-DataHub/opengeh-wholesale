@@ -13,10 +13,11 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
+using Microsoft.Azure.Databricks.Client.Models;
 
 namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
 
 public interface IDatabricksCalculatorJobSelector
 {
-    Task<WheelJob> GetAsync();
+    Task<Job> GetAsync();
 }

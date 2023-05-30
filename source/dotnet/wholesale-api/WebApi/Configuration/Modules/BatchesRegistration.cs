@@ -45,7 +45,6 @@ public static class BatchesRegistration
         serviceCollection.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
 
         serviceCollection.AddScoped<IDatabricksCalculatorJobSelector, DatabricksCalculatorJobSelector>();
-        serviceCollection.AddScoped<IDatabricksWheelClient, DatabricksWheelClient>();
         serviceCollection.AddScoped<ICalculationParametersFactory, DatabricksCalculationParametersFactory>();
 
         serviceCollection.AddScoped<IDatabaseContext, DatabaseContext>();

@@ -14,6 +14,7 @@
 
 using System.Net;
 using System.Net.Http.Headers;
+using Microsoft.Azure.Databricks.Client;
 using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient
@@ -28,19 +29,7 @@ namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWhee
     /// </summary>
     public class DatabricksWheelClient : IDisposable, IDatabricksWheelClient
     {
-        private const string Version = "2.1";
         private readonly HttpClient _httpClient;
-
-        /// <summary>
-        /// Create client object with specified base URL, access token and timeout.
-        /// </summary>
-        /// <param name="baseUrl">Base URL for the databricks resource. For example: https://southcentralus.azuredatabricks.net</param>
-        /// <param name="token">The access token. To generate a token, refer to this document: https://docs.databricks.com/api/latest/authentication.html#generate-a-token </param>
-        /// <param name="timeoutSeconds">Web request time out in seconds</param>
-        public static IDatabricksWheelClient CreateClient(string baseUrl, string token, long timeoutSeconds = 30)
-        {
-            return new DatabricksWheelClient(baseUrl, token, timeoutSeconds);
-        }
 
         /// <summary>
         /// Create client object with specified base URL, access token and timeout.
@@ -50,25 +39,9 @@ namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWhee
         public DatabricksWheelClient(IOptions<DatabricksOptions> optionsFactory, long timeoutSeconds = 30)
         {
             var options = optionsFactory.Value;
-            var apiUrl = new Uri(new Uri(options.DATABRICKS_WORKSPACE_URL), $"api/{Version}/");
+            var apiUrl = new Uri(new Uri(options.DATABRICKS_WORKSPACE_URL), $"api/");
             _httpClient = CreateHttpClient(options.DATABRICKS_WORKSPACE_TOKEN, timeoutSeconds, apiUrl);
-            Jobs = new JobsApiClient21(_httpClient);
-        }
-
-        /// <summary>
-        /// An empty ctor used for mocking this client.
-        /// </summary>
-        protected DatabricksWheelClient()
-        {
-        }
-
-        private DatabricksWheelClient(string baseUrl, string token, long timeoutSeconds = 30)
-        {
-            var apiUrl = new Uri(new Uri(baseUrl), $"api/{Version}/");
-
-            _httpClient = CreateHttpClient(token, timeoutSeconds, apiUrl);
-
-            Jobs = new JobsApiClient21(_httpClient);
+            Jobs = new JobsApiClient(_httpClient);
         }
 
         private static HttpClient CreateHttpClient(string token, long timeoutSeconds, Uri apiUrl)
@@ -90,7 +63,7 @@ namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWhee
             return httpClient;
         }
 
-        public virtual IJobsWheelApi Jobs { get; }
+        public virtual IJobsApi Jobs { get; }
 
         public void Dispose()
         {
