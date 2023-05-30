@@ -48,12 +48,12 @@ public class DatabricksCalculatorJobRunnerTests
         CalculationState expectedCalculationState,
         RunLifeCycleState runLifeCycleState,
         RunResultState runResultState,
-        [Frozen] Mock<IJobsApiClient> databricksWheelClientMock,
+        [Frozen] Mock<IJobsApiClient> jobsApiMock,
         CalculationEngineClient sut)
     {
         var jobRunId = new CalculationId(1);
         var runState = new Run { State = new RunState { LifeCycleState = runLifeCycleState, ResultState = runResultState } };
-        databricksWheelClientMock.Setup(x => x.Jobs.RunsGet(jobRunId.Id, false, CancellationToken.None)).ReturnsAsync((runState, new RepairHistory()));
+        jobsApiMock.Setup(x => x.Jobs.RunsGet(jobRunId.Id, false, CancellationToken.None)).ReturnsAsync((runState, new RepairHistory()));
         var jobState = await sut.GetStatusAsync(jobRunId);
         Assert.Equal(expectedCalculationState, jobState);
     }
