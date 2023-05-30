@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System.ComponentModel.DataAnnotations;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,11 +23,11 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.SettlementReport;
 [Route("v3/[controller]")]
 public class SettlementReportController : V3ControllerBase
 {
-    private readonly ISettlementReportApplicationService _settlementReportApplicationService;
+    private readonly ISettlementReportClient _settlementReportClient;
 
-    public SettlementReportController(ISettlementReportApplicationService settlementReportApplicationService)
+    public SettlementReportController(ISettlementReportClient settlementReportClient)
     {
-        _settlementReportApplicationService = settlementReportApplicationService;
+        _settlementReportClient = settlementReportClient;
     }
 
     /// <summary>
@@ -50,7 +50,7 @@ public class SettlementReportController : V3ControllerBase
         [FromQuery] string? energySupplier,
         [FromQuery] string? csvFormatLocale)
     {
-        return _settlementReportApplicationService
+        return _settlementReportClient
             .CreateCompressedSettlementReportAsync(
                 () =>
                 {
@@ -88,7 +88,7 @@ public class SettlementReportController : V3ControllerBase
 
         await using (outputStream.ConfigureAwait(false))
         {
-            await _settlementReportApplicationService
+            await _settlementReportClient
                 .GetSettlementReportAsync(batchId, gridAreaCode, outputStream)
                 .ConfigureAwait(false);
         }
@@ -103,7 +103,7 @@ public class SettlementReportController : V3ControllerBase
     [BinaryContent]
     public async Task<IActionResult> GetSettlementReportAsync([Required] Guid batchId)
     {
-        var report = await _settlementReportApplicationService.GetSettlementReportAsync(batchId).ConfigureAwait(false);
+        var report = await _settlementReportClient.GetSettlementReportAsync(batchId).ConfigureAwait(false);
         return Ok(report.Stream);
     }
 

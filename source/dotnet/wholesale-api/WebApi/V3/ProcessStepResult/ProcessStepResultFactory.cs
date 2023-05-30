@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using BatchDto = Energinet.DataHub.Wholesale.WebApi.V3.Batch.BatchDto;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 
 namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 
 public static class ProcessStepResultFactory
 {
-    public static ProcessStepResultDto Create(Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.ProcessStepResult stepResult, BatchDto batch)
+    public static ProcessStepResultDto Create(CalculationResults.Interfaces.CalculationResults.Model.ProcessStepResult stepResult, BatchDto batch)
     {
         return new ProcessStepResultDto(
             stepResult.Sum,
@@ -33,7 +34,7 @@ public static class ProcessStepResultFactory
             stepResult.TimeSeriesType);
     }
 
-    private static Func<CalculationResults.Interfaces.CalculationResultClient.TimeSeriesPoint, TimeSeriesPointDto> MapTimeSeriesPoint()
+    private static Func<TimeSeriesPoint, TimeSeriesPointDto> MapTimeSeriesPoint()
     {
         return p => new TimeSeriesPointDto(p.Time, p.Quantity, p.Quality.ToString());
     }

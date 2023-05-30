@@ -14,8 +14,9 @@
 
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Actors;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.Common.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -58,11 +59,11 @@ public class WebApiFactory : WebApplicationFactory<Startup>
 
             services.AddScoped(_ =>
                 SettlementReportApplicationServiceMock?.Object ??
-                new Mock<ISettlementReportApplicationService>().Object);
+                new Mock<ISettlementReportClient>().Object);
             services.AddScoped(_ =>
-                ProcessStepResultRepositoryMock?.Object ?? new Mock<IProcessStepResultRepository>().Object);
+                ProcessStepResultRepositoryMock?.Object ?? new Mock<ICalculationResultClient>().Object);
             services.AddScoped(_ =>
-                ActorRepositoryMock?.Object ?? new Mock<IActorRepository>().Object);
+                ActorRepositoryMock?.Object ?? new Mock<IActorClient>().Object);
             services.AddScoped(_ => BatchApplicationServiceMock?.Object ?? new Mock<IBatchApplicationService>().Object);
 
             var defaultUserContext = new Mock<IUserContext<FrontendUser>>();
@@ -72,14 +73,14 @@ public class WebApiFactory : WebApplicationFactory<Startup>
     }
 
     /// <summary>
-    /// Allow configuring the behaviour of the <see cref="ISettlementReportApplicationService"/> by providing a custom <see cref="Moq.Mock{ISettlementReportApplicationService}" /> mock.
+    /// Allow configuring the behaviour of the <see cref="ISettlementReportClient"/> by providing a custom <see cref="Moq.Mock{ISettlementReportApplicationService}" /> mock.
     /// NOTE: This will only work as expected as long as no tests are executed in parallel.
     /// </summary>
-    public Mock<ISettlementReportApplicationService>? SettlementReportApplicationServiceMock { get; set; }
+    public Mock<ISettlementReportClient>? SettlementReportApplicationServiceMock { get; set; }
 
-    public Mock<IProcessStepResultRepository>? ProcessStepResultRepositoryMock { get; set; }
+    public Mock<ICalculationResultClient>? ProcessStepResultRepositoryMock { get; set; }
 
-    public Mock<IActorRepository>? ActorRepositoryMock { get; set; }
+    public Mock<IActorClient>? ActorRepositoryMock { get; set; }
 
     public Mock<IBatchApplicationService>? BatchApplicationServiceMock { get; set; }
 

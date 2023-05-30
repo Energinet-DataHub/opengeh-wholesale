@@ -12,13 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using System.Globalization;
 
-/// <summary>
-/// Defines the settlement method
-/// </summary>
-public enum SettlementMethod
+namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports;
+
+public interface ISettlementReportResultsCsvWriter
 {
-    Flex = 0,
-    NonProfiled = 1,
+    Task WriteAsync(Stream destination, IEnumerable<SettlementReportResultRow> rows, CultureInfo csvFormatLocale);
 }

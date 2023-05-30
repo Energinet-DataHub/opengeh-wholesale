@@ -12,6 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
-public record Actor(string Gln);
+/// <summary>
+/// Defines the settlement method
+/// </summary>
+public enum SettlementMethod
+{
+    Flex = 0,
+    NonProfiled = 1,
+}

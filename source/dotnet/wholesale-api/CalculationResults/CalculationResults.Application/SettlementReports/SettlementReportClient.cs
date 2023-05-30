@@ -14,31 +14,30 @@
 
 using System.Globalization;
 using System.IO.Compression;
-using Energinet.DataHub.Wholesale.Application.SettlementReport.Model;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 using Energinet.DataHub.Wholesale.Common.Models;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Application;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports;
 
-public class SettlementReportApplicationService : ISettlementReportApplicationService
+public class SettlementReportClient : ISettlementReportClient
 {
     private readonly IBatchApplicationService _batchRepository;
-    private readonly ICalculationResultClient _calculationResultClient;
+    private readonly ISqlStatementClient _sqlStatementClient;
     private readonly ISettlementReportResultsCsvWriter _settlementReportResultsCsvWriter;
     private readonly ISettlementReportRepository _settlementReportRepository;
 
-    public SettlementReportApplicationService(
+    public SettlementReportClient(
         IBatchApplicationService batchRepository,
-        ICalculationResultClient calculationResultClient,
+        ISqlStatementClient sqlStatementClient,
         ISettlementReportResultsCsvWriter settlementReportResultsCsvWriter,
         ISettlementReportRepository settlementReportRepository)
     {
         _batchRepository = batchRepository;
-        _calculationResultClient = calculationResultClient;
+        _sqlStatementClient = sqlStatementClient;
         _settlementReportResultsCsvWriter = settlementReportResultsCsvWriter;
         _settlementReportRepository = settlementReportRepository;
     }
@@ -62,7 +61,7 @@ public class SettlementReportApplicationService : ISettlementReportApplicationSe
         if (processType == ProcessType.Aggregation)
             throw new BusinessValidationException($"{ProcessType.Aggregation} is not a valid process type for settlement reports.");
 
-        var resultRows = await _calculationResultClient
+        var resultRows = await _sqlStatementClient
             .GetSettlementReportResultAsync(
                 gridAreaCodes,
                 processType,
