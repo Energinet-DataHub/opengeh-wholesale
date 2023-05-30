@@ -17,13 +17,12 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineSerializer;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Processes;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SettlementReport;
 using FluentAssertions;
 using Moq;
 using Xunit;
 using Xunit.Categories;
-using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.Processes;
 
@@ -51,7 +50,7 @@ public class ProcessStepResultRepositoryTests
                 processResultPoint,
             });
 
-        var sut = new ProcessStepResultRepository(
+        var sut = new CalculationResults.Infrastructure.Processes.CalculationResultClient(
             dataLakeClientMock.Object,
             jsonNewlineSerializerMock.Object);
 
@@ -72,7 +71,7 @@ public class ProcessStepResultRepositoryTests
         var expected = calculationFilePathsContract.ResultFileForTotalGridArea;
 
         // Act
-        var actual = ProcessStepResultRepository.GetDirectoryForTotalGridArea(new Guid(batchId), gridAreaCode, TimeSeriesType.Production);
+        var actual = CalculationResults.Infrastructure.Processes.CalculationResultClient.GetDirectoryForTotalGridArea(new Guid(batchId), gridAreaCode, TimeSeriesType.Production);
 
         // Assert
         actual.Should().MatchRegex(expected.DirectoryExpression);
@@ -88,7 +87,7 @@ public class ProcessStepResultRepositoryTests
         var expected = calculationFilePathsContract.ResultFile;
 
         // Act
-        var actual = ProcessStepResultRepository.GetDirectoryForEsGridArea(new Guid(batchId), gridAreaCode, TimeSeriesType.Production, AnyEnergySupplierGln);
+        var actual = CalculationResults.Infrastructure.Processes.CalculationResultClient.GetDirectoryForEsGridArea(new Guid(batchId), gridAreaCode, TimeSeriesType.Production, AnyEnergySupplierGln);
 
         // Assert
         actual.Should().MatchRegex(expected.DirectoryExpression);
@@ -104,7 +103,7 @@ public class ProcessStepResultRepositoryTests
         var expected = calculationFilePathsContract.ResultFileForGaBrpEs;
 
         // Act
-        var actual = ProcessStepResultRepository.GetDirectoryForEsBrpGridArea(new Guid(batchId), gridAreaCode, TimeSeriesType.Production, AnyBalanceResponsiblePartyGln, AnyEnergySupplierGln);
+        var actual = CalculationResults.Infrastructure.Processes.CalculationResultClient.GetDirectoryForEsBrpGridArea(new Guid(batchId), gridAreaCode, TimeSeriesType.Production, AnyBalanceResponsiblePartyGln, AnyEnergySupplierGln);
 
         // Assert
         actual.Should().MatchRegex(expected.DirectoryExpression);
@@ -121,7 +120,7 @@ public class ProcessStepResultRepositoryTests
         const string gridAreaCode = "123";
 
         // Act
-        var actual = ProcessStepResultRepository.GetDirectoryForTotalGridArea(new Guid(batchId), gridAreaCode, timeSeriesType);
+        var actual = CalculationResults.Infrastructure.Processes.CalculationResultClient.GetDirectoryForTotalGridArea(new Guid(batchId), gridAreaCode, timeSeriesType);
 
         // Assert
         actual.Should().Contain(expectedTimeSeriesType);

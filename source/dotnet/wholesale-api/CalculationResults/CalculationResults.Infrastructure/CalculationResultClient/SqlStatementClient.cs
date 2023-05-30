@@ -28,14 +28,14 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 
 // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-7.0
 // https://learn.microsoft.com/en-gb/azure/databricks/sql/api/sql-execution-tutorial
-public class CalculationResultClient : ICalculationResultClient
+public class SqlStatementClient : ISqlStatementClient
 {
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly HttpClient _httpClient;
     private readonly IOptions<DatabricksOptions> _options;
     private readonly IDatabricksSqlResponseParser _databricksSqlResponseParser;
 
-    public CalculationResultClient(HttpClient httpClient, IOptions<DatabricksOptions> options, IDatabricksSqlResponseParser databricksSqlResponseParser)
+    public SqlStatementClient(HttpClient httpClient, IOptions<DatabricksOptions> options, IDatabricksSqlResponseParser databricksSqlResponseParser)
     {
         _httpClient = httpClient;
         _options = options;

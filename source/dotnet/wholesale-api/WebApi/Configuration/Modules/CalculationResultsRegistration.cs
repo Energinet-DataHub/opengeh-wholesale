@@ -13,15 +13,16 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Application;
+using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.BatchActor;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineSerializer;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Actors;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 
@@ -33,15 +34,15 @@ public static class CalculationResultsRegistration
     public static void AddCalculationResultsModule(
         this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddScoped<ISettlementReportApplicationService, SettlementReportApplicationService>();
-        serviceCollection.AddHttpClient<ICalculationResultClient>();
-        serviceCollection.AddScoped<ICalculationResultClient, CalculationResultClient>();
+        serviceCollection.AddScoped<ISettlementReportClient, SettlementReportClient>();
+        serviceCollection.AddHttpClient<ISqlStatementClient>();
+        serviceCollection.AddScoped<ISqlStatementClient, SqlStatementClient>();
         serviceCollection.AddScoped<ISettlementReportResultsCsvWriter, SettlementReportResultsCsvWriter>();
         serviceCollection.AddScoped<IDatabricksSqlResponseParser, DatabricksSqlResponseParser>();
         serviceCollection.AddScoped<IDataLakeClient, DataLakeClient>();
         serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
-        serviceCollection.AddScoped<IProcessStepResultRepository, ProcessStepResultRepository>();
-        serviceCollection.AddScoped<IActorRepository, ActorRepository>();
+        serviceCollection.AddScoped<ICalculationResultClient, CalculationResultClient>();
+        serviceCollection.AddScoped<IActorClient, ActorClient>();
         serviceCollection.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
         serviceCollection.AddScoped<ISettlementReportRepository>(
             provider => new SettlementReportRepository(

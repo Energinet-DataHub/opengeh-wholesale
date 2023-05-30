@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,14 +27,14 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 public class ProcessStepResultController : V3ControllerBase
 {
     private readonly IBatchApplicationService _batchApplicationService;
-    private readonly IProcessStepResultRepository _processStepResultRepository;
+    private readonly ICalculationResultClient _calculationResultClient;
 
     public ProcessStepResultController(
         IBatchApplicationService batchApplicationService,
-        IProcessStepResultRepository processStepResultRepository)
+        ICalculationResultClient calculationResultClient)
     {
         _batchApplicationService = batchApplicationService;
-        _processStepResultRepository = processStepResultRepository;
+        _calculationResultClient = calculationResultClient;
     }
 
     /// <summary>
@@ -58,7 +58,7 @@ public class ProcessStepResultController : V3ControllerBase
         [FromQuery] string? energySupplierGln,
         [FromQuery] string? balanceResponsiblePartyGln)
     {
-        var stepResult = await _processStepResultRepository.GetAsync(
+        var stepResult = await _calculationResultClient.GetAsync(
             batchId,
             gridAreaCode,
             timeSeriesType,

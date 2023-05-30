@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.IntegrationEventsManagement;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Processes;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Processes.Model;
