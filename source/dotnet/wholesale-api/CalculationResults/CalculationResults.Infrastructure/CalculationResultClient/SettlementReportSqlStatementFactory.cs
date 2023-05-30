@@ -19,19 +19,19 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
 
-public static class SqlStatementFactory
+public static class SettlementReportSqlStatementFactory
 {
-    public static string CreateForSettlementReport(
+    public static string Create(
         string[] gridAreaCodes,
         ProcessType processType,
         Instant periodStart,
         Instant periodEnd,
         string? energySupplier)
     {
-        return string.IsNullOrEmpty(energySupplier) ? GetSqlStatementForSettlementReportForGridAreas(gridAreaCodes, processType, periodStart, periodEnd) : GetSqlStatementForSettlementReportForEnergySupplier(gridAreaCodes, processType, periodStart, periodEnd, energySupplier);
+        return string.IsNullOrEmpty(energySupplier) ? GetSqlForTotalGridAreas(gridAreaCodes, processType, periodStart, periodEnd) : GetSqlForEnergySupplier(gridAreaCodes, processType, periodStart, periodEnd, energySupplier);
     }
 
-    private static string GetSqlStatementForSettlementReportForGridAreas(
+    private static string GetSqlForTotalGridAreas(
         string[] gridAreaCodes,
         ProcessType processType,
         Instant periodStart,
@@ -58,7 +58,7 @@ ORDER by time
 ";
     }
 
-    private static string GetSqlStatementForSettlementReportForEnergySupplier(
+    private static string GetSqlForEnergySupplier(
         string[] gridAreaCodes,
         ProcessType processType,
         Instant periodStart,

@@ -22,34 +22,34 @@ using Xunit.Categories;
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.CalculationResultClient;
 
 [UnitTest]
-public class SqlStatementFactoryTests
+public class SettlementReportSqlStatementFactoryTests
 {
     private readonly string[] _defaultGridAreasCodes = { "123", "234", "345" };
     private readonly Instant _defaultPeriodStart = Instant.FromUtc(2022, 10, 12, 1, 0);
     private readonly Instant _defaultPeriodEnd = Instant.FromUtc(2022, 10, 12, 3, 0);
 
     [Fact]
-    public void CreateForSettlementReport_WhenEnergySupplierIsNull_ReturnsExpectedSqlStatement()
+    public void Create_WhenEnergySupplierIsNull_ReturnsExpectedSqlStatement()
     {
         // Arrange
         var expectedSql = GetExpectedSqlWhenNoEnergySupplier();
 
         // Act
-        var actual = SqlStatementFactory.CreateForSettlementReport(_defaultGridAreasCodes, ProcessType.BalanceFixing, _defaultPeriodStart, _defaultPeriodEnd, null);
+        var actual = SettlementReportSqlStatementFactory.Create(_defaultGridAreasCodes, ProcessType.BalanceFixing, _defaultPeriodStart, _defaultPeriodEnd, null);
 
         // Assert
         actual.Should().Be(expectedSql);
     }
 
     [Fact]
-    public void CreateForSettlementReport_WhenEnergySupplierIsNotNull_ReturnsExpectedSqlStatement()
+    public void Create_WhenEnergySupplierIsNotNull_ReturnsExpectedSqlStatement()
     {
         // Arrange
         const string someEnergySupplier = "1234567890123";
         var expectedSql = GetExpectedSqlWhenWithEnergySupplier(someEnergySupplier);
 
         // Act
-        var actual = SqlStatementFactory.CreateForSettlementReport(_defaultGridAreasCodes, ProcessType.BalanceFixing, _defaultPeriodStart, _defaultPeriodEnd, someEnergySupplier);
+        var actual = SettlementReportSqlStatementFactory.Create(_defaultGridAreasCodes, ProcessType.BalanceFixing, _defaultPeriodStart, _defaultPeriodEnd, someEnergySupplier);
 
         // Assert
         actual.Should().Be(expectedSql);
