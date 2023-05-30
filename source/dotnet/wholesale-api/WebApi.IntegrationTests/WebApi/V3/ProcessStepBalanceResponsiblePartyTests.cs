@@ -15,8 +15,8 @@
 using System.Net;
 using System.Net.Http.Json;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.V3;
@@ -58,16 +58,19 @@ public class ProcessStepBalanceResponsiblePartyTests : WebApiTestBase
     [Theory]
     [InlineAutoMoqData]
     public async Task HTTP_GET_V3_ReturnsExpectedActorInJson(
-        Mock<IProcessStepApplicationService> applicationServiceMock,
-        ProcessStepActorsRequest request,
-        WholesaleActorDto expectedActor)
+        Mock<IActorRepository> applicationServiceMock,
+        Guid batchId,
+        string gridAreaCode,
+        TimeSeriesType timeSeriesType,
+        Actor expectedActor)
     {
         // Arrange
-        var url = $"/v3/batches/{request.BatchId}/processes/{request.GridAreaCode}/time-series-types/{request.Type}/balance-responsible-parties";
+        var url = $"/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}/balance-responsible-parties";
 
         applicationServiceMock
-            .Setup(service => service.GetBalanceResponsiblePartiesAsync(request.BatchId, request.GridAreaCode, request.Type)).ReturnsAsync(() => new[] { expectedActor });
-        Factory.ProcessStepApplicationServiceMock = applicationServiceMock;
+            .Setup(service => service.GetBalanceResponsiblePartiesAsync(batchId, gridAreaCode, timeSeriesType))
+            .ReturnsAsync(() => new[] { expectedActor });
+        Factory.ActorRepositoryMock = applicationServiceMock;
 
         // Act
         var actualContent = await Client.GetAsync(url);

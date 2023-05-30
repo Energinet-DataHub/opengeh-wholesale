@@ -15,18 +15,13 @@
 using System.Text;
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.CalculationResults.Application;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
 using FluentAssertions;
 using Moq;
 using Xunit;
 using Xunit.Categories;
-using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SettlementReport;
 
@@ -225,42 +220,5 @@ public class SettlementReportRepositoryTests
 
         // Assert
         actual.Should().Be(expectedOutput);
-    }
-
-    [Theory]
-    [AutoMoqData]
-    public async Task GetResultAsync_TimeSeriesPoint_IsRead(
-        [Frozen] Mock<IProcessStepResultRepository> processActorResultRepositoryMock,
-        [Frozen] Mock<IActorRepository> actorRepositoryMock)
-    {
-        // Arrange
-        var time = new DateTimeOffset(2022, 05, 15, 22, 15, 0, TimeSpan.Zero);
-        var quantity = 1.000m;
-        var quality = QuantityQuality.Measured;
-
-        const string gridAreaCode = "805";
-
-        var batchId = Guid.NewGuid();
-
-        var sut = new ProcessStepApplicationService(
-            processActorResultRepositoryMock.Object,
-            new ProcessStepResultMapper(),
-            actorRepositoryMock.Object);
-
-        processActorResultRepositoryMock.Setup(p => p.GetAsync(batchId, gridAreaCode, TimeSeriesType.Production, null, null))
-            .ReturnsAsync(new ProcessStepResult(TimeSeriesType.Production, new[] { new TimeSeriesPoint(time, quantity, quality) }));
-
-        // Act
-        var actual = await sut.GetResultAsync(
-                batchId,
-                gridAreaCode,
-                Interfaces.ProcessStep.Model.TimeSeriesType.Production,
-                null,
-                null);
-
-        // Assert
-        actual.TimeSeriesPoints.First().Time.Should().Be(time);
-        actual.TimeSeriesPoints.First().Quantity.Should().Be(quantity);
-        actual.TimeSeriesPoints.First().Quality.Should().Be(quality.ToString());
     }
 }

@@ -37,8 +37,7 @@ public sealed class ProcessStepResult
 
     public decimal Max { get; }
 
-    // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Local - setter used in test
     public TimeSeriesType TimeSeriesType { get; private set; }
 
-    public TimeSeriesPoint[] TimeSeriesPoints { get; }
+    public TimeSeriesPoint[] TimeSeriesPoints { get; private set; }
 }

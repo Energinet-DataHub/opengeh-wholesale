@@ -16,8 +16,8 @@ using System.Net;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 using FluentAssertions;
@@ -41,23 +41,23 @@ public class ProcessStepResultTests : WebApiTestBase
     [Theory]
     [InlineAutoMoqData]
     public async Task HTTP_GET_V3_ReturnsHttpStatusCodeOkAtExpectedUrl(
-        Mock<IProcessStepApplicationService> processStepApplicationServiceMock,
+        Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
         Mock<IBatchApplicationService> batchApplicationServiceMock,
-        ProcessStepResultDto result,
-        BatchDto batchDto,
-        ProcessStepActorsRequest request)
+        ProcessStepResult result,
+        Guid batchId,
+        string gridAreaCode,
+        BatchDto batchDto)
     {
         // Arrange
-        request.SetPrivateProperty(r => r.Type, TimeSeriesType.Production);
-        result.SetPrivateProperty(r => r.TimeSeriesPoints, new TimeSeriesPointDto[] { new(DateTimeOffset.Now, decimal.One, "measured") });
-        processStepApplicationServiceMock
-            .Setup(service => service.GetResultAsync(request.BatchId, request.GridAreaCode, TimeSeriesType.Production, null, null))
+        result.SetPrivateProperty(r => r.TimeSeriesPoints, new TimeSeriesPoint[] { new(DateTimeOffset.Now, decimal.One, QuantityQuality.Measured) });
+        processStepResultRepositoryMock
+            .Setup(service => service.GetAsync(batchId, gridAreaCode, TimeSeriesType.Production, null, null))
             .ReturnsAsync(() => result);
-        batchApplicationServiceMock.Setup(service => service.GetAsync(request.BatchId)).ReturnsAsync(batchDto);
-        Factory.ProcessStepApplicationServiceMock = processStepApplicationServiceMock;
+        batchApplicationServiceMock.Setup(service => service.GetAsync(batchId)).ReturnsAsync(batchDto);
+        Factory.ProcessStepResultRepositoryMock = processStepResultRepositoryMock;
         Factory.BatchApplicationServiceMock = batchApplicationServiceMock;
 
-        var url = $"/v3/batches/{request.BatchId}/processes/{request.GridAreaCode}/time-series-types/{request.Type}";
+        var url = $"/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{TimeSeriesType.Production}";
         var expectedHttpStatusCode = HttpStatusCode.OK;
 
         // Act

@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,18 +26,15 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 [Route("/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}")]
 public class ProcessStepResultController : V3ControllerBase
 {
-    private readonly IProcessStepApplicationService _processStepApplicationService;
-    private readonly IProcessStepResultFactory _processStepResultFactory;
     private readonly IBatchApplicationService _batchApplicationService;
+    private readonly IProcessStepResultRepository _processStepResultRepository;
 
     public ProcessStepResultController(
-        IProcessStepApplicationService processStepApplicationService,
-        IProcessStepResultFactory processStepResultFactory,
-        IBatchApplicationService batchApplicationService)
+        IBatchApplicationService batchApplicationService,
+        IProcessStepResultRepository processStepResultRepository)
     {
-        _processStepApplicationService = processStepApplicationService;
-        _processStepResultFactory = processStepResultFactory;
         _batchApplicationService = batchApplicationService;
+        _processStepResultRepository = processStepResultRepository;
     }
 
     /// <summary>
@@ -61,7 +58,7 @@ public class ProcessStepResultController : V3ControllerBase
         [FromQuery] string? energySupplierGln,
         [FromQuery] string? balanceResponsiblePartyGln)
     {
-        var stepResult = await _processStepApplicationService.GetResultAsync(
+        var stepResult = await _processStepResultRepository.GetAsync(
             batchId,
             gridAreaCode,
             timeSeriesType,
@@ -70,6 +67,6 @@ public class ProcessStepResultController : V3ControllerBase
 
         var batch = await _batchApplicationService.GetAsync(batchId).ConfigureAwait(false);
 
-        return _processStepResultFactory.Create(stepResult, BatchDtoMapper.Map(batch));
+        return ProcessStepResultFactory.Create(stepResult, BatchDtoMapper.Map(batch));
     }
 }
