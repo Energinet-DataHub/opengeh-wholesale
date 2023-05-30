@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System.Reflection;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.DeltaTableConstants;
 using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using Test.Core;

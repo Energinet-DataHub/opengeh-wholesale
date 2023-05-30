@@ -21,16 +21,16 @@ public static class ProcessTypeMapper
     public static string ToDeltaTableValue(ProcessType processType) =>
         processType switch
         {
-            ProcessType.BalanceFixing => "BalanceFixing",
-            ProcessType.Aggregation => "Aggregation",
+            ProcessType.BalanceFixing => DeltaTableConstants.DeltaTableProcessType.BalanceFixing,
+            ProcessType.Aggregation => DeltaTableConstants.DeltaTableProcessType.Aggregation,
             _ => throw new NotImplementedException($"Cannot map process type '{processType}"),
         };
 
     public static ProcessType FromDeltaTableValue(string processType) =>
         processType switch
         {
-            "BalanceFixing" => ProcessType.BalanceFixing,
-            "Aggregation" => ProcessType.Aggregation,
+            DeltaTableConstants.DeltaTableProcessType.BalanceFixing => ProcessType.BalanceFixing,
+            DeltaTableConstants.DeltaTableProcessType.Aggregation => ProcessType.Aggregation,
             _ => throw new NotImplementedException($"Cannot map process type '{processType}"),
         };
 }

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using FluentAssertions;
@@ -24,10 +25,10 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 public class TimeSeriesTypeMapperTests
 {
     [Theory]
-    [InlineData(TimeSeriesType.FlexConsumption, "flex_consumption")]
-    [InlineData(TimeSeriesType.Production, "production")]
-    [InlineData(TimeSeriesType.NonProfiledConsumption, "non_profiled_consumption")]
-    [InlineData(TimeSeriesType.NetExchangePerGa, "net_exchange_per_ga")]
+    [InlineData(TimeSeriesType.FlexConsumption, DeltaTableTimeSeriesType.FlexConsumption)]
+    [InlineData(TimeSeriesType.Production, DeltaTableTimeSeriesType.Production)]
+    [InlineData(TimeSeriesType.NonProfiledConsumption, DeltaTableTimeSeriesType.NonProfiledConsumption)]
+    [InlineData(TimeSeriesType.NetExchangePerGa, DeltaTableTimeSeriesType.NetExchangePerGridArea)]
     public void ToDeltaTableValue_ReturnsExpectedString(TimeSeriesType type, string expected)
     {
         // Act
@@ -38,10 +39,10 @@ public class TimeSeriesTypeMapperTests
     }
 
     [Theory]
-    [InlineData("flex_consumption", TimeSeriesType.FlexConsumption)]
-    [InlineData("production", TimeSeriesType.Production)]
-    [InlineData("non_profiled_consumption", TimeSeriesType.NonProfiledConsumption)]
-    [InlineData("net_exchange_per_ga", TimeSeriesType.NetExchangePerGa)]
+    [InlineData(DeltaTableTimeSeriesType.FlexConsumption, TimeSeriesType.FlexConsumption)]
+    [InlineData(DeltaTableTimeSeriesType.Production, TimeSeriesType.Production)]
+    [InlineData(DeltaTableTimeSeriesType.NonProfiledConsumption, TimeSeriesType.NonProfiledConsumption)]
+    [InlineData(DeltaTableTimeSeriesType.NetExchangePerGridArea, TimeSeriesType.NetExchangePerGa)]
     public void FromDeltaTableValue_ReturnsExpectedType(string deltaTableValue, TimeSeriesType expected)
     {
         // Act
