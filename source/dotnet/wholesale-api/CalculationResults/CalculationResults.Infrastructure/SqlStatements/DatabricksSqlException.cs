@@ -12,15 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 
-/// <summary>
-/// Representation of the state of a Databricks SQL response.
-/// </summary>
-public enum DatabricksSqlResponseState
+public class DatabricksSqlException : Exception
 {
-    Failed = 0,
-    Cancelled = 1,
-    Pending = 2,
-    Succeeded = 3,
+    public DatabricksSqlException(string message)
+        : base(message)
+    {
+    }
 }

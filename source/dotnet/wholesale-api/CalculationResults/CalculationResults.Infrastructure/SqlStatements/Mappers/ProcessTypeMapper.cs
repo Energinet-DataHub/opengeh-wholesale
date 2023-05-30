@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Common.Models;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 
 public static class ProcessTypeMapper
 {

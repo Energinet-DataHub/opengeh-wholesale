@@ -14,12 +14,12 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineSerializer;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Processes;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Actors;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Actors.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.BatchActor;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Actors;
 
 public class ActorClient : IActorClient
 {
@@ -60,7 +60,7 @@ public class ActorClient : IActorClient
         TimeSeriesType timeSeriesType)
     {
         return (
-            $"calculation-output/batch_id={batchId}/actors/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/grid_area={gridAreaCode}/",
+            $"calculation-output/batch_id={batchId}/actors/time_series_type={TimeSeriesTypeMapper.ToDeltaTableValue(timeSeriesType)}/grid_area={gridAreaCode}/",
             ".json");
     }
 

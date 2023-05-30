@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Processes;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using FluentAssertions;
 using Xunit;
@@ -21,7 +21,7 @@ using Xunit.Categories;
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Processes;
 
 [UnitTest]
-public class TimeSeriesTypeMapperTests
+public class FileBasedTimeSeriesTypeMapperTests
 {
     [Theory]
     [InlineData(TimeSeriesType.FlexConsumption, "consumption")]
@@ -32,7 +32,7 @@ public class TimeSeriesTypeMapperTests
         var timeSeriesTypes = Enum.GetValues(typeof(TimeSeriesType)).Cast<TimeSeriesType>();
         foreach (var timeSeriesType in timeSeriesTypes)
         {
-            var actual = TimeSeriesTypeMapper.Map(timeSeriesType);
+            var actual = FileBasedTimeSeriesTypeMapper.Map(timeSeriesType);
             if (timeSeriesType == type)
                 actual.Should().Be(expected);
         }
