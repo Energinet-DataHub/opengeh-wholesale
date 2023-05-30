@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
-using BatchDto = Energinet.DataHub.Wholesale.WebApi.V3.Batch.BatchDto;
+using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 
 namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 

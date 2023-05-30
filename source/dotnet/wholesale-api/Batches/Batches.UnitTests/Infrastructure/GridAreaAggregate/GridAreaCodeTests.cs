@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Batches.Application.Model;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using FluentAssertions;
 using Xunit;
