@@ -26,8 +26,7 @@ public class ProcessStepResultFactoryTests
     [InlineAutoMoqData]
     public void Create_ReturnsExpectedStepResult(
         CalculationResults.Interfaces.ProcessStep.Model.ProcessStepResultDto resultDto,
-        BatchDto batchDto,
-        ProcessStepResultFactory sut)
+        BatchDto batchDto)
     {
         // Arrange
         var point = resultDto.TimeSeriesPoints.First();
@@ -48,7 +47,7 @@ public class ProcessStepResultFactoryTests
             resultDto.TimeSeriesType);
 
         // Act
-        var actual = sut.Create(resultDto, batchDto);
+        var actual = ProcessStepResultFactory.Create(resultDto, batchDto);
 
         // Assert
         actual.Should().BeEquivalentTo(expected);
