@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Common.Models;
@@ -53,7 +54,7 @@ WHERE
     AND {ResultColumnNames.TimeSeriesType} IN ({timeSeriesTypesString})
     AND {ResultColumnNames.BatchProcessType} = '{processTypeString}'
     AND {ResultColumnNames.Time} BETWEEN '{startTimeString}' AND '{endTimeString}'
-    AND {ResultColumnNames.AggregationLevel} = 'total_ga'
+    AND {ResultColumnNames.AggregationLevel} = '{DeltaTableAggregationLevel.GridArea}'
 ORDER by time
 ";
     }
@@ -81,7 +82,7 @@ WHERE
     AND {ResultColumnNames.TimeSeriesType} IN ({timeSeriesTypesString})
     AND {ResultColumnNames.BatchProcessType} = '{processTypeString}'
     AND {ResultColumnNames.Time} BETWEEN '{startTimeString}' AND '{endTimeString}'
-    AND {ResultColumnNames.AggregationLevel} = 'es_ga'
+    AND {ResultColumnNames.AggregationLevel} = '{DeltaTableAggregationLevel.EnergySupplierAndGridArea}'
     AND {ResultColumnNames.EnergySupplierId} = '{energySupplier}'
 ORDER by time
 ";

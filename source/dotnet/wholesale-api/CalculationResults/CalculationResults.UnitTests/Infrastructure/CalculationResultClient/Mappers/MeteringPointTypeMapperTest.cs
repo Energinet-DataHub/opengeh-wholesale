@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using FluentAssertions;
@@ -24,9 +25,9 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 public class MeteringPointTypeMapperTests
 {
     [Theory]
-    [InlineData("flex_consumption", MeteringPointType.Consumption)]
-    [InlineData("production", MeteringPointType.Production)]
-    [InlineData("non_profiled_consumption", MeteringPointType.Consumption)]
+    [InlineData(DeltaTableTimeSeriesType.FlexConsumption, MeteringPointType.Consumption)]
+    [InlineData(DeltaTableTimeSeriesType.Production, MeteringPointType.Production)]
+    [InlineData(DeltaTableTimeSeriesType.NonProfiledConsumption, MeteringPointType.Consumption)]
     public void ToDeltaTableValue_ReturnsExpectedString(string timeSeriesType, MeteringPointType expected)
     {
         // Act
