@@ -18,7 +18,6 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Application;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.Common.Models;
-using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Moq;

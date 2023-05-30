@@ -21,7 +21,6 @@ using Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
-using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;

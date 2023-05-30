@@ -20,9 +20,9 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementRe
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.Common.DatabricksClient;
 using Energinet.DataHub.Wholesale.Common.Models;
-// TODO BJM: Should we avoid referencing the DatabricksClient project "just" to get access to the DatabricksOptions?
-using Energinet.DataHub.Wholesale.Components.DatabricksClient;
+// TODO BJM: Should we avoid referencing the JobsApiClient project "just" to get access to the DatabricksOptions?
 using Microsoft.Extensions.Options;
 using NodaTime;
 
