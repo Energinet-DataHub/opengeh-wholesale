@@ -29,10 +29,10 @@ public static class SqlStatementFactory
         Instant periodEnd,
         string? energySupplier)
     {
-        return string.IsNullOrEmpty(energySupplier) ? GetSqlStatementForGridArea(gridAreaCodes, processType, periodStart, periodEnd) : GetSqlStatementForEnergySupplier(gridAreaCodes, processType, periodStart, periodEnd, energySupplier);
+        return string.IsNullOrEmpty(energySupplier) ? GetSqlStatementForSettlementReportForGridAreas(gridAreaCodes, processType, periodStart, periodEnd) : GetSqlStatementForSettlementReportForEnergySupplier(gridAreaCodes, processType, periodStart, periodEnd, energySupplier);
     }
 
-    private static string GetSqlStatementForGridArea(
+    private static string GetSqlStatementForSettlementReportForGridAreas(
         string[] gridAreaCodes,
         ProcessType processType,
         Instant periodStart,
@@ -59,7 +59,7 @@ ORDER by time
 ";
     }
 
-    private static string GetSqlStatementForEnergySupplier(
+    private static string GetSqlStatementForSettlementReportForEnergySupplier(
         string[] gridAreaCodes,
         ProcessType processType,
         Instant periodStart,
