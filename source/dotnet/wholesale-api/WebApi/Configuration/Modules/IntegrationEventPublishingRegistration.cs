@@ -27,7 +27,7 @@ using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Pers
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.ServiceBus;
 
-namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
+namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
 
 /// <summary>
 /// Registration of services required for the Batches module.

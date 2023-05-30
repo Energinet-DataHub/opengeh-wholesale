@@ -17,6 +17,4 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.
 public interface IIntegrationEventTypeMapper
 {
     string GetMessageType(Type eventType);
-
-    public int Count();
 }
