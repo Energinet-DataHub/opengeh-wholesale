@@ -23,18 +23,18 @@ public class RegisterCompletedBatchesHandler : IRegisterCompletedBatchesHandler
     private readonly IBatchesClient _batchesClient;
     private readonly ICompletedBatchRepository _completedBatchRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ICompletedBatchMapper _completedBatchMapper;
+    private readonly ICompletedBatchFactory _completedBatchFactory;
 
     public RegisterCompletedBatchesHandler(
         IBatchesClient batchesClient,
         ICompletedBatchRepository completedBatchRepository,
         IUnitOfWork unitOfWork,
-        ICompletedBatchMapper completedBatchMapper)
+        ICompletedBatchFactory completedBatchFactory)
     {
         _batchesClient = batchesClient;
         _completedBatchRepository = completedBatchRepository;
         _unitOfWork = unitOfWork;
-        _completedBatchMapper = completedBatchMapper;
+        _completedBatchFactory = completedBatchFactory;
     }
 
     public async Task RegisterCompletedBatchesAsync()
@@ -48,6 +48,6 @@ public class RegisterCompletedBatchesHandler : IRegisterCompletedBatchesHandler
     {
         var lastKnownCompletedBatch = await _completedBatchRepository.GetLastCompletedOrNullAsync().ConfigureAwait(false);
         var completedBatchDtos = await _batchesClient.GetBatchesCompletedAfterAsync(lastKnownCompletedBatch?.CompletedTime).ConfigureAwait(false);
-        return _completedBatchMapper.Map(completedBatchDtos);
+        return _completedBatchFactory.CreateFromBatches(completedBatchDtos);
     }
 }
