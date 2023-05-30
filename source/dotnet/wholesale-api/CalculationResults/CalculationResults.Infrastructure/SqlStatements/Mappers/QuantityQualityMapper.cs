@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 
 public static class QuantityQualityMapper
 {

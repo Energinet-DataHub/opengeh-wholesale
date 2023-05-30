@@ -14,7 +14,7 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.BatchActor;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Actors;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineSerializer;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;

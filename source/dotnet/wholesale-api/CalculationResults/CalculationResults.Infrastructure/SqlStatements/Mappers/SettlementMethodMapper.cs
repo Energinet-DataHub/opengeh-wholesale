@@ -14,21 +14,21 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 
-public static class MeteringPointTypeMapper
+public static class SettlementMethodMapper
 {
-    public static MeteringPointType FromDeltaTableValue(string timeSeriesType) =>
+    public static SettlementMethod? FromDeltaTableValue(string timeSeriesType) =>
         TimeSeriesTypeMapper.FromDeltaTableValue(timeSeriesType) switch
         {
-            TimeSeriesType.Production => MeteringPointType.Production,
-            TimeSeriesType.FlexConsumption => MeteringPointType.Consumption,
-            TimeSeriesType.NonProfiledConsumption => MeteringPointType.Consumption,
-            TimeSeriesType.NetExchangePerNeighboringGa => MeteringPointType.Exchange,
-            TimeSeriesType.NetExchangePerGa => MeteringPointType.Exchange,
-            TimeSeriesType.GridLoss => MeteringPointType.Consumption,
-            TimeSeriesType.NegativeGridLoss => MeteringPointType.Production,
-            TimeSeriesType.PositiveGridLoss => MeteringPointType.Consumption,
+            TimeSeriesType.Production => null,
+            TimeSeriesType.FlexConsumption => SettlementMethod.Flex,
+            TimeSeriesType.NonProfiledConsumption => SettlementMethod.NonProfiled,
+            TimeSeriesType.NetExchangePerGa => null,
+            TimeSeriesType.NetExchangePerNeighboringGa => null,
+            TimeSeriesType.GridLoss => null,
+            TimeSeriesType.NegativeGridLoss => null,
+            TimeSeriesType.PositiveGridLoss => SettlementMethod.Flex,
             _ => throw new NotImplementedException($"Cannot map timeSeriesType type '{timeSeriesType}"),
         };
 }

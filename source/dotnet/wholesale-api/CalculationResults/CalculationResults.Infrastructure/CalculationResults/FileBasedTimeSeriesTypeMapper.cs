@@ -14,9 +14,9 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Processes;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 
-public static class TimeSeriesTypeMapper
+public static class FileBasedTimeSeriesTypeMapper
 {
     // These strings represents how write our results from spark.
     // They should only be changed with changing how we write down the results.

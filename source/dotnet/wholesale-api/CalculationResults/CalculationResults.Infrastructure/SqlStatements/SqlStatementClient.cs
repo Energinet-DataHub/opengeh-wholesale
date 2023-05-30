@@ -16,8 +16,9 @@ using System.Globalization;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Energinet.DataHub.Wholesale.CalculationResults.Application;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.DeltaTableConstants;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Common.DatabricksClient;
 using Energinet.DataHub.Wholesale.Common.Models;
@@ -25,7 +26,7 @@ using Energinet.DataHub.Wholesale.Common.Models;
 using Microsoft.Extensions.Options;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 
 // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-7.0
 // https://learn.microsoft.com/en-gb/azure/databricks/sql/api/sql-execution-tutorial

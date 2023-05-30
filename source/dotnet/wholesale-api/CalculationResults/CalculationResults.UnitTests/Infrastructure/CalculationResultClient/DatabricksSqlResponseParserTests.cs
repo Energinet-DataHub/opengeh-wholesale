@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using FluentAssertions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

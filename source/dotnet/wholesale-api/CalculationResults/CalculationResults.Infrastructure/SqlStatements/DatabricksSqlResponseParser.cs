@@ -15,7 +15,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 
 public class DatabricksSqlResponseParser : IDatabricksSqlResponseParser
 {

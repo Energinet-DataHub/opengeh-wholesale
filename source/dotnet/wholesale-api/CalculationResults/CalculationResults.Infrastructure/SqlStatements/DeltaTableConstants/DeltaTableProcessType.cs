@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 
-public interface IDatabricksSqlResponseParser
+public static class DeltaTableProcessType
 {
-    DatabricksSqlResponse Parse(string jsonResponse);
+    public const string Aggregation = "Aggregation";
+    public const string BalanceFixing = "BalanceFixing";
 }
