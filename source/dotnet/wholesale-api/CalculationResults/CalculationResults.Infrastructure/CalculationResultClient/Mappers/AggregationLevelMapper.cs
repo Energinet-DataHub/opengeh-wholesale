@@ -27,12 +27,12 @@ public static class AggregationLevelMapper
             case TimeSeriesType.Production:
             case TimeSeriesType.FlexConsumption:
                 if (energySupplierGln != null && balanceResponsiblePartyGln != null)
-                    return AggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea;
+                    return DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea;
                 if (energySupplierGln != null)
-                    return AggregationLevel.EnergySupplierAndGridArea;
+                    return DeltaTableAggregationLevel.EnergySupplierAndGridArea;
                 if (balanceResponsiblePartyGln != null)
-                    return AggregationLevel.BalanceResponsibleAndGridArea;
-                return AggregationLevel.GridArea;
+                    return DeltaTableAggregationLevel.BalanceResponsibleAndGridArea;
+                return DeltaTableAggregationLevel.GridArea;
             default:
                 throw new NotImplementedException($"Mapping of '{timeSeriesType}' not implemented.");
         }

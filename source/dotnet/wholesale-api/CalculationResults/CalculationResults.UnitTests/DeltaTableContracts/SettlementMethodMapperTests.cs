@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using FluentAssertions;
@@ -38,14 +39,14 @@ public class SettlementMethodMapperTests
     }
 
     [Theory]
-    [InlineAutoMoqData("production", null!)]
-    [InlineAutoMoqData("non_profiled_consumption", SettlementMethod.NonProfiled)]
-    [InlineAutoMoqData("net_exchange_per_neighboring_ga", null!)]
-    [InlineAutoMoqData("net_exchange_per_ga", null!)]
-    [InlineAutoMoqData("flex_consumption", SettlementMethod.Flex)]
-    [InlineAutoMoqData("grid_loss", null!)]
-    [InlineAutoMoqData("negative_grid_loss", null!)]
-    [InlineAutoMoqData("positive_grid_loss", SettlementMethod.Flex)]
+    [InlineAutoMoqData(DeltaTableTimeSeriesType.Production, null!)]
+    [InlineAutoMoqData(DeltaTableTimeSeriesType.NonProfiledConsumption, SettlementMethod.NonProfiled)]
+    [InlineAutoMoqData(DeltaTableTimeSeriesType.NetExchangePerNeighboringGridArea, null!)]
+    [InlineAutoMoqData(DeltaTableTimeSeriesType.NetExchangePerGridArea, null!)]
+    [InlineAutoMoqData(DeltaTableTimeSeriesType.FlexConsumption, SettlementMethod.Flex)]
+    [InlineAutoMoqData(DeltaTableTimeSeriesType.GridLoss, null!)]
+    [InlineAutoMoqData(DeltaTableTimeSeriesType.NegativeGridLoss, null!)]
+    [InlineAutoMoqData(DeltaTableTimeSeriesType.PositiveGridLoss, SettlementMethod.Flex)]
     public void SettlementMethodMapper_ReturnsValidSettlementMethod(string deltaValue, SettlementMethod? expected)
     {
         // Act

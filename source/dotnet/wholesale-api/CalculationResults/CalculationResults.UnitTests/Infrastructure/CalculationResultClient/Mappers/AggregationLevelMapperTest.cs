@@ -31,7 +31,7 @@ public class AggregationLevelMapperTests
     public void ToDeltaTableValue_WhenNoActorsSpecified_ReturnsExpectedAggLevel(TimeSeriesType type)
     {
         // Act
-        const string expected = AggregationLevel.GridArea;
+        const string expected = DeltaTableAggregationLevel.GridArea;
         var actual = AggregationLevelMapper.ToDeltaTableValue(type, null, null);
 
         // Assert
@@ -45,7 +45,7 @@ public class AggregationLevelMapperTests
     public void ToDeltaTableValue_WhenEnergySupplierIsNotNull_ReturnsExpectedAggLevel(TimeSeriesType type)
     {
         // Act
-        const string expected = AggregationLevel.EnergySupplierAndGridArea;
+        const string expected = DeltaTableAggregationLevel.EnergySupplierAndGridArea;
         var actual = AggregationLevelMapper.ToDeltaTableValue(type, "someEnergySupplier", null);
 
         // Assert
@@ -59,7 +59,7 @@ public class AggregationLevelMapperTests
     public void ToDeltaTableValue_WhenBalanceResponsibleIsNotNull_ReturnsExpectedAggLevel(TimeSeriesType type)
     {
         // Act
-        const string expected = AggregationLevel.BalanceResponsibleAndGridArea;
+        const string expected = DeltaTableAggregationLevel.BalanceResponsibleAndGridArea;
         var actual = AggregationLevelMapper.ToDeltaTableValue(type, null, "somBalanceResponsible");
 
         // Assert
@@ -73,7 +73,7 @@ public class AggregationLevelMapperTests
     public void ToDeltaTableValue_WhenNeitherEnergySupplierAndBalanceResponsibleIsNull_ReturnsExpectedAggLevel(TimeSeriesType type)
     {
         // Act
-        const string expected = AggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea;
+        const string expected = DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea;
         var actual = AggregationLevelMapper.ToDeltaTableValue(type, "someEnergySupplier", "somBalanceResponsible");
 
         // Assert

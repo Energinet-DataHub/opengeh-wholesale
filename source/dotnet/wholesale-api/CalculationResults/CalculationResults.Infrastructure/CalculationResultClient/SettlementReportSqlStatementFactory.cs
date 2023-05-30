@@ -54,7 +54,7 @@ WHERE
     AND {ResultColumnNames.TimeSeriesType} IN ({timeSeriesTypesString})
     AND {ResultColumnNames.BatchProcessType} = '{processTypeString}'
     AND {ResultColumnNames.Time} BETWEEN '{startTimeString}' AND '{endTimeString}'
-    AND {ResultColumnNames.AggregationLevel} = 'total_ga'
+    AND {ResultColumnNames.AggregationLevel} = '{DeltaTableAggregationLevel.GridArea}'
 ORDER by time
 ";
     }
@@ -82,7 +82,7 @@ WHERE
     AND {ResultColumnNames.TimeSeriesType} IN ({timeSeriesTypesString})
     AND {ResultColumnNames.BatchProcessType} = '{processTypeString}'
     AND {ResultColumnNames.Time} BETWEEN '{startTimeString}' AND '{endTimeString}'
-    AND {ResultColumnNames.AggregationLevel} = 'es_ga'
+    AND {ResultColumnNames.AggregationLevel} = '{DeltaTableAggregationLevel.EnergySupplierAndGridArea}'
     AND {ResultColumnNames.EnergySupplierId} = '{energySupplier}'
 ORDER by time
 ";

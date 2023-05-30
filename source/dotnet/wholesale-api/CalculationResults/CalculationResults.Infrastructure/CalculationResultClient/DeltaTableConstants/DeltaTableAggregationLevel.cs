@@ -14,7 +14,7 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.DeltaTableConstants;
 
-public static class AggregationLevel
+public static class DeltaTableAggregationLevel
 {
     public const string GridArea = "total_ga";
     public const string EnergySupplierAndGridArea = "es_ga";

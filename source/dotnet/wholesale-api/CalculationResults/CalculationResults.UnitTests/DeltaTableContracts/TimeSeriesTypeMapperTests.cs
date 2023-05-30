@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using FluentAssertions;
@@ -48,14 +49,14 @@ public class TimeSeriesTypeMapperTests
     }
 
     [Theory]
-    [InlineAutoMoqData("production", TimeSeriesType.Production)]
-    [InlineAutoMoqData("non_profiled_consumption", TimeSeriesType.NonProfiledConsumption)]
-    [InlineAutoMoqData("net_exchange_per_neighboring_ga", TimeSeriesType.NetExchangePerNeighboringGa)]
-    [InlineAutoMoqData("net_exchange_per_ga", TimeSeriesType.NetExchangePerGa)]
-    [InlineAutoMoqData("flex_consumption", TimeSeriesType.FlexConsumption)]
-    [InlineAutoMoqData("grid_loss", TimeSeriesType.GridLoss)]
-    [InlineAutoMoqData("negative_grid_loss", TimeSeriesType.NegativeGridLoss)]
-    [InlineAutoMoqData("positive_grid_loss", TimeSeriesType.PositiveGridLoss)]
+    [InlineAutoMoqData(DeltaTableTimeSeriesType.Production, TimeSeriesType.Production)]
+    [InlineAutoMoqData(DeltaTableTimeSeriesType.NonProfiledConsumption, TimeSeriesType.NonProfiledConsumption)]
+    [InlineAutoMoqData(DeltaTableTimeSeriesType.NetExchangePerNeighboringGridArea, TimeSeriesType.NetExchangePerNeighboringGa)]
+    [InlineAutoMoqData(DeltaTableTimeSeriesType.NetExchangePerGridArea, TimeSeriesType.NetExchangePerGa)]
+    [InlineAutoMoqData(DeltaTableTimeSeriesType.FlexConsumption, TimeSeriesType.FlexConsumption)]
+    [InlineAutoMoqData(DeltaTableTimeSeriesType.GridLoss, TimeSeriesType.GridLoss)]
+    [InlineAutoMoqData(DeltaTableTimeSeriesType.NegativeGridLoss, TimeSeriesType.NegativeGridLoss)]
+    [InlineAutoMoqData(DeltaTableTimeSeriesType.PositiveGridLoss, TimeSeriesType.PositiveGridLoss)]
     public void TimeSeriesTypeMapper_ReturnsValidTimeSeriesType(string deltaValue, TimeSeriesType? expected)
     {
         // Act

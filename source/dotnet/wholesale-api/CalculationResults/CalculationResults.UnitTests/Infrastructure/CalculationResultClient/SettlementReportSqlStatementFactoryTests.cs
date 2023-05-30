@@ -67,7 +67,7 @@ WHERE
     AND {ResultColumnNames.TimeSeriesType} IN ('production','flex_consumption','non_profiled_consumption','net_exchange_per_ga')
     AND {ResultColumnNames.BatchProcessType} = 'BalanceFixing'
     AND {ResultColumnNames.Time} BETWEEN '2022-10-12T01:00:00Z' AND '2022-10-12T03:00:00Z'
-    AND {ResultColumnNames.AggregationLevel} = 'total_ga'
+    AND {ResultColumnNames.AggregationLevel} = '{DeltaTableAggregationLevel.GridArea}'
 ORDER by time
 ";
     }
@@ -83,7 +83,7 @@ WHERE
     AND {ResultColumnNames.TimeSeriesType} IN ('production','flex_consumption','non_profiled_consumption')
     AND {ResultColumnNames.BatchProcessType} = 'BalanceFixing'
     AND {ResultColumnNames.Time} BETWEEN '2022-10-12T01:00:00Z' AND '2022-10-12T03:00:00Z'
-    AND {ResultColumnNames.AggregationLevel} = 'es_ga'
+    AND {ResultColumnNames.AggregationLevel} = '{DeltaTableAggregationLevel.EnergySupplierAndGridArea}'
     AND {ResultColumnNames.EnergySupplierId} = '{energySupplier}'
 ORDER by time
 ";
