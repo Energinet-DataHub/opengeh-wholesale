@@ -29,7 +29,6 @@ namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWhee
     /// </summary>
     public class DatabricksWheelClient : IDisposable, IDatabricksWheelClient
     {
-        private const string Version = "2.1";
         private readonly HttpClient _httpClient;
 
         /// <summary>
@@ -40,7 +39,7 @@ namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWhee
         public DatabricksWheelClient(IOptions<DatabricksOptions> optionsFactory, long timeoutSeconds = 30)
         {
             var options = optionsFactory.Value;
-            var apiUrl = new Uri(new Uri(options.DATABRICKS_WORKSPACE_URL), $"api/{Version}/");
+            var apiUrl = new Uri(new Uri(options.DATABRICKS_WORKSPACE_URL), $"api/");
             _httpClient = CreateHttpClient(options.DATABRICKS_WORKSPACE_TOKEN, timeoutSeconds, apiUrl);
             Jobs = new JobsApiClient(_httpClient);
         }
