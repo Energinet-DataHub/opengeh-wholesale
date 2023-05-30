@@ -12,14 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
-/// <summary>
-/// Defines metering point type
-/// </summary>
-public enum MeteringPointType
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+
+public interface ICalculationResultClient
 {
-    Consumption = 0,
-    Production = 1,
-    Exchange = 2,
+    Task<ProcessStepResult> GetAsync(
+        Guid batchId,
+        string gridAreaCode,
+        TimeSeriesType timeSeriesType,
+        string? energySupplierGln,
+        string? balanceResponsiblePartyGln);
 }

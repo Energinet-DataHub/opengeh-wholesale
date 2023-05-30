@@ -12,17 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
-
-// TODO JMG: To be replaced by ICalculationResultClient when it's ready
-public interface IProcessStepResultRepository
-{
-    Task<ProcessStepResult> GetAsync(
-        Guid batchId,
-        string gridAreaCode,
-        TimeSeriesType timeSeriesType,
-        string? energySupplierGln,
-        string? balanceResponsiblePartyGln);
-}
+public record SettlementReport(Stream Stream);

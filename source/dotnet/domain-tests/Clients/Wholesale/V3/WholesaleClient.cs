@@ -30,8 +30,6 @@ using System.IO;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Clients.v3
 {
-    using System = global::System;
-
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.18.2.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial interface IWholesaleClient_V3
     {

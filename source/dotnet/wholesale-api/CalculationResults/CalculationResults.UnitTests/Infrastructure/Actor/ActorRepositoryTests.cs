@@ -17,12 +17,12 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.BatchActor;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineSerializer;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SettlementReport;
 using FluentAssertions;
 using Moq;
 using Xunit;
 using Xunit.Categories;
-using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.Actor;
 
@@ -38,7 +38,7 @@ public class ActorRepositoryTests
         // Arrange
         MockSetup(jsonNewlineSerializerMock, dataLakeClientMock, new List<ActorRelation>());
 
-        var sut = new ActorRepository(dataLakeClientMock.Object, jsonNewlineSerializerMock.Object);
+        var sut = new ActorClient(dataLakeClientMock.Object, jsonNewlineSerializerMock.Object);
 
         // Act
         var actual = await sut.GetEnergySuppliersAsync(Guid.NewGuid(), "123", TimeSeriesType.Production);
@@ -61,11 +61,11 @@ public class ActorRepositoryTests
             new("123", "333"),
         };
 
-        var expectedGln = new List<Interfaces.Actor> { new("123"), new("234") }; // distinct gln list
+        var expectedGln = new List<Interfaces.Actors.Model.Actor> { new("123"), new("234") }; // distinct gln list
 
         MockSetup(jsonNewlineSerializerMock, dataLakeClientMock, actorRelationsDeserialized);
 
-        var sut = new ActorRepository(
+        var sut = new ActorClient(
             dataLakeClientMock.Object,
             jsonNewlineSerializerMock.Object);
 
@@ -90,11 +90,11 @@ public class ActorRepositoryTests
             new("345", "333"),
         };
 
-        var expectedGln = new List<Interfaces.Actor> { new("111"), new("333") }; // distinct gln list
+        var expectedGln = new List<Interfaces.Actors.Model.Actor> { new("111"), new("333") }; // distinct gln list
 
         MockSetup(jsonNewlineSerializerMock, dataLakeClientMock, actorRelationsDeserialized);
 
-        var sut = new ActorRepository(
+        var sut = new ActorClient(
             dataLakeClientMock.Object,
             jsonNewlineSerializerMock.Object);
 
@@ -123,11 +123,11 @@ public class ActorRepositoryTests
             new(targetEs2Gln, targetBrpGln),
         };
 
-        var expectedGln = new List<Interfaces.Actor> { new(targetEs1Gln), new(targetEs2Gln) };
+        var expectedGln = new List<Interfaces.Actors.Model.Actor> { new(targetEs1Gln), new(targetEs2Gln) };
 
         MockSetup(jsonNewlineSerializerMock, dataLakeClientMock, actorRelationsDeserialized);
 
-        var sut = new ActorRepository(
+        var sut = new ActorClient(
             dataLakeClientMock.Object,
             jsonNewlineSerializerMock.Object);
 
@@ -156,7 +156,7 @@ public class ActorRepositoryTests
 
         MockSetup(jsonNewlineSerializerMock, dataLakeClientMock, actorRelationsDeserialized);
 
-        var sut = new ActorRepository(
+        var sut = new ActorClient(
             dataLakeClientMock.Object,
             jsonNewlineSerializerMock.Object);
 
@@ -183,11 +183,11 @@ public class ActorRepositoryTests
             new(energySupplierGln, brp2Gln),
         };
 
-        var expectedGln = new List<Interfaces.Actor> { new(energySupplierGln) };
+        var expectedGln = new List<Interfaces.Actors.Model.Actor> { new(energySupplierGln) };
 
         MockSetup(jsonNewlineSerializerMock, dataLakeClientMock, actorRelationsDeserialized);
 
-        var sut = new ActorRepository(
+        var sut = new ActorClient(
             dataLakeClientMock.Object,
             jsonNewlineSerializerMock.Object);
 
@@ -213,7 +213,7 @@ public class ActorRepositoryTests
         var expected = calculationFilePathsContract.ActorsFile;
 
         // Act
-        var (directory, extension) = ActorRepository.GetActorListFileSpecification(new Guid(batchId), gridAreaCode, timeSeriesType);
+        var (directory, extension) = ActorClient.GetActorListFileSpecification(new Guid(batchId), gridAreaCode, timeSeriesType);
 
         // Assert
         extension.Should().Be(expected.Extension);
@@ -232,7 +232,7 @@ public class ActorRepositoryTests
             new(null!, null!),
         });
 
-        var sut = new ActorRepository(dataLakeClientMock.Object, jsonNewlineSerializerMock.Object);
+        var sut = new ActorClient(dataLakeClientMock.Object, jsonNewlineSerializerMock.Object);
 
         // Act
         var actual = await sut.GetEnergySuppliersAsync(Guid.NewGuid(), "123", TimeSeriesType.Production);

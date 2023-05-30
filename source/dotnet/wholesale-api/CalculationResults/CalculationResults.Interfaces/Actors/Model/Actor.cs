@@ -12,6 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Application.SettlementReport.Model;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Actors.Model;
 
-public record SettlementReportDto(Stream Stream);
+public record Actor(string Gln);

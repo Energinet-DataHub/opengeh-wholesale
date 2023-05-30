@@ -15,8 +15,8 @@
 using System.Net;
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.CalculationResults.Application;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
 using FluentAssertions;
@@ -64,7 +64,7 @@ public class CalculationResultClientTests
             .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.BadRequest, });
         var httpClient = new HttpClient(mockMessageHandler.Object);
 
-        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
+        var sut = new CalculationResults.Infrastructure.CalculationResultClient.SqlStatementClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
 
         // Act + Assert
         await Assert.ThrowsAsync<DatabricksSqlException>(() =>
@@ -86,7 +86,7 @@ public class CalculationResultClientTests
         var httpClient = new HttpClient(mockMessageHandler.Object);
         databricksSqlResponseParserMock.Setup(p => p.Parse(It.IsAny<string>())).Returns(_failedDatabricksSqlResponse);
 
-        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
+        var sut = new CalculationResults.Infrastructure.CalculationResultClient.SqlStatementClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
 
         // Act + Assert
         await Assert.ThrowsAsync<DatabricksSqlException>(() => sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null));
@@ -107,7 +107,7 @@ public class CalculationResultClientTests
         var httpClient = new HttpClient(mockMessageHandler.Object);
         databricksSqlResponseParserMock.Setup(p => p.Parse(It.IsAny<string>())).Returns(_pendingDatabricksSqlResponse);
 
-        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
+        var sut = new CalculationResults.Infrastructure.CalculationResultClient.SqlStatementClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
 
         // Act + Assert
         await Assert.ThrowsAsync<DatabricksSqlException>(() =>
@@ -130,7 +130,7 @@ public class CalculationResultClientTests
         databricksSqlResponseParserMock.Setup(p => p.Parse(It.IsAny<string>()))
             .Returns(_succeededDatabricksSqlResponse);
 
-        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
+        var sut = new CalculationResults.Infrastructure.CalculationResultClient.SqlStatementClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
 
         // Act
         var actual = await sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null);
@@ -156,7 +156,7 @@ public class CalculationResultClientTests
         databricksSqlResponseParserMock.SetupSequence(p => p.Parse(It.IsAny<string>()))
             .Returns(_pendingDatabricksSqlResponse).Returns(_succeededDatabricksSqlResponse);
 
-        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
+        var sut = new CalculationResults.Infrastructure.CalculationResultClient.SqlStatementClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
 
         // Act
         var actual = await sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null);
@@ -182,7 +182,7 @@ public class CalculationResultClientTests
         databricksSqlResponseParserMock.SetupSequence(p => p.Parse(It.IsAny<string>()))
             .Returns(_cancelledDatabricksSqlResponse).Returns(_succeededDatabricksSqlResponse);
 
-        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
+        var sut = new CalculationResults.Infrastructure.CalculationResultClient.SqlStatementClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
 
         // Act
         var actual = await sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null);
@@ -208,7 +208,7 @@ public class CalculationResultClientTests
         databricksSqlResponseParserMock.Setup(p => p.Parse(It.IsAny<string>()))
             .Returns(_succeededDatabricksSqlResponse);
 
-        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
+        var sut = new CalculationResults.Infrastructure.CalculationResultClient.SqlStatementClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
 
         // Act
         var actual = await sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null);
@@ -232,7 +232,7 @@ public class CalculationResultClientTests
             .Setup<Task<HttpResponseMessage>>("SendAsync", IsAny<HttpRequestMessage>(), IsAny<CancellationToken>())
             .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.OK, Content = GetValidHttpResponseContent(), });
         var httpClient = new HttpClient(mockMessageHandler.Object);
-        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient, mockOptions.Object, new DatabricksSqlResponseParser()); // here we use the real parser
+        var sut = new CalculationResults.Infrastructure.CalculationResultClient.SqlStatementClient(httpClient, mockOptions.Object, new DatabricksSqlResponseParser()); // here we use the real parser
 
         // Act
         var actual = await sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null);
@@ -259,7 +259,7 @@ public class CalculationResultClientTests
         var httpClient = new HttpClient(mockMessageHandler.Object);
         databricksSqlResponseParserMock.Setup(p => p.Parse(It.IsAny<string>()))
             .Returns(_succeededDatabricksSqlResponseWithZeroRows);
-        var sut = new CalculationResults.Infrastructure.CalculationResultClient.CalculationResultClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
+        var sut = new CalculationResults.Infrastructure.CalculationResultClient.SqlStatementClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
 
         // Act
         var actual = await sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null);
