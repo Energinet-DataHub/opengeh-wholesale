@@ -16,9 +16,9 @@ using BatchDto = Energinet.DataHub.Wholesale.WebApi.V3.Batch.BatchDto;
 
 namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 
-public class ProcessStepResultFactory
+public static class ProcessStepResultFactory
 {
-    public ProcessStepResultDto Create(CalculationResults.Interfaces.ProcessStep.Model.ProcessStepResultDto stepResult, BatchDto batch)
+    public static ProcessStepResultDto Create(CalculationResults.Interfaces.ProcessStep.Model.ProcessStepResultDto stepResult, BatchDto batch)
     {
         return new ProcessStepResultDto(
             stepResult.Sum,
