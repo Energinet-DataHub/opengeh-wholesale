@@ -17,7 +17,7 @@ using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
-using Energinet.DataHub.Wholesale.Components.DatabricksClient;
+using Energinet.DataHub.Wholesale.Common.DatabricksClient;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.Components;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.Database;

@@ -17,17 +17,17 @@ using System.Net.Http.Headers;
 using Microsoft.Azure.Databricks.Client;
 using Microsoft.Extensions.Options;
 
-namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient
+namespace Energinet.DataHub.Wholesale.Common.DatabricksClient
 {
     /// <summary>
-    /// A databricks client based on the Microsoft.Azure.DatabricksClient, which is using Job API 2.0.
+    /// A databricks client based on the Microsoft.Azure.JobsApiClient, which is using Job API 2.0.
     /// The client is extended with a method for reading jobs created using Python Wheels, using Job API 2.1.
     /// Because the Job API 2.0 does not support reading python wheel settings.
     /// Which is used when we run new jobs and need to know the existing parameters of the job.
     /// The code is based on https://github.com/Azure/azure-databricks-client and can be replaced by the official
     /// package when support for Job API 2.1 is added.
     /// </summary>
-    public class DatabricksWheelClient : IDisposable, IDatabricksWheelClient
+    public sealed class JobsApiClient : IDisposable, IJobsApiClient
     {
         private readonly HttpClient _httpClient;
 
@@ -36,12 +36,12 @@ namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWhee
         /// </summary>
         /// <param name="optionsFactory">The databricks settings (options).</param>
         /// <param name="timeoutSeconds">Web request time out in seconds</param>
-        public DatabricksWheelClient(IOptions<DatabricksOptions> optionsFactory, long timeoutSeconds = 30)
+        public JobsApiClient(IOptions<DatabricksOptions> optionsFactory, long timeoutSeconds = 30)
         {
             var options = optionsFactory.Value;
-            var apiUrl = new Uri(new Uri(options.DATABRICKS_WORKSPACE_URL), $"api/");
+            var apiUrl = new Uri(new Uri(options.DATABRICKS_WORKSPACE_URL), "api/");
             _httpClient = CreateHttpClient(options.DATABRICKS_WORKSPACE_TOKEN, timeoutSeconds, apiUrl);
-            Jobs = new JobsApiClient(_httpClient);
+            Jobs = new Microsoft.Azure.Databricks.Client.JobsApiClient(_httpClient);
         }
 
         private static HttpClient CreateHttpClient(string token, long timeoutSeconds, Uri apiUrl)
@@ -63,7 +63,7 @@ namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWhee
             return httpClient;
         }
 
-        public virtual IJobsApi Jobs { get; }
+        public IJobsApi Jobs { get; }
 
         public void Dispose()
         {
@@ -71,7 +71,7 @@ namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWhee
             GC.SuppressFinalize(this);
         }
 
-        protected virtual void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (disposing)
             {

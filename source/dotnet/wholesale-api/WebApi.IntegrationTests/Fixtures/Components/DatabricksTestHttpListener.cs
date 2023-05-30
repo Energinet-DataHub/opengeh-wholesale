@@ -14,7 +14,6 @@
 
 using System.Net;
 using System.Text;
-using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
 using Microsoft.Azure.Databricks.Client;
 using Microsoft.Azure.Databricks.Client.Models;
 using Newtonsoft.Json;

@@ -14,8 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Batches.Application;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
-using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
-using Microsoft.Azure.Databricks.Client;
+using Energinet.DataHub.Wholesale.Common.DatabricksClient;
 using Microsoft.Azure.Databricks.Client.Models;
 
 namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
@@ -23,16 +22,16 @@ namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
 public sealed class CalculationEngineClient : ICalculationEngineClient
 {
     private readonly IDatabricksCalculatorJobSelector _databricksCalculatorJobSelector;
-    private readonly IDatabricksWheelClient _wheelClient;
+    private readonly IJobsApiClient _client;
     private readonly ICalculationParametersFactory _calculationParametersFactory;
 
     public CalculationEngineClient(
         IDatabricksCalculatorJobSelector databricksCalculatorJobSelector,
-        IDatabricksWheelClient wheelClient,
+        IJobsApiClient client,
         ICalculationParametersFactory calculationParametersFactory)
     {
         _databricksCalculatorJobSelector = databricksCalculatorJobSelector;
-        _wheelClient = wheelClient;
+        _client = client;
         _calculationParametersFactory = calculationParametersFactory;
     }
 
@@ -44,7 +43,7 @@ public sealed class CalculationEngineClient : ICalculationEngineClient
             .GetAsync()
             .ConfigureAwait(false);
 
-        var runId = await _wheelClient
+        var runId = await _client
             .Jobs
             .RunNow(calculatorJob.JobId, runParameters)
             .ConfigureAwait(false);
@@ -54,7 +53,7 @@ public sealed class CalculationEngineClient : ICalculationEngineClient
 
     public async Task<CalculationState> GetStatusAsync(CalculationId calculationId)
     {
-        var runState = await _wheelClient
+        var runState = await _client
             .Jobs
             .RunsGet(calculationId.Id)
             .ConfigureAwait(false);
