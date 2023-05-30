@@ -16,6 +16,8 @@ using System.Net;
 using System.Net.Http.Json;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ActorClient;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ActorClient.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
@@ -58,7 +60,7 @@ public class ProcessStepBalanceResponsiblePartyTests : WebApiTestBase
     [Theory]
     [InlineAutoMoqData]
     public async Task HTTP_GET_V3_ReturnsExpectedActorInJson(
-        Mock<IActorRepository> applicationServiceMock,
+        Mock<IActorClient> applicationServiceMock,
         Guid batchId,
         string gridAreaCode,
         TimeSeriesType timeSeriesType,

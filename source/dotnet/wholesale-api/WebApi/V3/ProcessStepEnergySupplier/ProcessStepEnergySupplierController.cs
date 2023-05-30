@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ActorClient;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,11 +25,11 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepEnergySupplier;
 [Route("/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}/energy-suppliers")]
 public class ProcessStepEnergySupplierController : V3ControllerBase
 {
-    private readonly IActorRepository _actorRepository;
+    private readonly IActorClient _actorClient;
 
-    public ProcessStepEnergySupplierController(IActorRepository actorRepository)
+    public ProcessStepEnergySupplierController(IActorClient actorClient)
     {
-        _actorRepository = actorRepository;
+        _actorClient = actorClient;
     }
 
     /// <summary>
@@ -49,7 +50,7 @@ public class ProcessStepEnergySupplierController : V3ControllerBase
     /// </summary>
     private async Task<List<ActorDto>> GetAllAsync(Guid batchId, string gridAreaCode, TimeSeriesType timeSeriesType)
     {
-        var actors = await _actorRepository.GetEnergySuppliersAsync(batchId, gridAreaCode, timeSeriesType).ConfigureAwait(false);
+        var actors = await _actorClient.GetEnergySuppliersAsync(batchId, gridAreaCode, timeSeriesType).ConfigureAwait(false);
 
         return actors
             .Select(a => new ActorDto(a.Gln))
@@ -61,7 +62,7 @@ public class ProcessStepEnergySupplierController : V3ControllerBase
     /// </summary>
     private async Task<List<ActorDto>> GetByBalanceResponsiblePartyAsync(Guid batchId, string gridAreaCode, TimeSeriesType timeSeriesType, string balanceResponsibleParty)
     {
-        var actors = await _actorRepository.GetEnergySuppliersByBalanceResponsiblePartyAsync(batchId, gridAreaCode, timeSeriesType, balanceResponsibleParty).ConfigureAwait(false);
+        var actors = await _actorClient.GetEnergySuppliersByBalanceResponsiblePartyAsync(batchId, gridAreaCode, timeSeriesType, balanceResponsibleParty).ConfigureAwait(false);
 
         return actors
             .Select(a => new ActorDto(a.Gln))

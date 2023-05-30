@@ -15,6 +15,7 @@
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ActorClient;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
 using Energinet.DataHub.Wholesale.Common.Security;
 using Microsoft.AspNetCore.Authorization;
@@ -62,7 +63,7 @@ public class WebApiFactory : WebApplicationFactory<Startup>
             services.AddScoped(_ =>
                 ProcessStepResultRepositoryMock?.Object ?? new Mock<IProcessStepResultRepository>().Object);
             services.AddScoped(_ =>
-                ActorRepositoryMock?.Object ?? new Mock<IActorRepository>().Object);
+                ActorRepositoryMock?.Object ?? new Mock<IActorClient>().Object);
             services.AddScoped(_ => BatchApplicationServiceMock?.Object ?? new Mock<IBatchApplicationService>().Object);
 
             var defaultUserContext = new Mock<IUserContext<FrontendUser>>();
@@ -79,7 +80,7 @@ public class WebApiFactory : WebApplicationFactory<Startup>
 
     public Mock<IProcessStepResultRepository>? ProcessStepResultRepositoryMock { get; set; }
 
-    public Mock<IActorRepository>? ActorRepositoryMock { get; set; }
+    public Mock<IActorClient>? ActorRepositoryMock { get; set; }
 
     public Mock<IBatchApplicationService>? BatchApplicationServiceMock { get; set; }
 
