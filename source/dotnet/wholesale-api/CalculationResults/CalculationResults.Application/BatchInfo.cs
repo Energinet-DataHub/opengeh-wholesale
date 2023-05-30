@@ -14,7 +14,7 @@
 
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Application;
 
 public class BatchInfo
 {

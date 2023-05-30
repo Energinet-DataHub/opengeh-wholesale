@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
 /// <summary>
-/// Time series point.
-/// Immutable value object.
+/// Defines metering point type
 /// </summary>
-/// <param name="Time"></param>
-/// <param name="Quantity">In kWh.</param>
-/// <param name="Quality"></param>
-public sealed record TimeSeriesPoint(DateTimeOffset Time, decimal Quantity, QuantityQuality Quality);
+public enum MeteringPointType
+{
+    Consumption = 0,
+    Production = 1,
+    Exchange = 2,
+}
