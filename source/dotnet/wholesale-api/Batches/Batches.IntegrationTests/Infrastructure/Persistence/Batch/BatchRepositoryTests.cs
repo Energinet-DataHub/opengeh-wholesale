@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Application.BatchAggregate;
-using Energinet.DataHub.Wholesale.Batches.Application.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Batches.Application.Model;
+using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.Batches.IntegrationTests.Fixture.Database;
@@ -199,7 +199,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture<Datab
         await using var writeContext = _databaseManager.CreateDbContext();
 
         var period = Periods.January_EuropeCopenhagen_Instant;
-        var batch = new Application.BatchAggregate.Batch(
+        var batch = new Application.Model.Batches.Batch(
             SystemClock.Instance.GetCurrentInstant(),
             ProcessType.BalanceFixing,
             new List<GridAreaCode> { new("004") },
@@ -229,15 +229,15 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture<Datab
             actual.Should().NotContain(batch);
     }
 
-    private static Application.BatchAggregate.Batch CreateBatch(List<GridAreaCode> someGridAreasIds)
+    private static Application.Model.Batches.Batch CreateBatch(List<GridAreaCode> someGridAreasIds)
     {
         return CreateBatch(ProcessType.BalanceFixing, someGridAreasIds);
     }
 
-    private static Application.BatchAggregate.Batch CreateBatch(ProcessType processType, List<GridAreaCode> someGridAreasIds)
+    private static Application.Model.Batches.Batch CreateBatch(ProcessType processType, List<GridAreaCode> someGridAreasIds)
     {
         var period = Periods.January_EuropeCopenhagen_Instant;
-        return new Application.BatchAggregate.Batch(
+        return new Application.Model.Batches.Batch(
             SystemClock.Instance.GetCurrentInstant(),
             processType,
             someGridAreasIds,
