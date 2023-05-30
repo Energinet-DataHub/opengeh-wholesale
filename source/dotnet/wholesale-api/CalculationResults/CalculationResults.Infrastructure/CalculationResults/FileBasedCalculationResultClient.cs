@@ -13,16 +13,15 @@
 // limitations under the License.
 
 using System.Globalization;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResultClient.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineSerializer;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Processes;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 
-public class CalculationResultClient : ICalculationResultClient
+public class FileBasedCalculationResultClient : ICalculationResultClient
 {
     private const string EnergySupplierBalanceResponsiblePartyGridArea = "es_brp_ga";
     private const string EnergySupplierGridArea = "es_ga";
@@ -31,7 +30,7 @@ public class CalculationResultClient : ICalculationResultClient
     private readonly IDataLakeClient _dataLakeClient;
     private readonly IJsonNewlineSerializer _jsonNewlineSerializer;
 
-    public CalculationResultClient(
+    public FileBasedCalculationResultClient(
         IDataLakeClient dataLakeClient,
         IJsonNewlineSerializer jsonNewlineSerializer)
     {
@@ -59,16 +58,16 @@ public class CalculationResultClient : ICalculationResultClient
     }
 
     public static string GetDirectoryForBrpGridArea(Guid batchId, string gridAreaCode, TimeSeriesType timeSeriesType, string balanceResponsiblePartyGln)
-        => $"calculation-output/batch_id={batchId}/result/grouping={BalanceResponsiblePartyGridArea}/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/grid_area={gridAreaCode}/gln={balanceResponsiblePartyGln}/";
+        => $"calculation-output/batch_id={batchId}/result/grouping={BalanceResponsiblePartyGridArea}/time_series_type={TimeSeriesTypeMapper.ToDeltaTableValue(timeSeriesType)}/grid_area={gridAreaCode}/gln={balanceResponsiblePartyGln}/";
 
     public static string GetDirectoryForEsGridArea(Guid batchId, string gridAreaCode, TimeSeriesType timeSeriesType, string energySupplierGln)
-        => $"calculation-output/batch_id={batchId}/result/grouping={EnergySupplierGridArea}/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/grid_area={gridAreaCode}/gln={energySupplierGln}/";
+        => $"calculation-output/batch_id={batchId}/result/grouping={EnergySupplierGridArea}/time_series_type={TimeSeriesTypeMapper.ToDeltaTableValue(timeSeriesType)}/grid_area={gridAreaCode}/gln={energySupplierGln}/";
 
     public static string GetDirectoryForTotalGridArea(Guid batchId, string gridAreaCode, TimeSeriesType timeSeriesType)
-        => $"calculation-output/batch_id={batchId}/result/grouping={TotalGridArea}/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/grid_area={gridAreaCode}/";
+        => $"calculation-output/batch_id={batchId}/result/grouping={TotalGridArea}/time_series_type={TimeSeriesTypeMapper.ToDeltaTableValue(timeSeriesType)}/grid_area={gridAreaCode}/";
 
     public static string GetDirectoryForEsBrpGridArea(Guid batchId, string gridAreaCode, TimeSeriesType timeSeriesType, string balanceResponsiblePartyGln, string energySupplierGln)
-        => $"calculation-output/batch_id={batchId}/result/grouping={EnergySupplierBalanceResponsiblePartyGridArea}/time_series_type={TimeSeriesTypeMapper.Map(timeSeriesType)}/grid_area={gridAreaCode}/balance_responsible_party_gln={balanceResponsiblePartyGln}/energy_supplier_gln={energySupplierGln}/";
+        => $"calculation-output/batch_id={batchId}/result/grouping={EnergySupplierBalanceResponsiblePartyGridArea}/time_series_type={TimeSeriesTypeMapper.ToDeltaTableValue(timeSeriesType)}/grid_area={gridAreaCode}/balance_responsible_party_gln={balanceResponsiblePartyGln}/energy_supplier_gln={energySupplierGln}/";
 
     private async Task<ProcessStepResult> GetResultAsync(string directory, TimeSeriesType timeSeriesType)
     {
