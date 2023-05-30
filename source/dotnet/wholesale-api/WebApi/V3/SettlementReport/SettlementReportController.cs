@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.ComponentModel.DataAnnotations;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 using Microsoft.AspNetCore.Mvc;
