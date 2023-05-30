@@ -36,13 +36,13 @@ public static class CalculationResultsRegistration
         this IServiceCollection serviceCollection)
     {
         serviceCollection.AddScoped<ISettlementReportClient, SettlementReportClient>();
-        serviceCollection.AddHttpClient<ICalculationResultClient>();
-        serviceCollection.AddScoped<ICalculationResultClient, CalculationResultClient>();
+        serviceCollection.AddHttpClient<ISqlStatementClient>();
+        serviceCollection.AddScoped<ISqlStatementClient, SqlStatementClient>();
         serviceCollection.AddScoped<ISettlementReportResultsCsvWriter, SettlementReportResultsCsvWriter>();
         serviceCollection.AddScoped<IDatabricksSqlResponseParser, DatabricksSqlResponseParser>();
         serviceCollection.AddScoped<IDataLakeClient, DataLakeClient>();
         serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
-        serviceCollection.AddScoped<IProcessStepResultRepository, ProcessStepResultRepository>();
+        serviceCollection.AddScoped<ICalculationResultClient, CalculationResultClient>();
         serviceCollection.AddScoped<IActorClient, ActorClient>();
         serviceCollection.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
         serviceCollection.AddScoped<ISettlementReportRepository>(

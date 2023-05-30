@@ -17,6 +17,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Actors;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Actors.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application;
@@ -36,7 +37,7 @@ public class ProcessApplicationServiceTest
     public async Task
         PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForTotalGridAreaProductionOnce(
             [Frozen] Mock<IActorClient> actorRepositoryMock,
-            [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
+            [Frozen] Mock<ICalculationResultClient> processStepResultRepositoryMock,
             [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
             [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
             [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
@@ -87,7 +88,7 @@ public class ProcessApplicationServiceTest
     public async Task
         PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForTotalGridAreaNonProfiledConsumptionOnce(
             [Frozen] Mock<IActorClient> actorRepositoryMock,
-            [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
+            [Frozen] Mock<ICalculationResultClient> processStepResultRepositoryMock,
             [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
             [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
             [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
@@ -137,7 +138,7 @@ public class ProcessApplicationServiceTest
     [InlineAutoMoqData]
     public async Task PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForEnergySupplier(
         [Frozen] Mock<IActorClient> actorRepositoryMock,
-        [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
+        [Frozen] Mock<ICalculationResultClient> processStepResultRepositoryMock,
         [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
@@ -190,7 +191,7 @@ public class ProcessApplicationServiceTest
     public async Task
         PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForBalanceResponsibleParty(
             [Frozen] Mock<IActorClient> actorRepositoryMock,
-            [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
+            [Frozen] Mock<ICalculationResultClient> processStepResultRepositoryMock,
             [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
             [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
             [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
@@ -240,7 +241,7 @@ public class ProcessApplicationServiceTest
     public async Task
         PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForEnergySupplierByBalanceResponsibleParty(
             [Frozen] Mock<IActorClient> actorRepositoryMock,
-            [Frozen] Mock<IProcessStepResultRepository> processStepResultRepositoryMock,
+            [Frozen] Mock<ICalculationResultClient> processStepResultRepositoryMock,
             [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
             [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
             [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,

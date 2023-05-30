@@ -13,16 +13,16 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.Common.Models;
+using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Application;
 
-// TODO JMG: To be replaced by ICalculationResultClient when it's ready
-public interface IProcessStepResultRepository
-{
-    Task<ProcessStepResult> GetAsync(
-        Guid batchId,
-        string gridAreaCode,
-        TimeSeriesType timeSeriesType,
-        string? energySupplierGln,
-        string? balanceResponsiblePartyGln);
-}
+public sealed record SettlementReportResultRow(
+    string GridArea,
+    ProcessType ProcessType,
+    Instant Time,
+    string Resolution,
+    MeteringPointType MeteringPointType,
+    SettlementMethod? SettlementMethod,
+    decimal Quantity);

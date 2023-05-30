@@ -27,18 +27,18 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementR
 public class SettlementReportClient : ISettlementReportClient
 {
     private readonly IBatchApplicationService _batchRepository;
-    private readonly ICalculationResultClient _calculationResultClient;
+    private readonly ISqlStatementClient _sqlStatementClient;
     private readonly ISettlementReportResultsCsvWriter _settlementReportResultsCsvWriter;
     private readonly ISettlementReportRepository _settlementReportRepository;
 
     public SettlementReportClient(
         IBatchApplicationService batchRepository,
-        ICalculationResultClient calculationResultClient,
+        ISqlStatementClient sqlStatementClient,
         ISettlementReportResultsCsvWriter settlementReportResultsCsvWriter,
         ISettlementReportRepository settlementReportRepository)
     {
         _batchRepository = batchRepository;
-        _calculationResultClient = calculationResultClient;
+        _sqlStatementClient = sqlStatementClient;
         _settlementReportResultsCsvWriter = settlementReportResultsCsvWriter;
         _settlementReportRepository = settlementReportRepository;
     }
@@ -62,7 +62,7 @@ public class SettlementReportClient : ISettlementReportClient
         if (processType == ProcessType.Aggregation)
             throw new BusinessValidationException($"{ProcessType.Aggregation} is not a valid process type for settlement reports.");
 
-        var resultRows = await _calculationResultClient
+        var resultRows = await _sqlStatementClient
             .GetSettlementReportResultAsync(
                 gridAreaCodes,
                 processType,
