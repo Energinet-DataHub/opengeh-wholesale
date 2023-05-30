@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.Model;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
-/// <summary>
-/// Defines the settlement method
-/// </summary>
-public enum SettlementMethod
+public enum QuantityQuality
 {
-    Flex = 0,
-    NonProfiled = 1,
+    Missing,
+    Estimated,
+    Measured,
+    Incomplete,
+    Calculated,
 }

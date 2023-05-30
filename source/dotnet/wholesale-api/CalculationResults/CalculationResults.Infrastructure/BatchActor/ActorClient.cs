@@ -16,10 +16,9 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineSerializer;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ActorClient;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ActorClient.Model;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Actors;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Actors.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.BatchActor;
 

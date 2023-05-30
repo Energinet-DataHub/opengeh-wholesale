@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using BatchDto = Energinet.DataHub.Wholesale.WebApi.V3.Batch.BatchDto;
 
 namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 
 public static class ProcessStepResultFactory
 {
-    public static ProcessStepResultDto Create(CalculationResults.Interfaces.CalculationResultClient.Model.ProcessStepResult stepResult, BatchDto batch)
+    public static ProcessStepResultDto Create(CalculationResults.Interfaces.CalculationResults.Model.ProcessStepResult stepResult, BatchDto batch)
     {
         return new ProcessStepResultDto(
             stepResult.Sum,

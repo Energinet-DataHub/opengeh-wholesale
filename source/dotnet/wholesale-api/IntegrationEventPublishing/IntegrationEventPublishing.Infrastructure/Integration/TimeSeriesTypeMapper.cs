@@ -18,13 +18,13 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.
 
 public static class TimeSeriesTypeMapper
 {
-    public static TimeSeriesType MapTimeSeriesType(CalculationResults.Interfaces.CalculationResultClient.Model.TimeSeriesType timeSeriesType)
+    public static TimeSeriesType MapTimeSeriesType(CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType timeSeriesType)
     {
         return timeSeriesType switch
         {
-            CalculationResults.Interfaces.CalculationResultClient.Model.TimeSeriesType.Production => TimeSeriesType.Production,
-            CalculationResults.Interfaces.CalculationResultClient.Model.TimeSeriesType.FlexConsumption => TimeSeriesType.FlexConsumption,
-            CalculationResults.Interfaces.CalculationResultClient.Model.TimeSeriesType.NonProfiledConsumption => TimeSeriesType
+            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.Production => TimeSeriesType.Production,
+            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.FlexConsumption => TimeSeriesType.FlexConsumption,
+            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.NonProfiledConsumption => TimeSeriesType
                 .NonProfiledConsumption,
             _ => throw new ArgumentException($"No matching 'TimeSeriesType' for: {timeSeriesType.ToString()}"),
         };

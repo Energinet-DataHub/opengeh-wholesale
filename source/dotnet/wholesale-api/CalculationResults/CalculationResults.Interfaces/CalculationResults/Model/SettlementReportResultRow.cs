@@ -15,7 +15,7 @@
 using Energinet.DataHub.Wholesale.Common.Models;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.Model;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
 public sealed record SettlementReportResultRow(
     string GridArea,

@@ -13,8 +13,7 @@
 // limitations under the License.
 
 using System.Globalization;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application;
 

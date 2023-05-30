@@ -16,7 +16,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Integration;
 using FluentAssertions;
 using Xunit;
-using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.Model.QuantityQuality;
+using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
 
 namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.UnitTests.Integration;
 

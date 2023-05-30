@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure;
@@ -23,9 +22,9 @@ using Google.Protobuf.WellKnownTypes;
 using NodaTime;
 using Xunit;
 using ProcessType = Energinet.DataHub.Wholesale.Common.Models.ProcessType;
-using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.Model.QuantityQuality;
-using TimeSeriesPoint = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.Model.TimeSeriesPoint;
-using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.Model.TimeSeriesType;
+using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
+using TimeSeriesPoint = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesPoint;
+using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.UnitTests.Integration;
 

@@ -20,9 +20,10 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineS
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Processes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ActorClient;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Actors;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 

@@ -12,13 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.Model;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 
-public enum QuantityQuality
-{
-    Missing,
-    Estimated,
-    Measured,
-    Incomplete,
-    Calculated,
-}
+public record SettlementReportDto(Stream Stream);

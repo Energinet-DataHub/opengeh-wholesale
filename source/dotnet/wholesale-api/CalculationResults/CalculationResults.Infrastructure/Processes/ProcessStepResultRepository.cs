@@ -18,9 +18,8 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationR
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineSerializer;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.Model;
-using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.Model.TimeSeriesType;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Processes;
 
