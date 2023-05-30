@@ -28,9 +28,15 @@ namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.UnitTests.Appli
 
 public class PublishCalculationResultsHandlerTests
 {
+    /// <summary>
+    /// Publishing a batch includes
+    /// - update timestamp <see cref="CompletedBatch.PublishedTime"/>
+    /// - delegate to the <see cref="IProcessApplicationService"/> to do the actual publishing
+    /// - commit unit of work
+    /// </summary>
     [Theory]
     [InlineAutoMoqData]
-    public async Task Foo(
+    public async Task PublishCalculationResultsAsync_WhenMoreCompletedBatches_PublishedEach(
         CompletedBatch completedBatch1,
         CompletedBatch completedBatch2,
         [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
