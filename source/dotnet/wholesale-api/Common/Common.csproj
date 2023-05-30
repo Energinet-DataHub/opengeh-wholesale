@@ -14,17 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <AssemblyName>Energinet.DataHub.Wholesale.Common</AssemblyName>
     <RootNamespace>Energinet.DataHub.Wholesale.Common</RootNamespace>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="7.4.3" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+    <PackageReference Include="Microsoft.Azure.Databricks.Client" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
   </ItemGroup>
-  
   <ItemGroup>
     <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.5.22">
       <PrivateAssets>all</PrivateAssets>
@@ -33,5 +32,4 @@ limitations under the License.
     <PackageReference Include="Energinet.DataHub.Core.App.Common.Abstractions" Version="7.4.3" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
   </ItemGroup>
-
 </Project>

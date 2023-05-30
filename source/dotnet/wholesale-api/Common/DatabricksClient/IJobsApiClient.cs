@@ -14,9 +14,9 @@
 
 using Microsoft.Azure.Databricks.Client;
 
-namespace Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
+namespace Energinet.DataHub.Wholesale.Common.DatabricksClient;
 
-public interface IDatabricksWheelClient
+public interface IJobsApiClient
 {
     IJobsApi Jobs { get; }
 }

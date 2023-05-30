@@ -16,7 +16,7 @@ using Azure.Identity;
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.JsonSerialization;
-using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
+using Energinet.DataHub.Wholesale.Common.DatabricksClient;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Microsoft.EntityFrameworkCore;
@@ -61,7 +61,7 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddScoped<ICorrelationContext, CorrelationContext>();
         serviceCollection.AddScoped<IJsonSerializer, JsonSerializer>();
 
-        serviceCollection.AddSingleton<IDatabricksWheelClient, DatabricksWheelClient>();
+        serviceCollection.AddSingleton<IJobsApiClient, JobsApiClient>();
 
         serviceCollection.AddDateTimeConfiguration(configuration);
         serviceCollection.AddDataLakeFileSystemClient(configuration);
