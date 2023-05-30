@@ -27,16 +27,13 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 public class ProcessStepResultController : V3ControllerBase
 {
     private readonly IProcessStepApplicationService _processStepApplicationService;
-    private readonly IProcessStepResultFactory _processStepResultFactory;
     private readonly IBatchApplicationService _batchApplicationService;
 
     public ProcessStepResultController(
         IProcessStepApplicationService processStepApplicationService,
-        IProcessStepResultFactory processStepResultFactory,
         IBatchApplicationService batchApplicationService)
     {
         _processStepApplicationService = processStepApplicationService;
-        _processStepResultFactory = processStepResultFactory;
         _batchApplicationService = batchApplicationService;
     }
 
@@ -70,6 +67,6 @@ public class ProcessStepResultController : V3ControllerBase
 
         var batch = await _batchApplicationService.GetAsync(batchId).ConfigureAwait(false);
 
-        return _processStepResultFactory.Create(stepResult, BatchDtoMapper.Map(batch));
+        return ProcessStepResultFactory.Create(stepResult, BatchDtoMapper.Map(batch));
     }
 }

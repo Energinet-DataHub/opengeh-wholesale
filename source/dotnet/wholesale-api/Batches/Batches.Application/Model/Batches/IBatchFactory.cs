@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
+using Energinet.DataHub.Wholesale.Common.Models;
 
-namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
+namespace Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
 
-public interface IProcessStepResultFactory
+public interface IBatchFactory
 {
-    public ProcessStepResultDto Create(CalculationResults.Interfaces.ProcessStep.Model.ProcessStepResultDto stepResult, BatchDto batch);
+     Batch Create(ProcessType processType, IEnumerable<string> gridAreaCodes, DateTimeOffset startDate, DateTimeOffset endDate, Guid createdByUserId);
 }

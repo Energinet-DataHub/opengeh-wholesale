@@ -15,7 +15,7 @@
 using System.Text.RegularExpressions;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 
-namespace Energinet.DataHub.Wholesale.Batches.Application.GridAreaAggregate;
+namespace Energinet.DataHub.Wholesale.Batches.Application.Model;
 
 public sealed record GridAreaCode
 {
