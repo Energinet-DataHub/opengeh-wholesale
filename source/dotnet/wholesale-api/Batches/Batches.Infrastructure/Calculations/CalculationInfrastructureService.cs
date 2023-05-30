@@ -13,16 +13,16 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Batches.Application;
-using Energinet.DataHub.Wholesale.Batches.Application.BatchAggregate;
+using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
 
-namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationDomainService;
+namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
 
-public class CalculationDomainService : ICalculationDomainService
+public class CalculationInfrastructureService : ICalculationInfrastructureService
 {
     private readonly IBatchRepository _batchRepository;
     private readonly ICalculationEngineClient _calculationEngineClient;
 
-    public CalculationDomainService(
+    public CalculationInfrastructureService(
         IBatchRepository batchRepository,
         ICalculationEngineClient calculationEngineClient)
     {

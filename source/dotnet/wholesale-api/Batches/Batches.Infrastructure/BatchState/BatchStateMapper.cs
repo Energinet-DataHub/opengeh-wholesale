@@ -13,10 +13,9 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Batches.Application;
-using Energinet.DataHub.Wholesale.Batches.Application.BatchAggregate;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationDomainService;
+using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
 
-namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchExecutionStateDomainService;
+namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchState;
 
 public class BatchStateMapper
 {

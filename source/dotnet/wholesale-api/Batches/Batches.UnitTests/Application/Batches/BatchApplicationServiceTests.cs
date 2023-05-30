@@ -15,10 +15,8 @@
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Application;
-using Energinet.DataHub.Wholesale.Batches.Application.BatchAggregate;
-using Energinet.DataHub.Wholesale.Batches.Application.GridAreaAggregate;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchExecutionStateDomainService;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationDomainService;
+using Energinet.DataHub.Wholesale.Batches.Application.Model;
+using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchAggregate;
 using FluentAssertions;
@@ -36,7 +34,7 @@ public class BatchApplicationServiceTests
     public async Task StartCalculationAsync_ActivatesDomainServiceAndCommits(
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
-        [Frozen] Mock<ICalculationDomainService> calculationDomainServiceMock,
+        [Frozen] Mock<ICalculationInfrastructureService> calculationDomainServiceMock,
         BatchApplicationService sut)
     {
         // Arrange
@@ -60,7 +58,7 @@ public class BatchApplicationServiceTests
     [InlineAutoMoqData]
     public async Task UpdateExecutionStateAsync_ActivatesDomainServiceAndCommits(
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
-        [Frozen] Mock<IBatchExecutionStateDomainService> calculationDomainServiceMock,
+        [Frozen] Mock<IBatchExecutionStateInfrastructureService> calculationDomainServiceMock,
         BatchApplicationService sut)
     {
         // Arrange & Act

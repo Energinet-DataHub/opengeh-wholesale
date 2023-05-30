@@ -12,9 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Application.BatchAggregate;
-using Energinet.DataHub.Wholesale.Batches.Application.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Batches.Application.Model;
+using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using NodaTime;
@@ -25,21 +24,21 @@ public class BatchApplicationService : IBatchApplicationService
 {
     private readonly IBatchRepository _batchRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ICalculationDomainService _calculationDomainService;
-    private readonly IBatchExecutionStateDomainService _batchExecutionStateDomainService;
+    private readonly ICalculationInfrastructureService _calculationInfrastructureService;
+    private readonly IBatchExecutionStateInfrastructureService _batchExecutionStateInfrastructureService;
     private readonly IBatchDtoMapper _batchDtoMapper;
 
     public BatchApplicationService(
         IBatchRepository batchRepository,
         IUnitOfWork unitOfWork,
-        ICalculationDomainService calculationDomainService,
-        IBatchExecutionStateDomainService batchExecutionStateDomainService,
+        ICalculationInfrastructureService calculationInfrastructureService,
+        IBatchExecutionStateInfrastructureService batchExecutionStateInfrastructureService,
         IBatchDtoMapper batchDtoMapper)
     {
         _batchRepository = batchRepository;
         _unitOfWork = unitOfWork;
-        _calculationDomainService = calculationDomainService;
-        _batchExecutionStateDomainService = batchExecutionStateDomainService;
+        _calculationInfrastructureService = calculationInfrastructureService;
+        _batchExecutionStateInfrastructureService = batchExecutionStateInfrastructureService;
         _batchDtoMapper = batchDtoMapper;
     }
 
@@ -48,14 +47,14 @@ public class BatchApplicationService : IBatchApplicationService
         var batches = await _batchRepository.GetCreatedAsync().ConfigureAwait(false);
         foreach (var batch in batches)
         {
-            await _calculationDomainService.StartAsync(batch.Id).ConfigureAwait(false);
+            await _calculationInfrastructureService.StartAsync(batch.Id).ConfigureAwait(false);
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
         }
     }
 
     public async Task UpdateExecutionStateAsync()
     {
-        await _batchExecutionStateDomainService.UpdateExecutionStateAsync().ConfigureAwait(false);
+        await _batchExecutionStateInfrastructureService.UpdateExecutionStateAsync().ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
