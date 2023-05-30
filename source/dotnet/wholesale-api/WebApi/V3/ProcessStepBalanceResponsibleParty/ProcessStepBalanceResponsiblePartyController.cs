@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepBalanceResponsibleParty;
@@ -24,11 +24,11 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepBalanceResponsiblePar
 [Route("/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}/balance-responsible-parties")]
 public class ProcessStepBalanceResponsiblePartyController : V3ControllerBase
 {
-    private readonly IProcessStepApplicationService _processStepApplicationService;
+    private readonly IActorRepository _actorRepository;
 
-    public ProcessStepBalanceResponsiblePartyController(IProcessStepApplicationService processStepApplicationService)
+    public ProcessStepBalanceResponsiblePartyController(IActorRepository actorRepository)
     {
-        _processStepApplicationService = processStepApplicationService;
+        _actorRepository = actorRepository;
     }
 
     /// <summary>
@@ -41,7 +41,7 @@ public class ProcessStepBalanceResponsiblePartyController : V3ControllerBase
         [FromRoute] string gridAreaCode,
         [FromRoute] TimeSeriesType timeSeriesType)
     {
-        var balanceResponsibleParties = await _processStepApplicationService.GetBalanceResponsiblePartiesAsync(batchId, gridAreaCode, timeSeriesType).ConfigureAwait(false);
+        var balanceResponsibleParties = await _actorRepository.GetBalanceResponsiblePartiesAsync(batchId, gridAreaCode, timeSeriesType).ConfigureAwait(false);
 
         return balanceResponsibleParties
             .Select(a => new ActorDto(a.Gln))

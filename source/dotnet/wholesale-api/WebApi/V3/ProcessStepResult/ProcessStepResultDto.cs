@@ -12,9 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.ProcessStep.Model;
-using ProcessType = Energinet.DataHub.Wholesale.WebApi.V3.Batch.ProcessType;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient;
+using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 
 namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 
