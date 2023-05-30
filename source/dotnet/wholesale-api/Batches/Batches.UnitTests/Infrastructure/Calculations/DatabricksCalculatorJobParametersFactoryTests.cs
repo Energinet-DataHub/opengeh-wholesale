@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Batches.Application.BatchAggregate;
-using Energinet.DataHub.Wholesale.Batches.Application.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Batches.Application.Model;
+using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Common.Models;
 using FluentAssertions;
@@ -34,6 +34,7 @@ public class DatabricksCalculatorJobParametersFactoryTests
     {
         // Arrange
         var batch = new Batch(
+            SystemClock.Instance.GetCurrentInstant(),
             ProcessType.BalanceFixing,
             new List<GridAreaCode> { new("805"), new("806"), new("033") },
             DateTimeOffset.Parse("2022-05-31T22:00Z").ToInstant(),

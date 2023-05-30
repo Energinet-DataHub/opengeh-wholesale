@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Application;
-using Energinet.DataHub.Wholesale.Batches.Application.BatchAggregate;
+using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
 
-namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationDomainService;
+namespace Energinet.DataHub.Wholesale.Batches.Application;
 
-public interface ICalculationEngineClient
+public interface ICalculationInfrastructureService
 {
-    Task<CalculationId> StartAsync(Batch batch);
-
     Task<CalculationState> GetStatusAsync(CalculationId calculationId);
+
+    Task StartAsync(Guid batchId);
 }

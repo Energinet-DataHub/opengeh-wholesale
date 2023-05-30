@@ -24,7 +24,6 @@ using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Process
 using Moq;
 using NodaTime;
 using Xunit;
-using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResultClient.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.UnitTests.Processes;
 

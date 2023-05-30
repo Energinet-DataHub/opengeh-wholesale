@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces;
 
-// TODO: To be replaced by ICalculationResultClient when it's ready
+// TODO JMG: To be replaced by ICalculationResultClient when it's ready
 public interface IProcessStepResultRepository
 {
     Task<ProcessStepResult> GetAsync(

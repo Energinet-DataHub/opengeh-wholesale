@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Batches.Application.BatchAggregate;
-using Energinet.DataHub.Wholesale.Batches.Application.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Batches.Application.Model;
+using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.Common.Models;
 using FluentAssertions;
@@ -50,6 +50,7 @@ public class BatchTests
         // ReSharper disable once CollectionNeverUpdated.Local
         var emptyGridAreaCodes = new List<GridAreaCode>();
         var actual = Assert.Throws<BusinessValidationException>(() => new Batch(
+            SystemClock.Instance.GetCurrentInstant(),
             ProcessType.BalanceFixing,
             emptyGridAreaCodes,
             Instant.FromDateTimeOffset(DateTimeOffset.Now),
@@ -150,6 +151,7 @@ public class BatchTests
 
         // Act
         var actual = Assert.Throws<BusinessValidationException>(() => new Batch(
+            SystemClock.Instance.GetCurrentInstant(),
             ProcessType.BalanceFixing,
             new List<GridAreaCode> { gridAreaCode },
             Instant.MinValue,
@@ -174,6 +176,7 @@ public class BatchTests
 
         // Act
         var actual = Assert.Throws<BusinessValidationException>(() => new Batch(
+            SystemClock.Instance.GetCurrentInstant(),
             ProcessType.BalanceFixing,
             new List<GridAreaCode> { gridAreaCode },
             startPeriod,

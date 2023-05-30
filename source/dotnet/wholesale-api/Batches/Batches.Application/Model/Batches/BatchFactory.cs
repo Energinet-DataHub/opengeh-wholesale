@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Application.GridAreaAggregate;
 using Energinet.DataHub.Wholesale.Common.Models;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Batches.Application.BatchAggregate;
+namespace Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
 
 public class BatchFactory : IBatchFactory
 {
@@ -36,10 +35,12 @@ public class BatchFactory : IBatchFactory
         DateTimeOffset endDate,
         Guid createdByUserId)
     {
+        var createdTime = _clock.GetCurrentInstant();
         var gridAreas = gridAreaCodes.Select(c => new GridAreaCode(c)).ToList();
         var periodStart = Instant.FromDateTimeOffset(startDate);
         var periodEnd = Instant.FromDateTimeOffset(endDate);
-        var executionTimeStart = _clock.GetCurrentInstant();
-        return new Batch(processType, gridAreas, periodStart, periodEnd, executionTimeStart, _dateTimeZone, createdByUserId);
+        // As long as scheduling is not implemented, execution time start is the same as created time
+        var executionTimeStart = createdTime;
+        return new Batch(createdTime, processType, gridAreas, periodStart, periodEnd, executionTimeStart, _dateTimeZone, createdByUserId);
     }
 }

@@ -15,8 +15,9 @@
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Application;
-using Energinet.DataHub.Wholesale.Batches.Application.BatchAggregate;
-using Energinet.DataHub.Wholesale.Batches.Application.GridAreaAggregate;
+using Energinet.DataHub.Wholesale.Batches.Application.Model;
+using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
+using Energinet.DataHub.Wholesale.Batches.Application.UseCases;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.Common.Models;
 using FluentAssertions;
@@ -68,6 +69,7 @@ public class CreateBatchHandlerTests
     {
         var period = Periods.January_EuropeCopenhagen_Instant;
         return new Batch(
+            SystemClock.Instance.GetCurrentInstant(),
             ProcessType.BalanceFixing,
             command.GridAreaCodes.Select(x => new GridAreaCode(x)).ToList(),
             command.StartDate.ToInstant(),

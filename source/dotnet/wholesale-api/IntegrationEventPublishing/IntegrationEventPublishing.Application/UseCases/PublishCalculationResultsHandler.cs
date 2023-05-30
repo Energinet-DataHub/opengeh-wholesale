@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Processes;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Processes.Model;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.UseCases;
 
@@ -22,12 +23,14 @@ public class PublishCalculationResultsHandler : IPublishCalculationResultsHandle
     private readonly ICompletedBatchRepository _completedBatchRepository;
     private readonly IProcessApplicationService _processApplicationService;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IClock _clock;
 
-    public PublishCalculationResultsHandler(ICompletedBatchRepository completedBatchRepository, IProcessApplicationService processApplicationService, IUnitOfWork unitOfWork)
+    public PublishCalculationResultsHandler(ICompletedBatchRepository completedBatchRepository, IProcessApplicationService processApplicationService, IUnitOfWork unitOfWork, IClock clock)
     {
         _completedBatchRepository = completedBatchRepository;
         _processApplicationService = processApplicationService;
         _unitOfWork = unitOfWork;
+        _clock = clock;
     }
 
     public async Task PublishCalculationResultsAsync()
@@ -44,7 +47,7 @@ public class PublishCalculationResultsHandler : IPublishCalculationResultsHandle
                 await _processApplicationService.PublishCalculationResultCompletedIntegrationEventsAsync(@event).ConfigureAwait(false);
             }
 
-            batch.IsPublished = true;
+            batch.PublishedTime = _clock.GetCurrentInstant();
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
         }
         while (true);
