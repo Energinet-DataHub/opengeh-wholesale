@@ -14,10 +14,14 @@
 
 using System.Reflection;
 using System.Text.Json.Serialization;
+using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
+using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Wholesale.Common.Security;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Microsoft.AspNetCore.Mvc;
@@ -40,15 +44,7 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection serviceCollection)
     {
-        var connectionStringOptions = Configuration.GetSection(ConnectionStringsOptions.ConnectionStrings).Get<ConnectionStringsOptions>();
-        serviceCollection.AddBatchesModule(() => connectionStringOptions!.DB_CONNECTION_STRING);
-
-        serviceCollection.AddCalculationResultsModule();
-
-        var serviceBusOptions = Configuration.Get<ServiceBusOptions>()!;
-        serviceCollection.AddIntegrationEventPublishingModule(
-            serviceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING,
-            serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME);
+        serviceCollection.AddModules(Configuration);
 
         serviceCollection.AddControllers(options => options.Filters.Add<BusinessValidationExceptionFilter>()).AddJsonOptions(
             options => { options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()); });
@@ -103,11 +99,10 @@ public class Startup
         serviceCollection.AddOptions<DateTimeOptions>().Bind(Configuration);
         serviceCollection.AddOptions<DataLakeOptions>().Bind(Configuration);
 
-        serviceCollection.AddJwtTokenSecurity(Configuration);
-        serviceCollection.AddHealthCheck(Configuration);
-        serviceCollection.AddCommandStack(Configuration);
+        AddJwtTokenSecurity(serviceCollection);
+        AddHealthCheck(serviceCollection);
         serviceCollection.AddApplicationInsightsTelemetry();
-        serviceCollection.AddCorrelationContext();
+        AddCorrelationContext(serviceCollection);
 
         serviceCollection.AddUserAuthentication<FrontendUser, FrontendUserProvider>();
     }
@@ -152,6 +147,47 @@ public class Startup
             // Health check
             endpoints.MapLiveHealthChecks();
             endpoints.MapReadyHealthChecks();
+        });
+    }
+
+    /// <summary>
+    /// Adds registrations of JwtTokenMiddleware and corresponding dependencies.
+    /// </summary>
+    private void AddJwtTokenSecurity(IServiceCollection serviceCollection)
+    {
+        var options = Configuration.Get<JwtOptions>()!;
+        serviceCollection.AddJwtBearerAuthentication(options.EXTERNAL_OPEN_ID_URL, options.INTERNAL_OPEN_ID_URL, options.BACKEND_BFF_APP_ID);
+        serviceCollection.AddPermissionAuthorization();
+    }
+
+    private void AddHealthCheck(IServiceCollection serviceCollection)
+    {
+        var serviceBusOptions = Configuration.Get<ServiceBusOptions>()!;
+        var dataLakeOptions = Configuration.Get<DataLakeOptions>()!;
+        serviceCollection.AddHealthChecks()
+            .AddLiveCheck()
+            .AddDbContextCheck<IntegrationEventPublishingDatabaseContext>(name: "SqlDatabaseContextCheck")
+            .AddDataLakeContainerCheck(dataLakeOptions.STORAGE_ACCOUNT_URI, dataLakeOptions.STORAGE_CONTAINER_NAME)
+            .AddAzureServiceBusTopic(
+                serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
+                serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
+                name: "IntegrationEventsTopicExists");
+    }
+
+    /// <summary>
+    /// The middleware to handle properly set a CorrelationContext is only supported for Functions.
+    /// This registry will ensure a new CorrelationContext (with a new Id) is set for each session
+    /// </summary>
+    private static void AddCorrelationContext(IServiceCollection serviceCollection)
+    {
+        var serviceDescriptor =
+            serviceCollection.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(ICorrelationContext));
+        serviceCollection.Remove(serviceDescriptor!);
+        serviceCollection.AddScoped<ICorrelationContext>(_ =>
+        {
+            var correlationContext = new CorrelationContext();
+            correlationContext.SetId(Guid.NewGuid().ToString());
+            return correlationContext;
         });
     }
 }

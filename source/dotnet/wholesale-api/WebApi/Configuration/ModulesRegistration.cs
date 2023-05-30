@@ -14,15 +14,11 @@
 
 using Azure.Identity;
 using Azure.Storage.Files.DataLake;
-using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
-using Energinet.DataHub.Core.App.WebApp.Authentication;
-using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Components.DatabricksClient.DatabricksWheelClient;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
-using Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 
@@ -30,17 +26,25 @@ namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 
 internal static class ServiceCollectionExtensions
 {
-    /// <summary>
-    /// Adds registrations of JwtTokenMiddleware and corresponding dependencies.
-    /// </summary>
-    public static void AddJwtTokenSecurity(this IServiceCollection serviceCollection, IConfiguration configuration)
+    public static void AddModules(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
-        var options = configuration.Get<JwtOptions>()!;
-        serviceCollection.AddJwtBearerAuthentication(options.EXTERNAL_OPEN_ID_URL, options.INTERNAL_OPEN_ID_URL, options.BACKEND_BFF_APP_ID);
-        serviceCollection.AddPermissionAuthorization();
+        // Add modules
+        var connectionStringOptions = configuration.GetSection(ConnectionStringsOptions.ConnectionStrings)
+            .Get<ConnectionStringsOptions>();
+        serviceCollection.AddBatchesModule(() => connectionStringOptions!.DB_CONNECTION_STRING);
+
+        serviceCollection.AddCalculationResultsModule();
+
+        var serviceBusOptions = configuration.Get<ServiceBusOptions>()!;
+        serviceCollection.AddIntegrationEventPublishingModule(
+            serviceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING,
+            serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME);
+
+        // Add registration that are used by more than one module
+        serviceCollection.AddShared(configuration);
     }
 
-    public static void AddCommandStack(this IServiceCollection serviceCollection, IConfiguration configuration)
+    private static void AddShared(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         serviceCollection.AddDbContext<IntegrationEventPublishingDatabaseContext>(
             options => options.UseSqlServer(
@@ -56,43 +60,11 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddScoped<IClock>(_ => SystemClock.Instance);
         serviceCollection.AddScoped<ICorrelationContext, CorrelationContext>();
         serviceCollection.AddScoped<IJsonSerializer, JsonSerializer>();
-        serviceCollection.AddScoped<IProcessStepResultFactory, ProcessStepResultFactory>();
 
         serviceCollection.AddSingleton<IDatabricksWheelClient, DatabricksWheelClient>();
 
         serviceCollection.AddDateTimeConfiguration(configuration);
         serviceCollection.AddDataLakeFileSystemClient(configuration);
-    }
-
-    public static void AddHealthCheck(this IServiceCollection serviceCollection, IConfiguration configuration)
-    {
-        var serviceBusOptions = configuration.Get<ServiceBusOptions>()!;
-        var dataLakeOptions = configuration.Get<DataLakeOptions>()!;
-        serviceCollection.AddHealthChecks()
-            .AddLiveCheck()
-            .AddDbContextCheck<IntegrationEventPublishingDatabaseContext>(name: "SqlDatabaseContextCheck")
-            .AddDataLakeContainerCheck(dataLakeOptions.STORAGE_ACCOUNT_URI, dataLakeOptions.STORAGE_CONTAINER_NAME)
-            .AddAzureServiceBusTopic(
-                serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
-                serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
-                name: "IntegrationEventsTopicExists");
-    }
-
-    /// <summary>
-    /// The middleware to handle properly set a CorrelationContext is only supported for Functions.
-    /// This registry will ensure a new CorrelationContext (with a new Id) is set for each session
-    /// </summary>
-    public static void AddCorrelationContext(this IServiceCollection serviceCollection)
-    {
-        var serviceDescriptor =
-            serviceCollection.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(ICorrelationContext));
-        serviceCollection.Remove(serviceDescriptor!);
-        serviceCollection.AddScoped<ICorrelationContext>(_ =>
-        {
-            var correlationContext = new CorrelationContext();
-            correlationContext.SetId(Guid.NewGuid().ToString());
-            return correlationContext;
-        });
     }
 
     private static void AddDataLakeFileSystemClient(this IServiceCollection serviceCollection, IConfiguration configuration)
