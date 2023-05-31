@@ -27,13 +27,13 @@ using Xunit.Categories;
 namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Application.Batches;
 
 [UnitTest]
-public class BatchApplicationServiceTests
+public class SearchBatchHandlerTests
 {
     [Theory]
     [InlineAutoMoqData]
     public async Task SearchAsync_NoMatchingBatches_ReturnsZeroBatches(
        [Frozen] Mock<IBatchRepository> batchRepositoryMock,
-       BatchApplicationService sut)
+       SearchBatchHandler sut)
     {
         // Arrange
         var noBatches = new List<Batch>();
@@ -64,7 +64,7 @@ public class BatchApplicationServiceTests
     [InlineAutoMoqData]
     public async Task SearchAsync_ReturnsCorrectNumberOfBatches(
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
-        BatchApplicationService sut)
+        SearchBatchHandler sut)
     {
         // Arrange
         const int numberOfBatches = 3;
