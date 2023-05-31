@@ -45,33 +45,7 @@ public class SqlStatementClient : ISqlStatementClient
         ConfigureHttpClient(_httpClient, _options);
     }
 
-    public async Task<IEnumerable<SettlementReportResultRow>> GetSettlementReportResultAsync(
-        string[] gridAreaCodes,
-        ProcessType processType,
-        Instant periodStart,
-        Instant periodEnd,
-        string? energySupplier)
-    {
-        var sql = SettlementReportSqlStatementFactory.Create(gridAreaCodes, processType, periodStart, periodEnd, energySupplier);
-
-        var resultTable = await ExecuteSqlStatementAsync(sql).ConfigureAwait(false);
-
-        return SettlementReportDataFactory.Create(resultTable);
-    }
-
-    public async Task<ProcessStepResult> GetAsync(
-        Guid batchId,
-        string gridAreaCode,
-        TimeSeriesType timeSeriesType,
-        string? energySupplierGln,
-        string? balanceResponsiblePartyGln)
-    {
-        await Task.Delay(1000).ConfigureAwait(false);
-
-        throw new NotImplementedException("GetAsync is not implemented yet");
-    }
-
-    private async Task<Table> ExecuteSqlStatementAsync(string sqlStatement)
+    public async Task<ITable> ExecuteSqlStatementAsync(string sqlStatement)
     {
         const int timeOutPerAttemptSeconds = 30;
         const int maxAttempts = 16; // 8 minutes in total (16 * 30 seconds). The warehouse takes around 5 minutes to start if it has been stopped.

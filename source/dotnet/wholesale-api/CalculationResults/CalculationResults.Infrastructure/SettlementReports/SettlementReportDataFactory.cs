@@ -23,7 +23,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public static class SettlementReportDataFactory
 {
-    public static IEnumerable<SettlementReportResultRow> Create(Table table)
+    public static IEnumerable<SettlementReportResultRow> Create(ITable table)
     {
         return Enumerable.Range(0, table.RowCount)
             .Select(i => new SettlementReportResultRow(

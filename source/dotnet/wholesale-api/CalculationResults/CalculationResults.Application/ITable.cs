@@ -14,7 +14,11 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application;
 
-public interface ISqlStatementClient
+public interface ITable
 {
-    Task<ITable> ExecuteSqlStatementAsync(string sqlStatement);
+    string this[Index rowIndex, string columnName] { get; }
+
+    IEnumerable<string> this[Index rowIndex] { get; }
+
+    int RowCount { get; }
 }

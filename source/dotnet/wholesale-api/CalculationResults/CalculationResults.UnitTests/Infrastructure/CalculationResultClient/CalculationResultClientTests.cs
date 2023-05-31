@@ -68,7 +68,7 @@ public class CalculationResultClientTests
 
         // Act + Assert
         await Assert.ThrowsAsync<DatabricksSqlException>(() =>
-            sut.GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null));
+            sut.ExecuteSqlStatementAsync().GetSettlementReportResultAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null));
     }
 
     [Theory]

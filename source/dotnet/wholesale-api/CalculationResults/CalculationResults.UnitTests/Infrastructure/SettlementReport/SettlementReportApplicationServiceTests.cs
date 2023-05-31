@@ -36,15 +36,15 @@ public class SettlementReportApplicationServiceTests
         [Frozen] Mock<IBatchApplicationService> batchApplicationServiceMock,
         [Frozen] Mock<ISettlementReportResultsCsvWriter> settlementReportResultsCsvWriterMock,
         [Frozen] Mock<ISettlementReportRepository> settlementReportRepositoryMock,
-        [Frozen] Mock<ISqlStatementClient> calculationResultClientMock)
+        [Frozen] Mock<ISettlementReportResultRepository> settlementReportResultRepositoryMock)
     {
         // Arrange
         await using var memoryStream = new MemoryStream();
         var sut = new SettlementReportClient(
             batchApplicationServiceMock.Object,
-            calculationResultClientMock.Object,
             settlementReportResultsCsvWriterMock.Object,
-            settlementReportRepositoryMock.Object);
+            settlementReportRepositoryMock.Object,
+            settlementReportResultRepositoryMock.Object);
 
         const string fileContent = "Unit Test File Contents";
 
@@ -82,15 +82,15 @@ public class SettlementReportApplicationServiceTests
         [Frozen] Mock<IBatchApplicationService> batchApplicationServiceMock,
         [Frozen] Mock<ISettlementReportResultsCsvWriter> settlementReportResultsCsvWriterMock,
         [Frozen] Mock<ISettlementReportRepository> settlementReportRepositoryMock,
-        [Frozen] Mock<ISqlStatementClient> calculationResultClientMock)
+        [Frozen] Mock<ISettlementReportResultRepository> settlementReportResultRepositoryMock)
     {
         // Arrange
         await using var memoryStream = new MemoryStream();
         var sut = new SettlementReportClient(
             batchApplicationServiceMock.Object,
-            calculationResultClientMock.Object,
             settlementReportResultsCsvWriterMock.Object,
-            settlementReportRepositoryMock.Object);
+            settlementReportRepositoryMock.Object,
+            settlementReportResultRepositoryMock.Object);
 
         const string fileContent = "Unit Test File Contents";
 
@@ -122,14 +122,14 @@ public class SettlementReportApplicationServiceTests
         [Frozen] Mock<IBatchApplicationService> batchApplicationServiceMock,
         [Frozen] Mock<ISettlementReportResultsCsvWriter> settlementReportResultsCsvWriterMock,
         [Frozen] Mock<ISettlementReportRepository> settlementReportRepositoryMock,
-        [Frozen] Mock<ISqlStatementClient> calculationResultClientMock)
+        [Frozen] Mock<ISettlementReportResultRepository> settlementReportResultRepositoryMock)
     {
         // Arrange
         var sut = new SettlementReportClient(
             batchApplicationServiceMock.Object,
-            calculationResultClientMock.Object,
             settlementReportResultsCsvWriterMock.Object,
-            settlementReportRepositoryMock.Object);
+            settlementReportRepositoryMock.Object,
+            settlementReportResultRepositoryMock.Object);
 
         // Act + Assert
         await Assert.ThrowsAsync<BusinessValidationException>(() => sut.CreateCompressedSettlementReportAsync(

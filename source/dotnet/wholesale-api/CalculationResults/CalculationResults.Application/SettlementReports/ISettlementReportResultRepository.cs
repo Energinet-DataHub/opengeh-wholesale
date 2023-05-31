@@ -12,9 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Application;
+using Energinet.DataHub.Wholesale.Common.Models;
+using NodaTime;
 
-public interface ISqlStatementClient
+namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports;
+
+public interface ISettlementReportResultRepository
 {
-    Task<ITable> ExecuteSqlStatementAsync(string sqlStatement);
+    Task<IEnumerable<SettlementReportResultRow>> GetRowsAsync(
+        string[] gridAreaCodes,
+        ProcessType processType,
+        Instant periodStart,
+        Instant periodEnd,
+        string? energySupplier);
 }
