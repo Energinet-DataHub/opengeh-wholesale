@@ -116,6 +116,8 @@ public class BatchExecutionStateDomainServiceTests
 
         batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>()))
             .ReturnsAsync(batches);
+        calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch1.CalculationId!))
+            .ReturnsAsync(CalculationState.Pending); // Unchanged
         calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch2.CalculationId!))
             .ReturnsAsync(CalculationState.Completed);
 
