@@ -17,6 +17,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Application;
 using Energinet.DataHub.Wholesale.Batches.Application.Model;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
+using Energinet.DataHub.Wholesale.Batches.Application.UseCases;
 using Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchAggregate;
 using FluentAssertions;
 using Moq;
@@ -28,31 +29,6 @@ namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Application.Batches;
 [UnitTest]
 public class BatchApplicationServiceTests
 {
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task StartCalculationAsync_ActivatesDomainServiceAndCommits(
-        [Frozen] Mock<IBatchRepository> batchRepositoryMock,
-        [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
-        [Frozen] Mock<ICalculationInfrastructureService> calculationDomainServiceMock,
-        BatchApplicationService sut)
-    {
-        // Arrange
-        var batches = new List<Batch> { new BatchBuilder().Build(), new BatchBuilder().Build() };
-        batchRepositoryMock
-            .Setup(repository => repository.GetCreatedAsync())
-            .ReturnsAsync(batches);
-
-        // Arrange & Act
-        await sut.StartCalculationsAsync();
-
-        // Assert
-        unitOfWorkMock.Verify(x => x.CommitAsync());
-        foreach (var batch in batches)
-        {
-            calculationDomainServiceMock.Verify(x => x.StartAsync(batch.Id));
-        }
-    }
-
     [Theory]
     [InlineAutoMoqData]
     public async Task UpdateExecutionStateAsync_ActivatesDomainServiceAndCommits(
