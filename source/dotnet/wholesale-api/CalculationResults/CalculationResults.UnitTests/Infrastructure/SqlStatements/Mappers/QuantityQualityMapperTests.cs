@@ -12,28 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using FluentAssertions;
 using Xunit;
-using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.CalculationResultClient.Mappers;
+namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SqlStatements.Mappers;
 
-[UnitTest]
-public class SettlementMethodMapperTests
+public class QuantityQualityMapperTests
 {
-    [Theory]
-    [InlineData(DeltaTableTimeSeriesType.FlexConsumption, SettlementMethod.Flex)]
-    [InlineData(DeltaTableTimeSeriesType.Production, null)]
-    [InlineData(DeltaTableTimeSeriesType.NonProfiledConsumption, SettlementMethod.NonProfiled)]
-    public void ToDeltaTableValue_ReturnsExpectedSettlementMethod(string timeSeriesType, SettlementMethod? expected)
+    [Fact]
+    public void MapQuality_ReturnsMappedQuality()
     {
-        // Act
-        var actual = SettlementMethodMapper.FromDeltaTableValue(timeSeriesType);
+        // Arrange
+        foreach (var type in Enum.GetValues(typeof(QuantityQuality)))
+        {
+            var expected = (QuantityQuality)type;
+            var input = expected.ToString().ToLower();
 
-        // Assert
-        actual.Should().Be(expected);
+            // Act & Assert
+            QuantityQualityMapper.FromDeltaTableValue(input).Should().Be(expected);
+        }
     }
 }

@@ -20,7 +20,7 @@ using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.CalculationResultClient;
+namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SqlStatements;
 
 [UnitTest]
 public class DatabricksSqlResponseParserTests

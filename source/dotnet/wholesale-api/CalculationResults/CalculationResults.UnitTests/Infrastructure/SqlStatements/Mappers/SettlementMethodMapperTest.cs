@@ -19,19 +19,19 @@ using FluentAssertions;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.CalculationResultClient.Mappers;
+namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SqlStatements.Mappers;
 
 [UnitTest]
-public class MeteringPointTypeMapperTests
+public class SettlementMethodMapperTests
 {
     [Theory]
-    [InlineData(DeltaTableTimeSeriesType.FlexConsumption, MeteringPointType.Consumption)]
-    [InlineData(DeltaTableTimeSeriesType.Production, MeteringPointType.Production)]
-    [InlineData(DeltaTableTimeSeriesType.NonProfiledConsumption, MeteringPointType.Consumption)]
-    public void ToDeltaTableValue_ReturnsExpectedString(string timeSeriesType, MeteringPointType expected)
+    [InlineData(DeltaTableTimeSeriesType.FlexConsumption, SettlementMethod.Flex)]
+    [InlineData(DeltaTableTimeSeriesType.Production, null)]
+    [InlineData(DeltaTableTimeSeriesType.NonProfiledConsumption, SettlementMethod.NonProfiled)]
+    public void ToDeltaTableValue_ReturnsExpectedSettlementMethod(string timeSeriesType, SettlementMethod? expected)
     {
         // Act
-        var actual = MeteringPointTypeMapper.FromDeltaTableValue(timeSeriesType);
+        var actual = SettlementMethodMapper.FromDeltaTableValue(timeSeriesType);
 
         // Assert
         actual.Should().Be(expected);

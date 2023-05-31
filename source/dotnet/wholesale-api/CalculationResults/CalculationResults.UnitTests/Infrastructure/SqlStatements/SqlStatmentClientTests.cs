@@ -26,10 +26,10 @@ using Xunit;
 using Xunit.Categories;
 using static Moq.Protected.ItExpr;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.CalculationResultClient;
+namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SqlStatements;
 
 [UnitTest]
-public class CalculationResultClientTests
+public class SqlStatmentClientTests
 {
     private readonly string _anySqlStatement = "anySqlStatement";
     private readonly DatabricksOptions _someDatabricksOptions = new()

@@ -12,26 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using FluentAssertions;
 using Xunit;
+using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.CalculationResultClient.Mappers;
+namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SqlStatements.Mappers;
 
-public class QuantityQualityMapperTests
+[UnitTest]
+public class MeteringPointTypeMapperTests
 {
-    [Fact]
-    public void MapQuality_ReturnsMappedQuality()
+    [Theory]
+    [InlineData(DeltaTableTimeSeriesType.FlexConsumption, MeteringPointType.Consumption)]
+    [InlineData(DeltaTableTimeSeriesType.Production, MeteringPointType.Production)]
+    [InlineData(DeltaTableTimeSeriesType.NonProfiledConsumption, MeteringPointType.Consumption)]
+    public void ToDeltaTableValue_ReturnsExpectedString(string timeSeriesType, MeteringPointType expected)
     {
-        // Arrange
-        foreach (var type in Enum.GetValues(typeof(QuantityQuality)))
-        {
-            var expected = (QuantityQuality)type;
-            var input = expected.ToString().ToLower();
+        // Act
+        var actual = MeteringPointTypeMapper.FromDeltaTableValue(timeSeriesType);
 
-            // Act & Assert
-            QuantityQualityMapper.FromDeltaTableValue(input).Should().Be(expected);
-        }
+        // Assert
+        actual.Should().Be(expected);
     }
 }
