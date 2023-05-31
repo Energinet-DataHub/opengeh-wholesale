@@ -26,13 +26,13 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 [Route("/v3/batches")]
 public class BatchController : V3ControllerBase
 {
-    private readonly IBatchApplicationService _batchApplicationService;
+    private readonly IGetBatchHandler _batchApplicationService;
     private readonly ISearchBatchHandler _searchBatchHandler;
     private readonly ICreateBatchHandler _createBatchHandler;
     private readonly IUserContext<FrontendUser> _userContext;
 
     public BatchController(
-        IBatchApplicationService batchApplicationService,
+        IGetBatchHandler batchApplicationService,
         ICreateBatchHandler createBatchHandler,
         IUserContext<FrontendUser> userContext,
         ISearchBatchHandler searchBatchHandler)
