@@ -34,6 +34,6 @@ public class StartCalculationWorker : RepeatingWorker<IStartCalculationHandler>
 
     protected override async Task ExecuteAsync(IStartCalculationHandler instance)
     {
-        await instance.StartCalculationsAsync().ConfigureAwait(false);
+        await instance.StartAsync().ConfigureAwait(false);
     }
 }

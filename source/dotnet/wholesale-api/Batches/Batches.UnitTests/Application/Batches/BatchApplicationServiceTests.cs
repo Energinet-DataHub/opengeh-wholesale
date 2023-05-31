@@ -44,7 +44,7 @@ public class BatchApplicationServiceTests
             .ReturnsAsync(batches);
 
         // Arrange & Act
-        await sut.StartCalculationsAsync();
+        await sut.StartAsync();
 
         // Assert
         unitOfWorkMock.Verify(x => x.CommitAsync());

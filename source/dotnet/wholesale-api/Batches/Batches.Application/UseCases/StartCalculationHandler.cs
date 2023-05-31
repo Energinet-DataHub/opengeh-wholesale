@@ -29,7 +29,7 @@ public class StartCalculationHandler : IStartCalculationHandler
         _batchRepository = batchRepository;
     }
 
-    public async Task StartCalculationsAsync()
+    public async Task StartAsync()
     {
         var batches = await _batchRepository.GetCreatedAsync().ConfigureAwait(false);
         foreach (var batch in batches)
