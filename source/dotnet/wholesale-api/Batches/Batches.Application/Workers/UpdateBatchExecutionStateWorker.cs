@@ -21,7 +21,7 @@ namespace Energinet.DataHub.Wholesale.Batches.Application.Workers;
 /// <summary>
 /// Worker invoking updating batch execution states.
 /// </summary>
-public class UpdateBatchExecutionStateWorker : RepeatingWorker<IUpdateExecutionStateHandler>
+public class UpdateBatchExecutionStateWorker : RepeatingWorker<IUpdateBatchExecutionStateHandler>
 {
     private const int DelayInSecondsBeforeNextExecution = 20;
 
@@ -32,7 +32,7 @@ public class UpdateBatchExecutionStateWorker : RepeatingWorker<IUpdateExecutionS
     {
     }
 
-    protected override async Task ExecuteAsync(IUpdateExecutionStateHandler instance)
+    protected override async Task ExecuteAsync(IUpdateBatchExecutionStateHandler instance)
     {
         await instance.UpdateAsync().ConfigureAwait(false);
     }

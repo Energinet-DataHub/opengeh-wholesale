@@ -30,7 +30,7 @@ public class UpdateExecutionStateHandlerTests
     public async Task UpdateExecutionStateAsync_ActivatesDomainServiceAndCommits(
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         [Frozen] Mock<IBatchExecutionStateInfrastructureService> calculationDomainServiceMock,
-        UpdateExecutionStateHandler sut)
+        UpdateBatchExecutionStateHandler sut)
     {
         // Arrange & Act
         await sut.UpdateAsync();

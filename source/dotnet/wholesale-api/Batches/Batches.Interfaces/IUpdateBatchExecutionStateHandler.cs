@@ -14,7 +14,7 @@
 
 namespace Energinet.DataHub.Wholesale.Batches.Interfaces;
 
-public interface IUpdateExecutionStateHandler
+public interface IUpdateBatchExecutionStateHandler
 {
     Task UpdateAsync();
 }

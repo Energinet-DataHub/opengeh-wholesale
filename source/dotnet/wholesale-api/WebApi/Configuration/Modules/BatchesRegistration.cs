@@ -62,7 +62,7 @@ public static class BatchesRegistration
 
         serviceCollection.AddScoped<ICreateBatchHandler, CreateBatchHandler>();
         serviceCollection.AddScoped<IStartCalculationHandler, StartCalculationHandler>();
-        serviceCollection.AddScoped<IUpdateExecutionStateHandler, UpdateExecutionStateHandler>();
+        serviceCollection.AddScoped<IUpdateBatchExecutionStateHandler, UpdateBatchExecutionStateHandler>();
 
         serviceCollection.AddHostedService<StartCalculationWorker>();
         serviceCollection.AddHostedService<UpdateBatchExecutionStateWorker>();
