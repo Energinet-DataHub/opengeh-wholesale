@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// ReSharper disable once CheckNamespace - the namespace must match that of the (protobuf) contracts
 namespace Energinet.DataHub.Wholesale.Contracts.Events
 {
     /// <summary>

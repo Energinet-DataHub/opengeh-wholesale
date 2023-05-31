@@ -18,6 +18,7 @@ using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Common.DatabricksClient;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;

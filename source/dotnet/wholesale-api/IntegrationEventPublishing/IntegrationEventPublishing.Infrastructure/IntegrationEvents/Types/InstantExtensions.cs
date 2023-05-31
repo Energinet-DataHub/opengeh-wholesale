@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.EventPublishers;
+using Google.Protobuf.WellKnownTypes;
+using NodaTime;
 
-public class MessageTypeDictionary
+namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.IntegrationEvents.Types
 {
-    private IDictionary<Type, string> _dictionary;
-
-    public MessageTypeDictionary(IDictionary<Type, string> dictionary)
+    public static class InstantExtensions
     {
-        _dictionary = dictionary;
+        public static Timestamp ToTimestamp(this Instant instant)
+        {
+            return Timestamp.FromDateTimeOffset(instant.ToDateTimeOffset());
+        }
     }
-
-    public string this[Type key] => _dictionary[key];
 }

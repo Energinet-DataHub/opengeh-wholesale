@@ -39,14 +39,10 @@ public static class ServiceCollectionExtensions
 
     private static void ServiceBusClientAndAndMessageFactoryRegistry(
         IServiceCollection serviceCollection,
-        string serviceBusConnectionString,
-        MessageTypeDictionary? messageType = null)
+        string serviceBusConnectionString)
     {
         if (serviceCollection.All(x => x.ServiceType != typeof(ServiceBusClient)))
             serviceCollection.AddSingleton(_ => new ServiceBusClient(serviceBusConnectionString));
-
-        if (messageType != null && serviceCollection.All(x => x.ServiceType != typeof(MessageTypeDictionary)))
-            serviceCollection.AddSingleton(messageType);
 
         if (serviceCollection.All(x => x.ServiceType != typeof(IServiceBusMessageFactory)))
             serviceCollection.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();

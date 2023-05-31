@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
-using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.BatchAggregate;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Model;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.UseCases.Mappers;
 
 namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.UseCases;
