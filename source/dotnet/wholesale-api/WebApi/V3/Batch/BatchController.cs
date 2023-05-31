@@ -26,21 +26,18 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 [Route("/v3/batches")]
 public class BatchController : V3ControllerBase
 {
-    private readonly IGetBatchHandler _batchApplicationService;
-    private readonly ISearchBatchHandler _searchBatchHandler;
+    private readonly IBatchesClient _batchesClient;
     private readonly ICreateBatchHandler _createBatchHandler;
     private readonly IUserContext<FrontendUser> _userContext;
 
     public BatchController(
-        IGetBatchHandler batchApplicationService,
+        IBatchesClient batchesClient,
         ICreateBatchHandler createBatchHandler,
-        IUserContext<FrontendUser> userContext,
-        ISearchBatchHandler searchBatchHandler)
+        IUserContext<FrontendUser> userContext)
     {
-        _batchApplicationService = batchApplicationService;
+        _batchesClient = batchesClient;
         _createBatchHandler = createBatchHandler;
         _userContext = userContext;
-        _searchBatchHandler = searchBatchHandler;
     }
 
     /// <summary>
@@ -69,7 +66,7 @@ public class BatchController : V3ControllerBase
     [Produces("application/json", Type = typeof(BatchDto))]
     public async Task<IActionResult> GetAsync([FromRoute]Guid batchId)
     {
-        return Ok(await _batchApplicationService.GetAsync(batchId).ConfigureAwait(false));
+        return Ok(await _batchesClient.GetAsync(batchId).ConfigureAwait(false));
     }
 
     /// <summary>
@@ -93,7 +90,7 @@ public class BatchController : V3ControllerBase
         [FromQuery] DateTimeOffset? periodStart,
         [FromQuery] DateTimeOffset? periodEnd)
     {
-        var batches = await _searchBatchHandler.SearchAsync(
+        var batches = await _batchesClient.SearchAsync(
             gridAreaCodes ?? Array.Empty<string>(),
             BatchStateMapper.MapState(executionState),
             minExecutionTime,

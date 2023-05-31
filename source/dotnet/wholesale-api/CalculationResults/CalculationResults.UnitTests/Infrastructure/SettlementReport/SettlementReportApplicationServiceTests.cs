@@ -33,7 +33,7 @@ public class SettlementReportApplicationServiceTests
     [Theory]
     [AutoMoqData]
     public static async Task CreateCompressedSettlementReportAsync_GivenRows_CreatesValidZipArchive(
-        [Frozen] Mock<IGetBatchHandler> batchApplicationServiceMock,
+        [Frozen] Mock<IBatchesClient> batchesClientMock,
         [Frozen] Mock<ISettlementReportResultsCsvWriter> settlementReportResultsCsvWriterMock,
         [Frozen] Mock<ISettlementReportRepository> settlementReportRepositoryMock,
         [Frozen] Mock<ISqlStatementClient> calculationResultClientMock)
@@ -41,7 +41,7 @@ public class SettlementReportApplicationServiceTests
         // Arrange
         await using var memoryStream = new MemoryStream();
         var sut = new SettlementReportClient(
-            batchApplicationServiceMock.Object,
+            batchesClientMock.Object,
             calculationResultClientMock.Object,
             settlementReportResultsCsvWriterMock.Object,
             settlementReportRepositoryMock.Object);
@@ -79,7 +79,7 @@ public class SettlementReportApplicationServiceTests
     [Theory]
     [AutoMoqData]
     public static async Task CreateCompressedSettlementReportAsync_GivenNoLanguage_DefaultsToEnUs(
-        [Frozen] Mock<IGetBatchHandler> batchApplicationServiceMock,
+        [Frozen] Mock<IBatchesClient> batchesClientMock,
         [Frozen] Mock<ISettlementReportResultsCsvWriter> settlementReportResultsCsvWriterMock,
         [Frozen] Mock<ISettlementReportRepository> settlementReportRepositoryMock,
         [Frozen] Mock<ISqlStatementClient> calculationResultClientMock)
@@ -87,7 +87,7 @@ public class SettlementReportApplicationServiceTests
         // Arrange
         await using var memoryStream = new MemoryStream();
         var sut = new SettlementReportClient(
-            batchApplicationServiceMock.Object,
+            batchesClientMock.Object,
             calculationResultClientMock.Object,
             settlementReportResultsCsvWriterMock.Object,
             settlementReportRepositoryMock.Object);
@@ -119,14 +119,14 @@ public class SettlementReportApplicationServiceTests
     [Theory]
     [AutoMoqData]
     public static async Task CreateCompressedSettlementReportAsync_GivenUnsupportedProcessType_ThrowValidationException(
-        [Frozen] Mock<IGetBatchHandler> batchApplicationServiceMock,
+        [Frozen] Mock<IBatchesClient> batchesClientMock,
         [Frozen] Mock<ISettlementReportResultsCsvWriter> settlementReportResultsCsvWriterMock,
         [Frozen] Mock<ISettlementReportRepository> settlementReportRepositoryMock,
         [Frozen] Mock<ISqlStatementClient> calculationResultClientMock)
     {
         // Arrange
         var sut = new SettlementReportClient(
-            batchApplicationServiceMock.Object,
+            batchesClientMock.Object,
             calculationResultClientMock.Object,
             settlementReportResultsCsvWriterMock.Object,
             settlementReportRepositoryMock.Object);
