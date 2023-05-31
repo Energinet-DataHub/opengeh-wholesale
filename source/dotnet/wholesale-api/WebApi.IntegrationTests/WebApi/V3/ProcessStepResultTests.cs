@@ -42,7 +42,7 @@ public class ProcessStepResultTests : WebApiTestBase
     [InlineAutoMoqData]
     public async Task HTTP_GET_V3_ReturnsHttpStatusCodeOkAtExpectedUrl(
         Mock<ICalculationResultClient> calculationResultClientMock,
-        Mock<IGetBatchHandler> batchApplicationServiceMock,
+        Mock<IBatchesClient> batchesClientMock,
         ProcessStepResult result,
         Guid batchId,
         string gridAreaCode,
@@ -53,9 +53,9 @@ public class ProcessStepResultTests : WebApiTestBase
         calculationResultClientMock
             .Setup(service => service.GetAsync(batchId, gridAreaCode, TimeSeriesType.Production, null, null))
             .ReturnsAsync(() => result);
-        batchApplicationServiceMock.Setup(service => service.GetAsync(batchId)).ReturnsAsync(batchDto);
+        batchesClientMock.Setup(service => service.GetAsync(batchId)).ReturnsAsync(batchDto);
         Factory.ProcessStepResultRepositoryMock = calculationResultClientMock;
-        Factory.BatchApplicationServiceMock = batchApplicationServiceMock;
+        Factory.BatchesClientMock = batchesClientMock;
 
         var url = $"/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{TimeSeriesType.Production}";
         var expectedHttpStatusCode = HttpStatusCode.OK;
