@@ -14,7 +14,6 @@
 
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using Energinet.DataHub.Wholesale.CalculationResults.Application;
 using Energinet.DataHub.Wholesale.Common.DatabricksClient;
 // TODO BJM: Should we avoid referencing the JobsApiClient project "just" to get access to the DatabricksOptions?
 using Microsoft.Extensions.Options;
