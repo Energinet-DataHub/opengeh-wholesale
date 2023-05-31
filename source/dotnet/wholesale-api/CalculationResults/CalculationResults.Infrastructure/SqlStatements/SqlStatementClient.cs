@@ -12,19 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Globalization;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Energinet.DataHub.Wholesale.CalculationResults.Application;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Common.DatabricksClient;
-using Energinet.DataHub.Wholesale.Common.Models;
 // TODO BJM: Should we avoid referencing the JobsApiClient project "just" to get access to the DatabricksOptions?
 using Microsoft.Extensions.Options;
-using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 
@@ -45,7 +38,7 @@ public class SqlStatementClient : ISqlStatementClient
         ConfigureHttpClient(_httpClient, _options);
     }
 
-    public async Task<ITable> ExecuteSqlStatementAsync(string sqlStatement)
+    public async Task<Table> ExecuteSqlStatementAsync(string sqlStatement)
     {
         const int timeOutPerAttemptSeconds = 30;
         const int maxAttempts = 16; // 8 minutes in total (16 * 30 seconds). The warehouse takes around 5 minutes to start if it has been stopped.

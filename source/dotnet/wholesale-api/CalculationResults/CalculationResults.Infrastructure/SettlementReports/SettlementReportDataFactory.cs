@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System.Globalization;
-using Energinet.DataHub.Wholesale.CalculationResults.Application;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
@@ -23,7 +23,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public static class SettlementReportDataFactory
 {
-    public static IEnumerable<SettlementReportResultRow> Create(ITable table)
+    public static IEnumerable<SettlementReportResultRow> Create(Table table)
     {
         return Enumerable.Range(0, table.RowCount)
             .Select(i => new SettlementReportResultRow(

@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Application;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 
 public interface ISqlStatementClient
 {
-    Task<ITable> ExecuteSqlStatementAsync(string sqlStatement);
+    Task<Table> ExecuteSqlStatementAsync(string sqlStatement);
 }
