@@ -22,7 +22,7 @@ using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.UseCase
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.UseCases.Mappers;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Workers;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.EventPublishers;
-using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Integration;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.IntegrationEvents.Factories;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.ServiceBus;

@@ -18,7 +18,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.EventPublishers;
-using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Integration;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.IntegrationEvents.Factories;
 using Google.Protobuf;
 using Moq;
 using NodaTime;

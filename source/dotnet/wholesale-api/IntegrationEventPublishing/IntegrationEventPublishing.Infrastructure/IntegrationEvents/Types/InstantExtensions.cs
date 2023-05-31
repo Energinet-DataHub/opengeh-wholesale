@@ -12,12 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure;
+using Google.Protobuf.WellKnownTypes;
+using NodaTime;
 
-public static class Root
+namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.IntegrationEvents.Types
 {
-    /// <summary>
-    /// The "root namespace" of the assembly.
-    /// </summary>
-    public static string Namespace => typeof(Root).Namespace!;
+    public static class InstantExtensions
+    {
+        public static Timestamp ToTimestamp(this Instant instant)
+        {
+            return Timestamp.FromDateTimeOffset(instant.ToDateTimeOffset());
+        }
+    }
 }
