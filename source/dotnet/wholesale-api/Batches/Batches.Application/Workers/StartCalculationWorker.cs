@@ -21,7 +21,7 @@ namespace Energinet.DataHub.Wholesale.Batches.Application.Workers;
 /// <summary>
 /// Worker invoking starting new batches.
 /// </summary>
-public class StartCalculationWorker : RepeatingWorker<IBatchApplicationService>
+public class StartCalculationWorker : RepeatingWorker<IStartCalculationHandler>
 {
     private const int DelayInSecondsBeforeNextExecution = 10;
 
@@ -32,7 +32,7 @@ public class StartCalculationWorker : RepeatingWorker<IBatchApplicationService>
     {
     }
 
-    protected override async Task ExecuteAsync(IBatchApplicationService instance)
+    protected override async Task ExecuteAsync(IStartCalculationHandler instance)
     {
         await instance.StartCalculationsAsync().ConfigureAwait(false);
     }

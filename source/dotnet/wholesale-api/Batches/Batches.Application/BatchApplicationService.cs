@@ -42,16 +42,6 @@ public class BatchApplicationService : IBatchApplicationService
         _batchDtoMapper = batchDtoMapper;
     }
 
-    public async Task StartCalculationsAsync()
-    {
-        var batches = await _batchRepository.GetCreatedAsync().ConfigureAwait(false);
-        foreach (var batch in batches)
-        {
-            await _calculationInfrastructureService.StartAsync(batch.Id).ConfigureAwait(false);
-            await _unitOfWork.CommitAsync().ConfigureAwait(false);
-        }
-    }
-
     public async Task UpdateExecutionStateAsync()
     {
         await _batchExecutionStateInfrastructureService.UpdateExecutionStateAsync().ConfigureAwait(false);

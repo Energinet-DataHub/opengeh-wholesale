@@ -12,21 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
-
 namespace Energinet.DataHub.Wholesale.Batches.Interfaces;
 
-public interface IBatchApplicationService
+public interface IStartCalculationHandler
 {
-    Task UpdateExecutionStateAsync();
-
-    Task<IEnumerable<BatchDto>> SearchAsync(
-        IEnumerable<string> filterByGridAreaCodes,
-        BatchState? filterByExecutionState,
-        DateTimeOffset? minExecutionTime,
-        DateTimeOffset? maxExecutionTime,
-        DateTimeOffset? periodStart,
-        DateTimeOffset? periodEnd);
-
-    Task<BatchDto> GetAsync(Guid batchId);
+    Task StartCalculationsAsync();
 }

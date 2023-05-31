@@ -17,6 +17,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Application;
 using Energinet.DataHub.Wholesale.Batches.Application.Model;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
+using Energinet.DataHub.Wholesale.Batches.Application.UseCases;
 using Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchAggregate;
 using FluentAssertions;
 using Moq;
@@ -34,7 +35,7 @@ public class BatchApplicationServiceTests
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         [Frozen] Mock<ICalculationInfrastructureService> calculationDomainServiceMock,
-        BatchApplicationService sut)
+        StartCalculationHandler sut)
     {
         // Arrange
         var batches = new List<Batch> { new BatchBuilder().Build(), new BatchBuilder().Build() };
