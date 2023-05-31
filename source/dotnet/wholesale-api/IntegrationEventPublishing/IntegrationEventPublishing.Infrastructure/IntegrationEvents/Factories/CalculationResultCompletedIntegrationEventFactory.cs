@@ -15,10 +15,12 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Processes.Model;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.IntegrationEvents.Mappers;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.IntegrationEvents.Types;
 using Google.Protobuf.WellKnownTypes;
 using TimeSeriesPoint = Energinet.DataHub.Wholesale.Contracts.Events.TimeSeriesPoint;
 
-namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Integration;
+namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.IntegrationEvents.Factories;
 
 public class CalculationResultCompletedIntegrationEventFactory : ICalculationResultCompletedIntegrationEventFactory
 {
