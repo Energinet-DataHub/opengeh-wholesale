@@ -18,7 +18,7 @@ using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mapper
 using FluentAssertions;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Events.UnitTests.Integration;
+namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.Mappers;
 
 public class QuantityQualityMapperTests
 {

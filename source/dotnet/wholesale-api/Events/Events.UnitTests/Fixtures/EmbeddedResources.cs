@@ -14,7 +14,7 @@
 
 using System.Reflection;
 
-namespace Energinet.DataHub.Wholesale.Events.UnitTests.TestHelpers;
+namespace Energinet.DataHub.Wholesale.Events.UnitTests.Fixtures;
 
 public static class EmbeddedResources
 {

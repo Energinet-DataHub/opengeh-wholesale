@@ -19,7 +19,7 @@ using Energinet.DataHub.Wholesale.Events.Infrastructure.ServiceBus;
 using Moq;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Events.UnitTests.EventPublishers;
+namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.EventPublishers;
 
 public class IntegrationEventPublisherTests
 {

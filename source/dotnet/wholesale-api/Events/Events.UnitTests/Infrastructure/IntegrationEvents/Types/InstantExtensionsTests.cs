@@ -17,7 +17,7 @@ using FluentAssertions;
 using NodaTime;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Infrastructure
+namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.Types
 {
     public class InstantExtensionsTests
     {

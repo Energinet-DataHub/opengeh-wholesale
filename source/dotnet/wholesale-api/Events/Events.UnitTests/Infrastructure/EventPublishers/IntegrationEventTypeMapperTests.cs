@@ -18,7 +18,7 @@ using Energinet.DataHub.Wholesale.Events.Infrastructure.EventPublishers;
 using FluentAssertions;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Events.UnitTests.EventPublishers;
+namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.EventPublishers;
 
 public class IntegrationEventTypeMapperTests
 {
