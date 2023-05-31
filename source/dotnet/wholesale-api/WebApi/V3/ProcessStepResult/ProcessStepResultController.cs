@@ -26,11 +26,11 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 [Route("/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}")]
 public class ProcessStepResultController : V3ControllerBase
 {
-    private readonly IBatchApplicationService _batchApplicationService;
+    private readonly IGetBatchHandler _batchApplicationService;
     private readonly ICalculationResultClient _calculationResultClient;
 
     public ProcessStepResultController(
-        IBatchApplicationService batchApplicationService,
+        IGetBatchHandler batchApplicationService,
         ICalculationResultClient calculationResultClient)
     {
         _batchApplicationService = batchApplicationService;
