@@ -87,7 +87,7 @@ jobs:
       download_attempt_limit: 20
 
   dotnet_ci_test_integrationtests_events:
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v10
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v11
     with:
       tests_dll_file_path: \source\dotnet\wholesale-api\Events\Events.IntegrationTests\bin\Release\net7.0\Energinet.DataHub.Wholesale.Events.IntegrationTests.dll
       download_attempt_limit: 20
@@ -101,7 +101,7 @@ jobs:
       azure_b2csecrets_keyvault_url: ${{ secrets.azure_b2csecrets_keyvault_url }}
 
   dotnet_ci_test_events:
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v10
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v11
     with:
       tests_dll_file_path: \source\dotnet\wholesale-api\Events\Events.UnitTests\bin\Release\net7.0\Energinet.DataHub.Wholesale.Events.UnitTests.dll
       download_attempt_limit: 20
