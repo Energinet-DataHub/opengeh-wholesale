@@ -66,6 +66,13 @@ public abstract class RepeatingWorker<TService> : BackgroundService
         correlationContext.SetId(Guid.NewGuid().ToString());
 
         var service = scope.ServiceProvider.GetRequiredService<TService>();
-        await ExecuteAsync(service).ConfigureAwait(false);
+        try
+        {
+            await ExecuteAsync(service).ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Unhandled exception in {Worker}", GetType().Name);
+        }
     }
 }
