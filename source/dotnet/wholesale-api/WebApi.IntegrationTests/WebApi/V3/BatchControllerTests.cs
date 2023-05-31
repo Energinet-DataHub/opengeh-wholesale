@@ -56,7 +56,7 @@ public class BatchControllerTests : WebApiTestBase
     [Theory]
     [InlineAutoMoqData]
     public async Task HTTP_GET_V3_ReturnsHttpStatusCodeOkAtExpectedUrl(
-        Mock<IBatchApplicationService> mock,
+        Mock<IGetBatchHandler> mock,
         BatchDto batchDto)
     {
         // Arrange
