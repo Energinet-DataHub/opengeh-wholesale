@@ -23,29 +23,14 @@ namespace Energinet.DataHub.Wholesale.Batches.Application;
 public class BatchApplicationService : IBatchApplicationService
 {
     private readonly IBatchRepository _batchRepository;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly ICalculationInfrastructureService _calculationInfrastructureService;
-    private readonly IBatchExecutionStateInfrastructureService _batchExecutionStateInfrastructureService;
     private readonly IBatchDtoMapper _batchDtoMapper;
 
     public BatchApplicationService(
         IBatchRepository batchRepository,
-        IUnitOfWork unitOfWork,
-        ICalculationInfrastructureService calculationInfrastructureService,
-        IBatchExecutionStateInfrastructureService batchExecutionStateInfrastructureService,
         IBatchDtoMapper batchDtoMapper)
     {
         _batchRepository = batchRepository;
-        _unitOfWork = unitOfWork;
-        _calculationInfrastructureService = calculationInfrastructureService;
-        _batchExecutionStateInfrastructureService = batchExecutionStateInfrastructureService;
         _batchDtoMapper = batchDtoMapper;
-    }
-
-    public async Task UpdateExecutionStateAsync()
-    {
-        await _batchExecutionStateInfrastructureService.UpdateExecutionStateAsync().ConfigureAwait(false);
-        await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
     public async Task<IEnumerable<BatchDto>> SearchAsync(
