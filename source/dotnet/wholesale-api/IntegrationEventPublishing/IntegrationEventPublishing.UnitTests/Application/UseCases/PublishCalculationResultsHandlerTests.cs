@@ -15,7 +15,7 @@
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application;
-using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.BatchAggregate;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Model;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Processes;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.UseCases;
