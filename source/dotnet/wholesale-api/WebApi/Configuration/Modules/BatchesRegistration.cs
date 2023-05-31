@@ -57,12 +57,13 @@ public static class BatchesRegistration
                 }));
 
         serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
-        serviceCollection.AddScoped<IBatchApplicationService, BatchApplicationService>();
         serviceCollection.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
 
         serviceCollection.AddScoped<ICreateBatchHandler, CreateBatchHandler>();
         serviceCollection.AddScoped<IStartCalculationHandler, StartCalculationHandler>();
         serviceCollection.AddScoped<IUpdateBatchExecutionStateHandler, UpdateBatchExecutionStateHandler>();
+        serviceCollection.AddScoped<ISearchBatchHandler, SearchBatchHandler>();
+        serviceCollection.AddScoped<IGetBatchHandler, GetBatchHandler>();
 
         serviceCollection.AddHostedService<StartCalculationWorker>();
         serviceCollection.AddHostedService<UpdateBatchExecutionStateWorker>();
