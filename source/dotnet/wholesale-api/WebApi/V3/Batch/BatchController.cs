@@ -26,18 +26,21 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 [Route("/v3/batches")]
 public class BatchController : V3ControllerBase
 {
-    private readonly IBatchApplicationService _batchApplicationService;
+    private readonly IGetBatchHandler _batchApplicationService;
+    private readonly ISearchBatchHandler _searchBatchHandler;
     private readonly ICreateBatchHandler _createBatchHandler;
     private readonly IUserContext<FrontendUser> _userContext;
 
     public BatchController(
-        IBatchApplicationService batchApplicationService,
+        IGetBatchHandler batchApplicationService,
         ICreateBatchHandler createBatchHandler,
-        IUserContext<FrontendUser> userContext)
+        IUserContext<FrontendUser> userContext,
+        ISearchBatchHandler searchBatchHandler)
     {
         _batchApplicationService = batchApplicationService;
         _createBatchHandler = createBatchHandler;
         _userContext = userContext;
+        _searchBatchHandler = searchBatchHandler;
     }
 
     /// <summary>
@@ -90,7 +93,7 @@ public class BatchController : V3ControllerBase
         [FromQuery] DateTimeOffset? periodStart,
         [FromQuery] DateTimeOffset? periodEnd)
     {
-        var batches = await _batchApplicationService.SearchAsync(
+        var batches = await _searchBatchHandler.SearchAsync(
             gridAreaCodes ?? Array.Empty<string>(),
             BatchStateMapper.MapState(executionState),
             minExecutionTime,

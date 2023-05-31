@@ -18,16 +18,14 @@ using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Batches.Application;
+namespace Energinet.DataHub.Wholesale.Batches.Application.UseCases;
 
-public class BatchApplicationService : IBatchApplicationService
+public class SearchBatchHandler : ISearchBatchHandler
 {
     private readonly IBatchRepository _batchRepository;
     private readonly IBatchDtoMapper _batchDtoMapper;
 
-    public BatchApplicationService(
-        IBatchRepository batchRepository,
-        IBatchDtoMapper batchDtoMapper)
+    public SearchBatchHandler(IBatchRepository batchRepository, IBatchDtoMapper batchDtoMapper)
     {
         _batchRepository = batchRepository;
         _batchDtoMapper = batchDtoMapper;
@@ -71,12 +69,6 @@ public class BatchApplicationService : IBatchApplicationService
             .ConfigureAwait(false);
 
         return batches.Select(_batchDtoMapper.Map);
-    }
-
-    public async Task<BatchDto> GetAsync(Guid batchId)
-    {
-        var batch = await _batchRepository.GetAsync(batchId).ConfigureAwait(false);
-        return _batchDtoMapper.Map(batch);
     }
 
     private static Instant? ConvertToInstant(DateTimeOffset? dateTimeOffset)
