@@ -25,18 +25,18 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementR
 
 public class SettlementReportClient : ISettlementReportClient
 {
-    private readonly IBatchesClient _batchRepository;
+    private readonly IBatchesClient _batchesClient;
     private readonly ISqlStatementClient _sqlStatementClient;
     private readonly ISettlementReportResultsCsvWriter _settlementReportResultsCsvWriter;
     private readonly ISettlementReportRepository _settlementReportRepository;
 
     public SettlementReportClient(
-        IBatchesClient batchRepository,
+        IBatchesClient batchesClient,
         ISqlStatementClient sqlStatementClient,
         ISettlementReportResultsCsvWriter settlementReportResultsCsvWriter,
         ISettlementReportRepository settlementReportRepository)
     {
-        _batchRepository = batchRepository;
+        _batchesClient = batchesClient;
         _sqlStatementClient = sqlStatementClient;
         _settlementReportResultsCsvWriter = settlementReportResultsCsvWriter;
         _settlementReportRepository = settlementReportRepository;
@@ -44,7 +44,7 @@ public class SettlementReportClient : ISettlementReportClient
 
     public async Task<SettlementReportDto> GetSettlementReportAsync(Guid batchId)
     {
-        var batch = await _batchRepository.GetAsync(batchId).ConfigureAwait(false);
+        var batch = await _batchesClient.GetAsync(batchId).ConfigureAwait(false);
         var report = await _settlementReportRepository.GetSettlementReportAsync(Map(batch)).ConfigureAwait(false);
         return new SettlementReportDto(report.Stream);
     }
@@ -91,7 +91,7 @@ public class SettlementReportClient : ISettlementReportClient
 
     public async Task GetSettlementReportAsync(Guid batchId, string gridAreaCode, Stream outputStream)
     {
-        var batch = await _batchRepository.GetAsync(batchId).ConfigureAwait(false);
+        var batch = await _batchesClient.GetAsync(batchId).ConfigureAwait(false);
         await _settlementReportRepository
             .GetSettlementReportAsync(Map(batch), gridAreaCode, outputStream)
             .ConfigureAwait(false);
