@@ -48,5 +48,6 @@ public static class CalculationResultsRegistration
             provider => new SettlementReportRepository(
                 provider.GetRequiredService<IDataLakeClient>(),
                 provider.GetRequiredService<IStreamZipper>()));
+        serviceCollection.AddScoped<ISettlementReportResultRepository, SettlementReportResultRepository>();
     }
 }
