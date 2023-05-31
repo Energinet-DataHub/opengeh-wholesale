@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.Batches.Interfaces;
 
-public interface IBatchApplicationService
+public interface IGetBatchHandler
 {
     Task<BatchDto> GetAsync(Guid batchId);
 }
