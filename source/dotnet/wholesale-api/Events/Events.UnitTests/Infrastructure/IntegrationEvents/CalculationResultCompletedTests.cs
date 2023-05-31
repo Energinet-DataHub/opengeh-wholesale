@@ -17,7 +17,7 @@ using FluentAssertions;
 using Google.Protobuf.WellKnownTypes;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Events.UnitTests.Contracts;
+namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents;
 
 public class CalculationResultCompletedTests
 {

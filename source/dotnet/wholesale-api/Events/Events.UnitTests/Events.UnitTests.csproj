@@ -27,4 +27,9 @@
       <ProjectReference Include="..\..\Test.Core\Test.Core.csproj" />
       <ProjectReference Include="..\Events.Infrastructure\Events.Infrastructure.csproj" />
     </ItemGroup>
+    <ItemGroup>
+      <Content Include="..\..\..\..\..\..\..\.nuget\packages\energinet.datahub.core.functionapp.testcommon\4.1.0\contentFiles\any\netstandard2.1\Azurite\TestCertificate\azurite-cert.pfx">
+        <Link>Fixtures\Azurite\TestCertificate\azurite-cert.pfx</Link>
+      </Content>
+    </ItemGroup>
 </Project>

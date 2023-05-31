@@ -24,7 +24,7 @@ using Moq;
 using NodaTime;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Events.UnitTests.EventPublishers;
+namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.EventPublishers;
 
 public class CalculationResultCompletedToIntegrationEventFactoryTests
 {
