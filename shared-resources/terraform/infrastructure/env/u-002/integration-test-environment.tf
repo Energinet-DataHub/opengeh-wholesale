@@ -204,6 +204,22 @@ resource "azurerm_key_vault_access_policy" "integration-test-kv-ci-test-spn" {
 #
 # Keyvault secrets
 #
+resource "azurerm_key_vault_secret" "kvs-appi-instrumentation-key" {
+  name         = "AZURE-APPINSIGHTS-INSTRUMENTATIONKEY"
+  value        = azurerm_application_insights.integration-test-appi.instrumentation_key
+  key_vault_id = azurerm_key_vault.integration-test-kv.id
+
+  lifecycle {
+    ignore_changes = [
+      tags,
+    ]
+  }
+
+  depends_on = [
+    azurerm_key_vault_access_policy.integration-test-kv-selfpermissions
+  ]
+}
+
 resource "azurerm_key_vault_secret" "kvs-evhns-connection-string" {
   name         = "AZURE-EVENTHUB-CONNECTIONSTRING"
   value        = azurerm_eventhub_namespace.integration-test-evhns.default_primary_connection_string
