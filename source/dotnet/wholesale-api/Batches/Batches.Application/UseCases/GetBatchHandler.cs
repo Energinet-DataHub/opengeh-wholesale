@@ -12,22 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Application.Model;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
-using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Batches.Application;
+namespace Energinet.DataHub.Wholesale.Batches.Application.UseCases;
 
-public class BatchApplicationService : IBatchApplicationService
+public class GetBatchHandler : IGetBatchHandler
 {
     private readonly IBatchRepository _batchRepository;
     private readonly IBatchDtoMapper _batchDtoMapper;
 
-    public BatchApplicationService(
-        IBatchRepository batchRepository,
-        IBatchDtoMapper batchDtoMapper)
+    public GetBatchHandler(IBatchRepository batchRepository, IBatchDtoMapper batchDtoMapper)
     {
         _batchRepository = batchRepository;
         _batchDtoMapper = batchDtoMapper;

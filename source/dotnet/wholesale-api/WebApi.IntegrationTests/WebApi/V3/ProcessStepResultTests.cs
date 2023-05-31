@@ -42,7 +42,7 @@ public class ProcessStepResultTests : WebApiTestBase
     [InlineAutoMoqData]
     public async Task HTTP_GET_V3_ReturnsHttpStatusCodeOkAtExpectedUrl(
         Mock<ICalculationResultClient> calculationResultClientMock,
-        Mock<IBatchApplicationService> batchApplicationServiceMock,
+        Mock<IGetBatchHandler> batchApplicationServiceMock,
         ProcessStepResult result,
         Guid batchId,
         string gridAreaCode,

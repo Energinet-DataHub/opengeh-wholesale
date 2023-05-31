@@ -64,7 +64,7 @@ public class WebApiFactory : WebApplicationFactory<Startup>
                 ProcessStepResultRepositoryMock?.Object ?? new Mock<ICalculationResultClient>().Object);
             services.AddScoped(_ =>
                 ActorRepositoryMock?.Object ?? new Mock<IActorClient>().Object);
-            services.AddScoped(_ => BatchApplicationServiceMock?.Object ?? new Mock<IBatchApplicationService>().Object);
+            services.AddScoped(_ => BatchApplicationServiceMock?.Object ?? new Mock<IGetBatchHandler>().Object);
 
             var defaultUserContext = new Mock<IUserContext<FrontendUser>>();
             defaultUserContext.Setup(x => x.CurrentUser).Returns(new FrontendUser(Guid.NewGuid(), Guid.NewGuid(), false));
@@ -82,7 +82,7 @@ public class WebApiFactory : WebApplicationFactory<Startup>
 
     public Mock<IActorClient>? ActorRepositoryMock { get; set; }
 
-    public Mock<IBatchApplicationService>? BatchApplicationServiceMock { get; set; }
+    public Mock<IGetBatchHandler>? BatchApplicationServiceMock { get; set; }
 
     public Mock<IUserContext<FrontendUser>>? UserContextMock { get; set; }
 
