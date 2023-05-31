@@ -27,7 +27,7 @@ using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interface
 using TimeSeriesPoint = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesPoint;
 using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType;
 
-namespace Energinet.DataHub.Wholesale.Events.UnitTests.Integration;
+namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.Factories;
 
 public class CalculationResultReadyIntegrationEventFactoryTests
 {

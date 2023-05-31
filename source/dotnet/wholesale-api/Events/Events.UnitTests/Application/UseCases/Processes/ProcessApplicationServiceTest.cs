@@ -27,7 +27,7 @@ using Moq;
 using NodaTime;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Events.UnitTests.Processes;
+namespace Energinet.DataHub.Wholesale.Events.UnitTests.Application.UseCases.Processes;
 
 public class ProcessApplicationServiceTest
 {
