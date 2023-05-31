@@ -35,11 +35,6 @@ public class IntegrationEventTypeMapper : IIntegrationEventTypeMapper
         return _dic[eventType];
     }
 
-    public int Count()
-    {
-        return _dic.Count;
-    }
-
     private void Add(string eventName, Type eventType)
     {
         if (_dic.ContainsKey(eventType))

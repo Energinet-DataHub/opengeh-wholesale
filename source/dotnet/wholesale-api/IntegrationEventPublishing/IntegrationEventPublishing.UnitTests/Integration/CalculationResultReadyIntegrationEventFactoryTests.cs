@@ -16,7 +16,10 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Processes.Model;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure;
-using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Integration;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.IntegrationEvents;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.IntegrationEvents.Factories;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.IntegrationEvents.Mappers;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.IntegrationEvents.Types;
 using FluentAssertions;
 using Google.Protobuf.WellKnownTypes;
 using NodaTime;

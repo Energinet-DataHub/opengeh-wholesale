@@ -15,7 +15,7 @@
 using Energinet.DataHub.Wholesale.Common.Models;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.BatchAggregate;
+namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Model;
 
 public sealed class CompletedBatch
 {

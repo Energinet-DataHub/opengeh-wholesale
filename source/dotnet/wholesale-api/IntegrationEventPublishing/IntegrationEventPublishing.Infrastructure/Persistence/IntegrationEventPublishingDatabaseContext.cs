@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System.Diagnostics.CodeAnalysis;
-using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.BatchAggregate;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Model;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence.Batches;
 using Microsoft.EntityFrameworkCore;
 

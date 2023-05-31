@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// DO NOT CHANGE - this namespace is exposed publicly in the Contracts package
+// ReSharper disable once CheckNamespace - the namespace is exposed publicly in the Contracts package
 namespace Energinet.DataHub.Wholesale.Contracts.Events;
 
 public partial class CalculationResultCompleted

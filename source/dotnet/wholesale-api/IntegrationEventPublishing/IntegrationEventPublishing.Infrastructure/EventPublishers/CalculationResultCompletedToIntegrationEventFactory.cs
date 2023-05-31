@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.IntegrationEventsManagement;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Processes;
 using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Processes.Model;
-using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Integration;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.IntegrationEvents.Factories;
 using Google.Protobuf;
 using NodaTime;
 

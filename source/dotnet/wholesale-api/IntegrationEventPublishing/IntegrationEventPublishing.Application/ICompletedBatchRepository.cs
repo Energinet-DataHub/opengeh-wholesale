@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.BatchAggregate;
+using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application.Model;
 
 namespace Energinet.DataHub.Wholesale.IntegrationEventPublishing.Application;
 
