@@ -21,7 +21,7 @@ using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Wholesale.Common.DatabricksClient;
 using Energinet.DataHub.Wholesale.Common.Security;
-using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Microsoft.AspNetCore.Mvc;
@@ -166,7 +166,7 @@ public class Startup
         var dataLakeOptions = Configuration.Get<DataLakeOptions>()!;
         serviceCollection.AddHealthChecks()
             .AddLiveCheck()
-            .AddDbContextCheck<IntegrationEventPublishingDatabaseContext>(name: "SqlDatabaseContextCheck")
+            .AddDbContextCheck<EventsDatabaseContext>(name: "SqlDatabaseContextCheck")
             .AddDataLakeContainerCheck(dataLakeOptions.STORAGE_ACCOUNT_URI, dataLakeOptions.STORAGE_CONTAINER_NAME)
             .AddAzureServiceBusTopic(
                 serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,

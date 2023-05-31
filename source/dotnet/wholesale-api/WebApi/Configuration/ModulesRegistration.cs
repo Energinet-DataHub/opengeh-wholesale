@@ -17,7 +17,7 @@ using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Common.DatabricksClient;
-using Energinet.DataHub.Wholesale.IntegrationEventPublishing.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Microsoft.EntityFrameworkCore;
@@ -37,7 +37,7 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddCalculationResultsModule();
 
         var serviceBusOptions = configuration.Get<ServiceBusOptions>()!;
-        serviceCollection.AddIntegrationEventPublishingModule(
+        serviceCollection.AddEventsModule(
             serviceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING,
             serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME);
 
@@ -47,7 +47,7 @@ internal static class ServiceCollectionExtensions
 
     private static void AddShared(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
-        serviceCollection.AddDbContext<IntegrationEventPublishingDatabaseContext>(
+        serviceCollection.AddDbContext<EventsDatabaseContext>(
             options => options.UseSqlServer(
                 configuration
                     .GetSection(ConnectionStringsOptions.ConnectionStrings)

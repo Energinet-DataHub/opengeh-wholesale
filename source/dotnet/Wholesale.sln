@@ -30,7 +30,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebApi", "WebApi", "{B64D54
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Batches", "Batches", "{B1CB77BA-0D18-410C-BC65-DDA21275E99E}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IntegrationEventPublishing", "IntegrationEventPublishing", "{AEB36AF9-5E4E-4BF9-990D-F6D65E9E2482}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Events", "Events", "{AEB36AF9-5E4E-4BF9-990D-F6D65E9E2482}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Batches.Application", "wholesale-api\Batches\Batches.Application\Batches.Application.csproj", "{ED06DBF9-57AB-40BA-B86B-BA799B52F11C}"
 EndProject
@@ -38,7 +38,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Batches.Infrastructure", "w
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Batches.Interfaces", "wholesale-api\Batches\Batches.Interfaces\Batches.Interfaces.csproj", "{54B65F5A-8D27-42E0-8FC1-6DAC21DD9E80}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationEventPublishing.Application", "wholesale-api\IntegrationEventPublishing\IntegrationEventPublishing.Application\IntegrationEventPublishing.Application.csproj", "{7458B732-DD06-4390-A57F-8CFC84D96F4C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Events.Application", "wholesale-api\Events\Events.Application\Events.Application.csproj", "{7458B732-DD06-4390-A57F-8CFC84D96F4C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CalculationResults", "CalculationResults", "{6E82058A-D327-44E7-A4BC-3635966A6FC5}"
 EndProject
@@ -52,7 +52,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{A63AF6CC
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{8148F1A2-0836-4957-81C4-9786229266B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationEventPublishing.Infrastructure", "wholesale-api\IntegrationEventPublishing\IntegrationEventPublishing.Infrastructure\IntegrationEventPublishing.Infrastructure.csproj", "{793B8FF4-26FB-4783-90AA-6348FD643B33}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Events.Infrastructure", "wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj", "{793B8FF4-26FB-4783-90AA-6348FD643B33}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalculationResults.Infrastructure", "wholesale-api\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj", "{E384C3FE-C4C8-45D8-9E41-40DF4D05C867}"
 EndProject
@@ -64,9 +64,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalculationResults.Integrat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalculationResults.UnitTests", "wholesale-api\CalculationResults\CalculationResults.UnitTests\CalculationResults.UnitTests.csproj", "{3AB56E38-3179-4E37-B9AA-0E2DE7597431}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationEventPublishing.UnitTests", "wholesale-api\IntegrationEventPublishing\IntegrationEventPublishing.UnitTests\IntegrationEventPublishing.UnitTests.csproj", "{39CC42A2-FD5D-4B2C-87B6-22442E240B40}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Events.UnitTests", "wholesale-api\Events\Events.UnitTests\Events.UnitTests.csproj", "{39CC42A2-FD5D-4B2C-87B6-22442E240B40}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationEventPublishing.IntegrationTests", "wholesale-api\IntegrationEventPublishing\IntegrationEventPublishing.IntegrationTests\IntegrationEventPublishing.IntegrationTests.csproj", "{54AC1F13-F6AE-418B-A21F-AF2C341EC94C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Events.IntegrationTests", "wholesale-api\Events\Events.IntegrationTests\Events.IntegrationTests.csproj", "{54AC1F13-F6AE-418B-A21F-AF2C341EC94C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
