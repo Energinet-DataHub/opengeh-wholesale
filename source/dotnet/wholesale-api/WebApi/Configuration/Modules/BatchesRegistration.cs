@@ -61,6 +61,7 @@ public static class BatchesRegistration
         serviceCollection.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
 
         serviceCollection.AddScoped<ICreateBatchHandler, CreateBatchHandler>();
+        serviceCollection.AddScoped<IStartCalculationHandler, StartCalculationHandler>();
 
         serviceCollection.AddHostedService<StartCalculationWorker>();
         serviceCollection.AddHostedService<UpdateBatchExecutionStateWorker>();
