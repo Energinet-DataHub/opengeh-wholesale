@@ -89,18 +89,4 @@ public class SqlStatementClient : ISqlStatementClient
         httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
         httpClient.BaseAddress = new Uri(options.Value.DATABRICKS_WORKSPACE_URL);
     }
-
-    private static ProcessStepResult CreateProcessStepResult(
-        TimeSeriesType timeSeriesType,
-        Table resultTable)
-    {
-        var pointsDto = Enumerable.Range(0, resultTable.RowCount)
-            .Select(row => new TimeSeriesPoint(
-                DateTimeOffset.Parse(resultTable[row, ResultColumnNames.Time]),
-                decimal.Parse(resultTable[row, ResultColumnNames.Quantity], CultureInfo.InvariantCulture),
-                QuantityQualityMapper.FromDeltaTableValue(resultTable[row, ResultColumnNames.QuantityQuality])))
-            .ToList();
-
-        return new ProcessStepResult(timeSeriesType, pointsDto.ToArray());
-    }
 }

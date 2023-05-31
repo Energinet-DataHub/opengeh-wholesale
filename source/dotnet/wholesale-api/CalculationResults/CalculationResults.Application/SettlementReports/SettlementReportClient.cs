@@ -27,17 +27,17 @@ public class SettlementReportClient : ISettlementReportClient
 {
     private readonly IBatchApplicationService _batchRepository;
     private readonly ISettlementReportResultsCsvWriter _settlementReportResultsCsvWriter;
-    private readonly ISettlementReportResultRepository _settlementReportResultRepository;
+    private readonly ISettlementReportResultService _settlementReportResultService;
     private readonly ISettlementReportRepository _settlementReportRepository;
 
     public SettlementReportClient(
         IBatchApplicationService batchRepository,
         ISettlementReportResultsCsvWriter settlementReportResultsCsvWriter,
         ISettlementReportRepository settlementReportRepository,
-        ISettlementReportResultRepository settlementReportResultRepository)
+        ISettlementReportResultService settlementReportResultService)
     {
         _batchRepository = batchRepository;
-        _settlementReportResultRepository = settlementReportResultRepository;
+        _settlementReportResultService = settlementReportResultService;
         _settlementReportResultsCsvWriter = settlementReportResultsCsvWriter;
         _settlementReportRepository = settlementReportRepository;
     }
@@ -61,7 +61,7 @@ public class SettlementReportClient : ISettlementReportClient
         if (processType == ProcessType.Aggregation)
             throw new BusinessValidationException($"{ProcessType.Aggregation} is not a valid process type for settlement reports.");
 
-        var resultRows = await _settlementReportResultRepository.GetRowsAsync(
+        var resultRows = await _settlementReportResultService.GetRowsAsync(
                 gridAreaCodes,
                 processType,
                 Instant.FromDateTimeOffset(periodStart),

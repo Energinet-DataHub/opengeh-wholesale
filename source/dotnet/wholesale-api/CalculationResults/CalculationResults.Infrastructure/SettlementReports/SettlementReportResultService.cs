@@ -13,17 +13,18 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Application;
-using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 using Energinet.DataHub.Wholesale.Common.Models;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 
-public class SettlementReportResultRepository : ISettlementReportResultRepository
+public class SettlementReportResultService : ISettlementReportResultService
 {
     private readonly ISqlStatementClient _sqlStatementClient;
 
-    public SettlementReportResultRepository(ISqlStatementClient sqlStatementClient)
+    public SettlementReportResultService(ISqlStatementClient sqlStatementClient)
     {
         _sqlStatementClient = sqlStatementClient;
     }

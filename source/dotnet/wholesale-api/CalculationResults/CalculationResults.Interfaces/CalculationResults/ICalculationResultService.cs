@@ -12,17 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Common.Models;
-using NodaTime;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 
-public interface ISettlementReportResultRepository
+public interface ICalculationResultService
 {
-    Task<IEnumerable<SettlementReportResultRow>> GetRowsAsync(
-        string[] gridAreaCodes,
-        ProcessType processType,
-        Instant periodStart,
-        Instant periodEnd,
-        string? energySupplier);
+    Task<ProcessStepResult> GetAsync(
+        Guid batchId,
+        string gridAreaCode,
+        TimeSeriesType timeSeriesType,
+        string? energySupplierGln,
+        string? balanceResponsiblePartyGln);
 }

@@ -12,17 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 using Energinet.DataHub.Wholesale.Common.Models;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 
-public sealed record SettlementReportResultRow(
-    string GridArea,
-    ProcessType ProcessType,
-    Instant Time,
-    string Resolution,
-    MeteringPointType MeteringPointType,
-    SettlementMethod? SettlementMethod,
-    decimal Quantity);
+public interface ISettlementReportResultService
+{
+    Task<IEnumerable<SettlementReportResultRow>> GetRowsAsync(
+        string[] gridAreaCodes,
+        ProcessType processType,
+        Instant periodStart,
+        Instant periodEnd,
+        string? energySupplier);
+}

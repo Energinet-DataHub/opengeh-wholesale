@@ -14,9 +14,9 @@
 
 using System.Globalization;
 using Energinet.DataHub.Wholesale.CalculationResults.Application;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 using NodaTime.Text;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;

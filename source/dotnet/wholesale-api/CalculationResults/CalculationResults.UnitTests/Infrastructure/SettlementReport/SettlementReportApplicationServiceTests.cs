@@ -18,8 +18,9 @@ using System.Text;
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
-using Energinet.DataHub.Wholesale.CalculationResults.Application;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 using Energinet.DataHub.Wholesale.Common.Models;
 using Moq;
 using Xunit;
@@ -36,7 +37,7 @@ public class SettlementReportApplicationServiceTests
         [Frozen] Mock<IBatchApplicationService> batchApplicationServiceMock,
         [Frozen] Mock<ISettlementReportResultsCsvWriter> settlementReportResultsCsvWriterMock,
         [Frozen] Mock<ISettlementReportRepository> settlementReportRepositoryMock,
-        [Frozen] Mock<ISettlementReportResultRepository> settlementReportResultRepositoryMock)
+        [Frozen] Mock<ISettlementReportResultService> settlementReportResultRepositoryMock)
     {
         // Arrange
         await using var memoryStream = new MemoryStream();
@@ -82,7 +83,7 @@ public class SettlementReportApplicationServiceTests
         [Frozen] Mock<IBatchApplicationService> batchApplicationServiceMock,
         [Frozen] Mock<ISettlementReportResultsCsvWriter> settlementReportResultsCsvWriterMock,
         [Frozen] Mock<ISettlementReportRepository> settlementReportRepositoryMock,
-        [Frozen] Mock<ISettlementReportResultRepository> settlementReportResultRepositoryMock)
+        [Frozen] Mock<ISettlementReportResultService> settlementReportResultRepositoryMock)
     {
         // Arrange
         await using var memoryStream = new MemoryStream();
@@ -122,7 +123,7 @@ public class SettlementReportApplicationServiceTests
         [Frozen] Mock<IBatchApplicationService> batchApplicationServiceMock,
         [Frozen] Mock<ISettlementReportResultsCsvWriter> settlementReportResultsCsvWriterMock,
         [Frozen] Mock<ISettlementReportRepository> settlementReportRepositoryMock,
-        [Frozen] Mock<ISettlementReportResultRepository> settlementReportResultRepositoryMock)
+        [Frozen] Mock<ISettlementReportResultService> settlementReportResultRepositoryMock)
     {
         // Arrange
         var sut = new SettlementReportClient(
