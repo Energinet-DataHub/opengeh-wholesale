@@ -44,7 +44,6 @@ public class BatchApplicationService : IBatchApplicationService
 
     public async Task UpdateExecutionStateAsync()
     {
-        // rerun
         await _batchExecutionStateInfrastructureService.UpdateExecutionStateAsync().ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
