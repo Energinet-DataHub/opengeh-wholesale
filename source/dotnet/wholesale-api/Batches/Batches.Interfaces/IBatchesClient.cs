@@ -20,4 +20,14 @@ namespace Energinet.DataHub.Wholesale.Batches.Interfaces;
 public interface IBatchesClient
 {
     Task<IEnumerable<BatchDto>> GetBatchesCompletedAfterAsync(Instant? completedTime);
+
+    Task<BatchDto> GetAsync(Guid batchId);
+
+    Task<IEnumerable<BatchDto>> SearchAsync(
+        IEnumerable<string> filterByGridAreaCodes,
+        BatchState? filterByExecutionState,
+        DateTimeOffset? minExecutionTime,
+        DateTimeOffset? maxExecutionTime,
+        DateTimeOffset? periodStart,
+        DateTimeOffset? periodEnd);
 }

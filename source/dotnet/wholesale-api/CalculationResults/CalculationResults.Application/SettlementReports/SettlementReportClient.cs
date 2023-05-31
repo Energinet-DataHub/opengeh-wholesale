@@ -25,13 +25,13 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementR
 
 public class SettlementReportClient : ISettlementReportClient
 {
-    private readonly IGetBatchHandler _batchRepository;
+    private readonly IBatchesClient _batchRepository;
     private readonly ISqlStatementClient _sqlStatementClient;
     private readonly ISettlementReportResultsCsvWriter _settlementReportResultsCsvWriter;
     private readonly ISettlementReportRepository _settlementReportRepository;
 
     public SettlementReportClient(
-        IGetBatchHandler batchRepository,
+        IBatchesClient batchRepository,
         ISqlStatementClient sqlStatementClient,
         ISettlementReportResultsCsvWriter settlementReportResultsCsvWriter,
         ISettlementReportRepository settlementReportRepository)
