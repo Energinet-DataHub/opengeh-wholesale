@@ -16,7 +16,13 @@ using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.Batches.Interfaces;
 
-public interface IBatchApplicationService
+public interface ISearchBatchHandler
 {
-    Task<BatchDto> GetAsync(Guid batchId);
+    Task<IEnumerable<BatchDto>> SearchAsync(
+        IEnumerable<string> filterByGridAreaCodes,
+        BatchState? filterByExecutionState,
+        DateTimeOffset? minExecutionTime,
+        DateTimeOffset? maxExecutionTime,
+        DateTimeOffset? periodStart,
+        DateTimeOffset? periodEnd);
 }
