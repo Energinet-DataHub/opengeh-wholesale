@@ -24,6 +24,8 @@ namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Common;
 
 public class RepeatingWorkerTests
 {
+    private const int CancellationTokenTimeOutMilliSeconds = 50;
+
     [Theory]
     [InlineAutoMoqData]
     public async Task WhenUnableToResolveService_FailToStart(
@@ -51,7 +53,7 @@ public class RepeatingWorkerTests
         services.AddScoped<ICorrelationContext>(_ => new CorrelationContext());
 
         var cancellationTokenSource = new CancellationTokenSource();
-        cancellationTokenSource.CancelAfter(TimeSpan.FromMilliseconds(100)); // Ought to be more than enough to invoke the service multiple times
+        cancellationTokenSource.CancelAfter(TimeSpan.FromMilliseconds(CancellationTokenTimeOutMilliSeconds)); // Ought to be more than enough to invoke the service multiple times
 
         var sut = new FooRepeatingWorker(services.BuildServiceProvider(), logger);
 
@@ -83,7 +85,7 @@ public class RepeatingWorkerTests
         services.AddScoped<ICorrelationContext>(_ => new CorrelationContext());
 
         var cancellationTokenSource = new CancellationTokenSource();
-        cancellationTokenSource.CancelAfter(TimeSpan.FromMilliseconds(100)); // Ought to be more than enough to invoke the service multiple times
+        cancellationTokenSource.CancelAfter(TimeSpan.FromMilliseconds(CancellationTokenTimeOutMilliSeconds)); // Ought to be more than enough to invoke the service multiple times
 
         var sut = new FooRepeatingWorker(services.BuildServiceProvider(), loggerMock.Object);
 
@@ -118,11 +120,14 @@ public class RepeatingWorkerTests
         // Arrange
         services.AddScoped<IFooService>(_ => fooServiceMock.Object);
         services.AddScoped<ICorrelationContext>(_ => new CorrelationContext());
+        var provider = services.BuildServiceProvider();
+        // ReSharper disable once UnusedVariable - force time consuming creation of proxy before starting token timeOut
+        var unused = fooServiceMock.Object;
 
         var cancellationTokenSource = new CancellationTokenSource();
-        cancellationTokenSource.CancelAfter(TimeSpan.FromMilliseconds(100)); // Ought to be more than enough to invoke the service multiple times
+        cancellationTokenSource.CancelAfter(TimeSpan.FromMilliseconds(CancellationTokenTimeOutMilliSeconds)); // Ought to be more than enough to invoke the service multiple times
 
-        var sut = new FooRepeatingWorker(services.BuildServiceProvider(), loggerMock.Object);
+        var sut = new FooRepeatingWorker(provider, loggerMock.Object);
 
         // Act
         try
