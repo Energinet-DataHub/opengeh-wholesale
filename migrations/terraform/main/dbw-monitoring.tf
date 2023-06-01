@@ -6,17 +6,9 @@ adding a query using the sql warehouse
 adding a job to schedule the query
 */
 
-resource "databricks_sql_endpoint" "this" {
-  name             = "Migration endpoint"
-  cluster_size     = "Small"
-  max_num_clusters = 1
-  auto_stop_mins   = 60
-  warehouse_type   = "PRO"
-}
-
 # query for monitor_wholesale_time_series
 resource "databricks_sql_query" "monitor_wholesale_time_series" {
-  data_source_id = databricks_sql_endpoint.this.data_source_id
+  data_source_id = databricks_sql_endpoint.migration_sql_endpoint.data_source_id
   name           = "Monitor_wholesale_time_series"
   query          = <<EOT
     select case when count(*) = 0 then raise_error("table is empty") end from wholesale.time_series_points;
@@ -25,7 +17,7 @@ resource "databricks_sql_query" "monitor_wholesale_time_series" {
 
 # query for monitor_wholesale_metering_points
 resource "databricks_sql_query" "monitor_wholesale_metering_points" {
-  data_source_id = databricks_sql_endpoint.this.data_source_id
+  data_source_id = databricks_sql_endpoint.migration_sql_endpoint.data_source_id
   name           = "Monitor_wholesale_metering_point"
   query          = <<EOT
     select case when count(*) = 0 then raise_error("table is empty") end from wholesale.metering_point_periods;
@@ -34,7 +26,7 @@ resource "databricks_sql_query" "monitor_wholesale_metering_points" {
 
 # query for monitor_eloverblik_time_series
 resource "databricks_sql_query" "monitor_eloverblik_time_series" {
-  data_source_id = databricks_sql_endpoint.this.data_source_id
+  data_source_id = databricks_sql_endpoint.migration_sql_endpoint.data_source_id
   name           = "Monitor_eloverblik_time_series"
   query          = <<EOT
     select case when count(*) = 0 then raise_error("table is empty") end from eloverblik.eloverblik_time_series_points
@@ -43,7 +35,7 @@ resource "databricks_sql_query" "monitor_eloverblik_time_series" {
 
 # job for monitor_wholesale_time_series
 resource "databricks_job" "monitor_wholesale_time_series" {
-  name = "Monitor_wholesale_time_series"
+  name                = "Monitor_wholesale_time_series"
   max_concurrent_runs = 2
 
   schedule {
@@ -55,7 +47,7 @@ resource "databricks_job" "monitor_wholesale_time_series" {
     task_key = "monitor_wholesale_time_series"
 
     sql_task {
-      warehouse_id = databricks_sql_endpoint.this.id
+      warehouse_id = databricks_sql_endpoint.migration_sql_endpoint.id
       query {
         query_id = databricks_sql_query.monitor_wholesale_time_series.id
       }
@@ -66,7 +58,7 @@ resource "databricks_job" "monitor_wholesale_time_series" {
 
 # job for monitor_wholesale_metering_points
 resource "databricks_job" "monitor_wholesale_metering_points" {
-  name = "Monitor_wholesale_metering_points"
+  name                = "Monitor_wholesale_metering_points"
   max_concurrent_runs = 2
 
   schedule {
@@ -78,7 +70,7 @@ resource "databricks_job" "monitor_wholesale_metering_points" {
     task_key = "monitor_wholesale_metering_points"
 
     sql_task {
-      warehouse_id = databricks_sql_endpoint.this.id
+      warehouse_id = databricks_sql_endpoint.migration_sql_endpoint.id
       query {
         query_id = databricks_sql_query.monitor_wholesale_metering_points.id
       }
@@ -88,7 +80,7 @@ resource "databricks_job" "monitor_wholesale_metering_points" {
 
 # job for monitor_eloverblik_time_series
 resource "databricks_job" "monitor_eloverblik_time_series" {
-  name = "Monitor_eloverblik_time_series"
+  name                = "Monitor_eloverblik_time_series"
   max_concurrent_runs = 2
 
   schedule {
@@ -100,7 +92,7 @@ resource "databricks_job" "monitor_eloverblik_time_series" {
     task_key = "monitor_eloverblik_time_series"
 
     sql_task {
-      warehouse_id = databricks_sql_endpoint.this.id
+      warehouse_id = databricks_sql_endpoint.migration_sql_endpoint.id
       query {
         query_id = databricks_sql_query.monitor_eloverblik_time_series.id
       }
