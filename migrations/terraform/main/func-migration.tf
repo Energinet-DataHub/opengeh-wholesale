@@ -16,4 +16,8 @@ module "func_migration" {
   dotnet_framework_version                 = "v7.0"
   use_dotnet_isolated_runtime              = true
   health_check_path                        = "/api/monitor/ready"
+  health_check_alert = {
+    action_group_id = data.azurerm_key_vault_secret.primary_action_group_id.value
+    enabled         = var.enable_health_check_alerts
+  }
 }
