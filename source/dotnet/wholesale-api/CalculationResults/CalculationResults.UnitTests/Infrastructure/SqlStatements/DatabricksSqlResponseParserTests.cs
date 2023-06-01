@@ -30,7 +30,7 @@ public class DatabricksSqlResponseParserTests
 
     public DatabricksSqlResponseParserTests()
     {
-        var stream = EmbeddedResources.GetStream("Infrastructure.CalculationResultClient.CalculationResult.json");
+        var stream = EmbeddedResources.GetStream("Infrastructure.SqlStatements.CalculationResult.json");
         using var reader = new StreamReader(stream);
         _succeededResultJson = reader.ReadToEnd();
 

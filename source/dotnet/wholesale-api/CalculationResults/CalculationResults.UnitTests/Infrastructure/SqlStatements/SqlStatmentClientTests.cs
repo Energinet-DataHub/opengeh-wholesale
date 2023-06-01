@@ -262,7 +262,7 @@ public class SqlStatmentClientTests
 
     private static StringContent GetValidHttpResponseContent()
     {
-        var stream = EmbeddedResources.GetStream("Infrastructure.CalculationResultClient.CalculationResult.json");
+        var stream = EmbeddedResources.GetStream("Infrastructure.SqlStatements.CalculationResult.json");
         using var reader = new StreamReader(stream);
         return new StringContent(reader.ReadToEnd());
     }
