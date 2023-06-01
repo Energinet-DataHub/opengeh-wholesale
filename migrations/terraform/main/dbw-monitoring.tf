@@ -47,7 +47,7 @@ resource "databricks_job" "monitor_wholesale_time_series" {
     task_key = "monitor_wholesale_time_series"
 
     sql_task {
-      warehouse_id = databricks_sql_endpoint.this.id
+      warehouse_id = databricks_sql_endpoint.migration_sql_endpoint.id
       query {
         query_id = databricks_sql_query.monitor_wholesale_time_series.id
       }
@@ -70,7 +70,7 @@ resource "databricks_job" "monitor_wholesale_metering_points" {
     task_key = "monitor_wholesale_metering_points"
 
     sql_task {
-      warehouse_id = databricks_sql_endpoint.this.id
+      warehouse_id = databricks_sql_endpoint.migration_sql_endpoint.id
       query {
         query_id = databricks_sql_query.monitor_wholesale_metering_points.id
       }
@@ -92,7 +92,7 @@ resource "databricks_job" "monitor_eloverblik_time_series" {
     task_key = "monitor_eloverblik_time_series"
 
     sql_task {
-      warehouse_id = databricks_sql_endpoint.this.id
+      warehouse_id = databricks_sql_endpoint.migration_sql_endpoint.id
       query {
         query_id = databricks_sql_query.monitor_eloverblik_time_series.id
       }
