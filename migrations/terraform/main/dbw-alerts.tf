@@ -42,7 +42,7 @@ resource "databricks_job" "duplicates_time_series_silver" {
   }
 
   email_notifications {
-    on_failure = [local.alert_job_email_notification]
+    on_failure = [var.alert_email_notification]
   }
 
   task {
@@ -93,7 +93,7 @@ resource "databricks_job" "duplicates_time_series_gold" {
   }
 
   email_notifications {
-    on_failure = [local.alert_job_email_notification]
+    on_failure = [var.alert_email_notification]
   }
 
   task {
@@ -144,7 +144,7 @@ resource "databricks_job" "duplicates_time_series_wholesale" {
   }
 
   email_notifications {
-    on_failure = [local.alert_job_email_notification]
+    on_failure = [var.alert_email_notification]
   }
 
   task {
@@ -195,7 +195,7 @@ resource "databricks_job" "duplicates_time_series_eloverblik" {
   }
 
   email_notifications {
-    on_failure = [local.alert_job_email_notification]
+    on_failure = [var.alert_email_notification]
   }
 
   task {
@@ -246,7 +246,7 @@ resource "databricks_job" "duplicates_metering_points_gold" {
   }
 
   email_notifications {
-    on_failure = [local.alert_job_email_notification]
+    on_failure = [var.alert_email_notification]
   }
 
   task {
@@ -297,7 +297,7 @@ resource "databricks_job" "duplicates_metering_point_periods_wholesale" {
   }
 
   email_notifications {
-    on_failure = [local.alert_job_email_notification]
+    on_failure = [var.alert_email_notification]
   }
 
   task {

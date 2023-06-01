@@ -42,3 +42,8 @@ variable "shared_resources_resource_group_name" {
   type        = string
   description = "Name of the Resource Group, that contains the shared resources."
 }
+
+variable "alert_email_notification" {
+  type        = string
+  description = "Email address for the teams channel that the alerts are sent to."
+}
