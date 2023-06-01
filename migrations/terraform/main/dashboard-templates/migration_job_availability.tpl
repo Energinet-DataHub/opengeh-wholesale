@@ -185,7 +185,7 @@
               },
               {
                 "name": "Query",
-                "value": "let taskKey = \"monitor_wholesale_metering_points\";\nlet failed =\n    DatabricksJobs\n    | where tostring(parse_json(tostring(RequestParams)).taskKey) == taskKey\n    | where ActionName in (\"runFailed\")\n    | count;\nlet succeeded = \n    DatabricksJobs\n    | where tostring(parse_json(tostring(RequestParams)).taskKey) == taskKey\n    | where ActionName in (\"runSucceeded\")\n    | count;\nunion\n    (DatabricksJobs\n    | take 1\n    | project\n        Metric = \"availability %\",\n        Value = round(todecimal(toscalar(succeeded)) / todecimal(toscalar(succeeded) + toscalar(failed)) * 100, 2)\n    ),\n    (DatabricksJobs\n    | take 1\n    | project Metric = \"succeeded\", Value = toreal(toscalar(succeeded))\n    ),\n    (DatabricksJobs\n    | take 1\n    | project Metric = \"failed\", Value = toreal(toscalar(failed))\n    ),\n    (DatabricksJobs\n    | take 1\n    | project Metric = \"total\", Value = toreal(toscalar(failed)) + toreal(toscalar(succeeded))\n    )\n| order by Metric asc\n\n",
+                "value": "let taskKey = \"monitor_wholesale_metering_points\";\nlet failed =\n    DatabricksJobs\n    | where RequestParams has taskKey\n    | where ActionName in (\"runFailed\")\n    | count;\nlet succeeded = \n    DatabricksJobs\n    | where RequestParams has taskKey\n    | where ActionName in (\"runSucceeded\")\n    | count;\nunion\n    (DatabricksJobs\n    | take 1\n    | project\n        Metric = \"availability %\",\n        Value = round(todecimal(toscalar(succeeded)) / todecimal(toscalar(succeeded) + toscalar(failed)) * 100, 2)\n    ),\n    (DatabricksJobs\n    | take 1\n    | project Metric = \"succeeded\", Value = toreal(toscalar(succeeded))\n    ),\n    (DatabricksJobs\n    | take 1\n    | project Metric = \"failed\", Value = toreal(toscalar(failed))\n    ),\n    (DatabricksJobs\n    | take 1\n    | project Metric = \"total\", Value = toreal(toscalar(failed)) + toreal(toscalar(succeeded))\n    )\n| order by Metric asc\n\n",
                 "isOptional": true
               },
               {
@@ -284,7 +284,7 @@
               },
               {
                 "name": "Query",
-                "value": "let taskKey = \"monitor_eloverblik_time_series\";\nDatabricksJobs\n| where parse_json(RequestParams).taskKey == taskKey\n| where ActionName in (\"runFailed\")\n| project runId = todecimal(parse_json(RequestParams).multitaskParentRunId), TimeGenerated\n| order by TimeGenerated asc\n",
+                "value": "let taskKey = \"monitor_eloverblik_time_series\";\nDatabricksJobs\n| where RequestParams has taskKey\n| where ActionName in (\"runFailed\")\n| project runId = todecimal(parse_json(RequestParams).multitaskParentRunId), TimeGenerated\n| order by TimeGenerated asc\n",
                 "isOptional": true
               },
               {
@@ -342,10 +342,10 @@
             "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
             "settings": {
               "content": {
-                "Query": "let job = \"monitor_wholesale_metering_points\";\nlet timeRangeEnd = todatetime(now() - 5m);\nlet timeRangeStart = startofday(timeRangeEnd - 30d);\nlet timeRange = range runTime from timeRangeStart to timeRangeEnd step 5m;\nlet data = DatabricksJobs\n    | project task = tostring(parse_json(RequestParams).taskKey), ActionName, runTime = todatetime(bin(TimeGenerated, 5m))\n    | where task == job\n    | where ActionName in (\"runStart\")\n    | summarize runs = count() by runTime, task;\ntimeRange \n    | extend task = job\n    | join kind=leftouter data on runTime and task\n    | project runTime, task, runs = iif(runs>0, 1, 0)\n    | order by runTime asc, task asc\n\n",
+                "Query": "let job = \"monitor_wholesale_metering_points\";\nlet timeRangeEnd = todatetime(now() - 5m);\nlet timeRangeStart = startofday(timeRangeEnd - 30d);\nlet timeRange = range runTime from timeRangeStart to timeRangeEnd step 5m;\nlet data = DatabricksJobs\n    | where RequestParams has job\n    | project task = job, ActionName, runTime = todatetime(bin(TimeGenerated, 5m))\n    | where ActionName in (\"runStart\")\n    | summarize runs = count() by runTime, task;\ntimeRange \n    | extend task = job\n    | join kind=leftouter data on runTime and task\n    | project runTime, task, runs = iif(runs>0, 1, 0)\n    | order by runTime asc, task asc\n\n",
                 "ControlType": "FrameControlChart",
                 "SpecificChart": "Line",
-                "PartTitle": "Job availabilty - monitor_wholesale_metering_points",
+                "PartTitle": "Job availability - monitor_wholesale_metering_points",
                 "PartSubTitle": "Job executed within a 5 min. timespan for 30 days",
                 "Dimensions": {
                   "xAxis": {
@@ -437,7 +437,7 @@
               },
               {
                 "name": "Query",
-                "value": "let taskKey = \"monitor_wholesale_time_series\";\nlet failed =\n    DatabricksJobs\n    | where tostring(parse_json(tostring(RequestParams)).taskKey) == taskKey\n    | where ActionName in (\"runFailed\")\n    | count;\nlet succeeded = \n    DatabricksJobs\n    | where tostring(parse_json(tostring(RequestParams)).taskKey) == taskKey\n    | where ActionName in (\"runSucceeded\")\n    | count;\nunion\n    (DatabricksJobs\n    | take 1\n    | project\n        Metric = \"availability %\",\n        Value = round(todecimal(toscalar(succeeded)) / todecimal(toscalar(succeeded) + toscalar(failed)) * 100, 2)\n    ),\n    (DatabricksJobs\n    | take 1\n    | project Metric = \"succeeded\", Value = toreal(toscalar(succeeded))\n    ),\n    (DatabricksJobs\n    | take 1\n    | project Metric = \"failed\", Value = toreal(toscalar(failed))\n    ),\n    (DatabricksJobs\n    | take 1\n    | project Metric = \"total\", Value = toreal(toscalar(failed)) + toreal(toscalar(succeeded))\n    )\n| order by Metric asc\n",
+                "value": "let taskKey = \"monitor_wholesale_time_series\";\nlet failed =\n    DatabricksJobs\n    | where RequestParams has taskKey\n    | where ActionName in (\"runFailed\")\n    | count;\nlet succeeded = \n    DatabricksJobs\n    | where RequestParams has taskKey\n    | where ActionName in (\"runSucceeded\")\n    | count;\nunion\n    (DatabricksJobs\n    | take 1\n    | project\n        Metric = \"availability %\",\n        Value = round(todecimal(toscalar(succeeded)) / todecimal(toscalar(succeeded) + toscalar(failed)) * 100, 2)\n    ),\n    (DatabricksJobs\n    | take 1\n    | project Metric = \"succeeded\", Value = toreal(toscalar(succeeded))\n    ),\n    (DatabricksJobs\n    | take 1\n    | project Metric = \"failed\", Value = toreal(toscalar(failed))\n    ),\n    (DatabricksJobs\n    | take 1\n    | project Metric = \"total\", Value = toreal(toscalar(failed)) + toreal(toscalar(succeeded))\n    )\n| order by Metric asc\n",
                 "isOptional": true
               },
               {
@@ -536,7 +536,7 @@
               },
               {
                 "name": "Query",
-                "value": "let taskKey = \"monitor_eloverblik_time_series\";\nDatabricksJobs\n| where parse_json(RequestParams).taskKey == taskKey\n| where ActionName in (\"runFailed\")\n| project runId = todecimal(parse_json(RequestParams).multitaskParentRunId), TimeGenerated\n| order by TimeGenerated asc\n",
+                "value": "let taskKey = \"monitor_eloverblik_time_series\";\nDatabricksJobs\n| where RequestParams has taskKey\n| where ActionName in (\"runFailed\")\n| project runId = todecimal(parse_json(RequestParams).multitaskParentRunId), TimeGenerated\n| order by TimeGenerated asc\n",
                 "isOptional": true
               },
               {
@@ -594,10 +594,10 @@
             "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
             "settings": {
               "content": {
-                "Query": "let job = \"monitor_wholesale_time_series\";\nlet timeRangeEnd = todatetime(now() - 5m);\nlet timeRangeStart = startofday(timeRangeEnd - 30d);\nlet timeRange = range runTime from timeRangeStart to timeRangeEnd step 5m;\nlet data = DatabricksJobs\n    | project task = tostring(parse_json(RequestParams).taskKey), ActionName, runTime = todatetime(bin(TimeGenerated, 5m))\n    | where task == job\n    | where ActionName in (\"runStart\")\n    | summarize runs = count() by runTime, task;\ntimeRange \n    | extend task = job\n    | join kind=leftouter data on runTime and task\n    | project runTime, task, runs = iif(runs>0, 1, 0)\n    | order by runTime asc, task asc\n\n",
+                "Query": "let job = \"monitor_wholesale_time_series\";\nlet timeRangeEnd = todatetime(now() - 5m);\nlet timeRangeStart = startofday(timeRangeEnd - 30d);\nlet timeRange = range runTime from timeRangeStart to timeRangeEnd step 5m;\nlet data = DatabricksJobs\n    | where RequestParams has job\n    | project task = job, ActionName, runTime = todatetime(bin(TimeGenerated, 5m))\n    | where ActionName in (\"runStart\")\n    | summarize runs = count() by runTime, task;\ntimeRange \n    | extend task = job\n    | join kind=leftouter data on runTime and task\n    | project runTime, task, runs = iif(runs>0, 1, 0)\n    | order by runTime asc, task asc\n\n",
                 "ControlType": "FrameControlChart",
                 "SpecificChart": "Line",
-                "PartTitle": "Job availabilty - monitor_wholesale_time_series",
+                "PartTitle": "Job availability - monitor_wholesale_time_series",
                 "PartSubTitle": "Job executed within a 5 min. timespan for 30 days",
                 "Dimensions": {
                   "xAxis": {
@@ -817,7 +817,7 @@
               },
               {
                 "name": "Query",
-                "value": "let taskKey = \"monitor_eloverblik_time_series\";\nlet failed =\n    DatabricksJobs\n    | where tostring(parse_json(tostring(RequestParams)).taskKey) == taskKey\n    | where ActionName in (\"runFailed\")\n    | count;\nlet succeeded = \n    DatabricksJobs\n    | where tostring(parse_json(tostring(RequestParams)).taskKey) == taskKey\n    | where ActionName in (\"runSucceeded\")\n    | count;\nunion\n    (DatabricksJobs\n    | take 1\n    | project\n        Metric = \"availability %\",\n        Value = round(todecimal(toscalar(succeeded)) / todecimal(toscalar(succeeded) + toscalar(failed)) * 100, 2)\n    ),\n    (DatabricksJobs\n    | take 1\n    | project Metric = \"succeeded\", Value = toreal(toscalar(succeeded))\n    ),\n    (DatabricksJobs\n    | take 1\n    | project Metric = \"failed\", Value = toreal(toscalar(failed))\n    ),\n    (DatabricksJobs\n    | take 1\n    | project Metric = \"total\", Value = toreal(toscalar(failed)) + toreal(toscalar(succeeded))\n    )\n| order by Metric asc\n\n",
+                "value": "let taskKey = \"monitor_eloverblik_time_series\";\nlet failed =\n    DatabricksJobs\n    | where RequestParams has taskKey\n    | where ActionName in (\"runFailed\")\n    | count;\nlet succeeded = \n    DatabricksJobs\n    | where RequestParams has taskKey\n    | where ActionName in (\"runSucceeded\")\n    | count;\nunion\n    (DatabricksJobs\n    | take 1\n    | project\n        Metric = \"availability %\",\n        Value = round(todecimal(toscalar(succeeded)) / todecimal(toscalar(succeeded) + toscalar(failed)) * 100, 2)\n    ),\n    (DatabricksJobs\n    | take 1\n    | project Metric = \"succeeded\", Value = toreal(toscalar(succeeded))\n    ),\n    (DatabricksJobs\n    | take 1\n    | project Metric = \"failed\", Value = toreal(toscalar(failed))\n    ),\n    (DatabricksJobs\n    | take 1\n    | project Metric = \"total\", Value = toreal(toscalar(failed)) + toreal(toscalar(succeeded))\n    )\n| order by Metric asc\n\n",
                 "isOptional": true
               },
               {
@@ -916,7 +916,7 @@
               },
               {
                 "name": "Query",
-                "value": "let taskKey = \"monitor_eloverblik_time_series\";\nDatabricksJobs\n| where parse_json(RequestParams).taskKey == taskKey\n| where ActionName in (\"runFailed\")\n| project runId = todecimal(parse_json(RequestParams).multitaskParentRunId), TimeGenerated\n| order by TimeGenerated asc\n",
+                "value": "let taskKey = \"monitor_eloverblik_time_series\";\nDatabricksJobs\n| where RequestParams has taskKey\n| where ActionName in (\"runFailed\")\n| project runId = todecimal(parse_json(RequestParams).multitaskParentRunId), TimeGenerated\n| order by TimeGenerated asc\n",
                 "isOptional": true
               },
               {
@@ -974,10 +974,10 @@
             "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
             "settings": {
               "content": {
-                "Query": "let job = \"monitor_eloverblik_time_series\";\nlet timeRangeEnd = todatetime(now() - 5m);\nlet timeRangeStart = startofday(timeRangeEnd - 30d);\nlet timeRange = range runTime from timeRangeStart to timeRangeEnd step 5m;\nlet data = DatabricksJobs\n    | project task = tostring(parse_json(RequestParams).taskKey), ActionName, runTime = todatetime(bin(TimeGenerated, 5m))\n    | where task == job\n    | where ActionName in (\"runStart\")\n    | summarize runs = count() by runTime, task;\ntimeRange \n    | extend task = job\n    | join kind=leftouter data on runTime and task\n    | project runTime, task, runs = iif(runs>0, 1, 0)\n    | order by runTime asc, task asc\n\n",
+                "Query": "let job = \"monitor_eloverblik_time_series\";\nlet timeRangeEnd = todatetime(now() - 5m);\nlet timeRangeStart = startofday(timeRangeEnd - 30d);\nlet timeRange = range runTime from timeRangeStart to timeRangeEnd step 5m;\nlet data = DatabricksJobs\n    | where RequestParams has job\n    | project task = job, ActionName, runTime = todatetime(bin(TimeGenerated, 5m))\n    | where ActionName in (\"runStart\")\n    | summarize runs = count() by runTime, task;\ntimeRange \n    | extend task = job\n    | join kind=leftouter data on runTime and task\n    | project runTime, task, runs = iif(runs>0, 1, 0)\n    | order by runTime asc, task asc\n\n",
                 "ControlType": "FrameControlChart",
                 "SpecificChart": "Line",
-                "PartTitle": "Job availabilty - monitor_eloverblik_time_series",
+                "PartTitle": "Job availability - monitor_eloverblik_time_series",
                 "PartSubTitle": "Job executed within a 5 min. timespan for 30 days",
                 "Dimensions": {
                   "xAxis": {
