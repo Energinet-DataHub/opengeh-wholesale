@@ -42,11 +42,13 @@ public static class CalculationResultsRegistration
         serviceCollection.AddScoped<IDataLakeClient, DataLakeClient>();
         serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
         serviceCollection.AddScoped<ICalculationResultClient, FileBasedCalculationResultClient>();
+        serviceCollection.AddScoped<ICalculationResultQueries, CalculationResultQueries>();
         serviceCollection.AddScoped<IActorClient, ActorClient>();
         serviceCollection.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
         serviceCollection.AddScoped<ISettlementReportRepository>(
             provider => new SettlementReportRepository(
                 provider.GetRequiredService<IDataLakeClient>(),
                 provider.GetRequiredService<IStreamZipper>()));
+        serviceCollection.AddScoped<ISettlementReportResultQueries, SettlementReportResultQueries>();
     }
 }

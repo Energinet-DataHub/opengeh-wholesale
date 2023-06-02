@@ -12,26 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
-using FluentAssertions;
-using Xunit;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.CalculationResultClient.Mappers;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 
-public class QuantityQualityMapperTests
+public interface ICalculationResultQueries
 {
-    [Fact]
-    public void MapQuality_ReturnsMappedQuality()
-    {
-        // Arrange
-        foreach (var type in Enum.GetValues(typeof(QuantityQuality)))
-        {
-            var expected = (QuantityQuality)type;
-            var input = expected.ToString().ToLower();
-
-            // Act & Assert
-            QuantityQualityMapper.FromDeltaTableValue(input).Should().Be(expected);
-        }
-    }
+    Task<ProcessStepResult> GetAsync(
+        Guid batchId,
+        string gridAreaCode,
+        TimeSeriesType timeSeriesType,
+        string? energySupplierGln,
+        string? balanceResponsiblePartyGln);
 }

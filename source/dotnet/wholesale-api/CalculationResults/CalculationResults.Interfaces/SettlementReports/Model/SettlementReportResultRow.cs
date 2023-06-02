@@ -16,21 +16,13 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.Common.Models;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Application;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 
-public interface ISqlStatementClient
-{
-    Task<ProcessStepResult> GetAsync(
-        Guid batchId,
-        string gridAreaCode,
-        TimeSeriesType timeSeriesType,
-        string? energySupplierGln,
-        string? balanceResponsiblePartyGln);
-
-    Task<IEnumerable<SettlementReportResultRow>> GetSettlementReportResultAsync(
-       string[] gridAreaCodes,
-       ProcessType processType,
-       Instant periodStart,
-       Instant periodEnd,
-       string? energySupplier);
-}
+public sealed record SettlementReportResultRow(
+    string GridArea,
+    ProcessType ProcessType,
+    Instant Time,
+    string Resolution,
+    MeteringPointType MeteringPointType,
+    SettlementMethod? SettlementMethod,
+    decimal Quantity);

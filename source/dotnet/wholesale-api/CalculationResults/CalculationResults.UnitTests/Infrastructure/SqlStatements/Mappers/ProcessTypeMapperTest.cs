@@ -14,24 +14,35 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.Common.Models;
 using FluentAssertions;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.CalculationResultClient.Mappers;
+namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SqlStatements.Mappers;
 
 [UnitTest]
-public class SettlementMethodMapperTests
+public class ProcessTypeMapperTests
 {
     [Theory]
-    [InlineData(DeltaTableTimeSeriesType.FlexConsumption, SettlementMethod.Flex)]
-    [InlineData(DeltaTableTimeSeriesType.Production, null)]
-    [InlineData(DeltaTableTimeSeriesType.NonProfiledConsumption, SettlementMethod.NonProfiled)]
-    public void ToDeltaTableValue_ReturnsExpectedSettlementMethod(string timeSeriesType, SettlementMethod? expected)
+    [InlineData(ProcessType.Aggregation, DeltaTableProcessType.Aggregation)]
+    [InlineData(ProcessType.BalanceFixing, DeltaTableProcessType.BalanceFixing)]
+    public void ToDeltaTableValue_ReturnsExpectedString(ProcessType type, string expected)
     {
         // Act
-        var actual = SettlementMethodMapper.FromDeltaTableValue(timeSeriesType);
+        var actual = ProcessTypeMapper.ToDeltaTableValue(type);
+
+        // Assert
+        actual.Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData(DeltaTableProcessType.Aggregation, ProcessType.Aggregation)]
+    [InlineData(DeltaTableProcessType.BalanceFixing, ProcessType.BalanceFixing)]
+    public void FromDeltaTableValue_ReturnsExpectedType(string deltaTableValue, ProcessType expected)
+    {
+        // Act
+        var actual = ProcessTypeMapper.FromDeltaTableValue(deltaTableValue);
 
         // Assert
         actual.Should().Be(expected);

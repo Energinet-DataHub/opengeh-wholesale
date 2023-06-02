@@ -12,17 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
-using Energinet.DataHub.Wholesale.Common.Models;
-using NodaTime;
+using FluentAssertions;
+using Xunit;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Application;
+namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SqlStatements.Mappers;
 
-public sealed record SettlementReportResultRow(
-    string GridArea,
-    ProcessType ProcessType,
-    Instant Time,
-    string Resolution,
-    MeteringPointType MeteringPointType,
-    SettlementMethod? SettlementMethod,
-    decimal Quantity);
+public class QuantityQualityMapperTests
+{
+    [Fact]
+    public void MapQuality_ReturnsMappedQuality()
+    {
+        // Arrange
+        foreach (var type in Enum.GetValues(typeof(QuantityQuality)))
+        {
+            var expected = (QuantityQuality)type;
+            var input = expected.ToString().ToLower();
+
+            // Act & Assert
+            QuantityQualityMapper.FromDeltaTableValue(input).Should().Be(expected);
+        }
+    }
+}
