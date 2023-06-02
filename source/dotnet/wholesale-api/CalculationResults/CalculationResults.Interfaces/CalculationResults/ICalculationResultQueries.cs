@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 
-public interface ICalculationResultService
+public interface ICalculationResultQueries
 {
     Task<ProcessStepResult> GetAsync(
         Guid batchId,

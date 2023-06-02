@@ -20,11 +20,11 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 
-public class SettlementReportResultService : ISettlementReportResultService
+public class SettlementReportResultQueries : ISettlementReportResultQueries
 {
     private readonly ISqlStatementClient _sqlStatementClient;
 
-    public SettlementReportResultService(ISqlStatementClient sqlStatementClient)
+    public SettlementReportResultQueries(ISqlStatementClient sqlStatementClient)
     {
         _sqlStatementClient = sqlStatementClient;
     }

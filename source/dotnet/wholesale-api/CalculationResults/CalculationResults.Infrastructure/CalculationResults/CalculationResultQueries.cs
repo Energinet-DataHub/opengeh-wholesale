@@ -21,11 +21,11 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 
-public class CalculationResultService : ICalculationResultService
+public class CalculationResultQueries : ICalculationResultQueries
 {
     private readonly ISqlStatementClient _sqlStatementClient;
 
-    public CalculationResultService(ISqlStatementClient sqlStatementClient)
+    public CalculationResultQueries(ISqlStatementClient sqlStatementClient)
     {
         _sqlStatementClient = sqlStatementClient;
     }

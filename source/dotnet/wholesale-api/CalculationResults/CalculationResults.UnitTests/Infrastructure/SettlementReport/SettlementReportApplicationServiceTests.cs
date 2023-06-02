@@ -37,7 +37,7 @@ public class SettlementReportApplicationServiceTests
         [Frozen] Mock<IBatchesClient> batchesClientMock,
         [Frozen] Mock<ISettlementReportResultsCsvWriter> settlementReportResultsCsvWriterMock,
         [Frozen] Mock<ISettlementReportRepository> settlementReportRepositoryMock,
-        [Frozen] Mock<ISettlementReportResultService> settlementReportResultRepositoryMock)
+        [Frozen] Mock<ISettlementReportResultQueries> settlementReportResultRepositoryMock)
     {
         // Arrange
         await using var memoryStream = new MemoryStream();
@@ -83,7 +83,7 @@ public class SettlementReportApplicationServiceTests
         [Frozen] Mock<IBatchesClient> batchesClientMock,
         [Frozen] Mock<ISettlementReportResultsCsvWriter> settlementReportResultsCsvWriterMock,
         [Frozen] Mock<ISettlementReportRepository> settlementReportRepositoryMock,
-        [Frozen] Mock<ISettlementReportResultService> settlementReportResultRepositoryMock)
+        [Frozen] Mock<ISettlementReportResultQueries> settlementReportResultRepositoryMock)
     {
         // Arrange
         await using var memoryStream = new MemoryStream();
@@ -123,7 +123,7 @@ public class SettlementReportApplicationServiceTests
         [Frozen] Mock<IBatchesClient> batchesClientMock,
         [Frozen] Mock<ISettlementReportResultsCsvWriter> settlementReportResultsCsvWriterMock,
         [Frozen] Mock<ISettlementReportRepository> settlementReportRepositoryMock,
-        [Frozen] Mock<ISettlementReportResultService> settlementReportResultRepositoryMock)
+        [Frozen] Mock<ISettlementReportResultQueries> settlementReportResultRepositoryMock)
     {
         // Arrange
         var sut = new SettlementReportClient(

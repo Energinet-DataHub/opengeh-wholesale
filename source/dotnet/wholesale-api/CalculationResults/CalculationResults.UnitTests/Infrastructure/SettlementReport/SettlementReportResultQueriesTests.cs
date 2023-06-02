@@ -29,7 +29,7 @@ using Xunit.Categories;
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SettlementReport;
 
 [UnitTest]
-public class SettlementReportResultServiceTests
+public class SettlementReportResultQueriesTests
 {
     private readonly Instant _somePeriodStart = Instant.FromUtc(2021, 3, 1, 10, 15);
     private readonly Instant _somePeriodEnd = Instant.FromUtc(2021, 3, 31, 10, 15);
@@ -43,7 +43,7 @@ public class SettlementReportResultServiceTests
     {
         // Arrange
         mockSqlStatementClient.Setup(s => s.ExecuteSqlStatementAsync(It.IsAny<string>())).ReturnsAsync(_someTable);
-        var sut = new SettlementReportResultService(mockSqlStatementClient.Object);
+        var sut = new SettlementReportResultQueries(mockSqlStatementClient.Object);
 
         // Act
         var actual = await sut.GetRowsAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null);
@@ -60,7 +60,7 @@ public class SettlementReportResultServiceTests
         var row = new[] { "123", "BalanceFixing", "2022-05-16T01:00:00.000Z", "non_profiled_consumption", "1.234" };
         var table = new Table(_columnNames,  new List<string[]> { row });
         mockSqlStatementClient.Setup(s => s.ExecuteSqlStatementAsync(It.IsAny<string>())).ReturnsAsync(table);
-        var sut = new SettlementReportResultService(mockSqlStatementClient.Object);
+        var sut = new SettlementReportResultQueries(mockSqlStatementClient.Object);
 
         // Act
         var actual = await sut.GetRowsAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null);

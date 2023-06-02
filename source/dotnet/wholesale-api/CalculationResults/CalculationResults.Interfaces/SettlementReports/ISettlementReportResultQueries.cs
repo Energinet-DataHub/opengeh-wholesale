@@ -18,7 +18,7 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 
-public interface ISettlementReportResultService
+public interface ISettlementReportResultQueries
 {
     Task<IEnumerable<SettlementReportResultRow>> GetRowsAsync(
         string[] gridAreaCodes,
