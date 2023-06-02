@@ -58,6 +58,14 @@ public class SettlementReportResultQueriesTests
     {
         // Arrange
         var row = new[] { "123", "BalanceFixing", "2022-05-16T01:00:00.000Z", "non_profiled_consumption", "1.234" };
+        var expected = new SettlementReportResultRow(
+            "123",
+            ProcessType.BalanceFixing,
+            Instant.FromUtc(2022, 5, 16, 1, 0, 0),
+            "PT15M",
+            MeteringPointType.Consumption,
+            SettlementMethod.NonProfiled,
+            1.234m);
         var table = new Table(_columnNames,  new List<string[]> { row });
         mockSqlStatementClient.Setup(s => s.ExecuteSqlStatementAsync(It.IsAny<string>())).ReturnsAsync(table);
         var sut = new SettlementReportResultQueries(mockSqlStatementClient.Object);
@@ -66,13 +74,6 @@ public class SettlementReportResultQueriesTests
         var actual = await sut.GetRowsAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null);
 
         // Assert
-        var actualRow = actual.First();
-        actualRow.Quantity.Should().Be(1.234m);
-        actualRow.Time.Should().Be(Instant.FromUtc(2022, 5, 16, 1, 0, 0));
-        actualRow.Resolution.Should().Be("PT15M");
-        actualRow.GridArea.Should().Be("123");
-        actualRow.SettlementMethod.Should().Be(SettlementMethod.NonProfiled);
-        actualRow.ProcessType.Should().Be(ProcessType.BalanceFixing);
-        actualRow.MeteringPointType.Should().Be(MeteringPointType.Consumption);
+        actual.First().Should().Be(expected);
     }
 }
