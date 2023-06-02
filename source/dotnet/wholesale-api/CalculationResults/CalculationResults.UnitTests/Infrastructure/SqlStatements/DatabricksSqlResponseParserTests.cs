@@ -20,7 +20,7 @@ using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.CalculationResultClient;
+namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SqlStatements;
 
 [UnitTest]
 public class DatabricksSqlResponseParserTests
@@ -30,7 +30,7 @@ public class DatabricksSqlResponseParserTests
 
     public DatabricksSqlResponseParserTests()
     {
-        var stream = EmbeddedResources.GetStream("Infrastructure.CalculationResultClient.CalculationResult.json");
+        var stream = EmbeddedResources.GetStream("Infrastructure.SqlStatements.CalculationResult.json");
         using var reader = new StreamReader(stream);
         _succeededResultJson = reader.ReadToEnd();
 

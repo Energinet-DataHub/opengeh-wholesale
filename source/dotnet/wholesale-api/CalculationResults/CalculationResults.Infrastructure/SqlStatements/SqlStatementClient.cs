@@ -12,19 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Globalization;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using Energinet.DataHub.Wholesale.CalculationResults.Application;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Common.DatabricksClient;
-using Energinet.DataHub.Wholesale.Common.Models;
-// TODO BJM: Should we avoid referencing the JobsApiClient project "just" to get access to the DatabricksOptions?
 using Microsoft.Extensions.Options;
-using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 
@@ -45,33 +36,7 @@ public class SqlStatementClient : ISqlStatementClient
         ConfigureHttpClient(_httpClient, _options);
     }
 
-    public async Task<IEnumerable<SettlementReportResultRow>> GetSettlementReportResultAsync(
-        string[] gridAreaCodes,
-        ProcessType processType,
-        Instant periodStart,
-        Instant periodEnd,
-        string? energySupplier)
-    {
-        var sql = SettlementReportSqlStatementFactory.Create(gridAreaCodes, processType, periodStart, periodEnd, energySupplier);
-
-        var resultTable = await ExecuteSqlStatementAsync(sql).ConfigureAwait(false);
-
-        return SettlementReportDataFactory.Create(resultTable);
-    }
-
-    public async Task<ProcessStepResult> GetAsync(
-        Guid batchId,
-        string gridAreaCode,
-        TimeSeriesType timeSeriesType,
-        string? energySupplierGln,
-        string? balanceResponsiblePartyGln)
-    {
-        await Task.Delay(1000).ConfigureAwait(false);
-
-        throw new NotImplementedException("GetAsync is not implemented yet");
-    }
-
-    private async Task<Table> ExecuteSqlStatementAsync(string sqlStatement)
+    public async Task<Table> ExecuteSqlStatementAsync(string sqlStatement)
     {
         const int timeOutPerAttemptSeconds = 30;
         const int maxAttempts = 16; // 8 minutes in total (16 * 30 seconds). The warehouse takes around 5 minutes to start if it has been stopped.
@@ -114,19 +79,5 @@ public class SqlStatementClient : ISqlStatementClient
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
         httpClient.BaseAddress = new Uri(options.Value.DATABRICKS_WORKSPACE_URL);
-    }
-
-    private static ProcessStepResult CreateProcessStepResult(
-        TimeSeriesType timeSeriesType,
-        Table resultTable)
-    {
-        var pointsDto = Enumerable.Range(0, resultTable.RowCount)
-            .Select(row => new TimeSeriesPoint(
-                DateTimeOffset.Parse(resultTable[row, ResultColumnNames.Time]),
-                decimal.Parse(resultTable[row, ResultColumnNames.Quantity], CultureInfo.InvariantCulture),
-                QuantityQualityMapper.FromDeltaTableValue(resultTable[row, ResultColumnNames.QuantityQuality])))
-            .ToList();
-
-        return new ProcessStepResult(timeSeriesType, pointsDto.ToArray());
     }
 }

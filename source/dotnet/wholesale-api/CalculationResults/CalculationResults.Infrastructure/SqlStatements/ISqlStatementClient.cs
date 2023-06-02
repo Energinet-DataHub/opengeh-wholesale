@@ -12,12 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Globalization;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports;
-
-public interface ISettlementReportResultsCsvWriter
+public interface ISqlStatementClient
 {
-    Task WriteAsync(Stream destination, IEnumerable<SettlementReportResultRow> rows, CultureInfo csvFormatLocale);
+    Task<Table> ExecuteSqlStatementAsync(string sqlStatement);
 }

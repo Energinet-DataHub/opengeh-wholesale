@@ -18,8 +18,9 @@ using System.Text;
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
-using Energinet.DataHub.Wholesale.CalculationResults.Application;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 using Energinet.DataHub.Wholesale.Common.Models;
 using Moq;
 using Xunit;
@@ -36,15 +37,15 @@ public class SettlementReportApplicationServiceTests
         [Frozen] Mock<IBatchesClient> batchesClientMock,
         [Frozen] Mock<ISettlementReportResultsCsvWriter> settlementReportResultsCsvWriterMock,
         [Frozen] Mock<ISettlementReportRepository> settlementReportRepositoryMock,
-        [Frozen] Mock<ISqlStatementClient> calculationResultClientMock)
+        [Frozen] Mock<ISettlementReportResultQueries> settlementReportResultRepositoryMock)
     {
         // Arrange
         await using var memoryStream = new MemoryStream();
         var sut = new SettlementReportClient(
             batchesClientMock.Object,
-            calculationResultClientMock.Object,
             settlementReportResultsCsvWriterMock.Object,
-            settlementReportRepositoryMock.Object);
+            settlementReportRepositoryMock.Object,
+            settlementReportResultRepositoryMock.Object);
 
         const string fileContent = "Unit Test File Contents";
 
@@ -82,15 +83,15 @@ public class SettlementReportApplicationServiceTests
         [Frozen] Mock<IBatchesClient> batchesClientMock,
         [Frozen] Mock<ISettlementReportResultsCsvWriter> settlementReportResultsCsvWriterMock,
         [Frozen] Mock<ISettlementReportRepository> settlementReportRepositoryMock,
-        [Frozen] Mock<ISqlStatementClient> calculationResultClientMock)
+        [Frozen] Mock<ISettlementReportResultQueries> settlementReportResultRepositoryMock)
     {
         // Arrange
         await using var memoryStream = new MemoryStream();
         var sut = new SettlementReportClient(
             batchesClientMock.Object,
-            calculationResultClientMock.Object,
             settlementReportResultsCsvWriterMock.Object,
-            settlementReportRepositoryMock.Object);
+            settlementReportRepositoryMock.Object,
+            settlementReportResultRepositoryMock.Object);
 
         const string fileContent = "Unit Test File Contents";
 
@@ -122,14 +123,14 @@ public class SettlementReportApplicationServiceTests
         [Frozen] Mock<IBatchesClient> batchesClientMock,
         [Frozen] Mock<ISettlementReportResultsCsvWriter> settlementReportResultsCsvWriterMock,
         [Frozen] Mock<ISettlementReportRepository> settlementReportRepositoryMock,
-        [Frozen] Mock<ISqlStatementClient> calculationResultClientMock)
+        [Frozen] Mock<ISettlementReportResultQueries> settlementReportResultRepositoryMock)
     {
         // Arrange
         var sut = new SettlementReportClient(
             batchesClientMock.Object,
-            calculationResultClientMock.Object,
             settlementReportResultsCsvWriterMock.Object,
-            settlementReportRepositoryMock.Object);
+            settlementReportRepositoryMock.Object,
+            settlementReportResultRepositoryMock.Object);
 
         // Act + Assert
         await Assert.ThrowsAsync<BusinessValidationException>(() => sut.CreateCompressedSettlementReportAsync(
