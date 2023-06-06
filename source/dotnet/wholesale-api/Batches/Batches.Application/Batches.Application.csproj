@@ -8,6 +8,10 @@
   <ItemGroup>
     <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="7.4.3" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+    <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.6.40">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
