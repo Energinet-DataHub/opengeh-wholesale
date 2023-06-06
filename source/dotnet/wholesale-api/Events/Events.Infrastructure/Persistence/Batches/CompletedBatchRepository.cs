@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Events.Application;
-using Energinet.DataHub.Wholesale.Events.Application.Model;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.Batches;

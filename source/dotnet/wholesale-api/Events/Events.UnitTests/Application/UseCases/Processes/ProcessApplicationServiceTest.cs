@@ -19,10 +19,9 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Actors.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Common.Models;
-using Energinet.DataHub.Wholesale.Events.Application;
+using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing;
+using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing.Model;
 using Energinet.DataHub.Wholesale.Events.Application.IntegrationEventsManagement;
-using Energinet.DataHub.Wholesale.Events.Application.Processes;
-using Energinet.DataHub.Wholesale.Events.Application.Processes.Model;
 using Moq;
 using NodaTime;
 using Xunit;
@@ -38,10 +37,9 @@ public class ProcessApplicationServiceTest
             [Frozen] Mock<IActorClient> actorRepositoryMock,
             [Frozen] Mock<ICalculationResultClient> processStepResultRepositoryMock,
             [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
-            [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
             [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
             IntegrationEventDto integrationEventDto,
-            ProcessApplicationService sut)
+            CalculationResultPublisher sut)
     {
         // Arrange
         var eventDto = new ProcessCompletedEventDto(
@@ -75,11 +73,10 @@ public class ProcessApplicationServiceTest
             .Returns(integrationEventDto);
 
         // Act
-        await sut.PublishCalculationResultCompletedIntegrationEventsAsync(eventDto);
+        await sut.PublishAsync(eventDto);
 
         // Assert
         integrationEventPublisherMock.Verify(x => x.PublishAsync(integrationEventDto), Times.Once);
-        unitOfWorkMock.Verify(x => x.CommitAsync());
     }
 
     [Theory]
@@ -89,10 +86,9 @@ public class ProcessApplicationServiceTest
             [Frozen] Mock<IActorClient> actorRepositoryMock,
             [Frozen] Mock<ICalculationResultClient> processStepResultRepositoryMock,
             [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
-            [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
             [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
             IntegrationEventDto integrationEventDto,
-            ProcessApplicationService sut)
+            CalculationResultPublisher sut)
     {
         // Arrange
         var eventDto = new ProcessCompletedEventDto(
@@ -126,11 +122,10 @@ public class ProcessApplicationServiceTest
             .Returns(integrationEventDto);
 
         // Act
-        await sut.PublishCalculationResultCompletedIntegrationEventsAsync(eventDto);
+        await sut.PublishAsync(eventDto);
 
         // Assert
         integrationEventPublisherMock.Verify(x => x.PublishAsync(integrationEventDto), Times.Once);
-        unitOfWorkMock.Verify(x => x.CommitAsync());
     }
 
     [Theory]
@@ -139,11 +134,10 @@ public class ProcessApplicationServiceTest
         [Frozen] Mock<IActorClient> actorRepositoryMock,
         [Frozen] Mock<ICalculationResultClient> processStepResultRepositoryMock,
         [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
-        [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
         IntegrationEventDto integrationEventDto,
         string glnNumber,
-        ProcessApplicationService sut)
+        CalculationResultPublisher sut)
     {
         // Arrange
         var eventDto = new ProcessCompletedEventDto(
@@ -178,11 +172,10 @@ public class ProcessApplicationServiceTest
             .Returns(integrationEventDto);
 
         //Act
-        await sut.PublishCalculationResultCompletedIntegrationEventsAsync(eventDto);
+        await sut.PublishAsync(eventDto);
 
         // Assert
         integrationEventPublisherMock.Verify(x => x.PublishAsync(integrationEventDto), Times.Once);
-        unitOfWorkMock.Verify(x => x.CommitAsync());
     }
 
     [Theory]
@@ -193,10 +186,9 @@ public class ProcessApplicationServiceTest
             [Frozen] Mock<ICalculationResultClient> processStepResultRepositoryMock,
             [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
             [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
-            [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
             string brpGlnNumber,
             IntegrationEventDto integrationEventDto,
-            ProcessApplicationService sut)
+            CalculationResultPublisher sut)
     {
         // Arrange
         var eventDto = new ProcessCompletedEventDto(
@@ -228,11 +220,10 @@ public class ProcessApplicationServiceTest
             .Returns(integrationEventDto);
 
         // Act
-        await sut.PublishCalculationResultCompletedIntegrationEventsAsync(eventDto);
+        await sut.PublishAsync(eventDto);
 
         // Assert
         integrationEventPublisherMock.Verify(x => x.PublishAsync(integrationEventDto), Times.Once);
-        unitOfWorkMock.Verify(x => x.CommitAsync());
     }
 
     [Theory]
@@ -242,12 +233,11 @@ public class ProcessApplicationServiceTest
             [Frozen] Mock<IActorClient> actorRepositoryMock,
             [Frozen] Mock<ICalculationResultClient> processStepResultRepositoryMock,
             [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
-            [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
             [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
             IntegrationEventDto integrationEventDto,
             string brpGlnNumber,
             string glnNumber,
-            ProcessApplicationService sut)
+            CalculationResultPublisher sut)
     {
         // Arrange
         var eventDto = new ProcessCompletedEventDto(
@@ -290,10 +280,9 @@ public class ProcessApplicationServiceTest
             .Returns(integrationEventDto);
 
         // Act
-        await sut.PublishCalculationResultCompletedIntegrationEventsAsync(eventDto);
+        await sut.PublishAsync(eventDto);
 
         // Assert
         integrationEventPublisherMock.Verify(x => x.PublishAsync(integrationEventDto), Times.Once);
-        unitOfWorkMock.Verify(x => x.CommitAsync());
     }
 }
