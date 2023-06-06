@@ -15,9 +15,9 @@
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Events.Application;
-using Energinet.DataHub.Wholesale.Events.Application.Model;
-using Energinet.DataHub.Wholesale.Events.Application.Processes;
-using Energinet.DataHub.Wholesale.Events.Application.Processes.Model;
+using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing;
+using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing.Model;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using FluentAssertions;
 using Moq;
@@ -31,7 +31,7 @@ public class PublishCalculationResultsHandlerTests
     /// <summary>
     /// Publishing a batch includes
     /// - update timestamp <see cref="CompletedBatch.PublishedTime"/>
-    /// - delegate to the <see cref="IProcessApplicationService"/> to do the actual publishing
+    /// - delegate to the <see cref="ICalculationResultPublisher"/> to do the actual publishing
     /// - commit unit of work
     /// </summary>
     [Theory]
@@ -41,7 +41,7 @@ public class PublishCalculationResultsHandlerTests
         CompletedBatch completedBatch2,
         [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
-        [Frozen] Mock<IProcessApplicationService> processApplicationServiceMock,
+        [Frozen] Mock<ICalculationResultPublisher> processApplicationServiceMock,
         PublishCalculationResultsHandler sut)
     {
         // Arrange
@@ -67,7 +67,7 @@ public class PublishCalculationResultsHandlerTests
 
         // Publish invocation per grid area
         processApplicationServiceMock
-            .Verify(service => service.PublishCalculationResultCompletedIntegrationEventsAsync(It.IsAny<ProcessCompletedEventDto>()), Times.Exactly(expectedPublishCount));
+            .Verify(service => service.PublishAsync(It.IsAny<ProcessCompletedEventDto>()), Times.Exactly(expectedPublishCount));
 
         // Unit of work commit per batch
         unitOfWorkMock

@@ -15,8 +15,9 @@
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Events.Application;
+using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Energinet.DataHub.Wholesale.Events.Application.IntegrationEventsManagement;
-using Energinet.DataHub.Wholesale.Events.Application.Processes;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases.Factories;
 using Energinet.DataHub.Wholesale.Events.Application.Workers;
@@ -60,7 +61,7 @@ public static class EventsRegistration
 
     private static void AddApplications(this IServiceCollection services)
     {
-        services.AddScoped<IProcessApplicationService, ProcessApplicationService>();
+        services.AddScoped<ICalculationResultPublisher, CalculationResultPublisher>();
         // This is a temporary fix until we move registration out to each of the modules
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services
