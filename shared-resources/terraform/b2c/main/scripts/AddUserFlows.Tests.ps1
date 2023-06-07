@@ -22,8 +22,8 @@ Describe "AddUserFlows" {
                 Mock New-UserFlow {}
                 Mock New-UserFlowAttribute {}
 
-                $b2CTenantId     = "mocked_value"
-                $b2CClientId     = "mocked_value"
+                $b2CTenantId = "mocked_value"
+                $b2CClientId = "mocked_value"
                 $b2CClientSecret = "mocked_value"
                 $mitIdProviderId = "mocked_value"
 
@@ -46,8 +46,8 @@ Describe "AddUserFlows" {
                 Mock New-UserFlow {}
                 Mock New-UserFlowAttribute {}
 
-                $b2CTenantId     = "mocked_value"
-                $b2CClientId     = "mocked_value"
+                $b2CTenantId = "mocked_value"
+                $b2CClientId = "mocked_value"
                 $b2CClientSecret = "mocked_value"
                 $mitIdProviderId = "mocked_value"
 
