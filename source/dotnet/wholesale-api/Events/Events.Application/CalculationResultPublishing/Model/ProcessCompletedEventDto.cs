@@ -12,15 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Events.Application.Model;
+using Energinet.DataHub.Wholesale.Common.Models;
+using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Events.Application;
+namespace Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing.Model;
 
-public interface ICompletedBatchRepository
-{
-    Task AddAsync(IEnumerable<CompletedBatch> completedBatches);
-
-    Task<CompletedBatch?> GetLastCompletedOrNullAsync();
-
-    Task<CompletedBatch?> GetNextUnpublishedOrNullAsync();
-}
+public sealed record ProcessCompletedEventDto(
+    string GridAreaCode,
+    Guid BatchId,
+    ProcessType ProcessType,
+    Instant PeriodStart,
+    Instant PeriodEnd);

@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Events.Application.Processes.Model;
+using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing.Model;
 
-namespace Energinet.DataHub.Wholesale.Events.Application.Processes;
+namespace Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing;
 
-public interface IProcessApplicationService
+public interface ICalculationResultPublisher
 {
     /// <summary>
     /// Publish a calculation ready result event for each result in a grid area.
     /// </summary>
-    Task PublishCalculationResultCompletedIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEventDto);
+    Task PublishAsync(ProcessCompletedEventDto processCompletedEventDto);
 }

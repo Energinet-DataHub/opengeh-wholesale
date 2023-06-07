@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Events.Application.Processes;
-using Energinet.DataHub.Wholesale.Events.Application.Processes.Model;
+using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing;
+using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing.Model;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.UseCases;
@@ -21,14 +22,14 @@ namespace Energinet.DataHub.Wholesale.Events.Application.UseCases;
 public class PublishCalculationResultsHandler : IPublishCalculationResultsHandler
 {
     private readonly ICompletedBatchRepository _completedBatchRepository;
-    private readonly IProcessApplicationService _processApplicationService;
+    private readonly ICalculationResultPublisher _calculationResultPublisher;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IClock _clock;
 
-    public PublishCalculationResultsHandler(ICompletedBatchRepository completedBatchRepository, IProcessApplicationService processApplicationService, IUnitOfWork unitOfWork, IClock clock)
+    public PublishCalculationResultsHandler(ICompletedBatchRepository completedBatchRepository, ICalculationResultPublisher calculationResultPublisher, IUnitOfWork unitOfWork, IClock clock)
     {
         _completedBatchRepository = completedBatchRepository;
-        _processApplicationService = processApplicationService;
+        _calculationResultPublisher = calculationResultPublisher;
         _unitOfWork = unitOfWork;
         _clock = clock;
     }
@@ -44,7 +45,7 @@ public class PublishCalculationResultsHandler : IPublishCalculationResultsHandle
             foreach (var gridAreaCode in batch.GridAreaCodes)
             {
                 var @event = new ProcessCompletedEventDto(gridAreaCode, batch.Id, batch.ProcessType, batch.PeriodStart, batch.PeriodEnd);
-                await _processApplicationService.PublishCalculationResultCompletedIntegrationEventsAsync(@event).ConfigureAwait(false);
+                await _calculationResultPublisher.PublishAsync(@event).ConfigureAwait(false);
             }
 
             batch.PublishedTime = _clock.GetCurrentInstant();

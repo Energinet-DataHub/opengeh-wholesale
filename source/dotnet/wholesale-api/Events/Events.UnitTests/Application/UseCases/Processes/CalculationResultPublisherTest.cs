@@ -19,29 +19,32 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Actors.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Common.Models;
-using Energinet.DataHub.Wholesale.Events.Application;
+using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing;
+using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing.Model;
 using Energinet.DataHub.Wholesale.Events.Application.IntegrationEventsManagement;
-using Energinet.DataHub.Wholesale.Events.Application.Processes;
-using Energinet.DataHub.Wholesale.Events.Application.Processes.Model;
 using Moq;
 using NodaTime;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Application.UseCases.Processes;
 
-public class ProcessApplicationServiceTest
+public class CalculationResultPublisherTest
 {
     [Theory]
-    [InlineAutoMoqData]
+    [InlineAutoMoqData(TimeSeriesType.NonProfiledConsumption)]
+    [InlineAutoMoqData(TimeSeriesType.FlexConsumption)]
+    [InlineAutoMoqData(TimeSeriesType.Production)]
+    [InlineAutoMoqData(TimeSeriesType.NetExchangePerGa)]
+    [InlineAutoMoqData(TimeSeriesType.NetExchangePerNeighboringGa)]
     public async Task
-        PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForTotalGridAreaProductionOnce(
-            [Frozen] Mock<IActorClient> actorRepositoryMock,
-            [Frozen] Mock<ICalculationResultClient> processStepResultRepositoryMock,
+        PublishAsync_PublishEventForGridArea(
+            TimeSeriesType timeSeriesType,
+            [Frozen] Mock<IActorClient> actorClientMock,
+            [Frozen] Mock<ICalculationResultClient> calculationResultClientMock,
             [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
-            [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
             [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
             IntegrationEventDto integrationEventDto,
-            ProcessApplicationService sut)
+            CalculationResultPublisher sut)
     {
         // Arrange
         var eventDto = new ProcessCompletedEventDto(
@@ -52,17 +55,17 @@ public class ProcessApplicationServiceTest
             Instant.MinValue);
 
         var processStepResult = new ProcessStepResult(
-            TimeSeriesType.Production,
+            timeSeriesType,
             new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
 
-        processStepResultRepositoryMock.Setup(p => p.GetAsync(
+        calculationResultClientMock.Setup(p => p.GetAsync(
             eventDto.BatchId,
             It.IsAny<string>(),
-            TimeSeriesType.Production,
+            timeSeriesType,
             null,
             null)).ReturnsAsync(processStepResult);
 
-        actorRepositoryMock
+        actorClientMock
             .Setup(a => a.GetEnergySuppliersAsync(
                 eventDto.BatchId,
                 eventDto.GridAreaCode,
@@ -75,75 +78,25 @@ public class ProcessApplicationServiceTest
             .Returns(integrationEventDto);
 
         // Act
-        await sut.PublishCalculationResultCompletedIntegrationEventsAsync(eventDto);
+        await sut.PublishAsync(eventDto);
 
         // Assert
         integrationEventPublisherMock.Verify(x => x.PublishAsync(integrationEventDto), Times.Once);
-        unitOfWorkMock.Verify(x => x.CommitAsync());
     }
 
     [Theory]
-    [InlineAutoMoqData]
-    public async Task
-        PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForTotalGridAreaNonProfiledConsumptionOnce(
-            [Frozen] Mock<IActorClient> actorRepositoryMock,
-            [Frozen] Mock<ICalculationResultClient> processStepResultRepositoryMock,
-            [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
-            [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
-            [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
-            IntegrationEventDto integrationEventDto,
-            ProcessApplicationService sut)
-    {
-        // Arrange
-        var eventDto = new ProcessCompletedEventDto(
-            "805",
-            Guid.NewGuid(),
-            ProcessType.BalanceFixing,
-            Instant.MinValue,
-            Instant.MinValue);
-
-        var processStepResult = new ProcessStepResult(
-            TimeSeriesType.Production,
-            new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
-
-        processStepResultRepositoryMock.Setup(p => p.GetAsync(
-            eventDto.BatchId,
-            It.IsAny<string>(),
-            TimeSeriesType.NonProfiledConsumption,
-            null,
-            null)).ReturnsAsync(processStepResult);
-
-        actorRepositoryMock
-            .Setup(a => a.GetEnergySuppliersAsync(
-                eventDto.BatchId,
-                eventDto.GridAreaCode,
-                It.IsAny<TimeSeriesType>())).ReturnsAsync(Array.Empty<Actor>());
-
-        calculationResultCompletedFactoryMock
-            .Setup(c => c.CreateForTotalGridArea(
-                processStepResult,
-                eventDto))
-            .Returns(integrationEventDto);
-
-        // Act
-        await sut.PublishCalculationResultCompletedIntegrationEventsAsync(eventDto);
-
-        // Assert
-        integrationEventPublisherMock.Verify(x => x.PublishAsync(integrationEventDto), Times.Once);
-        unitOfWorkMock.Verify(x => x.CommitAsync());
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForEnergySupplier(
-        [Frozen] Mock<IActorClient> actorRepositoryMock,
-        [Frozen] Mock<ICalculationResultClient> processStepResultRepositoryMock,
+    [InlineAutoMoqData(TimeSeriesType.NonProfiledConsumption)]
+    [InlineAutoMoqData(TimeSeriesType.FlexConsumption)]
+    [InlineAutoMoqData(TimeSeriesType.Production)]
+    public async Task PublishAsync_PublishEventForEnergySupplier(
+        TimeSeriesType timeSeriesType,
+        [Frozen] Mock<IActorClient> actorClientMock,
+        [Frozen] Mock<ICalculationResultClient> calculationResultClientMock,
         [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
-        [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
         IntegrationEventDto integrationEventDto,
         string glnNumber,
-        ProcessApplicationService sut)
+        CalculationResultPublisher sut)
     {
         // Arrange
         var eventDto = new ProcessCompletedEventDto(
@@ -154,17 +107,17 @@ public class ProcessApplicationServiceTest
             Instant.MinValue);
 
         var processStepResult = new ProcessStepResult(
-            TimeSeriesType.NonProfiledConsumption,
+            timeSeriesType,
             new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
 
-        processStepResultRepositoryMock.Setup(p => p.GetAsync(
+        calculationResultClientMock.Setup(p => p.GetAsync(
             eventDto.BatchId,
             It.IsAny<string>(),
-            TimeSeriesType.NonProfiledConsumption,
+            timeSeriesType,
             glnNumber,
             null)).ReturnsAsync(processStepResult);
 
-        actorRepositoryMock
+        actorClientMock
             .Setup(a => a.GetEnergySuppliersAsync(
                 eventDto.BatchId,
                 It.IsAny<string>(),
@@ -178,25 +131,26 @@ public class ProcessApplicationServiceTest
             .Returns(integrationEventDto);
 
         //Act
-        await sut.PublishCalculationResultCompletedIntegrationEventsAsync(eventDto);
+        await sut.PublishAsync(eventDto);
 
         // Assert
         integrationEventPublisherMock.Verify(x => x.PublishAsync(integrationEventDto), Times.Once);
-        unitOfWorkMock.Verify(x => x.CommitAsync());
     }
 
     [Theory]
-    [InlineAutoMoqData]
+    [InlineAutoMoqData(TimeSeriesType.NonProfiledConsumption)]
+    [InlineAutoMoqData(TimeSeriesType.FlexConsumption)]
+    [InlineAutoMoqData(TimeSeriesType.Production)]
     public async Task
-        PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForBalanceResponsibleParty(
-            [Frozen] Mock<IActorClient> actorRepositoryMock,
-            [Frozen] Mock<ICalculationResultClient> processStepResultRepositoryMock,
+        PublishAsyncPublishEventForBalanceResponsibleParty(
+            TimeSeriesType timeSeriesType,
+            [Frozen] Mock<IActorClient> actorClientMock,
+            [Frozen] Mock<ICalculationResultClient> calculationResultClientMock,
             [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
             [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
-            [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
             string brpGlnNumber,
             IntegrationEventDto integrationEventDto,
-            ProcessApplicationService sut)
+            CalculationResultPublisher sut)
     {
         // Arrange
         var eventDto = new ProcessCompletedEventDto(
@@ -207,17 +161,17 @@ public class ProcessApplicationServiceTest
             Instant.MinValue);
 
         var processStepResult = new ProcessStepResult(
-            TimeSeriesType.NonProfiledConsumption,
+            timeSeriesType,
             new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
 
-        processStepResultRepositoryMock.Setup(p => p.GetAsync(
+        calculationResultClientMock.Setup(p => p.GetAsync(
             eventDto.BatchId,
             It.IsAny<string>(),
-            TimeSeriesType.NonProfiledConsumption,
+            timeSeriesType,
             null,
             brpGlnNumber)).ReturnsAsync(processStepResult);
 
-        actorRepositoryMock
+        actorClientMock
             .Setup(a => a.GetBalanceResponsiblePartiesAsync(
                 eventDto.BatchId,
                 It.IsAny<string>(),
@@ -228,26 +182,27 @@ public class ProcessApplicationServiceTest
             .Returns(integrationEventDto);
 
         // Act
-        await sut.PublishCalculationResultCompletedIntegrationEventsAsync(eventDto);
+        await sut.PublishAsync(eventDto);
 
         // Assert
         integrationEventPublisherMock.Verify(x => x.PublishAsync(integrationEventDto), Times.Once);
-        unitOfWorkMock.Verify(x => x.CommitAsync());
     }
 
     [Theory]
-    [InlineAutoMoqData]
+    [InlineAutoMoqData(TimeSeriesType.NonProfiledConsumption)]
+    [InlineAutoMoqData(TimeSeriesType.FlexConsumption)]
+    [InlineAutoMoqData(TimeSeriesType.Production)]
     public async Task
-        PublishCalculationResultReadyIntegrationEventsAsync_WhenCalled_PublishEventForEnergySupplierByBalanceResponsibleParty(
-            [Frozen] Mock<IActorClient> actorRepositoryMock,
-            [Frozen] Mock<ICalculationResultClient> processStepResultRepositoryMock,
+        PublishAsync_PublishEventForEnergySupplierByBalanceResponsibleParty(
+            TimeSeriesType timeSeriesType,
+            [Frozen] Mock<IActorClient> actorClientMock,
+            [Frozen] Mock<ICalculationResultClient> calculationResultClientMock,
             [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
-            [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
             [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
             IntegrationEventDto integrationEventDto,
             string brpGlnNumber,
             string glnNumber,
-            ProcessApplicationService sut)
+            CalculationResultPublisher sut)
     {
         // Arrange
         var eventDto = new ProcessCompletedEventDto(
@@ -258,23 +213,23 @@ public class ProcessApplicationServiceTest
             Instant.MinValue);
 
         var processStepResult = new ProcessStepResult(
-            TimeSeriesType.NonProfiledConsumption,
+            timeSeriesType,
             new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
 
-        processStepResultRepositoryMock.Setup(p => p.GetAsync(
+        calculationResultClientMock.Setup(p => p.GetAsync(
             eventDto.BatchId,
             It.IsAny<string>(),
-            TimeSeriesType.NonProfiledConsumption,
+            timeSeriesType,
             glnNumber,
             brpGlnNumber)).ReturnsAsync(processStepResult);
 
-        actorRepositoryMock
+        actorClientMock
             .Setup(a => a.GetBalanceResponsiblePartiesAsync(
                 eventDto.BatchId,
                 It.IsAny<string>(),
                 It.IsAny<TimeSeriesType>())).ReturnsAsync(new[] { new Actor(brpGlnNumber) });
 
-        actorRepositoryMock
+        actorClientMock
             .Setup(a => a.GetEnergySuppliersByBalanceResponsiblePartyAsync(
                 eventDto.BatchId,
                 It.IsAny<string>(),
@@ -290,10 +245,9 @@ public class ProcessApplicationServiceTest
             .Returns(integrationEventDto);
 
         // Act
-        await sut.PublishCalculationResultCompletedIntegrationEventsAsync(eventDto);
+        await sut.PublishAsync(eventDto);
 
         // Assert
         integrationEventPublisherMock.Verify(x => x.PublishAsync(integrationEventDto), Times.Once);
-        unitOfWorkMock.Verify(x => x.CommitAsync());
     }
 }

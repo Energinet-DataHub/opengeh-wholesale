@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System.Text.Json;
-using Energinet.DataHub.Wholesale.Events.Application.Model;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

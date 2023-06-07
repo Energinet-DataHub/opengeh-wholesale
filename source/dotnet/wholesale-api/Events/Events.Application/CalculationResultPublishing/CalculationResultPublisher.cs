@@ -15,54 +15,56 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Actors;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing.Model;
 using Energinet.DataHub.Wholesale.Events.Application.IntegrationEventsManagement;
-using Energinet.DataHub.Wholesale.Events.Application.Processes.Model;
 
-namespace Energinet.DataHub.Wholesale.Events.Application.Processes;
+namespace Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing;
 
-public class ProcessApplicationService : IProcessApplicationService
+public class CalculationResultPublisher : ICalculationResultPublisher
 {
     private readonly ICalculationResultClient _calculationResultClient;
     private readonly IActorClient _actorClient;
     private readonly ICalculationResultCompletedFactory _calculationResultCompletedFactory;
     private readonly IIntegrationEventPublisher _integrationEventPublisher;
-    private readonly IUnitOfWork _unitOfWork;
 
-    public ProcessApplicationService(
+    public CalculationResultPublisher(
         ICalculationResultClient calculationResultClient,
         IActorClient actorClient,
         ICalculationResultCompletedFactory integrationEventFactory,
-        IIntegrationEventPublisher integrationEventPublisher,
-        IUnitOfWork unitOfWork)
+        IIntegrationEventPublisher integrationEventPublisher)
     {
         _calculationResultClient = calculationResultClient;
         _actorClient = actorClient;
         _calculationResultCompletedFactory = integrationEventFactory;
         _integrationEventPublisher = integrationEventPublisher;
-        _unitOfWork = unitOfWork;
     }
 
-    public async Task PublishCalculationResultCompletedIntegrationEventsAsync(ProcessCompletedEventDto processCompletedEvent)
+    public async Task PublishAsync(ProcessCompletedEventDto processCompletedEvent)
     {
+        // Publish events for total grid area
+        await PublishForGridAreaAsync(processCompletedEvent, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
+        await PublishForGridAreaAsync(processCompletedEvent, TimeSeriesType.FlexConsumption).ConfigureAwait(false);
+        await PublishForGridAreaAsync(processCompletedEvent, TimeSeriesType.Production).ConfigureAwait(false);
+        await PublishForGridAreaAsync(processCompletedEvent, TimeSeriesType.NetExchangePerGa).ConfigureAwait(false);
+        await PublishForGridAreaAsync(processCompletedEvent, TimeSeriesType.NetExchangePerNeighboringGa).ConfigureAwait(false);
+
         // Publish events for energy suppliers
-        await PublishCalculationResultCompletedForEnergySuppliersAsync(processCompletedEvent, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
-
-        // Publish events for total grid area - production
-        await PublishCalculationResultCompletedForTotalGridAreaAsync(processCompletedEvent, TimeSeriesType.Production).ConfigureAwait(false);
-
-        // Publish events for total grid area - non profiled
-        await PublishCalculationResultCompletedForTotalGridAreaAsync(processCompletedEvent, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
+        await PublishForEnergySuppliersAsync(processCompletedEvent, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
+        await PublishForEnergySuppliersAsync(processCompletedEvent, TimeSeriesType.FlexConsumption).ConfigureAwait(false);
+        await PublishForEnergySuppliersAsync(processCompletedEvent, TimeSeriesType.Production).ConfigureAwait(false);
 
         // Publish events for balance responsible party
-        await PublishCalculationResultCompletedForBalanceResponsiblePartiesAsync(processCompletedEvent, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
+        await PublishForBalanceResponsiblePartiesAsync(processCompletedEvent, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
+        await PublishForBalanceResponsiblePartiesAsync(processCompletedEvent, TimeSeriesType.FlexConsumption).ConfigureAwait(false);
+        await PublishForBalanceResponsiblePartiesAsync(processCompletedEvent, TimeSeriesType.Production).ConfigureAwait(false);
 
         // Publish events for energy suppliers results for balance responsible parties
-        await PublishCalculationResultCompletedForEnergySupplierBalanceResponsiblePartiesAsync(processCompletedEvent, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
-
-        await _unitOfWork.CommitAsync().ConfigureAwait(false);
+        await PublishForEnergySupplierBalanceResponsiblePartiesAsync(processCompletedEvent, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
+        await PublishForEnergySupplierBalanceResponsiblePartiesAsync(processCompletedEvent, TimeSeriesType.FlexConsumption).ConfigureAwait(false);
+        await PublishForEnergySupplierBalanceResponsiblePartiesAsync(processCompletedEvent, TimeSeriesType.Production).ConfigureAwait(false);
     }
 
-    private async Task PublishCalculationResultCompletedForEnergySupplierBalanceResponsiblePartiesAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
+    private async Task PublishForEnergySupplierBalanceResponsiblePartiesAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
     {
         var brps = await _actorClient
             .GetBalanceResponsiblePartiesAsync(
@@ -94,7 +96,7 @@ public class ProcessApplicationService : IProcessApplicationService
         }
     }
 
-    private async Task PublishCalculationResultCompletedForTotalGridAreaAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
+    private async Task PublishForGridAreaAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
     {
             var productionForTotalGa = await _calculationResultClient
                 .GetAsync(
@@ -109,7 +111,7 @@ public class ProcessApplicationService : IProcessApplicationService
             await _integrationEventPublisher.PublishAsync(integrationEvent).ConfigureAwait(false);
     }
 
-    private async Task PublishCalculationResultCompletedForEnergySuppliersAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
+    private async Task PublishForEnergySuppliersAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
     {
             var energySuppliers = await _actorClient.GetEnergySuppliersAsync(
                 processCompletedEvent.BatchId,
@@ -132,7 +134,7 @@ public class ProcessApplicationService : IProcessApplicationService
             }
     }
 
-    private async Task PublishCalculationResultCompletedForBalanceResponsiblePartiesAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
+    private async Task PublishForBalanceResponsiblePartiesAsync(ProcessCompletedEventDto processCompletedEvent, TimeSeriesType timeSeriesType)
     {
         var balanceResponsibleParties = await _actorClient.GetBalanceResponsiblePartiesAsync(
             processCompletedEvent.BatchId,
