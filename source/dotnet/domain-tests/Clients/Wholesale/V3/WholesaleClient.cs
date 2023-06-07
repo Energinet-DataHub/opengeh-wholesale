@@ -3,19 +3,6 @@
 //     Generated using the NSwag toolchain v13.18.2.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v13.0.0.0)) (http://NSwag.org)
 // </auto-generated>
 //----------------------
-// Copyright 2020 Energinet DataHub A/S
-//
-// Licensed under the Apache License, Version 2.0 (the "License2");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
 
 using System.IO;
 
@@ -30,6 +17,8 @@ using System.IO;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Clients.v3
 {
+    using System = global::System;
+
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.18.2.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial interface IWholesaleClient_V3
     {
@@ -1242,8 +1231,20 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Clients.v3
         [System.Runtime.Serialization.EnumMember(Value = @"Production")]
         Production = 2,
 
-        [System.Runtime.Serialization.EnumMember(Value = @"NetExchangePerGridArea")]
-        NetExchangePerGridArea = 3,
+        [System.Runtime.Serialization.EnumMember(Value = @"NetExchangePerGa")]
+        NetExchangePerGa = 3,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"NetExchangePerNeighboringGa")]
+        NetExchangePerNeighboringGa = 4,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"GridLoss")]
+        GridLoss = 5,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"NegativeGridLoss")]
+        NegativeGridLoss = 6,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"PositiveGridLoss")]
+        PositiveGridLoss = 7,
 
     }
 
