@@ -1,3 +1,5 @@
 {
-    "ignore": "source/dotnet/domain-tests/Clients/"
+    "ignore": [
+        "source/dotnet/domain-tests/Clients/"
+    ]
 }
