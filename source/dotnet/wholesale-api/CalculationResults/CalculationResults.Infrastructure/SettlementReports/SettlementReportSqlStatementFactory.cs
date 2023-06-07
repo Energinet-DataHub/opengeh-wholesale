@@ -38,7 +38,13 @@ public static class SettlementReportSqlStatementFactory
         Instant periodStart,
         Instant periodEnd)
     {
-        var selectColumns = string.Join(", ", ResultColumnNames.GridArea, ResultColumnNames.BatchProcessType, ResultColumnNames.Time, ResultColumnNames.TimeSeriesType, ResultColumnNames.Quantity);
+        var selectColumns = string.Join(
+            ", ",
+            @$"t1.{ResultColumnNames.GridArea}",
+            @$"t1.{ResultColumnNames.BatchProcessType}",
+            @$"t1.{ResultColumnNames.Time}",
+            @$"t1.{ResultColumnNames.TimeSeriesType}",
+            @$"t1.{ResultColumnNames.Quantity}");
         var processTypeString = ProcessTypeMapper.ToDeltaTableValue(processType);
         var gridAreas = string.Join(",", gridAreaCodes);
         var startTimeString = periodStart.ToString();
@@ -48,14 +54,16 @@ public static class SettlementReportSqlStatementFactory
 
         return $@"
 SELECT {selectColumns}
-FROM wholesale_output.result
-WHERE
-    {ResultColumnNames.GridArea} IN ({gridAreas})
-    AND {ResultColumnNames.TimeSeriesType} IN ({timeSeriesTypesString})
-    AND {ResultColumnNames.BatchProcessType} = '{processTypeString}'
-    AND {ResultColumnNames.Time} BETWEEN '{startTimeString}' AND '{endTimeString}'
-    AND {ResultColumnNames.AggregationLevel} = '{DeltaTableAggregationLevel.GridArea}'
-ORDER by time
+FROM wholesale_output.result t1
+LEFT JOIN wholesale_output.result t2
+    ON t1.time = t2.time AND t1.batch_execution_time_start < t2.batch_execution_time_start
+WHERE t2.time IS NULL
+    AND t1.{ResultColumnNames.GridArea} IN ({gridAreas})
+    AND t1.{ResultColumnNames.TimeSeriesType} IN ({timeSeriesTypesString})
+    AND t1.{ResultColumnNames.BatchProcessType} = '{processTypeString}'
+    AND t1.{ResultColumnNames.Time} BETWEEN '{startTimeString}' AND '{endTimeString}'
+    AND t1.{ResultColumnNames.AggregationLevel} = '{DeltaTableAggregationLevel.GridArea}'
+ORDER BY t1.time
 ";
     }
 
@@ -66,7 +74,13 @@ ORDER by time
         Instant periodEnd,
         string energySupplier)
     {
-        var selectColumns = string.Join(", ", ResultColumnNames.GridArea, ResultColumnNames.BatchProcessType, ResultColumnNames.Time, ResultColumnNames.TimeSeriesType, ResultColumnNames.Quantity);
+        var selectColumns = string.Join(
+            ", ",
+            @$"t1.{ResultColumnNames.GridArea}",
+            @$"t1.{ResultColumnNames.BatchProcessType}",
+            @$"t1.{ResultColumnNames.Time}",
+            @$"t1.{ResultColumnNames.TimeSeriesType}",
+            @$"t1.{ResultColumnNames.Quantity}");
         var processTypeString = ProcessTypeMapper.ToDeltaTableValue(processType);
         var gridAreas = string.Join(",", gridAreaCodes);
         var startTimeString = periodStart.ToString();
@@ -76,15 +90,17 @@ ORDER by time
 
         return $@"
 SELECT {selectColumns}
-FROM wholesale_output.result
-WHERE
-    {ResultColumnNames.GridArea} IN ({gridAreas})
-    AND {ResultColumnNames.TimeSeriesType} IN ({timeSeriesTypesString})
-    AND {ResultColumnNames.BatchProcessType} = '{processTypeString}'
-    AND {ResultColumnNames.Time} BETWEEN '{startTimeString}' AND '{endTimeString}'
-    AND {ResultColumnNames.AggregationLevel} = '{DeltaTableAggregationLevel.EnergySupplierAndGridArea}'
-    AND {ResultColumnNames.EnergySupplierId} = '{energySupplier}'
-ORDER by time
+FROM wholesale_output.result t1
+LEFT JOIN wholesale_output.result t2
+    ON t1.time = t2.time AND t1.batch_execution_time_start < t2.batch_execution_time_start
+WHERE t2.time IS NULL
+    AND t1.{ResultColumnNames.GridArea} IN ({gridAreas})
+    AND t1.{ResultColumnNames.TimeSeriesType} IN ({timeSeriesTypesString})
+    AND t1.{ResultColumnNames.BatchProcessType} = '{processTypeString}'
+    AND t1.{ResultColumnNames.Time} BETWEEN '{startTimeString}' AND '{endTimeString}'
+    AND t1.{ResultColumnNames.AggregationLevel} = '{DeltaTableAggregationLevel.EnergySupplierAndGridArea}'
+    AND t1.{ResultColumnNames.EnergySupplierId} = '{energySupplier}'
+ORDER BY t1.time
 ";
     }
 
