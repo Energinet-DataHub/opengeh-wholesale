@@ -706,7 +706,11 @@
           "NonProfiledConsumption",
           "FlexConsumption",
           "Production",
-          "NetExchangePerGridArea"
+          "NetExchangePerGa",
+          "NetExchangePerNeighboringGa",
+          "GridLoss",
+          "NegativeGridLoss",
+          "PositiveGridLoss"
         ]
       }
     },
