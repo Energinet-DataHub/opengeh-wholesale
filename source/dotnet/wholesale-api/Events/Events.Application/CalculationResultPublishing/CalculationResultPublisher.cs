@@ -64,95 +64,95 @@ public class CalculationResultPublisher : ICalculationResultPublisher
         await PublishForEnergySupplierBalanceResponsiblePartiesAsync(batchGridAreaInfo, TimeSeriesType.Production).ConfigureAwait(false);
     }
 
-    private async Task PublishForEnergySupplierBalanceResponsiblePartiesAsync(BatchGridAreaInfo processCompletedEvent, TimeSeriesType timeSeriesType)
+    private async Task PublishForEnergySupplierBalanceResponsiblePartiesAsync(BatchGridAreaInfo batchGridAreaInfo, TimeSeriesType timeSeriesType)
     {
         var brps = await _actorClient
             .GetBalanceResponsiblePartiesAsync(
-                processCompletedEvent.BatchId,
-                processCompletedEvent.GridAreaCode,
+                batchGridAreaInfo.BatchId,
+                batchGridAreaInfo.GridAreaCode,
                 timeSeriesType).ConfigureAwait(false);
         foreach (var brp in brps)
         {
             var energySuppliersByBalanceResponsibleParty = await _actorClient
                 .GetEnergySuppliersByBalanceResponsiblePartyAsync(
-                    processCompletedEvent.BatchId,
-                    processCompletedEvent.GridAreaCode,
+                    batchGridAreaInfo.BatchId,
+                    batchGridAreaInfo.GridAreaCode,
                     timeSeriesType,
                     brp.Gln).ConfigureAwait(false);
 
             foreach (var energySupplier in energySuppliersByBalanceResponsibleParty)
             {
                 var result = await _calculationResultClient.GetAsync(
-                        processCompletedEvent.BatchId,
-                        processCompletedEvent.GridAreaCode,
+                        batchGridAreaInfo.BatchId,
+                        batchGridAreaInfo.GridAreaCode,
                         timeSeriesType,
                         energySupplier.Gln,
                         brp.Gln)
                     .ConfigureAwait(false);
 
-                var integrationEvent = _calculationResultCompletedFactory.CreateForEnergySupplierByBalanceResponsibleParty(result, processCompletedEvent, energySupplier.Gln, brp.Gln);
+                var integrationEvent = _calculationResultCompletedFactory.CreateForEnergySupplierByBalanceResponsibleParty(result, batchGridAreaInfo, energySupplier.Gln, brp.Gln);
                 await _integrationEventPublisher.PublishAsync(integrationEvent).ConfigureAwait(false);
             }
         }
     }
 
-    private async Task PublishForGridAccessProviderAsync(BatchGridAreaInfo processCompletedEvent, TimeSeriesType timeSeriesType)
+    private async Task PublishForGridAccessProviderAsync(BatchGridAreaInfo batchGridAreaInfo, TimeSeriesType timeSeriesType)
     {
             var productionForTotalGa = await _calculationResultClient
                 .GetAsync(
-                    processCompletedEvent.BatchId,
-                    processCompletedEvent.GridAreaCode,
+                    batchGridAreaInfo.BatchId,
+                    batchGridAreaInfo.GridAreaCode,
                     timeSeriesType,
                     null,
                     null)
                 .ConfigureAwait(false);
 
-            var integrationEvent = _calculationResultCompletedFactory.CreateForTotalGridArea(productionForTotalGa, processCompletedEvent);
+            var integrationEvent = _calculationResultCompletedFactory.CreateForTotalGridArea(productionForTotalGa, batchGridAreaInfo);
             await _integrationEventPublisher.PublishAsync(integrationEvent).ConfigureAwait(false);
     }
 
-    private async Task PublishForEnergySuppliersAsync(BatchGridAreaInfo processCompletedEvent, TimeSeriesType timeSeriesType)
+    private async Task PublishForEnergySuppliersAsync(BatchGridAreaInfo batchGridAreaInfo, TimeSeriesType timeSeriesType)
     {
             var energySuppliers = await _actorClient.GetEnergySuppliersAsync(
-                processCompletedEvent.BatchId,
-                processCompletedEvent.GridAreaCode,
+                batchGridAreaInfo.BatchId,
+                batchGridAreaInfo.GridAreaCode,
                 timeSeriesType).ConfigureAwait(false);
 
             foreach (var energySupplier in energySuppliers)
             {
                 var processStepResultDto = await _calculationResultClient
                     .GetAsync(
-                        processCompletedEvent.BatchId,
-                        processCompletedEvent.GridAreaCode,
+                        batchGridAreaInfo.BatchId,
+                        batchGridAreaInfo.GridAreaCode,
                         timeSeriesType,
                         energySupplier.Gln,
                         null)
                     .ConfigureAwait(false);
 
-                var integrationEvent = _calculationResultCompletedFactory.CreateForEnergySupplier(processStepResultDto, processCompletedEvent, energySupplier.Gln);
+                var integrationEvent = _calculationResultCompletedFactory.CreateForEnergySupplier(processStepResultDto, batchGridAreaInfo, energySupplier.Gln);
                 await _integrationEventPublisher.PublishAsync(integrationEvent).ConfigureAwait(false);
             }
     }
 
-    private async Task PublishForBalanceResponsiblePartiesAsync(BatchGridAreaInfo processCompletedEvent, TimeSeriesType timeSeriesType)
+    private async Task PublishForBalanceResponsiblePartiesAsync(BatchGridAreaInfo batchGridAreaInfo, TimeSeriesType timeSeriesType)
     {
         var balanceResponsibleParties = await _actorClient.GetBalanceResponsiblePartiesAsync(
-            processCompletedEvent.BatchId,
-            processCompletedEvent.GridAreaCode,
+            batchGridAreaInfo.BatchId,
+            batchGridAreaInfo.GridAreaCode,
             timeSeriesType).ConfigureAwait(false);
 
         foreach (var balanceResponsibleParty in balanceResponsibleParties)
         {
             var processStepResultDto = await _calculationResultClient
                 .GetAsync(
-                    processCompletedEvent.BatchId,
-                    processCompletedEvent.GridAreaCode,
+                    batchGridAreaInfo.BatchId,
+                    batchGridAreaInfo.GridAreaCode,
                     timeSeriesType,
                     null,
                     balanceResponsibleParty.Gln)
                 .ConfigureAwait(false);
 
-            var integrationEvent = _calculationResultCompletedFactory.CreateForBalanceResponsibleParty(processStepResultDto, processCompletedEvent, balanceResponsibleParty.Gln);
+            var integrationEvent = _calculationResultCompletedFactory.CreateForBalanceResponsibleParty(processStepResultDto, batchGridAreaInfo, balanceResponsibleParty.Gln);
             await _integrationEventPublisher.PublishAsync(integrationEvent).ConfigureAwait(false);
         }
     }

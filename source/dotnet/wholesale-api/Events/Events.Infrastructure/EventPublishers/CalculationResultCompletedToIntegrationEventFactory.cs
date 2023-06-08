@@ -54,9 +54,9 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.EventPublishers
             return CreateIntegrationEvent(result);
         }
 
-        public IntegrationEventDto CreateForEnergySupplierByBalanceResponsibleParty(CalculationResult calculationResultDto, BatchGridAreaInfo processCompletedEvent, string energySupplierGln, string brpGln)
+        public IntegrationEventDto CreateForEnergySupplierByBalanceResponsibleParty(CalculationResult calculationResultDto, BatchGridAreaInfo batchGridAreaInfo, string energySupplierGln, string brpGln)
         {
-            var result = _calculationResultCompletedIntegrationEventFactory.CreateForEnergySupplierByBalanceResponsibleParty(calculationResultDto, processCompletedEvent, energySupplierGln, brpGln);
+            var result = _calculationResultCompletedIntegrationEventFactory.CreateForEnergySupplierByBalanceResponsibleParty(calculationResultDto, batchGridAreaInfo, energySupplierGln, brpGln);
             return CreateIntegrationEvent(result);
         }
 

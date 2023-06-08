@@ -70,15 +70,15 @@ public class CalculationResultCompletedIntegrationEventFactory : ICalculationRes
 
     public CalculationResultCompleted CreateForEnergySupplierByBalanceResponsibleParty(
         CalculationResult result,
-        BatchGridAreaInfo processCompletedEvent,
+        BatchGridAreaInfo batchGridAreaInfo,
         string energySupplierGln,
         string balanceResponsiblePartyGln)
     {
-        var calculationResultCompleted = Create(result, processCompletedEvent);
+        var calculationResultCompleted = Create(result, batchGridAreaInfo);
         calculationResultCompleted.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea =
             new AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea
             {
-                GridAreaCode = processCompletedEvent.GridAreaCode,
+                GridAreaCode = batchGridAreaInfo.GridAreaCode,
                 EnergySupplierGlnOrEic = energySupplierGln,
                 BalanceResponsiblePartyGlnOrEic = balanceResponsiblePartyGln,
             };

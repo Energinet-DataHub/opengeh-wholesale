@@ -36,7 +36,7 @@ public interface ICalculationResultCompletedIntegrationEventFactory
 
     CalculationResultCompleted CreateForEnergySupplierByBalanceResponsibleParty(
         CalculationResult result,
-        BatchGridAreaInfo processCompletedEvent,
+        BatchGridAreaInfo batchGridAreaInfo,
         string energySupplierGln,
         string balanceResponsiblePartyGln);
 }
