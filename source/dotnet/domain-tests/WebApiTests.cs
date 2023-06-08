@@ -143,10 +143,9 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                     _defaultDelay);
                 var messageHasValue = true;
                 var match = false;
-
                 while (messageHasValue)
                 {
-                    var message = await Fixture.Receiver.ReceiveMessageAsync();
+                    var message = await Fixture.Receiver.ReceiveMessageAsync(maxWaitTime: TimeSpan.FromMinutes(5));
                     if (message != null)
                     {
                         match = message.Body.ToString().Contains(batchId.ToString());
