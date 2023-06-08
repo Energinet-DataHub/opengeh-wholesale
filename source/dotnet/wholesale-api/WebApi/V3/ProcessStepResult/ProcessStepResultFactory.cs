@@ -19,7 +19,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 
 public static class ProcessStepResultFactory
 {
-    public static ProcessStepResultDto Create(CalculationResults.Interfaces.CalculationResults.Model.ProcessStepResult stepResult, BatchDto batch)
+    public static ProcessStepResultDto Create(CalculationResults.Interfaces.CalculationResults.Model.CalculationResult stepResult, BatchDto batch)
     {
         return new ProcessStepResultDto(
             stepResult.Sum,

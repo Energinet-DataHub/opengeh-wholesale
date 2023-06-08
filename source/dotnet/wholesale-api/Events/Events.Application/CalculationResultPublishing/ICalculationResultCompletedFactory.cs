@@ -20,11 +20,11 @@ namespace Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublis
 
 public interface ICalculationResultCompletedFactory
 {
-    IntegrationEventDto CreateForEnergySupplier(ProcessStepResult processStepResult, ProcessCompletedEventDto processCompletedEvent, string energySupplierGln);
+    IntegrationEventDto CreateForEnergySupplier(CalculationResult calculationResult, BatchGridAreaInfo processCompletedEvent, string energySupplierGln);
 
-    IntegrationEventDto CreateForBalanceResponsibleParty(ProcessStepResult processStepResult, ProcessCompletedEventDto processCompletedEvent, string gln);
+    IntegrationEventDto CreateForBalanceResponsibleParty(CalculationResult calculationResult, BatchGridAreaInfo processCompletedEvent, string gln);
 
-    IntegrationEventDto CreateForTotalGridArea(ProcessStepResult processStepResult, ProcessCompletedEventDto processCompletedEvent);
+    IntegrationEventDto CreateForTotalGridArea(CalculationResult calculationResult, BatchGridAreaInfo processCompletedEvent);
 
-    IntegrationEventDto CreateForEnergySupplierByBalanceResponsibleParty(ProcessStepResult result, ProcessCompletedEventDto processCompletedEvent, string energySupplierGln, string brpGln);
+    IntegrationEventDto CreateForEnergySupplierByBalanceResponsibleParty(CalculationResult result, BatchGridAreaInfo processCompletedEvent, string energySupplierGln, string brpGln);
 }

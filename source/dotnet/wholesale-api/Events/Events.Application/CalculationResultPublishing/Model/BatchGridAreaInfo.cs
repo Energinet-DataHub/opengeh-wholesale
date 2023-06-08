@@ -17,7 +17,7 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing.Model;
 
-public sealed record ProcessCompletedEventDto(
+public sealed record BatchGridAreaInfo(
     string GridAreaCode,
     Guid BatchId,
     ProcessType ProcessType,

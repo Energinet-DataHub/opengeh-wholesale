@@ -36,10 +36,10 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     {
         // Arrange
         var sut = new CalculationResultCompletedIntegrationEventFactory();
-        var processStepResultDto = new ProcessStepResult(
+        var processStepResultDto = new CalculationResult(
             TimeSeriesType.Production,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Calculated) });
-        var processCompletedEventDto = new ProcessCompletedEventDto(
+        var processCompletedEventDto = new BatchGridAreaInfo(
             "805",
             Guid.NewGuid(),
             ProcessType.Aggregation,
@@ -57,10 +57,10 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     {
         // Arrange
         var sut = new CalculationResultCompletedIntegrationEventFactory();
-        var processStepResultDto = new ProcessStepResult(
+        var processStepResultDto = new CalculationResult(
             TimeSeriesType.Production,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
-        var processCompletedEventDto = new ProcessCompletedEventDto(
+        var processCompletedEventDto = new BatchGridAreaInfo(
             "805",
             Guid.NewGuid(),
             ProcessType.Aggregation,
@@ -85,10 +85,10 @@ public class CalculationResultReadyIntegrationEventFactoryTests
         // Arrange
         var sut = new CalculationResultCompletedIntegrationEventFactory();
         var timeSeriesPoint = new TimeSeriesPoint(DateTimeOffset.Now, 10.101000000m, QuantityQuality.Estimated);
-        var processStepResultDto = new ProcessStepResult(
+        var processStepResultDto = new CalculationResult(
             TimeSeriesType.Production,
             new[] { timeSeriesPoint });
-        var processCompletedEventDto = new ProcessCompletedEventDto(
+        var processCompletedEventDto = new BatchGridAreaInfo(
             "805",
             Guid.NewGuid(),
             ProcessType.Aggregation,
@@ -120,10 +120,10 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     {
         // Arrange
         var sut = new CalculationResultCompletedIntegrationEventFactory();
-        var processStepResultDto = new ProcessStepResult(
+        var processStepResultDto = new CalculationResult(
             TimeSeriesType.Production,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
-        var processCompletedEventDto = new ProcessCompletedEventDto(
+        var processCompletedEventDto = new BatchGridAreaInfo(
             "805",
             Guid.NewGuid(),
             ProcessType.Aggregation,
@@ -149,10 +149,10 @@ public class CalculationResultReadyIntegrationEventFactoryTests
         // Arrange
         var sut = new CalculationResultCompletedIntegrationEventFactory();
         var timeSeriesPoint = new TimeSeriesPoint(DateTimeOffset.Now, 10.101000000m, QuantityQuality.Estimated);
-        var processStepResultDto = new ProcessStepResult(
+        var processStepResultDto = new CalculationResult(
             TimeSeriesType.Production,
             new[] { timeSeriesPoint });
-        var processCompletedEventDto = new ProcessCompletedEventDto(
+        var processCompletedEventDto = new BatchGridAreaInfo(
             "805",
             Guid.NewGuid(),
             ProcessType.Aggregation,
@@ -187,10 +187,10 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     {
         // Arrange
         var sut = new CalculationResultCompletedIntegrationEventFactory();
-        var processStepResultDto = new ProcessStepResult(
+        var processStepResultDto = new CalculationResult(
             TimeSeriesType.Production,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Calculated) });
-        var processCompletedEventDto = new ProcessCompletedEventDto(
+        var processCompletedEventDto = new BatchGridAreaInfo(
             "805",
             Guid.NewGuid(),
             ProcessType.Aggregation,
@@ -209,10 +209,10 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     {
         // Arrange
         var sut = new CalculationResultCompletedIntegrationEventFactory();
-        var processStepResultDto = new ProcessStepResult(
+        var processStepResultDto = new CalculationResult(
             TimeSeriesType.Production,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
-        var processCompletedEventDto = new ProcessCompletedEventDto(
+        var processCompletedEventDto = new BatchGridAreaInfo(
             "805",
             Guid.NewGuid(),
             ProcessType.Aggregation,
@@ -238,10 +238,10 @@ public class CalculationResultReadyIntegrationEventFactoryTests
         // Arrange
         var sut = new CalculationResultCompletedIntegrationEventFactory();
         var timeSeriesPoint = new TimeSeriesPoint(DateTimeOffset.Now, 10.101000000m, QuantityQuality.Estimated);
-        var processStepResultDto = new ProcessStepResult(
+        var processStepResultDto = new CalculationResult(
             TimeSeriesType.Production,
             new[] { timeSeriesPoint });
-        var processCompletedEventDto = new ProcessCompletedEventDto(
+        var processCompletedEventDto = new BatchGridAreaInfo(
             "805",
             Guid.NewGuid(),
             ProcessType.Aggregation,
@@ -276,10 +276,10 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     {
         // Arrange
         var sut = new CalculationResultCompletedIntegrationEventFactory();
-        var processStepResultDto = new ProcessStepResult(
+        var processStepResultDto = new CalculationResult(
             TimeSeriesType.Production,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Calculated) });
-        var processCompletedEventDto = new ProcessCompletedEventDto(
+        var processCompletedEventDto = new BatchGridAreaInfo(
             "805",
             Guid.NewGuid(),
             ProcessType.Aggregation,
@@ -298,10 +298,10 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     {
         // Arrange
         var sut = new CalculationResultCompletedIntegrationEventFactory();
-        var processStepResultDto = new ProcessStepResult(
+        var processStepResultDto = new CalculationResult(
             TimeSeriesType.NonProfiledConsumption,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
-        var processCompletedEventDto = new ProcessCompletedEventDto(
+        var processCompletedEventDto = new BatchGridAreaInfo(
             "805",
             Guid.NewGuid(),
             ProcessType.Aggregation,
@@ -328,10 +328,10 @@ public class CalculationResultReadyIntegrationEventFactoryTests
         // Arrange
         var sut = new CalculationResultCompletedIntegrationEventFactory();
         var timeSeriesPoint = new TimeSeriesPoint(DateTimeOffset.Now, 10.101000000m, QuantityQuality.Estimated);
-        var processStepResultDto = new ProcessStepResult(
+        var processStepResultDto = new CalculationResult(
             TimeSeriesType.NonProfiledConsumption,
             new[] { timeSeriesPoint });
-        var processCompletedEventDto = new ProcessCompletedEventDto(
+        var processCompletedEventDto = new BatchGridAreaInfo(
             "805",
             Guid.NewGuid(),
             ProcessType.Aggregation,
@@ -369,10 +369,10 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     {
         // Arrange
         var sut = new CalculationResultCompletedIntegrationEventFactory();
-        var processStepResultDto = new ProcessStepResult(
+        var processStepResultDto = new CalculationResult(
             TimeSeriesType.NonProfiledConsumption,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Calculated) });
-        var processCompletedEventDto = new ProcessCompletedEventDto(
+        var processCompletedEventDto = new BatchGridAreaInfo(
             "805",
             Guid.NewGuid(),
             ProcessType.Aggregation,
