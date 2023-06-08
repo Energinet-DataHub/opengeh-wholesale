@@ -35,4 +35,11 @@ public class CalculationResultCompletedTests
         // Actually the ".Should().NotBeNull()" part is not necessary, but it's required by the compiler.
         CalculationResultCompleted.Parser.Should().NotBeNull();
     }
+
+    [Fact]
+    public void CalculationResultCompleted_HasCorrectMessageType()
+    {
+        // Be careful to change the message type as it is public available and used for transport message meta data in accordance with ADR-008
+        CalculationResultCompleted.MessageType.Should().Be("CalculationResultCompleted");
+    }
 }

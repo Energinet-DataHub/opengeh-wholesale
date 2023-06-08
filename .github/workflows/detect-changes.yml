@@ -66,7 +66,7 @@ jobs:
               - 'source/dotnet/!(Packages/**)/**'
             packages:
               - 'source/dotnet/wholesale-integration-events-package/**'
-              - 'source/dotnet/wholesale-api/Infrastructure/IntegrationEvents/**'
+              - 'source/dotnet/wholesale-api/Events/Events.Infrastructure/IntegrationEvents/**'
               - '.github/workflows/packages-publish.yml'
             render_c4model_views:
               - 'docs/diagrams/c4-model/views.dsl'
