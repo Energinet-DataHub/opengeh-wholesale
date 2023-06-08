@@ -29,15 +29,8 @@ public static class SettlementReportSqlStatementFactory
         Instant periodEnd,
         string? energySupplier)
     {
-        return string.IsNullOrEmpty(energySupplier) ? GetSqlForTotalGridAreas(gridAreaCodes, processType, periodStart, periodEnd) : GetSqlForEnergySupplier(gridAreaCodes, processType, periodStart, periodEnd, energySupplier);
-    }
-
-    private static string GetSqlForTotalGridAreas(
-        string[] gridAreaCodes,
-        ProcessType processType,
-        Instant periodStart,
-        Instant periodEnd)
-    {
+        var isTotalGridArea = energySupplier == null;
+        var aggregationLevel = isTotalGridArea ? DeltaTableAggregationLevel.GridArea : DeltaTableAggregationLevel.EnergySupplierAndGridArea;
         var selectColumns = string.Join(
             ", ",
             @$"t1.{ResultColumnNames.GridArea}",
@@ -49,10 +42,9 @@ public static class SettlementReportSqlStatementFactory
         var gridAreas = string.Join(",", gridAreaCodes);
         var startTimeString = periodStart.ToString();
         var endTimeString = periodEnd.ToString();
-        var timeSeriesTypes = new List<TimeSeriesType> { TimeSeriesType.Production, TimeSeriesType.FlexConsumption, TimeSeriesType.NonProfiledConsumption, TimeSeriesType.NetExchangePerGa };
-        var timeSeriesTypesString = CreateTimeSeriesString(timeSeriesTypes);
+        var timeSeriesTypesString = CreateTimeSeriesString(isTotalGridArea: isTotalGridArea);
 
-        return $@"
+        var sql = $@"
 SELECT {selectColumns}
 FROM wholesale_output.result t1
 LEFT JOIN wholesale_output.result t2
@@ -62,50 +54,28 @@ WHERE t2.time IS NULL
     AND t1.{ResultColumnNames.TimeSeriesType} IN ({timeSeriesTypesString})
     AND t1.{ResultColumnNames.BatchProcessType} = '{processTypeString}'
     AND t1.{ResultColumnNames.Time} BETWEEN '{startTimeString}' AND '{endTimeString}'
-    AND t1.{ResultColumnNames.AggregationLevel} = '{DeltaTableAggregationLevel.GridArea}'
+    AND t1.{ResultColumnNames.AggregationLevel} = '{aggregationLevel}'";
+        if (energySupplier != null)
+        {
+            sql += $@"
+    AND t1.{ResultColumnNames.EnergySupplierId} = '{energySupplier}'";
+        }
+
+        sql += @"
 ORDER BY t1.time
 ";
+
+        return sql;
     }
 
-    private static string GetSqlForEnergySupplier(
-        string[] gridAreaCodes,
-        ProcessType processType,
-        Instant periodStart,
-        Instant periodEnd,
-        string energySupplier)
+    private static string CreateTimeSeriesString(bool isTotalGridArea)
     {
-        var selectColumns = string.Join(
-            ", ",
-            @$"t1.{ResultColumnNames.GridArea}",
-            @$"t1.{ResultColumnNames.BatchProcessType}",
-            @$"t1.{ResultColumnNames.Time}",
-            @$"t1.{ResultColumnNames.TimeSeriesType}",
-            @$"t1.{ResultColumnNames.Quantity}");
-        var processTypeString = ProcessTypeMapper.ToDeltaTableValue(processType);
-        var gridAreas = string.Join(",", gridAreaCodes);
-        var startTimeString = periodStart.ToString();
-        var endTimeString = periodEnd.ToString();
         var timeSeriesTypes = new List<TimeSeriesType> { TimeSeriesType.Production, TimeSeriesType.FlexConsumption, TimeSeriesType.NonProfiledConsumption };
-        var timeSeriesTypesString = CreateTimeSeriesString(timeSeriesTypes);
+        if (isTotalGridArea)
+        {
+            timeSeriesTypes.Add(TimeSeriesType.NetExchangePerGa);
+        }
 
-        return $@"
-SELECT {selectColumns}
-FROM wholesale_output.result t1
-LEFT JOIN wholesale_output.result t2
-    ON t1.time = t2.time AND t1.batch_execution_time_start < t2.batch_execution_time_start
-WHERE t2.time IS NULL
-    AND t1.{ResultColumnNames.GridArea} IN ({gridAreas})
-    AND t1.{ResultColumnNames.TimeSeriesType} IN ({timeSeriesTypesString})
-    AND t1.{ResultColumnNames.BatchProcessType} = '{processTypeString}'
-    AND t1.{ResultColumnNames.Time} BETWEEN '{startTimeString}' AND '{endTimeString}'
-    AND t1.{ResultColumnNames.AggregationLevel} = '{DeltaTableAggregationLevel.EnergySupplierAndGridArea}'
-    AND t1.{ResultColumnNames.EnergySupplierId} = '{energySupplier}'
-ORDER BY t1.time
-";
-    }
-
-    private static string CreateTimeSeriesString(IEnumerable<TimeSeriesType> timeSeriesTypes)
-    {
         var timeSeriesTypesString = string.Join(",", timeSeriesTypes.Select(x => $"\'{TimeSeriesTypeMapper.ToDeltaTableValue(x)}\'"));
         return timeSeriesTypesString;
     }
