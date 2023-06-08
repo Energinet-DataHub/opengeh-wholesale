@@ -20,7 +20,7 @@ using NodaTime;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SqlStatements;
+namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SettlementReport;
 
 [UnitTest]
 public class SettlementReportSqlStatementFactoryTests
@@ -60,15 +60,17 @@ public class SettlementReportSqlStatementFactoryTests
     {
         // This string must match the values of the private members that defines grid area codes, period start and period end
         return $@"
-SELECT grid_area, batch_process_type, time, time_series_type, quantity
-FROM wholesale_output.result
-WHERE
-    {ResultColumnNames.GridArea} IN (123,234,345)
-    AND {ResultColumnNames.TimeSeriesType} IN ('production','flex_consumption','non_profiled_consumption','net_exchange_per_ga')
-    AND {ResultColumnNames.BatchProcessType} = 'BalanceFixing'
-    AND {ResultColumnNames.Time} BETWEEN '2022-10-12T01:00:00Z' AND '2022-10-12T03:00:00Z'
-    AND {ResultColumnNames.AggregationLevel} = '{DeltaTableAggregationLevel.GridArea}'
-ORDER by time
+SELECT t1.grid_area, t1.batch_process_type, t1.time, t1.time_series_type, t1.quantity
+FROM wholesale_output.result t1
+LEFT JOIN wholesale_output.result t2
+    ON t1.time = t2.time AND t1.batch_execution_time_start < t2.batch_execution_time_start
+WHERE t2.time IS NULL
+    AND t1.{ResultColumnNames.GridArea} IN (123,234,345)
+    AND t1.{ResultColumnNames.TimeSeriesType} IN ('production','flex_consumption','non_profiled_consumption','net_exchange_per_ga')
+    AND t1.{ResultColumnNames.BatchProcessType} = 'BalanceFixing'
+    AND t1.{ResultColumnNames.Time} BETWEEN '2022-10-12T01:00:00Z' AND '2022-10-12T03:00:00Z'
+    AND t1.{ResultColumnNames.AggregationLevel} = '{DeltaTableAggregationLevel.GridArea}'
+ORDER BY t1.time
 ";
     }
 
@@ -76,16 +78,18 @@ ORDER by time
     {
         // This string must match the values of the private members that defines grid area codes, period start and period end
         return $@"
-SELECT grid_area, batch_process_type, time, time_series_type, quantity
-FROM wholesale_output.result
-WHERE
-    {ResultColumnNames.GridArea} IN (123,234,345)
-    AND {ResultColumnNames.TimeSeriesType} IN ('production','flex_consumption','non_profiled_consumption')
-    AND {ResultColumnNames.BatchProcessType} = 'BalanceFixing'
-    AND {ResultColumnNames.Time} BETWEEN '2022-10-12T01:00:00Z' AND '2022-10-12T03:00:00Z'
-    AND {ResultColumnNames.AggregationLevel} = '{DeltaTableAggregationLevel.EnergySupplierAndGridArea}'
-    AND {ResultColumnNames.EnergySupplierId} = '{energySupplier}'
-ORDER by time
+SELECT t1.grid_area, t1.batch_process_type, t1.time, t1.time_series_type, t1.quantity
+FROM wholesale_output.result t1
+LEFT JOIN wholesale_output.result t2
+    ON t1.time = t2.time AND t1.batch_execution_time_start < t2.batch_execution_time_start
+WHERE t2.time IS NULL
+    AND t1.{ResultColumnNames.GridArea} IN (123,234,345)
+    AND t1.{ResultColumnNames.TimeSeriesType} IN ('production','flex_consumption','non_profiled_consumption')
+    AND t1.{ResultColumnNames.BatchProcessType} = 'BalanceFixing'
+    AND t1.{ResultColumnNames.Time} BETWEEN '2022-10-12T01:00:00Z' AND '2022-10-12T03:00:00Z'
+    AND t1.{ResultColumnNames.AggregationLevel} = '{DeltaTableAggregationLevel.EnergySupplierAndGridArea}'
+    AND t1.{ResultColumnNames.EnergySupplierId} = '{energySupplier}'
+ORDER BY t1.time
 ";
     }
 }
