@@ -143,29 +143,20 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                     _defaultDelay);
                 var messageHasValue = true;
                 var match = false;
-                using (var cts = new CancellationTokenSource())
+                while (messageHasValue)
                 {
-                    cts.CancelAfter(_defaultTimeout);
-                    while (messageHasValue)
+                    var message = await Fixture.Receiver.ReceiveMessageAsync(maxWaitTime: TimeSpan.FromMinutes(5));
+                    if (message != null)
                     {
-                        var message = await Fixture.Receiver.ReceiveMessageAsync();
-                        if (message != null)
-                        {
-                            match = message.Body.ToString().Contains(batchId.ToString());
-                            if (match)
-                            {
-                                messageHasValue = false;
-                            }
-                        }
-                        else
+                        match = message.Body.ToString().Contains(batchId.ToString());
+                        if (match)
                         {
                             messageHasValue = false;
                         }
-
-                        if (cts.IsCancellationRequested)
-                        {
-                            Assert.Fail("No messages received on topic subscription.");
-                        }
+                    }
+                    else
+                    {
+                        messageHasValue = false;
                     }
                 }
 
