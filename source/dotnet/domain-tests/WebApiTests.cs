@@ -164,7 +164,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
 
                         if (cts.IsCancellationRequested)
                         {
-                            Assert.Fail("No messages received on topic subscription.");
+                            Assert.Fail($"No messages received on topic subscription match {batchId.ToString()}.");
                         }
                     }
                 }
