@@ -1,7 +1,7 @@
-module "st_dropzone" {
+module "st_dh2data" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=v11"
 
-  name                            = "dropzone"
+  name                            = "dh2data"
   project_name                    = var.domain_name_short
   environment_short               = var.environment_short
   environment_instance            = var.environment_instance
@@ -17,8 +17,8 @@ module "st_dropzone" {
   container_names                 = ["timeseries"]
 }
 
-resource "azurerm_role_assignment" "ra_dropzone_contributor" {
-  scope                = module.st_dropzone.id
+resource "azurerm_role_assignment" "ra_dh2data_contributor" {
+  scope                = module.st_dh2data.id
   role_definition_name = "Storage Blob Data Contributor"
   principal_id         = azuread_service_principal.spn_databricks.id
 }
