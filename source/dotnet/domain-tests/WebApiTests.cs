@@ -145,7 +145,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 var match = false;
                 using (var cts = new CancellationTokenSource())
                 {
-                    cts.CancelAfter(_defaultTimeout);
+                    cts.CancelAfter(TimeSpan.FromMinutes(5));
                     while (messageHasValue)
                     {
                         var message = await Fixture.Receiver.ReceiveMessageAsync();
