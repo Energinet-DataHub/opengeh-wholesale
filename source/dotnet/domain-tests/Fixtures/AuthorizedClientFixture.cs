@@ -100,7 +100,12 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                 await ServiceBusAdministrationClient.DeleteSubscriptionAsync(_topicName, _subscriptionName);
             }
 
-            await ServiceBusAdministrationClient.CreateSubscriptionAsync(_topicName, _subscriptionName);
+            var options = new CreateSubscriptionOptions(_topicName, _subscriptionName)
+            {
+                AutoDeleteOnIdle = TimeSpan.FromHours(1),
+            };
+
+            await ServiceBusAdministrationClient.CreateSubscriptionAsync(options);
         }
 
         private ServiceBusReceiver CreateServiceBusReceiver()
