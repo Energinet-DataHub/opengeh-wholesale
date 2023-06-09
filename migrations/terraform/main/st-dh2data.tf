@@ -14,7 +14,7 @@ module "st_dh2data" {
   private_endpoint_subnet_id      = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   private_dns_resource_group_name = var.shared_resources_resource_group_name
   ip_rules                        = data.azurerm_key_vault_secret.pir_hosted_deployment_agents.value
-  container_names                 = ["timeseries"]
+  containers                      = ["timeseries"]
 }
 
 resource "azurerm_role_assignment" "ra_dh2data_contributor" {
