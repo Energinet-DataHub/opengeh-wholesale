@@ -18,7 +18,7 @@ namespace Energinet.DataHub.Wholesale.Contracts.Events;
 public partial class CalculationResultCompleted
 {
     /// <summary>
-    /// The message type for transport message meta data in accordance with ADR-008.
+    /// The message type for balance-fixing-completed transport message meta data in accordance with ADR-008.
     /// </summary>
     public const string MessageType = "CalculationResultCompleted";
 }
