@@ -48,7 +48,7 @@ public static class EventsRegistration
         serviceCollection.AddScoped<IRegisterCompletedBatchesHandler, RegisterCompletedBatchesHandler>();
         serviceCollection.AddScoped<IIntegrationEventTypeMapper>(_ => new IntegrationEventTypeMapper(new Dictionary<Type, string>
         {
-            { typeof(CalculationResultCompleted), CalculationResultCompleted.BalanceFixingEventName },
+            { typeof(CalculationResultCompleted), CalculationResultCompleted.MessageType },
         }));
         serviceCollection.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
         serviceCollection.AddIntegrationEventPublisher(serviceBusConnectionString, integrationEventTopicName);

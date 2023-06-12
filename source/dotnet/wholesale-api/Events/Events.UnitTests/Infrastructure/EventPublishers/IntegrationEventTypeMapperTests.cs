@@ -28,10 +28,10 @@ public class IntegrationEventTypeMapperTests
         // Arrange
         var sut = new IntegrationEventTypeMapper(new Dictionary<Type, string>
         {
-            { typeof(CalculationResultCompleted), CalculationResultCompleted.BalanceFixingEventName },
+            { typeof(CalculationResultCompleted), CalculationResultCompleted.MessageType },
         });
 
-        const string expected = CalculationResultCompleted.BalanceFixingEventName;
+        const string expected = CalculationResultCompleted.MessageType;
         var eventType = typeof(CalculationResultCompleted);
 
         // Act
