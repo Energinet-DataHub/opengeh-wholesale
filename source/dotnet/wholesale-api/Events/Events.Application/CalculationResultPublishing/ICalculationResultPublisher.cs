@@ -21,5 +21,5 @@ public interface ICalculationResultPublisher
     /// <summary>
     /// Publish a calculation ready result event for each result in a grid area.
     /// </summary>
-    Task PublishAsync(ProcessCompletedEventDto processCompletedEventDto);
+    Task PublishForGridAreaAsync(BatchGridAreaInfo batchGridAreaInfo);
 }

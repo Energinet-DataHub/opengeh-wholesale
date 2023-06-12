@@ -27,7 +27,7 @@ public class ProcessStepResultFactoryTests
     [Theory]
     [InlineAutoMoqData]
     public void Create_ReturnsExpectedStepResult(
-        ProcessStepResult result,
+        CalculationResult result,
         BatchDto batchDto)
     {
         // Arrange

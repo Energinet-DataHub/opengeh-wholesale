@@ -26,7 +26,7 @@ public class ProcessStepResultAggregateTests
     public void Ctor_WhenNoPoints_ThrowsArgumentException(TimeSeriesType anyTimeSeriesType)
     {
         var emptyTimeSeriesPoints = new TimeSeriesPoint[] { };
-        Assert.Throws<ArgumentException>(() => new ProcessStepResult(anyTimeSeriesType, emptyTimeSeriesPoints));
+        Assert.Throws<ArgumentException>(() => new CalculationResult(anyTimeSeriesType, emptyTimeSeriesPoints));
     }
 
     [Theory]
@@ -37,7 +37,7 @@ public class ProcessStepResultAggregateTests
         var anyTimeSeriesType = TimeSeriesType.Production;
 
         // Act
-        var sut = new ProcessStepResult(anyTimeSeriesType, points.ToArray());
+        var sut = new CalculationResult(anyTimeSeriesType, points.ToArray());
 
         // Assert
         sut.Min.Should().Be(expectedMin);

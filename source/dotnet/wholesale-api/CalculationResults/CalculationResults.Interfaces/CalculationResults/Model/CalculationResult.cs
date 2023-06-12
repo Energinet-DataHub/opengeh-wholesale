@@ -14,12 +14,9 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
-/// <summary>
-/// Result data from a specific step in a process.
-/// </summary>
-public sealed class ProcessStepResult
+public sealed class CalculationResult
 {
-    public ProcessStepResult(TimeSeriesType timeSeriesType, TimeSeriesPoint[] timeSeriesPoints)
+    public CalculationResult(TimeSeriesType timeSeriesType, TimeSeriesPoint[] timeSeriesPoints)
     {
         if (timeSeriesPoints.Length == 0)
             throw new ArgumentException("Time series points empty");

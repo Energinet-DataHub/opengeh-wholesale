@@ -67,7 +67,7 @@ public class PublishCalculationResultsHandlerTests
 
         // Publish invocation per grid area
         processApplicationServiceMock
-            .Verify(service => service.PublishAsync(It.IsAny<ProcessCompletedEventDto>()), Times.Exactly(expectedPublishCount));
+            .Verify(service => service.PublishForGridAreaAsync(It.IsAny<BatchGridAreaInfo>()), Times.Exactly(expectedPublishCount));
 
         // Unit of work commit per batch
         unitOfWorkMock

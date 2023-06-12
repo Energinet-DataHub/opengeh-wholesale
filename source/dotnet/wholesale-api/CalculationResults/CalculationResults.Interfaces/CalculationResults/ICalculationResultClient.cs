@@ -18,7 +18,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationR
 
 public interface ICalculationResultClient
 {
-    Task<ProcessStepResult> GetAsync(
+    Task<CalculationResult> GetAsync(
         Guid batchId,
         string gridAreaCode,
         TimeSeriesType timeSeriesType,

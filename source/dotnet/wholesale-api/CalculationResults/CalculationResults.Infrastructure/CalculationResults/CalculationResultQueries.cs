@@ -30,7 +30,7 @@ public class CalculationResultQueries : ICalculationResultQueries
         _sqlStatementClient = sqlStatementClient;
     }
 
-    public async Task<ProcessStepResult> GetAsync(
+    public async Task<CalculationResult> GetAsync(
         Guid batchId,
         string gridAreaCode,
         TimeSeriesType timeSeriesType,
@@ -42,7 +42,7 @@ public class CalculationResultQueries : ICalculationResultQueries
         throw new NotImplementedException("GetAsync is not implemented yet");
     }
 
-    private static ProcessStepResult CreateProcessStepResult(
+    private static CalculationResult CreateProcessStepResult(
         TimeSeriesType timeSeriesType,
         Table resultTable)
     {
@@ -53,6 +53,6 @@ public class CalculationResultQueries : ICalculationResultQueries
                 QuantityQualityMapper.FromDeltaTableValue(resultTable[row, ResultColumnNames.QuantityQuality])))
             .ToList();
 
-        return new ProcessStepResult(timeSeriesType, pointsDto.ToArray());
+        return new CalculationResult(timeSeriesType, pointsDto.ToArray());
     }
 }
