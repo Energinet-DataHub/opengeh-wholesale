@@ -12,13 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// ReSharper disable once CheckNamespace - the namespace is exposed publicly in the Contracts package
-namespace Energinet.DataHub.Wholesale.Contracts.Events;
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.EventPublishers;
 
-public partial class CalculationResultCompleted
+public interface IIntegrationEventTypeMapper
 {
-    /// <summary>
-    /// The message type for balance-fixing-completed transport message meta data in accordance with ADR-008.
-    /// </summary>
-    public const string BalanceFixingEventName = "BalanceFixingCalculationResultCompleted";
+    string GetMessageType(Type eventType);
 }

@@ -40,6 +40,6 @@ public class CalculationResultCompletedTests
     public void CalculationResultCompleted_HasCorrectMessageType()
     {
         // Be careful to change the message type as it is public available and used for transport message meta data in accordance with ADR-008
-        CalculationResultCompleted.MessageType.Should().Be("CalculationResultCompleted");
+        CalculationResultCompleted.BalanceFixingEventName.Should().Be("BalanceFixingCalculationResultCompleted");
     }
 }

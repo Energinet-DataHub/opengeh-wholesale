@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
-using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing;
 using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing.Model;
 using Energinet.DataHub.Wholesale.Events.Application.IntegrationEventsManagement;
@@ -27,13 +26,16 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.EventPublishers
     {
         private readonly IClock _systemDateTimeProvider;
         private readonly ICalculationResultCompletedIntegrationEventFactory _calculationResultCompletedIntegrationEventFactory;
+        private readonly IIntegrationEventTypeMapper _integrationEventTypeMapper;
 
         public CalculationResultCompletedToIntegrationEventFactory(
             IClock systemDateTimeProvider,
-            ICalculationResultCompletedIntegrationEventFactory calculationResultCompletedIntegrationEventFactory)
+            ICalculationResultCompletedIntegrationEventFactory calculationResultCompletedIntegrationEventFactory,
+            IIntegrationEventTypeMapper integrationEventTypeMapper)
         {
             _systemDateTimeProvider = systemDateTimeProvider;
             _calculationResultCompletedIntegrationEventFactory = calculationResultCompletedIntegrationEventFactory;
+            _integrationEventTypeMapper = integrationEventTypeMapper;
         }
 
         public IntegrationEventDto CreateForEnergySupplier(CalculationResult calculationResult, BatchGridAreaInfo batchGridAreaInfo, string energySupplierGln)
@@ -62,7 +64,7 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.EventPublishers
 
         private IntegrationEventDto CreateIntegrationEvent(IMessage integrationEvent)
         {
-            var messageType = CalculationResultCompleted.MessageType;
+            var messageType = _integrationEventTypeMapper.GetMessageType(integrationEvent.GetType());
             var eventData = integrationEvent.ToByteArray();
             return new IntegrationEventDto(eventData, messageType, _systemDateTimeProvider.GetCurrentInstant());
         }

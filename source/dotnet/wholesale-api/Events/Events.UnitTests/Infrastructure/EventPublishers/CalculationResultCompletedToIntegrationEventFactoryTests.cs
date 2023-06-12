@@ -33,6 +33,7 @@ public class CalculationResultCompletedToIntegrationEventFactoryTests
     public void CalculationResultCompletedToIntegrationEventFactory_ReturnAnIntegrationEventDtoWithTheCorrectValues(
         [Frozen] Mock<ICalculationResultCompletedIntegrationEventFactory> calculationResultCompletedIntegrationEventFactoryMock,
         [Frozen] Mock<IClock> clockMock,
+        [Frozen] Mock<IIntegrationEventTypeMapper> integrationEventTypeMapperMock,
         CalculationResultCompleted calculationResultCompleted,
         CalculationResult calculationResult,
         BatchGridAreaInfo batchGridAreaInfo,
@@ -48,11 +49,15 @@ public class CalculationResultCompletedToIntegrationEventFactoryTests
         clockMock.Setup(x => x.GetCurrentInstant())
             .Returns(instant);
 
+        integrationEventTypeMapperMock
+            .Setup(x => x.GetMessageType(calculationResultCompleted.GetType()))
+            .Returns(typeof(CalculationResultCompleted).ToString);
+
         // Act
         var actual = sut.CreateForEnergySupplier(calculationResult, batchGridAreaInfo, energySupplierGln);
 
         // Assert
-        Assert.Equal(CalculationResultCompleted.MessageType, actual.MessageType);
+        Assert.Equal(calculationResultCompleted.GetType().ToString(), actual.MessageType);
         Assert.Equal(MessageExtensions.ToByteArray(calculationResultCompleted), actual.EventData);
         Assert.Equal(instant, actual.CreationDate);
     }
