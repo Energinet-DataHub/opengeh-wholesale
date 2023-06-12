@@ -20,5 +20,5 @@ public partial class CalculationResultCompleted
     /// <summary>
     /// The message type for balance-fixing-completed transport message meta data in accordance with ADR-008.
     /// </summary>
-    public const string MessageType = "CalculationResultCompleted";
+    public const string BalanceFixingEventName = "BalanceFixingCalculationResultCompleted";
 }

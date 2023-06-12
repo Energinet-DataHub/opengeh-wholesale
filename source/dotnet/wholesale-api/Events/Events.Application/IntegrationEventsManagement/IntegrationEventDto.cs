@@ -25,7 +25,7 @@ public class IntegrationEventDto
 
     /// <summary>
     /// Public message type used by consumers to identify the type of the message being published. See also ADR-008.
-    /// Example: CalculationResultCompleted.MessageType (CalculationResultCompleted)
+    /// Example: CalculationResultCompleted.BalanceFixingEventName (BalanceFixingCalculationResultCompleted)
     /// </summary>
     public string MessageType { get; }
 
