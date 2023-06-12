@@ -38,7 +38,7 @@ public class FileBasedCalculationResultClient : ICalculationResultClient
         _jsonNewlineSerializer = jsonNewlineSerializer;
     }
 
-    public async Task<ProcessStepResult> GetAsync(
+    public async Task<CalculationResult> GetAsync(
         Guid batchId,
         string gridAreaCode,
         TimeSeriesType timeSeriesType,
@@ -69,7 +69,7 @@ public class FileBasedCalculationResultClient : ICalculationResultClient
     public static string GetDirectoryForEsBrpGridArea(Guid batchId, string gridAreaCode, TimeSeriesType timeSeriesType, string balanceResponsiblePartyGln, string energySupplierGln)
         => $"calculation-output/batch_id={batchId}/result/grouping={EnergySupplierBalanceResponsiblePartyGridArea}/time_series_type={TimeSeriesTypeMapper.ToDeltaTableValue(timeSeriesType)}/grid_area={gridAreaCode}/balance_responsible_party_gln={balanceResponsiblePartyGln}/energy_supplier_gln={energySupplierGln}/";
 
-    private async Task<ProcessStepResult> GetResultAsync(string directory, TimeSeriesType timeSeriesType)
+    private async Task<CalculationResult> GetResultAsync(string directory, TimeSeriesType timeSeriesType)
     {
         var filepath = await _dataLakeClient.FindFileAsync(directory, ".json").ConfigureAwait(false);
         var stream = await _dataLakeClient.GetReadableFileStreamAsync(filepath).ConfigureAwait(false);
@@ -77,7 +77,7 @@ public class FileBasedCalculationResultClient : ICalculationResultClient
         return MapToProcessStepResultDto(timeSeriesType, points);
     }
 
-    private static ProcessStepResult MapToProcessStepResultDto(
+    private static CalculationResult MapToProcessStepResultDto(
         TimeSeriesType timeSeriesType,
         IEnumerable<ProcessResultPoint> points)
     {
@@ -88,6 +88,6 @@ public class FileBasedCalculationResultClient : ICalculationResultClient
                     QuantityQualityMapper.FromDeltaTableValue(point.quality)))
             .ToList();
 
-        return new ProcessStepResult(timeSeriesType, pointsDto.ToArray());
+        return new CalculationResult(timeSeriesType, pointsDto.ToArray());
     }
 }

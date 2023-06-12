@@ -47,14 +47,14 @@ public class CalculationResultPublisherTest
             CalculationResultPublisher sut)
     {
         // Arrange
-        var eventDto = new ProcessCompletedEventDto(
+        var eventDto = new BatchGridAreaInfo(
             "805",
             Guid.NewGuid(),
             ProcessType.BalanceFixing,
             Instant.MinValue,
             Instant.MinValue);
 
-        var processStepResult = new ProcessStepResult(
+        var processStepResult = new CalculationResult(
             timeSeriesType,
             new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
 
@@ -78,7 +78,7 @@ public class CalculationResultPublisherTest
             .Returns(integrationEventDto);
 
         // Act
-        await sut.PublishAsync(eventDto);
+        await sut.PublishForGridAreaAsync(eventDto);
 
         // Assert
         integrationEventPublisherMock.Verify(x => x.PublishAsync(integrationEventDto), Times.Once);
@@ -99,14 +99,14 @@ public class CalculationResultPublisherTest
         CalculationResultPublisher sut)
     {
         // Arrange
-        var eventDto = new ProcessCompletedEventDto(
+        var eventDto = new BatchGridAreaInfo(
             "805",
             Guid.NewGuid(),
             ProcessType.BalanceFixing,
             Instant.MinValue,
             Instant.MinValue);
 
-        var processStepResult = new ProcessStepResult(
+        var processStepResult = new CalculationResult(
             timeSeriesType,
             new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
 
@@ -131,7 +131,7 @@ public class CalculationResultPublisherTest
             .Returns(integrationEventDto);
 
         //Act
-        await sut.PublishAsync(eventDto);
+        await sut.PublishForGridAreaAsync(eventDto);
 
         // Assert
         integrationEventPublisherMock.Verify(x => x.PublishAsync(integrationEventDto), Times.Once);
@@ -153,14 +153,14 @@ public class CalculationResultPublisherTest
             CalculationResultPublisher sut)
     {
         // Arrange
-        var eventDto = new ProcessCompletedEventDto(
+        var eventDto = new BatchGridAreaInfo(
             "805",
             Guid.NewGuid(),
             ProcessType.BalanceFixing,
             Instant.MinValue,
             Instant.MinValue);
 
-        var processStepResult = new ProcessStepResult(
+        var processStepResult = new CalculationResult(
             timeSeriesType,
             new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
 
@@ -182,7 +182,7 @@ public class CalculationResultPublisherTest
             .Returns(integrationEventDto);
 
         // Act
-        await sut.PublishAsync(eventDto);
+        await sut.PublishForGridAreaAsync(eventDto);
 
         // Assert
         integrationEventPublisherMock.Verify(x => x.PublishAsync(integrationEventDto), Times.Once);
@@ -205,14 +205,14 @@ public class CalculationResultPublisherTest
             CalculationResultPublisher sut)
     {
         // Arrange
-        var eventDto = new ProcessCompletedEventDto(
+        var eventDto = new BatchGridAreaInfo(
             "805",
             Guid.NewGuid(),
             ProcessType.BalanceFixing,
             Instant.MinValue,
             Instant.MinValue);
 
-        var processStepResult = new ProcessStepResult(
+        var processStepResult = new CalculationResult(
             timeSeriesType,
             new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
 
@@ -245,7 +245,7 @@ public class CalculationResultPublisherTest
             .Returns(integrationEventDto);
 
         // Act
-        await sut.PublishAsync(eventDto);
+        await sut.PublishForGridAreaAsync(eventDto);
 
         // Assert
         integrationEventPublisherMock.Verify(x => x.PublishAsync(integrationEventDto), Times.Once);
