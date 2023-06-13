@@ -399,14 +399,20 @@ resource "azurerm_key_vault_secret" "kvs-mssql-server-id" {
 #
 # Databricks related resources
 #
-resource "azurerm_storage_account" "playground" {
-  name                     = "samigrationplayground"
+resource "azurerm_storage_account" "integration-test-st-databricks" {
+  name                     = "stdbwinttest"
   resource_group_name      = azurerm_resource_group.integration-test-rg.name
   location                 = azurerm_resource_group.integration-test-rg.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
   account_kind             = "StorageV2"
   is_hns_enabled           = true
+
+  lifecycle {
+    ignore_changes = [
+      tags,
+    ]
+  }
 }
 
 data "azuread_client_config" "current" {}
@@ -427,90 +433,125 @@ resource "azuread_service_principal" "spn_databricks_migration" {
 }
 
 resource "azurerm_role_assignment" "ra_migrations_playground_contributor" {
-  scope                = azurerm_storage_account.playground.id
+  scope                = azurerm_storage_account.integration-test-st-databricks.id
   role_definition_name = "Storage Blob Data Contributor"
   principal_id         = azuread_service_principal.spn_databricks_migration.id
 }
 
 resource "azurerm_storage_container" "playground" {
   name                  = "playground"
-  storage_account_name  = azurerm_storage_account.playground.name
+  storage_account_name  = azurerm_storage_account.integration-test-st-databricks.name
   container_access_type = "private"
 }
 
 resource "azurerm_storage_container" "playground_timeseries_testdata" {
   name                  = "time-series-testdata"
-  storage_account_name  = azurerm_storage_account.playground.name
+  storage_account_name  = azurerm_storage_account.integration-test-st-databricks.name
   container_access_type = "private"
 }
 
 resource "azurerm_storage_container" "playground_meteringpoints_testdata" {
   name                  = "metering-points-testdata"
-  storage_account_name  = azurerm_storage_account.playground.name
+  storage_account_name  = azurerm_storage_account.integration-test-st-databricks.name
   container_access_type = "private"
 }
 
-resource "azurerm_databricks_workspace" "playground" {
-  name                = "databricks-playground"
+resource "azurerm_databricks_workspace" "integration-test-dbw" {
+  name                = "dbw-integrationtest-u-002"
   resource_group_name = azurerm_resource_group.integration-test-rg.name
   location            = azurerm_resource_group.integration-test-rg.location
   sku                 = "premium"
+
+  lifecycle {
+    ignore_changes = [
+      tags,
+    ]
+  }
 }
 
 resource "azuread_application_password" "secret" {
   application_object_id = azuread_application.app_databricks_migration.object_id
 }
 
-resource "databricks_secret_scope" "migration_scope" {
+#
+# IMPORTANT:
+# All 'databricks_' resources in the "Integration Test" environment
+# MUST set provider alias; e.g. "provider = databricks.integration_test"
+#
+resource "databricks_git_credential" "ado_integration_test" {
+  provider = databricks.integration_test
+
+  git_username          = var.github_username
+  git_provider          = "gitHub"
+  personal_access_token = var.github_personal_access_token
+}
+
+resource "databricks_secret_scope" "migration_scope_integration_test" {
+  provider = databricks.integration_test
+
   name = "migration-scope"
 }
 
-resource "databricks_secret" "spn_app_id" {
+resource "databricks_secret" "spn_app_id_integration_test" {
+  provider = databricks.integration_test
+
   key          = "spn_app_id"
   string_value = azuread_application.app_databricks_migration.application_id
-  scope        = databricks_secret_scope.migration_scope.id
+  scope        = databricks_secret_scope.migration_scope_integration_test.id
 }
 
-resource "databricks_secret" "spn_app_secret" {
+resource "databricks_secret" "spn_app_secret_integration_test" {
+  provider = databricks.integration_test
+
   key          = "spn_app_secret"
   string_value = azuread_application_password.secret.value
-  scope        = databricks_secret_scope.migration_scope.id
+  scope        = databricks_secret_scope.migration_scope_integration_test.id
 }
 
-resource "databricks_secret" "appi_instrumentation_key" {
+resource "databricks_secret" "appi_instrumentation_key_integration_test" {
+  provider = databricks.integration_test
+
   key          = "appi_instrumentation_key"
   string_value = module.appi_shared.instrumentation_key
-  scope        = databricks_secret_scope.migration_scope.id
+  scope        = databricks_secret_scope.migration_scope_integration_test.id
 }
 
-resource "databricks_secret" "st_dropzone_storage_account" {
+resource "databricks_secret" "st_dropzone_storage_account_integration_test" {
+  provider = databricks.integration_test
+
   key          = "st_dropzone_storage_account"
-  string_value = azurerm_storage_account.playground.name
-  scope        = databricks_secret_scope.migration_scope.id
+  string_value = azurerm_storage_account.integration-test-st-databricks.name
+  scope        = databricks_secret_scope.migration_scope_integration_test.id
 }
 
-resource "databricks_secret" "st_shared_datalake_account" {
+resource "databricks_secret" "st_shared_datalake_account_integration_test" {
+  provider = databricks.integration_test
+
   key          = "st_shared_datalake_account"
-  string_value = azurerm_storage_account.playground.name
-  scope        = databricks_secret_scope.migration_scope.id
+  string_value = azurerm_storage_account.integration-test-st-databricks.name
+  scope        = databricks_secret_scope.migration_scope_integration_test.id
 }
 
-resource "databricks_secret" "st_migration_datalake_account" {
+resource "databricks_secret" "st_migration_datalake_account_integration_test" {
+  provider = databricks.integration_test
+
   key          = "st_migration_datalake_account"
-  string_value = azurerm_storage_account.playground.name
-  scope        = databricks_secret_scope.migration_scope.id
+  string_value = azurerm_storage_account.integration-test-st-databricks.name
+  scope        = databricks_secret_scope.migration_scope_integration_test.id
 }
 
-resource "databricks_secret" "tenant_id" {
+resource "databricks_secret" "tenant_id_integration_test" {
+  provider = databricks.integration_test
+
   key          = "tenant_id"
   string_value = data.azurerm_client_config.this.tenant_id
-  scope        = databricks_secret_scope.migration_scope.id
+  scope        = databricks_secret_scope.migration_scope_integration_test.id
 }
 
-data "external" "databricks_token_playground" {
-  program = ["pwsh", "${path.cwd}/scripts/generate-pat-token.ps1", azurerm_databricks_workspace.playground.id, "https://${azurerm_databricks_workspace.playground.workspace_url}"]
+data "external" "databricks_token_integration_test" {
+  program = ["pwsh", "${path.cwd}/scripts/generate-pat-token.ps1", azurerm_databricks_workspace.integration-test-dbw.id, "https://${azurerm_databricks_workspace.integration-test-dbw.workspace_url}"]
   depends_on = [
-    azurerm_databricks_workspace.playground
+    azurerm_databricks_workspace.integration-test-dbw
   ]
 }
 
@@ -522,7 +563,7 @@ module "kvs_databricks_dbw_playground_workspace_token" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
 
   name         = "dbw-playground-workspace-token"
-  value        = data.external.databricks_token_playground.result.pat_token
+  value        = data.external.databricks_token_integration_test.result.pat_token
   key_vault_id = azurerm_key_vault.integration-test-kv.id
 }
 
@@ -530,7 +571,7 @@ module "kvs_databricks_dbw_playground_workspace_url" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
 
   name         = "dbw-playground-workspace-url"
-  value        = azurerm_databricks_workspace.playground.workspace_url
+  value        = azurerm_databricks_workspace.integration-test-dbw.workspace_url
   key_vault_id = azurerm_key_vault.integration-test-kv.id
 }
 
@@ -538,7 +579,7 @@ module "kvs_databricks_dbw_playground_workspace_id" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
 
   name         = "dbw-playground-workspace-id"
-  value        = azurerm_databricks_workspace.playground.id
+  value        = azurerm_databricks_workspace.integration-test-dbw.id
   key_vault_id = azurerm_key_vault.integration-test-kv.id
 }
 
@@ -546,11 +587,13 @@ module "kvs_databricks_dbw_playground_storage_account_name" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
 
   name         = "dbw-playground-storage-account-name"
-  value        = azurerm_storage_account.playground.name
+  value        = azurerm_storage_account.integration-test-st-databricks.name
   key_vault_id = azurerm_key_vault.integration-test-kv.id
 }
 
-resource "databricks_instance_pool" "my_pool" {
+resource "databricks_instance_pool" "migration_pool_integration_test" {
+  provider = databricks.integration_test
+
   instance_pool_name                    = "migration-playground-instance-pool"
   min_idle_instances                    = 0
   max_capacity                          = 5
@@ -558,52 +601,56 @@ resource "databricks_instance_pool" "my_pool" {
   idle_instance_autotermination_minutes = 60
 }
 
-resource "databricks_cluster" "shared_all_purpose" {
+resource "databricks_cluster" "shared_all_purpose_integration_test" {
+  provider = databricks.integration_test
+
   cluster_name     = "Shared all-purpose"
   num_workers      = 1
-  instance_pool_id = databricks_instance_pool.my_pool.id
+  instance_pool_id = databricks_instance_pool.migration_pool_integration_test.id
   spark_version    = data.databricks_spark_version.latest_lts.id
   spark_conf = {
-    "fs.azure.account.oauth2.client.endpoint.${azurerm_storage_account.playground.name}.dfs.core.windows.net" : "https://login.microsoftonline.com/${data.azurerm_client_config.this.tenant_id}/oauth2/token"
-    "fs.azure.account.auth.type.${azurerm_storage_account.playground.name}.dfs.core.windows.net" : "OAuth"
-    "fs.azure.account.oauth.provider.type.${azurerm_storage_account.playground.name}.dfs.core.windows.net" : "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
-    "fs.azure.account.oauth2.client.id.${azurerm_storage_account.playground.name}.dfs.core.windows.net" : databricks_secret.spn_app_id.config_reference
-    "fs.azure.account.oauth2.client.secret.${azurerm_storage_account.playground.name}.dfs.core.windows.net" : databricks_secret.spn_app_secret.config_reference
+    "fs.azure.account.oauth2.client.endpoint.${azurerm_storage_account.integration-test-st-databricks.name}.dfs.core.windows.net" : "https://login.microsoftonline.com/${data.azurerm_client_config.this.tenant_id}/oauth2/token"
+    "fs.azure.account.auth.type.${azurerm_storage_account.integration-test-st-databricks.name}.dfs.core.windows.net" : "OAuth"
+    "fs.azure.account.oauth.provider.type.${azurerm_storage_account.integration-test-st-databricks.name}.dfs.core.windows.net" : "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
+    "fs.azure.account.oauth2.client.id.${azurerm_storage_account.integration-test-st-databricks.name}.dfs.core.windows.net" : databricks_secret.spn_app_id_integration_test.config_reference
+    "fs.azure.account.oauth2.client.secret.${azurerm_storage_account.integration-test-st-databricks.name}.dfs.core.windows.net" : databricks_secret.spn_app_secret_integration_test.config_reference
     "spark.databricks.delta.preview.enabled" : true
     "spark.databricks.io.cache.enabled" : true
     "spark.master" : "local[*, 4]"
   }
   spark_env_vars = {
     "APPI_INSTRUMENTATION_KEY"        = module.appi_shared.instrumentation_key
-    "LANDING_STORAGE_ACCOUNT"         = azurerm_storage_account.playground.name
-    "DATALAKE_STORAGE_ACCOUNT"        = azurerm_storage_account.playground.name
-    "DATALAKE_SHARED_STORAGE_ACCOUNT" = azurerm_storage_account.playground.name
+    "LANDING_STORAGE_ACCOUNT"         = azurerm_storage_account.integration-test-st-databricks.name
+    "DATALAKE_STORAGE_ACCOUNT"        = azurerm_storage_account.integration-test-st-databricks.name
+    "DATALAKE_SHARED_STORAGE_ACCOUNT" = azurerm_storage_account.integration-test-st-databricks.name
   }
 }
 
-resource "databricks_job" "migration_playground_workflow" {
+resource "databricks_job" "migration_workflow" {
+  provider = databricks.integration_test
+
   name = "Landing_To_Wholesale_Gold_Fully_In_Playground"
 
   job_cluster {
     job_cluster_key = "playground_job_cluster"
     new_cluster {
-      instance_pool_id = databricks_instance_pool.my_pool.id
+      instance_pool_id = databricks_instance_pool.migration_pool_integration_test.id
       spark_version    = data.databricks_spark_version.latest_lts.id
-            spark_conf = {
-        "fs.azure.account.oauth2.client.endpoint.${azurerm_storage_account.playground.name}.dfs.core.windows.net" : "https://login.microsoftonline.com/${data.azurerm_client_config.this.tenant_id}/oauth2/token"
-        "fs.azure.account.auth.type.${azurerm_storage_account.playground.name}.dfs.core.windows.net" : "OAuth"
-        "fs.azure.account.oauth.provider.type.${azurerm_storage_account.playground.name}.dfs.core.windows.net" : "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
-        "fs.azure.account.oauth2.client.id.${azurerm_storage_account.playground.name}.dfs.core.windows.net" : databricks_secret.spn_app_id.config_reference
-        "fs.azure.account.oauth2.client.secret.${azurerm_storage_account.playground.name}.dfs.core.windows.net" : databricks_secret.spn_app_secret.config_reference
+      spark_conf = {
+        "fs.azure.account.oauth2.client.endpoint.${azurerm_storage_account.integration-test-st-databricks.name}.dfs.core.windows.net" : "https://login.microsoftonline.com/${data.azurerm_client_config.this.tenant_id}/oauth2/token"
+        "fs.azure.account.auth.type.${azurerm_storage_account.integration-test-st-databricks.name}.dfs.core.windows.net" : "OAuth"
+        "fs.azure.account.oauth.provider.type.${azurerm_storage_account.integration-test-st-databricks.name}.dfs.core.windows.net" : "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
+        "fs.azure.account.oauth2.client.id.${azurerm_storage_account.integration-test-st-databricks.name}.dfs.core.windows.net" : databricks_secret.spn_app_id_integration_test.config_reference
+        "fs.azure.account.oauth2.client.secret.${azurerm_storage_account.integration-test-st-databricks.name}.dfs.core.windows.net" : databricks_secret.spn_app_secret_integration_test.config_reference
         "spark.databricks.delta.preview.enabled" : true
         "spark.databricks.io.cache.enabled" : true
         "spark.master" : "local[*, 4]"
       }
       spark_env_vars = {
         "APPI_INSTRUMENTATION_KEY"        = module.appi_shared.instrumentation_key
-        "LANDING_STORAGE_ACCOUNT"         = azurerm_storage_account.playground.name
-        "DATALAKE_STORAGE_ACCOUNT"        = azurerm_storage_account.playground.name
-        "DATALAKE_SHARED_STORAGE_ACCOUNT" = azurerm_storage_account.playground.name
+        "LANDING_STORAGE_ACCOUNT"         = azurerm_storage_account.integration-test-st-databricks.name
+        "DATALAKE_STORAGE_ACCOUNT"        = azurerm_storage_account.integration-test-st-databricks.name
+        "DATALAKE_SHARED_STORAGE_ACCOUNT" = azurerm_storage_account.integration-test-st-databricks.name
       }
     }
   }
@@ -624,6 +671,6 @@ resource "databricks_job" "migration_playground_workflow" {
   }
 
   depends_on = [
-    databricks_instance_pool.my_pool
+    databricks_instance_pool.migration_pool_integration_test
   ]
 }
