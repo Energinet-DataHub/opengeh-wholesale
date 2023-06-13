@@ -153,7 +153,7 @@ public class CalculationResultPublisher : ICalculationResultPublisher
 
         foreach (var energySupplier in energySuppliers)
         {
-            var processStepResultDto = await _calculationResultClient
+            var result = await _calculationResultClient
                 .GetAsync(
                     batchGridAreaInfo.BatchId,
                     batchGridAreaInfo.GridAreaCode,
@@ -162,7 +162,7 @@ public class CalculationResultPublisher : ICalculationResultPublisher
                     null)
                 .ConfigureAwait(false);
 
-            var integrationEvent = _calculationResultCompletedFactory.CreateForEnergySupplier(processStepResultDto, batchGridAreaInfo, energySupplier.Gln);
+            var integrationEvent = _calculationResultCompletedFactory.CreateForEnergySupplier(result, batchGridAreaInfo, energySupplier.Gln);
             await _integrationEventPublisher.PublishAsync(integrationEvent).ConfigureAwait(false);
         }
     }
@@ -185,7 +185,7 @@ public class CalculationResultPublisher : ICalculationResultPublisher
 
         foreach (var balanceResponsibleParty in balanceResponsibleParties)
         {
-            var processStepResultDto = await _calculationResultClient
+            var result = await _calculationResultClient
                 .GetAsync(
                     batchGridAreaInfo.BatchId,
                     batchGridAreaInfo.GridAreaCode,
@@ -194,7 +194,7 @@ public class CalculationResultPublisher : ICalculationResultPublisher
                     balanceResponsibleParty.Gln)
                 .ConfigureAwait(false);
 
-            var integrationEvent = _calculationResultCompletedFactory.CreateForBalanceResponsibleParty(processStepResultDto, batchGridAreaInfo, balanceResponsibleParty.Gln);
+            var integrationEvent = _calculationResultCompletedFactory.CreateForBalanceResponsibleParty(result, batchGridAreaInfo, balanceResponsibleParty.Gln);
             await _integrationEventPublisher.PublishAsync(integrationEvent).ConfigureAwait(false);
         }
     }

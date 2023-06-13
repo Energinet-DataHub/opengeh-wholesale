@@ -18,18 +18,18 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
+namespace Energinet.DataHub.Wholesale.WebApi.V3.CalculationResult;
 
 /// <summary>
 /// Calculated result.
 /// </summary>
 [Route("/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}")]
-public class ProcessStepResultController : V3ControllerBase
+public class CalculationResultController : V3ControllerBase
 {
     private readonly IBatchesClient _batchesClient;
     private readonly ICalculationResultClient _calculationResultClient;
 
-    public ProcessStepResultController(
+    public CalculationResultController(
         IBatchesClient batchesClient,
         ICalculationResultClient calculationResultClient)
     {
@@ -49,9 +49,9 @@ public class ProcessStepResultController : V3ControllerBase
     /// <param name="timeSeriesType">The time series type the result has</param>
     /// <param name="energySupplierGln">The GLN for the energy supplier the requested result</param>
     /// <param name="balanceResponsiblePartyGln">The GLN for the balance responsible party the requested result</param>
-    [HttpGet(Name = "GetProcessStepResult")]
-    [Produces("application/json", Type = typeof(ProcessStepResultDto))]
-    public async Task<ProcessStepResultDto> GetResultAsync(
+    [HttpGet(Name = "GetCalculationResult")]
+    [Produces("application/json", Type = typeof(CalculationResultDto))]
+    public async Task<CalculationResultDto> GetResultAsync(
         [FromRoute] Guid batchId,
         [FromRoute] string gridAreaCode,
         [FromRoute] TimeSeriesType timeSeriesType,
@@ -67,6 +67,6 @@ public class ProcessStepResultController : V3ControllerBase
 
         var batch = await _batchesClient.GetAsync(batchId).ConfigureAwait(false);
 
-        return ProcessStepResultFactory.Create(stepResult, BatchDtoMapper.Map(batch));
+        return CalculationResultFactory.Create(stepResult, BatchDtoMapper.Map(batch));
     }
 }
