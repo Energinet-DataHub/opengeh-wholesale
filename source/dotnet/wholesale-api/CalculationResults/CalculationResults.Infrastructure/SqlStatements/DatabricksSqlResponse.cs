@@ -29,6 +29,11 @@ public class DatabricksSqlResponse
         return new DatabricksSqlResponse(statementId, DatabricksSqlResponseState.Pending, null);
     }
 
+    public static DatabricksSqlResponse CreateAsRunning(Guid statementId)
+    {
+        return new DatabricksSqlResponse(statementId, DatabricksSqlResponseState.Running, null);
+    }
+
     public static DatabricksSqlResponse CreateAsCancelled(Guid statementId)
     {
         return new DatabricksSqlResponse(statementId, DatabricksSqlResponseState.Cancelled, null);
@@ -42,6 +47,11 @@ public class DatabricksSqlResponse
     public static DatabricksSqlResponse CreateAsFailed(Guid statementId)
     {
         return new DatabricksSqlResponse(statementId, DatabricksSqlResponseState.Failed, null);
+    }
+
+    public static DatabricksSqlResponse CreateAsClosed(Guid statementId)
+    {
+        return new DatabricksSqlResponse(statementId, DatabricksSqlResponseState.Closed, null);
     }
 
     public Guid StatementId { get; }

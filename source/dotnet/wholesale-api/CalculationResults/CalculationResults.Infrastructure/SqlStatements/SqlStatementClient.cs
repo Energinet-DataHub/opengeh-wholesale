@@ -43,10 +43,10 @@ public class SqlStatementClient : ISqlStatementClient
 
         var response = await BeginExecuteAsync(sqlStatement).ConfigureAwait(false);
 
-        if (response.State is (DatabricksSqlResponseState.Cancelled or DatabricksSqlResponseState.Failed))
+        if (response.State is DatabricksSqlResponseState.Cancelled or DatabricksSqlResponseState.Failed or DatabricksSqlResponseState.Closed)
             throw new DatabricksSqlException($"Unable to get calculation result from Databricks. State: {response.State}");
 
-        if (response.State == DatabricksSqlResponseState.Pending)
+        if (response.State is DatabricksSqlResponseState.Pending or DatabricksSqlResponseState.Running)
         {
             hasMoreRows = true;
             path = $"{StatementsEndpointPath}/{response.StatementId}";
@@ -68,8 +68,11 @@ public class SqlStatementClient : ISqlStatementClient
             var jsonResponse = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
             var databricksSqlResponse = _databricksSqlResponseParser.Parse(jsonResponse);
 
+            if (response.State is DatabricksSqlResponseState.Cancelled or DatabricksSqlResponseState.Failed or DatabricksSqlResponseState.Closed)
+                throw new DatabricksSqlException($"Unable to get calculation result from Databricks. State: {response.State}");
+
             // Handle the case where the statement is still pending
-            if (databricksSqlResponse.State == DatabricksSqlResponseState.Pending)
+            if (databricksSqlResponse.State is DatabricksSqlResponseState.Pending or DatabricksSqlResponseState.Running)
             {
                 await Task.Delay(TimeSpan.FromSeconds(2)).ConfigureAwait(false);
                 continue;
