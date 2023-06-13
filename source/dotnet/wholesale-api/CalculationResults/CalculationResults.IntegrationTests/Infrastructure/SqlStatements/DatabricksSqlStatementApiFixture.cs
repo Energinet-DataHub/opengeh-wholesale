@@ -25,10 +25,11 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SqlStatements;
 
-public class DatabricksSqlStatementApiFixture
+public class DatabricksSqlStatementApiFixture : IAsyncLifetime
 {
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly HttpClient _httpClient;
+    private List<string> _createdSchemas = new();
 
     public DatabricksOptions DatabricksOptions { get; }
 
@@ -58,6 +59,8 @@ public class DatabricksSqlStatementApiFixture
 
         if (!response.IsSuccessStatusCode)
             throw new DatabricksSqlException($"Unable to create schema on Databricks. Status code: {response.StatusCode}");
+
+        _createdSchemas.Add(schemaName);
     }
 
     public async Task CreateTableAsync(string schemaName, string tableName, Dictionary<string, string> columnNamesAndTypes)
@@ -76,6 +79,44 @@ public class DatabricksSqlStatementApiFixture
 
         if (!response.IsSuccessStatusCode)
             throw new DatabricksSqlException($"Unable to create table {schemaName}.{tableName} on Databricks. Status code: {response.StatusCode}");
+    }
+
+    /// <summary>
+    /// Drop schema
+    /// </summary>
+    /// <param name="schemaName"></param>
+    /// <param name="cascade">If true, drops all the associated tables and functions recursively.</param>
+    /// <exception cref="DatabricksSqlException">Exception thrown if the schema is not successfully deleted </exception>
+    public async Task DropSchemaAsync(string schemaName, bool cascade)
+    {
+        var sqlStatement = @$"DROP SCHEMA {schemaName}";
+        if (cascade)
+            sqlStatement += " CASCADE";
+
+        var requestObject = new
+        {
+            on_wait_timeout = "CANCEL",
+            wait_timeout = $"50s", // Make the operation synchronous
+            statement = sqlStatement,
+            warehouse_id = DatabricksOptions.DATABRICKS_WAREHOUSE_ID,
+        };
+
+        var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
+
+        if (!response.IsSuccessStatusCode)
+            throw new DatabricksSqlException($"Unable to create schema on Databricks. Status code: {response.StatusCode}");
+
+        _createdSchemas.Remove(schemaName);
+    }
+
+    public Task InitializeAsync()
+    {
+        return Task.CompletedTask;
+    }
+
+    public Task DisposeAsync()
+    {
+        DropSchemaAsync()
     }
 
     private HttpClient CreateHttpClient()
