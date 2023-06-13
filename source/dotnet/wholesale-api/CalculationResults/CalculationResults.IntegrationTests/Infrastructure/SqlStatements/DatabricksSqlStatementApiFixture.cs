@@ -68,7 +68,7 @@ public class DatabricksSqlStatementApiFixture
         {
             on_wait_timeout = "CANCEL",
             wait_timeout = $"50s", // Make the operation synchronous
-            statement = $@"CREATE TABLE {schemaName}.{tableName} ({columnDefinitions});",
+            statement = $@"CREATE TABLE {schemaName}.{tableName} ({columnDefinitions})",
             warehouse_id = DatabricksOptions.DATABRICKS_WAREHOUSE_ID,
         };
 
