@@ -63,6 +63,7 @@
       <EmbeddedResource Include="Application\CalculationResult\Model\ProcessResult.json" />
       <EmbeddedResource Include="Infrastructure\Actor\actor-list.json" />
       <EmbeddedResource Include="Infrastructure\SqlStatements\CalculationResult.json" />
+      <EmbeddedResource Include="Infrastructure\SqlStatements\CalculationResultChunk.json" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\..\Test.Core\Test.Core.csproj" />

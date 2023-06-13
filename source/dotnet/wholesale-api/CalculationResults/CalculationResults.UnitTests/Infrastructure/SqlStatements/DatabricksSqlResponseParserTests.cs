@@ -26,6 +26,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 public class DatabricksSqlResponseParserTests
 {
     private readonly string _succeededResultJson;
+    private readonly string _resultChunkJson;
     private readonly string _pendingResultJson;
 
     public DatabricksSqlResponseParserTests()
@@ -33,6 +34,10 @@ public class DatabricksSqlResponseParserTests
         var stream = EmbeddedResources.GetStream("Infrastructure.SqlStatements.CalculationResult.json");
         using var reader = new StreamReader(stream);
         _succeededResultJson = reader.ReadToEnd();
+
+        var chunkStream = EmbeddedResources.GetStream("Infrastructure.SqlStatements.CalculationResultChunk.json");
+        using var chunkReader = new StreamReader(chunkStream);
+        _resultChunkJson = chunkReader.ReadToEnd();
 
         var statement = new
         {
@@ -160,5 +165,21 @@ public class DatabricksSqlResponseParserTests
 
         // Assert
         actual.Table!.RowCount.Should().Be(0);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public void Parse_WhenResultIsChunk_ReturnsExpectedNextChunkInternalLink(DatabricksSqlResponseParser sut)
+    {
+        // Arrange
+        var expectedNextChunkInternalLink =
+            "/api/2.0/sql/statements/01ed92c5-3583-1f38-b21b-c6773e7c56b3/result/chunks/1?row_offset=432500";
+
+        // Act
+        var actual = sut.Parse(_resultChunkJson);
+
+        // Assert
+        actual.HasMoreRows.Should().BeTrue();
+        actual.NextChunkInternalLink.Should().Be(expectedNextChunkInternalLink);
     }
 }
