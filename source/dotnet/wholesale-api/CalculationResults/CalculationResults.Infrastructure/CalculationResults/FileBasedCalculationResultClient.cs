@@ -74,10 +74,10 @@ public class FileBasedCalculationResultClient : ICalculationResultClient
         var filepath = await _dataLakeClient.FindFileAsync(directory, ".json").ConfigureAwait(false);
         var stream = await _dataLakeClient.GetReadableFileStreamAsync(filepath).ConfigureAwait(false);
         var points = await _jsonNewlineSerializer.DeserializeAsync<ProcessResultPoint>(stream).ConfigureAwait(false);
-        return MapToProcessStepResultDto(timeSeriesType, points);
+        return MapToCalculationResult(timeSeriesType, points);
     }
 
-    private static CalculationResult MapToProcessStepResultDto(
+    private static CalculationResult MapToCalculationResult(
         TimeSeriesType timeSeriesType,
         IEnumerable<ProcessResultPoint> points)
     {

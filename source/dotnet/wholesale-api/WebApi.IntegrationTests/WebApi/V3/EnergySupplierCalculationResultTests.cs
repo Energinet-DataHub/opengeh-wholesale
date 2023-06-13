@@ -28,9 +28,9 @@ using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi.V3;
 
-public class ProcessStepEnergySupplierTests : WebApiTestBase
+public class EnergySupplierCalculationResultTests : WebApiTestBase
 {
-    public ProcessStepEnergySupplierTests(
+    public EnergySupplierCalculationResultTests(
         WholesaleWebApiFixture wholesaleWebApiFixture,
         WebApiFactory factory,
         ITestOutputHelper testOutputHelper)

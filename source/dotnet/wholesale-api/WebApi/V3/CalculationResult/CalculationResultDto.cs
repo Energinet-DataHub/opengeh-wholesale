@@ -15,7 +15,7 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 
-namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
+namespace Energinet.DataHub.Wholesale.WebApi.V3.CalculationResult;
 
 /// <summary>
 /// Result data from a specific step in a process
@@ -30,7 +30,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
 /// <param name="TimeSeriesPoints"></param>
 /// <param name="ProcessType"></param>
 /// <param name="TimeSeriesType"></param>
-public sealed record ProcessStepResultDto(
+public sealed record CalculationResultDto(
     decimal Sum,
     decimal Min,
     decimal Max,
