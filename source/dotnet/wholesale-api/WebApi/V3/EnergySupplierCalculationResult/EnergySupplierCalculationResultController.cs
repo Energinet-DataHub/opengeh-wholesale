@@ -16,17 +16,17 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Actors;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepEnergySupplier;
+namespace Energinet.DataHub.Wholesale.WebApi.V3.EnergySupplierCalculationResult;
 
 /// <summary>
 /// Energy suppliers for which batch results have been calculated.
 /// </summary>
 [Route("/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}/energy-suppliers")]
-public class ProcessStepEnergySupplierController : V3ControllerBase
+public class EnergySupplierCalculationResultController : V3ControllerBase
 {
     private readonly IActorClient _actorClient;
 
-    public ProcessStepEnergySupplierController(IActorClient actorClient)
+    public EnergySupplierCalculationResultController(IActorClient actorClient)
     {
         _actorClient = actorClient;
     }

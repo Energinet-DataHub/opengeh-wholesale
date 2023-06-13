@@ -60,7 +60,7 @@
       <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\result-table-column-names.json">
         <Link>DeltaTableContracts\Contracts\result-table-column-names.json</Link>
       </EmbeddedResource>
-      <EmbeddedResource Include="Application\ProcessStep\Model\ProcessResult.json" />
+      <EmbeddedResource Include="Application\CalculationResult\Model\ProcessResult.json" />
       <EmbeddedResource Include="Infrastructure\Actor\actor-list.json" />
       <EmbeddedResource Include="Infrastructure\SqlStatements\CalculationResult.json" />
     </ItemGroup>

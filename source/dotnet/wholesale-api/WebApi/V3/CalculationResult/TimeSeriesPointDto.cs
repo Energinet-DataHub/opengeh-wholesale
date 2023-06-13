@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
+namespace Energinet.DataHub.Wholesale.WebApi.V3.CalculationResult;
 
 /// <summary>
 /// TimeSeriesPoint
 /// </summary>
 /// <param name="Time">The observation time for the measured 'Quantity'</param>
 /// <param name="Quantity">Quantity has a scale of 3</param>
-/// <param name="Quality">Any of the values from <see cref="TimeSeriesPointQuality"/></param>
+/// <param name="Quality">Quantity quality</param>
 public sealed record TimeSeriesPointDto(
     DateTimeOffset Time,
     decimal Quantity,
