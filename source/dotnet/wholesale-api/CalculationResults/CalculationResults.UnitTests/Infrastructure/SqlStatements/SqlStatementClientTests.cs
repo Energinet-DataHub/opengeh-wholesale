@@ -29,10 +29,10 @@ using static Moq.Protected.ItExpr;
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SqlStatements;
 
 [UnitTest]
-public class SqlStatmentClientTests
+public class SqlStatementClientTests
 {
     private static readonly Guid _statementId = Guid.NewGuid();
-    //private static readonly string _nextChunkInternalLink = "anyNextChunkInternalLink";
+    private static readonly string _nextChunkInternalLink = "anyNextChunkInternalLink";
     private readonly string _anySqlStatement = "anySqlStatement";
     private readonly DatabricksOptions _someDatabricksOptions = new()
     {
@@ -43,6 +43,7 @@ public class SqlStatmentClientTests
 
     private readonly DatabricksSqlResponse _cancelledDatabricksSqlResponse = DatabricksSqlResponse.CreateAsCancelled(_statementId);
     private readonly DatabricksSqlResponse _pendingDatabricksSqlResponse = DatabricksSqlResponse.CreateAsPending(_statementId);
+    private readonly DatabricksSqlResponse _succeededDatabricksSqlResponseWithNextChunkLink = DatabricksSqlResponse.CreateAsSucceeded(_statementId, TableTestHelper.CreateTableForSettlementReport(4), _nextChunkInternalLink);
     private readonly DatabricksSqlResponse _succeededDatabricksSqlResponse = DatabricksSqlResponse.CreateAsSucceeded(_statementId, TableTestHelper.CreateTableForSettlementReport(3), null);
     private readonly DatabricksSqlResponse _succeededDatabricksSqlResponseWithZeroRows = DatabricksSqlResponse.CreateAsSucceeded(_statementId, TableTestHelper.CreateTableForSettlementReport(0), null);
     private readonly DatabricksSqlResponse _failedDatabricksSqlResponse = DatabricksSqlResponse.CreateAsFailed(_statementId);
@@ -60,6 +61,30 @@ public class SqlStatmentClientTests
             .Setup<Task<HttpResponseMessage>>("SendAsync", IsAny<HttpRequestMessage>(), IsAny<CancellationToken>())
             .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.BadRequest, });
         var httpClient = new HttpClient(mockMessageHandler.Object);
+
+        var sut = new SqlStatementClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
+
+        // Act
+        var actual = sut.ExecuteAsync(_anySqlStatement);
+
+        // Assert
+        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await actual.ToListAsync());
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task ExecuteAsync_WhenDatabricksReturnsCancelled_ThrowsDatabricksSqlException(
+        [Frozen] Mock<IDatabricksSqlResponseParser> databricksSqlResponseParserMock,
+        [Frozen] Mock<HttpMessageHandler> mockMessageHandler,
+        [Frozen] Mock<IOptions<DatabricksOptions>> mockOptions)
+    {
+        // Arrange
+        mockOptions.Setup(o => o.Value).Returns(_someDatabricksOptions);
+        mockMessageHandler.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", IsAny<HttpRequestMessage>(), IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.OK });
+        var httpClient = new HttpClient(mockMessageHandler.Object);
+        databricksSqlResponseParserMock.Setup(p => p.Parse(It.IsAny<string>())).Returns(_cancelledDatabricksSqlResponse);
 
         var sut = new SqlStatementClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
 
@@ -143,6 +168,34 @@ public class SqlStatmentClientTests
 
         // Assert
         actual.RowCount.Should().Be(_succeededDatabricksSqlResponse.Table!.RowCount);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task
+        ExecuteAsync_WhenDatabricksReturnsSucceededInTwoChunks_ReturnsExpectedResponse(
+            [Frozen] Mock<IDatabricksSqlResponseParser> databricksSqlResponseParserMock,
+            [Frozen] Mock<HttpMessageHandler> mockMessageHandler,
+            [Frozen] Mock<IOptions<DatabricksOptions>> mockOptions)
+    {
+        // Arrange
+        var expectedRowCount = _succeededDatabricksSqlResponseWithNextChunkLink.Table!.RowCount + _succeededDatabricksSqlResponse.Table!.RowCount;
+        mockOptions.Setup(o => o.Value).Returns(_someDatabricksOptions);
+        mockMessageHandler.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", IsAny<HttpRequestMessage>(), IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.OK, });
+        var httpClient = new HttpClient(mockMessageHandler.Object);
+        databricksSqlResponseParserMock.SetupSequence(p => p.Parse(It.IsAny<string>()))
+            .Returns(_succeededDatabricksSqlResponseWithNextChunkLink).Returns(_succeededDatabricksSqlResponse);
+
+        var sut = new SqlStatementClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
+
+        // Act
+        var actual = await sut.ExecuteAsync(_anySqlStatement).ToListAsync();
+
+        // Assert
+        var actualRowCount = actual.SelectMany(chunk => chunk.Rows).Count();
+        actualRowCount.Should().Be(expectedRowCount);
     }
 
     [Theory]
