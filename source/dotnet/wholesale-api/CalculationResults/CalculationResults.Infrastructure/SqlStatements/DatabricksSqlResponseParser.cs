@@ -57,7 +57,7 @@ public class DatabricksSqlResponseParser : IDatabricksSqlResponseParser
 
     private static int GetRowCount(JObject responseJsonObject)
     {
-        var rowCount = responseJsonObject["manifest"]?["row_count"]?.ToObject<int>() ?? throw new DatabricksSqlException("Unable to retrieve 'row_count' from the responseJsonObject.");
+        var rowCount = responseJsonObject["result"]?["row_count"]?.ToObject<int>() ?? throw new DatabricksSqlException("Unable to retrieve 'row_count' from the responseJsonObject.");
         return rowCount!;
     }
 
