@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
@@ -27,21 +25,14 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infras
 
 public class SqlStatementClientTests
 {
-    private const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly string _someSchemaName = $"TestSchema{Guid.NewGuid().ToString("N")[..8]}"; // TODO: use PR NUMBER
     private readonly string _sometableName = $"TestTable{Guid.NewGuid().ToString("N")[..8]}"; // TODO: use commit ID?
-    private static readonly DatabricksOptions _databricksOptions = new()
-    {
-        DATABRICKS_WAREHOUSE_ID = "anyDatabricksId",
-        DATABRICKS_WORKSPACE_URL = "https://anyDatabricksUrl",
-        DATABRICKS_WORKSPACE_TOKEN = "myToken",
-    };
 
-    private readonly HttpClient _httpClient = CreateHttpClient();
+    private readonly DatabricksSqlStatementApiFixture _databricksSqlStatementApiFixture;
 
-    public SqlStatementClientTests()
+    public SqlStatementClientTests(DatabricksSqlStatementApiFixture databricksSqlStatementApiFixture)
     {
-        await CreateSchemaAsync(_someSchemaName).ConfigureAwait(false);
+        _databricksSqlStatementApiFixture = databricksSqlStatementApiFixture;
     }
 
     [Theory]
@@ -50,7 +41,7 @@ public class SqlStatementClientTests
         [Frozen] Mock<IOptions<DatabricksOptions>> databricksOptionsMock)
     {
         // Arrange
-        databricksOptionsMock.Setup(o => o.Value).Returns(_databricksOptions);
+        databricksOptionsMock.Setup(o => o.Value).Returns(_databricksSqlStatementApiFixture.DatabricksOptions);
         var databricksSqlResponseParser = new DatabricksSqlResponseParser();
         var httpClient = new HttpClient();
         var sut = new SqlStatementClient(httpClient, databricksOptionsMock.Object, databricksSqlResponseParser);
@@ -61,53 +52,5 @@ public class SqlStatementClientTests
 
         // Assert
         response.RowCount.Should().Be(1);
-    }
-
-    private static HttpClient CreateHttpClient()
-    {
-        var httpClient = new HttpClient();
-        httpClient.BaseAddress = new Uri(_databricksOptions.DATABRICKS_WORKSPACE_URL);
-        httpClient.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", _databricksOptions.DATABRICKS_WORKSPACE_TOKEN);
-        httpClient.DefaultRequestHeaders.Accept.Clear();
-        httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
-        httpClient.BaseAddress = new Uri(_databricksOptions.DATABRICKS_WORKSPACE_URL);
-
-        return httpClient;
-    }
-
-    private async Task CreateSchemaAsync(string schemaName)
-    {
-        var requestObject = new
-        {
-            on_wait_timeout = "CANCEL",
-            wait_timeout = $"50s", // Make the operation synchronous
-            statement = @$"CREATE SCHEMA IF NOT EXISTS {schemaName}",
-            warehouse_id = _databricksOptions.DATABRICKS_WAREHOUSE_ID,
-        };
-
-        var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
-
-        if (!response.IsSuccessStatusCode)
-            throw new DatabricksSqlException($"Unable to create schema on Databricks. Status code: {response.StatusCode}");
-    }
-
-    private async Task CreateTableAsync(string schemaName, string tableName, Dictionary<string, string> columnNamesAndTypes)
-    {
-        var columnDefinitions = string.Join(", ", columnNamesAndTypes.Select(c => $"{c.Key} {c.Value}"));
-
-        var requestObject = new
-        {
-            on_wait_timeout = "CANCEL",
-            wait_timeout = $"50s", // Make the operation synchronous
-            statement = $@"CREATE TABLE {schemaName}.{tableName} ({columnDefinitions});",
-            warehouse_id = _databricksOptions.DATABRICKS_WAREHOUSE_ID,
-        };
-
-        var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
-
-        if (!response.IsSuccessStatusCode)
-            throw new DatabricksSqlException($"Unable to create table {schemaName}.{tableName} on Databricks. Status code: {response.StatusCode}");
     }
 }
