@@ -15,23 +15,23 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 
-namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
+namespace Energinet.DataHub.Wholesale.WebApi.V3.CalculationResult;
 
-public static class ProcessStepResultFactory
+public static class CalculationResultFactory
 {
-    public static ProcessStepResultDto Create(CalculationResults.Interfaces.CalculationResults.Model.CalculationResult stepResult, BatchDto batch)
+    public static CalculationResultDto Create(CalculationResults.Interfaces.CalculationResults.Model.CalculationResult calculationResult, BatchDto batch)
     {
-        return new ProcessStepResultDto(
-            stepResult.Sum,
-            stepResult.Min,
-            stepResult.Max,
+        return new CalculationResultDto(
+            calculationResult.Sum,
+            calculationResult.Min,
+            calculationResult.Max,
             batch.PeriodStart,
             batch.PeriodEnd,
             batch.Resolution,
             batch.Unit,
-            stepResult.TimeSeriesPoints.Select(MapTimeSeriesPoint()).ToArray(),
+            calculationResult.TimeSeriesPoints.Select(MapTimeSeriesPoint()).ToArray(),
             batch.ProcessType,
-            stepResult.TimeSeriesType);
+            calculationResult.TimeSeriesType);
     }
 
     private static Func<TimeSeriesPoint, TimeSeriesPointDto> MapTimeSeriesPoint()

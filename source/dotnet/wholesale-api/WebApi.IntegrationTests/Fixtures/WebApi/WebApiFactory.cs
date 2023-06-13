@@ -61,7 +61,7 @@ public class WebApiFactory : WebApplicationFactory<Startup>
                 SettlementReportApplicationServiceMock?.Object ??
                 new Mock<ISettlementReportClient>().Object);
             services.AddScoped(_ =>
-                ProcessStepResultRepositoryMock?.Object ?? new Mock<ICalculationResultClient>().Object);
+                CalculationResultClientMock?.Object ?? new Mock<ICalculationResultClient>().Object);
             services.AddScoped(_ =>
                 ActorRepositoryMock?.Object ?? new Mock<IActorClient>().Object);
             services.AddScoped(_ => BatchesClientMock?.Object ?? new Mock<IBatchesClient>().Object);
@@ -78,7 +78,7 @@ public class WebApiFactory : WebApplicationFactory<Startup>
     /// </summary>
     public Mock<ISettlementReportClient>? SettlementReportApplicationServiceMock { get; set; }
 
-    public Mock<ICalculationResultClient>? ProcessStepResultRepositoryMock { get; set; }
+    public Mock<ICalculationResultClient>? CalculationResultClientMock { get; set; }
 
     public Mock<IActorClient>? ActorRepositoryMock { get; set; }
 

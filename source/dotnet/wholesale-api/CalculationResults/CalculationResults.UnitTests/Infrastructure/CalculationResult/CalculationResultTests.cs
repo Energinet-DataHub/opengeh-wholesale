@@ -17,16 +17,16 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using FluentAssertions;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.ProcessStepResultAggregate;
+namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.CalculationResult;
 
-public class ProcessStepResultAggregateTests
+public class CalculationResultTests
 {
     [Theory]
     [InlineAutoMoqData]
     public void Ctor_WhenNoPoints_ThrowsArgumentException(TimeSeriesType anyTimeSeriesType)
     {
         var emptyTimeSeriesPoints = new TimeSeriesPoint[] { };
-        Assert.Throws<ArgumentException>(() => new CalculationResult(anyTimeSeriesType, emptyTimeSeriesPoints));
+        Assert.Throws<ArgumentException>(() => new Interfaces.CalculationResults.Model.CalculationResult(anyTimeSeriesType, emptyTimeSeriesPoints));
     }
 
     [Theory]
@@ -37,7 +37,7 @@ public class ProcessStepResultAggregateTests
         var anyTimeSeriesType = TimeSeriesType.Production;
 
         // Act
-        var sut = new CalculationResult(anyTimeSeriesType, points.ToArray());
+        var sut = new Interfaces.CalculationResults.Model.CalculationResult(anyTimeSeriesType, points.ToArray());
 
         // Assert
         sut.Min.Should().Be(expectedMin);
