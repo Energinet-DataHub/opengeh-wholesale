@@ -41,7 +41,7 @@ public class DatabricksSqlResponse
 
     public static DatabricksSqlResponse CreateAsFailed(Guid statementId)
     {
-        return new DatabricksSqlResponse(statementId, DatabricksSqlResponseState.Pending, null);
+        return new DatabricksSqlResponse(statementId, DatabricksSqlResponseState.Failed, null);
     }
 
     public Guid StatementId { get; }

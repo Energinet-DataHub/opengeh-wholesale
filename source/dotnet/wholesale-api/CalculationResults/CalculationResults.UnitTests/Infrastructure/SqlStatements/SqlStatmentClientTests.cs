@@ -49,7 +49,7 @@ public class SqlStatmentClientTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task ExecuteSqlStatementAsync_WhenHttpStatusCodeNotOK_ThrowsDatabricksSqlException(
+    public async Task ExecuteAsync_WhenHttpStatusCodeNotOK_ThrowsDatabricksSqlException(
         [Frozen] Mock<IDatabricksSqlResponseParser> databricksSqlResponseParserMock,
         [Frozen] Mock<HttpMessageHandler> mockMessageHandler,
         [Frozen] Mock<IOptions<DatabricksOptions>> mockOptions)
@@ -72,7 +72,7 @@ public class SqlStatmentClientTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task ExecuteSqlStatementAsync_WhenDatabricksReturnsFailed_ThrowsDatabricksSqlException(
+    public async Task ExecuteAsync_WhenDatabricksReturnsFailed_ThrowsDatabricksSqlException(
         [Frozen] Mock<IDatabricksSqlResponseParser> databricksSqlResponseParserMock,
         [Frozen] Mock<HttpMessageHandler> mockMessageHandler,
         [Frozen] Mock<IOptions<DatabricksOptions>> mockOptions)
@@ -96,7 +96,7 @@ public class SqlStatmentClientTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task ExecuteSqlStatementAsync_WhenDatabricksKeepsReturningPending_ThrowDatabricksSqlException(
+    public async Task ExecuteAsync_WhenDatabricksKeepsReturningPending_ThrowDatabricksSqlException(
         [Frozen] Mock<IDatabricksSqlResponseParser> databricksSqlResponseParserMock,
         [Frozen] Mock<HttpMessageHandler> mockMessageHandler,
         [Frozen] Mock<IOptions<DatabricksOptions>> mockOptions)
@@ -120,7 +120,7 @@ public class SqlStatmentClientTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task ExecuteSqlStatementAsync_WhenDatabricksReturnsSucceeded_ReturnsExpectedNumberOfRows(
+    public async Task ExecuteAsync_WhenDatabricksReturnsSucceeded_ReturnsExpectedNumberOfRows(
         [Frozen] Mock<IDatabricksSqlResponseParser> databricksSqlResponseParserMock,
         [Frozen] Mock<HttpMessageHandler> mockMessageHandler,
         [Frozen] Mock<IOptions<DatabricksOptions>> mockOptions)
@@ -146,7 +146,7 @@ public class SqlStatmentClientTests
     [Theory]
     [InlineAutoMoqData]
     public async Task
-        ExecuteSqlStatementAsync_WhenDatabricksReturnsPendingAndThenSucceeded_ReturnsExpectedResponse(
+        ExecuteAsync_WhenDatabricksReturnsPendingAndThenSucceeded_ReturnsExpectedResponse(
             [Frozen] Mock<IDatabricksSqlResponseParser> databricksSqlResponseParserMock,
             [Frozen] Mock<HttpMessageHandler> mockMessageHandler,
             [Frozen] Mock<IOptions<DatabricksOptions>> mockOptions)
@@ -172,7 +172,7 @@ public class SqlStatmentClientTests
     [Theory]
     [InlineAutoMoqData]
     public async Task
-        ExecuteSqlStatementAsync_WhenDatabricksReturnsCancelledAndThenSucceeded_ReturnsExpectedResponse(
+        ExecuteAsync_WhenDatabricksReturnsCancelledAndThenSucceeded_ReturnsExpectedResponse(
             [Frozen] Mock<IDatabricksSqlResponseParser> databricksSqlResponseParserMock,
             [Frozen] Mock<HttpMessageHandler> mockMessageHandler,
             [Frozen] Mock<IOptions<DatabricksOptions>> mockOptions)
@@ -197,7 +197,7 @@ public class SqlStatmentClientTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task ExecuteSqlStatementAsync_WhenSuccessfulResponse_ReturnsExpectedNumberOfRows(
+    public async Task ExecuteAsync_WhenSuccessfulResponse_ReturnsExpectedNumberOfRows(
         [Frozen] Mock<IDatabricksSqlResponseParser> databricksSqlResponseParserMock,
         [Frozen] Mock<HttpMessageHandler> mockMessageHandler,
         [Frozen] Mock<IOptions<DatabricksOptions>> mockOptions)
@@ -223,7 +223,7 @@ public class SqlStatmentClientTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task ExecuteSqlStatementAsync_WhenHttpEndpointReturnsRealSampleData_ReturnsExpectedData(
+    public async Task ExecuteAsync_WhenHttpEndpointReturnsRealSampleData_ReturnsExpectedData(
         [Frozen] Mock<HttpMessageHandler> mockMessageHandler,
         [Frozen] Mock<IOptions<DatabricksOptions>> mockOptions)
     {
@@ -249,7 +249,7 @@ public class SqlStatmentClientTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task ExecuteSqlStatementAsync_WhenNoRelevantData_ReturnsZeroRows(
+    public async Task ExecuteAsync_WhenNoRelevantData_ReturnsZeroRows(
         [Frozen] Mock<IDatabricksSqlResponseParser> databricksSqlResponseParserMock,
         [Frozen] Mock<HttpMessageHandler> mockMessageHandler,
         [Frozen] Mock<IOptions<DatabricksOptions>> mockOptions)
