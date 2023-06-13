@@ -396,6 +396,86 @@ resource "azurerm_key_vault_secret" "kvs-mssql-server-id" {
   ]
 }
 
+resource "azurerm_key_vault_secret" "kvs_dbw_sql_endpoint_id" {
+  name         = "dbw-sql-endpoint-id"
+  value        = databricks_sql_endpoint.sql_endpoint_integration_test.id
+  key_vault_id = azurerm_key_vault.integration-test-kv.id
+
+  lifecycle {
+    ignore_changes = [
+      tags,
+    ]
+  }
+
+  depends_on = [
+    azurerm_key_vault_access_policy.integration-test-kv-selfpermissions
+  ]
+}
+
+resource "azurerm_key_vault_secret" "kvs_databricks_dbw_playground_workspace_token" {
+  name         = "dbw-playground-workspace-token"
+  value        = data.external.databricks_token_integration_test.result.pat_token
+  key_vault_id = azurerm_key_vault.integration-test-kv.id
+
+  lifecycle {
+    ignore_changes = [
+      tags,
+    ]
+  }
+
+  depends_on = [
+    azurerm_key_vault_access_policy.integration-test-kv-selfpermissions
+  ]
+}
+
+resource "azurerm_key_vault_secret" "kvs_databricks_dbw_playground_workspace_url" {
+  name         = "dbw-playground-workspace-url"
+  value        = azurerm_databricks_workspace.integration-test-dbw.workspace_url
+  key_vault_id = azurerm_key_vault.integration-test-kv.id
+
+  lifecycle {
+    ignore_changes = [
+      tags,
+    ]
+  }
+
+  depends_on = [
+    azurerm_key_vault_access_policy.integration-test-kv-selfpermissions
+  ]
+}
+
+resource "azurerm_key_vault_secret" "kvs_databricks_dbw_playground_workspace_id" {
+  name         = "dbw-playground-workspace-id"
+  value        = azurerm_databricks_workspace.integration-test-dbw.id
+  key_vault_id = azurerm_key_vault.integration-test-kv.id
+
+  lifecycle {
+    ignore_changes = [
+      tags,
+    ]
+  }
+
+  depends_on = [
+    azurerm_key_vault_access_policy.integration-test-kv-selfpermissions
+  ]
+}
+
+resource "azurerm_key_vault_secret" "kvs_databricks_dbw_playground_storage_account_name" {
+  name         = "dbw-playground-storage-account-name"
+  value        = azurerm_storage_account.integration-test-st-databricks.name
+  key_vault_id = azurerm_key_vault.integration-test-kv.id
+
+  lifecycle {
+    ignore_changes = [
+      tags,
+    ]
+  }
+
+  depends_on = [
+    azurerm_key_vault_access_policy.integration-test-kv-selfpermissions
+  ]
+}
+
 #
 # Databricks related resources
 #
@@ -559,38 +639,6 @@ data "databricks_spark_version" "latest_lts" {
   long_term_support = true
 }
 
-module "kvs_databricks_dbw_playground_workspace_token" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
-
-  name         = "dbw-playground-workspace-token"
-  value        = data.external.databricks_token_integration_test.result.pat_token
-  key_vault_id = azurerm_key_vault.integration-test-kv.id
-}
-
-module "kvs_databricks_dbw_playground_workspace_url" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
-
-  name         = "dbw-playground-workspace-url"
-  value        = azurerm_databricks_workspace.integration-test-dbw.workspace_url
-  key_vault_id = azurerm_key_vault.integration-test-kv.id
-}
-
-module "kvs_databricks_dbw_playground_workspace_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
-
-  name         = "dbw-playground-workspace-id"
-  value        = azurerm_databricks_workspace.integration-test-dbw.id
-  key_vault_id = azurerm_key_vault.integration-test-kv.id
-}
-
-module "kvs_databricks_dbw_playground_storage_account_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
-
-  name         = "dbw-playground-storage-account-name"
-  value        = azurerm_storage_account.integration-test-st-databricks.name
-  key_vault_id = azurerm_key_vault.integration-test-kv.id
-}
-
 resource "databricks_instance_pool" "migration_pool_integration_test" {
   provider = databricks.integration_test
 
@@ -673,4 +721,20 @@ resource "databricks_job" "migration_workflow" {
   depends_on = [
     databricks_instance_pool.migration_pool_integration_test
   ]
+}
+
+resource "databricks_sql_endpoint" "sql_endpoint_integration_test" {
+  provider = databricks.integration_test
+
+  name                      = "SQL Endpoint for Testing"
+  cluster_size              = "Small"
+  max_num_clusters          = 1
+  auto_stop_mins            = 120
+  enable_serverless_compute = true
+  warehouse_type            = "PRO"
+
+  # Enable preview as the statement API is currently in public preview
+  channel {
+    name = "CHANNEL_NAME_PREVIEW"
+  }
 }
