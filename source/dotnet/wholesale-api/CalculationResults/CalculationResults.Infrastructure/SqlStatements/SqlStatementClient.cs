@@ -82,8 +82,7 @@ public class SqlStatementClient : ISqlStatementClient
             if (databricksSqlResponse.State is not DatabricksSqlResponseState.Succeeded)
                 throw new DatabricksSqlException($"Unable to get calculation result from Databricks. State: {databricksSqlResponse.State}");
 
-            if (databricksSqlResponse.State == DatabricksSqlResponseState.Succeeded)
-                yield return databricksSqlResponse.Table!;
+            yield return databricksSqlResponse.Table!;
 
             hasMoreRows = databricksSqlResponse.HasMoreRows;
             path = databricksSqlResponse.NextChunkInternalLink;
