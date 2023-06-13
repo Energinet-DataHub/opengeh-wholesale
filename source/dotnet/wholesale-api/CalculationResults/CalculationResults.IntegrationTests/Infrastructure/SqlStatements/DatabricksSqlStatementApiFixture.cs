@@ -25,13 +25,12 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SqlStatements;
 
-public class SqlStatementClientTests
+public class DatabricksSqlStatementApiFixture
 {
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
-    private readonly string _someSchemaName = $"TestSchema{Guid.NewGuid().ToString("N")[..8]}"; // TODO: use PR NUMBER
-    private readonly string _sometableName = $"TestTable{Guid.NewGuid().ToString("N")[..8]}"; // TODO: use commit ID?
     private static readonly DatabricksOptions _databricksOptions = new()
     {
+        // TODO: use key vault
         DATABRICKS_WAREHOUSE_ID = "anyDatabricksId",
         DATABRICKS_WORKSPACE_URL = "https://anyDatabricksUrl",
         DATABRICKS_WORKSPACE_TOKEN = "myToken",
@@ -39,45 +38,7 @@ public class SqlStatementClientTests
 
     private readonly HttpClient _httpClient = CreateHttpClient();
 
-    public SqlStatementClientTests()
-    {
-        await CreateSchemaAsync(_someSchemaName).ConfigureAwait(false);
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task ExecuteSqlStatementAsync_WhenQueryFromDatabricks_ReturnsExpectedData(
-        [Frozen] Mock<IOptions<DatabricksOptions>> databricksOptionsMock)
-    {
-        // Arrange
-        databricksOptionsMock.Setup(o => o.Value).Returns(_databricksOptions);
-        var databricksSqlResponseParser = new DatabricksSqlResponseParser();
-        var httpClient = new HttpClient();
-        var sut = new SqlStatementClient(httpClient, databricksOptionsMock.Object, databricksSqlResponseParser);
-        var sqlStatement = "SELECT * FROM myTable";
-
-        // Act
-        var response = await sut.ExecuteSqlStatementAsync(sqlStatement);
-
-        // Assert
-        response.RowCount.Should().Be(1);
-    }
-
-    private static HttpClient CreateHttpClient()
-    {
-        var httpClient = new HttpClient();
-        httpClient.BaseAddress = new Uri(_databricksOptions.DATABRICKS_WORKSPACE_URL);
-        httpClient.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", _databricksOptions.DATABRICKS_WORKSPACE_TOKEN);
-        httpClient.DefaultRequestHeaders.Accept.Clear();
-        httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
-        httpClient.BaseAddress = new Uri(_databricksOptions.DATABRICKS_WORKSPACE_URL);
-
-        return httpClient;
-    }
-
-    private async Task CreateSchemaAsync(string schemaName)
+    public async Task CreateSchemaAsync(string schemaName)
     {
         var requestObject = new
         {
@@ -93,7 +54,7 @@ public class SqlStatementClientTests
             throw new DatabricksSqlException($"Unable to create schema on Databricks. Status code: {response.StatusCode}");
     }
 
-    private async Task CreateTableAsync(string schemaName, string tableName, Dictionary<string, string> columnNamesAndTypes)
+    public async Task CreateTableAsync(string schemaName, string tableName, Dictionary<string, string> columnNamesAndTypes)
     {
         var columnDefinitions = string.Join(", ", columnNamesAndTypes.Select(c => $"{c.Key} {c.Value}"));
 
@@ -109,5 +70,19 @@ public class SqlStatementClientTests
 
         if (!response.IsSuccessStatusCode)
             throw new DatabricksSqlException($"Unable to create table {schemaName}.{tableName} on Databricks. Status code: {response.StatusCode}");
+    }
+
+    private static HttpClient CreateHttpClient()
+    {
+        var httpClient = new HttpClient();
+        httpClient.BaseAddress = new Uri(_databricksOptions.DATABRICKS_WORKSPACE_URL);
+        httpClient.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", _databricksOptions.DATABRICKS_WORKSPACE_TOKEN);
+        httpClient.DefaultRequestHeaders.Accept.Clear();
+        httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
+        httpClient.BaseAddress = new Uri(_databricksOptions.DATABRICKS_WORKSPACE_URL);
+
+        return httpClient;
     }
 }
