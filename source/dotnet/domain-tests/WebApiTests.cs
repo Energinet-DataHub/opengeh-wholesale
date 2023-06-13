@@ -86,6 +86,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
         /// <summary>
         /// These tests uses an authorized Wholesale client to perform requests.
         /// </summary>
+        [TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)]
         public class Given_Authorized : IClassFixture<AuthorizedClientFixture>
         {
             private static readonly TimeSpan _defaultTimeout = TimeSpan.FromMinutes(15);
