@@ -25,21 +25,29 @@ public class DatabricksSqlResponseParser : IDatabricksSqlResponseParser
         var jsonObject = JsonConvert.DeserializeObject<JObject>(jsonResponse, settings) ??
                          throw new InvalidOperationException();
 
+        var statementId = GetStatementId(jsonObject);
         var state = GetState(jsonObject);
         switch (state)
         {
             case "PENDING":
-                return DatabricksSqlResponse.CreateAsPending();
+                return DatabricksSqlResponse.CreateAsPending(statementId);
             case "CANCELED":
-                return DatabricksSqlResponse.CreateAsCancelled();
+                return DatabricksSqlResponse.CreateAsCancelled(statementId);
             case "SUCCEEDED":
                 var columnNames = GetColumnNames(jsonObject);
                 var hasData = GetRowCount(jsonObject) > 0;
                 var dataArray = hasData ? GetDataArray(jsonObject) : new List<string[]>();
-                return DatabricksSqlResponse.CreateAsSucceeded(new Table(columnNames, dataArray));
+                var tableChunk = new TableChunk(columnNames, dataArray);
+                var nextChunkInternalLink = GetNextChunkInternalLink(jsonObject);
+                return DatabricksSqlResponse.CreateAsSucceeded(statementId, tableChunk, nextChunkInternalLink);
             default:
                 throw new DatabricksSqlException($@"Databricks SQL statement execution failed. State: {state}");
         }
+    }
+
+    private static Guid GetStatementId(JObject responseJsonObject)
+    {
+        return responseJsonObject["statement_id"]!.ToObject<Guid>();
     }
 
     private static string GetState(JObject responseJsonObject)
@@ -65,5 +73,10 @@ public class DatabricksSqlResponseParser : IDatabricksSqlResponseParser
         var dataArray = responseJsonObject["result"]?["data_array"]?.ToObject<List<string[]>>() ??
                         throw new DatabricksSqlException("Unable to retrieve 'data_array' from the responseJsonObject");
         return dataArray;
+    }
+
+    private static string? GetNextChunkInternalLink(JObject responseJsonObject)
+    {
+        return responseJsonObject["result"]?["next_chunk_internal_link"]?.ToObject<string>();
     }
 }

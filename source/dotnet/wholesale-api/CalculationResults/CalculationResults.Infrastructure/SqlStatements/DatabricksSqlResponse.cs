@@ -16,36 +16,41 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlState
 
 public class DatabricksSqlResponse
 {
-    private readonly DatabricksSqlResponseState _state;
-    private readonly Table? _table;
-
-    private DatabricksSqlResponse(DatabricksSqlResponseState state, Table? table)
+    private DatabricksSqlResponse(Guid statementId, DatabricksSqlResponseState state, TableChunk? table, string? nextChunkInternalLink = null)
     {
-        _state = state;
-        _table = table;
+        StatementId = statementId;
+        State = state;
+        Table = table;
+        NextChunkInternalLink = nextChunkInternalLink;
     }
 
-    public static DatabricksSqlResponse CreateAsCancelled()
+    public static DatabricksSqlResponse CreateAsPending(Guid statementId)
     {
-        return new DatabricksSqlResponse(DatabricksSqlResponseState.Cancelled, null);
+        return new DatabricksSqlResponse(statementId, DatabricksSqlResponseState.Pending, null);
     }
 
-    public static DatabricksSqlResponse CreateAsSucceeded(Table resultTable)
+    public static DatabricksSqlResponse CreateAsCancelled(Guid statementId)
     {
-        return new DatabricksSqlResponse(DatabricksSqlResponseState.Succeeded, resultTable);
+        return new DatabricksSqlResponse(statementId, DatabricksSqlResponseState.Cancelled, null);
     }
 
-    public static DatabricksSqlResponse CreateAsFailed()
+    public static DatabricksSqlResponse CreateAsSucceeded(Guid statementId, TableChunk resultTableChunk, string? nextChunkInternalLink)
     {
-        return new DatabricksSqlResponse(DatabricksSqlResponseState.Failed, null);
+        return new DatabricksSqlResponse(statementId, DatabricksSqlResponseState.Succeeded, resultTableChunk, nextChunkInternalLink);
     }
 
-    public static DatabricksSqlResponse CreateAsPending()
+    public static DatabricksSqlResponse CreateAsFailed(Guid statementId)
     {
-        return new DatabricksSqlResponse(DatabricksSqlResponseState.Pending, null);
+        return new DatabricksSqlResponse(statementId, DatabricksSqlResponseState.Pending, null);
     }
 
-    public DatabricksSqlResponseState State => _state;
+    public Guid StatementId { get; }
 
-    public Table? Table => _table;
+    public DatabricksSqlResponseState State { get; }
+
+    public TableChunk? Table { get; }
+
+    public bool HasMoreRows => NextChunkInternalLink != null;
+
+    public string? NextChunkInternalLink { get; }
 }

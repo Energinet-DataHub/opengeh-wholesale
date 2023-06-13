@@ -36,38 +36,77 @@ public class SqlStatementClient : ISqlStatementClient
         ConfigureHttpClient(_httpClient, _options);
     }
 
-    public async Task<Table> ExecuteSqlStatementAsync(string sqlStatement)
+    public async IAsyncEnumerable<TableChunk> ExecuteAsync(string sqlStatement)
+    {
+        var hasMoreRows = false;
+        var path = string.Empty;
+
+        var response = await BeginExecuteAsync(sqlStatement).ConfigureAwait(false);
+
+        if (response.State is (DatabricksSqlResponseState.Cancelled or DatabricksSqlResponseState.Failed))
+            throw new DatabricksSqlException($"Unable to get calculation result from Databricks. State: {response.State}");
+
+        if (response.State == DatabricksSqlResponseState.Pending)
+        {
+            hasMoreRows = true;
+            path = $"{StatementsEndpointPath}/{response.StatementId}";
+        }
+
+        if (response.State == DatabricksSqlResponseState.Succeeded)
+        {
+            hasMoreRows = response.HasMoreRows;
+            path = response.NextChunkInternalLink!;
+            yield return response.Table!;
+        }
+
+        while (hasMoreRows)
+        {
+            var httpResponse = await _httpClient.GetAsync(path).ConfigureAwait(false);
+            if (!httpResponse.IsSuccessStatusCode)
+                throw new DatabricksSqlException($"Unable to get calculation result from Databricks. HTTP status code: {httpResponse.StatusCode}");
+
+            var jsonResponse = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var databricksSqlResponse = _databricksSqlResponseParser.Parse(jsonResponse);
+
+            // Handle the case where the statement is still pending
+            if (databricksSqlResponse.State == DatabricksSqlResponseState.Pending)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(2)).ConfigureAwait(false);
+                continue;
+            }
+
+            // Handle the case where the statement did not succeed
+            if (databricksSqlResponse.State is not DatabricksSqlResponseState.Succeeded)
+                throw new DatabricksSqlException($"Unable to get calculation result from Databricks. State: {databricksSqlResponse.State}");
+
+            if (databricksSqlResponse.State == DatabricksSqlResponseState.Succeeded)
+                yield return databricksSqlResponse.Table!;
+
+            hasMoreRows = databricksSqlResponse.HasMoreRows;
+            path = databricksSqlResponse.NextChunkInternalLink;
+        }
+    }
+
+    /// <summary>
+    /// Begins executing the SQL statement and returns the ID of the statement.
+    /// </summary>
+    private async Task<DatabricksSqlResponse> BeginExecuteAsync(string sqlStatement)
     {
         const int timeOutPerAttemptSeconds = 30;
-        const int maxAttempts = 16; // 8 minutes in total (16 * 30 seconds). The warehouse takes around 5 minutes to start if it has been stopped.
 
         var requestObject = new
         {
-            on_wait_timeout = "CANCEL",
             wait_timeout = $"{timeOutPerAttemptSeconds}s", // Make the operation synchronous
             statement = sqlStatement,
             warehouse_id = _options.Value.DATABRICKS_WAREHOUSE_ID,
         };
-        // TODO (JMG): Should we use Polly for retrying?
-        for (var attempt = 0; attempt < maxAttempts; attempt++)
-        {
-            var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
+        var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
 
-            if (!response.IsSuccessStatusCode)
-                throw new DatabricksSqlException($"Unable to get calculation result from Databricks. Status code: {response.StatusCode}");
+        if (!response.IsSuccessStatusCode)
+            throw new DatabricksSqlException($"Unable to get calculation result from Databricks. HTTP status code: {response.StatusCode}");
 
-            var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-            var databricksSqlResponse = _databricksSqlResponseParser.Parse(jsonResponse);
-
-            if (databricksSqlResponse.State == DatabricksSqlResponseState.Succeeded)
-                return databricksSqlResponse.Table!;
-
-            if (databricksSqlResponse.State is not (DatabricksSqlResponseState.Pending or DatabricksSqlResponseState.Cancelled))
-                throw new DatabricksSqlException($"Unable to get calculation result from Databricks. State: {databricksSqlResponse.State}");
-        }
-
-        throw new DatabricksSqlException($"Unable to get calculation result from Databricks. Max attempts reached ({maxAttempts}) and the state is still not SUCCEEDED.");
+        var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        return _databricksSqlResponseParser.Parse(jsonResponse);
     }
 
     private static void ConfigureHttpClient(HttpClient httpClient, IOptions<DatabricksOptions> options)

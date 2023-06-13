@@ -31,6 +31,8 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 [UnitTest]
 public class SqlStatmentClientTests
 {
+    private static readonly Guid _statementId = Guid.NewGuid();
+    private static readonly string _nextChunkInternalLink = "anyNextChunkInternalLink";
     private readonly string _anySqlStatement = "anySqlStatement";
     private readonly DatabricksOptions _someDatabricksOptions = new()
     {
@@ -39,11 +41,11 @@ public class SqlStatmentClientTests
         DATABRICKS_WORKSPACE_TOKEN = "myToken",
     };
 
-    private readonly DatabricksSqlResponse _cancelledDatabricksSqlResponse = DatabricksSqlResponse.CreateAsCancelled();
-    private readonly DatabricksSqlResponse _pendingDatabricksSqlResponse = DatabricksSqlResponse.CreateAsPending();
-    private readonly DatabricksSqlResponse _succeededDatabricksSqlResponse = DatabricksSqlResponse.CreateAsSucceeded(TableTestHelper.CreateTableForSettlementReport(3));
-    private readonly DatabricksSqlResponse _succeededDatabricksSqlResponseWithZeroRows = DatabricksSqlResponse.CreateAsSucceeded(TableTestHelper.CreateTableForSettlementReport(0));
-    private readonly DatabricksSqlResponse _failedDatabricksSqlResponse = DatabricksSqlResponse.CreateAsFailed();
+    private readonly DatabricksSqlResponse _cancelledDatabricksSqlResponse = DatabricksSqlResponse.CreateAsCancelled(_statementId);
+    private readonly DatabricksSqlResponse _pendingDatabricksSqlResponse = DatabricksSqlResponse.CreateAsPending(_statementId);
+    private readonly DatabricksSqlResponse _succeededDatabricksSqlResponse = DatabricksSqlResponse.CreateAsSucceeded(_statementId, TableTestHelper.CreateTableForSettlementReport(3), _nextChunkInternalLink);
+    private readonly DatabricksSqlResponse _succeededDatabricksSqlResponseWithZeroRows = DatabricksSqlResponse.CreateAsSucceeded(_statementId, TableTestHelper.CreateTableForSettlementReport(0), _nextChunkInternalLink);
+    private readonly DatabricksSqlResponse _failedDatabricksSqlResponse = DatabricksSqlResponse.CreateAsFailed(_statementId);
 
     [Theory]
     [InlineAutoMoqData]
@@ -61,8 +63,11 @@ public class SqlStatmentClientTests
 
         var sut = new SqlStatementClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
 
-        // Act + Assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(() => sut.ExecuteSqlStatementAsync(_anySqlStatement));
+        // Act
+        var actual = sut.ExecuteAsync(_anySqlStatement);
+
+        // Assert
+        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await actual.ToListAsync());
     }
 
     [Theory]
@@ -82,8 +87,11 @@ public class SqlStatmentClientTests
 
         var sut = new SqlStatementClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
 
-        // Act + Assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(() => sut.ExecuteSqlStatementAsync(_anySqlStatement));
+        // Act
+        var actual = sut.ExecuteAsync(_anySqlStatement);
+
+        // Assert
+        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await actual.ToListAsync());
     }
 
     [Theory]
@@ -103,8 +111,11 @@ public class SqlStatmentClientTests
 
         var sut = new SqlStatementClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
 
-        // Act + Assert
-        await Assert.ThrowsAsync<DatabricksSqlException>(() => sut.ExecuteSqlStatementAsync(_anySqlStatement));
+        // Act
+        var actual = sut.ExecuteAsync(_anySqlStatement);
+
+        // Assert
+        await Assert.ThrowsAsync<DatabricksSqlException>(async () => await actual.ToListAsync());
     }
 
     [Theory]
@@ -126,7 +137,7 @@ public class SqlStatmentClientTests
         var sut = new SqlStatementClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
 
         // Act
-        var actual = await sut.ExecuteSqlStatementAsync(_anySqlStatement);
+        var actual = await sut.ExecuteAsync(_anySqlStatement).SingleAsync();
 
         // Assert
         actual.RowCount.Should().Be(_succeededDatabricksSqlResponse.Table!.RowCount);
@@ -152,7 +163,7 @@ public class SqlStatmentClientTests
         var sut = new SqlStatementClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
 
         // Act
-        var actual = await sut.ExecuteSqlStatementAsync(_anySqlStatement);
+        var actual = await sut.ExecuteAsync(_anySqlStatement).SingleAsync();
 
         // Assert
         actual.RowCount.Should().Be(_succeededDatabricksSqlResponse.Table!.RowCount);
@@ -178,7 +189,7 @@ public class SqlStatmentClientTests
         var sut = new SqlStatementClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
 
         // Act
-        var actual = await sut.ExecuteSqlStatementAsync(_anySqlStatement);
+        var actual = await sut.ExecuteAsync(_anySqlStatement).SingleAsync();
 
         // Assert
         actual.RowCount.Should().Be(_succeededDatabricksSqlResponse.Table!.RowCount);
@@ -204,7 +215,7 @@ public class SqlStatmentClientTests
         var sut = new SqlStatementClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
 
         // Act
-        var actual = await sut.ExecuteSqlStatementAsync(_anySqlStatement);
+        var actual = await sut.ExecuteAsync(_anySqlStatement).SingleAsync();
 
         // Assert
         actual.RowCount.Should().Be(_succeededDatabricksSqlResponse.Table!.RowCount);
@@ -228,7 +239,7 @@ public class SqlStatmentClientTests
         var sut = new SqlStatementClient(httpClient, mockOptions.Object, new DatabricksSqlResponseParser()); // here we use the real parser
 
         // Act
-        var actual = await sut.ExecuteSqlStatementAsync(_anySqlStatement);
+        var actual = await sut.ExecuteAsync(_anySqlStatement).SingleAsync();
 
         // Assert
         actual.RowCount.Should().Be(expectedRowCount);
@@ -254,7 +265,7 @@ public class SqlStatmentClientTests
         var sut = new SqlStatementClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
 
         // Act
-        var actual = await sut.ExecuteSqlStatementAsync(_anySqlStatement);
+        var actual = await sut.ExecuteAsync(_anySqlStatement).SingleAsync();
 
         // Assert
         actual.RowCount.Should().Be(0);
