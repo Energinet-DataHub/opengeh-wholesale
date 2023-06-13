@@ -13,24 +13,24 @@
 // limitations under the License.
 
 using System.Net;
+using System.Net.Http.Json;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Batches.Interfaces;
-using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Actors;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Actors.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
+using Energinet.DataHub.Wholesale.WebApi.V3;
 using FluentAssertions;
 using Moq;
-using Test.Core;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi.V3;
 
-public class ProcessStepResultTests : WebApiTestBase
+public class BalanceResponsiblePartyCalculationResultTests : WebApiTestBase
 {
-    public ProcessStepResultTests(
+    public BalanceResponsiblePartyCalculationResultTests(
         WholesaleWebApiFixture wholesaleWebApiFixture,
         WebApiFactory factory,
         ITestOutputHelper testOutputHelper)
@@ -41,29 +41,43 @@ public class ProcessStepResultTests : WebApiTestBase
     [Theory]
     [InlineAutoMoqData]
     public async Task HTTP_GET_V3_ReturnsHttpStatusCodeOkAtExpectedUrl(
-        Mock<ICalculationResultClient> calculationResultClientMock,
-        Mock<IBatchesClient> batchesClientMock,
-        CalculationResult result,
         Guid batchId,
         string gridAreaCode,
-        BatchDto batchDto)
+        TimeSeriesType timeSeriesType)
     {
         // Arrange
-        result.SetPrivateProperty(r => r.TimeSeriesPoints, new TimeSeriesPoint[] { new(DateTimeOffset.Now, decimal.One, QuantityQuality.Measured) });
-        calculationResultClientMock
-            .Setup(service => service.GetAsync(batchId, gridAreaCode, TimeSeriesType.Production, null, null))
-            .ReturnsAsync(() => result);
-        batchesClientMock.Setup(service => service.GetAsync(batchId)).ReturnsAsync(batchDto);
-        Factory.ProcessStepResultRepositoryMock = calculationResultClientMock;
-        Factory.BatchesClientMock = batchesClientMock;
-
-        var url = $"/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{TimeSeriesType.Production}";
+        var expectedUrl = $"/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}/balance-responsible-parties";
         var expectedHttpStatusCode = HttpStatusCode.OK;
+
+        // Act
+        var actualContent = await Client.GetAsync(expectedUrl);
+
+        // Assert
+        actualContent.StatusCode.Should().Be(expectedHttpStatusCode);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task HTTP_GET_V3_ReturnsExpectedActorInJson(
+        Mock<IActorClient> applicationServiceMock,
+        Guid batchId,
+        string gridAreaCode,
+        TimeSeriesType timeSeriesType,
+        Actor expectedActor)
+    {
+        // Arrange
+        var url = $"/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}/balance-responsible-parties";
+
+        applicationServiceMock
+            .Setup(service => service.GetBalanceResponsiblePartiesAsync(batchId, gridAreaCode, timeSeriesType))
+            .ReturnsAsync(() => new[] { expectedActor });
+        Factory.ActorRepositoryMock = applicationServiceMock;
 
         // Act
         var actualContent = await Client.GetAsync(url);
 
         // Assert
-        actualContent.StatusCode.Should().Be(expectedHttpStatusCode);
+        var actualActors = await actualContent.Content.ReadFromJsonAsync<List<ActorDto>>();
+        actualActors!.Single().Should().BeEquivalentTo(expectedActor);
     }
 }

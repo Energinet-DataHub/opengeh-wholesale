@@ -36,7 +36,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     {
         // Arrange
         var sut = new CalculationResultCompletedIntegrationEventFactory();
-        var processStepResultDto = new CalculationResult(
+        var calculationResult = new CalculationResult(
             TimeSeriesType.Production,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Calculated) });
         var batchGridAreaInfo = new BatchGridAreaInfo(
@@ -48,7 +48,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
 
         // Act & Assert
         Assert.Throws<ArgumentException>(() => sut.CreateForGridArea(
-            processStepResultDto,
+            calculationResult,
             batchGridAreaInfo));
     }
 
@@ -57,7 +57,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     {
         // Arrange
         var sut = new CalculationResultCompletedIntegrationEventFactory();
-        var processStepResultDto = new CalculationResult(
+        var calculationResult = new CalculationResult(
             TimeSeriesType.Production,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
         var batchGridAreaInfo = new BatchGridAreaInfo(
@@ -69,14 +69,14 @@ public class CalculationResultReadyIntegrationEventFactoryTests
 
         // Act
         var actual = sut.CreateForGridArea(
-            processStepResultDto,
+            calculationResult,
             batchGridAreaInfo);
 
         // Assert
-        AssertionExtensions.Should((object)actual.AggregationPerBalanceresponsiblepartyPerGridarea).BeNull();
-        AssertionExtensions.Should((object)actual.AggregationPerEnergysupplierPerGridarea).BeNull();
-        AssertionExtensions.Should((object)actual.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea).BeNull();
-        AssertionExtensions.Should((object)actual.AggregationPerGridarea).NotBeNull();
+        actual.AggregationPerBalanceresponsiblepartyPerGridarea.Should().BeNull();
+        actual.AggregationPerEnergysupplierPerGridarea.Should().BeNull();
+        actual.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.Should().BeNull();
+        actual.AggregationPerGridarea.Should().NotBeNull();
     }
 
     [Fact]
@@ -85,7 +85,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
         // Arrange
         var sut = new CalculationResultCompletedIntegrationEventFactory();
         var timeSeriesPoint = new TimeSeriesPoint(DateTimeOffset.Now, 10.101000000m, QuantityQuality.Estimated);
-        var processStepResultDto = new CalculationResult(
+        var calculationResult = new CalculationResult(
             TimeSeriesType.Production,
             new[] { timeSeriesPoint });
         var batchGridAreaInfo = new BatchGridAreaInfo(
@@ -97,20 +97,20 @@ public class CalculationResultReadyIntegrationEventFactoryTests
 
         // Act
         var actual = sut.CreateForGridArea(
-            processStepResultDto,
+            calculationResult,
             batchGridAreaInfo);
 
         // Assert
-        AssertionExtensions.Should((string)actual.AggregationPerGridarea.GridAreaCode).Be(batchGridAreaInfo.GridAreaCode);
-        AssertionExtensions.Should((string)actual.BatchId).Be(batchGridAreaInfo.BatchId.ToString());
+        actual.AggregationPerGridarea.GridAreaCode.Should().Be(batchGridAreaInfo.GridAreaCode);
+        actual.BatchId.Should().Be(batchGridAreaInfo.BatchId.ToString());
         actual.Resolution.Should().Be(Resolution.Quarter);
         actual.QuantityUnit.Should().Be(QuantityUnit.Kwh);
         actual.PeriodEndUtc.Should().Be(batchGridAreaInfo.PeriodEnd.ToTimestamp());
         actual.PeriodStartUtc.Should().Be(batchGridAreaInfo.PeriodStart.ToTimestamp());
-        actual.TimeSeriesType.Should().Be(TimeSeriesTypeMapper.MapTimeSeriesType(processStepResultDto.TimeSeriesType));
+        actual.TimeSeriesType.Should().Be(TimeSeriesTypeMapper.MapTimeSeriesType(calculationResult.TimeSeriesType));
 
-        AssertionExtensions.Should((long)actual.TimeSeriesPoints[0].Quantity.Units).Be(10);
-        AssertionExtensions.Should((int)actual.TimeSeriesPoints[0].Quantity.Nanos).Be(101000000);
+        actual.TimeSeriesPoints[0].Quantity.Units.Should().Be(10);
+        actual.TimeSeriesPoints[0].Quantity.Nanos.Should().Be(101000000);
         actual.TimeSeriesPoints[0].Time.Should().Be(timeSeriesPoint.Time.ToTimestamp());
         actual.TimeSeriesPoints[0].QuantityQuality.Should().Be(QuantityQualityMapper.MapQuantityQuality(timeSeriesPoint.Quality));
     }
@@ -120,7 +120,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     {
         // Arrange
         var sut = new CalculationResultCompletedIntegrationEventFactory();
-        var processStepResultDto = new CalculationResult(
+        var calculationResult = new CalculationResult(
             TimeSeriesType.Production,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
         var batchGridAreaInfo = new BatchGridAreaInfo(
@@ -132,15 +132,15 @@ public class CalculationResultReadyIntegrationEventFactoryTests
 
         // Act
         var actual = sut.CreateForEnergySupplier(
-            processStepResultDto,
+            calculationResult,
             batchGridAreaInfo,
             "AGlnNumber");
 
         // Assert
-        AssertionExtensions.Should((object)actual.AggregationPerBalanceresponsiblepartyPerGridarea).BeNull();
-        AssertionExtensions.Should((object)actual.AggregationPerGridarea).BeNull();
-        AssertionExtensions.Should((object)actual.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea).BeNull();
-        AssertionExtensions.Should((object)actual.AggregationPerEnergysupplierPerGridarea).NotBeNull();
+        actual.AggregationPerBalanceresponsiblepartyPerGridarea.Should().BeNull();
+        actual.AggregationPerGridarea.Should().BeNull();
+        actual.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.Should().BeNull();
+        actual.AggregationPerEnergysupplierPerGridarea.Should().NotBeNull();
     }
 
     [Fact]
@@ -149,7 +149,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
         // Arrange
         var sut = new CalculationResultCompletedIntegrationEventFactory();
         var timeSeriesPoint = new TimeSeriesPoint(DateTimeOffset.Now, 10.101000000m, QuantityQuality.Estimated);
-        var processStepResultDto = new CalculationResult(
+        var calculationResult = new CalculationResult(
             TimeSeriesType.Production,
             new[] { timeSeriesPoint });
         var batchGridAreaInfo = new BatchGridAreaInfo(
@@ -162,22 +162,22 @@ public class CalculationResultReadyIntegrationEventFactoryTests
 
         // Act
         var actual = sut.CreateForEnergySupplier(
-            processStepResultDto,
+            calculationResult,
             batchGridAreaInfo,
             expectedGln);
 
         // Assert
-        AssertionExtensions.Should((string)actual.AggregationPerEnergysupplierPerGridarea.GridAreaCode).Be(batchGridAreaInfo.GridAreaCode);
-        AssertionExtensions.Should((string)actual.AggregationPerEnergysupplierPerGridarea.EnergySupplierGlnOrEic).Be(expectedGln);
-        AssertionExtensions.Should((string)actual.BatchId).Be(batchGridAreaInfo.BatchId.ToString());
+        actual.AggregationPerEnergysupplierPerGridarea.GridAreaCode.Should().Be(batchGridAreaInfo.GridAreaCode);
+        actual.AggregationPerEnergysupplierPerGridarea.EnergySupplierGlnOrEic.Should().Be(expectedGln);
+        actual.BatchId.Should().Be(batchGridAreaInfo.BatchId.ToString());
         actual.Resolution.Should().Be(Resolution.Quarter);
         actual.QuantityUnit.Should().Be(QuantityUnit.Kwh);
         actual.PeriodEndUtc.Should().Be(batchGridAreaInfo.PeriodEnd.ToTimestamp());
         actual.PeriodStartUtc.Should().Be(batchGridAreaInfo.PeriodStart.ToTimestamp());
-        actual.TimeSeriesType.Should().Be(TimeSeriesTypeMapper.MapTimeSeriesType(processStepResultDto.TimeSeriesType));
+        actual.TimeSeriesType.Should().Be(TimeSeriesTypeMapper.MapTimeSeriesType(calculationResult.TimeSeriesType));
 
-        AssertionExtensions.Should((long)actual.TimeSeriesPoints[0].Quantity.Units).Be(10);
-        AssertionExtensions.Should((int)actual.TimeSeriesPoints[0].Quantity.Nanos).Be(101000000);
+        actual.TimeSeriesPoints[0].Quantity.Units.Should().Be(10);
+        actual.TimeSeriesPoints[0].Quantity.Nanos.Should().Be(101000000);
         actual.TimeSeriesPoints[0].Time.Should().Be(timeSeriesPoint.Time.ToTimestamp());
         actual.TimeSeriesPoints[0].QuantityQuality.Should().Be(QuantityQualityMapper.MapQuantityQuality(timeSeriesPoint.Quality));
     }
@@ -187,7 +187,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     {
         // Arrange
         var sut = new CalculationResultCompletedIntegrationEventFactory();
-        var processStepResultDto = new CalculationResult(
+        var calculationResult = new CalculationResult(
             TimeSeriesType.Production,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Calculated) });
         var batchGridAreaInfo = new BatchGridAreaInfo(
@@ -199,7 +199,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
 
         // Act & Assert
         Assert.Throws<ArgumentException>(() => sut.CreateForEnergySupplier(
-            processStepResultDto,
+            calculationResult,
             batchGridAreaInfo,
             "AGlnNumber"));
     }
@@ -209,7 +209,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     {
         // Arrange
         var sut = new CalculationResultCompletedIntegrationEventFactory();
-        var processStepResultDto = new CalculationResult(
+        var calculationResult = new CalculationResult(
             TimeSeriesType.Production,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
         var batchGridAreaInfo = new BatchGridAreaInfo(
@@ -221,15 +221,15 @@ public class CalculationResultReadyIntegrationEventFactoryTests
 
         // Act
         var actual = sut.CreateForBalanceResponsibleParty(
-            processStepResultDto,
+            calculationResult,
             batchGridAreaInfo,
             "ABrpGlnNumber");
 
         // Assert
-        AssertionExtensions.Should((object)actual.AggregationPerGridarea).BeNull();
-        AssertionExtensions.Should((object)actual.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea).BeNull();
-        AssertionExtensions.Should((object)actual.AggregationPerEnergysupplierPerGridarea).BeNull();
-        AssertionExtensions.Should((object)actual.AggregationPerBalanceresponsiblepartyPerGridarea).NotBeNull();
+        actual.AggregationPerGridarea.Should().BeNull();
+        actual.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.Should().BeNull();
+        actual.AggregationPerEnergysupplierPerGridarea.Should().BeNull();
+        actual.AggregationPerBalanceresponsiblepartyPerGridarea.Should().NotBeNull();
     }
 
     [Fact]
@@ -238,7 +238,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
         // Arrange
         var sut = new CalculationResultCompletedIntegrationEventFactory();
         var timeSeriesPoint = new TimeSeriesPoint(DateTimeOffset.Now, 10.101000000m, QuantityQuality.Estimated);
-        var processStepResultDto = new CalculationResult(
+        var calculationResult = new CalculationResult(
             TimeSeriesType.Production,
             new[] { timeSeriesPoint });
         var batchGridAreaInfo = new BatchGridAreaInfo(
@@ -251,22 +251,22 @@ public class CalculationResultReadyIntegrationEventFactoryTests
 
         // Act
         var actual = sut.CreateForBalanceResponsibleParty(
-            processStepResultDto,
+            calculationResult,
             batchGridAreaInfo,
             expectedGln);
 
         // Assert
-        AssertionExtensions.Should((string)actual.AggregationPerBalanceresponsiblepartyPerGridarea.GridAreaCode).Be(batchGridAreaInfo.GridAreaCode);
-        AssertionExtensions.Should((string)actual.AggregationPerBalanceresponsiblepartyPerGridarea.BalanceResponsiblePartyGlnOrEic).Be(expectedGln);
-        AssertionExtensions.Should((string)actual.BatchId).Be(batchGridAreaInfo.BatchId.ToString());
+        actual.AggregationPerBalanceresponsiblepartyPerGridarea.GridAreaCode.Should().Be(batchGridAreaInfo.GridAreaCode);
+        actual.AggregationPerBalanceresponsiblepartyPerGridarea.BalanceResponsiblePartyGlnOrEic.Should().Be(expectedGln);
+        actual.BatchId.Should().Be(batchGridAreaInfo.BatchId.ToString());
         actual.Resolution.Should().Be(Resolution.Quarter);
         actual.QuantityUnit.Should().Be(QuantityUnit.Kwh);
         actual.PeriodEndUtc.Should().Be(batchGridAreaInfo.PeriodEnd.ToTimestamp());
         actual.PeriodStartUtc.Should().Be(batchGridAreaInfo.PeriodStart.ToTimestamp());
-        actual.TimeSeriesType.Should().Be(TimeSeriesTypeMapper.MapTimeSeriesType(processStepResultDto.TimeSeriesType));
+        actual.TimeSeriesType.Should().Be(TimeSeriesTypeMapper.MapTimeSeriesType(calculationResult.TimeSeriesType));
 
-        AssertionExtensions.Should((long)actual.TimeSeriesPoints[0].Quantity.Units).Be(10);
-        AssertionExtensions.Should((int)actual.TimeSeriesPoints[0].Quantity.Nanos).Be(101000000);
+        actual.TimeSeriesPoints[0].Quantity.Units.Should().Be(10);
+        actual.TimeSeriesPoints[0].Quantity.Nanos.Should().Be(101000000);
         actual.TimeSeriesPoints[0].Time.Should().Be(timeSeriesPoint.Time.ToTimestamp());
         actual.TimeSeriesPoints[0].QuantityQuality.Should().Be(QuantityQualityMapper.MapQuantityQuality(timeSeriesPoint.Quality));
     }
@@ -276,7 +276,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     {
         // Arrange
         var sut = new CalculationResultCompletedIntegrationEventFactory();
-        var processStepResultDto = new CalculationResult(
+        var calculationResult = new CalculationResult(
             TimeSeriesType.Production,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Calculated) });
         var batchGridAreaInfo = new BatchGridAreaInfo(
@@ -288,7 +288,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
 
         // Act & Assert
         Assert.Throws<ArgumentException>(() => sut.CreateForBalanceResponsibleParty(
-            processStepResultDto,
+            calculationResult,
             batchGridAreaInfo,
             "ABrpGlnNumber"));
     }
@@ -298,7 +298,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     {
         // Arrange
         var sut = new CalculationResultCompletedIntegrationEventFactory();
-        var processStepResultDto = new CalculationResult(
+        var calculationResult = new CalculationResult(
             TimeSeriesType.NonProfiledConsumption,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
         var batchGridAreaInfo = new BatchGridAreaInfo(
@@ -310,16 +310,16 @@ public class CalculationResultReadyIntegrationEventFactoryTests
 
         // Act
         var actual = sut.CreateForEnergySupplierByBalanceResponsibleParty(
-            processStepResultDto,
+            calculationResult,
             batchGridAreaInfo,
             "AEsGlnNumber",
             "ABrpGlnNumber");
 
         // Assert
-        AssertionExtensions.Should((object)actual.AggregationPerGridarea).BeNull();
-        AssertionExtensions.Should((object)actual.AggregationPerEnergysupplierPerGridarea).BeNull();
-        AssertionExtensions.Should((object)actual.AggregationPerBalanceresponsiblepartyPerGridarea).BeNull();
-        AssertionExtensions.Should((object)actual.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea).NotBeNull();
+        actual.AggregationPerGridarea.Should().BeNull();
+        actual.AggregationPerEnergysupplierPerGridarea.Should().BeNull();
+        actual.AggregationPerBalanceresponsiblepartyPerGridarea.Should().BeNull();
+        actual.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.Should().NotBeNull();
     }
 
     [Fact]
@@ -328,7 +328,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
         // Arrange
         var sut = new CalculationResultCompletedIntegrationEventFactory();
         var timeSeriesPoint = new TimeSeriesPoint(DateTimeOffset.Now, 10.101000000m, QuantityQuality.Estimated);
-        var processStepResultDto = new CalculationResult(
+        var calculationResult = new CalculationResult(
             TimeSeriesType.NonProfiledConsumption,
             new[] { timeSeriesPoint });
         var batchGridAreaInfo = new BatchGridAreaInfo(
@@ -342,24 +342,24 @@ public class CalculationResultReadyIntegrationEventFactoryTests
 
         // Act
         var actual = sut.CreateForEnergySupplierByBalanceResponsibleParty(
-            processStepResultDto,
+            calculationResult,
             batchGridAreaInfo,
             expectedEsGln,
             expectedBrpGln);
 
         // Assert
-        AssertionExtensions.Should((string)actual.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.GridAreaCode).Be(batchGridAreaInfo.GridAreaCode);
-        AssertionExtensions.Should((string)actual.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.BalanceResponsiblePartyGlnOrEic).Be(expectedBrpGln);
-        AssertionExtensions.Should((string)actual.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.EnergySupplierGlnOrEic).Be(expectedEsGln);
-        AssertionExtensions.Should((string)actual.BatchId).Be(batchGridAreaInfo.BatchId.ToString());
+        actual.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.GridAreaCode.Should().Be(batchGridAreaInfo.GridAreaCode);
+        actual.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.BalanceResponsiblePartyGlnOrEic.Should().Be(expectedBrpGln);
+        actual.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.EnergySupplierGlnOrEic.Should().Be(expectedEsGln);
+        actual.BatchId.Should().Be(batchGridAreaInfo.BatchId.ToString());
         actual.Resolution.Should().Be(Resolution.Quarter);
         actual.QuantityUnit.Should().Be(QuantityUnit.Kwh);
         actual.PeriodEndUtc.Should().Be(batchGridAreaInfo.PeriodEnd.ToTimestamp());
         actual.PeriodStartUtc.Should().Be(batchGridAreaInfo.PeriodStart.ToTimestamp());
-        actual.TimeSeriesType.Should().Be(TimeSeriesTypeMapper.MapTimeSeriesType(processStepResultDto.TimeSeriesType));
+        actual.TimeSeriesType.Should().Be(TimeSeriesTypeMapper.MapTimeSeriesType(calculationResult.TimeSeriesType));
 
-        AssertionExtensions.Should((long)actual.TimeSeriesPoints[0].Quantity.Units).Be(10);
-        AssertionExtensions.Should((int)actual.TimeSeriesPoints[0].Quantity.Nanos).Be(101000000);
+        actual.TimeSeriesPoints[0].Quantity.Units.Should().Be(10);
+        actual.TimeSeriesPoints[0].Quantity.Nanos.Should().Be(101000000);
         actual.TimeSeriesPoints[0].Time.Should().Be(timeSeriesPoint.Time.ToTimestamp());
         actual.TimeSeriesPoints[0].QuantityQuality.Should().Be(QuantityQualityMapper.MapQuantityQuality(timeSeriesPoint.Quality));
     }
@@ -369,7 +369,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
     {
         // Arrange
         var sut = new CalculationResultCompletedIntegrationEventFactory();
-        var processStepResultDto = new CalculationResult(
+        var calculationResult = new CalculationResult(
             TimeSeriesType.NonProfiledConsumption,
             new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Calculated) });
         var batchGridAreaInfo = new BatchGridAreaInfo(
@@ -381,7 +381,7 @@ public class CalculationResultReadyIntegrationEventFactoryTests
 
         // Act & Assert
         Assert.Throws<ArgumentException>(() => sut.CreateForEnergySupplierByBalanceResponsibleParty(
-            processStepResultDto,
+            calculationResult,
             batchGridAreaInfo,
             "AEsGlnNumer",
             "ABrpGlnNumber"));

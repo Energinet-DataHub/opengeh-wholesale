@@ -27,7 +27,7 @@ using Xunit.Categories;
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.Processes;
 
 [UnitTest]
-public class ProcessStepResultRepositoryTests
+public class FileBasedCalculationResultClientTests
 {
     private const string AnyEnergySupplierGln = "1234567890123";
     private const string AnyBalanceResponsiblePartyGln = "1234567890123";

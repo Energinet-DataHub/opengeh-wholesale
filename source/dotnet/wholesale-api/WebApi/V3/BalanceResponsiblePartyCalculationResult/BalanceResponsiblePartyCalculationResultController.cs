@@ -16,17 +16,17 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Actors;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepBalanceResponsibleParty;
+namespace Energinet.DataHub.Wholesale.WebApi.V3.BalanceResponsiblePartyCalculationResult;
 
 /// <summary>
 /// Energy suppliers for which batch results have been calculated.
 /// </summary>
 [Route("/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}/balance-responsible-parties")]
-public class ProcessStepBalanceResponsiblePartyController : V3ControllerBase
+public class BalanceResponsiblePartyCalculationResultController : V3ControllerBase
 {
     private readonly IActorClient _actorClient;
 
-    public ProcessStepBalanceResponsiblePartyController(IActorClient actorClient)
+    public BalanceResponsiblePartyCalculationResultController(IActorClient actorClient)
     {
         _actorClient = actorClient;
     }
