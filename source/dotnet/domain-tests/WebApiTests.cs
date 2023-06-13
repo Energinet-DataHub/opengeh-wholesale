@@ -19,6 +19,7 @@ using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures;
 using FluentAssertions;
 using Xunit;
+using Xunit.Priority;
 
 namespace Energinet.DataHub.Wholesale.DomainTests
 {
@@ -118,6 +119,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             private Guid _batchId;
 
             [DomainFact]
+            [Priority(1)]
             public async Task When_CreatingBatch_Then_BatchIsEventuallyCompleted()
             {
                 // Arrange
@@ -148,6 +150,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             }
 
             [DomainFact]
+            [Priority(2)]
             public async Task When_BatchIsCompleted_Then_BatchIsReceivedOnTopicSubscription()
             {
                 var messageHasValue = true;
