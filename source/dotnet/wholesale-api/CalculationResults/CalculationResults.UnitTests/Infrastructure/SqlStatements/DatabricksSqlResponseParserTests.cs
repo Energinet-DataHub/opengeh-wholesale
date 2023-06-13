@@ -151,14 +151,25 @@ public class DatabricksSqlResponseParserTests
     public void Parse_WhenNoDataMatchesCriteria_ReturnTableWithZeroRows(DatabricksSqlResponseParser sut)
     {
         // Arrange
-        var statementId = new JProperty("statement_id", Guid.NewGuid());
-        var status = new JProperty("status", new JObject(new JProperty("state", "SUCCEEDED")));
-        var manifest = new JProperty("manifest", new JObject(
-            new JProperty("schema", new JObject(new JProperty("columns", new JArray(new JObject(new JProperty("name", "grid_area")))))),
-            new JProperty("total_row_count", 0)));
-        var result = new JProperty("result", new JObject());
-        var obj = new JObject(statementId, status, manifest, result);
-        var jsonString = obj.ToString();
+        var jsonString = @"{
+    'statement_id': '01edef23-0d2c-10dd-879b-26b5e97b3796',
+    'status': {
+        'state': 'SUCCEEDED'
+    },
+    'manifest': {
+        'schema': {
+            'columns': [
+                {
+                    'name': 'grid_area'
+                }
+            ]
+        },
+        'total_row_count': 0
+    },
+    'result': {
+        'row_count': 0
+    }
+}";
 
         // Act
         var actual = sut.Parse(jsonString);
