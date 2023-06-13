@@ -25,7 +25,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infras
 
 public class SqlStatementClientTests
 {
-    private readonly string _someSchemaName = $"TestSchema{Guid.NewGuid().ToString("N")[..8]}"; // TODO: use PR NUMBER
+    private readonly string _schemaName = $"TestSchema{Guid.NewGuid().ToString("N")[..8]}"; // TODO: use PR NUMBER
     private readonly string _sometableName = $"TestTable{Guid.NewGuid().ToString("N")[..8]}"; // TODO: use commit ID?
 
     private readonly DatabricksSqlStatementApiFixture _databricksSqlStatementApiFixture;
@@ -45,12 +45,17 @@ public class SqlStatementClientTests
         var databricksSqlResponseParser = new DatabricksSqlResponseParser();
         var httpClient = new HttpClient();
         var sut = new SqlStatementClient(httpClient, databricksOptionsMock.Object, databricksSqlResponseParser);
-        var sqlStatement = "SELECT * FROM myTable";
+        const string sqlStatement = "SELECT * FROM myTable";
 
         // Act
         var response = await sut.ExecuteSqlStatementAsync(sqlStatement);
 
         // Assert
         response.RowCount.Should().Be(1);
+    }
+
+    public Task DisposeAsync()
+    {
+        return _databricksSqlStatementApiFixture.DropSchemaAsync(_schemaName, true);
     }
 }
