@@ -14,13 +14,8 @@
 
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using AutoFixture.Xunit2;
-using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.Common.DatabricksClient;
-using FluentAssertions;
-using Microsoft.Extensions.Options;
-using Moq;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SqlStatements;
@@ -29,7 +24,7 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
 {
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly HttpClient _httpClient;
-    private List<string> _createdSchemas = new();
+    private readonly List<string> _createdSchemas = new();
 
     public DatabricksOptions DatabricksOptions { get; }
 
@@ -114,9 +109,12 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
         return Task.CompletedTask;
     }
 
-    public Task DisposeAsync()
+    public async Task DisposeAsync()
     {
-        DropSchemaAsync()
+        foreach (var schema in _createdSchemas)
+        {
+            await DropSchemaAsync(schema, true).ConfigureAwait(false);
+        }
     }
 
     private HttpClient CreateHttpClient()

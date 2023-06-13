@@ -30,4 +30,10 @@
       <ProjectReference Include="..\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" />
       <ProjectReference Include="..\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
     </ItemGroup>
+  
+    <ItemGroup>
+      <None Update="integrationtest.local.settings.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
 </Project>

@@ -53,9 +53,4 @@ public class SqlStatementClientTests
         // Assert
         response.RowCount.Should().Be(1);
     }
-
-    public Task DisposeAsync()
-    {
-        return _databricksSqlStatementApiFixture.DropSchemaAsync(_schemaName, true);
-    }
 }
