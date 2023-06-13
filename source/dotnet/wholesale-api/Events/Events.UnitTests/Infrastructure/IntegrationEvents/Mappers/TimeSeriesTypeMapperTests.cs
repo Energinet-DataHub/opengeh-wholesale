@@ -26,6 +26,8 @@ public class TimeSeriesTypeMapperTests
     [InlineAutoMoqData(TimeSeriesType.Production, Wholesale.Contracts.Events.TimeSeriesType.Production)]
     [InlineAutoMoqData(TimeSeriesType.FlexConsumption, Wholesale.Contracts.Events.TimeSeriesType.FlexConsumption)]
     [InlineAutoMoqData(TimeSeriesType.NonProfiledConsumption, Wholesale.Contracts.Events.TimeSeriesType.NonProfiledConsumption)]
+    [InlineAutoMoqData(TimeSeriesType.NetExchangePerGa, Wholesale.Contracts.Events.TimeSeriesType.NetExchangePerGa)]
+    [InlineAutoMoqData(TimeSeriesType.NetExchangePerNeighboringGa, Wholesale.Contracts.Events.TimeSeriesType.NetExchangePerNeighboringGa)]
     public void MapQuantityQuality_WhenCalled_MapsCorrectly(TimeSeriesType timeSeriesType, Wholesale.Contracts.Events.TimeSeriesType expected)
     {
         // Act & Assert
