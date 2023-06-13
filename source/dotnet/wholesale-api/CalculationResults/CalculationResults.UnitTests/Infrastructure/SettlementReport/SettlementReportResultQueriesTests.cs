@@ -34,7 +34,7 @@ public class SettlementReportResultQueriesTests
     private readonly Instant _somePeriodStart = Instant.FromUtc(2021, 3, 1, 10, 15);
     private readonly Instant _somePeriodEnd = Instant.FromUtc(2021, 3, 31, 10, 15);
     private readonly string[] _someGridAreas = { "123", "456", };
-    private readonly Table _someTable = TableTestHelper.CreateTableForSettlementReport(3);
+    private readonly TableChunk _someTableChunk = TableTestHelper.CreateTableForSettlementReport(3);
     private readonly List<string> _columnNames = new() { ResultColumnNames.GridArea, ResultColumnNames.BatchProcessType, ResultColumnNames.Time, ResultColumnNames.TimeSeriesType, ResultColumnNames.Quantity, };
 
     [Theory]
@@ -42,14 +42,15 @@ public class SettlementReportResultQueriesTests
     public async Task GetRowsAsync_ReturnsExpectedNumberOfRows(Mock<ISqlStatementClient> mockSqlStatementClient)
     {
         // Arrange
-        mockSqlStatementClient.Setup(s => s.ExecuteSqlStatementAsync(It.IsAny<string>())).ReturnsAsync(_someTable);
+        var asyncResult = ToAsyncEnumerable(_someTableChunk);
+        mockSqlStatementClient.Setup(s => s.ExecuteAsync(It.IsAny<string>())).Returns(asyncResult);
         var sut = new SettlementReportResultQueries(mockSqlStatementClient.Object);
 
         // Act
         var actual = await sut.GetRowsAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null);
 
         // Assert
-        actual.Count().Should().Be(_someTable.RowCount);
+        actual.Count().Should().Be(_someTableChunk.RowCount);
     }
 
     [Theory]
@@ -66,8 +67,9 @@ public class SettlementReportResultQueriesTests
             MeteringPointType.Consumption,
             SettlementMethod.NonProfiled,
             1.234m);
-        var table = new Table(_columnNames,  new List<string[]> { row });
-        mockSqlStatementClient.Setup(s => s.ExecuteSqlStatementAsync(It.IsAny<string>())).ReturnsAsync(table);
+        var table = new TableChunk(_columnNames,  new List<string[]> { row });
+        var asyncResult = ToAsyncEnumerable(table);
+        mockSqlStatementClient.Setup(s => s.ExecuteAsync(It.IsAny<string>())).Returns(asyncResult);
         var sut = new SettlementReportResultQueries(mockSqlStatementClient.Object);
 
         // Act
@@ -75,5 +77,11 @@ public class SettlementReportResultQueriesTests
 
         // Assert
         actual.First().Should().Be(expected);
+    }
+
+    private static async IAsyncEnumerable<TableChunk> ToAsyncEnumerable(TableChunk tableChunk)
+    {
+        yield return tableChunk;
+        await Task.Delay(0);
     }
 }

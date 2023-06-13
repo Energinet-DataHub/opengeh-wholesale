@@ -14,12 +14,16 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 
-public class Table
+/// <summary>
+/// Represents a table or a chunk of a table.
+/// Or put in another way, a table with a subset of all the rows of a SQL query.
+/// </summary>
+public class TableChunk
 {
     private readonly List<string[]> _rows;
     private readonly Dictionary<string, int> _columnIndex;
 
-    public Table(IEnumerable<string> columnNames, IEnumerable<string[]> rows)
+    public TableChunk(IEnumerable<string> columnNames, IEnumerable<string[]> rows)
     {
         _columnIndex = columnNames.Select((name, i) => (name, i)).ToDictionary(x => x.name, x => x.i);
         _rows = rows.ToList();
@@ -30,4 +34,8 @@ public class Table
     public IEnumerable<string> this[Index rowIndex] => _rows[rowIndex];
 
     public int RowCount => _rows.Count;
+
+    public IReadOnlyCollection<string> ColumnNames => _columnIndex.Keys.ToList().AsReadOnly();
+
+    public IReadOnlyCollection<string[]> Rows => _rows.AsReadOnly();
 }
