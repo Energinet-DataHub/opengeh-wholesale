@@ -15,6 +15,7 @@
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
+using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.Common.DatabricksClient;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
@@ -23,6 +24,13 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SqlStatements;
 
+/// <summary>
+/// We use a IClassFixture to control the life cycle of the DatabricksSqlStatementApiFixture so:
+///   1. It is created and 'InitializeAsync()' is called before the first test in the test class is executed.
+///      Use 'InitializeAsync()' to create any schema and seed data.
+///   2. 'DisposeAsync()' is called after the last test in the test class has been executed.
+///      Use 'DisposeAsync()' to drop any created schema.
+/// </summary>
 public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFixture>
 {
     private readonly string _schemaName = $"TestSchema{Guid.NewGuid().ToString("N")[..8]}"; // TODO: use PR NUMBER
@@ -38,13 +46,13 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
     [Fact]
     public void Test()
     {
-       _databricksSqlStatementApiFixture.DatabricksOptions.DATABRICKS_WAREHOUSE_ID.Should().NotBeNull();
+       _databricksSqlStatementApiFixture.DatabricksWarehouseManager.Settings.WarehouseId.Should().NotBeNull();
     }
 
     [Fact]
     public async Task Test2()
     {
-        await _databricksSqlStatementApiFixture.DatabricksSqlSchemaManager.CreateSchemaAsync("testSchema");
+        await _databricksSqlStatementApiFixture.DatabricksWarehouseManager.CreateSchemaAsync("testSchema");
     }
 
     [Theory]
@@ -53,7 +61,15 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
         [Frozen] Mock<IOptions<DatabricksOptions>> databricksOptionsMock)
     {
         // Arrange
-        databricksOptionsMock.Setup(o => o.Value).Returns(_databricksSqlStatementApiFixture.DatabricksOptions);
+        databricksOptionsMock
+            .Setup(o => o.Value)
+            .Returns(new DatabricksOptions
+            {
+                DATABRICKS_WORKSPACE_URL = _databricksSqlStatementApiFixture.DatabricksWarehouseManager.Settings.WorkspaceUrl,
+                DATABRICKS_WORKSPACE_TOKEN = _databricksSqlStatementApiFixture.DatabricksWarehouseManager.Settings.WorkspaceAccessToken,
+                DATABRICKS_WAREHOUSE_ID = _databricksSqlStatementApiFixture.DatabricksWarehouseManager.Settings.WarehouseId,
+            });
+
         var databricksSqlResponseParser = new DatabricksSqlResponseParser();
         var httpClient = new HttpClient();
         var sut = new SqlStatementClient(httpClient, databricksOptionsMock.Object, databricksSqlResponseParser);

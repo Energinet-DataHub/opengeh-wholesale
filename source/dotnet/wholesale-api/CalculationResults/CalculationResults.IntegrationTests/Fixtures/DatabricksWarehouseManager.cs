@@ -15,23 +15,32 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
-using Energinet.DataHub.Wholesale.Common.DatabricksClient;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SqlStatements;
+namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 
-public class DatabricksSqlSchemaManager
+/// <summary>
+/// A manager for managing Databricks SQL schemas and tables from integration tests.
+/// </summary>
+public class DatabricksWarehouseManager
 {
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
+
     private readonly HttpClient _httpClient;
     private readonly List<string> _createdSchemas = new();
 
-    public DatabricksOptions DatabricksOptions { get; }
-
-    public DatabricksSqlSchemaManager(DatabricksOptions databricksOptions)
+    public DatabricksWarehouseManager(DatabricksWarehouseSettings settings)
     {
-        DatabricksOptions = databricksOptions;
-        _httpClient = CreateHttpClient(DatabricksOptions);
+        Settings = settings
+            ?? throw new ArgumentNullException(nameof(settings));
+
+        _httpClient = CreateHttpClient(Settings);
+
+        // TODO: Create unique schema name and use that
     }
+
+    // TODO: Consider if we can hide these settings or ensure they are readonly in DatabricksWarehouseSettings,
+    // otherwise external developers can manipulate them even after we created the manager
+    public DatabricksWarehouseSettings Settings { get; }
 
     public async Task CreateSchemaAsync(string schemaName)
     {
@@ -40,7 +49,7 @@ public class DatabricksSqlSchemaManager
             on_wait_timeout = "CANCEL",
             wait_timeout = "50s", // Make the operation synchronous
             statement = @$"CREATE SCHEMA IF NOT EXISTS {schemaName}",
-            warehouse_id = DatabricksOptions.DATABRICKS_WAREHOUSE_ID,
+            warehouse_id = Settings.WarehouseId,
         };
 
         var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
@@ -60,7 +69,7 @@ public class DatabricksSqlSchemaManager
             on_wait_timeout = "CANCEL",
             wait_timeout = $"50s", // Make the operation synchronous
             statement = $@"CREATE TABLE {schemaName}.{tableName} ({columnDefinitions})",
-            warehouse_id = DatabricksOptions.DATABRICKS_WAREHOUSE_ID,
+            warehouse_id = Settings.WarehouseId,
         };
 
         var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
@@ -86,7 +95,7 @@ public class DatabricksSqlSchemaManager
             on_wait_timeout = "CANCEL",
             wait_timeout = $"50s", // Make the operation synchronous
             statement = sqlStatement,
-            warehouse_id = DatabricksOptions.DATABRICKS_WAREHOUSE_ID,
+            warehouse_id = Settings.WarehouseId,
         };
 
         var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
@@ -97,29 +106,22 @@ public class DatabricksSqlSchemaManager
         _createdSchemas.Remove(schemaName);
     }
 
-    public Task InitializeAsync()
+    private static HttpClient CreateHttpClient(DatabricksWarehouseSettings settings)
     {
-        return Task.CompletedTask;
-    }
-
-    public async Task DisposeAsync()
-    {
-        foreach (var schema in _createdSchemas)
+        var httpClient = new HttpClient
         {
-            await DropSchemaAsync(schema, true).ConfigureAwait(false);
-        }
-    }
+            BaseAddress = new Uri(settings.WorkspaceUrl),
+        };
 
-    private static HttpClient CreateHttpClient(DatabricksOptions databricksOptions)
-    {
-        var httpClient = new HttpClient();
-        httpClient.BaseAddress = new Uri(databricksOptions.DATABRICKS_WORKSPACE_URL);
         httpClient.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", databricksOptions.DATABRICKS_WORKSPACE_TOKEN);
+            new AuthenticationHeaderValue("Bearer", settings.WorkspaceAccessToken);
+
         httpClient.DefaultRequestHeaders.Accept.Clear();
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
-        httpClient.BaseAddress = new Uri(databricksOptions.DATABRICKS_WORKSPACE_URL);
+
+        httpClient.BaseAddress = new Uri(settings.WorkspaceUrl);
+
         return httpClient;
     }
 }
