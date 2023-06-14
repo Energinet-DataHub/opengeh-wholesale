@@ -18,7 +18,6 @@ Simply go to the nswag.json file and change the url to the swagger.json file you
 # How is the nswag.json file run to generate the client code
 
 In the DomainTest.csproj file there is a target that runs the nswag.json file. Look for the element `<Target Name="NSwag" ...>`.
-```
 
 # Breaking changes to the client code
 
