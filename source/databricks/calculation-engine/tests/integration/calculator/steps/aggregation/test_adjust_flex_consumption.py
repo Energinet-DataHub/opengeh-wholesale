@@ -247,24 +247,17 @@ def test_grid_area_grid_loss_is_added_to_grid_loss_energy_responsible(
     positive_grid_loss_result_row_factory,
     grid_loss_sys_cor_row_factory,
 ):
-    results = {}
-    results[
-        ResultKeyName.flex_consumption
-    ] = create_dataframe_from_aggregation_result_schema(
+    flex_consumption = create_dataframe_from_aggregation_result_schema(
         flex_consumption_result_row_factory(supplier="A")
     )
 
-    results[
-        ResultKeyName.positive_grid_loss
-    ] = create_dataframe_from_aggregation_result_schema(
+    positive_grid_loss = create_dataframe_from_aggregation_result_schema(
         positive_grid_loss_result_row_factory()
     )
 
-    results[
-        ResultKeyName.grid_loss_sys_cor_master_data
-    ] = grid_loss_sys_cor_row_factory(supplier="A")
+    grid_loss_sys_cor_master_data = grid_loss_sys_cor_row_factory(supplier="A")
 
-    result_df = adjust_flex_consumption(results)
+    result_df = adjust_flex_consumption(flex_consumption, positive_grid_loss, grid_loss_sys_cor_master_data)
 
     assert (
         result_df.filter(col(Colname.energy_supplier_id) == "A").collect()[0][
@@ -279,24 +272,17 @@ def test_grid_area_grid_loss_is_not_added_to_non_grid_loss_energy_responsible(
     positive_grid_loss_result_row_factory,
     grid_loss_sys_cor_row_factory,
 ):
-    results = {}
-    results[
-        ResultKeyName.flex_consumption
-    ] = create_dataframe_from_aggregation_result_schema(
+    flex_consumption = create_dataframe_from_aggregation_result_schema(
         flex_consumption_result_row_factory(supplier="A")
     )
 
-    results[
-        ResultKeyName.positive_grid_loss
-    ] = create_dataframe_from_aggregation_result_schema(
+    positive_grid_loss = create_dataframe_from_aggregation_result_schema(
         positive_grid_loss_result_row_factory()
     )
 
-    results[
-        ResultKeyName.grid_loss_sys_cor_master_data
-    ] = grid_loss_sys_cor_row_factory(supplier="B")
+    grid_loss_sys_cor_master_data = grid_loss_sys_cor_row_factory(supplier="B")
 
-    result_df = adjust_flex_consumption(results)
+    result_df = adjust_flex_consumption(flex_consumption, positive_grid_loss, grid_loss_sys_cor_master_data)
 
     assert (
         result_df.filter(col(Colname.energy_supplier_id) == "A").collect()[0][
@@ -311,28 +297,21 @@ def test_result_dataframe_contains_same_number_of_results_with_same_energy_suppl
     positive_grid_loss_result_row_factory,
     grid_loss_sys_cor_row_factory,
 ):
-    results = {}
     fc_row_1 = flex_consumption_result_row_factory(supplier="A")
     fc_row_2 = flex_consumption_result_row_factory(supplier="B")
     fc_row_3 = flex_consumption_result_row_factory(supplier="C")
 
-    results[
-        ResultKeyName.flex_consumption
-    ] = create_dataframe_from_aggregation_result_schema(
+    flex_consumption = create_dataframe_from_aggregation_result_schema(
         fc_row_1.union(fc_row_2).union(fc_row_3)
     )
 
-    results[
-        ResultKeyName.positive_grid_loss
-    ] = create_dataframe_from_aggregation_result_schema(
+    positive_grid_loss = create_dataframe_from_aggregation_result_schema(
         positive_grid_loss_result_row_factory()
     )
 
-    results[
-        ResultKeyName.grid_loss_sys_cor_master_data
-    ] = grid_loss_sys_cor_row_factory(supplier="C")
+    grid_loss_sys_cor_master_data = grid_loss_sys_cor_row_factory(supplier="C")
 
-    result_df = adjust_flex_consumption(results)
+    result_df = adjust_flex_consumption(flex_consumption, positive_grid_loss, grid_loss_sys_cor_master_data)
 
     result_df_collect = result_df.collect()
     assert result_df.count() == 3
@@ -346,7 +325,6 @@ def test_correct_grid_loss_entry_is_used_to_determine_energy_responsible_for_the
     positive_grid_loss_result_row_factory,
     grid_loss_sys_cor_row_factory,
 ):
-    results = {}
     time_window_1 = {
         Colname.start: datetime(2020, 1, 1, 0, 0),
         Colname.end: datetime(2020, 1, 1, 1, 0),
@@ -370,9 +348,7 @@ def test_correct_grid_loss_entry_is_used_to_determine_energy_responsible_for_the
         supplier="B", time_window=time_window_3
     )
 
-    results[
-        ResultKeyName.flex_consumption
-    ] = create_dataframe_from_aggregation_result_schema(
+    flex_consumption = create_dataframe_from_aggregation_result_schema(
         fc_row_1.union(fc_row_2).union(fc_row_3)
     )
 
@@ -390,9 +366,7 @@ def test_correct_grid_loss_entry_is_used_to_determine_energy_responsible_for_the
         time_window=time_window_3, positive_grid_loss=gagl_result_3
     )
 
-    results[
-        ResultKeyName.positive_grid_loss
-    ] = create_dataframe_from_aggregation_result_schema(
+    positive_grid_loss = create_dataframe_from_aggregation_result_schema(
         gagl_row_1.union(gagl_row_2).union(gagl_row_3)
     )
 
@@ -406,11 +380,11 @@ def test_correct_grid_loss_entry_is_used_to_determine_energy_responsible_for_the
         supplier="B", valid_from=time_window_3["start"], valid_to=None
     )
 
-    results[ResultKeyName.grid_loss_sys_cor_master_data] = glsc_row_1.union(
+    grid_loss_sys_cor_master_data = glsc_row_1.union(
         glsc_row_2
     ).union(glsc_row_3)
 
-    result_df = adjust_flex_consumption(results)
+    result_df = adjust_flex_consumption(flex_consumption, positive_grid_loss, grid_loss_sys_cor_master_data)
 
     assert result_df.count() == 3
     assert (
