@@ -103,11 +103,14 @@ def _calculate(
         grid_loss_responsible_df
     )
 
-    _calculate_non_profiled_consumption(
+    consumption_per_ga = _calculate_non_profiled_consumption(
         actors_writer, result_writer, consumption_per_ga_and_brp_and_es
     )
-    _calculate_production(result_writer, production_per_ga_and_brp_and_es)
-    _calculate_flex_consumption(result_writer, flex_consumption_per_ga_and_brp_and_es)
+    production_per_ga = _calculate_production(result_writer, production_per_ga_and_brp_and_es)
+    flex_consumption_per_ga = _calculate_flex_consumption(result_writer, flex_consumption_per_ga_and_brp_and_es)
+
+    _calculate_total_consumption(result_writer, production_per_ga, net_exchange_per_ga)
+    _calculate_residual_ga(result_writer, net_exchange_per_ga, consumption_per_ga, flex_consumption_per_ga, production_per_ga)
 
 
 def _calculate_net_exchange_per_neighboring_ga(
@@ -233,7 +236,7 @@ def _calculate_adjust_flex_consumption_per_ga_and_brp_and_es(
 def _calculate_production(
     result_writer: ProcessStepResultWriter,
     production_per_ga_and_brp_and_es: DataFrame,
-) -> None:
+) -> DataFrame:
     result_writer.write(
         production_per_ga_and_brp_and_es,
         TimeSeriesType.PRODUCTION,
@@ -271,11 +274,13 @@ def _calculate_production(
         production_per_ga, TimeSeriesType.PRODUCTION, AggregationLevel.total_ga
     )
 
+    return production_per_ga
+
 
 def _calculate_flex_consumption(
     result_writer: ProcessStepResultWriter,
     flex_consumption_per_ga_and_brp_and_es: DataFrame,
-) -> None:
+) -> DataFrame:
     result_writer.write(
         flex_consumption_per_ga_and_brp_and_es,
         TimeSeriesType.PRODUCTION,
@@ -315,12 +320,14 @@ def _calculate_flex_consumption(
         AggregationLevel.total_ga,
     )
 
+    return flex_consumption_per_ga
+
 
 def _calculate_non_profiled_consumption(
     actors_writer: ActorsWriter,
     result_writer: ProcessStepResultWriter,
     consumption_per_ga_and_brp_and_es: DataFrame,
-) -> None:
+) -> DataFrame:
     result_writer.write(
         consumption_per_ga_and_brp_and_es,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
@@ -363,4 +370,34 @@ def _calculate_non_profiled_consumption(
     # write actors list to datalake
     actors_writer.write(
         consumption_per_ga_and_brp_and_es, TimeSeriesType.NON_PROFILED_CONSUMPTION
+    )
+
+    return consumption_per_ga
+
+
+def _calculate_total_consumption(
+    result_writer: ProcessStepResultWriter,
+    production_per_ga: DataFrame,
+    net_exchange_per_ga: DataFrame
+) -> None:
+    total_consumption = agg_steps.calculate_total_consumption(production_per_ga, net_exchange_per_ga)
+    result_writer.write(
+        total_consumption,
+        TimeSeriesType.TOTAL_CONSUMPTION,
+        AggregationLevel.total_ga,
+    )
+
+
+def _calculate_residual_ga(
+    result_writer: ProcessStepResultWriter,
+    net_exchange_per_ga: DataFrame,
+    consumption_per_ga: DataFrame,
+    flex_consumption_per_ga: DataFrame,
+    production_per_ga: DataFrame
+) -> None:
+    residual = agg_steps.calculate_residual_ga(net_exchange_per_ga, consumption_per_ga, flex_consumption_per_ga, production_per_ga)
+    result_writer.write(
+        residual,
+        TimeSeriesType.RESIDUAL,
+        AggregationLevel.total_ga,
     )
