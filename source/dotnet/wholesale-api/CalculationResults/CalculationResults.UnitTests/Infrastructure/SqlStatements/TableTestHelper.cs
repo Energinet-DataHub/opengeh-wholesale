@@ -19,7 +19,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 
 public static class TableTestHelper
 {
-    public static Table CreateTableForSettlementReport(int rowCount)
+    public static TableChunk CreateTableForSettlementReport(int rowCount)
     {
         var columnNames = new List<string>()
         {
@@ -36,6 +36,6 @@ public static class TableTestHelper
             rows.Add(new[] { "123", "BalanceFixing", "2022-05-16T01:00:00.000Z", "non_profiled_consumption", $@"{dummyQuantity}" });
         }
 
-        return new Table(columnNames, rows);
+        return new TableChunk(columnNames, rows);
     }
 }
