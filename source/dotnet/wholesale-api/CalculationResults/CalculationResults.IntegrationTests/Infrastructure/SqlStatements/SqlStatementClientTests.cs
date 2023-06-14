@@ -38,7 +38,13 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
     [Fact]
     public void Test()
     {
-        _databricksSqlStatementApiFixture.DatabricksOptions.DATABRICKS_WAREHOUSE_ID.Should().NotBeNull();
+       _databricksSqlStatementApiFixture.DatabricksOptions.DATABRICKS_WAREHOUSE_ID.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task Test2()
+    {
+        await _databricksSqlStatementApiFixture.DatabricksSqlSchemaManager.CreateSchemaAsync("testSchema");
     }
 
     [Theory]

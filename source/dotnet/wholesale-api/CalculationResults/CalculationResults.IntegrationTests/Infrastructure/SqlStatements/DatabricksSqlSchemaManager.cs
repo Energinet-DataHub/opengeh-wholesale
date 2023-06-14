@@ -28,15 +28,9 @@ public class DatabricksSqlSchemaManager
 
     public DatabricksOptions DatabricksOptions { get; }
 
-    public DatabricksSqlSchemaManager()
+    public DatabricksSqlSchemaManager(DatabricksOptions databricksOptions)
     {
-        DatabricksOptions = new DatabricksOptions
-        {
-            // TODO: use key vault
-            DATABRICKS_WAREHOUSE_ID = "anyDatabricksId",
-            DATABRICKS_WORKSPACE_URL = "https://anyDatabricksUrl",
-            DATABRICKS_WORKSPACE_TOKEN = "myToken",
-        };
+        DatabricksOptions = databricksOptions;
         _httpClient = CreateHttpClient(DatabricksOptions);
     }
 
