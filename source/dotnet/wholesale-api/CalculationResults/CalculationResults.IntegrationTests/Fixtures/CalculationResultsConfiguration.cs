@@ -35,8 +35,8 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtur
             {
                 DATABRICKS_WAREHOUSE_ID =
                     secretsConfiguration.GetValue<string>()!,
-                DATABRICKS_WORKSPACE_URL = secretsConfiguration.GetValue<string>(nameof(DatabricksOptions.DATABRICKS_WORKSPACE_URL))!,
-                DATABRICKS_WORKSPACE_TOKEN = secretsConfiguration.GetValue<string>(nameof(DatabricksOptions.DATABRICKS_WORKSPACE_TOKEN))!,
+                DATABRICKS_WORKSPACE_URL = secretsConfiguration.GetValue<string>()!,
+                DATABRICKS_WORKSPACE_TOKEN = secretsConfiguration.GetValue<string>())!,
                 // DATABRICKS_WAREHOUSE_ID =
                 //     secretsConfiguration.GetValue<string>(nameof(DatabricksOptions.DATABRICKS_WAREHOUSE_ID))!,
                 // DATABRICKS_WORKSPACE_URL = secretsConfiguration.GetValue<string>(nameof(DatabricksOptions.DATABRICKS_WORKSPACE_URL))!,
