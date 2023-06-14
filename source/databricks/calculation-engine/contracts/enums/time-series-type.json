@@ -31,14 +31,6 @@
     {
       "name": "POSITIVE_GRID_LOSS",
       "value": "positive_grid_loss"
-    },
-    {
-      "name": "TOTAL_CONSUMPTION",
-      "value": "total_consumption"
-    },
-    {
-      "name": "RESIDUAL",
-      "value": "residual"
     }
   ]
 }

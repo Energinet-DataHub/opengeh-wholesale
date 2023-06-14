@@ -19,7 +19,7 @@ from package.codelists import (
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, when, lit
 from . import transformations as T
-from package.constants import Colname
+from package.constants import Colname, ResultKeyName
 
 production_sum_quantity = "production_sum_quantity"
 exchange_sum_quantity = "exchange_sum_quantity"
@@ -46,12 +46,11 @@ def calculate_grid_loss(
 
 
 # (step 22)
-def calculate_residual_ga(
-    agg_net_exchange: DataFrame,
-    agg_non_profiled_consumption: DataFrame,
-    agg_flex_consumption: DataFrame,
-    agg_production: DataFrame
-) -> DataFrame:
+def calculate_residual_ga(results: dict) -> DataFrame:
+    agg_net_exchange = results[ResultKeyName.net_exchange_per_ga]
+    agg_non_profiled_consumption = results[ResultKeyName.non_profiled_consumption_ga]
+    agg_flex_consumption = results[ResultKeyName.flex_consumption_ga]
+    agg_production = results[ResultKeyName.production_ga]
     return __calculate_grid_loss_or_residual_ga(
         agg_net_exchange,
         agg_non_profiled_consumption,
@@ -172,7 +171,9 @@ def calculate_positive_grid_loss(grid_loss: DataFrame) -> DataFrame:
 
 
 # Function to calculate total consumption (step 21)
-def calculate_total_consumption(agg_net_exchange: DataFrame, agg_production: DataFrame) -> DataFrame:
+def calculate_total_consumption(results: dict) -> DataFrame:
+    agg_net_exchange = results[ResultKeyName.net_exchange_per_ga]
+    agg_production = results[ResultKeyName.production_ga]
     result_production = (
         agg_production.selectExpr(
             Colname.grid_area,

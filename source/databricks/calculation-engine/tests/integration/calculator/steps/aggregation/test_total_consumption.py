@@ -27,7 +27,7 @@ from package.steps.aggregation.transformations import (
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 import pytest
 import pandas as pd
-from package.constants import Colname
+from package.constants import Colname, ResultKeyName
 
 
 @pytest.fixture(scope="module")
@@ -289,9 +289,14 @@ def agg_total_net_exchange_factory(spark, net_exchange_schema):
 
 
 def test_grid_area_total_consumption(agg_net_exchange_factory, agg_production_factory):
-    net_exchange_per_ga = create_dataframe_from_aggregation_result_schema(agg_net_exchange_factory())
-    production_ga = create_dataframe_from_aggregation_result_schema(agg_production_factory())
-    aggregated_df = calculate_total_consumption(net_exchange_per_ga, production_ga)
+    results = {}
+    results[
+        ResultKeyName.net_exchange_per_ga
+    ] = create_dataframe_from_aggregation_result_schema(agg_net_exchange_factory())
+    results[
+        ResultKeyName.production_ga
+    ] = create_dataframe_from_aggregation_result_schema(agg_production_factory())
+    aggregated_df = calculate_total_consumption(results)
     aggregated_df_collect = aggregated_df.collect()
     assert (
         aggregated_df_collect[0][Colname.sum_quantity] == Decimal("14.0")
@@ -342,13 +347,18 @@ def test_aggregated_quality(
     ex_quality,
     expected_quality,
 ):
-    net_exchange_per_ga = create_dataframe_from_aggregation_result_schema(
+    results = {}
+    results[
+        ResultKeyName.net_exchange_per_ga
+    ] = create_dataframe_from_aggregation_result_schema(
         agg_total_net_exchange_factory(ex_quality)
     )
-    production_ga = create_dataframe_from_aggregation_result_schema(
+    results[
+        ResultKeyName.production_ga
+    ] = create_dataframe_from_aggregation_result_schema(
         agg_total_production_factory(prod_quality)
     )
 
-    result_df = calculate_total_consumption(net_exchange_per_ga, production_ga)
+    result_df = calculate_total_consumption(results)
 
     assert result_df.collect()[0][Colname.quality] == expected_quality
