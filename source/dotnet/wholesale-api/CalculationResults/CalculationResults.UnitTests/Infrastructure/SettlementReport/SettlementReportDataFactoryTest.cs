@@ -28,7 +28,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 [UnitTest]
 public class SettlementReportDataFactoryTests
 {
-    private readonly Table _table;
+    private readonly TableChunk _tableChunk;
     private readonly SettlementReportResultRow _firstRow;
     private readonly SettlementReportResultRow _lastRow;
 
@@ -48,7 +48,7 @@ public class SettlementReportDataFactoryTests
             new[] { "234", "BalanceFixing", "2022-05-16T01:15:00.000Z", "production", "2.2" },
             new[] { "234", "BalanceFixing", "2022-05-16T01:30:00.000Z", "production", "3.3" },
         };
-        _table = new Table(columnNames, rows);
+        _tableChunk = new TableChunk(columnNames, rows);
         _firstRow = new SettlementReportResultRow("123", ProcessType.BalanceFixing, Instant.FromUtc(2022, 5, 16, 1, 0, 0), "PT15M", MeteringPointType.Consumption, SettlementMethod.NonProfiled, new decimal(1.1));
         _lastRow = new SettlementReportResultRow("234", ProcessType.BalanceFixing, Instant.FromUtc(2022, 5, 16, 1, 30, 0), "PT15M", MeteringPointType.Production, null, new decimal(3.3));
     }
@@ -57,17 +57,17 @@ public class SettlementReportDataFactoryTests
     public void Create_ReturnExpectedNumberOfRows()
     {
         // Act
-        var actual = SettlementReportDataFactory.Create(_table);
+        var actual = SettlementReportDataFactory.Create(_tableChunk);
 
         // Assert
-        actual.Count().Should().Be(_table.RowCount);
+        actual.Count().Should().Be(_tableChunk.RowCount);
     }
 
     [Fact]
     public void Create_ReturnExpectedContent()
     {
         // Act
-        var actual = SettlementReportDataFactory.Create(_table);
+        var actual = SettlementReportDataFactory.Create(_tableChunk);
 
         // Assert
         var actualRows = actual.ToList();
