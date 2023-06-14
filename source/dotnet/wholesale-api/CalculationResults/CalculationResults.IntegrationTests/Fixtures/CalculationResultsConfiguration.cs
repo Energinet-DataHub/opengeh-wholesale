@@ -30,21 +30,20 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtur
         {
             var secretsConfiguration = BuildSecretsConfiguration(Root);
 
-
-            DatabricksOptions = new DatabricksOptions
-            {
-                DATABRICKS_WAREHOUSE_ID =
-                    secretsConfiguration.GetValue<string>()!,
-                DATABRICKS_WORKSPACE_URL = secretsConfiguration.GetValue<string>()!,
-                DATABRICKS_WORKSPACE_TOKEN = secretsConfiguration.GetValue<string>())!,
-                // DATABRICKS_WAREHOUSE_ID =
-                //     secretsConfiguration.GetValue<string>(nameof(DatabricksOptions.DATABRICKS_WAREHOUSE_ID))!,
-                // DATABRICKS_WORKSPACE_URL = secretsConfiguration.GetValue<string>(nameof(DatabricksOptions.DATABRICKS_WORKSPACE_URL))!,
-                // DATABRICKS_WORKSPACE_TOKEN = secretsConfiguration.GetValue<string>(nameof(DatabricksOptions.DATABRICKS_WORKSPACE_TOKEN))!,
-            };
+            // DatabricksOptions = new DatabricksOptions
+            // {
+            //     DATABRICKS_WAREHOUSE_ID =
+            //         secretsConfiguration.GetValue<string>()!,
+            //     DATABRICKS_WORKSPACE_URL = secretsConfiguration.GetValue<string>()!,
+            //     DATABRICKS_WORKSPACE_TOKEN = secretsConfiguration.GetValue<string>())!,
+            //     // DATABRICKS_WAREHOUSE_ID =
+            //     //     secretsConfiguration.GetValue<string>(nameof(DatabricksOptions.DATABRICKS_WAREHOUSE_ID))!,
+            //     // DATABRICKS_WORKSPACE_URL = secretsConfiguration.GetValue<string>(nameof(DatabricksOptions.DATABRICKS_WORKSPACE_URL))!,
+            //     // DATABRICKS_WORKSPACE_TOKEN = secretsConfiguration.GetValue<string>(nameof(DatabricksOptions.DATABRICKS_WORKSPACE_TOKEN))!,
+            // };
         }
 
-        public DatabricksOptions DatabricksOptions { get; }
+        // public DatabricksOptions DatabricksOptions { get; }
 
         /// <summary>
         /// Load settings from key vault secrets.
