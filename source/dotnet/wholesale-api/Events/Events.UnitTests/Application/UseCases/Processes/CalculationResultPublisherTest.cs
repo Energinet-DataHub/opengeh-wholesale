@@ -54,7 +54,7 @@ public class CalculationResultPublisherTest
             Instant.MinValue,
             Instant.MinValue);
 
-        var processStepResult = new CalculationResult(
+        var calculationResult = new CalculationResult(
             timeSeriesType,
             new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
 
@@ -63,7 +63,7 @@ public class CalculationResultPublisherTest
             It.IsAny<string>(),
             timeSeriesType,
             null,
-            null)).ReturnsAsync(processStepResult);
+            null)).ReturnsAsync(calculationResult);
 
         actorClientMock
             .Setup(a => a.GetEnergySuppliersAsync(
@@ -73,7 +73,7 @@ public class CalculationResultPublisherTest
 
         calculationResultCompletedFactoryMock
             .Setup(c => c.CreateForTotalGridArea(
-                processStepResult,
+                calculationResult,
                 eventDto))
             .Returns(integrationEventDto);
 
@@ -106,7 +106,7 @@ public class CalculationResultPublisherTest
             Instant.MinValue,
             Instant.MinValue);
 
-        var processStepResult = new CalculationResult(
+        var calculationResult = new CalculationResult(
             timeSeriesType,
             new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
 
@@ -115,7 +115,7 @@ public class CalculationResultPublisherTest
             It.IsAny<string>(),
             timeSeriesType,
             glnNumber,
-            null)).ReturnsAsync(processStepResult);
+            null)).ReturnsAsync(calculationResult);
 
         actorClientMock
             .Setup(a => a.GetEnergySuppliersAsync(
@@ -125,7 +125,7 @@ public class CalculationResultPublisherTest
 
         calculationResultCompletedFactoryMock
             .Setup(c => c.CreateForEnergySupplier(
-                processStepResult,
+                calculationResult,
                 eventDto,
                 glnNumber))
             .Returns(integrationEventDto);
@@ -160,7 +160,7 @@ public class CalculationResultPublisherTest
             Instant.MinValue,
             Instant.MinValue);
 
-        var processStepResult = new CalculationResult(
+        var calculationResult = new CalculationResult(
             timeSeriesType,
             new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
 
@@ -169,7 +169,7 @@ public class CalculationResultPublisherTest
             It.IsAny<string>(),
             timeSeriesType,
             null,
-            brpGlnNumber)).ReturnsAsync(processStepResult);
+            brpGlnNumber)).ReturnsAsync(calculationResult);
 
         actorClientMock
             .Setup(a => a.GetBalanceResponsiblePartiesAsync(
@@ -178,7 +178,7 @@ public class CalculationResultPublisherTest
                 It.IsAny<TimeSeriesType>())).ReturnsAsync(new[] { new Actor(brpGlnNumber) });
 
         calculationResultCompletedFactoryMock
-            .Setup(c => c.CreateForBalanceResponsibleParty(processStepResult, eventDto, brpGlnNumber))
+            .Setup(c => c.CreateForBalanceResponsibleParty(calculationResult, eventDto, brpGlnNumber))
             .Returns(integrationEventDto);
 
         // Act
@@ -212,7 +212,7 @@ public class CalculationResultPublisherTest
             Instant.MinValue,
             Instant.MinValue);
 
-        var processStepResult = new CalculationResult(
+        var calculationResult = new CalculationResult(
             timeSeriesType,
             new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
 
@@ -221,7 +221,7 @@ public class CalculationResultPublisherTest
             It.IsAny<string>(),
             timeSeriesType,
             glnNumber,
-            brpGlnNumber)).ReturnsAsync(processStepResult);
+            brpGlnNumber)).ReturnsAsync(calculationResult);
 
         actorClientMock
             .Setup(a => a.GetBalanceResponsiblePartiesAsync(
@@ -238,7 +238,7 @@ public class CalculationResultPublisherTest
 
         calculationResultCompletedFactoryMock
             .Setup(c => c.CreateForEnergySupplierByBalanceResponsibleParty(
-                processStepResult,
+                calculationResult,
                 eventDto,
                 glnNumber,
                 brpGlnNumber))

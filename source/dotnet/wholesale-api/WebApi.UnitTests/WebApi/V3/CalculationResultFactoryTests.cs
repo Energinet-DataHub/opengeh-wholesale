@@ -15,14 +15,14 @@
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
-using Energinet.DataHub.Wholesale.WebApi.V3.ProcessStepResult;
+using Energinet.DataHub.Wholesale.WebApi.V3.CalculationResult;
 using FluentAssertions;
 using Test.Core;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.WebApi.V3;
 
-public class ProcessStepResultFactoryTests
+public class CalculationResultFactoryTests
 {
     [Theory]
     [InlineAutoMoqData]
@@ -33,7 +33,7 @@ public class ProcessStepResultFactoryTests
         // Arrange
         var point = result.TimeSeriesPoints.First();
         result.SetPrivateProperty(r => r.TimeSeriesPoints, new[] { point });
-        var expected = new ProcessStepResultDto(
+        var expected = new CalculationResultDto(
             result.Sum,
             result.Min,
             result.Max,
@@ -49,7 +49,7 @@ public class ProcessStepResultFactoryTests
             result.TimeSeriesType);
 
         // Act
-        var actual = ProcessStepResultFactory.Create(result, batchDto);
+        var actual = CalculationResultFactory.Create(result, batchDto);
 
         // Assert
         actual.Should().BeEquivalentTo(expected);
