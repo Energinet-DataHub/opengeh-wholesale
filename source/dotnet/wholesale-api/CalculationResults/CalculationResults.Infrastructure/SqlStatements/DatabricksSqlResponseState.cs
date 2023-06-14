@@ -23,4 +23,6 @@ public enum DatabricksSqlResponseState
     Cancelled = 1,
     Pending = 2,
     Succeeded = 3,
+    Running = 4,
+    Closed = 5,
 }

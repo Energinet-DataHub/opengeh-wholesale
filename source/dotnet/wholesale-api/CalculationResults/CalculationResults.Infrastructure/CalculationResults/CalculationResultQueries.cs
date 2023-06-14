@@ -12,10 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Globalization;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
@@ -23,36 +19,13 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 
 public class CalculationResultQueries : ICalculationResultQueries
 {
-    private readonly ISqlStatementClient _sqlStatementClient;
-
-    public CalculationResultQueries(ISqlStatementClient sqlStatementClient)
-    {
-        _sqlStatementClient = sqlStatementClient;
-    }
-
-    public async Task<CalculationResult> GetAsync(
+    public Task<CalculationResult> GetAsync(
         Guid batchId,
         string gridAreaCode,
         TimeSeriesType timeSeriesType,
         string? energySupplierGln,
         string? balanceResponsiblePartyGln)
     {
-        await Task.Delay(1000).ConfigureAwait(false);
-
         throw new NotImplementedException("GetAsync is not implemented yet");
-    }
-
-    private static CalculationResult CreateProcessStepResult(
-        TimeSeriesType timeSeriesType,
-        Table resultTable)
-    {
-        var pointsDto = Enumerable.Range(0, resultTable.RowCount)
-            .Select(row => new TimeSeriesPoint(
-                DateTimeOffset.Parse(resultTable[row, ResultColumnNames.Time]),
-                decimal.Parse(resultTable[row, ResultColumnNames.Quantity], CultureInfo.InvariantCulture),
-                QuantityQualityMapper.FromDeltaTableValue(resultTable[row, ResultColumnNames.QuantityQuality])))
-            .ToList();
-
-        return new CalculationResult(timeSeriesType, pointsDto.ToArray());
     }
 }
