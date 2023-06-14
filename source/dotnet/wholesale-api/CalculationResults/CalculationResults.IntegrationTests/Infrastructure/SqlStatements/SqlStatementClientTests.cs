@@ -35,6 +35,12 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
         _databricksSqlStatementApiFixture = databricksSqlStatementApiFixture;
     }
 
+    [Fact]
+    public void Test()
+    {
+        _databricksSqlStatementApiFixture.DatabricksOptions.DATABRICKS_WAREHOUSE_ID.Should().NotBeNull();
+    }
+
     [Theory]
     [InlineAutoMoqData]
     public async Task ExecuteSqlStatementAsync_WhenQueryFromDatabricks_ReturnsExpectedData(
