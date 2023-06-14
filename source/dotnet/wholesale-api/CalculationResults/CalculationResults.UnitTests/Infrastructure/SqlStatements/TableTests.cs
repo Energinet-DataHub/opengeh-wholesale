@@ -39,7 +39,7 @@ public class TableTests
     public void Count_ReturnsNumberOfRows()
     {
         // Arrange
-        var sut = new Table(_columnNames, _rowData);
+        var sut = new TableChunk(_columnNames, _rowData);
 
         // Act
         var rowCount = sut.RowCount;
@@ -53,7 +53,7 @@ public class TableTests
     {
         // Arrange
         var expectedRow = new[] { "cell21", "cell22", "cell23" };
-        var sut = new Table(_columnNames, _rowData);
+        var sut = new TableChunk(_columnNames, _rowData);
 
         // Act
         var actualRow = sut[1];
@@ -66,7 +66,7 @@ public class TableTests
     public void IndexerWithColumnName_ReturnsExpectedCell()
     {
         // Arrange
-        var sut = new Table(_columnNames, _rowData);
+        var sut = new TableChunk(_columnNames, _rowData);
 
         // Act
         var actual = sut[1, "col2"];
@@ -79,7 +79,7 @@ public class TableTests
     public void IndexerWithInvalidColumnName_ThrowsException()
     {
         // Arrange
-        var sut = new Table(_columnNames, _rowData);
+        var sut = new TableChunk(_columnNames, _rowData);
 
         // Act + Assert
         Assert.ThrowsAny<Exception>(() => sut[ValidRowIndex, InvalidColumnName]);
@@ -89,7 +89,7 @@ public class TableTests
     public void IndexerWithInvalidRowIndex_ThrowsException()
     {
         // Arrange
-        var sut = new Table(_columnNames, _rowData);
+        var sut = new TableChunk(_columnNames, _rowData);
 
         // Act + Assert
         Assert.ThrowsAny<Exception>(() => sut[InvalidRowIndex, ValidColumnName]);
