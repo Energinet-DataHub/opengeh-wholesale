@@ -26,6 +26,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 public class DatabricksSqlResponseParserTests
 {
     private readonly string _succeededResultJson;
+    private readonly string _resultChunkJson;
     private readonly string _pendingResultJson;
 
     public DatabricksSqlResponseParserTests()
@@ -33,6 +34,10 @@ public class DatabricksSqlResponseParserTests
         var stream = EmbeddedResources.GetStream("Infrastructure.SqlStatements.CalculationResult.json");
         using var reader = new StreamReader(stream);
         _succeededResultJson = reader.ReadToEnd();
+
+        var chunkStream = EmbeddedResources.GetStream("Infrastructure.SqlStatements.CalculationResultChunk.json");
+        using var chunkReader = new StreamReader(chunkStream);
+        _resultChunkJson = chunkReader.ReadToEnd();
 
         var statement = new
         {
@@ -114,10 +119,11 @@ public class DatabricksSqlResponseParserTests
     public void Parse_WhenValidJson_ReturnsResult(DatabricksSqlResponseParser sut)
     {
         // Arrange
+        var statementId = new JProperty("statement_id", Guid.NewGuid());
         var status = new JProperty("status", new JObject(new JProperty("state", "PENDING")));
         var manifest = new JProperty("manifest", new JObject(new JProperty("schema", new JObject(new JProperty("columns", new JArray(new JObject(new JProperty("name", "grid_area"))))))));
         var result = new JProperty("result", new JObject(new JProperty("data_array", new List<string[]>())));
-        var obj = new JObject(status, manifest, result);
+        var obj = new JObject(statementId, status, manifest, result);
         var jsonString = obj.ToString();
 
         // Act + Assert
@@ -129,10 +135,11 @@ public class DatabricksSqlResponseParserTests
     public void Parse_WhenInvalidJson_ThrowsException(DatabricksSqlResponseParser sut)
     {
         // Arrange
+        var statementId = new JProperty("statement_id", Guid.NewGuid());
         var status = new JProperty("not_status", new JObject(new JProperty("state", "PENDING")));
         var manifest = new JProperty("manifest", new JObject(new JProperty("schema", new JObject(new JProperty("columns", new JArray(new JObject(new JProperty("name", "grid_area"))))))));
         var result = new JProperty("result", new JObject(new JProperty("data_array", new List<string[]>())));
-        var obj = new JObject(status, manifest, result);
+        var obj = new JObject(statementId, status, manifest, result);
         var jsonString = obj.ToString();
 
         // Act + Assert
@@ -144,18 +151,46 @@ public class DatabricksSqlResponseParserTests
     public void Parse_WhenNoDataMatchesCriteria_ReturnTableWithZeroRows(DatabricksSqlResponseParser sut)
     {
         // Arrange
-        var status = new JProperty("status", new JObject(new JProperty("state", "SUCCEEDED")));
-        var manifest = new JProperty("manifest", new JObject(
-            new JProperty("schema", new JObject(new JProperty("columns", new JArray(new JObject(new JProperty("name", "grid_area")))))),
-            new JProperty("total_row_count", 0)));
-        var result = new JProperty("result", new JObject());
-        var obj = new JObject(status, manifest, result);
-        var jsonString = obj.ToString();
+        var jsonString = @"{
+    'statement_id': '01edef23-0d2c-10dd-879b-26b5e97b3796',
+    'status': {
+        'state': 'SUCCEEDED'
+    },
+    'manifest': {
+        'schema': {
+            'columns': [
+                {
+                    'name': 'grid_area'
+                }
+            ]
+        },
+        'total_row_count': 0
+    },
+    'result': {
+        'row_count': 0
+    }
+}";
 
         // Act
         var actual = sut.Parse(jsonString);
 
         // Assert
         actual.Table!.RowCount.Should().Be(0);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public void Parse_WhenResultIsChunk_ReturnsExpectedNextChunkInternalLink(DatabricksSqlResponseParser sut)
+    {
+        // Arrange
+        var expectedNextChunkInternalLink =
+            "/api/2.0/sql/statements/01ed92c5-3583-1f38-b21b-c6773e7c56b3/result/chunks/1?row_offset=432500";
+
+        // Act
+        var actual = sut.Parse(_resultChunkJson);
+
+        // Assert
+        actual.HasMoreRows.Should().BeTrue();
+        actual.NextChunkInternalLink.Should().Be(expectedNextChunkInternalLink);
     }
 }

@@ -38,8 +38,14 @@ public class SettlementReportResultQueries : ISettlementReportResultQueries
     {
         var sql = SettlementReportSqlStatementFactory.Create(gridAreaCodes, processType, periodStart, periodEnd, energySupplier);
 
-        var resultTable = await _sqlStatementClient.ExecuteSqlStatementAsync(sql).ConfigureAwait(false);
+        var rows = new List<string[]>();
+        List<string>? cols = null;
+        await foreach (var chunk in _sqlStatementClient.ExecuteAsync(sql))
+        {
+            cols ??= chunk.ColumnNames.ToList();
+            rows.AddRange(chunk.Rows.ToList());
+        }
 
-        return SettlementReportDataFactory.Create(resultTable);
+        return SettlementReportDataFactory.Create(new TableChunk(cols!, rows));
     }
 }
