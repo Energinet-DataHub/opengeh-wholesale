@@ -30,6 +30,7 @@ def calculate_balance_fixing(
     process_step_result_writer: ProcessStepResultWriter,
     metering_points_periods_df: DataFrame,
     time_series_points_df: DataFrame,
+    grid_loss_responsible_df: DataFrame,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
     time_zone: str,
@@ -52,13 +53,14 @@ def calculate_balance_fixing(
     enriched_time_series_point_df = setup.transform_hour_to_quarter(
         enriched_time_series_point_df
     )
-    _calculate(actors_writer, process_step_result_writer, enriched_time_series_point_df)
+    _calculate(actors_writer, process_step_result_writer, enriched_time_series_point_df, grid_loss_responsible_df)
 
 
 def _calculate(
     actors_writer: ActorsWriter,
     result_writer: ProcessStepResultWriter,
     enriched_time_series_point_df: DataFrame,
+    grid_loss_responsible_df: DataFrame,
 ) -> None:
     _calculate_net_exchange_per_neighboring_ga(
         result_writer, enriched_time_series_point_df
@@ -89,17 +91,23 @@ def _calculate(
         consumption_per_ga_and_brp_and_es,
     )
 
+    production_per_ga_and_brp_and_es = _calculate_production_per_ga_and_brp_and_es(
+        temporay_production_per_ga_and_brp_and_es,
+        negative_grid_loss,
+        grid_loss_responsible_df
+    )
+
+    flex_consumption_per_ga_and_brp_and_es = _calculate_flex_consumption_per_ga_and_brp_and_es(
+        temporay_flex_consumption_per_ga_and_brp_and_es,
+        positive_grid_loss,
+        grid_loss_responsible_df
+    )
+
     _calculate_non_profiled_consumption(
         actors_writer, result_writer, consumption_per_ga_and_brp_and_es
     )
-    _calculate_production(
-        result_writer, temporay_production_per_ga_and_brp_and_es, negative_grid_loss
-    )
-    _calculate_flex_consumption(
-        result_writer,
-        temporay_flex_consumption_per_ga_and_brp_and_es,
-        positive_grid_loss,
-    )
+    _calculate_production(result_writer, production_per_ga_and_brp_and_es)
+    _calculate_flex_consumption(result_writer, flex_consumption_per_ga_and_brp_and_es)
 
 
 def _calculate_net_exchange_per_neighboring_ga(
@@ -194,15 +202,34 @@ def _calculate_grid_loss(
     return positive_grid_loss, negative_grid_loss
 
 
-def _calculate_production(
-    result_writer: ProcessStepResultWriter,
+def _calculate_production_per_ga_and_brp_and_es(
     temporay_production_per_ga_and_brp_and_es: DataFrame,
     negative_grid_loss: DataFrame,
-) -> None:
+    grid_loss_responsible_df: DataFrame,
+) -> DataFrame:
     # temporay_production_per_per_ga_and_brp_and_es is without negative_grid_loss, this has to be added at a later date
     # negative_grid_loss + temporay_production_per_per_ga_and_brp_and_es = production_per_ga_and_brp_and_es
     production_per_ga_and_brp_and_es = temporay_production_per_ga_and_brp_and_es  # replace with negative_grid_loss calculation
 
+    return production_per_ga_and_brp_and_es
+
+
+def _calculate_flex_consumption_per_ga_and_brp_and_es(
+    temporay_flex_consumption_per_ga_and_brp_and_es: DataFrame,
+    positive_grid_loss: DataFrame,
+    grid_loss_responsible_df: DataFrame,
+) -> DataFrame:
+    # temporay_flex_consumption_per_ga_and_brp_and_es is without positive_grid_loss, this has to be added at a later date
+    # positive_grid_loss + temporay_flex_consumption_per_ga_and_brp_and_es = flex_consumption_per_ga_and_brp_and_es
+    flex_consumption_per_ga_and_brp_and_es = temporay_flex_consumption_per_ga_and_brp_and_es  # replace this with positive_grid_loss calculation
+
+    return flex_consumption_per_ga_and_brp_and_es
+
+
+def _calculate_production(
+    result_writer: ProcessStepResultWriter,
+    production_per_ga_and_brp_and_es: DataFrame,
+) -> None:
     result_writer.write(
         production_per_ga_and_brp_and_es,
         TimeSeriesType.PRODUCTION,
@@ -243,13 +270,8 @@ def _calculate_production(
 
 def _calculate_flex_consumption(
     result_writer: ProcessStepResultWriter,
-    temporay_flex_consumption_per_ga_and_brp_and_es: DataFrame,
-    positive_grid_loss: DataFrame,
+    flex_consumption_per_ga_and_brp_and_es: DataFrame,
 ) -> None:
-    # temporay_flex_consumption_per_ga_and_brp_and_es is without positive_grid_loss, this has to be added at a later date
-    # positive_grid_loss + temporay_flex_consumption_per_ga_and_brp_and_es = flex_consumption_per_ga_and_brp_and_es
-    flex_consumption_per_ga_and_brp_and_es = temporay_flex_consumption_per_ga_and_brp_and_es  # replace this with positive_grid_loss calculation
-
     result_writer.write(
         flex_consumption_per_ga_and_brp_and_es,
         TimeSeriesType.PRODUCTION,

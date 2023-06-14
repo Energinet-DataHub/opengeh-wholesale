@@ -17,6 +17,8 @@ import sys
 import configargparse
 from configargparse import argparse
 from pyspark.sql import SparkSession
+from pyspark.sql.functions import col
+from package.constants import Colname
 import package.environment_variables as env_vars
 from package import (
     calculate_balance_fixing,
@@ -85,6 +87,27 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         args.batch_period_end_datetime,
     )
 
+    # TODO: get data a different way
+    grid_loss_responsible_df = spark.read.csv(
+        "///workspaces/opengeh-wholesale/source/databricks/calculation-engine/tests/integration/calculator/test_files/GridLossResponsible.csv",
+        header=True
+    )
+    # |-- METERING_POINT_ID: string (nullable = true)
+    # |-- GRID_AREA: string (nullable = true)
+    # |-- VALID_FROM : string (nullable = true)
+    # |-- VALID_TO: string (nullable = true)
+    # |-- TYPE_OF_MP: string (nullable = true)
+    # |-- BALANCE_SUPPLIER_ID: string (nullable = true)
+
+    grid_loss_responsible_df = grid_loss_responsible_df.select(
+        col("METERING_POINT_ID").alias(Colname.metering_point_id),
+        col("GRID_AREA").alias(Colname.grid_area),
+        col("VALID_FROM").alias(Colname.from_date),
+        col("VALID_TO").alias(Colname.to_date),
+        col("TYPE_OF_MP").alias(Colname.metering_point_type),
+        col("BALANCE_SUPPLIER_ID").alias(Colname.energy_supplier_id),
+    )
+
     process_step_result_writer = ProcessStepResultWriter(
         args.wholesale_container_path,
         args.batch_id,
@@ -100,6 +123,7 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         process_step_result_writer,
         metering_point_periods_df,
         timeseries_points_df,
+        grid_loss_responsible_df,
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
         args.time_zone,
