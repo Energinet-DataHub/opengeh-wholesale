@@ -38,7 +38,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtur
         private static IConfigurationRoot BuildConfigurationRoot()
         {
             return new ConfigurationBuilder()
-                .AddJsonFile("local.settings.json", optional: true)
+                .AddJsonFile("integrationtest.local.settings.json", optional: true)
                 .AddEnvironmentVariables()
                 .Build();
         }
