@@ -29,13 +29,17 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
 
         DatabricksOptions = new DatabricksOptions
         {
-            DATABRICKS_WORKSPACE_URL = IntegrationTestConfiguration.Configuration.GetValue("dbw-playground-workspace-url"),
+            DATABRICKS_WORKSPACE_URL = $"https://{IntegrationTestConfiguration.Configuration.GetValue("dbw-playground-workspace-url")}", // TODO: set https directly in KV
             DATABRICKS_WORKSPACE_TOKEN = IntegrationTestConfiguration.Configuration.GetValue("dbw-playground-workspace-token"),
             DATABRICKS_WAREHOUSE_ID = IntegrationTestConfiguration.Configuration.GetValue("dbw-sql-endpoint-id"),
         };
+
+        DatabricksSqlSchemaManager = new DatabricksSqlSchemaManager(DatabricksOptions);
     }
 
     public DatabricksOptions DatabricksOptions { get; }
+
+    public DatabricksSqlSchemaManager DatabricksSqlSchemaManager { get; }
 
     private IntegrationTestConfiguration IntegrationTestConfiguration { get; }
 
