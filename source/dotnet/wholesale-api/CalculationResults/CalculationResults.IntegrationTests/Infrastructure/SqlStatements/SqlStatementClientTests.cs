@@ -36,43 +36,32 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
     private readonly string _schemaName = $"TestSchema{Guid.NewGuid().ToString("N")[..8]}"; // TODO: use PR NUMBER
     private readonly string _sometableName = $"TestTable{Guid.NewGuid().ToString("N")[..8]}"; // TODO: use commit ID?
 
-    private readonly DatabricksSqlStatementApiFixture _databricksSqlStatementApiFixture;
+    private readonly DatabricksSqlStatementApiFixture _fixture;
 
-    public SqlStatementClientTests(DatabricksSqlStatementApiFixture databricksSqlStatementApiFixture)
+    public SqlStatementClientTests(DatabricksSqlStatementApiFixture fixture)
     {
-        _databricksSqlStatementApiFixture = databricksSqlStatementApiFixture;
+        _fixture = fixture;
     }
 
     [Fact]
     public void Test()
     {
-       _databricksSqlStatementApiFixture.DatabricksWarehouseManager.Settings.WarehouseId.Should().NotBeNull();
+       _fixture.DatabricksWarehouseManager.Settings.WarehouseId.Should().NotBeNull();
     }
 
     [Fact]
     public async Task Test2()
     {
-        await _databricksSqlStatementApiFixture.DatabricksWarehouseManager.CreateSchemaAsync("testSchema");
+        await _fixture.DatabricksWarehouseManager.CreateSchemaAsync("testSchema");
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task ExecuteSqlStatementAsync_WhenQueryFromDatabricks_ReturnsExpectedData(
-        [Frozen] Mock<IOptions<DatabricksOptions>> databricksOptionsMock)
+    [Fact]
+    public async Task ExecuteSqlStatementAsync_WhenQueryFromDatabricks_ReturnsExpectedData()
     {
         // Arrange
-        databricksOptionsMock
-            .Setup(o => o.Value)
-            .Returns(new DatabricksOptions
-            {
-                DATABRICKS_WORKSPACE_URL = _databricksSqlStatementApiFixture.DatabricksWarehouseManager.Settings.WorkspaceUrl,
-                DATABRICKS_WORKSPACE_TOKEN = _databricksSqlStatementApiFixture.DatabricksWarehouseManager.Settings.WorkspaceAccessToken,
-                DATABRICKS_WAREHOUSE_ID = _databricksSqlStatementApiFixture.DatabricksWarehouseManager.Settings.WarehouseId,
-            });
-
         var databricksSqlResponseParser = new DatabricksSqlResponseParser();
         var httpClient = new HttpClient();
-        var sut = new SqlStatementClient(httpClient, databricksOptionsMock.Object, databricksSqlResponseParser);
+        var sut = new SqlStatementClient(httpClient, _fixture.DatabricksOptionsMock.Object, databricksSqlResponseParser);
         const string sqlStatement = "SELECT * FROM myTable";
 
         // Act

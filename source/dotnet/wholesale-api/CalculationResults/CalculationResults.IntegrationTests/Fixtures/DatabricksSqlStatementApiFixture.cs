@@ -15,6 +15,9 @@
 using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures.TestCommon;
+using Energinet.DataHub.Wholesale.Common.DatabricksClient;
+using Microsoft.Extensions.Options;
+using Moq;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
@@ -33,9 +36,12 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
         };
 
         DatabricksWarehouseManager = new DatabricksWarehouseManager(databricksWarehouseSettings);
+        DatabricksOptionsMock = CreateDatabricksOptionsMock(DatabricksWarehouseManager);
     }
 
     public DatabricksWarehouseManager DatabricksWarehouseManager { get; }
+
+    public Mock<IOptions<DatabricksOptions>> DatabricksOptionsMock { get;}
 
     public Task InitializeAsync()
     {
@@ -47,5 +53,20 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
     {
         // TODO: Drop any schema we created in 'InitializeAsync'
         return Task.CompletedTask;
+    }
+
+    private static Mock<IOptions<DatabricksOptions>> CreateDatabricksOptionsMock(DatabricksWarehouseManager databricksWarehouseManager)
+    {
+        var databricksOptionsMock = new Mock<IOptions<DatabricksOptions>>();
+        databricksOptionsMock
+            .Setup(o => o.Value)
+            .Returns(new DatabricksOptions
+            {
+                DATABRICKS_WORKSPACE_URL = databricksWarehouseManager.Settings.WorkspaceUrl,
+                DATABRICKS_WORKSPACE_TOKEN = databricksWarehouseManager.Settings.WorkspaceAccessToken,
+                DATABRICKS_WAREHOUSE_ID = databricksWarehouseManager.Settings.WarehouseId,
+            });
+
+        return databricksOptionsMock;
     }
 }
