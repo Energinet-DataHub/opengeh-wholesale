@@ -23,7 +23,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SqlStatements;
 
-public class SqlStatementClientTests
+public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFixture>
 {
     private readonly string _schemaName = $"TestSchema{Guid.NewGuid().ToString("N")[..8]}"; // TODO: use PR NUMBER
     private readonly string _sometableName = $"TestTable{Guid.NewGuid().ToString("N")[..8]}"; // TODO: use commit ID?
