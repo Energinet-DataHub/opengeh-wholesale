@@ -91,13 +91,13 @@ def _calculate(
         consumption_per_ga_and_brp_and_es,
     )
 
-    production_per_ga_and_brp_and_es = _calculate_production_per_ga_and_brp_and_es(
+    production_per_ga_and_brp_and_es = _calculate_adjust_production_per_ga_and_brp_and_es(
         temporay_production_per_ga_and_brp_and_es,
         negative_grid_loss,
         grid_loss_responsible_df
     )
 
-    flex_consumption_per_ga_and_brp_and_es = _calculate_flex_consumption_per_ga_and_brp_and_es(
+    flex_consumption_per_ga_and_brp_and_es = _calculate_adjust_flex_consumption_per_ga_and_brp_and_es(
         temporay_flex_consumption_per_ga_and_brp_and_es,
         positive_grid_loss,
         grid_loss_responsible_df
@@ -202,26 +202,30 @@ def _calculate_grid_loss(
     return positive_grid_loss, negative_grid_loss
 
 
-def _calculate_production_per_ga_and_brp_and_es(
+def _calculate_adjust_production_per_ga_and_brp_and_es(
     temporay_production_per_ga_and_brp_and_es: DataFrame,
     negative_grid_loss: DataFrame,
     grid_loss_responsible_df: DataFrame,
 ) -> DataFrame:
-    # temporay_production_per_per_ga_and_brp_and_es is without negative_grid_loss, this has to be added at a later date
-    # negative_grid_loss + temporay_production_per_per_ga_and_brp_and_es = production_per_ga_and_brp_and_es
-    production_per_ga_and_brp_and_es = temporay_production_per_ga_and_brp_and_es  # replace with negative_grid_loss calculation
+    production_per_ga_and_brp_and_es = agg_steps.adjust_production(
+        temporay_production_per_ga_and_brp_and_es,
+        negative_grid_loss,
+        grid_loss_responsible_df
+    )
 
     return production_per_ga_and_brp_and_es
 
 
-def _calculate_flex_consumption_per_ga_and_brp_and_es(
+def _calculate_adjust_flex_consumption_per_ga_and_brp_and_es(
     temporay_flex_consumption_per_ga_and_brp_and_es: DataFrame,
     positive_grid_loss: DataFrame,
     grid_loss_responsible_df: DataFrame,
 ) -> DataFrame:
-    # temporay_flex_consumption_per_ga_and_brp_and_es is without positive_grid_loss, this has to be added at a later date
-    # positive_grid_loss + temporay_flex_consumption_per_ga_and_brp_and_es = flex_consumption_per_ga_and_brp_and_es
-    flex_consumption_per_ga_and_brp_and_es = temporay_flex_consumption_per_ga_and_brp_and_es  # replace this with positive_grid_loss calculation
+    flex_consumption_per_ga_and_brp_and_es = agg_steps.adjust_flex_consumption(
+        temporay_flex_consumption_per_ga_and_brp_and_es,
+        positive_grid_loss,
+        grid_loss_responsible_df
+    )
 
     return flex_consumption_per_ga_and_brp_and_es
 

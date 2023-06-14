@@ -17,7 +17,7 @@ import sys
 import configargparse
 from configargparse import argparse
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col
+from pyspark.sql.functions import col, when
 from package.constants import Colname
 import package.environment_variables as env_vars
 from package import (
@@ -107,6 +107,10 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         col("TYPE_OF_MP").alias(Colname.metering_point_type),
         col("BALANCE_SUPPLIER_ID").alias(Colname.energy_supplier_id),
     )
+    grid_loss_responsible_df = grid_loss_responsible_df.withColumn(
+        Colname.is_positive_grid_loss_responsible, when(col(Colname.metering_point_type) == "E17", True).otherwise(False))
+    grid_loss_responsible_df = grid_loss_responsible_df.withColumn(
+        Colname.is_negative_grid_loss_responsible, when(col(Colname.metering_point_type) == "E18", True).otherwise(False))
 
     process_step_result_writer = ProcessStepResultWriter(
         args.wholesale_container_path,

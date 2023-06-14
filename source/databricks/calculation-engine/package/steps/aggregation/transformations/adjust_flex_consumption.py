@@ -25,10 +25,11 @@ adjusted_sum_quantity = "adjusted_sum_quantity"
 
 
 # step 10
-def adjust_flex_consumption(results: dict) -> DataFrame:
-    flex_consumption_result_df = results[ResultKeyName.flex_consumption]
-    positive_grid_loss_result_df = results[ResultKeyName.positive_grid_loss]
-    grid_loss_sys_cor_df = results[ResultKeyName.grid_loss_sys_cor_master_data]
+def adjust_flex_consumption(
+    flex_consumption_result_df: DataFrame,
+    positive_grid_loss_result_df: DataFrame, 
+    grid_loss_sys_cor_df: DataFrame
+) -> DataFrame:
     # select columns from dataframe that contains information about metering points registered as GridLoss or SystemCorrection to use in join.
     glsc_df = grid_loss_sys_cor_df.selectExpr(
         Colname.from_date,
