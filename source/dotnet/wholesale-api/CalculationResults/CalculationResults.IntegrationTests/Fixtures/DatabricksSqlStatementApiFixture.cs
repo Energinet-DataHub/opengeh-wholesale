@@ -41,7 +41,7 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
 
     public DatabricksWarehouseManager DatabricksWarehouseManager { get; }
 
-    public Mock<IOptions<DatabricksOptions>> DatabricksOptionsMock { get;}
+    public Mock<IOptions<DatabricksOptions>> DatabricksOptionsMock { get; }
 
     public Task InitializeAsync()
     {
