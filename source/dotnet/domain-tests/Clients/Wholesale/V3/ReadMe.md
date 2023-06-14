@@ -17,12 +17,7 @@ Simply go to the nswag.json file and change the url to the swagger.json file you
 
 # How is the nswag.json file run to generate the client code
 
-In the DomainTest.csproj file there is a target that runs the nswag.json file.
-
-```c#
-  <Target Name="NSwag" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)' == 'Debug' ">
-    <Exec WorkingDirectory="$(ProjectDir)" EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" Command="if not exist Clients/Wholesale/V3/swagger.json $(NSwagExe_Net60) run Clients/Wholesale/V3/nswag.json /variables:Configuration=$(Configuration)" Condition="!Exists('Clients/Wholesale/V3/swagger.json')" />
-  </Target>
+In the DomainTest.csproj file there is a target that runs the nswag.json file. Look for the element `<Target Name="NSwag" ...>`.
 ```
 
 # Breaking changes to the client code
