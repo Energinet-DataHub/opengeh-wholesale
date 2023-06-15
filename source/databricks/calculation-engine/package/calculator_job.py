@@ -91,9 +91,9 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
     # TODO: get data a different way
     schema = StructType([
         StructField("METERING_POINT_ID", StringType(), nullable=False),
-        StructField("GRID_AREA", IntegerType(), nullable=False),
-        StructField("VALID_FROM", TimestampType(), nullable=False),
-        StructField("VALID_TO", TimestampType(), nullable=True),
+        StructField("GRID_AREA", StringType(), nullable=False),
+        StructField("VALID_FROM", StringType(), nullable=False),
+        StructField("VALID_TO", StringType(), nullable=True),
         StructField("TYPE_OF_MP", StringType(), nullable=False),
         StructField("BALANCE_SUPPLIER_ID", StringType(), nullable=False)
     ])
@@ -114,7 +114,7 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
     ]
 
     grid_loss_responsible_df = spark.createDataFrame(data, schema)
-    grid_loss_responsible_df.show()
+
     grid_loss_responsible_df = grid_loss_responsible_df.select(
         col("METERING_POINT_ID").alias(Colname.metering_point_id),
         col("GRID_AREA").alias(Colname.grid_area),
