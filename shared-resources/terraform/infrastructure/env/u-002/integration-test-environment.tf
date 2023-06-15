@@ -569,6 +569,8 @@ resource "databricks_sql_global_config" "sql_global_config_integration_test" {
     "spark.hadoop.fs.azure.account.oauth2.client.secret.${azurerm_storage_account.integration-test-st-databricks.name}.dfs.core.windows.net" : databricks_secret.spn_app_secret_integration_test.config_reference
     "spark.hadoop.fs.azure.account.oauth2.client.endpoint.${azurerm_storage_account.integration-test-st-databricks.name}.dfs.core.windows.net" : "https://login.microsoftonline.com/${data.azurerm_client_config.this.tenant_id}/oauth2/token"
   }
+
+  enable_serverless_compute = true # Will be removed in v1.14.0 of the databricks provider
 }
 
 resource "databricks_git_credential" "ado_integration_test" {
