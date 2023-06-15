@@ -29,10 +29,10 @@ adjusted_sum_quantity = "adjusted_sum_quantity"
 def adjust_production(
     hourly_production_result_df: DataFrame,
     negative_grid_loss_result_df: DataFrame,
-    sys_cor_df: DataFrame
+    grid_loss_responsible_df: DataFrame
 ) -> DataFrame:
     # select columns from dataframe that contains information about metering points registered as SystemCorrection to use in join.
-    sc_df = sys_cor_df.selectExpr(
+    sc_df = grid_loss_responsible_df.selectExpr(
         Colname.from_date,
         Colname.to_date,
         f"{Colname.energy_supplier_id} as {sys_cor_energy_supplier}",

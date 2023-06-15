@@ -11,12 +11,10 @@
 # # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # # See the License for the specific language governing permissions and
 # # limitations under the License.
-from package.codelists import MeteringPointResolution
 from package.codelists import MeteringPointType
 from . import create_dataframe_from_aggregation_result_schema
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, when, lit
-from package.constants import ResultKeyName
 from package.constants import Colname
 
 grid_loss_sys_cor_energy_supplier = "GridLossSysCor_EnergySupplier"
@@ -28,10 +26,10 @@ adjusted_sum_quantity = "adjusted_sum_quantity"
 def adjust_flex_consumption(
     flex_consumption_result_df: DataFrame,
     positive_grid_loss_result_df: DataFrame,
-    grid_loss_sys_cor_df: DataFrame
+    grid_loss_responsible_df: DataFrame
 ) -> DataFrame:
     # select columns from dataframe that contains information about metering points registered as GridLoss or SystemCorrection to use in join.
-    glsc_df = grid_loss_sys_cor_df.selectExpr(
+    glsc_df = grid_loss_responsible_df.selectExpr(
         Colname.from_date,
         Colname.to_date,
         f"{Colname.energy_supplier_id} as {grid_loss_sys_cor_energy_supplier}",

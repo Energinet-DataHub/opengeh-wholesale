@@ -98,7 +98,7 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         StructField("TYPE_OF_MP", StringType(), nullable=False),
         StructField("BALANCE_SUPPLIER_ID", StringType(), nullable=False)
     ])
-    default_valid_from = datetime.strptime("2020-01-01T23:00:00+0000", "%Y-%m-%dT%H:%M:%S%z")
+    default_valid_from = datetime.strptime("2000-01-01T23:00:00+0000", "%Y-%m-%dT%H:%M:%S%z")
     data = [
         ('571313180480500149', 804, default_valid_from, None, 'E18', '8100000000108'),
         ('570715000000682292', 512, default_valid_from, None, 'E18', '5790002437717'),
