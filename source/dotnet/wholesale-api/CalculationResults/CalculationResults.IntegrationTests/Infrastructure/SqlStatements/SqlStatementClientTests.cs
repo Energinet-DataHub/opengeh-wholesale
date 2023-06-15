@@ -28,13 +28,26 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infras
 ///   2. 'DisposeAsync()' is called after the last test in the test class has been executed.
 ///      Use 'DisposeAsync()' to drop any created schema.
 /// </summary>
-public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFixture>
+public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFixture>, IAsyncLifetime
 {
     private readonly DatabricksSqlStatementApiFixture _fixture;
+
+    private string _schemaName = string.Empty;
 
     public SqlStatementClientTests(DatabricksSqlStatementApiFixture fixture)
     {
         _fixture = fixture;
+    }
+
+    public async Task InitializeAsync()
+    {
+        _schemaName = $"TestSchema_{Guid.NewGuid().ToString("N")[..8]}";
+        await _fixture.DatabricksWarehouseManager.CreateSchemaAsync(_schemaName);
+    }
+
+    public async Task DisposeAsync()
+    {
+        await _fixture.DatabricksWarehouseManager.DropSchemaAsync(_schemaName, true);
     }
 
     [Fact]
@@ -47,7 +60,20 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
     public async Task ExecuteSqlStatementAsync_WhenQueryFromDatabricks_ReturnsExpectedData()
     {
         // Arrange
-        var schemaName = $"TestSchema_{Guid.NewGuid().ToString("N")[..8]}";
+        var tableName = await CreateTableXxxAsync();
+
+        var sut = new SqlStatementClient(new HttpClient(), _fixture.DatabricksOptionsMock.Object, new DatabricksSqlResponseParser());
+        var sqlStatement = $@"SELECT * FROM {_schemaName}.{tableName}";
+
+        // Act
+        var actual = await sut.ExecuteAsync(sqlStatement).SingleAsync();
+
+        // Assert
+        actual.RowCount.Should().Be(2);
+    }
+
+    private async Task<string> CreateTableXxxAsync()
+    {
         var tableName = $"TestTable_{Guid.NewGuid().ToString("N")[..8]}";
         var columnDefinition = new Dictionary<string, string>()
         {
@@ -55,19 +81,11 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
             { ResultColumnNames.Quantity, "DECIMAL(18,3)" },
         };
         const string values = "('805', 1.0)";
-        await _fixture.DatabricksWarehouseManager.CreateSchemaAsync(schemaName);
-        await _fixture.DatabricksWarehouseManager.CreateTableAsync(schemaName, tableName, columnDefinition);
-        await _fixture.DatabricksWarehouseManager.InsertIntoAsync(schemaName, tableName, values);
-        await _fixture.DatabricksWarehouseManager.InsertIntoAsync(schemaName, tableName, values);
-        var sut = new SqlStatementClient(new HttpClient(), _fixture.DatabricksOptionsMock.Object, new DatabricksSqlResponseParser());
-        var sqlStatement = $@"SELECT * FROM {schemaName}.{tableName}";
 
-        // Act
-        var actual = await sut.ExecuteAsync(sqlStatement).SingleAsync();
+        await _fixture.DatabricksWarehouseManager.CreateTableAsync(_schemaName, tableName, columnDefinition);
+        await _fixture.DatabricksWarehouseManager.InsertIntoAsync(_schemaName, tableName, values);
+        await _fixture.DatabricksWarehouseManager.InsertIntoAsync(_schemaName, tableName, values);
 
-        // Assert
-        actual.RowCount.Should().Be(2);
-
-        // TODO: DROP TABLE
+        return tableName;
     }
 }
