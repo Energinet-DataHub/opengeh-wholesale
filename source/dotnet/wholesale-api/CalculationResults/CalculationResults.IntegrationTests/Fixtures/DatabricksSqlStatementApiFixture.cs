@@ -45,13 +45,11 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
 
     public Task InitializeAsync()
     {
-        // TODO: Create schema if we want to reuse it between multiple tests
         return Task.CompletedTask;
     }
 
     public Task DisposeAsync()
     {
-        // TODO: Drop any schema we created in 'InitializeAsync'
         return Task.CompletedTask;
     }
 
