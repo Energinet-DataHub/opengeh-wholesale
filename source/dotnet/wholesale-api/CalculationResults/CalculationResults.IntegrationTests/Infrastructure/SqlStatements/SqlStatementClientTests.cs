@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Identity;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
@@ -32,8 +31,6 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
 {
     private readonly DatabricksSqlStatementApiFixture _fixture;
 
-    private string _schemaName = string.Empty;
-
     public SqlStatementClientTests(DatabricksSqlStatementApiFixture fixture)
     {
         _fixture = fixture;
@@ -41,19 +38,20 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
 
     public async Task InitializeAsync()
     {
-        _schemaName = $"TestSchema_{Guid.NewGuid().ToString("N")[..8]}";
-        await _fixture.DatabricksWarehouseManager.CreateSchemaAsync(_schemaName);
+        await _fixture.DatabricksSchemaManager.CreateSchemaAsync();
     }
 
     public async Task DisposeAsync()
     {
-        await _fixture.DatabricksWarehouseManager.DropSchemaAsync(_schemaName, true);
+        await _fixture.DatabricksSchemaManager.DropSchemaAsync();
     }
+
+    private string SchemaName => _fixture.DatabricksSchemaManager.SchemaName;
 
     [Fact]
     public async Task Test2()
     {
-        await _fixture.DatabricksWarehouseManager.CreateSchemaAsync("testSchema");
+        await _fixture.DatabricksSchemaManager.CreateSchemaAsync();
     }
 
     [Fact]
@@ -63,7 +61,7 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
         var tableName = await CreateTableXxxAsync();
 
         var sut = new SqlStatementClient(new HttpClient(), _fixture.DatabricksOptionsMock.Object, new DatabricksSqlResponseParser());
-        var sqlStatement = $@"SELECT * FROM {_schemaName}.{tableName}";
+        var sqlStatement = $@"SELECT * FROM {SchemaName}.{tableName}";
 
         // Act
         var actual = await sut.ExecuteAsync(sqlStatement).SingleAsync();
@@ -82,9 +80,9 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
         };
         const string values = "('805', 1.0)";
 
-        await _fixture.DatabricksWarehouseManager.CreateTableAsync(_schemaName, tableName, columnDefinition);
-        await _fixture.DatabricksWarehouseManager.InsertIntoAsync(_schemaName, tableName, values);
-        await _fixture.DatabricksWarehouseManager.InsertIntoAsync(_schemaName, tableName, values);
+        await _fixture.DatabricksSchemaManager.CreateTableAsync(tableName, columnDefinition);
+        await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, values);
+        await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, values);
 
         return tableName;
     }

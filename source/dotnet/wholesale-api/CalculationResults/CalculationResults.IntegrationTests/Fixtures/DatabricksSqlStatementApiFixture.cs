@@ -35,11 +35,11 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
             WarehouseId = integrationTestConfiguration.Configuration.GetValue("dbw-sql-endpoint-id"),
         };
 
-        DatabricksWarehouseManager = new DatabricksWarehouseManager(databricksWarehouseSettings);
-        DatabricksOptionsMock = CreateDatabricksOptionsMock(DatabricksWarehouseManager);
+        DatabricksSchemaManager = new DatabricksSchemaManager(databricksWarehouseSettings);
+        DatabricksOptionsMock = CreateDatabricksOptionsMock(DatabricksSchemaManager);
     }
 
-    public DatabricksWarehouseManager DatabricksWarehouseManager { get; }
+    public DatabricksSchemaManager DatabricksSchemaManager { get; }
 
     public Mock<IOptions<DatabricksOptions>> DatabricksOptionsMock { get; }
 
@@ -55,16 +55,16 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
         return Task.CompletedTask;
     }
 
-    private static Mock<IOptions<DatabricksOptions>> CreateDatabricksOptionsMock(DatabricksWarehouseManager databricksWarehouseManager)
+    private static Mock<IOptions<DatabricksOptions>> CreateDatabricksOptionsMock(DatabricksSchemaManager databricksSchemaManager)
     {
         var databricksOptionsMock = new Mock<IOptions<DatabricksOptions>>();
         databricksOptionsMock
             .Setup(o => o.Value)
             .Returns(new DatabricksOptions
             {
-                DATABRICKS_WORKSPACE_URL = databricksWarehouseManager.Settings.WorkspaceUrl,
-                DATABRICKS_WORKSPACE_TOKEN = databricksWarehouseManager.Settings.WorkspaceAccessToken,
-                DATABRICKS_WAREHOUSE_ID = databricksWarehouseManager.Settings.WarehouseId,
+                DATABRICKS_WORKSPACE_URL = databricksSchemaManager.Settings.WorkspaceUrl,
+                DATABRICKS_WORKSPACE_TOKEN = databricksSchemaManager.Settings.WorkspaceAccessToken,
+                DATABRICKS_WAREHOUSE_ID = databricksSchemaManager.Settings.WarehouseId,
             });
 
         return databricksOptionsMock;
