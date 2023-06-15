@@ -15,43 +15,39 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
-using Energinet.DataHub.Wholesale.Common.DatabricksClient;
-using Microsoft.Extensions.Options;
-using Moq;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures.TestCommon;
 
 /// <summary>
 /// A manager for managing Databricks SQL schemas and tables from integration tests.
 /// </summary>
-public class DatabricksWarehouseManager
+public class DatabricksSchemaManager
 {
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
-
     private readonly HttpClient _httpClient;
-    private readonly List<string> _createdSchemas = new();
 
-    public DatabricksWarehouseManager(DatabricksWarehouseSettings settings)
+    public DatabricksSchemaManager(DatabricksWarehouseSettings settings)
     {
         Settings = settings
             ?? throw new ArgumentNullException(nameof(settings));
 
         _httpClient = CreateHttpClient(Settings);
-
-        // TODO: Create unique schema name and use that
+        SchemaName = $"TestSchema_{Guid.NewGuid().ToString("N")[..8]}";
     }
 
     // TODO: Consider if we can hide these settings or ensure they are readonly in DatabricksWarehouseSettings,
     // otherwise external developers can manipulate them even after we created the manager
     public DatabricksWarehouseSettings Settings { get; }
 
-    public async Task CreateSchemaAsync(string schemaName)
+    public string SchemaName { get; }
+
+    public async Task CreateSchemaAsync()
     {
         var requestObject = new
         {
             on_wait_timeout = "CANCEL",
             wait_timeout = "50s", // Make the operation synchronous
-            statement = @$"CREATE SCHEMA IF NOT EXISTS {schemaName}",
+            statement = @$"CREATE SCHEMA IF NOT EXISTS {SchemaName}",
             warehouse_id = Settings.WarehouseId,
         };
 
@@ -59,14 +55,12 @@ public class DatabricksWarehouseManager
 
         if (!response.IsSuccessStatusCode)
             throw new DatabricksSqlException($"Unable to create schema on Databricks. Status code: {response.StatusCode}");
-
-        _createdSchemas.Add(schemaName);
     }
 
     /// <summary>
     /// Create table based on with a specified column definition (column name, data type)
     /// </summary>
-    public async Task CreateTableAsync(string schemaName, string tableName, Dictionary<string, string> columnDefinition)
+    public async Task CreateTableAsync(string tableName, Dictionary<string, string> columnDefinition)
     {
         var columnDefinitions = string.Join(", ", columnDefinition.Select(c => $"{c.Key} {c.Value}"));
 
@@ -74,23 +68,23 @@ public class DatabricksWarehouseManager
         {
             on_wait_timeout = "CANCEL",
             wait_timeout = $"50s", // Make the operation synchronous
-            statement = $@"CREATE TABLE {schemaName}.{tableName} ({columnDefinitions})",
+            statement = $@"CREATE TABLE {SchemaName}.{tableName} ({columnDefinitions})",
             warehouse_id = Settings.WarehouseId,
         };
 
         var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
 
         if (!response.IsSuccessStatusCode)
-            throw new DatabricksSqlException($"Unable to create table {schemaName}.{tableName} on Databricks. Status code: {response.StatusCode}");
+            throw new DatabricksSqlException($"Unable to create table {SchemaName}.{tableName} on Databricks. Status code: {response.StatusCode}");
     }
 
-    public async Task InsertIntoAsync(string schemaName, string tableName, string values)
+    public async Task InsertIntoAsync(string tableName, string values)
     {
         var requestObject = new
         {
             on_wait_timeout = "CANCEL",
             wait_timeout = $"50s", // Make the operation synchronous
-            statement = $@"INSERT INTO {schemaName}.{tableName} VALUES {values}",
+            statement = $@"INSERT INTO {SchemaName}.{tableName} VALUES {values}",
             warehouse_id = Settings.WarehouseId,
         };
 
@@ -100,17 +94,9 @@ public class DatabricksWarehouseManager
             throw new DatabricksSqlException($"Unable to execute SQL statement on Databricks. Status code: {response.StatusCode}");
     }
 
-    /// <summary>
-    /// Drop schema
-    /// </summary>
-    /// <param name="schemaName"></param>
-    /// <param name="cascade">If true, drops all the associated tables and functions recursively.</param>
-    /// <exception cref="DatabricksSqlException">Exception thrown if the schema is not successfully deleted </exception>
-    public async Task DropSchemaAsync(string schemaName, bool cascade)
+    public async Task DropSchemaAsync()
     {
-        var sqlStatement = @$"DROP SCHEMA {schemaName}";
-        if (cascade)
-            sqlStatement += " CASCADE";
+        var sqlStatement = @$"DROP SCHEMA {SchemaName} CASCADE";
 
         var requestObject = new
         {
@@ -124,8 +110,6 @@ public class DatabricksWarehouseManager
 
         if (!response.IsSuccessStatusCode)
             throw new DatabricksSqlException($"Unable to create schema on Databricks. Status code: {response.StatusCode}");
-
-        _createdSchemas.Remove(schemaName);
     }
 
     private static HttpClient CreateHttpClient(DatabricksWarehouseSettings settings)

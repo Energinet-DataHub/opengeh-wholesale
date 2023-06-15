@@ -15,7 +15,7 @@
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures.TestCommon
 {
     /// <summary>
-    /// Settings used by <see cref="DatabricksWarehouseManager"/>.
+    /// Settings used by <see cref="DatabricksSchemaManager"/>.
     /// </summary>
     public class DatabricksWarehouseSettings
     {
