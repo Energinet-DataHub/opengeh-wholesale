@@ -47,7 +47,7 @@ public class DatabricksSchemaManager
         {
             on_wait_timeout = "CANCEL",
             wait_timeout = "50s", // Make the operation synchronous
-            statement = @$"CREATE SCHEMA IF NOT EXISTS {SchemaName}",
+            statement = @$"CREATE SCHEMA {SchemaName}",
             warehouse_id = Settings.WarehouseId,
         };
 
