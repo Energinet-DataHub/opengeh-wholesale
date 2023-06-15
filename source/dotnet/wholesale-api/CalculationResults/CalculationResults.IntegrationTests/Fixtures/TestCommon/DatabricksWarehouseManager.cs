@@ -63,9 +63,12 @@ public class DatabricksWarehouseManager
         _createdSchemas.Add(schemaName);
     }
 
-    public async Task CreateTableAsync(string schemaName, string tableName, Dictionary<string, string> columnNamesAndTypes)
+    /// <summary>
+    /// Create table based on with a specified column definition (column name, data type)
+    /// </summary>
+    public async Task CreateTableAsync(string schemaName, string tableName, Dictionary<string, string> columnDefinition)
     {
-        var columnDefinitions = string.Join(", ", columnNamesAndTypes.Select(c => $"{c.Key} {c.Value}"));
+        var columnDefinitions = string.Join(", ", columnDefinition.Select(c => $"{c.Key} {c.Value}"));
 
         var requestObject = new
         {
@@ -79,6 +82,22 @@ public class DatabricksWarehouseManager
 
         if (!response.IsSuccessStatusCode)
             throw new DatabricksSqlException($"Unable to create table {schemaName}.{tableName} on Databricks. Status code: {response.StatusCode}");
+    }
+
+    public async Task InsertIntoAsync(string schemaName, string tableName, string values)
+    {
+        var requestObject = new
+        {
+            on_wait_timeout = "CANCEL",
+            wait_timeout = $"50s", // Make the operation synchronous
+            statement = $@"INSERT INTO {schemaName}.{tableName} VALUES {values}",
+            warehouse_id = Settings.WarehouseId,
+        };
+
+        var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
+
+        if (!response.IsSuccessStatusCode)
+            throw new DatabricksSqlException($"Unable to execute SQL statement on Databricks. Status code: {response.StatusCode}");
     }
 
     /// <summary>
