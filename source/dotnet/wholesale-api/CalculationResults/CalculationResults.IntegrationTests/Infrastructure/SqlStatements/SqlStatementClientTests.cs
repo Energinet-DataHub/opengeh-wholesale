@@ -12,14 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using AutoFixture.Xunit2;
-using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Azure.Identity;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
-using Energinet.DataHub.Wholesale.Common.DatabricksClient;
 using FluentAssertions;
-using Microsoft.Extensions.Options;
-using Moq;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SqlStatements;
@@ -33,9 +30,6 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infras
 /// </summary>
 public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFixture>
 {
-    private readonly string _schemaName = $"TestSchema{Guid.NewGuid().ToString("N")[..8]}";
-    private readonly string _sometableName = $"TestTable{Guid.NewGuid().ToString("N")[..8]}";
-
     private readonly DatabricksSqlStatementApiFixture _fixture;
 
     public SqlStatementClientTests(DatabricksSqlStatementApiFixture fixture)
@@ -53,15 +47,27 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
     public async Task ExecuteSqlStatementAsync_WhenQueryFromDatabricks_ReturnsExpectedData()
     {
         // Arrange
-        var databricksSqlResponseParser = new DatabricksSqlResponseParser();
-        var httpClient = new HttpClient();
-        var sut = new SqlStatementClient(httpClient, _fixture.DatabricksOptionsMock.Object, databricksSqlResponseParser);
-        const string sqlStatement = "SELECT * FROM myTable";
+        var schemaName = $"TestSchema_{Guid.NewGuid().ToString("N")[..8]}";
+        var tableName = $"TestTable_{Guid.NewGuid().ToString("N")[..8]}";
+        var columnDefinition = new Dictionary<string, string>()
+        {
+            { ResultColumnNames.GridArea, "STRING" },
+            { ResultColumnNames.Quantity, "DECIMAL(18,3)" },
+        };
+        const string values = "('805', 1.0)";
+        await _fixture.DatabricksWarehouseManager.CreateSchemaAsync(schemaName);
+        await _fixture.DatabricksWarehouseManager.CreateTableAsync(schemaName, tableName, columnDefinition);
+        await _fixture.DatabricksWarehouseManager.InsertIntoAsync(schemaName, tableName, values);
+        await _fixture.DatabricksWarehouseManager.InsertIntoAsync(schemaName, tableName, values);
+        var sut = new SqlStatementClient(new HttpClient(), _fixture.DatabricksOptionsMock.Object, new DatabricksSqlResponseParser());
+        var sqlStatement = $@"SELECT * FROM {schemaName}.{tableName}";
 
         // Act
         var actual = await sut.ExecuteAsync(sqlStatement).SingleAsync();
 
         // Assert
-        // actual.Should().NotBeNull();
+        actual.RowCount.Should().Be(2);
+
+        // TODO: DROP TABLE
     }
 }
