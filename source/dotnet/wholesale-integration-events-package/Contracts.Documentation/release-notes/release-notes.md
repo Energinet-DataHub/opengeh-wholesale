@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 3.0.1
+
+No functional changes.
+
 ## Version 3.0.0
 
 Renamed BalanceFixingEventName to MessageType and its value from BalanceFixingCalculationResultCompleted to CalculationResultCompleted.
