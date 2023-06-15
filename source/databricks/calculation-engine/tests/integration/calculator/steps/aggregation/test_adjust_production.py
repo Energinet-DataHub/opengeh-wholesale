@@ -413,3 +413,30 @@ def test_correct_system_correction_entry_is_used_to_determine_energy_responsible
         .collect()[0][Colname.sum_quantity]
         == default_sum_quantity + gasc_result_3
     )
+
+
+def test_that_the_correct_metering_point_type_is_put_on_the_result(
+    hourly_production_result_row_factory: Callable[..., DataFrame],
+    negative_grid_loss_result_row_factory: Callable[..., DataFrame],
+    sys_cor_row_factory: Callable[..., DataFrame],
+) -> None:
+    production = create_dataframe_from_aggregation_result_schema(
+        hourly_production_result_row_factory(supplier="A")
+    )
+
+    negative_grid_loss = create_dataframe_from_aggregation_result_schema(
+        negative_grid_loss_result_row_factory()
+    )
+
+    grid_loss_sys_cor_master_data = sys_cor_row_factory(
+        supplier="A"
+    )
+
+    result_df = adjust_production(production, negative_grid_loss, grid_loss_sys_cor_master_data)
+
+    assert (
+        result_df.filter(col(Colname.energy_supplier_id) == "A").collect()[0][
+            Colname.metering_point_type
+        ]
+        == MeteringPointType.production.value
+    )

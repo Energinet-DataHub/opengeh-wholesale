@@ -12,7 +12,9 @@
 # # See the License for the specific language governing permissions and
 # # limitations under the License.
 from package.codelists import MeteringPointType
-from . import create_dataframe_from_aggregation_result_schema
+from package.steps.aggregation.transformations import (
+    create_dataframe_from_aggregation_result_schema
+)
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, when, lit
 from package.constants import Colname

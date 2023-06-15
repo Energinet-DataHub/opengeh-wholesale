@@ -407,19 +407,28 @@ def test_correct_grid_loss_entry_is_used_to_determine_energy_responsible_for_the
         .collect()[0][Colname.sum_quantity]
         == default_sum_quantity + gagl_result_3
     )
+    
 
-    # for i in range(1, 23):
-    #     time_windows.append({'start': datetime(2020, 1, 1, i, 0), 'end': datetime(2020, 1, 1, i + 1, 0)})
-    #     sup = "A"
-    #     if i > 4:
-    #         sup = "B"
-    #     if i > 8:
-    #         sup = "C"
-    #     if i > 12:
-    #         sup = "D"
-    #     if i > 16:
-    #         sup = "E"
-    #     if i > 20:
-    #         sup = "F"
-    #     fc_row = flex_consumption_result_row_factory(supplier=sup, time_window=time_windows[i])
-    #     fc_df.union(fc_row)
+def test_that_the_correct_metering_point_type_is_put_on_the_result(
+    flex_consumption_result_row_factory: Callable[..., DataFrame],
+    positive_grid_loss_result_row_factory: Callable[..., DataFrame],
+    grid_loss_sys_cor_row_factory: Callable[..., DataFrame],
+) -> None:
+    flex_consumption = create_dataframe_from_aggregation_result_schema(
+        flex_consumption_result_row_factory(supplier="A")
+    )
+
+    positive_grid_loss = create_dataframe_from_aggregation_result_schema(
+        positive_grid_loss_result_row_factory()
+    )
+
+    grid_loss_sys_cor_master_data = grid_loss_sys_cor_row_factory(supplier="A")
+
+    result_df = adjust_flex_consumption(flex_consumption, positive_grid_loss, grid_loss_sys_cor_master_data)
+
+    assert (
+        result_df.filter(col(Colname.energy_supplier_id) == "A").collect()[0][
+            Colname.metering_point_type
+        ]
+        == MeteringPointType.consumption.value
+    )
