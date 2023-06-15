@@ -17,9 +17,6 @@ import sys
 import configargparse
 from configargparse import argparse
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, when
-from pyspark.sql.types import StructType, StructField, StringType, IntegerType, TimestampType
-from package.constants import Colname
 import package.environment_variables as env_vars
 from package import (
     calculate_balance_fixing,
@@ -37,8 +34,6 @@ import package.calculation_input as input
 from .args_helper import valid_date, valid_list
 from .calculator_args import CalculatorArgs
 from package.storage_account_access import islocked
-from datetime import datetime
-import os
 
 
 def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
