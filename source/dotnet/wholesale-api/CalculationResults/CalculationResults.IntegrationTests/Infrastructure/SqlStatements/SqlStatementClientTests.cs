@@ -49,12 +49,6 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
     private string SchemaName => _fixture.DatabricksSchemaManager.SchemaName;
 
     [Fact]
-    public async Task Test2()
-    {
-        await _fixture.DatabricksSchemaManager.CreateSchemaAsync();
-    }
-
-    [Fact]
     public async Task ExecuteSqlStatementAsync_WhenQueryFromDatabricks_ReturnsExpectedData()
     {
         // Arrange
