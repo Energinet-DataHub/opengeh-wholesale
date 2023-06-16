@@ -41,6 +41,10 @@ public class DatabricksSchemaManager
 
     public string SchemaName { get; }
 
+    /// <summary>
+    /// Create schema (formerly known as database).
+    /// See more here https://docs.databricks.com/lakehouse/data-objects.html.
+    /// </summary>
     public async Task CreateSchemaAsync()
     {
         var requestObject = new
@@ -59,6 +63,7 @@ public class DatabricksSchemaManager
 
     /// <summary>
     /// Create table based on with a specified column definition (column name, data type)
+    /// See more here https://docs.databricks.com/lakehouse/data-objects.html.
     /// </summary>
     public async Task CreateTableAsync(string tableName, Dictionary<string, string> columnDefinition)
     {
