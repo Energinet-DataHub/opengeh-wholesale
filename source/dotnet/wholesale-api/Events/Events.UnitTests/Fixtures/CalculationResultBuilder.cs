@@ -19,7 +19,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Fixtures;
 public sealed class CalculationResultBuilder
 {
     private TimeSeriesType _timeSeriesType = TimeSeriesType.Production;
-    private TimeSeriesPoint[] _points = { new(DateTime.MinValue, 0, QuantityQuality.Measured) };
+    private TimeSeriesPoint[] _points = { new(DateTime.Now, 0, QuantityQuality.Measured) };
 
     public CalculationResultBuilder WithTimeSeriesType(TimeSeriesType timeSeriesType)
     {
