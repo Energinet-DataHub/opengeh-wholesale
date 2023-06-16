@@ -65,7 +65,7 @@ def _apply_grid_loss_adjustment(
     grid_loss_type_col: str
 ) -> DataFrame:
     # select columns from dataframe that contains information about metering points registered as negative or positive grid loss to use in join.
-    sc_df = grid_loss_responsible_df.selectExpr(
+    glr_df = grid_loss_responsible_df.selectExpr(
         Colname.from_date,
         Colname.to_date,
         f"{Colname.energy_supplier_id} as {grid_loss_responsible_energy_supplier}",
@@ -96,7 +96,7 @@ def _apply_grid_loss_adjustment(
     # join information from negative or positive grid loss dataframe on to joined result dataframe with information about which energy supplier,
     # that is responsible for grid loss in the given time window from the joined result dataframe.
     df = df.join(
-        sc_df,
+        glr_df,
         when(
             col(Colname.to_date).isNotNull(),
             col(Colname.time_window_start) <= col(Colname.to_date),
