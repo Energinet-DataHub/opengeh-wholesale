@@ -59,7 +59,7 @@ Two GitHub workflows (`<domain-name>-ci.yml` and `<domain-name>-cd.yml`) are rel
 
 In the DataHub 3 project we use the [C4 model](https://c4model.com/) to document the high-level software design.
 
-The [DataHub 3 base model](https://github.com/Energinet-DataHub/opengeh-arch-diagrams#datahub-3-base-model) describes elements like organizations, software systems and actors. In domain repositories we should `extend` on this model and add additional elements within the DataHub 3.0 Software System (`dh3`).
+The [DataHub base model](https://github.com/Energinet-DataHub/opengeh-arch-diagrams#datahub-base-model) describes elements like organizations, software systems and actors. In domain repositories we should `extend` on this model and add additional elements within the DataHub 3.0 Software System (`dh3`).
 
 In current infrastructure repository we also `extend` on the DataHub 3 base model and references other domains models by using `!include`. We do this to create one big model containing all _containers_, which we can then describe how are deployed onto _deployment nodes_, and visualize in _deployment diagrams_.
 
@@ -71,4 +71,4 @@ The deployment C4 model and rendered diagrams are located in the folder hierarch
 - `deployment.json`: Structurizr layout information for views.
 - `/deployment/*.png`: A PNG file per view described in the Structurizr DSL.
 
-Maintenance of the C4 model should be performed using VS Code and a local version of Structurizr Lite running in Docker. See [DataHub 3 base model](https://github.com/Energinet-DataHub/opengeh-arch-diagrams#datahub-3-base-model) for a description of how to do this.
+Maintenance of the C4 model should be performed using VS Code and a local version of Structurizr Lite running in Docker. See [DataHub base model](https://github.com/Energinet-DataHub/opengeh-arch-diagrams#datahub-base-model) for a description of how to do this.
