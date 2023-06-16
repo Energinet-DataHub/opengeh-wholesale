@@ -61,14 +61,14 @@ public class DatabricksSqlResponseParser : IDatabricksSqlResponseParser
         return rowCount!;
     }
 
-    private static IEnumerable<string> GetColumnNames(JObject responseJsonObject)
+    private static string[] GetColumnNames(JObject responseJsonObject)
     {
-        var columnNames = responseJsonObject["manifest"]?["schema"]?["columns"]?.Select(x => x["name"]?.ToString()) ??
+        var columnNames = responseJsonObject["manifest"]?["schema"]?["columns"]?.Select(x => x["name"]?.ToString()).ToArray() ??
                           throw new DatabricksSqlException("Unable to retrieve 'columns' from the responseJsonObject.");
         return columnNames!;
     }
 
-    private static IEnumerable<string[]> GetDataArray(JObject responseJsonObject)
+    private static List<string[]> GetDataArray(JObject responseJsonObject)
     {
         var dataArray = responseJsonObject["result"]?["data_array"]?.ToObject<List<string[]>>() ??
                         throw new DatabricksSqlException("Unable to retrieve 'data_array' from the responseJsonObject");

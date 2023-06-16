@@ -36,7 +36,7 @@ public class SqlStatementClient : ISqlStatementClient
         ConfigureHttpClient(_httpClient, _options);
     }
 
-    public async IAsyncEnumerable<TableChunk> ExecuteAsync(string sqlStatement)
+    public async IAsyncEnumerable<SqlResultRow> ExecuteAsync(string sqlStatement)
     {
         var hasMoreRows = false;
         var path = string.Empty;
@@ -56,7 +56,11 @@ public class SqlStatementClient : ISqlStatementClient
         {
             hasMoreRows = response.HasMoreRows;
             path = response.NextChunkInternalLink!;
-            yield return response.Table!;
+
+            for (var index = 0; index < response.Table!.Rows.Count; index++)
+            {
+                yield return new SqlResultRow(response.Table!, index);
+            }
         }
 
         while (hasMoreRows)
@@ -82,7 +86,10 @@ public class SqlStatementClient : ISqlStatementClient
             if (databricksSqlResponse.State is not DatabricksSqlResponseState.Succeeded)
                 throw new DatabricksSqlException($"Unable to get calculation result from Databricks. State: {databricksSqlResponse.State}");
 
-            yield return databricksSqlResponse.Table!;
+            for (var index = 0; index < databricksSqlResponse.Table!.Rows.Count; index++)
+            {
+                yield return new SqlResultRow(response.Table!, index);
+            }
 
             hasMoreRows = databricksSqlResponse.HasMoreRows;
             path = databricksSqlResponse.NextChunkInternalLink;

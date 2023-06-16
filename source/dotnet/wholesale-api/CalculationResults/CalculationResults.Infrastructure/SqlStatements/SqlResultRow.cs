@@ -14,10 +14,16 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 
-public interface ISqlStatementClient
+public record SqlResultRow
 {
-    /// <summary>
-    /// Get all the rows of a SQL query in as an asynchronous data stream.
-    /// </summary>
-    IAsyncEnumerable<SqlResultRow> ExecuteAsync(string sqlStatement);
+    private readonly TableChunk _chunk;
+    private readonly int _index;
+
+    public SqlResultRow(TableChunk chunk, int index)
+    {
+        _chunk = chunk;
+        _index = index;
+    }
+
+    public string this[string column] => _chunk[_index, column];
 }
