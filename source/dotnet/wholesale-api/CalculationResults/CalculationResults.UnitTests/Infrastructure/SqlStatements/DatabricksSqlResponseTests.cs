@@ -23,7 +23,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 [UnitTest]
 public class DatabricksSqlResponseTests
 {
-    private readonly TableChunk _someTableChunk = new(new List<string> { "someColumn" }, new List<string[]> { new[] { "{someValue}" } });
+    private readonly TableChunk _someTableChunk = new(new[] { "someColumn" }, new List<string[]> { new[] { "{someValue}" } });
 
     [Fact]
     public void CreateAsPending_ReturnsResponseWithExpectedProperties()
