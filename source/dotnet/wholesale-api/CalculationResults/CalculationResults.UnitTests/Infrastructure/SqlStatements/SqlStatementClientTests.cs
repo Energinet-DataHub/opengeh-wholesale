@@ -164,10 +164,10 @@ public class SqlStatementClientTests
         var sut = new SqlStatementClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
 
         // Act
-        var actual = await sut.ExecuteAsync(_anySqlStatement).SingleAsync();
+        var actual = await sut.ExecuteAsync(_anySqlStatement).ToListAsync();
 
         // Assert
-        actual.RowCount.Should().Be(_succeededDatabricksSqlResponse.Table!.RowCount);
+        actual.Count.Should().Be(_succeededDatabricksSqlResponse.Table!.RowCount);
     }
 
     [Theory]
@@ -190,10 +190,10 @@ public class SqlStatementClientTests
         var sut = new SqlStatementClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
 
         // Act
-        var actual = await sut.ExecuteAsync(_anySqlStatement).SingleAsync();
+        var actual = await sut.ExecuteAsync(_anySqlStatement).ToListAsync();
 
         // Assert
-        actual.RowCount.Should().Be(_succeededDatabricksSqlResponse.Table!.RowCount);
+        actual.Count.Should().Be(_succeededDatabricksSqlResponse.Table!.RowCount);
     }
 
     [Theory]
@@ -216,10 +216,10 @@ public class SqlStatementClientTests
         var sut = new SqlStatementClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
 
         // Act
-        var actual = await sut.ExecuteAsync(_anySqlStatement).SingleAsync();
+        var actual = await sut.ExecuteAsync(_anySqlStatement).ToListAsync();
 
         // Assert
-        actual.RowCount.Should().Be(_succeededDatabricksSqlResponse.Table!.RowCount);
+        actual.Count.Should().Be(_succeededDatabricksSqlResponse.Table!.RowCount);
     }
 
     [Theory]
@@ -246,8 +246,7 @@ public class SqlStatementClientTests
         var actual = await sut.ExecuteAsync(_anySqlStatement).ToListAsync();
 
         // Assert
-        var actualRowCount = actual.SelectMany(chunk => chunk.Rows).Count();
-        actualRowCount.Should().Be(expectedRowCount);
+        actual.Count.Should().Be(expectedRowCount);
     }
 
     [Theory]
@@ -277,8 +276,7 @@ public class SqlStatementClientTests
         var actual = await sut.ExecuteAsync(_anySqlStatement).ToListAsync();
 
         // Assert
-        var actualRowCount = actual.SelectMany(chunk => chunk.Rows).Count();
-        actualRowCount.Should().Be(expectedRowCount);
+        actual.Count.Should().Be(expectedRowCount);
     }
 
     [Theory]
@@ -301,10 +299,10 @@ public class SqlStatementClientTests
         var sut = new SqlStatementClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
 
         // Act
-        var actual = await sut.ExecuteAsync(_anySqlStatement).SingleAsync();
+        var actual = await sut.ExecuteAsync(_anySqlStatement).ToListAsync();
 
         // Assert
-        actual.RowCount.Should().Be(_succeededDatabricksSqlResponse.Table!.RowCount);
+        actual.Count.Should().Be(_succeededDatabricksSqlResponse.Table!.RowCount);
     }
 
     [Theory]
@@ -325,12 +323,12 @@ public class SqlStatementClientTests
         var sut = new SqlStatementClient(httpClient, mockOptions.Object, new DatabricksSqlResponseParser()); // here we use the real parser
 
         // Act
-        var actual = await sut.ExecuteAsync(_anySqlStatement).SingleAsync();
+        var actual = await sut.ExecuteAsync(_anySqlStatement).ToListAsync();
 
         // Assert
-        actual.RowCount.Should().Be(expectedRowCount);
-        actual[0, ResultColumnNames.Quantity].Should().Be(expectedFirstQuantity);
-        actual[^1, ResultColumnNames.Quantity].Should().Be(expectedLastQuantity);
+        actual.Count.Should().Be(expectedRowCount);
+        actual[0][ResultColumnNames.Quantity].Should().Be(expectedFirstQuantity);
+        actual[^1][ResultColumnNames.Quantity].Should().Be(expectedLastQuantity);
     }
 
     [Theory]
@@ -351,10 +349,10 @@ public class SqlStatementClientTests
         var sut = new SqlStatementClient(httpClient, mockOptions.Object, databricksSqlResponseParserMock.Object);
 
         // Act
-        var actual = await sut.ExecuteAsync(_anySqlStatement).SingleAsync();
+        var actual = await sut.ExecuteAsync(_anySqlStatement).ToListAsync();
 
         // Assert
-        actual.RowCount.Should().Be(0);
+        actual.Count.Should().Be(0);
     }
 
     private static StringContent GetValidHttpResponseContent()

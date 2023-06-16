@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.ObjectModel;
+
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 
 /// <summary>
@@ -20,22 +22,22 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlState
 /// </summary>
 public class TableChunk
 {
-    private readonly List<string[]> _rows;
     private readonly Dictionary<string, int> _columnIndex;
 
-    public TableChunk(IEnumerable<string> columnNames, IEnumerable<string[]> rows)
+    public TableChunk(string[] columnNames, List<string[]> rows)
     {
         _columnIndex = columnNames.Select((name, i) => (name, i)).ToDictionary(x => x.name, x => x.i);
-        _rows = rows.ToList();
+        ColumnNames = columnNames;
+        Rows = rows.AsReadOnly();
     }
 
-    public string this[Index rowIndex, string columnName] => _rows[rowIndex][_columnIndex[columnName]];
+    public string this[Index rowIndex, string columnName] => Rows[rowIndex][_columnIndex[columnName]];
 
-    public IEnumerable<string> this[Index rowIndex] => _rows[rowIndex];
+    public IEnumerable<string> this[Index rowIndex] => Rows[rowIndex];
 
-    public int RowCount => _rows.Count;
+    public int RowCount => Rows.Count;
 
-    public IReadOnlyCollection<string> ColumnNames => _columnIndex.Keys.ToList().AsReadOnly();
+    public string[] ColumnNames { get; }
 
-    public IReadOnlyCollection<string[]> Rows => _rows.AsReadOnly();
+    public ReadOnlyCollection<string[]> Rows { get; }
 }

@@ -35,7 +35,7 @@ public class SettlementReportResultQueriesTests
     private readonly Instant _somePeriodEnd = Instant.FromUtc(2021, 3, 31, 10, 15);
     private readonly string[] _someGridAreas = { "123", "456", };
     private readonly TableChunk _someTableChunk = TableTestHelper.CreateTableForSettlementReport(3);
-    private readonly List<string> _columnNames = new() { ResultColumnNames.GridArea, ResultColumnNames.BatchProcessType, ResultColumnNames.Time, ResultColumnNames.TimeSeriesType, ResultColumnNames.Quantity, };
+    private readonly string[] _columnNames = { ResultColumnNames.GridArea, ResultColumnNames.BatchProcessType, ResultColumnNames.Time, ResultColumnNames.TimeSeriesType, ResultColumnNames.Quantity, };
 
     [Theory]
     [AutoMoqData]
@@ -79,9 +79,11 @@ public class SettlementReportResultQueriesTests
         actual.First().Should().Be(expected);
     }
 
-    private static async IAsyncEnumerable<TableChunk> ToAsyncEnumerable(TableChunk tableChunk)
+    private static async IAsyncEnumerable<SqlResultRow> ToAsyncEnumerable(TableChunk tableChunk)
     {
-        yield return tableChunk;
+        for (var index = 0; index < tableChunk.RowCount; index++)
+            yield return new SqlResultRow(tableChunk, index);
+
         await Task.Delay(0);
     }
 }
