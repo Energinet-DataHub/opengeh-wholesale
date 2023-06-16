@@ -64,7 +64,7 @@ def _adjust_grid_loss(
     metering_point_type: str,
     grid_loss_type_col: str
 ) -> DataFrame:
-    # select columns from dataframe that contains information about metering points registered as SystemCorrection to use in join.
+    # select columns from dataframe that contains information about metering points registered as negative or positive grid loss to use in join.
     sc_df = grid_loss_responsible_df.selectExpr(
         Colname.from_date,
         Colname.to_date,
@@ -93,8 +93,8 @@ def _adjust_grid_loss(
         grid_loss_result_df[Colname.negative_grid_loss],
     )
 
-    # join information from system correction dataframe on to joined result dataframe with information about which energy supplier,
-    # that is responsible for system correction in the given time window from the joined result dataframe.
+    # join information from negative or positive grid loss dataframe on to joined result dataframe with information about which energy supplier,
+    # that is responsible for grid loss in the given time window from the joined result dataframe.
     df = df.join(
         sc_df,
         when(
