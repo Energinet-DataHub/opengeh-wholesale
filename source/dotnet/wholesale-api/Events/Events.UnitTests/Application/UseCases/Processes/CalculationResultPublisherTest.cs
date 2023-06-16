@@ -39,8 +39,8 @@ public class CalculationResultPublisherTest
     [InlineAutoMoqData(TimeSeriesType.NetExchangePerNeighboringGa)]
     public async Task
         PublishAsync_PublishEventForGridArea(
-            CalculationResultBuilder calculationResultBuilder,
             TimeSeriesType timeSeriesType,
+            CalculationResultBuilder calculationResultBuilder,
             [Frozen] Mock<IActorClient> actorClientMock,
             [Frozen] Mock<ICalculationResultClient> calculationResultClientMock,
             [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
@@ -89,8 +89,8 @@ public class CalculationResultPublisherTest
     [InlineAutoMoqData(TimeSeriesType.FlexConsumption)]
     [InlineAutoMoqData(TimeSeriesType.Production)]
     public async Task PublishAsync_PublishEventForEnergySupplier(
-        CalculationResultBuilder calculationResultBuilder,
         TimeSeriesType timeSeriesType,
+        CalculationResultBuilder calculationResultBuilder,
         [Frozen] Mock<IActorClient> actorClientMock,
         [Frozen] Mock<ICalculationResultClient> calculationResultClientMock,
         [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
@@ -142,8 +142,8 @@ public class CalculationResultPublisherTest
     [InlineAutoMoqData(TimeSeriesType.Production)]
     public async Task
         PublishAsyncPublishEventForBalanceResponsibleParty(
-            CalculationResultBuilder calculationResultBuilder,
             TimeSeriesType timeSeriesType,
+            CalculationResultBuilder calculationResultBuilder,
             [Frozen] Mock<IActorClient> actorClientMock,
             [Frozen] Mock<ICalculationResultClient> calculationResultClientMock,
             [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
@@ -192,8 +192,8 @@ public class CalculationResultPublisherTest
     [InlineAutoMoqData(TimeSeriesType.Production)]
     public async Task
         PublishAsync_PublishEventForEnergySupplierByBalanceResponsibleParty(
-            CalculationResultBuilder calculationResultBuilder,
             TimeSeriesType timeSeriesType,
+            CalculationResultBuilder calculationResultBuilder,
             [Frozen] Mock<IActorClient> actorClientMock,
             [Frozen] Mock<ICalculationResultClient> calculationResultClientMock,
             [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
