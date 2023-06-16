@@ -16,25 +16,34 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationR
 
 public sealed class CalculationResult
 {
-    public CalculationResult(TimeSeriesType timeSeriesType, TimeSeriesPoint[] timeSeriesPoints)
+    public CalculationResult(
+        Guid batchId,
+        string gridArea,
+        TimeSeriesType timeSeriesType,
+        string? energySupplierId,
+        string? balanceResponsibleId,
+        TimeSeriesPoint[] timeSeriesPoints)
     {
         if (timeSeriesPoints.Length == 0)
             throw new ArgumentException("Time series points empty");
 
+        BatchId = batchId;
+        GridArea = gridArea;
         TimeSeriesType = timeSeriesType;
+        EnergySupplierId = energySupplierId;
+        BalanceResponsibleId = balanceResponsibleId;
         TimeSeriesPoints = timeSeriesPoints;
-        Min = timeSeriesPoints.Min(point => point.Quantity);
-        Max = timeSeriesPoints.Max(point => point.Quantity);
-        Sum = timeSeriesPoints.Sum(point => point.Quantity);
     }
 
-    public decimal Sum { get; }
+    public Guid BatchId { get; }
 
-    public decimal Min { get; }
-
-    public decimal Max { get; }
+    public string GridArea { get; }
 
     public TimeSeriesType TimeSeriesType { get; private set; }
+
+    public string? EnergySupplierId { get; }
+
+    public string? BalanceResponsibleId { get; }
 
     public TimeSeriesPoint[] TimeSeriesPoints { get; private set; }
 }

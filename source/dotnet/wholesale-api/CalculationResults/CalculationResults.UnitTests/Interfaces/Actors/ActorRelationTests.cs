@@ -17,7 +17,7 @@ using Test.Core;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.Actor;
+namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Interfaces.Actors;
 
 [UnitTest]
 public class ActorRelationTests

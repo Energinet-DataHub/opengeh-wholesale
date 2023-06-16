@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
@@ -19,13 +21,86 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 
 public class CalculationResultQueries : ICalculationResultQueries
 {
-    public Task<CalculationResult> GetAsync(
-        Guid batchId,
-        string gridAreaCode,
-        TimeSeriesType timeSeriesType,
-        string? energySupplierGln,
-        string? balanceResponsiblePartyGln)
+    private readonly ISqlStatementClient _sqlStatementClient;
+
+    public CalculationResultQueries(ISqlStatementClient sqlStatementClient)
     {
-        throw new NotImplementedException("GetAsync is not implemented yet");
+        _sqlStatementClient = sqlStatementClient;
+    }
+
+    public async IAsyncEnumerable<CalculationResult> GetAsync(Guid batchId)
+    {
+        var sql = CreateBatchResultsSql(batchId);
+        var timeSeriesPoints = new List<TimeSeriesPoint>();
+        SqlResultRow? currentRow = null;
+
+        await foreach (var nextRow in _sqlStatementClient.ExecuteAsync(sql))
+        {
+            var timeSeriesPoint = CreateTimeSeriesPoint(nextRow);
+
+            if (currentRow != null && BelongsToDifferentResults(currentRow, nextRow))
+            {
+                yield return CreateCalculationResult(batchId, currentRow, timeSeriesPoints);
+                timeSeriesPoints = new List<TimeSeriesPoint>();
+            }
+
+            timeSeriesPoints.Add(timeSeriesPoint);
+            currentRow = nextRow;
+        }
+
+        // Do not create empty results
+        if (currentRow != null)
+            yield return CreateCalculationResult(batchId, currentRow, timeSeriesPoints);
+    }
+
+    private string CreateBatchResultsSql(Guid batchId)
+    {
+        return $@"
+SELECT
+       {ResultColumnNames.GridArea},
+       {ResultColumnNames.BatchProcessType},
+       {ResultColumnNames.Time},
+       {ResultColumnNames.TimeSeriesType},
+       {ResultColumnNames.Quantity},
+       {ResultColumnNames.EnergySupplierId},
+       {ResultColumnNames.BalanceResponsibleId},
+FROM wholesale_output.result
+WHERE {ResultColumnNames.BatchId} = '{batchId}'
+ORDER BY time
+";
+    }
+
+    private static TimeSeriesPoint CreateTimeSeriesPoint(SqlResultRow row)
+    {
+        var time = SqlResultValueConverters.ToDateTimeOffset(row[ResultColumnNames.Time])!.Value;
+        var quantity = SqlResultValueConverters.ToDecimal(row[ResultColumnNames.Quantity])!.Value;
+        var quality = SqlResultValueConverters.ToQuantityQuality(row[ResultColumnNames.QuantityQuality]);
+        return new TimeSeriesPoint(time, quantity, quality);
+    }
+
+    private bool BelongsToDifferentResults(SqlResultRow row, SqlResultRow otherRow)
+    {
+        return row[ResultColumnNames.GridArea] != otherRow[ResultColumnNames.GridArea]
+               || row[ResultColumnNames.TimeSeriesType] != otherRow[ResultColumnNames.TimeSeriesType]
+               || row[ResultColumnNames.EnergySupplierId] != otherRow[ResultColumnNames.EnergySupplierId]
+               || row[ResultColumnNames.BalanceResponsibleId] != otherRow[ResultColumnNames.BalanceResponsibleId];
+    }
+
+    private static CalculationResult CreateCalculationResult(
+        Guid batchId,
+        SqlResultRow sqlResultRow,
+        List<TimeSeriesPoint> timeSeriesPoints)
+    {
+        var timeSeriesType = SqlResultValueConverters.ToTimeSeriesType(sqlResultRow[ResultColumnNames.TimeSeriesType]);
+        var energySupplierId = sqlResultRow[ResultColumnNames.EnergySupplierId];
+        var balanceResponsibleId = sqlResultRow[ResultColumnNames.BalanceResponsibleId];
+        var gridArea = sqlResultRow[ResultColumnNames.GridArea];
+        return new CalculationResult(
+            batchId,
+            gridArea,
+            timeSeriesType,
+            energySupplierId,
+            balanceResponsibleId,
+            timeSeriesPoints.ToArray());
     }
 }

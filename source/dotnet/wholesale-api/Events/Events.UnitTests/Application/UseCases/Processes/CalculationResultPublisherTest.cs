@@ -22,6 +22,7 @@ using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing;
 using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing.Model;
 using Energinet.DataHub.Wholesale.Events.Application.IntegrationEventsManagement;
+using Energinet.DataHub.Wholesale.Events.UnitTests.Fixtures;
 using Moq;
 using NodaTime;
 using Xunit;
@@ -38,6 +39,7 @@ public class CalculationResultPublisherTest
     [InlineAutoMoqData(TimeSeriesType.NetExchangePerNeighboringGa)]
     public async Task
         PublishAsync_PublishEventForGridArea(
+            CalculationResultBuilder calculationResultBuilder,
             TimeSeriesType timeSeriesType,
             [Frozen] Mock<IActorClient> actorClientMock,
             [Frozen] Mock<ICalculationResultClient> calculationResultClientMock,
@@ -54,9 +56,7 @@ public class CalculationResultPublisherTest
             Instant.MinValue,
             Instant.MinValue);
 
-        var calculationResult = new CalculationResult(
-            timeSeriesType,
-            new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
+        var calculationResult = calculationResultBuilder.Build();
 
         calculationResultClientMock.Setup(p => p.GetAsync(
             eventDto.BatchId,
@@ -89,6 +89,7 @@ public class CalculationResultPublisherTest
     [InlineAutoMoqData(TimeSeriesType.FlexConsumption)]
     [InlineAutoMoqData(TimeSeriesType.Production)]
     public async Task PublishAsync_PublishEventForEnergySupplier(
+        CalculationResultBuilder calculationResultBuilder,
         TimeSeriesType timeSeriesType,
         [Frozen] Mock<IActorClient> actorClientMock,
         [Frozen] Mock<ICalculationResultClient> calculationResultClientMock,
@@ -106,9 +107,7 @@ public class CalculationResultPublisherTest
             Instant.MinValue,
             Instant.MinValue);
 
-        var calculationResult = new CalculationResult(
-            timeSeriesType,
-            new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
+        var calculationResult = calculationResultBuilder.Build();
 
         calculationResultClientMock.Setup(p => p.GetAsync(
             eventDto.BatchId,
@@ -143,6 +142,7 @@ public class CalculationResultPublisherTest
     [InlineAutoMoqData(TimeSeriesType.Production)]
     public async Task
         PublishAsyncPublishEventForBalanceResponsibleParty(
+            CalculationResultBuilder calculationResultBuilder,
             TimeSeriesType timeSeriesType,
             [Frozen] Mock<IActorClient> actorClientMock,
             [Frozen] Mock<ICalculationResultClient> calculationResultClientMock,
@@ -160,9 +160,7 @@ public class CalculationResultPublisherTest
             Instant.MinValue,
             Instant.MinValue);
 
-        var calculationResult = new CalculationResult(
-            timeSeriesType,
-            new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
+        var calculationResult = calculationResultBuilder.Build();
 
         calculationResultClientMock.Setup(p => p.GetAsync(
             eventDto.BatchId,
@@ -194,6 +192,7 @@ public class CalculationResultPublisherTest
     [InlineAutoMoqData(TimeSeriesType.Production)]
     public async Task
         PublishAsync_PublishEventForEnergySupplierByBalanceResponsibleParty(
+            CalculationResultBuilder calculationResultBuilder,
             TimeSeriesType timeSeriesType,
             [Frozen] Mock<IActorClient> actorClientMock,
             [Frozen] Mock<ICalculationResultClient> calculationResultClientMock,
@@ -212,9 +211,7 @@ public class CalculationResultPublisherTest
             Instant.MinValue,
             Instant.MinValue);
 
-        var calculationResult = new CalculationResult(
-            timeSeriesType,
-            new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
+        var calculationResult = calculationResultBuilder.Build();
 
         calculationResultClientMock.Setup(p => p.GetAsync(
             eventDto.BatchId,

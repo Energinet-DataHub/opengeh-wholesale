@@ -14,6 +14,9 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 
+/// <summary>
+/// This class is optimized to reduce allocations when reading data from the database.
+/// </summary>
 public record SqlResultRow
 {
     private readonly TableChunk _chunk;
