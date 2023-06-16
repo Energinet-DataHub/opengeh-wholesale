@@ -26,13 +26,13 @@ public class TableTests
     private const int ValidRowIndex = 1;
     private const string ValidColumnName = "col2";
     private const string InvalidColumnName = "invalid_column_name";
-    private readonly List<string> _columnNames;
+    private readonly string[] _columnNames;
     private readonly List<string[]> _rowData;
 
     public TableTests()
     {
-        _columnNames = new List<string>() { "col1", "col2", "col3", };
-        _rowData = new List<string[]>() { new[] { "cell11", "cell12", "cell13" }, new[] { "cell21", "cell22", "cell23" }, };
+        _columnNames = new[] { "col1", "col2", "col3", };
+        _rowData = new List<string[]> { new[] { "cell11", "cell12", "cell13" }, new[] { "cell21", "cell22", "cell23" }, };
     }
 
     [Fact]
