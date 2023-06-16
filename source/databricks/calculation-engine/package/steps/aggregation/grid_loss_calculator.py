@@ -145,11 +145,12 @@ def calculate_negative_grid_loss(grid_loss: DataFrame) -> DataFrame:
     result = result.select(
         Colname.grid_area,
         Colname.time_window,
-        col(Colname.negative_grid_loss).alias(Colname.sum_quantity),
+        Colname.negative_grid_loss,
+        Colname.sum_quantity,
         lit(MeteringPointType.production.value).alias(Colname.metering_point_type),
         Colname.quality,
     )
-
+    result.show()
     return T.create_dataframe_from_aggregation_result_schema(result)
 
 
@@ -162,7 +163,8 @@ def calculate_positive_grid_loss(grid_loss: DataFrame) -> DataFrame:
     result = result.select(
         Colname.grid_area,
         Colname.time_window,
-        col(Colname.positive_grid_loss).alias(Colname.sum_quantity),
+        Colname.positive_grid_loss,
+        Colname.sum_quantity,
         lit(MeteringPointType.consumption.value).alias(Colname.metering_point_type),
         Colname.quality,
     )

@@ -35,7 +35,8 @@ def adjust_production(
         negative_grid_loss_result_df,
         grid_loss_responsible_df,
         Colname.is_negative_grid_loss_responsible,
-        MeteringPointType.production.value
+        MeteringPointType.production.value,
+        Colname.negative_grid_loss
     )
 
 
@@ -50,7 +51,8 @@ def adjust_flex_consumption(
         positive_grid_loss_result_df,
         grid_loss_responsible_df,
         Colname.is_positive_grid_loss_responsible,
-        MeteringPointType.consumption.value
+        MeteringPointType.consumption.value,
+        Colname.positive_grid_loss
     )
 
 
@@ -59,7 +61,8 @@ def _apply_grid_loss_adjustment(
     grid_loss_result_df: DataFrame,
     grid_loss_responsible_df: DataFrame,
     grid_loss_responsible_type_col: str,
-    metering_point_type: str
+    metering_point_type: str,
+    grid_loss_type_col: str
 ) -> DataFrame:
     # select columns from dataframe that contains information about metering points registered as negative or positive grid loss to use in join.
     glr_df = grid_loss_responsible_df.selectExpr(
@@ -86,7 +89,8 @@ def _apply_grid_loss_adjustment(
         result_df[Colname.quality],
         result_df[Colname.metering_point_type],
         result_df[Colname.settlement_method],
-        grid_loss_result_df[Colname.sum_quantity].alias("grid_loss_sum_quantity"),
+        grid_loss_result_df[Colname.positive_grid_loss],
+        grid_loss_result_df[Colname.negative_grid_loss],
     )
 
     # join information from negative or positive grid loss dataframe on to joined result dataframe with information about which energy supplier,
@@ -110,7 +114,7 @@ def _apply_grid_loss_adjustment(
     # update function that selects the sum of two columns if condition is met, or selects data from a single column if condition is not met.
     update_func = when(
         col(Colname.energy_supplier_id) == col(grid_loss_responsible_energy_supplier),
-        col(Colname.sum_quantity) + col("grid_loss_sum_quantity"),
+        col(Colname.sum_quantity) + col(grid_loss_type_col),
     ).otherwise(col(Colname.sum_quantity))
 
     result_df = (
