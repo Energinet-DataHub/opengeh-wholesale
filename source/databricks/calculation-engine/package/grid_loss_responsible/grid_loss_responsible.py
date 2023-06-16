@@ -24,7 +24,7 @@ from pyspark.sql.functions import col, when
 
 
 def get_grid_loss_responsible() -> DataFrame:
-    script_dir = os.path.dirname(os.path.abspath(__file__))
+    script_dir = os.path.dirname(os.path.normpath(__file__))
 
     file_path = os.path.join(script_dir, 'GridLossResponsible.csv')
 
