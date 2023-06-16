@@ -37,4 +37,4 @@ from .grid_loss_calculator import (
     calculate_positive_grid_loss,
     calculate_total_consumption,
 )
-from .transformations.adjust_grid_loss import adjust_production, adjust_flex_consumption
+from .transformations.apply_grid_loss_adjustment import adjust_production, adjust_flex_consumption

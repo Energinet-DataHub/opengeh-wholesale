@@ -30,7 +30,7 @@ def adjust_production(
     negative_grid_loss_result_df: DataFrame,
     grid_loss_responsible_df: DataFrame
 ) -> DataFrame:
-    return _adjust_grid_loss(
+    return _apply_grid_loss_adjustment(
         production_result_df,
         negative_grid_loss_result_df,
         grid_loss_responsible_df,
@@ -46,7 +46,7 @@ def adjust_flex_consumption(
     positive_grid_loss_result_df: DataFrame,
     grid_loss_responsible_df: DataFrame
 ) -> DataFrame:
-    return _adjust_grid_loss(
+    return _apply_grid_loss_adjustment(
         flex_consumption_result_df,
         positive_grid_loss_result_df,
         grid_loss_responsible_df,
@@ -56,7 +56,7 @@ def adjust_flex_consumption(
     )
 
 
-def _adjust_grid_loss(
+def _apply_grid_loss_adjustment(
     result_df: DataFrame,
     grid_loss_result_df: DataFrame,
     grid_loss_responsible_df: DataFrame,
