@@ -26,7 +26,6 @@ from package.constants import Colname
 from pyspark.sql.functions import col
 
 
-
 def calculate_balance_fixing(
     actors_writer: ActorsWriter,
     basis_data_writer: BasisDataWriter,
