@@ -49,8 +49,8 @@ def get_grid_loss_responsible() -> DataFrame:
         col("BALANCE_SUPPLIER_ID").alias(Colname.energy_supplier_id),
     )
     grid_loss_responsible_df = grid_loss_responsible_df.withColumn(
-        Colname.is_positive_grid_loss_responsible, when(col(Colname.metering_point_type) == "E17", True).otherwise(False))
+        Colname.is_positive_grid_loss_responsible, when(col(Colname.metering_point_type) == "consumption", True).otherwise(False))
     grid_loss_responsible_df = grid_loss_responsible_df.withColumn(
-        Colname.is_negative_grid_loss_responsible, when(col(Colname.metering_point_type) == "E18", True).otherwise(False))
+        Colname.is_negative_grid_loss_responsible, when(col(Colname.metering_point_type) == "production", True).otherwise(False))
 
     return grid_loss_responsible_df
