@@ -21,7 +21,7 @@ public static class TableTestHelper
 {
     public static TableChunk CreateTableForSettlementReport(int rowCount)
     {
-        var columnNames = new List<string>()
+        var columnNames = new[]
         {
             ResultColumnNames.GridArea,
             ResultColumnNames.BatchProcessType,

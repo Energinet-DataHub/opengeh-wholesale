@@ -28,13 +28,13 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 [UnitTest]
 public class SettlementReportDataFactoryTests
 {
-    private readonly TableChunk _tableChunk;
     private readonly SettlementReportResultRow _firstRow;
     private readonly SettlementReportResultRow _lastRow;
+    private readonly List<SqlResultRow> _rows;
 
     public SettlementReportDataFactoryTests()
     {
-        var columnNames = new List<string>()
+        var columnNames = new[]
         {
             ResultColumnNames.GridArea,
             ResultColumnNames.BatchProcessType,
@@ -42,13 +42,14 @@ public class SettlementReportDataFactoryTests
             ResultColumnNames.TimeSeriesType,
             ResultColumnNames.Quantity,
         };
-        var rows = new List<string[]>()
+        var rows = new List<string[]>
         {
             new[] { "123", "BalanceFixing", "2022-05-16T01:00:00.000Z", "non_profiled_consumption", "1.1" },
             new[] { "234", "BalanceFixing", "2022-05-16T01:15:00.000Z", "production", "2.2" },
             new[] { "234", "BalanceFixing", "2022-05-16T01:30:00.000Z", "production", "3.3" },
         };
-        _tableChunk = new TableChunk(columnNames, rows);
+        var tableChunk = new TableChunk(columnNames, rows);
+        _rows = tableChunk.Rows.Select((_, index) => new SqlResultRow(tableChunk, index)).ToList();
         _firstRow = new SettlementReportResultRow("123", ProcessType.BalanceFixing, Instant.FromUtc(2022, 5, 16, 1, 0, 0), "PT15M", MeteringPointType.Consumption, SettlementMethod.NonProfiled, new decimal(1.1));
         _lastRow = new SettlementReportResultRow("234", ProcessType.BalanceFixing, Instant.FromUtc(2022, 5, 16, 1, 30, 0), "PT15M", MeteringPointType.Production, null, new decimal(3.3));
     }
@@ -57,17 +58,17 @@ public class SettlementReportDataFactoryTests
     public void Create_ReturnExpectedNumberOfRows()
     {
         // Act
-        var actual = SettlementReportDataFactory.Create(_tableChunk);
+        var actual = SettlementReportDataFactory.Create(_rows);
 
         // Assert
-        actual.Count().Should().Be(_tableChunk.RowCount);
+        actual.Count().Should().Be(_rows.Count);
     }
 
     [Fact]
     public void Create_ReturnExpectedContent()
     {
         // Act
-        var actual = SettlementReportDataFactory.Create(_tableChunk);
+        var actual = SettlementReportDataFactory.Create(_rows);
 
         // Assert
         var actualRows = actual.ToList();
