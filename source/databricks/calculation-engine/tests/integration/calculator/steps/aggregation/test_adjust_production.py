@@ -244,7 +244,7 @@ def sys_cor_row_factory(spark: SparkSession, sys_cor_schema: StructType) -> Call
     return factory
 
 
-def test_grid_area_system_correction_is_added_to_system_correction_energy_responsible(
+def test_grid_area_negative_grid_loss_is_added_to_grid_loss_responsible_energy_supplier(
     hourly_production_result_row_factory: Callable[..., DataFrame],
     negative_grid_loss_result_row_factory: Callable[..., DataFrame],
     sys_cor_row_factory: Callable[..., DataFrame],
@@ -328,7 +328,7 @@ def test_result_dataframe_contains_same_number_of_results_with_same_energy_suppl
     assert result_df_collect[2][Colname.energy_supplier_id] == "C"
 
 
-def test_correct_system_correction_entry_is_used_to_determine_energy_responsible_for_the_given_time_window_from_hourly_production_result_dataframe(
+def test_correct_negative_grid_loss_entry_is_used_to_determine_energy_responsible_for_the_given_time_window_from_hourly_production_result_dataframe(
     hourly_production_result_row_factory: Callable[..., DataFrame],
     negative_grid_loss_result_row_factory: Callable[..., DataFrame],
     sys_cor_row_factory: Callable[..., DataFrame],
