@@ -58,10 +58,10 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
         var sqlStatement = $@"SELECT * FROM {SchemaName}.{tableName}";
 
         // Act
-        var actual = await sut.ExecuteAsync(sqlStatement).SingleAsync();
+        var actual = await sut.ExecuteAsync(sqlStatement).ToListAsync();
 
         // Assert
-        actual.RowCount.Should().Be(2);
+        actual.Count.Should().Be(2);
     }
 
     private async Task<string> CreateResultTableWithTwoRowsAsync()
@@ -78,7 +78,7 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
         return tableName;
     }
 
-    private string CreateSomeRow(IEnumerable<string> columnNames)
+    private static string CreateSomeRow(IEnumerable<string> columnNames)
     {
         var valueCollection = columnNames.Select(CreateSomeColumnValue).ToList();
         return @$"({string.Join(",", valueCollection)})"; // Example: ('805', 1.0, 2022-05-16T03:00:00.000Z)
