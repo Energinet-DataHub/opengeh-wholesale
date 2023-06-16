@@ -22,6 +22,9 @@ from package.file_writers.basis_data_writer import BasisDataWriter
 from package.file_writers.process_step_result_writer import ProcessStepResultWriter
 from pyspark.sql import DataFrame
 from typing import Tuple
+from package.constants import Colname
+from pyspark.sql.functions import col
+
 
 
 def calculate_balance_fixing(
@@ -184,6 +187,7 @@ def _calculate_grid_loss(
     )
 
     positive_grid_loss = agg_steps.calculate_positive_grid_loss(grid_loss)
+    positive_grid_loss = positive_grid_loss.withColumn(Colname.sum_quantity, col(Colname.positive_grid_loss))
 
     result_writer.write(
         positive_grid_loss,
@@ -192,6 +196,7 @@ def _calculate_grid_loss(
     )
 
     negative_grid_loss = agg_steps.calculate_negative_grid_loss(grid_loss)
+    negative_grid_loss = negative_grid_loss.withColumn(Colname.sum_quantity, col(Colname.negative_grid_loss))
 
     result_writer.write(
         negative_grid_loss,

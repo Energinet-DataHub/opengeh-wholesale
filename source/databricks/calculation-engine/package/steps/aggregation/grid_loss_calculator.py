@@ -134,7 +134,7 @@ def __calculate_grid_loss_or_residual_ga(
     return T.create_dataframe_from_aggregation_result_schema(result)
 
 
-# Function to calculate system correction to be added (step 8)
+# Function to calculate negative grid loss to be added (step 8)
 def calculate_negative_grid_loss(grid_loss: DataFrame) -> DataFrame:
     result = grid_loss.withColumn(
         Colname.negative_grid_loss,
@@ -150,10 +150,11 @@ def calculate_negative_grid_loss(grid_loss: DataFrame) -> DataFrame:
         lit(MeteringPointType.production.value).alias(Colname.metering_point_type),
         Colname.quality,
     )
+    result.show()
     return T.create_dataframe_from_aggregation_result_schema(result)
 
 
-# Function to calculate grid loss to be added (step 9)
+# Function to calculate positive grid loss to be added (step 9)
 def calculate_positive_grid_loss(grid_loss: DataFrame) -> DataFrame:
     result = grid_loss.withColumn(
         Colname.positive_grid_loss,
