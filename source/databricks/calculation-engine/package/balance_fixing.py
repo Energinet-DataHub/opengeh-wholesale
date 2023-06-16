@@ -186,7 +186,6 @@ def _calculate_grid_loss(
     )
 
     positive_grid_loss = agg_steps.calculate_positive_grid_loss(grid_loss)
-    positive_grid_loss = positive_grid_loss.withColumn(Colname.sum_quantity, col(Colname.positive_grid_loss))
 
     result_writer.write(
         positive_grid_loss,
@@ -195,7 +194,6 @@ def _calculate_grid_loss(
     )
 
     negative_grid_loss = agg_steps.calculate_negative_grid_loss(grid_loss)
-    negative_grid_loss = negative_grid_loss.withColumn(Colname.sum_quantity, col(Colname.negative_grid_loss))
 
     result_writer.write(
         negative_grid_loss,

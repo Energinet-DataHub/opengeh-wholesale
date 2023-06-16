@@ -30,10 +30,6 @@ def __add_missing_nullable_columns(result: DataFrame) -> DataFrame:
         result = result.withColumn(Colname.energy_supplier_id, lit(None))
     if Colname.settlement_method not in result.columns:
         result = result.withColumn(Colname.settlement_method, lit(None))
-    if Colname.positive_grid_loss not in result.columns:
-        result = result.withColumn(Colname.positive_grid_loss, lit(None))
-    if Colname.negative_grid_loss not in result.columns:
-        result = result.withColumn(Colname.negative_grid_loss, lit(None))
     if Colname.position not in result.columns:
         result = result.withColumn(Colname.position, lit(None))
     return result
@@ -63,8 +59,6 @@ def create_dataframe_from_aggregation_result_schema(result: DataFrame) -> DataFr
             Colname.quality,
             Colname.metering_point_type,
             Colname.settlement_method,
-            Colname.positive_grid_loss,
-            Colname.negative_grid_loss,
             Colname.position,
         ).rdd,
         aggregation_result_schema,

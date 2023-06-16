@@ -44,8 +44,6 @@ aggregation_result_schema = StructType(
         StructField(Colname.quality, StringType(), False),
         StructField(Colname.metering_point_type, StringType(), False),
         StructField(Colname.settlement_method, StringType(), True),
-        StructField(Colname.positive_grid_loss, DecimalType(18, 3), True),
-        StructField(Colname.negative_grid_loss, DecimalType(18, 3), True),
         StructField(Colname.position, IntegerType(), True),
     ]
 )
