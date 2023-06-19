@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Common.Models;
+
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
 public sealed class CalculationResult
@@ -36,6 +38,8 @@ public sealed class CalculationResult
     }
 
     public Guid BatchId { get; }
+
+    public ProcessType ProcessType { get; }
 
     public string GridArea { get; }
 

@@ -48,7 +48,6 @@ public class CalculationResultQueries : ICalculationResultQueries
             currentRow = nextRow;
         }
 
-        // Do not create empty results
         if (currentRow != null)
             yield return CreateCalculationResult(batchId, currentRow, timeSeriesPoints);
     }
@@ -56,18 +55,33 @@ public class CalculationResultQueries : ICalculationResultQueries
     private string CreateBatchResultsSql(Guid batchId)
     {
         return $@"
-SELECT
-       {ResultColumnNames.GridArea},
-       {ResultColumnNames.BatchProcessType},
-       {ResultColumnNames.Time},
-       {ResultColumnNames.TimeSeriesType},
-       {ResultColumnNames.Quantity},
-       {ResultColumnNames.EnergySupplierId},
-       {ResultColumnNames.BalanceResponsibleId},
+SELECT {string.Join(", ", SqlColumnNames)}
 FROM wholesale_output.result
 WHERE {ResultColumnNames.BatchId} = '{batchId}'
 ORDER BY time
 ";
+    }
+
+    public static string[] SqlColumnNames { get; } =
+    {
+        ResultColumnNames.BatchId,
+        ResultColumnNames.GridArea,
+        ResultColumnNames.BatchProcessType,
+        ResultColumnNames.TimeSeriesType,
+        ResultColumnNames.EnergySupplierId,
+        ResultColumnNames.BalanceResponsibleId,
+        ResultColumnNames.Time,
+        ResultColumnNames.Quantity,
+        ResultColumnNames.QuantityQuality,
+    };
+
+    public static bool BelongsToDifferentResults(SqlResultRow row, SqlResultRow otherRow)
+    {
+        return row[ResultColumnNames.BatchId] != otherRow[ResultColumnNames.BatchId]
+               || row[ResultColumnNames.GridArea] != otherRow[ResultColumnNames.GridArea]
+               || row[ResultColumnNames.TimeSeriesType] != otherRow[ResultColumnNames.TimeSeriesType]
+               || row[ResultColumnNames.EnergySupplierId] != otherRow[ResultColumnNames.EnergySupplierId]
+               || row[ResultColumnNames.BalanceResponsibleId] != otherRow[ResultColumnNames.BalanceResponsibleId];
     }
 
     private static TimeSeriesPoint CreateTimeSeriesPoint(SqlResultRow row)
@@ -76,14 +90,6 @@ ORDER BY time
         var quantity = SqlResultValueConverters.ToDecimal(row[ResultColumnNames.Quantity])!.Value;
         var quality = SqlResultValueConverters.ToQuantityQuality(row[ResultColumnNames.QuantityQuality]);
         return new TimeSeriesPoint(time, quantity, quality);
-    }
-
-    private bool BelongsToDifferentResults(SqlResultRow row, SqlResultRow otherRow)
-    {
-        return row[ResultColumnNames.GridArea] != otherRow[ResultColumnNames.GridArea]
-               || row[ResultColumnNames.TimeSeriesType] != otherRow[ResultColumnNames.TimeSeriesType]
-               || row[ResultColumnNames.EnergySupplierId] != otherRow[ResultColumnNames.EnergySupplierId]
-               || row[ResultColumnNames.BalanceResponsibleId] != otherRow[ResultColumnNames.BalanceResponsibleId];
     }
 
     private static CalculationResult CreateCalculationResult(

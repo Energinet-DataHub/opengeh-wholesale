@@ -28,5 +28,5 @@ public record SqlResultRow
         _index = index;
     }
 
-    public string this[string column] => _chunk[_index, column];
+    public virtual string this[string column] => _chunk[_index, column];
 }
