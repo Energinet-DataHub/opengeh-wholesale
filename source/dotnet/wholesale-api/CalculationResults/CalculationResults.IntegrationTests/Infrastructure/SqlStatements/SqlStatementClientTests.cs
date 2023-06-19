@@ -21,7 +21,7 @@ using Xunit;
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SqlStatements;
 
 /// <summary>
-/// We use a IClassFixture to control the life cycle of the DatabricksSqlStatementApiFixture so:
+/// We use an IClassFixture to control the life cycle of the DatabricksSqlStatementApiFixture so:
 ///   1. It is created and 'InitializeAsync()' is called before the first test in the test class is executed.
 ///      Use 'InitializeAsync()' to create any schema and seed data.
 ///   2. 'DisposeAsync()' is called after the last test in the test class has been executed.

@@ -26,16 +26,16 @@ public class DatabricksSchemaManager
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly HttpClient _httpClient;
 
-    public DatabricksSchemaManager(DatabricksWarehouseSettings settings)
+    public DatabricksSchemaManager(DatabricksWarehouseSettings settings, string schemaPrefix)
     {
         Settings = settings
             ?? throw new ArgumentNullException(nameof(settings));
 
         _httpClient = CreateHttpClient(Settings);
-        SchemaName = $"TestSchema_{Guid.NewGuid().ToString("N")[..8]}";
+        SchemaName = $"{schemaPrefix}_{Guid.NewGuid().ToString("N")[..8]}";
     }
 
-    // TODO: Consider if we can hide these settings or ensure they are readonly in DatabricksWarehouseSettings,
+    // TODO JMG: Consider if we can hide these settings or ensure they are readonly in DatabricksWarehouseSettings,
     // otherwise external developers can manipulate them even after we created the manager
     public DatabricksWarehouseSettings Settings { get; }
 
@@ -62,7 +62,7 @@ public class DatabricksSchemaManager
     }
 
     /// <summary>
-    /// Create table based on with a specified column definition (column name, data type)
+    /// Create table with a specified column definition (column name, data type)
     /// See more here https://docs.databricks.com/lakehouse/data-objects.html.
     /// </summary>
     public async Task CreateTableAsync(string tableName, Dictionary<string, string> columnDefinition)
@@ -96,7 +96,7 @@ public class DatabricksSchemaManager
         var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
 
         if (!response.IsSuccessStatusCode)
-            throw new DatabricksSqlException($"Unable to execute SQL statement on Databricks. Status code: {response.StatusCode}");
+            throw new DatabricksSqlException($"Unable to insert values into table on Databricks. Status code: {response.StatusCode}");
     }
 
     public async Task DropSchemaAsync()
@@ -114,7 +114,7 @@ public class DatabricksSchemaManager
         var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
 
         if (!response.IsSuccessStatusCode)
-            throw new DatabricksSqlException($"Unable to create schema on Databricks. Status code: {response.StatusCode}");
+            throw new DatabricksSqlException($"Unable to drop schema on Databricks. Status code: {response.StatusCode}");
     }
 
     private static HttpClient CreateHttpClient(DatabricksWarehouseSettings settings)
