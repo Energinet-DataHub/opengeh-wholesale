@@ -61,12 +61,15 @@
         <Link>DeltaTableContracts\Contracts\result-table-column-names.json</Link>
       </EmbeddedResource>
       <EmbeddedResource Include="Application\CalculationResult\Model\ProcessResult.json" />
-      <EmbeddedResource Include="Infrastructure\Actor\actor-list.json" />
       <EmbeddedResource Include="Infrastructure\SqlStatements\CalculationResult.json" />
       <EmbeddedResource Include="Infrastructure\SqlStatements\CalculationResultChunk.json" />
+      <EmbeddedResource Include="Interfaces\Actors\actor-list.json" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\..\Test.Core\Test.Core.csproj" />
       <ProjectReference Include="..\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Interfaces" />
     </ItemGroup>
 </Project>
