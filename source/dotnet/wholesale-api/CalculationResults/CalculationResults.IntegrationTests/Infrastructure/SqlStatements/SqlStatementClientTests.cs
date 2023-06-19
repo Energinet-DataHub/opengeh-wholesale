@@ -67,40 +67,31 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
     private async Task<string> CreateResultTableWithTwoRowsAsync()
     {
         var tableName = $"TestTable_{Guid.NewGuid().ToString("N")[..8]}";
-        var columnDefinition = DeltaTableSchema.Result;
+        var (someColumnDefinition, values) = GetSomeDeltaTableRow();
 
-        var values = CreateSomeRow(DeltaTableSchema.Result.Keys);
-
-        await _fixture.DatabricksSchemaManager.CreateTableAsync(tableName, columnDefinition);
+        await _fixture.DatabricksSchemaManager.CreateTableAsync(tableName, someColumnDefinition);
         await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, values);
         await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, values);
 
         return tableName;
     }
 
-    private static string CreateSomeRow(IEnumerable<string> columnNames)
+    private static (Dictionary<string, string> ColumnDefintion, List<string> Values) GetSomeDeltaTableRow()
     {
-        var valueCollection = columnNames.Select(CreateSomeColumnValue).ToList();
-        return @$"({string.Join(",", valueCollection)})"; // Example: ('805', 1.0, 2022-05-16T03:00:00.000Z)
-    }
-
-    private static string CreateSomeColumnValue(string columnName)
-    {
-        return columnName switch
+        var dictionary = new Dictionary<string, string>
         {
-            ResultColumnNames.BatchId => "'ed39dbc5-bdc5-41b9-922a-08d3b12d4538'",
-            ResultColumnNames.BatchExecutionTimeStart => "'2022-03-11T03:00:00.000Z'",
-            ResultColumnNames.BatchProcessType => $@"'{DeltaTableProcessType.BalanceFixing}'",
-            ResultColumnNames.TimeSeriesType => $@"'{DeltaTableTimeSeriesType.Production}'",
-            ResultColumnNames.GridArea => "'805'",
-            ResultColumnNames.FromGridArea => "'806'",
-            ResultColumnNames.BalanceResponsibleId => "'1236552000028'",
-            ResultColumnNames.EnergySupplierId => "'1236552000027'",
-            ResultColumnNames.Time => "'2022-05-16T03:00:00.000Z'",
-            ResultColumnNames.Quantity => "1.234",
-            ResultColumnNames.QuantityQuality => "'measured'",
-            ResultColumnNames.AggregationLevel => $@"'{DeltaTableAggregationLevel.GridArea}'",
-            _ => throw new ArgumentOutOfRangeException($"Unexpected column name: {columnName}."),
+            { "someTimeColumn",  "TIMESTAMP" },
+            { "someStringColumn", "STRING" },
+            { "someDecimalColumn", "DECIMAL(18,3)" },
         };
+
+        var values = new List<string>
+        {
+            "'2022-03-11T03:00:00.000Z'",
+            "'measured'",
+            "1.234",
+        };
+
+        return (dictionary, values);
     }
 }

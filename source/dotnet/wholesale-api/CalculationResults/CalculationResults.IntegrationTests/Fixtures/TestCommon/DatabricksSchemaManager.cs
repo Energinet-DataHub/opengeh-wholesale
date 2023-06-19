@@ -83,13 +83,13 @@ public class DatabricksSchemaManager
             throw new DatabricksSqlException($"Unable to create table {SchemaName}.{tableName} on Databricks. Status code: {response.StatusCode}");
     }
 
-    public async Task InsertIntoAsync(string tableName, string values)
+    public async Task InsertIntoAsync(string tableName, IEnumerable<string> values)
     {
         var requestObject = new
         {
             on_wait_timeout = "CANCEL",
             wait_timeout = $"50s", // Make the operation synchronous
-            statement = $@"INSERT INTO {SchemaName}.{tableName} VALUES {values}",
+            statement = $@"INSERT INTO {SchemaName}.{tableName} VALUES ({string.Join(",", values)})",
             warehouse_id = Settings.WarehouseId,
         };
 
