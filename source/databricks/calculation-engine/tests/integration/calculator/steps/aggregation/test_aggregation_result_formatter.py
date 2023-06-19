@@ -26,24 +26,26 @@ import pytest
 import pandas as pd
 from tests.helpers import DataframeDefaults
 from package.constants import Colname
+from typing import Callable
+from pyspark.sql import DataFrame, SparkSession
 
 
 @pytest.fixture(scope="module")
-def aggregation_result_factory(spark):
+def aggregation_result_factory(spark: SparkSession) -> Callable[..., DataFrame]:
     def factory(
-        grid_area=DataframeDefaults.default_grid_area,
-        to_grid_area=None,
-        from_grid_area=None,
-        balance_responsible_id=None,
-        energy_supplier_id=None,
-        time_window_start=DataframeDefaults.default_time_window_start,
-        time_window_end=DataframeDefaults.default_time_window_end,
-        sum_quantity=DataframeDefaults.default_sum_quantity,
-        quality=DataframeDefaults.default_quality,
-        metering_point_type=DataframeDefaults.default_metering_point_type,
-        settlement_method=None,
-        position=None,
-    ):
+        grid_area: str = DataframeDefaults.default_grid_area,
+        to_grid_area: str | None = None,
+        from_grid_area: str | None = None,
+        balance_responsible_id: str | None = None,
+        energy_supplier_id: str | None = None,
+        time_window_start: datetime = DataframeDefaults.default_time_window_start,
+        time_window_end: datetime = DataframeDefaults.default_time_window_end,
+        sum_quantity: Decimal = DataframeDefaults.default_sum_quantity,
+        quality: str = DataframeDefaults.default_quality,
+        metering_point_type: str = DataframeDefaults.default_metering_point_type,
+        settlement_method: str | None = None,
+        position: int | None = None,
+    ) -> DataFrame:
         pandas_df = pd.DataFrame().append(
             [
                 {
@@ -72,16 +74,16 @@ def aggregation_result_factory(spark):
 
 
 @pytest.fixture(scope="module")
-def agg_result_factory(spark):
+def agg_result_factory(spark: SparkSession) -> Callable[..., DataFrame]:
     def factory(
-        grid_area="A",
-        start=datetime(2020, 1, 1, 0, 0),
-        end=datetime(2020, 1, 1, 1, 0),
-        resolution=MeteringPointResolution.hour.value,
-        sum_quantity=Decimal("1.234"),
-        quality=TimeSeriesQuality.estimated.value,
-        metering_point_type=MeteringPointType.consumption.value,
-    ):
+        grid_area: str = "A",
+        start: datetime = datetime(2020, 1, 1, 0, 0),
+        end: datetime = datetime(2020, 1, 1, 1, 0),
+        resolution: str = MeteringPointResolution.hour.value,
+        sum_quantity: Decimal = Decimal("1.234"),
+        quality: str = TimeSeriesQuality.estimated.value,
+        metering_point_type: str = MeteringPointType.consumption.value,
+    ) -> DataFrame:
         return spark.createDataFrame(
             pd.DataFrame().append(
                 [
@@ -102,8 +104,8 @@ def agg_result_factory(spark):
 
 
 def test__create_dataframe_from_aggregation_result_schema__can_create_a_dataframe_that_match_aggregation_result_schema(
-    agg_result_factory,
-):
+    agg_result_factory: Callable[..., DataFrame],
+) -> None:
     # Arrange
     result = agg_result_factory()
     # Act
@@ -113,8 +115,8 @@ def test__create_dataframe_from_aggregation_result_schema__can_create_a_datafram
 
 
 def test__create_dataframe_from_aggregation_result_schema__match_expected_dataframe(
-    agg_result_factory, aggregation_result_factory
-):
+    agg_result_factory: Callable[..., DataFrame], aggregation_result_factory: Callable[..., DataFrame]
+) -> None:
     # Arrange
     result = agg_result_factory()
     expected = aggregation_result_factory(
