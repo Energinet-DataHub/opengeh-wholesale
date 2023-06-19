@@ -17,7 +17,10 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatement
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SqlStatements;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 using Energinet.DataHub.Wholesale.Common.Models;
+using FluentAssertions;
 using NodaTime;
 using Xunit;
 
@@ -32,7 +35,11 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infras
 /// </summary>
 public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlStatementApiFixture>, IAsyncLifetime
 {
+    private const ProcessType DefaultProcessType = ProcessType.BalanceFixing;
     private readonly DatabricksSqlStatementApiFixture _fixture;
+    private readonly string[] _defaultGridAreaCodes = { DefaultRow.GridArea };
+    private readonly Instant _defaultPeriodStart = Instant.FromUtc(2022, 5, 16, 1, 0, 0);
+    private readonly Instant _defaultPeriodEnd = Instant.FromUtc(2022, 5, 17, 1, 0, 0);
 
     public SettlementReportResultQueriesTests(DatabricksSqlStatementApiFixture fixture)
     {
@@ -53,25 +60,19 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
     public async Task GetRowsAsync_ReturnsExpectedReportRow()
     {
         // Arrange
-        string[] someGridAreaCodes = { DefaultRow.GridArea };
-        const ProcessType someProcessType = ProcessType.BalanceFixing;
-        var somePeriodStart = Instant.FromUtc(2022, 5, 16, 1, 0, 0);
-        var somePeriodEnd = Instant.FromUtc(2022, 5, 17, 1, 0, 0);
-        string? energySupplier = null;
-
-        var tableName = await CreateResultTableWithTwoRowsAsync();
-
+        var expectedSettlementReportRow = GetDefaultSettlementReportRow();
+        await CreateTableWithDefaultRow();
         var sqlStatementClient = new SqlStatementClient(new HttpClient(), _fixture.DatabricksOptionsMock.Object, new DatabricksSqlResponseParser());
         var sut = new SettlementReportResultQueries(sqlStatementClient);
 
         // Act
-        var actual = await sut.GetRowsAsync(someGridAreaCodes, someProcessType, somePeriodStart, somePeriodEnd, energySupplier);
+        var actual = await sut.GetRowsAsync(_defaultGridAreaCodes, DefaultProcessType, _defaultPeriodStart, _defaultPeriodEnd, null);
 
         // Assert
-        // actual.
+        actual.First().Should().Be(expectedSettlementReportRow);
     }
 
-    private async Task<string> CreateResultTableWithRow()
+    private async Task CreateTableWithDefaultRow()
     {
         var tableName = $"TestTable_{DateTime.Now:yyyyMMddHHmmss}";
         var columnDefinition = DeltaTableSchema.Result;
@@ -79,8 +80,6 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
 
         await _fixture.DatabricksSchemaManager.CreateTableAsync(tableName, columnDefinition);
         await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, values);
-
-        return tableName;
     }
 
     private static string CreateSomeColumnValue(string columnName)
@@ -117,5 +116,17 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
         public const string Quantity = "1.123";
         public const string QuantityQuality = "missing";
         public const string AggregationLevel = "total_ga";
+    }
+
+    private SettlementReportResultRow GetDefaultSettlementReportRow()
+    {
+        return new SettlementReportResultRow(
+            DefaultRow.GridArea,
+            ProcessType.BalanceFixing,
+            Instant.FromUtc(2022, 5, 16, 3, 0, 0),
+            "PT15M",
+            MeteringPointType.Production,
+            null,
+            1.123m);
     }
 }
