@@ -27,7 +27,7 @@ def combine_negative_grid_loss_with_master_data(results: dict) -> DataFrame:
     return combine_master_data(
         negative_grid_loss_df,
         grid_loss_sys_cor_master_data_df,
-        Colname.negative_grid_loss,
+        Colname.sum_quantity,
         Colname.is_negative_grid_loss_responsible,
     )
 
@@ -40,7 +40,7 @@ def combine_positive_grid_loss_with_master_data(results: dict) -> DataFrame:
     return combine_master_data(
         positive_grid_loss_df,
         grid_loss_sys_cor_master_data_df,
-        Colname.positive_grid_loss,
+        Colname.sum_quantity,
         Colname.is_positive_grid_loss_responsible,
     )
 
