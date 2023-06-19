@@ -18,10 +18,8 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationR
 
 public interface ICalculationResultQueries
 {
-    Task<CalculationResult> GetAsync(
-        Guid batchId,
-        string gridAreaCode,
-        TimeSeriesType timeSeriesType,
-        string? energySupplierGln,
-        string? balanceResponsiblePartyGln);
+    /// <summary>
+    /// Get all results for a given batch.
+    /// </summary>
+    IAsyncEnumerable<CalculationResult> GetAsync(Guid batchId);
 }

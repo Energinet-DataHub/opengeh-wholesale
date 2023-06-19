@@ -22,6 +22,7 @@ using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing;
 using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing.Model;
 using Energinet.DataHub.Wholesale.Events.Application.IntegrationEventsManagement;
+using Energinet.DataHub.Wholesale.Events.UnitTests.Fixtures;
 using Moq;
 using NodaTime;
 using Xunit;
@@ -39,6 +40,7 @@ public class CalculationResultPublisherTest
     public async Task
         PublishAsync_PublishEventForGridArea(
             TimeSeriesType timeSeriesType,
+            CalculationResultBuilder calculationResultBuilder,
             [Frozen] Mock<IActorClient> actorClientMock,
             [Frozen] Mock<ICalculationResultClient> calculationResultClientMock,
             [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
@@ -54,9 +56,7 @@ public class CalculationResultPublisherTest
             Instant.MinValue,
             Instant.MinValue);
 
-        var calculationResult = new CalculationResult(
-            timeSeriesType,
-            new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
+        var calculationResult = calculationResultBuilder.Build();
 
         calculationResultClientMock.Setup(p => p.GetAsync(
             eventDto.BatchId,
@@ -90,6 +90,7 @@ public class CalculationResultPublisherTest
     [InlineAutoMoqData(TimeSeriesType.Production)]
     public async Task PublishAsync_PublishEventForEnergySupplier(
         TimeSeriesType timeSeriesType,
+        CalculationResultBuilder calculationResultBuilder,
         [Frozen] Mock<IActorClient> actorClientMock,
         [Frozen] Mock<ICalculationResultClient> calculationResultClientMock,
         [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
@@ -106,9 +107,7 @@ public class CalculationResultPublisherTest
             Instant.MinValue,
             Instant.MinValue);
 
-        var calculationResult = new CalculationResult(
-            timeSeriesType,
-            new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
+        var calculationResult = calculationResultBuilder.Build();
 
         calculationResultClientMock.Setup(p => p.GetAsync(
             eventDto.BatchId,
@@ -144,6 +143,7 @@ public class CalculationResultPublisherTest
     public async Task
         PublishAsyncPublishEventForBalanceResponsibleParty(
             TimeSeriesType timeSeriesType,
+            CalculationResultBuilder calculationResultBuilder,
             [Frozen] Mock<IActorClient> actorClientMock,
             [Frozen] Mock<ICalculationResultClient> calculationResultClientMock,
             [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
@@ -160,9 +160,7 @@ public class CalculationResultPublisherTest
             Instant.MinValue,
             Instant.MinValue);
 
-        var calculationResult = new CalculationResult(
-            timeSeriesType,
-            new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
+        var calculationResult = calculationResultBuilder.Build();
 
         calculationResultClientMock.Setup(p => p.GetAsync(
             eventDto.BatchId,
@@ -195,6 +193,7 @@ public class CalculationResultPublisherTest
     public async Task
         PublishAsync_PublishEventForEnergySupplierByBalanceResponsibleParty(
             TimeSeriesType timeSeriesType,
+            CalculationResultBuilder calculationResultBuilder,
             [Frozen] Mock<IActorClient> actorClientMock,
             [Frozen] Mock<ICalculationResultClient> calculationResultClientMock,
             [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
@@ -212,9 +211,7 @@ public class CalculationResultPublisherTest
             Instant.MinValue,
             Instant.MinValue);
 
-        var calculationResult = new CalculationResult(
-            timeSeriesType,
-            new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
+        var calculationResult = calculationResultBuilder.Build();
 
         calculationResultClientMock.Setup(p => p.GetAsync(
             eventDto.BatchId,
