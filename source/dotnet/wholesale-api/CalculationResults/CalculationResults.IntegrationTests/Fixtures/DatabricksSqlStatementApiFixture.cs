@@ -35,7 +35,7 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
             WarehouseId = integrationTestConfiguration.Configuration.GetValue("dbw-sql-endpoint-id"),
         };
 
-        DatabricksSchemaManager = new DatabricksSchemaManager(databricksWarehouseSettings, "Wholesale");
+        DatabricksSchemaManager = new DatabricksSchemaManager(databricksWarehouseSettings, "wholesale");
         DatabricksOptionsMock = CreateDatabricksOptionsMock(DatabricksSchemaManager);
     }
 

@@ -66,7 +66,7 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
 
     private async Task<string> CreateResultTableWithTwoRowsAsync()
     {
-        var tableName = $"TestTable_{Guid.NewGuid().ToString("N")[..8]}";
+        var tableName = $"TestTable_{DateTime.Now:yyyyMMddHHmmss}";
         var (someColumnDefinition, values) = GetSomeDeltaTableRow();
 
         await _fixture.DatabricksSchemaManager.CreateTableAsync(tableName, someColumnDefinition);

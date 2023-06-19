@@ -32,7 +32,7 @@ public class DatabricksSchemaManager
             ?? throw new ArgumentNullException(nameof(settings));
 
         _httpClient = CreateHttpClient(Settings);
-        SchemaName = $"{schemaPrefix}_{Guid.NewGuid().ToString("N")[..8]}";
+        SchemaName = $"{schemaPrefix}_{DateTime.Now:yyyyMMddHHmmss}";
     }
 
     // TODO JMG: Consider if we can hide these settings or ensure they are readonly in DatabricksWarehouseSettings,
