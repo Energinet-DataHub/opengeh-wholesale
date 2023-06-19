@@ -91,7 +91,6 @@ def negative_grid_loss_result_schema() -> StructType:
     return (
         StructType()
         .add(Colname.grid_area, StringType(), False)
-        .add(Colname.negative_grid_loss, DecimalType())
         .add(
             Colname.time_window,
             StructType()
@@ -190,9 +189,8 @@ def negative_grid_loss_result_row_factory(spark: SparkSession, negative_grid_los
 
     def factory(
         domain: str = default_domain,
-        negative_grid_loss: Decimal = default_negative_grid_loss,
         time_window: dict[str, datetime] = default_time_window,
-        sum_quantity: Decimal = default_sum_quantity,
+        negative_grid_loss: Decimal = default_negative_grid_loss,
         aggregated_quality: str = default_aggregated_quality,
         resolution: str = default_resolution,
         metering_point_type: str = default_metering_point_type,
@@ -200,9 +198,8 @@ def negative_grid_loss_result_row_factory(spark: SparkSession, negative_grid_los
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: [domain],
-                Colname.negative_grid_loss: [negative_grid_loss],
                 Colname.time_window: [time_window],
-                Colname.sum_quantity: [sum_quantity],
+                Colname.sum_quantity: [negative_grid_loss],
                 Colname.quality: [aggregated_quality],
                 Colname.resolution: [resolution],
                 Colname.metering_point_type: [metering_point_type],

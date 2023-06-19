@@ -42,8 +42,6 @@ def aggregation_result_factory(spark):
         quality=DataframeDefaults.default_quality,
         metering_point_type=DataframeDefaults.default_metering_point_type,
         settlement_method=None,
-        positive_grid_loss=None,
-        negative_grid_loss=None,
         position=None,
     ):
         pandas_df = pd.DataFrame().append(
@@ -62,8 +60,6 @@ def aggregation_result_factory(spark):
                     Colname.quality: quality,
                     Colname.metering_point_type: metering_point_type,
                     Colname.settlement_method: settlement_method,
-                    Colname.positive_grid_loss: positive_grid_loss,
-                    Colname.negative_grid_loss: negative_grid_loss,
                     Colname.position: position,
                 }
             ],
