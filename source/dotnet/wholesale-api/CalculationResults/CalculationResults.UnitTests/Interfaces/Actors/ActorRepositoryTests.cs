@@ -17,6 +17,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Actors;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineSerializer;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Actors.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SettlementReport;
 using FluentAssertions;
@@ -24,7 +25,7 @@ using Moq;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.Actor;
+namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Interfaces.Actors;
 
 [UnitTest]
 public class ActorRepositoryTests
@@ -61,7 +62,7 @@ public class ActorRepositoryTests
             new("123", "333"),
         };
 
-        var expectedGln = new List<Interfaces.Actors.Model.Actor> { new("123"), new("234") }; // distinct gln list
+        var expectedGln = new List<Actor> { new("123"), new("234") }; // distinct gln list
 
         MockSetup(jsonNewlineSerializerMock, dataLakeClientMock, actorRelationsDeserialized);
 
@@ -90,7 +91,7 @@ public class ActorRepositoryTests
             new("345", "333"),
         };
 
-        var expectedGln = new List<Interfaces.Actors.Model.Actor> { new("111"), new("333") }; // distinct gln list
+        var expectedGln = new List<Actor> { new("111"), new("333") }; // distinct gln list
 
         MockSetup(jsonNewlineSerializerMock, dataLakeClientMock, actorRelationsDeserialized);
 
@@ -123,7 +124,7 @@ public class ActorRepositoryTests
             new(targetEs2Gln, targetBrpGln),
         };
 
-        var expectedGln = new List<Interfaces.Actors.Model.Actor> { new(targetEs1Gln), new(targetEs2Gln) };
+        var expectedGln = new List<Actor> { new(targetEs1Gln), new(targetEs2Gln) };
 
         MockSetup(jsonNewlineSerializerMock, dataLakeClientMock, actorRelationsDeserialized);
 
@@ -183,7 +184,7 @@ public class ActorRepositoryTests
             new(energySupplierGln, brp2Gln),
         };
 
-        var expectedGln = new List<Interfaces.Actors.Model.Actor> { new(energySupplierGln) };
+        var expectedGln = new List<Actor> { new(energySupplierGln) };
 
         MockSetup(jsonNewlineSerializerMock, dataLakeClientMock, actorRelationsDeserialized);
 

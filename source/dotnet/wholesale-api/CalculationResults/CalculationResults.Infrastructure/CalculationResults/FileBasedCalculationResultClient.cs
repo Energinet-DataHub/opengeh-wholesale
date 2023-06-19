@@ -42,19 +42,19 @@ public class FileBasedCalculationResultClient : ICalculationResultClient
         Guid batchId,
         string gridAreaCode,
         TimeSeriesType timeSeriesType,
-        string? energySupplierGln,
-        string? balanceResponsiblePartyGln)
+        string? energySupplierId,
+        string? balanceResponsiblePartyId)
     {
-        if (balanceResponsiblePartyGln != null && energySupplierGln == null)
-            return await GetResultAsync(GetDirectoryForBrpGridArea(batchId, gridAreaCode, timeSeriesType, balanceResponsiblePartyGln), timeSeriesType).ConfigureAwait(false);
+        if (balanceResponsiblePartyId != null && energySupplierId == null)
+            return await GetResultAsync(batchId, gridAreaCode, energySupplierId, balanceResponsiblePartyId, GetDirectoryForBrpGridArea(batchId, gridAreaCode, timeSeriesType, balanceResponsiblePartyId), timeSeriesType).ConfigureAwait(false);
 
-        if (energySupplierGln != null && balanceResponsiblePartyGln == null)
-            return await GetResultAsync(GetDirectoryForEsGridArea(batchId, gridAreaCode, timeSeriesType, energySupplierGln), timeSeriesType).ConfigureAwait(false);
+        if (energySupplierId != null && balanceResponsiblePartyId == null)
+            return await GetResultAsync(batchId, gridAreaCode, energySupplierId, balanceResponsiblePartyId, GetDirectoryForEsGridArea(batchId, gridAreaCode, timeSeriesType, energySupplierId), timeSeriesType).ConfigureAwait(false);
 
-        if (energySupplierGln != null && balanceResponsiblePartyGln != null)
-            return await GetResultAsync(GetDirectoryForEsBrpGridArea(batchId, gridAreaCode, timeSeriesType, balanceResponsiblePartyGln, energySupplierGln), timeSeriesType).ConfigureAwait(false);
+        if (energySupplierId != null && balanceResponsiblePartyId != null)
+            return await GetResultAsync(batchId, gridAreaCode, energySupplierId, balanceResponsiblePartyId, GetDirectoryForEsBrpGridArea(batchId, gridAreaCode, timeSeriesType, balanceResponsiblePartyId, energySupplierId), timeSeriesType).ConfigureAwait(false);
 
-        return await GetResultAsync(GetDirectoryForTotalGridArea(batchId, gridAreaCode, timeSeriesType), timeSeriesType).ConfigureAwait(false);
+        return await GetResultAsync(batchId, gridAreaCode, energySupplierId, balanceResponsiblePartyId, GetDirectoryForTotalGridArea(batchId, gridAreaCode, timeSeriesType), timeSeriesType).ConfigureAwait(false);
     }
 
     public static string GetDirectoryForBrpGridArea(Guid batchId, string gridAreaCode, TimeSeriesType timeSeriesType, string balanceResponsiblePartyGln)
@@ -69,15 +69,19 @@ public class FileBasedCalculationResultClient : ICalculationResultClient
     public static string GetDirectoryForEsBrpGridArea(Guid batchId, string gridAreaCode, TimeSeriesType timeSeriesType, string balanceResponsiblePartyGln, string energySupplierGln)
         => $"calculation-output/batch_id={batchId}/result/grouping={EnergySupplierBalanceResponsiblePartyGridArea}/time_series_type={TimeSeriesTypeMapper.ToDeltaTableValue(timeSeriesType)}/grid_area={gridAreaCode}/balance_responsible_party_gln={balanceResponsiblePartyGln}/energy_supplier_gln={energySupplierGln}/";
 
-    private async Task<CalculationResult> GetResultAsync(string directory, TimeSeriesType timeSeriesType)
+    private async Task<CalculationResult> GetResultAsync(Guid batchId, string gridArea, string? energySupplierId, string? balanceResponsibleId, string directory, TimeSeriesType timeSeriesType)
     {
         var filepath = await _dataLakeClient.FindFileAsync(directory, ".json").ConfigureAwait(false);
         var stream = await _dataLakeClient.GetReadableFileStreamAsync(filepath).ConfigureAwait(false);
         var points = await _jsonNewlineSerializer.DeserializeAsync<ProcessResultPoint>(stream).ConfigureAwait(false);
-        return MapToCalculationResult(timeSeriesType, points);
+        return MapToCalculationResult(batchId, gridArea, energySupplierId, balanceResponsibleId, timeSeriesType, points);
     }
 
     private static CalculationResult MapToCalculationResult(
+        Guid batchId,
+        string gridArea,
+        string? energySupplierId,
+        string? balanceResponsibleId,
         TimeSeriesType timeSeriesType,
         IEnumerable<ProcessResultPoint> points)
     {
@@ -88,6 +92,6 @@ public class FileBasedCalculationResultClient : ICalculationResultClient
                     QuantityQualityMapper.FromDeltaTableValue(point.quality)))
             .ToList();
 
-        return new CalculationResult(timeSeriesType, pointsDto.ToArray());
+        return new CalculationResult(batchId, gridArea, timeSeriesType, energySupplierId, balanceResponsibleId, pointsDto.ToArray());
     }
 }

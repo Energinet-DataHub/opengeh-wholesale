@@ -12,12 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Globalization;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
-using NodaTime.Text;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 
@@ -28,10 +26,10 @@ public static class SettlementReportDataFactory
         return rows.Select(row => new SettlementReportResultRow(
             row[ResultColumnNames.GridArea],
             ProcessTypeMapper.FromDeltaTableValue(row[ResultColumnNames.BatchProcessType]),
-            InstantPattern.ExtendedIso.Parse(row[ResultColumnNames.Time]).Value,
+            SqlResultValueConverters.ToInstant(row[ResultColumnNames.Time])!.Value,
             "PT15M", // TODO (JMG): store resolution in delta table?
             MeteringPointTypeMapper.FromDeltaTableValue(row[ResultColumnNames.TimeSeriesType]),
             SettlementMethodMapper.FromDeltaTableValue(row[ResultColumnNames.TimeSeriesType]),
-            decimal.Parse(row[ResultColumnNames.Quantity], CultureInfo.InvariantCulture)));
+            SqlResultValueConverters.ToDecimal(row[ResultColumnNames.Quantity])!.Value));
     }
 }

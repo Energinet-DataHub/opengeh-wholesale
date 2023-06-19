@@ -22,6 +22,6 @@ public interface ICalculationResultClient
         Guid batchId,
         string gridAreaCode,
         TimeSeriesType timeSeriesType,
-        string? energySupplierGln,
-        string? balanceResponsiblePartyGln);
+        string? energySupplierId,
+        string? balanceResponsiblePartyId);
 }
