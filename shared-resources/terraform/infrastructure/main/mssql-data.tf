@@ -31,12 +31,12 @@ module "mssql_data" {
   elastic_pool_sku = {
     name     = "StandardPool"
     tier     = "Standard"
-    capacity = 100
+    capacity = 200
   }
 
   elastic_pool_per_database_settings = {
     min_capacity = 0
-    max_capacity = 50
+    max_capacity = 100
   }
 }
 
