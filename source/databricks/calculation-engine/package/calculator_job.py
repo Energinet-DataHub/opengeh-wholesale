@@ -24,6 +24,7 @@ from package import (
     infrastructure,
     initialize_spark,
     log,
+    get_grid_loss_responsible
 )
 from package.file_writers.basis_data_writer import BasisDataWriter
 from package.file_writers.process_step_result_writer import ProcessStepResultWriter
@@ -85,6 +86,8 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         args.batch_period_end_datetime,
     )
 
+    grid_loss_responsible_df = get_grid_loss_responsible()
+
     process_step_result_writer = ProcessStepResultWriter(
         args.wholesale_container_path,
         args.batch_id,
@@ -100,6 +103,7 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         process_step_result_writer,
         metering_point_periods_df,
         timeseries_points_df,
+        grid_loss_responsible_df,
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
         args.time_zone,
