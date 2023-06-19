@@ -37,7 +37,7 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
 {
     private const ProcessType DefaultProcessType = ProcessType.BalanceFixing;
     private readonly DatabricksSqlStatementApiFixture _fixture;
-    private readonly string[] _defaultGridAreaCodes = { DefaultRow.GridArea };
+    private readonly string[] _defaultGridAreaCodes = { "805" };
     private readonly Instant _defaultPeriodStart = Instant.FromUtc(2022, 5, 16, 1, 0, 0);
     private readonly Instant _defaultPeriodEnd = Instant.FromUtc(2022, 5, 17, 1, 0, 0);
 
@@ -76,52 +76,38 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
     {
         var tableName = $"TestTable_{DateTime.Now:yyyyMMddHHmmss}";
         var columnDefinition = DeltaTableSchema.Result;
-        var values = columnDefinition.Keys.Select(CreateSomeColumnValue).ToList();
+        var rowValues = CreateRowValues(columnDefinition.Keys);
 
         await _fixture.DatabricksSchemaManager.CreateTableAsync(tableName, columnDefinition);
-        await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, values);
+        await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, rowValues);
     }
 
-    private static string CreateSomeColumnValue(string columnName)
+    private static IEnumerable<string> CreateRowValues(IEnumerable<string> columnNames)
     {
-        return columnName switch
+        var values = columnNames.Select(columnName => columnName switch
         {
-            ResultColumnNames.BatchId => $@"'{DefaultRow.BatchId}'",
-            ResultColumnNames.BatchExecutionTimeStart => $@"'{DefaultRow.BatchExecutionTimeStart}'",
-            ResultColumnNames.BatchProcessType => $@"'{DefaultRow.BatchProcessType}'",
-            ResultColumnNames.TimeSeriesType => $@"'{DefaultRow.TimeSeriesType}'",
-            ResultColumnNames.GridArea => $@"'{DefaultRow.GridArea}'",
-            ResultColumnNames.FromGridArea => $@"'{DefaultRow.FromGridArea}'",
-            ResultColumnNames.BalanceResponsibleId => $@"'{DefaultRow.BalanceResponsibleId}'",
-            ResultColumnNames.EnergySupplierId => $@"'{DefaultRow.EnergySupplierId}'",
-            ResultColumnNames.Time => $@"'{DefaultRow.Time}'",
-            ResultColumnNames.Quantity => $@"{DefaultRow.Quantity}",
-            ResultColumnNames.QuantityQuality => $@"'{DefaultRow.QuantityQuality}'",
-            ResultColumnNames.AggregationLevel => $@"'{DefaultRow.AggregationLevel}'",
+            ResultColumnNames.BatchId => "'ed39dbc5-bdc5-41b9-922a-08d3b12d4538'",
+            ResultColumnNames.BatchExecutionTimeStart => "'2022-03-11T03:00:00.000Z'",
+            ResultColumnNames.BatchProcessType => $@"'{DeltaTableProcessType.BalanceFixing}'",
+            ResultColumnNames.TimeSeriesType => $@"'{DeltaTableTimeSeriesType.Production}'",
+            ResultColumnNames.GridArea => "'805'",
+            ResultColumnNames.FromGridArea => "'806'",
+            ResultColumnNames.BalanceResponsibleId => "'1236552000028'",
+            ResultColumnNames.EnergySupplierId => "'2236552000028'",
+            ResultColumnNames.Time => "'2022-05-16T03:00:00.000Z'",
+            ResultColumnNames.Quantity => "1.123",
+            ResultColumnNames.QuantityQuality => "'missing'",
+            ResultColumnNames.AggregationLevel => "'total_ga'",
             _ => throw new ArgumentOutOfRangeException($"Unexpected column name: {columnName}."),
-        };
+        });
+
+        return values;
     }
 
-    private struct DefaultRow
-    {
-        public const string BatchId = "ed39dbc5-bdc5-41b9-922a-08d3b12d4538";
-        public const string BatchExecutionTimeStart = "2022-03-11T03:00:00.000Z";
-        public const string BatchProcessType = DeltaTableProcessType.BalanceFixing;
-        public const string TimeSeriesType = DeltaTableTimeSeriesType.Production;
-        public const string GridArea = "805";
-        public const string FromGridArea = "1236552000028";
-        public const string BalanceResponsibleId = "1236552000028";
-        public const string EnergySupplierId = "2236552000028";
-        public const string Time = "2022-05-16T03:00:00.000Z";
-        public const string Quantity = "1.123";
-        public const string QuantityQuality = "missing";
-        public const string AggregationLevel = "total_ga";
-    }
-
-    private SettlementReportResultRow GetDefaultSettlementReportRow()
+    private static SettlementReportResultRow GetDefaultSettlementReportRow()
     {
         return new SettlementReportResultRow(
-            DefaultRow.GridArea,
+            "805",
             ProcessType.BalanceFixing,
             Instant.FromUtc(2022, 5, 16, 3, 0, 0),
             "PT15M",
