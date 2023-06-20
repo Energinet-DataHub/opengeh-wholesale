@@ -57,8 +57,8 @@ public class SettlementReportResultsCsvWriterTests
         var lines = text.Split(Environment.NewLine);
 
         Assert.Equal("METERINGGRIDAREAID;ENERGYBUSINESSPROCESS;STARTDATETIME;RESOLUTIONDURATION;TYPEOFMP;SETTLEMENTMETHOD;ENERGYQUANTITY", lines[0]);
-        Assert.Equal("500;D04;2021-01-01T00:00:00Z;PT15M;E17;E02;1000,521", lines[1]);
-        Assert.Equal("500;D04;2021-01-01T00:00:00Z;PT15M;E17;E02;1000,521", lines[2]);
+        Assert.Equal("500;D04;2021-01-01T00:00:00Z;PT15M;E17;D01;1000,521", lines[1]);
+        Assert.Equal("500;D04;2021-01-01T00:00:00Z;PT15M;E17;D01;1000,521", lines[2]);
     }
 
     [Fact]
@@ -82,8 +82,8 @@ public class SettlementReportResultsCsvWriterTests
         var lines = text.Split(Environment.NewLine);
 
         Assert.Equal("METERINGGRIDAREAID,ENERGYBUSINESSPROCESS,STARTDATETIME,RESOLUTIONDURATION,TYPEOFMP,SETTLEMENTMETHOD,ENERGYQUANTITY", lines[0]);
-        Assert.Equal("500,D04,2021-01-01T00:00:00Z,PT15M,E17,E02,1000.521", lines[1]);
-        Assert.Equal("500,D04,2021-01-01T00:00:00Z,PT15M,E17,E02,1000.521", lines[2]);
+        Assert.Equal("500,D04,2021-01-01T00:00:00Z,PT15M,E17,D01,1000.521", lines[1]);
+        Assert.Equal("500,D04,2021-01-01T00:00:00Z,PT15M,E17,D01,1000.521", lines[2]);
     }
 
     [Fact]
@@ -191,8 +191,8 @@ public class SettlementReportResultsCsvWriterTests
 
     [Theory]
     [InlineData(null, "")]
-    [InlineData(SettlementMethod.Flex, "E02")]
-    [InlineData(SettlementMethod.NonProfiled, "")]
+    [InlineData(SettlementMethod.Flex, "D01")]
+    [InlineData(SettlementMethod.NonProfiled, "E02")]
     public static async Task WriteAsync_GivenValidRow_WritesCorrectlyFormattedSettlementMethod(SettlementMethod? input, string expected)
     {
         // Arrange
