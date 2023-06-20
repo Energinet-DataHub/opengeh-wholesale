@@ -64,8 +64,8 @@ public class SettlementReportSqlStatementFactoryTests
         // This string must match the values of the private members that defines grid area codes, period start and period end
         return $@"
 SELECT t1.grid_area, t1.batch_process_type, t1.time, t1.time_series_type, t1.quantity
-FROM wholesale_output.result t1
-LEFT JOIN wholesale_output.result t2
+FROM {_schemaName}.{_tableName} t1
+LEFT JOIN {_schemaName}.{_tableName} t2
     ON t1.time = t2.time AND t1.batch_execution_time_start < t2.batch_execution_time_start
 WHERE t2.time IS NULL
     AND t1.{ResultColumnNames.GridArea} IN (123,234,345)
@@ -83,7 +83,7 @@ ORDER BY t1.time
         return $@"
 SELECT t1.grid_area, t1.batch_process_type, t1.time, t1.time_series_type, t1.quantity
 FROM {_schemaName}.{_tableName} t1
-LEFT JOIN wholesale_output.result t2
+LEFT JOIN {_schemaName}.{_tableName} t2
     ON t1.time = t2.time AND t1.batch_execution_time_start < t2.batch_execution_time_start
 WHERE t2.time IS NULL
     AND t1.{ResultColumnNames.GridArea} IN (123,234,345)

@@ -32,7 +32,4 @@ limitations under the License.
     <PackageReference Include="Energinet.DataHub.Core.App.Common.Abstractions" Version="7.4.4" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DatabricksClient\Options" />
-  </ItemGroup>
 </Project>

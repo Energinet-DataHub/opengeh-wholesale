@@ -14,7 +14,4 @@
   <ItemGroup>
     <ProjectReference Include="..\CalculationResults.Application\CalculationResults.Application.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Configuration" />
-  </ItemGroup>
 </Project>
