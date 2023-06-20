@@ -99,8 +99,8 @@ public sealed class SettlementReportResultsCsvWriter : ISettlementReportResultsC
             return row.Value.SettlementMethod switch
             {
                 null => string.Empty,
-                SettlementMethod.NonProfiled => string.Empty,
-                SettlementMethod.Flex => "E02",
+                SettlementMethod.NonProfiled => "E02",
+                SettlementMethod.Flex => "D01",
                 _ => throw new ArgumentOutOfRangeException(nameof(row)),
             };
         }
