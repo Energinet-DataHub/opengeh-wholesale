@@ -15,7 +15,9 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
+using Energinet.DataHub.Wholesale.Common.DatabricksClient;
 using Energinet.DataHub.Wholesale.Common.Models;
+using Microsoft.Extensions.Options;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
@@ -23,10 +25,12 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 public class SettlementReportResultQueries : ISettlementReportResultQueries
 {
     private readonly ISqlStatementClient _sqlStatementClient;
+    private readonly DatabricksOptions _databricksOptions;
 
-    public SettlementReportResultQueries(ISqlStatementClient sqlStatementClient)
+    public SettlementReportResultQueries(ISqlStatementClient sqlStatementClient, IOptions<DatabricksOptions> databricksOptions)
     {
         _sqlStatementClient = sqlStatementClient;
+        _databricksOptions = databricksOptions.Value;
     }
 
     public async Task<IEnumerable<SettlementReportResultRow>> GetRowsAsync(
@@ -36,7 +40,7 @@ public class SettlementReportResultQueries : ISettlementReportResultQueries
         Instant periodEnd,
         string? energySupplier)
     {
-        var sql = SettlementReportSqlStatementFactory.Create(gridAreaCodes, processType, periodStart, periodEnd, energySupplier);
+        var sql = SettlementReportSqlStatementFactory.Create(_databricksOptions.SCHEMA_NAME, _databricksOptions.RESULT_TABLE_NAME, gridAreaCodes, processType, periodStart, periodEnd, energySupplier);
         var rows = await _sqlStatementClient.ExecuteAsync(sql).ToListAsync().ConfigureAwait(false);
         return SettlementReportDataFactory.Create(rows);
     }
