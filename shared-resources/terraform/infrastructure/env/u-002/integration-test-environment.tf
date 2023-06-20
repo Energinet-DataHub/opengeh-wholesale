@@ -607,7 +607,7 @@ resource "databricks_secret" "appi_instrumentation_key_integration_test" {
   provider = databricks.integration_test
 
   key          = "appi_instrumentation_key"
-  string_value = module.appi_shared.instrumentation_key
+  string_value = azurerm_application_insights.integration-test-appi.instrumentation_key
   scope        = databricks_secret_scope.migration_scope_integration_test.id
 }
 
@@ -664,31 +664,6 @@ resource "databricks_instance_pool" "migration_pool_integration_test" {
   idle_instance_autotermination_minutes = 60
 }
 
-resource "databricks_cluster" "shared_all_purpose_integration_test" {
-  provider = databricks.integration_test
-
-  cluster_name     = "Shared all-purpose"
-  num_workers      = 1
-  instance_pool_id = databricks_instance_pool.migration_pool_integration_test.id
-  spark_version    = data.databricks_spark_version.latest_lts.id
-  spark_conf = {
-    "fs.azure.account.oauth2.client.endpoint.${azurerm_storage_account.integration-test-st-databricks.name}.dfs.core.windows.net" : "https://login.microsoftonline.com/${data.azurerm_client_config.this.tenant_id}/oauth2/token"
-    "fs.azure.account.auth.type.${azurerm_storage_account.integration-test-st-databricks.name}.dfs.core.windows.net" : "OAuth"
-    "fs.azure.account.oauth.provider.type.${azurerm_storage_account.integration-test-st-databricks.name}.dfs.core.windows.net" : "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
-    "fs.azure.account.oauth2.client.id.${azurerm_storage_account.integration-test-st-databricks.name}.dfs.core.windows.net" : databricks_secret.spn_app_id_integration_test.config_reference
-    "fs.azure.account.oauth2.client.secret.${azurerm_storage_account.integration-test-st-databricks.name}.dfs.core.windows.net" : databricks_secret.spn_app_secret_integration_test.config_reference
-    "spark.databricks.delta.preview.enabled" : true
-    "spark.databricks.io.cache.enabled" : true
-    "spark.master" : "local[*, 4]"
-  }
-  spark_env_vars = {
-    "APPI_INSTRUMENTATION_KEY"        = module.appi_shared.instrumentation_key
-    "LANDING_STORAGE_ACCOUNT"         = azurerm_storage_account.integration-test-st-databricks.name
-    "DATALAKE_STORAGE_ACCOUNT"        = azurerm_storage_account.integration-test-st-databricks.name
-    "DATALAKE_SHARED_STORAGE_ACCOUNT" = azurerm_storage_account.integration-test-st-databricks.name
-  }
-}
-
 resource "databricks_job" "migration_workflow" {
   provider = databricks.integration_test
 
@@ -710,7 +685,7 @@ resource "databricks_job" "migration_workflow" {
         "spark.master" : "local[*, 4]"
       }
       spark_env_vars = {
-        "APPI_INSTRUMENTATION_KEY"        = module.appi_shared.instrumentation_key
+        "APPI_INSTRUMENTATION_KEY"        = azurerm_application_insights.integration-test-appi.instrumentation_key
         "LANDING_STORAGE_ACCOUNT"         = azurerm_storage_account.integration-test-st-databricks.name
         "DATALAKE_STORAGE_ACCOUNT"        = azurerm_storage_account.integration-test-st-databricks.name
         "DATALAKE_SHARED_STORAGE_ACCOUNT" = azurerm_storage_account.integration-test-st-databricks.name
