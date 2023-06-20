@@ -19,8 +19,10 @@ using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
+using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Energinet.DataHub.Wholesale.Common.Models;
 using FluentAssertions;
+using Microsoft.Extensions.Options;
 using NodaTime;
 using Xunit;
 
@@ -63,9 +65,7 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
         var expectedSettlementReportRow = GetDefaultSettlementReportRow();
         var tableName = await CreateTableWithDefaultRow();
         var sqlStatementClient = new SqlStatementClient(new HttpClient(), _fixture.DatabricksOptionsMock.Object, new DatabricksSqlResponseParser());
-        _fixture.DatabricksOptionsMock.Setup(o => o.Value.SCHEMA_NAME).Returns(_fixture.DatabricksSchemaManager.SchemaName);
-        _fixture.DatabricksOptionsMock.Setup(o => o.Value.RESULT_TABLE_NAME).Returns(tableName);
-        var sut = new SettlementReportResultQueries(sqlStatementClient, _fixture.DatabricksOptionsMock.Object);
+        var sut = new SettlementReportResultQueries(sqlStatementClient, CreateDeltaTableOptions(_fixture.DatabricksSchemaManager.SchemaName, tableName));
 
         // Act
         var actual = await sut.GetRowsAsync(_defaultGridAreaCodes, DefaultProcessType, _defaultPeriodStart, _defaultPeriodEnd, null);
@@ -118,5 +118,10 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
             MeteringPointType.Production,
             null,
             1.123m);
+    }
+
+    private static IOptions<DeltaTableOptions> CreateDeltaTableOptions(string schemaName, string tableName)
+    {
+        return Options.Create(new DeltaTableOptions { SCHEMA_NAME = schemaName, RESULT_TABLE_NAME = tableName, });
     }
 }
