@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Common.DatabricksClient;
+namespace Energinet.DataHub.Wholesale.Common.Databricks.Options;
 
 public class DatabricksOptions
 {
@@ -30,14 +30,4 @@ public class DatabricksOptions
     /// The databricks warehouse id.
     /// </summary>
     public string DATABRICKS_WAREHOUSE_ID { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Name of the schema/database under which the result table is associated.
-    /// </summary>
-    public string SCHEMA_NAME { get; set; } = "wholesale_output";
-
-    /// <summary>
-    /// Name of the results delta table.
-    /// </summary>
-    public string RESULT_TABLE_NAME { get; set; } = "result";
 }

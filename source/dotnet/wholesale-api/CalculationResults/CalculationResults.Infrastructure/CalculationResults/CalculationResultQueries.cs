@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatement
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
-using Energinet.DataHub.Wholesale.Common.DatabricksClient;
+using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
@@ -24,12 +24,12 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 public class CalculationResultQueries : ICalculationResultQueries
 {
     private readonly ISqlStatementClient _sqlStatementClient;
-    private readonly DatabricksOptions _databricksOptions;
+    private readonly DeltaTableOptions _deltaTableOptions;
 
-    public CalculationResultQueries(ISqlStatementClient sqlStatementClient, IOptions<DatabricksOptions> databricksOptions)
+    public CalculationResultQueries(ISqlStatementClient sqlStatementClient, IOptions<DeltaTableOptions> deltaTableOptions)
     {
         _sqlStatementClient = sqlStatementClient;
-        _databricksOptions = databricksOptions.Value;
+        _deltaTableOptions = deltaTableOptions.Value;
     }
 
     public async IAsyncEnumerable<CalculationResult> GetAsync(Guid batchId)
@@ -60,7 +60,7 @@ public class CalculationResultQueries : ICalculationResultQueries
     {
         return $@"
 SELECT {string.Join(", ", SqlColumnNames)}
-FROM {_databricksOptions.SCHEMA_NAME}.{_databricksOptions.RESULT_TABLE_NAME}
+FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.RESULT_TABLE_NAME}
 WHERE {ResultColumnNames.BatchId} = '{batchId}'
 ORDER BY time
 ";

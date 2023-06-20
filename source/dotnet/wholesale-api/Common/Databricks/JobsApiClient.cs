@@ -14,10 +14,12 @@
 
 using System.Net;
 using System.Net.Http.Headers;
+using Energinet.DataHub.Wholesale.Common.Databricks.Options;
+using Energinet.DataHub.Wholesale.Common.DatabricksClient;
 using Microsoft.Azure.Databricks.Client;
 using Microsoft.Extensions.Options;
 
-namespace Energinet.DataHub.Wholesale.Common.DatabricksClient
+namespace Energinet.DataHub.Wholesale.Common.Databricks
 {
     /// <summary>
     /// A databricks client based on the Microsoft.Azure.JobsApiClient, which is using Job API 2.0.
