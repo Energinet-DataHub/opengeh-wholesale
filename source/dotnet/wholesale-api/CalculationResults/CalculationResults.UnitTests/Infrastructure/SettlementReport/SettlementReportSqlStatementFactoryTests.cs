@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
+using Energinet.DataHub.Wholesale.Common.DatabricksClient;
 using Energinet.DataHub.Wholesale.Common.Models;
 using FluentAssertions;
 using NodaTime;
@@ -28,6 +29,8 @@ public class SettlementReportSqlStatementFactoryTests
     private readonly string[] _defaultGridAreasCodes = { "123", "234", "345" };
     private readonly Instant _defaultPeriodStart = Instant.FromUtc(2022, 10, 12, 1, 0);
     private readonly Instant _defaultPeriodEnd = Instant.FromUtc(2022, 10, 12, 3, 0);
+    private readonly string _schemaName = new DatabricksOptions().SCHEMA_NAME;
+    private readonly string _tableName = new DatabricksOptions().RESULT_TABLE_NAME;
 
     [Fact]
     public void Create_WhenEnergySupplierIsNull_ReturnsExpectedSqlStatement()
@@ -36,7 +39,7 @@ public class SettlementReportSqlStatementFactoryTests
         var expectedSql = GetExpectedSqlWhenNoEnergySupplier();
 
         // Act
-        var actual = SettlementReportSqlStatementFactory.Create(_defaultGridAreasCodes, ProcessType.BalanceFixing, _defaultPeriodStart, _defaultPeriodEnd, null);
+        var actual = SettlementReportSqlStatementFactory.Create(_schemaName, _tableName, _defaultGridAreasCodes, ProcessType.BalanceFixing, _defaultPeriodStart, _defaultPeriodEnd, null);
 
         // Assert
         actual.Should().Be(expectedSql);
@@ -50,13 +53,13 @@ public class SettlementReportSqlStatementFactoryTests
         var expectedSql = GetExpectedSqlWhenWithEnergySupplier(someEnergySupplier);
 
         // Act
-        var actual = SettlementReportSqlStatementFactory.Create(_defaultGridAreasCodes, ProcessType.BalanceFixing, _defaultPeriodStart, _defaultPeriodEnd, someEnergySupplier);
+        var actual = SettlementReportSqlStatementFactory.Create(_schemaName, _tableName, _defaultGridAreasCodes, ProcessType.BalanceFixing, _defaultPeriodStart, _defaultPeriodEnd, someEnergySupplier);
 
         // Assert
         actual.Should().Be(expectedSql);
     }
 
-    private static string GetExpectedSqlWhenNoEnergySupplier()
+    private string GetExpectedSqlWhenNoEnergySupplier()
     {
         // This string must match the values of the private members that defines grid area codes, period start and period end
         return $@"
@@ -74,12 +77,12 @@ ORDER BY t1.time
 ";
     }
 
-    private static string GetExpectedSqlWhenWithEnergySupplier(string energySupplier)
+    private string GetExpectedSqlWhenWithEnergySupplier(string energySupplier)
     {
         // This string must match the values of the private members that defines grid area codes, period start and period end
         return $@"
 SELECT t1.grid_area, t1.batch_process_type, t1.time, t1.time_series_type, t1.quantity
-FROM wholesale_output.result t1
+FROM {_schemaName}.{_tableName} t1
 LEFT JOIN wholesale_output.result t2
     ON t1.time = t2.time AND t1.batch_execution_time_start < t2.batch_execution_time_start
 WHERE t2.time IS NULL
