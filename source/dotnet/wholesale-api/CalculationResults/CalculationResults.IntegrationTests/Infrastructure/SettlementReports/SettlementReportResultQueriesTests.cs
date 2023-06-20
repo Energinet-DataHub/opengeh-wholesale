@@ -61,9 +61,11 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
     {
         // Arrange
         var expectedSettlementReportRow = GetDefaultSettlementReportRow();
-        await CreateTableWithDefaultRow();
+        var tableName = await CreateTableWithDefaultRow();
         var sqlStatementClient = new SqlStatementClient(new HttpClient(), _fixture.DatabricksOptionsMock.Object, new DatabricksSqlResponseParser());
-        var sut = new SettlementReportResultQueries(sqlStatementClient);
+        _fixture.DatabricksOptionsMock.Setup(o => o.Value.SCHEMA_NAME).Returns(_fixture.DatabricksSchemaManager.SchemaName);
+        _fixture.DatabricksOptionsMock.Setup(o => o.Value.RESULT_TABLE_NAME).Returns(tableName);
+        var sut = new SettlementReportResultQueries(sqlStatementClient, _fixture.DatabricksOptionsMock.Object);
 
         // Act
         var actual = await sut.GetRowsAsync(_defaultGridAreaCodes, DefaultProcessType, _defaultPeriodStart, _defaultPeriodEnd, null);
@@ -72,7 +74,7 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
         actual.First().Should().Be(expectedSettlementReportRow);
     }
 
-    private async Task CreateTableWithDefaultRow()
+    private async Task<string> CreateTableWithDefaultRow()
     {
         var tableName = $"TestTable_{DateTime.Now:yyyyMMddHHmmss}";
         var columnDefinition = DeltaTableSchema.Result;
@@ -80,6 +82,8 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
 
         await _fixture.DatabricksSchemaManager.CreateTableAsync(tableName, columnDefinition);
         await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, rowValues);
+
+        return tableName;
     }
 
     private static IEnumerable<string> CreateRowValues(IEnumerable<string> columnNames)
