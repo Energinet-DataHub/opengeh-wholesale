@@ -37,9 +37,11 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infras
 /// </summary>
 public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlStatementApiFixture>, IAsyncLifetime
 {
+    private const string DefaultGridArea = "805";
+    private const string SomeOtherGridArea = "111";
     private const ProcessType DefaultProcessType = ProcessType.BalanceFixing;
     private readonly DatabricksSqlStatementApiFixture _fixture;
-    private readonly string[] _defaultGridAreaCodes = { "805" };
+    private readonly string[] _defaultGridAreaCodes = { DefaultGridArea };
     private readonly Instant _defaultPeriodStart = Instant.FromUtc(2022, 5, 16, 1, 0, 0);
     private readonly Instant _defaultPeriodEnd = Instant.FromUtc(2022, 5, 17, 1, 0, 0);
 
@@ -63,7 +65,7 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
     {
         // Arrange
         var expectedSettlementReportRow = GetDefaultSettlementReportRow();
-        var tableName = await CreateTableWithDefaultRow();
+        var tableName = await CreateTableTwoRowsAsync();
         var sqlStatementClient = new SqlStatementClient(new HttpClient(), _fixture.DatabricksOptionsMock.Object, new DatabricksSqlResponseParser());
         var sut = new SettlementReportResultQueries(sqlStatementClient, CreateDeltaTableOptions(_fixture.DatabricksSchemaManager.SchemaName, tableName));
 
@@ -71,22 +73,28 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
         var actual = await sut.GetRowsAsync(_defaultGridAreaCodes, DefaultProcessType, _defaultPeriodStart, _defaultPeriodEnd, null);
 
         // Assert
-        actual.First().Should().Be(expectedSettlementReportRow);
+        var actualList = actual.ToList();
+        actualList.Should().HaveCount(1);
+        actualList.First().Should().Be(expectedSettlementReportRow);
     }
 
-    private async Task<string> CreateTableWithDefaultRow()
+    private async Task<string> CreateTableTwoRowsAsync()
     {
         var tableName = $"TestTable_{DateTime.Now:yyyyMMddHHmmss}";
         var columnDefinition = DeltaTableSchema.Result;
-        var rowValues = CreateRowValues(columnDefinition.Keys);
-
         await _fixture.DatabricksSchemaManager.CreateTableAsync(tableName, columnDefinition);
-        await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, rowValues);
-
+        await InsertRow(tableName, DefaultGridArea);
+        await InsertRow(tableName, SomeOtherGridArea);
         return tableName;
     }
 
-    private static IEnumerable<string> CreateRowValues(IEnumerable<string> columnNames)
+    private async Task InsertRow(string tableName, string gridArea)
+    {
+        var rowValues = CreateRowValues(DeltaTableSchema.Result.Keys, gridArea);
+        await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, rowValues);
+    }
+
+    private static IEnumerable<string> CreateRowValues(IEnumerable<string> columnNames, string gridArea)
     {
         var values = columnNames.Select(columnName => columnName switch
         {
@@ -94,8 +102,8 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
             ResultColumnNames.BatchExecutionTimeStart => "'2022-03-11T03:00:00.000Z'",
             ResultColumnNames.BatchProcessType => $@"'{DeltaTableProcessType.BalanceFixing}'",
             ResultColumnNames.TimeSeriesType => $@"'{DeltaTableTimeSeriesType.Production}'",
-            ResultColumnNames.GridArea => "'805'",
-            ResultColumnNames.FromGridArea => "'806'",
+            ResultColumnNames.GridArea => $@"'{gridArea}'",
+            ResultColumnNames.FromGridArea => "'406'",
             ResultColumnNames.BalanceResponsibleId => "'1236552000028'",
             ResultColumnNames.EnergySupplierId => "'2236552000028'",
             ResultColumnNames.Time => "'2022-05-16T03:00:00.000Z'",
@@ -111,7 +119,7 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
     private static SettlementReportResultRow GetDefaultSettlementReportRow()
     {
         return new SettlementReportResultRow(
-            "805",
+            DefaultGridArea,
             ProcessType.BalanceFixing,
             Instant.FromUtc(2022, 5, 16, 3, 0, 0),
             "PT15M",
