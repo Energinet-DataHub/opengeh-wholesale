@@ -19,7 +19,7 @@ using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
 using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
-using Energinet.DataHub.Wholesale.Common.DatabricksClient;
+using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Energinet.DataHub.Wholesale.Common.Security;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
@@ -98,6 +98,7 @@ public class Startup
         serviceCollection.AddOptions<DatabricksOptions>().Bind(Configuration);
         serviceCollection.AddOptions<DateTimeOptions>().Bind(Configuration);
         serviceCollection.AddOptions<DataLakeOptions>().Bind(Configuration);
+        serviceCollection.AddOptions<DeltaTableOptions>();
 
         AddJwtTokenSecurity(serviceCollection);
         AddHealthCheck(serviceCollection);

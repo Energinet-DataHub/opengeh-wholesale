@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
-using Energinet.DataHub.Wholesale.Common.DatabricksClient;
+using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Energinet.DataHub.Wholesale.Common.Models;
 using FluentAssertions;
 using NodaTime;
@@ -29,8 +29,8 @@ public class SettlementReportSqlStatementFactoryTests
     private readonly string[] _defaultGridAreasCodes = { "123", "234", "345" };
     private readonly Instant _defaultPeriodStart = Instant.FromUtc(2022, 10, 12, 1, 0);
     private readonly Instant _defaultPeriodEnd = Instant.FromUtc(2022, 10, 12, 3, 0);
-    private readonly string _schemaName = new DatabricksOptions().SCHEMA_NAME;
-    private readonly string _tableName = new DatabricksOptions().RESULT_TABLE_NAME;
+    private readonly string _schemaName = new DeltaTableOptions().SCHEMA_NAME;
+    private readonly string _tableName = new DeltaTableOptions().RESULT_TABLE_NAME;
 
     [Fact]
     public void Create_WhenEnergySupplierIsNull_ReturnsExpectedSqlStatement()

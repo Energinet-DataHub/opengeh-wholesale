@@ -19,7 +19,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatement
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SqlStatements;
-using Energinet.DataHub.Wholesale.Common.DatabricksClient;
+using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Energinet.DataHub.Wholesale.Common.Models;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
@@ -38,7 +38,7 @@ public class SettlementReportResultQueriesTests
     private readonly string[] _someGridAreas = { "123", "456", };
     private readonly TableChunk _someTableChunk = TableTestHelper.CreateTableForSettlementReport(3);
     private readonly string[] _columnNames = { ResultColumnNames.GridArea, ResultColumnNames.BatchProcessType, ResultColumnNames.Time, ResultColumnNames.TimeSeriesType, ResultColumnNames.Quantity, };
-    private readonly IOptions<DatabricksOptions> _someDatabricksOptions = Options.Create(new DatabricksOptions { SCHEMA_NAME = "someSchema", RESULT_TABLE_NAME = "someTable", });
+    private readonly IOptions<DeltaTableOptions> _someDeltaTableOptions = Options.Create(new DeltaTableOptions { SCHEMA_NAME = "someSchema", RESULT_TABLE_NAME = "someTable", });
 
     [Theory]
     [AutoMoqData]
@@ -47,7 +47,7 @@ public class SettlementReportResultQueriesTests
         // Arrange
         var asyncResult = ToAsyncEnumerable(_someTableChunk);
         mockSqlStatementClient.Setup(s => s.ExecuteAsync(It.IsAny<string>())).Returns(asyncResult);
-        var sut = new SettlementReportResultQueries(mockSqlStatementClient.Object, _someDatabricksOptions);
+        var sut = new SettlementReportResultQueries(mockSqlStatementClient.Object, _someDeltaTableOptions);
 
         // Act
         var actual = await sut.GetRowsAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null);
@@ -73,7 +73,7 @@ public class SettlementReportResultQueriesTests
         var table = new TableChunk(_columnNames,  new List<string[]> { row });
         var asyncResult = ToAsyncEnumerable(table);
         mockSqlStatementClient.Setup(s => s.ExecuteAsync(It.IsAny<string>())).Returns(asyncResult);
-        var sut = new SettlementReportResultQueries(mockSqlStatementClient.Object, _someDatabricksOptions);
+        var sut = new SettlementReportResultQueries(mockSqlStatementClient.Object, _someDeltaTableOptions);
 
         // Act
         var actual = await sut.GetRowsAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null);
