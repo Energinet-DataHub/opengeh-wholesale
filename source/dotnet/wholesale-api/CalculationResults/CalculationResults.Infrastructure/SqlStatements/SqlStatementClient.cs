@@ -14,7 +14,7 @@
 
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using Energinet.DataHub.Wholesale.Common.DatabricksClient;
+using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
