@@ -24,4 +24,6 @@ public enum TimeSeriesType
     GridLoss = 6,
     NegativeGridLoss = 7,
     PositiveGridLoss = 8,
+    TotalConsumption = 9,
+    Residual = 10,
 }

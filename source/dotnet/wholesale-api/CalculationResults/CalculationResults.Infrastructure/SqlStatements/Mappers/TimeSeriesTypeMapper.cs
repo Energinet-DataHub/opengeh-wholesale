@@ -30,6 +30,8 @@ public static class TimeSeriesTypeMapper
             DeltaTableTimeSeriesType.GridLoss => TimeSeriesType.GridLoss,
             DeltaTableTimeSeriesType.NegativeGridLoss => TimeSeriesType.NegativeGridLoss,
             DeltaTableTimeSeriesType.PositiveGridLoss => TimeSeriesType.PositiveGridLoss,
+            DeltaTableTimeSeriesType.TotalConsumption => TimeSeriesType.TotalConsumption,
+            DeltaTableTimeSeriesType.Residual => TimeSeriesType.Residual,
             _ => throw new NotImplementedException($"Cannot map timeSeriesType type '{timeSeriesType}"),
         };
 
