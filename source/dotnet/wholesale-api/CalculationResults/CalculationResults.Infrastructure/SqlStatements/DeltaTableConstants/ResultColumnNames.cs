@@ -28,4 +28,22 @@ public static class ResultColumnNames
     public const string Quantity = "quantity";
     public const string QuantityQuality = "quantity_quality";
     public const string AggregationLevel = "aggregation_level";
+
+    public static string GetType(string columnName) =>
+         columnName switch
+         {
+             GridArea => "string",
+             BalanceResponsibleId => "string",
+             EnergySupplierId => "string",
+             Time => "timestamp",
+             QuantityQuality => "string",
+             AggregationLevel => "string",
+             TimeSeriesType => "string",
+             BatchId => "string",
+             BatchProcessType => "string",
+             BatchExecutionTimeStart => "timestamp",
+             FromGridArea => "string",
+             Quantity => "decimal(18,3)",
+             _ => throw new ArgumentException($"Unexpected column name '{columnName}'."),
+         };
 }
