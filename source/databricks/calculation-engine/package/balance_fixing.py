@@ -280,7 +280,7 @@ def _calculate_flex_consumption(
 ) -> None:
     result_writer.write(
         flex_consumption_per_ga_and_brp_and_es,
-        TimeSeriesType.PRODUCTION,
+        TimeSeriesType.FLEX_CONSUMPTION,
         AggregationLevel.es_per_brp_per_ga,
     )
 
