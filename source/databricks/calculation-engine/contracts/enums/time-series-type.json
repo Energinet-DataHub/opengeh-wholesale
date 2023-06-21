@@ -39,6 +39,14 @@
     {
       "name": "RESIDUAL",
       "value": "residual"
+    },
+    {
+      "name": "TEMP_FLEX_CONSUMPTION",
+      "value": "temp_flex_consumption"
+    },
+    {
+      "name": "TEMP_PRODUCTION",
+      "value": "temp_production"
     }
   ]
 }
