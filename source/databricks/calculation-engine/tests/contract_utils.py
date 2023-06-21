@@ -25,14 +25,9 @@ def read_contract(path: str) -> Dict:
 def assert_contract_matches_schema(contract_path: str, schema: StructType) -> None:
     expected_schema = read_contract(contract_path)["fields"]
     actual_schema = json.loads(schema.json())["fields"]
-    
-    print(len(actual_schema))
-    print(len(expected_schema))
-    print(actual_schema)
 
     # Assert: Schema and contract has the same number of fields
     assert len(actual_schema) == len(expected_schema)
-    
 
     # Assert: Schema matches contract
     for expected_field in expected_schema:
