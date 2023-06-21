@@ -107,7 +107,7 @@ from package.constants import Colname
             TimeSeriesType.TEMP_FLEX_CONSUMPTION.value,
             AggregationLevel.es_per_brp_per_ga.value,
         ),
-        (
+                (
             TimeSeriesType.TEMP_PRODUCTION.value,
             AggregationLevel.es_per_brp_per_ga.value,
         ),
