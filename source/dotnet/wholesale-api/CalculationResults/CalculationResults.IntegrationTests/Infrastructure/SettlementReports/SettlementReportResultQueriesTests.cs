@@ -44,6 +44,7 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
     private readonly string[] _defaultGridAreaCodes = { DefaultGridArea };
     private readonly Instant _defaultPeriodStart = Instant.FromUtc(2022, 5, 16, 1, 0, 0);
     private readonly Instant _defaultPeriodEnd = Instant.FromUtc(2022, 5, 17, 1, 0, 0);
+    private readonly Dictionary<string, string> _tableColumnDefinitions = CreateColumnDefinitions();
 
     public SettlementReportResultQueriesTests(DatabricksSqlStatementApiFixture fixture)
     {
@@ -81,8 +82,7 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
     private async Task<string> CreateTableTwoRowsAsync()
     {
         var tableName = $"TestTable_{DateTime.Now:yyyyMMddHHmmss}";
-        var columnDefinition = DeltaTableSchema.Result;
-        await _fixture.DatabricksSchemaManager.CreateTableAsync(tableName, columnDefinition);
+        await _fixture.DatabricksSchemaManager.CreateTableAsync(tableName, _tableColumnDefinitions);
         await InsertRow(tableName, DefaultGridArea);
         await InsertRow(tableName, SomeOtherGridArea);
         return tableName;
@@ -90,7 +90,7 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
 
     private async Task InsertRow(string tableName, string gridArea)
     {
-        var rowValues = CreateRowValues(DeltaTableSchema.Result.Keys, gridArea);
+        var rowValues = CreateRowValues(_tableColumnDefinitions.Keys, gridArea);
         await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, rowValues);
     }
 
@@ -131,5 +131,12 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
     private static IOptions<DeltaTableOptions> CreateDeltaTableOptions(string schemaName, string tableName)
     {
         return Options.Create(new DeltaTableOptions { SCHEMA_NAME = schemaName, RESULT_TABLE_NAME = tableName, });
+    }
+
+    private static Dictionary<string, string> CreateColumnDefinitions()
+    {
+        var columnNames = ResultColumnNames.GetAllNames().ToList();
+        var columnTypes = columnNames.Select(ResultColumnNames.GetType);
+        return columnNames.Zip(columnTypes, (name, type) => new { Name = name, Type = type }).ToDictionary(item => item.Name, item => item.Type);
     }
 }
