@@ -28,13 +28,21 @@ public class ResultColumnNameTests
     {
         // Arrange
         await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.result-table-column-names.json");
-        var json = await ContractComplianceTestHelper.GetJsonObjectAsync(stream);
-        var expectedColumnNames = ((JArray)json).ToObject<List<string>>();
+        var contractDescription = await ContractComplianceTestHelper.GetJsonObjectAsync(stream);
+        var expectedColumnNames = new List<string>();
+        var expectedColumnTypes = new List<string>();
+        foreach (var expectedField in contractDescription.fields)
+        {
+            expectedColumnNames.Add((string)expectedField.name);
+            expectedColumnTypes.Add((string)expectedField.type);
+        }
 
         var fieldInfos = typeof(ResultColumnNames).GetFields(BindingFlags.Public | BindingFlags.Static);
         var actualColumnNames = fieldInfos.Select(x => x.GetValue(null)).Cast<string>().ToList();
+        var actualColumnTypes = actualColumnNames.Select(ResultColumnNames.GetType).ToList();
 
         // Assert
         actualColumnNames.Should().BeEquivalentTo(expectedColumnNames);
+        actualColumnTypes.Should().BeEquivalentTo(expectedColumnTypes);
     }
 }
