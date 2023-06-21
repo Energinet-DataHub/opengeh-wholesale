@@ -37,29 +37,10 @@ CONSTRAINTS = [
 
 
 def apply(args: MigrationScriptArgs) -> None:
-    existing_constraints = args.spark.sql(
-        f"SHOW CONSTRAINTS ON {DATABASE_NAME}.{RESULT_TABLE_NAME}"
-    ).collect()
-
+    args.spark.sql(
+        f"ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME} DROP CONSTRAINT time_series_type_chk"
+    )
     for constraint in CONSTRAINTS:
-        constraint_name = constraint[0]
-        constraint_condition = constraint[1]
-
-        # Check if the constraint already exists
-        existing_constraint = next(
-            (c for c in existing_constraints if c["name"] == constraint_name),
-            None
-        )
-
-        if existing_constraint:
-            # Drop the existing constraint
-            args.spark.sql(
-                f"ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME} DROP CONSTRAINT {constraint_name}"
-            )
-            print(f"Dropped constraint '{constraint_name}'")
-
-        # Add the constraint
         args.spark.sql(
-            f"ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME} ADD CONSTRAINT {constraint_name} CHECK ({constraint_condition})"
+            f"ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME} ADD CONSTRAINT {constraint[0]} CHECK ({constraint[1]})"
         )
-        print(f"Added constraint '{constraint_name}'")
