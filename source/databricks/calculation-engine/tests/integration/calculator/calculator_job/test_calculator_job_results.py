@@ -103,6 +103,14 @@ from package.constants import Colname
             TimeSeriesType.RESIDUAL.value,
             AggregationLevel.total_ga.value,
         ),
+        (
+            TimeSeriesType.TEMP_FLEX_CONSUMPTION.value,
+            AggregationLevel.es_per_brp_per_ga.value,
+        ),
+                (
+            TimeSeriesType.TEMP_PRODUCTION.value,
+            AggregationLevel.es_per_brp_per_ga.value,
+        ),
     ],
 )
 def test__result__is_created(
