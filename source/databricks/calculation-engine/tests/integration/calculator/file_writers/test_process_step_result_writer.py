@@ -311,7 +311,6 @@ def test__write__writes_columns_matching_contract(
 ) -> None:
     # Arrange
     contract_path = f"{contracts_path}/result-table-column-names.json"
-    # expected_column_names = read_contract(contract_path)
     row = [_create_result_row()]
     result_df = _create_result_df(spark, row)
     sut = ProcessStepResultWriter(
@@ -331,7 +330,6 @@ def test__write__writes_columns_matching_contract(
     # Assert
     actual_df = spark.read.table(TABLE_NAME).where(
         col(ResultTableColName.batch_id) == batch_id
-    )    
-    
+    )
+
     assert_contract_matches_schema(contract_path, actual_df.schema)
-    # assert sorted(actual_df.columns) == sorted(expected_column_names)
