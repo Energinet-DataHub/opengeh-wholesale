@@ -73,11 +73,13 @@ def _calculate(
 
     temporay_production_per_ga_and_brp_and_es = (
         _calculate_temporay_production_per_per_ga_and_brp_and_es(
+            result_writer,
             enriched_time_series_point_df
         )
     )
     temporay_flex_consumption_per_ga_and_brp_and_es = (
         _calculate_temporay_flex_consumption_per_per_ga_and_brp_and_es(
+            result_writer,
             enriched_time_series_point_df
         )
     )
@@ -149,20 +151,36 @@ def _calculate_consumption_per_ga_and_brp_and_es(
 
 
 def _calculate_temporay_production_per_per_ga_and_brp_and_es(
+    result_writer: ProcessStepResultWriter,
     enriched_time_series: DataFrame,
 ) -> DataFrame:
     temporay_production_per_per_ga_and_brp_and_es = (
         agg_steps.aggregate_production_ga_brp_es(enriched_time_series)
     )
+
+    result_writer.write(
+        temporay_production_per_per_ga_and_brp_and_es,
+        TimeSeriesType.TEMP_FLEX_CONSUMPTION,
+        AggregationLevel.es_per_brp_per_ga,
+    )
+
     return temporay_production_per_per_ga_and_brp_and_es
 
 
 def _calculate_temporay_flex_consumption_per_per_ga_and_brp_and_es(
+    result_writer: ProcessStepResultWriter,
     enriched_time_series: DataFrame,
 ) -> DataFrame:
     temporay_flex_consumption_per_ga_and_brp_and_es = (
         agg_steps.aggregate_flex_consumption_ga_brp_es(enriched_time_series)
     )
+
+    result_writer.write(
+        temporay_flex_consumption_per_ga_and_brp_and_es,
+        TimeSeriesType.TEMP_FLEX_CONSUMPTION,
+        AggregationLevel.es_per_brp_per_ga,
+    )
+
     return temporay_flex_consumption_per_ga_and_brp_and_es
 
 
