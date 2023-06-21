@@ -31,7 +31,7 @@ from package.codelists import (
 )
 from package.constants import Colname, ResultTableColName
 from package.file_writers.process_step_result_writer import ProcessStepResultWriter
-from tests.contract_utils import read_contract
+from tests.contract_utils import assert_contract_matches_schema
 from tests.helpers.assert_calculation_file_path import (
     CalculationFileType,
     assert_file_path_match_contract,
@@ -311,7 +311,7 @@ def test__write__writes_columns_matching_contract(
 ) -> None:
     # Arrange
     contract_path = f"{contracts_path}/result-table-column-names.json"
-    expected_column_names = read_contract(contract_path)
+    # expected_column_names = read_contract(contract_path)
     row = [_create_result_row()]
     result_df = _create_result_df(spark, row)
     sut = ProcessStepResultWriter(
@@ -331,5 +331,7 @@ def test__write__writes_columns_matching_contract(
     # Assert
     actual_df = spark.read.table(TABLE_NAME).where(
         col(ResultTableColName.batch_id) == batch_id
-    )
-    assert sorted(actual_df.columns) == sorted(expected_column_names)
+    )    
+    
+    assert_contract_matches_schema(contract_path, actual_df.schema)
+    # assert sorted(actual_df.columns) == sorted(expected_column_names)
