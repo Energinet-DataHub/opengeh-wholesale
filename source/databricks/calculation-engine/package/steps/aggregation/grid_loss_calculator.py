@@ -45,21 +45,6 @@ def calculate_grid_loss(
     )
 
 
-# (step 22)
-def calculate_residual_ga(
-    agg_net_exchange: DataFrame,
-    agg_non_profiled_consumption: DataFrame,
-    agg_flex_consumption: DataFrame,
-    agg_production: DataFrame
-) -> DataFrame:
-    return __calculate_grid_loss_or_residual_ga(
-        agg_net_exchange,
-        agg_non_profiled_consumption,
-        agg_flex_consumption,
-        agg_production,
-    )
-
-
 def __calculate_grid_loss_or_residual_ga(
     agg_net_exchange: DataFrame,
     agg_non_profiled_consumption: DataFrame,
