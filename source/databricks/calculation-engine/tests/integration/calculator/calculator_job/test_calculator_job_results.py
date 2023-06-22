@@ -99,10 +99,6 @@ from package.constants import Colname
             TimeSeriesType.TOTAL_CONSUMPTION.value,
             AggregationLevel.total_ga.value,
         ),
-        (
-            TimeSeriesType.RESIDUAL.value,
-            AggregationLevel.total_ga.value,
-        ),
     ],
 )
 def test__result__is_created(

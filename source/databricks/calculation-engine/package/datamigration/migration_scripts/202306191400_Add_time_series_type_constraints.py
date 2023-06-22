@@ -30,8 +30,7 @@ CONSTRAINTS = [
             'grid_loss',
             'negative_grid_loss',
             'positive_grid_loss',
-            'total_consumption',
-            'residual')""",
+            'total_consumption')""",
     ),
 ]
 
