@@ -7,20 +7,20 @@ wholesaleDomain = group "Wholesale" {
         tags "Data Storage" "Microsoft Azure - Data Lake Store Gen1"
     }
     wholesaleCalculator = container "Calculation Engine" {
-        description "<add description>"
+        description "Executes energy calculations"
         technology "Azure Databricks"
         tags "Microsoft Azure - Azure Databricks"
 
         # Domain relationships
-        this -> wholesaleDataLake "write to"
+        this -> wholesaleDataLake "read / write"
     }
     wholesaleDb = container "Wholesale Database" {
-        description "<add description>"
+        description "Stores batches and operations data"
         technology "SQL Database Schema"
         tags "Data Storage" "Microsoft Azure - SQL Database"
     }
     wholesaleApi = container "Wholesale API" {
-        description "<add description>"
+        description "Backend server providing external web API for wholesale operations"
         technology "Asp.Net Core Web API"
         tags "Microsoft Azure - App Services"
 
