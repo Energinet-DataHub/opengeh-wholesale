@@ -286,7 +286,7 @@ def _calculate_flex_consumption(
     actors_writer: ActorsWriter,
     result_writer: ProcessStepResultWriter,
     flex_consumption_per_ga_and_brp_and_es: DataFrame,
-) -> DataFrame:
+) -> None:
     result_writer.write(
         flex_consumption_per_ga_and_brp_and_es,
         TimeSeriesType.FLEX_CONSUMPTION,
@@ -336,7 +336,7 @@ def _calculate_non_profiled_consumption(
     actors_writer: ActorsWriter,
     result_writer: ProcessStepResultWriter,
     consumption_per_ga_and_brp_and_es: DataFrame,
-) -> DataFrame:
+) -> None:
     result_writer.write(
         consumption_per_ga_and_brp_and_es,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
