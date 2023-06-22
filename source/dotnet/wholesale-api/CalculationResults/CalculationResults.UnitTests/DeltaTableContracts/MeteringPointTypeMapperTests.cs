@@ -21,7 +21,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.DeltaTableCon
 
 public class MeteringPointTypeMapperTests
 {
-    [Fact(Skip = "temporarily disabled, because metering point type can be null")]
+    [Fact]
     public async Task MeteringPointTypeMapper_ReturnsValidMeteringPointType()
     {
         // Arrange

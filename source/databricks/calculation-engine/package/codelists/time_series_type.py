@@ -25,4 +25,3 @@ class TimeSeriesType(Enum):
     NEGATIVE_GRID_LOSS = "negative_grid_loss"
     POSITIVE_GRID_LOSS = "positive_grid_loss"
     TOTAL_CONSUMPTION = "total_consumption"
-    RESIDUAL = "residual"

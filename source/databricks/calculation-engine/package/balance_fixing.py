@@ -112,7 +112,7 @@ def _calculate(
     flex_consumption_per_ga = _calculate_flex_consumption(actors_writer, result_writer, flex_consumption_per_ga_and_brp_and_es)
 
     _calculate_total_consumption(actors_writer, result_writer, production_per_ga, net_exchange_per_ga)
-    _calculate_residual_ga(actors_writer, result_writer, net_exchange_per_ga, consumption_per_ga, flex_consumption_per_ga, production_per_ga)
+    _calculate_residual_ga(net_exchange_per_ga, consumption_per_ga, flex_consumption_per_ga, production_per_ga)
 
 
 def _calculate_net_exchange_per_neighboring_ga(
@@ -409,21 +409,9 @@ def _calculate_total_consumption(
 
 
 def _calculate_residual_ga(
-    actors_writer: ActorsWriter,
-    result_writer: ProcessStepResultWriter,
     net_exchange_per_ga: DataFrame,
     consumption_per_ga: DataFrame,
     flex_consumption_per_ga: DataFrame,
     production_per_ga: DataFrame
 ) -> None:
-    residual = agg_steps.calculate_residual_ga(net_exchange_per_ga, consumption_per_ga, flex_consumption_per_ga, production_per_ga)
-    result_writer.write(
-        residual,
-        TimeSeriesType.RESIDUAL,
-        AggregationLevel.total_ga,
-    )
-
-    # write actors list to datalake
-    actors_writer.write(
-        residual, TimeSeriesType.RESIDUAL
-    )
+    agg_steps.calculate_residual_ga(net_exchange_per_ga, consumption_per_ga, flex_consumption_per_ga, production_per_ga)

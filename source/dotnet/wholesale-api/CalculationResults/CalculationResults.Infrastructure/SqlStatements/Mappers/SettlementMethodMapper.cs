@@ -30,7 +30,6 @@ public static class SettlementMethodMapper
             TimeSeriesType.NegativeGridLoss => null,
             TimeSeriesType.PositiveGridLoss => SettlementMethod.Flex,
             TimeSeriesType.TotalConsumption => null,
-            TimeSeriesType.Residual => null,
             _ => throw new NotImplementedException($"Cannot map timeSeriesType type '{timeSeriesType}"),
         };
 }

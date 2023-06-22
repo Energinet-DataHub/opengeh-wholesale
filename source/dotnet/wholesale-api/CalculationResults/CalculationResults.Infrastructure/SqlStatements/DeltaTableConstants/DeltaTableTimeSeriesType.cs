@@ -27,5 +27,4 @@ public static class DeltaTableTimeSeriesType
     public const string NegativeGridLoss = "negative_grid_loss";
     public const string PositiveGridLoss = "positive_grid_loss";
     public const string TotalConsumption = "total_consumption";
-    public const string Residual = "residual";
 }

@@ -35,10 +35,6 @@
     {
       "name": "TOTAL_CONSUMPTION",
       "value": "total_consumption"
-    },
-    {
-      "name": "RESIDUAL",
-      "value": "residual"
     }
   ]
 }

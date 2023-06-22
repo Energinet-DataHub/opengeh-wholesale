@@ -18,7 +18,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlState
 
 public static class MeteringPointTypeMapper
 {
-    public static MeteringPointType? FromDeltaTableValue(string timeSeriesType) =>
+    public static MeteringPointType FromDeltaTableValue(string timeSeriesType) =>
         TimeSeriesTypeMapper.FromDeltaTableValue(timeSeriesType) switch
         {
             TimeSeriesType.Production => MeteringPointType.Production,
@@ -30,7 +30,6 @@ public static class MeteringPointTypeMapper
             TimeSeriesType.NegativeGridLoss => MeteringPointType.Production,
             TimeSeriesType.PositiveGridLoss => MeteringPointType.Consumption,
             TimeSeriesType.TotalConsumption => MeteringPointType.Consumption,
-            TimeSeriesType.Residual => null,
             _ => throw new NotImplementedException($"Cannot map timeSeriesType type '{timeSeriesType}"),
         };
 }
