@@ -14,6 +14,8 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.Batches.Interfaces;
+using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
@@ -83,11 +85,16 @@ public class CalculationResultQueriesTests
     [Theory]
     [InlineAutoMoqData]
     public async Task GetAsync_ReturnsResultRowWithExpectedValues(
+        BatchDto anyBatch,
+        [Frozen] Mock<IBatchesClient> batchesClientMock,
         [Frozen] Mock<ISqlStatementClient> sqlStatementClientMock,
         CalculationResultQueries sut)
     {
         // Arrange
         var batchId = Guid.Parse(_row0BatchId);
+        batchesClientMock
+            .Setup(client => client.GetAsync(batchId))
+            .ReturnsAsync(anyBatch);
         sqlStatementClientMock
             .Setup(x => x.ExecuteAsync(It.IsAny<string>()))
             .Returns(GetRowsAsync(1));

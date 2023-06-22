@@ -14,7 +14,9 @@
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.Common.Models;
 using FluentAssertions;
+using NodaTime;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Interfaces.CalculationResults;
@@ -26,10 +28,14 @@ public class CalculationResultTests
     public void Ctor_WhenNoPoints_ThrowsArgumentException(
         Guid anyBatchId,
         string anyGridArea,
-        TimeSeriesType anyTimeSeriesType)
+        TimeSeriesType anyTimeSeriesType,
+        ProcessType anyProcessType,
+        Instant anyPeriodStart,
+        Instant anyPeriodEnd)
     {
         var emptyTimeSeriesPoints = new TimeSeriesPoint[] { };
-        var exception = Assert.Throws<ArgumentException>(() => new CalculationResult(anyBatchId, anyGridArea, anyTimeSeriesType, null, null, emptyTimeSeriesPoints));
+        var exception = Assert.Throws<ArgumentException>(() =>
+            new CalculationResult(anyBatchId, anyGridArea, anyTimeSeriesType, null, null, emptyTimeSeriesPoints, anyProcessType, anyPeriodStart, anyPeriodEnd));
         exception.Message.Should().Contain("empty");
     }
 }
