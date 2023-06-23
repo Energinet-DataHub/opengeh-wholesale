@@ -96,3 +96,11 @@ module "apima_b2b" {
     }
   ]
 }
+
+module "kvs_apim_b2b_api_name" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
+
+  name         = "apim-b2b-api-name"
+  value        = module.apima_b2b.name
+  key_vault_id = module.kv_shared.id
+}
