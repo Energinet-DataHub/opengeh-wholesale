@@ -22,7 +22,7 @@ resource "databricks_secret" "appi_instrumentation_key" {
 
 resource "databricks_secret" "st_dropzone_storage_account" {
   key          = "st_dropzone_storage_account"
-  string_value = data.azurerm_storage_account.drop.name
+  string_value = module.st_dh2dropzone.name
   scope        = databricks_secret_scope.migration_scope.id
 }
 
