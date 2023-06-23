@@ -41,7 +41,7 @@ public class DatabricksSqlResponseParser : IDatabricksSqlResponseParser
                 var nextChunkInternalLink = GetNextChunkInternalLink(jsonObject);
                 return DatabricksSqlResponse.CreateAsSucceeded(statementId, tableChunk, nextChunkInternalLink);
             default:
-                throw new DatabricksSqlException($@"Databricks SQL statement execution failed. State: {state}");
+                throw new DatabricksSqlException($@"Databricks SQL statement execution failed. State: {state} \n {jsonResponse}");
         }
     }
 
