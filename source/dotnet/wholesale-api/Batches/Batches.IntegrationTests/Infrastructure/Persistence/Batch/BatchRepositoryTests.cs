@@ -160,9 +160,9 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture<Datab
     [InlineData("2022-01-30T23:00Z", "2022-02-02T23:00Z", true)] // Period overlaps end of batch interval
     [InlineData("2021-12-30T23:00Z", "2022-02-01T23:00Z", true)] // Period overlaps entire batch interval
     [InlineData("2021-12-25T23:00Z", "2022-01-01T23:00Z", true)] // Period overlaps start of batch interval
-    [InlineData("2021-12-25T23:00Z", "2021-12-31T23:00Z", true)] // Period before start of batch interval, include batch start
+    [InlineData("2021-12-25T23:00Z", "2021-12-31T23:00Z", false)] // Period before start of batch interval, complete miss
     [InlineData("2021-12-21T23:00Z", "2021-12-29T23:00Z", false)] // Period before start of batch interval, complete miss
-    [InlineData("2022-01-31T23:00Z", "2022-02-01T23:00Z", true)] // Period past end of batch interval, include batch end
+    [InlineData("2022-01-31T23:00Z", "2022-02-01T23:00Z", false)] // Period past end of batch interval, complete miss
     public async Task SearchAsync_HasPeriodFilter_FiltersAsExpected(DateTimeOffset start, DateTimeOffset end, bool expected)
     {
         // Arrange
