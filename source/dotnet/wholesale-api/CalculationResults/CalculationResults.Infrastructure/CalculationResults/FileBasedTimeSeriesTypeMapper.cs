@@ -28,6 +28,7 @@ public static class FileBasedTimeSeriesTypeMapper
     private const string GridLoss = "grid_loss";
     private const string NegativeGridLoss = "negative_grid_loss";
     private const string PositiveGridLoss = "positive_grid_loss";
+    private const string TotalConsumption = "total_consumption";
 
     public static string Map(TimeSeriesType timeSeriesType)
     {
@@ -41,6 +42,7 @@ public static class FileBasedTimeSeriesTypeMapper
             TimeSeriesType.GridLoss => GridLoss,
             TimeSeriesType.NegativeGridLoss => NegativeGridLoss,
             TimeSeriesType.PositiveGridLoss => PositiveGridLoss,
+            TimeSeriesType.TotalConsumption => TotalConsumption,
             _ => throw new ArgumentOutOfRangeException(nameof(timeSeriesType), timeSeriesType, null),
         };
     }

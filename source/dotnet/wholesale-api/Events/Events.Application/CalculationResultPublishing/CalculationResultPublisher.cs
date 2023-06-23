@@ -52,6 +52,7 @@ public class CalculationResultPublisher : ICalculationResultPublisher
         await PublishForGridAccessProviderAsync(batchGridAreaInfo, TimeSeriesType.Production).ConfigureAwait(false);
         await PublishForGridAccessProviderAsync(batchGridAreaInfo, TimeSeriesType.NetExchangePerGa).ConfigureAwait(false);
         await PublishForGridAccessProviderAsync(batchGridAreaInfo, TimeSeriesType.NetExchangePerNeighboringGa).ConfigureAwait(false);
+        await PublishForGridAccessProviderAsync(batchGridAreaInfo, TimeSeriesType.TotalConsumption).ConfigureAwait(false);
 
         // Publish events for energy suppliers
         await PublishForEnergySuppliersAsync(batchGridAreaInfo, TimeSeriesType.NonProfiledConsumption).ConfigureAwait(false);
