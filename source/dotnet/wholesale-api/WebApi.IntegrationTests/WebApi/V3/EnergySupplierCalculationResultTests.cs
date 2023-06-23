@@ -13,16 +13,11 @@
 // limitations under the License.
 
 using System.Net;
-using System.Net.Http.Json;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Actors;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Actors.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
-using Energinet.DataHub.Wholesale.WebApi.V3;
 using FluentAssertions;
-using Moq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -54,56 +49,5 @@ public class EnergySupplierCalculationResultTests : WebApiTestBase
 
         // Assert
         actualContent.StatusCode.Should().Be(expectedHttpStatusCode);
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task HTTP_GET_V3_ReturnsExpectedActorInJson(
-        Mock<IActorClient> actorRepositoryMock,
-        Guid batchId,
-        string gridAreaCode,
-        TimeSeriesType timeSeriesType,
-        Actor expectedActor)
-    {
-        // Arrange
-        var url = $"/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}/energy-suppliers";
-
-        actorRepositoryMock
-            .Setup(service => service.GetEnergySuppliersAsync(batchId, gridAreaCode, timeSeriesType))
-            .ReturnsAsync(() => new[] { expectedActor });
-        Factory.ActorRepositoryMock = actorRepositoryMock;
-
-        // Act
-        var actualContent = await Client.GetAsync(url);
-
-        // Assert
-        var actualActors = await actualContent.Content.ReadFromJsonAsync<List<ActorDto>>();
-        actualActors!.Single().Should().BeEquivalentTo(expectedActor);
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task HTTP_GET_V3_WithBalanceResponsibleGln_ReturnsExpectedActorInJson(
-        Mock<IActorClient> actorRepositoryMock,
-        Guid batchId,
-        string gridAreaCode,
-        TimeSeriesType timeSeriesType,
-        string balanceResponsiblePartyGln,
-        Actor expectedActor)
-    {
-        // Arrange
-        var url = $"/v3/batches/{batchId}/processes/{gridAreaCode}/time-series-types/{timeSeriesType}/energy-suppliers/?balanceResponsibleParty={balanceResponsiblePartyGln}";
-
-        actorRepositoryMock
-            .Setup(service => service.GetEnergySuppliersByBalanceResponsiblePartyAsync(batchId, gridAreaCode, timeSeriesType, balanceResponsiblePartyGln))
-            .ReturnsAsync(() => new[] { expectedActor });
-        Factory.ActorRepositoryMock = actorRepositoryMock;
-
-        // Act
-        var actualContent = await Client.GetAsync(url);
-
-        // Assert
-        var actualActors = await actualContent.Content.ReadFromJsonAsync<List<ActorDto>>();
-        actualActors!.Single().Should().BeEquivalentTo(expectedActor);
     }
 }

@@ -20,16 +20,16 @@ from tests.helpers import file_utils
 
 
 class CalculationFileType(Enum):
-    TimeSeriesQuarterBasisDataForTotalGa = "time_series_quarter_basis_data_file_for_total_grid_area"
+    TimeSeriesQuarterBasisDataForTotalGa = (
+        "time_series_quarter_basis_data_file_for_total_grid_area"
+    )
     TimeSeriesHourBasisData = "time_series_hour_basis_data_file_for_total_grid_area"
     MasterBasisDataForTotalGa = "master_basis_data_file_for_total_grid_area"
-    TimeSeriesQuarterBasisDataForEsPerGa = "time_series_quarter_basis_data_file_for_es_per_ga"
+    TimeSeriesQuarterBasisDataForEsPerGa = (
+        "time_series_quarter_basis_data_file_for_es_per_ga"
+    )
     TimeSeriesHourBasisDataForEsPerGa = "time_series_hour_basis_data_file_for_es_per_ga"
     MasterBasisDataForEsPerGa = "master_basis_data_file_for_es_per_ga"
-    ResultFileForTotalGridArea = "result_file_for_total_grid_area"
-    ResultFileForGaBrpEs = "result_file_for_ga_brp_es"
-    ResultFile = "result_file"
-    ActorsFile = "actors_file"
 
 
 def _calculation_file_paths_contract(

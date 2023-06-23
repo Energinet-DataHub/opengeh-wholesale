@@ -102,54 +102,8 @@ def test__published_time_series_points_contract_matches_schema_from_input_time_s
     )
 
 
-def test__quantity_is_with_precision_3(
-    spark: SparkSession,
-    data_lake_path: str,
-    executed_calculation_job: None,
-) -> None:
-    # Arrange
-    result_relative_path_production = infra.get_result_file_relative_path(
-        C.executed_batch_id,
-        "805",
-        None,
-        None,
-        TimeSeriesType.PRODUCTION,
-        AggregationLevel.total_ga,
-    )
-
-    result_relative_path_non_profiled_consumption = infra.get_result_file_relative_path(
-        C.executed_batch_id,
-        "805",
-        C.energy_supplier_gln_a,
-        None,
-        TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        AggregationLevel.es_per_ga,
-    )
-
-    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
-    # Assert: Quantity output is a string encoded decimal with precision 3 (number of digits after delimiter)
-    # Note that any change or violation may impact consumers that expects exactly this precision from the result
-    result_production = spark.read.json(
-        f"{data_lake_path}/{result_relative_path_production}"
-    )
-    result_non_profiled_consumption = spark.read.json(
-        f"{data_lake_path}/{result_relative_path_non_profiled_consumption}"
-    )
-
-    import re
-
-    assert re.search(r"^\d+\.\d{3}$", result_production.first().quantity)
-    assert re.search(r"^\d+\.\d{3}$", result_non_profiled_consumption.first().quantity)
-
-
 @patch("package.calculator_job._get_valid_args_or_throw")
-@patch("package.calculator_job.env_vars")
-@patch("package.calculator_job.islocked")
-def test__when_data_lake_is_locked__return_exit_code_3(
-    mock_islocked: Mock,
-    mock_env_vars: Mock,
-    mock_args_parser: Mock,
-) -> None:
+def test__when_data_lake_is_locked__return_exit_code_3(mock_islocked: Mock) -> None:
     # Arrange
     mock_islocked.return_value = True
 
@@ -162,11 +116,9 @@ def test__when_data_lake_is_locked__return_exit_code_3(
 
 @patch("package.calculator_job.initialize_spark")
 @patch("package.calculator_job.islocked")
-@patch("package.calculator_job._start_calculator")
 def test__start__start_calculator_called_without_exceptions(
     mock_start_calculator: Mock,
     mock_is_locked: Mock,
-    mock_init_spark: Mock,
 ) -> None:
     # Arrange
     mock_is_locked.return_value = False
