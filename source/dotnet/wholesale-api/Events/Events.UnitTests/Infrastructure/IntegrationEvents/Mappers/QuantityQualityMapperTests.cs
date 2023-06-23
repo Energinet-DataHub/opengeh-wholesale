@@ -28,9 +28,22 @@ public class QuantityQualityMapperTests
     [InlineAutoMoqData(QuantityQuality.Measured, Contracts.Events.QuantityQuality.Measured)]
     [InlineAutoMoqData(QuantityQuality.Missing, Contracts.Events.QuantityQuality.Missing)]
     [InlineAutoMoqData(QuantityQuality.Calculated, Contracts.Events.QuantityQuality.Calculated)]
-    public void MapQuantityQuality_WhenCalled_MapsCorrectly(QuantityQuality quantityQuality, Wholesale.Contracts.Events.QuantityQuality expected)
+    public void MapQuantityQuality_WhenCalled_MapsCorrectly(QuantityQuality quantityQuality, Contracts.Events.QuantityQuality expected)
     {
         // Act & Assert
         QuantityQualityMapper.MapQuantityQuality(quantityQuality).Should().Be(expected);
+    }
+
+    [Fact]
+    public void MapQuantityQuality_MapsAnyValidValue()
+    {
+        foreach (var quality in Enum.GetValues(typeof(QuantityQuality)).Cast<QuantityQuality>())
+        {
+            // Act
+            var actual = QuantityQualityMapper.MapQuantityQuality(quality);
+
+            // Assert: Is defined (and implicitly that it didn't throw exception)
+            Enum.IsDefined(typeof(Contracts.Events.QuantityQuality), actual).Should().BeTrue();
+        }
     }
 }

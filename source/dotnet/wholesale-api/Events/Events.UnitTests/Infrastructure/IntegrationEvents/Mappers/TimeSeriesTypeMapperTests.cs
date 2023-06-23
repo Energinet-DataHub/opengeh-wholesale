@@ -38,22 +38,16 @@ public class TimeSeriesTypeMapperTests
         TimeSeriesTypeMapper.MapTimeSeriesType(timeSeriesType).Should().Be(expected);
     }
 
-    /// <summary>
-    /// Ensure that no value is missed in the mapping.
-    /// Please update test above when adding new values.
-    /// </summary>
-    [Theory]
-    [MemberData(nameof(GetTypes))]
-    public void MapTimeSeriesType_MapsAnyPossibleValue(TimeSeriesType timeSeriesType)
+    [Fact]
+    public void MapTimeSeriesType_MapsAnyValidValue()
     {
-        var actual = TimeSeriesTypeMapper.MapTimeSeriesType(timeSeriesType);
-        Enum.IsDefined(typeof(Contracts.Events.TimeSeriesType), actual).Should().BeTrue();
-    }
+        foreach (var timeSeriesType in Enum.GetValues(typeof(TimeSeriesType)).Cast<TimeSeriesType>())
+        {
+            // Act
+            var actual = TimeSeriesTypeMapper.MapTimeSeriesType(timeSeriesType);
 
-    public static IEnumerable<object[]> GetTypes()
-    {
-        return Enum.GetValues(typeof(TimeSeriesType))
-            .Cast<TimeSeriesType>()
-            .Select(type => new object[] { type });
+            // Assert: Is defined (and implicitly that it didn't throw exception)
+            Enum.IsDefined(typeof(Contracts.Events.TimeSeriesType), actual).Should().BeTrue();
+        }
     }
 }
