@@ -52,9 +52,9 @@ public sealed class CalculationResult
 
     public TimeSeriesType TimeSeriesType { get; private set; }
 
-    public string? EnergySupplierId { get; }
+    public string? EnergySupplierId { get; private set; }
 
-    public string? BalanceResponsibleId { get; }
+    public string? BalanceResponsibleId { get; private set; }
 
     public Instant PeriodStart { get; }
 
