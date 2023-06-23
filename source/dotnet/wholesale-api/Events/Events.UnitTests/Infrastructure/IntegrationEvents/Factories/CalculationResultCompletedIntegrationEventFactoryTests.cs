@@ -33,21 +33,6 @@ public class CalculationResultCompletedIntegrationEventFactoryTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public void CreateCalculationResultCompletedForGridArea_WhenQuantityQualityCalculated_ExceptionIsThrown(
-        CalculationResultCompletedIntegrationEventFactory sut,
-        CalculationResultBuilder calculationResultBuilder)
-    {
-        // Arrange
-        var calculatedTimeSeriesPoint =
-            new TimeSeriesPoint(DateTimeOffset.Now, 10.101000000m, QuantityQuality.Calculated);
-        var calculationResult = calculationResultBuilder.WithTimeSeriesPoints(new[] { calculatedTimeSeriesPoint }).Build();
-
-        // Act & Assert
-        Assert.Throws<ArgumentException>(() => sut.CreateForGridArea(calculationResult));
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
     public void CreateCalculationResultCompletedForGridArea_WhenCreating_ResultIsForTotalGridArea(
         CalculationResult anyCalculationResult,
         CalculationResultCompletedIntegrationEventFactory sut)
@@ -142,23 +127,6 @@ public class CalculationResultCompletedIntegrationEventFactoryTests
 
     [Theory]
     [InlineAutoMoqData]
-    public void CreateCalculationResultCompletedForEnergySupplier_WhenQuantityQualityCalculated_ExceptionIsThrown(
-        CalculationResultBuilder calculationResultBuilder,
-        CalculationResultCompletedIntegrationEventFactory sut)
-    {
-        // Arrange
-        var calculatedTimeSeriesPoint =
-            new TimeSeriesPoint(DateTimeOffset.Now, 10.101000000m, QuantityQuality.Calculated);
-        var calculationResult = calculationResultBuilder.WithTimeSeriesPoints(new[] { calculatedTimeSeriesPoint }).Build();
-
-        // Act & Assert
-        Assert.Throws<ArgumentException>(() => sut.CreateForEnergySupplier(
-            calculationResult,
-            "AGlnNumber"));
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
     public void CreateCalculationResultCompletedForBalanceResponsibleParty_ReturnsResultForBalanceResponsibleParty(
         CalculationResult anyCalculationResult,
         CalculationResultCompletedIntegrationEventFactory sut)
@@ -204,22 +172,6 @@ public class CalculationResultCompletedIntegrationEventFactoryTests
         actual.TimeSeriesPoints[0].Time.Should().Be(timeSeriesPoint.Time.ToTimestamp());
         actual.TimeSeriesPoints[0].QuantityQuality.Should()
             .Be(QuantityQualityMapper.MapQuantityQuality(timeSeriesPoint.Quality));
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public void CreateCalculationResultCompletedForBalanceResponsibleParty_WhenQuantityQualityCalculated_ExceptionIsThrown(
-        CalculationResultBuilder calculationResultBuilder,
-        CalculationResultCompletedIntegrationEventFactory sut)
-    {
-        // Arrange
-        var calculatedTimeSeriesPoints = new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Calculated) };
-        var calculationResult = calculationResultBuilder.WithTimeSeriesPoints(calculatedTimeSeriesPoints).Build();
-
-        // Act & Assert
-        Assert.Throws<ArgumentException>(() => sut.CreateForBalanceResponsibleParty(
-            calculationResult,
-            "ABrpGlnNumber"));
     }
 
     [Theory]
@@ -278,23 +230,5 @@ public class CalculationResultCompletedIntegrationEventFactoryTests
         actual.TimeSeriesPoints[0].Time.Should().Be(timeSeriesPoint.Time.ToTimestamp());
         actual.TimeSeriesPoints[0].QuantityQuality.Should()
             .Be(QuantityQualityMapper.MapQuantityQuality(timeSeriesPoint.Quality));
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public void
-        CreateCalculationResultCompletedForEnergySupplierByBalanceResponsibleParty_WhenQuantityQualityCalculated_ExceptionIsThrown(
-            CalculationResultBuilder calculationResultBuilder,
-            CalculationResultCompletedIntegrationEventFactory sut)
-    {
-        // Arrange
-        var calculatedTimeSeriesPoints = new TimeSeriesPoint[] { new(DateTimeOffset.Now, 10.0m, QuantityQuality.Calculated) };
-        var calculationResult = calculationResultBuilder.WithTimeSeriesPoints(calculatedTimeSeriesPoints).Build();
-
-        // Act & Assert
-        Assert.Throws<ArgumentException>(() => sut.CreateForEnergySupplierByBalanceResponsibleParty(
-            calculationResult,
-            "AEsGlnNumer",
-            "ABrpGlnNumber"));
     }
 }

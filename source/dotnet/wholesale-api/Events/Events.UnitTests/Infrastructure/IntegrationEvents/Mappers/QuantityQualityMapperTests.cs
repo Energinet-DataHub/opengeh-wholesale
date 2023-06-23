@@ -23,20 +23,27 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
 public class QuantityQualityMapperTests
 {
     [Theory]
-    [InlineAutoMoqData(QuantityQuality.Estimated, Wholesale.Contracts.Events.QuantityQuality.Estimated)]
-    [InlineAutoMoqData(QuantityQuality.Incomplete, Wholesale.Contracts.Events.QuantityQuality.Incomplete)]
-    [InlineAutoMoqData(QuantityQuality.Measured, Wholesale.Contracts.Events.QuantityQuality.Measured)]
-    [InlineAutoMoqData(QuantityQuality.Missing, Wholesale.Contracts.Events.QuantityQuality.Missing)]
-    public void MapQuantityQuality_WhenCalled_MapsCorrectly(QuantityQuality quantityQuality, Wholesale.Contracts.Events.QuantityQuality expected)
+    [InlineAutoMoqData(QuantityQuality.Estimated, Contracts.Events.QuantityQuality.Estimated)]
+    [InlineAutoMoqData(QuantityQuality.Incomplete, Contracts.Events.QuantityQuality.Incomplete)]
+    [InlineAutoMoqData(QuantityQuality.Measured, Contracts.Events.QuantityQuality.Measured)]
+    [InlineAutoMoqData(QuantityQuality.Missing, Contracts.Events.QuantityQuality.Missing)]
+    [InlineAutoMoqData(QuantityQuality.Calculated, Contracts.Events.QuantityQuality.Calculated)]
+    public void MapQuantityQuality_WhenCalled_MapsCorrectly(QuantityQuality quantityQuality, Contracts.Events.QuantityQuality expected)
     {
         // Act & Assert
         QuantityQualityMapper.MapQuantityQuality(quantityQuality).Should().Be(expected);
     }
 
     [Fact]
-    public void MapQuantityQuality_WhenCalledWithCalculated_ExceptionIsThrown()
+    public void MapQuantityQuality_MapsAnyValidValue()
     {
-        // Act & Assert
-        Assert.Throws<ArgumentException>(() => QuantityQualityMapper.MapQuantityQuality(QuantityQuality.Calculated));
+        foreach (var quality in Enum.GetValues(typeof(QuantityQuality)).Cast<QuantityQuality>())
+        {
+            // Act
+            var actual = QuantityQualityMapper.MapQuantityQuality(quality);
+
+            // Assert: Is defined (and implicitly that it didn't throw exception)
+            Enum.IsDefined(typeof(Contracts.Events.QuantityQuality), actual).Should().BeTrue();
+        }
     }
 }
