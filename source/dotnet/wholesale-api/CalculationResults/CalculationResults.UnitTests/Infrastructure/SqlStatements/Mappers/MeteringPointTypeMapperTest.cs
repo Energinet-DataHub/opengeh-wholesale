@@ -16,6 +16,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatement
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using FluentAssertions;
+using Test.Core;
 using Xunit;
 using Xunit.Categories;
 
@@ -24,6 +25,23 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 [UnitTest]
 public class MeteringPointTypeMapperTests
 {
+    [Fact]
+    public async Task FromDeltaTableValue_ReturnsValidMeteringPointType()
+    {
+        // Arrange
+        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.Enums.time-series-type.json");
+        var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
+
+        foreach (var validDeltaValue in validDeltaValues)
+        {
+            // Act
+            var actual = MeteringPointTypeMapper.FromDeltaTableValue(validDeltaValue);
+
+            // Assert it's a defined enum value (and not null)
+            actual.Should().BeDefined();
+        }
+    }
+
     [Theory]
     [InlineData(DeltaTableTimeSeriesType.FlexConsumption, MeteringPointType.Consumption)]
     [InlineData(DeltaTableTimeSeriesType.Production, MeteringPointType.Production)]
