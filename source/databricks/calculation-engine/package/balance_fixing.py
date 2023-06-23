@@ -22,8 +22,6 @@ from package.file_writers.basis_data_writer import BasisDataWriter
 from package.file_writers.process_step_result_writer import ProcessStepResultWriter
 from pyspark.sql import DataFrame
 from typing import Tuple
-from package.constants import Colname
-from pyspark.sql.functions import col
 
 
 def calculate_balance_fixing(
@@ -108,8 +106,10 @@ def _calculate(
     _calculate_non_profiled_consumption(
         actors_writer, result_writer, consumption_per_ga_and_brp_and_es
     )
-    _calculate_production(actors_writer, result_writer, production_per_ga_and_brp_and_es)
+    production_per_ga = _calculate_production(actors_writer, result_writer, production_per_ga_and_brp_and_es)
     _calculate_flex_consumption(actors_writer, result_writer, flex_consumption_per_ga_and_brp_and_es)
+
+    _calculate_total_consumption(actors_writer, result_writer, production_per_ga, net_exchange_per_ga)
 
 
 def _calculate_net_exchange_per_neighboring_ga(
@@ -236,7 +236,7 @@ def _calculate_production(
     actors_writer: ActorsWriter,
     result_writer: ProcessStepResultWriter,
     production_per_ga_and_brp_and_es: DataFrame,
-) -> None:
+) -> DataFrame:
     result_writer.write(
         production_per_ga_and_brp_and_es,
         TimeSeriesType.PRODUCTION,
@@ -278,6 +278,8 @@ def _calculate_production(
     actors_writer.write(
         production_per_ga_and_brp_and_es, TimeSeriesType.PRODUCTION
     )
+
+    return production_per_ga
 
 
 def _calculate_flex_consumption(
@@ -377,4 +379,23 @@ def _calculate_non_profiled_consumption(
     # write actors list to datalake
     actors_writer.write(
         consumption_per_ga_and_brp_and_es, TimeSeriesType.NON_PROFILED_CONSUMPTION
+    )
+
+
+def _calculate_total_consumption(
+    actors_writer: ActorsWriter,
+    result_writer: ProcessStepResultWriter,
+    production_per_ga: DataFrame,
+    net_exchange_per_ga: DataFrame
+) -> None:
+    total_consumption = agg_steps.calculate_total_consumption(production_per_ga, net_exchange_per_ga)
+    result_writer.write(
+        total_consumption,
+        TimeSeriesType.TOTAL_CONSUMPTION,
+        AggregationLevel.total_ga,
+    )
+
+    # write actors list to datalake
+    actors_writer.write(
+        total_consumption, TimeSeriesType.TOTAL_CONSUMPTION
     )

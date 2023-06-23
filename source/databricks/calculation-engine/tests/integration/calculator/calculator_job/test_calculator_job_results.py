@@ -95,6 +95,10 @@ from package.constants import Colname
             TimeSeriesType.NEGATIVE_GRID_LOSS.value,
             AggregationLevel.total_ga.value,
         ),
+        (
+            TimeSeriesType.TOTAL_CONSUMPTION.value,
+            AggregationLevel.total_ga.value,
+        ),
     ],
 )
 def test__result__is_created(
