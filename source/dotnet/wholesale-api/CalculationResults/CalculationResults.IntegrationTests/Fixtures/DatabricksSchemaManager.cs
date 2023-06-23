@@ -14,9 +14,10 @@
 
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures.TestCommon;
+namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 
 /// <summary>
 /// A manager for managing Databricks SQL schemas and tables from integration tests.
@@ -26,7 +27,7 @@ public class DatabricksSchemaManager
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly HttpClient _httpClient;
 
-    public DatabricksSchemaManager(DatabricksWarehouseSettings settings, string schemaPrefix)
+    public DatabricksSchemaManager(DatabricksSettings settings, string schemaPrefix)
     {
         Settings = settings
             ?? throw new ArgumentNullException(nameof(settings));
@@ -37,7 +38,7 @@ public class DatabricksSchemaManager
 
     // TODO JMG: Consider if we can hide these settings or ensure they are readonly in DatabricksWarehouseSettings,
     // otherwise external developers can manipulate them even after we created the manager
-    public DatabricksWarehouseSettings Settings { get; }
+    public DatabricksSettings Settings { get; }
 
     public string SchemaName { get; }
 
@@ -117,7 +118,7 @@ public class DatabricksSchemaManager
             throw new DatabricksSqlException($"Unable to drop schema on Databricks. Status code: {response.StatusCode}");
     }
 
-    private static HttpClient CreateHttpClient(DatabricksWarehouseSettings settings)
+    private static HttpClient CreateHttpClient(DatabricksSettings settings)
     {
         var httpClient = new HttpClient
         {
