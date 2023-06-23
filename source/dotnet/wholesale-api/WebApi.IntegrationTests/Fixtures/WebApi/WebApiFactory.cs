@@ -15,7 +15,6 @@
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Actors;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.Common.Security;
 using Microsoft.AspNetCore.Authorization;
@@ -61,8 +60,6 @@ public class WebApiFactory : WebApplicationFactory<Startup>
                 SettlementReportApplicationServiceMock?.Object ??
                 new Mock<ISettlementReportClient>().Object);
             services.AddScoped(_ =>
-                CalculationResultClientMock?.Object ?? new Mock<ICalculationResultClient>().Object);
-            services.AddScoped(_ =>
                 ActorRepositoryMock?.Object ?? new Mock<IActorClient>().Object);
             services.AddScoped(_ => BatchesClientMock?.Object ?? new Mock<IBatchesClient>().Object);
 
@@ -77,8 +74,6 @@ public class WebApiFactory : WebApplicationFactory<Startup>
     /// NOTE: This will only work as expected as long as no tests are executed in parallel.
     /// </summary>
     public Mock<ISettlementReportClient>? SettlementReportApplicationServiceMock { get; set; }
-
-    public Mock<ICalculationResultClient>? CalculationResultClientMock { get; set; }
 
     public Mock<IActorClient>? ActorRepositoryMock { get; set; }
 

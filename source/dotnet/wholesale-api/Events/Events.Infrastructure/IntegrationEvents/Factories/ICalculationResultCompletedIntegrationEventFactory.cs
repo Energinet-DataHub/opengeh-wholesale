@@ -14,29 +14,23 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Contracts.Events;
-using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing.Model;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 
 public interface ICalculationResultCompletedIntegrationEventFactory
 {
-    CalculationResultCompleted CreateForGridArea(
-        CalculationResult calculationResultDto,
-        BatchGridAreaInfo batchGridAreaInfo);
+    CalculationResultCompleted CreateForGridArea(CalculationResult result);
 
     CalculationResultCompleted CreateForEnergySupplier(
-        CalculationResult calculationResultDto,
-        BatchGridAreaInfo batchGridAreaInfo,
-        string energySupplierGln);
+        CalculationResult result,
+        string energySupplierId);
 
     CalculationResultCompleted CreateForBalanceResponsibleParty(
-        CalculationResult calculationResultDto,
-        BatchGridAreaInfo batchGridAreaInfo,
-        string balanceResponsiblePartyGln);
+        CalculationResult result,
+        string balanceResponsiblePartyId);
 
     CalculationResultCompleted CreateForEnergySupplierByBalanceResponsibleParty(
         CalculationResult result,
-        BatchGridAreaInfo batchGridAreaInfo,
-        string energySupplierGln,
-        string balanceResponsiblePartyGln);
+        string energySupplierId,
+        string balanceResponsiblePartyId);
 }

@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Application;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Actors;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
@@ -24,7 +23,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Actors;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 
-namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
+namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
 
 /// <summary>
 /// Registration of services required for the CalculationResults module.
@@ -41,7 +40,6 @@ public static class CalculationResultsRegistration
         serviceCollection.AddScoped<IDatabricksSqlResponseParser, DatabricksSqlResponseParser>();
         serviceCollection.AddScoped<IDataLakeClient, DataLakeClient>();
         serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
-        serviceCollection.AddScoped<ICalculationResultClient, FileBasedCalculationResultClient>();
         serviceCollection.AddScoped<ICalculationResultQueries, CalculationResultQueries>();
         serviceCollection.AddScoped<IActorClient, ActorClient>();
         serviceCollection.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();

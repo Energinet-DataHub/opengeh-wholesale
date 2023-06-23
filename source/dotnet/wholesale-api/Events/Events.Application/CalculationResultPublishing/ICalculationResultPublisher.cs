@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing.Model;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing;
 
@@ -21,5 +21,5 @@ public interface ICalculationResultPublisher
     /// <summary>
     /// Publish a calculation ready result event for each result in a grid area.
     /// </summary>
-    Task PublishForGridAreaAsync(BatchGridAreaInfo batchGridAreaInfo);
+    Task PublishForBatchAsync(CompletedBatch batch);
 }

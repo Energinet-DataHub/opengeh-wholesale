@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing;
-using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing.Model;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using NodaTime;
 
@@ -41,12 +40,7 @@ public class PublishCalculationResultsHandler : IPublishCalculationResultsHandle
             var batch = await _completedBatchRepository.GetNextUnpublishedOrNullAsync().ConfigureAwait(false);
             if (batch == null) break;
 
-            // TODO BJM: Reuse existing functionality of ProcessApplicationService and refactor in upcoming PR
-            foreach (var gridAreaCode in batch.GridAreaCodes)
-            {
-                var @event = new BatchGridAreaInfo(gridAreaCode, batch.Id, batch.ProcessType, batch.PeriodStart, batch.PeriodEnd);
-                await _calculationResultPublisher.PublishForGridAreaAsync(@event).ConfigureAwait(false);
-            }
+            await _calculationResultPublisher.PublishForBatchAsync(batch).ConfigureAwait(false);
 
             batch.PublishedTime = _clock.GetCurrentInstant();
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
