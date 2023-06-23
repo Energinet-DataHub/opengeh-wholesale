@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.Common.Models;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Fixtures;
 
@@ -20,6 +22,15 @@ public sealed class CalculationResultBuilder
 {
     private TimeSeriesType _timeSeriesType = TimeSeriesType.Production;
     private TimeSeriesPoint[] _points = { new(DateTime.Now, 0, QuantityQuality.Measured) };
+    private Guid _batchId = Guid.NewGuid();
+    private string? _energySupplierId;
+    private string? _balanceResponsiblePartyId;
+
+    public CalculationResultBuilder WithId(Guid batchId)
+    {
+        _batchId = batchId;
+        return this;
+    }
 
     public CalculationResultBuilder WithTimeSeriesType(TimeSeriesType timeSeriesType)
     {
@@ -33,14 +44,29 @@ public sealed class CalculationResultBuilder
         return this;
     }
 
+    public CalculationResultBuilder WithEnergySupplier()
+    {
+        _energySupplierId = "es";
+        return this;
+    }
+
+    public CalculationResultBuilder WithBalanceResponsibleParty()
+    {
+        _balanceResponsiblePartyId = "brp";
+        return this;
+    }
+
     public CalculationResult Build()
     {
         return new CalculationResult(
-            Guid.NewGuid(),
-            "DK1",
+            _batchId,
+            "543",
             _timeSeriesType,
-            "ES1",
-            "BR1",
-            _points);
+            _energySupplierId,
+            _balanceResponsiblePartyId,
+            _points,
+            ProcessType.Aggregation,
+            Instant.FromUtc(2022, 12, 31, 23, 0),
+            Instant.FromUtc(2023, 1, 31, 23, 0));
     }
 }
