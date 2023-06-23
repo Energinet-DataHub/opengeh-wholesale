@@ -60,23 +60,6 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
         await _fixture.DatabricksSchemaManager.DropSchemaAsync();
     }
 
-    // [Fact]
-    // public async Task GetRowsAsync_WhenMultipleBatchesInSamePeriod_ReturnsLatestResult()
-    // {
-    //     // Arrange
-    //     var expectedSettlementReportRow = GetDefaultSettlementReportRow();
-    //     var tableName = await CreateTableTwoRowsAsync();
-    //     var sqlStatementClient = new SqlStatementClient(new HttpClient(), _fixture.DatabricksOptionsMock.Object, new DatabricksSqlResponseParser());
-    //     var sut = new SettlementReportResultQueries(sqlStatementClient, CreateDeltaTableOptions(_fixture.DatabricksSchemaManager.SchemaName, tableName));
-    //
-    //     // Act
-    //     var actual = await sut.GetRowsAsync(_defaultGridAreaCodes, DefaultProcessType, _defaultPeriodStart, _defaultPeriodEnd, null);
-    //
-    //     // Assert
-    //     var actualList = actual.ToList();
-    //     actualList.Should().HaveCount(1);
-    //     actualList.First().Should().Be(expectedSettlementReportRow);
-    // }
     [Fact]
     public async Task GetRowsAsync_WhenMultipleBatchesInSamePeriod_ReturnsLatestResult()
     {
