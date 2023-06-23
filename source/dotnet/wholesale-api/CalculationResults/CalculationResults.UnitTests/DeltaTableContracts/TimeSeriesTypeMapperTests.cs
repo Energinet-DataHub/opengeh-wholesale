@@ -57,6 +57,7 @@ public class TimeSeriesTypeMapperTests
     [InlineAutoMoqData(DeltaTableTimeSeriesType.GridLoss, TimeSeriesType.GridLoss)]
     [InlineAutoMoqData(DeltaTableTimeSeriesType.NegativeGridLoss, TimeSeriesType.NegativeGridLoss)]
     [InlineAutoMoqData(DeltaTableTimeSeriesType.PositiveGridLoss, TimeSeriesType.PositiveGridLoss)]
+    [InlineAutoMoqData(DeltaTableTimeSeriesType.TotalConsumption, TimeSeriesType.TotalConsumption)]
     public void TimeSeriesTypeMapper_ReturnsValidTimeSeriesType(string deltaValue, TimeSeriesType? expected)
     {
         // Act
