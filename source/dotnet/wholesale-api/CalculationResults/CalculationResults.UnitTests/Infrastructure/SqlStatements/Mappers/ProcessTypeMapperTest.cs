@@ -16,6 +16,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatement
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.Common.Models;
 using FluentAssertions;
+using Test.Core;
 using Xunit;
 using Xunit.Categories;
 
@@ -24,6 +25,29 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 [UnitTest]
 public class ProcessTypeMapperTests
 {
+    [Fact]
+    public async Task ProcessType_Matches_Contract()
+    {
+        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.Enums.process-type.json");
+        await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<ProcessType>(stream);
+    }
+
+    [Theory]
+    [InlineData(ProcessType.Aggregation)]
+    [InlineData(ProcessType.BalanceFixing)]
+    public async Task ToDeltaTableValue_ReturnsValidDeltaValue(ProcessType processType)
+    {
+        // Arrange
+        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.Enums.process-type.json");
+        var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
+
+        // Act
+        var actual = ProcessTypeMapper.ToDeltaTableValue(processType);
+
+        // Assert
+        actual.Should().BeOneOf(validDeltaValues);
+    }
+
     [Theory]
     [InlineData(ProcessType.Aggregation, DeltaTableProcessType.Aggregation)]
     [InlineData(ProcessType.BalanceFixing, DeltaTableProcessType.BalanceFixing)]
