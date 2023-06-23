@@ -76,7 +76,6 @@ ORDER BY time
     {
         ResultColumnNames.BatchId,
         ResultColumnNames.GridArea,
-        ResultColumnNames.BatchProcessType,
         ResultColumnNames.TimeSeriesType,
         ResultColumnNames.EnergySupplierId,
         ResultColumnNames.BalanceResponsibleId,
