@@ -15,11 +15,10 @@
 using System.Reflection;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using FluentAssertions;
-using Newtonsoft.Json.Linq;
 using Test.Core;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.DeltaTableContracts;
+namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SqlStatements.DeltaTableConstants;
 
 public class ResultColumnNameTests
 {
