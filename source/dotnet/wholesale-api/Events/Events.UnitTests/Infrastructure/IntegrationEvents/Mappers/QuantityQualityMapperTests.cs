@@ -23,10 +23,10 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
 public class QuantityQualityMapperTests
 {
     [Theory]
-    [InlineAutoMoqData(QuantityQuality.Estimated, Wholesale.Contracts.Events.QuantityQuality.Estimated)]
-    [InlineAutoMoqData(QuantityQuality.Incomplete, Wholesale.Contracts.Events.QuantityQuality.Incomplete)]
-    [InlineAutoMoqData(QuantityQuality.Measured, Wholesale.Contracts.Events.QuantityQuality.Measured)]
-    [InlineAutoMoqData(QuantityQuality.Missing, Wholesale.Contracts.Events.QuantityQuality.Missing)]
+    [InlineAutoMoqData(QuantityQuality.Estimated, Contracts.Events.QuantityQuality.Estimated)]
+    [InlineAutoMoqData(QuantityQuality.Incomplete, Contracts.Events.QuantityQuality.Incomplete)]
+    [InlineAutoMoqData(QuantityQuality.Measured, Contracts.Events.QuantityQuality.Measured)]
+    [InlineAutoMoqData(QuantityQuality.Missing, Contracts.Events.QuantityQuality.Missing)]
     public void MapQuantityQuality_WhenCalled_MapsCorrectly(QuantityQuality quantityQuality, Wholesale.Contracts.Events.QuantityQuality expected)
     {
         // Act & Assert

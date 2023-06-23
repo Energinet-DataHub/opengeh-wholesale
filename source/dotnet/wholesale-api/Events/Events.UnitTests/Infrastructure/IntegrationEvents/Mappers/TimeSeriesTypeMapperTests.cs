@@ -23,14 +23,37 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
 public class TimeSeriesTypeMapperTests
 {
     [Theory]
-    [InlineAutoMoqData(TimeSeriesType.Production, Wholesale.Contracts.Events.TimeSeriesType.Production)]
-    [InlineAutoMoqData(TimeSeriesType.FlexConsumption, Wholesale.Contracts.Events.TimeSeriesType.FlexConsumption)]
-    [InlineAutoMoqData(TimeSeriesType.NonProfiledConsumption, Wholesale.Contracts.Events.TimeSeriesType.NonProfiledConsumption)]
-    [InlineAutoMoqData(TimeSeriesType.NetExchangePerGa, Wholesale.Contracts.Events.TimeSeriesType.NetExchangePerGa)]
-    [InlineAutoMoqData(TimeSeriesType.NetExchangePerNeighboringGa, Wholesale.Contracts.Events.TimeSeriesType.NetExchangePerNeighboringGa)]
-    public void MapQuantityQuality_WhenCalled_MapsCorrectly(TimeSeriesType timeSeriesType, Wholesale.Contracts.Events.TimeSeriesType expected)
+    [InlineAutoMoqData(TimeSeriesType.Production, Contracts.Events.TimeSeriesType.Production)]
+    [InlineAutoMoqData(TimeSeriesType.FlexConsumption, Contracts.Events.TimeSeriesType.FlexConsumption)]
+    [InlineAutoMoqData(TimeSeriesType.NonProfiledConsumption, Contracts.Events.TimeSeriesType.NonProfiledConsumption)]
+    [InlineAutoMoqData(TimeSeriesType.NetExchangePerGa, Contracts.Events.TimeSeriesType.NetExchangePerGa)]
+    [InlineAutoMoqData(TimeSeriesType.NetExchangePerNeighboringGa, Contracts.Events.TimeSeriesType.NetExchangePerNeighboringGa)]
+    [InlineAutoMoqData(TimeSeriesType.GridLoss, Contracts.Events.TimeSeriesType.GridLoss)]
+    [InlineAutoMoqData(TimeSeriesType.NegativeGridLoss, Contracts.Events.TimeSeriesType.NegativeGridLoss)]
+    [InlineAutoMoqData(TimeSeriesType.PositiveGridLoss, Contracts.Events.TimeSeriesType.PositiveGridLoss)]
+    [InlineAutoMoqData(TimeSeriesType.TotalConsumption, Contracts.Events.TimeSeriesType.TotalConsumption)]
+    public void MapTimeSeriesType_WhenCalled_MapsCorrectly(TimeSeriesType timeSeriesType, Wholesale.Contracts.Events.TimeSeriesType expected)
     {
         // Act & Assert
         TimeSeriesTypeMapper.MapTimeSeriesType(timeSeriesType).Should().Be(expected);
+    }
+
+    /// <summary>
+    /// Ensure that no value is missed in the mapping.
+    /// Please update test above when adding new values.
+    /// </summary>
+    [Theory]
+    [MemberData(nameof(GetTypes))]
+    public void MapTimeSeriesType_MapsAnyPossibleValue(TimeSeriesType timeSeriesType)
+    {
+        var actual = TimeSeriesTypeMapper.MapTimeSeriesType(timeSeriesType);
+        Enum.IsDefined(typeof(Contracts.Events.TimeSeriesType), actual).Should().BeTrue();
+    }
+
+    public static IEnumerable<object[]> GetTypes()
+    {
+        return Enum.GetValues(typeof(TimeSeriesType))
+            .Cast<TimeSeriesType>()
+            .Select(type => new object[] { type });
     }
 }
