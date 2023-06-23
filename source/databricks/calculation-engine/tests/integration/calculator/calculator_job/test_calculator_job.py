@@ -103,7 +103,13 @@ def test__published_time_series_points_contract_matches_schema_from_input_time_s
 
 
 @patch("package.calculator_job._get_valid_args_or_throw")
-def test__when_data_lake_is_locked__return_exit_code_3(mock_islocked: Mock) -> None:
+@patch("package.calculator_job.env_vars")
+@patch("package.calculator_job.islocked")
+def test__when_data_lake_is_locked__return_exit_code_3(
+    mock_islocked: Mock,
+    mock_env_vars: Mock,
+    mock_args_parser: Mock,
+) -> None:
     # Arrange
     mock_islocked.return_value = True
 
@@ -116,9 +122,11 @@ def test__when_data_lake_is_locked__return_exit_code_3(mock_islocked: Mock) -> N
 
 @patch("package.calculator_job.initialize_spark")
 @patch("package.calculator_job.islocked")
+@patch("package.calculator_job._start_calculator")
 def test__start__start_calculator_called_without_exceptions(
     mock_start_calculator: Mock,
     mock_is_locked: Mock,
+    mock_init_spark: Mock,
 ) -> None:
     # Arrange
     mock_is_locked.return_value = False
