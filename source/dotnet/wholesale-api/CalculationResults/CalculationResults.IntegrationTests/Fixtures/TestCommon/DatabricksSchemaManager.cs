@@ -15,6 +15,8 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures.TestCommon;
 
@@ -47,18 +49,8 @@ public class DatabricksSchemaManager
     /// </summary>
     public async Task CreateSchemaAsync()
     {
-        var requestObject = new
-        {
-            on_wait_timeout = "CANCEL",
-            wait_timeout = "50s", // Make the operation synchronous
-            statement = @$"CREATE SCHEMA {SchemaName}",
-            warehouse_id = Settings.WarehouseId,
-        };
-
-        var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
-
-        if (!response.IsSuccessStatusCode)
-            throw new DatabricksSqlException($"Unable to create schema on Databricks. Status code: {response.StatusCode}");
+        var sqlStatement = @$"CREATE SCHEMA {SchemaName}";
+        await ExecuteSql(sqlStatement);
     }
 
     /// <summary>
@@ -68,41 +60,24 @@ public class DatabricksSchemaManager
     public async Task CreateTableAsync(string tableName, Dictionary<string, string> columnDefinition)
     {
         var columnDefinitions = string.Join(", ", columnDefinition.Select(c => $"{c.Key} {c.Value}"));
-
-        var requestObject = new
-        {
-            on_wait_timeout = "CANCEL",
-            wait_timeout = $"50s", // Make the operation synchronous
-            statement = $@"CREATE TABLE {SchemaName}.{tableName} ({columnDefinitions})",
-            warehouse_id = Settings.WarehouseId,
-        };
-
-        var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
-
-        if (!response.IsSuccessStatusCode)
-            throw new DatabricksSqlException($"Unable to create table {SchemaName}.{tableName} on Databricks. Status code: {response.StatusCode}");
+        var sqlStatement = $@"CREATE TABLE {SchemaName}.{tableName} ({columnDefinitions})";
+        await ExecuteSql(sqlStatement);
     }
 
     public async Task InsertIntoAsync(string tableName, IEnumerable<string> values)
     {
-        var requestObject = new
-        {
-            on_wait_timeout = "CANCEL",
-            wait_timeout = $"50s", // Make the operation synchronous
-            statement = $@"INSERT INTO {SchemaName}.{tableName} VALUES ({string.Join(",", values)})",
-            warehouse_id = Settings.WarehouseId,
-        };
-
-        var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
-
-        if (!response.IsSuccessStatusCode)
-            throw new DatabricksSqlException($"Unable to insert values into table on Databricks. Status code: {response.StatusCode}");
+        var sqlStatement = $@"INSERT INTO {SchemaName}.{tableName} VALUES ({string.Join(",", values)})";
+        await ExecuteSql(sqlStatement);
     }
 
     public async Task DropSchemaAsync()
     {
         var sqlStatement = @$"DROP SCHEMA {SchemaName} CASCADE";
+        await ExecuteSql(sqlStatement);
+    }
 
+    private async Task ExecuteSql(string sqlStatement)
+    {
         var requestObject = new
         {
             on_wait_timeout = "CANCEL",
@@ -110,11 +85,19 @@ public class DatabricksSchemaManager
             statement = sqlStatement,
             warehouse_id = Settings.WarehouseId,
         };
+        var httpResponse = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
 
-        var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
+        if (!httpResponse.IsSuccessStatusCode)
+            throw new DatabricksSqlException($"Unable to execute SQL statement on Databricks. Status code: {httpResponse.StatusCode}");
 
-        if (!response.IsSuccessStatusCode)
-            throw new DatabricksSqlException($"Unable to drop schema on Databricks. Status code: {response.StatusCode}");
+        var jsonResponse = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var settings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None, };
+        var jsonObject = JsonConvert.DeserializeObject<JObject>(jsonResponse, settings) ??
+                         throw new InvalidOperationException();
+
+        var state = jsonObject["status"]?["state"]?.ToString() ?? throw new InvalidOperationException("Unable to retrieve 'state' from the responseJsonObject");
+        if (state != "SUCCEEDED")
+            throw new DatabricksSqlException($"Failed to execute SQL statement: {sqlStatement}. Response: {jsonResponse}");
     }
 
     private static HttpClient CreateHttpClient(DatabricksWarehouseSettings settings)
