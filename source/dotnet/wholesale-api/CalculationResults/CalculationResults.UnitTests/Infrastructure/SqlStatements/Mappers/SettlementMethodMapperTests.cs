@@ -20,12 +20,12 @@ using FluentAssertions;
 using Test.Core;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.DeltaTableContracts;
+namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SqlStatements.Mappers;
 
 public class SettlementMethodMapperTests
 {
     [Fact]
-    public async Task SettlementMethodMapper_AcceptsAllValidDeltaTableValues()
+    public async Task FromDeltaTableValue_AcceptsAllValidDeltaTableValues()
     {
         // Arrange
         await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.Enums.time-series-type.json");
@@ -47,7 +47,7 @@ public class SettlementMethodMapperTests
     [InlineAutoMoqData(DeltaTableTimeSeriesType.GridLoss, null!)]
     [InlineAutoMoqData(DeltaTableTimeSeriesType.NegativeGridLoss, null!)]
     [InlineAutoMoqData(DeltaTableTimeSeriesType.PositiveGridLoss, SettlementMethod.Flex)]
-    public void SettlementMethodMapper_ReturnsValidSettlementMethod(string deltaValue, SettlementMethod? expected)
+    public void FromDeltaTableValue_ReturnsValidSettlementMethod(string deltaValue, SettlementMethod? expected)
     {
         // Act
         var actual = SettlementMethodMapper.FromDeltaTableValue(deltaValue);

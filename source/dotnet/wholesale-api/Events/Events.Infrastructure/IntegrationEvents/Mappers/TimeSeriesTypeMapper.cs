@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using TimeSeriesType = Energinet.DataHub.Wholesale.Contracts.Events.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers;
@@ -28,6 +27,10 @@ public static class TimeSeriesTypeMapper
             CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.NonProfiledConsumption => TimeSeriesType.NonProfiledConsumption,
             CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.NetExchangePerGa => TimeSeriesType.NetExchangePerGa,
             CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.NetExchangePerNeighboringGa => TimeSeriesType.NetExchangePerNeighboringGa,
+            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.GridLoss => TimeSeriesType.GridLoss,
+            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.NegativeGridLoss => TimeSeriesType.NegativeGridLoss,
+            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.PositiveGridLoss => TimeSeriesType.PositiveGridLoss,
+            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.TotalConsumption => TimeSeriesType.TotalConsumption,
             _ => throw new ArgumentException($"No matching 'TimeSeriesType' for: {timeSeriesType.ToString()}"),
         };
     }
