@@ -15,7 +15,6 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing;
-using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing.Model;
 using Energinet.DataHub.Wholesale.Events.Application.IntegrationEventsManagement;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 using Google.Protobuf;
@@ -36,28 +35,32 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.EventPublishers
             _calculationResultCompletedIntegrationEventFactory = calculationResultCompletedIntegrationEventFactory;
         }
 
-        public IntegrationEventDto CreateForEnergySupplier(CalculationResult calculationResult, BatchGridAreaInfo batchGridAreaInfo, string energySupplierGln)
+        public IntegrationEventDto CreateForEnergySupplier(CalculationResult result)
         {
-            var result = _calculationResultCompletedIntegrationEventFactory.CreateForEnergySupplier(calculationResult, batchGridAreaInfo, energySupplierGln);
-            return CreateIntegrationEvent(result);
+            var @event = _calculationResultCompletedIntegrationEventFactory.CreateForEnergySupplier(result, result.EnergySupplierId!);
+            return CreateIntegrationEvent(@event);
         }
 
-        public IntegrationEventDto CreateForBalanceResponsibleParty(CalculationResult calculationResultDto, BatchGridAreaInfo batchGridAreaInfo, string balanceResponsiblePartyGln)
+        public IntegrationEventDto CreateForBalanceResponsibleParty(CalculationResult result)
         {
-            var result = _calculationResultCompletedIntegrationEventFactory.CreateForBalanceResponsibleParty(calculationResultDto, batchGridAreaInfo, balanceResponsiblePartyGln);
-            return CreateIntegrationEvent(result);
+            var @event = _calculationResultCompletedIntegrationEventFactory.CreateForBalanceResponsibleParty(result, result.BalanceResponsibleId!);
+            return CreateIntegrationEvent(@event);
         }
 
-        public IntegrationEventDto CreateForTotalGridArea(CalculationResult calculationResult, BatchGridAreaInfo batchGridAreaInfo)
+        public IntegrationEventDto CreateForTotalGridArea(CalculationResult result)
         {
-            var result = _calculationResultCompletedIntegrationEventFactory.CreateForGridArea(calculationResult, batchGridAreaInfo);
-            return CreateIntegrationEvent(result);
+            var @event = _calculationResultCompletedIntegrationEventFactory.CreateForGridArea(result);
+            return CreateIntegrationEvent(@event);
         }
 
-        public IntegrationEventDto CreateForEnergySupplierByBalanceResponsibleParty(CalculationResult calculationResultDto, BatchGridAreaInfo batchGridAreaInfo, string energySupplierGln, string brpGln)
+        public IntegrationEventDto CreateForEnergySupplierByBalanceResponsibleParty(
+            CalculationResult result)
         {
-            var result = _calculationResultCompletedIntegrationEventFactory.CreateForEnergySupplierByBalanceResponsibleParty(calculationResultDto, batchGridAreaInfo, energySupplierGln, brpGln);
-            return CreateIntegrationEvent(result);
+            var @event = _calculationResultCompletedIntegrationEventFactory.CreateForEnergySupplierByBalanceResponsibleParty(
+                result,
+                result.EnergySupplierId!,
+                result.BalanceResponsibleId!);
+            return CreateIntegrationEvent(@event);
         }
 
         private IntegrationEventDto CreateIntegrationEvent(IMessage integrationEvent)

@@ -25,7 +25,7 @@ from package.calculator_job import (
 )
 from package.calculator_args import CalculatorArgs
 from package.schemas import time_series_point_schema, metering_point_period_schema
-from package.file_writers.process_step_result_writer import (
+from package.output_writers.calculation_result_writer import (
     DATABASE_NAME,
     RESULT_TABLE_NAME,
 )

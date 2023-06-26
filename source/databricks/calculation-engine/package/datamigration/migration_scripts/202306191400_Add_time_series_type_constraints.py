@@ -20,10 +20,6 @@ RESULT_TABLE_NAME = "result"
 
 CONSTRAINTS = [
     (
-        "batch_process_type_chk",
-        "batch_process_type IN ('BalanceFixing', 'Aggregation')",
-    ),
-    (
         "time_series_type_chk",
         """time_series_type IN (
             'production',
@@ -33,39 +29,15 @@ CONSTRAINTS = [
             'flex_consumption',
             'grid_loss',
             'negative_grid_loss',
-            'positive_grid_loss')""",
-    ),
-    ("grid_area_chk", "LENGTH(grid_area) = 3"),
-    ("out_grid_area_chk", "out_grid_area IS NULL OR LENGTH(out_grid_area) = 3"),
-    (
-        "quantity_quality_chk",
-        "quantity_quality IN ('missing', 'estimated', 'measured', 'calculated', 'incomplete')",
-    ),
-    (
-        "aggregation_level_chk",
-        "aggregation_level IN ('total_ga', 'es_brp_ga', 'es_ga', 'brp_ga')",
+            'positive_grid_loss',
+            'total_consumption')""",
     ),
 ]
 
 
 def apply(args: MigrationScriptArgs) -> None:
     args.spark.sql(
-        f"ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME} DROP CONSTRAINT IF EXISTS batch_process_type_chk"
-    )
-    args.spark.sql(
-        f"ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME} DROP CONSTRAINT IF EXISTS time_series_type_chk"
-    )
-    args.spark.sql(
-        f"ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME} DROP CONSTRAINT IF EXISTS grid_area_chk"
-    )
-    args.spark.sql(
-        f"ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME} DROP CONSTRAINT IF EXISTS out_grid_area_chk"
-    )
-    args.spark.sql(
-        f"ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME} DROP CONSTRAINT IF EXISTS quantity_quality_chk"
-    )
-    args.spark.sql(
-        f"ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME} DROP CONSTRAINT IF EXISTS aggregation_level_chk"
+        f"ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME} DROP CONSTRAINT time_series_type_chk"
     )
     for constraint in CONSTRAINTS:
         args.spark.sql(

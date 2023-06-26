@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using FluentAssertions;
+using Test.Core;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SqlStatements.Mappers;
@@ -22,7 +24,14 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 public class QuantityQualityMapperTests
 {
     [Fact]
-    public void MapQuality_ReturnsMappedQuality()
+    public async Task QuantityQuality_Matches_Contract()
+    {
+        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.Enums.quantity-quality.json");
+        await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<QuantityQuality>(stream);
+    }
+
+    [Fact]
+    public void FromDeltaTableValue_ReturnsMappedQuality()
     {
         // Arrange
         foreach (var type in Enum.GetValues(typeof(QuantityQuality)))
@@ -33,5 +42,37 @@ public class QuantityQualityMapperTests
             // Act & Assert
             QuantityQualityMapper.FromDeltaTableValue(input).Should().Be(expected);
         }
+    }
+
+    [Fact]
+    public async Task FromDeltaTableValue_MapsAllValidDeltaTableValues()
+    {
+        // Arrange
+        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.Enums.quantity-quality.json");
+        var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
+
+        foreach (var validDeltaValue in validDeltaValues)
+        {
+            // Act
+            var actual = QuantityQualityMapper.FromDeltaTableValue(validDeltaValue);
+
+            // Assert it's a defined enum value (and not null)
+            actual.Should().BeDefined();
+        }
+    }
+
+    [Theory]
+    [InlineAutoMoqData("calculated", QuantityQuality.Calculated)]
+    [InlineAutoMoqData("estimated", QuantityQuality.Estimated)]
+    [InlineAutoMoqData("incomplete", QuantityQuality.Incomplete)]
+    [InlineAutoMoqData("measured", QuantityQuality.Measured)]
+    [InlineAutoMoqData("missing", QuantityQuality.Missing)]
+    public void FromDeltaTableValue_ReturnsValidQuantityQuality(string deltaValue, QuantityQuality? expected)
+    {
+        // Act
+        var actual = QuantityQualityMapper.FromDeltaTableValue(deltaValue);
+
+        // Assert
+        actual.Should().Be(expected);
     }
 }

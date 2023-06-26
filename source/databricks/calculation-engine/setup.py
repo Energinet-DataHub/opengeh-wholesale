@@ -28,6 +28,8 @@ setup(
         "azure-identity==1.12.0",
         "azure-storage-file-datalake==12.11.0",
         "databricks-cli==0.17.6",
+        "urllib3==1.26.11",
+        # urllib3 needs to be specific version because of bug https://community.databricks.com/s/topic/0TO8Y000000mOi5WAE/method-whitelist
         "delta-spark==2.2.0",
         "python-dateutil==2.8.2",
     ],

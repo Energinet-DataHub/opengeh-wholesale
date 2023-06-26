@@ -12,28 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Batches.Interfaces;
+using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Microsoft.Extensions.Options;
+using NodaTime.Extensions;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 
 public class CalculationResultQueries : ICalculationResultQueries
 {
     private readonly ISqlStatementClient _sqlStatementClient;
+    private readonly IBatchesClient _batchesClient;
     private readonly DeltaTableOptions _deltaTableOptions;
 
-    public CalculationResultQueries(ISqlStatementClient sqlStatementClient, IOptions<DeltaTableOptions> deltaTableOptions)
+    public CalculationResultQueries(ISqlStatementClient sqlStatementClient, IBatchesClient batchesClient, IOptions<DeltaTableOptions> deltaTableOptions)
     {
         _sqlStatementClient = sqlStatementClient;
+        _batchesClient = batchesClient;
         _deltaTableOptions = deltaTableOptions.Value;
     }
 
     public async IAsyncEnumerable<CalculationResult> GetAsync(Guid batchId)
     {
+        var batch = await _batchesClient.GetAsync(batchId).ConfigureAwait(false);
         var sql = CreateBatchResultsSql(batchId);
         var timeSeriesPoints = new List<TimeSeriesPoint>();
         SqlResultRow? currentRow = null;
@@ -44,7 +50,7 @@ public class CalculationResultQueries : ICalculationResultQueries
 
             if (currentRow != null && BelongsToDifferentResults(currentRow, nextRow))
             {
-                yield return CreateCalculationResult(batchId, currentRow, timeSeriesPoints);
+                yield return CreateCalculationResult(batch, currentRow, timeSeriesPoints);
                 timeSeriesPoints = new List<TimeSeriesPoint>();
             }
 
@@ -53,7 +59,7 @@ public class CalculationResultQueries : ICalculationResultQueries
         }
 
         if (currentRow != null)
-            yield return CreateCalculationResult(batchId, currentRow, timeSeriesPoints);
+            yield return CreateCalculationResult(batch, currentRow, timeSeriesPoints);
     }
 
     private string CreateBatchResultsSql(Guid batchId)
@@ -70,7 +76,6 @@ ORDER BY time
     {
         ResultColumnNames.BatchId,
         ResultColumnNames.GridArea,
-        ResultColumnNames.BatchProcessType,
         ResultColumnNames.TimeSeriesType,
         ResultColumnNames.EnergySupplierId,
         ResultColumnNames.BalanceResponsibleId,
@@ -97,7 +102,7 @@ ORDER BY time
     }
 
     private static CalculationResult CreateCalculationResult(
-        Guid batchId,
+        BatchDto batch,
         SqlResultRow sqlResultRow,
         List<TimeSeriesPoint> timeSeriesPoints)
     {
@@ -106,11 +111,14 @@ ORDER BY time
         var balanceResponsibleId = sqlResultRow[ResultColumnNames.BalanceResponsibleId];
         var gridArea = sqlResultRow[ResultColumnNames.GridArea];
         return new CalculationResult(
-            batchId,
+            batch.BatchId,
             gridArea,
             timeSeriesType,
             energySupplierId,
             balanceResponsibleId,
-            timeSeriesPoints.ToArray());
+            timeSeriesPoints.ToArray(),
+            batch.ProcessType,
+            batch.PeriodStart.ToInstant(),
+            batch.PeriodEnd.ToInstant());
     }
 }

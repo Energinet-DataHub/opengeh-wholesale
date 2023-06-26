@@ -30,6 +30,7 @@ public static class TimeSeriesTypeMapper
             DeltaTableTimeSeriesType.GridLoss => TimeSeriesType.GridLoss,
             DeltaTableTimeSeriesType.NegativeGridLoss => TimeSeriesType.NegativeGridLoss,
             DeltaTableTimeSeriesType.PositiveGridLoss => TimeSeriesType.PositiveGridLoss,
+            DeltaTableTimeSeriesType.TotalConsumption => TimeSeriesType.TotalConsumption,
             _ => throw new NotImplementedException($"Cannot map timeSeriesType type '{timeSeriesType}"),
         };
 
@@ -40,6 +41,11 @@ public static class TimeSeriesTypeMapper
             TimeSeriesType.Production => DeltaTableTimeSeriesType.Production,
             TimeSeriesType.FlexConsumption => DeltaTableTimeSeriesType.FlexConsumption,
             TimeSeriesType.NetExchangePerGa => DeltaTableTimeSeriesType.NetExchangePerGridArea,
+            TimeSeriesType.NetExchangePerNeighboringGa => DeltaTableTimeSeriesType.NetExchangePerNeighboringGridArea,
+            TimeSeriesType.GridLoss => DeltaTableTimeSeriesType.GridLoss,
+            TimeSeriesType.NegativeGridLoss => DeltaTableTimeSeriesType.NegativeGridLoss,
+            TimeSeriesType.PositiveGridLoss => DeltaTableTimeSeriesType.PositiveGridLoss,
+            TimeSeriesType.TotalConsumption => DeltaTableTimeSeriesType.TotalConsumption,
             _ => throw new NotImplementedException($"Mapping of '{timeSeriesType}' not implemented."),
         };
 }

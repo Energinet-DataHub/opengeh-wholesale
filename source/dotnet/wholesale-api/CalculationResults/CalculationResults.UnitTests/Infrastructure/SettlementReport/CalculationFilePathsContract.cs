@@ -40,14 +40,6 @@ public class CalculationFilePathsContract
 
     public ContractFile MasterBasisDataFileForEsPerGa { get; set; } = null!;
 
-    public ContractFile ResultFile { get; set; } = null!;
-
-    public ContractFile ResultFileForTotalGridArea { get; set; } = null!;
-
-    public ContractFile ResultFileForGaBrpEs { get; set; } = null!;
-
-    public ContractFile ActorsFile { get; set; } = null!;
-
     public static async Task<CalculationFilePathsContract> GetAsync()
     {
         await using var stream = EmbeddedResources.GetStream("BasisData.calculation-file-paths.yml");
