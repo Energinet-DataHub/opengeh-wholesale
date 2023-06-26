@@ -65,7 +65,7 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetRowsAsync_ReturnsExpectedReportRow(Mock<ILogger> loggerMock)
+    public async Task GetRowsAsync_ReturnsExpectedReportRow(Mock<ILogger<DatabricksSqlResponseParser>> loggerMock)
     {
         // Arrange
         var expectedSettlementReportRow = GetDefaultSettlementReportRow();

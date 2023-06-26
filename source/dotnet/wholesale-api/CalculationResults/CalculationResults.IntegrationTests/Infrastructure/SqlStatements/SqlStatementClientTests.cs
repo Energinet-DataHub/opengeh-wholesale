@@ -52,7 +52,7 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task ExecuteSqlStatementAsync_WhenQueryFromDatabricks_ReturnsExpectedData(Mock<ILogger> loggerMock)
+    public async Task ExecuteSqlStatementAsync_WhenQueryFromDatabricks_ReturnsExpectedData(Mock<ILogger<DatabricksSqlResponseParser>> loggerMock)
     {
         // Arrange
         var tableName = await CreateResultTableWithTwoRowsAsync();

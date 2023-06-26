@@ -20,9 +20,9 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlState
 
 public class DatabricksSqlResponseParser : IDatabricksSqlResponseParser
 {
-    private readonly ILogger _logger;
+    private readonly ILogger<DatabricksSqlResponseParser> _logger;
 
-    public DatabricksSqlResponseParser(ILogger logger)
+    public DatabricksSqlResponseParser(ILogger<DatabricksSqlResponseParser> logger)
     {
         _logger = logger;
     }

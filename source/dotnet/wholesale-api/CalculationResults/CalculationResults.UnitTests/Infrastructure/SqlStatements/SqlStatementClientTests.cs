@@ -311,7 +311,7 @@ public class SqlStatementClientTests
     public async Task ExecuteAsync_WhenHttpEndpointReturnsRealSampleData_ReturnsExpectedData(
         [Frozen] Mock<HttpMessageHandler> mockMessageHandler,
         [Frozen] Mock<IOptions<DatabricksOptions>> mockOptions,
-        [Frozen] Mock<ILogger> loggerMock)
+        [Frozen] Mock<ILogger<DatabricksSqlResponseParser>> loggerMock)
     {
         // Arrange
         const int expectedRowCount = 96;
