@@ -13,13 +13,11 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Actors;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineSerializer;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Actors;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 
@@ -41,7 +39,6 @@ public static class CalculationResultsRegistration
         serviceCollection.AddScoped<IDataLakeClient, DataLakeClient>();
         serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
         serviceCollection.AddScoped<ICalculationResultQueries, CalculationResultQueries>();
-        serviceCollection.AddScoped<IActorClient, ActorClient>();
         serviceCollection.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
         serviceCollection.AddScoped<ISettlementReportRepository>(
             provider => new SettlementReportRepository(

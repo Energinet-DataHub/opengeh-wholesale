@@ -26,7 +26,7 @@ from package.codelists import (
     TimeSeriesQuality,
 )
 from package.constants import Colname
-from package.file_writers import BasisDataWriter
+from package.output_writers import BasisDataWriter
 from pyspark.sql import DataFrame, SparkSession
 from tests.helpers.assert_calculation_file_path import (
     CalculationFileType,

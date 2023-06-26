@@ -14,16 +14,12 @@
 
 # Resource names and variables defined in the infrastructure repository (https://github.com/Energinet-DataHub/dh3-infrastructure)
 
-from package.codelists import TimeSeriesType, AggregationLevel
-from package.constants import PartitionKeyName
 from typing import Union
 from package.codelists import BasisDataType
 
 WHOLESALE_CONTAINER_NAME = "wholesale"
 
 OUTPUT_FOLDER = "calculation-output"
-ACTORS_FOLDER = "actors"
-RESULT_FOLDER = "result"
 BASIS_DATA_FOLDER = "basis_data"
 
 
@@ -33,36 +29,6 @@ def get_storage_account_url(storage_account_name: str) -> str:
 
 def get_container_root_path(storage_account_name: str) -> str:
     return f"abfss://{WHOLESALE_CONTAINER_NAME}@{storage_account_name}.dfs.core.windows.net/"
-
-
-def get_result_file_relative_path(
-    batch_id: str,
-    grid_area: str,
-    energy_supplier_gln: Union[str, None],
-    balance_responsible_gln: Union[str, None],
-    time_series_type: TimeSeriesType,
-    aggregation_level: AggregationLevel,
-) -> str:
-    batch_path = get_batch_relative_path(batch_id)
-    relative_path = f"{batch_path}/{RESULT_FOLDER}/grouping={aggregation_level.value}/time_series_type={time_series_type.value}/grid_area={grid_area}"
-
-    if (energy_supplier_gln is None) and (balance_responsible_gln is None):
-        return relative_path
-
-    if balance_responsible_gln is None:
-        return f"{relative_path}/gln={energy_supplier_gln}"
-
-    if energy_supplier_gln is None:
-        return f"{relative_path}/gln={balance_responsible_gln}"
-
-    return f"{relative_path}/{PartitionKeyName.BALANCE_RESPONSIBLE_PARTY_GLN}={balance_responsible_gln}/{PartitionKeyName.ENERGY_SUPPLIER_GLN}={energy_supplier_gln}"
-
-
-def get_actors_file_relative_path(
-    batch_id: str, grid_area: str, time_series_type: TimeSeriesType
-) -> str:
-    batch_path = get_batch_relative_path(batch_id)
-    return f"{batch_path}/{ACTORS_FOLDER}/time_series_type={time_series_type.value}/grid_area={grid_area}"
 
 
 def get_basis_data_root_path(basis_data_type: BasisDataType, batch_id: str) -> str:
