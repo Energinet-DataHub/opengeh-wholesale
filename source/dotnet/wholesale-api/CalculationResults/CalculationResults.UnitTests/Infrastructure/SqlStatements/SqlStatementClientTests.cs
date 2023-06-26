@@ -19,6 +19,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatement
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using Moq.Protected;
@@ -309,7 +310,8 @@ public class SqlStatementClientTests
     [InlineAutoMoqData]
     public async Task ExecuteAsync_WhenHttpEndpointReturnsRealSampleData_ReturnsExpectedData(
         [Frozen] Mock<HttpMessageHandler> mockMessageHandler,
-        [Frozen] Mock<IOptions<DatabricksOptions>> mockOptions)
+        [Frozen] Mock<IOptions<DatabricksOptions>> mockOptions,
+        [Frozen] Mock<ILogger<DatabricksSqlResponseParser>> loggerMock)
     {
         // Arrange
         const int expectedRowCount = 96;
@@ -320,7 +322,7 @@ public class SqlStatementClientTests
             .Setup<Task<HttpResponseMessage>>("SendAsync", IsAny<HttpRequestMessage>(), IsAny<CancellationToken>())
             .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.OK, Content = GetValidHttpResponseContent(), });
         var httpClient = new HttpClient(mockMessageHandler.Object);
-        var sut = new SqlStatementClient(httpClient, mockOptions.Object, new DatabricksSqlResponseParser()); // here we use the real parser
+        var sut = new SqlStatementClient(httpClient, mockOptions.Object, new DatabricksSqlResponseParser(loggerMock.Object)); // here we use the real parser
 
         // Act
         var actual = await sut.ExecuteAsync(_anySqlStatement).ToListAsync();

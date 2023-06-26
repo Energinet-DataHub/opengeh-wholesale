@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -19,6 +20,13 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlState
 
 public class DatabricksSqlResponseParser : IDatabricksSqlResponseParser
 {
+    private readonly ILogger<DatabricksSqlResponseParser> _logger;
+
+    public DatabricksSqlResponseParser(ILogger<DatabricksSqlResponseParser> logger)
+    {
+        _logger = logger;
+    }
+
     public DatabricksSqlResponse Parse(string jsonResponse)
     {
         var settings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None, };
@@ -41,6 +49,7 @@ public class DatabricksSqlResponseParser : IDatabricksSqlResponseParser
                 var nextChunkInternalLink = GetNextChunkInternalLink(jsonObject);
                 return DatabricksSqlResponse.CreateAsSucceeded(statementId, tableChunk, nextChunkInternalLink);
             default:
+                _logger.LogError("Databricks SQL statement execution failed. Response {jsonResponse}",  jsonResponse);
                 throw new DatabricksSqlException($@"Databricks SQL statement execution failed. State: {state}");
         }
     }
