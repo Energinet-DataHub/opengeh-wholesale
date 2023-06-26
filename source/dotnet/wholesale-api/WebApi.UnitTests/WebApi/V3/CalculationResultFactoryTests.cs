@@ -34,9 +34,9 @@ public class CalculationResultFactoryTests
         var point = result.TimeSeriesPoints.First();
         result.SetPrivateProperty(r => r.TimeSeriesPoints, new[] { point });
         var expected = new CalculationResultDto(
-            result.Sum,
-            result.Min,
-            result.Max,
+            0,
+            0,
+            0,
             batchDto.PeriodStart,
             batchDto.PeriodEnd,
             batchDto.Resolution,

@@ -23,6 +23,8 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 public static class SettlementReportSqlStatementFactory
 {
     public static string Create(
+        string schemaName,
+        string tableName,
         string[] gridAreaCodes,
         ProcessType processType,
         Instant periodStart,
@@ -46,8 +48,8 @@ public static class SettlementReportSqlStatementFactory
 
         var sql = $@"
 SELECT {selectColumns}
-FROM wholesale_output.result t1
-LEFT JOIN wholesale_output.result t2
+FROM {schemaName}.{tableName} t1
+LEFT JOIN {schemaName}.{tableName} t2
     ON t1.time = t2.time AND t1.batch_execution_time_start < t2.batch_execution_time_start
 WHERE t2.time IS NULL
     AND t1.{ResultColumnNames.GridArea} IN ({gridAreas})

@@ -12,27 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Globalization;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
-using NodaTime.Text;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 
 public static class SettlementReportDataFactory
 {
-    public static IEnumerable<SettlementReportResultRow> Create(TableChunk tableChunk)
+    public static IEnumerable<SettlementReportResultRow> Create(List<SqlResultRow> rows)
     {
-        return Enumerable.Range(0, tableChunk.RowCount)
-            .Select(i => new SettlementReportResultRow(
-                tableChunk[i, ResultColumnNames.GridArea],
-                ProcessTypeMapper.FromDeltaTableValue(tableChunk[i, ResultColumnNames.BatchProcessType]),
-                InstantPattern.ExtendedIso.Parse(tableChunk[i, ResultColumnNames.Time]).Value,
-                "PT15M", // TODO (JMG): store resolution in delta table?
-                MeteringPointTypeMapper.FromDeltaTableValue(tableChunk[i, ResultColumnNames.TimeSeriesType]),
-                SettlementMethodMapper.FromDeltaTableValue(tableChunk[i, ResultColumnNames.TimeSeriesType]),
-                decimal.Parse(tableChunk[i, ResultColumnNames.Quantity], CultureInfo.InvariantCulture)));
+        return rows.Select(row => new SettlementReportResultRow(
+            row[ResultColumnNames.GridArea],
+            ProcessTypeMapper.FromDeltaTableValue(row[ResultColumnNames.BatchProcessType]),
+            SqlResultValueConverters.ToInstant(row[ResultColumnNames.Time])!.Value,
+            "PT15M", // TODO (JMG): store resolution in delta table?
+            MeteringPointTypeMapper.FromDeltaTableValue(row[ResultColumnNames.TimeSeriesType]),
+            SettlementMethodMapper.FromDeltaTableValue(row[ResultColumnNames.TimeSeriesType]),
+            SqlResultValueConverters.ToDecimal(row[ResultColumnNames.Quantity])!.Value));
     }
 }

@@ -49,6 +49,24 @@ CONSTRAINTS = [
 
 
 def apply(args: MigrationScriptArgs) -> None:
+    args.spark.sql(
+        f"ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME} DROP CONSTRAINT IF EXISTS batch_process_type_chk"
+    )
+    args.spark.sql(
+        f"ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME} DROP CONSTRAINT IF EXISTS time_series_type_chk"
+    )
+    args.spark.sql(
+        f"ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME} DROP CONSTRAINT IF EXISTS grid_area_chk"
+    )
+    args.spark.sql(
+        f"ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME} DROP CONSTRAINT IF EXISTS out_grid_area_chk"
+    )
+    args.spark.sql(
+        f"ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME} DROP CONSTRAINT IF EXISTS quantity_quality_chk"
+    )
+    args.spark.sql(
+        f"ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME} DROP CONSTRAINT IF EXISTS aggregation_level_chk"
+    )
     for constraint in CONSTRAINTS:
         args.spark.sql(
             f"ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME} ADD CONSTRAINT {constraint[0]} CHECK ({constraint[1]})"

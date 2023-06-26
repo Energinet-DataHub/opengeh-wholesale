@@ -17,7 +17,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlState
 public interface ISqlStatementClient
 {
     /// <summary>
-    /// Get all the rows of a SQL query in an asynchronous way.
+    /// Get all the rows of a SQL query in as an asynchronous data stream.
     /// </summary>
-    IAsyncEnumerable<TableChunk> ExecuteAsync(string sqlStatement);
+    IAsyncEnumerable<SqlResultRow> ExecuteAsync(string sqlStatement);
 }

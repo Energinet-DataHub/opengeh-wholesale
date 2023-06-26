@@ -21,10 +21,11 @@ public static class CalculationResultFactory
 {
     public static CalculationResultDto Create(CalculationResults.Interfaces.CalculationResults.Model.CalculationResult calculationResult, BatchDto batch)
     {
+        // TODO BJM: Sum, Min and Max should be removed
         return new CalculationResultDto(
-            calculationResult.Sum,
-            calculationResult.Min,
-            calculationResult.Max,
+            0,
+            0,
+            0,
             batch.PeriodStart,
             batch.PeriodEnd,
             batch.Resolution,

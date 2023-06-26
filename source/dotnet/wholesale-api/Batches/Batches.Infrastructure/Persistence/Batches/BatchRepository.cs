@@ -72,8 +72,8 @@ public class BatchRepository : IBatchRepository
             .Batches
             .Where(b => minExecutionTimeStart == null || b.ExecutionTimeStart >= minExecutionTimeStart)
             .Where(b => maxExecutionTimeStart == null || b.ExecutionTimeStart <= maxExecutionTimeStart)
-            .Where(b => periodEnd == null || b.PeriodStart <= periodEnd)
-            .Where(b => periodStart == null || b.PeriodEnd >= periodStart)
+            .Where(b => periodEnd == null || b.PeriodStart < periodEnd)
+            .Where(b => periodStart == null || b.PeriodEnd > periodStart)
             .Where(b => filterByExecutionState.Count == 0 || filterByExecutionState.Contains(b.ExecutionState));
 
         var foundBatches = await query.ToListAsync().ConfigureAwait(false);

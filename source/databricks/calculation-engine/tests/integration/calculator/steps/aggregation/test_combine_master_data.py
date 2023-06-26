@@ -45,8 +45,6 @@ def aggregation_result_factory(spark):
         quality=DataframeDefaults.default_quality,
         metering_point_type=DataframeDefaults.default_metering_point_type,
         settlement_method=None,
-        positive_grid_loss=None,
-        negative_grid_loss=None,
         position=None,
     ):
         pandas_df = pd.DataFrame().append(
@@ -65,8 +63,6 @@ def aggregation_result_factory(spark):
                     Colname.quality: quality,
                     Colname.metering_point_type: metering_point_type,
                     Colname.settlement_method: settlement_method,
-                    Colname.positive_grid_loss: positive_grid_loss,
-                    Colname.negative_grid_loss: negative_grid_loss,
                     Colname.position: position,
                 }
             ],
@@ -161,7 +157,7 @@ def expected_combined_data_factory(spark, expected_combined_data_schema):
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: ["500", "500"],
-                Colname.positive_grid_loss: [Decimal(6.0), Decimal(6.0)],
+                Colname.sum_quantity: [Decimal(6.0), Decimal(6.0)],
                 Colname.time_window: [
                     {
                         Colname.start: datetime(2019, 1, 1, 0, 0),
@@ -208,7 +204,7 @@ def test_combine_negative_grid_loss_with_master_data(
     ] = grid_loss_sys_cor_master_data_result_factory()
     added_sys_cor_1 = aggregation_result_factory(
         grid_area="500",
-        negative_grid_loss=Decimal(6.0),
+        sum_quantity=Decimal(6.0),
         time_window_start=datetime(2019, 1, 1, 0, 0),
         time_window_end=datetime(2019, 1, 1, 1, 0),
         energy_supplier_id="8100000000115",
@@ -217,7 +213,7 @@ def test_combine_negative_grid_loss_with_master_data(
     )
     added_sys_cor_2 = aggregation_result_factory(
         grid_area="500",
-        negative_grid_loss=Decimal(6.0),
+        sum_quantity=Decimal(6.0),
         time_window_start=datetime(2020, 1, 1, 0, 0),
         time_window_end=datetime(2020, 1, 1, 1, 0),
         energy_supplier_id="8100000000115",
@@ -244,7 +240,7 @@ def test_combine_positive_grid_loss_with_master_data(
     ] = grid_loss_sys_cor_master_data_result_factory()
     positive_grid_loss_1 = aggregation_result_factory(
         grid_area="500",
-        positive_grid_loss=Decimal(6.0),
+        sum_quantity=Decimal(6.0),
         time_window_start=datetime(2019, 1, 1, 0, 0),
         time_window_end=datetime(2019, 1, 1, 1, 0),
         energy_supplier_id="8100000000115",
@@ -253,7 +249,7 @@ def test_combine_positive_grid_loss_with_master_data(
     )
     positive_grid_loss_2 = aggregation_result_factory(
         grid_area="500",
-        positive_grid_loss=Decimal(6.0),
+        sum_quantity=Decimal(6.0),
         time_window_start=datetime(2020, 1, 1, 0, 0),
         time_window_end=datetime(2020, 1, 1, 1, 0),
         energy_supplier_id="8100000000115",

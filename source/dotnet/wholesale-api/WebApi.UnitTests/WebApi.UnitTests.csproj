@@ -40,7 +40,7 @@ limitations under the License.
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
     <PackageReference Include="Moq" Version="4.18.4" />
     <PackageReference Include="xunit" Version="2.4.2" />
-    <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="4.1.0" />
+    <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="4.2.0" />
     <PackageReference Include="xunit.categories" Version="2.0.6" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -63,9 +63,6 @@ limitations under the License.
     <EmbeddedResource Include="..\..\..\databricks\calculation-engine\contracts\calculation-job-parameters-reference.txt">
       <Link>Infrastructure\JobRunner\calculation-job-parameters-reference.txt</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\databricks\calculation-engine\contracts\calculator-file-result.json">
-      <Link>Infrastructure\Integration\CalculationOutput\calculator-file-result.json</Link>
-    </EmbeddedResource>
     <EmbeddedResource Include="..\..\..\databricks\calculation-engine\contracts\enums\quantity-quality.json">
       <Link>Infrastructure\Integration\CalculationOutput\time-series-point-quality.json</Link>
     </EmbeddedResource>
@@ -74,12 +71,6 @@ limitations under the License.
   <ItemGroup>
     <EmbeddedResource Include="..\..\..\databricks\calculation-engine\contracts\calculation-file-paths.yml">
       <Link>Infrastructure\BasisData\calculation-file-paths.yml</Link>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="..\..\..\databricks\calculation-engine\contracts\calculator-actor.json">
-      <Link>Infrastructure\Actor\calculator-actor.json</Link>
     </EmbeddedResource>
   </ItemGroup>
 

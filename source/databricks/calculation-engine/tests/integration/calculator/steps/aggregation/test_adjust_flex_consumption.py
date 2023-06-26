@@ -32,7 +32,9 @@ from pyspark.sql.types import (
 )
 import pytest
 import pandas as pd
-from package.constants import Colname, ResultKeyName
+from package.constants import Colname
+from pyspark.sql import SparkSession, DataFrame
+from typing import Callable
 
 # Default values
 default_domain = "D1"
@@ -58,7 +60,7 @@ default_valid_to = datetime.strptime(
 
 
 @pytest.fixture(scope="module")
-def flex_consumption_result_schema():
+def flex_consumption_result_schema() -> StructType:
     """
     Input flex consumption result data frame schema
     """
@@ -82,14 +84,13 @@ def flex_consumption_result_schema():
 
 
 @pytest.fixture(scope="module")
-def positive_grid_loss_result_schema():
+def positive_grid_loss_result_schema() -> StructType:
     """
     Input grid loss result schema
     """
     return (
         StructType()
         .add(Colname.grid_area, StringType(), False)
-        .add(Colname.positive_grid_loss, DecimalType())
         .add(
             Colname.time_window,
             StructType()
@@ -105,7 +106,7 @@ def positive_grid_loss_result_schema():
 
 
 @pytest.fixture(scope="module")
-def grid_loss_sys_cor_schema():
+def grid_loss_sys_cor_schema() -> StructType:
     """
     Input grid loss system correction data frame schema
     """
@@ -121,7 +122,7 @@ def grid_loss_sys_cor_schema():
 
 
 @pytest.fixture(scope="module")
-def expected_schema():
+def expected_schema() -> StructType:
     """
     Expected aggregation schema
     NOTE: Spark seems to add 10 to the precision of the decimal type on summations.
@@ -148,21 +149,21 @@ def expected_schema():
 
 
 @pytest.fixture(scope="module")
-def flex_consumption_result_row_factory(spark, flex_consumption_result_schema):
+def flex_consumption_result_row_factory(spark: SparkSession, flex_consumption_result_schema: StructType) -> Callable[..., DataFrame]:
     """
     Factory to generate a single row of  data, with default parameters as specified above.
     """
 
     def factory(
-        domain=default_domain,
-        responsible=default_responsible,
-        supplier=default_supplier,
-        sum_quantity=default_sum_quantity,
-        time_window=default_time_window,
-        aggregated_quality=default_aggregated_quality,
-        resolution=default_resolution,
-        metering_point_type=default_metering_point_type,
-    ):
+        domain: str = default_domain,
+        responsible: str = default_responsible,
+        supplier: str = default_supplier,
+        sum_quantity: Decimal = default_sum_quantity,
+        time_window: dict[str, datetime] = default_time_window,
+        aggregated_quality: str = default_aggregated_quality,
+        resolution: str = default_resolution,
+        metering_point_type: str = default_metering_point_type,
+    ) -> DataFrame:
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: [domain],
@@ -181,26 +182,24 @@ def flex_consumption_result_row_factory(spark, flex_consumption_result_schema):
 
 
 @pytest.fixture(scope="module")
-def positive_grid_loss_result_row_factory(spark, positive_grid_loss_result_schema):
+def positive_grid_loss_result_row_factory(spark: SparkSession, positive_grid_loss_result_schema: StructType) -> Callable[..., DataFrame]:
     """
     Factory to generate a single row of  data, with default parameters as specified above.
     """
 
     def factory(
-        domain=default_domain,
-        positive_grid_loss=default_positive_grid_loss,
-        time_window=default_time_window,
-        sum_quantity=default_sum_quantity,
-        aggregated_quality=default_aggregated_quality,
-        resolution=default_resolution,
-        metering_point_type=default_metering_point_type,
-    ):
+        domain: str = default_domain,
+        time_window: dict[str, datetime] = default_time_window,
+        positive_grid_loss: Decimal = default_positive_grid_loss,
+        aggregated_quality: str = default_aggregated_quality,
+        resolution: str = default_resolution,
+        metering_point_type: str = default_metering_point_type,
+    ) -> DataFrame:
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: [domain],
-                Colname.positive_grid_loss: [positive_grid_loss],
                 Colname.time_window: [time_window],
-                Colname.sum_quantity: [sum_quantity],
+                Colname.sum_quantity: [positive_grid_loss],
                 Colname.quality: [aggregated_quality],
                 Colname.resolution: [resolution],
                 Colname.metering_point_type: [metering_point_type],
@@ -212,19 +211,19 @@ def positive_grid_loss_result_row_factory(spark, positive_grid_loss_result_schem
 
 
 @pytest.fixture(scope="module")
-def grid_loss_sys_cor_row_factory(spark, grid_loss_sys_cor_schema):
+def grid_loss_sys_cor_row_factory(spark: SparkSession, grid_loss_sys_cor_schema: StructType) -> Callable[..., DataFrame]:
     """
     Factory to generate a single row of  data, with default parameters as specified above.
     """
 
     def factory(
-        domain=default_domain,
-        responsible=default_responsible,
-        supplier=default_supplier,
-        valid_from=default_valid_from,
-        valid_to=default_valid_to,
-        is_positive_grid_loss_responsible=True,
-    ):
+        domain: str = default_domain,
+        responsible: str = default_responsible,
+        supplier: str = default_supplier,
+        valid_from: datetime = default_valid_from,
+        valid_to: datetime = default_valid_to,
+        is_positive_grid_loss_responsible: bool = True,
+    ) -> DataFrame:
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: [domain],
@@ -243,28 +242,21 @@ def grid_loss_sys_cor_row_factory(spark, grid_loss_sys_cor_schema):
 
 
 def test_grid_area_grid_loss_is_added_to_grid_loss_energy_responsible(
-    flex_consumption_result_row_factory,
-    positive_grid_loss_result_row_factory,
-    grid_loss_sys_cor_row_factory,
-):
-    results = {}
-    results[
-        ResultKeyName.flex_consumption
-    ] = create_dataframe_from_aggregation_result_schema(
+    flex_consumption_result_row_factory: Callable[..., DataFrame],
+    positive_grid_loss_result_row_factory: Callable[..., DataFrame],
+    grid_loss_sys_cor_row_factory: Callable[..., DataFrame],
+) -> None:
+    flex_consumption = create_dataframe_from_aggregation_result_schema(
         flex_consumption_result_row_factory(supplier="A")
     )
 
-    results[
-        ResultKeyName.positive_grid_loss
-    ] = create_dataframe_from_aggregation_result_schema(
+    positive_grid_loss = create_dataframe_from_aggregation_result_schema(
         positive_grid_loss_result_row_factory()
     )
 
-    results[
-        ResultKeyName.grid_loss_sys_cor_master_data
-    ] = grid_loss_sys_cor_row_factory(supplier="A")
+    grid_loss_sys_cor_master_data = grid_loss_sys_cor_row_factory(supplier="A")
 
-    result_df = adjust_flex_consumption(results)
+    result_df = adjust_flex_consumption(flex_consumption, positive_grid_loss, grid_loss_sys_cor_master_data)
 
     assert (
         result_df.filter(col(Colname.energy_supplier_id) == "A").collect()[0][
@@ -275,28 +267,21 @@ def test_grid_area_grid_loss_is_added_to_grid_loss_energy_responsible(
 
 
 def test_grid_area_grid_loss_is_not_added_to_non_grid_loss_energy_responsible(
-    flex_consumption_result_row_factory,
-    positive_grid_loss_result_row_factory,
-    grid_loss_sys_cor_row_factory,
-):
-    results = {}
-    results[
-        ResultKeyName.flex_consumption
-    ] = create_dataframe_from_aggregation_result_schema(
+    flex_consumption_result_row_factory: Callable[..., DataFrame],
+    positive_grid_loss_result_row_factory: Callable[..., DataFrame],
+    grid_loss_sys_cor_row_factory: Callable[..., DataFrame],
+) -> None:
+    flex_consumption = create_dataframe_from_aggregation_result_schema(
         flex_consumption_result_row_factory(supplier="A")
     )
 
-    results[
-        ResultKeyName.positive_grid_loss
-    ] = create_dataframe_from_aggregation_result_schema(
+    positive_grid_loss = create_dataframe_from_aggregation_result_schema(
         positive_grid_loss_result_row_factory()
     )
 
-    results[
-        ResultKeyName.grid_loss_sys_cor_master_data
-    ] = grid_loss_sys_cor_row_factory(supplier="B")
+    grid_loss_sys_cor_master_data = grid_loss_sys_cor_row_factory(supplier="B")
 
-    result_df = adjust_flex_consumption(results)
+    result_df = adjust_flex_consumption(flex_consumption, positive_grid_loss, grid_loss_sys_cor_master_data)
 
     assert (
         result_df.filter(col(Colname.energy_supplier_id) == "A").collect()[0][
@@ -307,32 +292,25 @@ def test_grid_area_grid_loss_is_not_added_to_non_grid_loss_energy_responsible(
 
 
 def test_result_dataframe_contains_same_number_of_results_with_same_energy_suppliers_as_flex_consumption_result_dataframe(
-    flex_consumption_result_row_factory,
-    positive_grid_loss_result_row_factory,
-    grid_loss_sys_cor_row_factory,
-):
-    results = {}
+    flex_consumption_result_row_factory: Callable[..., DataFrame],
+    positive_grid_loss_result_row_factory: Callable[..., DataFrame],
+    grid_loss_sys_cor_row_factory: Callable[..., DataFrame],
+) -> None:
     fc_row_1 = flex_consumption_result_row_factory(supplier="A")
     fc_row_2 = flex_consumption_result_row_factory(supplier="B")
     fc_row_3 = flex_consumption_result_row_factory(supplier="C")
 
-    results[
-        ResultKeyName.flex_consumption
-    ] = create_dataframe_from_aggregation_result_schema(
+    flex_consumption = create_dataframe_from_aggregation_result_schema(
         fc_row_1.union(fc_row_2).union(fc_row_3)
     )
 
-    results[
-        ResultKeyName.positive_grid_loss
-    ] = create_dataframe_from_aggregation_result_schema(
+    positive_grid_loss = create_dataframe_from_aggregation_result_schema(
         positive_grid_loss_result_row_factory()
     )
 
-    results[
-        ResultKeyName.grid_loss_sys_cor_master_data
-    ] = grid_loss_sys_cor_row_factory(supplier="C")
+    grid_loss_sys_cor_master_data = grid_loss_sys_cor_row_factory(supplier="C")
 
-    result_df = adjust_flex_consumption(results)
+    result_df = adjust_flex_consumption(flex_consumption, positive_grid_loss, grid_loss_sys_cor_master_data)
 
     result_df_collect = result_df.collect()
     assert result_df.count() == 3
@@ -342,11 +320,10 @@ def test_result_dataframe_contains_same_number_of_results_with_same_energy_suppl
 
 
 def test_correct_grid_loss_entry_is_used_to_determine_energy_responsible_for_the_given_time_window_from_flex_consumption_result_dataframe(
-    flex_consumption_result_row_factory,
-    positive_grid_loss_result_row_factory,
-    grid_loss_sys_cor_row_factory,
-):
-    results = {}
+    flex_consumption_result_row_factory: Callable[..., DataFrame],
+    positive_grid_loss_result_row_factory: Callable[..., DataFrame],
+    grid_loss_sys_cor_row_factory: Callable[..., DataFrame],
+) -> None:
     time_window_1 = {
         Colname.start: datetime(2020, 1, 1, 0, 0),
         Colname.end: datetime(2020, 1, 1, 1, 0),
@@ -370,9 +347,7 @@ def test_correct_grid_loss_entry_is_used_to_determine_energy_responsible_for_the
         supplier="B", time_window=time_window_3
     )
 
-    results[
-        ResultKeyName.flex_consumption
-    ] = create_dataframe_from_aggregation_result_schema(
+    flex_consumption = create_dataframe_from_aggregation_result_schema(
         fc_row_1.union(fc_row_2).union(fc_row_3)
     )
 
@@ -390,9 +365,7 @@ def test_correct_grid_loss_entry_is_used_to_determine_energy_responsible_for_the
         time_window=time_window_3, positive_grid_loss=gagl_result_3
     )
 
-    results[
-        ResultKeyName.positive_grid_loss
-    ] = create_dataframe_from_aggregation_result_schema(
+    positive_grid_loss = create_dataframe_from_aggregation_result_schema(
         gagl_row_1.union(gagl_row_2).union(gagl_row_3)
     )
 
@@ -406,11 +379,11 @@ def test_correct_grid_loss_entry_is_used_to_determine_energy_responsible_for_the
         supplier="B", valid_from=time_window_3["start"], valid_to=None
     )
 
-    results[ResultKeyName.grid_loss_sys_cor_master_data] = glsc_row_1.union(
+    grid_loss_sys_cor_master_data = glsc_row_1.union(
         glsc_row_2
     ).union(glsc_row_3)
 
-    result_df = adjust_flex_consumption(results)
+    result_df = adjust_flex_consumption(flex_consumption, positive_grid_loss, grid_loss_sys_cor_master_data)
 
     assert result_df.count() == 3
     assert (
@@ -432,18 +405,27 @@ def test_correct_grid_loss_entry_is_used_to_determine_energy_responsible_for_the
         == default_sum_quantity + gagl_result_3
     )
 
-    # for i in range(1, 23):
-    #     time_windows.append({'start': datetime(2020, 1, 1, i, 0), 'end': datetime(2020, 1, 1, i + 1, 0)})
-    #     sup = "A"
-    #     if i > 4:
-    #         sup = "B"
-    #     if i > 8:
-    #         sup = "C"
-    #     if i > 12:
-    #         sup = "D"
-    #     if i > 16:
-    #         sup = "E"
-    #     if i > 20:
-    #         sup = "F"
-    #     fc_row = flex_consumption_result_row_factory(supplier=sup, time_window=time_windows[i])
-    #     fc_df.union(fc_row)
+
+def test_that_the_correct_metering_point_type_is_put_on_the_result(
+    flex_consumption_result_row_factory: Callable[..., DataFrame],
+    positive_grid_loss_result_row_factory: Callable[..., DataFrame],
+    grid_loss_sys_cor_row_factory: Callable[..., DataFrame],
+) -> None:
+    flex_consumption = create_dataframe_from_aggregation_result_schema(
+        flex_consumption_result_row_factory(supplier="A")
+    )
+
+    positive_grid_loss = create_dataframe_from_aggregation_result_schema(
+        positive_grid_loss_result_row_factory()
+    )
+
+    grid_loss_sys_cor_master_data = grid_loss_sys_cor_row_factory(supplier="A")
+
+    result_df = adjust_flex_consumption(flex_consumption, positive_grid_loss, grid_loss_sys_cor_master_data)
+
+    assert (
+        result_df.filter(col(Colname.energy_supplier_id) == "A").collect()[0][
+            Colname.metering_point_type
+        ]
+        == MeteringPointType.consumption.value
+    )

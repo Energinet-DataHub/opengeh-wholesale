@@ -24,10 +24,10 @@ from package import (
     infrastructure,
     initialize_spark,
     log,
+    get_grid_loss_responsible
 )
-from package.file_writers.basis_data_writer import BasisDataWriter
-from package.file_writers.process_step_result_writer import ProcessStepResultWriter
-from package.file_writers.actors_writer import ActorsWriter
+from package.output_writers.basis_data_writer import BasisDataWriter
+from package.output_writers.calculation_result_writer import CalculationResultWriter
 import package.calculation_input as input
 
 from .args_helper import valid_date, valid_list
@@ -85,21 +85,21 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         args.batch_period_end_datetime,
     )
 
-    process_step_result_writer = ProcessStepResultWriter(
-        args.wholesale_container_path,
+    grid_loss_responsible_df = get_grid_loss_responsible()
+
+    calculation_result_writer = CalculationResultWriter(
         args.batch_id,
         args.batch_process_type,
         args.batch_execution_time_start,
     )
     basis_data_writer = BasisDataWriter(args.wholesale_container_path, args.batch_id)
-    actors_writer = ActorsWriter(args.wholesale_container_path, args.batch_id)
 
     calculate_balance_fixing(
-        actors_writer,
         basis_data_writer,
-        process_step_result_writer,
+        calculation_result_writer,
         metering_point_periods_df,
         timeseries_points_df,
+        grid_loss_responsible_df,
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
         args.time_zone,

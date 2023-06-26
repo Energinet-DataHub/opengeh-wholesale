@@ -32,7 +32,9 @@ from pyspark.sql.types import (
 )
 import pytest
 import pandas as pd
-from package.constants import Colname, ResultKeyName
+from package.constants import Colname
+from pyspark.sql import SparkSession, DataFrame
+from typing import Callable
 
 # Default values
 default_domain = "D1"
@@ -58,7 +60,7 @@ default_valid_to = datetime.strptime(
 
 
 @pytest.fixture(scope="module")
-def hourly_production_result_schema():
+def hourly_production_result_schema() -> StructType:
     """
     Input hourly production result data frame schema
     """
@@ -82,14 +84,13 @@ def hourly_production_result_schema():
 
 
 @pytest.fixture(scope="module")
-def negative_grid_loss_result_schema():
+def negative_grid_loss_result_schema() -> StructType:
     """
     Input system correction result schema
     """
     return (
         StructType()
         .add(Colname.grid_area, StringType(), False)
-        .add(Colname.negative_grid_loss, DecimalType())
         .add(
             Colname.time_window,
             StructType()
@@ -105,7 +106,7 @@ def negative_grid_loss_result_schema():
 
 
 @pytest.fixture(scope="module")
-def sys_cor_schema():
+def sys_cor_schema() -> StructType:
     """
     Input system correction data frame schema
     """
@@ -121,7 +122,7 @@ def sys_cor_schema():
 
 
 @pytest.fixture(scope="module")
-def expected_schema():
+def expected_schema() -> StructType:
     """
     Expected aggregation schema
     NOTE: Spark seems to add 10 to the precision of the decimal type on summations.
@@ -148,21 +149,21 @@ def expected_schema():
 
 
 @pytest.fixture(scope="module")
-def hourly_production_result_row_factory(spark, hourly_production_result_schema):
+def hourly_production_result_row_factory(spark: SparkSession, hourly_production_result_schema: StructType) -> Callable[..., DataFrame]:
     """
     Factory to generate a single row of  data, with default parameters as specified above.
     """
 
     def factory(
-        domain=default_domain,
-        responsible=default_responsible,
-        supplier=default_supplier,
-        sum_quantity=default_sum_quantity,
-        time_window=default_time_window,
-        aggregated_quality=default_aggregated_quality,
-        resolution=default_resolution,
-        metering_point_type=default_metering_point_type,
-    ):
+        domain: str = default_domain,
+        responsible: str = default_responsible,
+        supplier: str = default_supplier,
+        sum_quantity: Decimal = default_sum_quantity,
+        time_window: dict[str, datetime] = default_time_window,
+        aggregated_quality: str = default_aggregated_quality,
+        resolution: str = default_resolution,
+        metering_point_type: str = default_metering_point_type,
+    ) -> DataFrame:
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: [domain],
@@ -181,26 +182,24 @@ def hourly_production_result_row_factory(spark, hourly_production_result_schema)
 
 
 @pytest.fixture(scope="module")
-def negative_grid_loss_result_row_factory(spark, negative_grid_loss_result_schema):
+def negative_grid_loss_result_row_factory(spark: SparkSession, negative_grid_loss_result_schema: StructType) -> Callable[..., DataFrame]:
     """
     Factory to generate a single row of  data, with default parameters as specified above.
     """
 
     def factory(
-        domain=default_domain,
-        negative_grid_loss=default_negative_grid_loss,
-        time_window=default_time_window,
-        sum_quantity=default_sum_quantity,
-        aggregated_quality=default_aggregated_quality,
-        resolution=default_resolution,
-        metering_point_type=default_metering_point_type,
-    ):
+        domain: str = default_domain,
+        time_window: dict[str, datetime] = default_time_window,
+        negative_grid_loss: Decimal = default_negative_grid_loss,
+        aggregated_quality: str = default_aggregated_quality,
+        resolution: str = default_resolution,
+        metering_point_type: str = default_metering_point_type,
+    ) -> DataFrame:
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: [domain],
-                Colname.negative_grid_loss: [negative_grid_loss],
                 Colname.time_window: [time_window],
-                Colname.sum_quantity: [sum_quantity],
+                Colname.sum_quantity: [negative_grid_loss],
                 Colname.quality: [aggregated_quality],
                 Colname.resolution: [resolution],
                 Colname.metering_point_type: [metering_point_type],
@@ -212,19 +211,19 @@ def negative_grid_loss_result_row_factory(spark, negative_grid_loss_result_schem
 
 
 @pytest.fixture(scope="module")
-def sys_cor_row_factory(spark, sys_cor_schema):
+def sys_cor_row_factory(spark: SparkSession, sys_cor_schema: StructType) -> Callable[..., DataFrame]:
     """
     Factory to generate a single row of  data, with default parameters as specified above.
     """
 
     def factory(
-        domain=default_domain,
-        responsible=default_responsible,
-        supplier=default_supplier,
-        valid_from=default_valid_from,
-        valid_to=default_valid_to,
-        is_negative_grid_loss_responsible=True,
-    ):
+        domain: str = default_domain,
+        responsible: str = default_responsible,
+        supplier: str = default_supplier,
+        valid_from: datetime = default_valid_from,
+        valid_to: datetime = default_valid_to,
+        is_negative_grid_loss_responsible: bool = True,
+    ) -> DataFrame:
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: [domain],
@@ -242,27 +241,24 @@ def sys_cor_row_factory(spark, sys_cor_schema):
     return factory
 
 
-def test_grid_area_system_correction_is_added_to_system_correction_energy_responsible(
-    hourly_production_result_row_factory,
-    negative_grid_loss_result_row_factory,
-    sys_cor_row_factory,
-):
-    results = {}
-    results[ResultKeyName.production] = create_dataframe_from_aggregation_result_schema(
+def test_grid_area_negative_grid_loss_is_added_to_grid_loss_responsible_energy_supplier(
+    hourly_production_result_row_factory: Callable[..., DataFrame],
+    negative_grid_loss_result_row_factory: Callable[..., DataFrame],
+    sys_cor_row_factory: Callable[..., DataFrame],
+) -> None:
+    production = create_dataframe_from_aggregation_result_schema(
         hourly_production_result_row_factory(supplier="A")
     )
 
-    results[
-        ResultKeyName.negative_grid_loss
-    ] = create_dataframe_from_aggregation_result_schema(
+    negative_grid_loss = create_dataframe_from_aggregation_result_schema(
         negative_grid_loss_result_row_factory()
     )
 
-    results[ResultKeyName.grid_loss_sys_cor_master_data] = sys_cor_row_factory(
+    grid_loss_sys_cor_master_data = sys_cor_row_factory(
         supplier="A"
     )
 
-    result_df = adjust_production(results)
+    result_df = adjust_production(production, negative_grid_loss, grid_loss_sys_cor_master_data)
 
     assert (
         result_df.filter(col(Colname.energy_supplier_id) == "A").collect()[0][
@@ -273,26 +269,23 @@ def test_grid_area_system_correction_is_added_to_system_correction_energy_respon
 
 
 def test_grid_area_grid_loss_is_not_added_to_non_grid_loss_energy_responsible(
-    hourly_production_result_row_factory,
-    negative_grid_loss_result_row_factory,
-    sys_cor_row_factory,
-):
-    results = {}
-    results[ResultKeyName.production] = create_dataframe_from_aggregation_result_schema(
+    hourly_production_result_row_factory: Callable[..., DataFrame],
+    negative_grid_loss_result_row_factory: Callable[..., DataFrame],
+    sys_cor_row_factory: Callable[..., DataFrame],
+) -> None:
+    production = create_dataframe_from_aggregation_result_schema(
         hourly_production_result_row_factory(supplier="A")
     )
 
-    results[
-        ResultKeyName.negative_grid_loss
-    ] = create_dataframe_from_aggregation_result_schema(
+    negative_grid_loss = create_dataframe_from_aggregation_result_schema(
         negative_grid_loss_result_row_factory()
     )
 
-    results[ResultKeyName.grid_loss_sys_cor_master_data] = sys_cor_row_factory(
+    grid_loss_sys_cor_master_data = sys_cor_row_factory(
         supplier="B"
     )
 
-    result_df = adjust_production(results)
+    result_df = adjust_production(production, negative_grid_loss, grid_loss_sys_cor_master_data)
 
     assert (
         result_df.filter(col(Colname.energy_supplier_id) == "A").collect()[0][
@@ -303,30 +296,27 @@ def test_grid_area_grid_loss_is_not_added_to_non_grid_loss_energy_responsible(
 
 
 def test_result_dataframe_contains_same_number_of_results_with_same_energy_suppliers_as_flex_consumption_result_dataframe(
-    hourly_production_result_row_factory,
-    negative_grid_loss_result_row_factory,
-    sys_cor_row_factory,
-):
-    results = {}
+    hourly_production_result_row_factory: Callable[..., DataFrame],
+    negative_grid_loss_result_row_factory: Callable[..., DataFrame],
+    sys_cor_row_factory: Callable[..., DataFrame],
+) -> None:
     hp_row_1 = hourly_production_result_row_factory(supplier="A")
     hp_row_2 = hourly_production_result_row_factory(supplier="B")
     hp_row_3 = hourly_production_result_row_factory(supplier="C")
 
-    results[ResultKeyName.production] = create_dataframe_from_aggregation_result_schema(
+    production = create_dataframe_from_aggregation_result_schema(
         hp_row_1.union(hp_row_2).union(hp_row_3)
     )
 
-    results[
-        ResultKeyName.negative_grid_loss
-    ] = create_dataframe_from_aggregation_result_schema(
+    negative_grid_loss = create_dataframe_from_aggregation_result_schema(
         negative_grid_loss_result_row_factory()
     )
 
-    results[ResultKeyName.grid_loss_sys_cor_master_data] = sys_cor_row_factory(
+    grid_loss_sys_cor_master_data = sys_cor_row_factory(
         supplier="C"
     )
 
-    result_df = adjust_production(results)
+    result_df = adjust_production(production, negative_grid_loss, grid_loss_sys_cor_master_data)
 
     result_df_collect = result_df.collect()
     assert result_df.count() == 3
@@ -335,12 +325,11 @@ def test_result_dataframe_contains_same_number_of_results_with_same_energy_suppl
     assert result_df_collect[2][Colname.energy_supplier_id] == "C"
 
 
-def test_correct_system_correction_entry_is_used_to_determine_energy_responsible_for_the_given_time_window_from_hourly_production_result_dataframe(
-    hourly_production_result_row_factory,
-    negative_grid_loss_result_row_factory,
-    sys_cor_row_factory,
-):
-    results = {}
+def test_correct_negative_grid_loss_entry_is_used_to_determine_energy_responsible_for_the_given_time_window_from_hourly_production_result_dataframe(
+    hourly_production_result_row_factory: Callable[..., DataFrame],
+    negative_grid_loss_result_row_factory: Callable[..., DataFrame],
+    sys_cor_row_factory: Callable[..., DataFrame],
+) -> None:
     time_window_1 = {
         Colname.start: datetime(2020, 1, 1, 0, 0),
         Colname.end: datetime(2020, 1, 1, 1, 0),
@@ -364,7 +353,7 @@ def test_correct_system_correction_entry_is_used_to_determine_energy_responsible
         supplier="B", time_window=time_window_3
     )
 
-    results[ResultKeyName.production] = create_dataframe_from_aggregation_result_schema(
+    production = create_dataframe_from_aggregation_result_schema(
         hp_row_1.union(hp_row_2).union(hp_row_3)
     )
 
@@ -382,9 +371,7 @@ def test_correct_system_correction_entry_is_used_to_determine_energy_responsible
         time_window=time_window_3, negative_grid_loss=gasc_result_3
     )
 
-    results[
-        ResultKeyName.negative_grid_loss
-    ] = create_dataframe_from_aggregation_result_schema(
+    negative_grid_loss = create_dataframe_from_aggregation_result_schema(
         gasc_row_1.union(gasc_row_2).union(gasc_row_3)
     )
 
@@ -398,11 +385,11 @@ def test_correct_system_correction_entry_is_used_to_determine_energy_responsible
         supplier="B", valid_from=time_window_3["start"], valid_to=None
     )
 
-    results[ResultKeyName.grid_loss_sys_cor_master_data] = sc_row_1.union(
+    grid_loss_sys_cor_master_data = sc_row_1.union(
         sc_row_2
     ).union(sc_row_3)
 
-    result_df = adjust_production(results)
+    result_df = adjust_production(production, negative_grid_loss, grid_loss_sys_cor_master_data)
 
     assert result_df.count() == 3
     assert (
@@ -422,4 +409,31 @@ def test_correct_system_correction_entry_is_used_to_determine_energy_responsible
         .filter(col(f"{Colname.time_window_start}") == time_window_3["start"])
         .collect()[0][Colname.sum_quantity]
         == default_sum_quantity + gasc_result_3
+    )
+
+
+def test_that_the_correct_metering_point_type_is_put_on_the_result(
+    hourly_production_result_row_factory: Callable[..., DataFrame],
+    negative_grid_loss_result_row_factory: Callable[..., DataFrame],
+    sys_cor_row_factory: Callable[..., DataFrame],
+) -> None:
+    production = create_dataframe_from_aggregation_result_schema(
+        hourly_production_result_row_factory(supplier="A")
+    )
+
+    negative_grid_loss = create_dataframe_from_aggregation_result_schema(
+        negative_grid_loss_result_row_factory()
+    )
+
+    grid_loss_sys_cor_master_data = sys_cor_row_factory(
+        supplier="A"
+    )
+
+    result_df = adjust_production(production, negative_grid_loss, grid_loss_sys_cor_master_data)
+
+    assert (
+        result_df.filter(col(Colname.energy_supplier_id) == "A").collect()[0][
+            Colname.metering_point_type
+        ]
+        == MeteringPointType.production.value
     )

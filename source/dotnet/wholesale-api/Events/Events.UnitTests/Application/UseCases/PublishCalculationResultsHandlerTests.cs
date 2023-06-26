@@ -16,7 +16,6 @@ using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Events.Application;
 using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing;
-using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing.Model;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using FluentAssertions;
@@ -54,8 +53,6 @@ public class PublishCalculationResultsHandlerTests
             .ReturnsAsync(completedBatch2)
             .ReturnsAsync((CompletedBatch?)null);
 
-        var expectedPublishCount = completedBatch1.GridAreaCodes.Count + completedBatch2.GridAreaCodes.Count;
-
         // Act
         await sut.PublishCalculationResultsAsync();
 
@@ -67,7 +64,7 @@ public class PublishCalculationResultsHandlerTests
 
         // Publish invocation per grid area
         processApplicationServiceMock
-            .Verify(service => service.PublishForGridAreaAsync(It.IsAny<BatchGridAreaInfo>()), Times.Exactly(expectedPublishCount));
+            .Verify(service => service.PublishForBatchAsync(It.IsAny<CompletedBatch>()), Times.Exactly(2));
 
         // Unit of work commit per batch
         unitOfWorkMock

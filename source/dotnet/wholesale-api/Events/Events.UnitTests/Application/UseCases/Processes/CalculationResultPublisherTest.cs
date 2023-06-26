@@ -14,16 +14,13 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Actors;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.Actors.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
-using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing;
-using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing.Model;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Energinet.DataHub.Wholesale.Events.Application.IntegrationEventsManagement;
+using Energinet.DataHub.Wholesale.Events.UnitTests.Fixtures;
 using Moq;
-using NodaTime;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Application.UseCases.Processes;
@@ -31,223 +28,139 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Application.UseCases.Proc
 public class CalculationResultPublisherTest
 {
     [Theory]
-    [InlineAutoMoqData(TimeSeriesType.NonProfiledConsumption)]
-    [InlineAutoMoqData(TimeSeriesType.FlexConsumption)]
-    [InlineAutoMoqData(TimeSeriesType.Production)]
-    [InlineAutoMoqData(TimeSeriesType.NetExchangePerGa)]
-    [InlineAutoMoqData(TimeSeriesType.NetExchangePerNeighboringGa)]
+    [InlineAutoMoqData]
     public async Task
         PublishAsync_PublishEventForGridArea(
-            TimeSeriesType timeSeriesType,
-            [Frozen] Mock<IActorClient> actorClientMock,
-            [Frozen] Mock<ICalculationResultClient> calculationResultClientMock,
+            CompletedBatch completedBatch,
+            CalculationResultBuilder calculationResultBuilder,
+            [Frozen] Mock<ICalculationResultQueries> calculationResultQueriesMock,
             [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
             [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
             IntegrationEventDto integrationEventDto,
             CalculationResultPublisher sut)
     {
         // Arrange
-        var eventDto = new BatchGridAreaInfo(
-            "805",
-            Guid.NewGuid(),
-            ProcessType.BalanceFixing,
-            Instant.MinValue,
-            Instant.MinValue);
+        var calculationResult = calculationResultBuilder.WithId(completedBatch.Id).Build();
 
-        var calculationResult = new CalculationResult(
-            timeSeriesType,
-            new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
-
-        calculationResultClientMock.Setup(p => p.GetAsync(
-            eventDto.BatchId,
-            It.IsAny<string>(),
-            timeSeriesType,
-            null,
-            null)).ReturnsAsync(calculationResult);
-
-        actorClientMock
-            .Setup(a => a.GetEnergySuppliersAsync(
-                eventDto.BatchId,
-                eventDto.GridAreaCode,
-                It.IsAny<TimeSeriesType>())).ReturnsAsync(Array.Empty<Actor>());
+        calculationResultQueriesMock
+            .Setup(p => p.GetAsync(completedBatch.Id))
+            .Returns(ResultAsyncEnumerable(calculationResult));
 
         calculationResultCompletedFactoryMock
-            .Setup(c => c.CreateForTotalGridArea(
-                calculationResult,
-                eventDto))
+            .Setup(c => c.CreateForTotalGridArea(calculationResult))
             .Returns(integrationEventDto);
 
         // Act
-        await sut.PublishForGridAreaAsync(eventDto);
+        await sut.PublishForBatchAsync(completedBatch);
 
         // Assert
         integrationEventPublisherMock.Verify(x => x.PublishAsync(integrationEventDto), Times.Once);
     }
 
     [Theory]
-    [InlineAutoMoqData(TimeSeriesType.NonProfiledConsumption)]
-    [InlineAutoMoqData(TimeSeriesType.FlexConsumption)]
-    [InlineAutoMoqData(TimeSeriesType.Production)]
+    [InlineAutoMoqData]
     public async Task PublishAsync_PublishEventForEnergySupplier(
-        TimeSeriesType timeSeriesType,
-        [Frozen] Mock<IActorClient> actorClientMock,
-        [Frozen] Mock<ICalculationResultClient> calculationResultClientMock,
+        CompletedBatch completedBatch,
+        CalculationResultBuilder calculationResultBuilder,
+        [Frozen] Mock<ICalculationResultQueries> calculationResultQueriesMock,
         [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
         [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
         IntegrationEventDto integrationEventDto,
-        string glnNumber,
         CalculationResultPublisher sut)
     {
         // Arrange
-        var eventDto = new BatchGridAreaInfo(
-            "805",
-            Guid.NewGuid(),
-            ProcessType.BalanceFixing,
-            Instant.MinValue,
-            Instant.MinValue);
+        var calculationResult = calculationResultBuilder
+            .WithId(completedBatch.Id)
+            .WithEnergySupplier()
+            .Build();
 
-        var calculationResult = new CalculationResult(
-            timeSeriesType,
-            new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
-
-        calculationResultClientMock.Setup(p => p.GetAsync(
-            eventDto.BatchId,
-            It.IsAny<string>(),
-            timeSeriesType,
-            glnNumber,
-            null)).ReturnsAsync(calculationResult);
-
-        actorClientMock
-            .Setup(a => a.GetEnergySuppliersAsync(
-                eventDto.BatchId,
-                It.IsAny<string>(),
-                It.IsAny<TimeSeriesType>())).ReturnsAsync(new[] { new Actor(glnNumber) });
+        calculationResultQueriesMock
+            .Setup(p => p.GetAsync(completedBatch.Id))
+            .Returns(ResultAsyncEnumerable(calculationResult));
 
         calculationResultCompletedFactoryMock
             .Setup(c => c.CreateForEnergySupplier(
-                calculationResult,
-                eventDto,
-                glnNumber))
+                calculationResult))
             .Returns(integrationEventDto);
 
         //Act
-        await sut.PublishForGridAreaAsync(eventDto);
+        await sut.PublishForBatchAsync(completedBatch);
 
         // Assert
         integrationEventPublisherMock.Verify(x => x.PublishAsync(integrationEventDto), Times.Once);
     }
 
     [Theory]
-    [InlineAutoMoqData(TimeSeriesType.NonProfiledConsumption)]
-    [InlineAutoMoqData(TimeSeriesType.FlexConsumption)]
-    [InlineAutoMoqData(TimeSeriesType.Production)]
+    [InlineAutoMoqData]
     public async Task
         PublishAsyncPublishEventForBalanceResponsibleParty(
-            TimeSeriesType timeSeriesType,
-            [Frozen] Mock<IActorClient> actorClientMock,
-            [Frozen] Mock<ICalculationResultClient> calculationResultClientMock,
+            CompletedBatch completedBatch,
+            CalculationResultBuilder calculationResultBuilder,
+            [Frozen] Mock<ICalculationResultQueries> calculationResultQueriesMock,
             [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
             [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
-            string brpGlnNumber,
             IntegrationEventDto integrationEventDto,
             CalculationResultPublisher sut)
     {
         // Arrange
-        var eventDto = new BatchGridAreaInfo(
-            "805",
-            Guid.NewGuid(),
-            ProcessType.BalanceFixing,
-            Instant.MinValue,
-            Instant.MinValue);
+        var calculationResult = calculationResultBuilder
+            .WithId(completedBatch.Id)
+            .WithBalanceResponsibleParty()
+            .Build();
 
-        var calculationResult = new CalculationResult(
-            timeSeriesType,
-            new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
-
-        calculationResultClientMock.Setup(p => p.GetAsync(
-            eventDto.BatchId,
-            It.IsAny<string>(),
-            timeSeriesType,
-            null,
-            brpGlnNumber)).ReturnsAsync(calculationResult);
-
-        actorClientMock
-            .Setup(a => a.GetBalanceResponsiblePartiesAsync(
-                eventDto.BatchId,
-                It.IsAny<string>(),
-                It.IsAny<TimeSeriesType>())).ReturnsAsync(new[] { new Actor(brpGlnNumber) });
+        calculationResultQueriesMock
+            .Setup(p => p.GetAsync(completedBatch.Id))
+            .Returns(ResultAsyncEnumerable(calculationResult));
 
         calculationResultCompletedFactoryMock
-            .Setup(c => c.CreateForBalanceResponsibleParty(calculationResult, eventDto, brpGlnNumber))
+            .Setup(c => c.CreateForBalanceResponsibleParty(calculationResult))
             .Returns(integrationEventDto);
 
         // Act
-        await sut.PublishForGridAreaAsync(eventDto);
+        await sut.PublishForBatchAsync(completedBatch);
 
         // Assert
         integrationEventPublisherMock.Verify(x => x.PublishAsync(integrationEventDto), Times.Once);
     }
 
     [Theory]
-    [InlineAutoMoqData(TimeSeriesType.NonProfiledConsumption)]
-    [InlineAutoMoqData(TimeSeriesType.FlexConsumption)]
-    [InlineAutoMoqData(TimeSeriesType.Production)]
+    [InlineAutoMoqData]
     public async Task
         PublishAsync_PublishEventForEnergySupplierByBalanceResponsibleParty(
-            TimeSeriesType timeSeriesType,
-            [Frozen] Mock<IActorClient> actorClientMock,
-            [Frozen] Mock<ICalculationResultClient> calculationResultClientMock,
+            CompletedBatch completedBatch,
+            CalculationResultBuilder calculationResultBuilder,
+            [Frozen] Mock<ICalculationResultQueries> calculationResultQueriesMock,
             [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
             [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
             IntegrationEventDto integrationEventDto,
-            string brpGlnNumber,
-            string glnNumber,
             CalculationResultPublisher sut)
     {
         // Arrange
-        var eventDto = new BatchGridAreaInfo(
-            "805",
-            Guid.NewGuid(),
-            ProcessType.BalanceFixing,
-            Instant.MinValue,
-            Instant.MinValue);
+        var calculationResult = calculationResultBuilder
+            .WithId(completedBatch.Id)
+            .WithEnergySupplier()
+            .WithBalanceResponsibleParty()
+            .Build();
 
-        var calculationResult = new CalculationResult(
-            timeSeriesType,
-            new[] { new TimeSeriesPoint(DateTimeOffset.Now, 10.0m, QuantityQuality.Estimated) });
-
-        calculationResultClientMock.Setup(p => p.GetAsync(
-            eventDto.BatchId,
-            It.IsAny<string>(),
-            timeSeriesType,
-            glnNumber,
-            brpGlnNumber)).ReturnsAsync(calculationResult);
-
-        actorClientMock
-            .Setup(a => a.GetBalanceResponsiblePartiesAsync(
-                eventDto.BatchId,
-                It.IsAny<string>(),
-                It.IsAny<TimeSeriesType>())).ReturnsAsync(new[] { new Actor(brpGlnNumber) });
-
-        actorClientMock
-            .Setup(a => a.GetEnergySuppliersByBalanceResponsiblePartyAsync(
-                eventDto.BatchId,
-                It.IsAny<string>(),
-                It.IsAny<TimeSeriesType>(),
-                brpGlnNumber)).ReturnsAsync(new[] { new Actor(glnNumber) });
+        calculationResultQueriesMock
+            .Setup(p => p.GetAsync(completedBatch.Id))
+            .Returns(ResultAsyncEnumerable(calculationResult));
 
         calculationResultCompletedFactoryMock
             .Setup(c => c.CreateForEnergySupplierByBalanceResponsibleParty(
-                calculationResult,
-                eventDto,
-                glnNumber,
-                brpGlnNumber))
+                calculationResult))
             .Returns(integrationEventDto);
 
         // Act
-        await sut.PublishForGridAreaAsync(eventDto);
+        await sut.PublishForBatchAsync(completedBatch);
 
         // Assert
         integrationEventPublisherMock.Verify(x => x.PublishAsync(integrationEventDto), Times.Once);
+    }
+
+    private async IAsyncEnumerable<CalculationResult> ResultAsyncEnumerable(CalculationResult calculationResult)
+    {
+        yield return calculationResult;
+        await Task.Delay(0);
     }
 }

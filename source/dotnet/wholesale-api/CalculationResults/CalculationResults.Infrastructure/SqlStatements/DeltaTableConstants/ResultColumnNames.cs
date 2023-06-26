@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Diagnostics;
+using System.Reflection;
+
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 
 public static class ResultColumnNames
@@ -28,4 +31,28 @@ public static class ResultColumnNames
     public const string Quantity = "quantity";
     public const string QuantityQuality = "quantity_quality";
     public const string AggregationLevel = "aggregation_level";
+
+    public static IEnumerable<string> GetAllNames()
+    {
+        var fieldInfos = typeof(ResultColumnNames).GetFields(BindingFlags.Public | BindingFlags.Static);
+        return fieldInfos.Select(x => x.GetValue(null)).Cast<string>().ToList();
+    }
+
+    public static string GetType(string columnName) =>
+         columnName switch
+         {
+             GridArea => "string",
+             BalanceResponsibleId => "string",
+             EnergySupplierId => "string",
+             Time => "timestamp",
+             QuantityQuality => "string",
+             AggregationLevel => "string",
+             TimeSeriesType => "string",
+             BatchId => "string",
+             BatchProcessType => "string",
+             BatchExecutionTimeStart => "timestamp",
+             FromGridArea => "string",
+             Quantity => "decimal(18,3)",
+             _ => throw new ArgumentException($"Unexpected column name '{columnName}'."),
+         };
 }

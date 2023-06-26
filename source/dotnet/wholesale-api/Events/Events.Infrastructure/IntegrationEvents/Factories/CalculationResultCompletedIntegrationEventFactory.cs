@@ -14,7 +14,6 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Contracts.Events;
-using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing.Model;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Types;
 using Google.Protobuf.WellKnownTypes;
@@ -24,45 +23,41 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Fa
 
 public class CalculationResultCompletedIntegrationEventFactory : ICalculationResultCompletedIntegrationEventFactory
 {
-    public CalculationResultCompleted CreateForGridArea(
-        CalculationResult calculationResultDto,
-        BatchGridAreaInfo batchGridAreaInfo)
+    public CalculationResultCompleted CreateForGridArea(CalculationResult result)
     {
-        var calculationResultCompleted = Create(calculationResultDto, batchGridAreaInfo);
+        var calculationResultCompleted = Create(result);
         calculationResultCompleted.AggregationPerGridarea = new AggregationPerGridArea
         {
-            GridAreaCode = batchGridAreaInfo.GridAreaCode,
+            GridAreaCode = result.GridArea,
         };
 
         return calculationResultCompleted;
     }
 
     public CalculationResultCompleted CreateForEnergySupplier(
-        CalculationResult calculationResultDto,
-        BatchGridAreaInfo batchGridAreaInfo,
-        string energySupplierGln)
+        CalculationResult result,
+        string energySupplierId)
     {
-        var calculationResultCompleted = Create(calculationResultDto, batchGridAreaInfo);
+        var calculationResultCompleted = Create(result);
         calculationResultCompleted.AggregationPerEnergysupplierPerGridarea = new AggregationPerEnergySupplierPerGridArea
         {
-            GridAreaCode = batchGridAreaInfo.GridAreaCode,
-            EnergySupplierGlnOrEic = energySupplierGln,
+            GridAreaCode = result.GridArea,
+            EnergySupplierGlnOrEic = energySupplierId,
         };
 
         return calculationResultCompleted;
     }
 
     public CalculationResultCompleted CreateForBalanceResponsibleParty(
-        CalculationResult calculationResultDto,
-        BatchGridAreaInfo batchGridAreaInfo,
-        string balanceResponsiblePartyGln)
+        CalculationResult result,
+        string balanceResponsiblePartyId)
     {
-        var calculationResultCompleted = Create(calculationResultDto, batchGridAreaInfo);
+        var calculationResultCompleted = Create(result);
         calculationResultCompleted.AggregationPerBalanceresponsiblepartyPerGridarea =
             new AggregationPerBalanceResponsiblePartyPerGridArea
             {
-                GridAreaCode = batchGridAreaInfo.GridAreaCode,
-                BalanceResponsiblePartyGlnOrEic = balanceResponsiblePartyGln,
+                GridAreaCode = result.GridArea,
+                BalanceResponsiblePartyGlnOrEic = balanceResponsiblePartyId,
             };
 
         return calculationResultCompleted;
@@ -70,39 +65,36 @@ public class CalculationResultCompletedIntegrationEventFactory : ICalculationRes
 
     public CalculationResultCompleted CreateForEnergySupplierByBalanceResponsibleParty(
         CalculationResult result,
-        BatchGridAreaInfo batchGridAreaInfo,
-        string energySupplierGln,
-        string balanceResponsiblePartyGln)
+        string energySupplierId,
+        string balanceResponsiblePartyId)
     {
-        var calculationResultCompleted = Create(result, batchGridAreaInfo);
+        var calculationResultCompleted = Create(result);
         calculationResultCompleted.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea =
             new AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea
             {
-                GridAreaCode = batchGridAreaInfo.GridAreaCode,
-                EnergySupplierGlnOrEic = energySupplierGln,
-                BalanceResponsiblePartyGlnOrEic = balanceResponsiblePartyGln,
+                GridAreaCode = result.GridArea,
+                EnergySupplierGlnOrEic = energySupplierId,
+                BalanceResponsiblePartyGlnOrEic = balanceResponsiblePartyId,
             };
 
         return calculationResultCompleted;
     }
 
-    private static CalculationResultCompleted Create(
-        CalculationResult calculationResultDto,
-        BatchGridAreaInfo batchGridAreaInfo)
+    private static CalculationResultCompleted Create(CalculationResult result)
     {
         var calculationResultCompleted = new CalculationResultCompleted
         {
-            BatchId = batchGridAreaInfo.BatchId.ToString(),
+            BatchId = result.BatchId.ToString(),
             Resolution = Resolution.Quarter,
-            ProcessType = ProcessTypeMapper.MapProcessType(batchGridAreaInfo.ProcessType),
+            ProcessType = ProcessTypeMapper.MapProcessType(result.ProcessType),
             QuantityUnit = QuantityUnit.Kwh,
-            PeriodStartUtc = batchGridAreaInfo.PeriodStart.ToTimestamp(),
-            PeriodEndUtc = batchGridAreaInfo.PeriodEnd.ToTimestamp(),
-            TimeSeriesType = TimeSeriesTypeMapper.MapTimeSeriesType(calculationResultDto.TimeSeriesType),
+            PeriodStartUtc = result.PeriodStart.ToTimestamp(),
+            PeriodEndUtc = result.PeriodEnd.ToTimestamp(),
+            TimeSeriesType = TimeSeriesTypeMapper.MapTimeSeriesType(result.TimeSeriesType),
         };
 
         calculationResultCompleted.TimeSeriesPoints
-            .AddRange(calculationResultDto.TimeSeriesPoints
+            .AddRange(result.TimeSeriesPoints
                 .Select(timeSeriesPoint => new TimeSeriesPoint
                 {
                     Quantity = new DecimalValue(timeSeriesPoint.Quantity),
