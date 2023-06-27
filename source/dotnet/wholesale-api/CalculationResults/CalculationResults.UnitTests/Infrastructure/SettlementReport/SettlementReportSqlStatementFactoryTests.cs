@@ -66,8 +66,8 @@ public class SettlementReportSqlStatementFactoryTests
 SELECT t1.grid_area, t1.batch_process_type, t1.time, t1.time_series_type, t1.quantity
 FROM {_schemaName}.{_tableName} t1
 LEFT JOIN {_schemaName}.{_tableName} t2
-    ON t1.batch_execution_time_start < t2.batch_execution_time_start
-        AND t1.time = t2.time
+    ON t1.time = t2.time
+        AND t1.batch_execution_time_start < t2.batch_execution_time_start
         AND t1.grid_area = t2.grid_area
         AND t1.out_grid_area = t2.out_grid_area
         AND t1.time_series_type = t2.time_series_type
@@ -90,8 +90,8 @@ ORDER BY t1.time
 SELECT t1.grid_area, t1.batch_process_type, t1.time, t1.time_series_type, t1.quantity
 FROM {_schemaName}.{_tableName} t1
 LEFT JOIN {_schemaName}.{_tableName} t2
-    ON t1.batch_execution_time_start < t2.batch_execution_time_start
-        AND t1.time = t2.time
+    ON t1.time = t2.time
+        AND t1.batch_execution_time_start < t2.batch_execution_time_start
         AND t1.grid_area = t2.grid_area
         AND t1.out_grid_area = t2.out_grid_area
         AND t1.time_series_type = t2.time_series_type

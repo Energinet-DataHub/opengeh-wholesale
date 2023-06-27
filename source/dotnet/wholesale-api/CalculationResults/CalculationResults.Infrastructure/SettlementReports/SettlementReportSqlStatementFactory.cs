@@ -50,9 +50,8 @@ public static class SettlementReportSqlStatementFactory
 SELECT {selectColumns}
 FROM {schemaName}.{tableName} t1
 LEFT JOIN {schemaName}.{tableName} t2
-    ON t1.time = t2.time
-        AND t1.batch_execution_time_start < t2.batch_execution_time_start
-        AND t1.time = t2.time
+    ON t1.{ResultColumnNames.Time} = t2.{ResultColumnNames.Time}
+        AND t1.{ResultColumnNames.BatchExecutionTimeStart} < t2.{ResultColumnNames.BatchExecutionTimeStart}
         AND t1.{ResultColumnNames.GridArea} = t2.{ResultColumnNames.GridArea}
         AND t1.{ResultColumnNames.FromGridArea} = t2.{ResultColumnNames.FromGridArea}
         AND t1.{ResultColumnNames.TimeSeriesType} = t2.{ResultColumnNames.TimeSeriesType}
