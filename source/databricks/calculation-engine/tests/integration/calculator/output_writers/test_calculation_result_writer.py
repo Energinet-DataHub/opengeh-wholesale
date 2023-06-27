@@ -29,8 +29,8 @@ from package.codelists import (
     TimeSeriesType,
 )
 from package.constants import Colname, ResultTableColName
-from package.output_writers.calculation_result_writer import CalculationResultWriter
-from tests.contract_utils import assert_contract_matches_schema
+from package.output_writers.calculation_result_writer import CalculationResultWriter, _get_calculation_result_definition
+from tests.contract_utils import assert_contract_matches_schema, get_column_names_from_contract
 from typing import Any
 
 DATABASE_NAME = "wholesale_output"
@@ -192,3 +192,33 @@ def test__write__writes_columns_matching_contract(
     )
 
     assert_contract_matches_schema(contract_path, actual_df.schema)
+
+
+def test__get_calculation_result_definition__returns_expected_column_names() -> None:
+    # Arrange
+    expected_column_names = [ResultTableColName.batch_id, ResultTableColName.batch_execution_time_start, ResultTableColName.batch_process_type,
+                             ResultTableColName.grid_area, ResultTableColName.time_series_type, ResultTableColName.aggregation_level,
+                             ResultTableColName.from_grid_area, ResultTableColName.balance_responsible_id, ResultTableColName.energy_supplier_id]
+
+    # Act
+    actual = _get_calculation_result_definition()
+
+    # Assert
+    assert actual == expected_column_names
+
+
+# def test__get_calculation_result_definition__excludes_exepected_other_column_names(contracts_path: str) -> None:
+
+#     # This class is a guard against adding new columns without considering how the column affects the generation of calculation result IDs
+
+#     # Arrange
+#     expected_other_columns = [ResultTableColName.quantity_quality, ResultTableColName.quantity]
+#     contract_path = f"{contracts_path}/result-table-column-names.json"
+#     all_columns = get_column_names_from_contract(contract_path)
+
+#     # Act
+#     included_columns = _get_calculation_result_definition()
+#     actual_other_columns = set(all_columns) - set(included_columns)
+
+#     # Assert
+#     assert set(actual_other_columns) == set(expected_other_columns)
