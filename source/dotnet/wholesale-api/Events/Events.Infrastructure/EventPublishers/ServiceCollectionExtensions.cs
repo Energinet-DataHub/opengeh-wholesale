@@ -43,8 +43,5 @@ public static class ServiceCollectionExtensions
     {
         if (serviceCollection.All(x => x.ServiceType != typeof(ServiceBusClient)))
             serviceCollection.AddSingleton(_ => new ServiceBusClient(serviceBusConnectionString));
-
-        if (serviceCollection.All(x => x.ServiceType != typeof(IServiceBusMessageFactory)))
-            serviceCollection.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
     }
 }

@@ -18,7 +18,7 @@ namespace Energinet.DataHub.Core.Messaging.Communication;
 
 public class ServiceBusMessageFactory : IServiceBusMessageFactory
 {
-    public ServiceBusMessage Create(OutboxEvent @event)
+    public ServiceBusMessage Create(IntegrationEvent @event)
     {
         var serviceBusMessage = new ServiceBusMessage
         {

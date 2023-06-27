@@ -18,13 +18,15 @@ namespace Energinet.DataHub.Core.Messaging.Communication;
 
 public static class Registration
 {
+    /// <summary>
+    /// An implementation of <see cref="IOutboxRepository"/> must be registered in the DI container.
+    /// </summary>
     public static IServiceCollection AddCommunication(this IServiceCollection services)
     {
         services.AddHostedService<OutboxSenderTrigger>();
 
-        services.AddScoped<IOutboxSender>();
-        services.AddScoped<IOutboxRepository>(); // TODO: Implementation must be provided by package consumer
-        services.AddScoped<IServiceBusMessageFactory>();
+        services.AddScoped<IOutboxSender, OutboxSender>();
+        services.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
 
         return services;
     }

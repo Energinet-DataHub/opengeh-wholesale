@@ -16,5 +16,5 @@ namespace Energinet.DataHub.Core.Messaging.Communication;
 
 public interface IOutboxRepository
 {
-    IAsyncEnumerable<List<OutboxEvent>> GetAsync();
+    IAsyncEnumerable<List<IntegrationEvent>> GetAsync();
 }

@@ -35,7 +35,7 @@ public class CalculationResultCompletedToIntegrationEventFactoryTests
         [Frozen] Mock<IClock> clockMock,
         CalculationResultCompleted calculationResultCompleted,
         CalculationResult calculationResult,
-        CalculationResultCompletedToIntegrationEventFactory sut)
+        CalculationResultIntegrationEventToIntegrationEventFactory sut)
     {
         // Arrange
         calculationResult.SetPrivateProperty(r => r.BalanceResponsibleId, null);
@@ -51,7 +51,7 @@ public class CalculationResultCompletedToIntegrationEventFactoryTests
         var actual = sut.CreateForEnergySupplier(calculationResult);
 
         // Assert
-        Assert.Equal(CalculationResultCompleted.MessageType, actual.MessageType);
+        Assert.Equal(CalculationResultCompleted.MessageName, actual.MessageType);
         Assert.Equal(MessageExtensions.ToByteArray(calculationResultCompleted), actual.EventData);
         Assert.Equal(instant, actual.CreationDate);
     }
@@ -62,7 +62,7 @@ public class CalculationResultCompletedToIntegrationEventFactoryTests
         [Frozen] Mock<ICalculationResultCompletedIntegrationEventFactory> calculationResultCompletedIntegrationEventFactoryMock,
         CalculationResultCompleted calculationResultCompleted,
         CalculationResult calculationResult,
-        CalculationResultCompletedToIntegrationEventFactory sut)
+        CalculationResultIntegrationEventToIntegrationEventFactory sut)
     {
         // Arrange
         calculationResult.SetPrivateProperty(r => r.EnergySupplierId, null);
@@ -83,7 +83,7 @@ public class CalculationResultCompletedToIntegrationEventFactoryTests
         [Frozen] Mock<ICalculationResultCompletedIntegrationEventFactory> calculationResultCompletedIntegrationEventFactoryMock,
         CalculationResultCompleted calculationResultCompleted,
         CalculationResult calculationResult,
-        CalculationResultCompletedToIntegrationEventFactory sut)
+        CalculationResultIntegrationEventToIntegrationEventFactory sut)
     {
         // Arrange
         calculationResultCompletedIntegrationEventFactoryMock
@@ -103,7 +103,7 @@ public class CalculationResultCompletedToIntegrationEventFactoryTests
         [Frozen] Mock<ICalculationResultCompletedIntegrationEventFactory> calculationResultCompletedIntegrationEventFactoryMock,
         CalculationResultCompleted calculationResultCompleted,
         CalculationResult calculationResult,
-        CalculationResultCompletedToIntegrationEventFactory sut)
+        CalculationResultIntegrationEventToIntegrationEventFactory sut)
     {
         // Arrange
         calculationResultCompletedIntegrationEventFactoryMock

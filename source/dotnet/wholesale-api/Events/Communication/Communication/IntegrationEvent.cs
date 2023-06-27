@@ -25,4 +25,4 @@ namespace Energinet.DataHub.Core.Messaging.Communication;
 /// <param name="OperationTimeStamp">TODO: Why is this required by ADR-008?</param>
 /// <param name="MessageVersion"></param>
 /// <param name="Message"></param>
-public record OutboxEvent(Guid EventIdentification, string MessageName, Instant OperationTimeStamp, string MessageVersion, IMessage Message);
+public record IntegrationEvent(Guid EventIdentification, string MessageName, Instant OperationTimeStamp, int MessageVersion, IMessage Message);

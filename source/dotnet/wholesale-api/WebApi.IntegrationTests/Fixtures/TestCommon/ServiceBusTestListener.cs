@@ -55,7 +55,6 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
                 .VerifyOnceAsync(receivedMessage =>
                 {
                     result.Body = receivedMessage.Body;
-                    result.OperationCorrelationId = receivedMessage.GetOperationCorrelationId();
                     return Task.CompletedTask;
                 }).ConfigureAwait(false);
             return result;

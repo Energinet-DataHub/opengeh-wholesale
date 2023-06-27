@@ -20,10 +20,6 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.ServiceBus
     /// </summary>
     public static class MessageMetaDataConstants
     {
-        public const string OperationCorrelationId = "OperationCorrelationId";
-        public const string OperationTimestamp = "OperationTimestamp";
-        public const string MessageVersion = "MessageVersion";
         public const string MessageType = "MessageType";
-        public const string EventIdentification = "EventIdentification";
     }
 }

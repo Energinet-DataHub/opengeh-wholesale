@@ -13,19 +13,19 @@
 // limitations under the License.
 
 using AutoFixture.Xunit2;
+using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
-using Energinet.DataHub.Wholesale.Events.Application.IntegrationEventsManagement;
 using Energinet.DataHub.Wholesale.Events.UnitTests.Fixtures;
 using Moq;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Application.UseCases.Processes;
 
-public class CalculationResultPublisherTest
+public class OutboxRepositoryTests
 {
     [Theory]
     [InlineAutoMoqData]
@@ -35,9 +35,9 @@ public class CalculationResultPublisherTest
             CalculationResultBuilder calculationResultBuilder,
             [Frozen] Mock<ICalculationResultQueries> calculationResultQueriesMock,
             [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
-            [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
-            IntegrationEventDto integrationEventDto,
-            CalculationResultPublisher sut)
+            [Frozen] Mock<ICalculationResultIntegrationEventFactory> calculationResultCompletedFactoryMock,
+            IntegrationEvent integrationEventDto,
+            OutboxRepository sut)
     {
         // Arrange
         var calculationResult = calculationResultBuilder.WithId(completedBatch.Id).Build();
@@ -51,7 +51,7 @@ public class CalculationResultPublisherTest
             .Returns(integrationEventDto);
 
         // Act
-        await sut.PublishForBatchAsync(completedBatch);
+        await sut.CreateIntegrationEventsAsync(completedBatch);
 
         // Assert
         integrationEventPublisherMock.Verify(x => x.PublishAsync(integrationEventDto), Times.Once);
@@ -64,9 +64,9 @@ public class CalculationResultPublisherTest
         CalculationResultBuilder calculationResultBuilder,
         [Frozen] Mock<ICalculationResultQueries> calculationResultQueriesMock,
         [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
-        [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
-        IntegrationEventDto integrationEventDto,
-        CalculationResultPublisher sut)
+        [Frozen] Mock<ICalculationResultIntegrationEventFactory> calculationResultCompletedFactoryMock,
+        IntegrationEvent integrationEventDto,
+        OutboxRepository sut)
     {
         // Arrange
         var calculationResult = calculationResultBuilder
@@ -84,7 +84,7 @@ public class CalculationResultPublisherTest
             .Returns(integrationEventDto);
 
         //Act
-        await sut.PublishForBatchAsync(completedBatch);
+        await sut.CreateIntegrationEventsAsync(completedBatch);
 
         // Assert
         integrationEventPublisherMock.Verify(x => x.PublishAsync(integrationEventDto), Times.Once);
@@ -98,9 +98,9 @@ public class CalculationResultPublisherTest
             CalculationResultBuilder calculationResultBuilder,
             [Frozen] Mock<ICalculationResultQueries> calculationResultQueriesMock,
             [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
-            [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
-            IntegrationEventDto integrationEventDto,
-            CalculationResultPublisher sut)
+            [Frozen] Mock<ICalculationResultIntegrationEventFactory> calculationResultCompletedFactoryMock,
+            IntegrationEvent integrationEventDto,
+            OutboxRepository sut)
     {
         // Arrange
         var calculationResult = calculationResultBuilder
@@ -117,7 +117,7 @@ public class CalculationResultPublisherTest
             .Returns(integrationEventDto);
 
         // Act
-        await sut.PublishForBatchAsync(completedBatch);
+        await sut.CreateIntegrationEventsAsync(completedBatch);
 
         // Assert
         integrationEventPublisherMock.Verify(x => x.PublishAsync(integrationEventDto), Times.Once);
@@ -131,9 +131,9 @@ public class CalculationResultPublisherTest
             CalculationResultBuilder calculationResultBuilder,
             [Frozen] Mock<ICalculationResultQueries> calculationResultQueriesMock,
             [Frozen] Mock<IIntegrationEventPublisher> integrationEventPublisherMock,
-            [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
-            IntegrationEventDto integrationEventDto,
-            CalculationResultPublisher sut)
+            [Frozen] Mock<ICalculationResultIntegrationEventFactory> calculationResultCompletedFactoryMock,
+            IntegrationEvent integrationEventDto,
+            OutboxRepository sut)
     {
         // Arrange
         var calculationResult = calculationResultBuilder
@@ -152,7 +152,7 @@ public class CalculationResultPublisherTest
             .Returns(integrationEventDto);
 
         // Act
-        await sut.PublishForBatchAsync(completedBatch);
+        await sut.CreateIntegrationEventsAsync(completedBatch);
 
         // Assert
         integrationEventPublisherMock.Verify(x => x.PublishAsync(integrationEventDto), Times.Once);

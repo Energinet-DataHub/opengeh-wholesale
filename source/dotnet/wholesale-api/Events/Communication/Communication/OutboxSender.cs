@@ -25,7 +25,7 @@ public class OutboxSender : IOutboxSender
     private readonly IOutboxRepository _outboxRepository;
     private readonly ServiceBusSender _sender;
     private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
-    private ILogger _logger;
+    private readonly ILogger _logger;
 
     public OutboxSender(
         IOutboxRepository outboxRepository,
@@ -52,12 +52,12 @@ public class OutboxSender : IOutboxSender
                 var serviceBusMessage = _serviceBusMessageFactory.Create(@event);
                 if (!batch.TryAddMessage(serviceBusMessage))
                 {
-                    await _sender.SendMessagesAsync(batch).ConfigureAwait(false);
+                    await SendBatchAsync(batch).ConfigureAwait(false);
                     batch = await _sender.CreateMessageBatchAsync().ConfigureAwait(false);
+
                     if (!batch.TryAddMessage(serviceBusMessage))
                     {
-                        // Here we send a single service bus message because is too large to fit in the current batch
-                        await SendSingleServiceBusMessageAsync(serviceBusMessage).ConfigureAwait(false);
+                        await SendMessageThatExceedBatchLimitAsync(serviceBusMessage).ConfigureAwait(false);
                     }
                 }
             }
@@ -66,8 +66,15 @@ public class OutboxSender : IOutboxSender
         await _sender.SendMessagesAsync(batch).ConfigureAwait(false);
     }
 
-    private async Task SendSingleServiceBusMessageAsync(ServiceBusMessage serviceBusMessage)
+    private async Task SendBatchAsync(ServiceBusMessageBatch batch)
+    {
+        await _sender.SendMessagesAsync(batch).ConfigureAwait(false);
+        _logger.LogInformation("Sent batch of {BatchCount} messages", batch.Count);
+    }
+
+    private async Task SendMessageThatExceedBatchLimitAsync(ServiceBusMessage serviceBusMessage)
     {
         await _sender.SendMessageAsync(serviceBusMessage).ConfigureAwait(false);
+        _logger.LogInformation("Sent single message that exceeded batch size");
     }
 }

@@ -12,18 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
-using Energinet.DataHub.Wholesale.Events.Application.IntegrationEventsManagement;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing;
 
-public interface ICalculationResultCompletedFactory
+public interface ICalculationResultIntegrationEventFactory
 {
-    IntegrationEventDto CreateForEnergySupplier(CalculationResult result);
+    IntegrationEvent CreateForEnergySupplier(CalculationResult result);
 
-    IntegrationEventDto CreateForBalanceResponsibleParty(CalculationResult result);
+    IntegrationEvent CreateForBalanceResponsibleParty(CalculationResult result);
 
-    IntegrationEventDto CreateForTotalGridArea(CalculationResult result);
+    IntegrationEvent CreateForTotalGridArea(CalculationResult result);
 
-    IntegrationEventDto CreateForEnergySupplierByBalanceResponsibleParty(CalculationResult result);
+    IntegrationEvent CreateForEnergySupplierByBalanceResponsibleParty(CalculationResult result);
 }

@@ -13,11 +13,10 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.JsonSerialization;
-using Energinet.DataHub.Wholesale.Contracts.Events;
+using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Wholesale.Events.Application;
 using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
-using Energinet.DataHub.Wholesale.Events.Application.IntegrationEventsManagement;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases.Factories;
 using Energinet.DataHub.Wholesale.Events.Application.Workers;
@@ -40,25 +39,23 @@ public static class EventsRegistration
         string integrationEventTopicName)
     {
         serviceCollection.AddHostedService<RegisterCompletedBatchesWorker>();
-        serviceCollection.AddHostedService<PublishCalculationResultsWorker>();
 
-        serviceCollection.AddScoped<IPublishCalculationResultsHandler, PublishCalculationResultsHandler>();
         serviceCollection.AddScoped<ICompletedBatchRepository, CompletedBatchRepository>();
         serviceCollection.AddScoped<ICompletedBatchFactory, CompletedBatchFactory>();
         serviceCollection.AddScoped<IRegisterCompletedBatchesHandler, RegisterCompletedBatchesHandler>();
-        serviceCollection.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
         serviceCollection.AddIntegrationEventPublisher(serviceBusConnectionString, integrationEventTopicName);
 
-        serviceCollection.AddScoped<ICalculationResultCompletedFactory, CalculationResultCompletedToIntegrationEventFactory>();
+        serviceCollection.AddScoped<ICalculationResultIntegrationEventFactory, CalculationResultIntegrationEventToIntegrationEventFactory>();
 
         serviceCollection.AddApplications();
         serviceCollection.AddInfrastructure();
+
+        serviceCollection.AddScoped<IOutboxRepository, OutboxRepository>();
+        serviceCollection.AddCommunication();
     }
 
     private static void AddApplications(this IServiceCollection services)
     {
-        services.AddScoped<ICalculationResultPublisher, CalculationResultPublisher>();
-        // This is a temporary fix until we move registration out to each of the modules
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services
             .AddScoped<ICalculationResultCompletedIntegrationEventFactory,

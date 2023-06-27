@@ -18,5 +18,5 @@ namespace Energinet.DataHub.Core.Messaging.Communication;
 
 public interface IServiceBusMessageFactory
 {
-    ServiceBusMessage Create(OutboxEvent @event);
+    ServiceBusMessage Create(IntegrationEvent @event);
 }
