@@ -33,7 +33,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Wholesale.Contracts</PackageId>
-    <PackageVersion>3.0.1$(VersionSuffix)</PackageVersion>
+    <PackageVersion>3.1.0$(VersionSuffix)</PackageVersion>
     <Title>Wholesale Contracts</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
