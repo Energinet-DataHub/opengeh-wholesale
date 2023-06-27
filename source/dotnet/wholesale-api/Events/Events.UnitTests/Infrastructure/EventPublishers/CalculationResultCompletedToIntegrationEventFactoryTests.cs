@@ -18,6 +18,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
+using FluentAssertions;
 using Google.Protobuf;
 using Moq;
 using NodaTime;
@@ -51,9 +52,11 @@ public class CalculationResultCompletedToIntegrationEventFactoryTests
         var actual = sut.CreateForEnergySupplier(calculationResult);
 
         // Assert
-        Assert.Equal(CalculationResultCompleted.MessageName, actual.MessageType);
-        Assert.Equal(MessageExtensions.ToByteArray(calculationResultCompleted), actual.EventData);
-        Assert.Equal(instant, actual.CreationDate);
+        actual.MessageName.Should().Be(CalculationResultCompleted.MessageName);
+        actual.Message.ToByteArray().Should().BeEquivalentTo(calculationResultCompleted.ToByteArray());
+        actual.OperationTimeStamp.Should().Be(instant);
+        actual.MessageVersion.Should().Be(CalculationResultCompleted.MessageVersion);
+        actual.EventIdentification.Should().Be("TODO");
     }
 
     [Theory]
