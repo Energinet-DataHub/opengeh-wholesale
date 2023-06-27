@@ -92,6 +92,8 @@ public class CalculationResultCompletedIntegrationEventFactory : ICalculationRes
             PeriodEndUtc = result.PeriodEnd.ToTimestamp(),
             TimeSeriesType = TimeSeriesTypeMapper.MapTimeSeriesType(result.TimeSeriesType),
         };
+        if (result.FromGridArea != null)
+            calculationResultCompleted.FromGridAreaCode = result.FromGridArea;
 
         calculationResultCompleted.TimeSeriesPoints
             .AddRange(result.TimeSeriesPoints
