@@ -12,17 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
-using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Energinet.DataHub.Wholesale.Common.Models;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Moq;
 using NodaTime;
 using Xunit;
 
@@ -61,13 +63,14 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
         await _fixture.DatabricksSchemaManager.DropSchemaAsync();
     }
 
-    [Fact]
-    public async Task GetRowsAsync_ReturnsExpectedReportRow()
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetRowsAsync_ReturnsExpectedReportRow(Mock<ILogger<DatabricksSqlResponseParser>> loggerMock)
     {
         // Arrange
         var expectedSettlementReportRow = GetDefaultSettlementReportRow();
         var tableName = await CreateTableTwoRowsAsync();
-        var sqlStatementClient = new SqlStatementClient(new HttpClient(), _fixture.DatabricksOptionsMock.Object, new DatabricksSqlResponseParser());
+        var sqlStatementClient = new SqlStatementClient(new HttpClient(), _fixture.DatabricksOptionsMock.Object, new DatabricksSqlResponseParser(loggerMock.Object));
         var sut = new SettlementReportResultQueries(sqlStatementClient, CreateDeltaTableOptions(_fixture.DatabricksSchemaManager.SchemaName, tableName));
 
         // Act
