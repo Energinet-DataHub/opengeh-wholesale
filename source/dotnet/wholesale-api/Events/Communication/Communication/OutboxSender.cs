@@ -15,7 +15,7 @@
 using Azure.Messaging.ServiceBus;
 using Microsoft.Extensions.Hosting;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Communication;
+namespace Energinet.DataHub.Core.Messaging.Communication;
 
 public class OutboxSender<TOutboxRepository> : BackgroundService
     where TOutboxRepository : IOutboxRepository

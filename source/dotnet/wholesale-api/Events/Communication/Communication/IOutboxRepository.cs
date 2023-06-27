@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Communication;
+namespace Energinet.DataHub.Core.Messaging.Communication;
 
 public interface IOutboxRepository
 {
