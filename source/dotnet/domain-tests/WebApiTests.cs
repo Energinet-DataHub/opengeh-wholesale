@@ -19,6 +19,7 @@ using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures;
 using FluentAssertions;
 using Xunit;
+using Xunit.Priority;
 
 namespace Energinet.DataHub.Wholesale.DomainTests
 {
@@ -84,7 +85,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests
 
         /// <summary>
         /// These tests uses an authorized Wholesale client to perform requests.
-        /// </summary>
+        /// </summary>'
+        [TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)]
         public class Given_Authorized : IClassFixture<AuthorizedClientFixture>
         {
             private static readonly TimeSpan _defaultTimeout = TimeSpan.FromMinutes(15);
@@ -115,8 +117,11 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 batchResult!.BatchId.Should().Be(_existingBatchId);
             }
 
+            private static Guid _batchId;
+
             [DomainFact]
-            public async Task When_CreatingBatch_Then_BatchIsEventuallyCompletedAndReceivedOnTopicSubscription()
+            [Priority(1)]
+            public async Task When_CreatingBatch_Then_BatchIsEventuallyCompleted()
             {
                 // Arrange
                 var startDate = new DateTimeOffset(2020, 1, 28, 23, 0, 0, TimeSpan.Zero);
@@ -130,17 +135,25 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 };
 
                 // Act
-                var batchId = await Fixture.WholesaleClient.CreateBatchAsync(batchRequestDto).ConfigureAwait(false);
+                _batchId = await Fixture.WholesaleClient.CreateBatchAsync(batchRequestDto).ConfigureAwait(false);
 
                 // Assert
                 var isCompleted = await Awaiter.TryWaitUntilConditionAsync(
                     async () =>
                     {
-                        var batchResult = await Fixture.WholesaleClient.GetBatchAsync(batchId);
+                        var batchResult = await Fixture.WholesaleClient.GetBatchAsync(_batchId);
                         return batchResult?.ExecutionState == BatchState.Completed;
                     },
                     _defaultTimeout,
                     _defaultDelay);
+
+                isCompleted.Should().BeTrue();
+            }
+
+            [DomainFact]
+            [Priority(2)]
+            public async Task When_BatchIsCompleted_Then_BatchIsReceivedOnTopicSubscription()
+            {
                 var messageHasValue = true;
                 var match = false;
                 using (var cts = new CancellationTokenSource())
@@ -151,9 +164,10 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                         var message = await Fixture.Receiver.ReceiveMessageAsync();
                         if (message != null)
                         {
-                            match = message.Body.ToString().Contains(batchId.ToString());
+                            match = message.Body.ToString().Contains(_batchId.ToString());
                             if (match)
                             {
+                                var t = message.Body.ToString();
                                 messageHasValue = false;
                             }
                         }
@@ -164,12 +178,11 @@ namespace Energinet.DataHub.Wholesale.DomainTests
 
                         if (cts.IsCancellationRequested)
                         {
-                            Assert.Fail($"No messages received on topic subscription match {batchId.ToString()}.");
+                            Assert.Fail($"No messages received on topic subscription match {_batchId.ToString()}.");
                         }
                     }
                 }
 
-                isCompleted.Should().BeTrue();
                 match.Should().BeTrue();
             }
 
