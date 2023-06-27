@@ -13,7 +13,7 @@
       <PackageReference Include="System.Linq.Async" Version="6.0.1" />
       <PackageReference Include="xunit" Version="2.4.2" />
       <PackageReference Include="YamlDotNet" Version="13.1.0" />
-      <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="4.1.0" />
+      <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="4.2.0" />
       <PackageReference Include="xunit.categories" Version="2.0.6" />
       <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -39,12 +39,6 @@
       <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\calculation-file-paths.yml">
         <Link>BasisData\calculation-file-paths.yml</Link>
       </EmbeddedResource>
-      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\calculator-actor.json">
-        <Link>Actor\calculator-actor.json</Link>
-      </EmbeddedResource>
-      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\calculator-file-result.json">
-        <Link>Integration\CalculationOutput\calculator-file-result.json</Link>
-      </EmbeddedResource>
       <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\enums\process-type.json">
         <Link>DeltaTableContracts\Contracts\Enums\process-type.json</Link>
       </EmbeddedResource>
@@ -60,10 +54,8 @@
       <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\result-table-column-names.json">
         <Link>DeltaTableContracts\Contracts\result-table-column-names.json</Link>
       </EmbeddedResource>
-      <EmbeddedResource Include="Application\CalculationResult\Model\ProcessResult.json" />
       <EmbeddedResource Include="Infrastructure\SqlStatements\CalculationResult.json" />
       <EmbeddedResource Include="Infrastructure\SqlStatements\CalculationResultChunk.json" />
-      <EmbeddedResource Include="Interfaces\Actors\actor-list.json" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\..\Test.Core\Test.Core.csproj" />

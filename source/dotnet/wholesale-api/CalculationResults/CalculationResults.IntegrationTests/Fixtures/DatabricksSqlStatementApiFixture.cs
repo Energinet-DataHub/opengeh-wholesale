@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.FunctionApp.TestCommon;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
-using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures.TestCommon;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -27,15 +25,7 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
     public DatabricksSqlStatementApiFixture()
     {
         var integrationTestConfiguration = new IntegrationTestConfiguration();
-        var databricksWarehouseSettings = new DatabricksWarehouseSettings
-        {
-            // We have to build the URL here in code as currently this is also what happens in the infrastructure code (terraform).
-            WorkspaceUrl = $"https://{integrationTestConfiguration.Configuration.GetValue("dbw-playground-workspace-url")}",
-            WorkspaceAccessToken = integrationTestConfiguration.Configuration.GetValue("dbw-playground-workspace-token"),
-            WarehouseId = integrationTestConfiguration.Configuration.GetValue("dbw-sql-endpoint-id"),
-        };
-
-        DatabricksSchemaManager = new DatabricksSchemaManager(databricksWarehouseSettings, "wholesale");
+        DatabricksSchemaManager = new DatabricksSchemaManager(integrationTestConfiguration.DatabricksSettings, "wholesale");
         DatabricksOptionsMock = CreateDatabricksOptionsMock(DatabricksSchemaManager);
     }
 

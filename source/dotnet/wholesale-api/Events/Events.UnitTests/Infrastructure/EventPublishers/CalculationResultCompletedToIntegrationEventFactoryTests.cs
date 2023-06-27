@@ -16,12 +16,12 @@ using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Contracts.Events;
-using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing.Model;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 using Google.Protobuf;
 using Moq;
 using NodaTime;
+using Test.Core;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.EventPublishers;
@@ -35,13 +35,12 @@ public class CalculationResultCompletedToIntegrationEventFactoryTests
         [Frozen] Mock<IClock> clockMock,
         CalculationResultCompleted calculationResultCompleted,
         CalculationResult calculationResult,
-        BatchGridAreaInfo batchGridAreaInfo,
-        string energySupplierGln,
         CalculationResultCompletedToIntegrationEventFactory sut)
     {
         // Arrange
+        calculationResult.SetPrivateProperty(r => r.BalanceResponsibleId, null);
         calculationResultCompletedIntegrationEventFactoryMock
-            .Setup(x => x.CreateForEnergySupplier(calculationResult, batchGridAreaInfo, energySupplierGln))
+            .Setup(x => x.CreateForEnergySupplier(calculationResult, calculationResult.EnergySupplierId!))
             .Returns(calculationResultCompleted);
 
         var instant = SystemClock.Instance.GetCurrentInstant();
@@ -49,7 +48,7 @@ public class CalculationResultCompletedToIntegrationEventFactoryTests
             .Returns(instant);
 
         // Act
-        var actual = sut.CreateForEnergySupplier(calculationResult, batchGridAreaInfo, energySupplierGln);
+        var actual = sut.CreateForEnergySupplier(calculationResult);
 
         // Assert
         Assert.Equal(CalculationResultCompleted.MessageType, actual.MessageType);
@@ -63,20 +62,19 @@ public class CalculationResultCompletedToIntegrationEventFactoryTests
         [Frozen] Mock<ICalculationResultCompletedIntegrationEventFactory> calculationResultCompletedIntegrationEventFactoryMock,
         CalculationResultCompleted calculationResultCompleted,
         CalculationResult calculationResult,
-        BatchGridAreaInfo batchGridAreaInfo,
-        string energySupplierGln,
         CalculationResultCompletedToIntegrationEventFactory sut)
     {
         // Arrange
+        calculationResult.SetPrivateProperty(r => r.EnergySupplierId, null);
         calculationResultCompletedIntegrationEventFactoryMock
-            .Setup(x => x.CreateForBalanceResponsibleParty(calculationResult, batchGridAreaInfo, energySupplierGln))
+            .Setup(x => x.CreateForBalanceResponsibleParty(calculationResult, calculationResult.BalanceResponsibleId!))
             .Returns(calculationResultCompleted);
 
         // Act
-        sut.CreateForBalanceResponsibleParty(calculationResult, batchGridAreaInfo, energySupplierGln);
+        sut.CreateForBalanceResponsibleParty(calculationResult);
 
         // Assert
-        calculationResultCompletedIntegrationEventFactoryMock.Verify(x => x.CreateForBalanceResponsibleParty(calculationResult, batchGridAreaInfo, energySupplierGln));
+        calculationResultCompletedIntegrationEventFactoryMock.Verify(x => x.CreateForBalanceResponsibleParty(calculationResult, calculationResult.BalanceResponsibleId!));
     }
 
     [Theory]
@@ -85,19 +83,18 @@ public class CalculationResultCompletedToIntegrationEventFactoryTests
         [Frozen] Mock<ICalculationResultCompletedIntegrationEventFactory> calculationResultCompletedIntegrationEventFactoryMock,
         CalculationResultCompleted calculationResultCompleted,
         CalculationResult calculationResult,
-        BatchGridAreaInfo batchGridAreaInfo,
         CalculationResultCompletedToIntegrationEventFactory sut)
     {
         // Arrange
         calculationResultCompletedIntegrationEventFactoryMock
-            .Setup(x => x.CreateForGridArea(calculationResult, batchGridAreaInfo))
+            .Setup(x => x.CreateForGridArea(calculationResult))
             .Returns(calculationResultCompleted);
 
         // Act
-        sut.CreateForTotalGridArea(calculationResult, batchGridAreaInfo);
+        sut.CreateForTotalGridArea(calculationResult);
 
         // Assert
-        calculationResultCompletedIntegrationEventFactoryMock.Verify(x => x.CreateForGridArea(calculationResult, batchGridAreaInfo));
+        calculationResultCompletedIntegrationEventFactoryMock.Verify(x => x.CreateForGridArea(calculationResult));
     }
 
     [Theory]
@@ -106,20 +103,18 @@ public class CalculationResultCompletedToIntegrationEventFactoryTests
         [Frozen] Mock<ICalculationResultCompletedIntegrationEventFactory> calculationResultCompletedIntegrationEventFactoryMock,
         CalculationResultCompleted calculationResultCompleted,
         CalculationResult calculationResult,
-        BatchGridAreaInfo batchGridAreaInfo,
-        string energySupplierGln,
-        string brpGln,
         CalculationResultCompletedToIntegrationEventFactory sut)
     {
         // Arrange
         calculationResultCompletedIntegrationEventFactoryMock
-            .Setup(x => x.CreateForEnergySupplierByBalanceResponsibleParty(calculationResult, batchGridAreaInfo, energySupplierGln, brpGln))
+            .Setup(x => x.CreateForEnergySupplierByBalanceResponsibleParty(calculationResult, calculationResult.EnergySupplierId!, calculationResult.BalanceResponsibleId!))
             .Returns(calculationResultCompleted);
 
         // Act
-        sut.CreateForEnergySupplierByBalanceResponsibleParty(calculationResult, batchGridAreaInfo, energySupplierGln, brpGln);
+        sut.CreateForEnergySupplierByBalanceResponsibleParty(calculationResult);
 
         // Assert
-        calculationResultCompletedIntegrationEventFactoryMock.Verify(x => x.CreateForEnergySupplierByBalanceResponsibleParty(calculationResult, batchGridAreaInfo, energySupplierGln, brpGln));
+        calculationResultCompletedIntegrationEventFactoryMock.Verify(
+            x => x.CreateForEnergySupplierByBalanceResponsibleParty(calculationResult, calculationResult.EnergySupplierId!, calculationResult.BalanceResponsibleId!));
     }
 }

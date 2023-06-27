@@ -17,9 +17,8 @@ from decimal import Decimal
 from pathlib import Path
 from typing import List
 
-import package.infrastructure as infra
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import col, lit
+from pyspark.sql.functions import col
 import pytest
 import uuid
 
@@ -30,13 +29,8 @@ from package.codelists import (
     TimeSeriesType,
 )
 from package.constants import Colname, ResultTableColName
-from package.file_writers.process_step_result_writer import ProcessStepResultWriter
-from tests.contract_utils import read_contract
-from tests.helpers.assert_calculation_file_path import (
-    CalculationFileType,
-    assert_file_path_match_contract,
-)
-from tests.helpers.file_utils import find_file
+from package.output_writers.calculation_result_writer import CalculationResultWriter
+from tests.contract_utils import assert_contract_matches_schema
 from typing import Any
 
 DATABASE_NAME = "wholesale_output"
@@ -87,142 +81,12 @@ def _create_result_df(spark: SparkSession, row: List[dict]) -> DataFrame:
     )
 
 
-def test__write___when_aggregation_level_is_es_per_ga__result_file_path_matches_contract(
-    spark: SparkSession,
-    contracts_path: str,
-    tmpdir: Path,
-    migrations_executed: None,
-) -> None:
-    # Arrange
-    row = [_create_result_row()]
-    result_df = _create_result_df(spark, row)
-    relative_output_path = infra.get_result_file_relative_path(
-        DEFAULT_BATCH_ID,
-        DEFAULT_GRID_AREA,
-        DEFAULT_ENERGY_SUPPLIER_ID,
-        None,
-        TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        AggregationLevel.es_per_ga,
-    )
-    sut = ProcessStepResultWriter(
-        str(tmpdir),
-        DEFAULT_BATCH_ID,
-        DEFAULT_PROCESS_TYPE,
-        DEFAULT_BATCH_EXECUTION_START,
-    )
-
-    # Act
-    sut.write(
-        result_df,
-        TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        AggregationLevel.es_per_ga,
-    )
-
-    # Assert
-    actual_result_file = find_file(
-        f"{str(tmpdir)}/",
-        f"{relative_output_path}/part-*.json",
-    )
-    assert_file_path_match_contract(
-        contracts_path,
-        actual_result_file,
-        CalculationFileType.ResultFile,
-    )
-
-
-def test__write___when_aggregation_level_is_total_ga__result_file_path_matches_contract(
-    spark: SparkSession,
-    contracts_path: str,
-    tmpdir: Path,
-    migrations_executed: None,
-) -> None:
-    # Arrange
-    row = [_create_result_row(energy_supplier_id="None")]
-    result_df = _create_result_df(spark, row)
-    relative_output_path = infra.get_result_file_relative_path(
-        DEFAULT_BATCH_ID,
-        DEFAULT_GRID_AREA,
-        None,
-        None,
-        TimeSeriesType.PRODUCTION,
-        AggregationLevel.total_ga,
-    )
-    sut = ProcessStepResultWriter(
-        str(tmpdir),
-        DEFAULT_BATCH_ID,
-        DEFAULT_PROCESS_TYPE,
-        DEFAULT_BATCH_EXECUTION_START,
-    )
-
-    # Act
-    sut.write(
-        result_df,
-        TimeSeriesType.PRODUCTION,
-        AggregationLevel.total_ga,
-    )
-
-    # Assert
-    actual_result_file = find_file(
-        f"{str(tmpdir)}/",
-        f"{relative_output_path}/part-*.json",
-    )
-    assert_file_path_match_contract(
-        contracts_path,
-        actual_result_file,
-        CalculationFileType.ResultFileForTotalGridArea,
-    )
-
-
-def test__write___when_aggregation_level_is_ga_brp_es__result_file_path_matches_contract(
-    spark: SparkSession,
-    contracts_path: str,
-    tmpdir: Path,
-    migrations_executed: None,
-) -> None:
-    # Arrange
-    row = [_create_result_row()]
-    result_df = _create_result_df(spark, row)
-    relative_output_path = infra.get_result_file_relative_path(
-        DEFAULT_BATCH_ID,
-        DEFAULT_GRID_AREA,
-        DEFAULT_ENERGY_SUPPLIER_ID,
-        DEFAULT_BALANCE_RESPONSIBLE_ID,
-        TimeSeriesType.PRODUCTION,
-        AggregationLevel.es_per_brp_per_ga,
-    )
-    sut = ProcessStepResultWriter(
-        str(tmpdir),
-        DEFAULT_BATCH_ID,
-        DEFAULT_PROCESS_TYPE,
-        DEFAULT_BATCH_EXECUTION_START,
-    )
-
-    # Act
-    sut.write(
-        result_df,
-        TimeSeriesType.PRODUCTION,
-        AggregationLevel.es_per_brp_per_ga,
-    )
-
-    # Assert
-    actual_result_file = find_file(
-        f"{str(tmpdir)}/",
-        f"{relative_output_path}/part-*.json",
-    )
-    assert_file_path_match_contract(
-        contracts_path,
-        actual_result_file,
-        CalculationFileType.ResultFileForGaBrpEs,
-    )
-
-
 @pytest.mark.parametrize(
     "aggregation_level",
     AggregationLevel,
 )
 def test__write__writes_aggregation_level(
     spark: SparkSession,
-    tmpdir: Path,
     aggregation_level: AggregationLevel,
     migrations_executed: None,
 ) -> None:
@@ -230,8 +94,7 @@ def test__write__writes_aggregation_level(
     row = [_create_result_row()]
     result_df = _create_result_df(spark, row)
     batch_id = str(uuid.uuid4())
-    sut = ProcessStepResultWriter(
-        str(tmpdir),
+    sut = CalculationResultWriter(
         batch_id,
         DEFAULT_PROCESS_TYPE,
         DEFAULT_BATCH_EXECUTION_START,
@@ -274,7 +137,6 @@ batch_id = "some batch id"  # Needed in both test param and test implementation
 )
 def test__write__writes_column(
     spark: SparkSession,
-    tmpdir: Path,
     column_name: str,
     column_value: Any,
     migrations_executed: None,
@@ -282,8 +144,7 @@ def test__write__writes_column(
     # Arrange
     row = [_create_result_row()]
     result_df = _create_result_df(spark, row)
-    sut = ProcessStepResultWriter(
-        str(tmpdir),
+    sut = CalculationResultWriter(
         batch_id,
         DEFAULT_PROCESS_TYPE,
         DEFAULT_BATCH_EXECUTION_START,
@@ -306,16 +167,13 @@ def test__write__writes_column(
 def test__write__writes_columns_matching_contract(
     spark: SparkSession,
     contracts_path: str,
-    tmpdir: Path,
     migrations_executed: None,
 ) -> None:
     # Arrange
     contract_path = f"{contracts_path}/result-table-column-names.json"
-    expected_column_names = read_contract(contract_path)
     row = [_create_result_row()]
     result_df = _create_result_df(spark, row)
-    sut = ProcessStepResultWriter(
-        str(tmpdir),
+    sut = CalculationResultWriter(
         batch_id,
         DEFAULT_PROCESS_TYPE,
         DEFAULT_BATCH_EXECUTION_START,
@@ -332,4 +190,5 @@ def test__write__writes_columns_matching_contract(
     actual_df = spark.read.table(TABLE_NAME).where(
         col(ResultTableColName.batch_id) == batch_id
     )
-    assert sorted(actual_df.columns) == sorted(expected_column_names)
+
+    assert_contract_matches_schema(contract_path, actual_df.schema)

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Common.Models;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
@@ -24,7 +25,10 @@ public sealed class CalculationResult
         TimeSeriesType timeSeriesType,
         string? energySupplierId,
         string? balanceResponsibleId,
-        TimeSeriesPoint[] timeSeriesPoints)
+        TimeSeriesPoint[] timeSeriesPoints,
+        ProcessType processType,
+        Instant periodStart,
+        Instant periodEnd)
     {
         if (timeSeriesPoints.Length == 0)
             throw new ArgumentException("Time series points empty");
@@ -35,6 +39,9 @@ public sealed class CalculationResult
         EnergySupplierId = energySupplierId;
         BalanceResponsibleId = balanceResponsibleId;
         TimeSeriesPoints = timeSeriesPoints;
+        ProcessType = processType;
+        PeriodStart = periodStart;
+        PeriodEnd = periodEnd;
     }
 
     public Guid BatchId { get; }
@@ -45,9 +52,13 @@ public sealed class CalculationResult
 
     public TimeSeriesType TimeSeriesType { get; private set; }
 
-    public string? EnergySupplierId { get; }
+    public string? EnergySupplierId { get; private set; }
 
-    public string? BalanceResponsibleId { get; }
+    public string? BalanceResponsibleId { get; private set; }
+
+    public Instant PeriodStart { get; }
+
+    public Instant PeriodEnd { get; }
 
     public TimeSeriesPoint[] TimeSeriesPoints { get; private set; }
 }

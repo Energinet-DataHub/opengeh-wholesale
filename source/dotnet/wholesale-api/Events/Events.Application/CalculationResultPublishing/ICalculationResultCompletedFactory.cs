@@ -13,18 +13,17 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
-using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing.Model;
 using Energinet.DataHub.Wholesale.Events.Application.IntegrationEventsManagement;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing;
 
 public interface ICalculationResultCompletedFactory
 {
-    IntegrationEventDto CreateForEnergySupplier(CalculationResult calculationResult, BatchGridAreaInfo batchGridAreaInfo, string energySupplierGln);
+    IntegrationEventDto CreateForEnergySupplier(CalculationResult result);
 
-    IntegrationEventDto CreateForBalanceResponsibleParty(CalculationResult calculationResult, BatchGridAreaInfo batchGridAreaInfo, string gln);
+    IntegrationEventDto CreateForBalanceResponsibleParty(CalculationResult result);
 
-    IntegrationEventDto CreateForTotalGridArea(CalculationResult calculationResult, BatchGridAreaInfo batchGridAreaInfo);
+    IntegrationEventDto CreateForTotalGridArea(CalculationResult result);
 
-    IntegrationEventDto CreateForEnergySupplierByBalanceResponsibleParty(CalculationResult result, BatchGridAreaInfo batchGridAreaInfo, string energySupplierGln, string brpGln);
+    IntegrationEventDto CreateForEnergySupplierByBalanceResponsibleParty(CalculationResult result);
 }
