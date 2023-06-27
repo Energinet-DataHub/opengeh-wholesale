@@ -12,17 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Protobuf;
-using NodaTime;
-
 namespace Energinet.DataHub.Core.Messaging.Communication;
 
-/// <summary>
-/// ADR-008:  https://energinet.atlassian.net/wiki/spaces/D3/pages/328957986/ADR+008+-+Integration+events+with+protocol+buffers
-/// </summary>
-/// <param name="EventIdentification"></param>
-/// <param name="MessageName"></param>
-/// <param name="OperationTimeStamp">TODO: Why is this required by ADR-008?</param>
-/// <param name="MessageVersion"></param>
-/// <param name="Message"></param>
-public record OutboxEvent(Guid EventIdentification, string MessageName, Instant OperationTimeStamp, string MessageVersion, IMessage Message);
+public interface IOutboxSender
+{
+    Task SendAsync();
+}

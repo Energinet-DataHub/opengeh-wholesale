@@ -16,5 +16,5 @@ namespace Energinet.DataHub.Core.Messaging.Communication;
 
 public interface IOutboxRepository
 {
-    IAsyncEnumerable<List<OutboxEvent>> GetAsync(CancellationToken cancellationToken);
+    IAsyncEnumerable<List<OutboxEvent>> GetAsync();
 }

@@ -13,68 +13,61 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Core.Messaging.Communication;
 
-public class OutboxSender<TOutboxRepository> : BackgroundService
-    where TOutboxRepository : IOutboxRepository
+/// <summary>
+/// The sender runs as a background service
+/// </summary>
+public class OutboxSender : IOutboxSender
 {
-    private readonly TOutboxRepository _outboxRepository;
+    private readonly IOutboxRepository _outboxRepository;
     private readonly ServiceBusSender _sender;
+    private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
+    private ILogger _logger;
 
-    public OutboxSender(TOutboxRepository outboxRepository, ServiceBusSender sender)
+    public OutboxSender(
+        IOutboxRepository outboxRepository,
+        ServiceBusSender sender,
+        IServiceBusMessageFactory serviceBusMessageFactory,
+        ILogger<OutboxSender> logger)
     {
         _outboxRepository = outboxRepository;
         _sender = sender;
+        _serviceBusMessageFactory = serviceBusMessageFactory;
+        _logger = logger;
     }
 
     // Send time stamp (afsendelsen): when the event was actually sent on the bus
     // Note naming? MessageName becomes subject, how do I know that?
-    protected override async Task ExecuteAsync(CancellationToken token)
+    public async Task SendAsync()
     {
-        var batch = await _sender.CreateMessageBatchAsync(token).ConfigureAwait(false);
+        var batch = await _sender.CreateMessageBatchAsync().ConfigureAwait(false);
 
-        await foreach (var events in _outboxRepository.GetAsync(token))
+        await foreach (var events in _outboxRepository.GetAsync())
         {
             foreach (var @event in events)
             {
-                var serviceBusMessage = CreateServiceBusMessage(@event);
+                var serviceBusMessage = _serviceBusMessageFactory.Create(@event);
                 if (!batch.TryAddMessage(serviceBusMessage))
                 {
-                    await _sender.SendMessagesAsync(batch, token).ConfigureAwait(false);
-                    batch = await _sender.CreateMessageBatchAsync(token).ConfigureAwait(false);
+                    await _sender.SendMessagesAsync(batch).ConfigureAwait(false);
+                    batch = await _sender.CreateMessageBatchAsync().ConfigureAwait(false);
                     if (!batch.TryAddMessage(serviceBusMessage))
                     {
                         // Here we send a single service bus message because is too large to fit in the current batch
-                        await SendSingleServiceBusMessageAsync(token, serviceBusMessage).ConfigureAwait(false);
+                        await SendSingleServiceBusMessageAsync(serviceBusMessage).ConfigureAwait(false);
                     }
                 }
             }
         }
 
-        await _sender.SendMessagesAsync(batch, token).ConfigureAwait(false);
+        await _sender.SendMessagesAsync(batch).ConfigureAwait(false);
     }
 
-    private async Task SendSingleServiceBusMessageAsync(CancellationToken token, ServiceBusMessage serviceBusMessage)
+    private async Task SendSingleServiceBusMessageAsync(ServiceBusMessage serviceBusMessage)
     {
-        await _sender.SendMessageAsync(serviceBusMessage, token).ConfigureAwait(false);
-    }
-
-    private static ServiceBusMessage CreateServiceBusMessage(OutboxEvent @event)
-    {
-        var serviceBusMessage = new ServiceBusMessage
-        {
-            Body = new BinaryData(@event.Message),
-
-            // Subject (message name) can be used in filters i.e. <prefix-domain>MeteringPointCreated
-            Subject = @event.MessageName,
-            MessageId = @event.EventIdentification.ToString(),
-        };
-
-        // The Operation Time Stamp is when the event was actually completed (in the business process logic)
-        serviceBusMessage.ApplicationProperties.Add("OperationTimeStamp", @event.OperationTimeStamp);
-        serviceBusMessage.ApplicationProperties.Add("MessageVersion", @event.MessageVersion);
-        return serviceBusMessage;
+        await _sender.SendMessageAsync(serviceBusMessage).ConfigureAwait(false);
     }
 }
