@@ -44,5 +44,6 @@ results_schema = StructType(
         ),
         # The time when the energy was consumed/produced/exchanged
         StructField(ResultTableColName.from_grid_area, StringType(), True),
+        StructField(ResultTableColName.calculation_result_id, StringType(), False),
     ]
 )

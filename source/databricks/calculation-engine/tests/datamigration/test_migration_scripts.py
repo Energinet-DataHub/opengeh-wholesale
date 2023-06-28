@@ -51,6 +51,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
         ResultTableColName.batch_process_type: "BalanceFixing",
         ResultTableColName.batch_execution_time_start: datetime(2020, 1, 1, 0, 0),
         ResultTableColName.from_grid_area: "843",
+        ResultTableColName.calculation_result_id: "6033ab5c-436b-44e9-8a79-90489d324e53"
     }
     return spark.createDataFrame(data=[row], schema=results_schema)
 
