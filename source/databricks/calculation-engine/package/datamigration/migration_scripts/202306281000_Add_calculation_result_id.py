@@ -19,4 +19,4 @@ RESULT_TABLE_NAME = "result"
 
 
 def apply(args: MigrationScriptArgs) -> None:
-    args.spark.sql(f"ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME} ADD COLUMN calculation_result_id string")
+    args.spark.sql(f"ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME} ADD COLUMN calculation_result_id STRING")
