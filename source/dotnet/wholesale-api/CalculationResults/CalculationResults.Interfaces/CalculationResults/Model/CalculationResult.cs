@@ -20,6 +20,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationR
 public sealed class CalculationResult
 {
     public CalculationResult(
+        Guid id,
         Guid batchId,
         string gridArea,
         TimeSeriesType timeSeriesType,
@@ -34,6 +35,7 @@ public sealed class CalculationResult
         if (timeSeriesPoints.Length == 0)
             throw new ArgumentException("Time series points empty");
 
+        Id = id;
         BatchId = batchId;
         GridArea = gridArea;
         TimeSeriesType = timeSeriesType;
@@ -45,6 +47,8 @@ public sealed class CalculationResult
         PeriodEnd = periodEnd;
         FromGridArea = fromGridArea;
     }
+
+    public Guid Id { get; }
 
     public Guid BatchId { get; }
 
