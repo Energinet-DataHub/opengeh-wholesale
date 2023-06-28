@@ -27,9 +27,12 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
         var integrationTestConfiguration = new IntegrationTestConfiguration();
         DatabricksSchemaManager = new DatabricksSchemaManager(integrationTestConfiguration.DatabricksSettings, "wholesale");
         DatabricksOptionsMock = CreateDatabricksOptionsMock(DatabricksSchemaManager);
+        DatabricksTableManager = new DatabricksTableManager(DatabricksSchemaManager);
     }
 
     public DatabricksSchemaManager DatabricksSchemaManager { get; }
+
+    public DatabricksTableManager DatabricksTableManager { get; }
 
     public Mock<IOptions<DatabricksOptions>> DatabricksOptionsMock { get; }
 

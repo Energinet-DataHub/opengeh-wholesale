@@ -45,12 +45,10 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
     private readonly string[] _defaultGridAreaCodes = { DefaultGridArea };
     private readonly Instant _defaultPeriodStart = Instant.FromUtc(2022, 5, 16, 1, 0, 0);
     private readonly Instant _defaultPeriodEnd = Instant.FromUtc(2022, 5, 17, 1, 0, 0);
-    private readonly DatabricksTableManager _databricksTableManager;
 
     public SettlementReportResultQueriesTests(DatabricksSqlStatementApiFixture fixture)
     {
         _fixture = fixture;
-        _databricksTableManager = new DatabricksTableManager(_fixture.DatabricksSchemaManager);
     }
 
     public async Task InitializeAsync()
@@ -84,11 +82,14 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
 
     private async Task<string> CreateTableWithTwoRowsAsync()
     {
-        var tableName = await _databricksTableManager.CreateTableAsync();
-        var row1 = _databricksTableManager.CreateRowValues(gridArea: DefaultGridArea);
-        await _databricksTableManager.InsertRow(tableName, row1);
-        var row2 = _databricksTableManager.CreateRowValues(gridArea: SomeOtherGridArea);
-        await _databricksTableManager.InsertRow(tableName, row2);
+        var tableName = await _fixture.DatabricksTableManager.CreateTableAsync();
+
+        var row1 = _fixture.DatabricksTableManager.CreateRowValues(gridArea: DefaultGridArea);
+        await _fixture.DatabricksTableManager.InsertRow(tableName, row1);
+
+        var row2 = _fixture.DatabricksTableManager.CreateRowValues(gridArea: SomeOtherGridArea);
+        await _fixture.DatabricksTableManager.InsertRow(tableName, row2);
+
         return tableName;
     }
 

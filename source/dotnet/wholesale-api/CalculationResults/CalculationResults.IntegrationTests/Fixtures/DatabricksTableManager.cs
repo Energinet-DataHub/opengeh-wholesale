@@ -13,9 +13,8 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
-using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure;
+namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 
 public class DatabricksTableManager
 {
