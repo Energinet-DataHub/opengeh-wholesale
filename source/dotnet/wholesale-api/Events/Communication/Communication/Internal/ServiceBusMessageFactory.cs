@@ -23,15 +23,15 @@ public class ServiceBusMessageFactory : IServiceBusMessageFactory
         var serviceBusMessage = new ServiceBusMessage
         {
             Body = new BinaryData(@event.Message),
-
-            // Subject (message name) can be used in filters i.e. <prefix-domain>MeteringPointCreated
             Subject = @event.MessageName,
             MessageId = @event.EventIdentification.ToString(),
         };
 
+        // TODO BJM: Is this correct?
         // The Operation Time Stamp is when the event was actually completed (in the business process logic)
         serviceBusMessage.ApplicationProperties.Add("OperationTimeStamp", @event.OperationTimeStamp);
         serviceBusMessage.ApplicationProperties.Add("MessageVersion", @event.MessageVersion);
+
         return serviceBusMessage;
     }
 }
