@@ -22,7 +22,7 @@ module "st_dh2data" {
       name = "dh2-timeseries"
     },
     {
-      name = "dh2-timeseries-synchrozation"
+      name = "dh2-timeseries-synchronization"
     }
   ]
 }
