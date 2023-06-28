@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Messaging.ServiceBus;
+
 namespace Energinet.DataHub.Core.Messaging.Communication;
 
 public interface IServiceBusSenderProvider
 {
+    ServiceBusSender Instance { get; }
 }

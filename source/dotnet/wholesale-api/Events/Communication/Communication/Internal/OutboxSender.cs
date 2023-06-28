@@ -23,18 +23,18 @@ namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
 public class OutboxSender : IOutboxSender
 {
     private readonly IIntegrationEventProvider _integrationEventProvider;
-    private readonly ServiceBusSender _sender;
+    private readonly IServiceBusSenderProvider _senderProvider;
     private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
     private readonly ILogger _logger;
 
     public OutboxSender(
         IIntegrationEventProvider integrationEventProvider,
-        ServiceBusSender sender,
+        IServiceBusSenderProvider senderProvider,
         IServiceBusMessageFactory serviceBusMessageFactory,
         ILogger<OutboxSender> logger)
     {
         _integrationEventProvider = integrationEventProvider;
-        _sender = sender;
+        _senderProvider = senderProvider;
         _serviceBusMessageFactory = serviceBusMessageFactory;
         _logger = logger;
     }
@@ -43,7 +43,7 @@ public class OutboxSender : IOutboxSender
     // Note naming? MessageName becomes subject, how do I know that?
     public async Task SendAsync()
     {
-        var batch = await _sender.CreateMessageBatchAsync().ConfigureAwait(false);
+        var batch = await _senderProvider.Instance.CreateMessageBatchAsync().ConfigureAwait(false);
 
         await foreach (var @event in _integrationEventProvider.GetAsync())
         {
@@ -51,7 +51,7 @@ public class OutboxSender : IOutboxSender
             if (!batch.TryAddMessage(serviceBusMessage))
             {
                 await SendBatchAsync(batch).ConfigureAwait(false);
-                batch = await _sender.CreateMessageBatchAsync().ConfigureAwait(false);
+                batch = await _senderProvider.Instance.CreateMessageBatchAsync().ConfigureAwait(false);
 
                 if (!batch.TryAddMessage(serviceBusMessage))
                 {
@@ -60,18 +60,18 @@ public class OutboxSender : IOutboxSender
             }
         }
 
-        await _sender.SendMessagesAsync(batch).ConfigureAwait(false);
+        await _senderProvider.Instance.SendMessagesAsync(batch).ConfigureAwait(false);
     }
 
     private async Task SendBatchAsync(ServiceBusMessageBatch batch)
     {
-        await _sender.SendMessagesAsync(batch).ConfigureAwait(false);
+        await _senderProvider.Instance.SendMessagesAsync(batch).ConfigureAwait(false);
         _logger.LogInformation("Sent batch of {BatchCount} messages", batch.Count);
     }
 
     private async Task SendMessageThatExceedsBatchLimitAsync(ServiceBusMessage serviceBusMessage)
     {
-        await _sender.SendMessageAsync(serviceBusMessage).ConfigureAwait(false);
+        await _senderProvider.Instance.SendMessageAsync(serviceBusMessage).ConfigureAwait(false);
         _logger.LogInformation("Sent single message that exceeded batch size");
     }
 }

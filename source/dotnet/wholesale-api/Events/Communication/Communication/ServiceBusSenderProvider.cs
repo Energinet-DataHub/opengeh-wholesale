@@ -28,14 +28,17 @@ public class ServiceBusSenderProvider : IServiceBusSenderProvider
         _topicName = topicName;
     }
 
-    public ServiceBusSender Get()
+    public ServiceBusSender Instance
     {
-        if (_serviceBusSender == null)
+        get
         {
-            var serviceBusClient = new ServiceBusClient(_serviceBusIntegrationEventWriteConnectionString);
-            _serviceBusSender = serviceBusClient.CreateSender(_topicName);
-        }
+            if (_serviceBusSender == null)
+            {
+                var serviceBusClient = new ServiceBusClient(_serviceBusIntegrationEventWriteConnectionString);
+                _serviceBusSender = serviceBusClient.CreateSender(_topicName);
+            }
 
-        return _serviceBusSender;
+            return _serviceBusSender;
+        }
     }
 }
