@@ -21,6 +21,7 @@ public static class ResultColumnNames
 {
     public const string BatchId = "batch_id";
     public const string BatchExecutionTimeStart = "batch_execution_time_start";
+    public const string CalculationResultId = "calculation_result_id";
     public const string BatchProcessType = "batch_process_type";
     public const string TimeSeriesType = "time_series_type";
     public const string GridArea = "grid_area";
@@ -43,6 +44,7 @@ public static class ResultColumnNames
          {
              GridArea => "string",
              BalanceResponsibleId => "string",
+             CalculationResultId => "string",
              EnergySupplierId => "string",
              Time => "timestamp",
              QuantityQuality => "string",
