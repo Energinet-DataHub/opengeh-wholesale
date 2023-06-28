@@ -53,6 +53,6 @@ jobs:
       contains(needs.*.result, 'failure')
     uses: Energinet-DataHub/.github/.github/workflows/notify-team.yml@v11
     with:
-      team_name: Batman
+      team_name: Phoenix
       subject: "Deployment dispatch failed: Infrastructure - EDI"
     secrets: inherit
