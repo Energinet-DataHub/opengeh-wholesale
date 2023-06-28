@@ -15,7 +15,6 @@
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
@@ -46,11 +45,12 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
     private readonly string[] _defaultGridAreaCodes = { DefaultGridArea };
     private readonly Instant _defaultPeriodStart = Instant.FromUtc(2022, 5, 16, 1, 0, 0);
     private readonly Instant _defaultPeriodEnd = Instant.FromUtc(2022, 5, 17, 1, 0, 0);
-    private readonly Dictionary<string, string> _tableColumnDefinitions = CreateColumnDefinitions();
+    private readonly DatabricksTableManager _databricksTableManager;
 
     public SettlementReportResultQueriesTests(DatabricksSqlStatementApiFixture fixture)
     {
         _fixture = fixture;
+        _databricksTableManager = new DatabricksTableManager(_fixture.DatabricksSchemaManager);
     }
 
     public async Task InitializeAsync()
@@ -69,7 +69,7 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
     {
         // Arrange
         var expectedSettlementReportRow = GetDefaultSettlementReportRow();
-        var tableName = await CreateTableTwoRowsAsync();
+        var tableName = await CreateTableWithTwoRowsAsync();
         var sqlStatementClient = new SqlStatementClient(new HttpClient(), _fixture.DatabricksOptionsMock.Object, new DatabricksSqlResponseParser(loggerMock.Object));
         var sut = new SettlementReportResultQueries(sqlStatementClient, CreateDeltaTableOptions(_fixture.DatabricksSchemaManager.SchemaName, tableName));
 
@@ -82,42 +82,14 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
         actualList.First().Should().Be(expectedSettlementReportRow);
     }
 
-    private async Task<string> CreateTableTwoRowsAsync()
+    private async Task<string> CreateTableWithTwoRowsAsync()
     {
-        var tableName = $"TestTable_{DateTime.Now:yyyyMMddHHmmss}";
-        await _fixture.DatabricksSchemaManager.CreateTableAsync(tableName, _tableColumnDefinitions);
-        await InsertRow(tableName, DefaultGridArea);
-        await InsertRow(tableName, SomeOtherGridArea);
+        var tableName = await _databricksTableManager.CreateTableAsync();
+        var row1 = _databricksTableManager.CreateRowValues(gridArea: DefaultGridArea);
+        await _databricksTableManager.InsertRow(tableName, row1);
+        var row2 = _databricksTableManager.CreateRowValues(gridArea: SomeOtherGridArea);
+        await _databricksTableManager.InsertRow(tableName, row2);
         return tableName;
-    }
-
-    private async Task InsertRow(string tableName, string gridArea)
-    {
-        var rowValues = CreateRowValues(_tableColumnDefinitions.Keys, gridArea);
-        await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, rowValues);
-    }
-
-    private static IEnumerable<string> CreateRowValues(IEnumerable<string> columnNames, string gridArea)
-    {
-        var values = columnNames.Select(columnName => columnName switch
-        {
-            ResultColumnNames.BatchId => "'ed39dbc5-bdc5-41b9-922a-08d3b12d4538'",
-            ResultColumnNames.BatchExecutionTimeStart => "'2022-03-11T03:00:00.000Z'",
-            ResultColumnNames.BatchProcessType => $@"'{DeltaTableProcessType.BalanceFixing}'",
-            ResultColumnNames.CalculationResultId => "'aaaaaaaa-1111-1111-1c1c-08d3b12d4511'",
-            ResultColumnNames.TimeSeriesType => $@"'{DeltaTableTimeSeriesType.Production}'",
-            ResultColumnNames.GridArea => $@"'{gridArea}'",
-            ResultColumnNames.FromGridArea => "'406'",
-            ResultColumnNames.BalanceResponsibleId => "'1236552000028'",
-            ResultColumnNames.EnergySupplierId => "'2236552000028'",
-            ResultColumnNames.Time => "'2022-05-16T03:00:00.000Z'",
-            ResultColumnNames.Quantity => "1.123",
-            ResultColumnNames.QuantityQuality => "'missing'",
-            ResultColumnNames.AggregationLevel => "'total_ga'",
-            _ => throw new ArgumentOutOfRangeException($"Unexpected column name: {columnName}."),
-        });
-
-        return values;
     }
 
     private static SettlementReportResultRow GetDefaultSettlementReportRow()
@@ -135,12 +107,5 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
     private static IOptions<DeltaTableOptions> CreateDeltaTableOptions(string schemaName, string tableName)
     {
         return Options.Create(new DeltaTableOptions { SCHEMA_NAME = schemaName, RESULT_TABLE_NAME = tableName, });
-    }
-
-    private static Dictionary<string, string> CreateColumnDefinitions()
-    {
-        var columnNames = ResultColumnNames.GetAllNames().ToList();
-        var columnTypes = columnNames.Select(ResultColumnNames.GetType);
-        return columnNames.Zip(columnTypes, (name, type) => new { Name = name, Type = type }).ToDictionary(item => item.Name, item => item.Type);
     }
 }
