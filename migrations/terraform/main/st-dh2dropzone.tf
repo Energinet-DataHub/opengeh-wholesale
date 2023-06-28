@@ -16,11 +16,8 @@ module "st_dh2dropzone" {
   ip_rules                        = data.azurerm_key_vault_secret.pir_hosted_deployment_agents.value
   containers = [
     {
-      name = "dh2-metering-point-history"
-    },
-    {
-      name = "dh2-timeseries"
-    },
+      name = "dh2-dropzone-zipped"
+    }
   ]
 }
 

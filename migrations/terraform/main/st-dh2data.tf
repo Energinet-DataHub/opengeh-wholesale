@@ -16,7 +16,13 @@ module "st_dh2data" {
   ip_rules                        = data.azurerm_key_vault_secret.pir_hosted_deployment_agents.value
   containers = [
     {
-      name = "timeseries"
+      name = "dh2-metering-point-history"
+    },
+    {
+      name = "dh2-timeseries"
+    },
+    {
+      name = "dh2-timeseries-synchronization"
     }
   ]
 }
