@@ -104,12 +104,14 @@ ORDER BY {ResultColumnNames.CalculationResultId}, {ResultColumnNames.Time}
         SqlResultRow sqlResultRow,
         List<TimeSeriesPoint> timeSeriesPoints)
     {
+        var id = SqlResultValueConverters.ToGuid(sqlResultRow[ResultColumnNames.CalculationResultId]);
         var timeSeriesType = SqlResultValueConverters.ToTimeSeriesType(sqlResultRow[ResultColumnNames.TimeSeriesType]);
         var energySupplierId = sqlResultRow[ResultColumnNames.EnergySupplierId];
         var balanceResponsibleId = sqlResultRow[ResultColumnNames.BalanceResponsibleId];
         var gridArea = sqlResultRow[ResultColumnNames.GridArea];
         var fromGridArea = sqlResultRow[ResultColumnNames.FromGridArea];
         return new CalculationResult(
+            id,
             batch.BatchId,
             gridArea,
             timeSeriesType,

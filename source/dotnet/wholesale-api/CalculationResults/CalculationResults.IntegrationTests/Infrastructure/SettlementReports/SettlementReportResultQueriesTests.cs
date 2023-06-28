@@ -69,7 +69,8 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
         var expectedSettlementReportRow = GetDefaultSettlementReportRow();
         var tableName = await CreateTableWithTwoRowsAsync();
         var sqlStatementClient = new SqlStatementClient(new HttpClient(), _fixture.DatabricksOptionsMock.Object, new DatabricksSqlResponseParser(loggerMock.Object));
-        var sut = new SettlementReportResultQueries(sqlStatementClient, CreateDeltaTableOptions(_fixture.DatabricksSchemaManager.SchemaName, tableName));
+        var deltaTableOptions = CreateDeltaTableOptions(_fixture.DatabricksSchemaManager.SchemaName, tableName);
+        var sut = new SettlementReportResultQueries(sqlStatementClient, deltaTableOptions);
 
         // Act
         var actual = await sut.GetRowsAsync(_defaultGridAreaCodes, DefaultProcessType, _defaultPeriodStart, _defaultPeriodEnd, null);
