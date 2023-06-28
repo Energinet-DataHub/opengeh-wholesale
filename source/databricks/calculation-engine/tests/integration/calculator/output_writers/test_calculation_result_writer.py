@@ -223,7 +223,7 @@ def test__write__writes_columns_matching_contract(
     assert_contract_matches_schema(contract_path, actual_df.schema)
 
 
-def test__write__writes_calculation_result_id(spark: SparkSession, contracts_path: str, migrations_executed: None) -> None:
+def test__write__writes_calculation_result_id(spark: SparkSession, contracts_path: str, migrations_executed_per_test: None) -> None:
 
     # Arrange
     result_df = _create_result_df_corresponding_to_four_calculation_results(spark)
