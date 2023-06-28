@@ -81,11 +81,7 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
         // Assert
         using var assertionScope = new AssertionScope();
         actual.Count.Should().Be(expectedResultCount);
-        // actual.All(obj => obj.TimeSeriesPoints.Should().HaveCount(2)).Should().BeTrue();
-        // actual.Select(r => r.TimeSeriesPoints).Should().AllSatisfy(b =>
-        // {
-        //     var b1 = b.Length == 2;
-        // });
+        actual.Select(r => r.TimeSeriesPoints.Length).Should().OnlyContain(x => x == 2);
         actual[0].TimeSeriesPoints[0].Quantity.ToString(CultureInfo.InvariantCulture).Should().Be(FirstQuantity);
         actual[0].TimeSeriesPoints[1].Quantity.ToString(CultureInfo.InvariantCulture).Should().Be(SecondQuantity);
         actual[1].TimeSeriesPoints[0].Quantity.ToString(CultureInfo.InvariantCulture).Should().Be(ThirdQuantity);
