@@ -23,65 +23,29 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Fa
 {
     public class CalculationResultIntegrationEventFactory : ICalculationResultIntegrationEventFactory
     {
-        private readonly IClock _systemDateTimeProvider;
-        private readonly ICalculationResultCompletedIntegrationEventFactory _calculationResultCompletedIntegrationEventFactory;
+        private readonly IClock _clock;
+        private readonly ICalculationResultCompletedFactory _calculationResultCompletedFactory;
 
         public CalculationResultIntegrationEventFactory(
-            IClock systemDateTimeProvider,
-            ICalculationResultCompletedIntegrationEventFactory calculationResultCompletedIntegrationEventFactory)
+            IClock clock,
+            ICalculationResultCompletedFactory calculationResultCompletedFactory)
         {
-            _systemDateTimeProvider = systemDateTimeProvider;
-            _calculationResultCompletedIntegrationEventFactory = calculationResultCompletedIntegrationEventFactory;
+            _clock = clock;
+            _calculationResultCompletedFactory = calculationResultCompletedFactory;
         }
 
         public IntegrationEvent Create(CalculationResult calculationResult)
         {
-            if (calculationResult.EnergySupplierId == null && calculationResult.BalanceResponsibleId == null)
-                return CreateForTotalGridArea(calculationResult);
-
-            if (calculationResult.EnergySupplierId != null && calculationResult.BalanceResponsibleId == null)
-                return CreateForEnergySupplier(calculationResult);
-
-            if (calculationResult.EnergySupplierId == null && calculationResult.BalanceResponsibleId != null)
-                return CreateForBalanceResponsibleParty(calculationResult);
-
-            return CreateForEnergySupplierByBalanceResponsibleParty(calculationResult);
+            var @event = _calculationResultCompletedFactory.Create(calculationResult);
+            return CreateIntegrationEvent(@event, calculationResult.Id);
         }
 
-        private IntegrationEvent CreateForEnergySupplier(CalculationResult result)
+        private IntegrationEvent CreateIntegrationEvent(IMessage protobufMessage, Guid calculationResultId)
         {
-            var @event = _calculationResultCompletedIntegrationEventFactory.CreateForEnergySupplier(result, result.EnergySupplierId!);
-            return CreateIntegrationEvent(@event, result);
-        }
-
-        private IntegrationEvent CreateForBalanceResponsibleParty(CalculationResult result)
-        {
-            var @event = _calculationResultCompletedIntegrationEventFactory.CreateForBalanceResponsibleParty(result, result.BalanceResponsibleId!);
-            return CreateIntegrationEvent(@event, result);
-        }
-
-        private IntegrationEvent CreateForTotalGridArea(CalculationResult result)
-        {
-            var @event = _calculationResultCompletedIntegrationEventFactory.CreateForGridArea(result);
-            return CreateIntegrationEvent(@event, result);
-        }
-
-        private IntegrationEvent CreateForEnergySupplierByBalanceResponsibleParty(
-            CalculationResult result)
-        {
-            var @event = _calculationResultCompletedIntegrationEventFactory.CreateForEnergySupplierByBalanceResponsibleParty(
-                result,
-                result.EnergySupplierId!,
-                result.BalanceResponsibleId!);
-            return CreateIntegrationEvent(@event, result);
-        }
-
-        private IntegrationEvent CreateIntegrationEvent(IMessage protobufMessage, CalculationResult calculationResult)
-        {
-            var eventIdentification = calculationResult.Id;
+            var eventIdentification = calculationResultId;
             var messageName = CalculationResultCompleted.MessageName;
             var messageVersion = CalculationResultCompleted.MessageVersion;
-            var operationTimeStamp = _systemDateTimeProvider.GetCurrentInstant();
+            var operationTimeStamp = _clock.GetCurrentInstant();
             return new IntegrationEvent(eventIdentification, messageName, operationTimeStamp, messageVersion, protobufMessage);
         }
     }

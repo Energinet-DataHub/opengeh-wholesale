@@ -54,8 +54,8 @@ public static class EventsRegistration
     {
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services
-            .AddScoped<ICalculationResultCompletedIntegrationEventFactory,
-                CalculationResultCompletedIntegrationEventFactory>();
+            .AddScoped<ICalculationResultCompletedFactory,
+                CalculationResultCompletedFactory>();
     }
 
     private static void AddInfrastructure(

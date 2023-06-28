@@ -21,11 +21,25 @@ using TimeSeriesPoint = Energinet.DataHub.Wholesale.Contracts.Events.TimeSeriesP
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 
-public class CalculationResultCompletedIntegrationEventFactory : ICalculationResultCompletedIntegrationEventFactory
+public class CalculationResultCompletedFactory : ICalculationResultCompletedFactory
 {
-    public CalculationResultCompleted CreateForGridArea(CalculationResult result)
+    public CalculationResultCompleted Create(CalculationResult calculationResult)
     {
-        var calculationResultCompleted = Create(result);
+        if (calculationResult.EnergySupplierId == null && calculationResult.BalanceResponsibleId == null)
+            return CreateForGridArea(calculationResult);
+
+        if (calculationResult.EnergySupplierId != null && calculationResult.BalanceResponsibleId == null)
+            return CreateForEnergySupplier(calculationResult);
+
+        if (calculationResult.EnergySupplierId == null && calculationResult.BalanceResponsibleId != null)
+            return CreateForBalanceResponsibleParty(calculationResult);
+
+        return CreateForEnergySupplierByBalanceResponsibleParty(calculationResult);
+    }
+
+    private CalculationResultCompleted CreateForGridArea(CalculationResult result)
+    {
+        var calculationResultCompleted = CreateInternal(result);
         calculationResultCompleted.AggregationPerGridarea = new AggregationPerGridArea
         {
             GridAreaCode = result.GridArea,
@@ -34,53 +48,49 @@ public class CalculationResultCompletedIntegrationEventFactory : ICalculationRes
         return calculationResultCompleted;
     }
 
-    public CalculationResultCompleted CreateForEnergySupplier(
-        CalculationResult result,
-        string energySupplierId)
+    private CalculationResultCompleted CreateForEnergySupplier(
+        CalculationResult result)
     {
-        var calculationResultCompleted = Create(result);
+        var calculationResultCompleted = CreateInternal(result);
         calculationResultCompleted.AggregationPerEnergysupplierPerGridarea = new AggregationPerEnergySupplierPerGridArea
         {
             GridAreaCode = result.GridArea,
-            EnergySupplierGlnOrEic = energySupplierId,
+            EnergySupplierGlnOrEic = result.EnergySupplierId,
         };
 
         return calculationResultCompleted;
     }
 
-    public CalculationResultCompleted CreateForBalanceResponsibleParty(
-        CalculationResult result,
-        string balanceResponsiblePartyId)
+    private CalculationResultCompleted CreateForBalanceResponsibleParty(
+        CalculationResult result)
     {
-        var calculationResultCompleted = Create(result);
+        var calculationResultCompleted = CreateInternal(result);
         calculationResultCompleted.AggregationPerBalanceresponsiblepartyPerGridarea =
             new AggregationPerBalanceResponsiblePartyPerGridArea
             {
                 GridAreaCode = result.GridArea,
-                BalanceResponsiblePartyGlnOrEic = balanceResponsiblePartyId,
+                BalanceResponsiblePartyGlnOrEic = result.BalanceResponsibleId,
             };
 
         return calculationResultCompleted;
     }
 
-    public CalculationResultCompleted CreateForEnergySupplierByBalanceResponsibleParty(
-        CalculationResult result,
-        string energySupplierId,
-        string balanceResponsiblePartyId)
+    private CalculationResultCompleted CreateForEnergySupplierByBalanceResponsibleParty(
+        CalculationResult result)
     {
-        var calculationResultCompleted = Create(result);
+        var calculationResultCompleted = CreateInternal(result);
         calculationResultCompleted.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea =
             new AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea
             {
                 GridAreaCode = result.GridArea,
-                EnergySupplierGlnOrEic = energySupplierId,
-                BalanceResponsiblePartyGlnOrEic = balanceResponsiblePartyId,
+                EnergySupplierGlnOrEic = result.EnergySupplierId,
+                BalanceResponsiblePartyGlnOrEic = result.BalanceResponsibleId,
             };
 
         return calculationResultCompleted;
     }
 
-    private static CalculationResultCompleted Create(CalculationResult result)
+    private static CalculationResultCompleted CreateInternal(CalculationResult result)
     {
         var calculationResultCompleted = new CalculationResultCompleted
         {

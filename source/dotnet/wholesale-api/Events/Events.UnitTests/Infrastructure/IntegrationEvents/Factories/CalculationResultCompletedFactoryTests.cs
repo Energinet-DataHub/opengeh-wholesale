@@ -29,13 +29,13 @@ using TimeSeriesPoint =
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.Factories;
 
-public class CalculationResultCompletedIntegrationEventFactoryTests
+public class CalculationResultCompletedFactoryTests
 {
     [Theory]
     [InlineAutoMoqData]
     public void CreateCalculationResultCompletedForGridArea_WhenCreating_ResultIsForTotalGridArea(
         CalculationResult anyCalculationResult,
-        CalculationResultCompletedIntegrationEventFactory sut)
+        CalculationResultCompletedFactory sut)
     {
         // Act
         var actual = sut.CreateForGridArea(anyCalculationResult);
@@ -51,7 +51,7 @@ public class CalculationResultCompletedIntegrationEventFactoryTests
     [InlineAutoMoqData]
     public void CreateCalculationResultCompletedForGridArea_WhenCreating_PropertiesAreMappedCorrectly(
         CalculationResultBuilder calculationResultBuilder,
-        CalculationResultCompletedIntegrationEventFactory sut)
+        CalculationResultCompletedFactory sut)
     {
         // Arrange
         var timeSeriesPoint = new TimeSeriesPoint(DateTimeOffset.Now, 10.101000000m, QuantityQuality.Estimated);
@@ -81,7 +81,7 @@ public class CalculationResultCompletedIntegrationEventFactoryTests
     [InlineAutoMoqData]
     public void CreateCalculationResultCompletedForEnergySupplier_WhenCreating_ResultIsForTotalEnergySupplier(
         CalculationResult anyCalculationResult,
-        CalculationResultCompletedIntegrationEventFactory sut)
+        CalculationResultCompletedFactory sut)
     {
         // Act
         var actual = sut.CreateForEnergySupplier(
@@ -99,7 +99,7 @@ public class CalculationResultCompletedIntegrationEventFactoryTests
     [InlineAutoMoqData]
     public void CreateCalculationResultCompletedForEnergySupplier_WhenCreating_PropertiesAreMappedCorrectly(
         CalculationResultBuilder calculationResultBuilder,
-        CalculationResultCompletedIntegrationEventFactory sut)
+        CalculationResultCompletedFactory sut)
     {
         // Arrange
         var timeSeriesPoint = new TimeSeriesPoint(DateTimeOffset.Now, 10.101000000m, QuantityQuality.Estimated);
@@ -130,7 +130,7 @@ public class CalculationResultCompletedIntegrationEventFactoryTests
     [InlineAutoMoqData]
     public void CreateCalculationResultCompletedForBalanceResponsibleParty_ReturnsResultForBalanceResponsibleParty(
         CalculationResult anyCalculationResult,
-        CalculationResultCompletedIntegrationEventFactory sut)
+        CalculationResultCompletedFactory sut)
     {
         // Act
         var actual = sut.CreateForBalanceResponsibleParty(anyCalculationResult, "ABrpGlnNumber");
@@ -146,7 +146,7 @@ public class CalculationResultCompletedIntegrationEventFactoryTests
     [InlineAutoMoqData]
     public void CreateCalculationResultCompletedForBalanceResponsibleParty_WhenCreating_PropertiesAreMappedCorrectly(
         CalculationResultBuilder calculationResultBuilder,
-        CalculationResultCompletedIntegrationEventFactory sut)
+        CalculationResultCompletedFactory sut)
     {
         // Arrange
         var timeSeriesPoint = new TimeSeriesPoint(DateTimeOffset.Now, 10.101000000m, QuantityQuality.Estimated);
@@ -179,7 +179,7 @@ public class CalculationResultCompletedIntegrationEventFactoryTests
     [InlineAutoMoqData]
     public void CreateCalculationResultCompletedForEnergySupplierByBalanceResponsibleParty_ReturnsResultForEnergySupplierByBalanceResponsibleParty(
         CalculationResult anyCalculationResult,
-        CalculationResultCompletedIntegrationEventFactory sut)
+        CalculationResultCompletedFactory sut)
     {
         // Act
         var actual = sut.CreateForEnergySupplierByBalanceResponsibleParty(
@@ -198,7 +198,7 @@ public class CalculationResultCompletedIntegrationEventFactoryTests
     [InlineAutoMoqData]
     public void CreateCalculationResultCompletedForEnergySupplierByBalanceResponsibleParty_WhenCreating_PropertiesAreMappedCorrectly(
         CalculationResultBuilder calculationResultBuilder,
-        CalculationResultCompletedIntegrationEventFactory sut)
+        CalculationResultCompletedFactory sut)
     {
         // Arrange
         var timeSeriesPoint = new TimeSeriesPoint(DateTimeOffset.Now, 10.101000000m, QuantityQuality.Estimated);

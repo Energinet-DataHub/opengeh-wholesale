@@ -17,20 +17,7 @@ using Energinet.DataHub.Wholesale.Contracts.Events;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 
-public interface ICalculationResultCompletedIntegrationEventFactory
+public interface ICalculationResultCompletedFactory
 {
-    CalculationResultCompleted CreateForGridArea(CalculationResult result);
-
-    CalculationResultCompleted CreateForEnergySupplier(
-        CalculationResult result,
-        string energySupplierId);
-
-    CalculationResultCompleted CreateForBalanceResponsibleParty(
-        CalculationResult result,
-        string balanceResponsiblePartyId);
-
-    CalculationResultCompleted CreateForEnergySupplierByBalanceResponsibleParty(
-        CalculationResult result,
-        string energySupplierId,
-        string balanceResponsiblePartyId);
+    CalculationResultCompleted Create(CalculationResult result);
 }
