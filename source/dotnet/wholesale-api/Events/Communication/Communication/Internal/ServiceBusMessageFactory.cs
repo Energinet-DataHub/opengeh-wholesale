@@ -30,7 +30,7 @@ public class ServiceBusMessageFactory : IServiceBusMessageFactory
 
         // TODO BJM: Is this correct?
         // The Operation Time Stamp is when the event was actually completed (in the business process logic)
-        serviceBusMessage.ApplicationProperties.Add("OperationTimeStamp", @event.OperationTimeStamp);
+        serviceBusMessage.ApplicationProperties.Add("OperationTimeStamp", @event.OperationTimeStamp.ToDateTimeOffset().ToString());
         serviceBusMessage.ApplicationProperties.Add("MessageVersion", @event.MessageVersion);
 
         return serviceBusMessage;
