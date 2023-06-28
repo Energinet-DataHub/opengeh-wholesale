@@ -12,6 +12,8 @@ on:
         value: ${{ jobs.changes.outputs.edi_ci }}
       market_participant_ci:
         value: ${{ jobs.changes.outputs.market_participant_ci }}
+      esett_exchange_ci:
+        value: ${{ jobs.changes.outputs.esett_exchange_ci }}
       migrations_ci:
         value: ${{ jobs.changes.outputs.migrations_ci }}
       shared_resources_ci:
@@ -30,6 +32,7 @@ jobs:
     outputs:
       edi_ci: ${{ steps.filter.outputs.edi_ci }}
       market_participant_ci: ${{ steps.filter.outputs.market_participant_ci }}
+      esett_exchange_ci: ${{ steps.filter.outputs.esett_exchange_ci }}
       migrations_ci: ${{ steps.filter.outputs.migrations_ci }}
       shared_resources_ci: ${{ steps.filter.outputs.shared_resources_ci }}
       ui_ci: ${{ steps.filter.outputs.ui_ci }}
@@ -54,6 +57,12 @@ jobs:
             market_participant_ci:
               - market-participant/**
               - .github/workflows/market-participant-*.yml
+              - .github/workflows/infrastructure-build-prerelease.yml
+              - .github/workflows/infrastructure-validate.yml
+              - .github/actions/terraform-validate/*
+            esett_exchange_ci:
+              - esett-exchange/**
+              - .github/workflows/esett-exchange-*.yml
               - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*
