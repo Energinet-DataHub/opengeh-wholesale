@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
+using Google.Protobuf;
 
 namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
 
@@ -22,7 +23,7 @@ public class ServiceBusMessageFactory : IServiceBusMessageFactory
     {
         var serviceBusMessage = new ServiceBusMessage
         {
-            Body = new BinaryData(@event.Message),
+            Body = new BinaryData(@event.Message.ToByteArray()),
             Subject = @event.MessageName,
             MessageId = @event.EventIdentification.ToString(),
         };
