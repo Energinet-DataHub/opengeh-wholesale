@@ -21,6 +21,8 @@ from pyspark.sql.window import Window
 from package.codelists import TimeSeriesType, AggregationLevel
 from package.constants import Colname, ResultTableColName
 
+import uuid
+
 DATABASE_NAME = "wholesale_output"
 RESULT_TABLE_NAME = "result"
 
@@ -78,7 +80,7 @@ class CalculationResultWriter:
         )
 
         df = df.withColumn(ResultTableColName.calculation_result_id, F.expr("uuid()"))
-        window = Window.partitionBy(_get_calculation_result_column_definition())
+        window = Window.partitionBy(_get_column_group_for_calculation_result_id())
         df = df.withColumn(ResultTableColName.calculation_result_id, first(col(ResultTableColName.calculation_result_id)).over(window))
 
         df.write.format("delta").mode("append").option(
@@ -86,7 +88,7 @@ class CalculationResultWriter:
         ).insertInto(f"{DATABASE_NAME}.{RESULT_TABLE_NAME}")
 
 
-def _get_calculation_result_column_definition() -> list[str]:
+def _get_column_group_for_calculation_result_id() -> list[str]:
     return [ResultTableColName.batch_id, ResultTableColName.batch_execution_time_start, ResultTableColName.batch_process_type,
             ResultTableColName.grid_area, ResultTableColName.time_series_type, ResultTableColName.aggregation_level,
             ResultTableColName.from_grid_area, ResultTableColName.balance_responsible_id, ResultTableColName.energy_supplier_id]

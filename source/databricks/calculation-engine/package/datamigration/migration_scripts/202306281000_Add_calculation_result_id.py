@@ -13,26 +13,10 @@
 # limitations under the License.
 
 from package.datamigration.migration_script_args import MigrationScriptArgs
-from delta import DeltaTable
 
-OUTPUT_FOLDER = "calculation-output"
 DATABASE_NAME = "wholesale_output"  # Also known as schema
 RESULT_TABLE_NAME = "result"
 
 
 def apply(args: MigrationScriptArgs) -> None:
     args.spark.sql(f"ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME} ADD COLUMN calculation_result_id string")
-#     args.spark.sql(f" UPDATE df
-# SET calculation_result_id = uuid();
-
-# -- Assign the first value of calculation_result_id within each partition
-# UPDATE df
-# SET calculation_result_id = t.calculation_result_id
-# FROM (
-#     SELECT calculation_result_id,
-#            ROW_NUMBER() OVER (PARTITION BY col1, col2 ORDER BY calculation_result_id) AS rn
-#     FROM df
-# ) AS t
-# WHERE df.calculation_result_id = t.calculation_result_id
-#   AND t.rn = 1;
-# ")"
