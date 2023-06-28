@@ -104,6 +104,7 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
             ResultColumnNames.BatchId => "'ed39dbc5-bdc5-41b9-922a-08d3b12d4538'",
             ResultColumnNames.BatchExecutionTimeStart => "'2022-03-11T03:00:00.000Z'",
             ResultColumnNames.BatchProcessType => $@"'{DeltaTableProcessType.BalanceFixing}'",
+            ResultColumnNames.CalculationResultId => "'aaaaaaaa-1111-1111-1c1c-08d3b12d4511'",
             ResultColumnNames.TimeSeriesType => $@"'{DeltaTableTimeSeriesType.Production}'",
             ResultColumnNames.GridArea => $@"'{gridArea}'",
             ResultColumnNames.FromGridArea => "'406'",

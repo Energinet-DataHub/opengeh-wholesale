@@ -47,6 +47,10 @@
       {
         "name": "aggregation_level",
         "type": "string"
+      },
+      {
+        "name": "calculation_result_id",
+        "type": "string"
       }
     ]
   }
