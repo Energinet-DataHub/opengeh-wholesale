@@ -13,149 +13,194 @@
 // limitations under the License.
 
 using AutoFixture.Xunit2;
-using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Internal;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
-using Energinet.DataHub.Wholesale.Events.UnitTests.Fixtures;
+using Energinet.DataHub.Wholesale.Events.Application.UseCases;
+using FluentAssertions;
 using Moq;
+using NodaTime;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Application.CalculationResultPublishing;
 
 public class IntegrationEventProviderTests
 {
-    [Theory(Skip = "TODO BJARKE")]
+    [Theory]
     [InlineAutoMoqData]
-    public void PublishAsync_PublishEventForGridArea(
-            CompletedBatch completedBatch,
-            CalculationResultBuilder calculationResultBuilder,
-            [Frozen] Mock<ICalculationResultQueries> calculationResultQueriesMock,
-            [Frozen] Mock<ICalculationResultIntegrationEventFactory> calculationResultCompletedFactoryMock,
-            IntegrationEvent integrationEventDto,
-            IntegrationEventProvider sut)
-    {
-        // Arrange
-        var calculationResult = calculationResultBuilder.WithId(completedBatch.Id).Build();
-
-        calculationResultQueriesMock
-            .Setup(p => p.GetAsync(completedBatch.Id))
-            .Returns(ResultAsyncEnumerable(calculationResult));
-
-        calculationResultCompletedFactoryMock
-            .Setup(c => c.CreateForTotalGridArea(calculationResult))
-            .Returns(integrationEventDto);
-
-        // Act
-        var actual = sut.GetAsync().ToListAsync();
-
-        // Assert
-        //integrationEventPublisherMock.Verify(x => x.PublishAsync(integrationEventDto), Times.Once);
-    }
-
-    [Theory(Skip = "TODO BJARKE")]
-    [InlineAutoMoqData]
-    public void PublishAsync_PublishEventForEnergySupplier(
-        CompletedBatch completedBatch,
-        CalculationResultBuilder calculationResultBuilder,
-        [Frozen] Mock<ICalculationResultQueries> calculationResultQueriesMock,
-        [Frozen] Mock<ICalculationResultIntegrationEventFactory> calculationResultCompletedFactoryMock,
-        IntegrationEvent integrationEventDto,
+    public void GetAsync_WhenNoUnpublishedBatches_DoesNotCommit(
+        [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
+        [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         IntegrationEventProvider sut)
     {
         // Arrange
-        var calculationResult = calculationResultBuilder
-            .WithId(completedBatch.Id)
-            .WithEnergySupplier()
-            .Build();
-
-        calculationResultQueriesMock
-            .Setup(p => p.GetAsync(completedBatch.Id))
-            .Returns(ResultAsyncEnumerable(calculationResult));
-
-        calculationResultCompletedFactoryMock
-            .Setup(c => c.CreateForEnergySupplier(
-                calculationResult))
-            .Returns(integrationEventDto);
-
-        //Act
-        var actual = sut.GetAsync();
-
-        // Assert
-        //integrationEventPublisherMock.Verify(x => x.PublishAsync(integrationEventDto), Times.Once);
-    }
-
-    [Theory(Skip = "TODO BJARKE")]
-    [InlineAutoMoqData]
-    public void
-        PublishAsyncPublishEventForBalanceResponsibleParty(
-            CompletedBatch completedBatch,
-            CalculationResultBuilder calculationResultBuilder,
-            [Frozen] Mock<ICalculationResultQueries> calculationResultQueriesMock,
-            [Frozen] Mock<ICalculationResultIntegrationEventFactory> calculationResultCompletedFactoryMock,
-            IntegrationEvent integrationEventDto,
-            IntegrationEventProvider sut)
-    {
-        // Arrange
-        var calculationResult = calculationResultBuilder
-            .WithId(completedBatch.Id)
-            .WithBalanceResponsibleParty()
-            .Build();
-
-        calculationResultQueriesMock
-            .Setup(p => p.GetAsync(completedBatch.Id))
-            .Returns(ResultAsyncEnumerable(calculationResult));
-
-        calculationResultCompletedFactoryMock
-            .Setup(c => c.CreateForBalanceResponsibleParty(calculationResult))
-            .Returns(integrationEventDto);
+        completedBatchRepositoryMock
+            .Setup(p => p.GetNextUnpublishedOrNullAsync())
+            .ReturnsAsync((CompletedBatch)null!);
 
         // Act
-        var actaul = sut.GetAsync();
+        var unused = sut.GetAsync().ToListAsync();
 
         // Assert
-        //integrationEventPublisherMock.Verify(x => x.PublishAsync(integrationEventDto), Times.Once);
+        unitOfWorkMock.Verify(x => x.CommitAsync(), Times.Never);
     }
 
-    [Theory(Skip = "TODO BJARKE")]
+    [Theory]
     [InlineAutoMoqData]
-    public void PublishAsync_PublishEventForEnergySupplierByBalanceResponsibleParty(
-            CompletedBatch completedBatch,
-            CalculationResultBuilder calculationResultBuilder,
-            [Frozen] Mock<ICalculationResultQueries> calculationResultQueriesMock,
-            [Frozen] Mock<ICalculationResultIntegrationEventFactory> calculationResultCompletedFactoryMock,
-            IntegrationEvent integrationEventDto,
-            IntegrationEventProvider sut)
+    public void GetAsync_WhenMultipleUnpublishedBatches_CommitsOncePerBatch(
+        CompletedBatch completedBatch,
+        CalculationResult calculationResult,
+        IntegrationEvent anyIntegrationEvent,
+        [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
+        [Frozen] Mock<ICalculationResultQueries> calculationResultQueriesMock,
+        [Frozen] Mock<ICalculationResultIntegrationEventFactory> calculationResultIntegrationEventFactoryMock,
+        [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
+        IntegrationEventProvider sut)
     {
         // Arrange
-        var calculationResult = calculationResultBuilder
-            .WithId(completedBatch.Id)
-            .WithEnergySupplier()
-            .WithBalanceResponsibleParty()
-            .Build();
+        completedBatchRepositoryMock
+            .SetupSequence(p => p.GetNextUnpublishedOrNullAsync())
+            .ReturnsAsync(completedBatch)
+            .ReturnsAsync(completedBatch)
+            .ReturnsAsync((CompletedBatch)null!);
 
         calculationResultQueriesMock
-            .Setup(p => p.GetAsync(completedBatch.Id))
-            .Returns(ResultAsyncEnumerable(calculationResult));
+            .Setup(queries => queries.GetAsync(completedBatch.Id))
+            .Returns(AsAsyncEnumerable(calculationResult));
 
-        calculationResultCompletedFactoryMock
-            .Setup(c => c.CreateForEnergySupplierByBalanceResponsibleParty(
-                calculationResult))
-            .Returns(integrationEventDto);
+        calculationResultIntegrationEventFactoryMock
+            .Setup(factory => factory.Create(calculationResult))
+            .Returns(anyIntegrationEvent);
 
         // Act
-        var actual = sut.GetAsync();
+        var unused = sut.GetAsync().ToListAsync();
 
-        // Assert
-        //integrationEventPublisherMock.Verify(x => x.PublishAsync(integrationEventDto), Times.Once);
+        // Assert: Commits once per unpublished batch
+        unitOfWorkMock.Verify(x => x.CommitAsync(), Times.Exactly(2));
     }
 
-    private async IAsyncEnumerable<CalculationResult> ResultAsyncEnumerable(CalculationResult calculationResult)
+    [Theory]
+    [InlineAutoMoqData]
+    public void GetAsync_SetsPublishedTimeOfBatch(
+        Instant instant,
+        CompletedBatch completedBatch,
+        [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
+        [Frozen] Mock<ICalculationResultQueries> calculationResultQueriesMock,
+        [Frozen] Mock<IClock> clockMock,
+        IntegrationEventProvider sut)
     {
-        yield return calculationResult;
+        // Arrange
+        completedBatchRepositoryMock
+            .SetupSequence(p => p.GetNextUnpublishedOrNullAsync())
+            .ReturnsAsync(completedBatch)
+            .ReturnsAsync((CompletedBatch)null!);
+
+        calculationResultQueriesMock
+            .Setup(queries => queries.GetAsync(completedBatch.Id))
+            .Returns(AsAsyncEnumerable<CalculationResult>());
+
+        clockMock.Setup(c => c.GetCurrentInstant()).Returns(instant);
+
+        // Act
+        var unused = sut.GetAsync().ToListAsync();
+
+        // Assert
+        completedBatch.PublishedTime.Should().Be(instant);
+    }
+
+    // TODO BJM: Redundant?
+    [Theory]
+    [InlineAutoMoqData]
+    public void GetAsync_WhenMultipleUnpublishedBatches_FetchesResultsForEach(
+        CompletedBatch completedBatch,
+        IntegrationEvent anyIntegrationEvent,
+        CalculationResult calculationResult,
+        [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
+        [Frozen] Mock<ICalculationResultQueries> calculationResultQueriesMock,
+        [Frozen] Mock<ICalculationResultIntegrationEventFactory> calculationResultIntegrationEventFactoryMock,
+        IntegrationEventProvider sut)
+    {
+        // Arrange
+        completedBatchRepositoryMock
+            .SetupSequence(p => p.GetNextUnpublishedOrNullAsync())
+            .ReturnsAsync(completedBatch)
+            .ReturnsAsync(completedBatch)
+            .ReturnsAsync((CompletedBatch)null!);
+
+        calculationResultQueriesMock
+            .Setup(queries => queries.GetAsync(completedBatch.Id))
+            .Returns(AsAsyncEnumerable(calculationResult));
+
+        calculationResultIntegrationEventFactoryMock
+            .Setup(factory => factory.Create(calculationResult))
+            .Returns(anyIntegrationEvent);
+
+        // Act
+        var unused = sut.GetAsync().ToListAsync();
+
+        // Assert: Fetches results once per unpublished batch
+        calculationResultQueriesMock.Verify(x => x.GetAsync(It.IsAny<Guid>()), Times.Exactly(2));
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetAsync_WhenMultipleUnpublishedBatches_ReturnsEachResult(
+        CompletedBatch completedBatch1,
+        CompletedBatch completedBatch2,
+        CalculationResult calculationResult1,
+        CalculationResult calculationResult2,
+        CalculationResult calculationResult3,
+        CalculationResult calculationResult4,
+        IntegrationEvent integrationEvent1,
+        IntegrationEvent integrationEvent2,
+        IntegrationEvent integrationEvent3,
+        IntegrationEvent integrationEvent4,
+        [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
+        [Frozen] Mock<ICalculationResultIntegrationEventFactory> calculationResultIntegrationEventFactoryMock,
+        [Frozen] Mock<ICalculationResultQueries> calculationResultQueriesMock,
+        IntegrationEventProvider sut)
+    {
+        // Arrange
+        completedBatchRepositoryMock
+            .SetupSequence(p => p.GetNextUnpublishedOrNullAsync())
+            .ReturnsAsync(completedBatch1)
+            .ReturnsAsync(completedBatch2)
+            .ReturnsAsync((CompletedBatch)null!);
+
+        calculationResultQueriesMock
+            .Setup(queries => queries.GetAsync(completedBatch1.Id))
+            .Returns(AsAsyncEnumerable(calculationResult1, calculationResult2));
+        calculationResultQueriesMock
+            .Setup(queries => queries.GetAsync(completedBatch2.Id))
+            .Returns(AsAsyncEnumerable(calculationResult3, calculationResult4));
+
+        calculationResultIntegrationEventFactoryMock
+            .Setup(factory => factory.Create(calculationResult1))
+            .Returns(integrationEvent1);
+        calculationResultIntegrationEventFactoryMock
+            .SetupSequence(factory => factory.Create(calculationResult2))
+            .Returns(integrationEvent2);
+        calculationResultIntegrationEventFactoryMock
+            .Setup(factory => factory.Create(calculationResult3))
+            .Returns(integrationEvent3);
+        calculationResultIntegrationEventFactoryMock
+            .SetupSequence(factory => factory.Create(calculationResult4))
+            .Returns(integrationEvent4);
+
+        // Act
+        var actual = await sut.GetAsync().ToListAsync();
+
+        // Assert
+        actual.Should().BeEquivalentTo(new[] { integrationEvent1, integrationEvent2, integrationEvent3, integrationEvent4 });
+    }
+
+    private async IAsyncEnumerable<T> AsAsyncEnumerable<T>(params T[] items)
+    {
+        foreach (var item in items)
+            yield return item;
         await Task.Delay(0);
     }
 }
