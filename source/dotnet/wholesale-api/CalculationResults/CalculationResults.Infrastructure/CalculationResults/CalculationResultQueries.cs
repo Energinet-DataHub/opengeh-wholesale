@@ -68,7 +68,7 @@ public class CalculationResultQueries : ICalculationResultQueries
 SELECT {string.Join(", ", SqlColumnNames)}
 FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.RESULT_TABLE_NAME}
 WHERE {ResultColumnNames.BatchId} = '{batchId}'
-ORDER BY time
+ORDER BY {ResultColumnNames.CalculationResultId}
 ";
     }
 
@@ -83,16 +83,12 @@ ORDER BY time
         ResultColumnNames.Time,
         ResultColumnNames.Quantity,
         ResultColumnNames.QuantityQuality,
+        ResultColumnNames.CalculationResultId,
     };
 
     public static bool BelongsToDifferentResults(SqlResultRow row, SqlResultRow otherRow)
     {
-        return row[ResultColumnNames.BatchId] != otherRow[ResultColumnNames.BatchId]
-               || row[ResultColumnNames.GridArea] != otherRow[ResultColumnNames.GridArea]
-               || row[ResultColumnNames.FromGridArea] != otherRow[ResultColumnNames.FromGridArea]
-               || row[ResultColumnNames.TimeSeriesType] != otherRow[ResultColumnNames.TimeSeriesType]
-               || row[ResultColumnNames.EnergySupplierId] != otherRow[ResultColumnNames.EnergySupplierId]
-               || row[ResultColumnNames.BalanceResponsibleId] != otherRow[ResultColumnNames.BalanceResponsibleId];
+        return row[ResultColumnNames.CalculationResultId] != otherRow[ResultColumnNames.CalculationResultId];
     }
 
     private static TimeSeriesPoint CreateTimeSeriesPoint(SqlResultRow row)
