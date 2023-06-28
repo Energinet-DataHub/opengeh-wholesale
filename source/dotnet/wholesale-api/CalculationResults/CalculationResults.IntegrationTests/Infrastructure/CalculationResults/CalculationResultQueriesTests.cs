@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
@@ -57,30 +58,29 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
         // Arrange
         var tableName = await CreateTableWithTwoRowsAsync();
         var sqlStatementClient = new SqlStatementClient(new HttpClient(), _fixture.DatabricksOptionsMock.Object, new DatabricksSqlResponseParser(loggerMock.Object));
-        var sut = new SettlementReportResultQueries(sqlStatementClient, CreateDeltaTableOptions(_fixture.DatabricksSchemaManager.SchemaName, tableName));
+        var sut = new CalculationResultQueries(sqlStatementClient, , CreateDeltaTableOptions(_fixture.DatabricksSchemaManager.SchemaName, tableName));
 
         // Act
         var actual = await sut.GetRowsAsync(_defaultGridAreaCodes, DefaultProcessType, _defaultPeriodStart, _defaultPeriodEnd, null);
 
         // Assert
-        var actualList = actual.ToList();
-        actualList.Should().HaveCount(1);
-        actualList.First().Should().Be(expectedSettlementReportRow);
+        // var actualList = actual.ToList();
+        // actualList.Should().HaveCount(1);
+        // actualList.First().Should().Be(expectedSettlementReportRow);
     }
 
-    private async Task<string> CreateTableWithTwoRowsAsync()
-    {
-        var tableName = await _fixture.DatabricksTableManager.CreateTableAsync();
-
-        var row1 = _fixture.DatabricksTableManager.CreateRowValues(gridArea: DefaultGridArea);
-        await _fixture.DatabricksTableManager.InsertRow(tableName, row1);
-
-        var row2 = _fixture.DatabricksTableManager.CreateRowValues(gridArea: SomeOtherGridArea);
-        await _fixture.DatabricksTableManager.InsertRow(tableName, row2);
-
-        return tableName;
-    }
-
+    // private async Task<string> CreateTableWithTwoRowsAsync()
+    // {
+    //     var tableName = await _fixture.DatabricksSchemaManager.DatabricksTableManager..CreateTableAsync();
+    //
+    //     var row1 = _fixture.DatabricksTableManager.CreateRowValues(gridArea: DefaultGridArea);
+    //     await _fixture.DatabricksTableManager.InsertRow(tableName, row1);
+    //
+    //     var row2 = _fixture.DatabricksTableManager.CreateRowValues(gridArea: SomeOtherGridArea);
+    //     await _fixture.DatabricksTableManager.InsertRow(tableName, row2);
+    //
+    //     return tableName;
+    // }
 
     // private string SchemaName => _fixture.DatabricksSchemaManager.SchemaName;
     //

@@ -16,23 +16,8 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatement
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 
-public class DatabricksTableManager
+public class ResultDeltaTableHelper
 {
-    private readonly DatabricksSchemaManager _databricksSchemaManager;
-    private readonly Dictionary<string, string> _tableColumnDefinitions = CreateColumnDefinitions();
-
-    public DatabricksTableManager(DatabricksSchemaManager databricksSchemaManager)
-    {
-        _databricksSchemaManager = databricksSchemaManager;
-    }
-
-    public async Task<string> CreateTableAsync()
-    {
-        var tableName = $"TestTable_{DateTime.Now:yyyyMMddHHmmss}";
-        await _databricksSchemaManager.CreateTableAsync(tableName, _tableColumnDefinitions);
-        return tableName;
-    }
-
     public IEnumerable<string> CreateRowValues(
         string batchId = "ed39dbc5-bdc5-41b9-922a-08d3b12d4538",
         string batchExecutionTimeStart = "2022-03-11T03:00:00.000Z",
@@ -48,7 +33,7 @@ public class DatabricksTableManager
         string quantityQuality = "missing",
         string aggregationLevel = "total_ga")
     {
-        return _tableColumnDefinitions.Keys.Select(columnName => columnName switch
+        return GetColumnDefinitions().Keys.Select(columnName => columnName switch
         {
             ResultColumnNames.BatchId => $@"'{batchId}'",
             ResultColumnNames.BatchExecutionTimeStart => $@"'{batchExecutionTimeStart}'",
@@ -67,12 +52,7 @@ public class DatabricksTableManager
         });
     }
 
-    public async Task InsertRow(string tableName, IEnumerable<string> rowValues)
-    {
-        await _databricksSchemaManager.InsertIntoAsync(tableName, rowValues);
-    }
-
-    private static Dictionary<string, string> CreateColumnDefinitions()
+    public static Dictionary<string, string> GetColumnDefinitions()
     {
         var columnNames = ResultColumnNames.GetAllNames().ToList();
         var columnTypes = columnNames.Select(ResultColumnNames.GetType);

@@ -58,11 +58,13 @@ public class DatabricksSchemaManager
     /// Create table with a specified column definition (column name, data type)
     /// See more here https://docs.databricks.com/lakehouse/data-objects.html.
     /// </summary>
-    public async Task CreateTableAsync(string tableName, Dictionary<string, string> columnDefinition)
+    public async Task<string> CreateTableAsync(Dictionary<string, string> columnDefinition)
     {
+        var tableName = $"TestTable_{DateTime.Now:yyyyMMddHHmmss}";
         var columnDefinitions = string.Join(", ", columnDefinition.Select(c => $"{c.Key} {c.Value}"));
         var sqlStatement = $@"CREATE TABLE {SchemaName}.{tableName} ({columnDefinitions})";
         await ExecuteSql(sqlStatement);
+        return tableName;
     }
 
     public async Task InsertIntoAsync(string tableName, IEnumerable<string> values)

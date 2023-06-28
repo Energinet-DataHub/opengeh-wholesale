@@ -82,13 +82,14 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
 
     private async Task<string> CreateTableWithTwoRowsAsync()
     {
-        var tableName = await _fixture.DatabricksTableManager.CreateTableAsync();
+        var columnDefinitions = ResultDeltaTableHelper.GetColumnDefinitions();
+        var tableName = await _fixture.DatabricksSchemaManager.CreateTableAsync(columnDefinitions);
 
-        var row1 = _fixture.DatabricksTableManager.CreateRowValues(gridArea: DefaultGridArea);
-        await _fixture.DatabricksTableManager.InsertRow(tableName, row1);
+        var row1 = _fixture.ResultDeltaTableHelper.CreateRowValues(gridArea: DefaultGridArea);
+        await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, row1);
 
-        var row2 = _fixture.DatabricksTableManager.CreateRowValues(gridArea: SomeOtherGridArea);
-        await _fixture.DatabricksTableManager.InsertRow(tableName, row2);
+        var row2 = _fixture.ResultDeltaTableHelper.CreateRowValues(gridArea: SomeOtherGridArea);
+        await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, row2);
 
         return tableName;
     }
