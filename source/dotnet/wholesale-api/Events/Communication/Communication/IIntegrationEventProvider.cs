@@ -14,7 +14,12 @@
 
 namespace Energinet.DataHub.Core.Messaging.Communication;
 
-public interface IOutboxRepository
+/// <summary>
+/// In order to use the `Communication` library to publish integration events an implementation of this interface is required.
+/// The implementation will most likely be responsible for fetching or creating integration events from e.g. a database
+/// and subsequently commit state changes.
+/// </summary>
+public interface IIntegrationEventProvider
 {
-    IAsyncEnumerable<List<IntegrationEvent>> GetAsync();
+    IAsyncEnumerable<IntegrationEvent> GetAsync();
 }

@@ -40,6 +40,8 @@ public class CalculationResultCompletedToIntegrationEventFactoryTests
     {
         // Arrange
         calculationResult.SetPrivateProperty(r => r.BalanceResponsibleId, null);
+        var expectedEventIdentification =
+            CalculationResultIntegrationEventToIntegrationEventFactory.GetEventIdentification(calculationResult);
         calculationResultCompletedIntegrationEventFactoryMock
             .Setup(x => x.CreateForEnergySupplier(calculationResult, calculationResult.EnergySupplierId!))
             .Returns(calculationResultCompleted);
@@ -56,7 +58,7 @@ public class CalculationResultCompletedToIntegrationEventFactoryTests
         actual.Message.ToByteArray().Should().BeEquivalentTo(calculationResultCompleted.ToByteArray());
         actual.OperationTimeStamp.Should().Be(instant);
         actual.MessageVersion.Should().Be(CalculationResultCompleted.MessageVersion);
-        actual.EventIdentification.Should().Be("TODO");
+        actual.EventIdentification.Should().Be(expectedEventIdentification);
     }
 
     [Theory]

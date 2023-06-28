@@ -21,14 +21,14 @@ namespace Energinet.DataHub.Core.Messaging.Communication;
 /// <summary>
 /// Hosted service worker repeating a task indefinitely.
 /// </summary>
-public abstract class RepeatingWorker<TService> : BackgroundService
+public abstract class RepeatingTrigger<TService> : BackgroundService
     where TService : notnull
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger _logger;
     private readonly TimeSpan _delayBetweenExecutions;
 
-    protected RepeatingWorker(
+    protected RepeatingTrigger(
         IServiceProvider serviceProvider,
         ILogger logger,
         TimeSpan delayBetweenExecutions)

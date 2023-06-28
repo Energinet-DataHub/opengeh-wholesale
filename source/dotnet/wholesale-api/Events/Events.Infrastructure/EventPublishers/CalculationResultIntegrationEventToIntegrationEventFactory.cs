@@ -65,6 +65,17 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.EventPublishers
             return CreateIntegrationEvent(@event, result);
         }
 
+        /// <summary>
+        /// Only made public for testing purposes while waiting to be replaced by CalculationResult.Id.
+        /// </summary>
+        public static Guid GetEventIdentification(CalculationResult calculationResult)
+        {
+            var uniqueConsistentIdentifier = $"{calculationResult.BatchId}-{calculationResult.GridArea}-{calculationResult.EnergySupplierId}-{calculationResult.BalanceResponsibleId}{calculationResult.TimeSeriesType}";
+            using var hasher = SHA256.Create();
+            var hash = hasher.ComputeHash(Encoding.UTF8.GetBytes(uniqueConsistentIdentifier));
+            return new Guid(hash.Take(16).ToArray());
+        }
+
         private IntegrationEvent CreateIntegrationEvent(IMessage protobufMessage, CalculationResult calculationResult)
         {
             var eventIdentification = GetEventIdentification(calculationResult);
@@ -72,15 +83,6 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.EventPublishers
             var messageVersion = CalculationResultCompleted.MessageVersion;
             var operationTimeStamp = _systemDateTimeProvider.GetCurrentInstant();
             return new IntegrationEvent(eventIdentification, messageName, operationTimeStamp, messageVersion, protobufMessage);
-        }
-
-        // TODO: Replace with CalculationResult.Id
-        private Guid GetEventIdentification(CalculationResult calculationResult)
-        {
-            var uniqueConsistentIdentifier = $"{calculationResult.BatchId}-{calculationResult.GridArea}-{calculationResult.EnergySupplierId}-{calculationResult.BalanceResponsibleId}{calculationResult.TimeSeriesType}";
-            using var hasher = SHA256.Create();
-            var hash = hasher.ComputeHash(Encoding.UTF8.GetBytes(uniqueConsistentIdentifier));
-            return new Guid(hash.Take(16).ToArray());
         }
     }
 }

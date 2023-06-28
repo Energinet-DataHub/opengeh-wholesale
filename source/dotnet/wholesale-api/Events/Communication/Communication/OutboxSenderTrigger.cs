@@ -19,7 +19,7 @@ namespace Energinet.DataHub.Core.Messaging.Communication;
 /// <summary>
 /// The sender runs as a background service
 /// </summary>
-public class OutboxSenderTrigger : RepeatingWorker<IOutboxSender>
+public class OutboxSenderTrigger : RepeatingTrigger<IOutboxSender>
 {
     private const int DelayInSecondsBeforeNextExecution = 10;
 

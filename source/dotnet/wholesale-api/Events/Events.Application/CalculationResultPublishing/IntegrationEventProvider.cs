@@ -20,7 +20,7 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing;
 
-public class OutboxRepository : IOutboxRepository
+public class IntegrationEventProvider : IIntegrationEventProvider
 {
     private readonly ICalculationResultIntegrationEventFactory _calculationResultIntegrationEventFactory;
     private readonly ICalculationResultQueries _calculationResultQueries;
@@ -28,7 +28,7 @@ public class OutboxRepository : IOutboxRepository
     private readonly IClock _clock;
     private readonly IUnitOfWork _unitOfWork;
 
-    public OutboxRepository(
+    public IntegrationEventProvider(
         ICalculationResultIntegrationEventFactory integrationEventFactory,
         ICalculationResultQueries calculationResultQueries,
         ICompletedBatchRepository completedBatchRepository,
@@ -42,34 +42,22 @@ public class OutboxRepository : IOutboxRepository
         _unitOfWork = unitOfWork;
     }
 
-    public async IAsyncEnumerable<List<IntegrationEvent>> GetAsync()
+    public async IAsyncEnumerable<IntegrationEvent> GetAsync()
     {
         do
         {
             var batch = await _completedBatchRepository.GetNextUnpublishedOrNullAsync().ConfigureAwait(false);
             if (batch == null) break;
 
-            // TODO: This approach will bring all calculation results into memory. That's bad.
-            var integrationEvents = await CreateIntegrationEventsAsync(batch).ConfigureAwait(false);
-            yield return integrationEvents;
+            await foreach (var calculationResult in _calculationResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
+            {
+                yield return CreateIntegrationEvent(calculationResult);
+            }
 
             batch.PublishedTime = _clock.GetCurrentInstant();
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
         }
         while (true);
-    }
-
-    public async Task<List<IntegrationEvent>> CreateIntegrationEventsAsync(CompletedBatch batch)
-    {
-        var events = new List<IntegrationEvent>();
-
-        await foreach (var calculationResult in _calculationResultQueries.GetAsync(batch.Id))
-        {
-            var integrationEvent = CreateIntegrationEvent(calculationResult);
-            events.Add(integrationEvent);
-        }
-
-        return events;
     }
 
     private IntegrationEvent CreateIntegrationEvent(CalculationResult calculationResult)

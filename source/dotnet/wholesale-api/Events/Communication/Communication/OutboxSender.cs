@@ -22,18 +22,18 @@ namespace Energinet.DataHub.Core.Messaging.Communication;
 /// </summary>
 public class OutboxSender : IOutboxSender
 {
-    private readonly IOutboxRepository _outboxRepository;
+    private readonly IIntegrationEventProvider _integrationEventProvider;
     private readonly ServiceBusSender _sender;
     private readonly IServiceBusMessageFactory _serviceBusMessageFactory;
     private readonly ILogger _logger;
 
     public OutboxSender(
-        IOutboxRepository outboxRepository,
+        IIntegrationEventProvider integrationEventProvider,
         ServiceBusSender sender,
         IServiceBusMessageFactory serviceBusMessageFactory,
         ILogger<OutboxSender> logger)
     {
-        _outboxRepository = outboxRepository;
+        _integrationEventProvider = integrationEventProvider;
         _sender = sender;
         _serviceBusMessageFactory = serviceBusMessageFactory;
         _logger = logger;
@@ -45,20 +45,17 @@ public class OutboxSender : IOutboxSender
     {
         var batch = await _sender.CreateMessageBatchAsync().ConfigureAwait(false);
 
-        await foreach (var events in _outboxRepository.GetAsync())
+        await foreach (var @event in _integrationEventProvider.GetAsync())
         {
-            foreach (var @event in events)
+            var serviceBusMessage = _serviceBusMessageFactory.Create(@event);
+            if (!batch.TryAddMessage(serviceBusMessage))
             {
-                var serviceBusMessage = _serviceBusMessageFactory.Create(@event);
+                await SendBatchAsync(batch).ConfigureAwait(false);
+                batch = await _sender.CreateMessageBatchAsync().ConfigureAwait(false);
+
                 if (!batch.TryAddMessage(serviceBusMessage))
                 {
-                    await SendBatchAsync(batch).ConfigureAwait(false);
-                    batch = await _sender.CreateMessageBatchAsync().ConfigureAwait(false);
-
-                    if (!batch.TryAddMessage(serviceBusMessage))
-                    {
-                        await SendMessageThatExceedBatchLimitAsync(serviceBusMessage).ConfigureAwait(false);
-                    }
+                    await SendMessageThatExceedsBatchLimitAsync(serviceBusMessage).ConfigureAwait(false);
                 }
             }
         }
@@ -72,7 +69,7 @@ public class OutboxSender : IOutboxSender
         _logger.LogInformation("Sent batch of {BatchCount} messages", batch.Count);
     }
 
-    private async Task SendMessageThatExceedBatchLimitAsync(ServiceBusMessage serviceBusMessage)
+    private async Task SendMessageThatExceedsBatchLimitAsync(ServiceBusMessage serviceBusMessage)
     {
         await _sender.SendMessageAsync(serviceBusMessage).ConfigureAwait(false);
         _logger.LogInformation("Sent single message that exceeded batch size");

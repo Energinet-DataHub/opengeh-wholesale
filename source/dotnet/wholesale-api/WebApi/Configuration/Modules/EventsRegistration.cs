@@ -50,8 +50,7 @@ public static class EventsRegistration
         serviceCollection.AddApplications();
         serviceCollection.AddInfrastructure();
 
-        serviceCollection.AddScoped<IOutboxRepository, OutboxRepository>();
-        serviceCollection.AddCommunication();
+        serviceCollection.AddCommunication<IntegrationEventProvider>();
     }
 
     private static void AddApplications(this IServiceCollection services)
