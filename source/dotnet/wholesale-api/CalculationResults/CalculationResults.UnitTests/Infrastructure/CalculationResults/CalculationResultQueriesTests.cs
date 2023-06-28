@@ -36,8 +36,8 @@ public class CalculationResultQueriesTests
     {
         // The two rows belongs to different calculation results as they are for different grid areas
         _row0BatchId = "b78787d5-b544-44ac-87c2-7720aab86ed1";
-        var row0 = new[] { _row0BatchId, "100", "non_profiled_consumption", string.Empty, string.Empty, "2022-05-16T22:00:00.000Z", "1.111", "measured" };
-        var row1 = new[] { "b78787d5-b544-44ac-87c2-7720aab86ed2", "200", "non_profiled_consumption", string.Empty, string.Empty, "2022-05-16T22:00:00.000Z", "2.222", "measured" };
+        var row0 = new[] { _row0BatchId, "100", "200", "non_profiled_consumption", string.Empty, string.Empty, "2022-05-16T22:00:00.000Z", "1.111", "measured" };
+        var row1 = new[] { "b78787d5-b544-44ac-87c2-7720aab86ed2", "200", "100", "non_profiled_consumption", string.Empty, string.Empty, "2022-05-16T22:00:00.000Z", "2.222", "measured" };
         var rows = new List<string[]> { row0, row1, };
 
         // Using the columns from the CalculationResultQueries class to ensure that the test is not broken if the columns are changed
@@ -151,23 +151,27 @@ public class CalculationResultQueriesTests
     }
 
     [Theory]
-    [InlineAutoMoqData("id", "id", "ga", "ga", "ts", "ts", "es", "es", "brp", "brp", false)]
-    [InlineAutoMoqData("idx", "id", "ga", "ga", "ts", "ts", "es", "es", "brp", "brp", true)]
-    [InlineAutoMoqData("id", "idx", "ga", "ga", "ts", "ts", "es", "es", "brp", "brp", true)]
-    [InlineAutoMoqData("id", "id", "gax", "ga", "ts", "ts", "es", "es", "brp", "brp", true)]
-    [InlineAutoMoqData("id", "id", "ga", "gax", "ts", "ts", "es", "es", "brp", "brp", true)]
-    [InlineAutoMoqData("id", "id", "ga", "ga", "tsx", "ts", "es", "es", "brp", "brp", true)]
-    [InlineAutoMoqData("id", "id", "ga", "ga", "ts", "tsx", "es", "es", "brp", "brp", true)]
-    [InlineAutoMoqData("id", "id", "ga", "ga", "ts", "ts", "esx", "es", "brp", "brp", true)]
-    [InlineAutoMoqData("id", "id", "ga", "ga", "ts", "ts", "es", "esx", "brp", "brp", true)]
-    [InlineAutoMoqData("id", "id", "ga", "ga", "ts", "ts", "es", "es", "brpx", "brp", true)]
-    [InlineAutoMoqData("id", "id", "ga", "ga", "ts", "ts", "es", "es", "brp", "brpx", true)]
-    [InlineAutoMoqData("idx", "id", "gax", "ga", "tsx", "ts", "esx", "es", "brpx", "brp", true)]
+    [InlineAutoMoqData("id", "id", "ga", "ga", "from_ga", "from_ga", "ts", "ts", "es", "es", "brp", "brp", false)]
+    [InlineAutoMoqData("idx", "id", "ga", "ga", "from_ga", "from_ga", "ts", "ts", "es", "es", "brp", "brp", true)]
+    [InlineAutoMoqData("id", "idx", "ga", "ga", "from_ga", "from_ga", "ts", "ts", "es", "es", "brp", "brp", true)]
+    [InlineAutoMoqData("id", "id", "gax", "ga", "from_ga", "from_ga", "ts", "ts", "es", "es", "brp", "brp", true)]
+    [InlineAutoMoqData("id", "id", "ga", "gax", "from_ga", "from_ga", "ts", "ts", "es", "es", "brp", "brp", true)]
+    [InlineAutoMoqData("id", "id", "ga", "ga", "from_gax", "from_ga", "ts", "ts", "es", "es", "brp", "brp", true)]
+    [InlineAutoMoqData("id", "id", "ga", "ga", "from_ga", "from_gax", "ts", "ts", "es", "es", "brp", "brp", true)]
+    [InlineAutoMoqData("id", "id", "ga", "ga", "from_ga", "from_ga", "tsx", "ts", "es", "es", "brp", "brp", true)]
+    [InlineAutoMoqData("id", "id", "ga", "ga", "from_ga", "from_ga", "ts", "tsx", "es", "es", "brp", "brp", true)]
+    [InlineAutoMoqData("id", "id", "ga", "ga", "from_ga", "from_ga", "ts", "ts", "esx", "es", "brp", "brp", true)]
+    [InlineAutoMoqData("id", "id", "ga", "ga", "from_ga", "from_ga", "ts", "ts", "es", "esx", "brp", "brp", true)]
+    [InlineAutoMoqData("id", "id", "ga", "ga", "from_ga", "from_ga", "ts", "ts", "es", "es", "brpx", "brp", true)]
+    [InlineAutoMoqData("id", "id", "ga", "ga", "from_ga", "from_ga", "ts", "ts", "es", "es", "brp", "brpx", true)]
+    [InlineAutoMoqData("idx", "id", "gax", "ga", "from_ga", "from_ga", "tsx", "ts", "esx", "es", "brpx", "brp", true)]
     public void BelongsToDifferentResults_ReturnsExpectedValue(
         string batchIdA,
         string batchIdB,
         string gridAreaA,
         string gridAreaB,
+        string fromGridAreaA,
+        string fromGridAreaB,
         string timeSeriesTypeA,
         string timeSeriesTypeB,
         string energySupplierIdA,
@@ -181,6 +185,7 @@ public class CalculationResultQueriesTests
         {
             new(ResultColumnNames.BatchId, batchIdA),
             new(ResultColumnNames.GridArea, gridAreaA),
+            new(ResultColumnNames.FromGridArea, fromGridAreaA),
             new(ResultColumnNames.TimeSeriesType, timeSeriesTypeA),
             new(ResultColumnNames.EnergySupplierId, energySupplierIdA),
             new(ResultColumnNames.BalanceResponsibleId, balanceResponsibleIdA),
@@ -190,6 +195,7 @@ public class CalculationResultQueriesTests
         {
             new(ResultColumnNames.BatchId, batchIdB),
             new(ResultColumnNames.GridArea, gridAreaB),
+            new(ResultColumnNames.FromGridArea, fromGridAreaB),
             new(ResultColumnNames.TimeSeriesType, timeSeriesTypeB),
             new(ResultColumnNames.EnergySupplierId, energySupplierIdB),
             new(ResultColumnNames.BalanceResponsibleId, balanceResponsibleIdB),

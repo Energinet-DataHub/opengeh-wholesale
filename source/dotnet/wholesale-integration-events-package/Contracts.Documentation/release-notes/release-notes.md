@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 3.1.0
+
+Added nullable property `CalculationResultCompleted.FromGridAreaCode`.
+
 ## Version 3.0.1
 
 No functional changes.
