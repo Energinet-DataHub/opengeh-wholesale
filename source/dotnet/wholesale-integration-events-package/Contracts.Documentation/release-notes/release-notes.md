@@ -1,5 +1,11 @@
 # Wholesale Contracts Release notes
 
+## Version 4.0.0
+
+Renamed `CalculationResultCompleted.MessageType` to `CalculationResultCompleted.MessageName` in order to align with ADR-008.
+
+Added `CalculationResultCompleted.MessageVersion`.
+
 ## Version 3.1.0
 
 Added nullable property `CalculationResultCompleted.FromGridAreaCode`.

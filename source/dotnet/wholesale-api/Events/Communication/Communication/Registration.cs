@@ -19,6 +19,11 @@ namespace Energinet.DataHub.Core.Messaging.Communication;
 
 public static class Registration
 {
+    /// <summary>
+    /// Method for registering the communication library.
+    /// It is the responsibility of the caller to register the dependencies of the
+    /// <see cref="IIntegrationEventProvider"/> implementation.
+    /// </summary>
     public static IServiceCollection AddCommunication<TIntegrationEventProvider>(
         this IServiceCollection services,
         string serviceBusIntegrationEventWriteConnectionString,
@@ -26,7 +31,6 @@ public static class Registration
         where TIntegrationEventProvider : class, IIntegrationEventProvider
     {
         services.AddHostedService<OutboxSenderTrigger>();
-
         services.AddScoped<IIntegrationEventProvider, TIntegrationEventProvider>();
         services.AddSingleton<IServiceBusSenderProvider>(
             _ => new ServiceBusSenderProvider(serviceBusIntegrationEventWriteConnectionString, integrationEventTopicName));

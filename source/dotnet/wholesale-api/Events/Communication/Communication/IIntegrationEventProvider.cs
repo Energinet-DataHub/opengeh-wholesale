@@ -18,7 +18,7 @@ namespace Energinet.DataHub.Core.Messaging.Communication;
 
 /// <summary>
 /// In order to use the `Communication` library to publish integration events an implementation of this interface is required.
-/// The implementation will most likely be responsible for fetching or creating integration events from e.g. a database
+/// The implementation is responsible for creating or fetching integration events (likely from a database)
 /// and subsequently commit state changes.
 /// </summary>
 public interface IIntegrationEventProvider
