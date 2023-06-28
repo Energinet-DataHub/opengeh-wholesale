@@ -15,7 +15,7 @@
 using Azure.Messaging.ServiceBus;
 using Microsoft.Extensions.Logging;
 
-namespace Energinet.DataHub.Core.Messaging.Communication;
+namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
 
 /// <summary>
 /// The sender runs as a background service

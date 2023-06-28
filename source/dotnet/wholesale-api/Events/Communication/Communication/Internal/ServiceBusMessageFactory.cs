@@ -14,7 +14,7 @@
 
 using Azure.Messaging.ServiceBus;
 
-namespace Energinet.DataHub.Core.Messaging.Communication;
+namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
 
 public class ServiceBusMessageFactory : IServiceBusMessageFactory
 {

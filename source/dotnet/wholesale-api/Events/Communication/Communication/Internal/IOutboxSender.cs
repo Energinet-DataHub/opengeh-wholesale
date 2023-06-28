@@ -12,11 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Messaging.ServiceBus;
+namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.ServiceBus;
-
-public interface IIntegrationEventTopicServiceBusSender
+public interface IOutboxSender
 {
-    Task SendAsync(ServiceBusMessage serviceBusMessage);
+    Task SendAsync();
 }

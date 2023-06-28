@@ -15,7 +15,7 @@
 using Google.Protobuf;
 using NodaTime;
 
-namespace Energinet.DataHub.Core.Messaging.Communication;
+namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
 
 /// <summary>
 /// ADR-008:  https://energinet.atlassian.net/wiki/spaces/D3/pages/328957986/ADR+008+-+Integration+events+with+protocol+buffers

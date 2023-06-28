@@ -12,26 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Logging;
-
 namespace Energinet.DataHub.Core.Messaging.Communication;
 
-/// <summary>
-/// The sender runs as a background service
-/// </summary>
-public class OutboxSenderTrigger : RepeatingTrigger<IOutboxSender>
+public interface IServiceBusSenderProvider
 {
-    private const int DelayInSecondsBeforeNextExecution = 10;
-
-    public OutboxSenderTrigger(
-        IServiceProvider serviceProvider,
-        ILogger<OutboxSenderTrigger> logger)
-        : base(serviceProvider, logger, TimeSpan.FromSeconds(DelayInSecondsBeforeNextExecution))
-    {
-    }
-
-    protected override async Task ExecuteAsync(IOutboxSender outboxSender)
-    {
-        await outboxSender.SendAsync().ConfigureAwait(false);
-    }
 }

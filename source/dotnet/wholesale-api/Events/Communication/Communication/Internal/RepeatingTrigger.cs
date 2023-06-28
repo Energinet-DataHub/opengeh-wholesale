@@ -16,7 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Energinet.DataHub.Core.Messaging.Communication;
+namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
 
 /// <summary>
 /// Hosted service worker repeating a task indefinitely.

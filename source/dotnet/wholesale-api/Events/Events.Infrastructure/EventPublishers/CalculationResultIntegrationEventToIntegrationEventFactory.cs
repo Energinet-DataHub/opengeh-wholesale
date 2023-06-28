@@ -15,6 +15,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using Energinet.DataHub.Core.Messaging.Communication;
+using Energinet.DataHub.Core.Messaging.Communication.Internal;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing;
