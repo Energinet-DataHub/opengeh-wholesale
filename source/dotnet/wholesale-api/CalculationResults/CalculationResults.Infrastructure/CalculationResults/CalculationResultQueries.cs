@@ -76,6 +76,7 @@ ORDER BY time
     {
         ResultColumnNames.BatchId,
         ResultColumnNames.GridArea,
+        ResultColumnNames.FromGridArea,
         ResultColumnNames.TimeSeriesType,
         ResultColumnNames.EnergySupplierId,
         ResultColumnNames.BalanceResponsibleId,
@@ -88,6 +89,7 @@ ORDER BY time
     {
         return row[ResultColumnNames.BatchId] != otherRow[ResultColumnNames.BatchId]
                || row[ResultColumnNames.GridArea] != otherRow[ResultColumnNames.GridArea]
+               || row[ResultColumnNames.FromGridArea] != otherRow[ResultColumnNames.FromGridArea]
                || row[ResultColumnNames.TimeSeriesType] != otherRow[ResultColumnNames.TimeSeriesType]
                || row[ResultColumnNames.EnergySupplierId] != otherRow[ResultColumnNames.EnergySupplierId]
                || row[ResultColumnNames.BalanceResponsibleId] != otherRow[ResultColumnNames.BalanceResponsibleId];
@@ -110,6 +112,7 @@ ORDER BY time
         var energySupplierId = sqlResultRow[ResultColumnNames.EnergySupplierId];
         var balanceResponsibleId = sqlResultRow[ResultColumnNames.BalanceResponsibleId];
         var gridArea = sqlResultRow[ResultColumnNames.GridArea];
+        var fromGridArea = sqlResultRow[ResultColumnNames.FromGridArea];
         return new CalculationResult(
             batch.BatchId,
             gridArea,
@@ -119,6 +122,7 @@ ORDER BY time
             timeSeriesPoints.ToArray(),
             batch.ProcessType,
             batch.PeriodStart.ToInstant(),
-            batch.PeriodEnd.ToInstant());
+            batch.PeriodEnd.ToInstant(),
+            fromGridArea);
     }
 }
