@@ -15,19 +15,18 @@
 using Energinet.DataHub.Core.Messaging.Communication.Internal;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Contracts.Events;
-using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
+using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Google.Protobuf;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.EventPublishers
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories
 {
-    public class CalculationResultIntegrationEventToIntegrationEventFactory : ICalculationResultIntegrationEventFactory
+    public class CalculationResultIntegrationEventFactory : ICalculationResultIntegrationEventFactory
     {
         private readonly IClock _systemDateTimeProvider;
         private readonly ICalculationResultCompletedIntegrationEventFactory _calculationResultCompletedIntegrationEventFactory;
 
-        public CalculationResultIntegrationEventToIntegrationEventFactory(
+        public CalculationResultIntegrationEventFactory(
             IClock systemDateTimeProvider,
             ICalculationResultCompletedIntegrationEventFactory calculationResultCompletedIntegrationEventFactory)
         {
@@ -35,25 +34,39 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.EventPublishers
             _calculationResultCompletedIntegrationEventFactory = calculationResultCompletedIntegrationEventFactory;
         }
 
-        public IntegrationEvent CreateForEnergySupplier(CalculationResult result)
+        public IntegrationEvent Create(CalculationResult calculationResult)
+        {
+            if (calculationResult.EnergySupplierId == null && calculationResult.BalanceResponsibleId == null)
+                return CreateForTotalGridArea(calculationResult);
+
+            if (calculationResult.EnergySupplierId != null && calculationResult.BalanceResponsibleId == null)
+                return CreateForEnergySupplier(calculationResult);
+
+            if (calculationResult.EnergySupplierId == null && calculationResult.BalanceResponsibleId != null)
+                return CreateForBalanceResponsibleParty(calculationResult);
+
+            return CreateForEnergySupplierByBalanceResponsibleParty(calculationResult);
+        }
+
+        private IntegrationEvent CreateForEnergySupplier(CalculationResult result)
         {
             var @event = _calculationResultCompletedIntegrationEventFactory.CreateForEnergySupplier(result, result.EnergySupplierId!);
             return CreateIntegrationEvent(@event, result);
         }
 
-        public IntegrationEvent CreateForBalanceResponsibleParty(CalculationResult result)
+        private IntegrationEvent CreateForBalanceResponsibleParty(CalculationResult result)
         {
             var @event = _calculationResultCompletedIntegrationEventFactory.CreateForBalanceResponsibleParty(result, result.BalanceResponsibleId!);
             return CreateIntegrationEvent(@event, result);
         }
 
-        public IntegrationEvent CreateForTotalGridArea(CalculationResult result)
+        private IntegrationEvent CreateForTotalGridArea(CalculationResult result)
         {
             var @event = _calculationResultCompletedIntegrationEventFactory.CreateForGridArea(result);
             return CreateIntegrationEvent(@event, result);
         }
 
-        public IntegrationEvent CreateForEnergySupplierByBalanceResponsibleParty(
+        private IntegrationEvent CreateForEnergySupplierByBalanceResponsibleParty(
             CalculationResult result)
         {
             var @event = _calculationResultCompletedIntegrationEventFactory.CreateForEnergySupplierByBalanceResponsibleParty(

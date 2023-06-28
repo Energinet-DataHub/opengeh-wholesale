@@ -16,18 +16,18 @@ using Energinet.DataHub.Wholesale.Common.Workers;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Microsoft.Extensions.Logging;
 
-namespace Energinet.DataHub.Wholesale.Events.Application.Workers;
+namespace Energinet.DataHub.Wholesale.Events.Application.Triggers;
 
 /// <summary>
 /// Worker invoking fetching completed batches from the batches module and registering them in the module.
 /// </summary>
-public class RegisterCompletedBatchesWorker : RepeatingWorker<IRegisterCompletedBatchesHandler>
+public class RegisterCompletedBatchesTrigger : RepeatingWorker<IRegisterCompletedBatchesHandler>
 {
     private const int DelayInSecondsBeforeNextExecution = 10;
 
-    public RegisterCompletedBatchesWorker(
+    public RegisterCompletedBatchesTrigger(
         IServiceProvider serviceProvider,
-        ILogger<RegisterCompletedBatchesWorker> logger)
+        ILogger<RegisterCompletedBatchesTrigger> logger)
         : base(serviceProvider, logger, TimeSpan.FromSeconds(DelayInSecondsBeforeNextExecution))
     {
     }

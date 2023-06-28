@@ -13,10 +13,9 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
-using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using NodaTime.Extensions;
 
-namespace Energinet.DataHub.Wholesale.Events.Application.UseCases.Factories;
+namespace Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 
 public class CompletedBatchFactory : ICompletedBatchFactory
 {

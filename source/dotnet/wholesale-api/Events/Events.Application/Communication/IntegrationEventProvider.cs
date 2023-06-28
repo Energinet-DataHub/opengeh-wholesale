@@ -15,11 +15,11 @@
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Internal;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing;
+namespace Energinet.DataHub.Wholesale.Events.Application.Communication;
 
 public class IntegrationEventProvider : IIntegrationEventProvider
 {
@@ -52,33 +52,12 @@ public class IntegrationEventProvider : IIntegrationEventProvider
 
             await foreach (var calculationResult in _calculationResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
             {
-                yield return CreateIntegrationEvent(calculationResult);
+                yield return _calculationResultIntegrationEventFactory.Create(calculationResult);
             }
 
             batch.PublishedTime = _clock.GetCurrentInstant();
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
         }
         while (true);
-    }
-
-    private IntegrationEvent CreateIntegrationEvent(CalculationResult calculationResult)
-    {
-        if (calculationResult.EnergySupplierId == null && calculationResult.BalanceResponsibleId == null)
-        {
-            return _calculationResultIntegrationEventFactory.CreateForTotalGridArea(calculationResult);
-        }
-
-        if (calculationResult.EnergySupplierId != null && calculationResult.BalanceResponsibleId == null)
-        {
-            return _calculationResultIntegrationEventFactory.CreateForEnergySupplier(calculationResult);
-        }
-
-        if (calculationResult.EnergySupplierId == null && calculationResult.BalanceResponsibleId != null)
-        {
-            return
-                _calculationResultIntegrationEventFactory.CreateForBalanceResponsibleParty(calculationResult);
-        }
-
-        return _calculationResultIntegrationEventFactory.CreateForEnergySupplierByBalanceResponsibleParty(calculationResult);
     }
 }

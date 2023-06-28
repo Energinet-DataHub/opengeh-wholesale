@@ -13,9 +13,8 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
-using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 
-namespace Energinet.DataHub.Wholesale.Events.Application.UseCases.Factories;
+namespace Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 
 public interface ICompletedBatchFactory
 {

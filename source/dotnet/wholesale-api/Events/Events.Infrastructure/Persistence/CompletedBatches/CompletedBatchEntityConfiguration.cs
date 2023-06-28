@@ -17,7 +17,7 @@ using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.Batches;
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedBatches;
 
 public class CompletedBatchEntityConfiguration : IEntityTypeConfiguration<CompletedBatch>
 {

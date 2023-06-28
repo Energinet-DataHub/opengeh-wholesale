@@ -16,15 +16,13 @@ using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Internal;
 using Energinet.DataHub.Wholesale.Events.Application;
-using Energinet.DataHub.Wholesale.Events.Application.CalculationResultPublishing;
+using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Application.Triggers;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
-using Energinet.DataHub.Wholesale.Events.Application.UseCases.Factories;
-using Energinet.DataHub.Wholesale.Events.Application.Workers;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.Batches;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedBatches;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
 
@@ -38,13 +36,13 @@ public static class EventsRegistration
         string serviceBusConnectionString,
         string integrationEventTopicName)
     {
-        serviceCollection.AddHostedService<RegisterCompletedBatchesWorker>();
+        serviceCollection.AddHostedService<RegisterCompletedBatchesTrigger>();
 
         serviceCollection.AddScoped<ICompletedBatchRepository, CompletedBatchRepository>();
         serviceCollection.AddScoped<ICompletedBatchFactory, CompletedBatchFactory>();
         serviceCollection.AddScoped<IRegisterCompletedBatchesHandler, RegisterCompletedBatchesHandler>();
 
-        serviceCollection.AddScoped<ICalculationResultIntegrationEventFactory, CalculationResultIntegrationEventToIntegrationEventFactory>();
+        serviceCollection.AddScoped<ICalculationResultIntegrationEventFactory, CalculationResultIntegrationEventFactory>();
 
         serviceCollection.AddApplications();
         serviceCollection.AddInfrastructure();

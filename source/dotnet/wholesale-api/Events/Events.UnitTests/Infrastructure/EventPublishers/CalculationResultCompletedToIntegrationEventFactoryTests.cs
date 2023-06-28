@@ -16,7 +16,6 @@ using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Contracts.Events;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.EventPublishers;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 using FluentAssertions;
 using Google.Protobuf;
@@ -36,7 +35,7 @@ public class CalculationResultCompletedToIntegrationEventFactoryTests
         [Frozen] Mock<IClock> clockMock,
         CalculationResultCompleted calculationResultCompleted,
         CalculationResult calculationResult,
-        CalculationResultIntegrationEventToIntegrationEventFactory sut)
+        CalculationResultIntegrationEventFactory sut)
     {
         // Arrange
         calculationResult.SetPrivateProperty(r => r.BalanceResponsibleId, null);
@@ -65,7 +64,7 @@ public class CalculationResultCompletedToIntegrationEventFactoryTests
         [Frozen] Mock<ICalculationResultCompletedIntegrationEventFactory> calculationResultCompletedIntegrationEventFactoryMock,
         CalculationResultCompleted calculationResultCompleted,
         CalculationResult calculationResult,
-        CalculationResultIntegrationEventToIntegrationEventFactory sut)
+        CalculationResultIntegrationEventFactory sut)
     {
         // Arrange
         calculationResult.SetPrivateProperty(r => r.EnergySupplierId, null);
@@ -86,7 +85,7 @@ public class CalculationResultCompletedToIntegrationEventFactoryTests
         [Frozen] Mock<ICalculationResultCompletedIntegrationEventFactory> calculationResultCompletedIntegrationEventFactoryMock,
         CalculationResultCompleted calculationResultCompleted,
         CalculationResult calculationResult,
-        CalculationResultIntegrationEventToIntegrationEventFactory sut)
+        CalculationResultIntegrationEventFactory sut)
     {
         // Arrange
         calculationResultCompletedIntegrationEventFactoryMock
@@ -106,7 +105,7 @@ public class CalculationResultCompletedToIntegrationEventFactoryTests
         [Frozen] Mock<ICalculationResultCompletedIntegrationEventFactory> calculationResultCompletedIntegrationEventFactoryMock,
         CalculationResultCompleted calculationResultCompleted,
         CalculationResult calculationResult,
-        CalculationResultIntegrationEventToIntegrationEventFactory sut)
+        CalculationResultIntegrationEventFactory sut)
     {
         // Arrange
         calculationResultCompletedIntegrationEventFactoryMock
