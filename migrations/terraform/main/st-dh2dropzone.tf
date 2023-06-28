@@ -16,7 +16,7 @@ module "st_dh2dropzone" {
   ip_rules                        = data.azurerm_key_vault_secret.pir_hosted_deployment_agents.value
   containers = [
     {
-      name = "bulkdata"
+      name = "dh2-dropzone-zipped"
     }
   ]
 }
