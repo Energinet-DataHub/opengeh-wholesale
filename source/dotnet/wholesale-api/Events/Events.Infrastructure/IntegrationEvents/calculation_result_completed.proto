@@ -15,6 +15,7 @@
 
 syntax = "proto3";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
 
 option csharp_namespace = "Energinet.DataHub.Wholesale.Contracts.Events";
 
@@ -61,6 +62,13 @@ message CalculationResultCompleted {
   Resolution resolution = 14;
   
   QuantityUnit quantity_unit = 15;
+  
+  /*
+   * The grid area from which the exchange is leaving.
+   * The exchange goes into the grid area specified in the aggregation.
+   * Only applies to results with exchange time series types.
+   */
+  google.protobuf.StringValue from_grid_area_code = 16;
   
   repeated TimeSeriesPoint time_series_points = 20;
 }

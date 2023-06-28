@@ -28,7 +28,8 @@ public sealed class CalculationResult
         TimeSeriesPoint[] timeSeriesPoints,
         ProcessType processType,
         Instant periodStart,
-        Instant periodEnd)
+        Instant periodEnd,
+        string? fromGridArea)
     {
         if (timeSeriesPoints.Length == 0)
             throw new ArgumentException("Time series points empty");
@@ -42,6 +43,7 @@ public sealed class CalculationResult
         ProcessType = processType;
         PeriodStart = periodStart;
         PeriodEnd = periodEnd;
+        FromGridArea = fromGridArea;
     }
 
     public Guid BatchId { get; }
@@ -49,6 +51,8 @@ public sealed class CalculationResult
     public ProcessType ProcessType { get; }
 
     public string GridArea { get; }
+
+    public string? FromGridArea { get; }
 
     public TimeSeriesType TimeSeriesType { get; private set; }
 

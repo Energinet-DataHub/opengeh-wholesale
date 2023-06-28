@@ -67,6 +67,7 @@ public sealed class CalculationResultBuilder
             _points,
             ProcessType.Aggregation,
             Instant.FromUtc(2022, 12, 31, 23, 0),
-            Instant.FromUtc(2023, 1, 31, 23, 0));
+            Instant.FromUtc(2023, 1, 31, 23, 0),
+            null);
     }
 }
