@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Diagnostics;
 using Azure.Messaging.ServiceBus;
 using Microsoft.Extensions.Logging;
 
@@ -43,10 +44,13 @@ public class OutboxSender : IOutboxSender
     // Note naming? MessageName becomes subject, how do I know that?
     public async Task SendAsync()
     {
+        var stopwatch = Stopwatch.StartNew();
+        var eventCount = 0;
         var batch = await _senderProvider.Instance.CreateMessageBatchAsync().ConfigureAwait(false);
 
         await foreach (var @event in _integrationEventProvider.GetAsync())
         {
+            eventCount++;
             var serviceBusMessage = _serviceBusMessageFactory.Create(@event);
             if (!batch.TryAddMessage(serviceBusMessage))
             {
@@ -61,6 +65,7 @@ public class OutboxSender : IOutboxSender
         }
 
         await _senderProvider.Instance.SendMessagesAsync(batch).ConfigureAwait(false);
+        _logger.LogInformation("Sent {EventCount} integration events in {Time} ms", eventCount, stopwatch.Elapsed.TotalMilliseconds);
     }
 
     private async Task SendBatchAsync(ServiceBusMessageBatch batch)
