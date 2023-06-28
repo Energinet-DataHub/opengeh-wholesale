@@ -151,54 +151,24 @@ public class CalculationResultQueriesTests
     }
 
     [Theory]
-    [InlineAutoMoqData("id", "id", "ga", "ga", "from_ga", "from_ga", "ts", "ts", "es", "es", "brp", "brp", false)]
-    [InlineAutoMoqData("idx", "id", "ga", "ga", "from_ga", "from_ga", "ts", "ts", "es", "es", "brp", "brp", true)]
-    [InlineAutoMoqData("id", "idx", "ga", "ga", "from_ga", "from_ga", "ts", "ts", "es", "es", "brp", "brp", true)]
-    [InlineAutoMoqData("id", "id", "gax", "ga", "from_ga", "from_ga", "ts", "ts", "es", "es", "brp", "brp", true)]
-    [InlineAutoMoqData("id", "id", "ga", "gax", "from_ga", "from_ga", "ts", "ts", "es", "es", "brp", "brp", true)]
-    [InlineAutoMoqData("id", "id", "ga", "ga", "from_gax", "from_ga", "ts", "ts", "es", "es", "brp", "brp", true)]
-    [InlineAutoMoqData("id", "id", "ga", "ga", "from_ga", "from_gax", "ts", "ts", "es", "es", "brp", "brp", true)]
-    [InlineAutoMoqData("id", "id", "ga", "ga", "from_ga", "from_ga", "tsx", "ts", "es", "es", "brp", "brp", true)]
-    [InlineAutoMoqData("id", "id", "ga", "ga", "from_ga", "from_ga", "ts", "tsx", "es", "es", "brp", "brp", true)]
-    [InlineAutoMoqData("id", "id", "ga", "ga", "from_ga", "from_ga", "ts", "ts", "esx", "es", "brp", "brp", true)]
-    [InlineAutoMoqData("id", "id", "ga", "ga", "from_ga", "from_ga", "ts", "ts", "es", "esx", "brp", "brp", true)]
-    [InlineAutoMoqData("id", "id", "ga", "ga", "from_ga", "from_ga", "ts", "ts", "es", "es", "brpx", "brp", true)]
-    [InlineAutoMoqData("id", "id", "ga", "ga", "from_ga", "from_ga", "ts", "ts", "es", "es", "brp", "brpx", true)]
-    [InlineAutoMoqData("idx", "id", "gax", "ga", "from_ga", "from_ga", "tsx", "ts", "esx", "es", "brpx", "brp", true)]
+    [InlineAutoMoqData("someId", "otherId", true)]
+    [InlineAutoMoqData("someId", "someId", false)]
     public void BelongsToDifferentResults_ReturnsExpectedValue(
-        string batchIdA,
-        string batchIdB,
-        string gridAreaA,
-        string gridAreaB,
-        string fromGridAreaA,
-        string fromGridAreaB,
-        string timeSeriesTypeA,
-        string timeSeriesTypeB,
-        string energySupplierIdA,
-        string energySupplierIdB,
-        string balanceResponsibleIdA,
-        string balanceResponsibleIdB,
+        string calculationResultIdA,
+        string calculationResultIdB,
         bool expected)
     {
         // Arrange
         var listA = new List<KeyValuePair<string, string>>
         {
-            new(ResultColumnNames.BatchId, batchIdA),
-            new(ResultColumnNames.GridArea, gridAreaA),
-            new(ResultColumnNames.FromGridArea, fromGridAreaA),
-            new(ResultColumnNames.TimeSeriesType, timeSeriesTypeA),
-            new(ResultColumnNames.EnergySupplierId, energySupplierIdA),
-            new(ResultColumnNames.BalanceResponsibleId, balanceResponsibleIdA),
+            new(ResultColumnNames.BatchId, "batchId"),
+            new(ResultColumnNames.CalculationResultId, calculationResultIdA),
         };
         var sqlResultRowA = new TestRow(listA);
         var listB = new List<KeyValuePair<string, string>>
         {
-            new(ResultColumnNames.BatchId, batchIdB),
-            new(ResultColumnNames.GridArea, gridAreaB),
-            new(ResultColumnNames.FromGridArea, fromGridAreaB),
-            new(ResultColumnNames.TimeSeriesType, timeSeriesTypeB),
-            new(ResultColumnNames.EnergySupplierId, energySupplierIdB),
-            new(ResultColumnNames.BalanceResponsibleId, balanceResponsibleIdB),
+            new(ResultColumnNames.BatchId, "batchId"),
+            new(ResultColumnNames.CalculationResultId, calculationResultIdB),
         };
         var sqlResultRowB = new TestRow(listB);
 

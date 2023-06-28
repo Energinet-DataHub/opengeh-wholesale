@@ -68,7 +68,7 @@ public class CalculationResultQueries : ICalculationResultQueries
 SELECT {string.Join(", ", SqlColumnNames)}
 FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.RESULT_TABLE_NAME}
 WHERE {ResultColumnNames.BatchId} = '{batchId}'
-ORDER BY {ResultColumnNames.CalculationResultId}
+ORDER BY {ResultColumnNames.CalculationResultId}, {ResultColumnNames.Time}
 ";
     }
 
