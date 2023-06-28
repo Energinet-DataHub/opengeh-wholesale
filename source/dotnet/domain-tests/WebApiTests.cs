@@ -15,11 +15,14 @@
 using System.IO.Compression;
 using System.Net;
 using Energinet.DataHub.Core.TestCommon;
+using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures;
 using FluentAssertions;
+using Google.Protobuf;
 using Xunit;
 using Xunit.Priority;
+using ProcessType = Energinet.DataHub.Wholesale.DomainTests.Clients.v3.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.DomainTests
 {
@@ -164,6 +167,11 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                         var message = await Fixture.Receiver.ReceiveMessageAsync();
                         if (message != null)
                         {
+                            var msgBody = message.Body.ToArray();
+                            {
+                                var obj = ConvertBinaryDataToCSharpObject(msgBody);
+                            }
+
                             match = message.Body.ToString().Contains(_batchId.ToString());
                             if (match)
                             {
@@ -184,6 +192,13 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 }
 
                 match.Should().BeTrue();
+            }
+
+            public CalculationResultCompleted ConvertBinaryDataToCSharpObject(byte[] binaryData)
+            {
+                var exampleData = new CalculationResultCompleted();
+                exampleData.MergeFrom(ByteString.CopyFrom(binaryData));
+                return exampleData;
             }
 
             [DomainFact(Skip = "Test fails on cold runs with a timeout error - expected to be fixed when switching to Databricks Serverless warehouse")]

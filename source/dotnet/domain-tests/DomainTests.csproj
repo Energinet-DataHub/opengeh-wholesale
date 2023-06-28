@@ -14,6 +14,7 @@
   <ItemGroup>
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.13.1" />
     <PackageReference Include="Energinet.DataHub.Core.FunctionApp.TestCommon" Version="4.1.0" />
+    <PackageReference Include="Google.Protobuf" Version="3.23.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.4" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
@@ -43,6 +44,10 @@
     <None Update="domaintest.local.settings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
