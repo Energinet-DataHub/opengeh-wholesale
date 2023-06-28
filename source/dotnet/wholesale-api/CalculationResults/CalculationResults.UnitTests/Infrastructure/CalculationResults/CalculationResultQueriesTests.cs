@@ -34,10 +34,12 @@ public class CalculationResultQueriesTests
 
     public CalculationResultQueriesTests()
     {
-        // The two rows belongs to different calculation results as they are for different grid areas
+        // The two rows belongs to different calculation results as they have differrent calculation result ids
         _row0BatchId = "b78787d5-b544-44ac-87c2-7720aab86ed1";
-        var row0 = new[] { _row0BatchId, "100", "200", "non_profiled_consumption", string.Empty, string.Empty, "2022-05-16T22:00:00.000Z", "1.111", "measured" };
-        var row1 = new[] { "b78787d5-b544-44ac-87c2-7720aab86ed2", "200", "100", "non_profiled_consumption", string.Empty, string.Empty, "2022-05-16T22:00:00.000Z", "2.222", "measured" };
+        const string calculationResultId0 = "9913f3bb-1208-400b-9cbe-50300e386d26";
+        const string calculationResultId1 = "8c2bb7c6-d8e5-462c-9bce-8537f93ef8e7";
+        var row0 = new[] { _row0BatchId, "100", "200", "non_profiled_consumption", string.Empty, string.Empty, "2022-05-16T22:00:00.000Z", "1.111", "measured", calculationResultId0 };
+        var row1 = new[] { "b78787d5-b544-44ac-87c2-7720aab86ed2", "200", "100", "non_profiled_consumption", string.Empty, string.Empty, "2022-05-16T22:00:00.000Z", "2.222", "measured", calculationResultId1 };
         var rows = new List<string[]> { row0, row1, };
 
         // Using the columns from the CalculationResultQueries class to ensure that the test is not broken if the columns are changed
@@ -151,54 +153,24 @@ public class CalculationResultQueriesTests
     }
 
     [Theory]
-    [InlineAutoMoqData("id", "id", "ga", "ga", "from_ga", "from_ga", "ts", "ts", "es", "es", "brp", "brp", false)]
-    [InlineAutoMoqData("idx", "id", "ga", "ga", "from_ga", "from_ga", "ts", "ts", "es", "es", "brp", "brp", true)]
-    [InlineAutoMoqData("id", "idx", "ga", "ga", "from_ga", "from_ga", "ts", "ts", "es", "es", "brp", "brp", true)]
-    [InlineAutoMoqData("id", "id", "gax", "ga", "from_ga", "from_ga", "ts", "ts", "es", "es", "brp", "brp", true)]
-    [InlineAutoMoqData("id", "id", "ga", "gax", "from_ga", "from_ga", "ts", "ts", "es", "es", "brp", "brp", true)]
-    [InlineAutoMoqData("id", "id", "ga", "ga", "from_gax", "from_ga", "ts", "ts", "es", "es", "brp", "brp", true)]
-    [InlineAutoMoqData("id", "id", "ga", "ga", "from_ga", "from_gax", "ts", "ts", "es", "es", "brp", "brp", true)]
-    [InlineAutoMoqData("id", "id", "ga", "ga", "from_ga", "from_ga", "tsx", "ts", "es", "es", "brp", "brp", true)]
-    [InlineAutoMoqData("id", "id", "ga", "ga", "from_ga", "from_ga", "ts", "tsx", "es", "es", "brp", "brp", true)]
-    [InlineAutoMoqData("id", "id", "ga", "ga", "from_ga", "from_ga", "ts", "ts", "esx", "es", "brp", "brp", true)]
-    [InlineAutoMoqData("id", "id", "ga", "ga", "from_ga", "from_ga", "ts", "ts", "es", "esx", "brp", "brp", true)]
-    [InlineAutoMoqData("id", "id", "ga", "ga", "from_ga", "from_ga", "ts", "ts", "es", "es", "brpx", "brp", true)]
-    [InlineAutoMoqData("id", "id", "ga", "ga", "from_ga", "from_ga", "ts", "ts", "es", "es", "brp", "brpx", true)]
-    [InlineAutoMoqData("idx", "id", "gax", "ga", "from_ga", "from_ga", "tsx", "ts", "esx", "es", "brpx", "brp", true)]
+    [InlineAutoMoqData("someId", "otherId", true)]
+    [InlineAutoMoqData("someId", "someId", false)]
     public void BelongsToDifferentResults_ReturnsExpectedValue(
-        string batchIdA,
-        string batchIdB,
-        string gridAreaA,
-        string gridAreaB,
-        string fromGridAreaA,
-        string fromGridAreaB,
-        string timeSeriesTypeA,
-        string timeSeriesTypeB,
-        string energySupplierIdA,
-        string energySupplierIdB,
-        string balanceResponsibleIdA,
-        string balanceResponsibleIdB,
+        string calculationResultIdA,
+        string calculationResultIdB,
         bool expected)
     {
         // Arrange
         var listA = new List<KeyValuePair<string, string>>
         {
-            new(ResultColumnNames.BatchId, batchIdA),
-            new(ResultColumnNames.GridArea, gridAreaA),
-            new(ResultColumnNames.FromGridArea, fromGridAreaA),
-            new(ResultColumnNames.TimeSeriesType, timeSeriesTypeA),
-            new(ResultColumnNames.EnergySupplierId, energySupplierIdA),
-            new(ResultColumnNames.BalanceResponsibleId, balanceResponsibleIdA),
+            new(ResultColumnNames.BatchId, "batchId"),
+            new(ResultColumnNames.CalculationResultId, calculationResultIdA),
         };
         var sqlResultRowA = new TestRow(listA);
         var listB = new List<KeyValuePair<string, string>>
         {
-            new(ResultColumnNames.BatchId, batchIdB),
-            new(ResultColumnNames.GridArea, gridAreaB),
-            new(ResultColumnNames.FromGridArea, fromGridAreaB),
-            new(ResultColumnNames.TimeSeriesType, timeSeriesTypeB),
-            new(ResultColumnNames.EnergySupplierId, energySupplierIdB),
-            new(ResultColumnNames.BalanceResponsibleId, balanceResponsibleIdB),
+            new(ResultColumnNames.BatchId, "batchId"),
+            new(ResultColumnNames.CalculationResultId, calculationResultIdB),
         };
         var sqlResultRowB = new TestRow(listB);
 
