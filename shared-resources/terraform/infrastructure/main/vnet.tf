@@ -72,7 +72,8 @@ module "snet_vnet_integration" {
 
   service_endpoints = [
     "Microsoft.KeyVault",
-    "Microsoft.EventHub"
+    "Microsoft.EventHub",
+    "Microsoft.Storage"
   ]
 }
 
