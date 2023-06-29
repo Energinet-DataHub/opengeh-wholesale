@@ -49,16 +49,15 @@ public static class SettlementReportSqlStatementFactory
         var sql = $@"
 SELECT {selectColumns}
 FROM {schemaName}.{tableName} t1
-LEFT JOIN {schemaName}.{tableName} t2
+INNER JOIN {schemaName}.{tableName} t2
     ON t1.{ResultColumnNames.Time} = t2.{ResultColumnNames.Time}
-        AND t1.{ResultColumnNames.BatchExecutionTimeStart} < t2.{ResultColumnNames.BatchExecutionTimeStart}
+        AND t1.{ResultColumnNames.BatchExecutionTimeStart} >= t2.{ResultColumnNames.BatchExecutionTimeStart}
         AND t1.{ResultColumnNames.GridArea} = t2.{ResultColumnNames.GridArea}
         AND t1.{ResultColumnNames.FromGridArea} = t2.{ResultColumnNames.FromGridArea}
         AND t1.{ResultColumnNames.TimeSeriesType} = t2.{ResultColumnNames.TimeSeriesType}
         AND t1.{ResultColumnNames.BatchProcessType} = t2.{ResultColumnNames.BatchProcessType}
         AND t1.{ResultColumnNames.AggregationLevel} = t2.{ResultColumnNames.AggregationLevel}
-WHERE t2.time IS NULL
-    AND t1.{ResultColumnNames.GridArea} IN ({gridAreas})
+WHERE t1.{ResultColumnNames.GridArea} IN ({gridAreas})
     AND t1.{ResultColumnNames.TimeSeriesType} IN ({timeSeriesTypesString})
     AND t1.{ResultColumnNames.BatchProcessType} = '{processTypeString}'
     AND t1.{ResultColumnNames.Time} BETWEEN '{startTimeString}' AND '{endTimeString}'
