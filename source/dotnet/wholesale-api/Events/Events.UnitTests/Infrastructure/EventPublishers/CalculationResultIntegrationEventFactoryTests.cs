@@ -21,7 +21,6 @@ using FluentAssertions;
 using Google.Protobuf;
 using Moq;
 using NodaTime;
-using Test.Core;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.EventPublishers;
@@ -30,20 +29,19 @@ public class CalculationResultIntegrationEventFactoryTests
 {
     [Theory]
     [AutoMoqData]
-    public void Create_WhenForEnergySupplier_ReturnsExpectedEvent(
-        [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedIntegrationEventFactoryMock,
-        [Frozen] Mock<IClock> clockMock,
+    public void Create_ReturnsExpectedIntegrationEvent(
+        Instant instant,
         CalculationResultCompleted calculationResultCompleted,
         CalculationResult calculationResult,
+        [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
+        [Frozen] Mock<IClock> clockMock,
         CalculationResultIntegrationEventFactory sut)
     {
         // Arrange
-        calculationResult.SetPrivateProperty(r => r.BalanceResponsibleId, null);
-        calculationResultCompletedIntegrationEventFactoryMock
-            .Setup(x => x.CreateForEnergySupplier(calculationResult, calculationResult.EnergySupplierId!))
+        calculationResultCompletedFactoryMock
+            .Setup(x => x.Create(calculationResult))
             .Returns(calculationResultCompleted);
 
-        var instant = SystemClock.Instance.GetCurrentInstant();
         clockMock.Setup(x => x.GetCurrentInstant())
             .Returns(instant);
 
@@ -56,97 +54,5 @@ public class CalculationResultIntegrationEventFactoryTests
         actual.OperationTimeStamp.Should().Be(instant);
         actual.MessageVersion.Should().Be(CalculationResultCompleted.MessageVersion);
         actual.EventIdentification.Should().Be(calculationResult.Id);
-    }
-
-    [Theory]
-    [AutoMoqData]
-    public void Create_ReturnAnIntegrationEventDtoWithTheCorrectValues(
-        [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedIntegrationEventFactoryMock,
-        [Frozen] Mock<IClock> clockMock,
-        CalculationResultCompleted calculationResultCompleted,
-        CalculationResult calculationResult,
-        CalculationResultIntegrationEventFactory sut)
-    {
-        // Arrange
-        calculationResult.SetPrivateProperty(r => r.BalanceResponsibleId, null);
-        calculationResultCompletedIntegrationEventFactoryMock
-            .Setup(x => x.CreateForEnergySupplier(calculationResult, calculationResult.EnergySupplierId!))
-            .Returns(calculationResultCompleted);
-
-        var instant = SystemClock.Instance.GetCurrentInstant();
-        clockMock.Setup(x => x.GetCurrentInstant())
-            .Returns(instant);
-
-        // Act
-        var actual = sut.CreateForEnergySupplier(calculationResult);
-
-        // Assert
-        actual.MessageName.Should().Be(CalculationResultCompleted.MessageName);
-        actual.Message.ToByteArray().Should().BeEquivalentTo(calculationResultCompleted.ToByteArray());
-        actual.OperationTimeStamp.Should().Be(instant);
-        actual.MessageVersion.Should().Be(CalculationResultCompleted.MessageVersion);
-        actual.EventIdentification.Should().Be(calculationResult.Id);
-    }
-
-    [Theory]
-    [AutoMoqData]
-    public void Create_CallsCreateForBalanceResponsibleParty(
-        [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedIntegrationEventFactoryMock,
-        CalculationResultCompleted calculationResultCompleted,
-        CalculationResult calculationResult,
-        CalculationResultIntegrationEventFactory sut)
-    {
-        // Arrange
-        calculationResult.SetPrivateProperty(r => r.EnergySupplierId, null);
-        calculationResultCompletedIntegrationEventFactoryMock
-            .Setup(x => x.CreateForBalanceResponsibleParty(calculationResult, calculationResult.BalanceResponsibleId!))
-            .Returns(calculationResultCompleted);
-
-        // Act
-        sut.CreateForBalanceResponsibleParty(calculationResult);
-
-        // Assert
-        calculationResultCompletedIntegrationEventFactoryMock.Verify(x => x.CreateForBalanceResponsibleParty(calculationResult, calculationResult.BalanceResponsibleId!));
-    }
-
-    [Theory]
-    [AutoMoqData]
-    public void Create_CallsCreateForGridArea(
-        [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedIntegrationEventFactoryMock,
-        CalculationResultCompleted calculationResultCompleted,
-        CalculationResult calculationResult,
-        CalculationResultIntegrationEventFactory sut)
-    {
-        // Arrange
-        calculationResultCompletedIntegrationEventFactoryMock
-            .Setup(x => x.CreateForGridArea(calculationResult))
-            .Returns(calculationResultCompleted);
-
-        // Act
-        sut.CreateForTotalGridArea(calculationResult);
-
-        // Assert
-        calculationResultCompletedIntegrationEventFactoryMock.Verify(x => x.CreateForGridArea(calculationResult));
-    }
-
-    [Theory]
-    [AutoMoqData]
-    public void Create_CallsCreateForEnergySupplierByBalanceResponsibleParty(
-        [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedIntegrationEventFactoryMock,
-        CalculationResultCompleted calculationResultCompleted,
-        CalculationResult calculationResult,
-        CalculationResultIntegrationEventFactory sut)
-    {
-        // Arrange
-        calculationResultCompletedIntegrationEventFactoryMock
-            .Setup(x => x.CreateForEnergySupplierByBalanceResponsibleParty(calculationResult, calculationResult.EnergySupplierId!, calculationResult.BalanceResponsibleId!))
-            .Returns(calculationResultCompleted);
-
-        // Act
-        sut.CreateForEnergySupplierByBalanceResponsibleParty(calculationResult);
-
-        // Assert
-        calculationResultCompletedIntegrationEventFactoryMock.Verify(
-            x => x.CreateForEnergySupplierByBalanceResponsibleParty(calculationResult, calculationResult.EnergySupplierId!, calculationResult.BalanceResponsibleId!));
     }
 }
