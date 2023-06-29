@@ -172,7 +172,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                         }
                         else
                         {
-                            var obj = ConvertBinaryDataToCSharpObject(message.Body.ToArray());
+                            var obj = new CalculationResultCompleted();
+                            obj.MergeFrom(ByteString.CopyFrom(message.Body.ToArray()));
                             if (obj.BatchId == _batchId.ToString())
                             {
                                 objlist.Add(obj);
@@ -187,23 +188,12 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 }
 
                 var timeSeriesTypesInObjList = objlist.Select(o => Enum.GetName(o.TimeSeriesType)).Distinct().ToList();
-
-                timeSeriesTypesInObjList.Should().Contain(Enum.GetName(TimeSeriesType.Production));
-                timeSeriesTypesInObjList.Should().Contain(Enum.GetName(TimeSeriesType.NonProfiledConsumption));
-                // timeSeriesTypesInObjList.Should().Contain(Enum.GetName(TimeSeriesType.FlexConsumption)); // not in the data used in the test
-                timeSeriesTypesInObjList.Should().Contain(Enum.GetName(TimeSeriesType.GridLoss));
-                timeSeriesTypesInObjList.Should().Contain(Enum.GetName(TimeSeriesType.NetExchangePerGa));
-                timeSeriesTypesInObjList.Should().Contain(Enum.GetName(TimeSeriesType.NetExchangePerNeighboringGa));
-                timeSeriesTypesInObjList.Should().Contain(Enum.GetName(TimeSeriesType.NegativeGridLoss));
-                timeSeriesTypesInObjList.Should().Contain(Enum.GetName(TimeSeriesType.PositiveGridLoss));
-                timeSeriesTypesInObjList.Should().Contain(Enum.GetName(TimeSeriesType.TotalConsumption));
-            }
-
-            public CalculationResultCompleted ConvertBinaryDataToCSharpObject(byte[] binaryData)
-            {
-                var exampleData = new CalculationResultCompleted();
-                exampleData.MergeFrom(ByteString.CopyFrom(binaryData));
-                return exampleData;
+                var timeSeriesTypesInEnum = Enum.GetNames(typeof(TimeSeriesType)).ToList();
+                timeSeriesTypesInEnum.Remove("FlexConsumption"); // FlexConsumption is not in the current test data
+                foreach (var timeSeriesType in timeSeriesTypesInEnum)
+                {
+                    timeSeriesTypesInObjList.Should().Contain(timeSeriesType);
+                }
             }
 
             [DomainFact(Skip = "Test fails on cold runs with a timeout error - expected to be fixed when switching to Databricks Serverless warehouse")]
