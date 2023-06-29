@@ -12,17 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
-using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Energinet.DataHub.Wholesale.Common.Models;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Moq;
 using NodaTime;
 using Xunit;
 
@@ -38,6 +40,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infras
 public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlStatementApiFixture>, IAsyncLifetime
 {
     private const string DefaultGridArea = "805";
+    private const string SomeOtherGridArea = "111";
     private const ProcessType DefaultProcessType = ProcessType.BalanceFixing;
     private readonly DatabricksSqlStatementApiFixture _fixture;
     private readonly string[] _defaultGridAreaCodes = { DefaultGridArea };
@@ -60,16 +63,14 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
         await _fixture.DatabricksSchemaManager.DropSchemaAsync();
     }
 
-    [Fact]
-    public async Task GetRowsAsync_WhenMultipleBatchesInSamePeriod_ReturnsLatestResult()
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetRowsAsync_ReturnsExpectedReportRow(Mock<ILogger<DatabricksSqlResponseParser>> loggerMock)
     {
         // Arrange
         var expectedSettlementReportRow = GetDefaultSettlementReportRow();
-        var tableName = $"TestTable_{DateTime.Now:yyyyMMddHHmmss}";
-        await _fixture.DatabricksSchemaManager.CreateTableAsync(tableName, _tableColumnDefinitions);
-        await InsertRows(tableName);
-
-        var sqlStatementClient = new SqlStatementClient(new HttpClient(), _fixture.DatabricksOptionsMock.Object, new DatabricksSqlResponseParser());
+        var tableName = await CreateTableTwoRowsAsync();
+        var sqlStatementClient = new SqlStatementClient(new HttpClient(), _fixture.DatabricksOptionsMock.Object, new DatabricksSqlResponseParser(loggerMock.Object));
         var sut = new SettlementReportResultQueries(sqlStatementClient, CreateDeltaTableOptions(_fixture.DatabricksSchemaManager.SchemaName, tableName));
 
         // Act
@@ -81,36 +82,31 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
         actualList.First().Should().Be(expectedSettlementReportRow);
     }
 
-    private async Task InsertRows(string tableName)
+    private async Task<string> CreateTableTwoRowsAsync()
     {
-        var batch1 = new
-        {
-            id = "aaaaaaaa-ed5f-46ba-bfe7-435ec0323519",
-            processType = DeltaTableProcessType.Aggregation,
-            executionTimeStart = "2022-03-12T03:00:00.000Z",
-        };
-        var batch2 = new
-        {
-            id = "bbbbbbbb-ed5f-46ba-bfe7-435ec0323519",
-            processType = DeltaTableProcessType.BalanceFixing,
-            executionTimeStart = "2022-03-11T03:00:00.000Z",
-        };
-
-        var row1Values = CreateRowValues(batch1.id, batch1.processType, batch1.executionTimeStart);
-        await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, row1Values);
-        var row2Values = CreateRowValues(batch2.id, batch2.processType, batch2.executionTimeStart);
-        await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, row2Values);
+        var tableName = $"TestTable_{DateTime.Now:yyyyMMddHHmmss}";
+        await _fixture.DatabricksSchemaManager.CreateTableAsync(tableName, _tableColumnDefinitions);
+        await InsertRow(tableName, DefaultGridArea);
+        await InsertRow(tableName, SomeOtherGridArea);
+        return tableName;
     }
 
-    private IEnumerable<string> CreateRowValues(string batchId, string processType, string executionTimeStart)
+    private async Task InsertRow(string tableName, string gridArea)
     {
-        var values = _tableColumnDefinitions.Keys.Select(columnName => columnName switch
+        var rowValues = CreateRowValues(_tableColumnDefinitions.Keys, gridArea);
+        await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, rowValues);
+    }
+
+    private static IEnumerable<string> CreateRowValues(IEnumerable<string> columnNames, string gridArea)
+    {
+        var values = columnNames.Select(columnName => columnName switch
         {
-            ResultColumnNames.BatchId => $"'{batchId}'",
-            ResultColumnNames.BatchExecutionTimeStart => $"'{executionTimeStart}'",
-            ResultColumnNames.BatchProcessType => $@"'{processType}'",
+            ResultColumnNames.BatchId => "'ed39dbc5-bdc5-41b9-922a-08d3b12d4538'",
+            ResultColumnNames.BatchExecutionTimeStart => "'2022-03-11T03:00:00.000Z'",
+            ResultColumnNames.BatchProcessType => $@"'{DeltaTableProcessType.BalanceFixing}'",
+            ResultColumnNames.CalculationResultId => "'aaaaaaaa-1111-1111-1c1c-08d3b12d4511'",
             ResultColumnNames.TimeSeriesType => $@"'{DeltaTableTimeSeriesType.Production}'",
-            ResultColumnNames.GridArea => $"'{DefaultGridArea}'",
+            ResultColumnNames.GridArea => $@"'{gridArea}'",
             ResultColumnNames.FromGridArea => "'406'",
             ResultColumnNames.BalanceResponsibleId => "'1236552000028'",
             ResultColumnNames.EnergySupplierId => "'2236552000028'",

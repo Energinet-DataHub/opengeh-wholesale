@@ -68,7 +68,7 @@ public class CalculationResultQueries : ICalculationResultQueries
 SELECT {string.Join(", ", SqlColumnNames)}
 FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.RESULT_TABLE_NAME}
 WHERE {ResultColumnNames.BatchId} = '{batchId}'
-ORDER BY time
+ORDER BY {ResultColumnNames.CalculationResultId}, {ResultColumnNames.Time}
 ";
     }
 
@@ -76,21 +76,19 @@ ORDER BY time
     {
         ResultColumnNames.BatchId,
         ResultColumnNames.GridArea,
+        ResultColumnNames.FromGridArea,
         ResultColumnNames.TimeSeriesType,
         ResultColumnNames.EnergySupplierId,
         ResultColumnNames.BalanceResponsibleId,
         ResultColumnNames.Time,
         ResultColumnNames.Quantity,
         ResultColumnNames.QuantityQuality,
+        ResultColumnNames.CalculationResultId,
     };
 
     public static bool BelongsToDifferentResults(SqlResultRow row, SqlResultRow otherRow)
     {
-        return row[ResultColumnNames.BatchId] != otherRow[ResultColumnNames.BatchId]
-               || row[ResultColumnNames.GridArea] != otherRow[ResultColumnNames.GridArea]
-               || row[ResultColumnNames.TimeSeriesType] != otherRow[ResultColumnNames.TimeSeriesType]
-               || row[ResultColumnNames.EnergySupplierId] != otherRow[ResultColumnNames.EnergySupplierId]
-               || row[ResultColumnNames.BalanceResponsibleId] != otherRow[ResultColumnNames.BalanceResponsibleId];
+        return row[ResultColumnNames.CalculationResultId] != otherRow[ResultColumnNames.CalculationResultId];
     }
 
     private static TimeSeriesPoint CreateTimeSeriesPoint(SqlResultRow row)
@@ -110,6 +108,7 @@ ORDER BY time
         var energySupplierId = sqlResultRow[ResultColumnNames.EnergySupplierId];
         var balanceResponsibleId = sqlResultRow[ResultColumnNames.BalanceResponsibleId];
         var gridArea = sqlResultRow[ResultColumnNames.GridArea];
+        var fromGridArea = sqlResultRow[ResultColumnNames.FromGridArea];
         return new CalculationResult(
             batch.BatchId,
             gridArea,
@@ -119,6 +118,7 @@ ORDER BY time
             timeSeriesPoints.ToArray(),
             batch.ProcessType,
             batch.PeriodStart.ToInstant(),
-            batch.PeriodEnd.ToInstant());
+            batch.PeriodEnd.ToInstant(),
+            fromGridArea);
     }
 }

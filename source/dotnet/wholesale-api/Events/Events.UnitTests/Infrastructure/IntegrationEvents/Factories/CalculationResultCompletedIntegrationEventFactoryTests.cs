@@ -65,6 +65,7 @@ public class CalculationResultCompletedIntegrationEventFactoryTests
         actual.BatchId.Should().Be(calculationResult.BatchId.ToString());
         actual.Resolution.Should().Be(Resolution.Quarter);
         actual.QuantityUnit.Should().Be(QuantityUnit.Kwh);
+        actual.FromGridAreaCode.Should().Be(calculationResult.FromGridArea);
         actual.PeriodEndUtc.Should().Be(calculationResult.PeriodEnd.ToTimestamp());
         actual.PeriodStartUtc.Should().Be(calculationResult.PeriodStart.ToTimestamp());
         actual.TimeSeriesType.Should().Be(TimeSeriesTypeMapper.MapTimeSeriesType(calculationResult.TimeSeriesType));
