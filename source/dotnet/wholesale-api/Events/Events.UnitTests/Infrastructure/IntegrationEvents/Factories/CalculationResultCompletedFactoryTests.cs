@@ -16,220 +16,178 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Types;
-using Energinet.DataHub.Wholesale.Events.UnitTests.Fixtures;
 using FluentAssertions;
 using Google.Protobuf.WellKnownTypes;
+using NodaTime;
+using Test.Core;
 using Xunit;
 using QuantityQuality =
     Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
 using TimeSeriesPoint =
     Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesPoint;
+using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.Factories;
 
 public class CalculationResultCompletedFactoryTests
 {
-    [Theory]
-    [InlineAutoMoqData]
-    public void CreateCalculationResultCompletedForGridArea_WhenCreating_ResultIsForTotalGridArea(
-        CalculationResult anyCalculationResult,
-        CalculationResultCompletedFactory sut)
-    {
-        // Act
-        var actual = sut.CreateForGridArea(anyCalculationResult);
-
-        // Assert
-        actual.AggregationPerBalanceresponsiblepartyPerGridarea.Should().BeNull();
-        actual.AggregationPerEnergysupplierPerGridarea.Should().BeNull();
-        actual.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.Should().BeNull();
-        actual.AggregationPerGridarea.Should().NotBeNull();
-    }
+    private readonly Guid _batchId = Guid.NewGuid();
+    private readonly Guid _id = Guid.NewGuid();
+    private readonly string _gridArea = "543";
+    private readonly string _energySupplierId = "es_id";
+    private readonly string _balanceResponsibleId = "br_id";
+    private readonly string _fromGridArea = "123";
+    private readonly Instant _periodStart = SystemClock.Instance.GetCurrentInstant();
+    private readonly Instant _periodEnd = SystemClock.Instance.GetCurrentInstant();
 
     [Theory]
     [InlineAutoMoqData]
-    public void CreateCalculationResultCompletedForGridArea_WhenCreating_PropertiesAreMappedCorrectly(
-        CalculationResultBuilder calculationResultBuilder,
+    public void Create_WhenForTotalGridArea_ReturnsExpectedObject(
         CalculationResultCompletedFactory sut)
     {
         // Arrange
-        var timeSeriesPoint = new TimeSeriesPoint(DateTimeOffset.Now, 10.101000000m, QuantityQuality.Estimated);
-        var calculationResult = calculationResultBuilder.WithTimeSeriesPoints(new[] { timeSeriesPoint }).Build();
+        var calculationResult = CreateCalculationResult();
+        calculationResult.SetPrivateProperty(r => r.EnergySupplierId, null);
+        calculationResult.SetPrivateProperty(r => r.BalanceResponsibleId, null);
+
+        var expected = CreateExpected(calculationResult);
 
         // Act
-        var actual = sut.CreateForGridArea(calculationResult);
+        var actual = sut.Create(calculationResult);
 
         // Assert
-        actual.AggregationPerGridarea.GridAreaCode.Should().Be(calculationResult.GridArea);
-        actual.BatchId.Should().Be(calculationResult.BatchId.ToString());
-        actual.Resolution.Should().Be(Resolution.Quarter);
-        actual.QuantityUnit.Should().Be(QuantityUnit.Kwh);
-        actual.FromGridAreaCode.Should().Be(calculationResult.FromGridArea);
-        actual.PeriodEndUtc.Should().Be(calculationResult.PeriodEnd.ToTimestamp());
-        actual.PeriodStartUtc.Should().Be(calculationResult.PeriodStart.ToTimestamp());
-        actual.TimeSeriesType.Should().Be(TimeSeriesTypeMapper.MapTimeSeriesType(calculationResult.TimeSeriesType));
-
-        actual.TimeSeriesPoints[0].Quantity.Units.Should().Be(10);
-        actual.TimeSeriesPoints[0].Quantity.Nanos.Should().Be(101000000);
-        actual.TimeSeriesPoints[0].Time.Should().Be(timeSeriesPoint.Time.ToTimestamp());
-        actual.TimeSeriesPoints[0].QuantityQuality.Should()
-            .Be(QuantityQualityMapper.MapQuantityQuality(timeSeriesPoint.Quality));
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Theory]
     [InlineAutoMoqData]
-    public void CreateCalculationResultCompletedForEnergySupplier_WhenCreating_ResultIsForTotalEnergySupplier(
-        CalculationResult anyCalculationResult,
-        CalculationResultCompletedFactory sut)
-    {
-        // Act
-        var actual = sut.CreateForEnergySupplier(
-            anyCalculationResult,
-            "AGlnNumber");
-
-        // Assert
-        actual.AggregationPerBalanceresponsiblepartyPerGridarea.Should().BeNull();
-        actual.AggregationPerGridarea.Should().BeNull();
-        actual.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.Should().BeNull();
-        actual.AggregationPerEnergysupplierPerGridarea.Should().NotBeNull();
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public void CreateCalculationResultCompletedForEnergySupplier_WhenCreating_PropertiesAreMappedCorrectly(
-        CalculationResultBuilder calculationResultBuilder,
+    public void Create_WhenForEnergySupplier_ReturnsExpectedObject(
         CalculationResultCompletedFactory sut)
     {
         // Arrange
-        var timeSeriesPoint = new TimeSeriesPoint(DateTimeOffset.Now, 10.101000000m, QuantityQuality.Estimated);
-        var calculationResult = calculationResultBuilder.WithTimeSeriesPoints(new[] { timeSeriesPoint }).Build();
-        var expectedGln = "TheGln";
+        var calculationResult = CreateCalculationResult();
+        calculationResult.SetPrivateProperty(r => r.BalanceResponsibleId, null);
+
+        var expected = CreateExpected(calculationResult);
 
         // Act
-        var actual = sut.CreateForEnergySupplier(calculationResult, expectedGln);
+        var actual = sut.Create(calculationResult);
 
         // Assert
-        actual.AggregationPerEnergysupplierPerGridarea.GridAreaCode.Should().Be(calculationResult.GridArea);
-        actual.AggregationPerEnergysupplierPerGridarea.EnergySupplierGlnOrEic.Should().Be(expectedGln);
-        actual.BatchId.Should().Be(calculationResult.BatchId.ToString());
-        actual.Resolution.Should().Be(Resolution.Quarter);
-        actual.QuantityUnit.Should().Be(QuantityUnit.Kwh);
-        actual.PeriodEndUtc.Should().Be(calculationResult.PeriodEnd.ToTimestamp());
-        actual.PeriodStartUtc.Should().Be(calculationResult.PeriodStart.ToTimestamp());
-        actual.TimeSeriesType.Should().Be(TimeSeriesTypeMapper.MapTimeSeriesType(calculationResult.TimeSeriesType));
-
-        actual.TimeSeriesPoints[0].Quantity.Units.Should().Be(10);
-        actual.TimeSeriesPoints[0].Quantity.Nanos.Should().Be(101000000);
-        actual.TimeSeriesPoints[0].Time.Should().Be(timeSeriesPoint.Time.ToTimestamp());
-        actual.TimeSeriesPoints[0].QuantityQuality.Should()
-            .Be(QuantityQualityMapper.MapQuantityQuality(timeSeriesPoint.Quality));
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Theory]
     [InlineAutoMoqData]
-    public void CreateCalculationResultCompletedForBalanceResponsibleParty_ReturnsResultForBalanceResponsibleParty(
-        CalculationResult anyCalculationResult,
-        CalculationResultCompletedFactory sut)
-    {
-        // Act
-        var actual = sut.CreateForBalanceResponsibleParty(anyCalculationResult, "ABrpGlnNumber");
-
-        // Assert
-        actual.AggregationPerGridarea.Should().BeNull();
-        actual.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.Should().BeNull();
-        actual.AggregationPerEnergysupplierPerGridarea.Should().BeNull();
-        actual.AggregationPerBalanceresponsiblepartyPerGridarea.Should().NotBeNull();
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public void CreateCalculationResultCompletedForBalanceResponsibleParty_WhenCreating_PropertiesAreMappedCorrectly(
-        CalculationResultBuilder calculationResultBuilder,
+    public void Create_WhenForBalanceResponsibleParty_ReturnsExpectedObject(
         CalculationResultCompletedFactory sut)
     {
         // Arrange
-        var timeSeriesPoint = new TimeSeriesPoint(DateTimeOffset.Now, 10.101000000m, QuantityQuality.Estimated);
-        var calculationResult = calculationResultBuilder.WithTimeSeriesPoints(new[] { timeSeriesPoint }).Build();
-        var expectedGln = "TheBrpGln";
+        var calculationResult = CreateCalculationResult();
+        calculationResult.SetPrivateProperty(r => r.EnergySupplierId, null);
+
+        var expected = CreateExpected(calculationResult);
 
         // Act
-        var actual = sut.CreateForBalanceResponsibleParty(calculationResult, expectedGln);
+        var actual = sut.Create(calculationResult);
 
         // Assert
-        actual.AggregationPerBalanceresponsiblepartyPerGridarea.GridAreaCode.Should()
-            .Be(calculationResult.GridArea);
-        actual.AggregationPerBalanceresponsiblepartyPerGridarea.BalanceResponsiblePartyGlnOrEic.Should()
-            .Be(expectedGln);
-        actual.BatchId.Should().Be(calculationResult.BatchId.ToString());
-        actual.Resolution.Should().Be(Resolution.Quarter);
-        actual.QuantityUnit.Should().Be(QuantityUnit.Kwh);
-        actual.PeriodEndUtc.Should().Be(calculationResult.PeriodEnd.ToTimestamp());
-        actual.PeriodStartUtc.Should().Be(calculationResult.PeriodStart.ToTimestamp());
-        actual.TimeSeriesType.Should().Be(TimeSeriesTypeMapper.MapTimeSeriesType(calculationResult.TimeSeriesType));
-
-        actual.TimeSeriesPoints[0].Quantity.Units.Should().Be(10);
-        actual.TimeSeriesPoints[0].Quantity.Nanos.Should().Be(101000000);
-        actual.TimeSeriesPoints[0].Time.Should().Be(timeSeriesPoint.Time.ToTimestamp());
-        actual.TimeSeriesPoints[0].QuantityQuality.Should()
-            .Be(QuantityQualityMapper.MapQuantityQuality(timeSeriesPoint.Quality));
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Theory]
     [InlineAutoMoqData]
-    public void CreateCalculationResultCompletedForEnergySupplierByBalanceResponsibleParty_ReturnsResultForEnergySupplierByBalanceResponsibleParty(
-        CalculationResult anyCalculationResult,
-        CalculationResultCompletedFactory sut)
-    {
-        // Act
-        var actual = sut.CreateForEnergySupplierByBalanceResponsibleParty(
-            anyCalculationResult,
-            "AEsGlnNumber",
-            "ABrpGlnNumber");
-
-        // Assert
-        actual.AggregationPerGridarea.Should().BeNull();
-        actual.AggregationPerEnergysupplierPerGridarea.Should().BeNull();
-        actual.AggregationPerBalanceresponsiblepartyPerGridarea.Should().BeNull();
-        actual.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.Should().NotBeNull();
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public void CreateCalculationResultCompletedForEnergySupplierByBalanceResponsibleParty_WhenCreating_PropertiesAreMappedCorrectly(
-        CalculationResultBuilder calculationResultBuilder,
+    public void Create_WhenForEnergySupplierPerBalanceResponsibleParty_ReturnsExpectedObject(
         CalculationResultCompletedFactory sut)
     {
         // Arrange
-        var timeSeriesPoint = new TimeSeriesPoint(DateTimeOffset.Now, 10.101000000m, QuantityQuality.Estimated);
-        var calculationResult = calculationResultBuilder.WithTimeSeriesPoints(new[] { timeSeriesPoint }).Build();
-        var expectedBrpGln = "TheBrpGln";
-        var expectedEsGln = "TheEsGln";
+        var calculationResult = CreateCalculationResult();
+        var expected = CreateExpected(calculationResult);
 
         // Act
-        var actual = sut.CreateForEnergySupplierByBalanceResponsibleParty(
-            calculationResult,
-            expectedEsGln,
-            expectedBrpGln);
+        var actual = sut.Create(calculationResult);
 
         // Assert
-        actual.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.GridAreaCode.Should()
-            .Be(calculationResult.GridArea);
-        actual.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.BalanceResponsiblePartyGlnOrEic
-            .Should().Be(expectedBrpGln);
-        actual.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.EnergySupplierGlnOrEic.Should()
-            .Be(expectedEsGln);
-        actual.BatchId.Should().Be(calculationResult.BatchId.ToString());
-        actual.Resolution.Should().Be(Resolution.Quarter);
-        actual.QuantityUnit.Should().Be(QuantityUnit.Kwh);
-        actual.PeriodEndUtc.Should().Be(calculationResult.PeriodEnd.ToTimestamp());
-        actual.PeriodStartUtc.Should().Be(calculationResult.PeriodStart.ToTimestamp());
-        actual.TimeSeriesType.Should().Be(TimeSeriesTypeMapper.MapTimeSeriesType(calculationResult.TimeSeriesType));
+        actual.Should().BeEquivalentTo(expected);
+    }
 
-        actual.TimeSeriesPoints[0].Quantity.Units.Should().Be(10);
-        actual.TimeSeriesPoints[0].Quantity.Nanos.Should().Be(101000000);
-        actual.TimeSeriesPoints[0].Time.Should().Be(timeSeriesPoint.Time.ToTimestamp());
-        actual.TimeSeriesPoints[0].QuantityQuality.Should()
-            .Be(QuantityQualityMapper.MapQuantityQuality(timeSeriesPoint.Quality));
+    private CalculationResult CreateCalculationResult()
+    {
+        return new CalculationResult(
+            _id,
+            _batchId,
+            _gridArea,
+            TimeSeriesType.FlexConsumption,
+            _energySupplierId,
+            _balanceResponsibleId,
+            new TimeSeriesPoint[]
+            {
+                new(new DateTime(2021, 1, 1), 1, QuantityQuality.Estimated),
+                new(new DateTime(2021, 1, 1), 2, QuantityQuality.Estimated),
+                new(new DateTime(2021, 1, 1), 3, QuantityQuality.Estimated),
+            },
+            Common.Models.ProcessType.Aggregation,
+            _periodStart,
+            _periodEnd,
+            _fromGridArea);
+    }
+
+    private CalculationResultCompleted CreateExpected(CalculationResult calculationResult)
+    {
+        var calculationResultCompleted = new CalculationResultCompleted
+        {
+            BatchId = calculationResult.BatchId.ToString(),
+            Resolution = Resolution.Quarter,
+            ProcessType = ProcessType.Aggregation,
+            QuantityUnit = QuantityUnit.Kwh,
+            PeriodStartUtc = calculationResult.PeriodStart.ToTimestamp(),
+            PeriodEndUtc = calculationResult.PeriodEnd.ToTimestamp(),
+            TimeSeriesType = Contracts.Events.TimeSeriesType.FlexConsumption,
+            FromGridAreaCode = calculationResult.FromGridArea,
+        };
+        calculationResultCompleted.TimeSeriesPoints.AddRange(
+            calculationResult.TimeSeriesPoints.Select(
+                p => new Contracts.Events.TimeSeriesPoint
+                {
+                    Time = p.Time.ToTimestamp(),
+                    Quantity = p.Quantity,
+                    QuantityQuality = Contracts.Events.QuantityQuality.Estimated,
+                }));
+
+        if (calculationResult.EnergySupplierId == null && calculationResult.BalanceResponsibleId == null)
+        {
+            calculationResultCompleted.AggregationPerGridarea = new AggregationPerGridArea { GridAreaCode = calculationResult.GridArea };
+        }
+        else if (calculationResult.BalanceResponsibleId != null && calculationResult.EnergySupplierId != null)
+        {
+            calculationResultCompleted.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea =
+                new AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea
+                {
+                    GridAreaCode = calculationResult.GridArea,
+                    EnergySupplierGlnOrEic = calculationResult.EnergySupplierId,
+                    BalanceResponsiblePartyGlnOrEic = calculationResult.BalanceResponsibleId,
+                };
+        }
+        else if (calculationResult.BalanceResponsibleId == null && calculationResult.EnergySupplierId != null)
+        {
+            calculationResultCompleted.AggregationPerEnergysupplierPerGridarea =
+                new AggregationPerEnergySupplierPerGridArea
+                {
+                    GridAreaCode = calculationResult.GridArea,
+                    EnergySupplierGlnOrEic = calculationResult.EnergySupplierId,
+                };
+        }
+        else
+        {
+            calculationResultCompleted.AggregationPerBalanceresponsiblepartyPerGridarea =
+                new AggregationPerBalanceResponsiblePartyPerGridArea
+                {
+                    GridAreaCode = calculationResult.GridArea,
+                    BalanceResponsiblePartyGlnOrEic = calculationResult.BalanceResponsibleId,
+                };
+        }
+
+        return calculationResultCompleted;
     }
 }
