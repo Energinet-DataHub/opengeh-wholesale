@@ -49,4 +49,9 @@ public static class SqlResultValueConverters
     {
         return TimeSeriesTypeMapper.FromDeltaTableValue(value);
     }
+
+    public static Guid ToGuid(string value)
+    {
+        return Guid.Parse(value);
+    }
 }
