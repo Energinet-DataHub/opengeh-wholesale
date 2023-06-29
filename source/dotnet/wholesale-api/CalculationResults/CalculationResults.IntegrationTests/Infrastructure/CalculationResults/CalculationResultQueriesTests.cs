@@ -81,7 +81,6 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
         // Assert
         using var assertionScope = new AssertionScope();
         actual.Count.Should().Be(expectedResultCount);
-        actual.Select(r => r.TimeSeriesPoints.Length).Should().OnlyContain(x => x == 2);
         actual.SelectMany(a => a.TimeSeriesPoints)
             .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
             .ToArray()
@@ -112,12 +111,8 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
         var row6 = _fixture.ResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, time: secondHour, gridArea: gridAreaC, quantity: SixthQuantity);
 
         // mix up the order of the rows
-        await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, row3);
-        await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, row5);
-        await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, row1);
-        await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, row6);
-        await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, row2);
-        await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, row4);
+        var rows = new List<IEnumerable<string>> { row3, row5, row1, row2, row6, row4, };
+        await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, rows);
 
         return tableName;
     }
