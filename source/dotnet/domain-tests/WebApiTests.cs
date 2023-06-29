@@ -166,28 +166,17 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                     while (messageHasValue)
                     {
                         var message = await Fixture.Receiver.ReceiveMessageAsync();
-                        if (message != null)
+                        if (message?.Body == null || objlist.Count == 109)
                         {
-                            if (message.Body != null)
-                            {
-                                var obj = ConvertBinaryDataToCSharpObject(message.Body.ToArray());
-                                if (obj.BatchId == _batchId.ToString())
-                                {
-                                    objlist.Add(obj);
-                                    if (objlist.Count == 109)
-                                    {
-                                        messageHasValue = false;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                messageHasValue = false;
-                            }
+                            messageHasValue = false;
                         }
                         else
                         {
-                            messageHasValue = false;
+                            var obj = ConvertBinaryDataToCSharpObject(message.Body.ToArray());
+                            if (obj.BatchId == _batchId.ToString())
+                            {
+                                objlist.Add(obj);
+                            }
                         }
 
                         if (cts.IsCancellationRequested)
@@ -201,6 +190,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
 
                 timeSeriesTypesInObjList.Should().Contain(Enum.GetName(TimeSeriesType.Production));
                 timeSeriesTypesInObjList.Should().Contain(Enum.GetName(TimeSeriesType.NonProfiledConsumption));
+                // timeSeriesTypesInObjList.Should().Contain(Enum.GetName(TimeSeriesType.FlexConsumption)); // not in the data used in the test
                 timeSeriesTypesInObjList.Should().Contain(Enum.GetName(TimeSeriesType.GridLoss));
                 timeSeriesTypesInObjList.Should().Contain(Enum.GetName(TimeSeriesType.NetExchangePerGa));
                 timeSeriesTypesInObjList.Should().Contain(Enum.GetName(TimeSeriesType.NetExchangePerNeighboringGa));
