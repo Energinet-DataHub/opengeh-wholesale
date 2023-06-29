@@ -54,3 +54,9 @@ data "azurerm_key_vault_secret" "pir_hosted_deployment_agents" {
   name         = "pir-hosted-deployment-agents"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+# Deployment agents subnet id
+data "azurerm_key_vault_secret" "snet_vnet_deployment_agents_id" {
+  name         = "snet-deployment-agents-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}

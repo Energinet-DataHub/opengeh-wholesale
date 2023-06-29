@@ -1,5 +1,5 @@
 module "kv_internal" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault?ref=v11"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault?ref=v12"
 
   name                            = "int"
   project_name                    = var.domain_name_short
@@ -9,11 +9,7 @@ module "kv_internal" {
   location                        = azurerm_resource_group.this.location
   enabled_for_template_deployment = true
   sku_name                        = "premium"
-  log_analytics_workspace_id      = data.azurerm_key_vault_secret.log_shared_id.value
   private_endpoint_subnet_id      = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
-  allowed_subnet_ids = [
-    data.azurerm_key_vault_secret.snet_vnet_integrations_id.value,
-  ]
 }
 
 module "kvs_sendgrid_api_key" {

@@ -131,3 +131,11 @@ module "kvs_snet_vnet_integrations_id" {
   value        = module.snet_vnet_integrations.id
   key_vault_id = module.kv_shared.id
 }
+
+module "kvs_snet_vnet_deployment_agents_id" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
+
+  name         = "snet-deployment-agents-id"
+  value        = data.azurerm_subnet.deployment_agents_subnet.id
+  key_vault_id = module.kv_shared.id
+}

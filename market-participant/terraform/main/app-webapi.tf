@@ -1,5 +1,5 @@
 module "app_webapi" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=v11"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=v12"
 
   name                                     = "webapi"
   project_name                             = var.domain_name_short
