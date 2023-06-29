@@ -82,12 +82,11 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
         using var assertionScope = new AssertionScope();
         actual.Count.Should().Be(expectedResultCount);
         actual.Select(r => r.TimeSeriesPoints.Length).Should().OnlyContain(x => x == 2);
-        actual[0].TimeSeriesPoints[0].Quantity.ToString(CultureInfo.InvariantCulture).Should().Be(FirstQuantity);
-        actual[0].TimeSeriesPoints[1].Quantity.ToString(CultureInfo.InvariantCulture).Should().Be(SecondQuantity);
-        actual[1].TimeSeriesPoints[0].Quantity.ToString(CultureInfo.InvariantCulture).Should().Be(ThirdQuantity);
-        actual[1].TimeSeriesPoints[1].Quantity.ToString(CultureInfo.InvariantCulture).Should().Be(FourthQuantity);
-        actual[2].TimeSeriesPoints[0].Quantity.ToString(CultureInfo.InvariantCulture).Should().Be(FifthQuantity);
-        actual[2].TimeSeriesPoints[1].Quantity.ToString(CultureInfo.InvariantCulture).Should().Be(SixthQuantity);
+        actual.SelectMany(a => a.TimeSeriesPoints)
+            .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
+            .ToArray()
+            .Should()
+            .Equal(FirstQuantity, SecondQuantity, ThirdQuantity, FourthQuantity, FifthQuantity, SixthQuantity);
     }
 
     private async Task<string> CreateTableWithRowsInArbitraryOrderAsync()
