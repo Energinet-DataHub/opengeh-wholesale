@@ -1,5 +1,5 @@
 module "func_migration" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=v11"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=feature/durableFunction"
 
   name                                     = "migration"
   project_name                             = var.domain_name_short
@@ -15,6 +15,7 @@ module "func_migration" {
   always_on                                = true
   dotnet_framework_version                 = "v7.0"
   use_dotnet_isolated_runtime              = true
+  durable_function                         = true
   health_check_path                        = "/api/monitor/ready"
   health_check_alert = {
     action_group_id = data.azurerm_key_vault_secret.primary_action_group_id.value
