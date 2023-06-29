@@ -128,3 +128,11 @@ module "kvs_b2c_tenant_id" {
   value        = var.apim_b2c_tenant_id
   key_vault_id = module.kv_shared.id
 }
+
+module "kvs_apim_oauth_server_name" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
+
+  name         = "apim-oauth-server-name"
+  value        = azurerm_api_management_authorization_server.oauth_server.name
+  key_vault_id = module.kv_shared.id
+}
