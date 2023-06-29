@@ -16,7 +16,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.IntegrationTests.Fixture.Database;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.Batches;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedBatches;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
