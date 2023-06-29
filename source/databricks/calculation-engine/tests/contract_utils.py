@@ -69,3 +69,8 @@ def get_message_type(contract_path: str) -> None:
     return next(
         x for x in grid_area_updated_schema["fields"] if x["name"] == "MessageType"
     )["value"]
+
+
+def get_column_names_from_contract(contract_path: str) -> list[str]:
+    schema = read_contract(contract_path)["fields"]
+    return [colname['name'] for colname in schema]

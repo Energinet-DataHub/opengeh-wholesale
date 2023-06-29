@@ -17,6 +17,7 @@ class ResultTableColName:
     batch_id = "batch_id"
     batch_execution_time_start = "batch_execution_time_start"
     batch_process_type = "batch_process_type"
+    calculation_result_id = "calculation_result_id"
     time_series_type = "time_series_type"
     grid_area = "grid_area"
     from_grid_area = "out_grid_area"
