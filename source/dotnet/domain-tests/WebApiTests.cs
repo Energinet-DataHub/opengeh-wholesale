@@ -23,6 +23,7 @@ using Google.Protobuf;
 using Xunit;
 using Xunit.Priority;
 using ProcessType = Energinet.DataHub.Wholesale.DomainTests.Clients.v3.ProcessType;
+using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.DomainTests
 {
@@ -158,7 +159,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             public async Task When_BatchIsCompleted_Then_BatchIsReceivedOnTopicSubscription()
             {
                 var messageHasValue = true;
-                var match = false;
+                var objlist = new List<CalculationResultCompleted>();
                 using (var cts = new CancellationTokenSource())
                 {
                     cts.CancelAfter(TimeSpan.FromMinutes(5));
@@ -167,15 +168,20 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                         var message = await Fixture.Receiver.ReceiveMessageAsync();
                         if (message != null)
                         {
-                            var msgBody = message.Body.ToArray();
+                            if (message.Body != null)
                             {
-                                var obj = ConvertBinaryDataToCSharpObject(msgBody);
+                                var obj = ConvertBinaryDataToCSharpObject(message.Body.ToArray());
+                                if (obj.BatchId == _batchId.ToString())
+                                {
+                                    objlist.Add(obj);
+                                    if (objlist.Count == 109)
+                                    {
+                                        messageHasValue = false;
+                                    }
+                                }
                             }
-
-                            match = message.Body.ToString().Contains(_batchId.ToString());
-                            if (match)
+                            else
                             {
-                                var t = message.Body.ToString();
                                 messageHasValue = false;
                             }
                         }
@@ -191,7 +197,16 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                     }
                 }
 
-                match.Should().BeTrue();
+                var timeSeriesTypesInObjList = objlist.Select(o => Enum.GetName(o.TimeSeriesType)).Distinct().ToList();
+
+                timeSeriesTypesInObjList.Should().Contain(Enum.GetName(TimeSeriesType.Production));
+                timeSeriesTypesInObjList.Should().Contain(Enum.GetName(TimeSeriesType.NonProfiledConsumption));
+                timeSeriesTypesInObjList.Should().Contain(Enum.GetName(TimeSeriesType.GridLoss));
+                timeSeriesTypesInObjList.Should().Contain(Enum.GetName(TimeSeriesType.NetExchangePerGa));
+                timeSeriesTypesInObjList.Should().Contain(Enum.GetName(TimeSeriesType.NetExchangePerNeighboringGa));
+                timeSeriesTypesInObjList.Should().Contain(Enum.GetName(TimeSeriesType.NegativeGridLoss));
+                timeSeriesTypesInObjList.Should().Contain(Enum.GetName(TimeSeriesType.PositiveGridLoss));
+                timeSeriesTypesInObjList.Should().Contain(Enum.GetName(TimeSeriesType.TotalConsumption));
             }
 
             public CalculationResultCompleted ConvertBinaryDataToCSharpObject(byte[] binaryData)
