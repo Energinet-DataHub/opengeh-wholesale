@@ -12,22 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Events.Application;
-using Energinet.DataHub.Wholesale.Events.Application.UseCases;
+using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
+namespace Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 
-public class UnitOfWork : IUnitOfWork
+public interface ICompletedBatchFactory
 {
-    private readonly IEventsDatabaseContext _eventsDatabaseContext;
-
-    public UnitOfWork(IEventsDatabaseContext eventsDatabaseContext)
-    {
-        _eventsDatabaseContext = eventsDatabaseContext;
-    }
-
-    public async Task CommitAsync()
-    {
-        await _eventsDatabaseContext.SaveChangesAsync().ConfigureAwait(false);
-    }
+    IEnumerable<CompletedBatch> CreateFromBatches(IEnumerable<BatchDto> completedBatchDtos);
 }

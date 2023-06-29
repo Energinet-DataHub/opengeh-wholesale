@@ -12,22 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Events.Application;
-using Energinet.DataHub.Wholesale.Events.Application.UseCases;
+using Energinet.DataHub.Core.Messaging.Communication.Internal;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
+namespace Energinet.DataHub.Wholesale.Events.Application.Communication;
 
-public class UnitOfWork : IUnitOfWork
+public interface ICalculationResultIntegrationEventFactory
 {
-    private readonly IEventsDatabaseContext _eventsDatabaseContext;
-
-    public UnitOfWork(IEventsDatabaseContext eventsDatabaseContext)
-    {
-        _eventsDatabaseContext = eventsDatabaseContext;
-    }
-
-    public async Task CommitAsync()
-    {
-        await _eventsDatabaseContext.SaveChangesAsync().ConfigureAwait(false);
-    }
+    IntegrationEvent Create(CalculationResult calculationResult);
 }
