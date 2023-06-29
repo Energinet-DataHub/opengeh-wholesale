@@ -5,11 +5,11 @@ module "apima_b2b" {
   project_name               = var.domain_name_short
   environment_short          = var.environment_short
   environment_instance       = var.environment_instance
-  api_management_name        = module.apim_shared.name
-  resource_group_name        = azurerm_resource_group.this.name
+  api_management_name        = data.azurerm_key_vault_secret.apim_instance_name.value
+  resource_group_name        = data.azurerm_key_vault_secret.apim_instance_resource_group_name.value
   display_name               = "B2B Api"
-  authorization_server_name  = azurerm_api_management_authorization_server.oauth_server.name
-  apim_logger_id             = azurerm_api_management_logger.apim_logger.id
+  authorization_server_name  = data.azurerm_key_vault_secret.apim_oauth_server_name.value
+  apim_logger_id             = data.azurerm_key_vault_secret.apim_logger_id.value
   logger_sampling_percentage = 100.0
   logger_verbosity           = "verbose"
   policies = [
@@ -38,10 +38,10 @@ module "apima_b2b" {
                 <metadata name="CorrelationId" value="@($"{context.RequestId}")" />
             </trace>
             <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Failed policy requirements, or token is invalid or missing.">
-                <openid-config url="https://login.microsoftonline.com/${var.apim_b2c_tenant_id}/v2.0/.well-known/openid-configuration" />
+                <openid-config url="https://login.microsoftonline.com/${data.azurerm_key_vault_secret.apim_b2c_tenant_id.value}/v2.0/.well-known/openid-configuration" />
                 <required-claims>
                     <claim name="aud" match="any">
-                        <value>${var.backend_b2b_app_id}</value>
+                        <value>${data.azurerm_key_vault_secret.apim_b2b_app_id.value}</value>
                     </claim>
                 </required-claims>
             </validate-jwt>
@@ -95,12 +95,4 @@ module "apima_b2b" {
       XML
     }
   ]
-}
-
-module "kvs_apim_b2b_api_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
-
-  name         = "apim-b2b-api-name"
-  value        = module.apima_b2b.name
-  key_vault_id = module.kv_shared.id
 }

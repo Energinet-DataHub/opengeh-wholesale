@@ -72,3 +72,33 @@ data "azurerm_key_vault_secret" "sbt_domainrelay_integrationevent_received_id" {
   name         = "sbt-sharedres-integrationevent-received-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+data "azurerm_key_vault_secret" "apim_instance_name" {
+  name         = "apim-instance-name"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "apim_instance_resource_group_name" {
+  name         = "apim-instance-resource-group-name"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "apim_b2b_app_id" {
+  name         = "backend-b2b-app-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "apim_b2c_tenant_id" {
+  name         = "b2c-tenant-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "apim_logger_id" {
+  name         = "apim-logger-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "apim_oauth_server_name" {
+  name         = "apim-oauth-server-name"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
