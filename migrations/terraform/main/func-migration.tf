@@ -1,5 +1,5 @@
 module "func_migration" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=feature/durableFunction"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=v11"
 
   name                                     = "migration"
   project_name                             = var.domain_name_short
