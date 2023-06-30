@@ -15,6 +15,7 @@
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
@@ -67,7 +68,7 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
     {
         // Arrange
         var expectedSettlementReportRow = GetDefaultSettlementReportRow();
-        var tableName = await CreateTableWithTwoRowsAsync();
+        var tableName = await CreateTableWithRowsFromMultipleBatches();
         var sqlStatementClient = new SqlStatementClient(new HttpClient(), _fixture.DatabricksOptionsMock.Object, new DatabricksSqlResponseParser(loggerMock.Object));
         var deltaTableOptions = CreateDeltaTableOptions(_fixture.DatabricksSchemaManager.SchemaName, tableName);
         var sut = new SettlementReportResultQueries(sqlStatementClient, deltaTableOptions);
@@ -81,16 +82,36 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
         actualList.First().Should().Be(expectedSettlementReportRow);
     }
 
-    private async Task<string> CreateTableWithTwoRowsAsync()
+    private async Task<string> CreateTableWithRowsFromMultipleBatches()
     {
         var columnDefinitions = ResultDeltaTableHelper.GetColumnDefinitions();
         var tableName = await _fixture.DatabricksSchemaManager.CreateTableAsync(columnDefinitions);
 
-        var row1 = _fixture.ResultDeltaTableHelper.CreateRowValues(gridArea: DefaultGridArea);
-        await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, row1);
+        const string january1st = "2022-01-01T01:00:00.000Z";
+        const string january2nd = "2022-01-02T01:00:00.000Z";
+        const string january3rd = "2022-01-03T01:00:00.000Z";
+        const string may1st = "2022-05-01T01:00:00.000Z";
+        const string june1st = "2022-06-01T01:00:00.000Z";
+        const string otherGridArea = "806";
 
-        var row2 = _fixture.ResultDeltaTableHelper.CreateRowValues(gridArea: SomeOtherGridArea);
-        await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, row2);
+        // Batch 1: Balance fixing, ExecutionTime=june1st, Period: 01/01 to 02/01 (include)
+        var batch1Row1 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: may1st, time: january1st, batchProcessType: DeltaTableProcessType.BalanceFixing, gridArea: DefaultGridArea);
+        var batch1Row2 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: may1st, time: january2nd, batchProcessType: DeltaTableProcessType.BalanceFixing, gridArea: DefaultGridArea);
+
+        // Batch 2: Same as batch 1, but for other grid area (include)
+        var batch2Row1 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: may1st, time: january1st, batchProcessType: DeltaTableProcessType.BalanceFixing, gridArea: otherGridArea);
+        var batch2Row2 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: may1st, time: january2nd, batchProcessType: DeltaTableProcessType.BalanceFixing, gridArea: otherGridArea);
+
+        // Batch 3: Same as batch 1, but only partly covering the same period (include)
+        var batch3Row1 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: may1st, time: january2nd, batchProcessType: DeltaTableProcessType.BalanceFixing, gridArea: DefaultGridArea);
+        var batch3Row2 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: may1st, time: january3rd, batchProcessType: DeltaTableProcessType.BalanceFixing, gridArea: DefaultGridArea);
+
+        // Batch 4: Same as batch 1, but newer and for Aggregation (include)
+        var batch4Row1 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: june1st, time: january1st, batchProcessType: DeltaTableProcessType.Aggregation, gridArea: DefaultGridArea);
+        var batch4Row2 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: june1st, time: january2nd, batchProcessType: DeltaTableProcessType.Aggregation, gridArea: DefaultGridArea);
+
+        var rows = new List<IEnumerable<string>> { batch1Row1, batch1Row2, batch2Row1, batch2Row2, batch3Row1, batch3Row2, batch4Row1, batch4Row2, };
+        await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, rows);
 
         return tableName;
     }
