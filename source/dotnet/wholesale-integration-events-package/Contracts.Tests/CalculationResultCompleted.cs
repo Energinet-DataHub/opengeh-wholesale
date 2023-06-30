@@ -37,9 +37,16 @@ public class CalculationResultCompletedTests
     }
 
     [Fact]
-    public void CalculationResultCompleted_HasCorrectMessageType()
+    public void CalculationResultCompleted_HasCorrectMessageName()
     {
         // Be careful to change the message type as it is public available and used for transport message meta data in accordance with ADR-008
-        CalculationResultCompleted.MessageType.Should().Be("CalculationResultCompleted");
+        CalculationResultCompleted.MessageName.Should().Be("CalculationResultCompleted");
+    }
+
+    [Fact]
+    public void CalculationResultCompleted_HasCorrectMessageVersion()
+    {
+        // Be careful to change the message type as it is public available and used for transport message meta data in accordance with ADR-008
+        CalculationResultCompleted.MessageVersion.Should().Be(1);
     }
 }

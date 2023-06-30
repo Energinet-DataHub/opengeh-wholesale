@@ -58,16 +58,32 @@ public class DatabricksSchemaManager
     /// Create table with a specified column definition (column name, data type)
     /// See more here https://docs.databricks.com/lakehouse/data-objects.html.
     /// </summary>
-    public async Task CreateTableAsync(string tableName, Dictionary<string, string> columnDefinition)
+    public async Task<string> CreateTableAsync(Dictionary<string, string> columnDefinition)
     {
+        var tableName = $"TestTable_{DateTime.Now:yyyyMMddHHmmss}";
         var columnDefinitions = string.Join(", ", columnDefinition.Select(c => $"{c.Key} {c.Value}"));
         var sqlStatement = $@"CREATE TABLE {SchemaName}.{tableName} ({columnDefinitions})";
         await ExecuteSql(sqlStatement);
+        return tableName;
     }
 
-    public async Task InsertIntoAsync(string tableName, IEnumerable<string> values)
+    /// <summary>
+    /// Inserts rows into a table. The rows are specified as a list of lists of strings. Example:
+    /// INSERT INTO myschema.mytable VALUES ('someString', 'someOtherString', 1.234), ('anotherString', 'anotherOtherString', 2.345);
+    /// </summary>
+    /// <param name="tableName">Name of table</param>
+    /// <param name="rows">Rows to be inserted in table. Note: that strings should have single quotes around them.
+    /// </param>
+    public async Task InsertIntoAsync(string tableName, IEnumerable<IEnumerable<string>> rows)
     {
-        var sqlStatement = $@"INSERT INTO {SchemaName}.{tableName} VALUES ({string.Join(",", values)})";
+        var values = string.Join(", ", rows.Select(row => $"({string.Join(", ", row.Select(val => $"{val}"))})"));
+        var sqlStatement = $@"INSERT INTO {SchemaName}.{tableName} VALUES {values}";
+        await ExecuteSql(sqlStatement);
+    }
+
+    public async Task InsertIntoAsync(string tableName, IEnumerable<string> row)
+    {
+        var sqlStatement = $@"INSERT INTO {SchemaName}.{tableName} VALUES ({string.Join(",", row)})";
         await ExecuteSql(sqlStatement);
     }
 

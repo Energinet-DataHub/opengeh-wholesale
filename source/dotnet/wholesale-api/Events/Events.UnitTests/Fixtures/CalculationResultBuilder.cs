@@ -59,6 +59,7 @@ public sealed class CalculationResultBuilder
     public CalculationResult Build()
     {
         return new CalculationResult(
+            Guid.NewGuid(),
             _batchId,
             "543",
             _timeSeriesType,
