@@ -20,11 +20,19 @@ module "func_entrypoint_peek" {
   }
   dotnet_framework_version    = "v7.0"
   use_dotnet_isolated_runtime = true
+  role_assignments = [
+    {
+      resource_id          = module.storage_esett_documents.id
+      role_definition_name = "Storage Blob Data Contributor"
+    }
+  ]
 
   app_settings = {
     "PublishServiceBusSettings:ConnectionString"            = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-send-connection-string)"
     "PublishServiceBusSettings:HealthCheckConnectionString" = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-manage-connection-string)"
     "PublishServiceBusSettings:SharedIntegrationEventTopic" = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbt-sharedres-integrationevent-received-name)"
     "DataHub2Settings:DataHub2Endpoint"                     = "https://${module.app_dh2_placeholder.default_hostname}"
+    "BlobStorageSettings:AccountUri"                        = local.ESETT_DOCUMENT_STORAGE_ACCOUNT_URI
+    "BlobStorageSettings:ContainerName"                     = local.ESETT_DOCUMENT_STORAGE_CONTAINER_NAME
   }
 }
