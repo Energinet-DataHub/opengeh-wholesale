@@ -20,8 +20,8 @@ resource "databricks_secret" "appi_instrumentation_key" {
   scope        = databricks_secret_scope.migration_scope.id
 }
 
-resource "databricks_secret" "st_dropzone_storage_account" {
-  key          = "st_dropzone_storage_account"
+resource "databricks_secret" "st_dh2data_storage_account" {
+  key          = "st_dh2data_storage_account"
   string_value = module.st_dh2data.name
   scope        = databricks_secret_scope.migration_scope.id
 }

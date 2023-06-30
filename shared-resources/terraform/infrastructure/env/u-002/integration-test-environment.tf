@@ -611,10 +611,10 @@ resource "databricks_secret" "appi_instrumentation_key_integration_test" {
   scope        = databricks_secret_scope.migration_scope_integration_test.id
 }
 
-resource "databricks_secret" "st_dropzone_storage_account_integration_test" {
+resource "databricks_secret" "st_dh2data_storage_account_integration_test" {
   provider = databricks.integration_test
 
-  key          = "st_dropzone_storage_account"
+  key          = "st_dh2data_storage_account"
   string_value = azurerm_storage_account.integration-test-st-databricks.name
   scope        = databricks_secret_scope.migration_scope_integration_test.id
 }
