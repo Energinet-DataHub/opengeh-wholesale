@@ -31,15 +31,14 @@ public class CalculationResultQueriesTests
 {
     private readonly TableChunk _tableChunk;
     private readonly string _row0BatchId;
-    private readonly string _calculationResultId0;
 
     public CalculationResultQueriesTests()
     {
-        // The two rows belongs to different calculation results as they have different calculation result ids
+        // The two rows belongs to different calculation results as they have differrent calculation result ids
         _row0BatchId = "b78787d5-b544-44ac-87c2-7720aab86ed1";
-        _calculationResultId0 = "9913f3bb-1208-400b-9cbe-50300e386d26";
+        const string calculationResultId0 = "9913f3bb-1208-400b-9cbe-50300e386d26";
         const string calculationResultId1 = "8c2bb7c6-d8e5-462c-9bce-8537f93ef8e7";
-        var row0 = new[] { _row0BatchId, "100", "200", "non_profiled_consumption", string.Empty, string.Empty, "2022-05-16T22:00:00.000Z", "1.111", "measured", _calculationResultId0 };
+        var row0 = new[] { _row0BatchId, "100", "200", "non_profiled_consumption", string.Empty, string.Empty, "2022-05-16T22:00:00.000Z", "1.111", "measured", calculationResultId0 };
         var row1 = new[] { "b78787d5-b544-44ac-87c2-7720aab86ed2", "200", "100", "non_profiled_consumption", string.Empty, string.Empty, "2022-05-16T22:00:00.000Z", "2.222", "measured", calculationResultId1 };
         var rows = new List<string[]> { row0, row1, };
 
@@ -113,7 +112,6 @@ public class CalculationResultQueriesTests
         var actual = await sut.GetAsync(batchId).SingleAsync();
 
         // Assert
-        actual.Id.Should().Be(_calculationResultId0);
         actual.BatchId.Should().Be(Guid.Parse(_row0BatchId));
         actual.GridArea.Should().Be(_tableChunk[0, ResultColumnNames.GridArea]);
         actual.TimeSeriesType.Should().Be(TimeSeriesType.NonProfiledConsumption);

@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// ReSharper disable once CheckNamespace - the namespace is exposed publicly in the Contracts package
-namespace Energinet.DataHub.Wholesale.Contracts.Events;
+using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 
-public partial class CalculationResultCompleted
+namespace Energinet.DataHub.Wholesale.Events.Application.UseCases.Factories;
+
+public interface ICompletedBatchFactory
 {
-    /// <summary>
-    /// The message type for transport message meta data in accordance with ADR-008.
-    /// </summary>
-    public const string MessageType = "CalculationResultCompleted";
+    IEnumerable<CompletedBatch> CreateFromBatches(IEnumerable<BatchDto> completedBatchDtos);
 }

@@ -19,6 +19,7 @@ using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Events.Application;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
+using Energinet.DataHub.Wholesale.Events.Application.UseCases.Factories;
 using Moq;
 using NodaTime;
 using Xunit;
