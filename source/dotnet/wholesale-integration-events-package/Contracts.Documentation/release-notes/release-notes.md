@@ -2,7 +2,7 @@
 
 ## Version 3.1.1
 
-No functional changes.
+No functional changes..
 
 ## Version 3.1.0
 
