@@ -39,13 +39,13 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infras
 /// </summary>
 public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlStatementApiFixture>, IAsyncLifetime
 {
-    private const string DefaultGridArea = "805";
-    private const string SomeOtherGridArea = "111";
     private const ProcessType DefaultProcessType = ProcessType.BalanceFixing;
+    private const string GridAreaA = "805";
+    private const string GridAreaB = "111";
+    private readonly string[] _gridAreaCodes = { GridAreaA, GridAreaB };
     private readonly DatabricksSqlStatementApiFixture _fixture;
-    private readonly string[] _defaultGridAreaCodes = { DefaultGridArea };
-    private readonly Instant _defaultPeriodStart = Instant.FromUtc(2022, 5, 16, 1, 0, 0);
-    private readonly Instant _defaultPeriodEnd = Instant.FromUtc(2022, 5, 17, 1, 0, 0);
+    private readonly Instant _january1st = Instant.FromUtc(2022, 1, 1, 0, 0, 0);
+    private readonly Instant _january5th = Instant.FromUtc(2022, 1, 5, 0, 0, 0);
 
     public SettlementReportResultQueriesTests(DatabricksSqlStatementApiFixture fixture)
     {
@@ -64,22 +64,20 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetRowsAsync_ReturnsExpectedReportRow(Mock<ILogger<DatabricksSqlResponseParser>> loggerMock)
+    public async Task GetRowsAsync_ReturnsExpectedReportRows(Mock<ILogger<DatabricksSqlResponseParser>> loggerMock)
     {
         // Arrange
         var tableName = await CreateTable();
-        var expectedSettlementReportRow = CreateTableWithRowsFromMultipleBatches(tableName);
+        var expectedSettlementReportRow = await CreateTableWithRowsFromMultipleBatches(tableName);
         var sqlStatementClient = new SqlStatementClient(new HttpClient(), _fixture.DatabricksOptionsMock.Object, new DatabricksSqlResponseParser(loggerMock.Object));
         var deltaTableOptions = CreateDeltaTableOptions(_fixture.DatabricksSchemaManager.SchemaName, tableName);
         var sut = new SettlementReportResultQueries(sqlStatementClient, deltaTableOptions);
 
         // Act
-        var actual = await sut.GetRowsAsync(_defaultGridAreaCodes, DefaultProcessType, _defaultPeriodStart, _defaultPeriodEnd, null);
+        var actual = await sut.GetRowsAsync(_gridAreaCodes, DefaultProcessType, _january1st, _january5th, null);
 
         // Assert
-        var actualList = actual.ToList();
-        actualList.Should().HaveCount(1);
-        actualList.First().Should().Be(expectedSettlementReportRow);
+        actual.Should().BeEquivalentTo(expectedSettlementReportRow);
     }
 
     private async Task<string> CreateTable()
@@ -95,42 +93,41 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
         const string january3rd = "2022-01-03T01:00:00.000Z";
         const string may1st = "2022-05-01T01:00:00.000Z";
         const string june1st = "2022-06-01T01:00:00.000Z";
-        const string otherGridArea = "806";
 
         // Batch 1: Balance fixing, ExecutionTime=june1st, Period: 01/01 to 02/01 (include)
         const string quantity11 = "1.100";
         const string quantity12 = "1.200";
-        var batch1Row1 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: may1st, time: january1st, batchProcessType: DeltaTableProcessType.BalanceFixing, gridArea: DefaultGridArea, quantity: quantity11);
-        var batch1Row2 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: may1st, time: january2nd, batchProcessType: DeltaTableProcessType.BalanceFixing, gridArea: DefaultGridArea, quantity: quantity12);
+        var batch1Row1 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: may1st, time: january1st, batchProcessType: DeltaTableProcessType.BalanceFixing, gridArea: GridAreaA, quantity: quantity11);
+        var batch1Row2 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: may1st, time: january2nd, batchProcessType: DeltaTableProcessType.BalanceFixing, gridArea: GridAreaA, quantity: quantity12);
 
         // Batch 2: Same as batch 1, but for other grid area (include)
         const string quantity21 = "2.100";
         const string quantity22 = "2.200";
-        var batch2Row1 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: may1st, time: january1st, batchProcessType: DeltaTableProcessType.BalanceFixing, gridArea: otherGridArea, quantity: quantity21);
-        var batch2Row2 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: may1st, time: january2nd, batchProcessType: DeltaTableProcessType.BalanceFixing, gridArea: otherGridArea, quantity: quantity22);
+        var batch2Row1 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: may1st, time: january1st, batchProcessType: DeltaTableProcessType.BalanceFixing, gridArea: GridAreaB, quantity: quantity21);
+        var batch2Row2 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: may1st, time: january2nd, batchProcessType: DeltaTableProcessType.BalanceFixing, gridArea: GridAreaB, quantity: quantity22);
 
         // Batch 3: Same as batch 1, but only partly covering the same period (include the uncovered part)
         const string quantity31 = "3.100";
         const string quantity32 = "3.200";
-        var batch3Row1 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: may1st, time: january2nd, batchProcessType: DeltaTableProcessType.BalanceFixing, gridArea: DefaultGridArea, quantity: quantity31);
-        var batch3Row2 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: may1st, time: january3rd, batchProcessType: DeltaTableProcessType.BalanceFixing, gridArea: DefaultGridArea, quantity: quantity32);
+        var batch3Row1 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: may1st, time: january2nd, batchProcessType: DeltaTableProcessType.BalanceFixing, gridArea: GridAreaA, quantity: quantity31);
+        var batch3Row2 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: may1st, time: january3rd, batchProcessType: DeltaTableProcessType.BalanceFixing, gridArea: GridAreaA, quantity: quantity32);
 
         // Batch 4: Same as batch 1, but newer and for Aggregation (exclude)
         const string quantity41 = "4.100";
-        var batch4Row1 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: june1st, time: january1st, batchProcessType: DeltaTableProcessType.Aggregation, gridArea: DefaultGridArea, quantity: quantity41);
+        var batch4Row1 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: june1st, time: january1st, batchProcessType: DeltaTableProcessType.Aggregation, gridArea: GridAreaA, quantity: quantity41);
         const string quantity42 = "4.200";
-        var batch4Row2 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: june1st, time: january2nd, batchProcessType: DeltaTableProcessType.Aggregation, gridArea: DefaultGridArea, quantity: quantity42);
+        var batch4Row2 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: june1st, time: january2nd, batchProcessType: DeltaTableProcessType.Aggregation, gridArea: GridAreaA, quantity: quantity42);
 
         var rows = new List<IEnumerable<string>> { batch1Row1, batch1Row2, batch2Row1, batch2Row2, batch3Row1, batch3Row2, batch4Row1, batch4Row2, };
         await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, rows);
 
         var expectedSettlementReportRows = new List<SettlementReportResultRow>
         {
-            GetSettlementReportRow(DefaultGridArea, january1st, quantity11),
-            GetSettlementReportRow(DefaultGridArea, january2nd, quantity12),
-            GetSettlementReportRow(DefaultGridArea, january3rd, quantity32),
-            GetSettlementReportRow(otherGridArea, january1st, quantity21),
-            GetSettlementReportRow(otherGridArea, january2nd, quantity22),
+            GetSettlementReportRow(GridAreaA, january1st, quantity11),
+            GetSettlementReportRow(GridAreaA, january2nd, quantity12),
+            GetSettlementReportRow(GridAreaA, january3rd, quantity32),
+            GetSettlementReportRow(GridAreaB, january1st, quantity21),
+            GetSettlementReportRow(GridAreaB, january2nd, quantity22),
         };
 
         return expectedSettlementReportRows;
