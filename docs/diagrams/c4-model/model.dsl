@@ -33,7 +33,7 @@ wholesaleDomain = group "Wholesale" {
         this -> wholesaleDataLake "retrieves results from"
 
         # Domain-to-domain relationships
-        this -> ediTimeSeriesListener "notify of <event>" "message/amqp" {
+        this -> ediApiApp "sends calculations" "integration event/amqp" {
             tags "Simple View"
         }
     }
