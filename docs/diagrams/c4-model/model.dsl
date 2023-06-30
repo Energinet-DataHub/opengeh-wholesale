@@ -25,7 +25,7 @@ wholesaleDomain = group "Wholesale" {
         tags "Microsoft Azure - App Services"
 
         # Base model relationships
-        this -> dh3.sharedServiceBus "publishes events"
+        this -> dh3.sharedServiceBus "sends calculations" "integration event/amqp"
 
         # Domain relationships
         this -> wholesaleDb "uses" "EF Core"
