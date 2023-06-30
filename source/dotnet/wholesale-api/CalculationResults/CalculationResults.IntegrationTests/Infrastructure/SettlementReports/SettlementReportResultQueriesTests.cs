@@ -67,8 +67,8 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
     public async Task GetRowsAsync_ReturnsExpectedReportRow(Mock<ILogger<DatabricksSqlResponseParser>> loggerMock)
     {
         // Arrange
-        var expectedSettlementReportRow = GetDefaultSettlementReportRow();
-        var tableName = await CreateTableWithRowsFromMultipleBatches();
+        var tableName = await CreateTable();
+        var expectedSettlementReportRow = CreateTableWithRowsFromMultipleBatches(tableName);
         var sqlStatementClient = new SqlStatementClient(new HttpClient(), _fixture.DatabricksOptionsMock.Object, new DatabricksSqlResponseParser(loggerMock.Object));
         var deltaTableOptions = CreateDeltaTableOptions(_fixture.DatabricksSchemaManager.SchemaName, tableName);
         var sut = new SettlementReportResultQueries(sqlStatementClient, deltaTableOptions);
@@ -82,11 +82,14 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
         actualList.First().Should().Be(expectedSettlementReportRow);
     }
 
-    private async Task<string> CreateTableWithRowsFromMultipleBatches()
+    private async Task<string> CreateTable()
     {
         var columnDefinitions = ResultDeltaTableHelper.GetColumnDefinitions();
-        var tableName = await _fixture.DatabricksSchemaManager.CreateTableAsync(columnDefinitions);
+        return await _fixture.DatabricksSchemaManager.CreateTableAsync(columnDefinitions);
+    }
 
+    private async Task<List<SettlementReportResultRow>> CreateTableWithRowsFromMultipleBatches(string tableName)
+    {
         const string january1st = "2022-01-01T01:00:00.000Z";
         const string january2nd = "2022-01-02T01:00:00.000Z";
         const string january3rd = "2022-01-03T01:00:00.000Z";
@@ -95,37 +98,54 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
         const string otherGridArea = "806";
 
         // Batch 1: Balance fixing, ExecutionTime=june1st, Period: 01/01 to 02/01 (include)
-        var batch1Row1 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: may1st, time: january1st, batchProcessType: DeltaTableProcessType.BalanceFixing, gridArea: DefaultGridArea);
-        var batch1Row2 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: may1st, time: january2nd, batchProcessType: DeltaTableProcessType.BalanceFixing, gridArea: DefaultGridArea);
+        const string quantity11 = "1.100";
+        const string quantity12 = "1.200";
+        var batch1Row1 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: may1st, time: january1st, batchProcessType: DeltaTableProcessType.BalanceFixing, gridArea: DefaultGridArea, quantity: quantity11);
+        var batch1Row2 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: may1st, time: january2nd, batchProcessType: DeltaTableProcessType.BalanceFixing, gridArea: DefaultGridArea, quantity: quantity12);
 
         // Batch 2: Same as batch 1, but for other grid area (include)
-        var batch2Row1 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: may1st, time: january1st, batchProcessType: DeltaTableProcessType.BalanceFixing, gridArea: otherGridArea);
-        var batch2Row2 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: may1st, time: january2nd, batchProcessType: DeltaTableProcessType.BalanceFixing, gridArea: otherGridArea);
+        const string quantity21 = "2.100";
+        const string quantity22 = "2.200";
+        var batch2Row1 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: may1st, time: january1st, batchProcessType: DeltaTableProcessType.BalanceFixing, gridArea: otherGridArea, quantity: quantity21);
+        var batch2Row2 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: may1st, time: january2nd, batchProcessType: DeltaTableProcessType.BalanceFixing, gridArea: otherGridArea, quantity: quantity22);
 
-        // Batch 3: Same as batch 1, but only partly covering the same period (include)
-        var batch3Row1 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: may1st, time: january2nd, batchProcessType: DeltaTableProcessType.BalanceFixing, gridArea: DefaultGridArea);
-        var batch3Row2 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: may1st, time: january3rd, batchProcessType: DeltaTableProcessType.BalanceFixing, gridArea: DefaultGridArea);
+        // Batch 3: Same as batch 1, but only partly covering the same period (include the uncovered part)
+        const string quantity31 = "3.100";
+        const string quantity32 = "3.200";
+        var batch3Row1 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: may1st, time: january2nd, batchProcessType: DeltaTableProcessType.BalanceFixing, gridArea: DefaultGridArea, quantity: quantity31);
+        var batch3Row2 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: may1st, time: january3rd, batchProcessType: DeltaTableProcessType.BalanceFixing, gridArea: DefaultGridArea, quantity: quantity32);
 
-        // Batch 4: Same as batch 1, but newer and for Aggregation (include)
-        var batch4Row1 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: june1st, time: january1st, batchProcessType: DeltaTableProcessType.Aggregation, gridArea: DefaultGridArea);
-        var batch4Row2 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: june1st, time: january2nd, batchProcessType: DeltaTableProcessType.Aggregation, gridArea: DefaultGridArea);
+        // Batch 4: Same as batch 1, but newer and for Aggregation (exclude)
+        const string quantity41 = "4.100";
+        var batch4Row1 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: june1st, time: january1st, batchProcessType: DeltaTableProcessType.Aggregation, gridArea: DefaultGridArea, quantity: quantity41);
+        const string quantity42 = "4.200";
+        var batch4Row2 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: june1st, time: january2nd, batchProcessType: DeltaTableProcessType.Aggregation, gridArea: DefaultGridArea, quantity: quantity42);
 
         var rows = new List<IEnumerable<string>> { batch1Row1, batch1Row2, batch2Row1, batch2Row2, batch3Row1, batch3Row2, batch4Row1, batch4Row2, };
         await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, rows);
 
-        return tableName;
+        var expectedSettlementReportRows = new List<SettlementReportResultRow>
+        {
+            GetSettlementReportRow(DefaultGridArea, january1st, quantity11),
+            GetSettlementReportRow(DefaultGridArea, january2nd, quantity12),
+            GetSettlementReportRow(DefaultGridArea, january3rd, quantity32),
+            GetSettlementReportRow(otherGridArea, january1st, quantity21),
+            GetSettlementReportRow(otherGridArea, january2nd, quantity22),
+        };
+
+        return expectedSettlementReportRows;
     }
 
-    private static SettlementReportResultRow GetDefaultSettlementReportRow()
+    private static SettlementReportResultRow GetSettlementReportRow(string gridArea, string time, string quantity)
     {
         return new SettlementReportResultRow(
-            DefaultGridArea,
+            gridArea,
             ProcessType.BalanceFixing,
-            Instant.FromUtc(2022, 5, 16, 3, 0, 0),
+            SqlResultValueConverters.ToInstant(time) ?? throw new Exception("Could not parse time"),
             "PT15M",
             MeteringPointType.Production,
             null,
-            1.123m);
+            SqlResultValueConverters.ToDecimal(quantity) ?? throw new Exception("Could not parse time"));
     }
 
     private static IOptions<DeltaTableOptions> CreateDeltaTableOptions(string schemaName, string tableName)
