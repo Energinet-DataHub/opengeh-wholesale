@@ -12,22 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Events.Application;
-using Energinet.DataHub.Wholesale.Events.Application.UseCases;
+using Energinet.DataHub.Core.Messaging.Communication.Internal;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
+namespace Energinet.DataHub.Core.Messaging.Communication;
 
-public class UnitOfWork : IUnitOfWork
+/// <summary>
+/// In order to use the `Communication` library to publish integration events an implementation of this interface is required.
+/// The implementation is responsible for creating or fetching integration events (likely from a database)
+/// and subsequently commit state changes.
+/// </summary>
+public interface IIntegrationEventProvider
 {
-    private readonly IEventsDatabaseContext _eventsDatabaseContext;
-
-    public UnitOfWork(IEventsDatabaseContext eventsDatabaseContext)
-    {
-        _eventsDatabaseContext = eventsDatabaseContext;
-    }
-
-    public async Task CommitAsync()
-    {
-        await _eventsDatabaseContext.SaveChangesAsync().ConfigureAwait(false);
-    }
+    IAsyncEnumerable<IntegrationEvent> GetAsync();
 }
