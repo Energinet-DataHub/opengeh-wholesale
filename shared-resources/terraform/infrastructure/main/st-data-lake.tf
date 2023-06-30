@@ -1,5 +1,5 @@
 module "st_data_lake" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=v11"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=v12"
 
   name                            = "datalake"
   project_name                    = var.domain_name_short
@@ -9,8 +9,6 @@ module "st_data_lake" {
   location                        = azurerm_resource_group.this.location
   account_replication_type        = "LRS"
   account_tier                    = "Standard"
-  is_hns_enabled                  = true
-  log_analytics_workspace_id      = module.log_workspace_shared.id
   private_endpoint_subnet_id      = module.snet_private_endpoints.id
   private_dns_resource_group_name = module.dbw_shared.private_dns_zone_resource_group_name
   ip_rules                        = var.hosted_deployagent_public_ip_range

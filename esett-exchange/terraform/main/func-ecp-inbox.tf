@@ -28,8 +28,8 @@ module "func_entrypoint_ecp_inbox" {
   ]
 
   app_settings = {
-    SQL_MP_DB_CONNECTION_STRING = local.MS_ESETT_EXCHANGE_CONNECTION_STRING
-    BLOB_STORAGE_ACCOUNT_URI    = local.ESETT_DOCUMENT_STORAGE_ACCOUNT_URI
-    BLOB_STORAGE_CONTAINER_NAME = local.ESETT_DOCUMENT_STORAGE_CONTAINER_NAME
+    "DatabaseSettings:ConnectionString" = local.MS_ESETT_EXCHANGE_CONNECTION_STRING
+    "BlobStorageSettings:AccountUri"    = local.ESETT_DOCUMENT_STORAGE_ACCOUNT_URI
+    "BlobStorageSettings:ContainerName" = local.ESETT_DOCUMENT_STORAGE_CONTAINER_NAME
   }
 }

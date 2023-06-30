@@ -13,12 +13,11 @@ module "dbw_shared" {
   main_virtual_network_resource_group_name = data.azurerm_virtual_network.this.resource_group_name
   databricks_virtual_network_address_space = var.databricks_vnet_address_space
   private_subnet_address_prefix            = var.databricks_private_subnet_address_prefix
+  log_analytics_workspace_id               = module.log_workspace_shared.id
   public_subnet_address_prefix             = var.databricks_public_subnet_address_prefix
   public_network_service_endpoints = [
     "Microsoft.EventHub"
   ]
-
-  log_analytics_workspace_id = module.log_workspace_shared.id
 }
 
 module "kvs_databricks_workspace_id" {

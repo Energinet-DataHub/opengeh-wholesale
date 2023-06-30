@@ -3,16 +3,19 @@ locals {
 }
 
 module "mssql_data" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-server?ref=v11"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-server?ref=v12"
 
-  name                           = "data"
-  project_name                   = var.domain_name_short
-  environment_short              = var.environment_short
-  environment_instance           = var.environment_instance
-  sql_version                    = "12.0"
-  resource_group_name            = azurerm_resource_group.this.name
-  location                       = azurerm_resource_group.this.location
-  monitor_alerts_action_group_id = module.ag_primary.id
+  name                 = "data"
+  project_name         = var.domain_name_short
+  environment_short    = var.environment_short
+  environment_instance = var.environment_instance
+  sql_version          = "12.0"
+  resource_group_name  = azurerm_resource_group.this.name
+  location             = azurerm_resource_group.this.location
+  monitor_action_group = {
+    name                = module.ag_primary.name
+    resource_group_name = azurerm_resource_group.this.name
+  }
 
   administrator_login          = local.mssqlServerAdminName
   administrator_login_password = random_password.mssql_administrator_login_password.result
@@ -21,7 +24,6 @@ module "mssql_data" {
   ad_group_directory_reader = var.ad_group_directory_reader
 
   private_endpoint_subnet_id = module.snet_private_endpoints.id
-  log_analytics_workspace_id = module.log_workspace_shared.id
 
   elastic_pool_max_size_gb      = 100
   public_network_access_enabled = true
@@ -38,6 +40,10 @@ module "mssql_data" {
     min_capacity = 0
     max_capacity = 100
   }
+
+  depends_on = [
+    module.ag_primary
+  ]
 }
 
 resource "azurerm_mssql_firewall_rule" "github_largerunner" {

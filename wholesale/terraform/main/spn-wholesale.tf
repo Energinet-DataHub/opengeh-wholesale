@@ -8,7 +8,7 @@ resource "azuread_application" "app_databricks" {
 }
 
 resource "azuread_service_principal" "spn_databricks" {
-  application_id               = azuread_application.app_databricks.application_id
+  application_id = azuread_application.app_databricks.application_id
   owners = [
     data.azuread_client_config.current.object_id
   ]
@@ -19,7 +19,7 @@ resource "azuread_application_password" "secret" {
 }
 
 module "kvs_app_databricks_password" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v10"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
 
   name         = "spn-databricks-secret"
   value        = azuread_application_password.secret.value
