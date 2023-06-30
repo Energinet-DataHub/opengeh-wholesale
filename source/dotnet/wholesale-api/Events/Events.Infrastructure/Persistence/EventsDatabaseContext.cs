@@ -14,7 +14,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.Batches;
 using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;

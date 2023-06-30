@@ -61,6 +61,6 @@ public class CalculationResultCompletedTests
         var serviceBusMessageSizeLimit = 256000;
 
         // Assert: Max message size is less than half the size allowed by ServiceBus in order to leave some room for future message size growth
-        actualSizeInBytes.Should().BeLessThan(serviceBusMessageSizeLimit / 2);
+        AssertionExtensions.Should(actualSizeInBytes).BeLessThan(serviceBusMessageSizeLimit / 2);
     }
 }
