@@ -1,5 +1,3 @@
-data "azuread_client_config" "current_client" {}
-
 resource "azuread_application" "app_datalake_contributor" {
   display_name = "sp-datalake-contributor-${lower(var.domain_name_short)}-${lower(var.environment_short)}-${lower(var.environment_instance)}"
   owners = [

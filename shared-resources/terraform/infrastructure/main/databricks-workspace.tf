@@ -1,5 +1,5 @@
 module "dbw_shared" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-workspace?ref=v11"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-workspace?ref=v12"
 
   name                                     = "dbw"
   project_name                             = var.domain_name_short
@@ -13,8 +13,8 @@ module "dbw_shared" {
   main_virtual_network_resource_group_name = data.azurerm_virtual_network.this.resource_group_name
   databricks_virtual_network_address_space = var.databricks_vnet_address_space
   private_subnet_address_prefix            = var.databricks_private_subnet_address_prefix
-  log_analytics_workspace_id               = module.log_workspace_shared.id
   public_subnet_address_prefix             = var.databricks_public_subnet_address_prefix
+  user_access_security_group_object_id     = var.developers_security_group_object_id
   public_network_service_endpoints = [
     "Microsoft.EventHub"
   ]
@@ -52,18 +52,11 @@ module "kvs_databricks_private_dns_resource_group_name" {
   key_vault_id = module.kv_shared.id
 }
 
-data "external" "databricks_token" {
-  program = ["pwsh", "${path.cwd}/scripts/generate-pat-token.ps1", module.dbw_shared.id, "https://${module.dbw_shared.workspace_url}"]
-  depends_on = [
-    module.dbw_shared
-  ]
-}
-
 module "kvs_databricks_dbw_shared_workspace_token" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
 
   name         = "dbw-shared-workspace-token"
-  value        = data.external.databricks_token.result.pat_token
+  value        = module.dbw_shared.databricks_token
   key_vault_id = module.kv_shared.id
 }
 
@@ -71,4 +64,5 @@ resource "databricks_git_credential" "ado" {
   git_username          = var.github_username
   git_provider          = "gitHub"
   personal_access_token = var.github_personal_access_token
+  depends_on            = [module.dbw_shared]
 }
