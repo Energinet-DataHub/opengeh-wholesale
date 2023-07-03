@@ -159,24 +159,24 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             public async Task When_BatchIsCompleted_Then_BatchIsReceivedOnTopicSubscription()
             {
                 var messageHasValue = true;
-                var objlist = new List<CalculationResultCompleted>();
+                var results = new List<CalculationResultCompleted>();
                 using (var cts = new CancellationTokenSource())
                 {
                     cts.CancelAfter(TimeSpan.FromMinutes(5));
                     while (messageHasValue)
                     {
                         var message = await Fixture.Receiver.ReceiveMessageAsync();
-                        if (message?.Body == null || objlist.Count == 109)
+                        if (message?.Body == null || results.Count == 109)
                         {
                             messageHasValue = false;
                         }
                         else
                         {
-                            var obj = new CalculationResultCompleted();
-                            obj.MergeFrom(ByteString.CopyFrom(message.Body.ToArray()));
-                            if (obj.BatchId == _batchId.ToString())
+                            var data = new CalculationResultCompleted();
+                            data.MergeFrom(ByteString.CopyFrom(message.Body.ToArray()));
+                            if (data.BatchId == _batchId.ToString())
                             {
-                                objlist.Add(obj);
+                                results.Add(data);
                             }
                         }
 
@@ -187,7 +187,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                     }
                 }
 
-                var timeSeriesTypesInObjList = objlist.Select(o => Enum.GetName(o.TimeSeriesType)).Distinct().ToList();
+                var timeSeriesTypesInObjList = results.Select(o => Enum.GetName(o.TimeSeriesType)).Distinct().ToList();
                 var timeSeriesTypesInEnum = Enum.GetNames(typeof(TimeSeriesType)).ToList();
                 timeSeriesTypesInEnum.Remove("FlexConsumption"); // FlexConsumption is not in the current test data
                 foreach (var timeSeriesType in timeSeriesTypesInEnum)
