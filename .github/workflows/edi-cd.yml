@@ -37,7 +37,7 @@ jobs:
         uses: peter-evans/repository-dispatch@v2
         with:
           token: ${{ secrets.PAT_TOKEN }}
-          repository: ${{ secrets.DEPLOYMENT_REPOSITORY_PATH }}
+          repository: ${{ vars.environment_repository_path }}
           event-type: edi-deployment-request-infrastructure
           # yamllint disable-line rule:quoted-strings
           client-payload: '{"infrastructure_pr": "${{ steps.find_pull_request.outputs.pull_request_number }}"}'
