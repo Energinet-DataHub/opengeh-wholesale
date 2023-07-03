@@ -81,7 +81,7 @@ jobs:
         uses: peter-evans/repository-dispatch@v2
         with:
           token: ${{ secrets.pat_token }}
-          repository: ${{ secrets.environment_repository_path }}
+          repository: ${{ vars.environment_repository_path }}
           event-type: wholesale-deployment-request-domain
           # yamllint disable-line rule:quoted-strings
           client-payload: '{"domain_pr": "${{ steps.find_pull_request.outputs.pull_request_number }}", "databricks_deploy": "${{ needs.changes.outputs.databricks }}", "dotnet_deploy": "${{ needs.changes.outputs.dotnet }}"}'
