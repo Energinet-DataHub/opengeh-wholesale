@@ -24,14 +24,11 @@ public class ServiceBusMessageFactory : IServiceBusMessageFactory
         var serviceBusMessage = new ServiceBusMessage
         {
             Body = new BinaryData(@event.Message.ToByteArray()),
-            Subject = @event.MessageName,
+            Subject = @event.EventName,
             MessageId = @event.EventIdentification.ToString(),
         };
 
-        // TODO BJM: Is this correct?
-        // The Operation Time Stamp is when the event was actually completed (in the business process logic)
-        serviceBusMessage.ApplicationProperties.Add("OperationTimeStamp", @event.OperationTimeStamp.ToDateTimeOffset().ToString());
-        serviceBusMessage.ApplicationProperties.Add("MessageVersion", @event.MessageVersion);
+        serviceBusMessage.ApplicationProperties.Add("EventMinorVersion", @event.EventMinorVersion);
 
         return serviceBusMessage;
     }

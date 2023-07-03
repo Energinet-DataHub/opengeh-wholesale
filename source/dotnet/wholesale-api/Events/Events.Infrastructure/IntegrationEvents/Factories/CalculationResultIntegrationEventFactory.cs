@@ -17,20 +17,15 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Google.Protobuf;
-using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories
 {
     public class CalculationResultIntegrationEventFactory : ICalculationResultIntegrationEventFactory
     {
-        private readonly IClock _clock;
         private readonly ICalculationResultCompletedFactory _calculationResultCompletedFactory;
 
-        public CalculationResultIntegrationEventFactory(
-            IClock clock,
-            ICalculationResultCompletedFactory calculationResultCompletedFactory)
+        public CalculationResultIntegrationEventFactory(ICalculationResultCompletedFactory calculationResultCompletedFactory)
         {
-            _clock = clock;
             _calculationResultCompletedFactory = calculationResultCompletedFactory;
         }
 
@@ -45,8 +40,7 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Fa
             var eventIdentification = calculationResultId;
             var messageName = CalculationResultCompleted.MessageName;
             var messageVersion = CalculationResultCompleted.MessageVersion;
-            var operationTimeStamp = _clock.GetCurrentInstant();
-            return new IntegrationEvent(eventIdentification, messageName, operationTimeStamp, messageVersion, protobufMessage);
+            return new IntegrationEvent(eventIdentification, messageName, messageVersion, protobufMessage);
         }
     }
 }
