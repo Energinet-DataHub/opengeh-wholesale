@@ -20,7 +20,6 @@ using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factor
 using FluentAssertions;
 using Google.Protobuf;
 using Moq;
-using NodaTime;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.EventPublishers;
@@ -30,11 +29,9 @@ public class CalculationResultIntegrationEventFactoryTests
     [Theory]
     [AutoMoqData]
     public void Create_ReturnsExpectedIntegrationEvent(
-        Instant instant,
         CalculationResultCompleted calculationResultCompleted,
         CalculationResult calculationResult,
         [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
-        [Frozen] Mock<IClock> clockMock,
         CalculationResultIntegrationEventFactory sut)
     {
         // Arrange
@@ -42,17 +39,13 @@ public class CalculationResultIntegrationEventFactoryTests
             .Setup(x => x.Create(calculationResult))
             .Returns(calculationResultCompleted);
 
-        clockMock.Setup(x => x.GetCurrentInstant())
-            .Returns(instant);
-
         // Act
         var actual = sut.Create(calculationResult);
 
         // Assert
-        actual.MessageName.Should().Be(CalculationResultCompleted.MessageName);
+        actual.EventName.Should().Be(CalculationResultCompleted.MessageName);
         actual.Message.ToByteArray().Should().BeEquivalentTo(calculationResultCompleted.ToByteArray());
-        actual.OperationTimeStamp.Should().Be(instant);
-        actual.MessageVersion.Should().Be(CalculationResultCompleted.MessageVersion);
+        actual.EventMinorVersion.Should().Be(CalculationResultCompleted.MessageVersion);
         actual.EventIdentification.Should().Be(calculationResult.Id);
     }
 }

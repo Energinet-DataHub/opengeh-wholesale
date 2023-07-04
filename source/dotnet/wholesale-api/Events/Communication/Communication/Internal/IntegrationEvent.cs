@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Google.Protobuf;
-using NodaTime;
 
 namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
 
@@ -21,8 +20,7 @@ namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
 /// ADR-008:  https://energinet.atlassian.net/wiki/spaces/D3/pages/328957986/ADR+008+-+Integration+events+with+protocol+buffers
 /// </summary>
 /// <param name="EventIdentification"></param>
-/// <param name="MessageName"></param>
-/// <param name="OperationTimeStamp">TODO BJM: Why is this required by ADR-008?</param>
-/// <param name="MessageVersion"></param>
+/// <param name="EventName"></param>
+/// <param name="EventMinorVersion"></param>
 /// <param name="Message"></param>
-public record IntegrationEvent(Guid EventIdentification, string MessageName, Instant OperationTimeStamp, int MessageVersion, IMessage Message);
+public record IntegrationEvent(Guid EventIdentification, string EventName, int EventMinorVersion, IMessage Message);
