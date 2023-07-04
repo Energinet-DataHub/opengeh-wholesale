@@ -31,9 +31,9 @@ module "apimao_request_aggregated_measure_data" {
                 <openid-config url="https://login.microsoftonline.com/${data.azurerm_key_vault_secret.apim_b2c_tenant_id.value}/v2.0/.well-known/openid-configuration" />
                 <required-claims>
                     <claim name="roles" match="any">
-                        <value>MeteredDataResponsible</value>
-                        <value>Electricalsupplier</value>
-                        <value>Balanceresponsible</value>
+                        <value>metereddataresponsible</value>
+                        <value>electricalsupplier</value>
+                        <value>balanceresponsibleparty</value>
                     </claim>
                 </required-claims>
             </validate-jwt>
