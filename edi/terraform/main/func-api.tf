@@ -23,6 +23,7 @@ module "func_receiver" {
     BACKEND_SERVICE_APP_ID                     = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-b2b-app-id)",
     # Endregion: Default Values
     DB_CONNECTION_STRING                                    = local.CONNECTION_STRING
+    EDI_INBOX_MESSAGE_QUEUE_NAME                            = module.sbq_edi_inbox_messagequeue.name
     INCOMING_CHANGE_OF_SUPPLIER_MESSAGE_QUEUE_NAME          = module.sbq_incoming_change_supplier_messagequeue.name
     INCOMING_AGGREGATED_MEASURE_DATA_QUEUE_NAME             = module.sbq_incoming_aggregated_measure_data_messagequeue.name
     SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_LISTENER = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-listen-connection-string)"
