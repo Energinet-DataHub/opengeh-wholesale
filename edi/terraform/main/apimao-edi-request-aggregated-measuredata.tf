@@ -32,7 +32,7 @@ module "apimao_request_aggregated_measure_data" {
                 <required-claims>
                     <claim name="roles" match="any">
                         <value>metereddataresponsible</value>
-                        <value>electricalsupplier</value>
+                        <value>energysupplier</value>
                         <value>balanceresponsibleparty</value>
                     </claim>
                 </required-claims>
