@@ -27,7 +27,8 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             !include https://raw.githubusercontent.com/Energinet-DataHub/greenforce-frontend/main/docs/diagrams/c4-model/model.dsl
 
             # Include Migration model - requires a token because its located in a private repository
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACDNGUTKGJTUXLOFHN7MJ4ZQZEZGYKQ
+            # Token is automatically appended in "Raw" view of the file
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAABXFZ74DNTGRS3AEDLDJGELGZFEEXVA
         }
 
         # Deployment model
@@ -130,7 +131,7 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
                         technology "App Service"
                         tags "Microsoft Azure - Function Apps"
 
-                        ediApiAppInstance = containerInstance ediApiApp
+                        ediInstance = containerInstance edi
                     }
                 }
 
