@@ -14,14 +14,10 @@
 
 using System.IO.Compression;
 using System.Net;
-using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.Contracts.Events;
-using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures;
 using FluentAssertions;
-using Google.Protobuf;
 using Xunit;
-using Xunit.Priority;
 using ProcessType = Energinet.DataHub.Wholesale.DomainTests.Clients.v3.ProcessType;
 using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType;
 
@@ -90,7 +86,6 @@ namespace Energinet.DataHub.Wholesale.DomainTests
         /// <summary>
         /// These tests uses an authorized Wholesale client to perform requests.
         /// </summary>'
-        [TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)]
         public class Given_Authorized : IClassFixture<AuthorizedClientFixture>
         {
             private static readonly TimeSpan _defaultTimeout = TimeSpan.FromMinutes(15);
@@ -101,9 +96,14 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             private static readonly DateTimeOffset _existingBatchPeriodEnd = DateTimeOffset.Parse("2020-01-29T23:00:00Z");
             private static readonly string ExistingGridAreaCode = "543";
 
+            private static Guid _batchId;
+            private static List<CalculationResultCompleted>? _calculationResults;
+
             public Given_Authorized(AuthorizedClientFixture fixture)
             {
                 Fixture = fixture;
+                _batchId = Fixture.CalculationId;
+                _calculationResults = Fixture.CalculationResults;
             }
 
             private AuthorizedClientFixture Fixture { get; }
@@ -121,73 +121,34 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 batchResult!.BatchId.Should().Be(_existingBatchId);
             }
 
-            private static Guid _batchId;
-
             [DomainFact]
-            [Priority(1)]
-            public async Task When_CreatingBatch_Then_BatchIsEventuallyCompleted()
+            public void When_CreatingBatch_Then_BatchIsEventuallyCompleted()
             {
-                // Arrange
-                var startDate = new DateTimeOffset(2020, 1, 28, 23, 0, 0, TimeSpan.Zero);
-                var endDate = new DateTimeOffset(2020, 1, 29, 23, 0, 0, TimeSpan.Zero);
-                var batchRequestDto = new BatchRequestDto
-                {
-                    ProcessType = ProcessType.BalanceFixing,
-                    GridAreaCodes = new List<string> { ExistingGridAreaCode },
-                    StartDate = startDate,
-                    EndDate = endDate,
-                };
-
-                // Act
-                _batchId = await Fixture.WholesaleClient.CreateBatchAsync(batchRequestDto).ConfigureAwait(false);
-
-                // Assert
-                var isCompleted = await Awaiter.TryWaitUntilConditionAsync(
-                    async () =>
-                    {
-                        var batchResult = await Fixture.WholesaleClient.GetBatchAsync(_batchId);
-                        return batchResult?.ExecutionState == BatchState.Completed;
-                    },
-                    _defaultTimeout,
-                    _defaultDelay);
+                var isCompleted = Fixture.CalculationIsComplete;
 
                 isCompleted.Should().BeTrue();
             }
 
             [DomainFact]
-            [Priority(2)]
-            public async Task When_BatchIsCompleted_Then_BatchIsReceivedOnTopicSubscription()
+            public void When_BatchIsCompleted_Then_BatchIsReceivedOnTopicSubscription()
             {
-                var messageHasValue = true;
-                var results = new List<CalculationResultCompleted>();
-                using (var cts = new CancellationTokenSource())
+                if (_calculationResults == null)
                 {
-                    cts.CancelAfter(TimeSpan.FromMinutes(5));
-                    while (messageHasValue)
-                    {
-                        var message = await Fixture.Receiver.ReceiveMessageAsync();
-                        if (message?.Body == null || results.Count == 109)
-                        {
-                            messageHasValue = false;
-                        }
-                        else
-                        {
-                            var data = new CalculationResultCompleted();
-                            data.MergeFrom(ByteString.CopyFrom(message.Body.ToArray()));
-                            if (data.BatchId == _batchId.ToString())
-                            {
-                                results.Add(data);
-                            }
-                        }
-
-                        if (cts.IsCancellationRequested)
-                        {
-                            Assert.Fail($"No messages received on topic subscription match {_batchId.ToString()}.");
-                        }
-                    }
+                    Assert.Fail("No results found");
                 }
 
-                var timeSeriesTypesInObjList = results.Select(o => Enum.GetName(o.TimeSeriesType)).Distinct().ToList();
+                _calculationResults.Count.Should().Be(109);
+            }
+
+            [DomainFact]
+            public void When_BatchIsReceivedOnTopicSubscription_Then_MessagesReceivedContainAllTimeSeriesTypes()
+            {
+                if (_calculationResults == null)
+                {
+                    Assert.Fail("No results found");
+                }
+
+                var timeSeriesTypesInObjList = _calculationResults.Select(o => Enum.GetName(o.TimeSeriesType)).Distinct().ToList();
                 var timeSeriesTypesInEnum = Enum.GetNames(typeof(TimeSeriesType)).ToList();
                 timeSeriesTypesInEnum.Remove("FlexConsumption"); // FlexConsumption is not in the current test data
                 foreach (var timeSeriesType in timeSeriesTypesInEnum)
