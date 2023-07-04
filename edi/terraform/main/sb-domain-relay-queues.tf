@@ -15,7 +15,7 @@ module "sbq_incoming_aggregated_measure_data_messagequeue" {
 }
 
 module "sbq_edi_inbox_messagequeue" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-queue?ref=v11"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-queue?ref=v12"
 
   name         = "edi-inbox"
   namespace_id = data.azurerm_key_vault_secret.sb_domain_relay_namespace_id.value

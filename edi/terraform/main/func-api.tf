@@ -1,5 +1,5 @@
 module "func_receiver" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=v11"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=v12"
 
   name                                     = "api"
   project_name                             = var.domain_name_short
