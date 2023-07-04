@@ -14,7 +14,7 @@ module "sbq_incoming_aggregated_measure_data_messagequeue" {
   project_name = var.domain_name_short
 }
 
-module "module.sbq_edi_inbox_messagequeue" {
+module "sbq_edi_inbox_messagequeue" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-queue?ref=v11"
 
   name         = "edi-inbox"
