@@ -70,7 +70,13 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
         const int expectedResultCount = 3;
         var tableName = await CreateTableWithRowsInArbitraryOrderAsync();
         batch = batch with { BatchId = Guid.Parse(BatchId) };
-        var sqlStatementClient = new SqlStatementClient(new HttpClient(), _fixture.DatabricksOptionsMock.Object, new DatabricksSqlResponseParser(loggerMock.Object));
+        var databricksSqlChunkResponseParser = new DatabricksSqlChunkResponseParser();
+        var sqlStatementClient = new SqlStatementClient(
+            new HttpClient(),
+            _fixture.DatabricksOptionsMock.Object,
+            new DatabricksSqlResponseParser(loggerMock.Object, databricksSqlChunkResponseParser),
+            databricksSqlChunkResponseParser,
+            new DatabricksSqlChunkDataResponseParser());
         batchesClientMock.Setup(b => b.GetAsync(It.IsAny<Guid>())).ReturnsAsync(batch);
         var deltaTableOptions = CreateDeltaTableOptions(_fixture.DatabricksSchemaManager.SchemaName, tableName);
         var sut = new CalculationResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions);

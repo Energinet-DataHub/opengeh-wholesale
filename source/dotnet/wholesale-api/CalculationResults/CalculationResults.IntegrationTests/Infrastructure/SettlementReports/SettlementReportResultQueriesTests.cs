@@ -68,7 +68,13 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
         // Arrange
         var expectedSettlementReportRow = GetDefaultSettlementReportRow();
         var tableName = await CreateTableWithTwoRowsAsync();
-        var sqlStatementClient = new SqlStatementClient(new HttpClient(), _fixture.DatabricksOptionsMock.Object, new DatabricksSqlResponseParser(loggerMock.Object));
+        var databricksSqlChunkResponseParser = new DatabricksSqlChunkResponseParser();
+        var sqlStatementClient = new SqlStatementClient(
+            new HttpClient(),
+            _fixture.DatabricksOptionsMock.Object,
+            new DatabricksSqlResponseParser(loggerMock.Object, databricksSqlChunkResponseParser),
+            databricksSqlChunkResponseParser,
+            new DatabricksSqlChunkDataResponseParser());
         var deltaTableOptions = CreateDeltaTableOptions(_fixture.DatabricksSchemaManager.SchemaName, tableName);
         var sut = new SettlementReportResultQueries(sqlStatementClient, deltaTableOptions);
 

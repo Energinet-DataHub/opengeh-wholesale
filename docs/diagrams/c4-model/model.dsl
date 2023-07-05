@@ -12,7 +12,7 @@ wholesaleDomain = group "Wholesale" {
         tags "Microsoft Azure - Azure Databricks"
 
         # Domain relationships
-        this -> wholesaleDataLake "read / write"
+        this -> wholesaleDataLake "Read / write"
     }
     wholesaleDb = container "Wholesale Database" {
         description "Stores batches and operations data"
@@ -25,15 +25,15 @@ wholesaleDomain = group "Wholesale" {
         tags "Microsoft Azure - App Services"
 
         # Base model relationships
-        this -> dh3.sharedServiceBus "publishes events"
+        this -> dh3.sharedServiceBus "Sends calculations" "integration event/amqp"
 
         # Domain relationships
-        this -> wholesaleDb "uses" "EF Core"
-        this -> wholesaleCalculator "sends requests to"
-        this -> wholesaleDataLake "retrieves results from"
+        this -> wholesaleDb "Uses" "EF Core"
+        this -> wholesaleCalculator "Sends requests to"
+        this -> wholesaleDataLake "Retrieves results from"
 
         # Domain-to-domain relationships
-        this -> ediTimeSeriesListener "notify of <event>" "message/amqp" {
+        this -> ediApiApp "Sends calculations" "integration event/amqp" {
             tags "Simple View"
         }
     }
