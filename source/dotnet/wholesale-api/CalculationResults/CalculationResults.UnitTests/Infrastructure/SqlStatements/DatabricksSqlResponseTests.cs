@@ -23,78 +23,90 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 [UnitTest]
 public class DatabricksSqlResponseTests
 {
-    private readonly TableChunk _someTableChunk = new(new[] { "someColumn" }, new List<string[]> { new[] { "{someValue}" } });
+    private readonly string[] _columnNames = { "someColumn" };
+    private readonly DatabricksSqlChunkResponse _chunkResponse = new(new Uri("https://foo.com"), "bar");
 
-    [Fact]
-    public void CreateAsPending_ReturnsResponseWithExpectedProperties()
+    [Theory]
+    [AutoMoqData]
+    public void CreateAsPending_ReturnsResponseWithExpectedProperties(Guid statementId)
     {
-        // Arrange
-        var statementId = Guid.NewGuid();
-        const DatabricksSqlResponseState expectedState = DatabricksSqlResponseState.Pending;
-
         // Act
         var actual = DatabricksSqlResponse.CreateAsPending(statementId);
 
         // Assert
         actual.StatementId.Should().Be(statementId);
-        actual.HasMoreRows.Should().BeFalse();
-        actual.NextChunkInternalLink.Should().BeNull();
-        actual.State.Should().Be(expectedState);
-        actual.Table.Should().BeNull();
+        actual.ColumnNames.Should().BeNull();
+        actual.Chunk.Should().BeNull();
+        actual.State.Should().Be(DatabricksSqlResponseState.Pending);
     }
 
     [Theory]
-    [InlineAutoMoqData(false, null!)]
-    [InlineAutoMoqData(true, "some-link")]
-    public void CreateAsSucceeded_ReturnsResponseWithExpectedProperties(bool hasMoreRows, string? nextChunkInternalLink, Guid statementId)
+    [AutoMoqData]
+    public void CreateAsRunning_ReturnsResponseWithExpectedProperties(Guid statementId)
     {
-        // Arrange
-        const DatabricksSqlResponseState expectedState = DatabricksSqlResponseState.Succeeded;
-
         // Act
-        var actual = DatabricksSqlResponse.CreateAsSucceeded(statementId, _someTableChunk, nextChunkInternalLink);
+        var actual = DatabricksSqlResponse.CreateAsRunning(statementId);
 
         // Assert
         actual.StatementId.Should().Be(statementId);
-        actual.HasMoreRows.Should().Be(hasMoreRows);
-        actual.NextChunkInternalLink.Should().Be(nextChunkInternalLink);
-        actual.State.Should().Be(expectedState);
-        actual.Table.Should().Be(_someTableChunk);
+        actual.ColumnNames.Should().BeNull();
+        actual.Chunk.Should().BeNull();
+        actual.State.Should().Be(DatabricksSqlResponseState.Running);
     }
 
-    [Fact]
-    public void CreateAsFailed_ReturnsResponseWithExpectedProperties()
+    [Theory]
+    [AutoMoqData]
+    public void CreateAsSucceeded_ReturnsResponseWithExpectedProperties(Guid statementId)
     {
-        // Arrange
-        var statementId = Guid.NewGuid();
-        const DatabricksSqlResponseState expectedState = DatabricksSqlResponseState.Failed;
+        // Act
+        var actual = DatabricksSqlResponse.CreateAsSucceeded(statementId, _columnNames, _chunkResponse);
 
+        // Assert
+        actual.StatementId.Should().Be(statementId);
+        actual.ColumnNames.Should().BeEquivalentTo(_columnNames);
+        actual.Chunk.Should().BeEquivalentTo(_chunkResponse);
+        actual.State.Should().Be(DatabricksSqlResponseState.Succeeded);
+    }
+
+    [Theory]
+    [AutoMoqData]
+    public void CreateAsFailed_ReturnsResponseWithExpectedProperties(Guid statementId)
+    {
         // Act
         var actual = DatabricksSqlResponse.CreateAsFailed(statementId);
 
         // Assert
         actual.StatementId.Should().Be(statementId);
-        actual.HasMoreRows.Should().BeFalse();
-        actual.NextChunkInternalLink.Should().BeNull();
-        actual.State.Should().Be(expectedState);
-        actual.Table.Should().BeNull();
+        actual.ColumnNames.Should().BeNull();
+        actual.Chunk.Should().BeNull();
+        actual.State.Should().Be(DatabricksSqlResponseState.Failed);
     }
 
-    [Fact]
-    public void CreateAsCancelled_ReturnsResponseWithExpectedProperties()
+    [Theory]
+    [AutoMoqData]
+    public void CreateAsCanceled_ReturnsResponseWithExpectedProperties(Guid statementId)
     {
-        // Arrange
-        var statementId = Guid.NewGuid();
-        const DatabricksSqlResponseState expectedState = DatabricksSqlResponseState.Cancelled;
-
         // Act
         var actual = DatabricksSqlResponse.CreateAsCancelled(statementId);
 
         // Assert
         actual.StatementId.Should().Be(statementId);
-        actual.HasMoreRows.Should().BeFalse();
-        actual.NextChunkInternalLink.Should().BeNull();
-        actual.State.Should().Be(expectedState);
-        actual.Table.Should().BeNull();
+        actual.ColumnNames.Should().BeNull();
+        actual.Chunk.Should().BeNull();
+        actual.State.Should().Be(DatabricksSqlResponseState.Cancelled);
+    }
+
+    [Theory]
+    [AutoMoqData]
+    public void CreateAsClosed_ReturnsResponseWithExpectedProperties(Guid statementId)
+    {
+        // Act
+        var actual = DatabricksSqlResponse.CreateAsClosed(statementId);
+
+        // Assert
+        actual.StatementId.Should().Be(statementId);
+        actual.ColumnNames.Should().BeNull();
+        actual.Chunk.Should().BeNull();
+        actual.State.Should().Be(DatabricksSqlResponseState.Closed);
     }
 }

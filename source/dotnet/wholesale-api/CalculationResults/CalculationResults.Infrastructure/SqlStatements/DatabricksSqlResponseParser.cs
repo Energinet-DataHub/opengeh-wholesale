@@ -21,10 +21,12 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlState
 public class DatabricksSqlResponseParser : IDatabricksSqlResponseParser
 {
     private readonly ILogger<DatabricksSqlResponseParser> _logger;
+    private readonly IDatabricksSqlChunkResponseParser _chunkParser;
 
-    public DatabricksSqlResponseParser(ILogger<DatabricksSqlResponseParser> logger)
+    public DatabricksSqlResponseParser(ILogger<DatabricksSqlResponseParser> logger, IDatabricksSqlChunkResponseParser chunkParser)
     {
         _logger = logger;
+        _chunkParser = chunkParser;
     }
 
     public DatabricksSqlResponse Parse(string jsonResponse)
@@ -32,24 +34,26 @@ public class DatabricksSqlResponseParser : IDatabricksSqlResponseParser
         var settings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None, };
         var jsonObject = JsonConvert.DeserializeObject<JObject>(jsonResponse, settings) ??
                          throw new InvalidOperationException();
-
         var statementId = GetStatementId(jsonObject);
         var state = GetState(jsonObject);
         switch (state)
         {
             case "PENDING":
                 return DatabricksSqlResponse.CreateAsPending(statementId);
+            case "RUNNING":
+                return DatabricksSqlResponse.CreateAsRunning(statementId);
+            case "CLOSED":
+                return DatabricksSqlResponse.CreateAsClosed(statementId);
             case "CANCELED":
                 return DatabricksSqlResponse.CreateAsCancelled(statementId);
+            case "FAILED":
+                return DatabricksSqlResponse.CreateAsFailed(statementId);
             case "SUCCEEDED":
                 var columnNames = GetColumnNames(jsonObject);
-                var hasData = GetRowCount(jsonObject) > 0;
-                var dataArray = hasData ? GetDataArray(jsonObject) : new List<string[]>();
-                var tableChunk = new TableChunk(columnNames, dataArray);
-                var nextChunkInternalLink = GetNextChunkInternalLink(jsonObject);
-                return DatabricksSqlResponse.CreateAsSucceeded(statementId, tableChunk, nextChunkInternalLink);
+                var chunk = _chunkParser.Parse(GetChunk(jsonObject));
+                return DatabricksSqlResponse.CreateAsSucceeded(statementId, columnNames, chunk);
             default:
-                _logger.LogError("Databricks SQL statement execution failed. Response {jsonResponse}",  jsonResponse);
+                _logger.LogError("Databricks SQL statement execution failed. Response {JsonResponse}", jsonResponse);
                 throw new DatabricksSqlException($@"Databricks SQL statement execution failed. State: {state}");
         }
     }
@@ -64,16 +68,6 @@ public class DatabricksSqlResponseParser : IDatabricksSqlResponseParser
         return responseJsonObject["status"]?["state"]?.ToString() ?? throw new InvalidOperationException("Unable to retrieve 'state' from the responseJsonObject");
     }
 
-    private static int GetRowCount(JObject responseJsonObject)
-    {
-        var totalRowCount = responseJsonObject["manifest"]?["total_row_count"]?.ToObject<int>() ?? throw new DatabricksSqlException("Unable to retrieve 'row_count' from the responseJsonObject.");
-        if (totalRowCount == 0)
-            return 0; // No data in the response
-
-        var rowCount = responseJsonObject["result"]?["row_count"]?.ToObject<int>() ?? throw new DatabricksSqlException("Unable to retrieve 'row_count' from the responseJsonObject.");
-        return rowCount!;
-    }
-
     private static string[] GetColumnNames(JObject responseJsonObject)
     {
         var columnNames = responseJsonObject["manifest"]?["schema"]?["columns"]?.Select(x => x["name"]?.ToString()).ToArray() ??
@@ -81,15 +75,8 @@ public class DatabricksSqlResponseParser : IDatabricksSqlResponseParser
         return columnNames!;
     }
 
-    private static List<string[]> GetDataArray(JObject responseJsonObject)
+    private static JToken GetChunk(JObject responseJsonObject)
     {
-        var dataArray = responseJsonObject["result"]?["data_array"]?.ToObject<List<string[]>>() ??
-                        throw new DatabricksSqlException("Unable to retrieve 'data_array' from the responseJsonObject");
-        return dataArray;
-    }
-
-    private static string? GetNextChunkInternalLink(JObject responseJsonObject)
-    {
-        return responseJsonObject["result"]?["next_chunk_internal_link"]?.ToObject<string>();
+        return responseJsonObject["result"]!;
     }
 }
