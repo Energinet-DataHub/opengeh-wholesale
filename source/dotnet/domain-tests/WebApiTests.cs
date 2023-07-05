@@ -88,21 +88,16 @@ namespace Energinet.DataHub.Wholesale.DomainTests
         /// </summary>'
         public class Given_Authorized : IClassFixture<AuthorizedClientFixture>
         {
-            private static readonly TimeSpan _defaultTimeout = TimeSpan.FromMinutes(15);
-            private static readonly TimeSpan _defaultDelay = TimeSpan.FromSeconds(30);
-
             private static readonly Guid _existingBatchId = new("ed39dbc5-bdc5-41b9-922a-08d3b12d4538");
             private static readonly DateTimeOffset _existingBatchPeriodStart = DateTimeOffset.Parse("2020-01-28T23:00:00Z");
             private static readonly DateTimeOffset _existingBatchPeriodEnd = DateTimeOffset.Parse("2020-01-29T23:00:00Z");
             private static readonly string ExistingGridAreaCode = "543";
 
-            private static Guid _batchId;
             private static List<CalculationResultCompleted>? _calculationResults;
 
             public Given_Authorized(AuthorizedClientFixture fixture)
             {
                 Fixture = fixture;
-                _batchId = Fixture.CalculationId;
                 _calculationResults = Fixture.CalculationResults;
             }
 
@@ -124,36 +119,22 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             [DomainFact]
             public void When_CreatingBatch_Then_BatchIsEventuallyCompleted()
             {
-                var isCompleted = Fixture.CalculationIsComplete;
-
-                isCompleted.Should().BeTrue();
+                Fixture.CalculationIsComplete.Should().BeTrue();
             }
 
             [DomainFact]
             public void When_BatchIsCompleted_Then_BatchIsReceivedOnTopicSubscription()
             {
-                if (_calculationResults == null)
-                {
-                    Assert.Fail("No results found");
-                }
-
-                _calculationResults.Count.Should().Be(109);
+                _calculationResults?.Count.Should().Be(109);
             }
 
             [DomainFact]
             public void When_BatchIsReceivedOnTopicSubscription_Then_MessagesReceivedContainAllTimeSeriesTypes()
             {
-                if (_calculationResults == null)
+                GetActualAndExpectedTimeSeriesTypes(out var actualTimeSeriesTypes, out var expectedTimeSeriesTypes);
+                foreach (var expectedTimeSeriesType in expectedTimeSeriesTypes)
                 {
-                    Assert.Fail("No results found");
-                }
-
-                var timeSeriesTypesInObjList = _calculationResults.Select(o => Enum.GetName(o.TimeSeriesType)).Distinct().ToList();
-                var timeSeriesTypesInEnum = Enum.GetNames(typeof(TimeSeriesType)).ToList();
-                timeSeriesTypesInEnum.Remove("FlexConsumption"); // FlexConsumption is not in the current test data
-                foreach (var timeSeriesType in timeSeriesTypesInEnum)
-                {
-                    timeSeriesTypesInObjList.Should().Contain(timeSeriesType);
+                    actualTimeSeriesTypes.Should().Contain(expectedTimeSeriesType);
                 }
             }
 
@@ -184,6 +165,13 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                     // Check that the line contains the expected grid area code and process type.
                     Assert.StartsWith("543,D04,", line);
                 }
+            }
+
+            private void GetActualAndExpectedTimeSeriesTypes(out List<string?> actual, out List<string> expected)
+            {
+                actual = (_calculationResults ?? throw new InvalidOperationException("calculationResults in null")).Select(o => Enum.GetName(o.TimeSeriesType)).Distinct().ToList();
+                expected = Enum.GetNames(typeof(TimeSeriesType)).ToList();
+                expected.Remove("FlexConsumption"); // FlexConsumption is not in the current test data
             }
         }
     }
