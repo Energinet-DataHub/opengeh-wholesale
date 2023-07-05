@@ -40,8 +40,14 @@ public class DatabricksSqlResponseParser : IDatabricksSqlResponseParser
         {
             case "PENDING":
                 return DatabricksSqlResponse.CreateAsPending(statementId);
+            case "RUNNING":
+                return DatabricksSqlResponse.CreateAsRunning(statementId);
+            case "CLOSED":
+                return DatabricksSqlResponse.CreateAsClosed(statementId);
             case "CANCELED":
                 return DatabricksSqlResponse.CreateAsCancelled(statementId);
+            case "FAILED":
+                return DatabricksSqlResponse.CreateAsFailed(statementId);
             case "SUCCEEDED":
                 var columnNames = GetColumnNames(jsonObject);
                 var chunk = _chunkParser.Parse(GetChunk(jsonObject));

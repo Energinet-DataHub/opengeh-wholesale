@@ -36,17 +36,9 @@ public class DatabricksSqlChunkResponseParser : IDatabricksSqlChunkResponseParse
 
     private static Uri GetExternalLink(JToken chunk)
     {
-        try
-        {
-            // TODO BJM: Throw if not exactly one chunk in external links
-            var link = chunk["external_links"]?[0]?["external_link"]?.ToObject<string>()
-                       ?? throw new InvalidOperationException("Unable to retrieve 'external_link' from the response");
-            return new Uri(link);
-        }
-        catch (Exception)
-        {
-            throw;
-        }
+        var link = chunk["external_links"]?[0]?["external_link"]?.ToObject<string>()
+                   ?? throw new InvalidOperationException("Unable to retrieve 'external_link' from the response");
+        return new Uri(link);
     }
 
     private string? GetNextChunkInternalLink(JToken chunk)
