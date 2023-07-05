@@ -35,12 +35,21 @@ public class DatabricksSqlResponseParserTests
     private readonly string _closedResultJson;
     private readonly string _canceledResultJson;
     private readonly string _failedResultJson;
+    private readonly string _succeededResultStatementId;
+    private readonly string[] _succeededResultColumnNames;
 
     public DatabricksSqlResponseParserTests()
     {
         var stream = EmbeddedResources.GetStream("Infrastructure.SqlStatements.CalculationResult.json");
         using var reader = new StreamReader(stream);
         _succeededResultJson = reader.ReadToEnd();
+        _succeededResultStatementId = "01edd9c4-2f88-1b8c-8764-bedad70547f2";
+        _succeededResultColumnNames = new[]
+        {
+            "grid_area", "energy_supplier_id", "balance_responsible_id", "quantity", "quantity_quality", "time",
+            "aggregation_level", "time_series_type", "batch_id", "batch_process_type", "batch_execution_time_start",
+            "out_grid_area",
+        };
 
         var chunkStream = EmbeddedResources.GetStream("Infrastructure.SqlStatements.CalculationResultChunk.json");
         using var chunkReader = new StreamReader(chunkStream);
@@ -51,6 +60,40 @@ public class DatabricksSqlResponseParserTests
         _closedResultJson = CreateResultJson("CLOSED");
         _canceledResultJson = CreateResultJson("CANCELED");
         _failedResultJson = CreateResultJson("FAILED");
+    }
+
+    [Theory]
+    [AutoMoqData]
+    public void Parse_ReturnsResponseWithExpectedStatementId(
+        DatabricksSqlChunkResponse chunkResponse,
+        [Frozen] Mock<IDatabricksSqlChunkResponseParser> chunkParserMock,
+        DatabricksSqlResponseParser sut)
+    {
+        // Arrange
+        chunkParserMock.Setup(x => x.Parse(It.IsAny<JToken>())).Returns(chunkResponse);
+
+        // Act
+        var actual = sut.Parse(_succeededResultJson);
+
+        // Assert
+        actual.StatementId.Should().Be(_succeededResultStatementId);
+    }
+
+    [Theory]
+    [AutoMoqData]
+    public void Parse_ReturnsResponseWithExpectedColumnNames(
+        DatabricksSqlChunkResponse chunkResponse,
+        [Frozen] Mock<IDatabricksSqlChunkResponseParser> chunkParserMock,
+        DatabricksSqlResponseParser sut)
+    {
+        // Arrange
+        chunkParserMock.Setup(x => x.Parse(It.IsAny<JToken>())).Returns(chunkResponse);
+
+        // Act
+        var actual = sut.Parse(_succeededResultJson);
+
+        // Assert
+        actual.ColumnNames.Should().BeEquivalentTo(_succeededResultColumnNames);
     }
 
     [Theory]
@@ -164,41 +207,6 @@ public class DatabricksSqlResponseParserTests
         actual.State.Should().Be(expectedState);
     }
 
-    // [Theory]
-    // [AutoMoqData]
-    // public void Parse_ReturnsResponseWithExpectedArrayLength(DatabricksSqlResponseParser sut)
-    // {
-    //     // Arrange
-    //     const int expectedLength = 96;
-    //
-    //     // Act
-    //     var actual = sut.Parse(_succeededResultJson);
-    //
-    //     // Assert
-    //     actual.Table!.RowCount.Should().Be(expectedLength);
-    // }
-    //
-    // [Theory]
-    // [AutoMoqData]
-    // public void Parse_ReturnsDataArrayWithExpectedContent(DatabricksSqlResponseParser sut)
-    // {
-    //     // Arrange
-    //     var expectedFirstArray = new[]
-    //     {
-    //         "543", null, null, "0.000", "missing", "2023-04-04T22:00:00.000Z", "total_ga", "net_exchange_per_ga", "0ff76fd9-7d07-48f0-9752-e94d38d93498", "BalanceFixing", "2023-04-05T08:47:41.000Z", null,
-    //     };
-    //     var expectedLastArray = new[]
-    //     {
-    //         "543", null, null, "1.235", "estimated", "2023-04-05T21:45:00.000Z", "total_ga", "net_exchange_per_ga", "0ff76fd9-7d07-48f0-9752-e94d38d93498", "BalanceFixing", "2023-04-05T08:47:41.000Z", null,
-    //     };
-    //
-    //     // Act
-    //     var actual = sut.Parse(_succeededResultJson);
-    //
-    //     // Assert
-    //     actual.Table![0].Should().Equal(expectedFirstArray);
-    //     actual.Table![^1].Should().Equal(expectedLastArray);
-    // }
     [Theory]
     [AutoMoqData]
     public void Parse_WhenValidJson_ReturnsResult(DatabricksSqlResponseParser sut)
@@ -231,53 +239,6 @@ public class DatabricksSqlResponseParserTests
         Assert.Throws<InvalidOperationException>(() => sut.Parse(jsonString));
     }
 
-//     [Theory]
-//     [AutoMoqData]
-//     public void Parse_WhenNoDataMatchesCriteria_ReturnTableWithZeroRows(DatabricksSqlResponseParser sut)
-//     {
-//         // Arrange
-//         var jsonString = @"{
-//     'statement_id': '01edef23-0d2c-10dd-879b-26b5e97b3796',
-//     'status': {
-//         'state': 'SUCCEEDED'
-//     },
-//     'manifest': {
-//         'schema': {
-//             'columns': [
-//                 {
-//                     'name': 'grid_area'
-//                 }
-//             ]
-//         },
-//         'total_row_count': 0
-//     },
-//     'result': {
-//         'row_count': 0
-//     }
-// }";
-//
-//         // Act
-//         var actual = sut.Parse(jsonString);
-//
-//         // Assert
-//         actual.Table!.RowCount.Should().Be(0);
-//     }
-//
-//     [Theory(Skip = "...")]
-//     [InlineAutoMoqData]
-//     public void Parse_WhenResultIsChunk_ReturnsExpectedNextChunkInternalLink(DatabricksSqlResponseParser sut)
-//     {
-//         // Arrange
-//         var expectedNextChunkInternalLink =
-//             "/api/2.0/sql/statements/01ed92c5-3583-1f38-b21b-c6773e7c56b3/result/chunks/1?row_offset=432500";
-//
-//         // Act
-//         var actual = sut.Parse(_resultChunkJson);
-//
-//         // Assert
-//         actual.HasMoreRows.Should().BeTrue();
-//         actual.ExternalLink.Should().Be(expectedNextChunkInternalLink);
-//     }
     private string CreateResultJson(string state)
     {
         var statement = new
