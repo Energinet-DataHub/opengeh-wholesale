@@ -67,7 +67,7 @@ public class DatabricksSqlResponseParserTests
     public void Parse_ReturnsResponseWithExpectedStatementId(
         DatabricksSqlChunkResponse chunkResponse,
         [Frozen] Mock<IDatabricksSqlChunkResponseParser> chunkParserMock,
-        DatabricksSqlResponseParser sut)
+        DatabricksSqlStatusResponseParser sut)
     {
         // Arrange
         chunkParserMock.Setup(x => x.Parse(It.IsAny<JToken>())).Returns(chunkResponse);
@@ -84,7 +84,7 @@ public class DatabricksSqlResponseParserTests
     public void Parse_ReturnsResponseWithExpectedColumnNames(
         DatabricksSqlChunkResponse chunkResponse,
         [Frozen] Mock<IDatabricksSqlChunkResponseParser> chunkParserMock,
-        DatabricksSqlResponseParser sut)
+        DatabricksSqlStatusResponseParser sut)
     {
         // Arrange
         chunkParserMock.Setup(x => x.Parse(It.IsAny<JToken>())).Returns(chunkResponse);
@@ -98,7 +98,7 @@ public class DatabricksSqlResponseParserTests
 
     [Theory]
     [AutoMoqData]
-    public void Parse_WhenStateIsPending_ReturnsResponseWithExpectedState(DatabricksSqlResponseParser sut)
+    public void Parse_WhenStateIsPending_ReturnsResponseWithExpectedState(DatabricksSqlStatusResponseParser sut)
     {
         // Arrange
         const DatabricksSqlResponseState expectedState = DatabricksSqlResponseState.Pending;
@@ -115,7 +115,7 @@ public class DatabricksSqlResponseParserTests
     public void Parse_WhenStateIsSucceeded_ReturnsResponseWithExpectedState(
         DatabricksSqlChunkResponse chunkResponse,
         [Frozen] Mock<IDatabricksSqlChunkResponseParser> chunkParserMock,
-        DatabricksSqlResponseParser sut)
+        DatabricksSqlStatusResponseParser sut)
     {
         // Arrange
         const DatabricksSqlResponseState expectedState = DatabricksSqlResponseState.Succeeded;
@@ -130,7 +130,7 @@ public class DatabricksSqlResponseParserTests
 
     [Theory]
     [AutoMoqData]
-    public void Parse_WhenStateIsCanceled_ReturnsResponseWithExpectedState(DatabricksSqlResponseParser sut)
+    public void Parse_WhenStateIsCanceled_ReturnsResponseWithExpectedState(DatabricksSqlStatusResponseParser sut)
     {
         // Arrange
         const DatabricksSqlResponseState expectedState = DatabricksSqlResponseState.Cancelled;
@@ -144,7 +144,7 @@ public class DatabricksSqlResponseParserTests
 
     [Theory]
     [AutoMoqData]
-    public void Parse_WhenStateIsRunning_ReturnsResponseWithExpectedState(DatabricksSqlResponseParser sut)
+    public void Parse_WhenStateIsRunning_ReturnsResponseWithExpectedState(DatabricksSqlStatusResponseParser sut)
     {
         // Arrange
         const DatabricksSqlResponseState expectedState = DatabricksSqlResponseState.Running;
@@ -158,7 +158,7 @@ public class DatabricksSqlResponseParserTests
 
     [Theory]
     [AutoMoqData]
-    public void Parse_WhenStateIsClosed_ReturnsResponseWithExpectedState(DatabricksSqlResponseParser sut)
+    public void Parse_WhenStateIsClosed_ReturnsResponseWithExpectedState(DatabricksSqlStatusResponseParser sut)
     {
         // Arrange
         const DatabricksSqlResponseState expectedState = DatabricksSqlResponseState.Closed;
@@ -173,8 +173,8 @@ public class DatabricksSqlResponseParserTests
     [Theory]
     [AutoMoqData]
     public void Parse_WhenStateIsUnknown_LogsErrorAndThrowsDatabricksSqlException(
-        [Frozen] Mock<ILogger<DatabricksSqlResponseParser>> loggerMock,
-        DatabricksSqlResponseParser sut)
+        [Frozen] Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
+        DatabricksSqlStatusResponseParser sut)
     {
         // Arrange
         var resultJson = CreateResultJson("UNKNOWN");
@@ -195,7 +195,7 @@ public class DatabricksSqlResponseParserTests
 
     [Theory]
     [AutoMoqData]
-    public void Parse_WhenStateIsFailed_ReturnsResponseWithExpectedState(DatabricksSqlResponseParser sut)
+    public void Parse_WhenStateIsFailed_ReturnsResponseWithExpectedState(DatabricksSqlStatusResponseParser sut)
     {
         // Arrange
         const DatabricksSqlResponseState expectedState = DatabricksSqlResponseState.Failed;
@@ -209,7 +209,7 @@ public class DatabricksSqlResponseParserTests
 
     [Theory]
     [AutoMoqData]
-    public void Parse_WhenValidJson_ReturnsResult(DatabricksSqlResponseParser sut)
+    public void Parse_WhenValidJson_ReturnsResult(DatabricksSqlStatusResponseParser sut)
     {
         // Arrange
         var statementId = new JProperty("statement_id", Guid.NewGuid());
@@ -225,7 +225,7 @@ public class DatabricksSqlResponseParserTests
 
     [Theory]
     [AutoMoqData]
-    public void Parse_WhenInvalidJson_ThrowsException(DatabricksSqlResponseParser sut)
+    public void Parse_WhenInvalidJson_ThrowsException(DatabricksSqlStatusResponseParser sut)
     {
         // Arrange
         var statementId = new JProperty("statement_id", Guid.NewGuid());

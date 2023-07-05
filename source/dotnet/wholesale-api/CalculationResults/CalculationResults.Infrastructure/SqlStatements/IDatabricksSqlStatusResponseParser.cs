@@ -14,11 +14,7 @@
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 
-public interface IDatabricksSqlResponseParser
+public interface IDatabricksSqlStatusResponseParser
 {
-    DatabricksSqlResponse ParseStatusResponse(string jsonResponse);
-
-    DatabricksSqlChunkResponse ParseChunkResponse(string jsonResponse);
-
-    TableChunk ParseChunkDataResponse(string jsonResponse, string[] columnNames);
+    DatabricksSqlResponse Parse(string jsonResponse);
 }
