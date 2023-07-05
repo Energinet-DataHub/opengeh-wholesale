@@ -68,11 +68,12 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         async Task IAsyncLifetime.InitializeAsync()
         {
             WholesaleClient = await CreateWholesaleClientAsync();
-            CalculationId = await StartCalculation();
             await CreateTopicSubscriptionAsync();
             Receiver = CreateServiceBusReceiver();
-            CalculationIsComplete = await WaitForCalculationToComplete(CalculationId);
-            CalculationResults = await GetListOfResultsFromServiceBus(CalculationId);
+            var f = new AuthorizedClientFixtureOutput(WholesaleClient, Receiver);
+            CalculationId = await f.StartCalculation();
+            CalculationIsComplete = await f.WaitForCalculationToComplete(CalculationId);
+            CalculationResults = await f.GetListOfResultsFromServiceBus(CalculationId);
         }
 
         async Task IAsyncLifetime.DisposeAsync()
@@ -127,70 +128,6 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             };
 
             return ServiceBusClient.CreateReceiver(_topicName, _subscriptionName, serviceBusReceiverOptions);
-        }
-
-        private async Task<Guid> StartCalculation()
-        {
-            var startDate = new DateTimeOffset(2020, 1, 28, 23, 0, 0, TimeSpan.Zero);
-            var endDate = new DateTimeOffset(2020, 1, 29, 23, 0, 0, TimeSpan.Zero);
-            var batchRequestDto = new BatchRequestDto
-            {
-                ProcessType = ProcessType.BalanceFixing,
-                GridAreaCodes = new List<string> { "543" },
-                StartDate = startDate,
-                EndDate = endDate,
-            };
-            var guid = await WholesaleClient.CreateBatchAsync(batchRequestDto);
-            return guid;
-        }
-
-        private async Task<bool> WaitForCalculationToComplete(Guid calculationId)
-        {
-        var defaultTimeout = TimeSpan.FromMinutes(15);
-        var defaultDelay = TimeSpan.FromSeconds(30);
-        var isCompleted = await Awaiter.TryWaitUntilConditionAsync(
-                async () =>
-                {
-                    var batchResult = await WholesaleClient.GetBatchAsync(calculationId);
-                    return batchResult?.ExecutionState == BatchState.Completed;
-                },
-                defaultTimeout,
-                defaultDelay);
-        return isCompleted;
-        }
-
-        private async Task<List<CalculationResultCompleted>?> GetListOfResultsFromServiceBus(Guid calculationId)
-        {
-            var messageHasValue = true;
-            var results = new List<CalculationResultCompleted>();
-            using (var cts = new CancellationTokenSource())
-            {
-                cts.CancelAfter(TimeSpan.FromMinutes(5));
-                while (messageHasValue)
-                {
-                    var message = await Receiver.ReceiveMessageAsync();
-                    if (message?.Body == null)
-                    {
-                        messageHasValue = false;
-                    }
-                    else
-                    {
-                        var data = message.Body.ToArray();
-                        var result = CalculationResultCompleted.Parser.ParseFrom(data);
-                        if (result.BatchId == calculationId.ToString())
-                        {
-                            results.Add(result);
-                        }
-                    }
-
-                    if (cts.IsCancellationRequested)
-                    {
-                        Assert.Fail($"No messages received on topic subscription match {calculationId.ToString()}.");
-                    }
-                }
-            }
-
-            return results;
         }
     }
 }
