@@ -98,7 +98,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             public Given_Authorized(AuthorizedClientFixture fixture)
             {
                 Fixture = fixture;
-                _calculationResults = Fixture.CalculationResults;
+                _calculationResults = Fixture.Output.CalculationResults;
             }
 
             private AuthorizedClientFixture Fixture { get; }
@@ -119,7 +119,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             [DomainFact]
             public void When_CreatingBatch_Then_BatchIsEventuallyCompleted()
             {
-                Fixture.CalculationIsComplete.Should().BeTrue();
+                Fixture.Output.CalculationIsComplete.Should().BeTrue();
             }
 
             [DomainFact]

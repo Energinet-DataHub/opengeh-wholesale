@@ -53,11 +53,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         /// </summary>
         public ServiceBusReceiver Receiver { get; private set; } = null!;
 
-        public Guid CalculationId { get; private set; }
-
-        public List<CalculationResultCompleted>? CalculationResults { get; private set; }
-
-        public bool CalculationIsComplete { get; private set; }
+        public AuthorizedClientFixtureOutput Output { get; private set; } = null!;
 
         private B2CUserTokenAuthenticationClient UserAuthenticationClient { get; }
 
@@ -70,10 +66,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             WholesaleClient = await CreateWholesaleClientAsync();
             await CreateTopicSubscriptionAsync();
             Receiver = CreateServiceBusReceiver();
-            var f = new AuthorizedClientFixtureOutput(WholesaleClient, Receiver);
-            CalculationId = await f.StartCalculation();
-            CalculationIsComplete = await f.WaitForCalculationToComplete(CalculationId);
-            CalculationResults = await f.GetListOfResultsFromServiceBus(CalculationId);
+            Output = new AuthorizedClientFixtureOutput(WholesaleClient, Receiver);
+            await Output.InitializeAsync();
         }
 
         async Task IAsyncLifetime.DisposeAsync()

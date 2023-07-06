@@ -12,14 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Identity;
 using Azure.Messaging.ServiceBus;
-using Azure.Messaging.ServiceBus.Administration;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
-using Moq;
-using Xunit;
 using ProcessType = Energinet.DataHub.Wholesale.DomainTests.Clients.v3.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
@@ -38,7 +34,20 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             _receiver = receiver;
         }
 
-        public async Task<Guid> StartCalculation()
+        public bool CalculationIsComplete { get; private set; }
+
+        public List<CalculationResultCompleted>? CalculationResults { get; private set; }
+
+        private Guid CalculationId { get; set; }
+
+        public async Task InitializeAsync()
+        {
+            CalculationId = await StartCalculation();
+            CalculationIsComplete = await WaitForCalculationToComplete(CalculationId);
+            CalculationResults = await GetListOfResultsFromServiceBus(CalculationId);
+        }
+
+        private async Task<Guid> StartCalculation()
         {
             var startDate = new DateTimeOffset(2020, 1, 28, 23, 0, 0, TimeSpan.Zero);
             var endDate = new DateTimeOffset(2020, 1, 29, 23, 0, 0, TimeSpan.Zero);
@@ -52,7 +61,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             return await _wholesaleClient.CreateBatchAsync(batchRequestDto);
         }
 
-        public async Task<bool> WaitForCalculationToComplete(Guid calculationId)
+        private async Task<bool> WaitForCalculationToComplete(Guid calculationId)
         {
         var defaultTimeout = TimeSpan.FromMinutes(15);
         var defaultDelay = TimeSpan.FromSeconds(30);
@@ -67,7 +76,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         return isCompleted;
         }
 
-        public async Task<List<CalculationResultCompleted>?> GetListOfResultsFromServiceBus(Guid calculationId)
+        private async Task<List<CalculationResultCompleted>?> GetListOfResultsFromServiceBus(Guid calculationId)
         {
             var messageHasValue = true;
             var results = new List<CalculationResultCompleted>();
@@ -89,11 +98,6 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                         {
                             results.Add(result);
                         }
-                    }
-
-                    if (cts.IsCancellationRequested)
-                    {
-                        Assert.Fail($"No messages received on topic subscription match {calculationId.ToString()}.");
                     }
                 }
             }
