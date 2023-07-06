@@ -52,12 +52,13 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task ExecuteSqlStatementAsync_WhenQueryFromDatabricks_ReturnsExpectedData(Mock<ILogger<DatabricksSqlResponseParser>> loggerMock)
+    public async Task ExecuteSqlStatementAsync_WhenQueryFromDatabricks_ReturnsExpectedData(
+        Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock)
     {
         // Arrange
         var tableName = await CreateResultTableWithTwoRowsAsync();
+        var sut = _fixture.CreateSqlStatementClient(loggerMock);
 
-        var sut = CreateSut(loggerMock);
         var sqlStatement = $@"SELECT * FROM {SchemaName}.{tableName}";
 
         // Act
@@ -69,12 +70,11 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task ExecuteAsync_WhenMultipleChunks_ReturnsAllRows(
-        Mock<ILogger<DatabricksSqlResponseParser>> loggerMock)
+    public async Task ExecuteAsync_WhenMultipleChunks_ReturnsAllRows(Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock)
     {
         // Arrange
         var expectedRowCount = 100;
-        var sut = CreateSut(loggerMock);
+        var sut = _fixture.CreateSqlStatementClient(loggerMock);
 
         // Arrange: The result of this query spans multiple chunks
         var sqlStatement = $@"select r.id, 'some value' as value from range({expectedRowCount}) as r";
@@ -84,18 +84,6 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
 
         // Assert
         actual.Should().Be(expectedRowCount);
-    }
-
-    private SqlStatementClient CreateSut(Mock<ILogger<DatabricksSqlResponseParser>> loggerMock)
-    {
-        var databricksSqlChunkResponseParser = new DatabricksSqlChunkResponseParser();
-        var sut = new SqlStatementClient(
-            new HttpClient(),
-            _fixture.DatabricksOptionsMock.Object,
-            new DatabricksSqlResponseParser(loggerMock.Object, databricksSqlChunkResponseParser),
-            databricksSqlChunkResponseParser,
-            new DatabricksSqlChunkDataResponseParser());
-        return sut;
     }
 
     private async Task<string> CreateResultTableWithTwoRowsAsync()

@@ -63,19 +63,13 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetRowsAsync_ReturnsExpectedReportRow(Mock<ILogger<DatabricksSqlResponseParser>> loggerMock)
+    public async Task GetRowsAsync_ReturnsExpectedReportRow(Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock)
     {
         // Arrange
         var expectedSettlementReportRow = GetDefaultSettlementReportRow();
         var tableName = await CreateTableWithTwoRowsAsync();
-        var databricksSqlChunkResponseParser = new DatabricksSqlChunkResponseParser();
-        var sqlStatementClient = new SqlStatementClient(
-            new HttpClient(),
-            _fixture.DatabricksOptionsMock.Object,
-            new DatabricksSqlResponseParser(loggerMock.Object, databricksSqlChunkResponseParser),
-            databricksSqlChunkResponseParser,
-            new DatabricksSqlChunkDataResponseParser());
         var deltaTableOptions = CreateDeltaTableOptions(_fixture.DatabricksSchemaManager.SchemaName, tableName);
+        var sqlStatementClient = _fixture.CreateSqlStatementClient(loggerMock);
         var sut = new SettlementReportResultQueries(sqlStatementClient, deltaTableOptions);
 
         // Act
