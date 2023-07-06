@@ -23,9 +23,8 @@ import package.datamigration.constants as c
 
 
 def _get_all_migrations() -> list[str]:
-    sql_files = importlib.resources.contents(f'{c.WHEEL_NAME}.{c.MIGRATION_SCRIPTS_FOLDER_PATH}')
-    sql_files = [file for file in sql_files if file.endswith('.sql')]
-    return sql_files
+    migration_files = importlib.resources.contents(f'{c.WHEEL_NAME}.{c.MIGRATION_SCRIPTS_FOLDER_PATH}')
+    return [file for file in migration_files if file.endswith('.sql')]
 
 
 def _print_count(
