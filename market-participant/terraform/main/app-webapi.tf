@@ -37,7 +37,7 @@ module "app_webapi" {
 }
 
 module "kvs_app_markpart_webapi_base_url" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
 
   name         = "app-markpart-webapi-base-url"
   value        = "https://${module.app_webapi.default_hostname}"
@@ -45,7 +45,7 @@ module "kvs_app_markpart_webapi_base_url" {
 }
 
 module "kvs_backend_open_id_url" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
 
   name         = "backend-open-id-url"
   value        = "https://${module.app_webapi.default_hostname}/.well-known/openid-configuration"

@@ -1,5 +1,5 @@
 module "apima_bff_graphql_temp" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api?ref=v11"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api?ref=v12"
 
   name                       = "bff-graphql-temp"
   project_name               = var.domain_name_short
@@ -92,7 +92,7 @@ module "apima_bff_graphql_temp" {
 }
 
 module "apimao_ping_for_connectivity_test" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api-operation?ref=v11"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api-operation?ref=v12"
 
   operation_id            = "graphql"
   api_management_api_name = module.apima_bff_graphql_temp.name

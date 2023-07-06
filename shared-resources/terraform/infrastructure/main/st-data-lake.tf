@@ -21,7 +21,7 @@ module "st_data_lake" {
 }
 
 module "kvs_st_data_lake_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
 
   name         = "st-data-lake-name"
   value        = module.st_data_lake.name
@@ -29,7 +29,7 @@ module "kvs_st_data_lake_name" {
 }
 
 module "kvs_st_data_lake_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
 
   name         = "st-data-lake-id"
   value        = module.st_data_lake.id

@@ -3,7 +3,7 @@ locals {
 }
 
 module "snet_deployagent" {
-  source               = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/subnet?ref=v11"
+  source               = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/subnet?ref=v12"
   name                 = "deployagents"
   project_name         = var.domain_name_short
   environment_short    = var.environment_short

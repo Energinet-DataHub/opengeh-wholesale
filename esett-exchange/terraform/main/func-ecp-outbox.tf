@@ -1,5 +1,5 @@
 module "func_entrypoint_ecp_outbox" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=v11"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=v12"
 
   name                                     = "ecp-outbox"
   project_name                             = var.domain_name_short
@@ -11,7 +11,6 @@ module "func_entrypoint_ecp_outbox" {
   private_endpoint_subnet_id               = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   app_service_plan_id                      = data.azurerm_key_vault_secret.plan_shared_id.value
   application_insights_instrumentation_key = data.azurerm_key_vault_secret.appi_shared_instrumentation_key.value
-  log_analytics_workspace_id               = data.azurerm_key_vault_secret.log_shared_id.value
   always_on                                = true
   health_check_path                        = "/api/monitor/ready"
   health_check_alert = {
