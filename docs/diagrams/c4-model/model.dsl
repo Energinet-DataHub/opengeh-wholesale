@@ -33,7 +33,7 @@ wholesaleDomain = group "Wholesale" {
         this -> wholesaleDataLake "Retrieves results from"
 
         # Domain-to-domain relationships
-        this -> ediApiApp "Sends calculations" "integration event/amqp" {
+        this -> edi "Sends calculations" "integration event/amqp" {
             tags "Simple View"
         }
     }
