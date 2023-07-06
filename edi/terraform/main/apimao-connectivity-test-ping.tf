@@ -1,5 +1,5 @@
 module "apimao_ping_for_connectivity_test" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api-operation?ref=v11"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api-operation?ref=v12"
 
   operation_id            = "connectivity-test-ping"
   api_management_api_name = module.apima_b2b.name

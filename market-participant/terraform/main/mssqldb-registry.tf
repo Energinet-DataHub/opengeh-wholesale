@@ -18,7 +18,7 @@ module "mssqldb_market_participant" {
 }
 
 module "kvs_sql_ms_market_participant_database_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
 
   name         = "mssql-market-participant-database-name"
   value        = module.mssqldb_market_participant.name

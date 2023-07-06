@@ -62,7 +62,7 @@ resource "random_password" "mssql_administrator_login_password" {
 }
 
 module "kvs_mssql_data_elastic_pool_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
 
   name         = "mssql-data-elastic-pool-id"
   value        = module.mssql_data.elastic_pool_id
@@ -70,7 +70,7 @@ module "kvs_mssql_data_elastic_pool_id" {
 }
 
 module "kvs_mssql_data_admin_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
 
   name         = "mssql-data-admin-user-name"
   value        = local.mssqlServerAdminName
@@ -78,7 +78,7 @@ module "kvs_mssql_data_admin_name" {
 }
 
 module "kvs_mssql_data_admin_password" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
 
   name         = "mssql-data-admin-user-password"
   value        = random_password.mssql_administrator_login_password.result
@@ -86,7 +86,7 @@ module "kvs_mssql_data_admin_password" {
 }
 
 module "kvs_mssql_data_url" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
 
   name         = "mssql-data-url"
   value        = module.mssql_data.fully_qualified_domain_name
@@ -94,7 +94,7 @@ module "kvs_mssql_data_url" {
 }
 
 module "kvs_mssql_data_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
 
   name         = "mssql-data-name"
   value        = module.mssql_data.name

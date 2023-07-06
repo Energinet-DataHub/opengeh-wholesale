@@ -39,7 +39,7 @@ module "func_receiver" {
 }
 
 module "kvs_edi_api_base_url" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
 
   name         = "func-edi-api-base-url"
   value        = "https://${module.func_receiver.default_hostname}"

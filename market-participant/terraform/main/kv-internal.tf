@@ -13,7 +13,7 @@ module "kv_internal" {
 }
 
 module "kvs_sendgrid_api_key" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
 
   name         = "sendgrid-api-key"
   value        = var.sendgrid_api_key
@@ -21,7 +21,7 @@ module "kvs_sendgrid_api_key" {
 }
 
 module "kvs_sendgrid_from_email" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
 
   name         = "sendgrid-from-email"
   value        = var.sendgrid_from_email
@@ -29,7 +29,7 @@ module "kvs_sendgrid_from_email" {
 }
 
 module "kvs_sendgrid_bcc_email" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
 
   name         = "sendgrid-bcc-email"
   value        = var.sendgrid_bcc_email

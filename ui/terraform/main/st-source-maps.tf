@@ -30,7 +30,7 @@ module "st_source_maps" {
 }
 
 module "kvs_st_source_maps_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
 
   name         = "st-sourcemaps-name"
   value        = module.st_source_maps.name

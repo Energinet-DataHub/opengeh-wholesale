@@ -18,7 +18,7 @@ module "kv_shared" {
 }
 
 module "kvs_pir_hosted_deployment_agents" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
 
   name         = "pir-hosted-deployment-agents"
   value        = var.hosted_deployagent_public_ip_range

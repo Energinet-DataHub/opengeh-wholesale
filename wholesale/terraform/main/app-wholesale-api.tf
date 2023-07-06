@@ -54,7 +54,7 @@ module "app_wholesale_api" {
 }
 
 module "kvs_app_wholesale_api_base_url" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v11"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
 
   name         = "app-wholesale-api-base-url"
   value        = "https://${module.app_wholesale_api.default_hostname}"

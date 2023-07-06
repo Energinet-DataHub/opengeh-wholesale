@@ -1,5 +1,5 @@
 module "storage_esett_documents" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=v11"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=v12"
 
   name                       = "documents"
   project_name               = var.domain_name_short
