@@ -10,7 +10,6 @@ module "storage_esett_documents" {
   account_replication_type   = "LRS"
   access_tier                = "Hot"
   account_tier               = "Standard"
-  log_analytics_workspace_id = data.azurerm_key_vault_secret.log_shared_id.value
   private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
 
   containers = [
