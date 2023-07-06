@@ -20,4 +20,16 @@ module "func_migration" {
     action_group_id = data.azurerm_key_vault_secret.primary_action_group_id.value
     enabled         = var.enable_health_check_alerts
   }
+  role_assignments = [
+    {
+      resource_id          = module.st_dh2data.id
+      role_definition_name = "Storage Blob Data Contributor"
+    }
+  ]
+
+    app_settings = {
+    Dh2ClientSettings__EndpointAddress              = "https://b2b.te7.datahub.dk"
+    Dh2ClientSettings__CertificateThumbprint        = azurerm_key_vault_certificate.dh2_certificate.thumbprint
+    StorageAccountSettings__Dh2StorageAccountUri    = "https://${module.st_dh2data.name}.blob.core.windows.net"
+  }
 }
