@@ -29,7 +29,7 @@ import package.datamigration.constants as c
 def split_string_by_go(string: str) -> list[str]:
     lines = string.replace("\r\n", "\n").split("\n")
     sections = []
-    current_section = []
+    current_section: list[str] = []
 
     for line in lines:
         if "go" in line.lower():
