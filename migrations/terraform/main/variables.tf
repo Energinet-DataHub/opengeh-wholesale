@@ -47,3 +47,13 @@ variable "alert_email_notification" {
   type        = string
   description = "Email address for the teams channel that the alerts are sent to."
 }
+
+variable "cert_pwd_migration_dh2_authentication_key1" {
+  type        = string
+  description = "Password for the certificate"
+
+  validation {
+    condition = length(var.cert_pwd_migration_dh2_authentication_key1) > 0
+    error_message = "The password for the certificate must be specified."
+  }
+}
