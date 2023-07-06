@@ -13,7 +13,9 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
@@ -44,6 +46,19 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
     public Task DisposeAsync()
     {
         return Task.CompletedTask;
+    }
+
+    public SqlStatementClient CreateSqlStatementClient(Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock)
+    {
+        var databricksSqlChunkResponseParser = new DatabricksSqlChunkResponseParser();
+        var sqlStatementClient = new SqlStatementClient(
+            new HttpClient(),
+            DatabricksOptionsMock.Object,
+            new DatabricksSqlResponseParser(
+                new DatabricksSqlStatusResponseParser(loggerMock.Object, databricksSqlChunkResponseParser),
+                databricksSqlChunkResponseParser,
+                new DatabricksSqlChunkDataResponseParser()));
+        return sqlStatementClient;
     }
 
     private static Mock<IOptions<DatabricksOptions>> CreateDatabricksOptionsMock(DatabricksSchemaManager databricksSchemaManager)

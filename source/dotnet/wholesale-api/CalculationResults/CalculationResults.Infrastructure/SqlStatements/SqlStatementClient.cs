@@ -26,22 +26,16 @@ public class SqlStatementClient : ISqlStatementClient
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly HttpClient _httpClient;
     private readonly IOptions<DatabricksOptions> _options;
-    private readonly IDatabricksSqlResponseParser _databricksSqlResponseParser;
-    private readonly IDatabricksSqlChunkResponseParser _databricksSqlChunkResponseParser;
-    private readonly IDatabricksSqlChunkDataResponseParser _databricksSqlChunkDataResponseParser;
+    private readonly IDatabricksSqlResponseParser _responseResponseParser;
 
     public SqlStatementClient(
         HttpClient httpClient,
         IOptions<DatabricksOptions> options,
-        IDatabricksSqlResponseParser databricksSqlResponseParser,
-        IDatabricksSqlChunkResponseParser databricksSqlChunkResponseParser,
-        IDatabricksSqlChunkDataResponseParser databricksSqlChunkDataResponseParser)
+        IDatabricksSqlResponseParser responseResponseParser)
     {
         _httpClient = httpClient;
         _options = options;
-        _databricksSqlResponseParser = databricksSqlResponseParser;
-        _databricksSqlChunkResponseParser = databricksSqlChunkResponseParser;
-        _databricksSqlChunkDataResponseParser = databricksSqlChunkDataResponseParser;
+        _responseResponseParser = responseResponseParser;
         ConfigureHttpClient(_httpClient, _options);
     }
 
@@ -83,7 +77,7 @@ public class SqlStatementClient : ISqlStatementClient
             throw new DatabricksSqlException($"Unable to get calculation result from Databricks. HTTP status code: {response.StatusCode}");
 
         var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-        var databricksSqlResponse = _databricksSqlResponseParser.Parse(jsonResponse);
+        var databricksSqlResponse = _responseResponseParser.ParseStatusResponse(jsonResponse);
 
         while (databricksSqlResponse.State is DatabricksSqlResponseState.Pending or DatabricksSqlResponseState.Running)
         {
@@ -93,7 +87,7 @@ public class SqlStatementClient : ISqlStatementClient
             if (!httpResponse.IsSuccessStatusCode)
                 throw new DatabricksSqlException($"Unable to get calculation result from Databricks. HTTP status code: {httpResponse.StatusCode}");
 
-            databricksSqlResponse = _databricksSqlResponseParser.Parse(jsonResponse);
+            databricksSqlResponse = _responseResponseParser.ParseStatusResponse(jsonResponse);
         }
 
         if (databricksSqlResponse.State is DatabricksSqlResponseState.Cancelled or DatabricksSqlResponseState.Failed or DatabricksSqlResponseState.Closed)
@@ -109,7 +103,7 @@ public class SqlStatementClient : ISqlStatementClient
             throw new DatabricksSqlException($"Unable to get chunk from {chunkLink}. HTTP status code: {httpResponse.StatusCode}");
 
         var jsonResponse = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-        return _databricksSqlChunkResponseParser.Parse(jsonResponse);
+        return _responseResponseParser.ParseChunkResponse(jsonResponse);
     }
 
     private async Task<TableChunk> GetChunkDataAsync(Uri externalLink, string[] columnNames)
@@ -120,7 +114,7 @@ public class SqlStatementClient : ISqlStatementClient
             throw new DatabricksSqlException($"Unable to get chunk data from external link {externalLink}. HTTP status code: {httpResponse.StatusCode}");
 
         var jsonResponse = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-        return _databricksSqlChunkDataResponseParser.Parse(jsonResponse, columnNames);
+        return _responseResponseParser.ParseChunkDataResponse(jsonResponse, columnNames);
     }
 
     private static void ConfigureHttpClient(HttpClient httpClient, IOptions<DatabricksOptions> options)

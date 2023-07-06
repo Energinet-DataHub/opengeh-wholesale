@@ -64,19 +64,16 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_ReturnsExpectedCalculationResult(Mock<ILogger<DatabricksSqlResponseParser>> loggerMock, Mock<IBatchesClient> batchesClientMock, BatchDto batch)
+    public async Task GetAsync_ReturnsExpectedCalculationResult(
+        Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
+        Mock<IBatchesClient> batchesClientMock,
+        BatchDto batch)
     {
         // Arrange
         const int expectedResultCount = 3;
         var tableName = await CreateTableWithRowsInArbitraryOrderAsync();
         batch = batch with { BatchId = Guid.Parse(BatchId) };
-        var databricksSqlChunkResponseParser = new DatabricksSqlChunkResponseParser();
-        var sqlStatementClient = new SqlStatementClient(
-            new HttpClient(),
-            _fixture.DatabricksOptionsMock.Object,
-            new DatabricksSqlResponseParser(loggerMock.Object, databricksSqlChunkResponseParser),
-            databricksSqlChunkResponseParser,
-            new DatabricksSqlChunkDataResponseParser());
+        var sqlStatementClient = _fixture.CreateSqlStatementClient(loggerMock);
         batchesClientMock.Setup(b => b.GetAsync(It.IsAny<Guid>())).ReturnsAsync(batch);
         var deltaTableOptions = CreateDeltaTableOptions(_fixture.DatabricksSchemaManager.SchemaName, tableName);
         var sut = new CalculationResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions);
