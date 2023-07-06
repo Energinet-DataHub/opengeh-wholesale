@@ -50,7 +50,11 @@ limitations under the License.
     <ItemGroup>
       <PackageReference Include="DbUp.Reboot.SqlServer" Version="1.5.0" />
       <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.6.2" />
-      <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.0" />
+      <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.1" />
+      <PackageReference Update="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.3">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
     </ItemGroup>
 
     <ItemGroup>
