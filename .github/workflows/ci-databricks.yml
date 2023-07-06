@@ -72,7 +72,7 @@ jobs:
           # Turn script_files_in_main_reverse_sorted into a array (the array will only have one item, since it wont look past a new line)
           read -ra LATEST_SCRIPT_FILE_IN_MAIN <<<"$script_files_in_main_reverse_sorted"
 
-          # Check if there are no script files in the main directory
+          # Check if there are no script files in main
           if [ ${#SCRIPT_FILES_IN_MAIN_ARRAY[@]} -eq 0 ]; then
             echo "No script files found in the main directory. Skipping step."
             exit 0

@@ -48,7 +48,7 @@ def split_string_by_go(string: str) -> list[str]:
 def _apply_migration(migration_name: str, migration_args: MigrationScriptArgs) -> None:
     sql_content = importlib.resources.read_text(f'{c.WHEEL_NAME}.{c.MIGRATION_SCRIPTS_FOLDER_PATH}', migration_name)
     for statement in split_string_by_go(sql_content):
-        # TODO BJM: Generalize this substitute concept
+        # TODO BJM: Generalize this substitute concept - must also be applied in .NET
         statement = statement.replace("{CONTAINER_PATH}", migration_args.storage_container_path)
         try:
             migration_args.spark.sql(statement)
