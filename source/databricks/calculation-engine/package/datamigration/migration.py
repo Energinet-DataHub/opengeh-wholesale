@@ -23,15 +23,37 @@ from package.infrastructure import WHOLESALE_CONTAINER_NAME
 from package.storage_account_access.data_lake_file_manager import DataLakeFileManager
 from .migration_script_args import MigrationScriptArgs
 from .uncommitted_migrations import get_uncommitted_migrations
+import package.datamigration.constants as c
+
+
+def split_string_by_go(string: str) -> list[str]:
+    lines = string.replace("\r\n", "\n").split("\n")
+    sections = []
+    current_section = []
+
+    for line in lines:
+        if "go" in line.lower():
+            if current_section:
+                sections.append("\n".join(current_section))
+                current_section = []
+        else:
+            current_section.append(line)
+
+    if current_section:
+        sections.append("\n".join(current_section))
+
+    return [s for s in sections if s and not s.isspace()]
 
 
 def _apply_migration(migration_name: str, migration_args: MigrationScriptArgs) -> None:
-    migration = importlib.import_module(
-        "package.datamigration.migration_scripts." + migration_name
-    )
-    migration.apply(
-        migration_args,
-    )
+    sql_content = importlib.resources.read_text(f'{c.WHEEL_NAME}.{c.MIGRATION_SCRIPTS_FOLDER_PATH}', migration_name)
+    for statement in split_string_by_go(sql_content):
+        # TODO BJM: Generalize this substitute concept
+        statement = statement.replace("{CONTAINER_PATH}", migration_args.storage_container_path)
+        try:
+            migration_args.spark.sql(statement)
+        except Exception as e:
+            raise Exception(f"Error executing SQL '{statement}. Error: {str(e)}'")
 
 
 def _migrate_data_lake(

@@ -13,8 +13,7 @@
 # limitations under the License.
 
 from package.storage_account_access.data_lake_file_manager import DataLakeFileManager
-
-COMMITTED_MIGRATIONS_FILE_NAME = "migration_state.csv"
+from .constants import COMMITTED_MIGRATIONS_FILE_NAME
 
 
 def download_committed_migrations(file_manager: DataLakeFileManager) -> list[str]:

@@ -11,3 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+COMMITTED_MIGRATIONS_FILE_NAME = "migration_state.csv"
+MIGRATION_STATE_FILE_NAME = "migration_state.csv"
+WHEEL_NAME = "package"
+MIGRATION_SCRIPTS_FOLDER_PATH = "datamigration.migration_scripts"

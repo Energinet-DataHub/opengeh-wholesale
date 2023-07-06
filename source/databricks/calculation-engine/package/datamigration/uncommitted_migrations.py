@@ -13,32 +13,19 @@
 # limitations under the License.
 
 from azure.identity import ClientSecretCredential
-from os import path, listdir
+import importlib.resources
+
 import package.environment_variables as env_vars
 from package.infrastructure import WHOLESALE_CONTAINER_NAME
 from package.storage_account_access.data_lake_file_manager import DataLakeFileManager
 from .committed_migrations import download_committed_migrations
-
-
-MIGRATION_STATE_FILE_NAME = "migration_state.csv"
-MIGRATION_SCRIPTS_FOLDER_NAME = "migration_scripts"
-
-
-def _get_migration_scripts_path() -> str:
-    dirname = path.dirname(__file__)
-    return path.join(dirname, MIGRATION_SCRIPTS_FOLDER_NAME)
+import package.datamigration.constants as c
 
 
 def _get_all_migrations() -> list[str]:
-    all_migration_scripts_paths = listdir(_get_migration_scripts_path())
-    file_names = [path.basename(p) for p in all_migration_scripts_paths]
-    script_names = []
-    for file_name in file_names:
-        name, extention = path.splitext(file_name)
-        if extention == ".py" and name != "__init__":
-            script_names.append(name)
-    script_names.sort()
-    return script_names
+    sql_files = importlib.resources.contents(f'{c.WHEEL_NAME}.{c.MIGRATION_SCRIPTS_FOLDER_PATH}')
+    sql_files = [file for file in sql_files if file.endswith('.sql')]
+    return sql_files
 
 
 def _print_count(

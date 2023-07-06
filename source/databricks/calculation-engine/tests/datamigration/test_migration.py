@@ -39,24 +39,6 @@ def test__migrate_datalake__when_script_not_found__raise_exception(
         _migrate_data_lake("dummy_storage_name", mock_credential)
 
 
-def test__all_migrations_script_has_correct_signature():
-
-    # Arrange
-    all_migrations = _get_all_migrations()
-
-    for migration_name in all_migrations:
-        # Act
-        migration = importlib.import_module(
-            "package.datamigration.migration_scripts." + migration_name
-        )
-
-        # Assert
-        signature = inspect.signature(migration.apply)
-        assert len(signature.parameters) == 1
-        (parameter,) = signature.parameters.values()
-        assert parameter.annotation is MigrationScriptArgs
-
-
 @patch("package.datamigration.migration.initialize_spark")
 @patch("package.datamigration.migration.DataLakeFileManager")
 @patch("package.datamigration.migration.get_uncommitted_migrations")

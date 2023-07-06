@@ -20,6 +20,7 @@ setup(
     long_description="",
     long_description_content_type="text/markdown",
     license="MIT",
+    package_data={'package': ['datamigration/migration_scripts/*.sql']},
     packages=find_packages(exclude=["tests*"]),
     # Make sure these packages are added to the docker container and pinned to the same versions
     install_requires=[
