@@ -72,6 +72,14 @@ def test__get_uncommitted_migrations_count__when_one_migration_needed__returns_1
     assert len(migrations) == 1
 
 
+def test__get_all_migrations__returns_some() -> None:
+    # Act
+    migrations = _get_all_migrations()
+
+    # Assert: This test will fail if there are in fact no migrations
+    assert len(migrations) > 0
+
+
 def test__get_all_migrations__returns_correct_names():
     # Act
     migrations = _get_all_migrations()
