@@ -19,7 +19,7 @@ on:
 
 jobs:
   databricks_ci_build:
-    uses: Energinet-DataHub/.github/.github/workflows/databricks-build-prerelease.yml@v11
+    uses: Energinet-DataHub/.github/.github/workflows/databricks-build-prerelease.yml@v12
     with:
       python_version: 3.9.7
       architecture: x64
@@ -100,7 +100,7 @@ jobs:
           done
 
   databricks_ci_test:
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v11
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v12
     with:
       operating_system: dh3-ubuntu-20.04-4core
       path_static_checks: ./source/databricks/calculation-engine
