@@ -78,4 +78,17 @@ def test__get_all_migrations__returns_correct_names():
 
     # Assert
     for migration in migrations:
-        assert migration.endswith(".sql")
+        assert not migration.endswith(".sql")
+
+
+@patch("importlib.resources.contents")
+def test__get_all_migrations__returns_expected_migrations(mock_importlib):
+    # Arrange
+    mock_importlib.return_value = ["my_migration1.sql", "my_migration2.sql"]
+    expected_migrations = ["my_migration1", "my_migration2"]
+
+    # Act
+    actual_migrations = _get_all_migrations()
+
+    # Assert
+    assert actual_migrations == expected_migrations
