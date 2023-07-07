@@ -14,9 +14,12 @@
 
 using System.IO.Compression;
 using System.Net;
+using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures;
 using FluentAssertions;
+using FluentAssertions.Execution;
+using Newtonsoft.Json;
 using Xunit;
 using ProcessType = Energinet.DataHub.Wholesale.DomainTests.Clients.v3.ProcessType;
 using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType;
@@ -138,6 +141,33 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 }
             }
 
+            [DomainFact]
+            public void When_BatchIsReceivedOnTopicSubscription_Then_MessagesReceivedContainAllTypesOfCalculations()
+            {
+                using (new AssertionScope())
+                {
+                    CheckIfExistsInCaluclationResults("NonProfiledConsumption", "AggregationPerGridarea").Should().BeTrue("because the calculation result should contain NonProfiledConsumption for AggregationPerGridarea");
+                    CheckIfExistsInCaluclationResults("NonProfiledConsumption", "AggregationPerEnergysupplierPerGridarea").Should().BeTrue("because the calculation result should contain NonProfiledConsumption for AggregationPerEnergysupplierPerGridarea");
+                    CheckIfExistsInCaluclationResults("NonProfiledConsumption", "AggregationPerBalanceresponsiblepartyPerGridarea").Should().BeTrue("because the calculation result should contain NonProfiledConsumption for AggregationPerBalanceresponsiblepartyPerGridarea");
+                    CheckIfExistsInCaluclationResults("NonProfiledConsumption", "AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea").Should().BeTrue("because the calculation result should contain NonProfiledConsumption for AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea");
+                    CheckIfExistsInCaluclationResults("Production", "AggregationPerGridarea").Should().BeTrue("because the calculation result should contain Production for AggregationPerGridarea");
+                    CheckIfExistsInCaluclationResults("Production", "AggregationPerEnergysupplierPerGridarea").Should().BeTrue("because the calculation result should contain Production for AggregationPerEnergysupplierPerGridarea");
+                    CheckIfExistsInCaluclationResults("Production", "AggregationPerBalanceresponsiblepartyPerGridarea").Should().BeTrue("because the calculation result should contain Production for AggregationPerBalanceresponsiblepartyPerGridarea");
+                    CheckIfExistsInCaluclationResults("Production", "AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea").Should().BeTrue("because the calculation result should contain Production for AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea");
+                    // flex is not in current test data
+                    // CheckIfExistsInCaluclationResults("FlexConsumption", "AggregationPerGridarea").Should().BeTrue("because the calculation result should contain FlexConsumption for AggregationPerGridarea");
+                    // CheckIfExistsInCaluclationResults("FlexConsumption", "AggregationPerEnergysupplierPerGridarea").Should().BeTrue("because the calculation result should contain FlexConsumption for AggregationPerEnergysupplierPerGridarea");
+                    // CheckIfExistsInCaluclationResults("FlexConsumption", "AggregationPerBalanceresponsiblepartyPerGridarea").Should().BeTrue("because the calculation result should contain FlexConsumption for AggregationPerBalanceresponsiblepartyPerGridarea");
+                    // CheckIfExistsInCaluclationResults("FlexConsumption", "AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea").Should().BeTrue("because the calculation result should contain FlexConsumption for AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea");
+                    CheckIfExistsInCaluclationResults("NetExchangePerGa", "AggregationPerGridarea").Should().BeTrue("because the calculation result should contain NetExchangePerGa for AggregationPerGridarea");
+                    CheckIfExistsInCaluclationResults("NetExchangePerNeighboringGa", "AggregationPerGridarea").Should().BeTrue("because the calculation result should contain NetExchangePerNeighboringGa for AggregationPerGridarea");
+                    CheckIfExistsInCaluclationResults("GridLoss", "AggregationPerGridarea").Should().BeTrue("because the calculation result should contain GridLoss for AggregationPerGridarea");
+                    CheckIfExistsInCaluclationResults("NegativeGridLoss", "AggregationPerGridarea").Should().BeTrue("because the calculation result should contain NegativeGridLoss for AggregationPerGridarea");
+                    CheckIfExistsInCaluclationResults("PositiveGridLoss", "AggregationPerGridarea").Should().BeTrue("because the calculation result should contain PositiveGridLoss for AggregationPerGridarea");
+                    CheckIfExistsInCaluclationResults("TotalConsumption", "AggregationPerGridarea").Should().BeTrue("because the calculation result should contain TotalConsumption for AggregationPerGridarea");
+                }
+            }
+
             [DomainFact(Skip = "Test fails on cold runs with a timeout error - expected to be fixed when switching to Databricks Serverless warehouse")]
             public async Task When_DownloadingSettlementReport_Then_ResponseIsCompressedFileWithData()
             {
@@ -172,6 +202,11 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 actual = (_calculationResults ?? throw new InvalidOperationException("calculationResults in null")).Select(o => Enum.GetName(o.TimeSeriesType)).Distinct().ToList();
                 expected = Enum.GetNames(typeof(TimeSeriesType)).ToList();
                 expected.Remove("FlexConsumption"); // FlexConsumption is not in the current test data
+            }
+
+            private bool CheckIfExistsInCaluclationResults(string timeSeriesType, string aggregationLevel)
+            {
+                return (_calculationResults ?? throw new Exception("calculation results is null")).Any(obj => Enum.GetName(obj.TimeSeriesType) == timeSeriesType && Enum.GetName(obj.AggregationLevelCase) == aggregationLevel);
             }
         }
     }
