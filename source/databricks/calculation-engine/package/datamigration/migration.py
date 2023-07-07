@@ -28,6 +28,10 @@ import package.datamigration.constants as c
 
 
 def split_string_by_go(string: str) -> list[str]:
+    """
+    Databricks doesn't support multi-statement queries.
+    So this emulates the "GO" used with SQL Server T-SQL.
+    """
     lines = string.replace("\r\n", "\n").split("\n")
     sections = []
     current_section: list[str] = []
