@@ -59,7 +59,7 @@ def _substitute_placeholders(statement: str, migration_args: MigrationScriptArgs
 
 
 def _apply_migration(migration_name: str, migration_args: MigrationScriptArgs) -> None:
-    sql_content = importlib.resources.read_text(f'{c.WHEEL_NAME}.{c.MIGRATION_SCRIPTS_FOLDER_PATH}', migration_name)
+    sql_content = importlib.resources.read_text(f'{c.WHEEL_NAME}.{c.MIGRATION_SCRIPTS_FOLDER_PATH}.sql', migration_name)
 
     for statement_template in split_string_by_go(sql_content):
         statement = _substitute_placeholders(statement_template, migration_args)
