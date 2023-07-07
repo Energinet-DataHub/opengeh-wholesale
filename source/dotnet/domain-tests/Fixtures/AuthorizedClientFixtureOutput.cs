@@ -49,8 +49,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
         private async Task<Guid> StartCalculation()
         {
-            var startDate = new DateTimeOffset(2020, 1, 28, 23, 0, 0, TimeSpan.Zero);
-            var endDate = new DateTimeOffset(2020, 1, 29, 23, 0, 0, TimeSpan.Zero);
+            var startDate = new DateTimeOffset(2022, 1, 11, 23, 0, 0, TimeSpan.Zero);
+            var endDate = new DateTimeOffset(2022, 1, 12, 23, 0, 0, TimeSpan.Zero);
             var batchRequestDto = new BatchRequestDto
             {
                 ProcessType = ProcessType.BalanceFixing,

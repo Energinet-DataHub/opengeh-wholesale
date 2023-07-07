@@ -14,12 +14,10 @@
 
 using System.IO.Compression;
 using System.Net;
-using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Newtonsoft.Json;
 using Xunit;
 using ProcessType = Energinet.DataHub.Wholesale.DomainTests.Clients.v3.ProcessType;
 using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType;
@@ -128,7 +126,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             [DomainFact]
             public void When_BatchIsCompleted_Then_BatchIsReceivedOnTopicSubscription()
             {
-                _calculationResults?.Count.Should().Be(109);
+                _calculationResults?.Count.Should().Be(110);
             }
 
             [DomainFact]
@@ -154,11 +152,10 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                     CheckIfExistsInCaluclationResults("Production", "AggregationPerEnergysupplierPerGridarea").Should().BeTrue("because the calculation result should contain Production for AggregationPerEnergysupplierPerGridarea");
                     CheckIfExistsInCaluclationResults("Production", "AggregationPerBalanceresponsiblepartyPerGridarea").Should().BeTrue("because the calculation result should contain Production for AggregationPerBalanceresponsiblepartyPerGridarea");
                     CheckIfExistsInCaluclationResults("Production", "AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea").Should().BeTrue("because the calculation result should contain Production for AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea");
-                    // flex is not in current test data
-                    // CheckIfExistsInCaluclationResults("FlexConsumption", "AggregationPerGridarea").Should().BeTrue("because the calculation result should contain FlexConsumption for AggregationPerGridarea");
-                    // CheckIfExistsInCaluclationResults("FlexConsumption", "AggregationPerEnergysupplierPerGridarea").Should().BeTrue("because the calculation result should contain FlexConsumption for AggregationPerEnergysupplierPerGridarea");
-                    // CheckIfExistsInCaluclationResults("FlexConsumption", "AggregationPerBalanceresponsiblepartyPerGridarea").Should().BeTrue("because the calculation result should contain FlexConsumption for AggregationPerBalanceresponsiblepartyPerGridarea");
-                    // CheckIfExistsInCaluclationResults("FlexConsumption", "AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea").Should().BeTrue("because the calculation result should contain FlexConsumption for AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea");
+                    CheckIfExistsInCaluclationResults("FlexConsumption", "AggregationPerGridarea").Should().BeTrue("because the calculation result should contain FlexConsumption for AggregationPerGridarea");
+                    CheckIfExistsInCaluclationResults("FlexConsumption", "AggregationPerEnergysupplierPerGridarea").Should().BeTrue("because the calculation result should contain FlexConsumption for AggregationPerEnergysupplierPerGridarea");
+                    CheckIfExistsInCaluclationResults("FlexConsumption", "AggregationPerBalanceresponsiblepartyPerGridarea").Should().BeTrue("because the calculation result should contain FlexConsumption for AggregationPerBalanceresponsiblepartyPerGridarea");
+                    CheckIfExistsInCaluclationResults("FlexConsumption", "AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea").Should().BeTrue("because the calculation result should contain FlexConsumption for AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea");
                     CheckIfExistsInCaluclationResults("NetExchangePerGa", "AggregationPerGridarea").Should().BeTrue("because the calculation result should contain NetExchangePerGa for AggregationPerGridarea");
                     CheckIfExistsInCaluclationResults("NetExchangePerNeighboringGa", "AggregationPerGridarea").Should().BeTrue("because the calculation result should contain NetExchangePerNeighboringGa for AggregationPerGridarea");
                     CheckIfExistsInCaluclationResults("GridLoss", "AggregationPerGridarea").Should().BeTrue("because the calculation result should contain GridLoss for AggregationPerGridarea");
