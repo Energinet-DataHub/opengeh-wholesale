@@ -1,3 +1,3 @@
-ALTER TABLE wholesale_output.result
+ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME}
     ADD COLUMN calculation_result_id STRING
 GO

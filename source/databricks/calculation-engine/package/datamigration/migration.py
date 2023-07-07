@@ -19,10 +19,11 @@ from typing import Any
 from package import infrastructure, initialize_spark, log
 import package.environment_variables as env_vars
 from .committed_migrations import upload_committed_migration
-from package.infrastructure import WHOLESALE_CONTAINER_NAME
+from package.infrastructure import WHOLESALE_CONTAINER_NAME, OUTPUT_FOLDER
 from package.storage_account_access.data_lake_file_manager import DataLakeFileManager
 from .migration_script_args import MigrationScriptArgs
 from .uncommitted_migrations import get_uncommitted_migrations
+from package.constants import RESULT_TABLE_NAME, DATABASE_NAME
 import package.datamigration.constants as c
 
 
@@ -45,15 +46,20 @@ def split_string_by_go(string: str) -> list[str]:
     return [s for s in sections if s and not s.isspace()]
 
 
+def _substitute_placeholders(statement: str, migration_args: MigrationScriptArgs) -> str:
+    return (statement
+            .replace("{CONTAINER_PATH}", migration_args.storage_container_path)  # abfss://...
+            .replace("{DATABASE_NAME}", DATABASE_NAME)  # "wholesale_output"
+            .replace("{OUTPUT_FOLDER}", OUTPUT_FOLDER)  # "calculation-output"
+            .replace("{RESULT_TABLE_NAME}", RESULT_TABLE_NAME))  # "result"
+
+
 def _apply_migration(migration_name: str, migration_args: MigrationScriptArgs) -> None:
     sql_content = importlib.resources.read_text(f'{c.WHEEL_NAME}.{c.MIGRATION_SCRIPTS_FOLDER_PATH}', migration_name)
-    for statement in split_string_by_go(sql_content):
-        # TODO BJM: Generalize this substitute concept - must also be applied in .NET
-        statement = statement.replace("{CONTAINER_PATH}", migration_args.storage_container_path)
-        try:
-            migration_args.spark.sql(statement)
-        except Exception as e:
-            raise Exception(f"Error executing SQL '{statement}. Error: {str(e)}'")
+
+    for statement_template in split_string_by_go(sql_content):
+        statement = _substitute_placeholders(statement_template, migration_args)
+        migration_args.spark.sql(statement)
 
 
 def _migrate_data_lake(

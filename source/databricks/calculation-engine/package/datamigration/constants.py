@@ -13,6 +13,5 @@
 # limitations under the License.
 
 COMMITTED_MIGRATIONS_FILE_NAME = "migration_state.csv"
-MIGRATION_STATE_FILE_NAME = "migration_state.csv"
 WHEEL_NAME = "package"
 MIGRATION_SCRIPTS_FOLDER_PATH = "datamigration.migration_scripts"
