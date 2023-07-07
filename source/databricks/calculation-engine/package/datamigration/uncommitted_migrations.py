@@ -48,13 +48,22 @@ def _print_count(
 def get_uncommitted_migrations(file_manager: DataLakeFileManager) -> list[str]:
     """Get list of migrations that have not yet been committed"""
 
-    committed_migrations = download_committed_migrations(file_manager)
-
     all_migrations = _get_all_migrations()
+    print("All migrations:")
+    for m in all_migrations:
+        print(m)
+
+    committed_migrations = download_committed_migrations(file_manager)
+    print("Committed migrations:")
+    for m in committed_migrations:
+        print(m)
 
     uncommitted_migrations = [
         m for m in all_migrations if m not in committed_migrations
     ]
+    print("Uncommitted migrations:")
+    for m in uncommitted_migrations:
+        print(m)
 
     return uncommitted_migrations
 
