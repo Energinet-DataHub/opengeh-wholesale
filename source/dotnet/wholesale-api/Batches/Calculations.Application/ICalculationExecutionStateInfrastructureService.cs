@@ -10,13 +10,11 @@
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
-// limitations under the License.
+// limitations under the License.using Energinet.DataHub.Wholesale.Common.JobRunner;
 
-using Energinet.DataHub.Wholesale.Common.Models;
+namespace Energinet.DataHub.Wholesale.Calculations.Application;
 
-namespace Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
-
-public interface IBatchFactory
+public interface ICalculationExecutionStateInfrastructureService
 {
-     Batch Create(ProcessType processType, IEnumerable<string> gridAreaCodes, DateTimeOffset startDate, DateTimeOffset endDate, Guid createdByUserId);
+    Task UpdateExecutionStateAsync();
 }

@@ -12,27 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Application.Model;
-using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model.Batches;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Batches.Application;
+namespace Energinet.DataHub.Wholesale.Calculations.Application;
 
-public interface IBatchRepository
+public interface ICalculationRepository
 {
-    Task AddAsync(Batch batch);
+    Task AddAsync(Calculation calculation);
 
-    Task<Batch> GetAsync(Guid batchId);
+    Task<Calculation> GetAsync(Guid batchId);
 
-    Task<List<Batch>> GetCreatedAsync();
+    Task<List<Calculation>> GetCreatedAsync();
 
-    Task<List<Batch>> GetByStatesAsync(IEnumerable<BatchExecutionState> states);
+    Task<List<Calculation>> GetByStatesAsync(IEnumerable<CalculationExecutionState> states);
 
-    Task<List<Batch>> GetCompletedAfterAsync(Instant? completedTime);
+    Task<List<Calculation>> GetCompletedAfterAsync(Instant? completedTime);
 
-    Task<IReadOnlyCollection<Batch>> SearchAsync(
+    Task<IReadOnlyCollection<Calculation>> SearchAsync(
         IReadOnlyCollection<GridAreaCode> filterByGridAreaCode,
-        IReadOnlyCollection<BatchExecutionState> filterByExecutionState,
+        IReadOnlyCollection<CalculationExecutionState> filterByExecutionState,
         Instant? minExecutionTimeStart,
         Instant? maxExecutionTimeStart,
         Instant? periodStart,

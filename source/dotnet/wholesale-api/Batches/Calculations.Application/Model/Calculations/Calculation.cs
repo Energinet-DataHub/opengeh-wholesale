@@ -12,17 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Interfaces;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model.Batches;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Common.Models;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
+namespace Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 
-public class Batch
+public class Calculation
 {
     private readonly List<GridAreaCode> _gridAreaCodes;
 
-    public Batch(
+    public Calculation(
         Instant createdTime,
         ProcessType processType,
         IEnumerable<GridAreaCode> gridAreaCodes,
@@ -37,7 +38,7 @@ public class Batch
         if (!IsValid(_gridAreaCodes, periodStart, periodEnd, dateTimeZone, out var errorMessages))
             throw new BusinessValidationException(string.Join(" ", errorMessages));
 
-        ExecutionState = BatchExecutionState.Created;
+        ExecutionState = CalculationExecutionState.Created;
         ProcessType = processType;
         PeriodStart = periodStart;
         PeriodEnd = periodEnd;
@@ -49,14 +50,14 @@ public class Batch
     }
 
     /// <summary>
-    /// Validate if parameters are valid for a Batch.
+    /// Validate if parameters are valid for a Calculation.
     /// </summary>
     /// <param name="gridAreaCodes"></param>
     /// <param name="periodStart"></param>
     /// <param name="periodEnd"></param>
     /// <param name="dateTimeZone"></param>
     /// <param name="validationErrors"></param>
-    /// <returns>If the parameters are valid for a Batch</returns>
+    /// <returns>If the parameters are valid for a Calculation</returns>
     public static bool IsValid(
         IEnumerable<GridAreaCode> gridAreaCodes,
         Instant periodStart,
@@ -67,7 +68,7 @@ public class Batch
         var errors = new List<string>();
 
         if (!gridAreaCodes.Any())
-            errors.Add("Batch must contain at least one grid area code.");
+            errors.Add("Calculation must contain at least one grid area code.");
 
         if (periodStart >= periodEnd)
             errors.Add("periodStart is greater or equal to periodEnd");
@@ -87,7 +88,7 @@ public class Batch
     /// Required by Entity Framework
     /// </summary>
     // ReSharper disable once UnusedMember.Local
-    private Batch()
+    private Calculation()
     {
         Id = Guid.NewGuid();
         _gridAreaCodes = new List<GridAreaCode>();
@@ -100,7 +101,7 @@ public class Batch
 
     public IReadOnlyCollection<GridAreaCode> GridAreaCodes => _gridAreaCodes;
 
-    public BatchExecutionState ExecutionState { get; private set; }
+    public CalculationExecutionState ExecutionState { get; private set; }
 
     public Instant? ExecutionTimeStart { get; }
 
@@ -158,35 +159,35 @@ public class Batch
     public void MarkAsSubmitted(CalculationId calculationId)
     {
         ArgumentNullException.ThrowIfNull(calculationId);
-        if (ExecutionState is BatchExecutionState.Submitted or BatchExecutionState.Pending
-            or BatchExecutionState.Executing or BatchExecutionState.Completed or BatchExecutionState.Failed)
+        if (ExecutionState is CalculationExecutionState.Submitted or CalculationExecutionState.Pending
+            or CalculationExecutionState.Executing or CalculationExecutionState.Completed or CalculationExecutionState.Failed)
         {
-            ThrowInvalidStateTransitionException(ExecutionState, BatchExecutionState.Submitted);
+            ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Submitted);
         }
 
         CalculationId = calculationId;
-        ExecutionState = BatchExecutionState.Submitted;
+        ExecutionState = CalculationExecutionState.Submitted;
     }
 
     public void MarkAsPending()
     {
-        if (ExecutionState is BatchExecutionState.Pending or BatchExecutionState.Executing or BatchExecutionState.Completed or BatchExecutionState.Failed)
-            ThrowInvalidStateTransitionException(ExecutionState, BatchExecutionState.Pending);
-        ExecutionState = BatchExecutionState.Pending;
+        if (ExecutionState is CalculationExecutionState.Pending or CalculationExecutionState.Executing or CalculationExecutionState.Completed or CalculationExecutionState.Failed)
+            ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Pending);
+        ExecutionState = CalculationExecutionState.Pending;
     }
 
     public void MarkAsExecuting()
     {
-        if (ExecutionState is BatchExecutionState.Executing or BatchExecutionState.Completed or BatchExecutionState.Failed)
-            ThrowInvalidStateTransitionException(ExecutionState, BatchExecutionState.Executing);
+        if (ExecutionState is CalculationExecutionState.Executing or CalculationExecutionState.Completed or CalculationExecutionState.Failed)
+            ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Executing);
 
-        ExecutionState = BatchExecutionState.Executing;
+        ExecutionState = CalculationExecutionState.Executing;
     }
 
     public void MarkAsCompleted(Instant executionTimeEnd)
     {
-        if (ExecutionState is BatchExecutionState.Completed or BatchExecutionState.Failed)
-            ThrowInvalidStateTransitionException(ExecutionState, BatchExecutionState.Completed);
+        if (ExecutionState is CalculationExecutionState.Completed or CalculationExecutionState.Failed)
+            ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Completed);
 
         if (executionTimeEnd < ExecutionTimeStart)
         {
@@ -194,16 +195,16 @@ public class Batch
                 $"Execution time end '{executionTimeEnd}' cannot be before execution time start '{ExecutionTimeStart}'");
         }
 
-        ExecutionState = BatchExecutionState.Completed;
+        ExecutionState = CalculationExecutionState.Completed;
         ExecutionTimeEnd = executionTimeEnd;
     }
 
     public void MarkAsFailed()
     {
-        if (ExecutionState is BatchExecutionState.Failed)
-            ThrowInvalidStateTransitionException(ExecutionState, BatchExecutionState.Failed);
+        if (ExecutionState is CalculationExecutionState.Failed)
+            ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Failed);
 
-        ExecutionState = BatchExecutionState.Failed;
+        ExecutionState = CalculationExecutionState.Failed;
     }
 
     /// <summary>
@@ -211,13 +212,13 @@ public class Batch
     /// </summary>
     public void Reset()
     {
-        if (ExecutionState is BatchExecutionState.Completed)
-            ThrowInvalidStateTransitionException(ExecutionState, BatchExecutionState.Created);
+        if (ExecutionState is CalculationExecutionState.Completed)
+            ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Created);
 
-        ExecutionState = BatchExecutionState.Created;
+        ExecutionState = CalculationExecutionState.Created;
     }
 
-    private void ThrowInvalidStateTransitionException(BatchExecutionState currentState, BatchExecutionState desiredState)
+    private void ThrowInvalidStateTransitionException(CalculationExecutionState currentState, CalculationExecutionState desiredState)
     {
         throw new BusinessValidationException($"Cannot change batchExecutionState from {currentState} to {desiredState}");
     }

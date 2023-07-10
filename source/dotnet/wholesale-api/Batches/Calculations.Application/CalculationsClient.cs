@@ -12,35 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Application.Model;
-using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
-using Energinet.DataHub.Wholesale.Batches.Interfaces;
-using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model.Batches;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Batches.Application;
+namespace Energinet.DataHub.Wholesale.Calculations.Application;
 
-public class BatchesClient : IBatchesClient
+public class CalculationsClient : ICalculationsClient
 {
-    private readonly IBatchRepository _batchRepository;
-    private readonly IBatchDtoMapper _batchDtoMapper;
+    private readonly ICalculationRepository _calculationRepository;
+    private readonly ICalculationDtoMapper _calculationDtoMapper;
 
-    public BatchesClient(IBatchRepository batchRepository, IBatchDtoMapper batchDtoMapper)
+    public CalculationsClient(ICalculationRepository calculationRepository, ICalculationDtoMapper calculationDtoMapper)
     {
-        _batchRepository = batchRepository;
-        _batchDtoMapper = batchDtoMapper;
+        _calculationRepository = calculationRepository;
+        _calculationDtoMapper = calculationDtoMapper;
     }
 
     public async Task<IEnumerable<BatchDto>> GetBatchesCompletedAfterAsync(Instant? completedTime)
     {
-        var batches = await _batchRepository.GetCompletedAfterAsync(completedTime).ConfigureAwait(false);
-        return batches.Select(_batchDtoMapper.Map);
+        var batches = await _calculationRepository.GetCompletedAfterAsync(completedTime).ConfigureAwait(false);
+        return batches.Select(_calculationDtoMapper.Map);
     }
 
     public async Task<BatchDto> GetAsync(Guid batchId)
     {
-        var batch = await _batchRepository.GetAsync(batchId).ConfigureAwait(false);
-        return _batchDtoMapper.Map(batch);
+        var batch = await _calculationRepository.GetAsync(batchId).ConfigureAwait(false);
+        return _calculationDtoMapper.Map(batch);
     }
 
     public async Task<IEnumerable<BatchDto>> SearchAsync(
@@ -53,11 +54,11 @@ public class BatchesClient : IBatchesClient
     {
         var executionStateFilter = filterByExecutionState switch
         {
-            null => Array.Empty<BatchExecutionState>(),
-            BatchState.Pending => new[] { BatchExecutionState.Created, BatchExecutionState.Submitted, BatchExecutionState.Pending },
-            BatchState.Executing => new[] { BatchExecutionState.Executing },
-            BatchState.Completed => new[] { BatchExecutionState.Completed },
-            BatchState.Failed => new[] { BatchExecutionState.Failed },
+            null => Array.Empty<CalculationExecutionState>(),
+            BatchState.Pending => new[] { CalculationExecutionState.Created, CalculationExecutionState.Submitted, CalculationExecutionState.Pending },
+            BatchState.Executing => new[] { CalculationExecutionState.Executing },
+            BatchState.Completed => new[] { CalculationExecutionState.Completed },
+            BatchState.Failed => new[] { CalculationExecutionState.Failed },
             _ => throw new ArgumentOutOfRangeException(nameof(filterByExecutionState)),
         };
 
@@ -70,7 +71,7 @@ public class BatchesClient : IBatchesClient
         var periodStartInstant = ConvertToInstant(periodStart);
         var periodEndInstant = ConvertToInstant(periodEnd);
 
-        var batches = await _batchRepository
+        var batches = await _calculationRepository
             .SearchAsync(
                 gridAreaFilter,
                 executionStateFilter,
@@ -80,7 +81,7 @@ public class BatchesClient : IBatchesClient
                 periodEndInstant)
             .ConfigureAwait(false);
 
-        return batches.Select(_batchDtoMapper.Map);
+        return batches.Select(_calculationDtoMapper.Map);
     }
 
     private static Instant? ConvertToInstant(DateTimeOffset? dateTimeOffset)

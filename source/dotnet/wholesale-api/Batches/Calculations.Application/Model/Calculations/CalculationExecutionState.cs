@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
+namespace Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 
 /// <summary>
 /// IMPORTANT: Do not change numeric values as it'll affect persistence or communication.
 /// </summary>
-public enum BatchExecutionState
+public enum CalculationExecutionState
 {
     /// <summary>
     /// The batch is created.

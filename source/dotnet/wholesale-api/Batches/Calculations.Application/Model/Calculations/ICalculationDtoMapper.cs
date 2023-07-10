@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 
-namespace Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
+namespace Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 
-public interface IBatchDtoMapper
+public interface ICalculationDtoMapper
 {
-    BatchDto Map(Batch batch);
+    BatchDto Map(Calculation calculation);
 }

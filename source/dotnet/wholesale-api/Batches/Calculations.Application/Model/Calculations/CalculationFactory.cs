@@ -12,23 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Calculations.Application.Model.Batches;
 using Energinet.DataHub.Wholesale.Common.Models;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
+namespace Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 
-public class BatchFactory : IBatchFactory
+public class CalculationFactory : ICalculationFactory
 {
     private readonly IClock _clock;
     private readonly DateTimeZone _dateTimeZone;
 
-    public BatchFactory(IClock clock, DateTimeZone dateTimeZone)
+    public CalculationFactory(IClock clock, DateTimeZone dateTimeZone)
     {
         _clock = clock;
         _dateTimeZone = dateTimeZone;
     }
 
-    public Batch Create(
+    public Calculation Create(
         ProcessType processType,
         IEnumerable<string> gridAreaCodes,
         DateTimeOffset startDate,
@@ -41,6 +42,6 @@ public class BatchFactory : IBatchFactory
         var periodEnd = Instant.FromDateTimeOffset(endDate);
         // As long as scheduling is not implemented, execution time start is the same as created time
         var executionTimeStart = createdTime;
-        return new Batch(createdTime, processType, gridAreas, periodStart, periodEnd, executionTimeStart, _dateTimeZone, createdByUserId);
+        return new Calculation(createdTime, processType, gridAreas, periodStart, periodEnd, executionTimeStart, _dateTimeZone, createdByUserId);
     }
 }

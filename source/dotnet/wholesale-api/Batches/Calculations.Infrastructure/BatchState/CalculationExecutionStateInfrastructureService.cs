@@ -12,44 +12,45 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.using Energinet.DataHub.Wholesale.Common.JobRunner;
 
-using Energinet.DataHub.Wholesale.Batches.Application;
-using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
+using Energinet.DataHub.Wholesale.Calculations.Application;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model.Batches;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchState;
+namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.BatchState;
 
-public class BatchExecutionStateInfrastructureService : IBatchExecutionStateInfrastructureService
+public class CalculationExecutionStateInfrastructureService : ICalculationExecutionStateInfrastructureService
 {
-    private readonly IBatchRepository _batchRepository;
+    private readonly ICalculationRepository _calculationRepository;
     private readonly ICalculationInfrastructureService _calculationInfrastructureService;
     private readonly IClock _clock;
     private readonly ILogger _logger;
 
-    public BatchExecutionStateInfrastructureService(
-        IBatchRepository batchRepository,
+    public CalculationExecutionStateInfrastructureService(
+        ICalculationRepository calculationRepository,
         ICalculationInfrastructureService calculationInfrastructureService,
-        ILogger<BatchExecutionStateInfrastructureService> logger,
+        ILogger<CalculationExecutionStateInfrastructureService> logger,
         IClock clock)
     {
-        _batchRepository = batchRepository;
+        _calculationRepository = calculationRepository;
         _calculationInfrastructureService = calculationInfrastructureService;
         _logger = logger;
         _clock = clock;
     }
 
     /// <summary>
-    /// Update the execution states in the batch repository by mapping the job states from the runs <see cref="ICalculationInfrastructureService"/>
+    /// Update the execution states in the calculation repository by mapping the job states from the runs <see cref="ICalculationInfrastructureService"/>
     /// </summary>
     /// <returns>Batches that have been completed</returns>
     public async Task UpdateExecutionStateAsync()
     {
-        var completedBatches = new List<Batch>();
-        var states = new List<BatchExecutionState>
+        var completedBatches = new List<Calculation>();
+        var states = new List<CalculationExecutionState>
         {
-            BatchExecutionState.Submitted, BatchExecutionState.Pending, BatchExecutionState.Executing,
+            CalculationExecutionState.Submitted, CalculationExecutionState.Pending, CalculationExecutionState.Executing,
         };
-        var activeBatches = await _batchRepository.GetByStatesAsync(states).ConfigureAwait(false);
+        var activeBatches = await _calculationRepository.GetByStatesAsync(states).ConfigureAwait(false);
         foreach (var batch in activeBatches)
         {
             try
@@ -58,7 +59,7 @@ public class BatchExecutionStateInfrastructureService : IBatchExecutionStateInfr
                     .GetStatusAsync(batch.CalculationId!)
                     .ConfigureAwait(false);
 
-                var executionState = BatchStateMapper.MapState(jobState);
+                var executionState = CalculationStateMapper.MapState(jobState);
                 if (executionState != batch.ExecutionState)
                 {
                     HandleNewState(executionState, batch, completedBatches);
@@ -71,27 +72,27 @@ public class BatchExecutionStateInfrastructureService : IBatchExecutionStateInfr
         }
     }
 
-    private void HandleNewState(BatchExecutionState state, Batch batch, ICollection<Batch> completedBatches)
+    private void HandleNewState(CalculationExecutionState state, Calculation calculation, ICollection<Calculation> completedBatches)
     {
         switch (state)
         {
-            case BatchExecutionState.Pending:
-                batch.MarkAsPending();
+            case CalculationExecutionState.Pending:
+                calculation.MarkAsPending();
                 break;
-            case BatchExecutionState.Executing:
-                batch.MarkAsExecuting();
+            case CalculationExecutionState.Executing:
+                calculation.MarkAsExecuting();
                 break;
-            case BatchExecutionState.Completed:
-                batch.MarkAsCompleted(_clock.GetCurrentInstant());
-                completedBatches.Add(batch);
+            case CalculationExecutionState.Completed:
+                calculation.MarkAsCompleted(_clock.GetCurrentInstant());
+                completedBatches.Add(calculation);
                 break;
-            case BatchExecutionState.Failed:
-                batch.MarkAsFailed();
+            case CalculationExecutionState.Failed:
+                calculation.MarkAsFailed();
                 break;
-            case BatchExecutionState.Canceled:
+            case CalculationExecutionState.Canceled:
                 // Jobs may be cancelled in Databricks for various reasons. For example they can be cancelled due to migrations in CD
-                // Setting batch state back to "created" ensure they will be picked up and started again
-                batch.Reset();
+                // Setting calculation state back to "created" ensure they will be picked up and started again
+                calculation.Reset();
                 break;
             default:
                 throw new ArgumentOutOfRangeException($"Unexpected execution state: {state.ToString()}.");

@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Batches.Interfaces;
+using Energinet.DataHub.Wholesale.Common.Models;
 
-public interface ICreateBatchHandler
+namespace Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
+
+public interface ICalculationFactory
 {
-    Task<Guid> HandleAsync(CreateBatchCommand command);
+     Calculation Create(ProcessType processType, IEnumerable<string> gridAreaCodes, DateTimeOffset startDate, DateTimeOffset endDate, Guid createdByUserId);
 }
