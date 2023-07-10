@@ -91,7 +91,7 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
         const string january1st = "2022-01-01T01:00:00.000Z";
         const string january2nd = "2022-01-02T01:00:00.000Z";
         const string january3rd = "2022-01-03T01:00:00.000Z";
-        const string april1st = "2022-05-01T01:00:00.000Z";
+        const string april1st = "2022-04-01T01:00:00.000Z";
         const string may1st = "2022-05-01T01:00:00.000Z";
         const string june1st = "2022-06-01T01:00:00.000Z";
 
