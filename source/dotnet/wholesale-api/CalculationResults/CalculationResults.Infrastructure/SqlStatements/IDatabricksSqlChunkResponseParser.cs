@@ -12,15 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Protobuf;
+using Newtonsoft.Json.Linq;
 
-namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 
-/// <summary>
-/// ADR-008:  https://energinet.atlassian.net/wiki/spaces/D3/pages/328957986/ADR+008+-+Integration+events+with+protocol+buffers
-/// </summary>
-/// <param name="EventIdentification"></param>
-/// <param name="EventName"></param>
-/// <param name="EventMinorVersion"></param>
-/// <param name="Message"></param>
-public record IntegrationEvent(Guid EventIdentification, string EventName, int EventMinorVersion, IMessage Message);
+public interface IDatabricksSqlChunkResponseParser
+{
+    DatabricksSqlChunkResponse Parse(string jsonResponse);
+
+    DatabricksSqlChunkResponse Parse(JToken jsonResponse);
+}

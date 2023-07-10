@@ -26,80 +26,41 @@ public class SqlStatementClient : ISqlStatementClient
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly HttpClient _httpClient;
     private readonly IOptions<DatabricksOptions> _options;
-    private readonly IDatabricksSqlResponseParser _databricksSqlResponseParser;
+    private readonly IDatabricksSqlResponseParser _responseResponseParser;
 
-    public SqlStatementClient(HttpClient httpClient, IOptions<DatabricksOptions> options, IDatabricksSqlResponseParser databricksSqlResponseParser)
+    public SqlStatementClient(
+        HttpClient httpClient,
+        IOptions<DatabricksOptions> options,
+        IDatabricksSqlResponseParser responseResponseParser)
     {
         _httpClient = httpClient;
         _options = options;
-        _databricksSqlResponseParser = databricksSqlResponseParser;
+        _responseResponseParser = responseResponseParser;
         ConfigureHttpClient(_httpClient, _options);
     }
 
     public async IAsyncEnumerable<SqlResultRow> ExecuteAsync(string sqlStatement)
     {
-        var hasMoreRows = false;
-        var path = string.Empty;
+        var response = await GetFirstChunkOrNullAsync(sqlStatement).ConfigureAwait(false);
+        var columnNames = response.ColumnNames;
+        var chunk = response.Chunk;
 
-        var response = await BeginExecuteAsync(sqlStatement).ConfigureAwait(false);
-
-        if (response.State is DatabricksSqlResponseState.Cancelled or DatabricksSqlResponseState.Failed or DatabricksSqlResponseState.Closed)
-            throw new DatabricksSqlException($"Unable to get calculation result from Databricks. State: {response.State}");
-
-        if (response.State is DatabricksSqlResponseState.Pending or DatabricksSqlResponseState.Running)
+        while (chunk != null)
         {
-            hasMoreRows = true;
-            path = $"{StatementsEndpointPath}/{response.StatementId}";
-        }
+            var data = await GetChunkDataAsync(chunk.ExternalLink, columnNames!).ConfigureAwait(false);
 
-        if (response.State == DatabricksSqlResponseState.Succeeded)
-        {
-            hasMoreRows = response.HasMoreRows;
-            path = response.NextChunkInternalLink!;
-
-            for (var index = 0; index < response.Table!.Rows.Count; index++)
+            for (var index = 0; index < data.Rows.Count; index++)
             {
-                yield return new SqlResultRow(response.Table!, index);
-            }
-        }
-
-        while (hasMoreRows)
-        {
-            var httpResponse = await _httpClient.GetAsync(path).ConfigureAwait(false);
-            if (!httpResponse.IsSuccessStatusCode)
-                throw new DatabricksSqlException($"Unable to get calculation result from Databricks. HTTP status code: {httpResponse.StatusCode}");
-
-            var jsonResponse = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var databricksSqlResponse = _databricksSqlResponseParser.Parse(jsonResponse);
-
-            if (response.State is DatabricksSqlResponseState.Cancelled or DatabricksSqlResponseState.Failed or DatabricksSqlResponseState.Closed)
-                throw new DatabricksSqlException($"Unable to get calculation result from Databricks. State: {response.State}");
-
-            // Handle the case where the statement is still pending
-            if (databricksSqlResponse.State is DatabricksSqlResponseState.Pending or DatabricksSqlResponseState.Running)
-            {
-                await Task.Delay(TimeSpan.FromSeconds(2)).ConfigureAwait(false);
-                continue;
+                yield return new SqlResultRow(data, index);
             }
 
-            // Handle the case where the statement did not succeed
-            if (databricksSqlResponse.State is not DatabricksSqlResponseState.Succeeded)
-                throw new DatabricksSqlException($"Unable to get calculation result from Databricks. State: {databricksSqlResponse.State}");
+            if (chunk.NextChunkInternalLink == null) break;
 
-            for (var index = 0; index < databricksSqlResponse.Table!.Rows.Count; index++)
-            {
-                yield return new SqlResultRow(response.Table!, index);
-            }
-
-            hasMoreRows = databricksSqlResponse.HasMoreRows;
-            path = databricksSqlResponse.NextChunkInternalLink;
+            chunk = await GetChunkAsync(chunk.NextChunkInternalLink).ConfigureAwait(false);
         }
     }
 
-    /// <summary>
-    /// Begins executing the SQL statement and returns the ID of the statement.
-    /// </summary>
-    private async Task<DatabricksSqlResponse> BeginExecuteAsync(string sqlStatement)
+    private async Task<DatabricksSqlResponse> GetFirstChunkOrNullAsync(string sqlStatement)
     {
         const int timeOutPerAttemptSeconds = 30;
 
@@ -108,6 +69,7 @@ public class SqlStatementClient : ISqlStatementClient
             wait_timeout = $"{timeOutPerAttemptSeconds}s", // Make the operation synchronous
             statement = sqlStatement,
             warehouse_id = _options.Value.DATABRICKS_WAREHOUSE_ID,
+            disposition = "EXTERNAL_LINKS", // Some results are larger than the maximum allowed 16MB limit, thus we need to use external links
         };
         var response = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
 
@@ -115,7 +77,44 @@ public class SqlStatementClient : ISqlStatementClient
             throw new DatabricksSqlException($"Unable to get calculation result from Databricks. HTTP status code: {response.StatusCode}");
 
         var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-        return _databricksSqlResponseParser.Parse(jsonResponse);
+        var databricksSqlResponse = _responseResponseParser.ParseStatusResponse(jsonResponse);
+
+        while (databricksSqlResponse.State is DatabricksSqlResponseState.Pending or DatabricksSqlResponseState.Running)
+        {
+            var path = $"{StatementsEndpointPath}/{databricksSqlResponse.StatementId}";
+            var httpResponse = await _httpClient.GetAsync(path).ConfigureAwait(false);
+
+            if (!httpResponse.IsSuccessStatusCode)
+                throw new DatabricksSqlException($"Unable to get calculation result from Databricks. HTTP status code: {httpResponse.StatusCode}");
+
+            databricksSqlResponse = _responseResponseParser.ParseStatusResponse(jsonResponse);
+        }
+
+        if (databricksSqlResponse.State is DatabricksSqlResponseState.Cancelled or DatabricksSqlResponseState.Failed or DatabricksSqlResponseState.Closed)
+            throw new DatabricksSqlException($"Unable to get calculation result from Databricks because the SQL statement execution didn't succeed. State: {databricksSqlResponse.State}");
+
+        return databricksSqlResponse;
+    }
+
+    private async Task<DatabricksSqlChunkResponse> GetChunkAsync(string chunkLink)
+    {
+        var httpResponse = await _httpClient.GetAsync(chunkLink).ConfigureAwait(false);
+        if (!httpResponse.IsSuccessStatusCode)
+            throw new DatabricksSqlException($"Unable to get chunk from {chunkLink}. HTTP status code: {httpResponse.StatusCode}");
+
+        var jsonResponse = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+        return _responseResponseParser.ParseChunkResponse(jsonResponse);
+    }
+
+    private async Task<TableChunk> GetChunkDataAsync(Uri externalLink, string[] columnNames)
+    {
+        var httpClient = new HttpClient();
+        var httpResponse = await httpClient.GetAsync(externalLink).ConfigureAwait(false);
+        if (!httpResponse.IsSuccessStatusCode)
+            throw new DatabricksSqlException($"Unable to get chunk data from external link {externalLink}. HTTP status code: {httpResponse.StatusCode}");
+
+        var jsonResponse = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+        return _responseResponseParser.ParseChunkDataResponse(jsonResponse, columnNames);
     }
 
     private static void ConfigureHttpClient(HttpClient httpClient, IOptions<DatabricksOptions> options)
