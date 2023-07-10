@@ -8,6 +8,7 @@ module "kv_internal" {
   resource_group_name             = azurerm_resource_group.this.name
   location                        = azurerm_resource_group.this.location
   enabled_for_template_deployment = true
+  enabled_for_deployment          = true
   sku_name                        = "premium"
   private_endpoint_subnet_id      = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   allowed_subnet_ids = [
