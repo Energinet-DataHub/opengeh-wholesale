@@ -82,7 +82,7 @@ public class CalculationDtoMapperTests
     {
         // Arrange
         var batch = new CalculationBuilder().Build();
-        var expectedRunId = new CalculationId(111);
+        var expectedRunId = new RunId(111);
         batch.MarkAsSubmitted(expectedRunId);
 
         // Act

@@ -35,7 +35,7 @@ public sealed class CalculationEngineClient : ICalculationEngineClient
         _calculationParametersFactory = calculationParametersFactory;
     }
 
-    public async Task<CalculationId> StartAsync(Calculation calculation)
+    public async Task<RunId> StartAsync(Calculation calculation)
     {
         var runParameters = _calculationParametersFactory.CreateParameters(calculation);
 
@@ -48,14 +48,14 @@ public sealed class CalculationEngineClient : ICalculationEngineClient
             .RunNow(calculatorJob.JobId, runParameters)
             .ConfigureAwait(false);
 
-        return new CalculationId(runId);
+        return new RunId(runId);
     }
 
-    public async Task<CalculationState> GetStatusAsync(CalculationId calculationId)
+    public async Task<CalculationState> GetStatusAsync(RunId runId)
     {
         var runState = await _client
             .Jobs
-            .RunsGet(calculationId.Id)
+            .RunsGet(runId.Id)
             .ConfigureAwait(false);
 
         return runState.Item1.State.LifeCycleState switch

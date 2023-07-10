@@ -19,7 +19,7 @@ namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 
 public interface IDatabaseContext
 {
-    DbSet<Calculation> Batches { get; }
+    DbSet<Calculation> Calculations { get; }
 
     /// <summary>
     /// Saves changes to the database.

@@ -15,7 +15,7 @@
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Batches;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.UnitTests.Infrastructure.CalculationAggregate;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -35,7 +35,7 @@ public class CalculationRepositoryTests
     {
         // Arrange
         databaseContextMock
-            .Setup<DbSet<Calculation>>(context => context.Batches)
+            .Setup<DbSet<Calculation>>(context => context.Calculations)
             .ReturnsDbSet(new List<Calculation>());
         var sut = new CalculationRepository(databaseContextMock.Object);
 
@@ -54,7 +54,7 @@ public class CalculationRepositoryTests
     {
         // Arrange
         databaseContextMock
-            .Setup<DbSet<Calculation>>(context => context.Batches)
+            .Setup<DbSet<Calculation>>(context => context.Calculations)
             .ReturnsDbSet(new List<Calculation>());
         var sut = new CalculationRepository(databaseContextMock.Object);
 
@@ -74,7 +74,7 @@ public class CalculationRepositoryTests
         var batch1 = new CalculationBuilder().WithStateCompleted().Build();
         var batch2 = new CalculationBuilder().WithStateCompleted().Build();
         databaseContextMock
-            .Setup<DbSet<Calculation>>(context => context.Batches)
+            .Setup<DbSet<Calculation>>(context => context.Calculations)
             .ReturnsDbSet(new List<Calculation> { batch1, batch2 });
 
         var sut = new CalculationRepository(databaseContextMock.Object);
@@ -95,7 +95,7 @@ public class CalculationRepositoryTests
         // Arrange
         var batch = new CalculationBuilder().WithStateCompleted().Build();
         databaseContextMock
-            .Setup<DbSet<Calculation>>(context => context.Batches)
+            .Setup<DbSet<Calculation>>(context => context.Calculations)
             .ReturnsDbSet(new List<Calculation> { batch });
         var futureCompletedTime = batch.ExecutionTimeEnd!.Value.Plus(Duration.FromMinutes(1));
 
@@ -116,7 +116,7 @@ public class CalculationRepositoryTests
         // Arrange
         var nonCompletedBatch = new CalculationBuilder().Build();
         databaseContextMock
-            .Setup<DbSet<Calculation>>(context => context.Batches)
+            .Setup<DbSet<Calculation>>(context => context.Calculations)
             .ReturnsDbSet(new List<Calculation> { nonCompletedBatch });
 
         var sut = new CalculationRepository(databaseContextMock.Object);

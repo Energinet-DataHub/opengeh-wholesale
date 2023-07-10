@@ -18,9 +18,9 @@ using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Batches;
+namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Calculations;
 
-public class BatchEntityConfiguration : IEntityTypeConfiguration<Calculation>
+public class CalculationEntityConfiguration : IEntityTypeConfiguration<Calculation>
 {
     public void Configure(EntityTypeBuilder<Calculation> builder)
     {
@@ -39,7 +39,7 @@ public class BatchEntityConfiguration : IEntityTypeConfiguration<Calculation>
         builder.Property(b => b.AreSettlementReportsCreated);
         builder.Property(b => b.CalculationId).HasConversion(
             calculationId => calculationId == null ? (long?)null : calculationId.Id,
-            calculationId => calculationId == null ? null : new CalculationId(calculationId.Value));
+            calculationId => calculationId == null ? null : new RunId(calculationId.Value));
         builder.Property(b => b.ProcessType);
         builder.Property(b => b.CreatedTime);
         builder.Property(b => b.CreatedByUserId);

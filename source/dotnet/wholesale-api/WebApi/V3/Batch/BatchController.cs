@@ -78,7 +78,7 @@ public class BatchController : V3ControllerBase
     /// <param name="maxExecutionTime"></param>
     /// <param name="periodStart"></param>
     /// <param name="periodEnd"></param>
-    /// <returns>Batches that matches the search criteria. Always 200 OK</returns>
+    /// <returns>Calculations that matches the search criteria. Always 200 OK</returns>
     [HttpGet(Name = "SearchBatches")]
     [MapToApiVersion(Version)]
     [Produces("application/json", Type = typeof(List<BatchDto>))]

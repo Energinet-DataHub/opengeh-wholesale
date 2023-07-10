@@ -14,7 +14,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
-using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Batches;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Calculations;
 using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
@@ -22,7 +22,7 @@ namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local", Justification = "Private setters are needed by EF Core")]
 public class DatabaseContext : DbContext, IDatabaseContext
 {
-    private const string Schema = "batches";
+    private const string Schema = "calculations";
 
     public DatabaseContext(DbContextOptions<DatabaseContext> options)
         : base(options)
@@ -34,14 +34,14 @@ public class DatabaseContext : DbContext, IDatabaseContext
     {
     }
 
-    public virtual DbSet<Calculation> Batches { get; private set; } = null!;
+    public virtual DbSet<Calculation> Calculations { get; private set; } = null!;
 
     public Task<int> SaveChangesAsync() => base.SaveChangesAsync();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema(Schema);
-        modelBuilder.ApplyConfiguration(new BatchEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new CalculationEntityConfiguration());
         base.OnModelCreating(modelBuilder);
     }
 }

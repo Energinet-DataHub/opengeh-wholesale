@@ -41,37 +41,37 @@ public class CalculationExecutionStateInfrastructureService : ICalculationExecut
     /// <summary>
     /// Update the execution states in the calculation repository by mapping the job states from the runs <see cref="ICalculationInfrastructureService"/>
     /// </summary>
-    /// <returns>Batches that have been completed</returns>
+    /// <returns>Calculations that have been completed</returns>
     public async Task UpdateExecutionStateAsync()
     {
-        var completedBatches = new List<Calculation>();
+        var completedCalculations = new List<Calculation>();
         var states = new List<CalculationExecutionState>
         {
             CalculationExecutionState.Submitted, CalculationExecutionState.Pending, CalculationExecutionState.Executing,
         };
-        var activeBatches = await _calculationRepository.GetByStatesAsync(states).ConfigureAwait(false);
-        foreach (var batch in activeBatches)
+        var activeCalculations = await _calculationRepository.GetByStatesAsync(states).ConfigureAwait(false);
+        foreach (var calculation in activeCalculations)
         {
             try
             {
                 var jobState = await _calculationInfrastructureService
-                    .GetStatusAsync(batch.CalculationId!)
+                    .GetStatusAsync(calculation.CalculationId!)
                     .ConfigureAwait(false);
 
                 var executionState = CalculationStateMapper.MapState(jobState);
-                if (executionState != batch.ExecutionState)
+                if (executionState != calculation.ExecutionState)
                 {
-                    HandleNewState(executionState, batch, completedBatches);
+                    HandleNewState(executionState, calculation, completedCalculations);
                 }
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Exception caught while trying to update execution state for run ID {BatchRunId}", batch.CalculationId);
+                _logger.LogError(e, "Exception caught while trying to update execution state for run ID {CalculationRunId}", calculation.CalculationId);
             }
         }
     }
 
-    private void HandleNewState(CalculationExecutionState state, Calculation calculation, ICollection<Calculation> completedBatches)
+    private void HandleNewState(CalculationExecutionState state, Calculation calculation, ICollection<Calculation> completedCalculations)
     {
         switch (state)
         {
@@ -83,7 +83,7 @@ public class CalculationExecutionStateInfrastructureService : ICalculationExecut
                 break;
             case CalculationExecutionState.Completed:
                 calculation.MarkAsCompleted(_clock.GetCurrentInstant());
-                completedBatches.Add(calculation);
+                completedCalculations.Add(calculation);
                 break;
             case CalculationExecutionState.Failed:
                 calculation.MarkAsFailed();

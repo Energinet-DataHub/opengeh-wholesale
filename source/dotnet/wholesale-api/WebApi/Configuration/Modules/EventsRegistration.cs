@@ -27,7 +27,7 @@ using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedBat
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
 
 /// <summary>
-/// Registration of services required for the Batches module.
+/// Registration of services required for the Calculations module.
 /// </summary>
 public static class EventsRegistration
 {

@@ -18,14 +18,14 @@ using Energinet.DataHub.Wholesale.Calculations.Application.UseCases;
 using Energinet.DataHub.Wholesale.Calculations.Application.Workers;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Batches;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
 
 /// <summary>
-///     Registration of services required for the Batches module.
+///     Registration of services required for the Calculations module.
 /// </summary>
 public static class BatchesRegistration
 {
