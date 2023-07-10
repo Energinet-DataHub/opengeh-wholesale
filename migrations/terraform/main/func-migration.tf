@@ -31,7 +31,7 @@ module "func_migration" {
     WEBSITE_LOAD_CERTIFICATES                       = "*"
     StorageAccountSettings__Dh2StorageAccountUri    = "https://${module.st_dh2data.name}.blob.core.windows.net"
     StorageAccountSettings__TimeSeriesContainerName = "timeseries"
-    Dh2ClientSettings__CertificateThumbprint        = azurerm_key_vault_certificate.dh2_certificate.thumbprint
-    Dh2ClientSettings__EndpointAddress              = "https://b2b.te7.datahub.dk"
+    DataHub2ClientSettings__CertificateThumbprint        = azurerm_key_vault_certificate.dh2_certificate.thumbprint
+    DataHub2ClientSettings__EndpointAddress              = "https://b2b.te7.datahub.dk"
   }
 }
