@@ -46,37 +46,37 @@ public class OutboxSender : IOutboxSender
     {
         var stopwatch = Stopwatch.StartNew();
         var eventCount = 0;
-        var batch = await _senderProvider.Instance.CreateMessageBatchAsync().ConfigureAwait(false);
+        var calculation = await _senderProvider.Instance.CreateMessageBatchAsync().ConfigureAwait(false);
 
         await foreach (var @event in _integrationEventProvider.GetAsync())
         {
             eventCount++;
             var serviceBusMessage = _serviceBusMessageFactory.Create(@event);
-            if (!batch.TryAddMessage(serviceBusMessage))
+            if (!calculation.TryAddMessage(serviceBusMessage))
             {
-                await SendBatchAsync(batch).ConfigureAwait(false);
-                batch = await _senderProvider.Instance.CreateMessageBatchAsync().ConfigureAwait(false);
+                await SendCalculationAsync(calculation).ConfigureAwait(false);
+                calculation = await _senderProvider.Instance.CreateMessageBatchAsync().ConfigureAwait(false);
 
-                if (!batch.TryAddMessage(serviceBusMessage))
+                if (!calculation.TryAddMessage(serviceBusMessage))
                 {
-                    await SendMessageThatExceedsBatchLimitAsync(serviceBusMessage).ConfigureAwait(false);
+                    await SendMessageThatExceedsCalculationLimitAsync(serviceBusMessage).ConfigureAwait(false);
                 }
             }
         }
 
-        await _senderProvider.Instance.SendMessagesAsync(batch).ConfigureAwait(false);
+        await _senderProvider.Instance.SendMessagesAsync(calculation).ConfigureAwait(false);
         _logger.LogInformation("Sent {EventCount} integration events in {Time} ms", eventCount, stopwatch.Elapsed.TotalMilliseconds);
     }
 
-    private async Task SendBatchAsync(ServiceBusMessageBatch batch)
+    private async Task SendCalculationAsync(ServiceBusMessageBatch calculation)
     {
-        await _senderProvider.Instance.SendMessagesAsync(batch).ConfigureAwait(false);
-        _logger.LogInformation("Sent batch of {BatchCount} messages", batch.Count);
+        await _senderProvider.Instance.SendMessagesAsync(calculation).ConfigureAwait(false);
+        _logger.LogInformation("Sent calculation of {BatchCount} messages", calculation.Count);
     }
 
-    private async Task SendMessageThatExceedsBatchLimitAsync(ServiceBusMessage serviceBusMessage)
+    private async Task SendMessageThatExceedsCalculationLimitAsync(ServiceBusMessage serviceBusMessage)
     {
         await _senderProvider.Instance.SendMessageAsync(serviceBusMessage).ConfigureAwait(false);
-        _logger.LogInformation("Sent single message that exceeded batch size");
+        _logger.LogInformation("Sent single message that exceeded calculation size");
     }
 }

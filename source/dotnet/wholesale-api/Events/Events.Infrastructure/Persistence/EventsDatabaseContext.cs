@@ -34,7 +34,7 @@ public class EventsDatabaseContext : DbContext, IEventsDatabaseContext
     {
     }
 
-    public virtual DbSet<CompletedBatch> CompletedBatches { get; private set; } = null!;
+    public virtual DbSet<CompletedCalculation> CompletedCalculations { get; private set; } = null!;
 
     public Task<int> SaveChangesAsync() => base.SaveChangesAsync();
 

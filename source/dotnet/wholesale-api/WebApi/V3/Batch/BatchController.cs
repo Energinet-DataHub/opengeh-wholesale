@@ -60,7 +60,7 @@ public class BatchController : V3ControllerBase
     /// <summary>
     /// Returns a batch matching <paramref name="batchId"/>.
     /// </summary>
-    /// <param name="batchId">BatchId</param>
+    /// <param name="batchId">CalculationId</param>
     [HttpGet("{batchId}", Name = "GetBatch")]
     [MapToApiVersion(Version)]
     [Produces("application/json", Type = typeof(BatchDto))]

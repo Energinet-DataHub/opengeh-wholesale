@@ -34,6 +34,6 @@ public class RegisterCompletedBatchesTrigger : RepeatingWorker<IRegisterComplete
 
     protected override async Task ExecuteAsync(IRegisterCompletedBatchesHandler instance)
     {
-        await instance.RegisterCompletedBatchesAsync().ConfigureAwait(false);
+        await instance.RegisterCompletedCalculationsAsync().ConfigureAwait(false);
     }
 }

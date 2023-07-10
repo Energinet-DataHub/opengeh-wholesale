@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Common.Models;
 
-namespace Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+namespace Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 
-public interface ICompletedBatchFactory
-{
-    IEnumerable<CompletedBatch> CreateFromBatches(IEnumerable<CalculationDto> completedBatchDtos);
-}
+/// <summary>
+/// An immutable request to create a calculation.
+/// </summary>
+public sealed record CalculationRequestDto(ProcessType ProcessType, IEnumerable<string> GridAreaCodes, DateTimeOffset StartDate, DateTimeOffset EndDate);

@@ -17,9 +17,9 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 
-public sealed class CompletedBatch
+public sealed class CompletedCalculation
 {
-    public CompletedBatch(
+    public CompletedCalculation(
         Guid id,
         List<string> gridAreaCodes,
         ProcessType processType,

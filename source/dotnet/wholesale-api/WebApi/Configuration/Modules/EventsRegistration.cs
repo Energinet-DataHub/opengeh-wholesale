@@ -38,9 +38,9 @@ public static class EventsRegistration
     {
         serviceCollection.AddHostedService<RegisterCompletedBatchesTrigger>();
 
-        serviceCollection.AddScoped<ICompletedBatchRepository, CompletedBatchRepository>();
-        serviceCollection.AddScoped<ICompletedBatchFactory, CompletedBatchFactory>();
-        serviceCollection.AddScoped<IRegisterCompletedBatchesHandler, RegisterCompletedBatchesHandler>();
+        serviceCollection.AddScoped<ICompletedCalculationRepository, CompletedCalculationRepository>();
+        serviceCollection.AddScoped<ICompletedCalculationFactory, CompletedCalculationFactory>();
+        serviceCollection.AddScoped<IRegisterCompletedBatchesHandler, RegisterCompletedCalculationsHandler>();
 
         serviceCollection.AddScoped<ICalculationResultIntegrationEventFactory, CalculationResultIntegrationEventFactory>();
 

@@ -16,7 +16,6 @@ using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
-using Energinet.DataHub.Wholesale.Events.Application;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Moq;
@@ -25,43 +24,43 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Application.UseCases;
 
-public class RegisterCompletedBatchesHandlerTests
+public class RegisterCompletedCalculationsHandlerTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public async Task RegisterCompletedBatchesAsync_WhenTwoNewBatchHasCompleted_RegistersThem(
-        CalculationDto newBatch1,
-        CalculationDto newBatch2,
-        CompletedBatch lastKnownCompletedBatch,
-        CompletedBatch newCompletedBatch1,
-        CompletedBatch newCompletedBatch2,
-        [Frozen] Mock<ICalculationsClient> batchesClientMock,
-        [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
+    public async Task RegisterCompletedCalculationsAsync_WhenTwoNewCalculationHasCompleted_RegistersThem(
+        CalculationDto newCalculation1,
+        CalculationDto newCalculation2,
+        CompletedCalculation lastKnownCompletedCalculation,
+        CompletedCalculation newCompletedCalculation1,
+        CompletedCalculation newCompletedCalculation2,
+        [Frozen] Mock<ICalculationsClient> calculationClientMock,
+        [Frozen] Mock<ICompletedCalculationRepository> completedCalculationRepositoryMock,
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
-        [Frozen] Mock<ICompletedBatchFactory> completedBatchFactoryMock,
-        RegisterCompletedBatchesHandler sut)
+        [Frozen] Mock<ICompletedCalculationFactory> completedCalculationFactoryMock,
+        RegisterCompletedCalculationsHandler sut)
     {
         // Arrange
-        completedBatchRepositoryMock
+        completedCalculationRepositoryMock
             .Setup(repository => repository.GetLastCompletedOrNullAsync())
-            .ReturnsAsync(lastKnownCompletedBatch);
-        batchesClientMock
+            .ReturnsAsync(lastKnownCompletedCalculation);
+        calculationClientMock
             .Setup(client => client.GetCalculationsCompletedAfterAsync(It.IsAny<Instant>()))
-            .ReturnsAsync(new[] { newBatch1, newBatch2 });
-        completedBatchFactoryMock
-            .Setup(x => x.CreateFromBatches(It.IsAny<IEnumerable<CalculationDto>>()))
-            .Returns(new[] { newCompletedBatch1, newCompletedBatch2 });
+            .ReturnsAsync(new[] { newCalculation1, newCalculation2 });
+        completedCalculationFactoryMock
+            .Setup(x => x.CreateFromCalculations(It.IsAny<IEnumerable<CalculationDto>>()))
+            .Returns(new[] { newCompletedCalculation1, newCompletedCalculation2 });
 
         // Act
-        await sut.RegisterCompletedBatchesAsync();
+        await sut.RegisterCompletedCalculationsAsync();
 
         // Assert
 
-        // The two batches has been registered
-        completedBatchRepositoryMock
+        // The two calculations has been registered
+        completedCalculationRepositoryMock
             .Verify(
-                x => x.AddAsync(It.Is<IEnumerable<CompletedBatch>>(
-                    batches => batches.First().Id == newCompletedBatch1.Id && batches.Last().Id == newCompletedBatch2.Id)),
+                x => x.AddAsync(It.Is<IEnumerable<CompletedCalculation>>(
+                    calculations => calculations.First().Id == newCompletedCalculation1.Id && calculations.Last().Id == newCompletedCalculation2.Id)),
                 Times.Once);
 
         // And the unit of work has been committed

@@ -77,7 +77,7 @@ public class SettlementReportController : V3ControllerBase
     /// <summary>
     /// Returns a stream containing the settlement report for batch with <paramref name="batchId" /> and <paramref name="gridAreaCode" />.
     /// </summary>
-    /// <param name="batchId">BatchId</param>
+    /// <param name="batchId">CalculationId</param>
     /// <param name="gridAreaCode">GridAreaCode</param>
     [HttpGet(Name = "GetSettlementReportAsStreamAsync")]
     [MapToApiVersion(Version)]
@@ -97,7 +97,7 @@ public class SettlementReportController : V3ControllerBase
     /// <summary>
     /// Returns a stream containing the settlement report for a batch matching <paramref name="batchId"/>
     /// </summary>
-    /// <param name="batchId">BatchId</param>
+    /// <param name="batchId">CalculationId</param>
     [HttpGet("ZippedBasisDataStream")]
     [MapToApiVersion(Version)]
     [BinaryContent]

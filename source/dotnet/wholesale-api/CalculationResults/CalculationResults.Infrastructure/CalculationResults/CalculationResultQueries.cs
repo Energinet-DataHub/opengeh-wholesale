@@ -112,7 +112,7 @@ ORDER BY {ResultColumnNames.CalculationResultId}, {ResultColumnNames.Time}
         var fromGridArea = sqlResultRow[ResultColumnNames.FromGridArea];
         return new CalculationResult(
             id,
-            calculation.BatchId,
+            calculation.CalculationId,
             gridArea,
             timeSeriesType,
             energySupplierId,

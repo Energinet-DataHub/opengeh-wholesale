@@ -17,20 +17,20 @@ using NodaTime.Extensions;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 
-public class CompletedBatchFactory : ICompletedBatchFactory
+public class CompletedCalculationFactory : ICompletedCalculationFactory
 {
-    public IEnumerable<CompletedBatch> CreateFromBatches(IEnumerable<CalculationDto> completedBatchDtos)
+    public IEnumerable<CompletedCalculation> CreateFromCalculations(IEnumerable<CalculationDto> completedBatchDtos)
     {
-        return completedBatchDtos.Select(CreateFromBatch);
+        return completedBatchDtos.Select(CreateFromCalculation);
     }
 
-    public CompletedBatch CreateFromBatch(CalculationDto completedCalculationDto)
+    public CompletedCalculation CreateFromCalculation(CalculationDto completedCalculationDto)
     {
         if (completedCalculationDto.ExecutionTimeEnd == null)
             throw new ArgumentNullException($"{nameof(CalculationDto.ExecutionTimeEnd)} should not be null for a completed calculation.");
 
-        return new CompletedBatch(
-            completedCalculationDto.BatchId,
+        return new CompletedCalculation(
+            completedCalculationDto.CalculationId,
             completedCalculationDto.GridAreaCodes.ToList(),
             completedCalculationDto.ProcessType,
             completedCalculationDto.PeriodStart.ToInstant(),

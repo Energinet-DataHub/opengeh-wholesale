@@ -17,36 +17,36 @@ using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.UseCases;
 
-public class RegisterCompletedBatchesHandler : IRegisterCompletedBatchesHandler
+public class RegisterCompletedCalculationsHandler : IRegisterCompletedBatchesHandler
 {
     private readonly ICalculationsClient _calculationsClient;
-    private readonly ICompletedBatchRepository _completedBatchRepository;
+    private readonly ICompletedCalculationRepository _completedCalculationRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ICompletedBatchFactory _completedBatchFactory;
+    private readonly ICompletedCalculationFactory _completedCalculationFactory;
 
-    public RegisterCompletedBatchesHandler(
+    public RegisterCompletedCalculationsHandler(
         ICalculationsClient calculationsClient,
-        ICompletedBatchRepository completedBatchRepository,
+        ICompletedCalculationRepository completedCalculationRepository,
         IUnitOfWork unitOfWork,
-        ICompletedBatchFactory completedBatchFactory)
+        ICompletedCalculationFactory completedCalculationFactory)
     {
         _calculationsClient = calculationsClient;
-        _completedBatchRepository = completedBatchRepository;
+        _completedCalculationRepository = completedCalculationRepository;
         _unitOfWork = unitOfWork;
-        _completedBatchFactory = completedBatchFactory;
+        _completedCalculationFactory = completedCalculationFactory;
     }
 
-    public async Task RegisterCompletedBatchesAsync()
+    public async Task RegisterCompletedCalculationsAsync()
     {
         var newCompletedBatches = await GetNewCompletedBatchesAsync().ConfigureAwait(false);
-        await _completedBatchRepository.AddAsync(newCompletedBatches).ConfigureAwait(false);
+        await _completedCalculationRepository.AddAsync(newCompletedBatches).ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
-    private async Task<IEnumerable<CompletedBatch>> GetNewCompletedBatchesAsync()
+    private async Task<IEnumerable<CompletedCalculation>> GetNewCompletedBatchesAsync()
     {
-        var lastKnownCompletedBatch = await _completedBatchRepository.GetLastCompletedOrNullAsync().ConfigureAwait(false);
+        var lastKnownCompletedBatch = await _completedCalculationRepository.GetLastCompletedOrNullAsync().ConfigureAwait(false);
         var completedBatchDtos = await _calculationsClient.GetCalculationsCompletedAfterAsync(lastKnownCompletedBatch?.CompletedTime).ConfigureAwait(false);
-        return _completedBatchFactory.CreateFromBatches(completedBatchDtos);
+        return _completedCalculationFactory.CreateFromCalculations(completedBatchDtos);
     }
 }

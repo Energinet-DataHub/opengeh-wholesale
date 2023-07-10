@@ -25,20 +25,20 @@ public class IntegrationEventProvider : IIntegrationEventProvider
 {
     private readonly ICalculationResultIntegrationEventFactory _calculationResultIntegrationEventFactory;
     private readonly ICalculationResultQueries _calculationResultQueries;
-    private readonly ICompletedBatchRepository _completedBatchRepository;
+    private readonly ICompletedCalculationRepository _completedCalculationRepository;
     private readonly IClock _clock;
     private readonly IUnitOfWork _unitOfWork;
 
     public IntegrationEventProvider(
         ICalculationResultIntegrationEventFactory integrationEventFactory,
         ICalculationResultQueries calculationResultQueries,
-        ICompletedBatchRepository completedBatchRepository,
+        ICompletedCalculationRepository completedCalculationRepository,
         IClock clock,
         IUnitOfWork unitOfWork)
     {
         _calculationResultIntegrationEventFactory = integrationEventFactory;
         _calculationResultQueries = calculationResultQueries;
-        _completedBatchRepository = completedBatchRepository;
+        _completedCalculationRepository = completedCalculationRepository;
         _clock = clock;
         _unitOfWork = unitOfWork;
     }
@@ -47,7 +47,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
     {
         do
         {
-            var batch = await _completedBatchRepository.GetNextUnpublishedOrNullAsync().ConfigureAwait(false);
+            var batch = await _completedCalculationRepository.GetNextUnpublishedOrNullAsync().ConfigureAwait(false);
             if (batch == null) break;
 
             await foreach (var calculationResult in _calculationResultQueries.GetAsync(batch.Id).ConfigureAwait(false))

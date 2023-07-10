@@ -16,5 +16,5 @@ namespace Energinet.DataHub.Wholesale.Events.Application.UseCases;
 
 public interface IRegisterCompletedBatchesHandler
 {
-    Task RegisterCompletedBatchesAsync();
+    Task RegisterCompletedCalculationsAsync();
 }

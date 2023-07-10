@@ -22,13 +22,13 @@ public sealed class CalculationResultBuilder
 {
     private TimeSeriesType _timeSeriesType = TimeSeriesType.Production;
     private TimeSeriesPoint[] _points = { new(DateTime.Now, 0, QuantityQuality.Measured) };
-    private Guid _batchId = Guid.NewGuid();
+    private Guid _calculationId = Guid.NewGuid();
     private string? _energySupplierId;
     private string? _balanceResponsiblePartyId;
 
-    public CalculationResultBuilder WithId(Guid batchId)
+    public CalculationResultBuilder WithId(Guid calculationId)
     {
-        _batchId = batchId;
+        _calculationId = calculationId;
         return this;
     }
 
@@ -60,7 +60,7 @@ public sealed class CalculationResultBuilder
     {
         return new CalculationResult(
             Guid.NewGuid(),
-            _batchId,
+            _calculationId,
             "543",
             _timeSeriesType,
             _energySupplierId,

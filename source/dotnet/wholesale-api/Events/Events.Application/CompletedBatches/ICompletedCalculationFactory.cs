@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 
-/// <summary>
-/// An immutable criteria for batch search.
-/// </summary>
-public sealed record BatchSearchDto(DateTimeOffset MinExecutionTime, DateTimeOffset MaxExecutionTime);
+namespace Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+
+public interface ICompletedCalculationFactory
+{
+    IEnumerable<CompletedCalculation> CreateFromCalculations(IEnumerable<CalculationDto> completedBatchDtos);
+}

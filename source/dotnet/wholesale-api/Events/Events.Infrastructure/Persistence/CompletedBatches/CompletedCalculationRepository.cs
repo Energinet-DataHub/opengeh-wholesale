@@ -17,31 +17,31 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedBatches;
 
-public class CompletedBatchRepository : ICompletedBatchRepository
+public class CompletedCalculationRepository : ICompletedCalculationRepository
 {
     private readonly IEventsDatabaseContext _context;
 
-    public CompletedBatchRepository(IEventsDatabaseContext context)
+    public CompletedCalculationRepository(IEventsDatabaseContext context)
     {
         _context = context;
     }
 
-    public async Task AddAsync(IEnumerable<CompletedBatch> completedBatches)
+    public async Task AddAsync(IEnumerable<CompletedCalculation> completedBatches)
     {
-        await _context.CompletedBatches.AddRangeAsync(completedBatches).ConfigureAwait(false);
+        await _context.CompletedCalculations.AddRangeAsync(completedBatches).ConfigureAwait(false);
     }
 
-    public async Task<CompletedBatch?> GetLastCompletedOrNullAsync()
+    public async Task<CompletedCalculation?> GetLastCompletedOrNullAsync()
     {
-        return await _context.CompletedBatches
+        return await _context.CompletedCalculations
             .OrderByDescending(x => x.CompletedTime)
             .FirstOrDefaultAsync()
             .ConfigureAwait(false);
     }
 
-    public async Task<CompletedBatch?> GetNextUnpublishedOrNullAsync()
+    public async Task<CompletedCalculation?> GetNextUnpublishedOrNullAsync()
     {
-        return await _context.CompletedBatches
+        return await _context.CompletedCalculations
             .OrderBy(x => x.CompletedTime)
             .Where(x => x.PublishedTime == null)
             .FirstOrDefaultAsync()

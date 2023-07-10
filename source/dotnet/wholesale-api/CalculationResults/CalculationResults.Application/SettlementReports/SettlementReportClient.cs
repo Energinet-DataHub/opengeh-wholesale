@@ -100,7 +100,7 @@ public class SettlementReportClient : ISettlementReportClient
     {
         return new CalculationInfo
         {
-            Id = calculation.BatchId,
+            Id = calculation.CalculationId,
             PeriodStart = Instant.FromDateTimeOffset(calculation.PeriodStart),
             PeriodEnd = Instant.FromDateTimeOffset(calculation.PeriodEnd),
             GridAreaCodes = calculation.GridAreaCodes.ToList(),

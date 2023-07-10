@@ -14,11 +14,11 @@
 
 namespace Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 
-public interface ICompletedBatchRepository
+public interface ICompletedCalculationRepository
 {
-    Task AddAsync(IEnumerable<CompletedBatch> completedBatches);
+    Task AddAsync(IEnumerable<CompletedCalculation> completedBatches);
 
-    Task<CompletedBatch?> GetLastCompletedOrNullAsync();
+    Task<CompletedCalculation?> GetLastCompletedOrNullAsync();
 
-    Task<CompletedBatch?> GetNextUnpublishedOrNullAsync();
+    Task<CompletedCalculation?> GetNextUnpublishedOrNullAsync();
 }

@@ -22,7 +22,7 @@ public static class BatchDtoMapper
 
         return new BatchDto(
             calculationDto.RunId,
-            calculationDto.BatchId,
+            calculationDto.CalculationId,
             calculationDto.PeriodStart,
             calculationDto.PeriodEnd,
             calculationDto.Resolution,

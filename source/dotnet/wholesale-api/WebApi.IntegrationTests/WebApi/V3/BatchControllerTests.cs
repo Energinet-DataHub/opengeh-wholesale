@@ -60,12 +60,12 @@ public class BatchControllerTests : WebApiTestBase
         CalculationDto calculationDto)
     {
         // Arrange
-        mock.Setup(service => service.GetAsync(calculationDto.BatchId))
+        mock.Setup(service => service.GetAsync(calculationDto.CalculationId))
             .ReturnsAsync(calculationDto);
         Factory.BatchesClientMock = mock;
 
         // Act
-        var response = await Client.GetAsync($"/v3/batches/{calculationDto.BatchId.ToString()}");
+        var response = await Client.GetAsync($"/v3/batches/{calculationDto.CalculationId.ToString()}");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -81,10 +81,10 @@ public class BatchControllerTests : WebApiTestBase
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    private static BatchRequestDto CreateBatchRequestDto()
+    private static CalculationRequestDto CreateBatchRequestDto()
     {
         var period = Periods.January_EuropeCopenhagen;
-        var batchRequest = new BatchRequestDto(
+        var batchRequest = new CalculationRequestDto(
             ProcessType.BalanceFixing,
             new List<string> { "805" },
             period.PeriodStart,

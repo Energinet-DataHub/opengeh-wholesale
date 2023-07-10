@@ -76,7 +76,7 @@ public class CalculationResultQueriesTests
     {
         // Arrange
         var batchId = Guid.Parse(_row0BatchId);
-        calculation = calculation with { BatchId = batchId };
+        calculation = calculation with { CalculationId = batchId };
         batchesClientMock
             .Setup(client => client.GetAsync(batchId))
             .ReturnsAsync(calculation);
@@ -101,7 +101,7 @@ public class CalculationResultQueriesTests
     {
         // Arrange
         var batchId = Guid.Parse(_row0BatchId);
-        calculation = calculation with { BatchId = batchId };
+        calculation = calculation with { CalculationId = batchId };
         batchesClientMock
             .Setup(client => client.GetAsync(batchId))
             .ReturnsAsync(calculation);
@@ -114,12 +114,12 @@ public class CalculationResultQueriesTests
 
         // Assert
         actual.Id.Should().Be(_calculationResultId0);
-        actual.BatchId.Should().Be(Guid.Parse(_row0BatchId));
+        actual.CalculationId.Should().Be(Guid.Parse(_row0BatchId));
         actual.GridArea.Should().Be(_tableChunk[0, ResultColumnNames.GridArea]);
         actual.TimeSeriesType.Should().Be(TimeSeriesType.NonProfiledConsumption);
         actual.BalanceResponsibleId.Should().Be(_tableChunk[0, ResultColumnNames.BalanceResponsibleId]);
         actual.EnergySupplierId.Should().Be(_tableChunk[0, ResultColumnNames.EnergySupplierId]);
-        actual.BatchId.Should().Be(_tableChunk[0, ResultColumnNames.BatchId]);
+        actual.CalculationId.Should().Be(_tableChunk[0, ResultColumnNames.BatchId]);
         actual.ProcessType.Should().Be(calculation.ProcessType);
         actual.PeriodStart.Should().Be(calculation.PeriodStart.ToInstant());
         actual.PeriodEnd.Should().Be(calculation.PeriodEnd.ToInstant());
@@ -139,7 +139,7 @@ public class CalculationResultQueriesTests
     {
         // Arrange
         var batchId = Guid.Parse(_row0BatchId);
-        calculation = calculation with { BatchId = batchId };
+        calculation = calculation with { CalculationId = batchId };
         batchesClientMock
             .Setup(client => client.GetAsync(batchId))
             .ReturnsAsync(calculation);
