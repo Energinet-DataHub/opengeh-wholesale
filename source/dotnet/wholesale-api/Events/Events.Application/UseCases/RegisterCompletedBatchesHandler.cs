@@ -46,7 +46,7 @@ public class RegisterCompletedBatchesHandler : IRegisterCompletedBatchesHandler
     private async Task<IEnumerable<CompletedBatch>> GetNewCompletedBatchesAsync()
     {
         var lastKnownCompletedBatch = await _completedBatchRepository.GetLastCompletedOrNullAsync().ConfigureAwait(false);
-        var completedBatchDtos = await _calculationsClient.GetBatchesCompletedAfterAsync(lastKnownCompletedBatch?.CompletedTime).ConfigureAwait(false);
+        var completedBatchDtos = await _calculationsClient.GetCalculationsCompletedAfterAsync(lastKnownCompletedBatch?.CompletedTime).ConfigureAwait(false);
         return _completedBatchFactory.CreateFromBatches(completedBatchDtos);
     }
 }

@@ -30,8 +30,8 @@ public class RegisterCompletedBatchesHandlerTests
     [Theory]
     [InlineAutoMoqData]
     public async Task RegisterCompletedBatchesAsync_WhenTwoNewBatchHasCompleted_RegistersThem(
-        BatchDto newBatch1,
-        BatchDto newBatch2,
+        CalculationDto newBatch1,
+        CalculationDto newBatch2,
         CompletedBatch lastKnownCompletedBatch,
         CompletedBatch newCompletedBatch1,
         CompletedBatch newCompletedBatch2,
@@ -46,10 +46,10 @@ public class RegisterCompletedBatchesHandlerTests
             .Setup(repository => repository.GetLastCompletedOrNullAsync())
             .ReturnsAsync(lastKnownCompletedBatch);
         batchesClientMock
-            .Setup(client => client.GetBatchesCompletedAfterAsync(It.IsAny<Instant>()))
+            .Setup(client => client.GetCalculationsCompletedAfterAsync(It.IsAny<Instant>()))
             .ReturnsAsync(new[] { newBatch1, newBatch2 });
         completedBatchFactoryMock
-            .Setup(x => x.CreateFromBatches(It.IsAny<IEnumerable<BatchDto>>()))
+            .Setup(x => x.CreateFromBatches(It.IsAny<IEnumerable<CalculationDto>>()))
             .Returns(new[] { newCompletedBatch1, newCompletedBatch2 });
 
         // Act

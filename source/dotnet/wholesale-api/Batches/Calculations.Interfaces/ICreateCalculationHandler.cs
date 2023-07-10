@@ -16,5 +16,5 @@ namespace Energinet.DataHub.Wholesale.Calculations.Interfaces;
 
 public interface ICreateCalculationHandler
 {
-    Task<Guid> HandleAsync(CreateBatchCommand command);
+    Task<Guid> HandleAsync(CreateCalculationCommand command);
 }

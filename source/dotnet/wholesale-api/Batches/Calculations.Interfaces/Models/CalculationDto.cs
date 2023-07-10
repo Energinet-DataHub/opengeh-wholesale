@@ -12,12 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Common.Models;
+
 namespace Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 
-public enum BatchState
-{
-    Pending,
-    Executing,
-    Completed,
-    Failed,
-}
+/// <summary>
+/// An immutable batch.
+/// </summary>
+public sealed record CalculationDto(
+    long? RunId,
+    Guid BatchId,
+    DateTimeOffset PeriodStart,
+    DateTimeOffset PeriodEnd,
+    string Resolution,
+    string Unit,
+    DateTimeOffset? ExecutionTimeStart,
+    DateTimeOffset? ExecutionTimeEnd,
+    CalculationState ExecutionState,
+    bool AreSettlementReportsCreated,
+    string[] GridAreaCodes,
+    ProcessType ProcessType,
+    Guid CreatedByUserId);

@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Calculations.Application.Model.Batches;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Common.Models;
 using NodaTime;
@@ -36,7 +35,9 @@ public class Calculation
     {
         _gridAreaCodes = gridAreaCodes.ToList();
         if (!IsValid(_gridAreaCodes, periodStart, periodEnd, dateTimeZone, out var errorMessages))
+        {
             throw new BusinessValidationException(string.Join(" ", errorMessages));
+        }
 
         ExecutionState = CalculationExecutionState.Created;
         ProcessType = processType;
@@ -50,42 +51,7 @@ public class Calculation
     }
 
     /// <summary>
-    /// Validate if parameters are valid for a Calculation.
-    /// </summary>
-    /// <param name="gridAreaCodes"></param>
-    /// <param name="periodStart"></param>
-    /// <param name="periodEnd"></param>
-    /// <param name="dateTimeZone"></param>
-    /// <param name="validationErrors"></param>
-    /// <returns>If the parameters are valid for a Calculation</returns>
-    public static bool IsValid(
-        IEnumerable<GridAreaCode> gridAreaCodes,
-        Instant periodStart,
-        Instant periodEnd,
-        DateTimeZone dateTimeZone,
-        out IEnumerable<string> validationErrors)
-    {
-        var errors = new List<string>();
-
-        if (!gridAreaCodes.Any())
-            errors.Add("Calculation must contain at least one grid area code.");
-
-        if (periodStart >= periodEnd)
-            errors.Add("periodStart is greater or equal to periodEnd");
-
-        // Validate that period end is set to midnight
-        if (new ZonedDateTime(periodEnd, dateTimeZone).TimeOfDay != LocalTime.Midnight)
-            errors.Add($"The period end '{periodEnd.ToString()}' must be midnight.");
-
-        if (new ZonedDateTime(periodStart, dateTimeZone).TimeOfDay != LocalTime.Midnight)
-            errors.Add($"The period start '{periodStart.ToString()}' must be midnight.");
-
-        validationErrors = errors;
-        return !errors.Any();
-    }
-
-    /// <summary>
-    /// Required by Entity Framework
+    ///     Required by Entity Framework
     /// </summary>
     // ReSharper disable once UnusedMember.Local
     private Calculation()
@@ -95,7 +61,7 @@ public class Calculation
     }
 
     // Private setter is used implicitly by tests
-    public Guid Id { get; private set; }
+    public Guid Id { get; }
 
     public ProcessType ProcessType { get; }
 
@@ -114,20 +80,63 @@ public class Calculation
     public CalculationId? CalculationId { get; private set; }
 
     /// <summary>
-    /// Must be exactly at the beginning (at 00:00:00 o'clock) of the local date.
+    ///     Must be exactly at the beginning (at 00:00:00 o'clock) of the local date.
     /// </summary>
     public Instant PeriodStart { get; }
 
     /// <summary>
-    /// Must be exactly 1 ms before the end (midnight) of the local date.
-    /// The 1 ms off is by design originating from the front-end decision on how to handle date periods.
+    ///     Must be exactly 1 ms before the end (midnight) of the local date.
+    ///     The 1 ms off is by design originating from the front-end decision on how to handle date periods.
     /// </summary>
     public Instant PeriodEnd { get; }
 
     public bool AreSettlementReportsCreated { get; set; }
 
     /// <summary>
-    /// Get the ISO 8601 duration for the given process type.
+    ///     Validate if parameters are valid for a Calculation.
+    /// </summary>
+    /// <param name="gridAreaCodes"></param>
+    /// <param name="periodStart"></param>
+    /// <param name="periodEnd"></param>
+    /// <param name="dateTimeZone"></param>
+    /// <param name="validationErrors"></param>
+    /// <returns>If the parameters are valid for a Calculation</returns>
+    public static bool IsValid(
+        IEnumerable<GridAreaCode> gridAreaCodes,
+        Instant periodStart,
+        Instant periodEnd,
+        DateTimeZone dateTimeZone,
+        out IEnumerable<string> validationErrors)
+    {
+        var errors = new List<string>();
+
+        if (!gridAreaCodes.Any())
+        {
+            errors.Add("Calculation must contain at least one grid area code.");
+        }
+
+        if (periodStart >= periodEnd)
+        {
+            errors.Add("periodStart is greater or equal to periodEnd");
+        }
+
+        // Validate that period end is set to midnight
+        if (new ZonedDateTime(periodEnd, dateTimeZone).TimeOfDay != LocalTime.Midnight)
+        {
+            errors.Add($"The period end '{periodEnd.ToString()}' must be midnight.");
+        }
+
+        if (new ZonedDateTime(periodStart, dateTimeZone).TimeOfDay != LocalTime.Midnight)
+        {
+            errors.Add($"The period start '{periodStart.ToString()}' must be midnight.");
+        }
+
+        validationErrors = errors;
+        return !errors.Any();
+    }
+
+    /// <summary>
+    ///     Get the ISO 8601 duration for the given process type.
     /// </summary>
     public string GetResolution()
     {
@@ -142,7 +151,7 @@ public class Calculation
     }
 
     /// <summary>
-    /// Get the unit for result values (an energy unit for aggregations and a price unit/currency for settlements).
+    ///     Get the unit for result values (an energy unit for aggregations and a price unit/currency for settlements).
     /// </summary>
     public string GetQuantityUnit()
     {
@@ -160,7 +169,8 @@ public class Calculation
     {
         ArgumentNullException.ThrowIfNull(calculationId);
         if (ExecutionState is CalculationExecutionState.Submitted or CalculationExecutionState.Pending
-            or CalculationExecutionState.Executing or CalculationExecutionState.Completed or CalculationExecutionState.Failed)
+            or CalculationExecutionState.Executing or CalculationExecutionState.Completed
+            or CalculationExecutionState.Failed)
         {
             ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Submitted);
         }
@@ -171,15 +181,22 @@ public class Calculation
 
     public void MarkAsPending()
     {
-        if (ExecutionState is CalculationExecutionState.Pending or CalculationExecutionState.Executing or CalculationExecutionState.Completed or CalculationExecutionState.Failed)
+        if (ExecutionState is CalculationExecutionState.Pending or CalculationExecutionState.Executing
+            or CalculationExecutionState.Completed or CalculationExecutionState.Failed)
+        {
             ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Pending);
+        }
+
         ExecutionState = CalculationExecutionState.Pending;
     }
 
     public void MarkAsExecuting()
     {
-        if (ExecutionState is CalculationExecutionState.Executing or CalculationExecutionState.Completed or CalculationExecutionState.Failed)
+        if (ExecutionState is CalculationExecutionState.Executing or CalculationExecutionState.Completed
+            or CalculationExecutionState.Failed)
+        {
             ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Executing);
+        }
 
         ExecutionState = CalculationExecutionState.Executing;
     }
@@ -187,7 +204,9 @@ public class Calculation
     public void MarkAsCompleted(Instant executionTimeEnd)
     {
         if (ExecutionState is CalculationExecutionState.Completed or CalculationExecutionState.Failed)
+        {
             ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Completed);
+        }
 
         if (executionTimeEnd < ExecutionTimeStart)
         {
@@ -202,24 +221,31 @@ public class Calculation
     public void MarkAsFailed()
     {
         if (ExecutionState is CalculationExecutionState.Failed)
+        {
             ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Failed);
+        }
 
         ExecutionState = CalculationExecutionState.Failed;
     }
 
     /// <summary>
-    /// Reset a batch. This will ensure that it will be picked up and run again in a new calculation.
+    ///     Reset a calculation. This will ensure that it will be picked up and run again in a new calculation.
     /// </summary>
     public void Reset()
     {
         if (ExecutionState is CalculationExecutionState.Completed)
+        {
             ThrowInvalidStateTransitionException(ExecutionState, CalculationExecutionState.Created);
+        }
 
         ExecutionState = CalculationExecutionState.Created;
     }
 
-    private void ThrowInvalidStateTransitionException(CalculationExecutionState currentState, CalculationExecutionState desiredState)
+    private void ThrowInvalidStateTransitionException(
+        CalculationExecutionState currentState,
+        CalculationExecutionState desiredState)
     {
-        throw new BusinessValidationException($"Cannot change batchExecutionState from {currentState} to {desiredState}");
+        throw new BusinessValidationException(
+            $"Cannot change calculationExecutionState from {currentState} to {desiredState}");
     }
 }

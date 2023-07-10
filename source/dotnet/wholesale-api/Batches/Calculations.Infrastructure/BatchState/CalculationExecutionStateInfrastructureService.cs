@@ -13,7 +13,6 @@
 // limitations under the License.using Energinet.DataHub.Wholesale.Common.JobRunner;
 
 using Energinet.DataHub.Wholesale.Calculations.Application;
-using Energinet.DataHub.Wholesale.Calculations.Application.Model.Batches;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Microsoft.Extensions.Logging;
 using NodaTime;

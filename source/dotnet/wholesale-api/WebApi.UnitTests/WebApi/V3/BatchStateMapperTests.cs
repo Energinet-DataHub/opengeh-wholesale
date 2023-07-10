@@ -22,22 +22,22 @@ namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.WebApi.V3;
 public static class BatchStateMapperTests
 {
     [Theory]
-    [InlineAutoMoqData(Calculations.Interfaces.Models.BatchState.Failed, BatchState.Failed)]
-    [InlineAutoMoqData(Calculations.Interfaces.Models.BatchState.Completed, BatchState.Completed)]
-    [InlineAutoMoqData(Calculations.Interfaces.Models.BatchState.Executing, BatchState.Executing)]
-    [InlineAutoMoqData(Calculations.Interfaces.Models.BatchState.Pending, BatchState.Pending)]
-    public static void Map_ReturnsExpectedTypeForWebApi(Calculations.Interfaces.Models.BatchState source, BatchState expected)
+    [InlineAutoMoqData(Calculations.Interfaces.Models.CalculationState.Failed, BatchState.Failed)]
+    [InlineAutoMoqData(Calculations.Interfaces.Models.CalculationState.Completed, BatchState.Completed)]
+    [InlineAutoMoqData(Calculations.Interfaces.Models.CalculationState.Executing, BatchState.Executing)]
+    [InlineAutoMoqData(Calculations.Interfaces.Models.CalculationState.Pending, BatchState.Pending)]
+    public static void Map_ReturnsExpectedTypeForWebApi(Calculations.Interfaces.Models.CalculationState source, BatchState expected)
     {
         var actual = BatchStateMapper.MapState(source);
         actual.Should().Be(expected);
     }
 
     [Theory]
-    [InlineAutoMoqData(BatchState.Failed, Calculations.Interfaces.Models.BatchState.Failed)]
-    [InlineAutoMoqData(BatchState.Completed, Calculations.Interfaces.Models.BatchState.Completed)]
-    [InlineAutoMoqData(BatchState.Executing, Calculations.Interfaces.Models.BatchState.Executing)]
-    [InlineAutoMoqData(BatchState.Pending, Calculations.Interfaces.Models.BatchState.Pending)]
-    public static void Map_ReturnsExpectedTypeForBatchModule(BatchState source, Calculations.Interfaces.Models.BatchState expected)
+    [InlineAutoMoqData(BatchState.Failed, Calculations.Interfaces.Models.CalculationState.Failed)]
+    [InlineAutoMoqData(BatchState.Completed, Calculations.Interfaces.Models.CalculationState.Completed)]
+    [InlineAutoMoqData(BatchState.Executing, Calculations.Interfaces.Models.CalculationState.Executing)]
+    [InlineAutoMoqData(BatchState.Pending, Calculations.Interfaces.Models.CalculationState.Pending)]
+    public static void Map_ReturnsExpectedTypeForBatchModule(BatchState source, Calculations.Interfaces.Models.CalculationState expected)
     {
         var actual = BatchStateMapper.MapState(source);
         actual.Should().Be(expected);

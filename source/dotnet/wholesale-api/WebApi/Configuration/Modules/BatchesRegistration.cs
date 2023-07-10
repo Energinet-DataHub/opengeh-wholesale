@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Calculations.Application;
-using Energinet.DataHub.Wholesale.Calculations.Application.Model.Batches;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Application.UseCases;
 using Energinet.DataHub.Wholesale.Calculations.Application.Workers;
@@ -24,10 +23,10 @@ using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Batche
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
+namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
 
 /// <summary>
-/// Registration of services required for the Batches module.
+///     Registration of services required for the Batches module.
 /// </summary>
 public static class BatchesRegistration
 {
@@ -36,7 +35,9 @@ public static class BatchesRegistration
         Func<string> databaseConnectionStringProvider)
     {
         serviceCollection.AddScoped<ICalculationsClient, CalculationsClient>();
-        serviceCollection.AddScoped<ICalculationExecutionStateInfrastructureService, CalculationExecutionStateInfrastructureService>();
+        serviceCollection
+            .AddScoped<ICalculationExecutionStateInfrastructureService,
+                CalculationExecutionStateInfrastructureService>();
         serviceCollection.AddScoped<ICalculationInfrastructureService, CalculationInfrastructureService>();
         serviceCollection.AddScoped<ICalculationFactory, CalculationFactory>();
         serviceCollection.AddScoped<ICalculationRepository, CalculationRepository>();
@@ -62,9 +63,9 @@ public static class BatchesRegistration
 
         serviceCollection.AddScoped<ICreateCalculationHandler, CreateCalculationHandler>();
         serviceCollection.AddScoped<IStartCalculationHandler, StartCalculationHandler>();
-        serviceCollection.AddScoped<IUpdateBatchExecutionStateHandler, UpdateBatchExecutionStateHandler>();
+        serviceCollection.AddScoped<IUpdateCalculationExecutionStateHandler, UpdateCalculationExecutionStateHandler>();
 
         serviceCollection.AddHostedService<StartCalculationWorker>();
-        serviceCollection.AddHostedService<UpdateBatchExecutionStateWorker>();
+        serviceCollection.AddHostedService<UpdateCalculationExecutionStateWorker>();
     }
 }

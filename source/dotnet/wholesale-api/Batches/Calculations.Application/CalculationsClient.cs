@@ -13,11 +13,11 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
-using Energinet.DataHub.Wholesale.Calculations.Application.Model.Batches;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using NodaTime;
+using CalculationState = Energinet.DataHub.Wholesale.Calculations.Interfaces.Models.CalculationState;
 
 namespace Energinet.DataHub.Wholesale.Calculations.Application;
 
@@ -32,21 +32,21 @@ public class CalculationsClient : ICalculationsClient
         _calculationDtoMapper = calculationDtoMapper;
     }
 
-    public async Task<IEnumerable<BatchDto>> GetBatchesCompletedAfterAsync(Instant? completedTime)
+    public async Task<IEnumerable<CalculationDto>> GetCalculationsCompletedAfterAsync(Instant? completedTime)
     {
-        var batches = await _calculationRepository.GetCompletedAfterAsync(completedTime).ConfigureAwait(false);
-        return batches.Select(_calculationDtoMapper.Map);
+        var calculations = await _calculationRepository.GetCompletedAfterAsync(completedTime).ConfigureAwait(false);
+        return calculations.Select(_calculationDtoMapper.Map);
     }
 
-    public async Task<BatchDto> GetAsync(Guid batchId)
+    public async Task<CalculationDto> GetAsync(Guid calculationId)
     {
-        var batch = await _calculationRepository.GetAsync(batchId).ConfigureAwait(false);
-        return _calculationDtoMapper.Map(batch);
+        var calculation = await _calculationRepository.GetAsync(calculationId).ConfigureAwait(false);
+        return _calculationDtoMapper.Map(calculation);
     }
 
-    public async Task<IEnumerable<BatchDto>> SearchAsync(
+    public async Task<IEnumerable<CalculationDto>> SearchAsync(
         IEnumerable<string> filterByGridAreaCodes,
-        BatchState? filterByExecutionState,
+        CalculationState? filterByExecutionState,
         DateTimeOffset? minExecutionTime,
         DateTimeOffset? maxExecutionTime,
         DateTimeOffset? periodStart,
@@ -55,10 +55,10 @@ public class CalculationsClient : ICalculationsClient
         var executionStateFilter = filterByExecutionState switch
         {
             null => Array.Empty<CalculationExecutionState>(),
-            BatchState.Pending => new[] { CalculationExecutionState.Created, CalculationExecutionState.Submitted, CalculationExecutionState.Pending },
-            BatchState.Executing => new[] { CalculationExecutionState.Executing },
-            BatchState.Completed => new[] { CalculationExecutionState.Completed },
-            BatchState.Failed => new[] { CalculationExecutionState.Failed },
+            CalculationState.Pending => new[] { CalculationExecutionState.Created, CalculationExecutionState.Submitted, CalculationExecutionState.Pending },
+            CalculationState.Executing => new[] { CalculationExecutionState.Executing },
+            CalculationState.Completed => new[] { CalculationExecutionState.Completed },
+            CalculationState.Failed => new[] { CalculationExecutionState.Failed },
             _ => throw new ArgumentOutOfRangeException(nameof(filterByExecutionState)),
         };
 
@@ -71,7 +71,7 @@ public class CalculationsClient : ICalculationsClient
         var periodStartInstant = ConvertToInstant(periodStart);
         var periodEndInstant = ConvertToInstant(periodEnd);
 
-        var batches = await _calculationRepository
+        var calculations = await _calculationRepository
             .SearchAsync(
                 gridAreaFilter,
                 executionStateFilter,
@@ -81,7 +81,7 @@ public class CalculationsClient : ICalculationsClient
                 periodEndInstant)
             .ConfigureAwait(false);
 
-        return batches.Select(_calculationDtoMapper.Map);
+        return calculations.Select(_calculationDtoMapper.Map);
     }
 
     private static Instant? ConvertToInstant(DateTimeOffset? dateTimeOffset)

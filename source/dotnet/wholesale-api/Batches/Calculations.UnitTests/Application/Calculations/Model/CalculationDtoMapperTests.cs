@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Calculations.Application.Model.Batches;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Calculations.UnitTests.Infrastructure.CalculationAggregate;
@@ -39,7 +38,7 @@ public class CalculationDtoMapperTests
         var batchDto = sut.Map(batch);
 
         // Assert
-        batchDto.ExecutionState.Should().Be(BatchState.Executing);
+        batchDto.ExecutionState.Should().Be(CalculationState.Executing);
     }
 
     [Theory]

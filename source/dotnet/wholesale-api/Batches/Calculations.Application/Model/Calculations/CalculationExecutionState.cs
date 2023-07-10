@@ -20,37 +20,37 @@ namespace Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculation
 public enum CalculationExecutionState
 {
     /// <summary>
-    /// The batch is created.
+    /// The calculation is created.
     /// </summary>
     Created = -2,
 
     /// <summary>
-    /// The batch is submitted.
+    /// The calculation is submitted.
     /// </summary>
     Submitted = -1,
 
     /// <summary>
-    /// The batch is pending.
+    /// The calculation is pending.
     /// </summary>
     Pending = 0,
 
     /// <summary>
-    /// The batch is currently executing.
+    /// The calculation is currently executing.
     /// </summary>
     Executing = 1,
 
     /// <summary>
-    /// The batch has (successfully) completed.
+    /// The calculation has (successfully) completed.
     /// </summary>
     Completed = 2,
 
     /// <summary>
-    /// The batch has (Failed) failed.
+    /// The calculation has (Failed) failed.
     /// </summary>
     Failed = 3,
 
     /// <summary>
-    /// The batch has been cancelled.
+    /// The calculation has been cancelled.
     /// </summary>
     Canceled,
 }

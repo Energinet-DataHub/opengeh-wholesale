@@ -49,7 +49,7 @@ public class BatchController : V3ControllerBase
     [Produces("application/json", Type = typeof(Guid))]
     public async Task<Guid> CreateAsync([FromBody][Required] BatchRequestDto batchRequestDto)
     {
-        return await _createCalculationHandler.HandleAsync(new CreateBatchCommand(
+        return await _createCalculationHandler.HandleAsync(new CreateCalculationCommand(
             ProcessTypeMapper.Map(batchRequestDto.ProcessType),
             batchRequestDto.GridAreaCodes,
             batchRequestDto.StartDate,

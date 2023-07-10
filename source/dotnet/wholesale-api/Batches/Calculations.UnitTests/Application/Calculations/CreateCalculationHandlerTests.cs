@@ -16,7 +16,6 @@ using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Calculations.Application;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
-using Energinet.DataHub.Wholesale.Calculations.Application.Model.Batches;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Application.UseCases;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
@@ -55,10 +54,10 @@ public class CreateCalculationHandlerTests
         batchRepositoryMock.Verify(x => x.AddAsync(batch));
     }
 
-    private static CreateBatchCommand CreateBatchCommand()
+    private static CreateCalculationCommand CreateBatchCommand()
     {
         var period = Periods.January_EuropeCopenhagen_Instant;
-        return new CreateBatchCommand(
+        return new CreateCalculationCommand(
             ProcessType.BalanceFixing,
             new List<string> { "805" },
             period.PeriodStart.ToDateTimeOffset(),
@@ -66,7 +65,7 @@ public class CreateCalculationHandlerTests
             Guid.NewGuid());
     }
 
-    private static Calculation CreateBatchFromCommand(CreateBatchCommand command)
+    private static Calculation CreateBatchFromCommand(CreateCalculationCommand command)
     {
         var period = Periods.January_EuropeCopenhagen_Instant;
         return new Calculation(

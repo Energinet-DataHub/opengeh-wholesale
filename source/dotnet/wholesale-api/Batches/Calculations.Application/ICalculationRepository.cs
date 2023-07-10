@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
-using Energinet.DataHub.Wholesale.Calculations.Application.Model.Batches;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using NodaTime;
 
@@ -23,7 +22,7 @@ public interface ICalculationRepository
 {
     Task AddAsync(Calculation calculation);
 
-    Task<Calculation> GetAsync(Guid batchId);
+    Task<Calculation> GetAsync(Guid calculationId);
 
     Task<List<Calculation>> GetCreatedAsync();
 

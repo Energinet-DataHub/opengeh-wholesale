@@ -69,17 +69,17 @@ public class CalculationResultQueriesTests
     [Theory]
     [InlineAutoMoqData]
     public async Task GetAsync_WhenOneRow_ReturnsSingleResultWithOneTimeSeriesPoint(
-        BatchDto batch,
+        CalculationDto calculation,
         [Frozen] Mock<ICalculationsClient> batchesClientMock,
         [Frozen] Mock<ISqlStatementClient> sqlStatementClientMock,
         CalculationResultQueries sut)
     {
         // Arrange
         var batchId = Guid.Parse(_row0BatchId);
-        batch = batch with { BatchId = batchId };
+        calculation = calculation with { BatchId = batchId };
         batchesClientMock
             .Setup(client => client.GetAsync(batchId))
-            .ReturnsAsync(batch);
+            .ReturnsAsync(calculation);
         sqlStatementClientMock
             .Setup(x => x.ExecuteAsync(It.IsAny<string>()))
             .Returns(GetRowsAsync(1));
@@ -94,17 +94,17 @@ public class CalculationResultQueriesTests
     [Theory]
     [InlineAutoMoqData]
     public async Task GetAsync_ReturnsResultRowWithExpectedValues(
-        BatchDto batch,
+        CalculationDto calculation,
         [Frozen] Mock<ICalculationsClient> batchesClientMock,
         [Frozen] Mock<ISqlStatementClient> sqlStatementClientMock,
         CalculationResultQueries sut)
     {
         // Arrange
         var batchId = Guid.Parse(_row0BatchId);
-        batch = batch with { BatchId = batchId };
+        calculation = calculation with { BatchId = batchId };
         batchesClientMock
             .Setup(client => client.GetAsync(batchId))
-            .ReturnsAsync(batch);
+            .ReturnsAsync(calculation);
         sqlStatementClientMock
             .Setup(x => x.ExecuteAsync(It.IsAny<string>()))
             .Returns(GetRowsAsync(1));
@@ -120,9 +120,9 @@ public class CalculationResultQueriesTests
         actual.BalanceResponsibleId.Should().Be(_tableChunk[0, ResultColumnNames.BalanceResponsibleId]);
         actual.EnergySupplierId.Should().Be(_tableChunk[0, ResultColumnNames.EnergySupplierId]);
         actual.BatchId.Should().Be(_tableChunk[0, ResultColumnNames.BatchId]);
-        actual.ProcessType.Should().Be(batch.ProcessType);
-        actual.PeriodStart.Should().Be(batch.PeriodStart.ToInstant());
-        actual.PeriodEnd.Should().Be(batch.PeriodEnd.ToInstant());
+        actual.ProcessType.Should().Be(calculation.ProcessType);
+        actual.PeriodStart.Should().Be(calculation.PeriodStart.ToInstant());
+        actual.PeriodEnd.Should().Be(calculation.PeriodEnd.ToInstant());
         var actualPoint = actual.TimeSeriesPoints.Single();
         actualPoint.Time.Should().Be(new DateTimeOffset(2022, 5, 16, 22, 0, 0, TimeSpan.Zero));
         actualPoint.Quantity.Should().Be(1.111m);
@@ -132,17 +132,17 @@ public class CalculationResultQueriesTests
     [Theory]
     [InlineAutoMoqData]
     public async Task GetAsync_WhenRowsBelongsToDifferentResults_ReturnsMultipleResults(
-        BatchDto batch,
+        CalculationDto calculation,
         [Frozen] Mock<ICalculationsClient> batchesClientMock,
         [Frozen] Mock<ISqlStatementClient> sqlStatementClientMock,
         CalculationResultQueries sut)
     {
         // Arrange
         var batchId = Guid.Parse(_row0BatchId);
-        batch = batch with { BatchId = batchId };
+        calculation = calculation with { BatchId = batchId };
         batchesClientMock
             .Setup(client => client.GetAsync(batchId))
-            .ReturnsAsync(batch);
+            .ReturnsAsync(calculation);
         sqlStatementClientMock
             .Setup(x => x.ExecuteAsync(It.IsAny<string>()))
             .Returns(GetRowsAsync(2));

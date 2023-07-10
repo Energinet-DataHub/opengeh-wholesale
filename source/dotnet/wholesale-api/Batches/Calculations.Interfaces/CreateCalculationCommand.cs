@@ -19,7 +19,7 @@ namespace Energinet.DataHub.Wholesale.Calculations.Interfaces;
 /// <summary>
 /// An immutable command to create a batch.
 /// </summary>
-public sealed record CreateBatchCommand(
+public sealed record CreateCalculationCommand(
     ProcessType ProcessType,
     IEnumerable<string> GridAreaCodes,
     DateTimeOffset StartDate,

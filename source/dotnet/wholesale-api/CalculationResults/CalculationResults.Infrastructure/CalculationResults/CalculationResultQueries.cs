@@ -100,7 +100,7 @@ ORDER BY {ResultColumnNames.CalculationResultId}, {ResultColumnNames.Time}
     }
 
     private static CalculationResult CreateCalculationResult(
-        BatchDto batch,
+        CalculationDto calculation,
         SqlResultRow sqlResultRow,
         List<TimeSeriesPoint> timeSeriesPoints)
     {
@@ -112,15 +112,15 @@ ORDER BY {ResultColumnNames.CalculationResultId}, {ResultColumnNames.Time}
         var fromGridArea = sqlResultRow[ResultColumnNames.FromGridArea];
         return new CalculationResult(
             id,
-            batch.BatchId,
+            calculation.BatchId,
             gridArea,
             timeSeriesType,
             energySupplierId,
             balanceResponsibleId,
             timeSeriesPoints.ToArray(),
-            batch.ProcessType,
-            batch.PeriodStart.ToInstant(),
-            batch.PeriodEnd.ToInstant(),
+            calculation.ProcessType,
+            calculation.PeriodStart.ToInstant(),
+            calculation.PeriodEnd.ToInstant(),
             fromGridArea);
     }
 }

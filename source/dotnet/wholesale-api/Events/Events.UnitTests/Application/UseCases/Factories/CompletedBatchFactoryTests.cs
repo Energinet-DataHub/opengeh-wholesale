@@ -25,19 +25,19 @@ public class CompletedBatchFactoryTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public void CreateFromBatch_ReturnsCompletedBatch(BatchDto batch, CompletedBatchFactory sut)
+    public void CreateFromBatch_ReturnsCompletedBatch(CalculationDto calculation, CompletedBatchFactory sut)
     {
         // Arrange
         var expectedCompletedBatch = new CompletedBatch(
-            batch.BatchId,
-            batch.GridAreaCodes.ToList(),
-            batch.ProcessType,
-            batch.PeriodStart.ToInstant(),
-            batch.PeriodEnd.ToInstant(),
-            batch.ExecutionTimeEnd!.Value.ToInstant());
+            calculation.BatchId,
+            calculation.GridAreaCodes.ToList(),
+            calculation.ProcessType,
+            calculation.PeriodStart.ToInstant(),
+            calculation.PeriodEnd.ToInstant(),
+            calculation.ExecutionTimeEnd!.Value.ToInstant());
 
         // Act
-        var actual = sut.CreateFromBatch(batch);
+        var actual = sut.CreateFromBatch(calculation);
 
         // Assert
         actual.Should().BeEquivalentTo(expectedCompletedBatch);

@@ -19,20 +19,20 @@ using Microsoft.Extensions.Logging;
 namespace Energinet.DataHub.Wholesale.Calculations.Application.Workers;
 
 /// <summary>
-/// Worker invoking updating batch execution states.
+/// Worker invoking updating calculation execution states.
 /// </summary>
-public class UpdateBatchExecutionStateWorker : RepeatingWorker<IUpdateBatchExecutionStateHandler>
+public class UpdateCalculationExecutionStateWorker : RepeatingWorker<IUpdateCalculationExecutionStateHandler>
 {
     private const int DelayInSecondsBeforeNextExecution = 20;
 
-    public UpdateBatchExecutionStateWorker(
+    public UpdateCalculationExecutionStateWorker(
         IServiceProvider serviceProvider,
-        ILogger<UpdateBatchExecutionStateWorker> logger)
+        ILogger<UpdateCalculationExecutionStateWorker> logger)
         : base(serviceProvider, logger, TimeSpan.FromSeconds(DelayInSecondsBeforeNextExecution))
     {
     }
 
-    protected override async Task ExecuteAsync(IUpdateBatchExecutionStateHandler instance)
+    protected override async Task ExecuteAsync(IUpdateCalculationExecutionStateHandler instance)
     {
         await instance.UpdateAsync().ConfigureAwait(false);
     }

@@ -16,23 +16,23 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 
 public static class BatchDtoMapper
 {
-    public static BatchDto Map(Calculations.Interfaces.Models.BatchDto batchDto)
+    public static BatchDto Map(Calculations.Interfaces.Models.CalculationDto calculationDto)
     {
-        if (batchDto == null) throw new ArgumentNullException(nameof(batchDto));
+        if (calculationDto == null) throw new ArgumentNullException(nameof(calculationDto));
 
         return new BatchDto(
-            batchDto.RunId,
-            batchDto.BatchId,
-            batchDto.PeriodStart,
-            batchDto.PeriodEnd,
-            batchDto.Resolution,
-            batchDto.Unit,
-            batchDto.ExecutionTimeStart,
-            batchDto.ExecutionTimeEnd,
-            BatchStateMapper.MapState(batchDto.ExecutionState),
-            batchDto.AreSettlementReportsCreated,
-            batchDto.GridAreaCodes,
-            ProcessTypeMapper.Map(batchDto.ProcessType),
-            batchDto.CreatedByUserId);
+            calculationDto.RunId,
+            calculationDto.BatchId,
+            calculationDto.PeriodStart,
+            calculationDto.PeriodEnd,
+            calculationDto.Resolution,
+            calculationDto.Unit,
+            calculationDto.ExecutionTimeStart,
+            calculationDto.ExecutionTimeEnd,
+            BatchStateMapper.MapState(calculationDto.ExecutionState),
+            calculationDto.AreSettlementReportsCreated,
+            calculationDto.GridAreaCodes,
+            ProcessTypeMapper.Map(calculationDto.ProcessType),
+            calculationDto.CreatedByUserId);
     }
 }

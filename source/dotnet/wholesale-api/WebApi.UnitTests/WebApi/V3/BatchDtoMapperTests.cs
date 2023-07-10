@@ -23,7 +23,7 @@ public static class BatchDtoMapperTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public static void MapDto_Returns_correct(Calculations.Interfaces.Models.BatchDto source)
+    public static void MapDto_Returns_correct(Calculations.Interfaces.Models.CalculationDto source)
     {
         // Act
         var actual = BatchDtoMapper.Map(source);

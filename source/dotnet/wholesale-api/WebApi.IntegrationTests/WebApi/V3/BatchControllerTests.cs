@@ -57,15 +57,15 @@ public class BatchControllerTests : WebApiTestBase
     [InlineAutoMoqData]
     public async Task HTTP_GET_V3_ReturnsHttpStatusCodeOkAtExpectedUrl(
         Mock<ICalculationsClient> mock,
-        BatchDto batchDto)
+        CalculationDto calculationDto)
     {
         // Arrange
-        mock.Setup(service => service.GetAsync(batchDto.BatchId))
-            .ReturnsAsync(batchDto);
+        mock.Setup(service => service.GetAsync(calculationDto.BatchId))
+            .ReturnsAsync(calculationDto);
         Factory.BatchesClientMock = mock;
 
         // Act
-        var response = await Client.GetAsync($"/v3/batches/{batchDto.BatchId.ToString()}");
+        var response = await Client.GetAsync($"/v3/batches/{calculationDto.BatchId.ToString()}");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);

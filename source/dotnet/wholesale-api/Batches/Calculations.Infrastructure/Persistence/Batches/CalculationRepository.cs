@@ -14,7 +14,6 @@
 
 using Energinet.DataHub.Wholesale.Calculations.Application;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
-using Energinet.DataHub.Wholesale.Calculations.Application.Model.Batches;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
@@ -35,9 +34,9 @@ public class CalculationRepository : ICalculationRepository
         await _context.Batches.AddAsync(calculation).ConfigureAwait(false);
     }
 
-    public async Task<Calculation> GetAsync(Guid batchId)
+    public async Task<Calculation> GetAsync(Guid calculationId)
     {
-        return await _context.Batches.FirstAsync(x => x.Id == batchId).ConfigureAwait(false);
+        return await _context.Batches.FirstAsync(x => x.Id == calculationId).ConfigureAwait(false);
     }
 
     public Task<List<Calculation>> GetCreatedAsync() => GetByStateAsync(CalculationExecutionState.Created);

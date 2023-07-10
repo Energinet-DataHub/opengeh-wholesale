@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Calculations.Application.Model.Batches;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 
@@ -34,11 +33,11 @@ public class CreateCalculationHandler : ICreateCalculationHandler
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Guid> HandleAsync(CreateBatchCommand command)
+    public async Task<Guid> HandleAsync(CreateCalculationCommand command)
     {
-        var batch = _calculationFactory.Create(command.ProcessType, command.GridAreaCodes, command.StartDate, command.EndDate, command.CreatedByUserId);
-        await _calculationRepository.AddAsync(batch).ConfigureAwait(false);
+        var calculation = _calculationFactory.Create(command.ProcessType, command.GridAreaCodes, command.StartDate, command.EndDate, command.CreatedByUserId);
+        await _calculationRepository.AddAsync(calculation).ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
-        return batch.Id;
+        return calculation.Id;
     }
 }
