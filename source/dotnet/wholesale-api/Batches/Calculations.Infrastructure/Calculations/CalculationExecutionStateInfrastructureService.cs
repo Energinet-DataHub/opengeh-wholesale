@@ -17,7 +17,7 @@ using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.BatchState;
+namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Calculations;
 
 public class CalculationExecutionStateInfrastructureService : ICalculationExecutionStateInfrastructureService
 {

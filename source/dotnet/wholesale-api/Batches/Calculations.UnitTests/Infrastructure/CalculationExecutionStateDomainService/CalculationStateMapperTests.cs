@@ -15,7 +15,7 @@
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
-using Energinet.DataHub.Wholesale.Calculations.Infrastructure.BatchState;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Calculations;
 using FluentAssertions;
 using Xunit;
 

@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Calculations.Application;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 
-namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.BatchState;
+namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Calculations;
 
 public class CalculationStateMapper
 {
