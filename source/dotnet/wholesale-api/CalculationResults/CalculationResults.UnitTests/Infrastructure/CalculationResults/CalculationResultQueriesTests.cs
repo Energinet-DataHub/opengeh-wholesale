@@ -14,12 +14,12 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Batches.Interfaces;
-using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using FluentAssertions;
 using Moq;
 using NodaTime.Extensions;
@@ -70,7 +70,7 @@ public class CalculationResultQueriesTests
     [InlineAutoMoqData]
     public async Task GetAsync_WhenOneRow_ReturnsSingleResultWithOneTimeSeriesPoint(
         BatchDto batch,
-        [Frozen] Mock<IBatchesClient> batchesClientMock,
+        [Frozen] Mock<ICalculationsClient> batchesClientMock,
         [Frozen] Mock<ISqlStatementClient> sqlStatementClientMock,
         CalculationResultQueries sut)
     {
@@ -95,7 +95,7 @@ public class CalculationResultQueriesTests
     [InlineAutoMoqData]
     public async Task GetAsync_ReturnsResultRowWithExpectedValues(
         BatchDto batch,
-        [Frozen] Mock<IBatchesClient> batchesClientMock,
+        [Frozen] Mock<ICalculationsClient> batchesClientMock,
         [Frozen] Mock<ISqlStatementClient> sqlStatementClientMock,
         CalculationResultQueries sut)
     {
@@ -133,7 +133,7 @@ public class CalculationResultQueriesTests
     [InlineAutoMoqData]
     public async Task GetAsync_WhenRowsBelongsToDifferentResults_ReturnsMultipleResults(
         BatchDto batch,
-        [Frozen] Mock<IBatchesClient> batchesClientMock,
+        [Frozen] Mock<ICalculationsClient> batchesClientMock,
         [Frozen] Mock<ISqlStatementClient> sqlStatementClientMock,
         CalculationResultQueries sut)
     {

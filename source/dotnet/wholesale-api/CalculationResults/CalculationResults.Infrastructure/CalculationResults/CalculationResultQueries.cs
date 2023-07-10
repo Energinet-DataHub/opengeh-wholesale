@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Interfaces;
-using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Microsoft.Extensions.Options;
 using NodaTime.Extensions;
@@ -27,19 +27,19 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 public class CalculationResultQueries : ICalculationResultQueries
 {
     private readonly ISqlStatementClient _sqlStatementClient;
-    private readonly IBatchesClient _batchesClient;
+    private readonly ICalculationsClient _calculationsClient;
     private readonly DeltaTableOptions _deltaTableOptions;
 
-    public CalculationResultQueries(ISqlStatementClient sqlStatementClient, IBatchesClient batchesClient, IOptions<DeltaTableOptions> deltaTableOptions)
+    public CalculationResultQueries(ISqlStatementClient sqlStatementClient, ICalculationsClient calculationsClient, IOptions<DeltaTableOptions> deltaTableOptions)
     {
         _sqlStatementClient = sqlStatementClient;
-        _batchesClient = batchesClient;
+        _calculationsClient = calculationsClient;
         _deltaTableOptions = deltaTableOptions.Value;
     }
 
     public async IAsyncEnumerable<CalculationResult> GetAsync(Guid batchId)
     {
-        var batch = await _batchesClient.GetAsync(batchId).ConfigureAwait(false);
+        var batch = await _calculationsClient.GetAsync(batchId).ConfigureAwait(false);
         var sql = CreateBatchResultsSql(batchId);
         var timeSeriesPoints = new List<TimeSeriesPoint>();
         SqlResultRow? currentRow = null;

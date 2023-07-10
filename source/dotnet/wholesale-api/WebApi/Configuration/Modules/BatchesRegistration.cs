@@ -12,15 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Application;
-using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
-using Energinet.DataHub.Wholesale.Batches.Application.UseCases;
-using Energinet.DataHub.Wholesale.Batches.Application.Workers;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchState;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
-using Energinet.DataHub.Wholesale.Batches.Interfaces;
+using Energinet.DataHub.Wholesale.Calculations.Application;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model.Batches;
+using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
+using Energinet.DataHub.Wholesale.Calculations.Application.UseCases;
+using Energinet.DataHub.Wholesale.Calculations.Application.Workers;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.BatchState;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Calculations;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Batches;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
@@ -34,12 +35,12 @@ public static class BatchesRegistration
         this IServiceCollection serviceCollection,
         Func<string> databaseConnectionStringProvider)
     {
-        serviceCollection.AddScoped<IBatchesClient, BatchesClient>();
-        serviceCollection.AddScoped<IBatchExecutionStateInfrastructureService, BatchExecutionStateInfrastructureService>();
+        serviceCollection.AddScoped<ICalculationsClient, CalculationsClient>();
+        serviceCollection.AddScoped<ICalculationExecutionStateInfrastructureService, CalculationExecutionStateInfrastructureService>();
         serviceCollection.AddScoped<ICalculationInfrastructureService, CalculationInfrastructureService>();
-        serviceCollection.AddScoped<IBatchFactory, BatchFactory>();
-        serviceCollection.AddScoped<IBatchRepository, BatchRepository>();
-        serviceCollection.AddSingleton(new BatchStateMapper());
+        serviceCollection.AddScoped<ICalculationFactory, CalculationFactory>();
+        serviceCollection.AddScoped<ICalculationRepository, CalculationRepository>();
+        serviceCollection.AddSingleton(new CalculationStateMapper());
 
         serviceCollection.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
 
@@ -57,9 +58,9 @@ public static class BatchesRegistration
                 }));
 
         serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
-        serviceCollection.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
+        serviceCollection.AddScoped<ICalculationDtoMapper, CalculationDtoMapper>();
 
-        serviceCollection.AddScoped<ICreateBatchHandler, CreateBatchHandler>();
+        serviceCollection.AddScoped<ICreateCalculationHandler, CreateCalculationHandler>();
         serviceCollection.AddScoped<IStartCalculationHandler, StartCalculationHandler>();
         serviceCollection.AddScoped<IUpdateBatchExecutionStateHandler, UpdateBatchExecutionStateHandler>();
 

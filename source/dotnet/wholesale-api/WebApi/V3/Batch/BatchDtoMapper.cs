@@ -16,7 +16,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 
 public static class BatchDtoMapper
 {
-    public static BatchDto Map(Batches.Interfaces.Models.BatchDto batchDto)
+    public static BatchDto Map(Calculations.Interfaces.Models.BatchDto batchDto)
     {
         if (batchDto == null) throw new ArgumentNullException(nameof(batchDto));
 

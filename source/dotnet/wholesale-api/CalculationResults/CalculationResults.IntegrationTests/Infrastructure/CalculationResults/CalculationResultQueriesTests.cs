@@ -14,11 +14,11 @@
 
 using System.Globalization;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Batches.Interfaces;
-using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -66,7 +66,7 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
     [InlineAutoMoqData]
     public async Task GetAsync_ReturnsExpectedCalculationResult(
         Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
-        Mock<IBatchesClient> batchesClientMock,
+        Mock<ICalculationsClient> batchesClientMock,
         BatchDto batch)
     {
         // Arrange

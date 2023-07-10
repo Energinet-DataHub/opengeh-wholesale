@@ -14,7 +14,7 @@
 
 using System.ComponentModel.DataAnnotations;
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
-using Energinet.DataHub.Wholesale.Batches.Interfaces;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Common.Security;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,17 +26,17 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 [Route("/v3/batches")]
 public class BatchController : V3ControllerBase
 {
-    private readonly IBatchesClient _batchesClient;
-    private readonly ICreateBatchHandler _createBatchHandler;
+    private readonly ICalculationsClient _calculationsClient;
+    private readonly ICreateCalculationHandler _createCalculationHandler;
     private readonly IUserContext<FrontendUser> _userContext;
 
     public BatchController(
-        IBatchesClient batchesClient,
-        ICreateBatchHandler createBatchHandler,
+        ICalculationsClient calculationsClient,
+        ICreateCalculationHandler createCalculationHandler,
         IUserContext<FrontendUser> userContext)
     {
-        _batchesClient = batchesClient;
-        _createBatchHandler = createBatchHandler;
+        _calculationsClient = calculationsClient;
+        _createCalculationHandler = createCalculationHandler;
         _userContext = userContext;
     }
 
@@ -49,7 +49,7 @@ public class BatchController : V3ControllerBase
     [Produces("application/json", Type = typeof(Guid))]
     public async Task<Guid> CreateAsync([FromBody][Required] BatchRequestDto batchRequestDto)
     {
-        return await _createBatchHandler.HandleAsync(new CreateBatchCommand(
+        return await _createCalculationHandler.HandleAsync(new CreateBatchCommand(
             ProcessTypeMapper.Map(batchRequestDto.ProcessType),
             batchRequestDto.GridAreaCodes,
             batchRequestDto.StartDate,
@@ -66,7 +66,7 @@ public class BatchController : V3ControllerBase
     [Produces("application/json", Type = typeof(BatchDto))]
     public async Task<IActionResult> GetAsync([FromRoute]Guid batchId)
     {
-        return Ok(await _batchesClient.GetAsync(batchId).ConfigureAwait(false));
+        return Ok(await _calculationsClient.GetAsync(batchId).ConfigureAwait(false));
     }
 
     /// <summary>
@@ -90,7 +90,7 @@ public class BatchController : V3ControllerBase
         [FromQuery] DateTimeOffset? periodStart,
         [FromQuery] DateTimeOffset? periodEnd)
     {
-        var batches = await _batchesClient.SearchAsync(
+        var batches = await _calculationsClient.SearchAsync(
             gridAreaCodes ?? Array.Empty<string>(),
             BatchStateMapper.MapState(executionState),
             minExecutionTime,

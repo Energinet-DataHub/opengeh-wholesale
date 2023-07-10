@@ -16,19 +16,19 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 
 public static class BatchStateMapper
 {
-    public static BatchState MapState(Batches.Interfaces.Models.BatchState batchDtoExecutionState)
+    public static BatchState MapState(Calculations.Interfaces.Models.BatchState batchDtoExecutionState)
     {
         return batchDtoExecutionState switch
         {
-            Batches.Interfaces.Models.BatchState.Pending => BatchState.Pending,
-            Batches.Interfaces.Models.BatchState.Executing => BatchState.Executing,
-            Batches.Interfaces.Models.BatchState.Completed => BatchState.Completed,
-            Batches.Interfaces.Models.BatchState.Failed => BatchState.Failed,
+            Calculations.Interfaces.Models.BatchState.Pending => BatchState.Pending,
+            Calculations.Interfaces.Models.BatchState.Executing => BatchState.Executing,
+            Calculations.Interfaces.Models.BatchState.Completed => BatchState.Completed,
+            Calculations.Interfaces.Models.BatchState.Failed => BatchState.Failed,
             _ => throw new ArgumentOutOfRangeException(nameof(batchDtoExecutionState), batchDtoExecutionState, null),
         };
     }
 
-    public static Batches.Interfaces.Models.BatchState? MapState(BatchState? batchDtoExecutionState)
+    public static Calculations.Interfaces.Models.BatchState? MapState(BatchState? batchDtoExecutionState)
     {
         if (batchDtoExecutionState == null)
         {
@@ -37,10 +37,10 @@ public static class BatchStateMapper
 
         return batchDtoExecutionState switch
         {
-            BatchState.Pending => Batches.Interfaces.Models.BatchState.Pending,
-            BatchState.Executing => Batches.Interfaces.Models.BatchState.Executing,
-            BatchState.Completed => Batches.Interfaces.Models.BatchState.Completed,
-            BatchState.Failed => Batches.Interfaces.Models.BatchState.Failed,
+            BatchState.Pending => Calculations.Interfaces.Models.BatchState.Pending,
+            BatchState.Executing => Calculations.Interfaces.Models.BatchState.Executing,
+            BatchState.Completed => Calculations.Interfaces.Models.BatchState.Completed,
+            BatchState.Failed => Calculations.Interfaces.Models.BatchState.Failed,
             _ => throw new ArgumentOutOfRangeException(nameof(batchDtoExecutionState), batchDtoExecutionState, null),
         };
     }
