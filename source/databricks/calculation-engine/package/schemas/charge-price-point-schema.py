@@ -26,7 +26,6 @@ Schema for charge price points
 Charge price points are only used in settlement.
 
 Data must be stored in a Delta table.
-The table must be partitioned by the observation time elements: year/month/day.
 Data must always be the current data.
 """
 charge_price_point_schema = StructType(

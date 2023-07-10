@@ -29,7 +29,6 @@ Gaps may occur if the link has been removed for a period before being added agai
 
 Data must be stored in a Delta table.
 
-The table must be partitioned by `ToDate`: ToDate_Year/ToDate_Month/ToDate_Day.
 It is important to partition by to-date instead of from-date as it will ensure efficient data filtering.
 This is because most periods will have a to-date prior to the calculation period start date.
 

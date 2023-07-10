@@ -21,17 +21,15 @@ from pyspark.sql.types import (
 )
 
 """
-Schema for charge link periods.
+Schema for charge master data.
 
-Charge link periods are only used in settlement.
-Periods (given by `from_date` and `to_date`) must not overlap but may have gaps.
-Gaps may occur if the link has been removed for a period before being added again.
+Charge  master data is only used in settlement.
 
 Data must be stored in a Delta table.
 
-The table data must always contain updated periods.
+The table data must always contain current data.
 """
-charge_link_period_schema = StructType(
+charge_master_data_period_schema = StructType(
     [
         # ID of the charge
         # The ID is only guaranteed to be unique for a specific actor and charge type.
@@ -60,11 +58,11 @@ charge_link_period_schema = StructType(
         # Example: True
         StructField("is_tax", BooleanType(), False),
 
-        # The start date of the link period. The start date must be the UTC time of the beginning of a date in the given timezone/DST.
+        # The start date of the master data period. The start date must be the UTC time of the beginning of a date in the given timezone/DST.
         # The date is inclusive.
         StructField("from_date", TimestampType(), False),
 
-        # The to-date of the link period. The to-date must be the UTC time of the beginning of a date in the given timezone/DST.
+        # The to-date of the master data period. The to-date must be the UTC time of the beginning of a date in the given timezone/DST.
         # The moment is exclusive.
         # All but the `to_date` of the last period must have value. The `to_date` of the last period can be null for subscriptions and tariffs.
         # The `to_date` of fees is the day after the `from_date`.
