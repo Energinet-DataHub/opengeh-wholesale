@@ -79,34 +79,23 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
         private async Task<List<CalculationResultCompleted>?> GetListOfResultsFromServiceBus(Guid calculationId)
         {
-            var messageHasValue = true;
             var results = new List<CalculationResultCompleted>();
-            using (var cts = new CancellationTokenSource())
+            using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(5));
+            while (!cts.Token.IsCancellationRequested)
             {
-                cts.CancelAfter(TimeSpan.FromMinutes(5));
-                while (messageHasValue)
+                var message = await _receiver.ReceiveMessageAsync();
+                if (message?.Body == null)
                 {
-                    var message = await _receiver.ReceiveMessageAsync();
-                    if (message?.Body == null)
+                    if (results.Any())
+                        break;
+                }
+                else
+                {
+                    var data = message.Body.ToArray();
+                    var result = CalculationResultCompleted.Parser.ParseFrom(data);
+                    if (result.BatchId == calculationId.ToString())
                     {
-                        if (!results.IsNullOrEmpty())
-                        {
-                            messageHasValue = false;
-                        }
-                    }
-                    else
-                    {
-                        var data = message.Body.ToArray();
-                        var result = CalculationResultCompleted.Parser.ParseFrom(data);
-                        if (result.BatchId == calculationId.ToString())
-                        {
-                            results.Add(result);
-                        }
-                    }
-
-                    if (cts.Token.IsCancellationRequested)
-                    {
-                        messageHasValue = false;
+                        results.Add(result);
                     }
                 }
             }
