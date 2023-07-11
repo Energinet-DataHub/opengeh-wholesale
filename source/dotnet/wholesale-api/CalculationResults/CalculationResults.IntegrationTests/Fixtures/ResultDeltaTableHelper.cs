@@ -18,7 +18,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtur
 
 public class ResultDeltaTableHelper
 {
-    public IEnumerable<string> CreateRowValues(
+    public static IEnumerable<string> CreateRowValues(
         string batchId = "ed39dbc5-bdc5-41b9-922a-08d3b12d4538",
         string batchExecutionTimeStart = "2022-03-11T03:00:00.000Z",
         string batchProcessType = DeltaTableProcessType.BalanceFixing,
