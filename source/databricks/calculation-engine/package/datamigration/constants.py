@@ -12,11 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from package.datamigration.migration_script_args import MigrationScriptArgs
-
-DATABASE_NAME = "wholesale_output"  # Also known as schema
-RESULT_TABLE_NAME = "result"
-
-
-def apply(args: MigrationScriptArgs) -> None:
-    args.spark.sql(f"ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME} ADD COLUMN calculation_result_id STRING")
+COMMITTED_MIGRATIONS_FILE_NAME = "migration_state.csv"
+WHEEL_NAME = "package"
+MIGRATION_SCRIPTS_FOLDER_PATH = "datamigration.migration_scripts"
