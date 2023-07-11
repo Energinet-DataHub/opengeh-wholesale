@@ -16,7 +16,6 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
-using Microsoft.IdentityModel.Tokens;
 using ProcessType = Energinet.DataHub.Wholesale.DomainTests.Clients.v3.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
