@@ -19,12 +19,7 @@ import pyspark.sql.functions as F
 from pyspark.sql.window import Window
 
 from package.codelists import TimeSeriesType, AggregationLevel
-from package.constants import Colname, ResultTableColName
-
-import uuid
-
-DATABASE_NAME = "wholesale_output"
-RESULT_TABLE_NAME = "result"
+from package.constants import Colname, ResultTableColName, DATABASE_NAME, RESULT_TABLE_NAME
 
 
 class CalculationResultWriter:
