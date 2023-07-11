@@ -27,9 +27,9 @@ namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
 /// <summary>
 ///     Registration of services required for the Calculations module.
 /// </summary>
-public static class BatchesRegistration
+public static class CalculationsRegistration
 {
-    public static void AddBatchesModule(
+    public static void AddCalculationsModule(
         this IServiceCollection serviceCollection,
         Func<string> databaseConnectionStringProvider)
     {

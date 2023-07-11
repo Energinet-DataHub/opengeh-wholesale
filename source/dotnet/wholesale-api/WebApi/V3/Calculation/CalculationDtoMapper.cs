@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
+namespace Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 
-public static class BatchDtoMapper
+public static class CalculationDtoMapper
 {
-    public static BatchDto Map(Calculations.Interfaces.Models.CalculationDto calculationDto)
+    public static CalculationDto Map(Calculations.Interfaces.Models.CalculationDto calculationDto)
     {
         if (calculationDto == null) throw new ArgumentNullException(nameof(calculationDto));
 
-        return new BatchDto(
+        return new CalculationDto(
             calculationDto.RunId,
             calculationDto.CalculationId,
             calculationDto.PeriodStart,
@@ -29,7 +29,7 @@ public static class BatchDtoMapper
             calculationDto.Unit,
             calculationDto.ExecutionTimeStart,
             calculationDto.ExecutionTimeEnd,
-            BatchStateMapper.MapState(calculationDto.ExecutionState),
+            CalculationStateMapper.MapState(calculationDto.ExecutionState),
             calculationDto.AreSettlementReportsCreated,
             calculationDto.GridAreaCodes,
             ProcessTypeMapper.Map(calculationDto.ProcessType),

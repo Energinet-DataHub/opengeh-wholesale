@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
+using Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 using FluentAssertions;
 using Xunit;
 

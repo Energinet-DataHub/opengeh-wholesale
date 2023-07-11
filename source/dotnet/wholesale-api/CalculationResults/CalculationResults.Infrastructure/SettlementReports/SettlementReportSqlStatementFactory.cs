@@ -51,7 +51,7 @@ SELECT {selectColumns}
 FROM {schemaName}.{tableName} t1
 LEFT JOIN {schemaName}.{tableName} t2
     ON t1.{ResultColumnNames.Time} = t2.{ResultColumnNames.Time}
-        AND t1.{ResultColumnNames.BatchExecutionTimeStart} < t2.{ResultColumnNames.BatchExecutionTimeStart}
+        AND t1.{ResultColumnNames.CalculationExecutionTimeStart} < t2.{ResultColumnNames.CalculationExecutionTimeStart}
         AND t1.{ResultColumnNames.GridArea} = t2.{ResultColumnNames.GridArea}
         AND t1.{ResultColumnNames.FromGridArea} = t2.{ResultColumnNames.FromGridArea}
         AND t1.{ResultColumnNames.TimeSeriesType} = t2.{ResultColumnNames.TimeSeriesType}

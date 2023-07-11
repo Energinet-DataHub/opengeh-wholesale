@@ -12,22 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
+namespace Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 
 /// <summary>
-/// An immutable batch.
+/// An immutable request to create a calculation.
 /// </summary>
-public sealed record BatchDto(
-    long? RunId,
-    Guid BatchId,
-    DateTimeOffset PeriodStart,
-    DateTimeOffset PeriodEnd,
-    string Resolution,
-    string Unit,
-    DateTimeOffset? ExecutionTimeStart,
-    DateTimeOffset? ExecutionTimeEnd,
-    BatchState ExecutionState,
-    bool AreSettlementReportsCreated,
-    string[] GridAreaCodes,
-    ProcessType ProcessType,
-    Guid CreatedByUserId);
+public sealed record CalculationRequestDto(ProcessType ProcessType, IEnumerable<string> GridAreaCodes, DateTimeOffset StartDate, DateTimeOffset EndDate);

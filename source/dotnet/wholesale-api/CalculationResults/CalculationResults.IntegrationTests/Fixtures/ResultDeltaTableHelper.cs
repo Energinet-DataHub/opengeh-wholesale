@@ -36,7 +36,7 @@ public class ResultDeltaTableHelper
         return GetColumnDefinitions().Keys.Select(columnName => columnName switch
         {
             ResultColumnNames.CalculationId => $@"'{calculationId}'",
-            ResultColumnNames.BatchExecutionTimeStart => $@"'{calculationExecutionTimeStart}'",
+            ResultColumnNames.CalculationExecutionTimeStart => $@"'{calculationExecutionTimeStart}'",
             ResultColumnNames.CalculationProcessType =>$@"'{calculationProcessType}'",
             ResultColumnNames.CalculationResultId => $@"'{calculationResultId}'",
             ResultColumnNames.TimeSeriesType => $@"'{timeSeriesType}'",

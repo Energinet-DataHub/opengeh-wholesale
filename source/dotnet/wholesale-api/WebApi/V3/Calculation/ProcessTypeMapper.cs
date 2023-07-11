@@ -12,27 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
+namespace Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 
 public static class ProcessTypeMapper
 {
-    public static Common.Models.ProcessType Map(ProcessType batchDtoProcessType)
+    public static Common.Models.ProcessType Map(ProcessType calculationDtoProcessType)
     {
-        return batchDtoProcessType switch
+        return calculationDtoProcessType switch
         {
             ProcessType.Aggregation => Common.Models.ProcessType.Aggregation,
             ProcessType.BalanceFixing => Common.Models.ProcessType.BalanceFixing,
-            _ => throw new ArgumentOutOfRangeException(nameof(batchDtoProcessType), batchDtoProcessType, null),
+            _ => throw new ArgumentOutOfRangeException(nameof(calculationDtoProcessType), calculationDtoProcessType, null),
         };
     }
 
-    public static ProcessType Map(Common.Models.ProcessType batchDtoProcessType)
+    public static ProcessType Map(Common.Models.ProcessType calculationDtoProcessType)
     {
-        return batchDtoProcessType switch
+        return calculationDtoProcessType switch
         {
             Common.Models.ProcessType.Aggregation => ProcessType.Aggregation,
             Common.Models.ProcessType.BalanceFixing => ProcessType.BalanceFixing,
-            _ => throw new ArgumentOutOfRangeException(nameof(batchDtoProcessType), batchDtoProcessType, null),
+            _ => throw new ArgumentOutOfRangeException(nameof(calculationDtoProcessType), calculationDtoProcessType, null),
         };
     }
 }

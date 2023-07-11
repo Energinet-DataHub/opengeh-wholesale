@@ -13,24 +13,24 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
+using Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 using FluentAssertions;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.WebApi.V3;
 
-public static class BatchDtoMapperTests
+public static class CalculationDtoMapperTests
 {
     [Theory]
     [InlineAutoMoqData]
     public static void MapDto_Returns_correct(Calculations.Interfaces.Models.CalculationDto source)
     {
         // Act
-        var actual = BatchDtoMapper.Map(source);
+        var actual = CalculationDtoMapper.Map(source);
 
         // Assert
         actual.ProcessType.Should().Be(ProcessTypeMapper.Map(source.ProcessType));
-        actual.ExecutionState.Should().Be(BatchStateMapper.MapState(source.ExecutionState));
+        actual.ExecutionState.Should().Be(CalculationStateMapper.MapState(source.ExecutionState));
         actual.Resolution.Should().Be(source.Resolution);
         actual.RunId.Should().Be(source.RunId);
         actual.Unit.Should().Be(source.Unit);
@@ -40,8 +40,8 @@ public static class BatchDtoMapperTests
         actual.ExecutionTimeEnd.Should().Be(source.ExecutionTimeEnd);
         actual.GridAreaCodes.Should().Contain(source.GridAreaCodes);
         actual.AreSettlementReportsCreated.Should().Be(source.AreSettlementReportsCreated);
-        actual.BatchId.Should().Be(source.CalculationId);
-        actual.BatchId.Should().Be(source.CalculationId);
+        actual.CalculationId.Should().Be(source.CalculationId);
+        actual.CalculationId.Should().Be(source.CalculationId);
         actual.CreatedByUserId.Should().Be(source.CreatedByUserId);
     }
 }

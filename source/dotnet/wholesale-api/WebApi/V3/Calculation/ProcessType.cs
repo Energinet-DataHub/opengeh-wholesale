@@ -12,9 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
+namespace Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 
 /// <summary>
-/// An immutable request to create a batch.
+/// Defines the wholesale process type
 /// </summary>
-public sealed record BatchRequestDto(ProcessType ProcessType, IEnumerable<string> GridAreaCodes, DateTimeOffset StartDate, DateTimeOffset EndDate);
+public enum ProcessType
+{
+    /// <summary>
+    /// Balance fixing
+    /// </summary>
+    BalanceFixing = 0,
+
+    /// <summary>
+    /// Aggregation.
+    /// </summary>
+    Aggregation = 1,
+}

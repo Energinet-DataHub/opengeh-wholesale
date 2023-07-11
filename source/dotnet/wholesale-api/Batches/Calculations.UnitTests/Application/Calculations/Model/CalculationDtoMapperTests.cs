@@ -77,7 +77,7 @@ public class CalculationDtoMapperTests
 
     [Theory]
     [InlineAutoMoqData]
-    public void Map_BatchNumber_Equals_RunId(
+    public void Map_CalculationNumber_Equals_RunId(
         CalculationDtoMapper sut)
     {
         // Arrange
@@ -94,7 +94,7 @@ public class CalculationDtoMapperTests
 
     [Theory]
     [InlineAutoMoqData]
-    public void Map_When_NoRunIdIsNull_Then_BatchNumberIsNull(
+    public void Map_When_NoRunIdIsNull_Then_CalculationNumberIsNull(
         CalculationDtoMapper sut)
     {
         // Arrange

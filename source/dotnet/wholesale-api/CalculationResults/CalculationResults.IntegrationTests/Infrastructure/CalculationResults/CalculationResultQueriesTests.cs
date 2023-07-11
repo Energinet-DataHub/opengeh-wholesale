@@ -38,7 +38,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infras
 /// </summary>
 public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatementApiFixture>, IAsyncLifetime
 {
-    private const string BatchId = "019703e7-98ee-45c1-b343-0cbf185a47d9";
+    private const string CalculationId = "019703e7-98ee-45c1-b343-0cbf185a47d9";
     private const string FirstQuantity = "1.111";
     private const string SecondQuantity = "2.222";
     private const string ThirdQuantity = "3.333";
@@ -66,17 +66,17 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
     [InlineAutoMoqData]
     public async Task GetAsync_ReturnsExpectedCalculationResult(
         Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
-        Mock<ICalculationsClient> batchesClientMock,
+        Mock<ICalculationsClient> calculationsClientMock,
         CalculationDto calculation)
     {
         // Arrange
         const int expectedResultCount = 3;
         var tableName = await CreateTableWithRowsInArbitraryOrderAsync();
-        calculation = calculation with { CalculationId = Guid.Parse(BatchId) };
+        calculation = calculation with { CalculationId = Guid.Parse(CalculationId) };
         var sqlStatementClient = _fixture.CreateSqlStatementClient(loggerMock);
-        batchesClientMock.Setup(b => b.GetAsync(It.IsAny<Guid>())).ReturnsAsync(calculation);
+        calculationsClientMock.Setup(b => b.GetAsync(It.IsAny<Guid>())).ReturnsAsync(calculation);
         var deltaTableOptions = CreateDeltaTableOptions(_fixture.DatabricksSchemaManager.SchemaName, tableName);
-        var sut = new CalculationResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions);
+        var sut = new CalculationResultQueries(sqlStatementClient, calculationsClientMock.Object, deltaTableOptions);
 
         // Act
         var actual = await sut.GetAsync(calculation.CalculationId).ToListAsync();
@@ -104,14 +104,14 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
         const string gridAreaB = "101";
         const string gridAreaC = "501";
 
-        var row1 = ResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: firstHour, gridArea: gridAreaA, quantity: FirstQuantity);
-        var row2 = ResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: secondHour, gridArea: gridAreaA, quantity: SecondQuantity);
+        var row1 = ResultDeltaTableHelper.CreateRowValues(calculationId: CalculationId, calculationResultId: firstCalculationResultId, time: firstHour, gridArea: gridAreaA, quantity: FirstQuantity);
+        var row2 = ResultDeltaTableHelper.CreateRowValues(calculationId: CalculationId, calculationResultId: firstCalculationResultId, time: secondHour, gridArea: gridAreaA, quantity: SecondQuantity);
 
-        var row3 = ResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: secondCalculationResultId, time: firstHour, gridArea: gridAreaB, quantity: ThirdQuantity);
-        var row4 = ResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: secondCalculationResultId, time: secondHour, gridArea: gridAreaB, quantity: FourthQuantity);
+        var row3 = ResultDeltaTableHelper.CreateRowValues(calculationId: CalculationId, calculationResultId: secondCalculationResultId, time: firstHour, gridArea: gridAreaB, quantity: ThirdQuantity);
+        var row4 = ResultDeltaTableHelper.CreateRowValues(calculationId: CalculationId, calculationResultId: secondCalculationResultId, time: secondHour, gridArea: gridAreaB, quantity: FourthQuantity);
 
-        var row5 = ResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, time: firstHour, gridArea: gridAreaC, quantity: FifthQuantity);
-        var row6 = ResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, time: secondHour, gridArea: gridAreaC, quantity: SixthQuantity);
+        var row5 = ResultDeltaTableHelper.CreateRowValues(calculationId: CalculationId, calculationResultId: thirdCalculationResultId, time: firstHour, gridArea: gridAreaC, quantity: FifthQuantity);
+        var row6 = ResultDeltaTableHelper.CreateRowValues(calculationId: CalculationId, calculationResultId: thirdCalculationResultId, time: secondHour, gridArea: gridAreaC, quantity: SixthQuantity);
 
         // mix up the order of the rows
         var rows = new List<IEnumerable<string>> { row3, row5, row1, row2, row6, row4, };

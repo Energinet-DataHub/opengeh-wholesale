@@ -18,19 +18,19 @@ using Energinet.DataHub.Wholesale.Calculations.Interfaces;
 using Energinet.DataHub.Wholesale.Common.Security;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
+namespace Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 
 /// <summary>
-/// Energy suppliers for which batch results have been calculated.
+/// Energy suppliers for which calculation results have been calculated.
 /// </summary>
-[Route("/v3/batches")]
-public class BatchController : V3ControllerBase
+[Route("/v3/calculations")]
+public class CalculationController : V3ControllerBase
 {
     private readonly ICalculationsClient _calculationsClient;
     private readonly ICreateCalculationHandler _createCalculationHandler;
     private readonly IUserContext<FrontendUser> _userContext;
 
-    public BatchController(
+    public CalculationController(
         ICalculationsClient calculationsClient,
         ICreateCalculationHandler createCalculationHandler,
         IUserContext<FrontendUser> userContext)
@@ -41,36 +41,36 @@ public class BatchController : V3ControllerBase
     }
 
     /// <summary>
-    /// Create a batch.
+    /// Create a calculation.
     /// </summary>
-    /// <returns>200 Ok with The batch id, or a 400 with an errormessage</returns>
-    [HttpPost(Name = "CreateBatch")]
+    /// <returns>200 Ok with The calculation id, or a 400 with an errormessage</returns>
+    [HttpPost(Name = "CreateCalculation")]
     [MapToApiVersion(Version)]
     [Produces("application/json", Type = typeof(Guid))]
-    public async Task<Guid> CreateAsync([FromBody][Required] BatchRequestDto batchRequestDto)
+    public async Task<Guid> CreateAsync([FromBody][Required] CalculationRequestDto calculationRequestDto)
     {
         return await _createCalculationHandler.HandleAsync(new CreateCalculationCommand(
-            ProcessTypeMapper.Map(batchRequestDto.ProcessType),
-            batchRequestDto.GridAreaCodes,
-            batchRequestDto.StartDate,
-            batchRequestDto.EndDate,
+            ProcessTypeMapper.Map(calculationRequestDto.ProcessType),
+            calculationRequestDto.GridAreaCodes,
+            calculationRequestDto.StartDate,
+            calculationRequestDto.EndDate,
             _userContext.CurrentUser.UserId)).ConfigureAwait(false);
     }
 
     /// <summary>
-    /// Returns a batch matching <paramref name="batchId"/>.
+    /// Returns a calculation matching <paramref name="calculationId"/>.
     /// </summary>
-    /// <param name="batchId">CalculationId</param>
-    [HttpGet("{batchId}", Name = "GetBatch")]
+    /// <param name="calculationId">CalculationId</param>
+    [HttpGet("{calculationId}", Name = "GetCalculation")]
     [MapToApiVersion(Version)]
-    [Produces("application/json", Type = typeof(BatchDto))]
-    public async Task<IActionResult> GetAsync([FromRoute]Guid batchId)
+    [Produces("application/json", Type = typeof(CalculationDto))]
+    public async Task<IActionResult> GetAsync([FromRoute]Guid calculationId)
     {
-        return Ok(await _calculationsClient.GetAsync(batchId).ConfigureAwait(false));
+        return Ok(await _calculationsClient.GetAsync(calculationId).ConfigureAwait(false));
     }
 
     /// <summary>
-    /// Get batches that matches the criteria specified
+    /// Get calculations that matches the criteria specified
     /// </summary>
     /// <param name="gridAreaCodes"></param>
     /// <param name="executionState"></param>
@@ -79,25 +79,25 @@ public class BatchController : V3ControllerBase
     /// <param name="periodStart"></param>
     /// <param name="periodEnd"></param>
     /// <returns>Calculations that matches the search criteria. Always 200 OK</returns>
-    [HttpGet(Name = "SearchBatches")]
+    [HttpGet(Name = "SearchCalculations")]
     [MapToApiVersion(Version)]
-    [Produces("application/json", Type = typeof(List<BatchDto>))]
+    [Produces("application/json", Type = typeof(List<CalculationDto>))]
     public async Task<IActionResult> SearchAsync(
         [FromQuery] string[]? gridAreaCodes,
-        [FromQuery] BatchState? executionState,
+        [FromQuery] CalculationState? executionState,
         [FromQuery] DateTimeOffset? minExecutionTime,
         [FromQuery] DateTimeOffset? maxExecutionTime,
         [FromQuery] DateTimeOffset? periodStart,
         [FromQuery] DateTimeOffset? periodEnd)
     {
-        var batches = await _calculationsClient.SearchAsync(
+        var calculations = await _calculationsClient.SearchAsync(
             gridAreaCodes ?? Array.Empty<string>(),
-            BatchStateMapper.MapState(executionState),
+            CalculationStateMapper.MapState(executionState),
             minExecutionTime,
             maxExecutionTime,
             periodStart,
             periodEnd).ConfigureAwait(false);
 
-        return Ok(batches);
+        return Ok(calculations);
     }
 }
