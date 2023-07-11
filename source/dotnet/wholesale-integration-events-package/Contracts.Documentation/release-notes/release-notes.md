@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 4.0.1
+
+No functional changes.
+
 ## Version 4.0.0
 
 Renamed `CalculationResultCompleted.MessageType` to `CalculationResultCompleted.MessageName` in order to align with ADR-008.
