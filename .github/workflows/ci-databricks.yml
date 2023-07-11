@@ -48,7 +48,7 @@ jobs:
         id: get_script_files_in_main
         run: |
           # Gets all files in migration_scripts folder on the main branch excluding the __init__ file and put them into at comma seperated string
-          SCRIPT_FILES_IN_MAIN=$(find ./source/databricks/calculation-engine/package/datamigration/migration_scripts -type f -not -name '__init__*' -printf "%f,")
+          SCRIPT_FILES_IN_MAIN=$(find ./source/databricks/calculation-engine/package/datamigration/migration_scripts -type f -name '*.sql' -printf "%f,")
           echo "::set-output name=script_files_in_main::$SCRIPT_FILES_IN_MAIN"
 
       - name: Verify migration script names
@@ -71,6 +71,12 @@ jobs:
           script_files_in_main_reverse_sorted=($(echo "${SCRIPT_FILES_IN_MAIN_ARRAY[@]}" | tr ' ' '\n' | sort -r))
           # Turn script_files_in_main_reverse_sorted into a array (the array will only have one item, since it wont look past a new line)
           read -ra LATEST_SCRIPT_FILE_IN_MAIN <<<"$script_files_in_main_reverse_sorted"
+
+          # Check if there are no script files in main
+          if [ ${#SCRIPT_FILES_IN_MAIN_ARRAY[@]} -eq 0 ]; then
+            echo "No script files found in the main directory. Skipping step."
+            exit 0
+          fi
 
           # Create a datetime from the prefix of the first item in the LATEST_SCRIPT_FILE_IN_MAIN array
           LATEST_SCRIPT_FILE_IN_MAIN_DATETIME=$(date -d "${LATEST_SCRIPT_FILE_IN_MAIN[0]:0:8} ${LATEST_SCRIPT_FILE_IN_MAIN[0]:8:2}:${LATEST_SCRIPT_FILE_IN_MAIN[0]:10:2}" +"%Y-%m-%d %H:%M:%S")

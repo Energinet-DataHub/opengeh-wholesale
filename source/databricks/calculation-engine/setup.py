@@ -20,6 +20,7 @@ setup(
     long_description="",
     long_description_content_type="text/markdown",
     license="MIT",
+    package_data={'package': ['datamigration/migration_scripts/*.sql']},
     packages=find_packages(exclude=["tests*"]),
     # Make sure these packages are added to the docker container and pinned to the same versions
     install_requires=[
@@ -40,6 +41,8 @@ setup(
             "unlock_storage = package.storage_account_access.lock_storage:unlock",
             "migrate_data_lake = package.datamigration.migration:migrate_data_lake",
             "uncommitted_migrations_count = package.datamigration.uncommitted_migrations:print_count",
+            # Entry point used for integration testing
+            "list_migrations_in_package = package.datamigration.uncommitted_migrations:print_all_migrations_in_package",
         ]
     },
 )
