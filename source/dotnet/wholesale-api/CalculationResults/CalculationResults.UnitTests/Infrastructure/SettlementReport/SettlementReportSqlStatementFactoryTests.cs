@@ -69,7 +69,7 @@ LEFT JOIN {_schemaName}.{_tableName} t2
     ON t1.time = t2.time
         AND t1.calculation_execution_time_start < t2.calculation_execution_time_start
         AND t1.grid_area = t2.grid_area
-        AND t1.out_grid_area = t2.out_grid_area
+        AND COALESCE(t1.out_grid_area, 'N/A') = COALESCE(t2.out_grid_area, 'N/A')
         AND t1.time_series_type = t2.time_series_type
         AND t1.calculation_process_type = t2.calculation_process_type
         AND t1.aggregation_level = t2.aggregation_level
@@ -93,7 +93,7 @@ LEFT JOIN {_schemaName}.{_tableName} t2
     ON t1.time = t2.time
         AND t1.calculation_execution_time_start < t2.calculation_execution_time_start
         AND t1.grid_area = t2.grid_area
-        AND t1.out_grid_area = t2.out_grid_area
+        AND COALESCE(t1.out_grid_area, 'N/A') = COALESCE(t2.out_grid_area, 'N/A')
         AND t1.time_series_type = t2.time_series_type
         AND t1.calculation_process_type = t2.calculation_process_type
         AND t1.aggregation_level = t2.aggregation_level

@@ -53,7 +53,7 @@ LEFT JOIN {schemaName}.{tableName} t2
     ON t1.{ResultColumnNames.Time} = t2.{ResultColumnNames.Time}
         AND t1.{ResultColumnNames.CalculationExecutionTimeStart} < t2.{ResultColumnNames.CalculationExecutionTimeStart}
         AND t1.{ResultColumnNames.GridArea} = t2.{ResultColumnNames.GridArea}
-        AND t1.{ResultColumnNames.FromGridArea} = t2.{ResultColumnNames.FromGridArea}
+        AND COALESCE(t1.{ResultColumnNames.FromGridArea}, 'N/A') = COALESCE(t2.{ResultColumnNames.FromGridArea}, 'N/A')
         AND t1.{ResultColumnNames.TimeSeriesType} = t2.{ResultColumnNames.TimeSeriesType}
         AND t1.{ResultColumnNames.CalculationProcessType} = t2.{ResultColumnNames.CalculationProcessType}
         AND t1.{ResultColumnNames.AggregationLevel} = t2.{ResultColumnNames.AggregationLevel}

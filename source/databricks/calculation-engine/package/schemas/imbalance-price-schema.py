@@ -36,7 +36,7 @@ imbalance_price_schema = StructType(
     [
         # Imbalance price value in actual currency per energy unit. In DataHub this is kr/kWh.
         # Example: 2.43806
-        StructField("Price", DecimalType(18,2), False),
+        StructField("Price", DecimalType(18, 2), False),
 
         # Regarding the ”Imbalance price”, please note that the "Spot price" was used
         # for the period before the movement of the imbalance settlement to eSett (01.02.2021).
@@ -47,16 +47,16 @@ imbalance_price_schema = StructType(
         # The time where the price applies in UTC.
         # Resolution is per hour.
         StructField("Time", TimestampType(), False),
-        
+
         # The year part of the `Time`. Used for partition.
         StructField("Time_Year", IntegerType(), False),
-        
+
         # The month part of the `Time`. Used for partition.
         StructField("Time_Month", IntegerType(), False),
-        
+
         # The day part (1-31) of the `Time`. Used for partition.
         StructField("Time_Day", IntegerType(), False),
-        
+
         # The time when the imbalance price was received from NOIS.
         # TODO Only needed if we don't create snapshots
         StructField("ReceivedTime", TimestampType(), False),
