@@ -40,7 +40,9 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Batches\Calculations.Infrastructure\Calculations.Infrastructure.csproj" />
+    <ProjectReference Include="..\Calculations\Calculations.Application\Calculations.Application.csproj" />
+    <ProjectReference Include="..\Calculations\Calculations.Infrastructure\Calculations.Infrastructure.csproj" />
+    <ProjectReference Include="..\Calculations\Calculations.Interfaces\Calculations.Interfaces.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" />
     <ProjectReference Include="..\Events\Communication\Communication\Communication.csproj" />

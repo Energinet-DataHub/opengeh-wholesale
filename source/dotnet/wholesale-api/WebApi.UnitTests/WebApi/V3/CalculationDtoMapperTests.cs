@@ -16,6 +16,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 using FluentAssertions;
 using Xunit;
+using CalculationDto = Energinet.DataHub.Wholesale.Calculations.Interfaces.Models.CalculationDto;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.WebApi.V3;
 
@@ -23,7 +24,7 @@ public static class CalculationDtoMapperTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public static void MapDto_Returns_correct(Calculations.Interfaces.Models.CalculationDto source)
+    public static void MapDto_Returns_correct(CalculationDto source)
     {
         // Act
         var actual = CalculationDtoMapper.Map(source);

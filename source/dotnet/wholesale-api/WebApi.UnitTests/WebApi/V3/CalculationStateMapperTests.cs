@@ -22,14 +22,14 @@ namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.WebApi.V3;
 public static class CalculationStateMapperTests
 {
     [Theory]
-    [InlineAutoMoqData(Calculations.Interfaces.Models.CalculationState.Failed, CalculationState.Failed)]
-    [InlineAutoMoqData(Calculations.Interfaces.Models.CalculationState.Completed, CalculationState.Completed)]
-    [InlineAutoMoqData(Calculations.Interfaces.Models.CalculationState.Executing, CalculationState.Executing)]
-    [InlineAutoMoqData(Calculations.Interfaces.Models.CalculationState.Pending, CalculationState.Pending)]
-    public static void Map_ReturnsExpectedTypeForWebApi(Calculations.Interfaces.Models.CalculationState source, CalculationState expected)
+    [InlineAutoMoqData(CalculationState.Failed, CalculationState.Failed)]
+    [InlineAutoMoqData(CalculationState.Completed, CalculationState.Completed)]
+    [InlineAutoMoqData(CalculationState.Executing, CalculationState.Executing)]
+    [InlineAutoMoqData(CalculationState.Pending, CalculationState.Pending)]
+    public static void Map_ReturnsExpectedTypeForWebApi(CalculationState source, CalculationState expected)
     {
         var actual = CalculationStateMapper.MapState(source);
-        actual.Should().Be(expected);
+        actual.Should().Be((Calculations.Interfaces.Models.CalculationState)expected);
     }
 
     [Theory]

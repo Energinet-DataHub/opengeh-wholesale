@@ -64,6 +64,7 @@
       <EmbeddedResource Include="Infrastructure\SqlStatements\CalculationResultWithExternalLinks.json" />
     </ItemGroup>
     <ItemGroup>
+      <ProjectReference Include="..\..\Calculations\Calculations.Interfaces\Calculations.Interfaces.csproj" />
       <ProjectReference Include="..\..\Test.Core\Test.Core.csproj" />
       <ProjectReference Include="..\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" />
     </ItemGroup>
