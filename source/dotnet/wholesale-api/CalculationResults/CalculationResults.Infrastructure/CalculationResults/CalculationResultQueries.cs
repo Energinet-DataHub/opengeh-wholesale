@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Interfaces;
-using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces;
+using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Microsoft.Extensions.Options;
 using NodaTime.Extensions;
@@ -27,20 +27,20 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 public class CalculationResultQueries : ICalculationResultQueries
 {
     private readonly ISqlStatementClient _sqlStatementClient;
-    private readonly IBatchesClient _batchesClient;
+    private readonly ICalculationsClient _calculationsClient;
     private readonly DeltaTableOptions _deltaTableOptions;
 
-    public CalculationResultQueries(ISqlStatementClient sqlStatementClient, IBatchesClient batchesClient, IOptions<DeltaTableOptions> deltaTableOptions)
+    public CalculationResultQueries(ISqlStatementClient sqlStatementClient, ICalculationsClient calculationsClient, IOptions<DeltaTableOptions> deltaTableOptions)
     {
         _sqlStatementClient = sqlStatementClient;
-        _batchesClient = batchesClient;
+        _calculationsClient = calculationsClient;
         _deltaTableOptions = deltaTableOptions.Value;
     }
 
-    public async IAsyncEnumerable<CalculationResult> GetAsync(Guid batchId)
+    public async IAsyncEnumerable<CalculationResult> GetAsync(Guid calculationId)
     {
-        var batch = await _batchesClient.GetAsync(batchId).ConfigureAwait(false);
-        var sql = CreateBatchResultsSql(batchId);
+        var calculation = await _calculationsClient.GetAsync(calculationId).ConfigureAwait(false);
+        var sql = CreateCalculationResultsSql(calculationId);
         var timeSeriesPoints = new List<TimeSeriesPoint>();
         SqlResultRow? currentRow = null;
 
@@ -50,7 +50,7 @@ public class CalculationResultQueries : ICalculationResultQueries
 
             if (currentRow != null && BelongsToDifferentResults(currentRow, nextRow))
             {
-                yield return CreateCalculationResult(batch, currentRow, timeSeriesPoints);
+                yield return CreateCalculationResult(calculation, currentRow, timeSeriesPoints);
                 timeSeriesPoints = new List<TimeSeriesPoint>();
             }
 
@@ -59,22 +59,22 @@ public class CalculationResultQueries : ICalculationResultQueries
         }
 
         if (currentRow != null)
-            yield return CreateCalculationResult(batch, currentRow, timeSeriesPoints);
+            yield return CreateCalculationResult(calculation, currentRow, timeSeriesPoints);
     }
 
-    private string CreateBatchResultsSql(Guid batchId)
+    private string CreateCalculationResultsSql(Guid calculationId)
     {
         return $@"
 SELECT {string.Join(", ", SqlColumnNames)}
 FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.RESULT_TABLE_NAME}
-WHERE {ResultColumnNames.BatchId} = '{batchId}'
+WHERE {ResultColumnNames.CalculationId} = '{calculationId}'
 ORDER BY {ResultColumnNames.CalculationResultId}, {ResultColumnNames.Time}
 ";
     }
 
     public static string[] SqlColumnNames { get; } =
     {
-        ResultColumnNames.BatchId,
+        ResultColumnNames.CalculationId,
         ResultColumnNames.GridArea,
         ResultColumnNames.FromGridArea,
         ResultColumnNames.TimeSeriesType,
@@ -100,7 +100,7 @@ ORDER BY {ResultColumnNames.CalculationResultId}, {ResultColumnNames.Time}
     }
 
     private static CalculationResult CreateCalculationResult(
-        BatchDto batch,
+        CalculationDto calculation,
         SqlResultRow sqlResultRow,
         List<TimeSeriesPoint> timeSeriesPoints)
     {
@@ -112,15 +112,15 @@ ORDER BY {ResultColumnNames.CalculationResultId}, {ResultColumnNames.Time}
         var fromGridArea = sqlResultRow[ResultColumnNames.FromGridArea];
         return new CalculationResult(
             id,
-            batch.BatchId,
+            calculation.CalculationId,
             gridArea,
             timeSeriesType,
             energySupplierId,
             balanceResponsibleId,
             timeSeriesPoints.ToArray(),
-            batch.ProcessType,
-            batch.PeriodStart.ToInstant(),
-            batch.PeriodEnd.ToInstant(),
+            calculation.ProcessType,
+            calculation.PeriodStart.ToInstant(),
+            calculation.PeriodEnd.ToInstant(),
             fromGridArea);
     }
 }

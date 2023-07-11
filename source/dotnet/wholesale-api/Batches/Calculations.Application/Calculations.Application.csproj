@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>Energinet.DataHub.Wholesale.Calculations.Application</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Wholesale.Calculations.Application</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="7.4.6" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+    <PackageReference Update="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\Common.csproj" />
+    <ProjectReference Include="..\Calculations.Interfaces\Calculations.Interfaces.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -21,7 +21,7 @@ public sealed class CalculationResult
 {
     public CalculationResult(
         Guid id,
-        Guid batchId,
+        Guid calculationId,
         string gridArea,
         TimeSeriesType timeSeriesType,
         string? energySupplierId,
@@ -36,7 +36,7 @@ public sealed class CalculationResult
             throw new ArgumentException("Time series points empty");
 
         Id = id;
-        BatchId = batchId;
+        CalculationId = calculationId;
         GridArea = gridArea;
         TimeSeriesType = timeSeriesType;
         EnergySupplierId = energySupplierId;
@@ -50,7 +50,7 @@ public sealed class CalculationResult
 
     public Guid Id { get; }
 
-    public Guid BatchId { get; }
+    public Guid CalculationId { get; }
 
     public ProcessType ProcessType { get; }
 

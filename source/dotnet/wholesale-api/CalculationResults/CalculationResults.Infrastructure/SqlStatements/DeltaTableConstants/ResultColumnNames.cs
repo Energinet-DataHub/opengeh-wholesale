@@ -18,10 +18,10 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlState
 
 public static class ResultColumnNames
 {
-    public const string BatchId = "batch_id";
-    public const string BatchExecutionTimeStart = "batch_execution_time_start";
+    public const string CalculationId = "calculation_id";
+    public const string CalculationExecutionTimeStart = "calculation_execution_time_start";
     public const string CalculationResultId = "calculation_result_id";
-    public const string BatchProcessType = "batch_process_type";
+    public const string CalculationProcessType = "calculation_process_type";
     public const string TimeSeriesType = "time_series_type";
     public const string GridArea = "grid_area";
     public const string FromGridArea = "out_grid_area";
@@ -49,9 +49,9 @@ public static class ResultColumnNames
              QuantityQuality => "string",
              AggregationLevel => "string",
              TimeSeriesType => "string",
-             BatchId => "string",
-             BatchProcessType => "string",
-             BatchExecutionTimeStart => "timestamp",
+             CalculationId => "string",
+             CalculationProcessType => "string",
+             CalculationExecutionTimeStart => "timestamp",
              FromGridArea => "string",
              Quantity => "decimal(18,3)",
              _ => throw new ArgumentException($"Unexpected column name '{columnName}'."),
