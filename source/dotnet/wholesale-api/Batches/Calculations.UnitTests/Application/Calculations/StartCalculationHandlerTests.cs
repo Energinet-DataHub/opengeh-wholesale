@@ -30,25 +30,25 @@ public class StartCalculationHandlerTests
     [Theory]
     [InlineAutoMoqData]
     public async Task StartCalculationAsync_ActivatesDomainServiceAndCommits(
-        [Frozen] Mock<ICalculationRepository> batchRepositoryMock,
+        [Frozen] Mock<ICalculationRepository> calculationRepositoryMock,
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         [Frozen] Mock<ICalculationInfrastructureService> calculationDomainServiceMock,
         StartCalculationHandler sut)
     {
         // Arrange
-        var batches = new List<Calculation> { new CalculationBuilder().Build(), new CalculationBuilder().Build() };
-        batchRepositoryMock
+        var calculations = new List<Calculation> { new CalculationBuilder().Build(), new CalculationBuilder().Build() };
+        calculationRepositoryMock
             .Setup(repository => repository.GetCreatedAsync())
-            .ReturnsAsync(batches);
+            .ReturnsAsync(calculations);
 
         // Arrange & Act
         await sut.StartAsync();
 
         // Assert
         unitOfWorkMock.Verify(x => x.CommitAsync());
-        foreach (var batch in batches)
+        foreach (var calculation in calculations)
         {
-            calculationDomainServiceMock.Verify(x => x.StartAsync(batch.Id));
+            calculationDomainServiceMock.Verify(x => x.StartAsync(calculation.Id));
         }
     }
 }

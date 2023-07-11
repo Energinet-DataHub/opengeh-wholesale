@@ -19,9 +19,9 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementRe
 
 public interface ISettlementReportClient
 {
-    Task<SettlementReportDto> GetSettlementReportAsync(Guid batchId);
+    Task<SettlementReportDto> GetSettlementReportAsync(Guid calculationId);
 
-    Task GetSettlementReportAsync(Guid batchId, string gridAreaCode, Stream outputStream);
+    Task GetSettlementReportAsync(Guid calculationId, string gridAreaCode, Stream outputStream);
 
     Task CreateCompressedSettlementReportAsync(
         Func<Stream> openDestinationStream,

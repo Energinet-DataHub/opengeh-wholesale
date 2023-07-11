@@ -15,13 +15,13 @@
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 using NodaTime.Extensions;
 
-namespace Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+namespace Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 
 public class CompletedCalculationFactory : ICompletedCalculationFactory
 {
-    public IEnumerable<CompletedCalculation> CreateFromCalculations(IEnumerable<CalculationDto> completedBatchDtos)
+    public IEnumerable<CompletedCalculation> CreateFromCalculations(IEnumerable<CalculationDto> completedCalculationDtos)
     {
-        return completedBatchDtos.Select(CreateFromCalculation);
+        return completedCalculationDtos.Select(CreateFromCalculation);
     }
 
     public CompletedCalculation CreateFromCalculation(CalculationDto completedCalculationDto)

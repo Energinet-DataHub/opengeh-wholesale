@@ -58,7 +58,7 @@ public class WebApiFactory : WebApplicationFactory<Startup>
             services.AddScoped(_ =>
                 SettlementReportApplicationServiceMock?.Object ??
                 new Mock<ISettlementReportClient>().Object);
-            services.AddScoped(_ => BatchesClientMock?.Object ?? new Mock<ICalculationsClient>().Object);
+            services.AddScoped(_ => CalculationsClientMock?.Object ?? new Mock<ICalculationsClient>().Object);
 
             var defaultUserContext = new Mock<IUserContext<FrontendUser>>();
             defaultUserContext.Setup(x => x.CurrentUser).Returns(new FrontendUser(Guid.NewGuid(), Guid.NewGuid(), false));
@@ -72,7 +72,7 @@ public class WebApiFactory : WebApplicationFactory<Startup>
     /// </summary>
     public Mock<ISettlementReportClient>? SettlementReportApplicationServiceMock { get; set; }
 
-    public Mock<ICalculationsClient>? BatchesClientMock { get; set; }
+    public Mock<ICalculationsClient>? CalculationsClientMock { get; set; }
 
     public Mock<IUserContext<FrontendUser>>? UserContextMock { get; set; }
 

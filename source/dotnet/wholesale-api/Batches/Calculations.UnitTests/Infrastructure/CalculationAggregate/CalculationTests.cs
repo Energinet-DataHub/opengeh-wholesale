@@ -190,7 +190,7 @@ public class CalculationTests
     }
 
     [Fact]
-    public void MarkAsCompleted_WhenExecuting_CompletesBatch()
+    public void MarkAsCompleted_WhenExecuting_CompletesCalculation()
     {
         // Arrange
         var sut = new CalculationBuilder().WithStateExecuting().Build();
@@ -247,7 +247,7 @@ public class CalculationTests
     }
 
     [Fact]
-    public void MarkAsExecuting_WhenPending_ExecutesBatch()
+    public void MarkAsExecuting_WhenPending_ExecutesCalculation()
     {
         var sut = new CalculationBuilder().WithStatePending().Build();
         sut.MarkAsExecuting();

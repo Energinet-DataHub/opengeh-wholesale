@@ -13,13 +13,13 @@
 // limitations under the License.
 
 using System.Text.Json;
-using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedBatches;
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedCalculations;
 
-public class CompletedBatchEntityConfiguration : IEntityTypeConfiguration<CompletedCalculation>
+public class CompletedCalculationEntityConfiguration : IEntityTypeConfiguration<CompletedCalculation>
 {
     public void Configure(EntityTypeBuilder<CompletedCalculation> builder)
     {

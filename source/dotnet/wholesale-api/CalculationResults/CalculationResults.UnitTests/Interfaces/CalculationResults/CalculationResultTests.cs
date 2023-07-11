@@ -27,7 +27,7 @@ public class CalculationResultTests
     [InlineAutoMoqData]
     public void Ctor_WhenNoPoints_ThrowsArgumentException(
         Guid anyId,
-        Guid anyBatchId,
+        Guid anyCalculationId,
         string anyGridArea,
         string anyFromGridArea,
         TimeSeriesType anyTimeSeriesType,
@@ -37,7 +37,7 @@ public class CalculationResultTests
     {
         var emptyTimeSeriesPoints = new TimeSeriesPoint[] { };
         var exception = Assert.Throws<ArgumentException>(() =>
-            new CalculationResult(anyId, anyBatchId, anyGridArea, anyTimeSeriesType, null, null, emptyTimeSeriesPoints, anyProcessType, anyPeriodStart, anyPeriodEnd, anyFromGridArea));
+            new CalculationResult(anyId, anyCalculationId, anyGridArea, anyTimeSeriesType, null, null, emptyTimeSeriesPoints, anyProcessType, anyPeriodStart, anyPeriodEnd, anyFromGridArea));
         exception.Message.Should().Contain("empty");
     }
 }

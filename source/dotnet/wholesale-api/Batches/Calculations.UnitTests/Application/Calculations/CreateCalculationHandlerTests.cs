@@ -35,26 +35,26 @@ public class CreateCalculationHandlerTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public async Task Handle_AddsBatchToRepository(
-        [Frozen] Mock<ICalculationFactory> batchFactoryMock,
-        [Frozen] Mock<ICalculationRepository> batchRepositoryMock,
+    public async Task Handle_AddsCalculationToRepository(
+        [Frozen] Mock<ICalculationFactory> calculationFactoryMock,
+        [Frozen] Mock<ICalculationRepository> calculationRepositoryMock,
         CreateCalculationHandler sut)
     {
         // Arrange
-        var batchCommand = CreateBatchCommand();
-        var batch = CreateBatchFromCommand(batchCommand);
-        batchFactoryMock.Setup(x => x.Create(batch.ProcessType, batchCommand.GridAreaCodes, batchCommand.StartDate, batchCommand.EndDate, batchCommand.CreatedByUserId))
-            .Returns(batch);
+        var calculationCommand = CreateCalculationCommand();
+        var calculation = CreateCalculationFromCommand(calculationCommand);
+        calculationFactoryMock.Setup(x => x.Create(calculation.ProcessType, calculationCommand.GridAreaCodes, calculationCommand.StartDate, calculationCommand.EndDate, calculationCommand.CreatedByUserId))
+            .Returns(calculation);
 
         // Act
-        var actual = await sut.HandleAsync(batchCommand);
+        var actual = await sut.HandleAsync(calculationCommand);
 
         // Assert
-        batch.Id.Should().Be(actual);
-        batchRepositoryMock.Verify(x => x.AddAsync(batch));
+        calculation.Id.Should().Be(actual);
+        calculationRepositoryMock.Verify(x => x.AddAsync(calculation));
     }
 
-    private static CreateCalculationCommand CreateBatchCommand()
+    private static CreateCalculationCommand CreateCalculationCommand()
     {
         var period = Periods.January_EuropeCopenhagen_Instant;
         return new CreateCalculationCommand(
@@ -65,7 +65,7 @@ public class CreateCalculationHandlerTests
             Guid.NewGuid());
     }
 
-    private static Calculation CreateBatchFromCommand(CreateCalculationCommand command)
+    private static Calculation CreateCalculationFromCommand(CreateCalculationCommand command)
     {
         var period = Periods.January_EuropeCopenhagen_Instant;
         return new Calculation(

@@ -14,9 +14,9 @@
 
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
 
-namespace Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+namespace Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 
 public interface ICompletedCalculationFactory
 {
-    IEnumerable<CompletedCalculation> CreateFromCalculations(IEnumerable<CalculationDto> completedBatchDtos);
+    IEnumerable<CompletedCalculation> CreateFromCalculations(IEnumerable<CalculationDto> completedCalculationDtos);
 }

@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Microsoft.EntityFrameworkCore;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedBatches;
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedCalculations;
 
 public class CompletedCalculationRepository : ICompletedCalculationRepository
 {
@@ -26,9 +26,9 @@ public class CompletedCalculationRepository : ICompletedCalculationRepository
         _context = context;
     }
 
-    public async Task AddAsync(IEnumerable<CompletedCalculation> completedBatches)
+    public async Task AddAsync(IEnumerable<CompletedCalculation> completedCalculations)
     {
-        await _context.CompletedCalculations.AddRangeAsync(completedBatches).ConfigureAwait(false);
+        await _context.CompletedCalculations.AddRangeAsync(completedCalculations).ConfigureAwait(false);
     }
 
     public async Task<CompletedCalculation?> GetLastCompletedOrNullAsync()

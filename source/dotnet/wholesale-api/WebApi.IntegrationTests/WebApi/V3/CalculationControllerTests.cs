@@ -28,9 +28,9 @@ using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi.V3;
 
-public class BatchControllerTests : WebApiTestBase
+public class CalculationControllerTests : WebApiTestBase
 {
-    public BatchControllerTests(
+    public CalculationControllerTests(
         WholesaleWebApiFixture wholesaleWebApiFixture,
         WebApiFactory factory,
         ITestOutputHelper testOutputHelper)
@@ -42,12 +42,12 @@ public class BatchControllerTests : WebApiTestBase
     public async Task HTTP_POST_V3_ReturnsHttpStatusCodeOkAtExpectedUrl()
     {
         // Arrange
-        var expectedUrl = "/v3/batches";
+        var expectedUrl = "/v3/calculations";
         var expectedHttpStatusCode = HttpStatusCode.OK;
-        var batchRequestDto = CreateBatchRequestDto();
+        var calculationRequestDto = CreateCalculationRequestDto();
 
         // Act
-        var actualContent = await Client.PostAsJsonAsync(expectedUrl, batchRequestDto, CancellationToken.None);
+        var actualContent = await Client.PostAsJsonAsync(expectedUrl, calculationRequestDto, CancellationToken.None);
 
         // Assert
         actualContent.StatusCode.Should().Be(expectedHttpStatusCode);
@@ -62,10 +62,10 @@ public class BatchControllerTests : WebApiTestBase
         // Arrange
         mock.Setup(service => service.GetAsync(calculationDto.CalculationId))
             .ReturnsAsync(calculationDto);
-        Factory.BatchesClientMock = mock;
+        Factory.CalculationsClientMock = mock;
 
         // Act
-        var response = await Client.GetAsync($"/v3/batches/{calculationDto.CalculationId.ToString()}");
+        var response = await Client.GetAsync($"/v3/calculations/{calculationDto.CalculationId.ToString()}");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -75,20 +75,20 @@ public class BatchControllerTests : WebApiTestBase
     public async Task HTTP_GET_V3_SearchReturnsHttpStatusCodeOkAtExpectedUrl()
     {
         // Arrange + Act
-        var response = await Client.GetAsync("/v3/batches", CancellationToken.None);
+        var response = await Client.GetAsync("/v3/calculations", CancellationToken.None);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    private static CalculationRequestDto CreateBatchRequestDto()
+    private static CalculationRequestDto CreateCalculationRequestDto()
     {
         var period = Periods.January_EuropeCopenhagen;
-        var batchRequest = new CalculationRequestDto(
+        var calculationRequest = new CalculationRequestDto(
             ProcessType.BalanceFixing,
             new List<string> { "805" },
             period.PeriodStart,
             period.PeriodEnd);
-        return batchRequest;
+        return calculationRequest;
     }
 }

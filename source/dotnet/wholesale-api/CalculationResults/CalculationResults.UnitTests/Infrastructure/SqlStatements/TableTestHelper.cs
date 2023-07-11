@@ -24,7 +24,7 @@ public static class TableTestHelper
         var columnNames = new[]
         {
             ResultColumnNames.GridArea,
-            ResultColumnNames.BatchProcessType,
+            ResultColumnNames.CalculationProcessType,
             ResultColumnNames.Time,
             ResultColumnNames.TimeSeriesType,
             ResultColumnNames.Quantity,

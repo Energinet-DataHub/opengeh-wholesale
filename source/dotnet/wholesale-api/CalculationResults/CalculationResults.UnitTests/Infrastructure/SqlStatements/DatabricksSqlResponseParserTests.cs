@@ -47,7 +47,7 @@ public class DatabricksSqlResponseParserTests
         _succeededResultColumnNames = new[]
         {
             "grid_area", "energy_supplier_id", "balance_responsible_id", "quantity", "quantity_quality", "time",
-            "aggregation_level", "time_series_type", "batch_id", "batch_process_type", "batch_execution_time_start",
+            "aggregation_level", "time_series_type", "calculation_id", "calculation_process_type", "calculation_execution_time_start",
             "out_grid_area",
         };
 

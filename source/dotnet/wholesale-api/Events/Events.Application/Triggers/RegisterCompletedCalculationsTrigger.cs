@@ -19,20 +19,20 @@ using Microsoft.Extensions.Logging;
 namespace Energinet.DataHub.Wholesale.Events.Application.Triggers;
 
 /// <summary>
-/// Worker invoking fetching completed batches from the batches module and registering them in the module.
+/// Worker invoking fetching completed calculations from the calculation module and registering them in the module.
 /// </summary>
-public class RegisterCompletedBatchesTrigger : RepeatingWorker<IRegisterCompletedBatchesHandler>
+public class RegisterCompletedCalculationsTrigger : RepeatingWorker<IRegisterCompletedCalculationsHandler>
 {
     private const int DelayInSecondsBeforeNextExecution = 10;
 
-    public RegisterCompletedBatchesTrigger(
+    public RegisterCompletedCalculationsTrigger(
         IServiceProvider serviceProvider,
-        ILogger<RegisterCompletedBatchesTrigger> logger)
+        ILogger<RegisterCompletedCalculationsTrigger> logger)
         : base(serviceProvider, logger, TimeSpan.FromSeconds(DelayInSecondsBeforeNextExecution))
     {
     }
 
-    protected override async Task ExecuteAsync(IRegisterCompletedBatchesHandler instance)
+    protected override async Task ExecuteAsync(IRegisterCompletedCalculationsHandler instance)
     {
         await instance.RegisterCompletedCalculationsAsync().ConfigureAwait(false);
     }

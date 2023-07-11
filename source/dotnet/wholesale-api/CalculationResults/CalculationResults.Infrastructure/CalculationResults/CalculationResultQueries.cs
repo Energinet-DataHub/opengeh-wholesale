@@ -37,10 +37,10 @@ public class CalculationResultQueries : ICalculationResultQueries
         _deltaTableOptions = deltaTableOptions.Value;
     }
 
-    public async IAsyncEnumerable<CalculationResult> GetAsync(Guid batchId)
+    public async IAsyncEnumerable<CalculationResult> GetAsync(Guid calculationId)
     {
-        var batch = await _calculationsClient.GetAsync(batchId).ConfigureAwait(false);
-        var sql = CreateBatchResultsSql(batchId);
+        var calculation = await _calculationsClient.GetAsync(calculationId).ConfigureAwait(false);
+        var sql = CreateCalculationResultsSql(calculationId);
         var timeSeriesPoints = new List<TimeSeriesPoint>();
         SqlResultRow? currentRow = null;
 
@@ -50,7 +50,7 @@ public class CalculationResultQueries : ICalculationResultQueries
 
             if (currentRow != null && BelongsToDifferentResults(currentRow, nextRow))
             {
-                yield return CreateCalculationResult(batch, currentRow, timeSeriesPoints);
+                yield return CreateCalculationResult(calculation, currentRow, timeSeriesPoints);
                 timeSeriesPoints = new List<TimeSeriesPoint>();
             }
 
@@ -59,22 +59,22 @@ public class CalculationResultQueries : ICalculationResultQueries
         }
 
         if (currentRow != null)
-            yield return CreateCalculationResult(batch, currentRow, timeSeriesPoints);
+            yield return CreateCalculationResult(calculation, currentRow, timeSeriesPoints);
     }
 
-    private string CreateBatchResultsSql(Guid batchId)
+    private string CreateCalculationResultsSql(Guid calculationId)
     {
         return $@"
 SELECT {string.Join(", ", SqlColumnNames)}
 FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.RESULT_TABLE_NAME}
-WHERE {ResultColumnNames.BatchId} = '{batchId}'
+WHERE {ResultColumnNames.CalculationId} = '{calculationId}'
 ORDER BY {ResultColumnNames.CalculationResultId}, {ResultColumnNames.Time}
 ";
     }
 
     public static string[] SqlColumnNames { get; } =
     {
-        ResultColumnNames.BatchId,
+        ResultColumnNames.CalculationId,
         ResultColumnNames.GridArea,
         ResultColumnNames.FromGridArea,
         ResultColumnNames.TimeSeriesType,

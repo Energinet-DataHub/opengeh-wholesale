@@ -20,7 +20,7 @@ using Moq;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.Calculations.UnitTests.Application.Batches;
+namespace Energinet.DataHub.Wholesale.Calculations.UnitTests.Application.Calculations;
 
 [UnitTest]
 public class UpdateExecutionStateHandlerTests

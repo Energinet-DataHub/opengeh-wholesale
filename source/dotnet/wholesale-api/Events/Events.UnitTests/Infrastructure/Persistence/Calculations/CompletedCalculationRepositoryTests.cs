@@ -14,9 +14,9 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedCalculations;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer.NodaTime.Extensions;

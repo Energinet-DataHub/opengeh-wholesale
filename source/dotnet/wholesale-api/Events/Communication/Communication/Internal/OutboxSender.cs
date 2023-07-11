@@ -71,7 +71,7 @@ public class OutboxSender : IOutboxSender
     private async Task SendCalculationAsync(ServiceBusMessageBatch calculation)
     {
         await _senderProvider.Instance.SendMessagesAsync(calculation).ConfigureAwait(false);
-        _logger.LogInformation("Sent calculation of {BatchCount} messages", calculation.Count);
+        _logger.LogInformation("Sent calculation of {CalculationCount} messages", calculation.Count);
     }
 
     private async Task SendMessageThatExceedsCalculationLimitAsync(ServiceBusMessage serviceBusMessage)

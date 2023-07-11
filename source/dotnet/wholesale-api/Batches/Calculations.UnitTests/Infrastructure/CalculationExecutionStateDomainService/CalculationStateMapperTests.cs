@@ -29,13 +29,13 @@ public class CalculationStateMapperTests
     [InlineAutoMoqData(CalculationState.Completed, CalculationExecutionState.Completed)]
     [InlineAutoMoqData(CalculationState.Canceled, CalculationExecutionState.Canceled)]
     [InlineAutoMoqData(CalculationState.Failed, CalculationExecutionState.Failed)]
-    public void MapState_CalledWithACalculationStateItCanMap_ExpectedBatchExecutionState(CalculationState calculationState, CalculationExecutionState expectedCalculationExecutionState)
+    public void MapState_CalledWithACalculationStateItCanMap_ExpectedCalculationExecutionState(CalculationState calculationState, CalculationExecutionState expectedCalculationExecutionState)
     {
         // Act
-        var actualBatchExecutionState = CalculationStateMapper.MapState(calculationState);
+        var actualCalculationExecutionState = CalculationStateMapper.MapState(calculationState);
 
         // Assert
-        actualBatchExecutionState.Should().Be(expectedCalculationExecutionState);
+        actualCalculationExecutionState.Should().Be(expectedCalculationExecutionState);
     }
 
     [Fact]

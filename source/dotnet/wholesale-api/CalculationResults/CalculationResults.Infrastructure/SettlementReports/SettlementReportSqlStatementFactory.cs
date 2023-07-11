@@ -36,7 +36,7 @@ public static class SettlementReportSqlStatementFactory
         var selectColumns = string.Join(
             ", ",
             @$"t1.{ResultColumnNames.GridArea}",
-            @$"t1.{ResultColumnNames.BatchProcessType}",
+            @$"t1.{ResultColumnNames.CalculationProcessType}",
             @$"t1.{ResultColumnNames.Time}",
             @$"t1.{ResultColumnNames.TimeSeriesType}",
             @$"t1.{ResultColumnNames.Quantity}");
@@ -55,12 +55,12 @@ LEFT JOIN {schemaName}.{tableName} t2
         AND t1.{ResultColumnNames.GridArea} = t2.{ResultColumnNames.GridArea}
         AND t1.{ResultColumnNames.FromGridArea} = t2.{ResultColumnNames.FromGridArea}
         AND t1.{ResultColumnNames.TimeSeriesType} = t2.{ResultColumnNames.TimeSeriesType}
-        AND t1.{ResultColumnNames.BatchProcessType} = t2.{ResultColumnNames.BatchProcessType}
+        AND t1.{ResultColumnNames.CalculationProcessType} = t2.{ResultColumnNames.CalculationProcessType}
         AND t1.{ResultColumnNames.AggregationLevel} = t2.{ResultColumnNames.AggregationLevel}
 WHERE t2.time IS NULL
     AND t1.{ResultColumnNames.GridArea} IN ({gridAreas})
     AND t1.{ResultColumnNames.TimeSeriesType} IN ({timeSeriesTypesString})
-    AND t1.{ResultColumnNames.BatchProcessType} = '{processTypeString}'
+    AND t1.{ResultColumnNames.CalculationProcessType} = '{processTypeString}'
     AND t1.{ResultColumnNames.Time} BETWEEN '{startTimeString}' AND '{endTimeString}'
     AND t1.{ResultColumnNames.AggregationLevel} = '{aggregationLevel}'";
         if (energySupplier != null)

@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Calculations.Interfaces.Models;
-using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using FluentAssertions;
 using NodaTime.Extensions;
 using Xunit;

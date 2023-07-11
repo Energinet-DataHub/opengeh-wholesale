@@ -17,12 +17,12 @@ using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Internal;
 using Energinet.DataHub.Wholesale.Events.Application;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
-using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Application.Triggers;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedCalculations;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
 
@@ -36,11 +36,11 @@ public static class EventsRegistration
         string serviceBusConnectionString,
         string integrationEventTopicName)
     {
-        serviceCollection.AddHostedService<RegisterCompletedBatchesTrigger>();
+        serviceCollection.AddHostedService<RegisterCompletedCalculationsTrigger>();
 
         serviceCollection.AddScoped<ICompletedCalculationRepository, CompletedCalculationRepository>();
         serviceCollection.AddScoped<ICompletedCalculationFactory, CompletedCalculationFactory>();
-        serviceCollection.AddScoped<IRegisterCompletedBatchesHandler, RegisterCompletedCalculationsHandler>();
+        serviceCollection.AddScoped<IRegisterCompletedCalculationsHandler, RegisterCompletedCalculationsHandler>();
 
         serviceCollection.AddScoped<ICalculationResultIntegrationEventFactory, CalculationResultIntegrationEventFactory>();
 

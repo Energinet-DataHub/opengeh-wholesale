@@ -15,7 +15,7 @@
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Internal;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
-using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using NodaTime;
 
@@ -47,15 +47,15 @@ public class IntegrationEventProvider : IIntegrationEventProvider
     {
         do
         {
-            var batch = await _completedCalculationRepository.GetNextUnpublishedOrNullAsync().ConfigureAwait(false);
-            if (batch == null) break;
+            var completedCalculation = await _completedCalculationRepository.GetNextUnpublishedOrNullAsync().ConfigureAwait(false);
+            if (completedCalculation == null) break;
 
-            await foreach (var calculationResult in _calculationResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
+            await foreach (var calculationResult in _calculationResultQueries.GetAsync(completedCalculation.Id).ConfigureAwait(false))
             {
                 yield return _calculationResultIntegrationEventFactory.Create(calculationResult);
             }
 
-            batch.PublishedTime = _clock.GetCurrentInstant();
+            completedCalculation.PublishedTime = _clock.GetCurrentInstant();
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
         }
         while (true);

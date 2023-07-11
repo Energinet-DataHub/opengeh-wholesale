@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+namespace Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 
 public interface ICompletedCalculationRepository
 {
-    Task AddAsync(IEnumerable<CompletedCalculation> completedBatches);
+    Task AddAsync(IEnumerable<CompletedCalculation> completedCalculations);
 
     Task<CompletedCalculation?> GetLastCompletedOrNullAsync();
 

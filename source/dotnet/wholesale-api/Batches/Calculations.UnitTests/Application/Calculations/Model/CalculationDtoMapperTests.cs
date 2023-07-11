@@ -32,13 +32,13 @@ public class CalculationDtoMapperTests
         CalculationDtoMapper sut)
     {
         // Arrange
-        var batch = new CalculationBuilder().WithStateExecuting().Build();
+        var calculation = new CalculationBuilder().WithStateExecuting().Build();
 
         // Act
-        var batchDto = sut.Map(batch);
+        var calculationDto = sut.Map(calculation);
 
         // Assert
-        batchDto.ExecutionState.Should().Be(CalculationState.Executing);
+        calculationDto.ExecutionState.Should().Be(CalculationState.Executing);
     }
 
     [Theory]
@@ -47,14 +47,14 @@ public class CalculationDtoMapperTests
         CalculationDtoMapper sut)
     {
         // Arrange
-        var batch = new CalculationBuilder().Build();
+        var calculation = new CalculationBuilder().Build();
 
         // Act
-        var batchDto = sut.Map(batch);
+        var calculationDto = sut.Map(calculation);
 
         // Assert
-        batchDto.PeriodStart.Should().Be(batch.PeriodStart.ToDateTimeOffset());
-        batchDto.PeriodEnd.Should().Be(batch.PeriodEnd.ToDateTimeOffset());
+        calculationDto.PeriodStart.Should().Be(calculation.PeriodStart.ToDateTimeOffset());
+        calculationDto.PeriodEnd.Should().Be(calculation.PeriodEnd.ToDateTimeOffset());
     }
 
     [Theory]
@@ -63,16 +63,16 @@ public class CalculationDtoMapperTests
         CalculationDtoMapper sut)
     {
         // Arrange
-        var batch = new CalculationBuilder().Build();
-        batch.MarkAsExecuting(); // this sets ExecutionTimeStart
-        batch.MarkAsCompleted(batch.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2))); // this sets ExecutionTimeEnd
+        var calculation = new CalculationBuilder().Build();
+        calculation.MarkAsExecuting(); // this sets ExecutionTimeStart
+        calculation.MarkAsCompleted(calculation.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2))); // this sets ExecutionTimeEnd
 
         // Act
-        var batchDto = sut.Map(batch);
+        var calculationDto = sut.Map(calculation);
 
         // Assert
-        batchDto.ExecutionTimeStart.Should().Be(batch.ExecutionTimeStart.Value.ToDateTimeOffset());
-        batchDto.ExecutionTimeEnd.Should().Be(batch.ExecutionTimeEnd!.Value.ToDateTimeOffset());
+        calculationDto.ExecutionTimeStart.Should().Be(calculation.ExecutionTimeStart.Value.ToDateTimeOffset());
+        calculationDto.ExecutionTimeEnd.Should().Be(calculation.ExecutionTimeEnd!.Value.ToDateTimeOffset());
     }
 
     [Theory]
@@ -81,15 +81,15 @@ public class CalculationDtoMapperTests
         CalculationDtoMapper sut)
     {
         // Arrange
-        var batch = new CalculationBuilder().Build();
+        var calculation = new CalculationBuilder().Build();
         var expectedRunId = new RunId(111);
-        batch.MarkAsSubmitted(expectedRunId);
+        calculation.MarkAsSubmitted(expectedRunId);
 
         // Act
-        var batchDto = sut.Map(batch);
+        var calculationDto = sut.Map(calculation);
 
         // Assert
-        batchDto.RunId.Should().Be(expectedRunId.Id);
+        calculationDto.RunId.Should().Be(expectedRunId.Id);
     }
 
     [Theory]
@@ -98,12 +98,12 @@ public class CalculationDtoMapperTests
         CalculationDtoMapper sut)
     {
         // Arrange
-        var batch = new CalculationBuilder().Build();
+        var calculation = new CalculationBuilder().Build();
 
         // Act
-        var batchDto = sut.Map(batch);
+        var calculationDto = sut.Map(calculation);
 
         // Assert
-        batchDto.RunId.Should().Be(null);
+        calculationDto.RunId.Should().Be(null);
     }
 }

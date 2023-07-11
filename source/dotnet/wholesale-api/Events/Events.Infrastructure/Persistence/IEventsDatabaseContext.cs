@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;

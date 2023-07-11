@@ -33,36 +33,36 @@ public class CalculationFactoryTests
     private readonly List<string> _someGridAreasIds = new() { "004", "805" };
 
     [Fact]
-    public void Create_ReturnsBatchWithCorrectPeriod()
+    public void Create_ReturnsCalculationWithCorrectPeriod()
     {
         // Arrange
         var sut = new CalculationFactory(SystemClock.Instance, _timeZone);
 
         // Act
-        var batch = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid());
+        var calculation = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid());
 
         // Assert
-        batch.PeriodStart.Should().Be(Instant.FromDateTimeOffset(_startDate));
-        batch.PeriodEnd.Should().Be(Instant.FromDateTimeOffset(_endDate));
+        calculation.PeriodStart.Should().Be(Instant.FromDateTimeOffset(_startDate));
+        calculation.PeriodEnd.Should().Be(Instant.FromDateTimeOffset(_endDate));
     }
 
     [Fact]
-    public void Create_ReturnsBatchWithCorrectGridAreas()
+    public void Create_ReturnsCalculationWithCorrectGridAreas()
     {
         // Arrange
         var sut = new CalculationFactory(SystemClock.Instance, _timeZone);
 
         // Act
-        var batch = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid());
+        var calculation = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid());
 
         // Assert
-        batch.GridAreaCodes.Select(x => x.Code).Should().Contain(_someGridAreasIds);
-        batch.GridAreaCodes.Count.Should().Be(_someGridAreasIds.Count);
+        calculation.GridAreaCodes.Select(x => x.Code).Should().Contain(_someGridAreasIds);
+        calculation.GridAreaCodes.Count.Should().Be(_someGridAreasIds.Count);
     }
 
     [Theory]
     [InlineAutoMoqData]
-    public void Create_ReturnsBatchWithExpectedExecutionTimeStart([Frozen] Mock<IClock> clockMock)
+    public void Create_ReturnsCalculationWithExpectedExecutionTimeStart([Frozen] Mock<IClock> clockMock)
     {
         // Arrange
         var expected = SystemClock.Instance.GetCurrentInstant();
@@ -70,9 +70,9 @@ public class CalculationFactoryTests
         var sut = new CalculationFactory(clockMock.Object, _timeZone);
 
         // Act
-        var batch = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid());
+        var calculation = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid());
 
         // Assert
-        batch.ExecutionTimeStart.Should().Be(expected);
+        calculation.ExecutionTimeStart.Should().Be(expected);
     }
 }
