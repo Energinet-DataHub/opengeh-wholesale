@@ -13,32 +13,19 @@
 # limitations under the License.
 
 from azure.identity import ClientSecretCredential
-from os import path, listdir
+import importlib.resources
+
 import package.environment_variables as env_vars
 from package.infrastructure import WHOLESALE_CONTAINER_NAME
 from package.storage_account_access.data_lake_file_manager import DataLakeFileManager
 from .committed_migrations import download_committed_migrations
-
-
-MIGRATION_STATE_FILE_NAME = "migration_state.csv"
-MIGRATION_SCRIPTS_FOLDER_NAME = "migration_scripts"
-
-
-def _get_migration_scripts_path() -> str:
-    dirname = path.dirname(__file__)
-    return path.join(dirname, MIGRATION_SCRIPTS_FOLDER_NAME)
+import package.datamigration.constants as c
 
 
 def _get_all_migrations() -> list[str]:
-    all_migration_scripts_paths = listdir(_get_migration_scripts_path())
-    file_names = [path.basename(p) for p in all_migration_scripts_paths]
-    script_names = []
-    for file_name in file_names:
-        name, extention = path.splitext(file_name)
-        if extention == ".py" and name != "__init__":
-            script_names.append(name)
-    script_names.sort()
-    return script_names
+    migration_files = list(importlib.resources.contents(f'{c.WHEEL_NAME}.{c.MIGRATION_SCRIPTS_FOLDER_PATH}'))
+    migration_files.sort()
+    return [file.removesuffix(".sql") for file in migration_files if file.endswith(".sql")]
 
 
 def _print_count(
@@ -61,10 +48,8 @@ def _print_count(
 def get_uncommitted_migrations(file_manager: DataLakeFileManager) -> list[str]:
     """Get list of migrations that have not yet been committed"""
 
-    committed_migrations = download_committed_migrations(file_manager)
-
     all_migrations = _get_all_migrations()
-
+    committed_migrations = download_committed_migrations(file_manager)
     uncommitted_migrations = [
         m for m in all_migrations if m not in committed_migrations
     ]
@@ -77,3 +62,10 @@ def print_count() -> None:
     storage_account_name = env_vars.get_storage_account_name()
     credential = env_vars.get_storage_account_credential()
     _print_count(storage_account_name, credential)
+
+
+# This method must remain parameterless because it will be called from the entry point when deployed.
+def print_all_migrations_in_package() -> None:
+    all_migrations = _get_all_migrations()
+    for m in all_migrations:
+        print(m)

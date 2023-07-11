@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import pkg_resources
+import subprocess
 from typing import Any
 
 # IMPORTANT:
@@ -48,6 +49,17 @@ def test__entry_point__uncommitted_migrations_count__can_load_entry_point(
 
     # Assert
     assert entry_point is not None
+
+
+def test__entry_point__list_migrations_in_package__prints_some(
+    installed_package: None,
+) -> None:
+    # Act
+    output = subprocess.check_output(["list_migrations_in_package"], universal_newlines=True)
+
+    # Assert: This test will fail if the selected migration is being deleted
+    migrations = output.replace("\r\n", "\n").split("\n")
+    assert any("202304191400_Add_result_table" in m for m in migrations)
 
 
 def test__entry_point__lock_storage__can_load_entry_point(
