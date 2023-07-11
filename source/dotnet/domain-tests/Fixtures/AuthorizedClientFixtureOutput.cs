@@ -51,14 +51,14 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         {
             var startDate = new DateTimeOffset(2022, 1, 11, 23, 0, 0, TimeSpan.Zero);
             var endDate = new DateTimeOffset(2022, 1, 12, 23, 0, 0, TimeSpan.Zero);
-            var batchRequestDto = new BatchRequestDto
+            var calculationRequestDto = new BatchRequestDto()
             {
                 ProcessType = ProcessType.BalanceFixing,
                 GridAreaCodes = new List<string> { "543" },
                 StartDate = startDate,
                 EndDate = endDate,
             };
-            return await _wholesaleClient.CreateBatchAsync(batchRequestDto);
+            return await _wholesaleClient.CreateBatchAsync(calculationRequestDto);
         }
 
         private async Task<bool> WaitForCalculationToComplete(Guid calculationId)
@@ -68,8 +68,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         var isCompleted = await Awaiter.TryWaitUntilConditionAsync(
                 async () =>
                 {
-                    var batchResult = await _wholesaleClient.GetBatchAsync(calculationId);
-                    return batchResult?.ExecutionState == BatchState.Completed;
+                    var calculationResult = await _wholesaleClient.GetBatchAsync(calculationId);
+                    return calculationResult?.ExecutionState == BatchState.Completed;
                 },
                 defaultTimeout,
                 defaultDelay);
@@ -94,7 +94,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                     {
                         var data = message.Body.ToArray();
                         var result = CalculationResultCompleted.Parser.ParseFrom(data);
-                        if (result.BatchId == calculationId.ToString())
+                        if (result.CalculationId == calculationId.ToString())
                         {
                             results.Add(result);
                         }

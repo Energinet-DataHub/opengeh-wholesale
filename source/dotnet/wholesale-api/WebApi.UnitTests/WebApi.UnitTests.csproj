@@ -30,6 +30,7 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Calculations\Calculations.Interfaces\Calculations.Interfaces.csproj" />
     <ProjectReference Include="..\Events\Events.Infrastructure\Events.Infrastructure.csproj" />
     <ProjectReference Include="..\Test.Core\Test.Core.csproj" />
     <ProjectReference Include="..\WebApi\WebApi.csproj" />

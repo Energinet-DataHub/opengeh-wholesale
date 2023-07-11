@@ -27,7 +27,7 @@ public class CalculationResultCompletedTests
         var largestRsm014Result = new CalculationResultCompleted()
         {
             Resolution = Resolution.Quarter,
-            BatchId = Guid.NewGuid().ToString(),
+            CalculationId = Guid.NewGuid().ToString(),
             ProcessType = ProcessType.Aggregation,
             QuantityUnit = QuantityUnit.Kwh,
             AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea = new AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea

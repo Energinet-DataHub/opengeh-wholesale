@@ -5,9 +5,9 @@
 #
 # Empty lines and lines starting with '#' are ignores in the tests.
 
---batch-id={batch-id}
---batch-grid-areas=[805, 806, 033]
---batch-period-start-datetime=2022-05-31T22:00:00Z
---batch-period-end-datetime=2022-06-01T22:00:00Z
---batch-process-type=BalanceFixing
---batch-execution-time-start=2022-06-04T22:00:00Z
+--calculation-id={calculation-id}
+--calculation-grid-areas=[805, 806, 033]
+--calculation-period-start-datetime=2022-05-31T22:00:00Z
+--calculation-period-end-datetime=2022-06-01T22:00:00Z
+--calculation-process-type=BalanceFixing
+--calculation-execution-time-start=2022-06-04T22:00:00Z

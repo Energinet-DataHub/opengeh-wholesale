@@ -28,11 +28,11 @@ option csharp_namespace = "Energinet.DataHub.Wholesale.Contracts.Events";
 message CalculationResultCompleted {
 
   /*
-   * The ID of the batch creating the calculation result.
+   * The ID of the calculation creating the calculation result.
    * The ID is a UUID consisting of hexadecimal digits in the form XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX.
    * Example: 65801e3c-5131-426e-b1bb-7b186349c996
    */ 
-  string batch_id = 1;
+  string calculation_id = 1;
 
   // The level at which the result is aggregated.
   oneof aggregation_level {
@@ -75,7 +75,7 @@ message CalculationResultCompleted {
 
 message AggregationPerGridArea {
   /*
-   * The grid area code uniquely defining the process in the batch.
+   * The grid area code uniquely defining the process in the calculation.
    * The grid area code is a 3 character string consisting solely of digits.
    * Examples:
    *   543
@@ -86,7 +86,7 @@ message AggregationPerGridArea {
 
 message AggregationPerEnergySupplierPerGridArea {
   /*
-   * The grid area code uniquely defining the process in the batch.
+   * The grid area code uniquely defining the process in the calculation.
    * The grid area code is a 3 character string consisting solely of digits.
    * Examples:
    *   543
@@ -99,7 +99,7 @@ message AggregationPerEnergySupplierPerGridArea {
 
 message AggregationPerBalanceResponsiblePartyPerGridArea {
   /*
-   * The grid area code uniquely defining the process in the batch.
+   * The grid area code uniquely defining the process in the calculation.
    * The grid area code is a 3 character string consisting solely of digits.
    * Examples:
    *   543
@@ -112,7 +112,7 @@ message AggregationPerBalanceResponsiblePartyPerGridArea {
 
 message AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea {
   /*
-   * The grid area code uniquely defining the process in the batch.
+   * The grid area code uniquely defining the process in the calculation.
    * The grid area code is a 3 character string consisting solely of digits.
    * Examples:
    *   543

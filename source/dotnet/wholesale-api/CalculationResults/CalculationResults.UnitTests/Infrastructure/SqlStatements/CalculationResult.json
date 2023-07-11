@@ -59,19 +59,19 @@
           "position": 7
         },
         {
-          "name": "batch_id",
+          "name": "calculation_id",
           "type_text": "STRING",
           "type_name": "STRING",
           "position": 8
         },
         {
-          "name": "batch_process_type",
+          "name": "calculation_process_type",
           "type_text": "STRING",
           "type_name": "STRING",
           "position": 9
         },
         {
-          "name": "batch_execution_time_start",
+          "name": "calculation_execution_time_start",
           "type_text": "TIMESTAMP",
           "type_name": "TIMESTAMP",
           "position": 10

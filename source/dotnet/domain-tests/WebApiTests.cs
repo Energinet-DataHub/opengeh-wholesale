@@ -71,10 +71,10 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             /// This shows our request will fail if we call Web API without a valid access token.
             /// </summary>
             [DomainFact]
-            public async Task When_RequestBatchId_Then_ResponseIsUnauthorized()
+            public async Task When_RequestCalculationId_Then_ResponseIsUnauthorized()
             {
                 // Arrange
-                var request = new HttpRequestMessage(HttpMethod.Get, "v3/batches?batchId=1");
+                var request = new HttpRequestMessage(HttpMethod.Get, "v3/calculationes?calculationId=1");
 
                 // Act
                 using var actualResponse = await UnauthorizedHttpClient.SendAsync(request);
@@ -89,9 +89,9 @@ namespace Energinet.DataHub.Wholesale.DomainTests
         /// </summary>'
         public class Given_Authorized : IClassFixture<AuthorizedClientFixture>
         {
-            private static readonly Guid _existingBatchId = new("ed39dbc5-bdc5-41b9-922a-08d3b12d4538");
-            private static readonly DateTimeOffset _existingBatchPeriodStart = DateTimeOffset.Parse("2020-01-28T23:00:00Z");
-            private static readonly DateTimeOffset _existingBatchPeriodEnd = DateTimeOffset.Parse("2020-01-29T23:00:00Z");
+            private static readonly Guid _existingCalculationId = new("ed39dbc5-bdc5-41b9-922a-08d3b12d4538");
+            private static readonly DateTimeOffset _existingCalculationPeriodStart = DateTimeOffset.Parse("2020-01-28T23:00:00Z");
+            private static readonly DateTimeOffset _existingCalculationPeriodEnd = DateTimeOffset.Parse("2020-01-29T23:00:00Z");
             private static readonly string ExistingGridAreaCode = "543";
 
             private static List<CalculationResultCompleted>? _calculationResults;
@@ -105,32 +105,32 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             private AuthorizedClientFixture Fixture { get; }
 
             [DomainFact]
-            public async Task When_RequestingExistingBatchId_Then_ResponseIsOk()
+            public async Task When_RequestingExistingCalculationId_Then_ResponseIsOk()
             {
                 // Arrange
 
                 // Act
-                var batchResult = await Fixture.WholesaleClient.GetBatchAsync(_existingBatchId);
+                var calculationResult = await Fixture.WholesaleClient.GetBatchAsync(_existingCalculationId);
 
                 // Assert
-                batchResult.Should().NotBeNull();
-                batchResult!.BatchId.Should().Be(_existingBatchId);
+                calculationResult.Should().NotBeNull();
+                calculationResult!.BatchId.Should().Be(_existingCalculationId);
             }
 
             [DomainFact]
-            public void When_CreatingBatch_Then_BatchIsEventuallyCompleted()
+            public void When_CreatingCalculation_Then_CalculationIsEventuallyCompleted()
             {
                 Fixture.Output.CalculationIsComplete.Should().BeTrue();
             }
 
             [DomainFact]
-            public void When_BatchIsCompleted_Then_BatchIsReceivedOnTopicSubscription()
+            public void When_CalculationIsCompleted_Then_CalculationIsReceivedOnTopicSubscription()
             {
                 _calculationResults?.Count.Should().Be(110);
             }
 
             [DomainFact]
-            public void When_BatchIsReceivedOnTopicSubscription_Then_MessagesReceivedContainAllTimeSeriesTypes()
+            public void When_CalculationIsReceivedOnTopicSubscription_Then_MessagesReceivedContainAllTimeSeriesTypes()
             {
                 GetActualAndExpectedTimeSeriesTypes(out var actualTimeSeriesTypes, out var expectedTimeSeriesTypes);
                 foreach (var expectedTimeSeriesType in expectedTimeSeriesTypes)
@@ -140,7 +140,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             }
 
             [DomainFact]
-            public void When_BatchIsReceivedOnTopicSubscription_Then_MessagesReceivedContainAllTypesOfCalculations()
+            public void When_CalculationIsReceivedOnTopicSubscription_Then_MessagesReceivedContainAllTypesOfCalculations()
             {
                 using (new AssertionScope())
                 {
@@ -172,8 +172,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 var fileResponse = await Fixture.WholesaleClient.DownloadAsync(
                     new[] { ExistingGridAreaCode },
                     ProcessType.BalanceFixing,
-                    _existingBatchPeriodStart,
-                    _existingBatchPeriodEnd);
+                    _existingCalculationPeriodStart,
+                    _existingCalculationPeriodEnd);
 
                 // Assert
                 using var compressedSettlementReport = new ZipArchive(fileResponse.Stream, ZipArchiveMode.Read);

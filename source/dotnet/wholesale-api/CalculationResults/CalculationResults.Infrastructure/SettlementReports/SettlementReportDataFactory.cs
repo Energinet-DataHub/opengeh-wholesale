@@ -25,7 +25,7 @@ public static class SettlementReportDataFactory
     {
         return rows.Select(row => new SettlementReportResultRow(
             row[ResultColumnNames.GridArea],
-            ProcessTypeMapper.FromDeltaTableValue(row[ResultColumnNames.BatchProcessType]),
+            ProcessTypeMapper.FromDeltaTableValue(row[ResultColumnNames.CalculationProcessType]),
             SqlResultValueConverters.ToInstant(row[ResultColumnNames.Time])!.Value,
             "PT15M", // TODO (JMG): store resolution in delta table?
             MeteringPointTypeMapper.FromDeltaTableValue(row[ResultColumnNames.TimeSeriesType]),
