@@ -93,10 +93,6 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                         {
                             messageHasValue = false;
                         }
-                        else
-                        {
-                            await Task.Delay(5000);
-                        }
                     }
                     else
                     {
