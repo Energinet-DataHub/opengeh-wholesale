@@ -103,6 +103,11 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                             results.Add(result);
                         }
                     }
+
+                    if (cts.Token.IsCancellationRequested)
+                    {
+                        messageHasValue = false;
+                    }
                 }
             }
 
