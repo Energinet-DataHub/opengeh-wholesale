@@ -48,4 +48,8 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -15,9 +15,12 @@
 using Azure.Identity;
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
+using Energinet.DataHub.Core.TestCommon;
+using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
 using Moq;
 using Xunit;
+using ProcessType = Energinet.DataHub.Wholesale.DomainTests.Clients.v3.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 {
@@ -50,6 +53,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         /// </summary>
         public ServiceBusReceiver Receiver { get; private set; } = null!;
 
+        public AuthorizedClientFixtureOutput Output { get; private set; } = null!;
+
         private B2CUserTokenAuthenticationClient UserAuthenticationClient { get; }
 
         private ServiceBusAdministrationClient ServiceBusAdministrationClient { get; }
@@ -59,9 +64,10 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         async Task IAsyncLifetime.InitializeAsync()
         {
             WholesaleClient = await CreateWholesaleClientAsync();
-
             await CreateTopicSubscriptionAsync();
             Receiver = CreateServiceBusReceiver();
+            Output = new AuthorizedClientFixtureOutput(WholesaleClient, Receiver);
+            await Output.InitializeAsync();
         }
 
         async Task IAsyncLifetime.DisposeAsync()
