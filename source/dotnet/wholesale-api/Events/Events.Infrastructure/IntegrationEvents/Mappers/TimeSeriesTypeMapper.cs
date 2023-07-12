@@ -31,6 +31,8 @@ public static class TimeSeriesTypeMapper
             CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.NegativeGridLoss => TimeSeriesType.NegativeGridLoss,
             CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.PositiveGridLoss => TimeSeriesType.PositiveGridLoss,
             CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.TotalConsumption => TimeSeriesType.TotalConsumption,
+            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.TempFlexConsumption => TimeSeriesType.TempFlexConsumption,
+            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.TempProduction => TimeSeriesType.TempProduction,
             _ => throw new ArgumentException($"No matching 'TimeSeriesType' for: {timeSeriesType.ToString()}"),
         };
     }
