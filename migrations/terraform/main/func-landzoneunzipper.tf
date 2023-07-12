@@ -34,8 +34,6 @@ module "func_landzoneunzipper" {
   UNZIPPED_TIME_SERIES_CONTAINER_NAME                   = azurerm_storage_container.dh2_timeseries.name
   UNZIPPED_CHARGES_CONTAINER_NAME                       = azurerm_storage_container.dh2_charges.name
   UNZIPPED_CHARGE_LINKS_CONTAINER_NAME                  = azurerm_storage_container.dh2_charge_links.name
-  TEST_PRIMARY_BLOB_CONN                                = data.azurerm_storage_account.st_dh2data.primary_blob_connection_string
-  TEST_PRIMARY_CONN                                     = data.azurerm_storage_account.st_dh2data.primary_connection_string
   # Event Hub settings
   INGRESS_EVENT_HUB_CONNECTION_STRING                   = module.eventhub_landzone_zipped.primary_connection_strings["eh-landzone-listener-connection-string"]
   INGRESS_EVENT_HUB_NAME                                = module.eventhub_landzone_zipped.name
