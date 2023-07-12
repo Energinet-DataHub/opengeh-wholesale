@@ -126,7 +126,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             [DomainFact]
             public void When_BatchIsCompleted_Then_BatchIsReceivedOnTopicSubscription()
             {
-                _calculationResults?.Count.Should().Be(110);
+                _calculationResults?.Count.Should().Be(112);
             }
 
             [DomainFact]
@@ -162,6 +162,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                     CheckIfExistsInCaluclationResults("NegativeGridLoss", "AggregationPerGridarea").Should().BeTrue("because the calculation result should contain NegativeGridLoss for AggregationPerGridarea");
                     CheckIfExistsInCaluclationResults("PositiveGridLoss", "AggregationPerGridarea").Should().BeTrue("because the calculation result should contain PositiveGridLoss for AggregationPerGridarea");
                     CheckIfExistsInCaluclationResults("TotalConsumption", "AggregationPerGridarea").Should().BeTrue("because the calculation result should contain TotalConsumption for AggregationPerGridarea");
+                    CheckIfExistsInCaluclationResults("TempFlexConsumption", "AggregationPerGridarea").Should().BeTrue("because the calculation result should contain TempFlexConsumption for AggregationPerGridarea");
+                    CheckIfExistsInCaluclationResults("TempProduction", "AggregationPerGridarea").Should().BeTrue("because the calculation result should contain TempProduction for AggregationPerGridarea");
                 }
             }
 
