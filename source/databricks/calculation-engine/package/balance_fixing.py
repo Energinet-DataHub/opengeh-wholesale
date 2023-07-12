@@ -72,14 +72,18 @@ def _calculate(
 
     temporay_production_per_ga_and_brp_and_es = (
         _calculate_temporay_production_per_per_ga_and_brp_and_es(
+            result_writer,
             enriched_time_series_point_df
         )
     )
+
     temporay_flex_consumption_per_ga_and_brp_and_es = (
         _calculate_temporay_flex_consumption_per_per_ga_and_brp_and_es(
+            result_writer,
             enriched_time_series_point_df
         )
     )
+
     consumption_per_ga_and_brp_and_es = _calculate_consumption_per_ga_and_brp_and_es(
         enriched_time_series_point_df
     )
@@ -156,19 +160,39 @@ def _calculate_consumption_per_ga_and_brp_and_es(
 
 
 def _calculate_temporay_production_per_per_ga_and_brp_and_es(
+    result_writer: CalculationResultWriter,
     enriched_time_series: DataFrame,
 ) -> DataFrame:
     temporay_production_per_per_ga_and_brp_and_es = (
         agg_steps.aggregate_production_ga_brp_es(enriched_time_series)
     )
+    # temp production per grid area - used as control result for grid loss
+    temporay_production_per_ga = agg_steps.aggregate_production_ga(
+        temporay_production_per_per_ga_and_brp_and_es
+    )
+    result_writer.write(
+        temporay_production_per_ga,
+        TimeSeriesType.TEMP_PRODUCTION,
+        AggregationLevel.total_ga,
+    )
     return temporay_production_per_per_ga_and_brp_and_es
 
 
 def _calculate_temporay_flex_consumption_per_per_ga_and_brp_and_es(
+    result_writer: CalculationResultWriter,
     enriched_time_series: DataFrame,
 ) -> DataFrame:
     temporay_flex_consumption_per_ga_and_brp_and_es = (
         agg_steps.aggregate_flex_consumption_ga_brp_es(enriched_time_series)
+    )
+    # temp flex consumption per grid area - used as control result for grid loss
+    temporay_flex_consumption_per_ga = agg_steps.aggregate_flex_consumption_ga(
+        temporay_flex_consumption_per_ga_and_brp_and_es
+    )
+    result_writer.write(
+        temporay_flex_consumption_per_ga,
+        TimeSeriesType.TEMP_FLEX_CONSUMPTION,
+        AggregationLevel.total_ga,
     )
     return temporay_flex_consumption_per_ga_and_brp_and_es
 
@@ -185,11 +209,6 @@ def _calculate_grid_loss(
         consumption_per_ga_and_brp_and_es,
         temporay_flex_consumption_per_ga_and_brp_and_es,
         temporay_production_per_ga_and_brp_and_es,
-    )
-    result_writer.write(
-        grid_loss,
-        TimeSeriesType.GRID_LOSS,
-        AggregationLevel.total_ga,
     )
 
     positive_grid_loss = agg_steps.calculate_positive_grid_loss(grid_loss)
