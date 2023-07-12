@@ -211,6 +211,12 @@ def _calculate_grid_loss(
         temporay_production_per_ga_and_brp_and_es,
     )
 
+    result_writer.write(
+        grid_loss,
+        TimeSeriesType.GRID_LOSS,
+        AggregationLevel.total_ga,
+    )
+
     positive_grid_loss = agg_steps.calculate_positive_grid_loss(grid_loss)
 
     result_writer.write(
