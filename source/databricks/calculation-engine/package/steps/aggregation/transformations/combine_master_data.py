@@ -11,7 +11,7 @@
 # # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # # See the License for the specific language governing permissions and
 # # limitations under the License.
-from package.constants import Colname, ResultKeyName
+from package.constants import Colname
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, when
 
@@ -19,11 +19,7 @@ from pyspark.sql.functions import col, when
 metering_grid_area_domain_mrid_drop = "MeteringGridArea_Domain_mRID_drop"
 
 
-def combine_negative_grid_loss_with_master_data(results: dict) -> DataFrame:
-    negative_grid_loss_df = results[ResultKeyName.negative_grid_loss]
-    grid_loss_sys_cor_master_data_df = results[
-        ResultKeyName.grid_loss_sys_cor_master_data
-    ]
+def combine_negative_grid_loss_with_master_data(negative_grid_loss_df: DataFrame, grid_loss_sys_cor_master_data_df: DataFrame) -> DataFrame:
     return combine_master_data(
         negative_grid_loss_df,
         grid_loss_sys_cor_master_data_df,
@@ -32,11 +28,7 @@ def combine_negative_grid_loss_with_master_data(results: dict) -> DataFrame:
     )
 
 
-def combine_positive_grid_loss_with_master_data(results: dict) -> DataFrame:
-    positive_grid_loss_df = results[ResultKeyName.positive_grid_loss]
-    grid_loss_sys_cor_master_data_df = results[
-        ResultKeyName.grid_loss_sys_cor_master_data
-    ]
+def combine_positive_grid_loss_with_master_data(positive_grid_loss_df: DataFrame, grid_loss_sys_cor_master_data_df: DataFrame) -> DataFrame:
     return combine_master_data(
         positive_grid_loss_df,
         grid_loss_sys_cor_master_data_df,

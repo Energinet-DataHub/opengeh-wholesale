@@ -28,7 +28,7 @@ import pytest
 import pandas as pd
 from package.schemas.output import aggregation_result_schema
 from tests.helpers import DataframeDefaults
-from package.constants import Colname, ResultKeyName
+from package.constants import Colname
 
 
 @pytest.fixture(scope="module")
@@ -198,10 +198,7 @@ def test_combine_negative_grid_loss_with_master_data(
     aggregation_result_factory,
     expected_combined_data_factory,
 ):
-    results = {}
-    results[
-        ResultKeyName.grid_loss_sys_cor_master_data
-    ] = grid_loss_sys_cor_master_data_result_factory()
+    grid_loss_sys_cor_master_data_df = grid_loss_sys_cor_master_data_result_factory()
     added_sys_cor_1 = aggregation_result_factory(
         grid_area="500",
         sum_quantity=Decimal(6.0),
@@ -220,10 +217,10 @@ def test_combine_negative_grid_loss_with_master_data(
         balance_responsible_id="8100000000214",
         settlement_method="D01",
     )
-    results[ResultKeyName.negative_grid_loss] = added_sys_cor_1.union(added_sys_cor_2)
+    negative_grid_loss = added_sys_cor_1.union(added_sys_cor_2)
     expected_combined_data_factory = expected_combined_data_factory()
 
-    result = combine_negative_grid_loss_with_master_data(results)
+    result = combine_negative_grid_loss_with_master_data(negative_grid_loss, grid_loss_sys_cor_master_data_df)
 
     # expected data for combine_positive_grid_loss_with_master_data is at index 1 in expected_combined_data_factory
     assert result.collect()[0] == expected_combined_data_factory.collect()[1]
@@ -234,10 +231,7 @@ def test_combine_positive_grid_loss_with_master_data(
     aggregation_result_factory,
     expected_combined_data_factory,
 ):
-    results = {}
-    results[
-        ResultKeyName.grid_loss_sys_cor_master_data
-    ] = grid_loss_sys_cor_master_data_result_factory()
+    grid_loss_sys_cor_master_data = grid_loss_sys_cor_master_data_result_factory()
     positive_grid_loss_1 = aggregation_result_factory(
         grid_area="500",
         sum_quantity=Decimal(6.0),
@@ -256,12 +250,10 @@ def test_combine_positive_grid_loss_with_master_data(
         balance_responsible_id="8100000000214",
         settlement_method="D01",
     )
-    results[ResultKeyName.positive_grid_loss] = positive_grid_loss_1.union(
-        positive_grid_loss_2
-    )
+    positive_grid_loss = positive_grid_loss_1.union(positive_grid_loss_2)
     expected_combined_data_factory = expected_combined_data_factory()
 
-    result = combine_positive_grid_loss_with_master_data(results)
+    result = combine_positive_grid_loss_with_master_data(positive_grid_loss, grid_loss_sys_cor_master_data)
 
     # expected data for combine_positive_grid_loss_with_master_data is at index 0 in expected_combined_data_factory
     assert result.collect()[0] == expected_combined_data_factory.collect()[0]
