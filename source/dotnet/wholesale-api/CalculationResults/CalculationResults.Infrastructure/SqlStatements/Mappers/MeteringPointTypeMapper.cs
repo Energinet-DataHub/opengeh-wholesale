@@ -30,6 +30,8 @@ public static class MeteringPointTypeMapper
             TimeSeriesType.NegativeGridLoss => MeteringPointType.Production,
             TimeSeriesType.PositiveGridLoss => MeteringPointType.Consumption,
             TimeSeriesType.TotalConsumption => MeteringPointType.Consumption,
+            TimeSeriesType.TempFlexConsumption => MeteringPointType.Consumption,
+            TimeSeriesType.TempProduction => MeteringPointType.Production,
             _ => throw new NotImplementedException($"Cannot map timeSeriesType type '{timeSeriesType}"),
         };
 }

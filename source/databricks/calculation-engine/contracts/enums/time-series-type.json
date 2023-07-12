@@ -35,6 +35,14 @@
     {
       "name": "TOTAL_CONSUMPTION",
       "value": "total_consumption"
+    },
+    {
+      "name": "TEMP_FLEX_CONSUMPTION",
+      "value": "temp_flex_consumption"
+    },
+    {
+      "name": "TEMP_PRODUCTION",
+      "value": "temp_production"
     }
   ]
 }
