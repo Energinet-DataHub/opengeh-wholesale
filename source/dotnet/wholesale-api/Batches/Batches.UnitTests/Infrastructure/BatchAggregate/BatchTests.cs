@@ -125,8 +125,8 @@ public class BatchTests
     [InlineAutoMoqData(ProcessType.Aggregation, "kWh")]
     [InlineAutoMoqData(ProcessType.WholesaleFixing, "kWh")]
     [InlineAutoMoqData(ProcessType.FirstCorrectionSettlement, "kWh")]
-    [InlineAutoMoqData(ProcessType.FirstCorrectionSettlement, "kWh")]
-    [InlineAutoMoqData(ProcessType.FirstCorrectionSettlement, "kWh")]
+    [InlineAutoMoqData(ProcessType.SecondCorrectionSettlement, "kWh")]
+    [InlineAutoMoqData(ProcessType.ThirdCorrectionSettlement, "kWh")]
     public void GetQuantityUnit_ReturnsExpectedIso8601Duration(ProcessType processType, string expectedQuantityUnit)
     {
         // Arrange
