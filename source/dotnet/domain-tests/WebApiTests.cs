@@ -200,7 +200,6 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             {
                 actual = (_calculationResults ?? throw new InvalidOperationException("calculationResults in null")).Select(o => Enum.GetName(o.TimeSeriesType)).Distinct().ToList();
                 expected = Enum.GetNames(typeof(TimeSeriesType)).ToList();
-                expected.Remove("FlexConsumption"); // FlexConsumption is not in the current test data
             }
 
             private bool CheckIfExistsInCaluclationResults(string timeSeriesType, string aggregationLevel)
