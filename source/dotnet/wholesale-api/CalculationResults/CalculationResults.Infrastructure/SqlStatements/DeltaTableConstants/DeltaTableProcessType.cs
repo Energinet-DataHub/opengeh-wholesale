@@ -18,4 +18,8 @@ public static class DeltaTableProcessType
 {
     public const string Aggregation = "Aggregation";
     public const string BalanceFixing = "BalanceFixing";
+    public const string WholesaleFixing = "WholesaleFixing";
+    public const string FirstCorrectionSettlement = "FirstCorrectionSettlement";
+    public const string SecondCorrectionSettlement = "SecondCorrectionSettlement";
+    public const string ThirdCorrectionSettlement = "ThirdCorrectionSettlement";
 }
