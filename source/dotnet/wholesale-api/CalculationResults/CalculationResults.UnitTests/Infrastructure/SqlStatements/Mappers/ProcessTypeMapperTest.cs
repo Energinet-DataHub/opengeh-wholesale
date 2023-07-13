@@ -35,6 +35,10 @@ public class ProcessTypeMapperTests
     [Theory]
     [InlineData(ProcessType.Aggregation)]
     [InlineData(ProcessType.BalanceFixing)]
+    [InlineData(ProcessType.WholesaleFixing)]
+    [InlineData(ProcessType.FirstCorrectionSettlement)]
+    [InlineData(ProcessType.SecondCorrectionSettlement)]
+    [InlineData(ProcessType.ThirdCorrectionSettlement)]
     public async Task ToDeltaTableValue_ReturnsValidDeltaValue(ProcessType processType)
     {
         // Arrange
@@ -51,6 +55,10 @@ public class ProcessTypeMapperTests
     [Theory]
     [InlineData(ProcessType.Aggregation, DeltaTableProcessType.Aggregation)]
     [InlineData(ProcessType.BalanceFixing, DeltaTableProcessType.BalanceFixing)]
+    [InlineData(ProcessType.WholesaleFixing, DeltaTableProcessType.WholesaleFixing)]
+    [InlineData(ProcessType.FirstCorrectionSettlement, DeltaTableProcessType.FirstCorrectionSettlement)]
+    [InlineData(ProcessType.SecondCorrectionSettlement, DeltaTableProcessType.SecondCorrectionSettlement)]
+    [InlineData(ProcessType.ThirdCorrectionSettlement, DeltaTableProcessType.ThirdCorrectionSettlement)]
     public void ToDeltaTableValue_ReturnsExpectedString(ProcessType type, string expected)
     {
         // Act
@@ -63,6 +71,10 @@ public class ProcessTypeMapperTests
     [Theory]
     [InlineData(DeltaTableProcessType.Aggregation, ProcessType.Aggregation)]
     [InlineData(DeltaTableProcessType.BalanceFixing, ProcessType.BalanceFixing)]
+    [InlineData(DeltaTableProcessType.WholesaleFixing, ProcessType.WholesaleFixing)]
+    [InlineData(DeltaTableProcessType.FirstCorrectionSettlement, ProcessType.FirstCorrectionSettlement)]
+    [InlineData(DeltaTableProcessType.SecondCorrectionSettlement, ProcessType.SecondCorrectionSettlement)]
+    [InlineData(DeltaTableProcessType.ThirdCorrectionSettlement, ProcessType.ThirdCorrectionSettlement)]
     public void FromDeltaTableValue_ReturnsExpectedType(string deltaTableValue, ProcessType expected)
     {
         // Act

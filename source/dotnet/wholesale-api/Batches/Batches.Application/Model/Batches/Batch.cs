@@ -134,6 +134,10 @@ public class Batch
         {
             case ProcessType.BalanceFixing:
             case ProcessType.Aggregation:
+            case ProcessType.WholesaleFixing:
+            case ProcessType.FirstCorrectionSettlement:
+            case ProcessType.SecondCorrectionSettlement:
+            case ProcessType.ThirdCorrectionSettlement:
                 return "PT15M";
             default:
                 throw new NotImplementedException();
@@ -149,6 +153,10 @@ public class Batch
         {
             case ProcessType.BalanceFixing:
             case ProcessType.Aggregation:
+            case ProcessType.WholesaleFixing:
+            case ProcessType.FirstCorrectionSettlement:
+            case ProcessType.SecondCorrectionSettlement:
+            case ProcessType.ThirdCorrectionSettlement:
                 return "kWh";
             default:
                 throw new NotImplementedException();
