@@ -30,7 +30,7 @@ from package.steps.aggregation.transformations import (
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 import pytest
 import pandas as pd
-from package.constants import Colname, ResultKeyName
+from package.constants import Colname
 from pyspark.sql import DataFrame, SparkSession
 from typing import Callable
 

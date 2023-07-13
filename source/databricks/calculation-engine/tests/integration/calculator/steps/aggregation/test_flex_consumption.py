@@ -31,7 +31,7 @@ from pyspark.sql import SparkSession, DataFrame
 from typing import Callable
 import pytest
 import pandas as pd
-from package.constants import Colname, ResultKeyName
+from package.constants import Colname
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_obs_time = datetime.strptime(
