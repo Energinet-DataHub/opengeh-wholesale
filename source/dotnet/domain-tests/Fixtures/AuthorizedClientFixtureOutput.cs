@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Diagnostics;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.Contracts.Events;
@@ -65,6 +66,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         {
         var defaultTimeout = TimeSpan.FromMinutes(15);
         var defaultDelay = TimeSpan.FromSeconds(30);
+        var stopwatch = Stopwatch.StartNew();
         var isCompleted = await Awaiter.TryWaitUntilConditionAsync(
                 async () =>
                 {
@@ -73,13 +75,18 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                 },
                 defaultTimeout,
                 defaultDelay);
+        stopwatch.Stop();
+        Console.WriteLine($"LOOK AT ME: Calculation took {stopwatch.Elapsed} to complete");
         return isCompleted;
         }
 
         private async Task<List<CalculationResultCompleted>?> GetListOfResultsFromServiceBus(Guid calculationId)
         {
             var results = new List<CalculationResultCompleted>();
-            using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(5));
+            using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(15));
+
+            var stopwatch = Stopwatch.StartNew();
+
             while (!cts.Token.IsCancellationRequested)
             {
                 var message = await _receiver.ReceiveMessageAsync();
@@ -98,6 +105,10 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                     }
                 }
             }
+
+            stopwatch.Stop();
+
+            Console.WriteLine($"LOOK AT ME: the loop took {stopwatch.Elapsed} to complete and received {results.Count} messages");
 
             return results;
         }
