@@ -31,7 +31,7 @@ from pyspark.sql.functions import col
 from pyspark.sql import DataFrame, SparkSession
 import pytest
 import pandas as pd
-from package.constants import Colname, ResultKeyName
+from package.constants import Colname
 from typing import Callable
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
