@@ -49,6 +49,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
         private async Task<Guid> StartCalculation()
         {
+            Console.WriteLine("Starting calculation...TESTTESTTEST");
             var startDate = new DateTimeOffset(2022, 1, 11, 23, 0, 0, TimeSpan.Zero);
             var endDate = new DateTimeOffset(2022, 1, 12, 23, 0, 0, TimeSpan.Zero);
             var batchRequestDto = new BatchRequestDto
