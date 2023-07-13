@@ -9,7 +9,7 @@ module "func_receiver" {
   location                                 = azurerm_resource_group.this.location
   app_service_plan_id                      = data.azurerm_key_vault_secret.plan_shared_id.value
   application_insights_instrumentation_key = data.azurerm_key_vault_secret.appi_instrumentation_key.value
-  vnet_integration_subnet_id               = data.azurerm_key_vault_secret.snet_vnet_integrations_id.value
+  vnet_integration_subnet_id               = data.azurerm_key_vault_secret.snet_vnet_integration_id.value
   private_endpoint_subnet_id               = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   always_on                                = true
   dotnet_framework_version                 = "7"

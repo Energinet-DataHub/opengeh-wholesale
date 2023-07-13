@@ -8,7 +8,7 @@ data "azurerm_key_vault_secret" "primary_action_group_id" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "snet_vnet_integrations_id" {
+data "azurerm_key_vault_secret" "snet_vnet_integration_id" {
   name         = "snet-vnet-integration-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }

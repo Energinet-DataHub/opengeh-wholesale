@@ -7,7 +7,7 @@ module "func_entrypoint_ecp_outbox" {
   environment_instance                     = var.environment_instance
   resource_group_name                      = azurerm_resource_group.this.name
   location                                 = azurerm_resource_group.this.location
-  vnet_integration_subnet_id               = data.azurerm_key_vault_secret.snet_vnet_integrations_id.value
+  vnet_integration_subnet_id               = data.azurerm_key_vault_secret.snet_vnet_integration_id.value
   private_endpoint_subnet_id               = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   app_service_plan_id                      = data.azurerm_key_vault_secret.plan_shared_id.value
   application_insights_instrumentation_key = data.azurerm_key_vault_secret.appi_shared_instrumentation_key.value

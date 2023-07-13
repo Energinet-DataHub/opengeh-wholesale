@@ -12,6 +12,6 @@ module "kv_internal" {
   sku_name                        = "premium"
   private_endpoint_subnet_id      = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   allowed_subnet_ids = [
-    data.azurerm_key_vault_secret.snet_vnet_integrations_id.value,
+    data.azurerm_key_vault_secret.snet_vnet_integration_id.value,
   ]
 }
