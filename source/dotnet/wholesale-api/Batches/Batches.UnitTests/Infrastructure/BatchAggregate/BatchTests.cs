@@ -104,6 +104,10 @@ public class BatchTests
     [Theory]
     [InlineAutoMoqData(ProcessType.BalanceFixing, "PT15M")]
     [InlineAutoMoqData(ProcessType.Aggregation, "PT15M")]
+    [InlineAutoMoqData(ProcessType.WholesaleFixing, "PT15M")]
+    [InlineAutoMoqData(ProcessType.FirstCorrectionSettlement, "PT15M")]
+    [InlineAutoMoqData(ProcessType.SecondCorrectionSettlement, "PT15M")]
+    [InlineAutoMoqData(ProcessType.ThirdCorrectionSettlement, "PT15M")]
     public void GetResolution_ReturnsExpectedIso8601Duration(ProcessType processType, string expectedIso8601Duration)
     {
         // Arrange
@@ -119,6 +123,10 @@ public class BatchTests
     [Theory]
     [InlineAutoMoqData(ProcessType.BalanceFixing, "kWh")]
     [InlineAutoMoqData(ProcessType.Aggregation, "kWh")]
+    [InlineAutoMoqData(ProcessType.WholesaleFixing, "kWh")]
+    [InlineAutoMoqData(ProcessType.FirstCorrectionSettlement, "kWh")]
+    [InlineAutoMoqData(ProcessType.SecondCorrectionSettlement, "kWh")]
+    [InlineAutoMoqData(ProcessType.ThirdCorrectionSettlement, "kWh")]
     public void GetQuantityUnit_ReturnsExpectedIso8601Duration(ProcessType processType, string expectedQuantityUnit)
     {
         // Arrange

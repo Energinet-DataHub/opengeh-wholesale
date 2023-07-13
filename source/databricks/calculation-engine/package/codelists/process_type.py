@@ -18,3 +18,7 @@ from enum import Enum
 class ProcessType(Enum):
     BALANCE_FIXING = "BalanceFixing"
     AGGREGATION = "Aggregation"
+    WHOLESALE_FIXING = "WholesaleFixing"
+    FIRST_CORRECTION_SETTLEMENT = "FirstCorrectionSettlement"
+    SECOND_CORRECTION_SETTLEMENT = "SecondCorrectionSettlement"
+    THIRD_CORRECTION_SETTLEMENT = "ThirdCorrectionSettlement"
