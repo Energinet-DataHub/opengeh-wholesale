@@ -25,10 +25,10 @@ module "func_landzoneunzipper" {
   WEBSITES_ENABLE_APP_SERVICE_STORAGE                   = true
   FUNCTIONS_WORKER_RUNTIME                              = "dotnet-isolated"
   # Storage Account and container settings
-  ARCHIVE_CONNECTION_STRING                             = "https://${module.st_dh2data.name}.blob.core.windows.net"
-  ARCHIVE_CONTAINER_NAME                                = azurerm_storage_container.dh2_metering_point_history.name
-  ZIPPED_LANDING_ZONE_CONNECTION_STRING                 = "https://${module.st_dh2data.name}.blob.core.windows.net"
-  ZIPPED_CONTAINER_NAME                                 = azurerm_storage_container.dh2_metering_point_history.name
+  ARCHIVE_CONNECTION_STRING                             = "https://${module.st_dh2landzone_archive.name}.blob.core.windows.net"
+  ARCHIVE_CONTAINER_NAME                                = azurerm_storage_container.landzonearchive.name
+  ZIPPED_LANDING_ZONE_CONNECTION_STRING                 = "https://${module.st_dh2landzone.name}.blob.core.windows.net"
+  ZIPPED_CONTAINER_NAME                                 = azurerm_storage_container.dh2_landzone_zipped.name
   UNZIPPED_LANDING_ZONE_CONNECTION_STRING               = "https://${module.st_dh2data.name}.blob.core.windows.net"
   UNZIPPED_METERING_POINTS_CONTAINER_NAME               = azurerm_storage_container.dh2_metering_point_history.name
   UNZIPPED_TIME_SERIES_CONTAINER_NAME                   = azurerm_storage_container.dh2_timeseries.name
@@ -42,6 +42,14 @@ module "func_landzoneunzipper" {
   role_assignments = [
     {
       resource_id          = module.st_dh2data.id
+      role_definition_name = "Storage Blob Data Contributor"
+    },
+    {
+      resource_id          = module.st_dh2landzone.id
+      role_definition_name = "Storage Blob Data Contributor"
+    },
+    {
+      resource_id          = module.st_dh2landzone_archive.id
       role_definition_name = "Storage Blob Data Contributor"
     }
   ]
