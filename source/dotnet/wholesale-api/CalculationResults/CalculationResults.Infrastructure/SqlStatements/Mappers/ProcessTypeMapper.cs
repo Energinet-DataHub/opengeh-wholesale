@@ -23,6 +23,10 @@ public static class ProcessTypeMapper
         {
             ProcessType.BalanceFixing => DeltaTableConstants.DeltaTableProcessType.BalanceFixing,
             ProcessType.Aggregation => DeltaTableConstants.DeltaTableProcessType.Aggregation,
+            ProcessType.WholesaleFixing => DeltaTableConstants.DeltaTableProcessType.WholesaleFixing,
+            ProcessType.FirstCorrectionSettlement => DeltaTableConstants.DeltaTableProcessType.FirstCorrectionSettlement,
+            ProcessType.SecondCorrectionSettlement => DeltaTableConstants.DeltaTableProcessType.SecondCorrectionSettlement,
+            ProcessType.ThirdCorrectionSettlement => DeltaTableConstants.DeltaTableProcessType.ThirdCorrectionSettlement,
             _ => throw new NotImplementedException($"Cannot map process type '{processType}"),
         };
 
@@ -31,6 +35,10 @@ public static class ProcessTypeMapper
         {
             DeltaTableConstants.DeltaTableProcessType.BalanceFixing => ProcessType.BalanceFixing,
             DeltaTableConstants.DeltaTableProcessType.Aggregation => ProcessType.Aggregation,
+            DeltaTableConstants.DeltaTableProcessType.WholesaleFixing => ProcessType.WholesaleFixing,
+            DeltaTableConstants.DeltaTableProcessType.FirstCorrectionSettlement => ProcessType.FirstCorrectionSettlement,
+            DeltaTableConstants.DeltaTableProcessType.SecondCorrectionSettlement => ProcessType.SecondCorrectionSettlement,
+            DeltaTableConstants.DeltaTableProcessType.ThirdCorrectionSettlement => ProcessType.ThirdCorrectionSettlement,
             _ => throw new NotImplementedException($"Cannot map process type '{processType}"),
         };
 }
