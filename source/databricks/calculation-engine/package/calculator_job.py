@@ -27,6 +27,7 @@ from package import (
 )
 from package.output_writers.basis_data_writer import BasisDataWriter
 from package.output_writers.calculation_result_writer import CalculationResultWriter
+import package.calculation_input as input
 
 from .args_helper import valid_date, valid_list
 from .calculator_args import CalculatorArgs
