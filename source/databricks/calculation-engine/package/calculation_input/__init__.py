@@ -19,4 +19,3 @@ from .batch_grid_areas import (
 from .grid_loss_responsible import get_grid_loss_responsible
 from .metering_point_periods import get_metering_point_periods_df
 from .time_series_points import get_time_series_points_df
-
