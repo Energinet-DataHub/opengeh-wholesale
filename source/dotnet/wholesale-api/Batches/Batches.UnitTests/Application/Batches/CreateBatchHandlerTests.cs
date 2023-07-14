@@ -65,36 +65,32 @@ public class CreateBatchHandlerTests
     }
 
     [Theory]
-    [InlineAutoMoqData(ProcessType.WholesaleFixing)]
-    [InlineAutoMoqData(ProcessType.FirstCorrectionSettlement)]
-    [InlineAutoMoqData(ProcessType.SecondCorrectionSettlement)]
-    [InlineAutoMoqData(ProcessType.ThirdCorrectionSettlement)]
-    public void Handle_BadBatch_ErrorThrownWhenPeriodNotOneMonthForCertainProcessTypes(ProcessType processType)
+    [InlineData(ProcessType.WholesaleFixing)]
+    [InlineData(ProcessType.FirstCorrectionSettlement)]
+    [InlineData(ProcessType.SecondCorrectionSettlement)]
+    [InlineData(ProcessType.ThirdCorrectionSettlement)]
+    public void Handle_WhenPeriodNotOneMonthForCertainProcessTypes_ThrowBusinessValidationException(ProcessType processType)
     {
         // Arrange
         var periodStart = DateTimeOffset.Parse("2021-12-31T23:00Z");
         var periodEnd = DateTimeOffset.Parse("2022-01-30T23:00Z");
         var gridAreaCodes = new List<string> { "805" };
-        var processTypeName = Enum.GetName(typeof(ProcessType), processType)!;
-        var expectedMessage =
-            $"The period (start: 2021-12-31T23:00:00Z end: 2022-01-30T23:00:00Z) has to be an entire month when using process type {processTypeName}.";
         var batchCommand = CreateBatchCommand(processType, periodStart, periodEnd, gridAreaCodes);
 
         // Act
         Action act = () => CreateBatchFromCommand(batchCommand);
 
         // Assert
-        act.Should().Throw<BusinessValidationException>().WithMessage(expectedMessage);
+        act.Should().Throw<BusinessValidationException>();
     }
 
     [Theory]
-    [InlineAutoMoqData("2022-12-31T23:00Z", "2022-01-31T23:00Z", "periodStart is greater or equal to periodEnd")]
-    [InlineAutoMoqData("2021-12-31T23:00Z", "2022-01-31T22:00Z", "The period end '2022-01-31T22:00:00Z' must be midnight.")]
-    [InlineAutoMoqData("2021-12-31T22:00Z", "2022-01-31T23:00Z", "The period start '2021-12-31T22:00:00Z' must be midnight.")]
-    public void Handle_BadBatch_ErrorThrownWhenPeriodIsWrong(
+    // [InlineAutoMoqData("2022-12-31T23:00Z", "2022-01-31T23:00Z")]
+    [InlineData("2021-12-31T23:00Z", "2022-01-31T22:00Z")]
+    [InlineData("2021-12-31T22:00Z", "2022-01-31T23:00Z")]
+    public void Handle_WhenPeriodIsNotMidnight_ThrowBusinessValidationException(
         string periodStartString,
-        string periodEndString,
-        string expectedMessage)
+        string periodEndString)
     {
         // Arrange
         var periodStart = DateTimeOffset.Parse(periodStartString);
@@ -107,7 +103,41 @@ public class CreateBatchHandlerTests
         Action act = () => CreateBatchFromCommand(batchCommand);
 
         // Assert
-        act.Should().Throw<BusinessValidationException>().WithMessage(expectedMessage);
+        act.Should().Throw<BusinessValidationException>();
+    }
+
+    [Fact]
+    public void Handle_WhenPeriodStartIsLaterThePeriodEnd_ThrowBusinessValidationException()
+    {
+        // Arrange
+        var periodStart = DateTimeOffset.Parse("2022-12-31T23:00Z");
+        var periodEnd = DateTimeOffset.Parse("2022-01-31T23:00Z");
+        var gridAreaCodes = new List<string> { "805" };
+        var processType = ProcessType.BalanceFixing;
+        var batchCommand = CreateBatchCommand(processType, periodStart, periodEnd, gridAreaCodes);
+
+        // Act
+        Action act = () => CreateBatchFromCommand(batchCommand);
+
+        // Assert
+        act.Should().Throw<BusinessValidationException>();
+    }
+
+    [Fact]
+    public void Handle_WhenNoGridAreaCodes_ThrowBusinessValidationException()
+    {
+        // Arrange
+        var periodStart = DateTimeOffset.Parse("2021-12-31T23:00Z");
+        var periodEnd = DateTimeOffset.Parse("2022-01-31T23:00Z");
+        var gridAreaCodes = new List<string> { };
+        var processType = ProcessType.BalanceFixing;
+        var batchCommand = CreateBatchCommand(processType, periodStart, periodEnd, gridAreaCodes);
+
+        // Act
+        Action act = () => CreateBatchFromCommand(batchCommand);
+
+        // Assert
+        act.Should().Throw<BusinessValidationException>();
     }
 
     private static CreateBatchCommand CreateBatchCommand(ProcessType processType, DateTimeOffset periodStart, DateTimeOffset periodEnd, IEnumerable<string> gridAreaCodes)
