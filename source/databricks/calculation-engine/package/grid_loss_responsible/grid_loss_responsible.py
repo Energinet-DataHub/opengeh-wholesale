@@ -41,7 +41,7 @@ def get_grid_loss_responsible(grid_areas: list[str]) -> DataFrame:
     spark = SparkSession.builder.getOrCreate()
     # grid_loss_responsible_df = spark.read.option("header", True).csv(file_path, schema=schema)
 
-    grid_loss_responsible = _get_all_grid_loss_responisble()
+    grid_loss_responsible = _get_all_grid_loss_responsible()
     grid_loss_responsible_df = spark.createDataFrame(grid_loss_responsible, schema)
 
     grid_loss_responsible_df = grid_loss_responsible_df.withColumn(
@@ -89,5 +89,3 @@ def _get_all_grid_loss_responsible() -> list[tuple]:
         ('571313153308031507', 533, default_valid_from, None, 'consumption', '5790001102357'),
         ('571313158410300060', 584, default_valid_from, None, 'consumption', '5790001103095')
     ]
-
-
