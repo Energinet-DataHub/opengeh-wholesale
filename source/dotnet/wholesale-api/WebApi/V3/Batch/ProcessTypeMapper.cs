@@ -22,6 +22,10 @@ public static class ProcessTypeMapper
         {
             ProcessType.Aggregation => Common.Models.ProcessType.Aggregation,
             ProcessType.BalanceFixing => Common.Models.ProcessType.BalanceFixing,
+            ProcessType.WholesaleFixing => Common.Models.ProcessType.WholesaleFixing,
+            ProcessType.FirstCorrectionSettlement => Common.Models.ProcessType.FirstCorrectionSettlement,
+            ProcessType.SecondCorrectionSettlement => Common.Models.ProcessType.SecondCorrectionSettlement,
+            ProcessType.ThirdCorrectionSettlement => Common.Models.ProcessType.ThirdCorrectionSettlement,
             _ => throw new ArgumentOutOfRangeException(nameof(batchDtoProcessType), batchDtoProcessType, null),
         };
     }
@@ -32,6 +36,10 @@ public static class ProcessTypeMapper
         {
             Common.Models.ProcessType.Aggregation => ProcessType.Aggregation,
             Common.Models.ProcessType.BalanceFixing => ProcessType.BalanceFixing,
+            Common.Models.ProcessType.WholesaleFixing => ProcessType.WholesaleFixing,
+            Common.Models.ProcessType.FirstCorrectionSettlement => ProcessType.FirstCorrectionSettlement,
+            Common.Models.ProcessType.SecondCorrectionSettlement => ProcessType.SecondCorrectionSettlement,
+            Common.Models.ProcessType.ThirdCorrectionSettlement => ProcessType.ThirdCorrectionSettlement,
             _ => throw new ArgumentOutOfRangeException(nameof(batchDtoProcessType), batchDtoProcessType, null),
         };
     }
