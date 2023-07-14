@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame
+from pyspark.sql import DataFrame, SparkSession
 
 from pyspark.sql.functions import (
     col,
@@ -21,14 +21,41 @@ from pyspark.sql.functions import (
 from package.constants import Colname
 from package.db_logging import debug
 from datetime import datetime
+from package.calculation_input import get_batch_grid_areas_df, check_all_grid_areas_have_metering_points
 
 
 def get_metering_point_periods_df(
+    spark: SparkSession,
+    wholesale_container_path: str,
+    period_start_datetime: datetime,
+    period_end_datetime: datetime,
+    batch_grid_areas: list[str],
+) -> DataFrame:
+
+    metering_points_periods_df = (
+        spark.read.option("mode", "FAILFAST")
+        .format("delta")
+        .load(
+            f"{wholesale_container_path}/calculation_input/metering_point_periods"
+        )
+    )
+
+    grid_area_df = get_batch_grid_areas_df(batch_grid_areas, spark)
+
+    check_all_grid_areas_have_metering_points(
+        grid_area_df, metering_points_periods_df
+    )
+
+    return _get_metering_point_periods_df(metering_points_periods_df, grid_area_df, period_start_datetime, period_end_datetime)
+
+
+def _get_metering_point_periods_df(
     metering_points_periods_df: DataFrame,
     grid_area_df: DataFrame,
     period_start_datetime: datetime,
-    period_end_datetime: datetime,
+    period_end_datetime: datetime
 ) -> DataFrame:
+
     grid_area_df = grid_area_df.withColumnRenamed(Colname.grid_area, "ga_GridAreaCode")
     metering_points_in_grid_area = metering_points_periods_df.join(
         grid_area_df,

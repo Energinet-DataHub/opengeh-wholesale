@@ -24,7 +24,6 @@ from package import (
     infrastructure,
     initialize_spark,
     log,
-    get_grid_loss_responsible
 )
 from package.output_writers.basis_data_writer import BasisDataWriter
 from package.output_writers.calculation_result_writer import CalculationResultWriter
@@ -61,31 +60,22 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
 
 
 def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
-    timeseries_points_df = (
-        spark.read.option("mode", "FAILFAST")
-        .format("delta")
-        .load(f"{args.wholesale_container_path}/calculation_input/time_series_points")
-    )
-    metering_points_periods_df = (
-        spark.read.option("mode", "FAILFAST")
-        .format("delta")
-        .load(
-            f"{args.wholesale_container_path}/calculation_input/metering_point_periods"
-        )
-    )
-    batch_grid_areas_df = input.get_batch_grid_areas_df(args.batch_grid_areas, spark)
-    input.check_all_grid_areas_have_metering_points(
-        batch_grid_areas_df, metering_points_periods_df
-    )
 
+    # Get input data
     metering_point_periods_df = input.get_metering_point_periods_df(
-        metering_points_periods_df,
-        batch_grid_areas_df,
+        spark,
+        args.wholesale_container_path,
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
+        args.batch_grid_areas,
     )
-
-    grid_loss_responsible_df = get_grid_loss_responsible()
+    time_series_points_df = input.get_time_series_points_df(
+        spark,
+        args.wholesale_container_path,
+        args.batch_period_start_datetime,
+        args.batch_period_end_datetime
+    )
+    grid_loss_responsible_df = input.get_grid_loss_responsible()
 
     calculation_result_writer = CalculationResultWriter(
         args.batch_id,
@@ -98,7 +88,7 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         basis_data_writer,
         calculation_result_writer,
         metering_point_periods_df,
-        timeseries_points_df,
+        time_series_points_df,
         grid_loss_responsible_df,
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,

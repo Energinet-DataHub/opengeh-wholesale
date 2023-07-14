@@ -25,14 +25,8 @@ from package.db_logging import debug
 def get_enriched_time_series_points_df(
     new_timeseries_df: DataFrame,
     master_basis_data_df: DataFrame,
-    period_start_datetime: datetime,
-    period_end_datetime: datetime,
 ) -> DataFrame:
     """Get enriched time-series points in quarterly resolution"""
-
-    new_timeseries_df = new_timeseries_df.where(
-        F.col(Colname.observation_time) >= period_start_datetime
-    ).where(F.col(Colname.observation_time) < period_end_datetime)
 
     quarterly_mp_df = master_basis_data_df.where(
         F.col(Colname.resolution) == MeteringPointResolution.quarter.value
