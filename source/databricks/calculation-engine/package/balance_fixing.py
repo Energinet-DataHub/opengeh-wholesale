@@ -36,6 +36,8 @@ def calculate_balance_fixing(
     enriched_time_series_point_df = setup.get_enriched_time_series_points_df(
         time_series_points_df,
         metering_points_periods_df,
+        period_start_datetime,
+        period_end_datetime,
     )
 
     basis_data_writer.write(

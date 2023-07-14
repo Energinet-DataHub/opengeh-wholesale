@@ -27,7 +27,6 @@ from package import (
 )
 from package.output_writers.basis_data_writer import BasisDataWriter
 from package.output_writers.calculation_result_writer import CalculationResultWriter
-import package.calculation_input as input
 
 from .args_helper import valid_date, valid_list
 from .calculator_args import CalculatorArgs
@@ -61,21 +60,13 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
 
 def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
 
-    # Get input data
-    metering_point_periods_df = input.get_metering_point_periods_df(
+    metering_point_periods_df, time_series_points_df, grid_loss_responsible_df = input.get_calculation_input(
         spark,
         args.wholesale_container_path,
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
         args.batch_grid_areas,
     )
-    time_series_points_df = input.get_time_series_points_df(
-        spark,
-        args.wholesale_container_path,
-        args.batch_period_start_datetime,
-        args.batch_period_end_datetime
-    )
-    grid_loss_responsible_df = input.get_grid_loss_responsible()
 
     calculation_result_writer = CalculationResultWriter(
         args.batch_id,

@@ -14,8 +14,6 @@
 
 from datetime import datetime
 from pyspark.sql import DataFrame, SparkSession
-import pyspark.sql.functions as F
-from package.constants import Colname
 
 
 def get_time_series_points_df(
@@ -30,9 +28,5 @@ def get_time_series_points_df(
         .format("delta")
         .load(f"{wholesale_container_path}/calculation_input/time_series_points")
     )
-
-    timeseries_points_df = timeseries_points_df.where(
-        F.col(Colname.observation_time) >= period_start_datetime
-    ).where(F.col(Colname.observation_time) < period_end_datetime)
 
     return timeseries_points_df
