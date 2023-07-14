@@ -85,7 +85,7 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         args.batch_period_end_datetime,
     )
 
-    grid_loss_responsible_df = get_grid_loss_responsible()
+    grid_loss_responsible_df = get_grid_loss_responsible(args.batch_grid_areas)
 
     calculation_result_writer = CalculationResultWriter(
         args.batch_id,
