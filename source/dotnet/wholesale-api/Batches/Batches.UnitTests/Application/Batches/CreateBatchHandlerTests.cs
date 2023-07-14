@@ -85,7 +85,6 @@ public class CreateBatchHandlerTests
     }
 
     [Theory]
-    // [InlineAutoMoqData("2022-12-31T23:00Z", "2022-01-31T23:00Z")]
     [InlineData("2021-12-31T23:00Z", "2022-01-31T22:00Z")]
     [InlineData("2021-12-31T22:00Z", "2022-01-31T23:00Z")]
     public void Handle_WhenPeriodIsNotMidnight_ThrowBusinessValidationException(
