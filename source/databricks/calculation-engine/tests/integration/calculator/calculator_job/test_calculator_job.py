@@ -18,7 +18,6 @@ import pytest
 from unittest.mock import patch, Mock
 from package.calculator_job import (
     _get_valid_args_or_throw,
-    _start_calculator,
     start,
     _start,
 )

@@ -21,25 +21,20 @@ from pyspark.sql.functions import (
 from package.constants import Colname
 from package.db_logging import debug
 from datetime import datetime
-from package.calculation_input import get_batch_grid_areas_df, check_all_grid_areas_have_metering_points
+from package.calculation_input import CalculationInputReader, get_batch_grid_areas_df, check_all_grid_areas_have_metering_points
 
 
 def get_metering_point_periods_df(
-    spark: SparkSession,
-    wholesale_container_path: str,
+    calculation_input_reader: CalculationInputReader,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
     batch_grid_areas: list[str],
 ) -> DataFrame:
 
-    metering_points_periods_df = (
-        spark.read.option("mode", "FAILFAST")
-        .format("delta")
-        .load(
-            f"{wholesale_container_path}/calculation_input/metering_point_periods"
-        )
-    )
+    metering_points_periods_df = calculation_input_reader.read_metering_point_periods()
 
+    # Get grid areas dataframe
+    spark = SparkSession.builder.getOrCreate()
     grid_area_df = get_batch_grid_areas_df(batch_grid_areas, spark)
 
     check_all_grid_areas_have_metering_points(
@@ -47,7 +42,7 @@ def get_metering_point_periods_df(
     )
 
     return _get_metering_point_periods_df(metering_points_periods_df, grid_area_df, period_start_datetime, period_end_datetime)
-
+    
 
 def _get_metering_point_periods_df(
     metering_points_periods_df: DataFrame,

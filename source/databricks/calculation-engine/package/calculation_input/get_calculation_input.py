@@ -14,31 +14,26 @@
 
 from typing import Tuple
 from datetime import datetime
-from pyspark.sql import DataFrame, SparkSession
-import package.calculation_input as input
+from pyspark.sql import DataFrame
+from package.calculation_input import CalculationInputReader, get_metering_point_periods_df, get_grid_loss_responsible
 
 
 def get_calculation_input(
-    spark: SparkSession,
-    wholesale_container_path: str,
+    calculation_input_reader: CalculationInputReader,
     batch_period_start_datetime: datetime,
     batch_period_end_datetime: datetime,
     batch_grid_areas: list[str],
 ) -> Tuple[DataFrame, DataFrame, DataFrame]:
 
-    metering_point_periods_df = input.get_metering_point_periods_df(
-        spark,
-        wholesale_container_path,
+    metering_point_periods_df = get_metering_point_periods_df(
+        calculation_input_reader,
         batch_period_start_datetime,
         batch_period_end_datetime,
-        batch_grid_areas,
+        batch_grid_areas
     )
-    time_series_points_df = input.get_time_series_points_df(
-        spark,
-        wholesale_container_path,
-        batch_period_start_datetime,
-        batch_period_end_datetime
-    )
-    grid_loss_responsible_df = input.get_grid_loss_responsible()
+
+    time_series_points_df = calculation_input_reader.read_time_series_points()
+
+    grid_loss_responsible_df = get_grid_loss_responsible()
 
     return metering_point_periods_df, time_series_points_df, grid_loss_responsible_df

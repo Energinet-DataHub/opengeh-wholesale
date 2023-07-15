@@ -61,9 +61,10 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
 
 def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
 
+    calculation_input_reader = input.CalculationInputReader(spark, args.wholesale_container_path)
+
     metering_point_periods_df, time_series_points_df, grid_loss_responsible_df = input.get_calculation_input(
-        spark,
-        args.wholesale_container_path,
+        calculation_input_reader,
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
         args.batch_grid_areas,
