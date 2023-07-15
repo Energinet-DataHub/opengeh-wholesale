@@ -42,7 +42,7 @@ def get_metering_point_periods_df(
     )
 
     return _get_metering_point_periods_df(metering_points_periods_df, grid_area_df, period_start_datetime, period_end_datetime)
-    
+
 
 def _get_metering_point_periods_df(
     metering_points_periods_df: DataFrame,
