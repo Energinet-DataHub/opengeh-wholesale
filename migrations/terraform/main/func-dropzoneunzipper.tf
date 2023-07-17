@@ -1,7 +1,7 @@
-module "func_landzoneunzipper" {
+module "func_dropzoneunzipper" {
   source                                                  = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=v12"
 
-  name                                                    = "landzoneunzipper"
+  name                                                    = "dropzoneunzipper"
   project_name                                            = var.domain_name_short
   environment_short                                       = var.environment_short
   environment_instance                                    = var.environment_instance
@@ -25,18 +25,18 @@ module "func_landzoneunzipper" {
   WEBSITES_ENABLE_APP_SERVICE_STORAGE                   = true
   FUNCTIONS_WORKER_RUNTIME                              = "dotnet-isolated"
   # Storage Account and container settings
-  ARCHIVE_CONNECTION_STRING                             = "https://${module.st_dh2landzone_archive.name}.blob.core.windows.net"
-  ARCHIVE_CONTAINER_NAME                                = azurerm_storage_container.landzonearchive.name
-  ZIPPED_LANDING_ZONE_CONNECTION_STRING                 = "https://${module.st_dh2landzone.name}.blob.core.windows.net"
-  ZIPPED_CONTAINER_NAME                                 = azurerm_storage_container.dh2_landzone_zipped.name
+  ARCHIVE_CONNECTION_STRING                             = "https://${module.st_dh2dropzone_archive.name}.blob.core.windows.net"
+  ARCHIVE_CONTAINER_NAME                                = azurerm_storage_container.dropzonearchive.name
+  ZIPPED_LANDING_ZONE_CONNECTION_STRING                 = "https://${module.st_dh2dropzone.name}.blob.core.windows.net"
+  ZIPPED_CONTAINER_NAME                                 = azurerm_storage_container.dh2_dropzone_zipped.name
   UNZIPPED_LANDING_ZONE_CONNECTION_STRING               = "https://${module.st_dh2data.name}.blob.core.windows.net"
   UNZIPPED_METERING_POINTS_CONTAINER_NAME               = azurerm_storage_container.dh2_metering_point_history.name
   UNZIPPED_TIME_SERIES_CONTAINER_NAME                   = azurerm_storage_container.dh2_timeseries.name
   UNZIPPED_CHARGES_CONTAINER_NAME                       = azurerm_storage_container.dh2_charges.name
   UNZIPPED_CHARGE_LINKS_CONTAINER_NAME                  = azurerm_storage_container.dh2_charge_links.name
   # Event Hub settings
-  INGRESS_EVENT_HUB_CONNECTION_STRING                   = module.eventhub_landzone_zipped.primary_connection_strings["eh-landzone-listener-connection-string"]
-  INGRESS_EVENT_HUB_NAME                                = module.eventhub_landzone_zipped.name
+  INGRESS_EVENT_HUB_CONNECTION_STRING                   = module.eventhub_dropzone_zipped.primary_connection_strings["eh-dropzone-listener-connection-string"]
+  INGRESS_EVENT_HUB_NAME                                = module.eventhub_dropzone_zipped.name
   }
   # Role assigments is needed to connect to the storage accounts using URI
   role_assignments = [
@@ -45,36 +45,36 @@ module "func_landzoneunzipper" {
       role_definition_name = "Storage Blob Data Contributor"
     },
     {
-      resource_id          = module.st_dh2landzone.id
+      resource_id          = module.st_dh2dropzone.id
       role_definition_name = "Storage Blob Data Contributor"
     },
     {
-      resource_id          = module.st_dh2landzone_archive.id
+      resource_id          = module.st_dh2dropzone_archive.id
       role_definition_name = "Storage Blob Data Contributor"
     }
   ]
   depends_on = [
-    module.st_dh2landzone,
-    module.st_dh2landzone_archive,
+    module.st_dh2dropzone,
+    module.st_dh2dropzone_archive,
     module.st_dh2data,
   ]
 }
 
 #---- Data assignments
 
-data "azurerm_storage_account" "st_dh2landzone" {
-  name                = module.st_dh2landzone.name
+data "azurerm_storage_account" "st_dh2dropzone" {
+  name                = module.st_dh2dropzone.name
   resource_group_name = azurerm_resource_group.this.name
   depends_on = [
-    module.st_dh2landzone,
+    module.st_dh2dropzone,
   ]
 }
 
-data "azurerm_storage_account" "st_dh2landzone_archive" {
-  name                = module.st_dh2landzone_archive.name
+data "azurerm_storage_account" "st_dh2dropzone_archive" {
+  name                = module.st_dh2dropzone_archive.name
   resource_group_name = azurerm_resource_group.this.name
   depends_on = [
-    module.st_dh2landzone_archive,
+    module.st_dh2dropzone_archive,
   ]
 }
 

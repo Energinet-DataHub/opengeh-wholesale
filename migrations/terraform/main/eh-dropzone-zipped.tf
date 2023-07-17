@@ -1,9 +1,9 @@
 #---- Eventhub Namespace 
 
-module "eventhub_namespace_landzone" {
+module "eventhub_namespace_dropzone" {
   source                          = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/eventhub-namespace?ref=v12"
 
-  name                            = "ehn-landzone"
+  name                            = "ehn-dropzone"
   project_name                    = var.domain_name_short
   environment_short               = var.environment_short
   environment_instance            = var.environment_instance
@@ -18,17 +18,17 @@ module "eventhub_namespace_landzone" {
 
 #---- Eventhub
 
-module "eventhub_landzone_zipped" {
+module "eventhub_dropzone_zipped" {
   source              = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/eventhub?ref=v12"
 
-  name                = "eh-landzone-zipped"
-  namespace_name      = module.eventhub_namespace_landzone.name
+  name                = "eh-dropzone-zipped"
+  namespace_name      = module.eventhub_namespace_dropzone.name
   resource_group_name = azurerm_resource_group.this.name
   partition_count     = 6
   message_retention   = 7
   auth_rules          = [
     {
-      name    = "eh-landzone-listener-connection-string"
+      name    = "eh-dropzone-listener-connection-string"
       listen  = true
     }
   ]
