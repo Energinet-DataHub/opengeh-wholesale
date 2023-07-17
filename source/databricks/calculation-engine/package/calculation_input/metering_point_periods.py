@@ -33,7 +33,29 @@ def get_metering_point_periods_df(
 
     metering_points_periods_df = calculation_input_reader.read_metering_point_periods()
 
-    # Get grid areas dataframe
+    metering_points_periods_df = _filter_by_grid_area(metering_points_periods_df, batch_grid_areas)
+
+    metering_points_periods_df = _filter_by_period(metering_points_periods_df, period_start_datetime, period_end_datetime)
+
+    metering_points_periods_df = metering_points_periods_df.select(
+        Colname.metering_point_id,
+        Colname.grid_area,
+        Colname.from_date,
+        Colname.to_date,
+        Colname.metering_point_type,
+        Colname.settlement_method,
+        Colname.from_grid_area,
+        Colname.to_grid_area,
+        Colname.resolution,
+        Colname.energy_supplier_id,
+        Colname.balance_responsible_id,
+    )
+
+    return metering_points_periods_df
+
+
+def _filter_by_grid_area(metering_points_periods_df: DataFrame, batch_grid_areas: list[str]) -> DataFrame:
+
     spark = SparkSession.builder.getOrCreate()
     grid_area_df = get_batch_grid_areas_df(batch_grid_areas, spark)
 
@@ -41,31 +63,30 @@ def get_metering_point_periods_df(
         grid_area_df, metering_points_periods_df
     )
 
-    return _get_metering_point_periods_df(metering_points_periods_df, grid_area_df, period_start_datetime, period_end_datetime)
-
-
-def _get_metering_point_periods_df(
-    metering_points_periods_df: DataFrame,
-    grid_area_df: DataFrame,
-    period_start_datetime: datetime,
-    period_end_datetime: datetime
-) -> DataFrame:
-
     grid_area_df = grid_area_df.withColumnRenamed(Colname.grid_area, "ga_GridAreaCode")
-    metering_points_in_grid_area = metering_points_periods_df.join(
+    metering_points_periods_df = metering_points_periods_df.join(
         grid_area_df,
         metering_points_periods_df[Colname.grid_area]
         == grid_area_df["ga_GridAreaCode"],
         "inner",
     )
 
-    metering_point_periods_df = metering_points_in_grid_area.where(
+    return metering_points_periods_df
+
+
+def _filter_by_period(
+    metering_points_periods_df: DataFrame,
+    period_start_datetime: datetime,
+    period_end_datetime: datetime
+) -> DataFrame:
+
+    metering_point_periods_df = metering_points_periods_df.where(
         col(Colname.from_date) < period_end_datetime
     ).where(
         col(Colname.to_date).isNull() | (col(Colname.to_date) > period_start_datetime)
     )
 
-    master_basis_data_df = metering_point_periods_df.withColumn(
+    metering_point_periods_df = metering_point_periods_df.withColumn(
         Colname.from_date,
         when(
             col(Colname.from_date) < period_start_datetime, period_start_datetime
@@ -79,30 +100,4 @@ def _get_metering_point_periods_df(
         ).otherwise(col(Colname.to_date)),
     )
 
-    master_basis_data_df = master_basis_data_df.select(
-        Colname.metering_point_id,
-        Colname.grid_area,
-        Colname.from_date,
-        Colname.to_date,
-        Colname.metering_point_type,
-        Colname.settlement_method,
-        Colname.from_grid_area,
-        Colname.to_grid_area,
-        Colname.resolution,
-        Colname.energy_supplier_id,
-        Colname.balance_responsible_id,
-    )
-    debug(
-        "Metering point events before join with grid areas",
-        metering_point_periods_df.orderBy(col(Colname.from_date).desc()),
-    )
-
-    debug(
-        "Metering point periods",
-        metering_point_periods_df.orderBy(
-            col(Colname.grid_area),
-            col(Colname.metering_point_id),
-            col(Colname.from_date),
-        ),
-    )
-    return master_basis_data_df
+    return metering_point_periods_df
