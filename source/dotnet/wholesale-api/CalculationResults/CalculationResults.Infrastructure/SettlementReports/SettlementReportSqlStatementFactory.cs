@@ -82,6 +82,7 @@ ORDER BY t1.time
         if (isTotalGridArea)
         {
             timeSeriesTypes.Add(TimeSeriesType.NetExchangePerGa);
+            timeSeriesTypes.Add(TimeSeriesType.TotalConsumption);
         }
 
         var timeSeriesTypesString = string.Join(",", timeSeriesTypes.Select(x => $"\'{TimeSeriesTypeMapper.ToDeltaTableValue(x)}\'"));
