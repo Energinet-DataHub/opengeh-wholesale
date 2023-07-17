@@ -14,6 +14,7 @@
 
 from datetime import datetime, timedelta
 import pytest
+from unittest.mock import patch, Mock
 from package.calculation_input import get_metering_point_periods_df
 from package.codelists import (
     MeteringPointType,
@@ -47,12 +48,6 @@ june_8th = june_1th + timedelta(days=7)
 june_9th = june_1th + timedelta(days=8)
 june_10th = june_1th + timedelta(days=9)
 balance_responsible_id = "someBalanceResponsibleId"
-
-
-@pytest.fixture
-def batch_grid_areas_df(spark) -> DataFrame:
-    row = {Colname.grid_area: grid_area_code}
-    return spark.createDataFrame([row])
 
 
 @pytest.fixture(scope="module")
@@ -156,51 +151,69 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
     return factory
 
 
+@patch("package.calculation_input.CalculationInputReader")
 def test__when_metering_point_period_is_in_grid_areas__returns_metering_point_period(
-    batch_grid_areas_df: DataFrame,
+    mock_calculation_input_reader: Mock,
     metering_points_periods_df_factory: Callable[..., DataFrame],
-):
-    metering_points_periods_df = metering_points_periods_df_factory()
+) -> None:
+    # Arrange
+    mock_calculation_input_reader.read_metering_point_periods.return_value = metering_points_periods_df_factory()
 
+    # Act
     raw_master_basis_data = get_metering_point_periods_df(
-        metering_points_periods_df,
-        batch_grid_areas_df,
+        mock_calculation_input_reader,
         june_1th,
         june_2th,
+        [grid_area_code],
     )
+
+    # Assert
     assert raw_master_basis_data.count() == 1
 
 
+@patch("package.calculation_input.CalculationInputReader")
 def test__when_type_is_production__returns_metering_point_period(
-    batch_grid_areas_df,
+    mock_calculation_input_reader: Mock,
     metering_points_periods_df_factory,
-):
+) -> None:
+
+    # Arrange
     metering_points_periods_df = metering_points_periods_df_factory(
         MeteringPointType=MeteringPointType.production.value
     )
+    mock_calculation_input_reader.read_metering_point_periods.return_value = metering_points_periods_df
 
+    # Act
     raw_master_basis_data = get_metering_point_periods_df(
-        metering_points_periods_df,
-        batch_grid_areas_df,
+        mock_calculation_input_reader,
         june_1th,
         june_2th,
+        [grid_area_code],
     )
+
+    # Assert
     assert raw_master_basis_data.count() == 1
 
 
+@patch("package.calculation_input.CalculationInputReader")
 def test__metering_points_have_expected_columns(
-    batch_grid_areas_df: DataFrame,
+    mock_calculation_input_reader: Mock,
     metering_points_periods_df_factory: Callable[..., DataFrame],
-):
-    metering_points_periods_df = metering_points_periods_df_factory()
+) -> None:
 
+    # Arrange
+    metering_points_periods_df = metering_points_periods_df_factory()
+    mock_calculation_input_reader.read_metering_point_periods.return_value = metering_points_periods_df
+
+    # Act
     raw_master_basis_data = get_metering_point_periods_df(
-        metering_points_periods_df,
-        batch_grid_areas_df,
+        mock_calculation_input_reader,
         june_1th,
         june_2th,
+        [grid_area_code],
     )
 
+    # Assert
     assert (
         raw_master_basis_data.where(
             (col(Colname.metering_point_id) == metering_point_id)
@@ -218,20 +231,24 @@ def test__metering_points_have_expected_columns(
     )
 
 
+@patch("package.calculation_input.CalculationInputReader")
 def test__when_period_to_date_is_null__returns_metering_point_period_with_to_date_equal_to_period_end(
-    batch_grid_areas_df,
+    mock_calculation_input_reader: Mock,
     metering_points_periods_df_factory,
-):
+) -> None:
     # Arrange
     metering_points_periods_df = metering_points_periods_df_factory(ToDate=None)
+    mock_calculation_input_reader.read_metering_point_periods.return_value = metering_points_periods_df
     period_end = june_2th
 
+    # Act
     raw_master_basis_data = get_metering_point_periods_df(
-        metering_points_periods_df,
-        batch_grid_areas_df,
+        mock_calculation_input_reader,
         june_1th,
-        period_end_datetime=period_end,
+        period_end,
+        [grid_area_code],
     )
 
+    # Assert
     assert raw_master_basis_data.count() == 1
     assert raw_master_basis_data.where(col(Colname.to_date) == period_end).count() == 1
