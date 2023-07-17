@@ -78,10 +78,10 @@ public class CreateBatchHandlerTests
         var batchCommand = CreateBatchCommand(processType, periodStart, periodEnd, gridAreaCodes);
 
         // Act
-        Action act = () => CreateBatchFromCommand(batchCommand);
+        var actual = () => CreateBatchFromCommand(batchCommand);
 
         // Assert
-        act.Should().Throw<BusinessValidationException>();
+        actual.Should().Throw<BusinessValidationException>();
     }
 
     [Theory]
@@ -99,10 +99,10 @@ public class CreateBatchHandlerTests
         var batchCommand = CreateBatchCommand(processType, periodStart, periodEnd, gridAreaCodes);
 
         // Act
-        Action act = () => CreateBatchFromCommand(batchCommand);
+        var actual = () => CreateBatchFromCommand(batchCommand);
 
         // Assert
-        act.Should().Throw<BusinessValidationException>();
+        actual.Should().Throw<BusinessValidationException>();
     }
 
     [Fact]
@@ -116,10 +116,10 @@ public class CreateBatchHandlerTests
         var batchCommand = CreateBatchCommand(processType, periodStart, periodEnd, gridAreaCodes);
 
         // Act
-        Action act = () => CreateBatchFromCommand(batchCommand);
+        var actual = () => CreateBatchFromCommand(batchCommand);
 
         // Assert
-        act.Should().Throw<BusinessValidationException>();
+        actual.Should().Throw<BusinessValidationException>();
     }
 
     [Fact]
@@ -133,10 +133,10 @@ public class CreateBatchHandlerTests
         var batchCommand = CreateBatchCommand(processType, periodStart, periodEnd, gridAreaCodes);
 
         // Act
-        Action act = () => CreateBatchFromCommand(batchCommand);
+        var actual = () => CreateBatchFromCommand(batchCommand);
 
         // Assert
-        act.Should().Throw<BusinessValidationException>();
+        actual.Should().Throw<BusinessValidationException>();
     }
 
     private static CreateBatchCommand CreateBatchCommand(ProcessType processType, DateTimeOffset periodStart, DateTimeOffset periodEnd, IEnumerable<string> gridAreaCodes)
