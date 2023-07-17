@@ -75,7 +75,7 @@ LEFT JOIN {_schemaName}.{_tableName} t2
         AND t1.aggregation_level = t2.aggregation_level
 WHERE t2.time IS NULL
     AND t1.{ResultColumnNames.GridArea} IN (123,234,345)
-    AND t1.{ResultColumnNames.TimeSeriesType} IN ('production','flex_consumption','non_profiled_consumption','net_exchange_per_ga')
+    AND t1.{ResultColumnNames.TimeSeriesType} IN ('production','flex_consumption','non_profiled_consumption','net_exchange_per_ga'. 'total_consumption')
     AND t1.{ResultColumnNames.BatchProcessType} = 'BalanceFixing'
     AND t1.{ResultColumnNames.Time} BETWEEN '2022-10-12T01:00:00Z' AND '2022-10-12T03:00:00Z'
     AND t1.{ResultColumnNames.AggregationLevel} = '{DeltaTableAggregationLevel.GridArea}'
