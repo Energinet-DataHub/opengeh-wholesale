@@ -14,6 +14,7 @@
 
 
 import sys
+from pyspark.sql import SparkSession
 from package import (
     calculate_balance_fixing,
     db_logging,
@@ -27,10 +28,8 @@ from package.calculator_args import CalculatorArgs, get_calculator_args
 from package.storage_account_access import islocked
 
 
-def _start_calculator(args: CalculatorArgs) -> None:
-
-    spark = initialize_spark()
-
+def _start_calculator(args: CalculatorArgs, spark: SparkSession) -> None:
+   
     calculation_input_reader = input.CalculationInputReader(spark, args.wholesale_container_path)
 
     metering_point_periods_df, time_series_points_df, grid_loss_responsible_df = input.get_calculation_input(
@@ -65,9 +64,11 @@ def start() -> None:
 
     args = get_calculator_args()
 
+    spark = initialize_spark()
+
     db_logging.loglevel = "information"
     if islocked(args.data_storage_account_name, args.data_storage_account_credentials):
         log("Exiting because storage is locked due to data migrations running.")
         sys.exit(3)
 
-    _start_calculator(args)
+    _start_calculator(args, spark)

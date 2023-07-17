@@ -57,6 +57,5 @@ def test__when_data_lake_is_locked__return_exit_code_3(
     # Act
     with pytest.raises(SystemExit) as excinfo:
         start()
-
     # Assert
     assert excinfo.value.code == 3
