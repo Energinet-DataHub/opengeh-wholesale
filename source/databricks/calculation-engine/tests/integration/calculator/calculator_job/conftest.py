@@ -16,6 +16,7 @@ from datetime import datetime
 from pyspark.sql import SparkSession, DataFrame
 import pytest
 from typing import Callable, Optional
+from unittest.mock import patch, Mock
 
 from . import configuration as C
 from package.calculator_job import (
@@ -52,6 +53,7 @@ def test_data_job_parameters(
 
 
 @pytest.fixture(scope="session")
+@patch("package.calculator_job.initialize_spark")
 def executed_calculation_job(
     spark: SparkSession,
     test_data_job_parameters: CalculatorArgs,
@@ -85,7 +87,7 @@ def executed_calculation_job(
         mode="overwrite",
     )
 
-    _start_calculator(spark, test_data_job_parameters)
+    _start_calculator(test_data_job_parameters)
 
 
 @pytest.fixture(scope="session")
