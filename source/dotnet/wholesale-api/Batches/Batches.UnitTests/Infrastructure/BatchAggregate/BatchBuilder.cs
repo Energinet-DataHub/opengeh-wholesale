@@ -33,7 +33,7 @@ public class BatchBuilder
     {
         // Create a valid period representing January in a +01:00 offset (e.g. time zone "Europe/Copenhagen")
         // In order to be valid the last millisecond must be omitted
-        var firstOfJanuary = DateTimeOffset.Parse("2021-01-31T23:00Z");
+        var firstOfJanuary = DateTimeOffset.Parse("2021-12-31T23:00Z");
         _periodStart = Instant.FromDateTimeOffset(firstOfJanuary);
         _periodEnd = Instant.FromDateTimeOffset(firstOfJanuary.AddMonths(1));
     }
