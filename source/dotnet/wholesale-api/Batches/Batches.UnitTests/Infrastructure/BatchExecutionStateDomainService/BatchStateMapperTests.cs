@@ -46,10 +46,10 @@ public class BatchStateMapperTests
         const CalculationState unexpectedCalculationState = (CalculationState)99;
 
         // Act
-        Action action = () => BatchStateMapper.MapState(unexpectedCalculationState);
+        var actual = () => BatchStateMapper.MapState(unexpectedCalculationState);
 
         // Assert
-        action.Should().Throw<ArgumentOutOfRangeException>()
+        actual.Should().Throw<ArgumentOutOfRangeException>()
             .WithParameterName("calculationState")
             .And.ActualValue.Should().Be(unexpectedCalculationState);
     }
