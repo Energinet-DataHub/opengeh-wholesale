@@ -70,8 +70,6 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
         args.batch_grid_areas,
     )
 
-    grid_loss_responsible_df = get_grid_loss_responsible(args.batch_grid_areas)
-
     calculation_result_writer = CalculationResultWriter(
         args.batch_id,
         args.batch_process_type,

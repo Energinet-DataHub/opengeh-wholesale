@@ -34,6 +34,6 @@ def get_calculation_input(
 
     time_series_points_df = calculation_input_reader.read_time_series_points()
 
-    grid_loss_responsible_df = get_grid_loss_responsible()
+    grid_loss_responsible_df = get_grid_loss_responsible(batch_grid_areas)
 
     return metering_point_periods_df, time_series_points_df, grid_loss_responsible_df
