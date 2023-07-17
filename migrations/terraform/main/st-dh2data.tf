@@ -26,7 +26,7 @@ resource "azurerm_role_assignment" "ra_dh2data_contributor" {
 
 resource "azurerm_storage_container" "dh2_metering_point_history" {
   name                  = "dh2-metering-point-history"
-  storage_account_name  = module.st_migrations.name
+  storage_account_name  = module.st_dh2data.name
   container_access_type = "private"
 }
 
