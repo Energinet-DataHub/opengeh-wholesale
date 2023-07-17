@@ -13,10 +13,8 @@
 # limitations under the License.
 
 from datetime import datetime
-from os import path
 from pyspark.sql import SparkSession, DataFrame
 import pytest
-from shutil import rmtree
 from typing import Callable, Optional
 
 from . import configuration as C

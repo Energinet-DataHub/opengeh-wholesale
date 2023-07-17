@@ -12,13 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from azure.identity import ClientSecretCredential
+import configargparse
+from configargparse import argparse
 from dataclasses import dataclass
 from datetime import datetime
+import sys
+from package.args_helper import valid_date, valid_list
+import package.environment_variables as env_vars
+from package import log, infrastructure
 
 
 @dataclass
 class CalculatorArgs:
     data_storage_account_name: str
+    data_storage_account_credentials: ClientSecretCredential
     wholesale_container_path: str
     batch_id: str
     batch_grid_areas: list[str]
@@ -27,3 +35,55 @@ class CalculatorArgs:
     batch_process_type: str
     batch_execution_time_start: datetime
     time_zone: str
+
+
+def get_calculator_args() -> CalculatorArgs:
+
+    job_args = _get_valid_args_or_throw(sys.argv[1:])
+    log(f"Job arguments: {str(job_args)}")
+
+    time_zone = env_vars.get_time_zone()
+    storage_account_name = env_vars.get_storage_account_name()
+    credential = env_vars.get_storage_account_credential()
+
+    calculator_args = CalculatorArgs(
+        data_storage_account_name=storage_account_name,
+        data_storage_account_credentials=credential,
+        wholesale_container_path=infrastructure.get_container_root_path(
+            storage_account_name
+        ),
+        batch_id=job_args.batch_id,
+        batch_grid_areas=job_args.batch_grid_areas,
+        batch_period_start_datetime=job_args.batch_period_start_datetime,
+        batch_period_end_datetime=job_args.batch_period_end_datetime,
+        batch_execution_time_start=job_args.batch_execution_time_start,
+        batch_process_type=job_args.batch_process_type,
+        time_zone=time_zone,
+    )
+
+    return calculator_args
+
+
+def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
+    p = configargparse.ArgParser(
+        description="Performs domain calculations for submitted batches",
+        formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
+    )
+
+    # Run parameters
+    p.add("--batch-id", type=str, required=True)
+    p.add("--batch-grid-areas", type=valid_list, required=True)
+    p.add("--batch-period-start-datetime", type=valid_date, required=True)
+    p.add("--batch-period-end-datetime", type=valid_date, required=True)
+    p.add("--batch-process-type", type=str, required=True)
+    p.add("--batch-execution-time-start", type=valid_date, required=True)
+
+    args, unknown_args = p.parse_known_args(args=command_line_args)
+    if len(unknown_args):
+        unknown_args_text = ", ".join(unknown_args)
+        raise Exception(f"Unknown args: {unknown_args_text}")
+
+    if type(args.batch_grid_areas) is not list:
+        raise Exception("Grid areas must be a list")
+
+    return args
