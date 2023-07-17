@@ -29,7 +29,7 @@ from package.storage_account_access import islocked
 
 
 def _start_calculator(args: CalculatorArgs, spark: SparkSession) -> None:
-   
+
     calculation_input_reader = input.CalculationInputReader(spark, args.wholesale_container_path)
 
     metering_point_periods_df, time_series_points_df, grid_loss_responsible_df = input.get_calculation_input(
