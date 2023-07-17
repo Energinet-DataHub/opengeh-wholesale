@@ -16,20 +16,11 @@ from azure.identity import ClientSecretCredential
 from pyspark.sql import SparkSession
 import pytest
 from unittest.mock import patch, Mock
-from tests.contract_utils import assert_contract_matches_schema
-from . import configuration as C
 from package.calculator_job import (
     _get_valid_args_or_throw,
-    _start_calculator,
     start,
     _start,
 )
-from package.codelists import (
-    TimeSeriesType,
-    AggregationLevel,
-)
-import package.infrastructure as infra
-from package.environment_variables import EnvironmentVariable
 from package.schemas import time_series_point_schema
 
 
