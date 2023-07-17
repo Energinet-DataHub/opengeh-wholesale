@@ -12,54 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from azure.identity import ClientSecretCredential
+
 import sys
-import configargparse
-from configargparse import argparse
 from pyspark.sql import SparkSession
-import package.environment_variables as env_vars
 from package import (
     calculate_balance_fixing,
     db_logging,
-    infrastructure,
     initialize_spark,
     log,
 )
 from package.output_writers.basis_data_writer import BasisDataWriter
 from package.output_writers.calculation_result_writer import CalculationResultWriter
 import package.calculation_input as input
-
-from .args_helper import valid_date, valid_list
-from .calculator_args import CalculatorArgs
+from package.calculator_args import CalculatorArgs, get_calculator_args
 from package.storage_account_access import islocked
 
 
-def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
-    p = configargparse.ArgParser(
-        description="Performs domain calculations for submitted batches",
-        formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
-    )
-
-    # Run parameters
-    p.add("--batch-id", type=str, required=True)
-    p.add("--batch-grid-areas", type=valid_list, required=True)
-    p.add("--batch-period-start-datetime", type=valid_date, required=True)
-    p.add("--batch-period-end-datetime", type=valid_date, required=True)
-    p.add("--batch-process-type", type=str, required=True)
-    p.add("--batch-execution-time-start", type=valid_date, required=True)
-
-    args, unknown_args = p.parse_known_args(args=command_line_args)
-    if len(unknown_args):
-        unknown_args_text = ", ".join(unknown_args)
-        raise Exception(f"Unknown args: {unknown_args_text}")
-
-    if type(args.batch_grid_areas) is not list:
-        raise Exception("Grid areas must be a list")
-
-    return args
-
-
-def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
+def _start_calculator(args: CalculatorArgs, spark: SparkSession) -> None:
 
     calculation_input_reader = input.CalculationInputReader(spark, args.wholesale_container_path)
 
@@ -89,45 +58,17 @@ def _start_calculator(spark: SparkSession, args: CalculatorArgs) -> None:
     )
 
 
-def _start(
-    storage_account_name: str,
-    storage_account_credetial: ClientSecretCredential,
-    time_zone: str,
-    job_args: argparse.Namespace,
-) -> None:
-    if islocked(storage_account_name, storage_account_credetial):
-        log("Exiting because storage is locked due to data migrations running.")
-        sys.exit(3)
-
-    spark = initialize_spark()
-
-    calculator_args = CalculatorArgs(
-        data_storage_account_name=storage_account_name,
-        wholesale_container_path=infrastructure.get_container_root_path(
-            storage_account_name
-        ),
-        batch_id=job_args.batch_id,
-        batch_grid_areas=job_args.batch_grid_areas,
-        batch_period_start_datetime=job_args.batch_period_start_datetime,
-        batch_period_end_datetime=job_args.batch_period_end_datetime,
-        batch_execution_time_start=job_args.batch_execution_time_start,
-        batch_process_type=job_args.batch_process_type,
-        time_zone=time_zone,
-    )
-
-    _start_calculator(spark, calculator_args)
-
-
 # The start() method should only have its name updated in correspondence with the wheels entry point for it.
 # Further the method must remain parameterless because it will be called from the entry point when deployed.
 def start() -> None:
-    job_args = _get_valid_args_or_throw(sys.argv[1:])
-    log(f"Job arguments: {str(job_args)}")
 
-    time_zone = env_vars.get_time_zone()
-    storage_account_name = env_vars.get_storage_account_name()
-    credential = env_vars.get_storage_account_credential()
+    args = get_calculator_args()
+
+    spark = initialize_spark()
 
     db_logging.loglevel = "information"
+    if islocked(args.data_storage_account_name, args.data_storage_account_credentials):
+        log("Exiting because storage is locked due to data migrations running.")
+        sys.exit(3)
 
-    _start(storage_account_name, credential, time_zone, job_args)
+    _start_calculator(args, spark)
