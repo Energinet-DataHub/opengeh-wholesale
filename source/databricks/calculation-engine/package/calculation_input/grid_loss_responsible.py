@@ -68,8 +68,11 @@ def get_grid_loss_responsible(grid_areas: list[str]) -> DataFrame:
 def _throw_if_no_grid_loss_responsible(grid_areas: list[str], grid_loss_responsible_df: DataFrame) -> None:
 
     for grid_area in grid_areas:
-        if grid_loss_responsible_df.filter(col(Colname.grid_area).contains(grid_area)).count() == 0:
-            raise ValueError(f"No grid area responsible found for grid area {grid_area}")
+        current_grid_area_responsible = grid_loss_responsible_df.filter(col(Colname.grid_area) == grid_area)
+        if (current_grid_area_responsible.filter(col(Colname.is_negative_grid_loss_responsible)).count() == 0):
+            raise ValueError(f"No responsible for negative grid loss found for grid area {grid_area}")
+        if (current_grid_area_responsible.filter(col(Colname.is_positive_grid_loss_responsible)).count() == 0):
+            raise ValueError(f"No responsible for positive grid loss found for grid area {grid_area}")
 
 
 def _get_all_grid_loss_responsible() -> list[tuple]:
