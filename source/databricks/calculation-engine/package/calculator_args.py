@@ -21,6 +21,7 @@ import sys
 from package.args_helper import valid_date, valid_list
 import package.environment_variables as env_vars
 from package import log, infrastructure
+from package.codelists.process_type import ProcessType
 
 
 @dataclass
@@ -32,7 +33,7 @@ class CalculatorArgs:
     batch_grid_areas: list[str]
     batch_period_start_datetime: datetime
     batch_period_end_datetime: datetime
-    batch_process_type: str
+    batch_process_type: ProcessType
     batch_execution_time_start: datetime
     time_zone: str
 
@@ -87,3 +88,19 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
         raise Exception("Grid areas must be a list")
 
     return args
+
+
+def _map_process_type(process_type: str) -> ProcessType:
+    match process_type:
+        case "Aggregation":
+            return ProcessType.AGGREGATION
+        case "BalanceFixing":
+            return ProcessType.BALANCE_FIXING
+        case "FirstCorrectionSettlement":
+            return ProcessType.FIRST_CORRECTION_SETTLEMENT
+        case "SecondCorrectionSettlement":
+            return ProcessType.SECOND_CORRECTION_SETTLEMENT
+        case "ThirdCorrectionSettlement":
+            return ProcessType.THIRD_CORRECTION_SETTLEMENT
+        case _:
+            raise ValueError(f"Unexpected process type, {process_type}")
