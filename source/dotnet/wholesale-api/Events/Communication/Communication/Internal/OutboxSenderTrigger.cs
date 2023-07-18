@@ -32,6 +32,7 @@ public class OutboxSenderTrigger : RepeatingTrigger<IOutboxSender>
 
     protected override async Task ExecuteAsync(IOutboxSender outboxSender)
     {
+        Console.WriteLine("LOOK AT ME: OutboxSenderTrigger.ExecuteAsync");
         await outboxSender.SendAsync().ConfigureAwait(false);
     }
 }
