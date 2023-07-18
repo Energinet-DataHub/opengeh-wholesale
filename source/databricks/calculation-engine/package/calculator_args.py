@@ -91,16 +91,15 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
 
 
 def _map_process_type(process_type: str) -> ProcessType:
-    match process_type:
-        case "Aggregation":
-            return ProcessType.AGGREGATION
-        case "BalanceFixing":
-            return ProcessType.BALANCE_FIXING
-        case "FirstCorrectionSettlement":
-            return ProcessType.FIRST_CORRECTION_SETTLEMENT
-        case "SecondCorrectionSettlement":
-            return ProcessType.SECOND_CORRECTION_SETTLEMENT
-        case "ThirdCorrectionSettlement":
-            return ProcessType.THIRD_CORRECTION_SETTLEMENT
-        case _:
-            raise ValueError(f"Unexpected process type, {process_type}")
+    if process_type == "Aggregation":
+        return ProcessType.AGGREGATION
+    elif process_type == "BalanceFixing":
+        return ProcessType.BALANCE_FIXING
+    elif process_type == "FirstCorrectionSettlement":
+        return ProcessType.FIRST_CORRECTION_SETTLEMENT
+    elif process_type == "SecondCorrectionSettlement":
+        return ProcessType.SECOND_CORRECTION_SETTLEMENT
+    elif process_type == "ThirdCorrectionSettlement":
+        return ProcessType.THIRD_CORRECTION_SETTLEMENT
+    else:
+        raise ValueError(f"Unexpected process type, {process_type}")
