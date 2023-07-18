@@ -58,7 +58,7 @@ def get_calculator_args() -> CalculatorArgs:
         batch_period_start_datetime=job_args.batch_period_start_datetime,
         batch_period_end_datetime=job_args.batch_period_end_datetime,
         batch_execution_time_start=job_args.batch_execution_time_start,
-        batch_process_type=job_args.batch_process_type,
+        batch_process_type=_map_process_type(job_args.batch_process_type),
         time_zone=time_zone,
     )
 
