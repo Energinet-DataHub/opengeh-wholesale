@@ -22,16 +22,19 @@ namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
 public class OutboxSenderTrigger : RepeatingTrigger<IOutboxSender>
 {
     private const int DelayInSecondsBeforeNextExecution = 10;
+    private readonly ILogger<OutboxSenderTrigger> _logger;
 
     public OutboxSenderTrigger(
         IServiceProvider serviceProvider,
         ILogger<OutboxSenderTrigger> logger)
         : base(serviceProvider, logger, TimeSpan.FromSeconds(DelayInSecondsBeforeNextExecution))
     {
+        _logger = logger;
     }
 
     protected override async Task ExecuteAsync(IOutboxSender outboxSender)
     {
+        _logger.LogInformation("LOOK AT ME: Executing OutboxSenderTrigger...");
         Console.WriteLine("LOOK AT ME: OutboxSenderTrigger.ExecuteAsync");
         await outboxSender.SendAsync().ConfigureAwait(false);
     }
