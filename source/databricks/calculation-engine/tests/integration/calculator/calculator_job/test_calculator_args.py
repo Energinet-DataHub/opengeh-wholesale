@@ -12,9 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from azure.identity import ClientSecretCredential
+import re
 import pytest
-from unittest.mock import patch, Mock
 from package.calculator_args import _get_valid_args_or_throw
 
 
@@ -60,3 +59,18 @@ def test__get_valid_args_or_throw__accepts_parameters_from_process_manager(
 
     # Act and Assert
     _get_valid_args_or_throw(dummy_job_parameters)
+
+
+def test__get_valid_args_or_throw__raise_exception_on_unknown_process_type(dummy_job_parameters: list[str]) -> None:
+
+    # Arrange
+    unknown_process_type = "unknown_process_type"
+    pattern = r'--batch-process-type=(\w+)'
+
+    for i, item in enumerate(dummy_job_parameters):
+        if re.search(pattern, item):
+            dummy_job_parameters[i] = re.sub(pattern, f'--batch-process-type={unknown_process_type}', item)
+            break
+
+    with pytest.raises(SystemExit):
+        _get_valid_args_or_throw(dummy_job_parameters)

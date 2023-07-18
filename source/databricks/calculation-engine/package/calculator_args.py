@@ -58,7 +58,7 @@ def get_calculator_args() -> CalculatorArgs:
         batch_period_start_datetime=job_args.batch_period_start_datetime,
         batch_period_end_datetime=job_args.batch_period_end_datetime,
         batch_execution_time_start=job_args.batch_execution_time_start,
-        batch_process_type=_map_process_type(job_args.batch_process_type),
+        batch_process_type=job_args.batch_process_type,
         time_zone=time_zone,
     )
 
@@ -76,7 +76,7 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
     p.add("--batch-grid-areas", type=valid_list, required=True)
     p.add("--batch-period-start-datetime", type=valid_date, required=True)
     p.add("--batch-period-end-datetime", type=valid_date, required=True)
-    p.add("--batch-process-type", type=str, required=True)
+    p.add("--batch-process-type", type=ProcessType, required=True)
     p.add("--batch-execution-time-start", type=valid_date, required=True)
 
     args, unknown_args = p.parse_known_args(args=command_line_args)
@@ -88,18 +88,3 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
         raise Exception("Grid areas must be a list")
 
     return args
-
-
-def _map_process_type(process_type: str) -> ProcessType:
-    if process_type == "Aggregation":
-        return ProcessType.AGGREGATION
-    elif process_type == "BalanceFixing":
-        return ProcessType.BALANCE_FIXING
-    elif process_type == "FirstCorrectionSettlement":
-        return ProcessType.FIRST_CORRECTION_SETTLEMENT
-    elif process_type == "SecondCorrectionSettlement":
-        return ProcessType.SECOND_CORRECTION_SETTLEMENT
-    elif process_type == "ThirdCorrectionSettlement":
-        return ProcessType.THIRD_CORRECTION_SETTLEMENT
-    else:
-        raise ValueError(f"Unexpected process type, {process_type}")
