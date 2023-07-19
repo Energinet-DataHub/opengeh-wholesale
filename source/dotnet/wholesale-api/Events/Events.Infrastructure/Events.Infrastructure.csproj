@@ -8,6 +8,7 @@
     <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.14.0" />
     <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="7.4.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Logging.AzureAppServices" Version="7.0.9" />
     <PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" Version="7.0.0" />
     <PackageReference Include="Google.Protobuf" Version="3.23.3" />
     <PackageReference Include="Grpc.Tools" Version="2.56.0" PrivateAssets="All" />
