@@ -29,15 +29,18 @@ public class BatchController : V3ControllerBase
     private readonly IBatchesClient _batchesClient;
     private readonly ICreateBatchHandler _createBatchHandler;
     private readonly IUserContext<FrontendUser> _userContext;
+    private readonly ILogger<BatchController> _logger;
 
     public BatchController(
         IBatchesClient batchesClient,
         ICreateBatchHandler createBatchHandler,
-        IUserContext<FrontendUser> userContext)
+        IUserContext<FrontendUser> userContext,
+        ILogger<BatchController> logger)
     {
         _batchesClient = batchesClient;
         _createBatchHandler = createBatchHandler;
         _userContext = userContext;
+        _logger = logger;
     }
 
     /// <summary>
@@ -90,6 +93,7 @@ public class BatchController : V3ControllerBase
         [FromQuery] DateTimeOffset? periodStart,
         [FromQuery] DateTimeOffset? periodEnd)
     {
+        _logger.LogInformation("TESTTESTTEST: SearchAsync");
         var batches = await _batchesClient.SearchAsync(
             gridAreaCodes ?? Array.Empty<string>(),
             BatchStateMapper.MapState(executionState),
