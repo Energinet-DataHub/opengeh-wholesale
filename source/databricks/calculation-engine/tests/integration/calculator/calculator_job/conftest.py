@@ -16,7 +16,7 @@ from datetime import datetime
 from pyspark.sql import SparkSession, DataFrame
 import pytest
 from typing import Callable, Optional
-from unittest.mock import patch, Mock
+from unittest.mock import patch
 
 from . import configuration as C
 from package.calculator_job import (
@@ -53,12 +53,33 @@ def test_data_job_parameters(
 
 
 @pytest.fixture(scope="session")
+def grid_loss_responsible() -> list:
+
+    default_valid_from = datetime.strptime("2000-01-01T23:00:00+0000", "%Y-%m-%dT%H:%M:%S%z")
+    return [
+        ('571313180480500149', 804, default_valid_from, None, 'production', '8100000000108'),
+        ('570715000000682292', 512, default_valid_from, None, 'production', '5790002437717'),
+        ('571313154313676325', 543, default_valid_from, None, 'production', '5790002437717'),
+        ('571313153313676335', 533, default_valid_from, None, 'production', '5790002437717'),
+        ('571313154391364862', 584, default_valid_from, None, 'production', '5790002437717'),
+        ('579900000000000026', 990, default_valid_from, None, 'production', '4260024590017'),
+        ('571313180300014979', 803, default_valid_from, None, 'production', '8100000000108'),
+        ('571313180400100657', 804, default_valid_from, None, 'consumption', '8100000000115'),
+        ('578030000000000012', 803, default_valid_from, None, 'consumption', '8100000000108'),
+        ('571313154312753911', 543, default_valid_from, None, 'consumption', '5790001103095'),
+        ('571313153308031507', 533, default_valid_from, None, 'consumption', '5790001102357'),
+        ('571313158410300060', 584, default_valid_from, None, 'consumption', '5790001103095')
+    ]
+
+
+@pytest.fixture(scope="session")
 def executed_calculation_job(
     spark: SparkSession,
     test_data_job_parameters: CalculatorArgs,
     test_files_folder_path: str,
     data_lake_path: str,
     migrations_executed: None,
+    grid_loss_responsible: list,
 ) -> None:
     """Execute the calculator job.
     This is the act part of a test in the arrange-act-assert paradigm.
@@ -86,7 +107,8 @@ def executed_calculation_job(
         mode="overwrite",
     )
 
-    _start_calculator(test_data_job_parameters, spark)
+    with patch("package.calculation_input._get_all_grid_loss_responsible", grid_loss_responsible):
+        _start_calculator(test_data_job_parameters, spark)
 
 
 @pytest.fixture(scope="session")
