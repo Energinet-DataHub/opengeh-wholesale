@@ -62,7 +62,7 @@ public class BatchExecutionStateInfrastructureService : IBatchExecutionStateInfr
                 if (executionState != batch.ExecutionState)
                 {
                     _logger.LogInformation(
-                        @"TESTTESTTEST: Updating execution state for run ID {BatchRunId} from {OldState} to {NewState}",
+                        "TESTTESTTEST: Updating execution state for run ID {BatchRunId} from {OldState} to {NewState}",
                         batch.CalculationId,
                         batch.ExecutionState,
                         executionState);
