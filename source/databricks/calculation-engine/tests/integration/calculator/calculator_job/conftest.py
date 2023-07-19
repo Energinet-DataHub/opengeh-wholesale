@@ -54,16 +54,20 @@ def test_data_job_parameters(
     )
 
 
-@pytest.fixture(scope="session")
-def testable_grid_loss_responsible() -> list:
+# @pytest.fixture(scope="session")
+# def testable_grid_loss_responsible() -> list:
+    # Read GridLossResponsible from file
+   
+    
+        
 
-    default_valid_from = datetime.strptime("2000-01-01T23:00:00+0000", "%Y-%m-%dT%H:%M:%S%z")
-    return [
-        ('578710000000000192', 805, default_valid_from, None, 'consumption', '8100000000108'),
-        ('578710000000000210', 806, default_valid_from, None, 'consumption', '8100000000108'),
-        ('578710000000000514', 805, default_valid_from, None, 'production', '8100000000108'),
-        ('578710000000000501', 806, default_valid_from, None, 'production', '8100000000108'),
-    ]
+    # default_valid_from = datetime.strptime("2000-01-01T23:00:00+0000", "%Y-%m-%dT%H:%M:%S%z")
+    # return [
+    #     ('578710000000000192', 805, default_valid_from, None, 'consumption', '8100000000108'),
+    #     ('578710000000000210', 806, default_valid_from, None, 'consumption', '8100000000108'),
+    #     ('578710000000000514', 805, default_valid_from, None, 'production', '8100000000108'),
+    #     ('578710000000000501', 806, default_valid_from, None, 'production', '8100000000108'),
+    # ]
 
 
 @pytest.fixture(scope="session")
@@ -73,7 +77,6 @@ def executed_calculation_job(
     test_files_folder_path: str,
     data_lake_path: str,
     migrations_executed: None,
-    testable_grid_loss_responsible: list,
 ) -> None:
     """Execute the calculator job.
     This is the act part of a test in the arrange-act-assert paradigm.
@@ -101,7 +104,9 @@ def executed_calculation_job(
         mode="overwrite",
     )
 
-    with patch.object(grid_loss_responsible, '_get_all_grid_loss_responsible', return_value=testable_grid_loss_responsible):
+    testable_grid_loss_responsible_df = spark.read.csv(f"{test_files_folder_path}/GridLossResponsible.csv", header=True)
+
+    with patch.object(grid_loss_responsible, '_get_all_grid_loss_responsible', return_value=testable_grid_loss_responsible_df):
         _start_calculator(test_data_job_parameters, spark)
 
 
