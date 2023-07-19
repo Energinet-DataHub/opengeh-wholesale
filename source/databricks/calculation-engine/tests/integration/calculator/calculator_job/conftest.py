@@ -58,18 +58,10 @@ def grid_loss_responsible() -> list:
 
     default_valid_from = datetime.strptime("2000-01-01T23:00:00+0000", "%Y-%m-%dT%H:%M:%S%z")
     return [
-        ('571313180480500149', 804, default_valid_from, None, 'production', '8100000000108'),
-        ('570715000000682292', 512, default_valid_from, None, 'production', '5790002437717'),
-        ('571313154313676325', 543, default_valid_from, None, 'production', '5790002437717'),
-        ('571313153313676335', 533, default_valid_from, None, 'production', '5790002437717'),
-        ('571313154391364862', 584, default_valid_from, None, 'production', '5790002437717'),
-        ('579900000000000026', 990, default_valid_from, None, 'production', '4260024590017'),
-        ('571313180300014979', 803, default_valid_from, None, 'production', '8100000000108'),
-        ('571313180400100657', 804, default_valid_from, None, 'consumption', '8100000000115'),
-        ('578030000000000012', 803, default_valid_from, None, 'consumption', '8100000000108'),
-        ('571313154312753911', 543, default_valid_from, None, 'consumption', '5790001103095'),
-        ('571313153308031507', 533, default_valid_from, None, 'consumption', '5790001102357'),
-        ('571313158410300060', 584, default_valid_from, None, 'consumption', '5790001103095')
+        ('578710000000000192', 805, default_valid_from, None, 'consumption', '8100000000108'),
+        ('578710000000000210', 806, default_valid_from, None, 'consumption', '8100000000108'),
+        ('578710000000000514', 805, default_valid_from, None, 'production', '8100000000108'),
+        ('578710000000000501', 806, default_valid_from, None, 'production', '8100000000108'),
     ]
 
 
