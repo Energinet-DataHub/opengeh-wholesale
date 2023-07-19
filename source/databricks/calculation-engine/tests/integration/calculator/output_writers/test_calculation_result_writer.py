@@ -24,6 +24,7 @@ import uuid
 from package.codelists import (
     AggregationLevel,
     MeteringPointResolution,
+    ProcessType,
     TimeSeriesQuality,
     TimeSeriesType,
 )
@@ -37,7 +38,7 @@ DEFAULT_GRID_AREA = "105"
 DEFAULT_FROM_GRID_AREA = "106"
 DEFAULT_ENERGY_SUPPLIER_ID = "9876543210123"
 DEFAULT_BALANCE_RESPONSIBLE_ID = "1234567890123"
-DEFAULT_PROCESS_TYPE = "BalanceFixing"
+DEFAULT_PROCESS_TYPE = ProcessType.BALANCE_FIXING
 DEFAULT_BATCH_EXECUTION_START = datetime(2022, 6, 10, 13, 15)
 DEFAULT_QUANTITY = "1.1"
 DEFAULT_QUALITY = TimeSeriesQuality.measured
@@ -150,7 +151,7 @@ batch_id = "some batch id"  # Needed in both test param and test implementation
     [
         (ResultTableColName.batch_id, batch_id),
         (ResultTableColName.batch_execution_time_start, DEFAULT_BATCH_EXECUTION_START),
-        (ResultTableColName.batch_process_type, DEFAULT_PROCESS_TYPE),
+        (ResultTableColName.batch_process_type, DEFAULT_PROCESS_TYPE.value),
         (ResultTableColName.time_series_type, DEFAULT_TIME_SERIES_TYPE.value),
         (ResultTableColName.grid_area, DEFAULT_GRID_AREA),
         (ResultTableColName.from_grid_area, DEFAULT_FROM_GRID_AREA),

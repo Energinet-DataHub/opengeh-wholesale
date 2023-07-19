@@ -23,6 +23,7 @@ from package.calculator_job import (
     _start_calculator,
 )
 from package.calculator_args import CalculatorArgs
+from package.codelists.process_type import ProcessType
 from package.schemas import time_series_point_schema, metering_point_period_schema
 from package.output_writers.calculation_result_writer import (
     DATABASE_NAME,
@@ -40,7 +41,7 @@ def test_data_job_parameters(
             "data_storage_account_name": "foo",
             "wholesale_container_path": f"{data_lake_path}",
             "batch_id": C.executed_batch_id,
-            "batch_process_type": "BalanceFixing",
+            "batch_process_type": ProcessType.BALANCE_FIXING,
             "batch_grid_areas": [805, 806],
             "batch_period_start_datetime": timestamp_factory(
                 "2018-01-01T23:00:00.000Z"
