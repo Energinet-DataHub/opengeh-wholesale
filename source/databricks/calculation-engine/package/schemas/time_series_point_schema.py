@@ -14,13 +14,11 @@
 
 from pyspark.sql.types import (
     DecimalType,
-    IntegerType,
     StructField,
     StringType,
     TimestampType,
     StructType,
 )
-from package.constants import Colname
 
 """
 Schema for time series points input data used by the calculator job.

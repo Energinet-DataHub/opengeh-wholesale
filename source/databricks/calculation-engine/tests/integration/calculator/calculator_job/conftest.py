@@ -54,22 +54,6 @@ def test_data_job_parameters(
     )
 
 
-# @pytest.fixture(scope="session")
-# def testable_grid_loss_responsible() -> list:
-    # Read GridLossResponsible from file
-   
-    
-        
-
-    # default_valid_from = datetime.strptime("2000-01-01T23:00:00+0000", "%Y-%m-%dT%H:%M:%S%z")
-    # return [
-    #     ('578710000000000192', 805, default_valid_from, None, 'consumption', '8100000000108'),
-    #     ('578710000000000210', 806, default_valid_from, None, 'consumption', '8100000000108'),
-    #     ('578710000000000514', 805, default_valid_from, None, 'production', '8100000000108'),
-    #     ('578710000000000501', 806, default_valid_from, None, 'production', '8100000000108'),
-    # ]
-
-
 @pytest.fixture(scope="session")
 def executed_calculation_job(
     spark: SparkSession,
