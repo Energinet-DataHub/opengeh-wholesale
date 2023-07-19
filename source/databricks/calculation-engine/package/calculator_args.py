@@ -21,6 +21,7 @@ import sys
 from package.args_helper import valid_date, valid_list
 import package.environment_variables as env_vars
 from package import log, infrastructure
+from package.codelists.process_type import ProcessType
 
 
 @dataclass
@@ -32,7 +33,7 @@ class CalculatorArgs:
     batch_grid_areas: list[str]
     batch_period_start_datetime: datetime
     batch_period_end_datetime: datetime
-    batch_process_type: str
+    batch_process_type: ProcessType
     batch_execution_time_start: datetime
     time_zone: str
 
@@ -75,7 +76,7 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
     p.add("--batch-grid-areas", type=valid_list, required=True)
     p.add("--batch-period-start-datetime", type=valid_date, required=True)
     p.add("--batch-period-end-datetime", type=valid_date, required=True)
-    p.add("--batch-process-type", type=str, required=True)
+    p.add("--batch-process-type", type=ProcessType, required=True)
     p.add("--batch-execution-time-start", type=valid_date, required=True)
 
     args, unknown_args = p.parse_known_args(args=command_line_args)

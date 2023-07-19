@@ -18,7 +18,7 @@ from pyspark.sql.functions import col, lit, first
 import pyspark.sql.functions as F
 from pyspark.sql.window import Window
 
-from package.codelists import TimeSeriesType, AggregationLevel
+from package.codelists import TimeSeriesType, AggregationLevel, ProcessType
 from package.constants import Colname, ResultTableColName, DATABASE_NAME, RESULT_TABLE_NAME
 
 
@@ -26,11 +26,11 @@ class CalculationResultWriter:
     def __init__(
         self,
         batch_id: str,
-        batch_process_type: str,
+        batch_process_type: ProcessType,
         batch_execution_time_start: datetime,
     ):
         self.__batch_id = batch_id
-        self.__batch_process_type = batch_process_type
+        self.__batch_process_type = batch_process_type.value
         self.__batch_execution_time_start = batch_execution_time_start
 
     def write(
