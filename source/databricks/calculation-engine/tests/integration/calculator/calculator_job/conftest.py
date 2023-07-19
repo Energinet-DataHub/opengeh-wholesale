@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from azure.identity import ClientSecretCredential
 from datetime import datetime
 from pyspark.sql import SparkSession, DataFrame
 import pytest
@@ -38,10 +39,11 @@ def test_data_job_parameters(
     timestamp_factory: Callable[[str], Optional[datetime]],
 ) -> CalculatorArgs:
     return CalculatorArgs(data_storage_account_name="foo",
+                          data_storage_account_credentials=ClientSecretCredential("foo", "foo", "foo"),
                           wholesale_container_path=f"{data_lake_path}",
                           batch_id=C.executed_batch_id,
                           batch_process_type=ProcessType.BALANCE_FIXING,
-                          batch_grid_areas=[805, 806],
+                          batch_grid_areas=["805", "806"],
                           batch_period_start_datetime=timestamp_factory("2018-01-01T23:00:00.000Z"),
                           batch_period_end_datetime=timestamp_factory("2018-01-03T23:00:00.000Z"),
                           batch_execution_time_start=timestamp_factory("2018-01-05T23:00:00.000Z"),
