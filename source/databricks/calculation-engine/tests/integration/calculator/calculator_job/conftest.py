@@ -22,6 +22,7 @@ from . import configuration as C
 from package.calculator_job import (
     _start_calculator,
 )
+import package.calculation_input.grid_loss_responsible as grid_loss_responsible
 from package.calculator_args import CalculatorArgs
 from package.codelists.process_type import ProcessType
 from package.schemas import time_series_point_schema, metering_point_period_schema
@@ -54,7 +55,7 @@ def test_data_job_parameters(
 
 
 @pytest.fixture(scope="session")
-def grid_loss_responsible() -> list:
+def testable_grid_loss_responsible() -> list:
 
     default_valid_from = datetime.strptime("2000-01-01T23:00:00+0000", "%Y-%m-%dT%H:%M:%S%z")
     return [
@@ -72,7 +73,7 @@ def executed_calculation_job(
     test_files_folder_path: str,
     data_lake_path: str,
     migrations_executed: None,
-    grid_loss_responsible: list,
+    testable_grid_loss_responsible: list,
 ) -> None:
     """Execute the calculator job.
     This is the act part of a test in the arrange-act-assert paradigm.
@@ -100,7 +101,7 @@ def executed_calculation_job(
         mode="overwrite",
     )
 
-    with patch("package.calculation_input._get_all_grid_loss_responsible", grid_loss_responsible):
+    with patch.object(grid_loss_responsible, '_get_all_grid_loss_responsible', return_value=testable_grid_loss_responsible):
         _start_calculator(test_data_job_parameters, spark)
 
 
