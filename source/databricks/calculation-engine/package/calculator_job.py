@@ -45,13 +45,6 @@ def _start_calculator(args: CalculatorArgs, spark: SparkSession) -> None:
         args.batch_execution_time_start,
     )
     basis_data_writer = BasisDataWriter(args.wholesale_container_path, args.batch_id)
-    
-    enriched_time_series_point_df = setup.get_enriched_time_series_points_df(
-        time_series_points_df,
-        metering_points_periods_df,
-        period_start_datetime,
-        period_end_datetime,
-    )
 
     energy_calculation.execute(
         basis_data_writer,
