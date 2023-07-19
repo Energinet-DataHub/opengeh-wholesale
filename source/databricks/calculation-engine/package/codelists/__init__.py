@@ -21,5 +21,4 @@ from .metering_point_resolution import MeteringPointResolution
 from .charge_type import ChargeType
 from .time_series_type import TimeSeriesType
 from .aggregation_level import AggregationLevel
-from .market_role import MarketRole
 from .process_type import ProcessType
