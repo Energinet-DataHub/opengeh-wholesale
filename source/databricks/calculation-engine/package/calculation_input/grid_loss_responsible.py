@@ -42,12 +42,11 @@ GRID_AREA_RESPONSIBLE = [
     ('571313158410300060', 584, DEFAULT_FROM_TIME, None, 'E17', '5790001103095')
 ]
 
-    
+
 def get_grid_loss_responsible(grid_areas: list[str]) -> DataFrame:
+
     # script_dir = os.path.dirname(os.path.normpath(__file__))
-
     # file_path = os.path.join(script_dir, 'GridLossResponsible.csv')
-
     # grid_loss_responsible_df = spark.read.option("header", True).csv(file_path, schema=schema)
 
     grid_loss_responsible_df = _get_all_grid_loss_responsible()
