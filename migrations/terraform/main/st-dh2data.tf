@@ -12,21 +12,44 @@ module "st_dh2data" {
   private_endpoint_subnet_id      = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   private_dns_resource_group_name = var.shared_resources_resource_group_name
   ip_rules                        = data.azurerm_key_vault_secret.pir_hosted_deployment_agents.value
-  containers = [
-    {
-      name = "dh2-metering-point-history"
-    },
-    {
-      name = "dh2-timeseries"
-    },
-    {
-      name = "dh2-timeseries-synchronization"
-    }
-  ]
 }
+
+#---- Role assignments
 
 resource "azurerm_role_assignment" "ra_dh2data_contributor" {
   scope                = module.st_dh2data.id
   role_definition_name = "Storage Blob Data Contributor"
   principal_id         = azuread_service_principal.spn_databricks.id
+}
+
+#---- Containers
+
+resource "azurerm_storage_container" "dh2_metering_point_history" {
+  name                  = "dh2-metering-point-history"
+  storage_account_name  = module.st_dh2data.name
+  container_access_type = "private"
+}
+
+resource "azurerm_storage_container" "dh2_timeseries" {
+  name                  = "dh2-timeseries"
+  storage_account_name  = module.st_dh2data.name
+  container_access_type = "private"
+}
+
+resource "azurerm_storage_container" "dh2_timeseries_synchronization" {
+  name                  = "dh2-timeseries-synchronization"
+  storage_account_name  = module.st_dh2data.name
+  container_access_type = "private"
+}
+
+resource "azurerm_storage_container" "dh2_charges" {
+  name                  = "dh2-charges"
+  storage_account_name  = module.st_dh2data.name
+  container_access_type = "private"
+}
+
+resource "azurerm_storage_container" "dh2_charge_links" {
+  name                  = "dh2-charge-links"
+  storage_account_name  = module.st_dh2data.name
+  container_access_type = "private"
 }

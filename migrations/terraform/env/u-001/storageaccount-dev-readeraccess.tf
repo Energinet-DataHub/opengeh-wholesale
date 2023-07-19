@@ -23,3 +23,9 @@ resource "azurerm_role_assignment" "dh2dropzone_readeraccess_group_name" {
   role_definition_name = "Storage Blob Data Contributor"
   principal_id         = data.azuread_group.datalake_readeraccess_group_name.object_id
 }
+
+resource "azurerm_role_assignment" "dh2dropzonearch_readeraccess_group_name" {
+  scope                = module.st_dh2dropzone_archive.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = data.azuread_group.datalake_readeraccess_group_name.object_id
+}
