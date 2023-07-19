@@ -23,7 +23,7 @@ from pyspark.sql import DataFrame
 from typing import Tuple
 
 
-def calculate_balance_fixing(
+def execute(
     basis_data_writer: BasisDataWriter,
     calculation_result_writer: CalculationResultWriter,
     metering_points_periods_df: DataFrame,
@@ -51,14 +51,14 @@ def calculate_balance_fixing(
     enriched_time_series_point_df = setup.transform_hour_to_quarter(
         enriched_time_series_point_df
     )
-    _calculate(
+    _aggregate(
         calculation_result_writer,
         enriched_time_series_point_df,
         grid_loss_responsible_df,
     )
 
 
-def _calculate(
+def _aggregate(
     result_writer: CalculationResultWriter,
     enriched_time_series_point_df: DataFrame,
     grid_loss_responsible_df: DataFrame,
