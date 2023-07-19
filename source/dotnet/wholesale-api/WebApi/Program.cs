@@ -23,6 +23,14 @@ public static class Program
 
     public static IHostBuilder CreateWebHostBuilder(string[] args) =>
         Host.CreateDefaultBuilder(args)
+            .ConfigureLogging((context, logging) =>
+            {
+                logging.ClearProviders();
+                logging.AddConfiguration(context.Configuration.GetSection("Logging"));
+                logging.AddDebug();
+                logging.AddConsole();
+                logging.AddAzureWebAppDiagnostics();
+            })
             .ConfigureWebHostDefaults(webBuilder =>
             {
                 webBuilder.UseStartup<Startup>();
