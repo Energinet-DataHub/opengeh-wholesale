@@ -35,8 +35,7 @@ from package.output_writers.calculation_result_writer import (
 
 @pytest.fixture(scope="session")
 def test_data_job_parameters(
-    data_lake_path: str,
-    timestamp_factory: Callable[[str], Optional[datetime]],
+    data_lake_path: str
 ) -> CalculatorArgs:
     return CalculatorArgs(data_storage_account_name="foo",
                           data_storage_account_credentials=ClientSecretCredential("foo", "foo", "foo"),
@@ -44,9 +43,9 @@ def test_data_job_parameters(
                           batch_id=C.executed_batch_id,
                           batch_process_type=ProcessType.BALANCE_FIXING,
                           batch_grid_areas=["805", "806"],
-                          batch_period_start_datetime=timestamp_factory("2018-01-01T23:00:00.000Z"),
-                          batch_period_end_datetime=timestamp_factory("2018-01-03T23:00:00.000Z"),
-                          batch_execution_time_start=timestamp_factory("2018-01-05T23:00:00.000Z"),
+                          batch_period_start_datetime=datetime(2018, 1, 1, 23, 0, 0),
+                          batch_period_end_datetime=datetime(2018, 1, 3, 23, 0, 0),
+                          batch_execution_time_start=datetime(2018, 1, 5, 23, 0, 0),
                           time_zone="Europe/Copenhagen",)
 
 
