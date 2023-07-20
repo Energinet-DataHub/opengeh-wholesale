@@ -16,7 +16,7 @@ from datetime import datetime
 
 import package.steps.aggregation as agg_steps
 import package.steps.setup as setup
-from package.codelists import TimeSeriesType, AggregationLevel
+from package.codelists import TimeSeriesType, AggregationLevel, ProcessType
 from package.output_writers.basis_data_writer import BasisDataWriter
 from package.output_writers.calculation_result_writer import CalculationResultWriter
 from pyspark.sql import DataFrame
@@ -24,27 +24,26 @@ from typing import Tuple
 
 
 def execute(
-    basis_data_writer: BasisDataWriter,
-    calculation_result_writer: CalculationResultWriter,
+    batch_id: str,
+    batch_process_type: ProcessType,
+    batch_execution_time_start: datetime,
+    wholesale_container_path: str,
     metering_points_periods_df: DataFrame,
-    time_series_points_df: DataFrame,
+    enriched_time_series_point_df: DataFrame,
     grid_loss_responsible_df: DataFrame,
-    period_start_datetime: datetime,
-    period_end_datetime: datetime,
     time_zone: str,
 ) -> None:
-    enriched_time_series_point_df = setup.get_enriched_time_series_points_df(
-        time_series_points_df,
-        metering_points_periods_df,
-        period_start_datetime,
-        period_end_datetime,
+
+    calculation_result_writer = CalculationResultWriter(
+        batch_id,
+        batch_process_type,
+        batch_execution_time_start,
     )
 
+    basis_data_writer = BasisDataWriter(wholesale_container_path, batch_id)
     basis_data_writer.write(
         metering_points_periods_df,
         enriched_time_series_point_df,
-        period_start_datetime,
-        period_end_datetime,
         time_zone,
     )
 

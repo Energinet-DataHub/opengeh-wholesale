@@ -21,10 +21,12 @@ from package import (
     initialize_spark,
     log,
 )
+
 from package.output_writers.basis_data_writer import BasisDataWriter
 from package.output_writers.calculation_result_writer import CalculationResultWriter
 import package.calculation_input as input
 from package.calculator_args import CalculatorArgs, get_calculator_args
+import package.steps.setup as setup
 from package.storage_account_access import islocked
 
 
@@ -38,22 +40,21 @@ def _start_calculator(args: CalculatorArgs, spark: SparkSession) -> None:
         args.batch_period_end_datetime,
         args.batch_grid_areas,
     )
-
-    calculation_result_writer = CalculationResultWriter(
-        args.batch_id,
-        args.batch_process_type,
-        args.batch_execution_time_start,
-    )
-    basis_data_writer = BasisDataWriter(args.wholesale_container_path, args.batch_id)
-
-    energy_calculation.execute(
-        basis_data_writer,
-        calculation_result_writer,
-        metering_point_periods_df,
+    
+    enriched_time_series_point_df = setup.get_enriched_time_series_points_df(
         time_series_points_df,
-        grid_loss_responsible_df,
+        metering_point_periods_df,
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
+    )
+
+
+   
+    energy_calculation.execute(
+        calculation_result_writer,
+        metering_point_periods_df,
+        enriched_time_series_point_df,
+        grid_loss_responsible_df,
         args.time_zone,
     )
 
