@@ -4,7 +4,6 @@
     <RootNamespace>Energinet.DataHub.Wholesale.Batches.Interfaces</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.AzureAppServices" Version="7.0.9" />
     <PackageReference Include="NodaTime" Version="3.1.9" />
     <PackageReference Update="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.3">
       <PrivateAssets>all</PrivateAssets>

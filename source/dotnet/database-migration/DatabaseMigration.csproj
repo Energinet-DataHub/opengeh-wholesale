@@ -55,7 +55,6 @@ limitations under the License.
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
-      <PackageReference Include="Microsoft.Extensions.Logging.AzureAppServices" Version="7.0.9" />
     </ItemGroup>
 
     <ItemGroup>
