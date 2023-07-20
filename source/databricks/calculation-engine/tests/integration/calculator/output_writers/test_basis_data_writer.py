@@ -168,13 +168,7 @@ def test__write__writes_to_paths_that_match_contract(
     sut = BasisDataWriter(str(tmpdir), DEFAULT_BATCH_ID)
 
     # Act
-    sut.write(
-        metering_point_period_df,
-        enriched_time_series,
-        PERIOD_START,
-        PERIOD_END,
-        TIME_ZONE,
-    )
+    sut.write(metering_point_period_df, enriched_time_series, TIME_ZONE)
 
     # Assert
     for file_type in _get_all_basis_data_file_types():

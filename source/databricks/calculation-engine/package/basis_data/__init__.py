@@ -35,22 +35,9 @@ from datetime import datetime
 
 def get_master_basis_data_df(
     metering_point_df: DataFrame,
-    period_start_datetime: datetime,
-    period_end_datetime: datetime,
 ) -> DataFrame:
     return (
-        metering_point_df.withColumn(
-            Colname.from_date,
-            when(
-                col(Colname.from_date) < period_start_datetime, period_start_datetime
-            ).otherwise(col(Colname.from_date)),
-        )
-        .withColumn(
-            Colname.to_date,
-            when(
-                col(Colname.to_date) > period_end_datetime, period_end_datetime
-            ).otherwise(col(Colname.to_date)),
-        )
+        metering_point_df
         .select(
             col(Colname.metering_point_id).alias(BasisDataColname.metering_point_id),
             col(Colname.from_date).alias(BasisDataColname.valid_from),
