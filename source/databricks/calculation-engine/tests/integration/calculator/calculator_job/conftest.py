@@ -12,15 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from azure.identity import ClientSecretCredential
 from datetime import datetime
 from pyspark.sql import SparkSession, DataFrame
 import pytest
 from typing import Callable, Optional
+from unittest.mock import patch
 
 from . import configuration as C
 from package.calculator_job import (
     _start_calculator,
 )
+import package.calculation_input.grid_loss_responsible as grid_loss_responsible
 from package.calculator_args import CalculatorArgs
 from package.codelists.process_type import ProcessType
 from package.schemas import time_series_point_schema, metering_point_period_schema
@@ -32,24 +35,18 @@ from package.output_writers.calculation_result_writer import (
 
 @pytest.fixture(scope="session")
 def test_data_job_parameters(
-    data_lake_path: str,
-    timestamp_factory: Callable[[str], Optional[datetime]],
+    data_lake_path: str
 ) -> CalculatorArgs:
-    return C.DictObj(
-        {
-            "data_storage_account_name": "foo",
-            "wholesale_container_path": f"{data_lake_path}",
-            "batch_id": C.executed_batch_id,
-            "batch_process_type": ProcessType.BALANCE_FIXING,
-            "batch_grid_areas": [805, 806],
-            "batch_period_start_datetime": timestamp_factory(
-                "2018-01-01T23:00:00.000Z"
-            ),
-            "batch_period_end_datetime": timestamp_factory("2018-01-03T23:00:00.000Z"),
-            "batch_execution_time_start": timestamp_factory("2018-01-05T23:00:00.000Z"),
-            "time_zone": "Europe/Copenhagen",
-        }
-    )
+    return CalculatorArgs(data_storage_account_name="foo",
+                          data_storage_account_credentials=ClientSecretCredential("foo", "foo", "foo"),
+                          wholesale_container_path=f"{data_lake_path}",
+                          batch_id=C.executed_batch_id,
+                          batch_process_type=ProcessType.BALANCE_FIXING,
+                          batch_grid_areas=["805", "806"],
+                          batch_period_start_datetime=datetime(2018, 1, 1, 23, 0, 0),
+                          batch_period_end_datetime=datetime(2018, 1, 3, 23, 0, 0),
+                          batch_execution_time_start=datetime(2018, 1, 5, 23, 0, 0),
+                          time_zone="Europe/Copenhagen",)
 
 
 @pytest.fixture(scope="session")
@@ -86,7 +83,10 @@ def executed_calculation_job(
         mode="overwrite",
     )
 
-    _start_calculator(test_data_job_parameters, spark)
+    testable_grid_loss_responsible_df = spark.read.csv(f"{test_files_folder_path}/GridLossResponsible.csv", header=True)
+
+    with patch.object(grid_loss_responsible, '_get_all_grid_loss_responsible', return_value=testable_grid_loss_responsible_df):
+        _start_calculator(test_data_job_parameters, spark)
 
 
 @pytest.fixture(scope="session")
