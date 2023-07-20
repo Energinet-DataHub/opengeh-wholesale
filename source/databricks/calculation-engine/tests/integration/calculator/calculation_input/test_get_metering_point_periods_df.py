@@ -300,4 +300,3 @@ def test__get_metering_point_periods_df__to_date_must_not_be_after_period_end(
 
     # Assert
     assert master_basis_data.collect()[0][Colname.to_date] == period_end
-
