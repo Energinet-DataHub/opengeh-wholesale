@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <PackageReference Include="FluentAssertions" Version="6.11.0" />
+      <PackageReference Include="Microsoft.Extensions.Logging.AzureAppServices" Version="7.0.9" />
       <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.3" />
       <PackageReference Include="Moq" Version="4.18.4" />
       <PackageReference Include="System.Linq.Async" Version="6.0.1" />
