@@ -1,4 +1,4 @@
-MeteringPointId,Type,CalculationType,SettlementMethod,GridAreaCode,Resolution,FromGridAreaCode,ToGridAreaCode,ParentMeteringPointId,EnergySupplierId,BalanceResponsibleId,FromDate,ToDate
+metering_point_id,type,calculation_type,settlement_method,grid_area_code,resolution,from_grid_area_code,to_grid_area_code,parent_metering_point_id,energy_supplier_id,balance_responsible_id,from_date,to_date
 578710000000000103,E17,NULL,D01,805,PT1H,NULL,NULL,NULL,8100000000108,1,2018-01-01 23:00:00,2018-01-02 23:00:00
 578710000000000103,E17,NULL,E02,805,PT1H,NULL,NULL,NULL,8100000000108,1,2018-01-02 23:00:00,2018-01-03 23:00:00
 578710000000000104,E17,NULL,E02,805,PT1H,NULL,NULL,NULL,8100000000108,1,2018-01-01 23:00:00,2018-01-02 23:00:00
