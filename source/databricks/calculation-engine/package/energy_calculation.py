@@ -51,14 +51,14 @@ def execute(
     enriched_time_series_point_df = setup.transform_hour_to_quarter(
         enriched_time_series_point_df
     )
-    _aggregate(
+    _calculate(
         calculation_result_writer,
         enriched_time_series_point_df,
         grid_loss_responsible_df,
     )
 
 
-def _aggregate(
+def _calculate(
     result_writer: CalculationResultWriter,
     enriched_time_series_point_df: DataFrame,
     grid_loss_responsible_df: DataFrame,
