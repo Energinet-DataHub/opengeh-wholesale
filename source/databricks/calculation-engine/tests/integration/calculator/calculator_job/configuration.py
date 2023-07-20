@@ -16,16 +16,3 @@ executed_batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"
 energy_supplier_gln_a = "8100000000108"
 energy_supplier_gln_b = "8100000000109"
 balance_responsible_party_gln_a = "1"
-
-
-# Code snippet from https://joelmccune.com/python-dictionary-as-object/
-class DictObj:
-    def __init__(self, in_dict: dict):
-        assert isinstance(in_dict, dict)
-        for key, val in in_dict.items():
-            if isinstance(val, (list, tuple)):
-                setattr(
-                    self, key, [DictObj(x) if isinstance(x, dict) else x for x in val]
-                )
-            else:
-                setattr(self, key, DictObj(val) if isinstance(val, dict) else val)

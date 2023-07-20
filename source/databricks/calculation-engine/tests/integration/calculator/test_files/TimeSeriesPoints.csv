@@ -1,4 +1,4 @@
-MeteringPointId,Quantity,Quality,ObservationTime
+metering_point_id,quantity,quality,observation_time
 578710000000000040,1.733,measured,2018-01-01 00:00:00
 578710000000000040,1.733,measured,2018-01-01 01:00:00
 578710000000000040,1.733,measured,2018-01-01 02:00:00
