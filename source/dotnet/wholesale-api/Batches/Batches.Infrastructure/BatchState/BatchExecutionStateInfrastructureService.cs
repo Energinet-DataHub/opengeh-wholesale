@@ -61,11 +61,6 @@ public class BatchExecutionStateInfrastructureService : IBatchExecutionStateInfr
                 var executionState = BatchStateMapper.MapState(jobState);
                 if (executionState != batch.ExecutionState)
                 {
-                    _logger.LogInformation(
-                        "TESTTESTTEST: Updating execution state for run ID {BatchRunId} from {OldState} to {NewState}",
-                        batch.CalculationId,
-                        batch.ExecutionState,
-                        executionState);
                     HandleNewState(executionState, batch, completedBatches);
                 }
             }
