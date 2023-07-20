@@ -127,8 +127,8 @@ def test__columns_have_expected_values(
 
     assert actual.GRIDAREA == expected_grid_area_code
     assert actual.METERINGPOINTID == expected_meteringpoint_id
-    assert actual.VALIDFROM == str(expected_from_date)
-    assert actual.VALIDTO == str(expected_to_date)
+    assert actual.VALIDFROM == expected_from_date
+    assert actual.VALIDTO == expected_to_date
     assert actual.GRIDAREA == expected_grid_area_code
     assert actual.TOGRIDAREA == expected_to_grid_area
     assert actual.FROMGRIDAREA == expected_from_grid_area
