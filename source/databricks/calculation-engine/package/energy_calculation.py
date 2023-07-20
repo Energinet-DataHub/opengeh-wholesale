@@ -23,7 +23,7 @@ from pyspark.sql import DataFrame
 from typing import Tuple
 
 
-def calculate_balance_fixing(
+def execute(
     basis_data_writer: BasisDataWriter,
     calculation_result_writer: CalculationResultWriter,
     metering_points_periods_df: DataFrame,
