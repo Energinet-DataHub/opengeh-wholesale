@@ -257,13 +257,13 @@ def test__when_period_to_date_is_null__returns_metering_point_period_with_to_dat
 @patch("package.calculation_input.CalculationInputReader")
 def test__get_metering_point_periods_df__from_date_must_not_be_earlier_than_period_start(
     mock_calculation_input_reader: Mock,
-    metering_point_period_df_factory: Callable[..., DataFrame],
+    metering_points_periods_df_factory: Callable[..., DataFrame],
 ) -> None:
 
     # Arrange
     period_start = june_4th
     period_end = june_6th
-    metering_point_period_df = metering_point_period_df_factory(FromDate=june_1th, ToDate=june_10th)
+    metering_point_period_df = metering_points_periods_df_factory(FromDate=june_1th, ToDate=june_10th)
     mock_calculation_input_reader.read_metering_point_periods.return_value = metering_point_period_df
 
     # Act
@@ -275,20 +275,19 @@ def test__get_metering_point_periods_df__from_date_must_not_be_earlier_than_peri
     )
 
     # Assert
-    actual = master_basis_data.first()
-    assert actual.VALIDFROM == period_start
+    assert master_basis_data.collect()[0][Colname.from_date] == period_start
 
 
 @patch("package.calculation_input.CalculationInputReader")
 def test__get_metering_point_periods_df__to_date_must_not_be_after_period_end(
     mock_calculation_input_reader: Mock,
-    metering_point_period_df_factory: Callable[..., DataFrame],
+    metering_points_periods_df_factory: Callable[..., DataFrame],
 ) -> None:
 
     # Arrange
     period_start = june_4th
     period_end = june_6th
-    metering_point_period_df = metering_point_period_df_factory(FromDate=june_1th, ToDate=june_10th)
+    metering_point_period_df = metering_points_periods_df_factory(FromDate=june_1th, ToDate=june_10th)
     mock_calculation_input_reader.read_metering_point_periods.return_value = metering_point_period_df
 
     # Act
@@ -300,5 +299,5 @@ def test__get_metering_point_periods_df__to_date_must_not_be_after_period_end(
     )
 
     # Assert
-    actual = master_basis_data.first()
-    assert actual.VALIDTO == period_end
+    assert master_basis_data.collect()[0][Colname.to_date] == period_end
+
