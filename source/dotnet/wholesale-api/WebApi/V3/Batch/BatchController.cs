@@ -52,6 +52,7 @@ public class BatchController : V3ControllerBase
     [Produces("application/json", Type = typeof(Guid))]
     public async Task<Guid> CreateAsync([FromBody][Required] BatchRequestDto batchRequestDto)
     {
+        _logger.LogInformation("TESTTESTTEST: CreateAsync");
         return await _createBatchHandler.HandleAsync(new CreateBatchCommand(
             ProcessTypeMapper.Map(batchRequestDto.ProcessType),
             batchRequestDto.GridAreaCodes,
@@ -69,6 +70,7 @@ public class BatchController : V3ControllerBase
     [Produces("application/json", Type = typeof(BatchDto))]
     public async Task<IActionResult> GetAsync([FromRoute]Guid batchId)
     {
+        _logger.LogInformation("TESTTESTTEST: GetBatch");
         return Ok(await _batchesClient.GetAsync(batchId).ConfigureAwait(false));
     }
 
