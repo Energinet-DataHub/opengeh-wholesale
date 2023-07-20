@@ -281,6 +281,7 @@ def test__get_metering_point_periods_df__from_date_must_not_be_earlier_than_peri
 
 @patch("package.calculation_input.CalculationInputReader")
 def test__get_metering_point_periods_df__to_date_must_not_be_after_period_end(
+    mock_calculation_input_reader: Mock,
     metering_point_period_df_factory: Callable[..., DataFrame],
 ) -> None:
 
@@ -288,10 +289,11 @@ def test__get_metering_point_periods_df__to_date_must_not_be_after_period_end(
     period_start = june_4th
     period_end = june_6th
     metering_point_period_df = metering_point_period_df_factory(FromDate=june_1th, ToDate=june_10th)
+    mock_calculation_input_reader.read_metering_point_periods.return_value = metering_point_period_df
 
     # Act
     master_basis_data = get_metering_point_periods_df(
-        metering_point_period_df,
+        mock_calculation_input_reader,
         period_start,
         period_end,
         [grid_area_code],
