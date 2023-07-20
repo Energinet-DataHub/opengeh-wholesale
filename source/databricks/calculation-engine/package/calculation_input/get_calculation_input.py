@@ -26,7 +26,7 @@ def get_calculation_input(
     batch_grid_areas: list[str],
 ) -> Tuple[DataFrame, DataFrame, DataFrame]:
 
-    calculation_input_reader = input.CalculationInputReader(spark, wholesale_container_path)
+    calculation_input_reader = CalculationInputReader(spark, wholesale_container_path)
 
     metering_point_periods_df = get_metering_point_periods_df(
         calculation_input_reader,
