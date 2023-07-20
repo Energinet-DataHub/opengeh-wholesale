@@ -21,7 +21,6 @@ from package import (
     initialize_spark,
     log,
 )
-
 from package.output_writers.basis_data_writer import BasisDataWriter
 from package.output_writers.calculation_result_writer import CalculationResultWriter
 import package.calculation_input as input
@@ -40,7 +39,7 @@ def _start_calculator(args: CalculatorArgs, spark: SparkSession) -> None:
         args.batch_period_end_datetime,
         args.batch_grid_areas,
     )
-    
+
     enriched_time_series_point_df = setup.get_enriched_time_series_points_df(
         time_series_points_df,
         metering_point_periods_df,
@@ -49,7 +48,7 @@ def _start_calculator(args: CalculatorArgs, spark: SparkSession) -> None:
     )
 
 
-   
+
     energy_calculation.execute(
         calculation_result_writer,
         metering_point_periods_df,
