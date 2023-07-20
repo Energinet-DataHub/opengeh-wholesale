@@ -30,6 +30,7 @@ public static class Program
                 logging.AddDebug();
                 logging.AddConsole();
                 logging.AddAzureWebAppDiagnostics();
+                logging.AddApplicationInsights();
             })
             .ConfigureWebHostDefaults(webBuilder =>
             {
