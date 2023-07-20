@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from .spark_initializor import initialize_spark
-import energy_calculation
+from .energy_calculation import execute
 from .db_logging import log, debug, loglevel
 from .args_helper import valid_date, valid_list, valid_log_level
 from .calculator_args import CalculatorArgs, get_calculator_args
