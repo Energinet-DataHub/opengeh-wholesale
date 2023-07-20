@@ -26,7 +26,6 @@ using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.Extensions.Logging.AzureAppServices;
 using Microsoft.OpenApi.Models;
 
 namespace Energinet.DataHub.Wholesale.WebApi;
@@ -77,13 +76,6 @@ public class Startup
             var securityRequirement = new OpenApiSecurityRequirement { { securitySchema, new[] { "Bearer" } }, };
 
             config.AddSecurityRequirement(securityRequirement);
-        });
-
-        serviceCollection.Configure<AzureFileLoggerOptions>(options =>
-        {
-            options.FileName = "logs-";
-            options.FileSizeLimit = 50 * 1024;
-            options.RetainedFileCountLimit = 5;
         });
 
         serviceCollection.AddApiVersioning(config =>
