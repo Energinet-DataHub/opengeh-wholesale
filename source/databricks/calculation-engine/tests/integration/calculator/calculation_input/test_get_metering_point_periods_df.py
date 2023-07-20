@@ -174,7 +174,7 @@ def test__when_metering_point_period_is_in_grid_areas__returns_metering_point_pe
 @patch("package.calculation_input.CalculationInputReader")
 def test__when_type_is_production__returns_metering_point_period(
     mock_calculation_input_reader: Mock,
-    metering_points_periods_df_factory,
+    metering_points_periods_df_factory: Callable[..., DataFrame],
 ) -> None:
 
     # Arrange
@@ -234,7 +234,7 @@ def test__metering_points_have_expected_columns(
 @patch("package.calculation_input.CalculationInputReader")
 def test__when_period_to_date_is_null__returns_metering_point_period_with_to_date_equal_to_period_end(
     mock_calculation_input_reader: Mock,
-    metering_points_periods_df_factory,
+    metering_points_periods_df_factory: Callable[..., DataFrame],
 ) -> None:
     # Arrange
     metering_points_periods_df = metering_points_periods_df_factory(ToDate=None)
@@ -252,3 +252,51 @@ def test__when_period_to_date_is_null__returns_metering_point_period_with_to_dat
     # Assert
     assert raw_master_basis_data.count() == 1
     assert raw_master_basis_data.where(col(Colname.to_date) == period_end).count() == 1
+
+
+@patch("package.calculation_input.CalculationInputReader")
+def test__get_metering_point_periods_df__from_date_must_not_be_earlier_than_period_start(
+    mock_calculation_input_reader: Mock,
+    metering_point_period_df_factory: Callable[..., DataFrame],
+) -> None:
+
+    # Arrange
+    period_start = june_4th
+    period_end = june_6th
+    metering_point_period_df = metering_point_period_df_factory(FromDate=june_1th, ToDate=june_10th)
+    mock_calculation_input_reader.read_metering_point_periods.return_value = metering_point_period_df
+
+    # Act
+    master_basis_data = get_metering_point_periods_df(
+        mock_calculation_input_reader,
+        period_start,
+        period_end,
+        [grid_area_code],
+    )
+
+    # Assert
+    actual = master_basis_data.first()
+    assert actual.VALIDFROM == period_start
+
+
+@patch("package.calculation_input.CalculationInputReader")
+def test__get_metering_point_periods_df__to_date_must_not_be_after_period_end(
+    metering_point_period_df_factory: Callable[..., DataFrame],
+) -> None:
+
+    # Arrange
+    period_start = june_4th
+    period_end = june_6th
+    metering_point_period_df = metering_point_period_df_factory(FromDate=june_1th, ToDate=june_10th)
+
+    # Act
+    master_basis_data = get_metering_point_periods_df(
+        metering_point_period_df,
+        period_start,
+        period_end,
+        [grid_area_code],
+    )
+
+    # Assert
+    actual = master_basis_data.first()
+    assert actual.VALIDTO == period_end

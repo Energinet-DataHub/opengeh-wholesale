@@ -17,9 +17,6 @@ from package.codelists import MeteringPointType, MeteringPointResolution
 from package.basis_data import get_master_basis_data_df
 from datetime import datetime
 
-period_start = "2022-06-08T12:22:00.000Z"
-period_end = "2022-06-010T12:22:00.000Z"
-
 
 @pytest.fixture(scope="module")
 def metering_point_period_df_factory(spark, timestamp_factory):
@@ -54,16 +51,17 @@ def metering_point_period_df_factory(spark, timestamp_factory):
 
 def test__get_master_basis_data_has_expected_columns(
     metering_point_period_df_factory, timestamp_factory
-):
+) -> None:
+    # Arrange
     metering_point_period_df = metering_point_period_df_factory().union(
         metering_point_period_df_factory(
             from_date=timestamp_factory("2022-06-10T22:00:00.000Z"),
             to_date=timestamp_factory("2022-06-12T22:00:00.000Z"),
         )
     )
-    master_basis_data = get_master_basis_data_df(
-        metering_point_period_df, period_start, period_end
-    )
+
+    # Act
+    master_basis_data = get_master_basis_data_df(metering_point_period_df)
 
     # Assert
     assert master_basis_data.columns == [
@@ -79,9 +77,8 @@ def test__get_master_basis_data_has_expected_columns(
     ]
 
 
-def test__each_meteringpoint_has_a_row(
-    metering_point_period_df_factory, timestamp_factory
-):
+def test__each_meteringpoint_has_a_row(metering_point_period_df_factory):
+    # Arrange
     expected_number_of_metering_points = 3
     metering_point_period_df = (
         metering_point_period_df_factory(meteringpoint_id="1")
@@ -89,9 +86,8 @@ def test__each_meteringpoint_has_a_row(
         .union(metering_point_period_df_factory(meteringpoint_id="3"))
     )
 
-    master_basis_data = get_master_basis_data_df(
-        metering_point_period_df, period_start, period_end
-    )
+    # Act
+    master_basis_data = get_master_basis_data_df(metering_point_period_df)
 
     # Assert
     assert master_basis_data.count() == expected_number_of_metering_points
@@ -100,6 +96,7 @@ def test__each_meteringpoint_has_a_row(
 def test__columns_have_expected_values(
     metering_point_period_df_factory, timestamp_factory
 ):
+    # Arrange
     expected_meteringpoint_id = "the-metering-point"
     expected_grid_area_code = "some-grid-area"
     expected_from_date = timestamp_factory("2022-06-08T22:00:00.000Z")
@@ -122,9 +119,8 @@ def test__columns_have_expected_values(
         energy_supplier_id=expected_energy_supplier_id,
     )
 
-    master_basis_data_df = get_master_basis_data_df(
-        metering_point_period_df, period_start, period_end
-    )
+    # Act
+    master_basis_data_df = get_master_basis_data_df(metering_point_period_df)
 
     # Assert
     actual = master_basis_data_df.first()
@@ -143,7 +139,8 @@ def test__columns_have_expected_values(
 
 def test__both_hour_and_quarterly_resolution_data_are_in_basis_data(
     metering_point_period_df_factory,
-):
+) -> None:
+    # Arrange
     expected_number_of_metering_points = 2
     metering_point_period_df = metering_point_period_df_factory(
         meteringpoint_id="1", resolution=MeteringPointResolution.quarter.value
@@ -153,43 +150,8 @@ def test__both_hour_and_quarterly_resolution_data_are_in_basis_data(
         )
     )
 
-    master_basis_data = get_master_basis_data_df(
-        metering_point_period_df, period_start, period_end
-    )
+    # Act
+    master_basis_data = get_master_basis_data_df(metering_point_period_df)
 
     # Assert
     assert master_basis_data.count() == expected_number_of_metering_points
-
-
-def test__from_date_must_not_be_earlier_than_period_start(
-    metering_point_period_df_factory,
-):
-    expected_vaild_from = "2022-06-09T12:09:15.000Z"
-    metering_point_period_df = metering_point_period_df_factory(meteringpoint_id="1")
-
-    master_basis_data = get_master_basis_data_df(
-        metering_point_period_df,
-        expected_vaild_from,
-        "2022-06-010T12:09:15.000Z",
-    )
-
-    # Assert
-    actual = master_basis_data.first()
-    assert actual.VALIDFROM == expected_vaild_from
-
-
-def test__to_date_must_not_be_after_period_end(
-    metering_point_period_df_factory,
-) -> None:
-    expected_vaild_to = "2022-06-10T12:09:15.000Z"
-    metering_point_period_df = metering_point_period_df_factory(meteringpoint_id="1")
-
-    master_basis_data = get_master_basis_data_df(
-        metering_point_period_df,
-        "2022-06-09T12:09:15.000Z",
-        expected_vaild_to,
-    )
-
-    # Assert
-    actual = master_basis_data.first()
-    assert actual.VALIDTO == expected_vaild_to
