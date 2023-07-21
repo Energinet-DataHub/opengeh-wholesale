@@ -21,7 +21,7 @@ from package.codelists import (
     AggregationLevel,
     TimeSeriesType,
 )
-from package.constants import Colname
+from package.constants import ResultTableColName
 
 ALL_ENERGY_RESULT_TYPES = {
     (
@@ -172,9 +172,9 @@ def test__balance_fixing_result__is_created(
 ) -> None:
     # Arrange
     result_df = (
-        balance_fixing_results_df.where(F.col(Colname.batch_id) == C.executed_balance_fixing_batch_id)
-        .where(F.col(Colname.time_series_type) == time_series_type)
-        .where(F.col(Colname.aggregation_level) == aggregation_level)
+        balance_fixing_results_df.where(F.col(ResultTableColName.batch_id) == C.executed_balance_fixing_batch_id)
+        .where(F.col(ResultTableColName.time_series_type) == time_series_type)
+        .where(F.col(ResultTableColName.aggregation_level) == aggregation_level)
     )
 
     # Act: Calculator job is executed just once per session. See the fixtures `balance_fixing_results_df` and `executed_balance_fixing`
@@ -183,6 +183,22 @@ def test__balance_fixing_result__is_created(
     assert result_df.count() > 0
 
 
+def test__balance_fixing_result__has_expected_number_of_result_types(
+    balance_fixing_results_df: DataFrame,
+) -> None:
+    # Arrange
+    actual_result_type_count = (
+        balance_fixing_results_df.where(F.col(ResultTableColName.batch_id) == C.executed_balance_fixing_batch_id)
+        .where(F.col(ResultTableColName.batch_id) == C.executed_wholesale_batch_id)
+        .select(ResultTableColName.time_series_type, ResultTableColName.aggregation_level).distinct().count()
+    )
+
+    # Act: Calculator job is executed just once per session. See the fixtures `results_df` and `executed_wholesale_fixing`
+
+    # Assert: The result is created if there are rows
+    assert actual_result_type_count == len(WHOLESALE_FIXING_ENERGY_RESULT_TYPES)
+
+
 @pytest.mark.parametrize(
     "time_series_type, aggregation_level", WHOLESALE_FIXING_ENERGY_RESULT_TYPES,
 )
@@ -193,9 +209,9 @@ def test__wholesale_result__is_created(
 ) -> None:
     # Arrange
     result_df = (
-        wholesale_fixing_results_df.where(F.col(Colname.batch_id) == C.executed_wholesale_batch_id)
-        .where(F.col(Colname.time_series_type) == time_series_type)
-        .where(F.col(Colname.aggregation_level) == aggregation_level)
+        wholesale_fixing_results_df.where(F.col(ResultTableColName.batch_id) == C.executed_wholesale_batch_id)
+        .where(F.col(ResultTableColName.time_series_type) == time_series_type)
+        .where(F.col(ResultTableColName.aggregation_level) == aggregation_level)
     )
 
     # Act: Calculator job is executed just once per session. See the fixtures `results_df` and `executed_wholesale_fixing`
@@ -204,22 +220,17 @@ def test__wholesale_result__is_created(
     assert result_df.count() > 0
 
 
-@pytest.mark.parametrize(
-    "time_series_type, aggregation_level", WHOLESALE_FIXING_ENERGY_RESULT_TYPES,
-)
-def test__wholesale_result__is_created(
+def test__wholesale_result__has_expected_number_of_result_types(
     wholesale_fixing_results_df: DataFrame,
-    time_series_type: str,
-    aggregation_level: str,
 ) -> None:
     # Arrange
-    result_df = (
-        wholesale_fixing_results_df.where(F.col(Colname.batch_id) == C.executed_wholesale_batch_id)
-        .where(F.col(Colname.time_series_type) == time_series_type)
-        .where(F.col(Colname.aggregation_level) == aggregation_level)
+    actual_result_type_count = (
+        wholesale_fixing_results_df.where(F.col(ResultTableColName.batch_id) == C.executed_wholesale_batch_id)
+        .where(F.col(ResultTableColName.batch_id) == C.executed_wholesale_batch_id)
+        .select(ResultTableColName.time_series_type, ResultTableColName.aggregation_level).distinct().count()
     )
 
     # Act: Calculator job is executed just once per session. See the fixtures `results_df` and `executed_wholesale_fixing`
 
     # Assert: The result is created if there are rows
-    assert result_df.count() > 0
+    assert actual_result_type_count == len(WHOLESALE_FIXING_ENERGY_RESULT_TYPES)
