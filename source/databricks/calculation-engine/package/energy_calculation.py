@@ -268,7 +268,7 @@ def _calculate_production(
     process_type: ProcessType,
     result_writer: CalculationResultWriter,
     production_per_ga_and_brp_and_es: DataFrame,
-) -> DataFrame:    
+) -> DataFrame:
 
     if _is_aggregation_or_balance_fixing(process_type):
         # production per balance responsible
@@ -277,7 +277,7 @@ def _calculate_production(
             TimeSeriesType.PRODUCTION,
             AggregationLevel.es_per_brp_per_ga,
         )
-            
+
         production_per_ga_and_brp = agg_steps.aggregate_production_ga_brp(
             production_per_ga_and_brp_and_es
         )
@@ -318,7 +318,7 @@ def _calculate_flex_consumption(
     result_writer: CalculationResultWriter,
     flex_consumption_per_ga_and_brp_and_es: DataFrame,
 ) -> None:
-    
+
     # flex consumption per grid area
     flex_consumption_per_ga = agg_steps.aggregate_flex_consumption_ga(
         flex_consumption_per_ga_and_brp_and_es
@@ -329,7 +329,7 @@ def _calculate_flex_consumption(
         TimeSeriesType.FLEX_CONSUMPTION,
         AggregationLevel.total_ga,
     )
-        
+
     # flex consumption per energy supplier
     flex_consumption_per_ga_and_es = agg_steps.aggregate_flex_consumption_ga_es(
         flex_consumption_per_ga_and_brp_and_es
