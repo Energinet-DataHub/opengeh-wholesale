@@ -51,10 +51,10 @@ def execute(
         enriched_time_series_point_df
     )
     _calculate(
+        batch_process_type,
         calculation_result_writer,
         enriched_time_series_point_df,
         grid_loss_responsible_df,
-        batch_process_type
     )
 
 
