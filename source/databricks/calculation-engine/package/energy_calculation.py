@@ -16,7 +16,7 @@ from datetime import datetime
 
 import package.steps.aggregation as agg_steps
 import package.steps.setup as setup
-from package.codelists import TimeSeriesType, AggregationLevel
+from package.codelists import TimeSeriesType, AggregationLevel, ProcessType
 from package.output_writers.basis_data_writer import BasisDataWriter
 from package.output_writers.calculation_result_writer import CalculationResultWriter
 from pyspark.sql import DataFrame
@@ -24,22 +24,23 @@ from typing import Tuple
 
 
 def execute(
-    basis_data_writer: BasisDataWriter,
-    calculation_result_writer: CalculationResultWriter,
+    batch_id: str,
+    batch_process_type: ProcessType,
+    batch_execution_time_start: datetime,
+    wholesale_container_path: str,
     metering_points_periods_df: DataFrame,
-    time_series_points_df: DataFrame,
+    enriched_time_series_point_df: DataFrame,
     grid_loss_responsible_df: DataFrame,
-    period_start_datetime: datetime,
-    period_end_datetime: datetime,
     time_zone: str,
 ) -> None:
-    enriched_time_series_point_df = setup.get_enriched_time_series_points_df(
-        time_series_points_df,
-        metering_points_periods_df,
-        period_start_datetime,
-        period_end_datetime,
+
+    calculation_result_writer = CalculationResultWriter(
+        batch_id,
+        batch_process_type,
+        batch_execution_time_start,
     )
 
+    basis_data_writer = BasisDataWriter(wholesale_container_path, batch_id)
     basis_data_writer.write(
         metering_points_periods_df,
         enriched_time_series_point_df,
@@ -50,6 +51,7 @@ def execute(
         enriched_time_series_point_df
     )
     _calculate(
+        batch_process_type,
         calculation_result_writer,
         enriched_time_series_point_df,
         grid_loss_responsible_df,
@@ -57,15 +59,14 @@ def execute(
 
 
 def _calculate(
+    process_type: ProcessType,
     result_writer: CalculationResultWriter,
     enriched_time_series_point_df: DataFrame,
     grid_loss_responsible_df: DataFrame,
 ) -> None:
-    _calculate_net_exchange_per_neighboring_ga(
-        result_writer, enriched_time_series_point_df
-    )
-    net_exchange_per_ga = _calculate_net_exchange_per_ga(
-        result_writer, enriched_time_series_point_df
+
+    net_exchange_per_ga = _calculate_net_exchange(
+        process_type, result_writer, enriched_time_series_point_df
     )
 
     temporay_production_per_ga_and_brp_and_es = (
@@ -111,40 +112,41 @@ def _calculate(
     )
 
     _calculate_non_profiled_consumption(
-        result_writer, consumption_per_ga_and_brp_and_es
+        process_type, result_writer, consumption_per_ga_and_brp_and_es
     )
     production_per_ga = _calculate_production(
-        result_writer, production_per_ga_and_brp_and_es
+        process_type, result_writer, production_per_ga_and_brp_and_es
     )
-    _calculate_flex_consumption(result_writer, flex_consumption_per_ga_and_brp_and_es)
+    _calculate_flex_consumption(process_type, result_writer, flex_consumption_per_ga_and_brp_and_es)
 
     _calculate_total_consumption(result_writer, production_per_ga, net_exchange_per_ga)
 
 
-def _calculate_net_exchange_per_neighboring_ga(
-    result_writer: CalculationResultWriter, enriched_time_series: DataFrame
-) -> None:
-    exchange = agg_steps.aggregate_net_exchange_per_neighbour_ga(enriched_time_series)
-
-    result_writer.write(
-        exchange,
-        TimeSeriesType.NET_EXCHANGE_PER_NEIGHBORING_GA,
-        AggregationLevel.total_ga,
-    )
-
-
-def _calculate_net_exchange_per_ga(
-    result_writer: CalculationResultWriter, enriched_time_series: DataFrame
+def _calculate_net_exchange(
+    process_type: ProcessType,
+    result_writer: CalculationResultWriter,
+    enriched_time_series: DataFrame
 ) -> DataFrame:
-    exchange = agg_steps.aggregate_net_exchange_per_ga(enriched_time_series)
+
+    if _is_aggregation_or_balance_fixing(process_type):
+        # Could the exchange_per_neighbour_ga be re-used for NET_EXCHANGE_PER_GA?
+        exchange_per_neighbour_ga = agg_steps.aggregate_net_exchange_per_neighbour_ga(enriched_time_series)
+
+        result_writer.write(
+            exchange_per_neighbour_ga,
+            TimeSeriesType.NET_EXCHANGE_PER_NEIGHBORING_GA,
+            AggregationLevel.total_ga,
+        )
+
+    exchange_per_grid_area = agg_steps.aggregate_net_exchange_per_ga(enriched_time_series)
 
     result_writer.write(
-        exchange,
+        exchange_per_grid_area,
         TimeSeriesType.NET_EXCHANGE_PER_GA,
         AggregationLevel.total_ga,
     )
 
-    return exchange
+    return exchange_per_grid_area
 
 
 def _calculate_consumption_per_ga_and_brp_and_es(
@@ -263,14 +265,28 @@ def _calculate_adjust_flex_consumption_per_ga_and_brp_and_es(
 
 
 def _calculate_production(
+    process_type: ProcessType,
     result_writer: CalculationResultWriter,
     production_per_ga_and_brp_and_es: DataFrame,
 ) -> DataFrame:
-    result_writer.write(
-        production_per_ga_and_brp_and_es,
-        TimeSeriesType.PRODUCTION,
-        AggregationLevel.es_per_brp_per_ga,
-    )
+
+    if _is_aggregation_or_balance_fixing(process_type):
+        # production per balance responsible
+        result_writer.write(
+            production_per_ga_and_brp_and_es,
+            TimeSeriesType.PRODUCTION,
+            AggregationLevel.es_per_brp_per_ga,
+        )
+
+        production_per_ga_and_brp = agg_steps.aggregate_production_ga_brp(
+            production_per_ga_and_brp_and_es
+        )
+
+        result_writer.write(
+            production_per_ga_and_brp,
+            TimeSeriesType.PRODUCTION,
+            AggregationLevel.brp_per_ga,
+        )
 
     # production per energy supplier
     production_per_ga_and_es = agg_steps.aggregate_production_ga_es(
@@ -283,37 +299,35 @@ def _calculate_production(
         AggregationLevel.es_per_ga,
     )
 
-    # production per balance responsible
-    production_per_ga_and_brp = agg_steps.aggregate_production_ga_brp(
-        production_per_ga_and_brp_and_es
-    )
-
-    result_writer.write(
-        production_per_ga_and_brp,
-        TimeSeriesType.PRODUCTION,
-        AggregationLevel.brp_per_ga,
-    )
-
     # production per grid area
     production_per_ga = agg_steps.aggregate_production_ga(
         production_per_ga_and_brp_and_es
     )
 
     result_writer.write(
-        production_per_ga, TimeSeriesType.PRODUCTION, AggregationLevel.total_ga
+        production_per_ga,
+        TimeSeriesType.PRODUCTION,
+        AggregationLevel.total_ga
     )
 
     return production_per_ga
 
 
 def _calculate_flex_consumption(
+    process_type: ProcessType,
     result_writer: CalculationResultWriter,
     flex_consumption_per_ga_and_brp_and_es: DataFrame,
 ) -> None:
+
+    # flex consumption per grid area
+    flex_consumption_per_ga = agg_steps.aggregate_flex_consumption_ga(
+        flex_consumption_per_ga_and_brp_and_es
+    )
+
     result_writer.write(
-        flex_consumption_per_ga_and_brp_and_es,
+        flex_consumption_per_ga,
         TimeSeriesType.FLEX_CONSUMPTION,
-        AggregationLevel.es_per_brp_per_ga,
+        AggregationLevel.total_ga,
     )
 
     # flex consumption per energy supplier
@@ -328,37 +342,48 @@ def _calculate_flex_consumption(
     )
 
     # flex consumption per balance responsible
-    flex_consumption_per_ga_and_brp = agg_steps.aggregate_flex_consumption_ga_brp(
-        flex_consumption_per_ga_and_brp_and_es
-    )
+    if _is_aggregation_or_balance_fixing(process_type):
+        result_writer.write(
+            flex_consumption_per_ga_and_brp_and_es,
+            TimeSeriesType.FLEX_CONSUMPTION,
+            AggregationLevel.es_per_brp_per_ga,
+        )
 
-    result_writer.write(
-        flex_consumption_per_ga_and_brp,
-        TimeSeriesType.FLEX_CONSUMPTION,
-        AggregationLevel.brp_per_ga,
-    )
+        flex_consumption_per_ga_and_brp = agg_steps.aggregate_flex_consumption_ga_brp(
+            flex_consumption_per_ga_and_brp_and_es
+        )
 
-    # flex consumption per grid area
-    flex_consumption_per_ga = agg_steps.aggregate_flex_consumption_ga(
-        flex_consumption_per_ga_and_brp_and_es
-    )
-
-    result_writer.write(
-        flex_consumption_per_ga,
-        TimeSeriesType.FLEX_CONSUMPTION,
-        AggregationLevel.total_ga,
-    )
+        result_writer.write(
+            flex_consumption_per_ga_and_brp,
+            TimeSeriesType.FLEX_CONSUMPTION,
+            AggregationLevel.brp_per_ga,
+        )
 
 
 def _calculate_non_profiled_consumption(
+    process_type: ProcessType,
     result_writer: CalculationResultWriter,
     consumption_per_ga_and_brp_and_es: DataFrame,
 ) -> None:
-    result_writer.write(
-        consumption_per_ga_and_brp_and_es,
-        TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        AggregationLevel.es_per_brp_per_ga,
-    )
+
+    # Non-profiled consumption per balance responsible
+    if _is_aggregation_or_balance_fixing(process_type):
+
+        consumption_per_ga_and_brp = agg_steps.aggregate_non_profiled_consumption_ga_brp(
+            consumption_per_ga_and_brp_and_es
+        )
+
+        result_writer.write(
+            consumption_per_ga_and_brp,
+            TimeSeriesType.NON_PROFILED_CONSUMPTION,
+            AggregationLevel.brp_per_ga,
+        )
+
+        result_writer.write(
+            consumption_per_ga_and_brp_and_es,
+            TimeSeriesType.NON_PROFILED_CONSUMPTION,
+            AggregationLevel.es_per_brp_per_ga,
+        )
 
     # Non-profiled consumption per energy supplier
     consumption_per_ga_and_es = agg_steps.aggregate_non_profiled_consumption_ga_es(
@@ -369,17 +394,6 @@ def _calculate_non_profiled_consumption(
         consumption_per_ga_and_es,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
         AggregationLevel.es_per_ga,
-    )
-
-    # Non-profiled consumption per balance responsible
-    consumption_per_ga_and_brp = agg_steps.aggregate_non_profiled_consumption_ga_brp(
-        consumption_per_ga_and_brp_and_es
-    )
-
-    result_writer.write(
-        consumption_per_ga_and_brp,
-        TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        AggregationLevel.brp_per_ga,
     )
 
     # Non-profiled consumption per grid area
@@ -407,3 +421,7 @@ def _calculate_total_consumption(
         TimeSeriesType.TOTAL_CONSUMPTION,
         AggregationLevel.total_ga,
     )
+
+
+def _is_aggregation_or_balance_fixing(process_type: ProcessType) -> bool:
+    return process_type == ProcessType.AGGREGATION or process_type == ProcessType.BALANCE_FIXING
