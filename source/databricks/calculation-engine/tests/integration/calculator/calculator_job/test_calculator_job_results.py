@@ -189,14 +189,14 @@ def test__balance_fixing_result__has_expected_number_of_result_types(
     # Arrange
     actual_result_type_count = (
         balance_fixing_results_df.where(F.col(ResultTableColName.batch_id) == C.executed_balance_fixing_batch_id)
-        .where(F.col(ResultTableColName.batch_id) == C.executed_wholesale_batch_id)
+        .where(F.col(ResultTableColName.batch_id) == C.executed_balance_fixing_batch_id)
         .select(ResultTableColName.time_series_type, ResultTableColName.aggregation_level).distinct().count()
     )
 
     # Act: Calculator job is executed just once per session. See the fixtures `results_df` and `executed_wholesale_fixing`
 
     # Assert: The result is created if there are rows
-    assert actual_result_type_count == len(WHOLESALE_FIXING_ENERGY_RESULT_TYPES)
+    assert actual_result_type_count == len(ALL_ENERGY_RESULT_TYPES)
 
 
 @pytest.mark.parametrize(
