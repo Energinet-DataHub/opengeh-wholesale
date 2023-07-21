@@ -21,9 +21,9 @@ from package.schemas import time_series_point_schema
 
 
 def test__published_time_series_points_contract_matches_schema_from_input_time_series_points(
-    spark: SparkSession, test_files_folder_path: str, executed_calculation_job: None
+    spark: SparkSession, test_files_folder_path: str, executed_balance_fixing: None
 ) -> None:
-    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
+    # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
 
     # Assert
     input_time_series_points = (
