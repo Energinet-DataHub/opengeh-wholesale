@@ -23,14 +23,14 @@ import package.infrastructure as infra
 def test__creates_hour_for_total_ga__with_expected_columns_names(
     spark: SparkSession,
     data_lake_path: str,
-    executed_calculation_job: None,
+    executed_balance_fixing: None,
 ) -> None:
     # Arrange
     basis_data_relative_path = infra.get_basis_data_path(
-        BasisDataType.TimeSeriesHour, C.executed_batch_id, "805"
+        BasisDataType.TimeSeriesHour, C.executed_balance_fixing_batch_id, "805"
     )
 
-    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
+    # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
 
     # Assert
     actual = spark.read.option("header", "true").csv(
@@ -47,17 +47,17 @@ def test__creates_hour_for_total_ga__with_expected_columns_names(
 def test__creates_hour_for_es_per_ga__with_expected_columns_names(
     spark: SparkSession,
     data_lake_path: str,
-    executed_calculation_job: None,
+    executed_balance_fixing: None,
 ) -> None:
     # Arrange
     basis_data_relative_path = infra.get_basis_data_path(
         BasisDataType.TimeSeriesHour,
-        C.executed_batch_id,
+        C.executed_balance_fixing_batch_idfixing_batch_idfixing_batch_id,
         "805",
         C.energy_supplier_gln_a,
     )
 
-    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
+    # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
 
     # Assert
     actual = spark.read.option("header", "true").csv(
@@ -74,14 +74,14 @@ def test__creates_hour_for_es_per_ga__with_expected_columns_names(
 def test__creates_quarter_for_total_ga__with_expected_columns_names(
     spark: SparkSession,
     data_lake_path: str,
-    executed_calculation_job: None,
+    executed_balance_fixing: None,
 ) -> None:
     # Arrange
     relative_path = infra.get_basis_data_path(
-        BasisDataType.TimeSeriesQuarter, C.executed_batch_id, "805"
+        BasisDataType.TimeSeriesQuarter, C.executed_balance_fixing_batch_id, "805"
     )
 
-    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
+    # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
 
     # Assert
     actual = spark.read.option("header", "true").csv(
@@ -99,17 +99,17 @@ def test__creates_quarter_for_total_ga__with_expected_columns_names(
 def test__creates_quarter_for_es_per_ga__with_expected_columns_names(
     spark: SparkSession,
     data_lake_path: str,
-    executed_calculation_job: None,
+    executed_balance_fixing: None,
 ) -> None:
     # Arrange
     relative_path = infra.get_basis_data_path(
         BasisDataType.TimeSeriesQuarter,
-        C.executed_batch_id,
+        C.executed_balance_fixing_batch_id,
         "805",
         C.energy_supplier_gln_a,
     )
 
-    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
+    # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
 
     # Assert
     actual = spark.read.option("header", "true").csv(
@@ -127,17 +127,17 @@ def test__creates_quarter_for_es_per_ga__with_expected_columns_names(
 def test__creates_quarter_for_total_ga__per_grid_area(
     spark: SparkSession,
     data_lake_path: str,
-    executed_calculation_job: None,
+    executed_balance_fixing: None,
 ) -> None:
     # Arrange
     basis_data_relative_path_805 = infra.get_basis_data_path(
-        BasisDataType.TimeSeriesQuarter, C.executed_batch_id, "805"
+        BasisDataType.TimeSeriesQuarter, C.executed_balance_fixing_batch_id, "805"
     )
     basis_data_relative_path_806 = infra.get_basis_data_path(
-        BasisDataType.TimeSeriesQuarter, C.executed_batch_id, "806"
+        BasisDataType.TimeSeriesQuarter, C.executed_balance_fixing_batch_id, "806"
     )
 
-    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
+    # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
 
     # Assert
     basis_data_805 = spark.read.option("header", "true").csv(
@@ -160,23 +160,23 @@ def test__creates_quarter_for_total_ga__per_grid_area(
 def test__creates_quarter_for_es_per_ga__per_energy_supplier(
     spark: SparkSession,
     data_lake_path: str,
-    executed_calculation_job: None,
+    executed_balance_fixing: None,
 ) -> None:
     # Arrange
     basis_data_relative_path_a = infra.get_basis_data_path(
         BasisDataType.TimeSeriesQuarter,
-        C.executed_batch_id,
+        C.executed_balance_fixing_batch_id,
         "805",
         C.energy_supplier_gln_a,
     )
     basis_data_relative_path_b = infra.get_basis_data_path(
         BasisDataType.TimeSeriesQuarter,
-        C.executed_batch_id,
+        C.executed_balance_fixing_batch_id,
         "805",
         C.energy_supplier_gln_b,
     )
 
-    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
+    # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
 
     # Assert
     basis_data_a = spark.read.option("header", "true").csv(
@@ -199,17 +199,17 @@ def test__creates_quarter_for_es_per_ga__per_energy_supplier(
 def test__creates_hour_for_total_ga__per_grid_area(
     spark: SparkSession,
     data_lake_path: str,
-    executed_calculation_job: None,
+    executed_balance_fixing: None,
 ) -> None:
     # Arrange
     basis_data_relative_path_805 = infra.get_basis_data_path(
-        BasisDataType.TimeSeriesHour, C.executed_batch_id, "805"
+        BasisDataType.TimeSeriesHour, C.executed_balance_fixing_batch_id, "805"
     )
     basis_data_relative_path_806 = infra.get_basis_data_path(
-        BasisDataType.TimeSeriesHour, C.executed_batch_id, "806"
+        BasisDataType.TimeSeriesHour, C.executed_balance_fixing_batch_id, "806"
     )
 
-    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
+    # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
 
     # Assert
     basis_data_805 = spark.read.option("header", "true").csv(
@@ -232,23 +232,23 @@ def test__creates_hour_for_total_ga__per_grid_area(
 def test__creates_hour_for_es_per_ga__per_energy_supplier(
     spark: SparkSession,
     data_lake_path: str,
-    executed_calculation_job: None,
+    executed_balance_fixing: None,
 ) -> None:
     # Arrange
     basis_data_relative_path_a = infra.get_basis_data_path(
         BasisDataType.TimeSeriesHour,
-        C.executed_batch_id,
+        C.executed_balance_fixing_batch_id,
         "805",
         C.energy_supplier_gln_a,
     )
     basis_data_relative_path_b = infra.get_basis_data_path(
         BasisDataType.TimeSeriesHour,
-        C.executed_batch_id,
+        C.executed_balance_fixing_batch_id,
         "805",
         C.energy_supplier_gln_b,
     )
 
-    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
+    # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
 
     # Assert
     basis_data_a = spark.read.option("header", "true").csv(
@@ -271,14 +271,14 @@ def test__creates_hour_for_es_per_ga__per_energy_supplier(
 def test__master_basis_data_for_total_ga_has_expected_columns_names(
     spark: SparkSession,
     data_lake_path: str,
-    executed_calculation_job: None,
+    executed_balance_fixing: None,
 ) -> None:
     # Arrange
     basis_data_path = infra.get_basis_data_path(
-        BasisDataType.MasterBasisData, C.executed_batch_id, "805"
+        BasisDataType.MasterBasisData, C.executed_balance_fixing_batch_id, "805"
     )
 
-    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
+    # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
 
     # Assert
     actual = spark.read.option("header", "true").csv(
@@ -301,17 +301,17 @@ def test__master_basis_data_for_total_ga_has_expected_columns_names(
 def test__master_basis_data_for_es_per_ga_has_expected_columns_names(
     spark: SparkSession,
     data_lake_path: str,
-    executed_calculation_job: None,
+    executed_balance_fixing: None,
 ) -> None:
     # Arrange
     basis_data_path = infra.get_basis_data_path(
         BasisDataType.MasterBasisData,
-        C.executed_batch_id,
+        C.executed_balance_fixing_batch_id,
         "805",
         C.energy_supplier_gln_a,
     )
 
-    # Act: Calculator job is executed just once per session. See the fixture `executed_calculation_job`
+    # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
 
     # Assert
     actual = spark.read.option("header", "true").csv(
@@ -333,17 +333,17 @@ def test__master_basis_data_for_es_per_ga_has_expected_columns_names(
 def test__creates_master_basis_data_per_grid_area(
     spark: SparkSession,
     data_lake_path: str,
-    executed_calculation_job: None,
+    executed_balance_fixing: None,
 ) -> None:
     # Arrange
     basis_data_path_805 = infra.get_basis_data_path(
-        BasisDataType.MasterBasisData, C.executed_batch_id, "805"
+        BasisDataType.MasterBasisData, C.executed_balance_fixing_batch_id, "805"
     )
     basis_data_path_806 = infra.get_basis_data_path(
-        BasisDataType.MasterBasisData, C.executed_batch_id, "806"
+        BasisDataType.MasterBasisData, C.executed_balance_fixing_batch_id, "806"
     )
 
-    # Act: Executed in fixture executed_calculation_job
+    # Act: Executed in fixture executed_balance_fixing
 
     # Assert
     master_basis_data_805 = spark.read.option("header", "true").csv(

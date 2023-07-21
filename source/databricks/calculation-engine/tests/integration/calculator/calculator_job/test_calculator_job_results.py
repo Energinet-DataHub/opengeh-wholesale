@@ -109,19 +109,123 @@ from package.constants import Colname
         ),
     ],
 )
-def test__result__is_created(
-    results_df: DataFrame,
+def test__balance_fixing_result__is_created(
+    balance_fixing_results_df: DataFrame,
     time_series_type: str,
     aggregation_level: str,
 ) -> None:
     # Arrange
     result_df = (
-        results_df.where(F.col(Colname.batch_id) == C.executed_batch_id)
+        balance_fixing_results_df.where(F.col(Colname.batch_id) == C.executed_balance_fixing_batch_id)
         .where(F.col(Colname.time_series_type) == time_series_type)
         .where(F.col(Colname.aggregation_level) == aggregation_level)
     )
 
-    # Act: Calculator job is executed just once per session. See the fixtures `results_df` and `executed_calculation_job`
+    # Act: Calculator job is executed just once per session. See the fixtures `balance_fixing_results_df` and `executed_balance_fixing`
+
+    # Assert: The result is created if there are rows
+    assert result_df.count() > 0
+
+
+
+@pytest.mark.parametrize(
+    "time_series_type, aggregation_level",
+    [
+        (
+            TimeSeriesType.NET_EXCHANGE_PER_NEIGHBORING_GA.value,
+            AggregationLevel.total_ga.value,
+        ),
+        (
+            TimeSeriesType.NET_EXCHANGE_PER_GA.value,
+            AggregationLevel.total_ga.value,
+        ),
+        (
+            TimeSeriesType.PRODUCTION.value,
+            AggregationLevel.es_per_brp_per_ga.value,
+        ),
+        (
+            TimeSeriesType.PRODUCTION.value,
+            AggregationLevel.es_per_ga.value,
+        ),
+        (
+            TimeSeriesType.PRODUCTION.value,
+            AggregationLevel.brp_per_ga.value,
+        ),
+        (
+            TimeSeriesType.PRODUCTION.value,
+            AggregationLevel.total_ga.value,
+        ),
+        (
+            TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
+            AggregationLevel.es_per_brp_per_ga.value,
+        ),
+        (
+            TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
+            AggregationLevel.es_per_ga.value,
+        ),
+        (
+            TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
+            AggregationLevel.brp_per_ga.value,
+        ),
+        (
+            TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
+            AggregationLevel.total_ga.value,
+        ),
+        (
+            TimeSeriesType.FLEX_CONSUMPTION.value,
+            AggregationLevel.es_per_brp_per_ga.value,
+        ),
+        (
+            TimeSeriesType.FLEX_CONSUMPTION.value,
+            AggregationLevel.es_per_ga.value,
+        ),
+        (
+            TimeSeriesType.FLEX_CONSUMPTION.value,
+            AggregationLevel.brp_per_ga.value,
+        ),
+        (
+            TimeSeriesType.FLEX_CONSUMPTION.value,
+            AggregationLevel.total_ga.value,
+        ),
+        (
+            TimeSeriesType.GRID_LOSS.value,
+            AggregationLevel.total_ga.value,
+        ),
+        (
+            TimeSeriesType.POSITIVE_GRID_LOSS.value,
+            AggregationLevel.total_ga.value,
+        ),
+        (
+            TimeSeriesType.NEGATIVE_GRID_LOSS.value,
+            AggregationLevel.total_ga.value,
+        ),
+        (
+            TimeSeriesType.TOTAL_CONSUMPTION.value,
+            AggregationLevel.total_ga.value,
+        ),
+        (
+            TimeSeriesType.TEMP_FLEX_CONSUMPTION.value,
+            AggregationLevel.total_ga.value,
+        ),
+        (
+            TimeSeriesType.TEMP_PRODUCTION.value,
+            AggregationLevel.total_ga.value,
+        ),
+    ],
+)
+def test__wholesale_result__is_created(
+    wholesale_fixing_results_df: DataFrame,
+    time_series_type: str,
+    aggregation_level: str,
+) -> None:
+    # Arrange
+    result_df = (
+        wholesale_fixing_results_df.where(F.col(Colname.batch_id) == C.executed_wholesale_batch_id)
+        .where(F.col(Colname.time_series_type) == time_series_type)
+        .where(F.col(Colname.aggregation_level) == aggregation_level)
+    )
+
+    # Act: Calculator job is executed just once per session. See the fixtures `results_df` and `executed_wholesale_fixing`
 
     # Assert: The result is created if there are rows
     assert result_df.count() > 0
