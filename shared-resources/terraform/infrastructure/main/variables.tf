@@ -133,11 +133,6 @@ variable "vnet_integration_address_space" {
   description = "Address space of the vnet integration subnet"
 }
 
-variable "vnet_integrations_address_space" {
-  type        = string
-  description = "Address space of the vnet integrations subnet"
-}
-
 variable "log_retention_in_days" {
   type        = number
   description = "Number of days logs are retained in log analytics workspace"
