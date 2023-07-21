@@ -29,7 +29,7 @@ public static class Program
                 logging.AddConfiguration(context.Configuration.GetSection("Logging"));
                 logging.AddDebug();
                 logging.AddConsole();
-                logging.AddAzureWebAppDiagnostics();
+                // logging.AddAzureWebAppDiagnostics();
                 logging.AddApplicationInsights();
             })
             .ConfigureWebHostDefaults(webBuilder =>
