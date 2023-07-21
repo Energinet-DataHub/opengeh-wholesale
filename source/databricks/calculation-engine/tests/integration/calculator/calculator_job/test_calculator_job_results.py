@@ -202,3 +202,24 @@ def test__wholesale_result__is_created(
 
     # Assert: The result is created if there are rows
     assert result_df.count() > 0
+
+
+@pytest.mark.parametrize(
+    "time_series_type, aggregation_level", WHOLESALE_FIXING_ENERGY_RESULT_TYPES,
+)
+def test__wholesale_result__is_created(
+    wholesale_fixing_results_df: DataFrame,
+    time_series_type: str,
+    aggregation_level: str,
+) -> None:
+    # Arrange
+    result_df = (
+        wholesale_fixing_results_df.where(F.col(Colname.batch_id) == C.executed_wholesale_batch_id)
+        .where(F.col(Colname.time_series_type) == time_series_type)
+        .where(F.col(Colname.aggregation_level) == aggregation_level)
+    )
+
+    # Act: Calculator job is executed just once per session. See the fixtures `results_df` and `executed_wholesale_fixing`
+
+    # Assert: The result is created if there are rows
+    assert result_df.count() > 0

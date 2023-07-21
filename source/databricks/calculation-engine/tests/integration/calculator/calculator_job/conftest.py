@@ -61,30 +61,6 @@ def calculator_args_wholesale_fixing(
 
 
 @pytest.fixture(scope="session")
-def metering_points_test_data(
-    spark: SparkSession,
-    test_files_folder_path: str,
-) -> DataFrame:
-    return spark.read.csv(
-        f"{test_files_folder_path}/MeteringPointsPeriods.csv",
-        header=True,
-        schema=metering_point_period_schema,
-    )
-
-
-@pytest.fixture(scope="session")
-def timeseries_points_test_data(
-    spark: SparkSession,
-    test_files_folder_path: str,
-) -> DataFrame:
-    return spark.read.csv(
-        f"{test_files_folder_path}/TimeSeriesPoints.csv",
-        header=True,
-        schema=time_series_point_schema,
-    )
-
-
-@pytest.fixture(scope="session")
 def grid_loss_responsible_test_data(
     spark: SparkSession,
     test_files_folder_path: str,
