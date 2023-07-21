@@ -52,7 +52,7 @@ def test__creates_hour_for_es_per_ga__with_expected_columns_names(
     # Arrange
     basis_data_relative_path = infra.get_basis_data_path(
         BasisDataType.TimeSeriesHour,
-        C.executed_balance_fixing_batch_idfixing_batch_idfixing_batch_id,
+        C.executed_balance_fixing_batch_id,
         "805",
         C.energy_supplier_gln_a,
     )
