@@ -24,16 +24,19 @@ namespace Energinet.DataHub.Wholesale.Events.Application.Triggers;
 public class RegisterCompletedBatchesTrigger : RepeatingWorker<IRegisterCompletedBatchesHandler>
 {
     private const int DelayInSecondsBeforeNextExecution = 10;
+    private readonly ILogger<RegisterCompletedBatchesTrigger> _logger;
 
     public RegisterCompletedBatchesTrigger(
         IServiceProvider serviceProvider,
         ILogger<RegisterCompletedBatchesTrigger> logger)
         : base(serviceProvider, logger, TimeSpan.FromSeconds(DelayInSecondsBeforeNextExecution))
     {
+        _logger = logger;
     }
 
     protected override async Task ExecuteAsync(IRegisterCompletedBatchesHandler instance)
     {
+        _logger.LogError("TESTTESTTEST: RegisterCompletedBatchesTrigger");
         await instance.RegisterCompletedBatchesAsync().ConfigureAwait(false);
     }
 }

@@ -34,7 +34,7 @@ public class OutboxSenderTrigger : RepeatingTrigger<IOutboxSender>
 
     protected override async Task ExecuteAsync(IOutboxSender outboxSender)
     {
-        _logger.LogInformation("TESTTESTTEST: Sending outbox messages");
+        _logger.LogError("TESTTESTTEST: OutboxSenderTrigger");
         await outboxSender.SendAsync().ConfigureAwait(false);
     }
 }
