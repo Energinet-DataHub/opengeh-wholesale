@@ -28,6 +28,7 @@ public static class Program
                 logging.ClearProviders();
                 logging.AddConfiguration(context.Configuration.GetSection("Logging"));
                 logging.AddAzureWebAppDiagnostics();
+                logging.AddApplicationInsights();
             })
             .ConfigureWebHostDefaults(webBuilder =>
             {
