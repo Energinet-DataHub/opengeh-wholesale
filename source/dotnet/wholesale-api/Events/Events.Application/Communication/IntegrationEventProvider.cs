@@ -53,15 +53,23 @@ public class IntegrationEventProvider : IIntegrationEventProvider
         do
         {
             var batch = await _completedBatchRepository.GetNextUnpublishedOrNullAsync().ConfigureAwait(false);
-            if (batch == null) break;
+            if (batch == null)
+            {
+                _logger.LogError("TESTTESTTEST: No more batches to publish");
+                break;
+            }
+
+            _logger.LogError("TESTTESTTEST: {id} unpublished batch", batch.Id);
 
             await foreach (var calculationResult in _calculationResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
             {
+                _logger.LogError("TESTTESTTEST: {id} Yielding calculation result", calculationResult.BatchId);
                 yield return _calculationResultIntegrationEventFactory.Create(calculationResult);
             }
 
             batch.PublishedTime = _clock.GetCurrentInstant();
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
+            _logger.LogError("TESTTESTTEST: {publishedTime} published batch", batch.PublishedTime);
         }
         while (true);
     }
