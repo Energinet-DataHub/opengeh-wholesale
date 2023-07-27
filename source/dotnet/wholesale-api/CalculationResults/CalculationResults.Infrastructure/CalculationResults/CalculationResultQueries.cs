@@ -19,7 +19,6 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatement
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NodaTime.Extensions;
 
@@ -30,21 +29,17 @@ public class CalculationResultQueries : ICalculationResultQueries
     private readonly ISqlStatementClient _sqlStatementClient;
     private readonly IBatchesClient _batchesClient;
     private readonly DeltaTableOptions _deltaTableOptions;
-    private readonly ILogger _logger;
 
-    public CalculationResultQueries(ISqlStatementClient sqlStatementClient, IBatchesClient batchesClient, IOptions<DeltaTableOptions> deltaTableOptions, ILogger logger)
+    public CalculationResultQueries(ISqlStatementClient sqlStatementClient, IBatchesClient batchesClient, IOptions<DeltaTableOptions> deltaTableOptions)
     {
         _sqlStatementClient = sqlStatementClient;
         _batchesClient = batchesClient;
-        _logger = logger;
         _deltaTableOptions = deltaTableOptions.Value;
     }
 
     public async IAsyncEnumerable<CalculationResult> GetAsync(Guid batchId)
     {
-        _logger.LogError("Getting calculation results for batch {batchId}", batchId);
         var batch = await _batchesClient.GetAsync(batchId).ConfigureAwait(false);
-        _logger.LogError("Batch {batchId}", batch.BatchId);
         var sql = CreateBatchResultsSql(batchId);
         var timeSeriesPoints = new List<TimeSeriesPoint>();
         SqlResultRow? currentRow = null;
