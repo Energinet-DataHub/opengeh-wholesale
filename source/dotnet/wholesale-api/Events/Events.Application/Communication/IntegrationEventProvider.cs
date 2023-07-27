@@ -17,6 +17,7 @@ using Energinet.DataHub.Core.Messaging.Communication.Internal;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.Communication;
@@ -28,23 +29,27 @@ public class IntegrationEventProvider : IIntegrationEventProvider
     private readonly ICompletedBatchRepository _completedBatchRepository;
     private readonly IClock _clock;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILogger<IntegrationEventProvider> _logger;
 
     public IntegrationEventProvider(
         ICalculationResultIntegrationEventFactory integrationEventFactory,
         ICalculationResultQueries calculationResultQueries,
         ICompletedBatchRepository completedBatchRepository,
         IClock clock,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ILogger<IntegrationEventProvider> logger)
     {
         _calculationResultIntegrationEventFactory = integrationEventFactory;
         _calculationResultQueries = calculationResultQueries;
         _completedBatchRepository = completedBatchRepository;
         _clock = clock;
         _unitOfWork = unitOfWork;
+        _logger = logger;
     }
 
     public async IAsyncEnumerable<IntegrationEvent> GetAsync()
     {
+        _logger.LogError("TESTTESTTEST: Starting to get integration events");
         do
         {
             var batch = await _completedBatchRepository.GetNextUnpublishedOrNullAsync().ConfigureAwait(false);

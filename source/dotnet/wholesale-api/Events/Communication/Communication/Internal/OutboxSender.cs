@@ -44,6 +44,7 @@ public class OutboxSender : IOutboxSender
     // Note naming? MessageName becomes subject, how do I know that?
     public async Task SendAsync()
     {
+        _logger.LogError("TESTTESTTEST: OutboxSender");
         var stopwatch = Stopwatch.StartNew();
         var eventCount = 0;
         var batch = await _senderProvider.Instance.CreateMessageBatchAsync().ConfigureAwait(false);
