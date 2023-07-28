@@ -44,3 +44,9 @@ variable allow_test_tokens {
   description   = "(Optional) Enables use of test tokens"
   default       = false
 }
+
+variable "hosted_deployagent_public_ip_range" {
+  type        = string
+  description = "(Optional) Comma-delimited string with IPs / CIDR block with deployagent's public IPs, so it can access network-protected resources (Keyvaults, Function apps etc)"
+  default     = null
+}

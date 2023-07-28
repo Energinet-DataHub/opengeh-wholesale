@@ -15,6 +15,7 @@ module "func_receiver" {
   dotnet_framework_version                 = "7"
   use_dotnet_isolated_runtime              = true
   health_check_path                        = "/api/monitor/ready"
+  ip_restriction_allow_ip_range            = var.hosted_deployagent_public_ip_range
   app_settings = {
     # Shared resources logging
     REQUEST_RESPONSE_LOGGING_CONNECTION_STRING = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-marketoplogs-primary-connection-string)",
