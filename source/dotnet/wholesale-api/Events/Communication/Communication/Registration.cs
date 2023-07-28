@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.Messaging.Communication.Internal;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -27,15 +28,28 @@ public static class Registration
     public static IServiceCollection AddCommunication<TIntegrationEventProvider>(
         this IServiceCollection services,
         string serviceBusIntegrationEventWriteConnectionString,
-        string integrationEventTopicName)
+        string integrationEventTopicName,
+        bool useNewChannelObject = false)
         where TIntegrationEventProvider : class, IIntegrationEventProvider
     {
         services.AddHostedService<OutboxSenderTrigger>();
         services.AddScoped<IIntegrationEventProvider, TIntegrationEventProvider>();
-        services.AddSingleton<IServiceBusSenderProvider>(
-            _ => new ServiceBusSenderProvider(serviceBusIntegrationEventWriteConnectionString, integrationEventTopicName));
-        services.AddScoped<IOutboxSender, OutboxSender>();
         services.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
+
+        if (useNewChannelObject)
+        {
+            services.Configure<IntegrationEventsChannelOptions>(opt => opt.TopicName = integrationEventTopicName);
+            services.AddSingleton<ServiceBusClient>(_ =>
+                new ServiceBusClient(serviceBusIntegrationEventWriteConnectionString));
+            services.AddSingleton<IntegrationEventsChannel>();
+            services.AddScoped<IOutboxSender, IntegrationEventsSender>();
+        }
+        else
+        {
+            services.AddSingleton<IServiceBusSenderProvider>(
+                _ => new ServiceBusSenderProvider(serviceBusIntegrationEventWriteConnectionString, integrationEventTopicName));
+            services.AddScoped<IOutboxSender, OutboxSender>();
+        }
 
         return services;
     }

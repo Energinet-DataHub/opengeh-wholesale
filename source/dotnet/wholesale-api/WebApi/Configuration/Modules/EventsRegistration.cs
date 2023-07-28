@@ -34,7 +34,8 @@ public static class EventsRegistration
     public static void AddEventsModule(
         this IServiceCollection serviceCollection,
         string serviceBusConnectionString,
-        string integrationEventTopicName)
+        string integrationEventTopicName,
+        bool useNewChannelObject = false)
     {
         serviceCollection.AddHostedService<RegisterCompletedBatchesTrigger>();
 
@@ -47,7 +48,7 @@ public static class EventsRegistration
         serviceCollection.AddApplications();
         serviceCollection.AddInfrastructure();
 
-        serviceCollection.AddCommunication<IntegrationEventProvider>(serviceBusConnectionString, integrationEventTopicName);
+        serviceCollection.AddCommunication<IntegrationEventProvider>(serviceBusConnectionString, integrationEventTopicName, useNewChannelObject);
     }
 
     private static void AddApplications(this IServiceCollection services)
