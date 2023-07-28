@@ -10,7 +10,7 @@ module "kv_internal" {
   enabled_for_template_deployment = true
   sku_name                        = "premium"
   private_endpoint_subnet_id      = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
-  ip_rules                        = data.azurerm_key_vault_secret.pir_hosted_deployment_agents.value
+  ip_rules                        = var.hosted_deployagent_public_ip_range
   allowed_subnet_ids = [
     data.azurerm_key_vault_secret.snet_vnet_deployment_agents_id.value
   ]
