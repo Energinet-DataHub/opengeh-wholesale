@@ -10,6 +10,7 @@ module "kv_internal" {
   enabled_for_template_deployment = true
   sku_name                        = "premium"
   private_endpoint_subnet_id      = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
+  ip_rules                        = var.hosted_deployagent_public_ip_range
 }
 
 module "kvs_sendgrid_api_key" {
