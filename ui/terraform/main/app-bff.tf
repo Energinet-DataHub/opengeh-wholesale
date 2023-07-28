@@ -9,6 +9,7 @@ module "bff" {
   location                                 = azurerm_resource_group.this.location
   vnet_integration_subnet_id               = data.azurerm_key_vault_secret.snet_vnet_integration_id.value
   private_endpoint_subnet_id               = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
+  ip_restriction_allow_ip_range            = var.hosted_deployagent_public_ip_range
   app_service_plan_id                      = data.azurerm_key_vault_secret.plan_shared_id.value
   application_insights_instrumentation_key = data.azurerm_key_vault_secret.appi_shared_instrumentation_key.value
   health_check_path                        = "/monitor/ready"

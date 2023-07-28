@@ -57,3 +57,9 @@ variable "enable_health_check_alerts" {
   type        = bool
   description = "Specify if health check alerts for Azure Functions and App Services should be enabled."
 }
+
+variable "hosted_deployagent_public_ip_range" {
+  type        = string
+  description = "(Optional) Comma-delimited string with IPs / CIDR block with deployagent's public IPs, so it can access network-protected resources (Keyvaults, Function apps etc)"
+  default     = null
+}
