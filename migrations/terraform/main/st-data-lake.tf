@@ -11,7 +11,7 @@ module "st_migrations" {
   account_tier                    = "Standard"
   private_endpoint_subnet_id      = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   private_dns_resource_group_name = var.shared_resources_resource_group_name
-  ip_rules                        = data.azurerm_key_vault_secret.pir_hosted_deployment_agents.value
+  ip_rules                        = var.hosted_deployagent_public_ip_range
 }
 
 resource "azurerm_role_assignment" "ra_migrations_contributor" {

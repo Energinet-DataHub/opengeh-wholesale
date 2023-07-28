@@ -58,11 +58,6 @@ data "azurerm_key_vault_secret" "snet_vnet_integration_id" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "pir_hosted_deployment_agents" {
-  name         = "pir-hosted-deployment-agents"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
 data "azurerm_key_vault_secret" "plan_shared_id" {
   name         = "plan-services-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
