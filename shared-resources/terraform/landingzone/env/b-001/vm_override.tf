@@ -1,5 +1,5 @@
 locals {
-  deployagent_count = 2
+  deployagent_count = 3
 }
 
 resource "azurerm_linux_virtual_machine" "deployagent" {
