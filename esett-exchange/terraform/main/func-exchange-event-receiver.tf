@@ -26,7 +26,6 @@ module "func_entrypoint_exchange_event_receiver" {
       role_definition_name = "Storage Blob Data Contributor"
     }
   ]
-
   app_settings = {
     "DatabaseSettings:ConnectionString"                     = local.MS_ESETT_EXCHANGE_CONNECTION_STRING
     "ConsumeServiceBusSettings:ConnectionString"            = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-listen-connection-string)"

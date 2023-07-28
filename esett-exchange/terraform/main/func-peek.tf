@@ -26,7 +26,6 @@ module "func_entrypoint_peek" {
       role_definition_name = "Storage Blob Data Contributor"
     }
   ]
-
   app_settings = {
     "PublishServiceBusSettings:ConnectionString"            = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-send-connection-string)"
     "PublishServiceBusSettings:HealthCheckConnectionString" = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-manage-connection-string)"

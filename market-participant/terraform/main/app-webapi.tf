@@ -16,7 +16,6 @@ module "app_webapi" {
   health_check_alert_enabled               = var.enable_health_check_alerts
   dotnet_framework_version                 = "v7.0"
   ip_restriction_allow_ip_range            = var.hosted_deployagent_public_ip_range
-
   app_settings = {
     EXTERNAL_OPEN_ID_URL                       = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-open-id-url)"
     INTERNAL_OPEN_ID_URL                       = "https://app-webapi-${var.domain_name_short}-${var.environment_short}-${var.environment_instance}.azurewebsites.net/.well-known/openid-configuration"
