@@ -65,14 +65,23 @@ public class OutboxSender : IOutboxSender
             }
         }
 
-        await _senderProvider.Instance.SendMessagesAsync(batch).ConfigureAwait(false);
-        _logger.LogInformation("Sent {EventCount} integration events in {Time} ms", eventCount, stopwatch.Elapsed.TotalMilliseconds);
+        _logger.LogError("TESTTESTTEST: OutboxSender foreach done");
+        try
+        {
+            await _senderProvider.Instance.SendMessagesAsync(batch).ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed to send batch");
+        }
+
+        _logger.LogError("Sent {EventCount} integration events in {Time} ms", eventCount, stopwatch.Elapsed.TotalMilliseconds);
     }
 
     private async Task SendBatchAsync(ServiceBusMessageBatch batch)
     {
         await _senderProvider.Instance.SendMessagesAsync(batch).ConfigureAwait(false);
-        _logger.LogInformation("Sent batch of {BatchCount} messages", batch.Count);
+        _logger.LogError("Sent batch of {BatchCount} messages", batch.Count);
     }
 
     private async Task SendMessageThatExceedsBatchLimitAsync(ServiceBusMessage serviceBusMessage)
