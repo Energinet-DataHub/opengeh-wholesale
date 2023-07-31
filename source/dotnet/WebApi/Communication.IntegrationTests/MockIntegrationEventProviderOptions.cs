@@ -12,18 +12,17 @@
 // // See the License for the specific language governing permissions and
 // // limitations under the License.
 
-using Azure.Messaging.ServiceBus;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+namespace Communication.IntegrationTests;
 
-namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
-
-internal class IntegrationEventsChannel : ServiceBusChannel
+internal class MockIntegrationEventProviderOptions
 {
-    public IntegrationEventsChannel(
-        ServiceBusClient client,
-        ILogger<IntegrationEventsChannel> logger,
-        IOptions<IntegrationEventsChannelOptions> options)
-        : base(client, options.Value.TopicName, logger, options.Value.BatchSize)
-    { }
+    public MockIntegrationEventProviderOptions()
+        : this(10) { }
+
+    public MockIntegrationEventProviderOptions(int integrationEventsToProduce)
+    {
+        IntegrationEventsToProduce = integrationEventsToProduce;
+    }
+
+    public int IntegrationEventsToProduce { get; set; }
 }

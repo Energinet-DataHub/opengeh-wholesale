@@ -16,5 +16,9 @@ namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
 
 public class IntegrationEventsChannelOptions
 {
+    private const int DefaultBatchSize = 1500;
+
     public string TopicName { get; set; } = string.Empty;
+
+    public int BatchSize { get; set; } = DefaultBatchSize;
 }

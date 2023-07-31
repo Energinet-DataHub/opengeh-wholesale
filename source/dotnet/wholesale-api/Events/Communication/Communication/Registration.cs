@@ -29,7 +29,8 @@ public static class Registration
         this IServiceCollection services,
         string serviceBusIntegrationEventWriteConnectionString,
         string integrationEventTopicName,
-        bool useNewChannelObject = false)
+        bool useNewChannelObject = false,
+        int batchSize = 1500)
         where TIntegrationEventProvider : class, IIntegrationEventProvider
     {
         services.AddHostedService<OutboxSenderTrigger>();
@@ -38,7 +39,11 @@ public static class Registration
 
         if (useNewChannelObject)
         {
-            services.Configure<IntegrationEventsChannelOptions>(opt => opt.TopicName = integrationEventTopicName);
+            services.Configure<IntegrationEventsChannelOptions>(opt =>
+            {
+                opt.TopicName = integrationEventTopicName;
+                opt.BatchSize = batchSize;
+            });
             services.AddSingleton<ServiceBusClient>(_ =>
                 new ServiceBusClient(serviceBusIntegrationEventWriteConnectionString));
             services.AddSingleton<IntegrationEventsChannel>();

@@ -19,12 +19,11 @@ namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
 
 internal class ServiceBusChannel : IAsyncDisposable
 {
-    private const int DefaultBatchSize = 1500;
     private readonly int _batchLimitSize;
     private readonly ILogger<ServiceBusChannel> _logger;
     private readonly ServiceBusSender _sender;
 
-    protected ServiceBusChannel(ServiceBusClient client, string topicName, ILogger<ServiceBusChannel> logger, int batchLimitSize = DefaultBatchSize)
+    protected ServiceBusChannel(ServiceBusClient client, string topicName, ILogger<ServiceBusChannel> logger, int batchLimitSize)
     {
         _batchLimitSize = batchLimitSize;
         _logger = logger;
