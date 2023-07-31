@@ -12,7 +12,6 @@ module "kv_shared" {
   private_endpoint_subnet_id      = module.snet_private_endpoints.id
   allowed_subnet_ids = [
     module.snet_vnet_integration.id,
-    data.azurerm_subnet.deployment_agents_subnet.id
   ]
   ip_rules = var.hosted_deployagent_public_ip_range
 }

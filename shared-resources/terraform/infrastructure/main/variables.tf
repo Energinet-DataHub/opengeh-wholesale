@@ -105,17 +105,12 @@ variable "authentication_mitid_invitation_user_flow_id" {
 
 variable "virtual_network_resource_group_name" {
   type        = string
-  description = "Name of the resource group where the landing zone virtual network is deployed"
+  description = "Name of the resource group where the virtual network is deployed"
 }
 
 variable "virtual_network_name" {
   type        = string
-  description = "Name of the landing zone virtual network"
-}
-
-variable "deployment_agents_subnet_name" {
-  type        = string
-  description = "Name of the subnet hosting the deployment agents."
+  description = "Name of the virtual network"
 }
 
 variable "apim_address_space" {

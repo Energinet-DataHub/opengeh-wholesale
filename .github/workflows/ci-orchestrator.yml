@@ -67,7 +67,6 @@ jobs:
     uses: ./.github/workflows/shared-resources-infrastructure-build-prerelease.yml
     with:
       infrastructure_path: ./shared-resources/terraform/infrastructure
-      landingzone_path: ./shared-resources/terraform/landingzone
       b2c_path: ./shared-resources/terraform/b2c
     secrets: inherit
 

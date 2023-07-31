@@ -3,12 +3,6 @@ data "azurerm_virtual_network" "this" {
   resource_group_name = var.virtual_network_resource_group_name
 }
 
-data "azurerm_subnet" "deployment_agents_subnet" {
-  name                 = var.deployment_agents_subnet_name
-  virtual_network_name = var.virtual_network_name
-  resource_group_name  = var.virtual_network_resource_group_name
-}
-
 module "kvs_vnet_name" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
 
@@ -91,13 +85,5 @@ module "kvs_snet_vnet_integration_id" {
 
   name         = "snet-vnet-integration-id"
   value        = module.snet_vnet_integration.id
-  key_vault_id = module.kv_shared.id
-}
-
-module "kvs_snet_vnet_deployment_agents_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
-
-  name         = "snet-deployment-agents-id"
-  value        = data.azurerm_subnet.deployment_agents_subnet.id
   key_vault_id = module.kv_shared.id
 }

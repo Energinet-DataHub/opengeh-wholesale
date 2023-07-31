@@ -7,7 +7,6 @@ name: Shared resources infrastructure build - prerelease
 # This workflow is a specialized version of the infrastructure-build-prelease
 # workflow, made spefically for the Shared Resources domain, which is unique
 # due to the domain's IaC configuration which contains multiple sub-components:
-# - Landing zone
 # - B2C
 # - Infrastructure (resources that are shared by the DataHub system)
 #
@@ -20,9 +19,6 @@ on:
   workflow_call:
     inputs:
       infrastructure_path:
-        required: true
-        type: string
-      landingzone_path:
         required: true
         type: string
       b2c_path:
@@ -44,12 +40,6 @@ jobs:
       infrastructure_path: ${{ inputs.infrastructure_path }}
     secrets: inherit
 
-  validate_landingzone_configuration:
-    uses: ./.github/workflows/infrastructure-validate.yml
-    with:
-      infrastructure_path: ${{ inputs.landingzone_path }}
-    secrets: inherit
-
   validate_b2c_configuration:
     uses: ./.github/workflows/infrastructure-validate.yml
     with:
@@ -60,7 +50,6 @@ jobs:
     needs:
       [
         validate_infrastructure_configuration,
-        validate_landingzone_configuration,
         validate_b2c_configuration,
       ]
     if: ${{ always() && !contains(needs.*.result, 'failure') }}
@@ -78,11 +67,6 @@ jobs:
           mkdir ${{ env.RELEASE_FOLDER_PATH }}/infrastructure
           cp -fR ${{ inputs.infrastructure_path }}/main ${{ env.RELEASE_FOLDER_PATH }}/infrastructure/main 2>/dev/null || :
           cp -fR ${{ inputs.infrastructure_path }}/env ${{ env.RELEASE_FOLDER_PATH }}/infrastructure/env 2>/dev/null || :
-
-      - name: Copy Landingzone infrastructure files
-        shell: bash
-        run: |
-          cp -fR ${{ inputs.landingzone_path }} ${{ env.RELEASE_FOLDER_PATH }} 2>/dev/null || :
 
       - name: Copy B2C infrastructure files
         shell: bash
