@@ -54,7 +54,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Communication\Communication\Communication.csproj" />
+      <ProjectReference Include="..\Communication\Communication.csproj" />
     </ItemGroup>
 
 </Project>
