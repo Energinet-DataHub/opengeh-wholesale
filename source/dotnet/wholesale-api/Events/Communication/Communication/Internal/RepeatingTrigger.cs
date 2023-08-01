@@ -40,6 +40,7 @@ public abstract class RepeatingTrigger<TService> : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        stoppingToken.Register(() => _logger.LogWarning("{Worker} was cancelled stoppingToken at: {Time}", GetType().Name, DateTimeOffset.Now));
         while (!stoppingToken.IsCancellationRequested)
         {
             _logger.LogInformation("{Worker} running at: {Time}", GetType().Name, DateTimeOffset.Now);
