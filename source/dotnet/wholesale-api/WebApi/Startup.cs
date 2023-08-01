@@ -100,13 +100,9 @@ public class Startup
         serviceCollection.AddOptions<DataLakeOptions>().Bind(Configuration);
         serviceCollection.AddOptions<DeltaTableOptions>();
 
-        serviceCollection.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Information));
-
         AddJwtTokenSecurity(serviceCollection);
         AddHealthCheck(serviceCollection);
-        serviceCollection.AddApplicationInsightsTelemetry();
-        var appOptions = new Microsoft.ApplicationInsights.AspNetCore.Extensions.ApplicationInsightsServiceOptions();
-        appOptions.EnableAdaptiveSampling = false;
+        serviceCollection.AddApplicationInsightsTelemetry(options => options.EnableAdaptiveSampling = false);
         AddCorrelationContext(serviceCollection);
 
         serviceCollection.AddUserAuthentication<FrontendUser, FrontendUserProvider>();
