@@ -100,6 +100,8 @@ public class Startup
         serviceCollection.AddOptions<DataLakeOptions>().Bind(Configuration);
         serviceCollection.AddOptions<DeltaTableOptions>();
 
+        serviceCollection.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Information));
+
         AddJwtTokenSecurity(serviceCollection);
         AddHealthCheck(serviceCollection);
         serviceCollection.AddApplicationInsightsTelemetry();

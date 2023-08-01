@@ -22,7 +22,7 @@ public static class Program
     }
 
     public static IHostBuilder CreateWebHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args)
+        Host.CreateDefaultBuilder(args).ConfigureLogging(builder => builder.AddFilter("Default", LogLevel.Information))
             .ConfigureWebHostDefaults(webBuilder =>
             {
                 webBuilder.UseStartup<Startup>();

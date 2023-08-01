@@ -44,6 +44,7 @@ public abstract class RepeatingWorker<TService> : BackgroundService
         while (!stoppingToken.IsCancellationRequested)
         {
             _logger.LogInformation("{Worker} running at: {Time}", GetType().Name, DateTimeOffset.Now);
+            _logger.LogError("{Worker} running at: {Time}", GetType().Name, DateTimeOffset.Now);
 
             await InvokeAsync().ConfigureAwait(false);
 
