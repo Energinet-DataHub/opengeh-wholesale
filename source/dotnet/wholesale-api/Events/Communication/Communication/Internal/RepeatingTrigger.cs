@@ -48,6 +48,8 @@ public abstract class RepeatingTrigger<TService> : BackgroundService
 
             await Task.Delay(_delayBetweenExecutions, stoppingToken).ConfigureAwait(false);
         }
+
+        _logger.LogWarning("{Worker} was cancelled at: {Time}", GetType().Name, DateTimeOffset.Now);
     }
 
     /// <summary>
