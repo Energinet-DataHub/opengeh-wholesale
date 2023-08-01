@@ -72,8 +72,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Communication", "wholesale-
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Communication.IntegrationTests", "wholesale-api\Events\Communication\Communication.IntegrationTests\Communication.IntegrationTests.csproj", "{BDC6B80D-1203-43E3-A7C6-269AAC509F36}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Communication.IntegrationTests", "wholesale-api\Events\Communication.IntegrationTests.csproj",
-"{D7F41F59-A0C7-44DE-8D25-D54BE44523BA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Communication.IntegrationTests", "wholesale-api\Events\Communication.IntegrationTests.csproj", "{D7F41F59-A0C7-44DE-8D25-D54BE44523BA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
