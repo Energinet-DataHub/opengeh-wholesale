@@ -28,6 +28,12 @@ public abstract class RepeatingTrigger<TService> : BackgroundService
     private readonly ILogger _logger;
     private readonly TimeSpan _delayBetweenExecutions;
 
+    public new async Task StopAsync(CancellationToken cancellationToken)
+    {
+        _logger.LogError("(in stop async) {Worker} was cancelled at: {Time}", GetType().Name, DateTimeOffset.Now);
+        await base.StopAsync(cancellationToken).ConfigureAwait(false);
+    }
+
     protected RepeatingTrigger(
         IServiceProvider serviceProvider,
         ILogger logger,
