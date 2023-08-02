@@ -63,7 +63,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
 
             await foreach (var calculationResult in _calculationResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
             {
-                _logger.LogError("TESTTESTTEST: {id} Yielding calculation result", calculationResult.BatchId);
+                _logger.LogError("TESTTESTTEST: {id} Yielding calculation result for batch", calculationResult.BatchId);
                 yield return _calculationResultIntegrationEventFactory.Create(calculationResult);
             }
 
