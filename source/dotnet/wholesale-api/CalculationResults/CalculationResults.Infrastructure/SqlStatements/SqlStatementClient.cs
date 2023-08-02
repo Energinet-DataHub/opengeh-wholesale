@@ -47,6 +47,8 @@ public class SqlStatementClient : ISqlStatementClient
 
         while (chunk != null)
         {
+            if (chunk.ExternalLink == null) break;
+
             var data = await GetChunkDataAsync(chunk.ExternalLink, columnNames!).ConfigureAwait(false);
 
             for (var index = 0; index < data.Rows.Count; index++)
