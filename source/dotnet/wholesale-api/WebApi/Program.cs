@@ -29,6 +29,7 @@ public static class Program
                 {
                     logging.ClearProviders(); // Optional: Clears the default logging providers.
                     logging.AddApplicationInsights(); // Optional: Adds Application Insights as a logging provider.
+                    logging.AddConsole();
 
                     // Set the default log level to Information.
                     logging.SetMinimumLevel(LogLevel.Information);
