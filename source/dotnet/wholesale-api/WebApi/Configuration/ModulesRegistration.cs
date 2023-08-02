@@ -28,7 +28,9 @@ namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
 
 internal static class ServiceCollectionExtensions
 {
-    public static void AddModules(this IServiceCollection serviceCollection, IConfiguration configuration)
+    public static void AddModules(
+        this IServiceCollection serviceCollection,
+        IConfiguration configuration)
     {
         // Add modules
         var connectionStringOptions = configuration.GetSection(ConnectionStringsOptions.ConnectionStrings)
@@ -38,9 +40,11 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddCalculationResultsModule();
 
         var serviceBusOptions = configuration.Get<ServiceBusOptions>()!;
+
         serviceCollection.AddEventsModule(
             serviceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING,
-            serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME);
+            serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
+            configuration.GetValue("UseNewChannelObject", defaultValue: false));
 
         // Add registration that are used by more than one module
         serviceCollection.AddShared(configuration);
