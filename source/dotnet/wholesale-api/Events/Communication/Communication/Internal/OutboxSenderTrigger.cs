@@ -32,9 +32,9 @@ public class OutboxSenderTrigger : RepeatingTrigger<IOutboxSender>
         _logger = logger;
     }
 
-    protected override async Task ExecuteAsync(IOutboxSender outboxSender)
+    protected override async Task ExecuteAsync(IOutboxSender outboxSender, CancellationToken cancellationToken)
     {
-        _logger.LogError("TESTTESTTEST: OutboxSenderTrigger");
-        await outboxSender.SendAsync().ConfigureAwait(false);
+        _logger.EnterMethod();
+        await outboxSender.SendAsync(cancellationToken).ConfigureAwait(false);
     }
 }

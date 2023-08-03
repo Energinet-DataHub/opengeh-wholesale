@@ -49,7 +49,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
 
     public async IAsyncEnumerable<IntegrationEvent> GetAsync()
     {
-        _logger.LogError("TESTTESTTEST: Starting to get integration events");
+        _logger.EnterMethod();
         do
         {
             var batch = await _completedBatchRepository.GetNextUnpublishedOrNullAsync().ConfigureAwait(false);

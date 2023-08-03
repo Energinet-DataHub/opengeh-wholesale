@@ -12,9 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Logging;
+
 namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
 
-public interface IOutboxSender
+public static class LoggerExtensions
 {
-    Task SendAsync(CancellationToken cancellationToken);
+    public static void EnterMethod(
+        this ILogger logger,
+        [CallerMemberName] string? methodName = null,
+        [CallerFilePath] string? sourceFile = null,
+        [CallerLineNumber] int? lineNumber = null)
+    {
+        logger.LogDebug("Entering {MethodName} in {FilePath}:{LineNo}", methodName, sourceFile, lineNumber);
+    }
 }

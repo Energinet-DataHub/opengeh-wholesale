@@ -42,15 +42,21 @@ public class OutboxSender : IOutboxSender
 
     // Send time stamp (afsendelsen): when the event was actually sent on the bus
     // Note naming? MessageName becomes subject, how do I know that?
-    public async Task SendAsync()
+    public async Task SendAsync(CancellationToken cancellationToken)
     {
-        _logger.LogError("TESTTESTTEST: OutboxSender");
+        _logger.EnterMethod();
         var stopwatch = Stopwatch.StartNew();
         var eventCount = 0;
         var batch = await _senderProvider.Instance.CreateMessageBatchAsync().ConfigureAwait(false);
 
         await foreach (var @event in _integrationEventProvider.GetAsync())
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                _logger.LogWarning("Cancellation requested while sending integration events");
+                return;
+            }
+
             eventCount++;
             var serviceBusMessage = _serviceBusMessageFactory.Create(@event);
             if (!batch.TryAddMessage(serviceBusMessage))

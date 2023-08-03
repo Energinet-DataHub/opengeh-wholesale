@@ -28,6 +28,7 @@ public abstract class RepeatingWorker<TService> : BackgroundService
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger _logger;
     private readonly TimeSpan _delayBetweenExecutions;
+    private readonly string _serviceName;
 
     protected RepeatingWorker(
         IServiceProvider serviceProvider,
@@ -37,22 +38,34 @@ public abstract class RepeatingWorker<TService> : BackgroundService
         _serviceProvider = serviceProvider;
         _logger = logger;
         _delayBetweenExecutions = delayBetweenExecutions;
+        _serviceName = GetType().Name;
+    }
+
+    public override async Task StopAsync(CancellationToken cancellationToken)
+    {
+        using (_logger.BeginScope(_serviceName))
+        {
+            await base.StopAsync(cancellationToken).ConfigureAwait(false);
+            _logger.LogWarning("{Worker} has stopped at {Time}", _serviceName, DateTimeOffset.Now);
+        }
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        stoppingToken.Register(() => _logger.LogWarning("{Worker} was cancelled stoppingToken at: {Time}", GetType().Name, DateTimeOffset.Now));
-        while (!stoppingToken.IsCancellationRequested)
+        using (_logger.BeginScope(new Dictionary<string, object> { ["HostedService"] = _serviceName }))
         {
-            _logger.LogInformation("{Worker} running at: {Time}", GetType().Name, DateTimeOffset.Now);
-            _logger.LogError("{Worker} running at: {Time}", GetType().Name, DateTimeOffset.Now);
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                _logger.LogInformation("{Worker} running at: {Time}", _serviceName, DateTimeOffset.Now);
+                _logger.LogError("{Worker} running at: {Time}", _serviceName, DateTimeOffset.Now);
 
-            await InvokeAsync().ConfigureAwait(false);
+                await InvokeAsync().ConfigureAwait(false);
 
-            await Task.Delay(_delayBetweenExecutions, stoppingToken).ConfigureAwait(false);
+                await Task.Delay(_delayBetweenExecutions, stoppingToken).ConfigureAwait(false);
+            }
+
+            _logger.LogWarning("{Worker} was cancelled at: {Time}", _serviceName, DateTimeOffset.Now);
         }
-
-        _logger.LogWarning("{Worker} was cancelled at: {Time}", GetType().Name, DateTimeOffset.Now);
     }
 
     /// <summary>
@@ -76,7 +89,7 @@ public abstract class RepeatingWorker<TService> : BackgroundService
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Unhandled exception in {Worker}", GetType().Name);
+            _logger.LogError(e, "Unhandled exception in {Worker}", _serviceName);
         }
     }
 }
