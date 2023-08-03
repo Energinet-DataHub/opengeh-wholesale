@@ -53,10 +53,10 @@ public abstract class RepeatingTrigger<TService> : BackgroundService
     {
         using (_logger.BeginScope(new Dictionary<string, object> { ["HostedService"] = _serviceName }))
         {
+            _logger.LogInformation("{Worker} started", _serviceName);
+
             while (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation("{Worker} running", _serviceName);
-
                 await InvokeAsync(stoppingToken).ConfigureAwait(false);
 
                 await Task.Delay(_delayBetweenExecutions, stoppingToken).ConfigureAwait(false);

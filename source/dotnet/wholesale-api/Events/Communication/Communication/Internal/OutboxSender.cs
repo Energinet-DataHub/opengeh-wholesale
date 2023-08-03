@@ -73,7 +73,8 @@ public class OutboxSender : IOutboxSender
             _logger.LogError(e, "Failed to send messages from outbox");
         }
 
-        _logger.LogDebug("Sent {EventCount} integration events in {Time} ms", eventCount, stopwatch.Elapsed.TotalMilliseconds);
+        if (eventCount > 0)
+            _logger.LogDebug("Sent {EventCount} integration events in {Time} ms", eventCount, stopwatch.Elapsed.TotalMilliseconds);
     }
 
     private async Task SendBatchAsync(ServiceBusMessageBatch batch)
