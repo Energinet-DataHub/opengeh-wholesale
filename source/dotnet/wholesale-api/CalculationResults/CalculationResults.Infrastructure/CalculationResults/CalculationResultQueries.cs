@@ -19,6 +19,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatement
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NodaTime.Extensions;
 
@@ -29,18 +30,23 @@ public class CalculationResultQueries : ICalculationResultQueries
     private readonly ISqlStatementClient _sqlStatementClient;
     private readonly IBatchesClient _batchesClient;
     private readonly DeltaTableOptions _deltaTableOptions;
+    private readonly ILogger<CalculationResultQueries> _logger;
 
-    public CalculationResultQueries(ISqlStatementClient sqlStatementClient, IBatchesClient batchesClient, IOptions<DeltaTableOptions> deltaTableOptions)
+    public CalculationResultQueries(ISqlStatementClient sqlStatementClient, IBatchesClient batchesClient, IOptions<DeltaTableOptions> deltaTableOptions, ILogger<CalculationResultQueries> logger)
     {
         _sqlStatementClient = sqlStatementClient;
         _batchesClient = batchesClient;
         _deltaTableOptions = deltaTableOptions.Value;
+        _logger = logger;
     }
 
     public async IAsyncEnumerable<CalculationResult> GetAsync(Guid batchId)
     {
+        _logger.LogInformation("Entering GetAsync method with batchId: {batchId}", batchId);
         var batch = await _batchesClient.GetAsync(batchId).ConfigureAwait(false);
+        _logger.LogInformation("Retrieved batch with id: {batchId}", batchId);
         var sql = CreateBatchResultsSql(batchId);
+        _logger.LogInformation("Created SQL statement: {sql}", sql);
         var timeSeriesPoints = new List<TimeSeriesPoint>();
         SqlResultRow? currentRow = null;
 
@@ -50,6 +56,7 @@ public class CalculationResultQueries : ICalculationResultQueries
 
             if (currentRow != null && BelongsToDifferentResults(currentRow, nextRow))
             {
+                _logger.LogInformation("Current row belongs to different results, creating calculation result");
                 yield return CreateCalculationResult(batch, currentRow, timeSeriesPoints);
                 timeSeriesPoints = new List<TimeSeriesPoint>();
             }
@@ -59,7 +66,10 @@ public class CalculationResultQueries : ICalculationResultQueries
         }
 
         if (currentRow != null)
+        {
+            _logger.LogInformation("Reached end of rows, creating final calculation result");
             yield return CreateCalculationResult(batch, currentRow, timeSeriesPoints);
+        }
     }
 
     private string CreateBatchResultsSql(Guid batchId)
