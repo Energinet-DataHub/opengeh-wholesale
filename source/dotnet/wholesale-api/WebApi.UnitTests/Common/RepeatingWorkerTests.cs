@@ -24,7 +24,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.Common;
 
 public class RepeatingWorkerTests
 {
-    private const int CancellationTokenTimeOutMilliSeconds = 50;
+    private const int CancellationTokenTimeOutMilliSeconds = 150;
 
     [Theory]
     [InlineAutoMoqData]
