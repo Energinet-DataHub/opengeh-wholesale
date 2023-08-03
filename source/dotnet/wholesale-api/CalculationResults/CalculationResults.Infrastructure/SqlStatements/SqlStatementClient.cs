@@ -14,6 +14,7 @@
 
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Web;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -45,7 +46,7 @@ public class SqlStatementClient : ISqlStatementClient
 
     public async IAsyncEnumerable<SqlResultRow> ExecuteAsync(string sqlStatement)
     {
-        _logger.LogDebug("Executing SQL statement: {Sql}", sqlStatement);
+        _logger.LogDebug("Executing SQL statement: {Sql}", HttpUtility.HtmlEncode(sqlStatement));
 
         var response = await GetFirstChunkOrNullAsync(sqlStatement).ConfigureAwait(false);
         var columnNames = response.ColumnNames;
