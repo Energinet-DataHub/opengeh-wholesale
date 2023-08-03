@@ -70,7 +70,7 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
         var tableName = await CreateTable();
         var expectedSettlementReportRow = await CreateTableWithRowsFromMultipleBatches(tableName);
         var deltaTableOptions = CreateDeltaTableOptions(_fixture.DatabricksSchemaManager.SchemaName, tableName);
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(loggerMock);
+        var sqlStatementClient = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
         var sut = new SettlementReportResultQueries(sqlStatementClient, deltaTableOptions);
 
         // Act

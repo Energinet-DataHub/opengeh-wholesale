@@ -57,7 +57,7 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
     {
         // Arrange
         var tableName = await CreateResultTableWithTwoRowsAsync();
-        var sut = _fixture.CreateSqlStatementClient(loggerMock);
+        var sut = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
 
         var sqlStatement = $@"SELECT * FROM {SchemaName}.{tableName}";
 
@@ -74,7 +74,7 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
     {
         // Arrange
         var expectedRowCount = 100;
-        var sut = _fixture.CreateSqlStatementClient(loggerMock);
+        var sut = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
 
         // Arrange: The result of this query spans multiple chunks
         var sqlStatement = $@"select r.id, 'some value' as value from range({expectedRowCount}) as r";

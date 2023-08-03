@@ -15,6 +15,7 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
@@ -27,21 +28,26 @@ public class SqlStatementClient : ISqlStatementClient
     private readonly HttpClient _httpClient;
     private readonly IOptions<DatabricksOptions> _options;
     private readonly IDatabricksSqlResponseParser _responseResponseParser;
+    private readonly ILogger<SqlStatementClient> _logger;
 
     public SqlStatementClient(
         HttpClient httpClient,
         IOptions<DatabricksOptions> options,
-        IDatabricksSqlResponseParser responseResponseParser)
+        IDatabricksSqlResponseParser responseResponseParser,
+        ILogger<SqlStatementClient> logger)
     {
         _httpClient = httpClient;
         _options = options;
         _responseResponseParser = responseResponseParser;
+        _logger = logger;
         ConfigureHttpClient(_httpClient, _options);
     }
 
     public async IAsyncEnumerable<SqlResultRow> ExecuteAsync(string sqlStatement)
     {
+        _logger.LogError("ExecuteAsync before GetFirstChunkOrNullAsync");
         var response = await GetFirstChunkOrNullAsync(sqlStatement).ConfigureAwait(false);
+        _logger.LogError("ExecuteAsync after GetFirstChunkOrNullAsync");
         var columnNames = response.ColumnNames;
         var chunk = response.Chunk;
 
@@ -60,6 +66,8 @@ public class SqlStatementClient : ISqlStatementClient
 
             chunk = await GetChunkAsync(chunk.NextChunkInternalLink).ConfigureAwait(false);
         }
+
+        _logger.LogError("ExecuteAsync end");
     }
 
     private async Task<DatabricksSqlResponse> GetFirstChunkOrNullAsync(string sqlStatement)
