@@ -29,6 +29,7 @@ public abstract class RepeatingWorker<TService> : BackgroundService
     private readonly ILogger _logger;
     private readonly TimeSpan _delayBetweenExecutions;
     private readonly string _serviceName;
+    private readonly Dictionary<string, object> _loggingScope;
 
     protected RepeatingWorker(
         IServiceProvider serviceProvider,
@@ -38,33 +39,32 @@ public abstract class RepeatingWorker<TService> : BackgroundService
         _serviceProvider = serviceProvider;
         _logger = logger;
         _delayBetweenExecutions = delayBetweenExecutions;
+
         _serviceName = GetType().Name;
+        _loggingScope = new Dictionary<string, object> { ["HostedService"] = _serviceName };
     }
 
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        using (_logger.BeginScope(_serviceName))
+        using (_logger.BeginScope(_loggingScope))
         {
             await base.StopAsync(cancellationToken).ConfigureAwait(false);
-            _logger.LogWarning("{Worker} has stopped at {Time}", _serviceName, DateTimeOffset.Now);
+            _logger.LogInformation("{Worker} has stopped", _serviceName);
         }
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        using (_logger.BeginScope(new Dictionary<string, object> { ["HostedService"] = _serviceName }))
+        using (_logger.BeginScope(_loggingScope))
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation("{Worker} running at: {Time}", _serviceName, DateTimeOffset.Now);
-                _logger.LogError("{Worker} running at: {Time}", _serviceName, DateTimeOffset.Now);
+                _logger.LogInformation("{Worker} running", _serviceName);
 
-                await InvokeAsync().ConfigureAwait(false);
+                await InvokeAsync(stoppingToken).ConfigureAwait(false);
 
                 await Task.Delay(_delayBetweenExecutions, stoppingToken).ConfigureAwait(false);
             }
-
-            _logger.LogWarning("{Worker} was cancelled at: {Time}", _serviceName, DateTimeOffset.Now);
         }
     }
 
@@ -72,9 +72,9 @@ public abstract class RepeatingWorker<TService> : BackgroundService
     /// Method to be implemented by the inheriting class.
     /// The method is invoked repeatedly with a delay between each invocation.
     /// </summary>
-    protected abstract Task ExecuteAsync(TService instance);
+    protected abstract Task ExecuteAsync(TService instance, CancellationToken cancellationToken);
 
-    private async Task InvokeAsync()
+    private async Task InvokeAsync(CancellationToken cancellationToken)
     {
         using var scope = _serviceProvider.CreateScope();
 
@@ -85,7 +85,7 @@ public abstract class RepeatingWorker<TService> : BackgroundService
         var service = scope.ServiceProvider.GetRequiredService<TService>();
         try
         {
-            await ExecuteAsync(service).ConfigureAwait(false);
+            await ExecuteAsync(service, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception e)
         {

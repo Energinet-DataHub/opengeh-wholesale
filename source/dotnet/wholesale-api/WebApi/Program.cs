@@ -21,7 +21,7 @@ public static class Program
         CreateWebHostBuilder(args).Build().Run();
     }
 
-    public static IHostBuilder CreateWebHostBuilder(string[] args) =>
+    private static IHostBuilder CreateWebHostBuilder(string[] args) =>
         Host.CreateDefaultBuilder(args)
             .ConfigureLogging((_, logging) =>
             {

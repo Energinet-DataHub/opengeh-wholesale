@@ -15,10 +15,13 @@
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 
-namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
+namespace Energinet.DataHub.Wholesale.Common.Logging;
 
 public static class LoggerExtensions
 {
+    /// <summary>
+    /// Utility method to log entering a method for debugging purposes.
+    /// </summary>
     public static void EnterMethod(
         this ILogger logger,
         [CallerMemberName] string? methodName = null,

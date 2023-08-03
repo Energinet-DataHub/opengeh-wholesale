@@ -45,11 +45,12 @@ public class SqlStatementClient : ISqlStatementClient
 
     public async IAsyncEnumerable<SqlResultRow> ExecuteAsync(string sqlStatement)
     {
-        _logger.LogError("ExecuteAsync before GetFirstChunkOrNullAsync");
+        _logger.LogDebug("Executing SQL statement: {Sql}", sqlStatement);
+
         var response = await GetFirstChunkOrNullAsync(sqlStatement).ConfigureAwait(false);
-        _logger.LogError("ExecuteAsync after GetFirstChunkOrNullAsync");
         var columnNames = response.ColumnNames;
         var chunk = response.Chunk;
+        var rowCount = 0;
 
         while (chunk != null)
         {
@@ -60,6 +61,7 @@ public class SqlStatementClient : ISqlStatementClient
             for (var index = 0; index < data.Rows.Count; index++)
             {
                 yield return new SqlResultRow(data, index);
+                rowCount++;
             }
 
             if (chunk.NextChunkInternalLink == null) break;
@@ -67,7 +69,7 @@ public class SqlStatementClient : ISqlStatementClient
             chunk = await GetChunkAsync(chunk.NextChunkInternalLink).ConfigureAwait(false);
         }
 
-        _logger.LogError("ExecuteAsync end");
+        _logger.LogDebug("SQL statement executed. Rows returned: {RowCount}", rowCount);
     }
 
     private async Task<DatabricksSqlResponse> GetFirstChunkOrNullAsync(string sqlStatement)

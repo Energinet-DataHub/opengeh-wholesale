@@ -42,24 +42,20 @@ public class CalculationResultQueries : ICalculationResultQueries
 
     public async IAsyncEnumerable<CalculationResult> GetAsync(Guid batchId)
     {
-        _logger.LogError("Entering GetAsync method with batchId: {batchId}", batchId);
         var batch = await _batchesClient.GetAsync(batchId).ConfigureAwait(false);
-        _logger.LogError("Retrieved batch with id: {batchId}", batchId);
         var sql = CreateBatchResultsSql(batchId);
-        _logger.LogError("Created SQL statement: {sql}", sql);
         var timeSeriesPoints = new List<TimeSeriesPoint>();
         SqlResultRow? currentRow = null;
+        var resultCount = 0;
 
         await foreach (var nextRow in _sqlStatementClient.ExecuteAsync(sql).ConfigureAwait(false))
         {
-            _logger.LogError("Processing row: {row}", nextRow);
             var timeSeriesPoint = CreateTimeSeriesPoint(nextRow);
-            _logger.LogError("Created time series point: {timeSeriesPoint}", timeSeriesPoint);
 
             if (currentRow != null && BelongsToDifferentResults(currentRow, nextRow))
             {
-                _logger.LogError("Current row belongs to different results, creating calculation result");
                 yield return CreateCalculationResult(batch, currentRow, timeSeriesPoints);
+                resultCount++;
                 timeSeriesPoints = new List<TimeSeriesPoint>();
             }
 
@@ -67,12 +63,13 @@ public class CalculationResultQueries : ICalculationResultQueries
             currentRow = nextRow;
         }
 
-        _logger.LogError("Reached end of rows, creating final calculation result");
         if (currentRow != null)
         {
-            _logger.LogError("Reached end of rows, creating final calculation result");
             yield return CreateCalculationResult(batch, currentRow, timeSeriesPoints);
+            resultCount++;
         }
+
+        _logger.LogDebug("Fetched all {ResultCount} results for batch {BatchId}", resultCount, batchId);
     }
 
     private string CreateBatchResultsSql(Guid batchId)

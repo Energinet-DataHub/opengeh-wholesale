@@ -51,7 +51,7 @@ public abstract class RepeatingTrigger<TService> : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        using (_logger.BeginScope(_serviceName))
+        using (_logger.BeginScope(new Dictionary<string, object> { ["HostedService"] = _serviceName }))
         {
             while (!stoppingToken.IsCancellationRequested)
             {
