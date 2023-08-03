@@ -29,18 +29,15 @@ public class BatchController : V3ControllerBase
     private readonly IBatchesClient _batchesClient;
     private readonly ICreateBatchHandler _createBatchHandler;
     private readonly IUserContext<FrontendUser> _userContext;
-    private readonly ILogger<BatchController> _logger;
 
     public BatchController(
         IBatchesClient batchesClient,
         ICreateBatchHandler createBatchHandler,
-        IUserContext<FrontendUser> userContext,
-        ILogger<BatchController> logger)
+        IUserContext<FrontendUser> userContext)
     {
         _batchesClient = batchesClient;
         _createBatchHandler = createBatchHandler;
         _userContext = userContext;
-        _logger = logger;
     }
 
     /// <summary>

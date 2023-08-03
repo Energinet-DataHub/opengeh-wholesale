@@ -23,17 +23,14 @@ public static class Program
 
     public static IHostBuilder CreateWebHostBuilder(string[] args) =>
         Host.CreateDefaultBuilder(args)
+            .ConfigureLogging((_, logging) =>
+            {
+                logging.ClearProviders();
+                logging.AddApplicationInsights();
+                logging.AddConsole();
+            })
             .ConfigureWebHostDefaults(webBuilder =>
             {
-                webBuilder.ConfigureLogging((hostingContext, logging) =>
-                {
-                    logging.ClearProviders(); // Optional: Clears the default logging providers.
-                    logging.AddApplicationInsights(); // Optional: Adds Application Insights as a logging provider.
-                    logging.AddConsole();
-
-                    // Set the default log level to Information.
-                    logging.SetMinimumLevel(LogLevel.Information);
-                });
                 webBuilder.UseStartup<Startup>();
             });
 }
