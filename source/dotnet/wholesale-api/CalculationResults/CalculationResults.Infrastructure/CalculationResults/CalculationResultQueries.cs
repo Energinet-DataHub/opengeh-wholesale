@@ -42,11 +42,11 @@ public class CalculationResultQueries : ICalculationResultQueries
 
     public async IAsyncEnumerable<CalculationResult> GetAsync(Guid batchId)
     {
-        _logger.LogInformation("Entering GetAsync method with batchId: {batchId}", batchId);
+        _logger.LogError("Entering GetAsync method with batchId: {batchId}", batchId);
         var batch = await _batchesClient.GetAsync(batchId).ConfigureAwait(false);
-        _logger.LogInformation("Retrieved batch with id: {batchId}", batchId);
+        _logger.LogError("Retrieved batch with id: {batchId}", batchId);
         var sql = CreateBatchResultsSql(batchId);
-        _logger.LogInformation("Created SQL statement: {sql}", sql);
+        _logger.LogError("Created SQL statement: {sql}", sql);
         var timeSeriesPoints = new List<TimeSeriesPoint>();
         SqlResultRow? currentRow = null;
 
@@ -56,7 +56,7 @@ public class CalculationResultQueries : ICalculationResultQueries
 
             if (currentRow != null && BelongsToDifferentResults(currentRow, nextRow))
             {
-                _logger.LogInformation("Current row belongs to different results, creating calculation result");
+                _logger.LogError("Current row belongs to different results, creating calculation result");
                 yield return CreateCalculationResult(batch, currentRow, timeSeriesPoints);
                 timeSeriesPoints = new List<TimeSeriesPoint>();
             }
@@ -67,7 +67,7 @@ public class CalculationResultQueries : ICalculationResultQueries
 
         if (currentRow != null)
         {
-            _logger.LogInformation("Reached end of rows, creating final calculation result");
+            _logger.LogError("Reached end of rows, creating final calculation result");
             yield return CreateCalculationResult(batch, currentRow, timeSeriesPoints);
         }
     }
