@@ -56,14 +56,11 @@ public abstract class RepeatingTrigger<TService> : BackgroundService
             while (!stoppingToken.IsCancellationRequested)
             {
                 _logger.LogInformation("{Worker} running", _serviceName);
-                _logger.LogWarning("{Worker} running", _serviceName);
 
                 await InvokeAsync(stoppingToken).ConfigureAwait(false);
 
                 await Task.Delay(_delayBetweenExecutions, stoppingToken).ConfigureAwait(false);
             }
-
-            _logger.LogWarning("{Worker} was cancelled at: {Time}", _serviceName, DateTimeOffset.Now);
         }
     }
 
