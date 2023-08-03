@@ -52,7 +52,9 @@ public class CalculationResultQueries : ICalculationResultQueries
 
         await foreach (var nextRow in _sqlStatementClient.ExecuteAsync(sql))
         {
+            _logger.LogError("Processing row: {row}", nextRow);
             var timeSeriesPoint = CreateTimeSeriesPoint(nextRow);
+            _logger.LogError("Created time series point: {timeSeriesPoint}", timeSeriesPoint);
 
             if (currentRow != null && BelongsToDifferentResults(currentRow, nextRow))
             {
@@ -65,6 +67,7 @@ public class CalculationResultQueries : ICalculationResultQueries
             currentRow = nextRow;
         }
 
+        _logger.LogError("Reached end of rows, creating final calculation result");
         if (currentRow != null)
         {
             _logger.LogError("Reached end of rows, creating final calculation result");
