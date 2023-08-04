@@ -41,6 +41,10 @@ module "app_wholesale_api" {
     DATABRICKS_WORKSPACE_TOKEN = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=dbw-shared-workspace-token)"
     DATABRICKS_WORKSPACE_URL   = "https://${data.azurerm_key_vault_secret.dbw_databricks_workspace_url.value}"
     DATABRICKS_WAREHOUSE_ID    = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-databricks-sql-endpoint-id)"
+
+    # Logging
+    Logging__ApplicationInsights__LogLevel__Default   = local.LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT
+    Logging__ApplicationInsights__LogLevel__Microsoft = local.LOGGING_APPINSIGHTS_LOGLEVEL_MICROSOFT
   }
 
   connection_strings = [
