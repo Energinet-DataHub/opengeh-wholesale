@@ -86,7 +86,7 @@ public abstract class RepeatingTrigger<TService> : BackgroundService
         try
         {
             await ExecuteAsync(service, cancellationToken).ConfigureAwait(false);
-            _hostedServiceReadinessMonitor.Ping<RepeatingTrigger<TService>>();
+            _hostedServiceReadinessMonitor.Ping(GetType());
         }
         catch (Exception e)
         {
