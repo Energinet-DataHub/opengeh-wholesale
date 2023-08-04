@@ -55,7 +55,7 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
         // Arrange
         const int expectedResultCount = 3;
         var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await CreateTableWithRowsInArbitraryOrderAsync(deltaTableOptions);
+        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
         batch = batch with { BatchId = Guid.Parse(BatchId) };
         var sqlStatementClient = _fixture.CreateSqlStatementClient(loggerMock);
         batchesClientMock.Setup(b => b.GetAsync(It.IsAny<Guid>())).ReturnsAsync(batch);
@@ -74,7 +74,7 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
             .Equal(FirstQuantity, SecondQuantity, ThirdQuantity, FourthQuantity, FifthQuantity, SixthQuantity);
     }
 
-    private async Task CreateTableWithRowsInArbitraryOrderAsync(IOptions<DeltaTableOptions> options)
+    private async Task AddCreatedRowsInArbitraryOrderAsync(IOptions<DeltaTableOptions> options)
     {
         const string firstCalculationResultId = "b55b6f74-386f-49eb-8b56-63fae62e4fc7";
         const string secondCalculationResultId = "c2bdceba-b58b-4190-a873-eded0ed50c20";
