@@ -25,8 +25,9 @@ public class OutboxSenderTrigger : RepeatingTrigger<IOutboxSender>
 
     public OutboxSenderTrigger(
         IServiceProvider serviceProvider,
+        IHostedServiceReadinessMonitor hostedServiceReadinessMonitor,
         ILogger<OutboxSenderTrigger> logger)
-        : base(serviceProvider, logger, TimeSpan.FromSeconds(DelayInSecondsBeforeNextExecution))
+        : base(serviceProvider, hostedServiceReadinessMonitor, logger, TimeSpan.FromSeconds(DelayInSecondsBeforeNextExecution))
     {
     }
 

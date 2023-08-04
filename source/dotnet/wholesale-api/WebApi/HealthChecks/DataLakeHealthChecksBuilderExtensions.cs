@@ -16,7 +16,7 @@ using Azure.Identity;
 using Azure.Storage.Files.DataLake;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace Energinet.DataHub.Wholesale.WebApi.Configuration
+namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks
 {
     public static class DataLakeHealthChecksBuilderExtensions
     {
