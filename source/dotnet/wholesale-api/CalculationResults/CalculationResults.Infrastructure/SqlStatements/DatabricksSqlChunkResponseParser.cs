@@ -34,10 +34,11 @@ public class DatabricksSqlChunkResponseParser : IDatabricksSqlChunkResponseParse
         return new DatabricksSqlChunkResponse(externalLink, nextChunkInternalLink);
     }
 
-    private static Uri GetExternalLink(JToken chunk)
+    private static Uri? GetExternalLink(JToken chunk)
     {
-        var link = chunk["external_links"]?[0]?["external_link"]?.ToObject<string>()
-                   ?? throw new InvalidOperationException("Unable to retrieve 'external_link' from the response");
+        var link = chunk["external_links"]?[0]?["external_link"]?.ToObject<string>();
+        if (link == null) return null;
+
         return new Uri(link);
     }
 

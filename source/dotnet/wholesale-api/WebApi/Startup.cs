@@ -102,7 +102,7 @@ public class Startup
 
         AddJwtTokenSecurity(serviceCollection);
         AddHealthCheck(serviceCollection);
-        serviceCollection.AddApplicationInsightsTelemetry();
+        serviceCollection.AddApplicationInsightsTelemetry(options => options.EnableAdaptiveSampling = false);
         AddCorrelationContext(serviceCollection);
 
         serviceCollection.AddUserAuthentication<FrontendUser, FrontendUserProvider>();
