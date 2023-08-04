@@ -25,6 +25,7 @@ public abstract class RepeatingTrigger<TService> : BackgroundService
     where TService : notnull
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly IHostedServiceReadinessMonitor _hostedServiceReadinessMonitor;
     private readonly ILogger _logger;
     private readonly TimeSpan _delayBetweenExecutions;
     private readonly string _serviceName;
@@ -32,10 +33,12 @@ public abstract class RepeatingTrigger<TService> : BackgroundService
 
     protected RepeatingTrigger(
         IServiceProvider serviceProvider,
+        IHostedServiceReadinessMonitor hostedServiceReadinessMonitor,
         ILogger logger,
         TimeSpan delayBetweenExecutions)
     {
         _serviceProvider = serviceProvider;
+        _hostedServiceReadinessMonitor = hostedServiceReadinessMonitor;
         _logger = logger;
         _delayBetweenExecutions = delayBetweenExecutions;
 
@@ -54,6 +57,8 @@ public abstract class RepeatingTrigger<TService> : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        _hostedServiceReadinessMonitor.Ping(GetType());
+
         using (_logger.BeginScope(_loggingScope))
         {
             _logger.LogInformation("{Worker} started", _serviceName);
@@ -81,6 +86,7 @@ public abstract class RepeatingTrigger<TService> : BackgroundService
         try
         {
             await ExecuteAsync(service, cancellationToken).ConfigureAwait(false);
+            _hostedServiceReadinessMonitor.Ping<RepeatingTrigger<TService>>();
         }
         catch (Exception e)
         {
