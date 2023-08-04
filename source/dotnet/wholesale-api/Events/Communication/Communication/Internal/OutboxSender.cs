@@ -40,43 +40,50 @@ public class OutboxSender : IOutboxSender
         _logger = logger;
     }
 
-    // Send time stamp (afsendelsen): when the event was actually sent on the bus
-    // Note naming? MessageName becomes subject, how do I know that?
-    public async Task SendAsync()
+    public async Task SendAsync(CancellationToken cancellationToken)
     {
         var stopwatch = Stopwatch.StartNew();
         var eventCount = 0;
-        var batch = await _senderProvider.Instance.CreateMessageBatchAsync().ConfigureAwait(false);
+        var messageBatch = await _senderProvider.Instance.CreateMessageBatchAsync(cancellationToken).ConfigureAwait(false);
 
-        await foreach (var @event in _integrationEventProvider.GetAsync())
+        await foreach (var @event in _integrationEventProvider.GetAsync().ConfigureAwait(false))
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             eventCount++;
             var serviceBusMessage = _serviceBusMessageFactory.Create(@event);
-            if (!batch.TryAddMessage(serviceBusMessage))
+            if (!messageBatch.TryAddMessage(serviceBusMessage))
             {
-                await SendBatchAsync(batch).ConfigureAwait(false);
-                batch = await _senderProvider.Instance.CreateMessageBatchAsync().ConfigureAwait(false);
+                await SendBatchAsync(messageBatch).ConfigureAwait(false);
+                messageBatch = await _senderProvider.Instance.CreateMessageBatchAsync().ConfigureAwait(false);
 
-                if (!batch.TryAddMessage(serviceBusMessage))
+                if (!messageBatch.TryAddMessage(serviceBusMessage))
                 {
                     await SendMessageThatExceedsBatchLimitAsync(serviceBusMessage).ConfigureAwait(false);
                 }
             }
         }
 
-        await _senderProvider.Instance.SendMessagesAsync(batch).ConfigureAwait(false);
-        _logger.LogInformation("Sent {EventCount} integration events in {Time} ms", eventCount, stopwatch.Elapsed.TotalMilliseconds);
+        try
+        {
+            await _senderProvider.Instance.SendMessagesAsync(messageBatch, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed to send messages from outbox");
+        }
+
+        if (eventCount > 0)
+            _logger.LogDebug("Sent {EventCount} integration events in {Time} ms", eventCount, stopwatch.Elapsed.TotalMilliseconds);
     }
 
     private async Task SendBatchAsync(ServiceBusMessageBatch batch)
     {
         await _senderProvider.Instance.SendMessagesAsync(batch).ConfigureAwait(false);
-        _logger.LogInformation("Sent batch of {BatchCount} messages", batch.Count);
     }
 
     private async Task SendMessageThatExceedsBatchLimitAsync(ServiceBusMessage serviceBusMessage)
     {
         await _senderProvider.Instance.SendMessageAsync(serviceBusMessage).ConfigureAwait(false);
-        _logger.LogInformation("Sent single message that exceeded batch size");
     }
 }

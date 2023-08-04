@@ -32,7 +32,9 @@ public class RegisterCompletedBatchesTrigger : RepeatingWorker<IRegisterComplete
     {
     }
 
-    protected override async Task ExecuteAsync(IRegisterCompletedBatchesHandler instance)
+    protected override async Task ExecuteAsync(
+        IRegisterCompletedBatchesHandler instance,
+        CancellationToken cancellationToken)
     {
         await instance.RegisterCompletedBatchesAsync().ConfigureAwait(false);
     }

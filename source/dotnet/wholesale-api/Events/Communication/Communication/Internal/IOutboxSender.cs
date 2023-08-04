@@ -16,5 +16,5 @@ namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
 
 public interface IOutboxSender
 {
-    Task SendAsync();
+    Task SendAsync(CancellationToken cancellationToken);
 }

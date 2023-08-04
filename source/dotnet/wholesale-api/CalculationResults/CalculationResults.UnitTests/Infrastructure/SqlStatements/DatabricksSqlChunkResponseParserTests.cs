@@ -72,15 +72,16 @@ public class DatabricksSqlChunkResponseParserTests
 
     [Theory]
     [InlineAutoMoqData]
-    public void Parse_WhenMissingExternalLink_ThrowsInvalidOperationException(DatabricksSqlChunkResponseParser sut)
+    public void Parse_WhenMissingExternalLink_ReturnsNull(DatabricksSqlChunkResponseParser sut)
     {
         // Arrange
         var jsonResponse = @"{""external_links"":[{}]}";
 
-        // Act & Assert
-        sut.Invoking(s => s.Parse(jsonResponse))
-            .Should().Throw<InvalidOperationException>()
-            .WithMessage("Unable to retrieve 'external_link' from the response");
+        // Act
+        var actual = sut.Parse(jsonResponse);
+
+        // Assert
+        actual.ExternalLink.Should().BeNull();
     }
 
     [Theory]

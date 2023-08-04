@@ -32,7 +32,9 @@ public class UpdateBatchExecutionStateWorker : RepeatingWorker<IUpdateBatchExecu
     {
     }
 
-    protected override async Task ExecuteAsync(IUpdateBatchExecutionStateHandler instance)
+    protected override async Task ExecuteAsync(
+        IUpdateBatchExecutionStateHandler instance,
+        CancellationToken cancellationToken)
     {
         await instance.UpdateAsync().ConfigureAwait(false);
     }
