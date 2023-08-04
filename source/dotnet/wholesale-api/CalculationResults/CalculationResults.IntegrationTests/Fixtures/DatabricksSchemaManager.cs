@@ -51,7 +51,8 @@ public class DatabricksSchemaManager
     public string SchemaName => DeltaTableOptions.Value.SCHEMA_NAME;
 
     /// <summary>
-    /// Create schema (formerly known as database).
+    /// Executes all the SQL scripts in the respective folder migration_scripts.
+    /// This creates a schema (formerly known as database), tables and constraints.
     /// See more here https://docs.databricks.com/lakehouse/data-objects.html.
     /// </summary>
     public async Task CreateSchemaAsync()
