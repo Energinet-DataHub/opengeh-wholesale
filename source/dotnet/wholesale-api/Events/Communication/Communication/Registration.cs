@@ -31,6 +31,7 @@ public static class Registration
         where TIntegrationEventProvider : class, IIntegrationEventProvider
     {
         services.AddHostedService<OutboxSenderTrigger>();
+        services.AddSingleton<IHostedServiceReadinessMonitor, HostedServiceReadinessMonitor>();
         services.AddScoped<IIntegrationEventProvider, TIntegrationEventProvider>();
         services.AddSingleton<IServiceBusSenderProvider>(
             _ => new ServiceBusSenderProvider(serviceBusIntegrationEventWriteConnectionString, integrationEventTopicName));
