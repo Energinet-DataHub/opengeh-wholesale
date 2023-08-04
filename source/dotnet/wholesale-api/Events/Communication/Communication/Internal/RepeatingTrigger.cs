@@ -28,6 +28,7 @@ public abstract class RepeatingTrigger<TService> : BackgroundService
     private readonly ILogger _logger;
     private readonly TimeSpan _delayBetweenExecutions;
     private readonly string _serviceName;
+    private readonly Dictionary<string, object> _loggingScope;
 
     protected RepeatingTrigger(
         IServiceProvider serviceProvider,
@@ -37,12 +38,14 @@ public abstract class RepeatingTrigger<TService> : BackgroundService
         _serviceProvider = serviceProvider;
         _logger = logger;
         _delayBetweenExecutions = delayBetweenExecutions;
+
         _serviceName = GetType().Name;
+        _loggingScope = new Dictionary<string, object> { ["HostedService"] = _serviceName };
     }
 
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        using (_logger.BeginScope(_serviceName))
+        using (_logger.BeginScope(_loggingScope))
         {
             await base.StopAsync(cancellationToken).ConfigureAwait(false);
             _logger.LogWarning("{Worker} has stopped at {Time}", _serviceName, DateTimeOffset.Now);
@@ -51,7 +54,7 @@ public abstract class RepeatingTrigger<TService> : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        using (_logger.BeginScope(new Dictionary<string, object> { ["HostedService"] = _serviceName }))
+        using (_logger.BeginScope(_loggingScope))
         {
             _logger.LogInformation("{Worker} started", _serviceName);
 
