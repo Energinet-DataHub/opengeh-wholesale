@@ -16,6 +16,8 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
+using Energinet.DataHub.Wholesale.Common.Databricks.Options;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -29,20 +31,24 @@ public class DatabricksSchemaManager
     private const string StatementsEndpointPath = "/api/2.0/sql/statements";
     private readonly HttpClient _httpClient;
 
+    public IOptions<DeltaTableOptions> DeltaTableOptions { get; }
+
     public DatabricksSchemaManager(DatabricksSettings settings, string schemaPrefix)
     {
         Settings = settings
             ?? throw new ArgumentNullException(nameof(settings));
 
         _httpClient = CreateHttpClient(Settings);
-        SchemaName = $"{schemaPrefix}_{DateTime.Now:yyyyMMddHHmmss}_{Guid.NewGuid().ToString()[..8]}";
+
+        var schemaName = $"{schemaPrefix}_{DateTime.Now:yyyyMMddHHmmss}_{Guid.NewGuid().ToString()[..8]}";
+        DeltaTableOptions = Options.Create(new DeltaTableOptions { SCHEMA_NAME = schemaName });
     }
 
     // TODO JMG: Consider if we can hide these settings or ensure they are readonly in DatabricksWarehouseSettings,
     // otherwise external developers can manipulate them even after we created the manager
     public DatabricksSettings Settings { get; }
 
-    public string SchemaName { get; }
+    public string SchemaName => DeltaTableOptions.Value.SCHEMA_NAME;
 
     /// <summary>
     /// Create schema (formerly known as database).
@@ -50,21 +56,13 @@ public class DatabricksSchemaManager
     /// </summary>
     public async Task CreateSchemaAsync()
     {
-        var sqlStatement = @$"CREATE SCHEMA {SchemaName}";
-        await ExecuteSql(sqlStatement);
+        await ExecuteSqlScriptsAsync();
     }
 
-    /// <summary>
-    /// Create table with a specified column definition (column name, data type)
-    /// See more here https://docs.databricks.com/lakehouse/data-objects.html.
-    /// </summary>
-    public async Task<string> CreateTableAsync(Dictionary<string, string> columnDefinition)
+    public async Task DropSchemaAsync()
     {
-        var tableName = $"TestTable_{DateTime.Now:yyyyMMddHHmmss}";
-        var columnDefinitions = string.Join(", ", columnDefinition.Select(c => $"{c.Key} {c.Value}"));
-        var sqlStatement = $@"CREATE TABLE {SchemaName}.{tableName} ({columnDefinitions})";
-        await ExecuteSql(sqlStatement);
-        return tableName;
+        var sqlStatement = @$"DROP SCHEMA {SchemaName} CASCADE";
+        await ExecuteSqlAsync(sqlStatement);
     }
 
     /// <summary>
@@ -78,23 +76,40 @@ public class DatabricksSchemaManager
     {
         var values = string.Join(", ", rows.Select(row => $"({string.Join(", ", row.Select(val => $"{val}"))})"));
         var sqlStatement = $@"INSERT INTO {SchemaName}.{tableName} VALUES {values}";
-        await ExecuteSql(sqlStatement);
+        await ExecuteSqlAsync(sqlStatement);
     }
 
     public async Task InsertIntoAsync(string tableName, IEnumerable<string> row)
     {
         var sqlStatement = $@"INSERT INTO {SchemaName}.{tableName} VALUES ({string.Join(",", row)})";
-        await ExecuteSql(sqlStatement);
+        await ExecuteSqlAsync(sqlStatement);
     }
 
-    public async Task DropSchemaAsync()
+    private async Task ExecuteSqlScriptsAsync()
     {
-        var sqlStatement = @$"DROP SCHEMA {SchemaName} CASCADE";
-        await ExecuteSql(sqlStatement);
+        var sqlScripts = Directory.GetFiles("./migration_scripts", "*.sql");
+        const string delimiter = "GO";
+
+        foreach (var sqlScript in sqlScripts)
+        {
+            var sqlString = await File.ReadAllTextAsync(sqlScript);
+            var sqlStatements = sqlString.Split(new[] { delimiter }, StringSplitOptions.None);
+            foreach (var sqlStatement in sqlStatements)
+            {
+                var sql = sqlStatement.Replace("{DATABASE_NAME}", SchemaName)
+                    .Replace("{SCHEMA_LOCATION}", SchemaName)
+                    .Replace("{RESULT_LOCATION}", SchemaName);
+                await ExecuteSqlAsync(sql);
+            }
+        }
     }
 
-    private async Task ExecuteSql(string sqlStatement)
+    private async Task ExecuteSqlAsync(string sqlStatement)
     {
+        if (string.IsNullOrWhiteSpace(sqlStatement))
+          return;
+        sqlStatement = sqlStatement.Trim();
+
         var requestObject = new
         {
             on_wait_timeout = "CANCEL",

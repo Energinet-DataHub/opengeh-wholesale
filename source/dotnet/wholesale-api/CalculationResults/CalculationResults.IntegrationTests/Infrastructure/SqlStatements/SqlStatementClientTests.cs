@@ -22,14 +22,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SqlStatements;
 
-/// <summary>
-/// We use an IClassFixture to control the life cycle of the DatabricksSqlStatementApiFixture so:
-///   1. It is created and 'InitializeAsync()' is called before the first test in the test class is executed.
-///      Use 'InitializeAsync()' to create any schema and seed data.
-///   2. 'DisposeAsync()' is called after the last test in the test class has been executed.
-///      Use 'DisposeAsync()' to drop any created schema.
-/// </summary>
-public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFixture>, IAsyncLifetime
+public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFixture>
 {
     private readonly DatabricksSqlStatementApiFixture _fixture;
 
@@ -38,28 +31,16 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
         _fixture = fixture;
     }
 
-    public async Task InitializeAsync()
-    {
-        await _fixture.DatabricksSchemaManager.CreateSchemaAsync();
-    }
-
-    public async Task DisposeAsync()
-    {
-        await _fixture.DatabricksSchemaManager.DropSchemaAsync();
-    }
-
-    private string SchemaName => _fixture.DatabricksSchemaManager.SchemaName;
-
     [Theory]
     [InlineAutoMoqData]
     public async Task ExecuteSqlStatementAsync_WhenQueryFromDatabricks_ReturnsExpectedData(
         Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock)
     {
         // Arrange
-        var tableName = await CreateResultTableWithTwoRowsAsync();
+        await AddDataToResultTableAsync();
         var sut = _fixture.CreateSqlStatementClient(loggerMock);
 
-        var sqlStatement = $@"SELECT * FROM {SchemaName}.{tableName}";
+        var sqlStatement = $@"SELECT * FROM {_fixture.DatabricksSchemaManager.SchemaName}.result";
 
         // Act
         var actual = await sut.ExecuteAsync(sqlStatement).ToListAsync();
@@ -73,7 +54,7 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
     public async Task ExecuteAsync_WhenMultipleChunks_ReturnsAllRows(Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock)
     {
         // Arrange
-        var expectedRowCount = 100;
+        const int expectedRowCount = 100;
         var sut = _fixture.CreateSqlStatementClient(loggerMock);
 
         // Arrange: The result of this query spans multiple chunks
@@ -86,33 +67,33 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
         actual.Should().Be(expectedRowCount);
     }
 
-    private async Task<string> CreateResultTableWithTwoRowsAsync()
+    private async Task AddDataToResultTableAsync()
     {
-        var (someColumnDefinition, values) = GetSomeDeltaTableRow();
-
-        var tableName = await _fixture.DatabricksSchemaManager.CreateTableAsync(someColumnDefinition);
-        await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, values);
-        await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, values);
-
-        return tableName;
+        var values = GetSomeDeltaTableRow();
+        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
+        await _fixture.DatabricksSchemaManager.InsertIntoAsync(deltaTableOptions.Value.RESULT_TABLE_NAME, values);
+        await _fixture.DatabricksSchemaManager.InsertIntoAsync(deltaTableOptions.Value.RESULT_TABLE_NAME, values);
     }
 
-    private static (Dictionary<string, string> ColumnDefintion, List<string> Values) GetSomeDeltaTableRow()
+    private static List<string> GetSomeDeltaTableRow()
     {
-        var dictionary = new Dictionary<string, string>
-        {
-            { "someTimeColumn", "TIMESTAMP" },
-            { "someStringColumn", "STRING" },
-            { "someDecimalColumn", "DECIMAL(18,3)" },
-        };
-
         var values = new List<string>
         {
+            "'123'",
+            "'energy_supplier_id'",
+            "'balance_responsible_id'",
+            "1.23",
+            "'missing'",
             "'2022-03-11T03:00:00.000Z'",
-            "'measured'",
-            "1.234",
+            "'total_ga'",
+            "'grid_loss'",
+            "'batch_id'",
+            "'BalanceFixing'",
+            "'2022-03-11T03:00:00.000Z'",
+            "'123'",
+            "'calculation_result_id'",
         };
 
-        return (dictionary, values);
+        return values;
     }
 }

@@ -18,19 +18,21 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlState
 
 public static class ResultColumnNames
 {
-    public const string BatchId = "batch_id";
-    public const string BatchExecutionTimeStart = "batch_execution_time_start";
-    public const string CalculationResultId = "calculation_result_id";
-    public const string BatchProcessType = "batch_process_type";
-    public const string TimeSeriesType = "time_series_type";
+    // Don't change the order of these fields.
+    // It is important that they are in the same order as the columns in the delta table.
     public const string GridArea = "grid_area";
-    public const string FromGridArea = "out_grid_area";
-    public const string BalanceResponsibleId = "balance_responsible_id";
     public const string EnergySupplierId = "energy_supplier_id";
-    public const string Time = "time";
+    public const string BalanceResponsibleId = "balance_responsible_id";
     public const string Quantity = "quantity";
     public const string QuantityQuality = "quantity_quality";
+    public const string Time = "time";
     public const string AggregationLevel = "aggregation_level";
+    public const string TimeSeriesType = "time_series_type";
+    public const string BatchId = "batch_id";
+    public const string BatchProcessType = "batch_process_type";
+    public const string BatchExecutionTimeStart = "batch_execution_time_start";
+    public const string FromGridArea = "out_grid_area";
+    public const string CalculationResultId = "calculation_result_id";
 
     public static IEnumerable<string> GetAllNames()
     {

@@ -1,8 +1,8 @@
-ALTER TABLE wholesale_output.result
+ALTER TABLE {DATABASE_NAME}.result
     DROP CONSTRAINT time_series_type_chk
 GO
 
-ALTER TABLE wholesale_output.result
+ALTER TABLE {DATABASE_NAME}.result
     ADD CONSTRAINT time_series_type_chk
     CHECK (time_series_type IN (
         'production',

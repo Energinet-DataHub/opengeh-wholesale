@@ -30,36 +30,19 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SettlementReports;
 
-/// <summary>
-/// We use an IClassFixture to control the life cycle of the DatabricksSqlStatementApiFixture so:
-///   1. It is created and 'InitializeAsync()' is called before the first test in the test class is executed.
-///      Use 'InitializeAsync()' to create any schema and seed data.
-///   2. 'DisposeAsync()' is called after the last test in the test class has been executed.
-///      Use 'DisposeAsync()' to drop any created schema.
-/// </summary>
-public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlStatementApiFixture>, IAsyncLifetime
+public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlStatementApiFixture>
 {
     private const ProcessType DefaultProcessType = ProcessType.BalanceFixing;
     private const string GridAreaA = "805";
     private const string GridAreaB = "111";
     private readonly string[] _gridAreaCodes = { GridAreaA, GridAreaB };
     private readonly DatabricksSqlStatementApiFixture _fixture;
-    private readonly Instant _january1st = Instant.FromUtc(2022, 1, 1, 0, 0, 0);
-    private readonly Instant _january5th = Instant.FromUtc(2022, 1, 5, 0, 0, 0);
+    private readonly Instant _january1St = Instant.FromUtc(2022, 1, 1, 0, 0, 0);
+    private readonly Instant _january5Th = Instant.FromUtc(2022, 1, 5, 0, 0, 0);
 
     public SettlementReportResultQueriesTests(DatabricksSqlStatementApiFixture fixture)
     {
         _fixture = fixture;
-    }
-
-    public async Task InitializeAsync()
-    {
-        await _fixture.DatabricksSchemaManager.CreateSchemaAsync();
-    }
-
-    public async Task DisposeAsync()
-    {
-        await _fixture.DatabricksSchemaManager.DropSchemaAsync();
     }
 
     [Theory]
@@ -67,26 +50,19 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
     public async Task GetRowsAsync_ReturnsExpectedReportRows(Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock)
     {
         // Arrange
-        var tableName = await CreateTable();
-        var expectedSettlementReportRow = await CreateTableWithRowsFromMultipleBatches(tableName);
-        var deltaTableOptions = CreateDeltaTableOptions(_fixture.DatabricksSchemaManager.SchemaName, tableName);
+        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
+        var expectedSettlementReportRow = await InsertRowsFromMultipleBatches(deltaTableOptions);
         var sqlStatementClient = _fixture.CreateSqlStatementClient(loggerMock);
         var sut = new SettlementReportResultQueries(sqlStatementClient, deltaTableOptions);
 
         // Act
-        var actual = await sut.GetRowsAsync(_gridAreaCodes, DefaultProcessType, _january1st, _january5th, null);
+        var actual = await sut.GetRowsAsync(_gridAreaCodes, DefaultProcessType, _january1St, _january5Th, null);
 
         // Assert
         actual.Should().BeEquivalentTo(expectedSettlementReportRow);
     }
 
-    private async Task<string> CreateTable()
-    {
-        var columnDefinitions = ResultDeltaTableHelper.GetColumnDefinitions();
-        return await _fixture.DatabricksSchemaManager.CreateTableAsync(columnDefinitions);
-    }
-
-    private async Task<List<SettlementReportResultRow>> CreateTableWithRowsFromMultipleBatches(string tableName)
+    private async Task<List<SettlementReportResultRow>> InsertRowsFromMultipleBatches(IOptions<DeltaTableOptions> options)
     {
         const string january1st = "2022-01-01T01:00:00.000Z";
         const string january2nd = "2022-01-02T01:00:00.000Z";
@@ -120,7 +96,7 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
         var batch4Row2 = ResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: june1st, time: january2nd, batchProcessType: DeltaTableProcessType.Aggregation, gridArea: GridAreaA, quantity: quantity42);
 
         var rows = new List<IEnumerable<string>> { batch1Row1, batch1Row2, batch2Row1, batch2Row2, batch3Row1, batch3Row2, batch4Row1, batch4Row2, };
-        await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, rows);
+        await _fixture.DatabricksSchemaManager.InsertIntoAsync(options.Value.RESULT_TABLE_NAME, rows);
 
         var expectedSettlementReportRows = new List<SettlementReportResultRow>
         {
@@ -144,10 +120,5 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
             MeteringPointType.Production,
             null,
             SqlResultValueConverters.ToDecimal(quantity) ?? throw new Exception("Could not parse time"));
-    }
-
-    private static IOptions<DeltaTableOptions> CreateDeltaTableOptions(string schemaName, string tableName)
-    {
-        return Options.Create(new DeltaTableOptions { SCHEMA_NAME = schemaName, RESULT_TABLE_NAME = tableName, });
     }
 }

@@ -1,8 +1,9 @@
-CREATE DATABASE IF NOT EXISTS wholesale_output
+CREATE DATABASE IF NOT EXISTS {DATABASE_NAME}
 COMMENT 'Contains result data from wholesale domain.'
+LOCATION '{SCHEMA_LOCATION}'
 GO
-
-CREATE TABLE IF NOT EXISTS wholesale_output.result
+    
+CREATE TABLE IF NOT EXISTS {DATABASE_NAME}.result
 (
     grid_area STRING NOT NULL,
     energy_supplier_id STRING,
@@ -22,4 +23,4 @@ CREATE TABLE IF NOT EXISTS wholesale_output.result
     out_grid_area STRING
 )
 USING DELTA
-LOCATION '{CONTAINER_PATH}/{OUTPUT_FOLDER}/{RESULT_TABLE_NAME}'
+LOCATION '{RESULT_LOCATION}.result'
