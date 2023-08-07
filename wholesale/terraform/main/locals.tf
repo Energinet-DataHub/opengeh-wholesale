@@ -9,6 +9,6 @@ locals {
   TIME_ZONE                     = "Europe/Copenhagen"
 
   # Logging
-  LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT = "Information"
-  LOGGING_APPINSIGHTS_LOGLEVEL_MICROSOFT = "Warning"
+  LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT                     = "Warning"
+  LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_WHOLESALE = "Information"
 }
