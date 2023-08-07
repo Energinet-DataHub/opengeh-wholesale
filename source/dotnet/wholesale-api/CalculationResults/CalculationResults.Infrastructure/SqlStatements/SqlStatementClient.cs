@@ -92,10 +92,14 @@ public class SqlStatementClient : ISqlStatementClient
         var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
         var databricksSqlResponse = _responseResponseParser.ParseStatusResponse(jsonResponse);
 
-        var waitTime = 0;
+        var waitTime = 1000;
         while (databricksSqlResponse.State is DatabricksSqlResponseState.Pending or DatabricksSqlResponseState.Running)
         {
-            await Task.Delay(waitTime++).ConfigureAwait(false);
+            if (waitTime > 600000)
+                throw new DatabricksSqlException($"Unable to get calculation result from Databricks because the SQL statement execution didn't succeed. State: {databricksSqlResponse.State}");
+
+            waitTime *= 2;
+            await Task.Delay(waitTime).ConfigureAwait(false);
 
             var path = $"{StatementsEndpointPath}/{databricksSqlResponse.StatementId}";
             var httpResponse = await _httpClient.GetAsync(path).ConfigureAwait(false);
@@ -103,10 +107,11 @@ public class SqlStatementClient : ISqlStatementClient
             if (!httpResponse.IsSuccessStatusCode)
                 throw new DatabricksSqlException($"Unable to get calculation result from Databricks. HTTP status code: {httpResponse.StatusCode}");
 
+            jsonResponse = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
             databricksSqlResponse = _responseResponseParser.ParseStatusResponse(jsonResponse);
         }
 
-        if (databricksSqlResponse.State is DatabricksSqlResponseState.Cancelled or DatabricksSqlResponseState.Failed or DatabricksSqlResponseState.Closed)
+        if (databricksSqlResponse.State is not DatabricksSqlResponseState.Succeeded)
             throw new DatabricksSqlException($"Unable to get calculation result from Databricks because the SQL statement execution didn't succeed. State: {databricksSqlResponse.State}");
 
         return databricksSqlResponse;

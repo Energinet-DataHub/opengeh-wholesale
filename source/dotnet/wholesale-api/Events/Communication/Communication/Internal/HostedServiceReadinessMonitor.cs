@@ -26,12 +26,6 @@ public class HostedServiceReadinessMonitor : IHostedServiceReadinessMonitor
         _timeStamps = new Dictionary<Type, DateTimeOffset>();
     }
 
-    public void Ping<TService>()
-        where TService : IHostedService
-    {
-        _timeStamps[typeof(TService)] = DateTimeOffset.UtcNow;
-    }
-
     public void Ping(Type hostedServiceType)
     {
         if (!typeof(IHostedService).IsAssignableFrom(hostedServiceType))

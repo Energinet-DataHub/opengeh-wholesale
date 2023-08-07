@@ -24,12 +24,6 @@ public interface IHostedServiceReadinessMonitor
 {
     /// <summary>
     /// Ping the monitor (from the hosted service) to indicate that the service is alive.
-    /// </summary>
-    public void Ping<TService>()
-        where TService : IHostedService;
-
-    /// <summary>
-    /// Ping the monitor (from the hosted service) to indicate that the service is alive.
     /// <paramref name="hostedServiceType"/> must be an implementation of <see cref="IHostedService"/>.
     /// </summary>
     void Ping(Type hostedServiceType);
