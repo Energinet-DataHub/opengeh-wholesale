@@ -94,15 +94,21 @@ public class DatabricksSchemaManager
         foreach (var sqlScript in sqlScripts)
         {
             var sqlString = await File.ReadAllTextAsync(sqlScript);
-            var sqlStatements = sqlString.Split(new[] { delimiter }, StringSplitOptions.None);
+            var sqlStatements = sqlString.Split(new[] { delimiter }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var sqlStatement in sqlStatements)
             {
-                var sql = sqlStatement.Replace("{DATABASE_NAME}", SchemaName)
-                    .Replace("{SCHEMA_LOCATION}", SchemaName)
-                    .Replace("{RESULT_LOCATION}", SchemaName);
+                var sql = Replacements(sqlStatement);
                 await ExecuteSqlAsync(sql);
             }
         }
+    }
+
+    private string Replacements(string sqlStatement)
+    {
+        return sqlStatement
+            .Replace("{DATABASE_NAME}", SchemaName)
+            .Replace("{SCHEMA_LOCATION}", SchemaName)
+            .Replace("{RESULT_LOCATION}", SchemaName);
     }
 
     private async Task ExecuteSqlAsync(string sqlStatement)
