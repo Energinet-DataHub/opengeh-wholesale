@@ -52,3 +52,14 @@ variable "tenant_id" {
   type        = string
   description = "Azure Tenant that the infrastructure is deployed into."
 }
+
+variable "arm_tenant_id" {
+  type        = string
+  description = "ID of the Azure tenant where the infrastructure is deployed"
+}
+
+variable "developers_security_group_object_id" {
+  type        = string
+  description = "(Optional) The Object ID of the Azure AD security group containing DataHub developers."
+  default     = null
+}
