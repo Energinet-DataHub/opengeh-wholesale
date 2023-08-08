@@ -88,7 +88,7 @@ public class DatabricksSchemaManager
 
     private async Task ExecuteSqlScriptsAsync()
     {
-        var sqlScripts = Directory.GetFiles("./migration_scripts", "*.sql");
+        var sqlScripts = Directory.GetFiles("./migration_sql_scripts", "*.sql");
         const string delimiter = "GO";
 
         foreach (var sqlScript in sqlScripts)
@@ -107,7 +107,7 @@ public class DatabricksSchemaManager
     {
         return sqlStatement
             .Replace("{DATABASE_NAME}", SchemaName)
-            .Replace("{RESULT_TABLE_NAME}", "result")
+            .Replace("{RESULT_TABLE_NAME}", DeltaTableOptions.Value.RESULT_TABLE_NAME)
             .Replace("{TEST}", "--");
     }
 

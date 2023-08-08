@@ -43,36 +43,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\package\datamigration\migration_scripts\202304191400_Add_result_table.sql">
-        <Link>migration_scripts\202304191400_Add_result_table.sql</Link>
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </EmbeddedResource>
-      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\package\datamigration\migration_scripts\202304191500_Add_result_constraints.sql">
-        <Link>migration_scripts\202304191500_Add_result_constraints.sql</Link>
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </EmbeddedResource>
-      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\package\datamigration\migration_scripts\202306191400_Add_time_series_type_constraints.sql">
-        <Link>migration_scripts\202306191400_Add_time_series_type_constraints.sql</Link>
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </EmbeddedResource>
-      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\package\datamigration\migration_scripts\202306281000_Add_calculation_result_id.sql">
-        <Link>migration_scripts\202306281000_Add_calculation_result_id.sql</Link>
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </EmbeddedResource>
-      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\package\datamigration\migration_scripts\202307070800_Noop_for_testing_migrations.sql">
-        <Link>migration_scripts\202307070800_Noop_for_testing_migrations.sql</Link>
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </EmbeddedResource>
-      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\package\datamigration\migration_scripts\202307120825_Add_time_series_type_constraints.sql">
-        <Link>migration_scripts\202307120825_Add_time_series_type_constraints.sql</Link>
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </EmbeddedResource>
-      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\package\datamigration\migration_scripts\202307131115_Add_process_type_constraints.sql">
-        <Link>migration_scripts\202307131115_Add_process_type_constraints.sql</Link>
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </EmbeddedResource>
-      <Content Include="..\..\..\..\databricks\calculation-engine\package\datamigration\migration_scripts\__init__.py">
-        <Link>migration_scripts\__init__.py</Link>
-      </Content>
-    </ItemGroup>
+      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\package\datamigration\migration_scripts\*.sql">
+		<Link>migration_sql_scripts\%(RecursiveDir)%(Filename)%(Extension)</Link>
+		   <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </EmbeddedResource>
+     </ItemGroup>
 </Project>
