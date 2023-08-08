@@ -22,4 +22,7 @@ CREATE TABLE IF NOT EXISTS {DATABASE_NAME}.{RESULT_TABLE_NAME}
     out_grid_area STRING
 )
 USING DELTA
+-- In the test environment the TEST keyword is set to "--" (commented out). 
+-- In the production environment the TEST keyword should is set to empty and the respective table location is used.
+-- This means the production tables won't be deleted if the schema is.    
 {TEST}LOCATION '{OUTPUT_FOLDER}.{RESULT_TABLE_NAME}' 
