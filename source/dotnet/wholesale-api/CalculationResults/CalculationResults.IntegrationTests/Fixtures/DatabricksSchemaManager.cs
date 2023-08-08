@@ -107,15 +107,15 @@ public class DatabricksSchemaManager
     {
         return sqlStatement
             .Replace("{DATABASE_NAME}", SchemaName)
-            .Replace("{SCHEMA_LOCATION}", SchemaName)
-            .Replace("{RESULT_LOCATION}", SchemaName);
+            .Replace("{TEST}", "--");
     }
 
     private async Task ExecuteSqlAsync(string sqlStatement)
     {
-        if (string.IsNullOrWhiteSpace(sqlStatement))
-          return;
         sqlStatement = sqlStatement.Trim();
+
+        if (string.IsNullOrEmpty(sqlStatement))
+          return;
 
         var requestObject = new
         {
