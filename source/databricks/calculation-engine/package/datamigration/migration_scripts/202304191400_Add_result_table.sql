@@ -1,7 +1,6 @@
 CREATE DATABASE IF NOT EXISTS {DATABASE_NAME}
 COMMENT 'Contains result data from wholesale domain.'
 GO
-    
 CREATE TABLE IF NOT EXISTS {DATABASE_NAME}.{RESULT_TABLE_NAME}
 (
     grid_area STRING NOT NULL,
