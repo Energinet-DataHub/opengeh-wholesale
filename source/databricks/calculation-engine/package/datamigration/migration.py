@@ -23,7 +23,7 @@ from package.infrastructure import WHOLESALE_CONTAINER_NAME, OUTPUT_FOLDER
 from package.storage_account_access.data_lake_file_manager import DataLakeFileManager
 from .migration_script_args import MigrationScriptArgs
 from .uncommitted_migrations import get_uncommitted_migrations
-from package.constants import DATABASE_NAME, TEST
+from package.constants import DATABASE_NAME, RESULT_TABLE_NAME, TEST
 import package.datamigration.constants as c
 
 
@@ -55,6 +55,7 @@ def _substitute_placeholders(statement: str, migration_args: MigrationScriptArgs
             .replace("{CONTAINER_PATH}", migration_args.storage_container_path)  # abfss://...
             .replace("{DATABASE_NAME}", DATABASE_NAME)  # "wholesale_output"
             .replace("{OUTPUT_FOLDER}", OUTPUT_FOLDER)  # "calculation-output"
+            .replace("{RESULT_TABLE_NAME}", RESULT_TABLE_NAME)  # "result"
             .replace("{TEST}", TEST))  # ""
 
 
