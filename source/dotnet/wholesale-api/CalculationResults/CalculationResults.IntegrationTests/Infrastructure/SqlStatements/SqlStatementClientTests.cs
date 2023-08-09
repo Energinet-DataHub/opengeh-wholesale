@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
@@ -38,7 +39,7 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
     {
         // Arrange
         await AddDataToResultTableAsync();
-        var sut = _fixture.CreateSqlStatementClient(loggerMock);
+        var sut = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
 
         var sqlStatement = $@"SELECT * FROM {_fixture.DatabricksSchemaManager.SchemaName}.{_fixture.DatabricksSchemaManager.ResultTableName}";
 
