@@ -14,6 +14,7 @@
 
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Reflection;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
@@ -50,6 +51,8 @@ public class DatabricksSchemaManager
 
     public string SchemaName => DeltaTableOptions.Value.SCHEMA_NAME;
 
+    public string ResultTableName => DeltaTableOptions.Value.RESULT_TABLE_NAME;
+
     /// <summary>
     /// Executes all the SQL scripts in the respective folder migration_scripts.
     /// This creates a schema (formerly known as database), tables and constraints.
@@ -66,23 +69,24 @@ public class DatabricksSchemaManager
         await ExecuteSqlAsync(sqlStatement);
     }
 
+    public async Task InsertAsync<T>(string tableName, IEnumerable<string> row)
+    {
+        await InsertAsync<T>(tableName, new[] { row });
+    }
+
     /// <summary>
     /// Inserts rows into a table. The rows are specified as a list of lists of strings. Example:
-    /// INSERT INTO myschema.mytable VALUES ('someString', 'someOtherString', 1.234), ('anotherString', 'anotherOtherString', 2.345);
+    /// INSERT INTO myschema.mytable (name, address, number) VALUES ('someString', 'someOtherString', 1.234), ('anotherString', 'anotherOtherString', 2.345);
     /// </summary>
     /// <param name="tableName">Name of table</param>
     /// <param name="rows">Rows to be inserted in table. Note: that strings should have single quotes around them.
     /// </param>
-    public async Task InsertIntoAsync(string tableName, IEnumerable<IEnumerable<string>> rows)
+    public async Task InsertAsync<T>(string tableName, IEnumerable<IEnumerable<string>> rows)
     {
+        var fieldInfos = typeof(T).GetFields(BindingFlags.Public | BindingFlags.Static);
+        var columnsNames = string.Join(", ", fieldInfos.Select(x => x.GetValue(null)).Cast<string>());
         var values = string.Join(", ", rows.Select(row => $"({string.Join(", ", row.Select(val => $"{val}"))})"));
-        var sqlStatement = $@"INSERT INTO {SchemaName}.{tableName} VALUES {values}";
-        await ExecuteSqlAsync(sqlStatement);
-    }
-
-    public async Task InsertIntoAsync(string tableName, IEnumerable<string> row)
-    {
-        var sqlStatement = $@"INSERT INTO {SchemaName}.{tableName} VALUES ({string.Join(",", row)})";
+        var sqlStatement = $@"INSERT INTO {SchemaName}.{tableName} ({columnsNames}) VALUES {values}";
         await ExecuteSqlAsync(sqlStatement);
     }
 
