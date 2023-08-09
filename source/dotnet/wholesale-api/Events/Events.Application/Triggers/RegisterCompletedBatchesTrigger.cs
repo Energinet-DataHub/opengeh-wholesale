@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Common.Workers;
+using Energinet.DataHub.Core.App.WebApp.Hosting;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Microsoft.Extensions.Logging;
 
@@ -21,7 +21,7 @@ namespace Energinet.DataHub.Wholesale.Events.Application.Triggers;
 /// <summary>
 /// Worker invoking fetching completed batches from the batches module and registering them in the module.
 /// </summary>
-public class RegisterCompletedBatchesTrigger : RepeatingWorker<IRegisterCompletedBatchesHandler>
+public class RegisterCompletedBatchesTrigger : RepeatingTrigger<IRegisterCompletedBatchesHandler>
 {
     private const int DelayInSecondsBeforeNextExecution = 10;
 
@@ -34,7 +34,8 @@ public class RegisterCompletedBatchesTrigger : RepeatingWorker<IRegisterComplete
 
     protected override async Task ExecuteAsync(
         IRegisterCompletedBatchesHandler instance,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        Action isAliveCallback)
     {
         await instance.RegisterCompletedBatchesAsync().ConfigureAwait(false);
     }
