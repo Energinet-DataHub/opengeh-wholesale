@@ -16,14 +16,12 @@ using System.Reflection;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 
-public static class ResultColumnNames
+public class ResultColumnNames
 {
-    // Don't change the order of these fields.
-    // It is important that they are in the same order as the columns in the delta table.
+    public const string Quantity = "quantity";
     public const string GridArea = "grid_area";
     public const string EnergySupplierId = "energy_supplier_id";
     public const string BalanceResponsibleId = "balance_responsible_id";
-    public const string Quantity = "quantity";
     public const string QuantityQuality = "quantity_quality";
     public const string Time = "time";
     public const string AggregationLevel = "aggregation_level";

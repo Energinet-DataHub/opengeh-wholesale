@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
@@ -40,7 +41,7 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
         await AddDataToResultTableAsync();
         var sut = _fixture.CreateSqlStatementClient(loggerMock);
 
-        var sqlStatement = $@"SELECT * FROM {_fixture.DatabricksSchemaManager.SchemaName}.result";
+        var sqlStatement = $@"SELECT * FROM {_fixture.DatabricksSchemaManager.SchemaName}.{_fixture.DatabricksSchemaManager.ResultTableName}";
 
         // Act
         var actual = await sut.ExecuteAsync(sqlStatement).ToListAsync();
@@ -58,7 +59,7 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
         var sut = _fixture.CreateSqlStatementClient(loggerMock);
 
         // Arrange: The result of this query spans multiple chunks
-        var sqlStatement = $@"select r.id, 'some value' as value from range({expectedRowCount}) as r";
+        var sqlStatement = $@"SELECT r.id, 'some value' AS VALUE FROM RANGE({expectedRowCount}) AS r";
 
         // Act
         var actual = await sut.ExecuteAsync(sqlStatement).CountAsync();
@@ -71,29 +72,23 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
     {
         var values = GetSomeDeltaTableRow();
         var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await _fixture.DatabricksSchemaManager.InsertIntoAsync(deltaTableOptions.Value.RESULT_TABLE_NAME, values);
-        await _fixture.DatabricksSchemaManager.InsertIntoAsync(deltaTableOptions.Value.RESULT_TABLE_NAME, values);
+        await _fixture.DatabricksSchemaManager.InsertAsync<ResultColumnNames>(deltaTableOptions.Value.RESULT_TABLE_NAME, values);
+        await _fixture.DatabricksSchemaManager.InsertAsync<ResultColumnNames>(deltaTableOptions.Value.RESULT_TABLE_NAME, values);
     }
 
-    private static List<string> GetSomeDeltaTableRow()
+    private static IList<string> GetSomeDeltaTableRow()
     {
-        var values = new List<string>
-        {
-            "'123'",
-            "'energy_supplier_id'",
-            "'balance_responsible_id'",
-            "1.23",
-            "'missing'",
-            "'2022-03-11T03:00:00.000Z'",
-            "'total_ga'",
-            "'grid_loss'",
-            "'batch_id'",
-            "'BalanceFixing'",
-            "'2022-03-11T03:00:00.000Z'",
-            "'123'",
-            "'calculation_result_id'",
-        };
+        var time = "2022-03-11T03:00:00.000Z";
+        var batchExecutionTimeStart = "2022-03-11T03:00:00.000Z";
+        var gridAreaB = "123";
+        var quantity21 = "1.23";
+        var row = ResultDeltaTableHelper.CreateRowValues(
+            batchExecutionTimeStart: batchExecutionTimeStart,
+            time: time,
+            batchProcessType: DeltaTableProcessType.BalanceFixing,
+            gridArea: gridAreaB,
+            quantity: quantity21);
 
-        return values;
+        return row.ToList();
     }
 }

@@ -18,6 +18,7 @@ using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using FluentAssertions;
@@ -96,6 +97,6 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
 
         // mix up the order of the rows
         var rows = new List<IEnumerable<string>> { row3, row5, row1, row2, row6, row4, };
-        await _fixture.DatabricksSchemaManager.InsertIntoAsync(options.Value.RESULT_TABLE_NAME, rows);
+        await _fixture.DatabricksSchemaManager.InsertAsync<ResultColumnNames>(options.Value.RESULT_TABLE_NAME, rows);
     }
 }
