@@ -12,25 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.WebApi;
+using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Logging;
 
-public static class Program
+namespace Energinet.DataHub.Wholesale.Common.Logging;
+
+public static class LoggerExtensions
 {
-    public static void Main(string[] args)
+    /// <summary>
+    /// Utility method to log entering a method for debugging purposes.
+    /// </summary>
+    public static void EnterMethod(
+        this ILogger logger,
+        [CallerMemberName] string? methodName = null,
+        [CallerFilePath] string? sourceFile = null,
+        [CallerLineNumber] int? lineNumber = null)
     {
-        CreateWebHostBuilder(args).Build().Run();
+        logger.LogDebug("Entering {MethodName} in {FilePath}:{LineNo}", methodName, sourceFile, lineNumber);
     }
-
-    private static IHostBuilder CreateWebHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args)
-            .ConfigureLogging((_, logging) =>
-            {
-                logging.ClearProviders();
-                logging.AddApplicationInsights();
-                logging.AddConsole();
-            })
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseStartup<Startup>();
-            });
 }

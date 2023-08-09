@@ -12,9 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Hosting;
+
 namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
 
-public interface IOutboxSender
+/// <summary>
+/// Monitor readiness of hosted services.
+/// Must be registered as a singleton.
+/// </summary>
+public interface IHostedServiceReadinessMonitor
 {
-    Task SendAsync(CancellationToken cancellationToken);
+    /// <summary>
+    /// Ping the monitor (from the hosted service) to indicate that the service is alive.
+    /// <paramref name="hostedServiceType"/> must be an implementation of <see cref="IHostedService"/>.
+    /// </summary>
+    void Ping(Type hostedServiceType);
+
+    /// <summary>
+    /// Query the monitor to see if the service is alive.
+    /// </summary>
+    public bool IsReady<TService>()
+        where TService : IHostedService;
 }

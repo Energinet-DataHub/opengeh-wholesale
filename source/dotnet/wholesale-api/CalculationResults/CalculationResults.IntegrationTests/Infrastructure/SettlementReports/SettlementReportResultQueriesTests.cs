@@ -52,7 +52,7 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
         // Arrange
         var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
         var expectedSettlementReportRow = await InsertRowsFromMultipleBatches(deltaTableOptions);
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(loggerMock);
+        var sqlStatementClient = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
         var sut = new SettlementReportResultQueries(sqlStatementClient, deltaTableOptions);
 
         // Act
@@ -120,5 +120,10 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
             MeteringPointType.Production,
             null,
             SqlResultValueConverters.ToDecimal(quantity) ?? throw new Exception("Could not parse time"));
+    }
+
+    private static IOptions<DeltaTableOptions> CreateDeltaTableOptions(string schemaName, string tableName)
+    {
+        return Options.Create(new DeltaTableOptions { SCHEMA_NAME = schemaName, RESULT_TABLE_NAME = tableName, });
     }
 }

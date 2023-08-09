@@ -14,7 +14,6 @@
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
@@ -55,11 +54,11 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
     public async Task ExecuteAsync_WhenMultipleChunks_ReturnsAllRows(Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock)
     {
         // Arrange
-        const int expectedRowCount = 100;
-        var sut = _fixture.CreateSqlStatementClient(loggerMock);
+        var expectedRowCount = 100;
+        var sut = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
 
         // Arrange: The result of this query spans multiple chunks
-        var sqlStatement = $@"SELECT r.id, 'some value' AS VALUE FROM RANGE({expectedRowCount}) AS r";
+        var sqlStatement = $@"select r.id, 'some value' as value from range({expectedRowCount}) as r";
 
         // Act
         var actual = await sut.ExecuteAsync(sqlStatement).CountAsync();

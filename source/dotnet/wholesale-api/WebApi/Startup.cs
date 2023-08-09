@@ -24,6 +24,7 @@ using Energinet.DataHub.Wholesale.Common.Security;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
+using Energinet.DataHub.Wholesale.WebApi.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.OpenApi.Models;
@@ -102,7 +103,7 @@ public class Startup
 
         AddJwtTokenSecurity(serviceCollection);
         AddHealthCheck(serviceCollection);
-        serviceCollection.AddApplicationInsightsTelemetry();
+        serviceCollection.AddApplicationInsightsTelemetry(options => options.EnableAdaptiveSampling = false);
         AddCorrelationContext(serviceCollection);
 
         serviceCollection.AddUserAuthentication<FrontendUser, FrontendUserProvider>();
@@ -172,7 +173,8 @@ public class Startup
             .AddAzureServiceBusTopic(
                 serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
                 serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
-                name: "IntegrationEventsTopicExists");
+                name: "IntegrationEventsTopicExists")
+            .AddCheck<HostedServicesHealthCheck>("HostedServices");
     }
 
     /// <summary>

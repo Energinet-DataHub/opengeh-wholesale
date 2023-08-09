@@ -51,16 +51,17 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
     public async Task GetAsync_ReturnsExpectedCalculationResult(
         Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
         Mock<IBatchesClient> batchesClientMock,
-        BatchDto batch)
+        BatchDto batch,
+        Mock<ILogger<CalculationResultQueries>> calculationResultQueriesLoggerMock)
     {
         // Arrange
         const int expectedResultCount = 3;
         var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
         await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
         batch = batch with { BatchId = Guid.Parse(BatchId) };
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(loggerMock);
+        var sqlStatementClient = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
         batchesClientMock.Setup(b => b.GetAsync(It.IsAny<Guid>())).ReturnsAsync(batch);
-        var sut = new CalculationResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions);
+        var sut = new CalculationResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions, calculationResultQueriesLoggerMock.Object);
 
         // Act
         var actual = await sut.GetAsync(batch.BatchId).ToListAsync();

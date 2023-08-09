@@ -25,13 +25,14 @@ public class OutboxSenderTrigger : RepeatingTrigger<IOutboxSender>
 
     public OutboxSenderTrigger(
         IServiceProvider serviceProvider,
+        IHostedServiceReadinessMonitor hostedServiceReadinessMonitor,
         ILogger<OutboxSenderTrigger> logger)
-        : base(serviceProvider, logger, TimeSpan.FromSeconds(DelayInSecondsBeforeNextExecution))
+        : base(serviceProvider, hostedServiceReadinessMonitor, logger, TimeSpan.FromSeconds(DelayInSecondsBeforeNextExecution))
     {
     }
 
-    protected override async Task ExecuteAsync(IOutboxSender outboxSender)
+    protected override async Task ExecuteAsync(IOutboxSender outboxSender, CancellationToken cancellationToken)
     {
-        await outboxSender.SendAsync().ConfigureAwait(false);
+        await outboxSender.SendAsync(cancellationToken).ConfigureAwait(false);
     }
 }

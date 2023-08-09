@@ -14,7 +14,9 @@
 
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Web;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
@@ -27,37 +29,48 @@ public class SqlStatementClient : ISqlStatementClient
     private readonly HttpClient _httpClient;
     private readonly IOptions<DatabricksOptions> _options;
     private readonly IDatabricksSqlResponseParser _responseResponseParser;
+    private readonly ILogger<SqlStatementClient> _logger;
 
     public SqlStatementClient(
         HttpClient httpClient,
         IOptions<DatabricksOptions> options,
-        IDatabricksSqlResponseParser responseResponseParser)
+        IDatabricksSqlResponseParser responseResponseParser,
+        ILogger<SqlStatementClient> logger)
     {
         _httpClient = httpClient;
         _options = options;
         _responseResponseParser = responseResponseParser;
+        _logger = logger;
         ConfigureHttpClient(_httpClient, _options);
     }
 
     public async IAsyncEnumerable<SqlResultRow> ExecuteAsync(string sqlStatement)
     {
+        _logger.LogDebug("Executing SQL statement: {Sql}", HttpUtility.HtmlEncode(sqlStatement));
+
         var response = await GetFirstChunkOrNullAsync(sqlStatement).ConfigureAwait(false);
         var columnNames = response.ColumnNames;
         var chunk = response.Chunk;
+        var rowCount = 0;
 
         while (chunk != null)
         {
+            if (chunk.ExternalLink == null) break;
+
             var data = await GetChunkDataAsync(chunk.ExternalLink, columnNames!).ConfigureAwait(false);
 
             for (var index = 0; index < data.Rows.Count; index++)
             {
                 yield return new SqlResultRow(data, index);
+                rowCount++;
             }
 
             if (chunk.NextChunkInternalLink == null) break;
 
             chunk = await GetChunkAsync(chunk.NextChunkInternalLink).ConfigureAwait(false);
         }
+
+        _logger.LogDebug("SQL statement executed. Rows returned: {RowCount}", rowCount);
     }
 
     private async Task<DatabricksSqlResponse> GetFirstChunkOrNullAsync(string sqlStatement)
@@ -79,18 +92,26 @@ public class SqlStatementClient : ISqlStatementClient
         var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
         var databricksSqlResponse = _responseResponseParser.ParseStatusResponse(jsonResponse);
 
+        var waitTime = 1000;
         while (databricksSqlResponse.State is DatabricksSqlResponseState.Pending or DatabricksSqlResponseState.Running)
         {
+            if (waitTime > 600000)
+                throw new DatabricksSqlException($"Unable to get calculation result from Databricks because the SQL statement execution didn't succeed. State: {databricksSqlResponse.State}");
+
+            waitTime *= 2;
+            await Task.Delay(waitTime).ConfigureAwait(false);
+
             var path = $"{StatementsEndpointPath}/{databricksSqlResponse.StatementId}";
             var httpResponse = await _httpClient.GetAsync(path).ConfigureAwait(false);
 
             if (!httpResponse.IsSuccessStatusCode)
                 throw new DatabricksSqlException($"Unable to get calculation result from Databricks. HTTP status code: {httpResponse.StatusCode}");
 
+            jsonResponse = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
             databricksSqlResponse = _responseResponseParser.ParseStatusResponse(jsonResponse);
         }
 
-        if (databricksSqlResponse.State is DatabricksSqlResponseState.Cancelled or DatabricksSqlResponseState.Failed or DatabricksSqlResponseState.Closed)
+        if (databricksSqlResponse.State is not DatabricksSqlResponseState.Succeeded)
             throw new DatabricksSqlException($"Unable to get calculation result from Databricks because the SQL statement execution didn't succeed. State: {databricksSqlResponse.State}");
 
         return databricksSqlResponse;
