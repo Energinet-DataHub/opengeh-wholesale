@@ -9,6 +9,7 @@ locals {
   TIME_ZONE                     = "Europe/Copenhagen"
 
   # Logging
-  LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT                     = "Warning"
-  LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_WHOLESALE = "Information"
+  LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_WHOLESALE = "Information"  # From opengeh-wholesale
+  LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE      = "Information"  # From geh-core
+  LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT                     = "Warning"      # Everything else
 }

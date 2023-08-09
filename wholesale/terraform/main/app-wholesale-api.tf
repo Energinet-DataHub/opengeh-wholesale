@@ -45,6 +45,7 @@ module "app_wholesale_api" {
     # Logging
     Logging__ApplicationInsights__LogLevel__Default                     = local.LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT
     Logging__ApplicationInsights__LogLevel__Energinet_Datahub_Wholesale = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_WHOLESALE
+    Logging__ApplicationInsights__LogLevel__Energinet_Datahub_Core      = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE
   }
 
   connection_strings = [
