@@ -2,7 +2,7 @@ resource "azurerm_key_vault_access_policy" "kv_access_policy_developers_security
   count = var.developers_security_group_object_id == null ? 0 : 1
 
   key_vault_id = module.kv_internal.id
-  tenant_id    = var.arm_tenant_id
+  tenant_id    = var.tenant_id
   object_id    = var.developers_security_group_object_id
   secret_permissions = [
     "List",
