@@ -35,9 +35,9 @@ jobs:
       environment: AzureAuth
       run_integration_tests: true
       azure_integrationtest_tenant_id: ${{ vars.azure_tenant_id }}
-      azure_integrationtest_subscription_id: ${{ vars.azure_subscription_id }}
-      azure_integrationtest_spn_id: ${{ vars.azure_spn_id_oidc }}
-      azure_keyvault_url: ${{ vars.azure_keyvault_url }}
+      azure_integrationtest_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
+      azure_integrationtest_spn_id: ${{ vars.integration_test_azure_spn_id_oidc }}
+      azure_keyvault_url: ${{ vars.integration_test_azure_keyvault_url }}
       azure_b2csecrets_keyvault_url: ${{ vars.azure_b2csecrets_keyvault_url }}
 
   dotnet_ci_test_webapi:
@@ -55,9 +55,9 @@ jobs:
       environment: AzureAuth
       run_integration_tests: true
       azure_integrationtest_tenant_id: ${{ vars.azure_tenant_id }}
-      azure_integrationtest_subscription_id: ${{ vars.azure_subscription_id }}
-      azure_integrationtest_spn_id: ${{ vars.azure_spn_id_oidc }}
-      azure_keyvault_url: ${{ vars.azure_keyvault_url }}
+      azure_integrationtest_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
+      azure_integrationtest_spn_id: ${{ vars.integration_test_azure_spn_id_oidc }}
+      azure_keyvault_url: ${{ vars.integration_test_azure_keyvault_url }}
       azure_b2csecrets_keyvault_url: ${{ vars.azure_b2csecrets_keyvault_url }}
 
   dotnet_ci_test_calculation_results:
