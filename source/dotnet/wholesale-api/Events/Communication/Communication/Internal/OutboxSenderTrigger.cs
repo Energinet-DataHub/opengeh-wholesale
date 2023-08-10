@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.App.WebApp.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
@@ -25,13 +26,15 @@ public class OutboxSenderTrigger : RepeatingTrigger<IOutboxSender>
 
     public OutboxSenderTrigger(
         IServiceProvider serviceProvider,
-        IHostedServiceReadinessMonitor hostedServiceReadinessMonitor,
         ILogger<OutboxSenderTrigger> logger)
-        : base(serviceProvider, hostedServiceReadinessMonitor, logger, TimeSpan.FromSeconds(DelayInSecondsBeforeNextExecution))
+        : base(serviceProvider, logger, TimeSpan.FromSeconds(DelayInSecondsBeforeNextExecution))
     {
     }
 
-    protected override async Task ExecuteAsync(IOutboxSender outboxSender, CancellationToken cancellationToken)
+    protected override async Task ExecuteAsync(
+        IOutboxSender outboxSender,
+        CancellationToken cancellationToken,
+        Action isAliveCallback)
     {
         await outboxSender.SendAsync(cancellationToken).ConfigureAwait(false);
     }

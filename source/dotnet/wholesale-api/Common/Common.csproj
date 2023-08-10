@@ -33,7 +33,6 @@ limitations under the License.
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Energinet.DataHub.Core.App.Common.Abstractions" Version="7.4.6" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
   </ItemGroup>
 </Project>

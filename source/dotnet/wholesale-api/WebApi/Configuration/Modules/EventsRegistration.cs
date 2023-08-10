@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Internal;
@@ -48,6 +49,10 @@ public static class EventsRegistration
         serviceCollection.AddInfrastructure();
 
         serviceCollection.AddCommunication<IntegrationEventProvider>(serviceBusConnectionString, integrationEventTopicName);
+
+        serviceCollection
+            .AddHealthChecks()
+            .AddRepeatingTriggerHealthCheck<RegisterCompletedBatchesTrigger>(TimeSpan.FromMinutes(1));
     }
 
     private static void AddApplications(this IServiceCollection services)

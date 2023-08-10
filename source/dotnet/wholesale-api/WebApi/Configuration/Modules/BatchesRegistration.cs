@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Wholesale.Batches.Application;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
 using Energinet.DataHub.Wholesale.Batches.Application.UseCases;
@@ -23,7 +24,7 @@ using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace Energinet.DataHub.Wholesale.WebApi.Configuration;
+namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
 
 /// <summary>
 /// Registration of services required for the Batches module.
@@ -63,7 +64,17 @@ public static class BatchesRegistration
         serviceCollection.AddScoped<IStartCalculationHandler, StartCalculationHandler>();
         serviceCollection.AddScoped<IUpdateBatchExecutionStateHandler, UpdateBatchExecutionStateHandler>();
 
-        serviceCollection.AddHostedService<StartCalculationWorker>();
-        serviceCollection.AddHostedService<UpdateBatchExecutionStateWorker>();
+        RegisterHostedServices(serviceCollection);
+    }
+
+    private static void RegisterHostedServices(IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddHostedService<StartCalculationTrigger>();
+        serviceCollection.AddHostedService<UpdateBatchExecutionStateTrigger>();
+
+        serviceCollection
+            .AddHealthChecks()
+            .AddRepeatingTriggerHealthCheck<StartCalculationTrigger>(TimeSpan.FromMinutes(1))
+            .AddRepeatingTriggerHealthCheck<UpdateBatchExecutionStateTrigger>(TimeSpan.FromMinutes(1));
     }
 }
