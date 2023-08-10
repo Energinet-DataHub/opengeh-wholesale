@@ -88,6 +88,15 @@ jobs:
       infrastructure_path: ./wholesale/terraform
     secrets: inherit
 
+  integration_test_ci:
+    needs: changes
+    if: ${{ needs.changes.outputs.integration_test_ci == 'true' }}
+    uses: ./.github/workflows/infrastructure-build-prerelease.yml
+    with:
+      release_name_prefix: integration_test_infrastructure
+      infrastructure_path: ./integration-test/terraform
+    secrets: inherit
+
   render_c4model_deployment:
     needs: changes
     if: ${{ needs.changes.outputs.render_c4model_deployment == 'true' }}

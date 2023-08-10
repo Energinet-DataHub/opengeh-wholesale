@@ -24,6 +24,8 @@ on:
         value: ${{ jobs.changes.outputs.wholesale_ci }}
       render_c4model_deployment:
         value: ${{ jobs.changes.outputs.render_c4model_deployment }}
+      integration_test_ci:
+        value: ${{ jobs.changes.outputs.integration_test_ci }}
 
 jobs:
   changes:
@@ -38,6 +40,7 @@ jobs:
       ui_ci: ${{ steps.filter.outputs.ui_ci }}
       wholesale_ci: ${{ steps.filter.outputs.wholesale_ci }}
       render_c4model_deployment: ${{ steps.filter.outputs.render_c4model_deployment }}
+      integration_test_ci: ${{ steps.filter.outputs.integration_test_ci }}
     steps:
       - name: Checkout repository
         if: ${{ github.event_name != 'pull_request' }}
@@ -93,3 +96,9 @@ jobs:
             render_c4model_deployment:
               - 'docs/diagrams/c4-model/deployment.dsl'
               - 'docs/diagrams/c4-model/deployment.json'
+            integration_test_ci:
+              - integration-test/**
+              - .github/workflows/integration-test-*.yml
+              - .github/workflows/infrastructure-build-prerelease.yml
+              - .github/workflows/infrastructure-validate.yml
+              - .github/actions/terraform-validate/*
