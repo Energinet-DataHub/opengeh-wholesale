@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.JsonNewlineSerializer;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 
@@ -29,16 +29,14 @@ namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
 public static class CalculationResultsRegistration
 {
     public static void AddCalculationResultsModule(
-        this IServiceCollection serviceCollection)
+        this IServiceCollection serviceCollection,
+        string warehouseId,
+        string workspaceToken,
+        string workspaceUrl)
     {
         serviceCollection.AddScoped<ISettlementReportClient, SettlementReportClient>();
-        serviceCollection.AddHttpClient<ISqlStatementClient>();
-        serviceCollection.AddScoped<ISqlStatementClient, SqlStatementClient>();
+        serviceCollection.AddDatabricks(warehouseId, workspaceToken, workspaceUrl);
         serviceCollection.AddScoped<ISettlementReportResultsCsvWriter, SettlementReportResultsCsvWriter>();
-        serviceCollection.AddScoped<IDatabricksSqlResponseParser, DatabricksSqlResponseParser>();
-        serviceCollection.AddScoped<IDatabricksSqlStatusResponseParser, DatabricksSqlStatusResponseParser>();
-        serviceCollection.AddScoped<IDatabricksSqlChunkResponseParser, DatabricksSqlChunkResponseParser>();
-        serviceCollection.AddScoped<IDatabricksSqlChunkDataResponseParser, DatabricksSqlChunkDataResponseParser>();
         serviceCollection.AddScoped<IDataLakeClient, DataLakeClient>();
         serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
         serviceCollection.AddScoped<ICalculationResultQueries, CalculationResultQueries>();
