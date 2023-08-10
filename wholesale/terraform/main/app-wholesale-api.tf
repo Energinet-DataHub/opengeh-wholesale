@@ -21,6 +21,10 @@ module "app_wholesale_api" {
       role_definition_name = "Storage Blob Data Contributor"
     }
   ]
+
+  # Ensure that IHostedServices are not terminated due to unloading of the application in periods with no traffic
+  always_on = true
+
   app_settings = {
     TIME_ZONE            = local.TIME_ZONE
     EXTERNAL_OPEN_ID_URL = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-open-id-url)"
