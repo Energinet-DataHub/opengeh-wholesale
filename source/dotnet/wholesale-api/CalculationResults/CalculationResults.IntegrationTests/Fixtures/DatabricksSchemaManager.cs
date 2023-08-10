@@ -92,13 +92,15 @@ public class DatabricksSchemaManager
 
     private async Task ExecuteSqlScriptsAsync()
     {
-        var sqlScripts = Directory.GetFiles("./migration_sql_scripts", "*.sql");
-        const string delimiter = "GO";
+        var sqlScripts = Directory.EnumerateFiles("./migration_sql_scripts", "*.sql");
+
+        // We only want to split on GO when it is on a line by itself
+        string[] delimiters = { "\r\nGO\r\n", "\nGO\n", "\rGO\r" };
 
         foreach (var sqlScript in sqlScripts)
         {
             var sqlString = await File.ReadAllTextAsync(sqlScript);
-            var sqlStatements = sqlString.Split(new[] { delimiter }, StringSplitOptions.RemoveEmptyEntries);
+            var sqlStatements = sqlString.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
             foreach (var sqlStatement in sqlStatements)
             {
                 var sql = Replacements(sqlStatement);
