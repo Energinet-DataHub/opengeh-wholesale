@@ -173,8 +173,7 @@ public class Startup
             .AddAzureServiceBusTopic(
                 serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
                 serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
-                name: "IntegrationEventsTopicExists")
-            .AddCheck<HostedServicesHealthCheck>("HostedServices");
+                name: "IntegrationEventsTopicExists");
     }
 
     /// <summary>

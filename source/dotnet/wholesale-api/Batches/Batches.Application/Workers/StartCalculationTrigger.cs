@@ -12,30 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.App.WebApp.Hosting;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
-using Energinet.DataHub.Wholesale.Common.Workers;
 using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Batches.Application.Workers;
 
 /// <summary>
-/// Worker invoking updating batch execution states.
+/// Worker invoking starting new batches.
 /// </summary>
-public class UpdateBatchExecutionStateWorker : RepeatingWorker<IUpdateBatchExecutionStateHandler>
+public class StartCalculationTrigger : RepeatingTrigger<IStartCalculationHandler>
 {
-    private const int DelayInSecondsBeforeNextExecution = 20;
+    private const int DelayInSecondsBeforeNextExecution = 10;
 
-    public UpdateBatchExecutionStateWorker(
+    public StartCalculationTrigger(
         IServiceProvider serviceProvider,
-        ILogger<UpdateBatchExecutionStateWorker> logger)
+        ILogger<StartCalculationTrigger> logger)
         : base(serviceProvider, logger, TimeSpan.FromSeconds(DelayInSecondsBeforeNextExecution))
     {
     }
 
-    protected override async Task ExecuteAsync(
-        IUpdateBatchExecutionStateHandler instance,
-        CancellationToken cancellationToken)
+    protected override async Task ExecuteAsync(IStartCalculationHandler scopedService, CancellationToken cancellationToken, Action isAliveCallback)
     {
-        await instance.UpdateAsync().ConfigureAwait(false);
+        await scopedService.StartAsync().ConfigureAwait(false);
     }
 }
