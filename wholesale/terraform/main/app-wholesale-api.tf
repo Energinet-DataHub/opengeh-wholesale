@@ -47,9 +47,9 @@ module "app_wholesale_api" {
     DATABRICKS_WAREHOUSE_ID    = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-databricks-sql-endpoint-id)"
 
     # Logging
-    Logging__ApplicationInsights__LogLevel__Default                     = local.LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT
-    Logging__ApplicationInsights__LogLevel__Energinet_Datahub_Wholesale = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_WHOLESALE
-    Logging__ApplicationInsights__LogLevel__Energinet_Datahub_Core      = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE
+    "Logging__ApplicationInsights__LogLevel__Default"                     = local.LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT
+    "Logging__ApplicationInsights__LogLevel__Energinet.Datahub.Wholesale" = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_WHOLESALE
+    "Logging__ApplicationInsights__LogLevel__Energinet.Datahub.Core"      = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE
   }
 
   connection_strings = [
