@@ -19,3 +19,4 @@ from .result_table_col_name import ResultTableColName
 
 DATABASE_NAME = "wholesale_output"
 RESULT_TABLE_NAME = "result"
+TEST = ""

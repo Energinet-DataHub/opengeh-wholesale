@@ -52,7 +52,7 @@ public class ResultDeltaTableHelper
         });
     }
 
-    public static Dictionary<string, string> GetColumnDefinitions()
+    private static Dictionary<string, string> GetColumnDefinitions()
     {
         var columnNames = ResultColumnNames.GetAllNames().ToList();
         var columnTypes = columnNames.Select(ResultColumnNames.GetType);

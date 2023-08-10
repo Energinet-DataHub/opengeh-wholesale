@@ -22,6 +22,11 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 
+/// <summary>
+/// The interface 'IAsyncLifetime' forces the implementation of two methods.
+///   1. 'InitializeAsync()' which is called before the first test in the test class is executed.
+///   2. 'DisposeAsync()' which is called after the last test in the test class has been executed.
+/// </summary>
 public class DatabricksSqlStatementApiFixture : IAsyncLifetime
 {
     public DatabricksSqlStatementApiFixture()
@@ -33,16 +38,16 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
 
     public DatabricksSchemaManager DatabricksSchemaManager { get; }
 
-    public Mock<IOptions<DatabricksOptions>> DatabricksOptionsMock { get; }
+    private Mock<IOptions<DatabricksOptions>> DatabricksOptionsMock { get; }
 
-    public Task InitializeAsync()
+    public async Task InitializeAsync()
     {
-        return Task.CompletedTask;
+        await DatabricksSchemaManager.CreateSchemaAsync();
     }
 
-    public Task DisposeAsync()
+    public async Task DisposeAsync()
     {
-        return Task.CompletedTask;
+        await DatabricksSchemaManager.DropSchemaAsync();
     }
 
     public SqlStatementClient CreateSqlStatementClient(Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock, Mock<ILogger<SqlStatementClient>> loggerMock2)
