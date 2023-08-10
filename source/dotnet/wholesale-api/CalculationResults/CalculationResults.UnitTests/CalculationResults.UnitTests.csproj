@@ -58,10 +58,7 @@
       <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\result-table-column-names.json">
         <Link>DeltaTableContracts\Contracts\result-table-column-names.json</Link>
       </EmbeddedResource>
-      <EmbeddedResource Include="Infrastructure\SqlStatements\CalculationResult.json" />
-      <EmbeddedResource Include="Infrastructure\SqlStatements\CalculationResultChunk.json" />
       <None Remove="Infrastructure\SqlStatements\CalculationResultWithExternalLinks.json" />
-      <EmbeddedResource Include="Infrastructure\SqlStatements\CalculationResultWithExternalLinks.json" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\..\Test.Core\Test.Core.csproj" />
