@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.Messaging.Communication.Internal;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -30,14 +31,23 @@ public static class Registration
         string integrationEventTopicName)
         where TIntegrationEventProvider : class, IIntegrationEventProvider
     {
-        services.AddHostedService<OutboxSenderTrigger>();
-        services.AddSingleton<IHostedServiceReadinessMonitor, HostedServiceReadinessMonitor>();
         services.AddScoped<IIntegrationEventProvider, TIntegrationEventProvider>();
         services.AddSingleton<IServiceBusSenderProvider>(
             _ => new ServiceBusSenderProvider(serviceBusIntegrationEventWriteConnectionString, integrationEventTopicName));
         services.AddScoped<IOutboxSender, OutboxSender>();
         services.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
 
+        RegisterHostedServices(services);
+
         return services;
+    }
+
+    private static void RegisterHostedServices(IServiceCollection services)
+    {
+        services.AddHostedService<OutboxSenderTrigger>();
+
+        services
+            .AddHealthChecks()
+            .AddRepeatingTriggerHealthCheck<OutboxSenderTrigger>(TimeSpan.FromMinutes(1));
     }
 }
