@@ -1,26 +1,26 @@
-ALTER TABLE wholesale_output.result
+ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME}
     DROP CONSTRAINT IF EXISTS batch_process_type_chk
 GO
-ALTER TABLE wholesale_output.result
+ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME}
     DROP CONSTRAINT IF EXISTS time_series_type_chk
 GO
-ALTER TABLE wholesale_output.result
+ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME}
     DROP CONSTRAINT IF EXISTS grid_area_chk
 GO
-ALTER TABLE wholesale_output.result
+ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME}
     DROP CONSTRAINT IF EXISTS out_grid_area_chk
 GO
-ALTER TABLE wholesale_output.result
+ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME}
     DROP CONSTRAINT IF EXISTS quantity_quality_chk
 GO
-ALTER TABLE wholesale_output.result
+ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME}
     DROP CONSTRAINT IF EXISTS aggregation_level_chk
 GO
 
-ALTER TABLE wholesale_output.result
+ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME}
     ADD CONSTRAINT batch_process_type_chk CHECK (batch_process_type IN ('BalanceFixing', 'Aggregation'))
 GO
-ALTER TABLE wholesale_output.result
+ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME}
     ADD CONSTRAINT time_series_type_chk
         CHECK (time_series_type IN (
             'production',
@@ -32,14 +32,14 @@ ALTER TABLE wholesale_output.result
             'negative_grid_loss',
             'positive_grid_loss'))
 GO
-ALTER TABLE wholesale_output.result
+ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME}
     ADD CONSTRAINT grid_area_chk CHECK (LENGTH(grid_area) = 3)
 GO
-ALTER TABLE wholesale_output.result
+ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME}
     ADD CONSTRAINT out_grid_area_chk CHECK (out_grid_area IS NULL OR LENGTH(out_grid_area) = 3)
 GO
-ALTER TABLE wholesale_output.result
+ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME}
     ADD CONSTRAINT quantity_quality_chk CHECK (quantity_quality IN ('missing', 'estimated', 'measured', 'calculated', 'incomplete'))
 GO
-ALTER TABLE wholesale_output.result
+ALTER TABLE {DATABASE_NAME}.{RESULT_TABLE_NAME}
     ADD CONSTRAINT aggregation_level_chk CHECK (aggregation_level IN ('total_ga', 'es_brp_ga', 'es_ga', 'brp_ga'))

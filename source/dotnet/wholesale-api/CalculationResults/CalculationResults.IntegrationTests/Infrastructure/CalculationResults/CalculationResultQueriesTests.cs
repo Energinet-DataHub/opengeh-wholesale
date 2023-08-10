@@ -18,6 +18,7 @@ using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using FluentAssertions;
@@ -29,14 +30,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.CalculationResults;
 
-/// <summary>
-/// We use an IClassFixture to control the life cycle of the DatabricksSqlStatementApiFixture so:
-///   1. It is created and 'InitializeAsync()' is called before the first test in the test class is executed.
-///      Use 'InitializeAsync()' to create any schema and seed data.
-///   2. 'DisposeAsync()' is called after the last test in the test class has been executed.
-///      Use 'DisposeAsync()' to drop any created schema.
-/// </summary>
-public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatementApiFixture>, IAsyncLifetime
+public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatementApiFixture>
 {
     private const string BatchId = "019703e7-98ee-45c1-b343-0cbf185a47d9";
     private const string FirstQuantity = "1.111";
@@ -52,16 +46,6 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
         _fixture = fixture;
     }
 
-    public async Task InitializeAsync()
-    {
-        await _fixture.DatabricksSchemaManager.CreateSchemaAsync();
-    }
-
-    public async Task DisposeAsync()
-    {
-        await _fixture.DatabricksSchemaManager.DropSchemaAsync();
-    }
-
     [Theory]
     [InlineAutoMoqData]
     public async Task GetAsync_ReturnsExpectedCalculationResult(
@@ -72,11 +56,11 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
     {
         // Arrange
         const int expectedResultCount = 3;
-        var tableName = await CreateTableWithRowsInArbitraryOrderAsync();
+        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
+        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
         batch = batch with { BatchId = Guid.Parse(BatchId) };
         var sqlStatementClient = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
         batchesClientMock.Setup(b => b.GetAsync(It.IsAny<Guid>())).ReturnsAsync(batch);
-        var deltaTableOptions = CreateDeltaTableOptions(_fixture.DatabricksSchemaManager.SchemaName, tableName);
         var sut = new CalculationResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions, calculationResultQueriesLoggerMock.Object);
 
         // Act
@@ -92,10 +76,8 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
             .Equal(FirstQuantity, SecondQuantity, ThirdQuantity, FourthQuantity, FifthQuantity, SixthQuantity);
     }
 
-    private async Task<string> CreateTableWithRowsInArbitraryOrderAsync()
+    private async Task AddCreatedRowsInArbitraryOrderAsync(IOptions<DeltaTableOptions> options)
     {
-        var columnDefinitions = ResultDeltaTableHelper.GetColumnDefinitions();
-        var tableName = await _fixture.DatabricksSchemaManager.CreateTableAsync(columnDefinitions);
         const string firstCalculationResultId = "b55b6f74-386f-49eb-8b56-63fae62e4fc7";
         const string secondCalculationResultId = "c2bdceba-b58b-4190-a873-eded0ed50c20";
         const string thirdCalculationResultId = "d2bdceba-b58b-4190-a873-eded0ed50c20";
@@ -116,13 +98,6 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
 
         // mix up the order of the rows
         var rows = new List<IEnumerable<string>> { row3, row5, row1, row2, row6, row4, };
-        await _fixture.DatabricksSchemaManager.InsertIntoAsync(tableName, rows);
-
-        return tableName;
-    }
-
-    private static IOptions<DeltaTableOptions> CreateDeltaTableOptions(string schemaName, string tableName)
-    {
-        return Options.Create(new DeltaTableOptions { SCHEMA_NAME = schemaName, RESULT_TABLE_NAME = tableName, });
+        await _fixture.DatabricksSchemaManager.InsertAsync<ResultColumnNames>(options.Value.RESULT_TABLE_NAME, rows);
     }
 }
