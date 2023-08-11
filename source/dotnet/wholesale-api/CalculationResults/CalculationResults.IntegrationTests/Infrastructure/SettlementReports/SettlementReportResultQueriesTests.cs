@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
@@ -120,10 +121,5 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
             MeteringPointType.Production,
             null,
             SqlResultValueConverters.ToDecimal(quantity) ?? throw new Exception("Could not parse time"));
-    }
-
-    private static IOptions<DeltaTableOptions> CreateDeltaTableOptions(string schemaName, string tableName)
-    {
-        return Options.Create(new DeltaTableOptions { SCHEMA_NAME = schemaName, RESULT_TABLE_NAME = tableName, });
     }
 }

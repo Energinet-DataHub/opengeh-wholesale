@@ -17,6 +17,7 @@ using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Common.Databricks;
+using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Energinet.DataHub.Wholesale.Common.DatabricksClient;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
@@ -35,7 +36,11 @@ internal static class ServiceCollectionExtensions
             .Get<ConnectionStringsOptions>();
         serviceCollection.AddBatchesModule(() => connectionStringOptions!.DB_CONNECTION_STRING);
 
-        serviceCollection.AddCalculationResultsModule();
+        var sqlWarehouseOptions = configuration.Get<DatabricksOptions>()!;
+        serviceCollection.AddCalculationResultsModule(
+            sqlWarehouseOptions.DATABRICKS_WAREHOUSE_ID,
+            sqlWarehouseOptions.DATABRICKS_WORKSPACE_TOKEN,
+            sqlWarehouseOptions.DATABRICKS_WORKSPACE_URL);
 
         var serviceBusOptions = configuration.Get<ServiceBusOptions>()!;
         serviceCollection.AddEventsModule(

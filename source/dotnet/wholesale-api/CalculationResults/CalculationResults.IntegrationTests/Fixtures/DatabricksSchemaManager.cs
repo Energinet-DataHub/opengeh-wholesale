@@ -15,8 +15,8 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Reflection;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
