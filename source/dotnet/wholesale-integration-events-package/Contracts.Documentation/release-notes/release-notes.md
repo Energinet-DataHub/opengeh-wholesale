@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 4.1.0
+
+Add wholesale process types to process type enum of the integration event contract.
+
 ## Version 4.0.1
 
 No functional changes.

@@ -38,9 +38,9 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Fa
         private IntegrationEvent CreateIntegrationEvent(IMessage protobufMessage, Guid calculationResultId)
         {
             var eventIdentification = calculationResultId;
-            var messageName = CalculationResultCompleted.MessageName;
-            var messageVersion = CalculationResultCompleted.MessageVersion;
-            return new IntegrationEvent(eventIdentification, messageName, messageVersion, protobufMessage);
+            var eventName = CalculationResultCompleted.EventName;
+            var eventMinorVersion = CalculationResultCompleted.EventMinorVersion;
+            return new IntegrationEvent(eventIdentification, eventName, eventMinorVersion, protobufMessage);
         }
     }
 }
