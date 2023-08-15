@@ -5,6 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="7.5.1" />
+    <PackageReference Include="Energinet.DataHub.Core.Messaging" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
     <PackageReference Update="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.3">
@@ -16,6 +17,5 @@
     <ProjectReference Include="..\..\Batches\Batches.Interfaces\Batches.Interfaces.csproj" />
     <ProjectReference Include="..\..\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
     <ProjectReference Include="..\..\Common\Common.csproj" />
-    <ProjectReference Include="..\Communication\Communication\Communication.csproj" />
   </ItemGroup>
 </Project>
