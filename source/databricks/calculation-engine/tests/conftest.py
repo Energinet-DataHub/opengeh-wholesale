@@ -28,7 +28,7 @@ from typing import Generator, Callable, Optional
 from package.datamigration.migration import _apply_migration
 from package.datamigration.uncommitted_migrations import _get_all_migrations
 from package.datamigration.migration_script_args import MigrationScriptArgs
-from package.output_writers.calculation_result_writer import DATABASE_NAME
+from package.output_writers.calculation_result_writer import OUTPUT_DATABASE_NAME
 
 
 @pytest.fixture(scope="session")
@@ -168,7 +168,7 @@ def migrations_executed_per_test(spark: SparkSession, data_lake_path: str) -> No
 def execute_migrations(spark: SparkSession, data_lake_path: str) -> None:
     # Clean up to prevent problems from previous test runs
     shutil.rmtree(data_lake_path, ignore_errors=True)
-    spark.sql(f"DROP DATABASE IF EXISTS {DATABASE_NAME} CASCADE")
+    spark.sql(f"DROP DATABASE IF EXISTS {OUTPUT_DATABASE_NAME} CASCADE")
 
     migration_args = MigrationScriptArgs(
         data_storage_account_url="foo",

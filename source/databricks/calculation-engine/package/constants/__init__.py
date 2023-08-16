@@ -17,6 +17,6 @@ from .basis_data_colname import BasisDataColname
 from .partition_key_name import PartitionKeyName
 from .result_table_col_name import ResultTableColName
 
-DATABASE_NAME = "wholesale_output"
-RESULT_TABLE_NAME = "result"
+OUTPUT_DATABASE_NAME = "wholesale_output"
+ENERGY_RESULT_TABLE_NAME = "result"
 TEST = ""

@@ -25,7 +25,7 @@ from package.codelists import (
     TimeSeriesType,
     TimeSeriesQuality,
 )
-from package.constants import ResultTableColName, DATABASE_NAME, RESULT_TABLE_NAME
+from package.constants import ResultTableColName, OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
 from package.schemas import results_schema
 
 
@@ -82,7 +82,7 @@ def test__migrated_table_rejects_invalid_data(
     # Act
     with pytest.raises(Exception) as ex:
         invalid_df.write.format("delta").option("mergeSchema", "false").insertInto(
-            f"{DATABASE_NAME}.{RESULT_TABLE_NAME}", overwrite=False
+            f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}", overwrite=False
         )
 
     # Assert: Do sufficient assertions to be confident that the expected violation has been caught
@@ -129,7 +129,7 @@ def test__migrated_table_accepts_valid_data(
 
     # Act and assert: Expectation is that no exception is raised
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
-        f"{DATABASE_NAME}.{RESULT_TABLE_NAME}"
+        f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}"
     )
 
 
@@ -156,7 +156,7 @@ def test__migrated_table_accepts_enum_value(
 
     # Act and assert: Expectation is that no exception is raised
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
-        f"{DATABASE_NAME}.{RESULT_TABLE_NAME}"
+        f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}"
     )
 
 
@@ -184,11 +184,11 @@ def test__migrated_table_does_not_round_valid_decimal(
 
     # Act
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
-        f"{DATABASE_NAME}.{RESULT_TABLE_NAME}"
+        f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}"
     )
 
     # Assert
-    actual_df = spark.read.table(f"{DATABASE_NAME}.{RESULT_TABLE_NAME}").where(
+    actual_df = spark.read.table(f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}").where(
         col(ResultTableColName.batch_id) == batch_id
     )
     assert actual_df.collect()[0].quantity == quantity
@@ -203,8 +203,8 @@ def test__result_table__is_not_managed(
     "To manage data life cycle independently of database, save data to a location that is not nested under any database locations."
     Thus we check whether the table is managed by comparing its location to the location of the database/schema.
     """
-    database_details = spark.sql(f"DESCRIBE DATABASE {DATABASE_NAME}")
-    table_details = spark.sql(f"DESCRIBE DETAIL {DATABASE_NAME}.{RESULT_TABLE_NAME}")
+    database_details = spark.sql(f"DESCRIBE DATABASE {OUTPUT_DATABASE_NAME}")
+    table_details = spark.sql(f"DESCRIBE DETAIL {OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}")
 
     database_location = database_details.where(
         col("info_name") == "Location"

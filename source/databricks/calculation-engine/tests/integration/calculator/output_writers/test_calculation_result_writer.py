@@ -28,7 +28,7 @@ from package.codelists import (
     TimeSeriesQuality,
     TimeSeriesType,
 )
-from package.constants import Colname, ResultTableColName, DATABASE_NAME, RESULT_TABLE_NAME
+from package.constants import Colname, ResultTableColName, OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
 from package.output_writers.calculation_result_writer import CalculationResultWriter, _get_column_group_for_calculation_result_id
 from tests.contract_utils import assert_contract_matches_schema, get_column_names_from_contract
 from typing import Any
@@ -47,7 +47,7 @@ DEFAULT_AGGREGATION_LEVEL = AggregationLevel.total_ga
 DEFAULT_TIME_WINDOW_START = datetime(2020, 1, 1, 0, 0)
 DEFAULT_TIME_WINDOW_END = datetime(2020, 1, 1, 1, 0)
 
-TABLE_NAME = f"{DATABASE_NAME}.{RESULT_TABLE_NAME}"
+TABLE_NAME = f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}"
 
 
 def _create_result_row(

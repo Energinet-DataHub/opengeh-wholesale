@@ -29,8 +29,8 @@ from package.codelists.process_type import ProcessType
 from package.constants import Colname
 from package.schemas import time_series_point_schema, metering_point_period_schema
 from package.output_writers.calculation_result_writer import (
-    DATABASE_NAME,
-    RESULT_TABLE_NAME,
+    OUTPUT_DATABASE_NAME,
+    ENERGY_RESULT_TABLE_NAME,
 )
 
 
@@ -137,7 +137,7 @@ def balance_fixing_results_df(
     spark: SparkSession,
     executed_balance_fixing: None,
 ) -> DataFrame:
-    results_df = spark.read.table(f"{DATABASE_NAME}.{RESULT_TABLE_NAME}")
+    results_df = spark.read.table(f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}")
     return results_df.where(F.col(Colname.batch_id) == C.executed_balance_fixing_batch_id)
 
 
@@ -146,5 +146,5 @@ def wholesale_fixing_results_df(
     spark: SparkSession,
     executed_wholesale_fixing: None,
 ) -> DataFrame:
-    results_df = spark.read.table(f"{DATABASE_NAME}.{RESULT_TABLE_NAME}")
+    results_df = spark.read.table(f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}")
     return results_df.where(F.col(Colname.batch_id) == C.executed_wholesale_batch_id)

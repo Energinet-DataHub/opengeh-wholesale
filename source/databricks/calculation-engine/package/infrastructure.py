@@ -49,9 +49,6 @@ def get_basis_data_path(
         return f"{basis_data_root_path}/grouping=es_ga/grid_area={grid_area}/energy_supplier_gln={energy_supplier_id}"
 
 
-def get_calculation_output_folder() -> str:
-    return OUTPUT_FOLDER
-
 
 def get_batch_relative_path(batch_id: str) -> str:
     return f"{OUTPUT_FOLDER}/batch_id={batch_id}"
