@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from pyspark.sql import DataFrame, SparkSession
-
+from package.constants import INPUT_DATABASE_NAME, 
 
 class CalculationInputReader:
     def __init__(
@@ -35,3 +35,6 @@ class CalculationInputReader:
             self.__spark.read.option("mode", "FAILFAST").format("delta")
             .load(f"{self.__wholesale_container_path}/calculation_input/time_series_points")
         )
+
+    def read_charge_links_periods(self) -> DataFrame:
+        return self.__spark.read.table(f"{DATABASE_NAME}.{WHOLESALE_TABLE_NAME}")
