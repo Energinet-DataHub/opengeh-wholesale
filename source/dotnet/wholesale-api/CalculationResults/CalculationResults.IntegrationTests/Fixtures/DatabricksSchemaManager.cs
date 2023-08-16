@@ -112,8 +112,8 @@ public class DatabricksSchemaManager
     private string Replacements(string sqlStatement)
     {
         return sqlStatement
-            .Replace("{DATABASE_NAME}", SchemaName)
-            .Replace("{RESULT_TABLE_NAME}", DeltaTableOptions.Value.RESULT_TABLE_NAME)
+            .Replace("{OUTPUT_DATABASE_NAME}", SchemaName)
+            .Replace("{ENERGY_RESULT_TABLE_NAME}", DeltaTableOptions.Value.RESULT_TABLE_NAME)
             .Replace("{TEST}", "--");
     }
 

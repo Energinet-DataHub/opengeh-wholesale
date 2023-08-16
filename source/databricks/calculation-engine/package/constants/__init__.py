@@ -12,13 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-INPUT_DATABASE_NAME = "wholesale"
-CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods"
-CHARGE_MASTER_DATA_PERIODS_TABLE_NAME = "charge_masterdata_periods"
-CHARGE_PRICE_POINTS_TABLE_NAME = "charge_price_points"
-
-DATABASE_NAME = "wholesale_output"
-RESULT_TABLE_NAME = "result"
-
-TEST = ""
+from .colname import Colname
+from .basis_data_colname import BasisDataColname
+from .partition_key_name import PartitionKeyName
+from .result_table_col_name import ResultTableColName
