@@ -6,7 +6,6 @@ on:
       - main
     paths:
       - wholesale/**
-      - .github/workflows/wholesale-ci.yml
       - .github/workflows/wholesale-cd.yml
       - .github/workflows/infrastructure-build-prerelease.yml
       - .github/workflows/infrastructure-validate.yml

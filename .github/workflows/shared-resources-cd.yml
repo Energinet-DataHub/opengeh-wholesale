@@ -6,7 +6,6 @@ on:
       - main
     paths:
       - shared-resources/**
-      - .github/workflows/shared-resources-ci.yml
       - .github/workflows/shared-resources-cd.yml
       - .github/workflows/shared-resources-infrastructure-build-prerelease.yml
       - .github/workflows/infrastructure-validate.yml
