@@ -16,4 +16,3 @@ from .colname import Colname
 from .basis_data_colname import BasisDataColname
 from .partition_key_name import PartitionKeyName
 from .result_table_col_name import ResultTableColName
-
