@@ -1,7 +1,7 @@
-CREATE DATABASE IF NOT EXISTS {DATABASE_NAME}
+CREATE DATABASE IF NOT EXISTS {OUTPUT_DATABASE_NAME}
 COMMENT 'Contains result data from wholesale domain.'
 GO
-CREATE TABLE IF NOT EXISTS {DATABASE_NAME}.{RESULT_TABLE_NAME}
+CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}
 (
     grid_area STRING NOT NULL,
     energy_supplier_id STRING,
@@ -23,4 +23,4 @@ CREATE TABLE IF NOT EXISTS {DATABASE_NAME}.{RESULT_TABLE_NAME}
 USING DELTA
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used. 
 -- In the production it is set to empty and the respective location is used. This means the production tables won't be deleted if the schema is.    
-{TEST}LOCATION '{CONTAINER_PATH}/{OUTPUT_FOLDER}/{RESULT_TABLE_NAME}' 
+{TEST}LOCATION '{CONTAINER_PATH}/{OUTPUT_FOLDER}/{ENERGY_RESULT_TABLE_NAME}' 
