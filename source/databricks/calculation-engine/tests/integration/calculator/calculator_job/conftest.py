@@ -27,11 +27,11 @@ import package.calculation_input.grid_loss_responsible as grid_loss_responsible
 from package.calculator_args import CalculatorArgs
 from package.codelists.process_type import ProcessType
 from package.constants import Colname
-from package.schemas import time_series_point_schema, metering_point_period_schema
-from package.output_writers.calculation_result_writer import (
+from package.infrastructure import (
     OUTPUT_DATABASE_NAME,
     ENERGY_RESULT_TABLE_NAME,
 )
+from package.schemas import time_series_point_schema, metering_point_period_schema
 
 
 @pytest.fixture(scope="session")

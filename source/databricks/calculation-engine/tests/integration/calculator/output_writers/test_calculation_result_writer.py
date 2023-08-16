@@ -28,7 +28,8 @@ from package.codelists import (
     TimeSeriesQuality,
     TimeSeriesType,
 )
-from package.constants import Colname, ResultTableColName, OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
+from package.constants import Colname, ResultTableColName
+from package.infrastructure import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
 from package.output_writers.calculation_result_writer import CalculationResultWriter, _get_column_group_for_calculation_result_id
 from tests.contract_utils import assert_contract_matches_schema, get_column_names_from_contract
 from typing import Any

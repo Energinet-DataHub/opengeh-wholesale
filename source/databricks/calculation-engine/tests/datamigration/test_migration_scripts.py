@@ -25,7 +25,8 @@ from package.codelists import (
     TimeSeriesType,
     TimeSeriesQuality,
 )
-from package.constants import ResultTableColName, OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
+from package.constants import ResultTableColName
+from package.infrastructure import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
 from package.schemas import results_schema
 
 

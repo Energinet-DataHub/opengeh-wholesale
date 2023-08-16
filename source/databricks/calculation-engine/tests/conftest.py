@@ -28,7 +28,7 @@ from typing import Generator, Callable, Optional
 from package.datamigration.migration import _apply_migration
 from package.datamigration.uncommitted_migrations import _get_all_migrations
 from package.datamigration.migration_script_args import MigrationScriptArgs
-from package.output_writers.calculation_result_writer import OUTPUT_DATABASE_NAME
+from package.infrastructure import OUTPUT_DATABASE_NAME
 
 
 @pytest.fixture(scope="session")

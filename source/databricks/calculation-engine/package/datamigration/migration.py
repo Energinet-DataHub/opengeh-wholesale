@@ -23,7 +23,7 @@ from package.infrastructure import WHOLESALE_CONTAINER_NAME, OUTPUT_FOLDER
 from package.storage_account_access.data_lake_file_manager import DataLakeFileManager
 from .migration_script_args import MigrationScriptArgs
 from .uncommitted_migrations import get_uncommitted_migrations
-from package.constants import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME, TEST
+from package.infrastructure import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME, TEST
 import package.datamigration.constants as c
 
 

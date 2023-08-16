@@ -17,6 +17,10 @@
 from typing import Union
 from package.codelists import BasisDataType
 
+OUTPUT_DATABASE_NAME = "wholesale_output"
+ENERGY_RESULT_TABLE_NAME = "result"
+TEST = ""
+
 WHOLESALE_CONTAINER_NAME = "wholesale"
 
 OUTPUT_FOLDER = "calculation-output"

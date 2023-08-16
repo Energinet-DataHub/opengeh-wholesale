@@ -19,7 +19,8 @@ import pyspark.sql.functions as F
 from pyspark.sql.window import Window
 
 from package.codelists import TimeSeriesType, AggregationLevel, ProcessType
-from package.constants import Colname, ResultTableColName, OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
+from package.constants import Colname, ResultTableColName
+from package.infrastructure import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
 
 
 class CalculationResultWriter:
