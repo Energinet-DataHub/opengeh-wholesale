@@ -13,28 +13,27 @@
 # limitations under the License.
 
 from pyspark.sql import DataFrame, SparkSession
-from package.constants import INPUT_DATABASE_NAME, 
+import package.infrastructure as infra
+
 
 class CalculationInputReader:
     def __init__(
         self,
         spark: SparkSession,
-        wholesale_container_path: str,
     ) -> None:
         self.__spark = spark
-        self.__wholesale_container_path = wholesale_container_path
-
+       
     def read_metering_point_periods(self) -> DataFrame:
-        return (
-            self.__spark.read.option("mode", "FAILFAST").format("delta")
-            .load(f"{self.__wholesale_container_path}/calculation_input/metering_point_periods")
-        )
+        return self.__spark.read.table(f"{infra.INPUT_DATABASE_NAME}.{infra.METERING_POINT_PERIODS_TABLE_NAME}")
 
     def read_time_series_points(self) -> DataFrame:
-        return (
-            self.__spark.read.option("mode", "FAILFAST").format("delta")
-            .load(f"{self.__wholesale_container_path}/calculation_input/time_series_points")
-        )
+        return self.__spark.read.table(f"{infra.INPUT_DATABASE_NAME}.{infra.TIME_SERIES_POINTS_TABLE_NAME}")
 
     def read_charge_links_periods(self) -> DataFrame:
-        return self.__spark.read.table(f"{DATABASE_NAME}.{WHOLESALE_TABLE_NAME}")
+        return self.__spark.read.table(f"{infra.INPUT_DATABASE_NAME}.{infra.CHARGE_LINK_PERIODS_TABLE_NAME}")
+
+    def read_charge_master_data_periods(self) -> DataFrame:
+        return self.__spark.read.table(f"{infra.INPUT_DATABASE_NAME}.{infra.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}")
+
+    def read_charge_price_points(self) -> DataFrame:
+        return self.__spark.read.table(f"{infra.INPUT_DATABASE_NAME}.{infra.CHARGE_PRICE_POINTS_TABLE_NAME}")
