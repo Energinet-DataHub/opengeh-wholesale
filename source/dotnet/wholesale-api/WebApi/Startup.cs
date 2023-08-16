@@ -25,6 +25,7 @@ using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Energinet.DataHub.Wholesale.WebApi.HealthChecks;
+using Energinet.DataHub.Wholesale.WebApi.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.OpenApi.Models;
@@ -107,6 +108,7 @@ public class Startup
         AddCorrelationContext(serviceCollection);
 
         serviceCollection.AddUserAuthentication<FrontendUser, FrontendUserProvider>();
+        serviceCollection.AddScoped<LoggingScopeMiddleware>();
     }
 
     public void Configure(IApplicationBuilder app)
@@ -133,6 +135,7 @@ public class Startup
             }
         });
 
+        app.UseMiddleware<LoggingScopeMiddleware>();
         app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();
