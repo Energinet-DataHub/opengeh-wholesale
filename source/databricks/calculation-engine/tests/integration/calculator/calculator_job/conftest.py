@@ -130,7 +130,7 @@ def balance_fixing_results_df(
     spark: SparkSession,
     executed_balance_fixing: None,
 ) -> DataFrame:
-    results_df = spark.read.table(f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}")
+    results_df = spark.read.table(f"{infra.OUTPUT_DATABASE_NAME}.{infra.ENERGY_RESULT_TABLE_NAME}")
     return results_df.where(F.col(Colname.batch_id) == C.executed_balance_fixing_batch_id)
 
 
@@ -139,5 +139,5 @@ def wholesale_fixing_results_df(
     spark: SparkSession,
     executed_wholesale_fixing: None,
 ) -> DataFrame:
-    results_df = spark.read.table(f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}")
+    results_df = spark.read.table(f"{infra.OUTPUT_DATABASE_NAME}.{infra.ENERGY_RESULT_TABLE_NAME}")
     return results_df.where(F.col(Colname.batch_id) == C.executed_wholesale_batch_id)
