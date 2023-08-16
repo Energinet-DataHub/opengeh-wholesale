@@ -15,6 +15,7 @@
 using System.ComponentModel.DataAnnotations;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Energinet.DataHub.Wholesale.WebApi.V3.SettlementReport;
@@ -42,6 +43,7 @@ public class SettlementReportController : V3ControllerBase
     [HttpGet("Download")]
     [MapToApiVersion(Version)]
     [BinaryContent]
+    [Authorize(Roles = Permissions.SettlementsManage)]
     public Task DownloadSettlementReportAsync(
         [Required, FromQuery] string[] gridAreaCodes,
         [Required, FromQuery] ProcessType processType,
@@ -82,6 +84,7 @@ public class SettlementReportController : V3ControllerBase
     [HttpGet(Name = "GetSettlementReportAsStreamAsync")]
     [MapToApiVersion(Version)]
     [BinaryContent]
+    [Authorize(Roles = Permissions.SettlementsManage)]
     public async Task GetAsync([Required] Guid batchId, [Required] string gridAreaCode)
     {
         var outputStream = Response.BodyWriter.AsStream();
@@ -101,6 +104,7 @@ public class SettlementReportController : V3ControllerBase
     [HttpGet("ZippedBasisDataStream")]
     [MapToApiVersion(Version)]
     [BinaryContent]
+    [Authorize(Roles = Permissions.SettlementsManage)]
     public async Task<IActionResult> GetSettlementReportAsync([Required] Guid batchId)
     {
         var report = await _settlementReportClient.GetSettlementReportAsync(batchId).ConfigureAwait(false);
