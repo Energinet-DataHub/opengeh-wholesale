@@ -20,13 +20,12 @@ from package.calculation_input import get_metering_point_periods_df, get_grid_lo
 
 def get_calculation_input(
     spark: SparkSession,
-    wholesale_container_path: str,
     batch_period_start_datetime: datetime,
     batch_period_end_datetime: datetime,
     batch_grid_areas: list[str],
 ) -> Tuple[DataFrame, DataFrame, DataFrame]:
 
-    calculation_input_reader = CalculationInputReader(spark, wholesale_container_path)
+    calculation_input_reader = CalculationInputReader(spark)
 
     metering_point_periods_df = get_metering_point_periods_df(
         calculation_input_reader,

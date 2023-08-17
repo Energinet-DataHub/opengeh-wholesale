@@ -17,12 +17,18 @@
 from typing import Union
 from package.codelists import BasisDataType
 
+# Input database and tables
+INPUT_DATABASE_NAME = "wholesale"
+METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods"
+TIME_SERIES_POINTS_TABLE_NAME = "time_series_points"
+
+# Output database and tables
 OUTPUT_DATABASE_NAME = "wholesale_output"
 ENERGY_RESULT_TABLE_NAME = "result"
 TEST = ""
 
+# Paths
 WHOLESALE_CONTAINER_NAME = "wholesale"
-
 OUTPUT_FOLDER = "calculation-output"
 BASIS_DATA_FOLDER = "basis_data"
 
