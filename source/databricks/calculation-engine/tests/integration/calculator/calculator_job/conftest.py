@@ -27,10 +27,7 @@ import package.calculation_input.grid_loss_responsible as grid_loss_responsible
 from package.calculator_args import CalculatorArgs
 from package.codelists.process_type import ProcessType
 from package.constants import Colname
-from package.infrastructure import (
-    OUTPUT_DATABASE_NAME,
-    ENERGY_RESULT_TABLE_NAME,
-)
+import package.infrastructure as infra
 from package.schemas import time_series_point_schema, metering_point_period_schema
 
 
@@ -72,27 +69,30 @@ def grid_loss_responsible_test_data(
 def test_data_written_to_delta_tables(
     spark: SparkSession,
     test_files_folder_path: str,
-    data_lake_path: str,
 ) -> None:
+
+    spark.sql(f"CREATE DATABASE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}")
+    spark.sql(f"CREATE TABLE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}.{infra.METERING_POINT_PERIODS_TABLE_NAME} USING DELTA")
+    spark.sql(f"CREATE TABLE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}.{infra.TIME_SERIES_POINTS_TABLE_NAME} USING DELTA")
 
     metering_points_df = spark.read.csv(
         f"{test_files_folder_path}/MeteringPointsPeriods.csv",
         header=True,
         schema=metering_point_period_schema,
     )
-    metering_points_df.write.format("delta").save(
-        f"{data_lake_path}/calculation_input/metering_point_periods",
-        mode="overwrite",
+
+    metering_points_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(
+        f"{infra.INPUT_DATABASE_NAME}.{infra.METERING_POINT_PERIODS_TABLE_NAME}"
     )
+
     timeseries_points_df = spark.read.csv(
         f"{test_files_folder_path}/TimeSeriesPoints.csv",
         header=True,
         schema=time_series_point_schema,
     )
 
-    timeseries_points_df.write.format("delta").save(
-        f"{data_lake_path}/calculation_input/time_series_points",
-        mode="overwrite",
+    timeseries_points_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(
+        f"{infra.INPUT_DATABASE_NAME}.{infra.TIME_SERIES_POINTS_TABLE_NAME}"
     )
 
 
@@ -137,7 +137,7 @@ def balance_fixing_results_df(
     spark: SparkSession,
     executed_balance_fixing: None,
 ) -> DataFrame:
-    results_df = spark.read.table(f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}")
+    results_df = spark.read.table(f"{infra.OUTPUT_DATABASE_NAME}.{infra.ENERGY_RESULT_TABLE_NAME}")
     return results_df.where(F.col(Colname.batch_id) == C.executed_balance_fixing_batch_id)
 
 
@@ -146,5 +146,5 @@ def wholesale_fixing_results_df(
     spark: SparkSession,
     executed_wholesale_fixing: None,
 ) -> DataFrame:
-    results_df = spark.read.table(f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}")
+    results_df = spark.read.table(f"{infra.OUTPUT_DATABASE_NAME}.{infra.ENERGY_RESULT_TABLE_NAME}")
     return results_df.where(F.col(Colname.batch_id) == C.executed_wholesale_batch_id)
