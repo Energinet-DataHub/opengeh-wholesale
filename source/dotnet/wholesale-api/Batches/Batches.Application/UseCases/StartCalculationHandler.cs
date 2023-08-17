@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Batches.Application.UseCases;
 
@@ -21,12 +22,18 @@ public class StartCalculationHandler : IStartCalculationHandler
     private readonly IBatchRepository _batchRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICalculationInfrastructureService _calculationInfrastructureService;
+    private readonly ILogger _logger;
 
-    public StartCalculationHandler(ICalculationInfrastructureService calculationInfrastructureService, IUnitOfWork unitOfWork, IBatchRepository batchRepository)
+    public StartCalculationHandler(
+        ICalculationInfrastructureService calculationInfrastructureService,
+        IUnitOfWork unitOfWork,
+        IBatchRepository batchRepository,
+        ILogger<StartCalculationHandler> logger)
     {
         _calculationInfrastructureService = calculationInfrastructureService;
         _unitOfWork = unitOfWork;
         _batchRepository = batchRepository;
+        _logger = logger;
     }
 
     public async Task StartAsync()
@@ -36,6 +43,8 @@ public class StartCalculationHandler : IStartCalculationHandler
         {
             await _calculationInfrastructureService.StartAsync(batch.Id).ConfigureAwait(false);
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
+
+            _logger.LogInformation("Calculation for batch {BatchId} started", batch.Id);
         }
     }
 }
