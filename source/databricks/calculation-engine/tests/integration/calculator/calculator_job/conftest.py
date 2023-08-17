@@ -81,7 +81,9 @@ def test_data_written_to_delta_tables(
         schema=metering_point_period_schema,
     )
 
-    metering_points_df.write.format("delta").mode("overwrite").saveAsTable(f"{infra.INPUT_DATABASE_NAME}.{infra.METERING_POINT_PERIODS_TABLE_NAME}")
+    metering_points_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(
+        f"{infra.INPUT_DATABASE_NAME}.{infra.METERING_POINT_PERIODS_TABLE_NAME}"
+    )
 
     timeseries_points_df = spark.read.csv(
         f"{test_files_folder_path}/TimeSeriesPoints.csv",
@@ -89,7 +91,9 @@ def test_data_written_to_delta_tables(
         schema=time_series_point_schema,
     )
 
-    timeseries_points_df.write.format("delta").mode("overwrite").saveAsTable(f"{infra.INPUT_DATABASE_NAME}.{infra.TIME_SERIES_POINTS_TABLE_NAME}")
+    timeseries_points_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(
+        f"{infra.INPUT_DATABASE_NAME}.{infra.TIME_SERIES_POINTS_TABLE_NAME}"
+    )
 
 
 @pytest.fixture(scope="session")
