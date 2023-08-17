@@ -31,7 +31,6 @@ def _start_calculator(args: CalculatorArgs, spark: SparkSession) -> None:
 
     metering_point_periods_df, time_series_points_df, grid_loss_responsible_df = input.get_calculation_input(
         spark,
-        args.wholesale_container_path,
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
         args.batch_grid_areas,
