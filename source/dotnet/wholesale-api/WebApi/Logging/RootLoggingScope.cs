@@ -23,10 +23,11 @@ namespace Energinet.DataHub.Wholesale.WebApi.Logging;
 /// </summary>
 public class RootLoggingScope : LoggingScope
 {
-    public RootLoggingScope()
+    public RootLoggingScope(string domain)
     {
+        Add("Domain", domain);
         // Always log the application entry assembly in order to be able to identify the release
         // and/or source code origin of the deployed code writing the log entry.
-        Add("EntryAssembly", Assembly.GetEntryAssembly()?.FullName ?? "Unknown");
+        Add("ApplicationEntry", Assembly.GetEntryAssembly()?.FullName ?? "Unknown");
     }
 }

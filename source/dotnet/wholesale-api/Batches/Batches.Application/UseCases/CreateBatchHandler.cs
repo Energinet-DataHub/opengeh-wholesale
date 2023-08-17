@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Batches.Application.UseCases;
 
@@ -22,15 +23,18 @@ public class CreateBatchHandler : ICreateBatchHandler
     private readonly IBatchFactory _batchFactory;
     private readonly IBatchRepository _batchRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILogger _logger;
 
     public CreateBatchHandler(
         IBatchFactory batchFactory,
         IBatchRepository batchRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        ILogger<CreateBatchHandler> logger)
     {
         _batchFactory = batchFactory;
         _batchRepository = batchRepository;
         _unitOfWork = unitOfWork;
+        _logger = logger;
     }
 
     public async Task<Guid> HandleAsync(CreateBatchCommand command)
@@ -38,6 +42,8 @@ public class CreateBatchHandler : ICreateBatchHandler
         var batch = _batchFactory.Create(command.ProcessType, command.GridAreaCodes, command.StartDate, command.EndDate, command.CreatedByUserId);
         await _batchRepository.AddAsync(batch).ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
+
+        _logger.LogInformation("Batch created with id {BatchId}", batch.Id);
         return batch.Id;
     }
 }
