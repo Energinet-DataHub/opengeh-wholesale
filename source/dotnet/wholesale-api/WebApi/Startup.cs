@@ -34,6 +34,8 @@ namespace Energinet.DataHub.Wholesale.WebApi;
 
 public class Startup
 {
+    private const string DomainName = "wholesale";
+
     public Startup(IConfiguration configuration, IWebHostEnvironment environment)
     {
         Configuration = configuration;
@@ -108,7 +110,7 @@ public class Startup
         AddCorrelationContext(serviceCollection);
 
         serviceCollection.AddUserAuthentication<FrontendUser, FrontendUserProvider>();
-        serviceCollection.AddScoped<LoggingScopeMiddleware>();
+        serviceCollection.AddLoggingScope(DomainName);
     }
 
     public void Configure(IApplicationBuilder app)
@@ -135,7 +137,7 @@ public class Startup
             }
         });
 
-        app.UseMiddleware<LoggingScopeMiddleware>();
+        app.UseLoggingScope();
         app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();
