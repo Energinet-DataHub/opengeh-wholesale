@@ -69,8 +69,11 @@ def grid_loss_responsible_test_data(
 def test_data_written_to_delta_tables(
     spark: SparkSession,
     test_files_folder_path: str,
-    data_lake_path: str,
 ) -> None:
+
+    spark.sql(f"CREATE DATABASE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}")
+    spark.sql(f"CREATE TABLE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}.{infra.METERING_POINT_PERIODS_TABLE_NAME} USING DELTA")
+    spark.sql(f"CREATE TABLE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}.{infra.TIME_SERIES_POINTS_TABLE_NAME} USING DELTA")
 
     metering_points_df = spark.read.csv(
         f"{test_files_folder_path}/MeteringPointsPeriods.csv",
