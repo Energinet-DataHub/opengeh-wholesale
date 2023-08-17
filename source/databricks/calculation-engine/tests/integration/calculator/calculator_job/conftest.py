@@ -68,7 +68,7 @@ def grid_loss_responsible_test_data(
 
 
 @pytest.fixture(scope="session")
-def test_data_written_to_delta_tables(
+def metering_point_and_time_series_test_data_written_to_delta_tables(
     spark: SparkSession,
     test_files_folder_path: str,
 ) -> None:
@@ -95,6 +95,13 @@ def test_data_written_to_delta_tables(
         f"{infra.INPUT_DATABASE_NAME}.{infra.TIME_SERIES_POINTS_TABLE_NAME}"
     )
 
+
+@pytest.fixture(scope="session")
+def charge_test_data_written_to_delta_tables(
+    spark: SparkSession,
+    test_files_folder_path: str,
+    test_data_for_energy_calculation_written_to_delta_tables: None
+) -> None:
     # Charge master data periods
     charge_master_data_periods_df = spark.read.csv(
         f"{test_files_folder_path}/ChargeMasterDataPeriods.csv",
@@ -134,7 +141,7 @@ def executed_balance_fixing(
     spark: SparkSession,
     calculator_args_balance_fixing: CalculatorArgs,
     migrations_executed: None,
-    test_data_written_to_delta_tables: None,
+    metering_point_and_time_series_test_data_written_to_delta_tables: None,
     grid_loss_responsible_test_data: DataFrame,
 ) -> None:
     """Execute the calculator job.
@@ -152,7 +159,8 @@ def executed_wholesale_fixing(
     spark: SparkSession,
     calculator_args_wholesale_fixing: CalculatorArgs,
     migrations_executed: None,
-    test_data_written_to_delta_tables: None,
+    metering_point_and_time_series_test_data_written_to_delta_tables: None,
+    charge_test_data_written_to_delta_tables: None,
     grid_loss_responsible_test_data: DataFrame,
 ) -> None:
     """Execute the calculator job.
