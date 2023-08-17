@@ -34,7 +34,7 @@ This is because most periods will have a to-date prior to the calculation period
 
 The table data must always contain updated periods.
 """
-charge_link_period_schema = StructType(
+charge_link_periods_schema = StructType(
     [
         # ID of the charge
         # The ID is only guaranteed to be unique for a specific actor and charge type.

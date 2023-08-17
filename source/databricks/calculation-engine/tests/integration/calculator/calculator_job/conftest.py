@@ -28,7 +28,9 @@ from package.calculator_args import CalculatorArgs
 from package.codelists.process_type import ProcessType
 from package.constants import Colname
 import package.infrastructure as infra
-from package.schemas import time_series_point_schema, metering_point_period_schema
+from package.schemas import (
+    time_series_point_schema, metering_point_period_schema, charge_master_data_periods_schema, charge_price_points_schema, charge_link_periods_schema
+)
 
 
 @pytest.fixture(scope="session")
@@ -71,10 +73,7 @@ def test_data_written_to_delta_tables(
     test_files_folder_path: str,
 ) -> None:
 
-    spark.sql(f"CREATE DATABASE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}")
-    spark.sql(f"CREATE TABLE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}.{infra.METERING_POINT_PERIODS_TABLE_NAME} USING DELTA")
-    spark.sql(f"CREATE TABLE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}.{infra.TIME_SERIES_POINTS_TABLE_NAME} USING DELTA")
-
+    # Metering point periods
     metering_points_df = spark.read.csv(
         f"{test_files_folder_path}/MeteringPointsPeriods.csv",
         header=True,
@@ -85,6 +84,7 @@ def test_data_written_to_delta_tables(
         f"{infra.INPUT_DATABASE_NAME}.{infra.METERING_POINT_PERIODS_TABLE_NAME}"
     )
 
+    # Time series points
     timeseries_points_df = spark.read.csv(
         f"{test_files_folder_path}/TimeSeriesPoints.csv",
         header=True,
@@ -93,6 +93,39 @@ def test_data_written_to_delta_tables(
 
     timeseries_points_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(
         f"{infra.INPUT_DATABASE_NAME}.{infra.TIME_SERIES_POINTS_TABLE_NAME}"
+    )
+
+    # Charge master data periods
+    charge_master_data_periods_df = spark.read.csv(
+        f"{test_files_folder_path}/ChargeMasterDataPeriods.csv",
+        header=True,
+        schema=charge_master_data_periods_schema,
+    )
+
+    charge_master_data_periods_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(
+        f"{infra.INPUT_DATABASE_NAME}.{infra.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}"
+    )
+
+    # Charge link periods
+    charge_links_periods_df = spark.read.csv(
+        f"{test_files_folder_path}/ChargeLinksPeriods.csv",
+        header=True,
+        schema=charge_link_periods_schema,
+    )
+
+    charge_links_periods_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(
+        f"{infra.INPUT_DATABASE_NAME}.{infra.CHARGE_LINK_PERIODS_TABLE_NAME}"
+    )
+
+    # Charge price points
+    charge_prices_points_df = spark.read.csv(
+        f"{test_files_folder_path}/ChargePricePoints.csv",
+        header=True,
+        schema=charge_price_points_schema,
+    )
+
+    charge_prices_points_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(
+        f"{infra.INPUT_DATABASE_NAME}.{infra.CHARGE_PRICE_POINTS_TABLE_NAME}"
     )
 
 
