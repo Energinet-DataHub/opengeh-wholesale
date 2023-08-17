@@ -28,12 +28,3 @@ class CalculationInputReader:
 
     def read_time_series_points(self) -> DataFrame:
         return self.__spark.read.table(f"{infra.INPUT_DATABASE_NAME}.{infra.TIME_SERIES_POINTS_TABLE_NAME}")
-
-    def read_charge_links_periods(self) -> DataFrame:
-        return self.__spark.read.table(f"{infra.INPUT_DATABASE_NAME}.{infra.CHARGE_LINK_PERIODS_TABLE_NAME}")
-
-    def read_charge_master_data_periods(self) -> DataFrame:
-        return self.__spark.read.table(f"{infra.INPUT_DATABASE_NAME}.{infra.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}")
-
-    def read_charge_price_points(self) -> DataFrame:
-        return self.__spark.read.table(f"{infra.INPUT_DATABASE_NAME}.{infra.CHARGE_PRICE_POINTS_TABLE_NAME}")
