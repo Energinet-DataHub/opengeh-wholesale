@@ -17,6 +17,7 @@ resource "databricks_sql_query" "duplicates_time_series_silver" {
       from silver.time_series as ts) as withRownumber
     where withRownumber.rownumber > 1
   EOT
+  parent         = "folders/${databricks_directory.shared_queries_dir.object_id}"
 }
 
 # alert for duplicates in silver.time_series
@@ -30,6 +31,7 @@ resource "databricks_sql_alert" "duplicates_time_series_silver" {
     value  = "0"
     muted  = false
   }
+  parent         = "folders/${databricks_directory.shared_alerts_dir.object_id}"
 }
 
 # job for duplicates in silver.time_series
@@ -68,6 +70,7 @@ resource "databricks_sql_query" "duplicates_time_series_gold" {
       from gold.time_series_points as ts) as withRownumber
     where withRownumber.rownumber > 1
   EOT
+  parent         = "folders/${databricks_directory.shared_queries_dir.object_id}"
 }
 
 # alert for duplicates in gold.time_series_points
@@ -81,6 +84,7 @@ resource "databricks_sql_alert" "duplicates_time_series_gold" {
     value  = "0"
     muted  = false
   }
+  parent         = "folders/${databricks_directory.shared_alerts_dir.object_id}"
 }
 
 # job for duplicates in wholesale.time_series_points
@@ -119,6 +123,7 @@ resource "databricks_sql_query" "duplicates_time_series_wholesale" {
       from wholesale.time_series_points as ts) as withRownumber
     where withRownumber.rownumber > 1
   EOT
+  parent         = "folders/${databricks_directory.shared_queries_dir.object_id}"
 }
 
 # alert for duplicates in wholesale.time_series_points
@@ -132,6 +137,7 @@ resource "databricks_sql_alert" "duplicates_time_series_wholesale" {
     value  = "0"
     muted  = false
   }
+  parent         = "folders/${databricks_directory.shared_alerts_dir.object_id}"
 }
 
 # job for duplicates in wholesale.time_series_points
@@ -170,6 +176,7 @@ resource "databricks_sql_query" "duplicates_time_series_eloverblik" {
     from eloverblik.eloverblik_time_series_points as ets) as withRownumber
   where withRownumber.rownumber > 1
   EOT
+  parent         = "folders/${databricks_directory.shared_queries_dir.object_id}"
 }
 
 # alert for duplicates in eloverblik.time_series_points
@@ -183,6 +190,7 @@ resource "databricks_sql_alert" "duplicates_time_series_eloverblik" {
     value  = "0"
     muted  = false
   }
+  parent         = "folders/${databricks_directory.shared_alerts_dir.object_id}"
 }
 
 # job for duplicates in eloverblik.time_series_points
@@ -221,6 +229,7 @@ resource "databricks_sql_query" "duplicates_metering_points_gold" {
     from gold.metering_points as mp) as withRownumber
   where withRownumber.rownumber > 1
   EOT
+  parent         = "folders/${databricks_directory.shared_queries_dir.object_id}"
 }
 
 # alert for duplicates in gold.metering_points
@@ -234,6 +243,7 @@ resource "databricks_sql_alert" "duplicates_metering_points_gold" {
     value  = "0"
     muted  = false
   }
+  parent         = "folders/${databricks_directory.shared_alerts_dir.object_id}"
 }
 
 # job for duplicates in gold.metering_points
@@ -272,6 +282,7 @@ resource "databricks_sql_query" "duplicates_metering_point_periods_wholesale" {
     from wholesale.metering_point_periods as mp) as withRownumber
     where withRownumber.rownumber > 1
   EOT
+  parent         = "folders/${databricks_directory.shared_queries_dir.object_id}"
 }
 
 # alert for duplicates in wholesale.metering_point_periods
@@ -285,6 +296,7 @@ resource "databricks_sql_alert" "duplicates_metering_point_periods_wholesale" {
     value  = "0"
     muted  = false
   }
+  parent         = "folders/${databricks_directory.shared_alerts_dir.object_id}"
 }
 
 # job for duplicates in wholesale.metering_point_periods

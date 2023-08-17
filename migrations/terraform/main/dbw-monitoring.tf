@@ -13,6 +13,7 @@ resource "databricks_sql_query" "monitor_wholesale_time_series" {
   query          = <<EOT
     select case when count(*) = 0 then raise_error("table is empty") end from wholesale.time_series_points;
   EOT
+  parent         = "folders/${databricks_directory.shared_queries_dir.object_id}"
 }
 
 # query for monitor_wholesale_metering_points
@@ -22,6 +23,7 @@ resource "databricks_sql_query" "monitor_wholesale_metering_points" {
   query          = <<EOT
     select case when count(*) = 0 then raise_error("table is empty") end from wholesale.metering_point_periods;
   EOT
+  parent         = "folders/${databricks_directory.shared_queries_dir.object_id}"
 }
 
 # query for monitor_eloverblik_time_series
@@ -31,6 +33,7 @@ resource "databricks_sql_query" "monitor_eloverblik_time_series" {
   query          = <<EOT
     select case when count(*) = 0 then raise_error("table is empty") end from eloverblik.eloverblik_time_series_points
   EOT
+  parent         = "folders/${databricks_directory.shared_queries_dir.object_id}"
 }
 
 # job for monitor_wholesale_time_series
