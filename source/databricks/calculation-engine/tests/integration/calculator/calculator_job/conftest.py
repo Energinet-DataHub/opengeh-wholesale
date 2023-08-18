@@ -124,7 +124,7 @@ def charge_input_data_written_to_delta_tables(
     # Charge master data periods
     spark.sql(
         f"CREATE TABLE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}.{infra.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME} USING DELTA \
-            LOCATION '{data_lake_path}/calculation_input/metering_point_periods'"
+            LOCATION '{data_lake_path}/calculation_input/charge_master_data_periods'"
     )
 
     charge_master_data_periods_df = spark.read.csv(
