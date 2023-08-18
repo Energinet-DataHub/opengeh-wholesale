@@ -68,15 +68,25 @@ def grid_loss_responsible_test_data(
 
 
 @pytest.fixture(scope="session")
-def metering_point_and_time_series_test_data_written_to_delta_tables(
+def input_database_created(
     spark: SparkSession,
-    test_files_folder_path: str,
 ) -> None:
     spark.sql(f"CREATE DATABASE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}")
-    spark.sql(f"CREATE TABLE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}.{infra.METERING_POINT_PERIODS_TABLE_NAME} USING DELTA")
-    spark.sql(f"CREATE TABLE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}.{infra.TIME_SERIES_POINTS_TABLE_NAME} USING DELTA")
 
+
+@pytest.fixture(scope="session")
+def metering_points_and_time_series_input_data_written_to_delta_tables(
+    spark: SparkSession,
+    test_files_folder_path: str,
+    input_database_created: None,
+    data_lake_path: str
+) -> None:
     # Metering point periods
+    spark.sql(
+        f"CREATE TABLE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}.{infra.METERING_POINT_PERIODS_TABLE_NAME} USING DELTA \
+            LOCATION '{data_lake_path}/calculation_input/metering_point_periods'"
+    )
+
     metering_points_df = spark.read.csv(
         f"{test_files_folder_path}/MeteringPointsPeriods.csv",
         header=True,
@@ -88,6 +98,11 @@ def metering_point_and_time_series_test_data_written_to_delta_tables(
     )
 
     # Time series points
+    spark.sql(
+        f"CREATE TABLE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}.{infra.TIME_SERIES_POINTS_TABLE_NAME} USING DELTA \
+            LOCATION '{data_lake_path}/calculation_input/time_series_points'"
+    )
+
     timeseries_points_df = spark.read.csv(
         f"{test_files_folder_path}/TimeSeriesPoints.csv",
         header=True,
@@ -100,12 +115,18 @@ def metering_point_and_time_series_test_data_written_to_delta_tables(
 
 
 @pytest.fixture(scope="session")
-def charge_test_data_written_to_delta_tables(
+def charge_input_data_written_to_delta_tables(
     spark: SparkSession,
     test_files_folder_path: str,
-    test_data_for_energy_calculation_written_to_delta_tables: None
+    input_database_created: None,
+    data_lake_path: str
 ) -> None:
     # Charge master data periods
+    spark.sql(
+        f"CREATE TABLE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}.{infra.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME} USING DELTA \
+            LOCATION '{data_lake_path}/calculation_input/metering_point_periods'"
+    )
+
     charge_master_data_periods_df = spark.read.csv(
         f"{test_files_folder_path}/ChargeMasterDataPeriods.csv",
         header=True,
@@ -117,8 +138,13 @@ def charge_test_data_written_to_delta_tables(
     )
 
     # Charge link periods
+    spark.sql(
+        f"CREATE TABLE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}.{infra.CHARGE_LINK_PERIODS_TABLE_NAME} USING DELTA \
+            LOCATION '{data_lake_path}/calculation_input/charge_link_periods'"
+    )
+
     charge_links_periods_df = spark.read.csv(
-        f"{test_files_folder_path}/ChargeLinksPeriods.csv",
+        f"{test_files_folder_path}/ChargeLinkPeriods.csv",
         header=True,
         schema=charge_link_periods_schema,
     )
@@ -128,6 +154,11 @@ def charge_test_data_written_to_delta_tables(
     )
 
     # Charge price points
+    spark.sql(
+        f"CREATE TABLE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}.{infra.CHARGE_PRICE_POINTS_TABLE_NAME} USING DELTA \
+            LOCATION '{data_lake_path}/calculation_input/charge_price_points'"
+    )
+
     charge_prices_points_df = spark.read.csv(
         f"{test_files_folder_path}/ChargePricePoints.csv",
         header=True,
@@ -144,7 +175,7 @@ def executed_balance_fixing(
     spark: SparkSession,
     calculator_args_balance_fixing: CalculatorArgs,
     migrations_executed: None,
-    metering_point_and_time_series_test_data_written_to_delta_tables: None,
+    metering_points_and_time_series_input_data_written_to_delta_tables: None,
     grid_loss_responsible_test_data: DataFrame,
 ) -> None:
     """Execute the calculator job.
@@ -162,8 +193,8 @@ def executed_wholesale_fixing(
     spark: SparkSession,
     calculator_args_wholesale_fixing: CalculatorArgs,
     migrations_executed: None,
-    metering_point_and_time_series_test_data_written_to_delta_tables: None,
-    charge_test_data_written_to_delta_tables: None,
+    metering_points_and_time_series_input_data_written_to_delta_tables: None,
+    charge_input_data_written_to_delta_tables: None,
     grid_loss_responsible_test_data: DataFrame,
 ) -> None:
     """Execute the calculator job.
