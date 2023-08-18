@@ -46,7 +46,7 @@ def get_tariff_charges(
         charge_links,
         metering_points,
         market_roles,
-        ChargeType.TARIFF,
+        ChargeType.TARIFF.value,
     )
 
     # group by time series on metering point id and resolution and sum quantity
