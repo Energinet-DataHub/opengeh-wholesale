@@ -22,7 +22,7 @@ class CalculationInputReader:
         spark: SparkSession,
     ) -> None:
         self.__spark = spark
-       
+
     def read_metering_point_periods(self) -> DataFrame:
         return self.__spark.read.table(f"{infra.INPUT_DATABASE_NAME}.{infra.METERING_POINT_PERIODS_TABLE_NAME}")
 

@@ -16,7 +16,6 @@ namespace Energinet.DataHub.Wholesale.WebApi.Logging;
 
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 
 /// <summary>
 /// Middleware for setting up the root logging scope for ASP.NET Core request logging.
@@ -24,17 +23,18 @@ using Microsoft.Extensions.Logging;
 /// </summary>
 public class LoggingScopeMiddleware : IMiddleware
 {
-    private readonly ILogger<LoggingScopeMiddleware> _logger;
+    private readonly ILogger _logger;
+    private readonly RootLoggingScope _rootLoggingScope;
 
-    public LoggingScopeMiddleware(ILogger<LoggingScopeMiddleware> logger)
+    public LoggingScopeMiddleware(ILogger<LoggingScopeMiddleware> logger, RootLoggingScope rootLoggingScope)
     {
         _logger = logger;
+        _rootLoggingScope = rootLoggingScope;
     }
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        var scope = new RootLoggingScope();
-        using (_logger.BeginScope(scope))
+        using (_logger.BeginScope(_rootLoggingScope))
         {
             await next(context).ConfigureAwait(false);
         }
