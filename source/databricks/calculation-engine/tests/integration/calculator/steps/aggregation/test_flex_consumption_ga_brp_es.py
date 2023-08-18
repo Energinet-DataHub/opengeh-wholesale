@@ -42,7 +42,7 @@ e_20 = MeteringPointType.EXCHANGE.value
 e_17 = MeteringPointType.CONSUMPTION.value
 e_18 = MeteringPointType.PRODUCTION.value
 e_02 = SettlementMethod.NON_PROFILED.value
-d_01 = SettlementMethod.flex.value
+d_01 = SettlementMethod.FLEX.value
 
 # Default time series data point values
 default_point_type = e_17
@@ -253,7 +253,7 @@ def test_flex_consumption_test_filter_by_domain_is_present(
     aggregated_df = _aggregate_per_ga_and_brp_and_es(
         df,
         MeteringPointType.CONSUMPTION,
-        SettlementMethod.flex,
+        SettlementMethod.FLEX,
     )
     assert aggregated_df.count() == 1
 

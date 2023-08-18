@@ -33,7 +33,7 @@ def aggregate_sum_and_set_quality(
             Colname.quality,
             F.when(
                 F.array_contains(
-                    F.col(qualities_col_name), F.lit(TimeSeriesQuality.missing.value)
+                    F.col(qualities_col_name), F.lit(TimeSeriesQuality.MISSING.value)
                 )
                 | F.array_contains(
                     F.col(qualities_col_name), F.lit(TimeSeriesQuality.INCOMPLETE.value)

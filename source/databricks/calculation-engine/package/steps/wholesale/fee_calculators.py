@@ -37,7 +37,7 @@ def filter_on_metering_point_type_and_settlement_method(
 ) -> DataFrame:
     charges_flex_consumption = fee_charges.filter(
         col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value
-    ).filter(col(Colname.settlement_method) == SettlementMethod.flex.value)
+    ).filter(col(Colname.settlement_method) == SettlementMethod.FLEX.value)
     return charges_flex_consumption
 
 

@@ -234,7 +234,7 @@ def test_consumption_test_filter_by_domain_is_not_pressent(
     aggregated_df = _aggregate_per_ga_and_brp_and_es(
         df,
         MeteringPointType.CONSUMPTION,
-        SettlementMethod.flex,
+        SettlementMethod.FLEX,
     )
     assert aggregated_df.count() == 0
 

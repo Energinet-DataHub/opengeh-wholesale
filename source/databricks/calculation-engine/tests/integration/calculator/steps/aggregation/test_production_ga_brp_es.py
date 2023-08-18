@@ -436,7 +436,7 @@ def test__each_grid_area_has_a_sum(
         (
             TimeSeriesQuality.MEASURED.value,
             TimeSeriesQuality.ESTIMATED.value,
-            TimeSeriesQuality.missing.value,
+            TimeSeriesQuality.MISSING.value,
             TimeSeriesQuality.INCOMPLETE.value,
         ),
         (
@@ -481,7 +481,7 @@ def test__when_time_series_point_is_missing__quality_has_value_incomplete(
     df = enriched_time_series_factory().withColumn("quality", F.lit(None))
 
     result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
-    assert result_df.first().quality == TimeSeriesQuality.missing.value
+    assert result_df.first().quality == TimeSeriesQuality.MISSING.value
 
 
 def test__when_time_series_point_is_missing__quantity_is_0(

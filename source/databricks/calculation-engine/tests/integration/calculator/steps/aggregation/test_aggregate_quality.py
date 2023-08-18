@@ -135,8 +135,8 @@ def test_set_aggregated_quality_to_estimated_when_quality_within_hour_is_estimat
 ):
     df = test_data_factory(
         TimeSeriesQuality.ESTIMATED.value,
-        TimeSeriesQuality.missing.value,
-        TimeSeriesQuality.missing.value,
+        TimeSeriesQuality.MISSING.value,
+        TimeSeriesQuality.MISSING.value,
     )
 
     result_df = aggregate_quality(df)
@@ -152,8 +152,8 @@ def test_set_aggregated_quality_to_estimated_when_quality_within_hour_is_read_an
 ):
     df = test_data_factory(
         TimeSeriesQuality.MEASURED.value,
-        TimeSeriesQuality.missing.value,
-        TimeSeriesQuality.missing.value,
+        TimeSeriesQuality.MISSING.value,
+        TimeSeriesQuality.MISSING.value,
     )
 
     result_df = aggregate_quality(df)
@@ -169,8 +169,8 @@ def test_set_aggregated_quality_to_estimated_when_quality_within_hour_is_calcula
 ):
     df = test_data_factory(
         TimeSeriesQuality.CALCULATED.value,
-        TimeSeriesQuality.missing.value,
-        TimeSeriesQuality.missing.value,
+        TimeSeriesQuality.MISSING.value,
+        TimeSeriesQuality.MISSING.value,
     )
 
     result_df = aggregate_quality(df)

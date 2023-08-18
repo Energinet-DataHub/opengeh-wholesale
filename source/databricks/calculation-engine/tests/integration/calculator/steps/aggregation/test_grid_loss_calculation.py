@@ -41,10 +41,10 @@ default_obs_time = datetime.strptime(
 
 
 class AggregationMethod(Enum):
-    net_exchange = "net_exchange"
-    hourly_consumption = "hourly_consumption"
-    flex_consumption = "flex_consumption"
-    production = "production"
+    NET_EXCHANGE = "net_exchange"
+    HOURLY_CONSUMPTION = "hourly_consumption"
+    FLEX_CONSUMPTION = "flex_consumption"
+    PRODUCTION = "production"
 
 
 @pytest.fixture(scope="module")
@@ -98,7 +98,7 @@ def agg_result_factory(
     """
 
     def factory(agg_method: AggregationMethod) -> DataFrame:
-        if agg_method == AggregationMethod.net_exchange:
+        if agg_method == AggregationMethod.NET_EXCHANGE:
             pandas_df = pd.DataFrame(
                 {
                     Colname.grid_area: [],
@@ -125,7 +125,7 @@ def agg_result_factory(
                     ignore_index=True,
                 )
             return spark.createDataFrame(pandas_df, schema=agg_net_exchange_schema)
-        elif agg_method == AggregationMethod.hourly_consumption:
+        elif agg_method == AggregationMethod.HOURLY_CONSUMPTION:
             pandas_df = pd.DataFrame(
                 {
                     Colname.grid_area: [],
@@ -158,7 +158,7 @@ def agg_result_factory(
             return spark.createDataFrame(
                 pandas_df, schema=agg_consumption_and_production_schema
             )
-        elif agg_method == AggregationMethod.flex_consumption:
+        elif agg_method == AggregationMethod.FLEX_CONSUMPTION:
             pandas_df = pd.DataFrame(
                 {
                     Colname.grid_area: [],
@@ -191,7 +191,7 @@ def agg_result_factory(
             return spark.createDataFrame(
                 pandas_df, schema=agg_consumption_and_production_schema
             )
-        elif agg_method == AggregationMethod.production:
+        elif agg_method == AggregationMethod.PRODUCTION:
             pandas_df = pd.DataFrame(
                 {
                     Colname.grid_area: [],
@@ -512,16 +512,16 @@ def test_grid_loss_calculation(
     agg_result_factory: Callable[[AggregationMethod], DataFrame]
 ) -> None:
     net_exchange_per_ga = create_dataframe_from_aggregation_result_schema(
-        agg_result_factory(AggregationMethod.net_exchange)
+        agg_result_factory(AggregationMethod.NET_EXCHANGE)
     )
     non_profiled_consumption = create_dataframe_from_aggregation_result_schema(
-        agg_result_factory(AggregationMethod.hourly_consumption)
+        agg_result_factory(AggregationMethod.HOURLY_CONSUMPTION)
     )
     flex_consumption = create_dataframe_from_aggregation_result_schema(
-        agg_result_factory(AggregationMethod.flex_consumption)
+        agg_result_factory(AggregationMethod.FLEX_CONSUMPTION)
     )
     production = create_dataframe_from_aggregation_result_schema(
-        agg_result_factory(AggregationMethod.production)
+        agg_result_factory(AggregationMethod.PRODUCTION)
     )
 
     result = calculate_grid_loss(

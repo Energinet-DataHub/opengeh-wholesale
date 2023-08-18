@@ -310,7 +310,7 @@ def test_grid_area_total_consumption(agg_net_exchange_factory, agg_production_fa
         ),
         (
             TimeSeriesQuality.ESTIMATED.value,
-            TimeSeriesQuality.missing.value,
+            TimeSeriesQuality.MISSING.value,
             TimeSeriesQuality.ESTIMATED.value,
         ),
         (
@@ -319,12 +319,12 @@ def test_grid_area_total_consumption(agg_net_exchange_factory, agg_production_fa
             TimeSeriesQuality.ESTIMATED.value,
         ),
         (
-            TimeSeriesQuality.missing.value,
-            TimeSeriesQuality.missing.value,
+            TimeSeriesQuality.MISSING.value,
+            TimeSeriesQuality.MISSING.value,
             TimeSeriesQuality.ESTIMATED.value,
         ),
         (
-            TimeSeriesQuality.missing.value,
+            TimeSeriesQuality.MISSING.value,
             TimeSeriesQuality.MEASURED.value,
             TimeSeriesQuality.ESTIMATED.value,
         ),

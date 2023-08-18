@@ -48,7 +48,7 @@ def aggregate_quality(time_series_df: DataFrame) -> DataFrame:
             ).alias(temp_estimated_quality_count),
             # Count entries where quality is quantity missing (Quality=QM)
             count(
-                when(col(Colname.quality) == TimeSeriesQuality.missing.value, 1)
+                when(col(Colname.quality) == TimeSeriesQuality.MISSING.value, 1)
             ).alias(temp_quantity_missing_quality_count),
         )
         .withColumn(
@@ -120,11 +120,11 @@ def aggregate_total_consumption_quality(df: DataFrame) -> DataFrame:
             count(
                 when(
                     col(aggregated_production_quality)
-                    == TimeSeriesQuality.missing.value,
+                    == TimeSeriesQuality.MISSING.value,
                     1,
                 ).when(
                     col(aggregated_net_exchange_quality)
-                    == TimeSeriesQuality.missing.value,
+                    == TimeSeriesQuality.MISSING.value,
                     1,
                 )
             ).alias(temp_quantity_missing_quality_count),

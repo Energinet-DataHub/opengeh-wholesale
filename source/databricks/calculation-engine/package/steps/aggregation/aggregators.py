@@ -45,7 +45,7 @@ def aggregate_flex_consumption_ga_brp_es(enriched_time_series: DataFrame) -> Dat
     return _aggregate_per_ga_and_brp_and_es(
         enriched_time_series,
         MeteringPointType.CONSUMPTION,
-        SettlementMethod.flex,
+        SettlementMethod.FLEX,
     )
 
 
@@ -100,7 +100,7 @@ def _aggregate_per_ga_and_brp_and_es(
         .withColumn(
             Colname.quality,
             when(
-                col(Colname.quality).isNull(), TimeSeriesQuality.missing.value
+                col(Colname.quality).isNull(), TimeSeriesQuality.MISSING.value
             ).otherwise(col(Colname.quality)),
         )
         .select(
