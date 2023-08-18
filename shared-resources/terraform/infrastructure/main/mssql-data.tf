@@ -28,7 +28,6 @@ module "mssql_data" {
   elastic_pool_max_size_gb      = 100
   public_network_access_enabled = true
 
-
   # If using DTU model then see pool limits based on SKU here: https://learn.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-elastic-pools?view=azuresql#standard-elastic-pool-limits
   elastic_pool_sku = {
     name     = "StandardPool"
