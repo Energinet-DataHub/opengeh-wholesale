@@ -16,5 +16,5 @@ from enum import Enum
 
 
 class MeteringPointResolution(Enum):
-    hour = "PT1H"
-    quarter = "PT15M"
+    HOUR = "PT1H"
+    QUARTER = "PT15M"

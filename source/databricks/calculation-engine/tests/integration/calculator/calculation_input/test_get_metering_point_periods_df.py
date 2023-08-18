@@ -32,9 +32,9 @@ grid_area_code = "805"
 grid_area_link_id = "the-grid-area-link-id"
 metering_point_id = "the-metering-point-id"
 energy_supplier_id = "the-energy-supplier-id"
-metering_point_type = MeteringPointType.production.value
+metering_point_type = MeteringPointType.PRODUCTION.value
 settlement_method = SettlementMethod.flex.value
-resolution = MeteringPointResolution.hour.value
+resolution = MeteringPointResolution.HOUR.value
 date_time_formatting_string = "%Y-%m-%dT%H:%M"
 # +02:00 dates (e.g. danish DST)
 june_1th = datetime.strptime("2022-05-31T22:00", date_time_formatting_string)
@@ -179,7 +179,7 @@ def test__when_type_is_production__returns_metering_point_period(
 
     # Arrange
     metering_points_periods_df = metering_points_periods_df_factory(
-        MeteringPointType=MeteringPointType.production.value
+        MeteringPointType=MeteringPointType.PRODUCTION.value
     )
     mock_calculation_input_reader.read_metering_point_periods.return_value = metering_points_periods_df
 
@@ -224,7 +224,7 @@ def test__metering_points_have_expected_columns(
             & (col(Colname.settlement_method) == settlement_method)
             & (col(Colname.to_grid_area) == "some-to-grid-area")
             & (col(Colname.from_grid_area) == "some-from-grid-area")
-            & (col(Colname.resolution) == MeteringPointResolution.hour.value)
+            & (col(Colname.resolution) == MeteringPointResolution.HOUR.value)
             & (col(Colname.energy_supplier_id) == energy_supplier_id)
         ).count()
         == 1

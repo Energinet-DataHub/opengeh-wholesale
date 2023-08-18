@@ -100,7 +100,7 @@ def calculate_fee_charge_price_factory(spark):
         total_daily_charge_price=Decimal,
         charge_key=DataframeDefaults.default_charge_key,
         charge_id=DataframeDefaults.default_charge_id,
-        charge_type=ChargeType.fee,
+        charge_type=ChargeType.FEE,
         charge_owner=DataframeDefaults.default_charge_owner,
         charge_price=DataframeDefaults.default_charge_price,
         metering_point_type=DataframeDefaults.default_metering_point_type,

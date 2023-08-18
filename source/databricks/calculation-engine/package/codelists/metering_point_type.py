@@ -16,6 +16,6 @@ from enum import Enum
 
 
 class MeteringPointType(Enum):
-    production = "E18"
-    consumption = "E17"
-    exchange = "E20"
+    PRODUCTION = "E18"
+    CONSUMPTION = "E17"
+    EXCHANGE = "E20"

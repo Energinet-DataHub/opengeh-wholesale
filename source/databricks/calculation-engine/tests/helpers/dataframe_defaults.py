@@ -22,7 +22,7 @@ from package.codelists import (
 )
 
 const_charge_id = "001"
-const_charge_type = ChargeType.subscription
+const_charge_type = ChargeType.SUBSCRIPTION
 const_charge_owner = "001"
 
 
@@ -42,19 +42,19 @@ class DataframeDefaults:
     default_charge_price: Decimal = Decimal("1.123456")
     default_charge_tax: str = "true"
     default_charge_type: str = const_charge_type
-    default_charge_resolution: str = ChargeResolution.day.value
+    default_charge_resolution: str = ChargeResolution.DAY.value
     default_currency: str = "DDK"
     default_energy_supplier_id: str = "1"
     default_from_grid_area: str = "chargea"
     default_grid_area: str = "500"
     default_metering_method: str = "1"
     default_metering_point_id: str = "D01"
-    default_metering_point_type: str = MeteringPointType.consumption.value
+    default_metering_point_type: str = MeteringPointType.CONSUMPTION.value
     default_parent_metering_point_id: str = "1"
     default_product: str = "chargea"
     default_quality: str = "E01"
     default_quantity: Decimal = Decimal("1.123")
-    default_metering_point_resolution: str = MeteringPointResolution.hour.value
+    default_metering_point_resolution: str = MeteringPointResolution.HOUR.value
     default_settlement_method: str = SettlementMethod.flex.value
     default_sum_quantity: Decimal = Decimal("1.234")
     default_time_window_end: datetime = datetime(2020, 1, 1, 1, 0)

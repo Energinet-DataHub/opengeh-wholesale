@@ -68,7 +68,7 @@ def test_data_factory(spark, schema):
             pandas_df = pandas_df.append(
                 {
                     Colname.grid_area: str(1),
-                    Colname.metering_point_type: MeteringPointType.consumption.value,
+                    Colname.metering_point_type: MeteringPointType.CONSUMPTION.value,
                     Colname.observation_time: default_obs_time + timedelta(hours=1),
                     Colname.quality: df_qualities[i],
                 },
@@ -83,16 +83,16 @@ def test_set_aggregated_quality_to_estimated_when_quality_within_hour_is_estimat
     test_data_factory,
 ):
     df = test_data_factory(
-        TimeSeriesQuality.estimated.value,
-        TimeSeriesQuality.measured.value,
-        TimeSeriesQuality.measured.value,
+        TimeSeriesQuality.ESTIMATED.value,
+        TimeSeriesQuality.MEASURED.value,
+        TimeSeriesQuality.MEASURED.value,
     )
 
     result_df = aggregate_quality(df)
 
     assert (
         result_df.collect()[0][Colname.aggregated_quality]
-        == TimeSeriesQuality.estimated.value
+        == TimeSeriesQuality.ESTIMATED.value
     )
 
 
@@ -100,16 +100,16 @@ def test_set_aggregated_quality_to_estimated_when_quality_within_hour_is_estimat
     test_data_factory,
 ):
     df = test_data_factory(
-        TimeSeriesQuality.estimated.value,
-        TimeSeriesQuality.calculated.value,
-        TimeSeriesQuality.calculated.value,
+        TimeSeriesQuality.ESTIMATED.value,
+        TimeSeriesQuality.CALCULATED.value,
+        TimeSeriesQuality.CALCULATED.value,
     )
 
     result_df = aggregate_quality(df)
 
     assert (
         result_df.collect()[0][Colname.aggregated_quality]
-        == TimeSeriesQuality.estimated.value
+        == TimeSeriesQuality.ESTIMATED.value
     )
 
 
@@ -117,16 +117,16 @@ def test_set_aggregated_quality_to_estimated_when_quality_within_hour_is_estimat
     test_data_factory,
 ):
     df = test_data_factory(
-        TimeSeriesQuality.calculated.value,
-        TimeSeriesQuality.measured.value,
-        TimeSeriesQuality.estimated.value,
+        TimeSeriesQuality.CALCULATED.value,
+        TimeSeriesQuality.MEASURED.value,
+        TimeSeriesQuality.ESTIMATED.value,
     )
 
     result_df = aggregate_quality(df)
 
     assert (
         result_df.collect()[0][Colname.aggregated_quality]
-        == TimeSeriesQuality.estimated.value
+        == TimeSeriesQuality.ESTIMATED.value
     )
 
 
@@ -134,7 +134,7 @@ def test_set_aggregated_quality_to_estimated_when_quality_within_hour_is_estimat
     test_data_factory,
 ):
     df = test_data_factory(
-        TimeSeriesQuality.estimated.value,
+        TimeSeriesQuality.ESTIMATED.value,
         TimeSeriesQuality.missing.value,
         TimeSeriesQuality.missing.value,
     )
@@ -143,7 +143,7 @@ def test_set_aggregated_quality_to_estimated_when_quality_within_hour_is_estimat
 
     assert (
         result_df.collect()[0][Colname.aggregated_quality]
-        == TimeSeriesQuality.estimated.value
+        == TimeSeriesQuality.ESTIMATED.value
     )
 
 
@@ -151,7 +151,7 @@ def test_set_aggregated_quality_to_estimated_when_quality_within_hour_is_read_an
     test_data_factory,
 ):
     df = test_data_factory(
-        TimeSeriesQuality.measured.value,
+        TimeSeriesQuality.MEASURED.value,
         TimeSeriesQuality.missing.value,
         TimeSeriesQuality.missing.value,
     )
@@ -160,7 +160,7 @@ def test_set_aggregated_quality_to_estimated_when_quality_within_hour_is_read_an
 
     assert (
         result_df.collect()[0][Colname.aggregated_quality]
-        == TimeSeriesQuality.estimated.value
+        == TimeSeriesQuality.ESTIMATED.value
     )
 
 
@@ -168,7 +168,7 @@ def test_set_aggregated_quality_to_estimated_when_quality_within_hour_is_calcula
     test_data_factory,
 ):
     df = test_data_factory(
-        TimeSeriesQuality.calculated.value,
+        TimeSeriesQuality.CALCULATED.value,
         TimeSeriesQuality.missing.value,
         TimeSeriesQuality.missing.value,
     )
@@ -177,7 +177,7 @@ def test_set_aggregated_quality_to_estimated_when_quality_within_hour_is_calcula
 
     assert (
         result_df.collect()[0][Colname.aggregated_quality]
-        == TimeSeriesQuality.estimated.value
+        == TimeSeriesQuality.ESTIMATED.value
     )
 
 
@@ -185,16 +185,16 @@ def test_set_aggregated_quality_to_read_when_quality_within_hour_is_either_read_
     test_data_factory,
 ):
     df = test_data_factory(
-        TimeSeriesQuality.measured.value,
-        TimeSeriesQuality.calculated.value,
-        TimeSeriesQuality.calculated.value,
+        TimeSeriesQuality.MEASURED.value,
+        TimeSeriesQuality.CALCULATED.value,
+        TimeSeriesQuality.CALCULATED.value,
     )
 
     result_df = aggregate_quality(df)
 
     assert (
         result_df.collect()[0][Colname.aggregated_quality]
-        == TimeSeriesQuality.measured.value
+        == TimeSeriesQuality.MEASURED.value
     )
 
 
@@ -204,9 +204,9 @@ def test_returns_correct_schema(test_data_factory, expected_schema):
     and time window (from the single-hour resolution specified in the aggregator).
     """
     df = test_data_factory(
-        TimeSeriesQuality.estimated.value,
-        TimeSeriesQuality.estimated.value,
-        TimeSeriesQuality.estimated.value,
+        TimeSeriesQuality.ESTIMATED.value,
+        TimeSeriesQuality.ESTIMATED.value,
+        TimeSeriesQuality.ESTIMATED.value,
     )
     aggregated_df = aggregate_quality(df)
     assert aggregated_df.schema == expected_schema
@@ -216,7 +216,7 @@ def test_returns_correct_schema(test_data_factory, expected_schema):
 @pytest.fixture(scope="module")
 def test_data_factory_with_diff_market_evalution_point_type(spark, schema):
     def factory():
-        df_qualities = TimeSeriesQuality.estimated.value
+        df_qualities = TimeSeriesQuality.ESTIMATED.value
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: [],

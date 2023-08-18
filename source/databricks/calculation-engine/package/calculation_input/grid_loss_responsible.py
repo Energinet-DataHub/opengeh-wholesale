@@ -52,10 +52,10 @@ def get_grid_loss_responsible(grid_areas: list[str]) -> DataFrame:
     grid_loss_responsible_df = _get_all_grid_loss_responsible()
 
     grid_loss_responsible_df = grid_loss_responsible_df.withColumn(
-        Colname.is_positive_grid_loss_responsible, when(col(Colname.metering_point_type) == MeteringPointType.consumption.value, True)
+        Colname.is_positive_grid_loss_responsible, when(col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value, True)
         .otherwise(False))
     grid_loss_responsible_df = grid_loss_responsible_df.withColumn(
-        Colname.is_negative_grid_loss_responsible, when(col(Colname.metering_point_type) == MeteringPointType.production.value, True)
+        Colname.is_negative_grid_loss_responsible, when(col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value, True)
         .otherwise(False))
 
     grid_loss_responsible_df = grid_loss_responsible_df.select(
