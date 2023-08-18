@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Reflection;
-using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.V3;
 using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 using Microsoft.AspNetCore.Authorization;
@@ -26,7 +25,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi;
 public class ControllerAuthorizeAttributeTests
 {
     [Fact]
-    public void ControllerMethodsMustHaveAuthorizeAttribute()
+    public void ControllerMethodsMustHaveAuthorizeAttributeIfControllerHasNot()
     {
         // Arrange & Act
         var controllers = GetControllersWithoutAuthorizeAttribute();
@@ -36,21 +35,10 @@ public class ControllerAuthorizeAttributeTests
         Assert.True(endpoints.Count == 0, $"Missing authorize attribute(s) found!\n {GenerateErrorMessage(endpoints)}");
     }
 
-    [Fact]
-    public void ControllerMethodsMustHaveAuthorizeAttribute2()
-    {
-        // Arrange & Act
-        var controllers = GetControllersWithoutAuthorizeAttribute();
-        var endpoints = GetEndpointsWithoutAuthorizeOrAllowAnonymousAttributes(controllers!);
-
-        // Assert
-        Assert.True(endpoints.Count == 0, $"Missing authorize attribute(s) found!\n {GenerateErrorMessage(endpoints)}");
-    }
-
-    private static IList<string> GetEndpointsWithoutAuthorizeOrAllowAnonymousAttributes(IEnumerable<Type> controllers)
+    private static IList<string> GetEndpointsWithoutAuthorizeOrAllowAnonymousAttributes(IEnumerable<Type> controllerTypes)
     {
         var methodsWithoutAuthorizeAttribute = new List<string>();
-        foreach (var controller in controllers)
+        foreach (var controller in controllerTypes)
         {
             var methods =
                 controller.GetMethods(BindingFlags.Public | BindingFlags.Instance)

@@ -14,6 +14,7 @@
 
 using System.Reflection;
 using AutoFixture.Xunit2;
+using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi.TestControllers;
 using Energinet.DataHub.Wholesale.WebApi.V3;
 using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 using Energinet.DataHub.Wholesale.WebApi.V3.SettlementReport;
@@ -27,11 +28,13 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi;
 public class ControllerRolesTests
 {
     [Theory]
-    [InlineAutoData(typeof(TestController), "CreateTest", "TestRole")]
-    [InlineAutoData(typeof(TestController), "CreateTest2", "TestRole1")]
-    [InlineAutoData(typeof(TestController), "CreateTest2", "TestRole2")]
-    [InlineAutoData(typeof(TestController), "CreateTest3", "TestRole1, TestRole2")]
+    [InlineAutoData(typeof(Test1Controller), "CreateTest", "TestRole")]
+    [InlineAutoData(typeof(Test1Controller), "CreateTest2", "TestRole1")]
+    [InlineAutoData(typeof(Test1Controller), "CreateTest2", "TestRole2")]
+    [InlineAutoData(typeof(Test1Controller), "CreateTest3", "TestRole1, TestRole2")]
+    [InlineAutoData(typeof(Test1Controller), "CreateTest4", null)]
     [InlineAutoData(typeof(Test2Controller), "", "TestRole")]
+    [InlineAutoData(typeof(Test2Controller), "CreateTest5", "TestRole2")]
     public void TestEndpointsMustHaveCorrectPermissions(Type controllerType, string endpointRoute, string expectedPermissions)
     {
         // Arrange & Act
@@ -44,6 +47,7 @@ public class ControllerRolesTests
         var actualPermissions = attributes.Select(x => x.Roles);
 
         // Assert
+        Assert.NotNull(actualPermissions);
         actualPermissions.Should().Contain(expectedPermissions);
     }
 
@@ -51,9 +55,9 @@ public class ControllerRolesTests
     [InlineAutoData(typeof(BatchController), "CreateBatch", Permissions.CalculationsManage)]
     [InlineAutoData(typeof(BatchController), "GetBatch", Permissions.CalculationsManage)]
     [InlineAutoData(typeof(BatchController), "SearchBatches", Permissions.CalculationsManage)]
-    [InlineAutoData(typeof(SettlementReportController), "Download", Permissions.SettlementsManage)]
-    [InlineAutoData(typeof(SettlementReportController), "GetSettlementReportAsStreamAsync", Permissions.SettlementsManage)]
-    [InlineAutoData(typeof(SettlementReportController), "ZippedBasisDataStream", Permissions.SettlementsManage)]
+    [InlineAutoData(typeof(SettlementReportController), "Download", Permissions.SettlementReportsManage)]
+    [InlineAutoData(typeof(SettlementReportController), "GetSettlementReportAsStreamAsync", Permissions.SettlementReportsManage)]
+    [InlineAutoData(typeof(SettlementReportController), "ZippedBasisDataStream", Permissions.SettlementReportsManage)]
     public void EndpointsMustHaveCorrectPermissions(Type controllerType, string endpointRoute, string expectedPermissions)
     {
         // Arrange & Act
@@ -72,16 +76,18 @@ public class ControllerRolesTests
     private static IEnumerable<AuthorizeAttribute> GetAuthorizeAttributesFromEndpoint(Type controllerType, string endpointRoute)
     {
         var authorizeAttribute = controllerType.GetCustomAttribute<AuthorizeAttribute>();
+        var authorizeAttributes = new List<AuthorizeAttribute>();
         if (authorizeAttribute != null)
         {
-            return new List<AuthorizeAttribute> { authorizeAttribute };
+            authorizeAttributes.Add(authorizeAttribute);
         }
 
-        var authorizeAttributes = controllerType.GetMethods(BindingFlags.Public | BindingFlags.Instance)
+        var authorizeAttributesFromMethods = controllerType.GetMethods(BindingFlags.Public | BindingFlags.Instance)
             .Where(x => x.GetCustomAttribute<HttpMethodAttribute>()?.Name == endpointRoute ||
                         x.GetCustomAttribute<HttpMethodAttribute>()?.Template == endpointRoute)
             .SelectMany(x => x.GetCustomAttributes<AuthorizeAttribute>());
 
+        authorizeAttributes.AddRange(authorizeAttributesFromMethods);
         return authorizeAttributes;
     }
 }

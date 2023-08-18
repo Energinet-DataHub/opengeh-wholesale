@@ -17,5 +17,5 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3;
 public abstract class Permissions
 {
     public const string CalculationsManage = "calculations:manage";
-    public const string SettlementsManage = "settlement-reports:manage";
+    public const string SettlementReportsManage = "settlement-reports:manage";
 }

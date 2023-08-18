@@ -36,7 +36,6 @@ public class BatchControllerTests : WebApiTestBase
         ITestOutputHelper testOutputHelper)
         : base(wholesaleWebApiFixture, factory, testOutputHelper)
     {
-        factory.ReenableAuthentication();
     }
 
     [Fact]

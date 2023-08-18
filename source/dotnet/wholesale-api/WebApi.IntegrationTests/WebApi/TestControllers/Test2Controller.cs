@@ -16,9 +16,16 @@ using Energinet.DataHub.Wholesale.WebApi.V3;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi;
+namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi.TestControllers;
 
 [Authorize(Roles = "TestRole")]
 public class Test2Controller : V3ControllerBase
 {
+    [HttpPost(Name = "CreateTest5")]
+    [MapToApiVersion(Version)]
+    [Authorize(Roles = "TestRole2")]
+    public async Task CreateAsync()
+    {
+        await Task.CompletedTask;
+    }
 }

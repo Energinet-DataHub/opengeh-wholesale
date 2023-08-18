@@ -43,7 +43,7 @@ public class SettlementReportController : V3ControllerBase
     [HttpGet("Download")]
     [MapToApiVersion(Version)]
     [BinaryContent]
-    [Authorize(Roles = Permissions.SettlementsManage)]
+    [Authorize(Roles = Permissions.SettlementReportsManage)]
     public Task DownloadSettlementReportAsync(
         [Required, FromQuery] string[] gridAreaCodes,
         [Required, FromQuery] ProcessType processType,
@@ -84,7 +84,7 @@ public class SettlementReportController : V3ControllerBase
     [HttpGet(Name = "GetSettlementReportAsStreamAsync")]
     [MapToApiVersion(Version)]
     [BinaryContent]
-    [Authorize(Roles = Permissions.SettlementsManage)]
+    [Authorize(Roles = Permissions.SettlementReportsManage)]
     public async Task GetAsync([Required] Guid batchId, [Required] string gridAreaCode)
     {
         var outputStream = Response.BodyWriter.AsStream();
@@ -104,7 +104,7 @@ public class SettlementReportController : V3ControllerBase
     [HttpGet("ZippedBasisDataStream")]
     [MapToApiVersion(Version)]
     [BinaryContent]
-    [Authorize(Roles = Permissions.SettlementsManage)]
+    [Authorize(Roles = Permissions.SettlementReportsManage)]
     public async Task<IActionResult> GetSettlementReportAsync([Required] Guid batchId)
     {
         var report = await _settlementReportClient.GetSettlementReportAsync(batchId).ConfigureAwait(false);
