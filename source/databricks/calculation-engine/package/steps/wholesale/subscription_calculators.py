@@ -40,8 +40,8 @@ def filter_on_metering_point_type_and_settlement_method(
     subscription_charges: DataFrame,
 ) -> DataFrame:
     charges_per_day_flex_consumption = subscription_charges.filter(
-        col(Colname.metering_point_type) == MeteringPointType.consumption.value
-    ).filter(col(Colname.settlement_method) == SettlementMethod.flex.value)
+        col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value
+    ).filter(col(Colname.settlement_method) == SettlementMethod.FLEX.value)
     return charges_per_day_flex_consumption
 
 

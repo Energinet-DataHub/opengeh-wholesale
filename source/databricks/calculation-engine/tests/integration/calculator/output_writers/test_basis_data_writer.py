@@ -46,8 +46,8 @@ TIME_ZONE = "Europe/Copenhagen"
 def enriched_time_series_factory(spark: SparkSession) -> Callable[..., DataFrame]:
     def factory() -> DataFrame:
         df = []
-        df.append(_create_enriched_time_series_point(MeteringPointResolution.hour))
-        df.append(_create_enriched_time_series_point(MeteringPointResolution.quarter))
+        df.append(_create_enriched_time_series_point(MeteringPointResolution.HOUR))
+        df.append(_create_enriched_time_series_point(MeteringPointResolution.QUARTER))
         return spark.createDataFrame(df)
 
     return factory
@@ -57,8 +57,8 @@ def enriched_time_series_factory(spark: SparkSession) -> Callable[..., DataFrame
 def metering_point_period_df_factory(spark: SparkSession) -> Callable[..., DataFrame]:
     def factory() -> DataFrame:
         df = []
-        df.append(_create_metering_point_period(MeteringPointResolution.hour))
-        df.append(_create_metering_point_period(MeteringPointResolution.quarter))
+        df.append(_create_metering_point_period(MeteringPointResolution.HOUR))
+        df.append(_create_metering_point_period(MeteringPointResolution.QUARTER))
         return spark.createDataFrame(df)
 
     return factory
@@ -69,13 +69,13 @@ def _create_enriched_time_series_point(
 ) -> dict[str, Any]:
     data = {
         Colname.metering_point_id: "metering_point_id",
-        Colname.metering_point_type: MeteringPointType.production.value,
+        Colname.metering_point_type: MeteringPointType.PRODUCTION.value,
         Colname.grid_area: DEFAULT_GRID_AREA,
         Colname.balance_responsible_id: "someId",
         Colname.energy_supplier_id: DEFAULT_ENERGY_SUPPLIER,
         Colname.quantity: Decimal("1"),
         Colname.observation_time: PERIOD_START,
-        Colname.quality: TimeSeriesQuality.estimated.value,
+        Colname.quality: TimeSeriesQuality.ESTIMATED.value,
         Colname.resolution: resolution.value,
     }
     return data
@@ -101,39 +101,39 @@ def _create_metering_point_period(
 
 
 def _get_basis_data_paths(calculation_filetype: CalculationFileType) -> str:
-    if calculation_filetype == CalculationFileType.MasterBasisDataForTotalGa:
+    if calculation_filetype == CalculationFileType.MASTER_BASIS_DATA_FOR_TOTAL_GA:
         return infra.get_basis_data_path(
-            BasisDataType.MasterBasisData, DEFAULT_BATCH_ID, DEFAULT_GRID_AREA
+            BasisDataType.MASTER_BASIS_DATA, DEFAULT_BATCH_ID, DEFAULT_GRID_AREA
         )
-    elif calculation_filetype == CalculationFileType.MasterBasisDataForEsPerGa:
+    elif calculation_filetype == CalculationFileType.MASTER_BASIS_DATA_FOR_ES_PER_GA:
         return infra.get_basis_data_path(
-            BasisDataType.MasterBasisData,
+            BasisDataType.MASTER_BASIS_DATA,
             DEFAULT_BATCH_ID,
             DEFAULT_GRID_AREA,
             DEFAULT_ENERGY_SUPPLIER,
         )
     elif (
-        calculation_filetype == CalculationFileType.TimeSeriesQuarterBasisDataForTotalGa
+        calculation_filetype == CalculationFileType.TIME_SERIES_QUARTER_BASIS_DATA_FOR_TOTAL_GA
     ):
         return infra.get_basis_data_path(
-            BasisDataType.TimeSeriesQuarter, DEFAULT_BATCH_ID, DEFAULT_GRID_AREA
+            BasisDataType.TIME_SERIES_QUARTER, DEFAULT_BATCH_ID, DEFAULT_GRID_AREA
         )
     elif (
-        calculation_filetype == CalculationFileType.TimeSeriesQuarterBasisDataForEsPerGa
+        calculation_filetype == CalculationFileType.TIME_SERIES_QUARTER_BASIS_DATA_FOR_ES_PER_GA
     ):
         return infra.get_basis_data_path(
-            BasisDataType.TimeSeriesQuarter,
+            BasisDataType.TIME_SERIES_QUARTER,
             DEFAULT_BATCH_ID,
             DEFAULT_GRID_AREA,
             DEFAULT_ENERGY_SUPPLIER,
         )
-    elif calculation_filetype == CalculationFileType.TimeSeriesHourBasisData:
+    elif calculation_filetype == CalculationFileType.TIME_SERIES_HOUR_BASIS_DATA:
         return infra.get_basis_data_path(
-            BasisDataType.TimeSeriesHour, DEFAULT_BATCH_ID, DEFAULT_GRID_AREA
+            BasisDataType.TIME_SERIES_HOUR, DEFAULT_BATCH_ID, DEFAULT_GRID_AREA
         )
-    elif calculation_filetype == CalculationFileType.TimeSeriesHourBasisDataForEsPerGa:
+    elif calculation_filetype == CalculationFileType.TIME_SERIES_HOUR_BASIS_DATA_FOR_ES_PER_GA:
         return infra.get_basis_data_path(
-            BasisDataType.TimeSeriesHour,
+            BasisDataType.TIME_SERIES_HOUR,
             DEFAULT_BATCH_ID,
             DEFAULT_GRID_AREA,
             DEFAULT_ENERGY_SUPPLIER,
@@ -144,12 +144,12 @@ def _get_basis_data_paths(calculation_filetype: CalculationFileType) -> str:
 
 def _get_all_basis_data_file_types() -> list[CalculationFileType]:
     return [
-        CalculationFileType.MasterBasisDataForEsPerGa,
-        CalculationFileType.MasterBasisDataForTotalGa,
-        CalculationFileType.TimeSeriesQuarterBasisDataForTotalGa,
-        CalculationFileType.TimeSeriesQuarterBasisDataForEsPerGa,
-        CalculationFileType.TimeSeriesHourBasisData,
-        CalculationFileType.TimeSeriesHourBasisDataForEsPerGa,
+        CalculationFileType.MASTER_BASIS_DATA_FOR_ES_PER_GA,
+        CalculationFileType.MASTER_BASIS_DATA_FOR_TOTAL_GA,
+        CalculationFileType.TIME_SERIES_QUARTER_BASIS_DATA_FOR_TOTAL_GA,
+        CalculationFileType.TIME_SERIES_QUARTER_BASIS_DATA_FOR_ES_PER_GA,
+        CalculationFileType.TIME_SERIES_HOUR_BASIS_DATA,
+        CalculationFileType.TIME_SERIES_HOUR_BASIS_DATA_FOR_ES_PER_GA,
     ]
 
 

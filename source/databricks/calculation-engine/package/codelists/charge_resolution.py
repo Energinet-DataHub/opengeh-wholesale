@@ -16,6 +16,6 @@ from enum import Enum
 
 
 class ChargeResolution(Enum):
-    month = "P1M"
-    day = "P1D"
-    hour = "PT1H"
+    MONTH = "P1M"
+    DAY = "P1D"
+    HOUR = "PT1H"

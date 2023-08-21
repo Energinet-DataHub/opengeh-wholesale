@@ -23,7 +23,7 @@ def transform_hour_to_quarter(df: DataFrame) -> DataFrame:
     result = df.withColumn(
         "quarter_times",
         F.when(
-            F.col(Colname.resolution) == MeteringPointResolution.hour.value,
+            F.col(Colname.resolution) == MeteringPointResolution.HOUR.value,
             F.array(
                 F.col(Colname.observation_time),
                 F.col(Colname.observation_time) + F.expr("INTERVAL 15 minutes"),
@@ -31,7 +31,7 @@ def transform_hour_to_quarter(df: DataFrame) -> DataFrame:
                 F.col(Colname.observation_time) + F.expr("INTERVAL 45 minutes"),
             ),
         ).when(
-            F.col(Colname.resolution) == MeteringPointResolution.quarter.value,
+            F.col(Colname.resolution) == MeteringPointResolution.QUARTER.value,
             F.array(F.col(Colname.observation_time)),
         ),
     ).select(
@@ -44,10 +44,10 @@ def transform_hour_to_quarter(df: DataFrame) -> DataFrame:
     result = result.withColumn(
         "quarter_quantity",
         F.when(
-            F.col(Colname.resolution) == MeteringPointResolution.hour.value,
+            F.col(Colname.resolution) == MeteringPointResolution.HOUR.value,
             F.col(Colname.quantity) / 4,
         ).when(
-            F.col(Colname.resolution) == MeteringPointResolution.quarter.value,
+            F.col(Colname.resolution) == MeteringPointResolution.QUARTER.value,
             F.col(Colname.quantity),
         ),
     )

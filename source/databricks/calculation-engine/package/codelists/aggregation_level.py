@@ -17,7 +17,7 @@ from enum import Enum
 
 
 class AggregationLevel(Enum):
-    total_ga = "total_ga"
-    es_per_brp_per_ga = "es_brp_ga"
-    es_per_ga = "es_ga"
-    brp_per_ga = "brp_ga"
+    TOTAL_GA = "total_ga"
+    ES_PER_BRP_PER_GA = "es_brp_ga"
+    ES_PER_GA = "es_ga"
+    BRP_PER_GA = "brp_ga"

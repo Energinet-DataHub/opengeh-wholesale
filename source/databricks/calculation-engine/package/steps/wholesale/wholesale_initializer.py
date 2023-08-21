@@ -46,7 +46,7 @@ def get_tariff_charges(
         charge_links,
         metering_points,
         market_roles,
-        ChargeType.tariff,
+        ChargeType.TARIFF,
     )
 
     # group by time series on metering point id and resolution and sum quantity
@@ -75,7 +75,7 @@ def get_fee_charges(
         charge_links,
         metering_points,
         market_roles,
-        ChargeType.fee,
+        ChargeType.FEE,
     )
 
 
@@ -92,7 +92,7 @@ def get_subscription_charges(
         charge_links,
         metering_points,
         market_roles,
-        ChargeType.subscription,
+        ChargeType.SUBSCRIPTION,
     )
 
 
@@ -282,10 +282,10 @@ def __get_window_duration_string_based_on_resolution(
 ) -> str:
     window_duration_string = "1 hour"
 
-    if resolution_duration == ChargeResolution.day.value:
+    if resolution_duration == ChargeResolution.DAY.value:
         window_duration_string = "1 day"
 
-    if resolution_duration == ChargeResolution.month.value:
+    if resolution_duration == ChargeResolution.MONTH.value:
         raise NotImplementedError("Month not yet implemented")
 
     return window_duration_string
@@ -306,7 +306,7 @@ def __join_properties_on_charges_with_given_charge_type(
     # join charge prices with charges
     charges_with_prices = join_with_charge_prices(charges, charge_prices)
 
-    if charge_type == ChargeType.subscription:
+    if charge_type == ChargeType.SUBSCRIPTION:
         # Explode dataframe: create row for each day the time period from and to date
         charges_with_prices = explode_subscription(charges_with_prices)
 
@@ -319,7 +319,7 @@ def __join_properties_on_charges_with_given_charge_type(
 
     df = join_with_metering_points(df, metering_points)
 
-    if charge_type != ChargeType.tariff:
+    if charge_type != ChargeType.TARIFF:
         df = df.select(
             Colname.charge_key,
             Colname.charge_id,

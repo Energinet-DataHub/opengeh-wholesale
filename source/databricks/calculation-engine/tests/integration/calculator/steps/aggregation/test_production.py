@@ -91,10 +91,10 @@ def test_data_factory(
                                 Colname.end: default_obs_time + timedelta(hours=i + 1),
                             },
                             Colname.sum_quantity: Decimal(i + j + k),
-                            Colname.quality: [TimeSeriesQuality.estimated.value],
-                            Colname.resolution: [MeteringPointResolution.hour.value],
+                            Colname.quality: [TimeSeriesQuality.ESTIMATED.value],
+                            Colname.resolution: [MeteringPointResolution.HOUR.value],
                             Colname.metering_point_type: [
-                                MeteringPointType.production.value
+                                MeteringPointType.PRODUCTION.value
                             ],
                         },
                         ignore_index=True,

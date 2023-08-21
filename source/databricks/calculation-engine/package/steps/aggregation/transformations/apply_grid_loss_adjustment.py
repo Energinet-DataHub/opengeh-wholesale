@@ -35,7 +35,7 @@ def adjust_production(
         negative_grid_loss_result_df,
         grid_loss_responsible_df,
         Colname.is_negative_grid_loss_responsible,
-        MeteringPointType.production.value
+        MeteringPointType.PRODUCTION.value
     )
 
 
@@ -50,7 +50,7 @@ def adjust_flex_consumption(
         positive_grid_loss_result_df,
         grid_loss_responsible_df,
         Colname.is_positive_grid_loss_responsible,
-        MeteringPointType.consumption.value
+        MeteringPointType.CONSUMPTION.value
     )
 
 

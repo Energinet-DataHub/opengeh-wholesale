@@ -41,10 +41,10 @@ default_obs_time = datetime.strptime(
 
 
 class AggregationMethod(Enum):
-    net_exchange = "net_exchange"
-    hourly_consumption = "hourly_consumption"
-    flex_consumption = "flex_consumption"
-    production = "production"
+    NET_EXCHANGE = "net_exchange"
+    HOURLY_CONSUMPTION = "hourly_consumption"
+    FLEX_CONSUMPTION = "flex_consumption"
+    PRODUCTION = "production"
 
 
 @pytest.fixture(scope="module")
@@ -98,7 +98,7 @@ def agg_result_factory(
     """
 
     def factory(agg_method: AggregationMethod) -> DataFrame:
-        if agg_method == AggregationMethod.net_exchange:
+        if agg_method == AggregationMethod.NET_EXCHANGE:
             pandas_df = pd.DataFrame(
                 {
                     Colname.grid_area: [],
@@ -118,14 +118,14 @@ def agg_result_factory(
                             Colname.end: default_obs_time + timedelta(hours=i + 1),
                         },
                         Colname.sum_quantity: Decimal(20 + i),
-                        Colname.quality: TimeSeriesQuality.estimated.value,
-                        Colname.resolution: MeteringPointResolution.hour.value,
-                        Colname.metering_point_type: MeteringPointType.exchange.value,
+                        Colname.quality: TimeSeriesQuality.ESTIMATED.value,
+                        Colname.resolution: MeteringPointResolution.HOUR.value,
+                        Colname.metering_point_type: MeteringPointType.EXCHANGE.value,
                     },
                     ignore_index=True,
                 )
             return spark.createDataFrame(pandas_df, schema=agg_net_exchange_schema)
-        elif agg_method == AggregationMethod.hourly_consumption:
+        elif agg_method == AggregationMethod.HOURLY_CONSUMPTION:
             pandas_df = pd.DataFrame(
                 {
                     Colname.grid_area: [],
@@ -149,16 +149,16 @@ def agg_result_factory(
                             Colname.end: default_obs_time + timedelta(hours=i + 1),
                         },
                         Colname.sum_quantity: Decimal(13 + i),
-                        Colname.quality: TimeSeriesQuality.estimated.value,
-                        Colname.resolution: MeteringPointResolution.hour.value,
-                        Colname.metering_point_type: MeteringPointType.consumption.value,
+                        Colname.quality: TimeSeriesQuality.ESTIMATED.value,
+                        Colname.resolution: MeteringPointResolution.HOUR.value,
+                        Colname.metering_point_type: MeteringPointType.CONSUMPTION.value,
                     },
                     ignore_index=True,
                 )
             return spark.createDataFrame(
                 pandas_df, schema=agg_consumption_and_production_schema
             )
-        elif agg_method == AggregationMethod.flex_consumption:
+        elif agg_method == AggregationMethod.FLEX_CONSUMPTION:
             pandas_df = pd.DataFrame(
                 {
                     Colname.grid_area: [],
@@ -182,16 +182,16 @@ def agg_result_factory(
                             Colname.end: default_obs_time + timedelta(hours=i + 1),
                         },
                         Colname.sum_quantity: Decimal(14 + i),
-                        Colname.quality: TimeSeriesQuality.estimated.value,
-                        Colname.resolution: MeteringPointResolution.hour.value,
-                        Colname.metering_point_type: MeteringPointType.consumption.value,
+                        Colname.quality: TimeSeriesQuality.ESTIMATED.value,
+                        Colname.resolution: MeteringPointResolution.HOUR.value,
+                        Colname.metering_point_type: MeteringPointType.CONSUMPTION.value,
                     },
                     ignore_index=True,
                 )
             return spark.createDataFrame(
                 pandas_df, schema=agg_consumption_and_production_schema
             )
-        elif agg_method == AggregationMethod.production:
+        elif agg_method == AggregationMethod.PRODUCTION:
             pandas_df = pd.DataFrame(
                 {
                     Colname.grid_area: [],
@@ -215,9 +215,9 @@ def agg_result_factory(
                             Colname.end: default_obs_time + timedelta(hours=i + 1),
                         },
                         Colname.sum_quantity: Decimal(50 + i),
-                        Colname.quality: TimeSeriesQuality.estimated.value,
-                        Colname.resolution: MeteringPointResolution.hour.value,
-                        Colname.metering_point_type: MeteringPointType.production.value,
+                        Colname.quality: TimeSeriesQuality.ESTIMATED.value,
+                        Colname.resolution: MeteringPointResolution.HOUR.value,
+                        Colname.metering_point_type: MeteringPointType.PRODUCTION.value,
                     },
                     ignore_index=True,
                 )
@@ -272,20 +272,20 @@ def agg_net_exchange_factory(
                 ],
                 Colname.quality: ["56", "56", "56", "56", "56", "56"],
                 Colname.resolution: [
-                    MeteringPointResolution.hour.value,
-                    MeteringPointResolution.hour.value,
-                    MeteringPointResolution.hour.value,
-                    MeteringPointResolution.hour.value,
-                    MeteringPointResolution.hour.value,
-                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.HOUR.value,
+                    MeteringPointResolution.HOUR.value,
+                    MeteringPointResolution.HOUR.value,
+                    MeteringPointResolution.HOUR.value,
+                    MeteringPointResolution.HOUR.value,
+                    MeteringPointResolution.HOUR.value,
                 ],
                 Colname.metering_point_type: [
-                    MeteringPointType.exchange.value,
-                    MeteringPointType.exchange.value,
-                    MeteringPointType.exchange.value,
-                    MeteringPointType.exchange.value,
-                    MeteringPointType.exchange.value,
-                    MeteringPointType.exchange.value,
+                    MeteringPointType.EXCHANGE.value,
+                    MeteringPointType.EXCHANGE.value,
+                    MeteringPointType.EXCHANGE.value,
+                    MeteringPointType.EXCHANGE.value,
+                    MeteringPointType.EXCHANGE.value,
+                    MeteringPointType.EXCHANGE.value,
                 ],
             }
         )
@@ -341,20 +341,20 @@ def agg_flex_consumption_factory(
                 ],
                 Colname.quality: ["56", "56", "56", "56", "56", "56"],
                 Colname.resolution: [
-                    MeteringPointResolution.hour.value,
-                    MeteringPointResolution.hour.value,
-                    MeteringPointResolution.hour.value,
-                    MeteringPointResolution.hour.value,
-                    MeteringPointResolution.hour.value,
-                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.HOUR.value,
+                    MeteringPointResolution.HOUR.value,
+                    MeteringPointResolution.HOUR.value,
+                    MeteringPointResolution.HOUR.value,
+                    MeteringPointResolution.HOUR.value,
+                    MeteringPointResolution.HOUR.value,
                 ],
                 Colname.metering_point_type: [
-                    MeteringPointType.consumption.value,
-                    MeteringPointType.consumption.value,
-                    MeteringPointType.consumption.value,
-                    MeteringPointType.consumption.value,
-                    MeteringPointType.consumption.value,
-                    MeteringPointType.consumption.value,
+                    MeteringPointType.CONSUMPTION.value,
+                    MeteringPointType.CONSUMPTION.value,
+                    MeteringPointType.CONSUMPTION.value,
+                    MeteringPointType.CONSUMPTION.value,
+                    MeteringPointType.CONSUMPTION.value,
+                    MeteringPointType.CONSUMPTION.value,
                 ],
             }
         )
@@ -412,20 +412,20 @@ def agg_hourly_consumption_factory(
                 ],
                 Colname.quality: ["56", "56", "56", "56", "56", "56"],
                 Colname.resolution: [
-                    MeteringPointResolution.hour.value,
-                    MeteringPointResolution.hour.value,
-                    MeteringPointResolution.hour.value,
-                    MeteringPointResolution.hour.value,
-                    MeteringPointResolution.hour.value,
-                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.HOUR.value,
+                    MeteringPointResolution.HOUR.value,
+                    MeteringPointResolution.HOUR.value,
+                    MeteringPointResolution.HOUR.value,
+                    MeteringPointResolution.HOUR.value,
+                    MeteringPointResolution.HOUR.value,
                 ],
                 Colname.metering_point_type: [
-                    MeteringPointType.consumption.value,
-                    MeteringPointType.consumption.value,
-                    MeteringPointType.consumption.value,
-                    MeteringPointType.consumption.value,
-                    MeteringPointType.consumption.value,
-                    MeteringPointType.consumption.value,
+                    MeteringPointType.CONSUMPTION.value,
+                    MeteringPointType.CONSUMPTION.value,
+                    MeteringPointType.CONSUMPTION.value,
+                    MeteringPointType.CONSUMPTION.value,
+                    MeteringPointType.CONSUMPTION.value,
+                    MeteringPointType.CONSUMPTION.value,
                 ],
             }
         )
@@ -483,20 +483,20 @@ def agg_hourly_production_factory(
                 ],
                 Colname.quality: ["56", "56", "56", "56", "56", "56"],
                 Colname.resolution: [
-                    MeteringPointResolution.hour.value,
-                    MeteringPointResolution.hour.value,
-                    MeteringPointResolution.hour.value,
-                    MeteringPointResolution.hour.value,
-                    MeteringPointResolution.hour.value,
-                    MeteringPointResolution.hour.value,
+                    MeteringPointResolution.HOUR.value,
+                    MeteringPointResolution.HOUR.value,
+                    MeteringPointResolution.HOUR.value,
+                    MeteringPointResolution.HOUR.value,
+                    MeteringPointResolution.HOUR.value,
+                    MeteringPointResolution.HOUR.value,
                 ],
                 Colname.metering_point_type: [
-                    MeteringPointType.production.value,
-                    MeteringPointType.production.value,
-                    MeteringPointType.production.value,
-                    MeteringPointType.production.value,
-                    MeteringPointType.production.value,
-                    MeteringPointType.production.value,
+                    MeteringPointType.PRODUCTION.value,
+                    MeteringPointType.PRODUCTION.value,
+                    MeteringPointType.PRODUCTION.value,
+                    MeteringPointType.PRODUCTION.value,
+                    MeteringPointType.PRODUCTION.value,
+                    MeteringPointType.PRODUCTION.value,
                 ],
             }
         )
@@ -512,16 +512,16 @@ def test_grid_loss_calculation(
     agg_result_factory: Callable[[AggregationMethod], DataFrame]
 ) -> None:
     net_exchange_per_ga = create_dataframe_from_aggregation_result_schema(
-        agg_result_factory(AggregationMethod.net_exchange)
+        agg_result_factory(AggregationMethod.NET_EXCHANGE)
     )
     non_profiled_consumption = create_dataframe_from_aggregation_result_schema(
-        agg_result_factory(AggregationMethod.hourly_consumption)
+        agg_result_factory(AggregationMethod.HOURLY_CONSUMPTION)
     )
     flex_consumption = create_dataframe_from_aggregation_result_schema(
-        agg_result_factory(AggregationMethod.flex_consumption)
+        agg_result_factory(AggregationMethod.FLEX_CONSUMPTION)
     )
     production = create_dataframe_from_aggregation_result_schema(
-        agg_result_factory(AggregationMethod.production)
+        agg_result_factory(AggregationMethod.PRODUCTION)
     )
 
     result = calculate_grid_loss(

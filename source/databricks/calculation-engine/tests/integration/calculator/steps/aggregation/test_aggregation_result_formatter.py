@@ -79,10 +79,10 @@ def agg_result_factory(spark: SparkSession) -> Callable[..., DataFrame]:
         grid_area: str = "A",
         start: datetime = datetime(2020, 1, 1, 0, 0),
         end: datetime = datetime(2020, 1, 1, 1, 0),
-        resolution: str = MeteringPointResolution.hour.value,
+        resolution: str = MeteringPointResolution.HOUR.value,
         sum_quantity: Decimal = Decimal("1.234"),
-        quality: str = TimeSeriesQuality.estimated.value,
-        metering_point_type: str = MeteringPointType.consumption.value,
+        quality: str = TimeSeriesQuality.ESTIMATED.value,
+        metering_point_type: str = MeteringPointType.CONSUMPTION.value,
     ) -> DataFrame:
         return spark.createDataFrame(
             pd.DataFrame().append(
@@ -124,8 +124,8 @@ def test__create_dataframe_from_aggregation_result_schema__match_expected_datafr
         time_window_start=datetime(2020, 1, 1, 0, 0),
         time_window_end=datetime(2020, 1, 1, 1, 0),
         sum_quantity=Decimal("1.234"),
-        quality=TimeSeriesQuality.estimated.value,
-        metering_point_type=MeteringPointType.consumption.value,
+        quality=TimeSeriesQuality.ESTIMATED.value,
+        metering_point_type=MeteringPointType.CONSUMPTION.value,
     )
     # Act
     actual = create_dataframe_from_aggregation_result_schema(result)

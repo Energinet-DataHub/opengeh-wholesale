@@ -1,23 +1,23 @@
 {
   "literals": [
     {
-      "name": "measured",
+      "name": "MEASURED",
       "value": "measured"
     },
     {
-      "name": "estimated",
+      "name": "ESTIMATED",
       "value": "estimated"
     },
     {
-      "name": "incomplete",
+      "name": "INCOMPLETE",
       "value": "incomplete"
     },
     {
-      "name": "missing",
+      "name": "MISSING",
       "value": "missing"
     },
     {
-      "name": "calculated",
+      "name": "CALCULATED",
       "value": "calculated"
     }
   ]

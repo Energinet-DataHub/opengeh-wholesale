@@ -67,11 +67,11 @@ def get_batch_relative_path(batch_id: str) -> str:
 
 
 def _get_basis_data_folder_name(basis_data_type: BasisDataType) -> str:
-    if basis_data_type == BasisDataType.MasterBasisData:
+    if basis_data_type == BasisDataType.MASTER_BASIS_DATA:
         return "master_basis_data"
-    elif basis_data_type == BasisDataType.TimeSeriesHour:
+    elif basis_data_type == BasisDataType.TIME_SERIES_HOUR:
         return "time_series_hour"
-    elif basis_data_type == BasisDataType.TimeSeriesQuarter:
+    elif basis_data_type == BasisDataType.TIME_SERIES_QUARTER:
         return "time_series_quarter"
     else:
         raise ValueError(f"Unexpected BasisDataType: {basis_data_type}")

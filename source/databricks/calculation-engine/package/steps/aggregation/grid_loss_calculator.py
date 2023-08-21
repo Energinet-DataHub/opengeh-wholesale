@@ -114,8 +114,8 @@ def __calculate_grid_loss_or_residual_ga(
         Colname.grid_area,
         Colname.time_window,
         Colname.sum_quantity,  # grid loss
-        lit(MeteringPointType.consumption.value).alias(Colname.metering_point_type),
-        lit(TimeSeriesQuality.calculated.value).alias(Colname.quality),
+        lit(MeteringPointType.CONSUMPTION.value).alias(Colname.metering_point_type),
+        lit(TimeSeriesQuality.CALCULATED.value).alias(Colname.quality),
     )
     return T.create_dataframe_from_aggregation_result_schema(result)
 
@@ -132,7 +132,7 @@ def calculate_negative_grid_loss(grid_loss: DataFrame) -> DataFrame:
         Colname.grid_area,
         Colname.time_window,
         col(Colname.negative_grid_loss).alias(Colname.sum_quantity),
-        lit(MeteringPointType.production.value).alias(Colname.metering_point_type),
+        lit(MeteringPointType.PRODUCTION.value).alias(Colname.metering_point_type),
         Colname.quality,
     )
 
@@ -149,7 +149,7 @@ def calculate_positive_grid_loss(grid_loss: DataFrame) -> DataFrame:
         Colname.grid_area,
         Colname.time_window,
         col(Colname.positive_grid_loss).alias(Colname.sum_quantity),
-        lit(MeteringPointType.consumption.value).alias(Colname.metering_point_type),
+        lit(MeteringPointType.CONSUMPTION.value).alias(Colname.metering_point_type),
         Colname.quality,
     )
     return T.create_dataframe_from_aggregation_result_schema(result)
@@ -197,7 +197,7 @@ def calculate_total_consumption(agg_net_exchange: DataFrame, agg_production: Dat
             Colname.time_window,
             Colname.quality,
             Colname.sum_quantity,
-            lit(MeteringPointType.consumption.value).alias(Colname.metering_point_type),
+            lit(MeteringPointType.CONSUMPTION.value).alias(Colname.metering_point_type),
         )
     )
 

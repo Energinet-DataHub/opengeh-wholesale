@@ -50,9 +50,9 @@ charges_dataset = [
     (
         "001-D01-001",
         "001",
-        ChargeType.tariff,
+        ChargeType.TARIFF,
         "001",
-        ChargeResolution.day.value,
+        ChargeResolution.DAY.value,
         "No",
         "DDK",
         datetime(2020, 1, 1, 0, 0),
@@ -61,9 +61,9 @@ charges_dataset = [
     (
         "001-D01-001",
         "001",
-        ChargeType.tariff,
+        ChargeType.TARIFF,
         "001",
-        ChargeResolution.day.value,
+        ChargeResolution.DAY.value,
         "No",
         "DDK",
         datetime(2020, 1, 1, 0, 0),
@@ -72,9 +72,9 @@ charges_dataset = [
     (
         "001-D01-001",
         "001",
-        ChargeType.tariff,
+        ChargeType.TARIFF,
         "001",
-        ChargeResolution.hour.value,
+        ChargeResolution.HOUR.value,
         "No",
         "DDK",
         datetime(2020, 1, 1, 0, 0),
@@ -83,9 +83,9 @@ charges_dataset = [
     (
         "001-D01-001",
         "001",
-        ChargeType.tariff,
+        ChargeType.TARIFF,
         "001",
-        ChargeResolution.month.value,
+        ChargeResolution.MONTH.value,
         "No",
         "DDK",
         datetime(2020, 1, 1, 0, 0),
@@ -98,8 +98,8 @@ charges_dataset = [
 @pytest.mark.parametrize(
     "charges,resolution_duration,expected",
     [
-        (charges_dataset, ChargeResolution.hour, 1),
-        (charges_dataset, ChargeResolution.day, 2),
+        (charges_dataset, ChargeResolution.HOUR, 1),
+        (charges_dataset, ChargeResolution.DAY, 2),
     ],
 )
 def test__get_charges_based_on_resolution__filters_on_resolution_hour_or_day_only_for_tariff(
@@ -119,9 +119,9 @@ charges_dataset = [
     (
         "001-D01-001",
         "001",
-        ChargeType.tariff,
+        ChargeType.TARIFF,
         "001",
-        ChargeResolution.day.value,
+        ChargeResolution.DAY.value,
         "No",
         "DDK",
         datetime(2020, 1, 1, 0, 0),
@@ -130,9 +130,9 @@ charges_dataset = [
     (
         "001-D01-001",
         "001",
-        ChargeType.tariff,
+        ChargeType.TARIFF,
         "001",
-        ChargeResolution.day.value,
+        ChargeResolution.DAY.value,
         "No",
         "DDK",
         datetime(2020, 1, 1, 0, 0),
@@ -141,9 +141,9 @@ charges_dataset = [
     (
         "001-D01-001",
         "001",
-        ChargeType.subscription,
+        ChargeType.SUBSCRIPTION,
         "001",
-        ChargeResolution.day.value,
+        ChargeResolution.DAY.value,
         "No",
         "DDK",
         datetime(2020, 1, 1, 0, 0),
@@ -152,9 +152,9 @@ charges_dataset = [
     (
         "001-D01-001",
         "001",
-        ChargeType.subscription,
+        ChargeType.SUBSCRIPTION,
         "001",
-        ChargeResolution.day.value,
+        ChargeResolution.DAY.value,
         "No",
         "DDK",
         datetime(2020, 1, 1, 0, 0),
@@ -163,9 +163,9 @@ charges_dataset = [
     (
         "001-D01-001",
         "001",
-        ChargeType.fee,
+        ChargeType.FEE,
         "001",
-        ChargeResolution.day.value,
+        ChargeResolution.DAY.value,
         "No",
         "DDK",
         datetime(2020, 1, 1, 0, 0),
@@ -174,9 +174,9 @@ charges_dataset = [
     (
         "001-D01-001",
         "001",
-        ChargeType.tariff,
+        ChargeType.TARIFF,
         "001",
-        ChargeResolution.day.value,
+        ChargeResolution.DAY.value,
         "No",
         "DDK",
         datetime(2020, 1, 1, 0, 0),
@@ -189,9 +189,9 @@ charges_dataset = [
 @pytest.mark.parametrize(
     "charges,charge_type,expected",
     [
-        (charges_dataset, ChargeType.tariff, 3),
-        (charges_dataset, ChargeType.subscription, 2),
-        (charges_dataset, ChargeType.fee, 1),
+        (charges_dataset, ChargeType.TARIFF, 3),
+        (charges_dataset, ChargeType.SUBSCRIPTION, 2),
+        (charges_dataset, ChargeType.FEE, 1),
     ],
 )
 def test__get_charges_based_on_charge_type__filters_on_one_charge_type(
@@ -687,8 +687,8 @@ time_series_dataset_1 = [
 @pytest.mark.parametrize(
     "time_series,resolution_duration,expected_count,expected_quantity",
     [
-        (time_series_dataset_1, ChargeResolution.day.value, 2, 30),
-        (time_series_dataset_1, ChargeResolution.hour.value, 3, 20),
+        (time_series_dataset_1, ChargeResolution.DAY.value, 2, 30),
+        (time_series_dataset_1, ChargeResolution.HOUR.value, 3, 20),
     ],
 )
 def test__group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
