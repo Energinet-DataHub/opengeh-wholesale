@@ -15,6 +15,7 @@
 from azure.identity import ClientSecretCredential
 from datetime import datetime
 from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql.types import StructType
 import pyspark.sql.functions as F
 import pytest
 from unittest.mock import patch
@@ -28,7 +29,9 @@ from package.calculator_args import CalculatorArgs
 from package.codelists.process_type import ProcessType
 from package.constants import Colname
 import package.infrastructure as infra
-from package.schemas import time_series_point_schema, metering_point_period_schema
+from package.schemas import (
+    time_series_point_schema, metering_point_period_schema, charge_master_data_periods_schema, charge_price_points_schema, charge_link_periods_schema
+)
 
 
 @pytest.fixture(scope="session")
@@ -66,33 +69,61 @@ def grid_loss_responsible_test_data(
 
 
 @pytest.fixture(scope="session")
-def test_data_written_to_delta_tables(
+def energy_input_data_written_to_delta(
     spark: SparkSession,
     test_files_folder_path: str,
+    calculation_input_path: str
 ) -> None:
-
-    spark.sql(f"CREATE DATABASE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}")
-    spark.sql(f"CREATE TABLE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}.{infra.METERING_POINT_PERIODS_TABLE_NAME} USING DELTA")
-    spark.sql(f"CREATE TABLE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}.{infra.TIME_SERIES_POINTS_TABLE_NAME} USING DELTA")
-
-    metering_points_df = spark.read.csv(
-        f"{test_files_folder_path}/MeteringPointsPeriods.csv",
-        header=True,
+    # Metering point periods
+    _write_input_test_data_to_table(
+        spark,
+        file_name=f"{test_files_folder_path}/MeteringPointsPeriods.csv",
+        table_name=infra.METERING_POINT_PERIODS_TABLE_NAME,
         schema=metering_point_period_schema,
+        table_location=f"{calculation_input_path}/metering_point_periods"
     )
 
-    metering_points_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(
-        f"{infra.INPUT_DATABASE_NAME}.{infra.METERING_POINT_PERIODS_TABLE_NAME}"
-    )
-
-    timeseries_points_df = spark.read.csv(
-        f"{test_files_folder_path}/TimeSeriesPoints.csv",
-        header=True,
+    # Time series points
+    _write_input_test_data_to_table(
+        spark,
+        file_name=f"{test_files_folder_path}/TimeSeriesPoints.csv",
+        table_name=infra.TIME_SERIES_POINTS_TABLE_NAME,
         schema=time_series_point_schema,
+        table_location=f"{calculation_input_path}/time_series_points"
     )
 
-    timeseries_points_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(
-        f"{infra.INPUT_DATABASE_NAME}.{infra.TIME_SERIES_POINTS_TABLE_NAME}"
+
+@pytest.fixture(scope="session")
+def price_input_data_written_to_delta(
+    spark: SparkSession,
+    test_files_folder_path: str,
+    calculation_input_path: str
+) -> None:
+    # Charge master data periods
+    _write_input_test_data_to_table(
+        spark,
+        file_name=f"{test_files_folder_path}/ChargeMasterDataPeriods.csv",
+        table_name=infra.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME,
+        schema=charge_master_data_periods_schema,
+        table_location=f"{calculation_input_path}/charge_master_data_periods"
+    )
+
+    # Charge link periods
+    _write_input_test_data_to_table(
+        spark,
+        file_name=f"{test_files_folder_path}/ChargeLinkPeriods.csv",
+        table_name=infra.CHARGE_LINK_PERIODS_TABLE_NAME,
+        schema=charge_link_periods_schema,
+        table_location=f"{calculation_input_path}/charge_link_periods"
+    )
+
+    # Charge price points
+    _write_input_test_data_to_table(
+        spark,
+        file_name=f"{test_files_folder_path}/ChargePricePoints.csv",
+        table_name=infra.CHARGE_PRICE_POINTS_TABLE_NAME,
+        schema=charge_price_points_schema,
+        table_location=f"{calculation_input_path}/charge_price_points"
     )
 
 
@@ -101,7 +132,7 @@ def executed_balance_fixing(
     spark: SparkSession,
     calculator_args_balance_fixing: CalculatorArgs,
     migrations_executed: None,
-    test_data_written_to_delta_tables: None,
+    energy_input_data_written_to_delta: None,
     grid_loss_responsible_test_data: DataFrame,
 ) -> None:
     """Execute the calculator job.
@@ -119,7 +150,8 @@ def executed_wholesale_fixing(
     spark: SparkSession,
     calculator_args_wholesale_fixing: CalculatorArgs,
     migrations_executed: None,
-    test_data_written_to_delta_tables: None,
+    energy_input_data_written_to_delta: None,
+    price_input_data_written_to_delta: None,
     grid_loss_responsible_test_data: DataFrame,
 ) -> None:
     """Execute the calculator job.
@@ -148,3 +180,24 @@ def wholesale_fixing_results_df(
 ) -> DataFrame:
     results_df = spark.read.table(f"{infra.OUTPUT_DATABASE_NAME}.{infra.ENERGY_RESULT_TABLE_NAME}")
     return results_df.where(F.col(Colname.batch_id) == C.executed_wholesale_batch_id)
+
+
+def _write_input_test_data_to_table(
+        spark: SparkSession,
+        file_name: str,
+        table_name: str,
+        table_location: str,
+        schema: StructType,
+) -> None:
+    spark.sql(f"CREATE DATABASE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}")
+    spark.sql(f"CREATE TABLE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}.{table_name} USING DELTA LOCATION '{table_location}'")
+
+    df = spark.read.csv(
+        file_name,
+        header=True,
+        schema=schema,
+    )
+
+    df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(
+        f"{infra.INPUT_DATABASE_NAME}.{table_name}"
+    )

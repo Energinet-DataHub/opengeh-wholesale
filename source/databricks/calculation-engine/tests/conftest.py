@@ -156,6 +156,11 @@ def data_lake_path(integration_tests_path: str, worker_id: str) -> str:
 
 
 @pytest.fixture(scope="session")
+def calculation_input_path(data_lake_path: str) -> str:
+    return f"{data_lake_path}/calculation_input"
+
+
+@pytest.fixture(scope="session")
 def migrations_executed(spark: SparkSession, data_lake_path: str) -> None:
     execute_migrations(spark, data_lake_path)
 
