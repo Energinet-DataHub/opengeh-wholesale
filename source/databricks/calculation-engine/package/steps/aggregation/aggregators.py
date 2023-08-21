@@ -36,22 +36,22 @@ def aggregate_non_profiled_consumption_ga_brp_es(
 ) -> DataFrame:
     return _aggregate_per_ga_and_brp_and_es(
         enriched_time_series,
-        MeteringPointType.consumption,
-        SettlementMethod.non_profiled,
+        MeteringPointType.CONSUMPTION,
+        SettlementMethod.NON_PROFILED,
     )
 
 
 def aggregate_flex_consumption_ga_brp_es(enriched_time_series: DataFrame) -> DataFrame:
     return _aggregate_per_ga_and_brp_and_es(
         enriched_time_series,
-        MeteringPointType.consumption,
-        SettlementMethod.flex,
+        MeteringPointType.CONSUMPTION,
+        SettlementMethod.FLEX,
     )
 
 
 def aggregate_production_ga_brp_es(enriched_time_series: DataFrame) -> DataFrame:
     return _aggregate_per_ga_and_brp_and_es(
-        enriched_time_series, MeteringPointType.production, None
+        enriched_time_series, MeteringPointType.PRODUCTION, None
     )
 
 
@@ -100,7 +100,7 @@ def _aggregate_per_ga_and_brp_and_es(
         .withColumn(
             Colname.quality,
             when(
-                col(Colname.quality).isNull(), TimeSeriesQuality.missing.value
+                col(Colname.quality).isNull(), TimeSeriesQuality.MISSING.value
             ).otherwise(col(Colname.quality)),
         )
         .select(
@@ -124,7 +124,7 @@ def _aggregate_per_ga_and_brp_and_es(
 def aggregate_production_ga_es(production: DataFrame) -> DataFrame:
     return _aggregate_per_ga_and_es(
         production,
-        MeteringPointType.production,
+        MeteringPointType.PRODUCTION,
     )
 
 
@@ -133,14 +133,14 @@ def aggregate_non_profiled_consumption_ga_es(
 ) -> DataFrame:
     return _aggregate_per_ga_and_es(
         non_profiled_consumption,
-        MeteringPointType.consumption,
+        MeteringPointType.CONSUMPTION,
     )
 
 
 def aggregate_flex_consumption_ga_es(flex_consumption: DataFrame) -> DataFrame:
     return _aggregate_per_ga_and_es(
         flex_consumption,
-        MeteringPointType.consumption,
+        MeteringPointType.CONSUMPTION,
     )
 
 
@@ -162,7 +162,7 @@ def _aggregate_per_ga_and_es(
 
 
 def aggregate_production_ga_brp(production: DataFrame) -> DataFrame:
-    return _aggregate_per_ga_and_brp(production, MeteringPointType.production)
+    return _aggregate_per_ga_and_brp(production, MeteringPointType.PRODUCTION)
 
 
 def aggregate_non_profiled_consumption_ga_brp(
@@ -170,14 +170,14 @@ def aggregate_non_profiled_consumption_ga_brp(
 ) -> DataFrame:
     return _aggregate_per_ga_and_brp(
         non_profiled_consumption,
-        MeteringPointType.consumption,
+        MeteringPointType.CONSUMPTION,
     )
 
 
 def aggregate_flex_consumption_ga_brp(flex_consumption: DataFrame) -> DataFrame:
     return _aggregate_per_ga_and_brp(
         flex_consumption,
-        MeteringPointType.consumption,
+        MeteringPointType.CONSUMPTION,
     )
 
 
@@ -203,14 +203,14 @@ def _aggregate_per_ga_and_brp(
 def aggregate_production_ga(production: DataFrame) -> DataFrame:
     return _aggregate_per_ga(
         production,
-        MeteringPointType.production,
+        MeteringPointType.PRODUCTION,
     )
 
 
 def aggregate_non_profiled_consumption_ga(consumption: DataFrame) -> DataFrame:
     return _aggregate_per_ga(
         consumption,
-        MeteringPointType.consumption,
+        MeteringPointType.CONSUMPTION,
     )
 
 
@@ -219,7 +219,7 @@ def aggregate_flex_consumption_ga(
 ) -> DataFrame:
     return _aggregate_per_ga(
         flex_consumption,
-        MeteringPointType.consumption,
+        MeteringPointType.CONSUMPTION,
     )
 
 

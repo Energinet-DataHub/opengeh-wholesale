@@ -44,11 +44,11 @@ def aggregate_quality(time_series_df: DataFrame) -> DataFrame:
         .agg(
             # Count entries where quality is estimated (Quality=56)
             count(
-                when(col(Colname.quality) == TimeSeriesQuality.estimated.value, 1)
+                when(col(Colname.quality) == TimeSeriesQuality.ESTIMATED.value, 1)
             ).alias(temp_estimated_quality_count),
             # Count entries where quality is quantity missing (Quality=QM)
             count(
-                when(col(Colname.quality) == TimeSeriesQuality.missing.value, 1)
+                when(col(Colname.quality) == TimeSeriesQuality.MISSING.value, 1)
             ).alias(temp_quantity_missing_quality_count),
         )
         .withColumn(
@@ -57,13 +57,13 @@ def aggregate_quality(time_series_df: DataFrame) -> DataFrame:
                 # Set quality to as read (Quality=E01) if no entries where quality is estimated or quantity missing
                 when(
                     col(temp_estimated_quality_count) > 0,
-                    TimeSeriesQuality.estimated.value,
+                    TimeSeriesQuality.ESTIMATED.value,
                 )
                 .when(
                     col(temp_quantity_missing_quality_count) > 0,
-                    TimeSeriesQuality.estimated.value,
+                    TimeSeriesQuality.ESTIMATED.value,
                 )
-                .otherwise(TimeSeriesQuality.measured.value)
+                .otherwise(TimeSeriesQuality.MEASURED.value)
             ),
         )
         .drop(temp_estimated_quality_count)
@@ -108,11 +108,11 @@ def aggregate_total_consumption_quality(df: DataFrame) -> DataFrame:
             count(
                 when(
                     col(aggregated_production_quality)
-                    == TimeSeriesQuality.estimated.value,
+                    == TimeSeriesQuality.ESTIMATED.value,
                     1,
                 ).when(
                     col(aggregated_net_exchange_quality)
-                    == TimeSeriesQuality.estimated.value,
+                    == TimeSeriesQuality.ESTIMATED.value,
                     1,
                 )
             ).alias(temp_estimated_quality_count),
@@ -120,11 +120,11 @@ def aggregate_total_consumption_quality(df: DataFrame) -> DataFrame:
             count(
                 when(
                     col(aggregated_production_quality)
-                    == TimeSeriesQuality.missing.value,
+                    == TimeSeriesQuality.MISSING.value,
                     1,
                 ).when(
                     col(aggregated_net_exchange_quality)
-                    == TimeSeriesQuality.missing.value,
+                    == TimeSeriesQuality.MISSING.value,
                     1,
                 )
             ).alias(temp_quantity_missing_quality_count),
@@ -135,13 +135,13 @@ def aggregate_total_consumption_quality(df: DataFrame) -> DataFrame:
                 # Set quality to as read (Quality=E01) if no entries where quality is estimated or quantity missing
                 when(
                     col(temp_estimated_quality_count) > 0,
-                    TimeSeriesQuality.estimated.value,
+                    TimeSeriesQuality.ESTIMATED.value,
                 )
                 .when(
                     col(temp_quantity_missing_quality_count) > 0,
-                    TimeSeriesQuality.estimated.value,
+                    TimeSeriesQuality.ESTIMATED.value,
                 )
-                .otherwise(TimeSeriesQuality.measured.value)
+                .otherwise(TimeSeriesQuality.MEASURED.value)
             ),
         )
     )

@@ -24,9 +24,9 @@ from package.codelists import AggregationLevel, BasisDataType
 
 class BasisDataWriter:
     def __init__(self, container_path: str, batch_id: str):
-        self.__master_basis_data_path = f"{container_path}/{infra.get_basis_data_root_path(BasisDataType.MasterBasisData, batch_id)}"
-        self.__time_series_quarter_path = f"{container_path}/{infra.get_basis_data_root_path(BasisDataType.TimeSeriesQuarter, batch_id)}"
-        self.__time_series_hour_path = f"{container_path}/{infra.get_basis_data_root_path(BasisDataType.TimeSeriesHour, batch_id)}"
+        self.__master_basis_data_path = f"{container_path}/{infra.get_basis_data_root_path(BasisDataType.MASTER_BASIS_DATA, batch_id)}"
+        self.__time_series_quarter_path = f"{container_path}/{infra.get_basis_data_root_path(BasisDataType.TIME_SERIES_QUARTER, batch_id)}"
+        self.__time_series_hour_path = f"{container_path}/{infra.get_basis_data_root_path(BasisDataType.TIME_SERIES_HOUR, batch_id)}"
 
     def write(
         self,
@@ -70,7 +70,7 @@ class BasisDataWriter:
         timeseries_quarter_df: DataFrame,
         timeseries_hour_df: DataFrame,
     ) -> None:
-        grouping_folder_name = f"grouping={AggregationLevel.total_ga.value}"
+        grouping_folder_name = f"grouping={AggregationLevel.TOTAL_GA.value}"
 
         partition_keys = [PartitionKeyName.GRID_AREA]
         timeseries_quarter_df = timeseries_quarter_df.drop(
@@ -97,7 +97,7 @@ class BasisDataWriter:
         timeseries_quarter_df: DataFrame,
         timeseries_hour_df: DataFrame,
     ) -> None:
-        grouping_folder_name = f"grouping={AggregationLevel.es_per_ga.value}"
+        grouping_folder_name = f"grouping={AggregationLevel.ES_PER_GA.value}"
 
         partition_keys = [
             PartitionKeyName.GRID_AREA,

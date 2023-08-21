@@ -135,7 +135,7 @@ def _calculate_net_exchange(
         result_writer.write(
             exchange_per_neighbour_ga,
             TimeSeriesType.NET_EXCHANGE_PER_NEIGHBORING_GA,
-            AggregationLevel.total_ga,
+            AggregationLevel.TOTAL_GA,
         )
 
     exchange_per_grid_area = agg_steps.aggregate_net_exchange_per_ga(enriched_time_series)
@@ -143,7 +143,7 @@ def _calculate_net_exchange(
     result_writer.write(
         exchange_per_grid_area,
         TimeSeriesType.NET_EXCHANGE_PER_GA,
-        AggregationLevel.total_ga,
+        AggregationLevel.TOTAL_GA,
     )
 
     return exchange_per_grid_area
@@ -173,7 +173,7 @@ def _calculate_temporay_production_per_per_ga_and_brp_and_es(
     result_writer.write(
         temporay_production_per_ga,
         TimeSeriesType.TEMP_PRODUCTION,
-        AggregationLevel.total_ga,
+        AggregationLevel.TOTAL_GA,
     )
     return temporay_production_per_per_ga_and_brp_and_es
 
@@ -192,7 +192,7 @@ def _calculate_temporay_flex_consumption_per_per_ga_and_brp_and_es(
     result_writer.write(
         temporay_flex_consumption_per_ga,
         TimeSeriesType.TEMP_FLEX_CONSUMPTION,
-        AggregationLevel.total_ga,
+        AggregationLevel.TOTAL_GA,
     )
     return temporay_flex_consumption_per_ga_and_brp_and_es
 
@@ -214,7 +214,7 @@ def _calculate_grid_loss(
     result_writer.write(
         grid_loss,
         TimeSeriesType.GRID_LOSS,
-        AggregationLevel.total_ga,
+        AggregationLevel.TOTAL_GA,
     )
 
     positive_grid_loss = agg_steps.calculate_positive_grid_loss(grid_loss)
@@ -222,7 +222,7 @@ def _calculate_grid_loss(
     result_writer.write(
         positive_grid_loss,
         TimeSeriesType.POSITIVE_GRID_LOSS,
-        AggregationLevel.total_ga,
+        AggregationLevel.TOTAL_GA,
     )
 
     negative_grid_loss = agg_steps.calculate_negative_grid_loss(grid_loss)
@@ -230,7 +230,7 @@ def _calculate_grid_loss(
     result_writer.write(
         negative_grid_loss,
         TimeSeriesType.NEGATIVE_GRID_LOSS,
-        AggregationLevel.total_ga,
+        AggregationLevel.TOTAL_GA,
     )
 
     return positive_grid_loss, negative_grid_loss
@@ -275,7 +275,7 @@ def _calculate_production(
         result_writer.write(
             production_per_ga_and_brp_and_es,
             TimeSeriesType.PRODUCTION,
-            AggregationLevel.es_per_brp_per_ga,
+            AggregationLevel.ES_PER_BRP_PER_GA,
         )
 
         production_per_ga_and_brp = agg_steps.aggregate_production_ga_brp(
@@ -285,7 +285,7 @@ def _calculate_production(
         result_writer.write(
             production_per_ga_and_brp,
             TimeSeriesType.PRODUCTION,
-            AggregationLevel.brp_per_ga,
+            AggregationLevel.BRP_PER_GA,
         )
 
     # production per energy supplier
@@ -296,7 +296,7 @@ def _calculate_production(
     result_writer.write(
         production_per_ga_and_es,
         TimeSeriesType.PRODUCTION,
-        AggregationLevel.es_per_ga,
+        AggregationLevel.ES_PER_GA,
     )
 
     # production per grid area
@@ -307,7 +307,7 @@ def _calculate_production(
     result_writer.write(
         production_per_ga,
         TimeSeriesType.PRODUCTION,
-        AggregationLevel.total_ga
+        AggregationLevel.TOTAL_GA
     )
 
     return production_per_ga
@@ -327,7 +327,7 @@ def _calculate_flex_consumption(
     result_writer.write(
         flex_consumption_per_ga,
         TimeSeriesType.FLEX_CONSUMPTION,
-        AggregationLevel.total_ga,
+        AggregationLevel.TOTAL_GA,
     )
 
     # flex consumption per energy supplier
@@ -338,7 +338,7 @@ def _calculate_flex_consumption(
     result_writer.write(
         flex_consumption_per_ga_and_es,
         TimeSeriesType.FLEX_CONSUMPTION,
-        AggregationLevel.es_per_ga,
+        AggregationLevel.ES_PER_GA,
     )
 
     # flex consumption per balance responsible
@@ -346,7 +346,7 @@ def _calculate_flex_consumption(
         result_writer.write(
             flex_consumption_per_ga_and_brp_and_es,
             TimeSeriesType.FLEX_CONSUMPTION,
-            AggregationLevel.es_per_brp_per_ga,
+            AggregationLevel.ES_PER_BRP_PER_GA,
         )
 
         flex_consumption_per_ga_and_brp = agg_steps.aggregate_flex_consumption_ga_brp(
@@ -356,7 +356,7 @@ def _calculate_flex_consumption(
         result_writer.write(
             flex_consumption_per_ga_and_brp,
             TimeSeriesType.FLEX_CONSUMPTION,
-            AggregationLevel.brp_per_ga,
+            AggregationLevel.BRP_PER_GA,
         )
 
 
@@ -376,13 +376,13 @@ def _calculate_non_profiled_consumption(
         result_writer.write(
             consumption_per_ga_and_brp,
             TimeSeriesType.NON_PROFILED_CONSUMPTION,
-            AggregationLevel.brp_per_ga,
+            AggregationLevel.BRP_PER_GA,
         )
 
         result_writer.write(
             consumption_per_ga_and_brp_and_es,
             TimeSeriesType.NON_PROFILED_CONSUMPTION,
-            AggregationLevel.es_per_brp_per_ga,
+            AggregationLevel.ES_PER_BRP_PER_GA,
         )
 
     # Non-profiled consumption per energy supplier
@@ -393,7 +393,7 @@ def _calculate_non_profiled_consumption(
     result_writer.write(
         consumption_per_ga_and_es,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        AggregationLevel.es_per_ga,
+        AggregationLevel.ES_PER_GA,
     )
 
     # Non-profiled consumption per grid area
@@ -404,7 +404,7 @@ def _calculate_non_profiled_consumption(
     result_writer.write(
         consumption_per_ga,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        AggregationLevel.total_ga,
+        AggregationLevel.TOTAL_GA,
     )
 
 
@@ -419,7 +419,7 @@ def _calculate_total_consumption(
     result_writer.write(
         total_consumption,
         TimeSeriesType.TOTAL_CONSUMPTION,
-        AggregationLevel.total_ga,
+        AggregationLevel.TOTAL_GA,
     )
 
 

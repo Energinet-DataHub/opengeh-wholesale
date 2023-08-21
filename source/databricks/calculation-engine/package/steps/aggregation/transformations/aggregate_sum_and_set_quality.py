@@ -33,26 +33,26 @@ def aggregate_sum_and_set_quality(
             Colname.quality,
             F.when(
                 F.array_contains(
-                    F.col(qualities_col_name), F.lit(TimeSeriesQuality.missing.value)
+                    F.col(qualities_col_name), F.lit(TimeSeriesQuality.MISSING.value)
                 )
                 | F.array_contains(
-                    F.col(qualities_col_name), F.lit(TimeSeriesQuality.incomplete.value)
+                    F.col(qualities_col_name), F.lit(TimeSeriesQuality.INCOMPLETE.value)
                 ),
-                F.lit(TimeSeriesQuality.incomplete.value),
+                F.lit(TimeSeriesQuality.INCOMPLETE.value),
             )
             .when(
                 F.array_contains(
                     F.col(qualities_col_name),
-                    F.lit(TimeSeriesQuality.estimated.value),
+                    F.lit(TimeSeriesQuality.ESTIMATED.value),
                 ),
-                F.lit(TimeSeriesQuality.estimated.value),
+                F.lit(TimeSeriesQuality.ESTIMATED.value),
             )
             .when(
                 F.array_contains(
                     F.col(qualities_col_name),
-                    F.lit(TimeSeriesQuality.measured.value),
+                    F.lit(TimeSeriesQuality.MEASURED.value),
                 ),
-                F.lit(TimeSeriesQuality.measured.value),
+                F.lit(TimeSeriesQuality.MEASURED.value),
             ),
         )
     )

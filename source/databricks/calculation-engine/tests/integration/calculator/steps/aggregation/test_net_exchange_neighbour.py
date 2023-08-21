@@ -26,13 +26,13 @@ from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 from pyspark.sql.functions import col, window
 
 
-e_20 = MeteringPointType.exchange.value
+e_20 = MeteringPointType.EXCHANGE.value
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_obs_time = datetime.strptime(
     "2020-01-01T00:00:00+0000", date_time_formatting_string
 )
 numberOfTestQuarters = 96
-estimated_quality = TimeSeriesQuality.estimated.value
+estimated_quality = TimeSeriesQuality.ESTIMATED.value
 
 df_template = {
     Colname.grid_area: [],

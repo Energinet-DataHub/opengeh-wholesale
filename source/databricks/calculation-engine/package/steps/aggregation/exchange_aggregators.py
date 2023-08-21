@@ -33,7 +33,7 @@ def aggregate_net_exchange_per_neighbour_ga(
     enriched_time_series: DataFrame,
 ) -> DataFrame:
     df = enriched_time_series.where(
-        F.col(Colname.metering_point_type) == MeteringPointType.exchange.value
+        F.col(Colname.metering_point_type) == MeteringPointType.EXCHANGE.value
     )
 
     group_by = [
@@ -76,7 +76,7 @@ def aggregate_net_exchange_per_neighbour_ga(
             Colname.quality,
             Colname.sum_quantity,
             F.col(Colname.to_grid_area).alias(Colname.grid_area),
-            F.lit(MeteringPointType.exchange.value).alias(Colname.metering_point_type),
+            F.lit(MeteringPointType.EXCHANGE.value).alias(Colname.metering_point_type),
         )
     )
     return T.create_dataframe_from_aggregation_result_schema(exchange)
@@ -85,7 +85,7 @@ def aggregate_net_exchange_per_neighbour_ga(
 # Function to aggregate net exchange per grid area
 def aggregate_net_exchange_per_ga(df: DataFrame) -> DataFrame:
     exchange_to = df.filter(
-        F.col(Colname.metering_point_type) == MeteringPointType.exchange.value
+        F.col(Colname.metering_point_type) == MeteringPointType.EXCHANGE.value
     )
     exchange_to_group_by = [
         Colname.to_grid_area,
@@ -100,7 +100,7 @@ def aggregate_net_exchange_per_ga(df: DataFrame) -> DataFrame:
     )
 
     exchange_from = df.filter(
-        F.col(Colname.metering_point_type) == MeteringPointType.exchange.value
+        F.col(Colname.metering_point_type) == MeteringPointType.EXCHANGE.value
     )
     exchange_from_group_by = [
         Colname.from_grid_area,
@@ -155,7 +155,7 @@ def aggregate_net_exchange_per_ga(df: DataFrame) -> DataFrame:
             Colname.time_window,
             Colname.sum_quantity,
             Colname.quality,
-            F.lit(MeteringPointType.exchange.value).alias(Colname.metering_point_type),
+            F.lit(MeteringPointType.EXCHANGE.value).alias(Colname.metering_point_type),
         )
     )
     return T.create_dataframe_from_aggregation_result_schema(result_df)

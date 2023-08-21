@@ -14,6 +14,6 @@
 
 
 class ChargeType:
-    subscription = "D01"
-    fee = "D02"
-    tariff = "D03"
+    SUBSCRIPTION = "subscription"
+    FEE = "fee"
+    TARIFF = "tariff"

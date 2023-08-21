@@ -16,8 +16,8 @@ from enum import Enum
 
 
 class TimeSeriesQuality(Enum):
-    missing = "missing"
-    estimated = "estimated"
-    measured = "measured"
-    incomplete = "incomplete"
-    calculated = "calculated"
+    MISSING = "missing"
+    ESTIMATED = "estimated"
+    MEASURED = "measured"
+    INCOMPLETE = "incomplete"
+    CALCULATED = "calculated"
