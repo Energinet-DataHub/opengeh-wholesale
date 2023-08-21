@@ -1,19 +1,19 @@
 {
   "literals": [
     {
-      "name": "total_ga",
+      "name": "TOTAL_GA",
       "value": "total_ga"
     },
     {
-      "name": "es_per_brp_per_ga",
+      "name": "ES_PER_BRP_PER_GA",
       "value": "es_brp_ga"
     },
     {
-      "name": "es_per_ga",
+      "name": "ES_PER_GA",
       "value": "es_ga"
     },
     {
-      "name": "brp_per_ga",
+      "name": "BRP_PER_GA",
       "value": "brp_ga"
     }
   ]
