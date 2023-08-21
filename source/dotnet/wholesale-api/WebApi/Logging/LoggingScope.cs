@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Core.Messaging.Communication.Internal;
+namespace Energinet.DataHub.Wholesale.WebApi.Logging;
 
-public interface IOutboxSender
+/// <summary>
+/// Logging scope intended to be used for any logging scope in the system for aligning logging.
+/// </summary>
+public class LoggingScope : Dictionary<string, object>
 {
-    Task SendAsync(CancellationToken cancellationToken);
 }

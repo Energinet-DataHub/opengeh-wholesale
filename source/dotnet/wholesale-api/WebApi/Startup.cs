@@ -25,6 +25,7 @@ using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Energinet.DataHub.Wholesale.WebApi.HealthChecks;
+using Energinet.DataHub.Wholesale.WebApi.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.OpenApi.Models;
@@ -33,6 +34,8 @@ namespace Energinet.DataHub.Wholesale.WebApi;
 
 public class Startup
 {
+    private const string DomainName = "wholesale";
+
     public Startup(IConfiguration configuration, IWebHostEnvironment environment)
     {
         Configuration = configuration;
@@ -107,6 +110,7 @@ public class Startup
         AddCorrelationContext(serviceCollection);
 
         serviceCollection.AddUserAuthentication<FrontendUser, FrontendUserProvider>();
+        serviceCollection.AddLoggingScope(DomainName);
     }
 
     public void Configure(IApplicationBuilder app)
@@ -133,6 +137,7 @@ public class Startup
             }
         });
 
+        app.UseLoggingScope();
         app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();

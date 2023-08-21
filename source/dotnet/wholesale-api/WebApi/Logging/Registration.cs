@@ -12,6 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
+namespace Energinet.DataHub.Wholesale.WebApi.Logging;
 
-public record DatabricksSqlChunkResponse(Uri? ExternalLink, string? NextChunkInternalLink);
+public static class Registration
+{
+    public static IServiceCollection AddLoggingScope(this IServiceCollection services, string domain)
+    {
+        services.AddSingleton<RootLoggingScope>(_ => new RootLoggingScope(domain));
+        services.AddScoped<LoggingScope>();
+        services.AddScoped<LoggingScopeMiddleware>();
+
+        return services;
+    }
+
+    public static IApplicationBuilder UseLoggingScope(this IApplicationBuilder app)
+    {
+        app.UseMiddleware<LoggingScopeMiddleware>();
+
+        return app;
+    }
+}

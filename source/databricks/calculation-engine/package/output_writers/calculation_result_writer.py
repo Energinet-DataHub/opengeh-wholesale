@@ -19,7 +19,8 @@ import pyspark.sql.functions as F
 from pyspark.sql.window import Window
 
 from package.codelists import TimeSeriesType, AggregationLevel, ProcessType
-from package.constants import Colname, ResultTableColName, DATABASE_NAME, RESULT_TABLE_NAME
+from package.constants import Colname, ResultTableColName
+from package.infrastructure import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
 
 
 class CalculationResultWriter:
@@ -80,7 +81,7 @@ class CalculationResultWriter:
 
         df.write.format("delta").mode("append").option(
             "mergeSchema", "false"
-        ).insertInto(f"{DATABASE_NAME}.{RESULT_TABLE_NAME}")
+        ).insertInto(f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}")
 
 
 def _get_column_group_for_calculation_result_id() -> list[str]:

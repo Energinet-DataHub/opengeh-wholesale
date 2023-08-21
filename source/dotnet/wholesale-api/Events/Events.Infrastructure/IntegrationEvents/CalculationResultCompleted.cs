@@ -20,7 +20,7 @@ public partial class CalculationResultCompleted
     /// <summary>
     /// The message type for transport message meta data in accordance with ADR-008.
     /// </summary>
-    public const string MessageName = "CalculationResultCompleted";
+    public const string EventName = "CalculationResultCompleted";
 
-    public const int MessageVersion = 1;
+    public const int EventMinorVersion = 2;
 }

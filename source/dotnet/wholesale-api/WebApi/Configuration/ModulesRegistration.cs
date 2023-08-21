@@ -16,7 +16,9 @@ using Azure.Identity;
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.JsonSerialization;
+using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Wholesale.Common.Databricks;
+using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Energinet.DataHub.Wholesale.Common.DatabricksClient;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
@@ -35,12 +37,23 @@ internal static class ServiceCollectionExtensions
             .Get<ConnectionStringsOptions>();
         serviceCollection.AddBatchesModule(() => connectionStringOptions!.DB_CONNECTION_STRING);
 
-        serviceCollection.AddCalculationResultsModule();
+        var sqlWarehouseOptions = configuration.Get<DatabricksOptions>()!;
+        serviceCollection.AddCalculationResultsModule(
+            sqlWarehouseOptions.DATABRICKS_WAREHOUSE_ID,
+            sqlWarehouseOptions.DATABRICKS_WORKSPACE_TOKEN,
+            sqlWarehouseOptions.DATABRICKS_WORKSPACE_URL);
 
-        var serviceBusOptions = configuration.Get<ServiceBusOptions>()!;
-        serviceCollection.AddEventsModule(
-            serviceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING,
-            serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME);
+        serviceCollection.AddEventsModule(_ =>
+        {
+            var serviceBusOptions = configuration.Get<ServiceBusOptions>()!;
+
+            return new CommunicationSettings
+            {
+                ServiceBusIntegrationEventWriteConnectionString =
+                    serviceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING,
+                IntegrationEventTopicName = serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
+            };
+        });
 
         // Add registration that are used by more than one module
         serviceCollection.AddShared(configuration);
@@ -69,17 +82,22 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddDataLakeFileSystemClient(configuration);
     }
 
-    private static void AddDataLakeFileSystemClient(this IServiceCollection serviceCollection, IConfiguration configuration)
+    private static void AddDataLakeFileSystemClient(
+        this IServiceCollection serviceCollection,
+        IConfiguration configuration)
     {
         var options = configuration.Get<DataLakeOptions>()!;
         serviceCollection.AddSingleton<DataLakeFileSystemClient>(_ =>
         {
-            var dataLakeServiceClient = new DataLakeServiceClient(new Uri(options.STORAGE_ACCOUNT_URI), new DefaultAzureCredential());
+            var dataLakeServiceClient =
+                new DataLakeServiceClient(new Uri(options.STORAGE_ACCOUNT_URI), new DefaultAzureCredential());
             return dataLakeServiceClient.GetFileSystemClient(options.STORAGE_CONTAINER_NAME);
         });
     }
 
-    private static void AddDateTimeConfiguration(this IServiceCollection serviceCollection, IConfiguration configuration)
+    private static void AddDateTimeConfiguration(
+        this IServiceCollection serviceCollection,
+        IConfiguration configuration)
     {
         var options = configuration.Get<DateTimeOptions>()!;
         serviceCollection.AddSingleton<DateTimeZone>(_ =>

@@ -15,8 +15,6 @@
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Core.Messaging.Communication;
-using Energinet.DataHub.Core.Messaging.Communication.Internal;
-using Energinet.DataHub.Wholesale.Events.Application;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Energinet.DataHub.Wholesale.Events.Application.Triggers;
@@ -34,8 +32,7 @@ public static class EventsRegistration
 {
     public static void AddEventsModule(
         this IServiceCollection serviceCollection,
-        string serviceBusConnectionString,
-        string integrationEventTopicName)
+        Func<IServiceProvider, CommunicationSettings> communicationSettingsFactory)
     {
         serviceCollection.AddHostedService<RegisterCompletedBatchesTrigger>();
 
@@ -48,7 +45,7 @@ public static class EventsRegistration
         serviceCollection.AddApplications();
         serviceCollection.AddInfrastructure();
 
-        serviceCollection.AddCommunication<IntegrationEventProvider>(serviceBusConnectionString, integrationEventTopicName);
+        serviceCollection.AddCommunication<IntegrationEventProvider>(communicationSettingsFactory);
 
         serviceCollection
             .AddHealthChecks()
@@ -68,6 +65,5 @@ public static class EventsRegistration
     {
         serviceCollection.AddScoped<IEventsDatabaseContext, EventsDatabaseContext>();
         serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
-        serviceCollection.AddScoped<IServiceBusMessageFactory, ServiceBusMessageFactory>();
     }
 }
