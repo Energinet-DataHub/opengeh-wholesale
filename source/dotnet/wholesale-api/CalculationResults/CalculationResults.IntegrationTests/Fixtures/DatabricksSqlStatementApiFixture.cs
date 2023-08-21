@@ -12,9 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
-using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -38,7 +37,7 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
 
     public DatabricksSchemaManager DatabricksSchemaManager { get; }
 
-    private Mock<IOptions<DatabricksOptions>> DatabricksOptionsMock { get; }
+    private Mock<IOptions<Core.Databricks.SqlStatementExecution.Internal.AppSettings.DatabricksOptions>> DatabricksOptionsMock { get; }
 
     public async Task InitializeAsync()
     {
@@ -64,16 +63,16 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
         return sqlStatementClient;
     }
 
-    private static Mock<IOptions<DatabricksOptions>> CreateDatabricksOptionsMock(DatabricksSchemaManager databricksSchemaManager)
+    private static Mock<IOptions<Core.Databricks.SqlStatementExecution.Internal.AppSettings.DatabricksOptions>> CreateDatabricksOptionsMock(DatabricksSchemaManager databricksSchemaManager)
     {
-        var databricksOptionsMock = new Mock<IOptions<DatabricksOptions>>();
+        var databricksOptionsMock = new Mock<IOptions<Core.Databricks.SqlStatementExecution.Internal.AppSettings.DatabricksOptions>>();
         databricksOptionsMock
             .Setup(o => o.Value)
-            .Returns(new DatabricksOptions
+            .Returns(new Core.Databricks.SqlStatementExecution.Internal.AppSettings.DatabricksOptions
             {
-                DATABRICKS_WORKSPACE_URL = databricksSchemaManager.Settings.WorkspaceUrl,
-                DATABRICKS_WORKSPACE_TOKEN = databricksSchemaManager.Settings.WorkspaceAccessToken,
-                DATABRICKS_WAREHOUSE_ID = databricksSchemaManager.Settings.WarehouseId,
+                WorkspaceUrl = databricksSchemaManager.Settings.WorkspaceUrl,
+                WorkspaceToken = databricksSchemaManager.Settings.WorkspaceAccessToken,
+                WarehouseId = databricksSchemaManager.Settings.WarehouseId,
             });
 
         return databricksOptionsMock;

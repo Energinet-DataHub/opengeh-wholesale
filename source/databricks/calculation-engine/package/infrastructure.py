@@ -17,8 +17,18 @@
 from typing import Union
 from package.codelists import BasisDataType
 
-WHOLESALE_CONTAINER_NAME = "wholesale"
+# Input database and tables
+INPUT_DATABASE_NAME = "wholesale"
+METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods"
+TIME_SERIES_POINTS_TABLE_NAME = "time_series_points"
 
+# Output database and tables
+OUTPUT_DATABASE_NAME = "wholesale_output"
+ENERGY_RESULT_TABLE_NAME = "result"
+TEST = ""
+
+# Paths
+WHOLESALE_CONTAINER_NAME = "wholesale"
 OUTPUT_FOLDER = "calculation-output"
 BASIS_DATA_FOLDER = "basis_data"
 
@@ -47,10 +57,6 @@ def get_basis_data_path(
         return f"{basis_data_root_path}/grouping=total_ga/grid_area={grid_area}"
     else:
         return f"{basis_data_root_path}/grouping=es_ga/grid_area={grid_area}/energy_supplier_gln={energy_supplier_id}"
-
-
-def get_calculation_output_folder() -> str:
-    return OUTPUT_FOLDER
 
 
 def get_batch_relative_path(batch_id: str) -> str:

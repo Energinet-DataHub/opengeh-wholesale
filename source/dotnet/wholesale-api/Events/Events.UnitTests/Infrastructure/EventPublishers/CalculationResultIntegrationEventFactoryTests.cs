@@ -43,9 +43,9 @@ public class CalculationResultIntegrationEventFactoryTests
         var actual = sut.Create(calculationResult);
 
         // Assert
-        actual.EventName.Should().Be(CalculationResultCompleted.MessageName);
+        actual.EventName.Should().Be(CalculationResultCompleted.EventName);
         actual.Message.ToByteArray().Should().BeEquivalentTo(calculationResultCompleted.ToByteArray());
-        actual.EventMinorVersion.Should().Be(CalculationResultCompleted.MessageVersion);
+        actual.EventMinorVersion.Should().Be(CalculationResultCompleted.EventMinorVersion);
         actual.EventIdentification.Should().Be(calculationResult.Id);
     }
 }
