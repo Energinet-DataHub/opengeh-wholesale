@@ -27,6 +27,10 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi;
 
 public class ControllerRolesTests
 {
+    /*
+     * The current controllers do not contain all authorize attributes senarios therefore two test
+     * controllers where added and tested.
+     */
     [Theory]
     [InlineAutoData(typeof(Test1Controller), "CreateTest", "TestRole")]
     [InlineAutoData(typeof(Test1Controller), "CreateTest2", "TestRole1")]
@@ -38,10 +42,10 @@ public class ControllerRolesTests
     public void TestEndpointsMustHaveCorrectPermissions(Type controllerType, string endpointRoute, string expectedPermissions)
     {
         // Arrange & Act
-        var attributes = GetAuthorizeAttributesFromEndpoint(controllerType, endpointRoute);
+        var attributes = GetAuthorizeAttributesFromControllerEndpoint(controllerType, endpointRoute);
         if (attributes == null)
         {
-            Assert.True(false, $"The route {endpointRoute} does not exist in test controller {controllerType}.");
+            Assert.True(false, $"The route {endpointRoute} does not exist in controller {controllerType}.");
         }
 
         var actualPermissions = attributes.Select(x => x.Roles);
@@ -58,13 +62,13 @@ public class ControllerRolesTests
     [InlineAutoData(typeof(SettlementReportController), "Download", Permissions.SettlementReportsManage)]
     [InlineAutoData(typeof(SettlementReportController), "GetSettlementReportAsStreamAsync", Permissions.SettlementReportsManage)]
     [InlineAutoData(typeof(SettlementReportController), "ZippedBasisDataStream", Permissions.SettlementReportsManage)]
-    public void EndpointsMustHaveCorrectPermissions(Type controllerType, string endpointRoute, string expectedPermissions)
+    public void EndpointsMustHaveCorrectPermissions(Type controllerType, string endpoint, string expectedPermissions)
     {
         // Arrange & Act
-        var attributes = GetAuthorizeAttributesFromEndpoint(controllerType, endpointRoute);
+        var attributes = GetAuthorizeAttributesFromControllerEndpoint(controllerType, endpoint);
         if (attributes == null)
         {
-            Assert.True(false, $"The route {endpointRoute} does not exist in controller {controllerType}.");
+            Assert.True(false, $"The route {endpoint} does not exist in controller {controllerType}.");
         }
 
         var actualPermissions = attributes.Select(x => x.Roles);
@@ -73,7 +77,7 @@ public class ControllerRolesTests
         actualPermissions.Should().Contain(expectedPermissions);
     }
 
-    private static IEnumerable<AuthorizeAttribute> GetAuthorizeAttributesFromEndpoint(Type controllerType, string endpointRoute)
+    private static IEnumerable<AuthorizeAttribute> GetAuthorizeAttributesFromControllerEndpoint(Type controllerType, string endpointRoute)
     {
         var authorizeAttribute = controllerType.GetCustomAttribute<AuthorizeAttribute>();
         var authorizeAttributes = new List<AuthorizeAttribute>();
