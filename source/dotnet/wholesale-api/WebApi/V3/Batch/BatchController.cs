@@ -16,6 +16,7 @@ using System.ComponentModel.DataAnnotations;
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.Common.Security;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
@@ -47,6 +48,7 @@ public class BatchController : V3ControllerBase
     [HttpPost(Name = "CreateBatch")]
     [MapToApiVersion(Version)]
     [Produces("application/json", Type = typeof(Guid))]
+    [Authorize(Roles = Permissions.CalculationsManage)]
     public async Task<Guid> CreateAsync([FromBody][Required] BatchRequestDto batchRequestDto)
     {
         return await _createBatchHandler.HandleAsync(new CreateBatchCommand(
@@ -64,6 +66,7 @@ public class BatchController : V3ControllerBase
     [HttpGet("{batchId}", Name = "GetBatch")]
     [MapToApiVersion(Version)]
     [Produces("application/json", Type = typeof(BatchDto))]
+    [Authorize(Roles = Permissions.CalculationsManage)]
     public async Task<IActionResult> GetAsync([FromRoute]Guid batchId)
     {
         return Ok(await _batchesClient.GetAsync(batchId).ConfigureAwait(false));
@@ -82,6 +85,7 @@ public class BatchController : V3ControllerBase
     [HttpGet(Name = "SearchBatches")]
     [MapToApiVersion(Version)]
     [Produces("application/json", Type = typeof(List<BatchDto>))]
+    [Authorize(Roles = Permissions.CalculationsManage)]
     public async Task<IActionResult> SearchAsync(
         [FromQuery] string[]? gridAreaCodes,
         [FromQuery] BatchState? executionState,
