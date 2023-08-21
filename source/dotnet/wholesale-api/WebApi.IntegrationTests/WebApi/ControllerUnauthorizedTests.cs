@@ -38,7 +38,7 @@ public class ControllerUnauthorizedTests :
     }
 
     [Fact]
-    public async Task GetAsync_WithoutAccess_ReturnsUnauthorized()
+    public async Task Endpoint_WithoutAccess_ReturnsUnauthorized()
     {
         // Arrange
         using var client = _factory.CreateClient();

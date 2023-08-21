@@ -20,6 +20,7 @@ using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 using Energinet.DataHub.Wholesale.WebApi.V3.SettlementReport;
 using FluentAssertions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Xunit;
 
@@ -53,6 +54,23 @@ public class ControllerRolesTests
         // Assert
         Assert.NotNull(actualPermissions);
         actualPermissions.Should().Contain(expectedPermissions);
+    }
+
+    /// <summary>
+    /// If the this tests fails it probably means that a new controller has been added to the project
+    /// and that you must increase the expected count. This test is made to remind you that the test below
+    /// (EndpointsMustHaveCorrectPermissions) must to be updated when adding a new controller.
+    /// </summary>
+    [Fact]
+    public void ControllerCountBeCorrect()
+    {
+        // Arrange & Act
+        var expectedCount = 2;
+        var types = GetAllControllerTypes();
+
+        // Assert
+        var errorMessage = types!.Select(x => x.Name).Aggregate((a, b) => a + "\n" + b);
+        Assert.True(types!.Count == expectedCount, errorMessage);
     }
 
     [Theory]
@@ -93,5 +111,14 @@ public class ControllerRolesTests
 
         authorizeAttributes.AddRange(authorizeAttributesFromMethods);
         return authorizeAttributes;
+    }
+
+    private static ICollection<Type>? GetAllControllerTypes()
+    {
+        var controllers = Assembly.GetAssembly(typeof(BatchController))?
+            .GetTypes()
+            .Where(type => typeof(V3ControllerBase).IsAssignableFrom(type) && !type.IsAbstract)
+            .ToList();
+        return controllers;
     }
 }
