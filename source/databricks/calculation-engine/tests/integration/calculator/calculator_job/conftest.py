@@ -15,6 +15,7 @@
 from azure.identity import ClientSecretCredential
 from datetime import datetime
 from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql.types import StructType
 import pyspark.sql.functions as F
 import pytest
 from unittest.mock import patch
@@ -68,49 +69,27 @@ def grid_loss_responsible_test_data(
 
 
 @pytest.fixture(scope="session")
-def input_database_created(
-    spark: SparkSession,
-) -> None:
-    spark.sql(f"CREATE DATABASE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}")
-
-
-@pytest.fixture(scope="session")
 def metering_points_and_time_series_input_data_written_to_delta_tables(
     spark: SparkSession,
     test_files_folder_path: str,
-    input_database_created: None,
-    data_lake_path: str
+    calculation_input_path: str
 ) -> None:
     # Metering point periods
-    spark.sql(
-        f"CREATE TABLE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}.{infra.METERING_POINT_PERIODS_TABLE_NAME} USING DELTA \
-            LOCATION '{data_lake_path}/calculation_input/metering_point_periods'"
-    )
-
-    metering_points_df = spark.read.csv(
-        f"{test_files_folder_path}/MeteringPointsPeriods.csv",
-        header=True,
+    _write_input_test_data_to_table(
+        spark,
+        file_name=f"{test_files_folder_path}/MeteringPointsPeriods.csv",
+        table_name=infra.METERING_POINT_PERIODS_TABLE_NAME,
         schema=metering_point_period_schema,
-    )
-
-    metering_points_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(
-        f"{infra.INPUT_DATABASE_NAME}.{infra.METERING_POINT_PERIODS_TABLE_NAME}"
+        table_location=f"{calculation_input_path}/metering_point_periods"
     )
 
     # Time series points
-    spark.sql(
-        f"CREATE TABLE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}.{infra.TIME_SERIES_POINTS_TABLE_NAME} USING DELTA \
-            LOCATION '{data_lake_path}/calculation_input/time_series_points'"
-    )
-
-    timeseries_points_df = spark.read.csv(
-        f"{test_files_folder_path}/TimeSeriesPoints.csv",
-        header=True,
+    _write_input_test_data_to_table(
+        spark,
+        file_name=f"{test_files_folder_path}/TimeSeriesPoints.csv",
+        table_name=infra.TIME_SERIES_POINTS_TABLE_NAME,
         schema=time_series_point_schema,
-    )
-
-    timeseries_points_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(
-        f"{infra.INPUT_DATABASE_NAME}.{infra.TIME_SERIES_POINTS_TABLE_NAME}"
+        table_location=f"{calculation_input_path}/time_series_points"
     )
 
 
@@ -118,55 +97,33 @@ def metering_points_and_time_series_input_data_written_to_delta_tables(
 def charge_input_data_written_to_delta_tables(
     spark: SparkSession,
     test_files_folder_path: str,
-    input_database_created: None,
-    data_lake_path: str
+    calculation_input_path: str
 ) -> None:
     # Charge master data periods
-    spark.sql(
-        f"CREATE TABLE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}.{infra.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME} USING DELTA \
-            LOCATION '{data_lake_path}/calculation_input/charge_master_data_periods'"
-    )
-
-    charge_master_data_periods_df = spark.read.csv(
-        f"{test_files_folder_path}/ChargeMasterDataPeriods.csv",
-        header=True,
+    _write_input_test_data_to_table(
+        spark,
+        file_name=f"{test_files_folder_path}/ChargeMasterDataPeriods.csv",
+        table_name=infra.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME,
         schema=charge_master_data_periods_schema,
-    )
-
-    charge_master_data_periods_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(
-        f"{infra.INPUT_DATABASE_NAME}.{infra.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}"
+        table_location=f"{calculation_input_path}/charge_master_data_periods"
     )
 
     # Charge link periods
-    spark.sql(
-        f"CREATE TABLE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}.{infra.CHARGE_LINK_PERIODS_TABLE_NAME} USING DELTA \
-            LOCATION '{data_lake_path}/calculation_input/charge_link_periods'"
-    )
-
-    charge_links_periods_df = spark.read.csv(
-        f"{test_files_folder_path}/ChargeLinkPeriods.csv",
-        header=True,
+    _write_input_test_data_to_table(
+        spark,
+        file_name=f"{test_files_folder_path}/ChargeLinkPeriods.csv",
+        table_name=infra.CHARGE_LINK_PERIODS_TABLE_NAME,
         schema=charge_link_periods_schema,
-    )
-
-    charge_links_periods_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(
-        f"{infra.INPUT_DATABASE_NAME}.{infra.CHARGE_LINK_PERIODS_TABLE_NAME}"
+        table_location=f"{calculation_input_path}/charge_link_periods"
     )
 
     # Charge price points
-    spark.sql(
-        f"CREATE TABLE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}.{infra.CHARGE_PRICE_POINTS_TABLE_NAME} USING DELTA \
-            LOCATION '{data_lake_path}/calculation_input/charge_price_points'"
-    )
-
-    charge_prices_points_df = spark.read.csv(
-        f"{test_files_folder_path}/ChargePricePoints.csv",
-        header=True,
+    _write_input_test_data_to_table(
+        spark,
+        file_name=f"{test_files_folder_path}/ChargePricePoints.csv",
+        table_name=infra.CHARGE_PRICE_POINTS_TABLE_NAME,
         schema=charge_price_points_schema,
-    )
-
-    charge_prices_points_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(
-        f"{infra.INPUT_DATABASE_NAME}.{infra.CHARGE_PRICE_POINTS_TABLE_NAME}"
+        table_location=f"{calculation_input_path}/charge_price_points"
     )
 
 
@@ -223,3 +180,24 @@ def wholesale_fixing_results_df(
 ) -> DataFrame:
     results_df = spark.read.table(f"{infra.OUTPUT_DATABASE_NAME}.{infra.ENERGY_RESULT_TABLE_NAME}")
     return results_df.where(F.col(Colname.batch_id) == C.executed_wholesale_batch_id)
+
+
+def _write_input_test_data_to_table(
+        spark: SparkSession,
+        file_name: str,
+        table_name: str,
+        table_location: str,
+        schema: StructType,
+) -> None:
+    spark.sql(f"CREATE DATABASE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}")
+    spark.sql(f"CREATE TABLE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}.{table_name} USING DELTA LOCATION '{table_location}'")
+
+    df = spark.read.csv(
+        file_name,
+        header=True,
+        schema=schema,
+    )
+
+    df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(
+        f"{infra.INPUT_DATABASE_NAME}.{table_name}"
+    )
