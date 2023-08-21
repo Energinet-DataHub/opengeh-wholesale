@@ -28,7 +28,7 @@ Charge price points are only used in settlement.
 Data must be stored in a Delta table.
 Data must always be the current data.
 """
-charge_price_point_schema = StructType(
+charge_price_points_schema = StructType(
     [
         # The ID is only guaranteed to be unique for a specific actor and charge type.
         # The ID is provided by the charge owner (actor).
