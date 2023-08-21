@@ -25,17 +25,28 @@ using Moq;
 namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 
 /// <summary>
-/// When we execute the tests on build agents we use the builded output (assemblies).
-/// To avoid an 'System.IO.DirectoryNotFoundException' exception from WebApplicationFactory
-/// during creation, we must set the path to the 'content root' using an environment variable
-/// named 'ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_WEBAPI'.
+///     When we execute the tests on build agents we use the build output (assemblies).
+///     To avoid an 'System.IO.DirectoryNotFoundException' exception from WebApplicationFactory
+///     during creation, we must set the path to the 'content root' using an environment variable
+///     named 'ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_WEBAPI'.
 /// </summary>
 public class WebApiFactory : WebApplicationFactory<Startup>
 {
     private bool _authenticationEnabled;
 
     /// <summary>
-    /// Integration tests run without authentication, unless explicitly enabled.
+    ///     Allow configuring the behaviour of the <see cref="ISettlementReportClient" /> by providing a custom
+    ///     <see cref="Moq.Mock{ISettlementReportApplicationService}" /> mock.
+    ///     NOTE: This will only work as expected as long as no tests are executed in parallel.
+    /// </summary>
+    public Mock<ISettlementReportClient>? SettlementReportApplicationServiceMock { get; set; }
+
+    public Mock<IBatchesClient>? BatchesClientMock { get; set; }
+
+    public Mock<IUserContext<FrontendUser>>? UserContextMock { get; }
+
+    /// <summary>
+    ///     Integration tests run without authentication, unless explicitly enabled.
     /// </summary>
     public void ReenableAuthentication()
     {
@@ -45,7 +56,9 @@ public class WebApiFactory : WebApplicationFactory<Startup>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         if (builder == null)
+        {
             throw new ArgumentNullException(nameof(builder));
+        }
 
         // This can be used for changing registrations in the container (e.g. for mocks).
         builder.ConfigureServices(services =>
@@ -61,20 +74,11 @@ public class WebApiFactory : WebApplicationFactory<Startup>
             services.AddScoped(_ => BatchesClientMock?.Object ?? new Mock<IBatchesClient>().Object);
 
             var defaultUserContext = new Mock<IUserContext<FrontendUser>>();
-            defaultUserContext.Setup(x => x.CurrentUser).Returns(new FrontendUser(Guid.NewGuid(), Guid.NewGuid(), false));
+            defaultUserContext.Setup(x => x.CurrentUser)
+                .Returns(new FrontendUser(Guid.NewGuid(), Guid.NewGuid(), false));
             services.AddScoped(_ => UserContextMock?.Object ?? defaultUserContext.Object);
         });
     }
-
-    /// <summary>
-    /// Allow configuring the behaviour of the <see cref="ISettlementReportClient"/> by providing a custom <see cref="Moq.Mock{ISettlementReportApplicationService}" /> mock.
-    /// NOTE: This will only work as expected as long as no tests are executed in parallel.
-    /// </summary>
-    public Mock<ISettlementReportClient>? SettlementReportApplicationServiceMock { get; set; }
-
-    public Mock<IBatchesClient>? BatchesClientMock { get; set; }
-
-    public Mock<IUserContext<FrontendUser>>? UserContextMock { get; set; }
 
     private sealed class AllowAnonymous : IAuthorizationHandler
     {
