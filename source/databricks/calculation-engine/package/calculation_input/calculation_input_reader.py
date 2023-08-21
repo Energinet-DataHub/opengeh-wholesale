@@ -13,6 +13,8 @@
 # limitations under the License.
 
 from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql.functions import concat_ws, col
+from package.constants import Colname
 import package.infrastructure as infra
 
 
@@ -30,10 +32,20 @@ class CalculationInputReader:
         return self.__spark.read.table(f"{infra.INPUT_DATABASE_NAME}.{infra.TIME_SERIES_POINTS_TABLE_NAME}")
 
     def read_charge_links_periods(self) -> DataFrame:
-        return self.__spark.read.table(f"{infra.INPUT_DATABASE_NAME}.{infra.CHARGE_LINK_PERIODS_TABLE_NAME}")
+        df = self.__spark.read.table(f"{infra.INPUT_DATABASE_NAME}.{infra.CHARGE_LINK_PERIODS_TABLE_NAME}")
+        df = _add_charge_key_column(df)
+        return df
 
     def read_charge_master_data_periods(self) -> DataFrame:
-        return self.__spark.read.table(f"{infra.INPUT_DATABASE_NAME}.{infra.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}")
+        df = self.__spark.read.table(f"{infra.INPUT_DATABASE_NAME}.{infra.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}")
+        df = _add_charge_key_column(df)
+        return df
 
     def read_charge_price_points(self) -> DataFrame:
-        return self.__spark.read.table(f"{infra.INPUT_DATABASE_NAME}.{infra.CHARGE_PRICE_POINTS_TABLE_NAME}")
+        df = self.__spark.read.table(f"{infra.INPUT_DATABASE_NAME}.{infra.CHARGE_PRICE_POINTS_TABLE_NAME}")
+        df = _add_charge_key_column(df)
+        return df
+
+
+def _add_charge_key_column(charge_df: DataFrame) -> DataFrame:
+    return charge_df.withColumn(Colname.charge_key, concat_ws("-", col(Colname.charge_id), col(Colname.charge_owner), col(Colname.charge_type)))
