@@ -21,16 +21,16 @@ from package.constants import Colname
 def get_tariff_charges(
     metering_points: DataFrame,
     time_series: DataFrame,
-    charges: DataFrame,
+    charge_master_data: DataFrame,
     charge_links: DataFrame,
     charge_prices: DataFrame,
     resolution_duration: ChargeResolution,
 ) -> DataFrame:
     # filter on resolution
-    charges = get_charges_based_on_resolution(charges, resolution_duration)
+    charge_master_data = get_charges_based_on_resolution(charge_master_data, resolution_duration)
 
     df = __join_properties_on_charges_with_given_charge_type(
-        charges,
+        charge_master_data,
         charge_prices,
         charge_links,
         metering_points,
@@ -51,13 +51,13 @@ def get_tariff_charges(
 
 
 def get_fee_charges(
-    charges: DataFrame,
+    charge_master_data: DataFrame,
     charge_prices: DataFrame,
     charge_links: DataFrame,
     metering_points: DataFrame,
 ) -> DataFrame:
     return __join_properties_on_charges_with_given_charge_type(
-        charges,
+        charge_master_data,
         charge_prices,
         charge_links,
         metering_points,
@@ -66,13 +66,13 @@ def get_fee_charges(
 
 
 def get_subscription_charges(
-    charges: DataFrame,
+    charge_master_data: DataFrame,
     charge_prices: DataFrame,
     charge_links: DataFrame,
     metering_points: DataFrame,
 ) -> DataFrame:
     return __join_properties_on_charges_with_given_charge_type(
-        charges,
+        charge_master_data,
         charge_prices,
         charge_links,
         metering_points,
@@ -81,14 +81,14 @@ def get_subscription_charges(
 
 
 def get_charges_based_on_resolution(
-    charges: DataFrame, resolution_duration: ChargeResolution
+    charge_master_data: DataFrame, resolution_duration: ChargeResolution
 ) -> DataFrame:
-    df = charges.filter(col(Colname.resolution) == resolution_duration.value)
+    df = charge_master_data.filter(col(Colname.resolution) == resolution_duration.value)
     return df
 
 
-def get_charges_based_on_charge_type(charges: DataFrame, charge_type: str) -> DataFrame:
-    df = charges.filter(col(Colname.charge_type) == charge_type)
+def get_charges_based_on_charge_type(charge_master_data: DataFrame, charge_type: ChargeType) -> DataFrame:
+    df = charge_master_data.filter(col(Colname.charge_type) == charge_type.value)
     return df
 
 
@@ -251,19 +251,19 @@ def __get_window_duration_string_based_on_resolution(
     return window_duration_string
 
 
-# Join charges, charge prices, charge links, and metering points together. On given charge type
+# Join charge_master_data, charge prices, charge links, and metering points together. On given charge type
 def __join_properties_on_charges_with_given_charge_type(
-    charges: DataFrame,
+    charge_master_data: DataFrame,
     charge_prices: DataFrame,
     charge_links: DataFrame,
     metering_points: DataFrame,
-    charge_type: str,
+    charge_type: ChargeType,
 ) -> DataFrame:
     # filter on charge_type
-    charges = get_charges_based_on_charge_type(charges, charge_type)
+    charge_master_data = get_charges_based_on_charge_type(charge_master_data, charge_type)
 
-    # join charge prices with charges
-    charges_with_prices = join_with_charge_prices(charges, charge_prices)
+    # join charge prices with charge_master_data
+    charges_with_prices = join_with_charge_prices(charge_master_data, charge_prices)
 
     if charge_type == ChargeType.subscription:
         # Explode dataframe: create row for each day the time period from and to date

@@ -26,15 +26,17 @@ def execute(
 ) -> None:
 
     # Read charge data from delta tables
-    calculation_input_reader.
-    
+    charge_master_data = calculation_input_reader.read_charge_master_data_periods()
+    charge_links = calculation_input_reader.read_charge_links_periods()
+    charge_prices = calculation_input_reader.read_charge_price_points()
+
     tariffs_hourly = init.get_tariff_charges(
         metering_points_periods_df,
         time_series_point_df,
-        charges,
+        charge_master_data,
         charge_links,
         charge_prices,
         ChargeResolution.hour
     )
-    
+
     tariff_per_ga_co_es = calculate_tariff_price_per_ga_co_es(tariffs_hourly)
