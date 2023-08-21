@@ -39,4 +39,4 @@ def execute(
         ChargeResolution.hour
     )
 
-    tariff_per_ga_co_es = calculate_tariff_price_per_ga_co_es(tariffs_hourly)
+    # hourly_tariff_per_ga_co_es = calculate_tariff_price_per_ga_co_es(tariffs_hourly)
