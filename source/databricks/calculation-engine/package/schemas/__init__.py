@@ -14,6 +14,9 @@
 from .metering_point_schema import metering_point_schema
 from .market_roles_schema import market_roles_schema
 from .charges_schema import charges_schema, charge_links_schema, charge_prices_schema
+from .charge_link_periods_schema import charge_link_periods_schema
+from .charge_master_data_periods_schema import charge_master_data_periods_schema
+from .charge_price_points_schema import charge_price_points_schema
 from .time_series_point_schema import time_series_point_schema
 from .metering_point_period_schema import metering_point_period_schema
 from .results_schema import results_schema

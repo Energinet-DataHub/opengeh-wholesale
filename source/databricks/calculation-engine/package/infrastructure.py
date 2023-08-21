@@ -21,6 +21,9 @@ from package.codelists import BasisDataType
 INPUT_DATABASE_NAME = "wholesale"
 METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods"
 TIME_SERIES_POINTS_TABLE_NAME = "time_series_points"
+CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods"
+CHARGE_MASTER_DATA_PERIODS_TABLE_NAME = "charge_masterdata_periods"
+CHARGE_PRICE_POINTS_TABLE_NAME = "charge_price_points"
 
 # Output database and tables
 OUTPUT_DATABASE_NAME = "wholesale_output"

@@ -29,7 +29,7 @@ Data must be stored in a Delta table.
 
 The table data must always contain current data.
 """
-charge_master_data_period_schema = StructType(
+charge_master_data_periods_schema = StructType(
     [
         # ID of the charge
         # The ID is only guaranteed to be unique for a specific actor and charge type.
