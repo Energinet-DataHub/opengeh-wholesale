@@ -8,8 +8,10 @@
 # How to generate the client code
 
 1. Delete the swagger.json file.
-2. Rebuild the DomainTest project.
-3. A new swagger.json file and WholesaleClient.cs file will be generated.
+2. Create VPN connection to u-001 using Azure VPN Client
+3. Rebuild the DomainTest project.
+
+A new swagger.json file and WholesaleClient.cs file will be generated.
 
 # How to build the client from a different swagger.json file, than the one specified in nswag.json
 
