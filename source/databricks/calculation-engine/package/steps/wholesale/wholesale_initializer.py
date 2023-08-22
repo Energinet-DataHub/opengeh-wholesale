@@ -18,34 +18,22 @@ from package.codelists import ChargeType, ChargeResolution
 from package.constants import Colname
 
 
-charge_from_date = "charge_from_date"
-charge_to_date = "charge_to_date"
-charge_link_from_date = "charge_link_from_date"
-charge_link_to_date = "charge_link_to_date"
-market_roles_from_date = "market_roles_from_date"
-market_roles_to_date = "market_roles_to_date"
-metering_point_from_date = "metering_point_from_date"
-metering_point_to_date = "metering_point_to_date"
-
-
 def get_tariff_charges(
+    metering_points: DataFrame,
     time_series: DataFrame,
-    charges: DataFrame,
+    charge_master_data: DataFrame,
     charge_links: DataFrame,
     charge_prices: DataFrame,
-    metering_points: DataFrame,
-    market_roles: DataFrame,
     resolution_duration: ChargeResolution,
 ) -> DataFrame:
     # filter on resolution
-    charges = get_charges_based_on_resolution(charges, resolution_duration)
+    charge_master_data = get_charges_based_on_resolution(charge_master_data, resolution_duration)
 
     df = __join_properties_on_charges_with_given_charge_type(
-        charges,
+        charge_master_data,
         charge_prices,
         charge_links,
         metering_points,
-        market_roles,
         ChargeType.TARIFF,
     )
 
@@ -63,48 +51,44 @@ def get_tariff_charges(
 
 
 def get_fee_charges(
-    charges: DataFrame,
+    charge_master_data: DataFrame,
     charge_prices: DataFrame,
     charge_links: DataFrame,
     metering_points: DataFrame,
-    market_roles: DataFrame,
 ) -> DataFrame:
     return __join_properties_on_charges_with_given_charge_type(
-        charges,
+        charge_master_data,
         charge_prices,
         charge_links,
         metering_points,
-        market_roles,
         ChargeType.FEE,
     )
 
 
 def get_subscription_charges(
-    charges: DataFrame,
+    charge_master_data: DataFrame,
     charge_prices: DataFrame,
     charge_links: DataFrame,
     metering_points: DataFrame,
-    market_roles: DataFrame,
 ) -> DataFrame:
     return __join_properties_on_charges_with_given_charge_type(
-        charges,
+        charge_master_data,
         charge_prices,
         charge_links,
         metering_points,
-        market_roles,
         ChargeType.SUBSCRIPTION,
     )
 
 
 def get_charges_based_on_resolution(
-    charges: DataFrame, resolution_duration: ChargeResolution
+    charge_master_data: DataFrame, resolution_duration: ChargeResolution
 ) -> DataFrame:
-    df = charges.filter(col(Colname.resolution) == resolution_duration.value)
+    df = charge_master_data.filter(col(Colname.resolution) == resolution_duration.value)
     return df
 
 
-def get_charges_based_on_charge_type(charges: DataFrame, charge_type: str) -> DataFrame:
-    df = charges.filter(col(Colname.charge_type) == charge_type)
+def get_charges_based_on_charge_type(charge_master_data: DataFrame, charge_type: str) -> DataFrame:
+    df = charge_master_data.filter(col(Colname.charge_type) == charge_type)
     return df
 
 
@@ -174,30 +158,6 @@ def join_with_charge_links(df: DataFrame, charge_links: DataFrame) -> DataFrame:
     return df
 
 
-def join_with_martket_roles(df: DataFrame, market_roles: DataFrame) -> DataFrame:
-    df = df.join(
-        market_roles,
-        [
-            df[Colname.metering_point_id] == market_roles[Colname.metering_point_id],
-            df[Colname.charge_time] >= market_roles[Colname.from_date],
-            df[Colname.charge_time] < market_roles[Colname.to_date],
-        ],
-        "inner",
-    ).select(
-        df[Colname.charge_key],
-        df[Colname.charge_id],
-        df[Colname.charge_type],
-        df[Colname.charge_owner],
-        df[Colname.charge_tax],
-        df[Colname.resolution],
-        df[Colname.charge_time],
-        df[Colname.charge_price],
-        df[Colname.metering_point_id],
-        market_roles[Colname.energy_supplier_id],
-    )
-    return df
-
-
 def join_with_metering_points(df: DataFrame, metering_points: DataFrame) -> DataFrame:
     df = df.join(
         metering_points,
@@ -217,10 +177,10 @@ def join_with_metering_points(df: DataFrame, metering_points: DataFrame) -> Data
         df[Colname.charge_time],
         df[Colname.charge_price],
         df[Colname.metering_point_id],
-        df[Colname.energy_supplier_id],
         metering_points[Colname.metering_point_type],
         metering_points[Colname.settlement_method],
         metering_points[Colname.grid_area],
+        metering_points[Colname.energy_supplier_id],
     )
     return df
 
@@ -291,20 +251,19 @@ def __get_window_duration_string_based_on_resolution(
     return window_duration_string
 
 
-# Join charges, charge prices, charge links, metering points and market roles together. On given charge type
+# Join charge_master_data, charge prices, charge links, and metering points together. On given charge type
 def __join_properties_on_charges_with_given_charge_type(
-    charges: DataFrame,
+    charge_master_data: DataFrame,
     charge_prices: DataFrame,
     charge_links: DataFrame,
     metering_points: DataFrame,
-    market_roles: DataFrame,
     charge_type: str,
 ) -> DataFrame:
     # filter on charge_type
-    charges = get_charges_based_on_charge_type(charges, charge_type)
+    charge_master_data = get_charges_based_on_charge_type(charge_master_data, charge_type)
 
-    # join charge prices with charges
-    charges_with_prices = join_with_charge_prices(charges, charge_prices)
+    # join charge prices with charge_master_data
+    charges_with_prices = join_with_charge_prices(charge_master_data, charge_prices)
 
     if charge_type == ChargeType.SUBSCRIPTION:
         # Explode dataframe: create row for each day the time period from and to date
@@ -315,9 +274,7 @@ def __join_properties_on_charges_with_given_charge_type(
         charges_with_prices, charge_links
     )
 
-    df = join_with_martket_roles(charges_with_price_and_links, market_roles)
-
-    df = join_with_metering_points(df, metering_points)
+    df = join_with_metering_points(charges_with_price_and_links, metering_points)
 
     if charge_type != ChargeType.TARIFF:
         df = df.select(
