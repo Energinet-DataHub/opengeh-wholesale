@@ -36,8 +36,8 @@ module "func_dropzoneunzipper" {
     UNZIPPED_CHARGES_CONTAINER_NAME         = azurerm_storage_container.dh2_charges.name
     UNZIPPED_CHARGE_LINKS_CONTAINER_NAME    = azurerm_storage_container.dh2_charge_links.name
     # Event Hub settings
-    INGRESS_EVENT_HUB_CONNECTION_STRING = module.eventhub_dropzone_zipped.primary_connection_strings["eh-dropzone-listener-connection-string"]
-    INGRESS_EVENT_HUB_NAME              = module.eventhub_dropzone_zipped.name
+    INGRESS_EVENT_HUB_CONNECTION_STRING = azurerm_eventhub_namespace.eventhub_namespace_dropzone.default_primary_connection_string
+    INGRESS_EVENT_HUB_NAME              = azurerm_eventhub.eventhub_dropzone_zipped.name
   }
   # Role assigments is needed to connect to the storage accounts using URI
   role_assignments = [
@@ -52,37 +52,10 @@ module "func_dropzoneunzipper" {
     {
       resource_id          = module.st_dh2dropzone_archive.id
       role_definition_name = "Storage Blob Data Contributor"
+    },
+    {
+      resource_id          = azurerm_eventhub_namespace.eventhub_namespace_dropzone.id
+      role_definition_name = "Azure Event Hubs Data Receiver"
     }
-  ]
-  depends_on = [
-    module.st_dh2dropzone,
-    module.st_dh2dropzone_archive,
-    module.st_dh2data,
-  ]
-}
-
-#---- Data assignments
-
-data "azurerm_storage_account" "st_dh2dropzone" {
-  name                = module.st_dh2dropzone.name
-  resource_group_name = azurerm_resource_group.this.name
-  depends_on = [
-    module.st_dh2dropzone,
-  ]
-}
-
-data "azurerm_storage_account" "st_dh2dropzone_archive" {
-  name                = module.st_dh2dropzone_archive.name
-  resource_group_name = azurerm_resource_group.this.name
-  depends_on = [
-    module.st_dh2dropzone_archive,
-  ]
-}
-
-data "azurerm_storage_account" "st_dh2data" {
-  name                = module.st_dh2data.name
-  resource_group_name = azurerm_resource_group.this.name
-  depends_on = [
-    module.st_dh2data,
   ]
 }

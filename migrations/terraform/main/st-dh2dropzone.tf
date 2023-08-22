@@ -23,6 +23,12 @@ resource "azurerm_role_assignment" "ra_dh2dropzone_contributor" {
   principal_id         = azuread_service_principal.spn_databricks.id
 }
 
+resource "azurerm_role_assignment" "ra_ehdropzone_sender" {
+  scope                = azurerm_eventhub_namespace.eventhub_namespace_dropzone.id
+  role_definition_name = "Azure Event Hubs Data Sender"
+  principal_id         = azurerm_eventgrid_system_topic.system_topic_dropzone_zipped.identity[0].principal_id
+}
+
 #---- Containers
 
 resource "azurerm_storage_container" "dh2_dropzone_zipped" {
@@ -31,14 +37,30 @@ resource "azurerm_storage_container" "dh2_dropzone_zipped" {
   container_access_type = "private"
 }
 
-#---- Event Grid to trigger Event Hub (Must be in this scope, to react on blob creation in the container)
+#---- System Topic for all storage account events
 
-resource "azurerm_eventgrid_event_subscription" "eventhub_dropzone_zipped_trigger" {
-  name                 = "eh-dropzone-zipped-trigger"
-  scope                = module.st_dh2dropzone.id
+resource "azurerm_eventgrid_system_topic" "system_topic_dropzone_zipped" {
+  name                   = "est-dropzonezipped-${local.resources_suffix}"
+  resource_group_name    = azurerm_resource_group.this.name
+  location               = azurerm_resource_group.this.location
+  source_arm_resource_id = module.st_dh2dropzone.id
+  topic_type             = "Microsoft.Storage.StorageAccounts"
+  identity {
+    type = "SystemAssigned"
+  }
+}
+
+#---- System topic event subscription for blob created events
+resource "azurerm_eventgrid_system_topic_event_subscription" "eventgrid_dropzone_zipped" {
+  name                 = "ests-dropzonezipped-${local.resources_suffix}"
+  system_topic         = azurerm_eventgrid_system_topic.system_topic_dropzone_zipped.name
+  resource_group_name  = azurerm_resource_group.this.name
   included_event_types = ["Microsoft.Storage.BlobCreated"]
-  eventhub_endpoint_id = module.eventhub_dropzone_zipped.id
+  eventhub_endpoint_id = azurerm_eventhub.eventhub_dropzone_zipped.id
   subject_filter {
     subject_begins_with = "/blobServices/default/containers/dh2-dropzone-zipped"
+  }
+  delivery_identity {
+    type = "SystemAssigned"
   }
 }
