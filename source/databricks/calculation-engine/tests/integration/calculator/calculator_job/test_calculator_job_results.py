@@ -220,7 +220,7 @@ def test__wholesale_result__is_created(
     assert result_df.count() > 0
 
 
-def test__wholesale_result__has_expected_number_of_energy_result_types(
+def test__wholesale_result__has_expected_number_of_result_types(
     wholesale_fixing_results_df: DataFrame,
 ) -> None:
     # Arrange
