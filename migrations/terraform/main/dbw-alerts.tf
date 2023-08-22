@@ -224,8 +224,9 @@ resource "databricks_sql_query" "duplicates_metering_points_gold" {
   name           = "QCMP16-01_duplicates_in_metering_points_gold"
   query          = <<EOT
   select count(*) as duplicates
-  from (select mp.metering_point_id, mp.valid_from_date, mp.valid_to_date, ROW_NUMBER()
-    OVER (PARTITION BY mp.metering_point_id, mp.valid_from_date, mp.valid_to_date ORDER BY mp.metering_point_id DESC, mp.valid_from_date DESC, mp.valid_to_date DESC) as rownumber
+  from (select mp.metering_point_id, mp.valid_from_date, mp.valid_to_date, mp.metering_point_state_id, ROW_NUMBER()
+    OVER (PARTITION BY mp.metering_point_id, mp.valid_from_date, mp.valid_to_date, mp.metering_point_state_id ORDER BY
+    mp.metering_point_id DESC, mp.valid_from_date DESC, mp.valid_to_date DESC, mp.metering_point_state_id DESC) as rownumber
     from gold.metering_points as mp) as withRownumber
   where withRownumber.rownumber > 1
   EOT
