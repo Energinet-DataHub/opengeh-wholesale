@@ -35,13 +35,13 @@ def get_enriched_time_series_points_df(
     ).where(F.col(Colname.observation_time) < period_end_datetime)
 
     quarterly_mp_df = master_basis_data_df.where(
-        F.col(Colname.resolution) == MeteringPointResolution.quarter.value
+        F.col(Colname.resolution) == MeteringPointResolution.QUARTER.value
     ).withColumn(
         Colname.to_date, (F.col(Colname.to_date) - F.expr("INTERVAL 1 seconds"))
     )
 
     hourly_mp_df = master_basis_data_df.where(
-        F.col(Colname.resolution) == MeteringPointResolution.hour.value
+        F.col(Colname.resolution) == MeteringPointResolution.HOUR.value
     ).withColumn(
         Colname.to_date, (F.col(Colname.to_date) - F.expr("INTERVAL 1 seconds"))
     )

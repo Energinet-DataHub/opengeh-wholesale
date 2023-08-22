@@ -12,10 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from enum import Enum
 
-
-class ChargeType(Enum):
-    subscription = "D01"
-    fee = "D02"
-    tariff = "D03"
+class ChargeType:
+    SUBSCRIPTION = "subscription"
+    FEE = "fee"
+    TARIFF = "tariff"

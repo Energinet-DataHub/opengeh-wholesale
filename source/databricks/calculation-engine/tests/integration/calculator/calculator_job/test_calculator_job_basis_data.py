@@ -27,7 +27,7 @@ def test__creates_hour_for_total_ga__with_expected_columns_names(
 ) -> None:
     # Arrange
     basis_data_relative_path = infra.get_basis_data_path(
-        BasisDataType.TimeSeriesHour, C.executed_balance_fixing_batch_id, "805"
+        BasisDataType.TIME_SERIES_HOUR, C.executed_balance_fixing_batch_id, "805"
     )
 
     # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
@@ -51,7 +51,7 @@ def test__creates_hour_for_es_per_ga__with_expected_columns_names(
 ) -> None:
     # Arrange
     basis_data_relative_path = infra.get_basis_data_path(
-        BasisDataType.TimeSeriesHour,
+        BasisDataType.TIME_SERIES_HOUR,
         C.executed_balance_fixing_batch_id,
         "805",
         C.energy_supplier_gln_a,
@@ -78,7 +78,7 @@ def test__creates_quarter_for_total_ga__with_expected_columns_names(
 ) -> None:
     # Arrange
     relative_path = infra.get_basis_data_path(
-        BasisDataType.TimeSeriesQuarter, C.executed_balance_fixing_batch_id, "805"
+        BasisDataType.TIME_SERIES_QUARTER, C.executed_balance_fixing_batch_id, "805"
     )
 
     # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
@@ -103,7 +103,7 @@ def test__creates_quarter_for_es_per_ga__with_expected_columns_names(
 ) -> None:
     # Arrange
     relative_path = infra.get_basis_data_path(
-        BasisDataType.TimeSeriesQuarter,
+        BasisDataType.TIME_SERIES_QUARTER,
         C.executed_balance_fixing_batch_id,
         "805",
         C.energy_supplier_gln_a,
@@ -131,10 +131,10 @@ def test__creates_quarter_for_total_ga__per_grid_area(
 ) -> None:
     # Arrange
     basis_data_relative_path_805 = infra.get_basis_data_path(
-        BasisDataType.TimeSeriesQuarter, C.executed_balance_fixing_batch_id, "805"
+        BasisDataType.TIME_SERIES_QUARTER, C.executed_balance_fixing_batch_id, "805"
     )
     basis_data_relative_path_806 = infra.get_basis_data_path(
-        BasisDataType.TimeSeriesQuarter, C.executed_balance_fixing_batch_id, "806"
+        BasisDataType.TIME_SERIES_QUARTER, C.executed_balance_fixing_batch_id, "806"
     )
 
     # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
@@ -164,13 +164,13 @@ def test__creates_quarter_for_es_per_ga__per_energy_supplier(
 ) -> None:
     # Arrange
     basis_data_relative_path_a = infra.get_basis_data_path(
-        BasisDataType.TimeSeriesQuarter,
+        BasisDataType.TIME_SERIES_QUARTER,
         C.executed_balance_fixing_batch_id,
         "805",
         C.energy_supplier_gln_a,
     )
     basis_data_relative_path_b = infra.get_basis_data_path(
-        BasisDataType.TimeSeriesQuarter,
+        BasisDataType.TIME_SERIES_QUARTER,
         C.executed_balance_fixing_batch_id,
         "805",
         C.energy_supplier_gln_b,
@@ -203,10 +203,10 @@ def test__creates_hour_for_total_ga__per_grid_area(
 ) -> None:
     # Arrange
     basis_data_relative_path_805 = infra.get_basis_data_path(
-        BasisDataType.TimeSeriesHour, C.executed_balance_fixing_batch_id, "805"
+        BasisDataType.TIME_SERIES_HOUR, C.executed_balance_fixing_batch_id, "805"
     )
     basis_data_relative_path_806 = infra.get_basis_data_path(
-        BasisDataType.TimeSeriesHour, C.executed_balance_fixing_batch_id, "806"
+        BasisDataType.TIME_SERIES_HOUR, C.executed_balance_fixing_batch_id, "806"
     )
 
     # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
@@ -236,13 +236,13 @@ def test__creates_hour_for_es_per_ga__per_energy_supplier(
 ) -> None:
     # Arrange
     basis_data_relative_path_a = infra.get_basis_data_path(
-        BasisDataType.TimeSeriesHour,
+        BasisDataType.TIME_SERIES_HOUR,
         C.executed_balance_fixing_batch_id,
         "805",
         C.energy_supplier_gln_a,
     )
     basis_data_relative_path_b = infra.get_basis_data_path(
-        BasisDataType.TimeSeriesHour,
+        BasisDataType.TIME_SERIES_HOUR,
         C.executed_balance_fixing_batch_id,
         "805",
         C.energy_supplier_gln_b,
@@ -275,7 +275,7 @@ def test__master_basis_data_for_total_ga_has_expected_columns_names(
 ) -> None:
     # Arrange
     basis_data_path = infra.get_basis_data_path(
-        BasisDataType.MasterBasisData, C.executed_balance_fixing_batch_id, "805"
+        BasisDataType.MASTER_BASIS_DATA, C.executed_balance_fixing_batch_id, "805"
     )
 
     # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
@@ -305,7 +305,7 @@ def test__master_basis_data_for_es_per_ga_has_expected_columns_names(
 ) -> None:
     # Arrange
     basis_data_path = infra.get_basis_data_path(
-        BasisDataType.MasterBasisData,
+        BasisDataType.MASTER_BASIS_DATA,
         C.executed_balance_fixing_batch_id,
         "805",
         C.energy_supplier_gln_a,
@@ -337,10 +337,10 @@ def test__creates_master_basis_data_per_grid_area(
 ) -> None:
     # Arrange
     basis_data_path_805 = infra.get_basis_data_path(
-        BasisDataType.MasterBasisData, C.executed_balance_fixing_batch_id, "805"
+        BasisDataType.MASTER_BASIS_DATA, C.executed_balance_fixing_batch_id, "805"
     )
     basis_data_path_806 = infra.get_basis_data_path(
-        BasisDataType.MasterBasisData, C.executed_balance_fixing_batch_id, "806"
+        BasisDataType.MASTER_BASIS_DATA, C.executed_balance_fixing_batch_id, "806"
     )
 
     # Act: Executed in fixture executed_balance_fixing

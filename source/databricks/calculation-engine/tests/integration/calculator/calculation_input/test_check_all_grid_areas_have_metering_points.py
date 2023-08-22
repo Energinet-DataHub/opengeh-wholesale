@@ -32,7 +32,7 @@ def metering_point_period_df_factory(spark, timestamp_factory):
                 "metering_point_type": "the_metering_point_type",
                 "from_date": timestamp_factory("2022-01-01T22:00:00.000Z"),
                 "to_date": timestamp_factory("2022-01-11T22:00:00.000Z"),
-                "resolution": MeteringPointResolution.hour.value,
+                "resolution": MeteringPointResolution.HOUR.value,
             }
         ]
         return spark.createDataFrame(df)

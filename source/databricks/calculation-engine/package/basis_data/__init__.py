@@ -63,13 +63,13 @@ def get_time_series_basis_data_dfs(
 
     time_series_quarter_basis_data_df = _get_time_series_basis_data_by_resolution(
         enriched_time_series_point_df,
-        MeteringPointResolution.quarter.value,
+        MeteringPointResolution.QUARTER.value,
         time_zone,
     )
 
     time_series_hour_basis_data_df = _get_time_series_basis_data_by_resolution(
         enriched_time_series_point_df,
-        MeteringPointResolution.hour.value,
+        MeteringPointResolution.HOUR.value,
         time_zone,
     )
 

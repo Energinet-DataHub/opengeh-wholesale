@@ -41,9 +41,9 @@ def create_dataframe_from_aggregation_result_schema(result: DataFrame) -> DataFr
     result = __add_missing_nullable_columns(result)
     # Replaces None value with zero for sum_quantity
     result = result.na.fill(value=0, subset=[Colname.sum_quantity])
-    # Replaces None value with TimeSeriesQuality.missing for quality
+    # Replaces None value with TimeSeriesQuality.MISSING for quality
     result = result.na.fill(
-        value=TimeSeriesQuality.missing.value, subset=[Colname.quality]
+        value=TimeSeriesQuality.MISSING.value, subset=[Colname.quality]
     )
 
     # Create data frame from RDD in order to be able to apply the schema

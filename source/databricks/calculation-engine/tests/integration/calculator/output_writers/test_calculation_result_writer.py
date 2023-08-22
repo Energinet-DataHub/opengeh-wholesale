@@ -42,9 +42,9 @@ DEFAULT_BALANCE_RESPONSIBLE_ID = "1234567890123"
 DEFAULT_PROCESS_TYPE = ProcessType.BALANCE_FIXING
 DEFAULT_BATCH_EXECUTION_START = datetime(2022, 6, 10, 13, 15)
 DEFAULT_QUANTITY = "1.1"
-DEFAULT_QUALITY = TimeSeriesQuality.measured
+DEFAULT_QUALITY = TimeSeriesQuality.MEASURED
 DEFAULT_TIME_SERIES_TYPE = TimeSeriesType.PRODUCTION
-DEFAULT_AGGREGATION_LEVEL = AggregationLevel.total_ga
+DEFAULT_AGGREGATION_LEVEL = AggregationLevel.TOTAL_GA
 DEFAULT_TIME_WINDOW_START = datetime(2020, 1, 1, 0, 0)
 DEFAULT_TIME_WINDOW_END = datetime(2020, 1, 1, 1, 0)
 
@@ -66,7 +66,7 @@ def _create_result_row(
         Colname.from_grid_area: from_grid_area,
         Colname.sum_quantity: Decimal(quantity),
         Colname.quality: quality.value,
-        Colname.resolution: MeteringPointResolution.quarter.value,
+        Colname.resolution: MeteringPointResolution.QUARTER.value,
         Colname.time_window: {
             Colname.start: time_window_start,
             Colname.end: time_window_end,

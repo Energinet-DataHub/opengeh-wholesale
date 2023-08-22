@@ -1,15 +1,15 @@
 {
   "literals": [
     {
-      "name": "production",
+      "name": "PRODUCTION",
       "value": "E18"
     },
     {
-      "name": "consumption",
+      "name": "CONSUMPTION",
       "value": "E17"
     },
     {
-      "name": "exchange",
+      "name": "EXCHANGE",
       "value": "E20"
     }
   ]

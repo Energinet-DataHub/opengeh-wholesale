@@ -24,7 +24,7 @@ from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import window, col
 
 
-e_20 = MeteringPointType.exchange.value
+e_20 = MeteringPointType.EXCHANGE.value
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_obs_time = datetime.strptime(
     "2020-01-01T00:00:00+0000", date_time_formatting_string
@@ -184,7 +184,7 @@ def add_row_of_data(
         Colname.from_grid_area: from_grid_area,
         Colname.quantity: quantity,
         Colname.observation_time: timestamp,
-        Colname.quality: TimeSeriesQuality.estimated.value,
+        Colname.quality: TimeSeriesQuality.ESTIMATED.value,
     }
     return pandas_df.append(new_row, ignore_index=True)
 

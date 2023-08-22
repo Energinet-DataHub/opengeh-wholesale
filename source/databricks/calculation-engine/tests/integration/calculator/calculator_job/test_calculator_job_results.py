@@ -26,138 +26,138 @@ from package.constants import ResultTableColName
 ALL_ENERGY_RESULT_TYPES = {
     (
         TimeSeriesType.NET_EXCHANGE_PER_NEIGHBORING_GA.value,
-        AggregationLevel.total_ga.value,
+        AggregationLevel.TOTAL_GA.value,
     ),
     (
         TimeSeriesType.NET_EXCHANGE_PER_GA.value,
-        AggregationLevel.total_ga.value,
+        AggregationLevel.TOTAL_GA.value,
     ),
     (
         TimeSeriesType.PRODUCTION.value,
-        AggregationLevel.es_per_brp_per_ga.value,
+        AggregationLevel.ES_PER_BRP_PER_GA.value,
     ),
     (
         TimeSeriesType.PRODUCTION.value,
-        AggregationLevel.es_per_ga.value,
+        AggregationLevel.ES_PER_GA.value,
     ),
     (
         TimeSeriesType.PRODUCTION.value,
-        AggregationLevel.brp_per_ga.value,
+        AggregationLevel.BRP_PER_GA.value,
     ),
     (
         TimeSeriesType.PRODUCTION.value,
-        AggregationLevel.total_ga.value,
+        AggregationLevel.TOTAL_GA.value,
     ),
     (
         TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
-        AggregationLevel.es_per_brp_per_ga.value,
+        AggregationLevel.ES_PER_BRP_PER_GA.value,
     ),
     (
         TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
-        AggregationLevel.es_per_ga.value,
+        AggregationLevel.ES_PER_GA.value,
     ),
     (
         TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
-        AggregationLevel.brp_per_ga.value,
+        AggregationLevel.BRP_PER_GA.value,
     ),
     (
         TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
-        AggregationLevel.total_ga.value,
+        AggregationLevel.TOTAL_GA.value,
     ),
     (
         TimeSeriesType.FLEX_CONSUMPTION.value,
-        AggregationLevel.es_per_brp_per_ga.value,
+        AggregationLevel.ES_PER_BRP_PER_GA.value,
     ),
     (
         TimeSeriesType.FLEX_CONSUMPTION.value,
-        AggregationLevel.es_per_ga.value,
+        AggregationLevel.ES_PER_GA.value,
     ),
     (
         TimeSeriesType.FLEX_CONSUMPTION.value,
-        AggregationLevel.brp_per_ga.value,
+        AggregationLevel.BRP_PER_GA.value,
     ),
     (
         TimeSeriesType.FLEX_CONSUMPTION.value,
-        AggregationLevel.total_ga.value,
+        AggregationLevel.TOTAL_GA.value,
     ),
     (
         TimeSeriesType.GRID_LOSS.value,
-        AggregationLevel.total_ga.value,
+        AggregationLevel.TOTAL_GA.value,
     ),
     (
         TimeSeriesType.POSITIVE_GRID_LOSS.value,
-        AggregationLevel.total_ga.value,
+        AggregationLevel.TOTAL_GA.value,
     ),
     (
         TimeSeriesType.NEGATIVE_GRID_LOSS.value,
-        AggregationLevel.total_ga.value,
+        AggregationLevel.TOTAL_GA.value,
     ),
     (
         TimeSeriesType.TOTAL_CONSUMPTION.value,
-        AggregationLevel.total_ga.value,
+        AggregationLevel.TOTAL_GA.value,
     ),
     (
         TimeSeriesType.TEMP_FLEX_CONSUMPTION.value,
-        AggregationLevel.total_ga.value,
+        AggregationLevel.TOTAL_GA.value,
     ),
     (
         TimeSeriesType.TEMP_PRODUCTION.value,
-        AggregationLevel.total_ga.value,
+        AggregationLevel.TOTAL_GA.value,
     ),
 }
 
 WHOLESALE_FIXING_ENERGY_RESULT_TYPES = {
     (
         TimeSeriesType.NET_EXCHANGE_PER_GA.value,
-        AggregationLevel.total_ga.value,
+        AggregationLevel.TOTAL_GA.value,
     ),
     (
         TimeSeriesType.PRODUCTION.value,
-        AggregationLevel.es_per_ga.value,
+        AggregationLevel.ES_PER_GA.value,
     ),
     (
         TimeSeriesType.PRODUCTION.value,
-        AggregationLevel.total_ga.value,
+        AggregationLevel.TOTAL_GA.value,
     ),
     (
         TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
-        AggregationLevel.es_per_ga.value,
+        AggregationLevel.ES_PER_GA.value,
     ),
     (
         TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
-        AggregationLevel.total_ga.value,
+        AggregationLevel.TOTAL_GA.value,
     ),
     (
         TimeSeriesType.FLEX_CONSUMPTION.value,
-        AggregationLevel.es_per_ga.value,
+        AggregationLevel.ES_PER_GA.value,
     ),
     (
         TimeSeriesType.FLEX_CONSUMPTION.value,
-        AggregationLevel.total_ga.value,
+        AggregationLevel.TOTAL_GA.value,
     ),
     (
         TimeSeriesType.GRID_LOSS.value,
-        AggregationLevel.total_ga.value,
+        AggregationLevel.TOTAL_GA.value,
     ),
     (
         TimeSeriesType.POSITIVE_GRID_LOSS.value,
-        AggregationLevel.total_ga.value,
+        AggregationLevel.TOTAL_GA.value,
     ),
     (
         TimeSeriesType.NEGATIVE_GRID_LOSS.value,
-        AggregationLevel.total_ga.value,
+        AggregationLevel.TOTAL_GA.value,
     ),
     (
         TimeSeriesType.TOTAL_CONSUMPTION.value,
-        AggregationLevel.total_ga.value,
+        AggregationLevel.TOTAL_GA.value,
     ),
     (
         TimeSeriesType.TEMP_FLEX_CONSUMPTION.value,
-        AggregationLevel.total_ga.value,
+        AggregationLevel.TOTAL_GA.value,
     ),
     (
         TimeSeriesType.TEMP_PRODUCTION.value,
-        AggregationLevel.total_ga.value,
+        AggregationLevel.TOTAL_GA.value,
     ),
 }
 
