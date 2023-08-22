@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatement
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 
-public class ResultDeltaTableHelper
+public class EnergyResultDeltaTableHelper
 {
     public static IEnumerable<string> CreateRowValues(
         string batchId = "ed39dbc5-bdc5-41b9-922a-08d3b12d4538",
@@ -35,27 +35,27 @@ public class ResultDeltaTableHelper
     {
         return GetColumnDefinitions().Keys.Select(columnName => columnName switch
         {
-            ResultColumnNames.BatchId => $@"'{batchId}'",
-            ResultColumnNames.BatchExecutionTimeStart => $@"'{batchExecutionTimeStart}'",
-            ResultColumnNames.BatchProcessType =>$@"'{batchProcessType}'",
-            ResultColumnNames.CalculationResultId => $@"'{calculationResultId}'",
-            ResultColumnNames.TimeSeriesType => $@"'{timeSeriesType}'",
-            ResultColumnNames.GridArea => $@"'{gridArea}'",
-            ResultColumnNames.FromGridArea => fromGridArea == null ? "NULL" : $@"'{fromGridArea}'",
-            ResultColumnNames.BalanceResponsibleId => $@"'{balanceResponsibleId}'",
-            ResultColumnNames.EnergySupplierId => $@"'{energySupplierId}'",
-            ResultColumnNames.Time => $@"'{time}'",
-            ResultColumnNames.Quantity => $@"{quantity}",
-            ResultColumnNames.QuantityQuality => $@"'{quantityQuality}'",
-            ResultColumnNames.AggregationLevel => $@"'{aggregationLevel}'",
+            EnergyResultColumnNames.BatchId => $@"'{batchId}'",
+            EnergyResultColumnNames.BatchExecutionTimeStart => $@"'{batchExecutionTimeStart}'",
+            EnergyResultColumnNames.BatchProcessType =>$@"'{batchProcessType}'",
+            EnergyResultColumnNames.CalculationResultId => $@"'{calculationResultId}'",
+            EnergyResultColumnNames.TimeSeriesType => $@"'{timeSeriesType}'",
+            EnergyResultColumnNames.GridArea => $@"'{gridArea}'",
+            EnergyResultColumnNames.FromGridArea => fromGridArea == null ? "NULL" : $@"'{fromGridArea}'",
+            EnergyResultColumnNames.BalanceResponsibleId => $@"'{balanceResponsibleId}'",
+            EnergyResultColumnNames.EnergySupplierId => $@"'{energySupplierId}'",
+            EnergyResultColumnNames.Time => $@"'{time}'",
+            EnergyResultColumnNames.Quantity => $@"{quantity}",
+            EnergyResultColumnNames.QuantityQuality => $@"'{quantityQuality}'",
+            EnergyResultColumnNames.AggregationLevel => $@"'{aggregationLevel}'",
             _ => throw new ArgumentOutOfRangeException($"Unexpected column name: {columnName}."),
         });
     }
 
     private static Dictionary<string, string> GetColumnDefinitions()
     {
-        var columnNames = ResultColumnNames.GetAllNames().ToList();
-        var columnTypes = columnNames.Select(ResultColumnNames.GetType);
+        var columnNames = EnergyResultColumnNames.GetAllNames().ToList();
+        var columnTypes = columnNames.Select(EnergyResultColumnNames.GetType);
         return columnNames.Zip(columnTypes, (name, type) => new { Name = name, Type = type }).ToDictionary(item => item.Name, item => item.Type);
     }
 }

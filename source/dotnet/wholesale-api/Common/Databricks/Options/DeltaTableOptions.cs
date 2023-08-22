@@ -24,5 +24,5 @@ public class DeltaTableOptions
     /// <summary>
     /// Name of the results delta table.
     /// </summary>
-    public string RESULT_TABLE_NAME { get; set; } = "result";
+    public string ENERGY_RESULTS_TABLE_NAME { get; set; } = "energy_results";
 }

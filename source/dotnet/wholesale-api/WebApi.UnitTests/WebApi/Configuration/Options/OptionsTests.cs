@@ -36,7 +36,7 @@ public class OptionsTests
     [InlineAutoMoqData(typeof(DateTimeOptions), 1, "TIME_ZONE")]
     [InlineAutoMoqData(typeof(ConnectionStringsOptions), 1, "DB_CONNECTION_STRING")]
     [InlineAutoMoqData(typeof(DatabricksOptions), 3, "DATABRICKS_WORKSPACE_URL", "DATABRICKS_WORKSPACE_TOKEN", "DATABRICKS_WAREHOUSE_ID")]
-    [InlineAutoMoqData(typeof(DeltaTableOptions), 2, "SCHEMA_NAME", "RESULT_TABLE_NAME")]
+    [InlineAutoMoqData(typeof(DeltaTableOptions), 2, "SCHEMA_NAME", "ENERGY_RESULTS_TABLE_NAME")]
     public void Options_HaveTheCorrectSettingNamesAndNumberOfSettings(Type sut, int settingsCount, params string[] expectedNames)
     {
         // Arrange & Act

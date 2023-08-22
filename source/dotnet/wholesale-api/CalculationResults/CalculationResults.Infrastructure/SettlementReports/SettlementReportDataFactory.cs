@@ -25,12 +25,12 @@ public static class SettlementReportDataFactory
     public static IEnumerable<SettlementReportResultRow> Create(List<SqlResultRow> rows)
     {
         return rows.Select(row => new SettlementReportResultRow(
-            row[ResultColumnNames.GridArea],
-            ProcessTypeMapper.FromDeltaTableValue(row[ResultColumnNames.BatchProcessType]),
-            SqlResultValueConverters.ToInstant(row[ResultColumnNames.Time])!.Value,
+            row[EnergyResultColumnNames.GridArea],
+            ProcessTypeMapper.FromDeltaTableValue(row[EnergyResultColumnNames.BatchProcessType]),
+            SqlResultValueConverters.ToInstant(row[EnergyResultColumnNames.Time])!.Value,
             "PT15M", // TODO (JMG): store resolution in delta table?
-            MeteringPointTypeMapper.FromDeltaTableValue(row[ResultColumnNames.TimeSeriesType]),
-            SettlementMethodMapper.FromDeltaTableValue(row[ResultColumnNames.TimeSeriesType]),
-            SqlResultValueConverters.ToDecimal(row[ResultColumnNames.Quantity])!.Value));
+            MeteringPointTypeMapper.FromDeltaTableValue(row[EnergyResultColumnNames.TimeSeriesType]),
+            SettlementMethodMapper.FromDeltaTableValue(row[EnergyResultColumnNames.TimeSeriesType]),
+            SqlResultValueConverters.ToDecimal(row[EnergyResultColumnNames.Quantity])!.Value));
     }
 }

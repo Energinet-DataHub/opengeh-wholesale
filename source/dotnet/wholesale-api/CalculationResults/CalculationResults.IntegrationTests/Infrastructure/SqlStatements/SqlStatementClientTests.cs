@@ -38,10 +38,10 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
         Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock)
     {
         // Arrange
-        await AddDataToResultTableAsync();
+        await AddDataToEnergyResultTableAsync();
         var sut = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
 
-        var sqlStatement = $@"SELECT * FROM {_fixture.DatabricksSchemaManager.SchemaName}.{_fixture.DatabricksSchemaManager.ResultTableName}";
+        var sqlStatement = $@"SELECT * FROM {_fixture.DatabricksSchemaManager.SchemaName}.{_fixture.DatabricksSchemaManager.EnergyResultTableName}";
 
         // Act
         var actual = await sut.ExecuteAsync(sqlStatement).ToListAsync();
@@ -68,21 +68,21 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
         actual.Should().Be(expectedRowCount);
     }
 
-    private async Task AddDataToResultTableAsync()
+    private async Task AddDataToEnergyResultTableAsync()
     {
-        var values = GetSomeDeltaTableRow();
+        var values = GetSomeEnergyResultDeltaTableRow();
         var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await _fixture.DatabricksSchemaManager.InsertAsync<ResultColumnNames>(deltaTableOptions.Value.RESULT_TABLE_NAME, values);
-        await _fixture.DatabricksSchemaManager.InsertAsync<ResultColumnNames>(deltaTableOptions.Value.RESULT_TABLE_NAME, values);
+        await _fixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(deltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME, values);
+        await _fixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(deltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME, values);
     }
 
-    private static IList<string> GetSomeDeltaTableRow()
+    private static IList<string> GetSomeEnergyResultDeltaTableRow()
     {
         var time = "2022-03-11T03:00:00.000Z";
         var batchExecutionTimeStart = "2022-03-11T03:00:00.000Z";
         var gridAreaB = "123";
         var quantity21 = "1.23";
-        var row = ResultDeltaTableHelper.CreateRowValues(
+        var row = EnergyResultDeltaTableHelper.CreateRowValues(
             batchExecutionTimeStart: batchExecutionTimeStart,
             time: time,
             batchProcessType: DeltaTableProcessType.BalanceFixing,

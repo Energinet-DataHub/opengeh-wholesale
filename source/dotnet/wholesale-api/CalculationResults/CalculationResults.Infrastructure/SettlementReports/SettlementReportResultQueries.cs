@@ -40,7 +40,7 @@ public class SettlementReportResultQueries : ISettlementReportResultQueries
         Instant periodEnd,
         string? energySupplier)
     {
-        var sql = SettlementReportSqlStatementFactory.Create(_deltaTableOptions.SCHEMA_NAME, _deltaTableOptions.RESULT_TABLE_NAME, gridAreaCodes, processType, periodStart, periodEnd, energySupplier);
+        var sql = SettlementReportSqlStatementFactory.Create(_deltaTableOptions.SCHEMA_NAME, _deltaTableOptions.ENERGY_RESULTS_TABLE_NAME, gridAreaCodes, processType, periodStart, periodEnd, energySupplier);
         var rows = await _sqlStatementClient.ExecuteAsync(sql).ToListAsync().ConfigureAwait(false);
         return SettlementReportDataFactory.Create(rows);
     }

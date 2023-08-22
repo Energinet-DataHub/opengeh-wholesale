@@ -23,11 +23,11 @@ public static class TableTestHelper
     {
         var columnNames = new[]
         {
-            ResultColumnNames.GridArea,
-            ResultColumnNames.BatchProcessType,
-            ResultColumnNames.Time,
-            ResultColumnNames.TimeSeriesType,
-            ResultColumnNames.Quantity,
+            EnergyResultColumnNames.GridArea,
+            EnergyResultColumnNames.BatchProcessType,
+            EnergyResultColumnNames.Time,
+            EnergyResultColumnNames.TimeSeriesType,
+            EnergyResultColumnNames.Quantity,
         };
         var rows = new List<string[]>();
         for (var row = 0; row < rowCount; row++)
