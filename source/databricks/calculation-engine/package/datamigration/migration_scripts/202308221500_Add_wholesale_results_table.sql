@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.wholesale_results
 
     energy_currency STRING NOT NULL,
     price DECIMAL(18, 3),
-    amount DECIMAL(18, 3) STRING NOT NULL,
+    amount DECIMAL(18, 3) NOT NULL,
 
     charge_id STRING,
     charge_type STRING,
