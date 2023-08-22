@@ -92,8 +92,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             private static readonly DateTimeOffset _existingBatchPeriodEnd = DateTimeOffset.Parse("2020-01-29T23:00:00Z");
             private static readonly string ExistingGridAreaCode = "543";
 
-            private static List<CalculationResultCompleted>? _energyCalculationResults;
-            private static List<CalculationResultCompleted>? _wholesaleCalculationResults;
+            private static List<CalculationResultCompleted> _energyCalculationResults = null!;
+            private static List<CalculationResultCompleted> _wholesaleCalculationResults = null!;
 
             public Given_Authorized(AuthorizedClientFixture fixture)
             {
@@ -132,20 +132,20 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             [DomainFact]
             public void When_EnergyCalculationBatchIsCompleted_Then_BatchIsReceivedOnTopicSubscription()
             {
-                _energyCalculationResults?.Count.Should().Be(112);
+                _energyCalculationResults.Count.Should().Be(112);
             }
 
             [DomainFact]
             public void When_WholesaleCalculationBatchIsCompleted_Then_BatchIsReceivedOnTopicSubscription()
             {
-                _wholesaleCalculationResults?.Count.Should().Be(112);
+                _wholesaleCalculationResults.Count.Should().Be(53);
             }
 
             [DomainFact]
             public void When_EnergyCalculationBatchIsComplete_Then_MessagesReceivedContainAllTimeSeriesTypes()
             {
-                var (actualTimeSeriesTypes, expectedTimeSeriesTypes) = GetActualAndExpectedTimeSeriesTypes(_energyCalculationResults);
-                foreach (var expectedTimeSeriesType in expectedTimeSeriesTypes)
+                var actualTimeSeriesTypes = GetTimeSeriesTypes(_energyCalculationResults);
+                foreach (var expectedTimeSeriesType in EnergyCalculationTimeSeriesTypes)
                 {
                     actualTimeSeriesTypes.Should().Contain(expectedTimeSeriesType);
                 }
@@ -154,8 +154,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             [DomainFact]
             public void When_WholesaleCalculationBatchIsComplete_Then_MessagesReceivedContainAllTimeSeriesTypes()
             {
-                var (actualTimeSeriesTypes, expectedTimeSeriesTypes) = GetActualAndExpectedTimeSeriesTypes(_wholesaleCalculationResults);
-                foreach (var expectedTimeSeriesType in expectedTimeSeriesTypes)
+                var actualTimeSeriesTypes = GetTimeSeriesTypes(_wholesaleCalculationResults);
+                foreach (var expectedTimeSeriesType in WholesaleCalculationTimeSeriesTypes)
                 {
                     actualTimeSeriesTypes.Should().Contain(expectedTimeSeriesType);
                 }
@@ -239,14 +239,14 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 }
             }
 
-            private (List<string?> Actual, List<string> Expected) GetActualAndExpectedTimeSeriesTypes(List<CalculationResultCompleted>? calculationResults)
+            private List<string> EnergyCalculationTimeSeriesTypes { get; } = Enum.GetNames(typeof(TimeSeriesType)).ToList();
+
+            private List<string> WholesaleCalculationTimeSeriesTypes
+                => EnergyCalculationTimeSeriesTypes.Where(s => s != nameof(TimeSeriesType.NetExchangePerNeighboringGa)).ToList();
+
+            private List<string?> GetTimeSeriesTypes(List<CalculationResultCompleted> calculationResults)
             {
-                ArgumentNullException.ThrowIfNull(calculationResults);
-
-                var actual = calculationResults.Select(o => Enum.GetName(o.TimeSeriesType)).Distinct().ToList();
-                var expected = Enum.GetNames(typeof(TimeSeriesType)).ToList();
-
-                return (actual, expected);
+                return calculationResults.Select(o => Enum.GetName(o.TimeSeriesType)).Distinct().ToList();
             }
 
             private bool CheckIfExistsInCalculationResults(
