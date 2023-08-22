@@ -39,9 +39,9 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
         public bool WholesaleCalculationIsComplete { get; private set; }
 
-        public List<CalculationResultCompleted>? EnergyCalculationResults { get; private set; }
+        public List<CalculationResultCompleted> EnergyCalculationResults { get; } = new();
 
-        public List<CalculationResultCompleted>? WholesaleCalculationResults { get; private set; }
+        public List<CalculationResultCompleted> WholesaleCalculationResults { get; } = new();
 
         private Guid EnergyCalculationId { get; set; }
 
@@ -49,8 +49,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
         public async Task InitializeAsync()
         {
-            EnergyCalculationId = await StartCalculation(ProcessType.BalanceFixing);
-            WholesaleCalculationId = await StartCalculation(ProcessType.Aggregation); // TODO: Wholesale
+            EnergyCalculationId = await StartEnergyCalculation();
+            WholesaleCalculationId = await StartWholesaleCalculation();
 
             EnergyCalculationIsComplete = await WaitForCalculationToComplete(EnergyCalculationId);
             WholesaleCalculationIsComplete = await WaitForCalculationToComplete(WholesaleCalculationId);
@@ -58,13 +58,27 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             await CollectResultsFromServiceBus();
         }
 
-        private async Task<Guid> StartCalculation(ProcessType processType)
+        private async Task<Guid> StartEnergyCalculation()
         {
             var startDate = new DateTimeOffset(2022, 1, 11, 23, 0, 0, TimeSpan.Zero);
             var endDate = new DateTimeOffset(2022, 1, 12, 23, 0, 0, TimeSpan.Zero);
             var batchRequestDto = new BatchRequestDto
             {
-                ProcessType = processType,
+                ProcessType = ProcessType.BalanceFixing,
+                GridAreaCodes = new List<string> { "543" },
+                StartDate = startDate,
+                EndDate = endDate,
+            };
+            return await _wholesaleClient.CreateBatchAsync(batchRequestDto);
+        }
+
+        private async Task<Guid> StartWholesaleCalculation()
+        {
+            var startDate = new DateTimeOffset(2021, 12, 31, 23, 0, 0, TimeSpan.Zero);
+            var endDate = new DateTimeOffset(2022, 1, 31, 23, 0, 0, TimeSpan.Zero);
+            var batchRequestDto = new BatchRequestDto
+            {
+                ProcessType = ProcessType.WholesaleFixing,
                 GridAreaCodes = new List<string> { "543" },
                 StartDate = startDate,
                 EndDate = endDate,
@@ -92,8 +106,6 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
         private async Task CollectResultsFromServiceBus()
         {
-            var energyResults = new List<CalculationResultCompleted>();
-            var wholesaleResults = new List<CalculationResultCompleted>();
             using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(15));
 
             var stopwatch = Stopwatch.StartNew();
@@ -103,7 +115,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                 var message = await _receiver.ReceiveMessageAsync();
                 if (message?.Body == null)
                 {
-                    if (energyResults.Any())
+                    // No more messages in the queue AND expected results are anticipated to have been received
+                    if (EnergyCalculationResults.Any() || WholesaleCalculationResults.Any())
                         break;
                 }
                 else
@@ -113,19 +126,19 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
                     if (result.BatchId == EnergyCalculationId.ToString())
                     {
-                        energyResults.Add(result);
+                        EnergyCalculationResults.Add(result);
                     }
 
                     if (result.BatchId == WholesaleCalculationId.ToString())
                     {
-                        wholesaleResults.Add(result);
+                        WholesaleCalculationResults.Add(result);
                     }
                 }
             }
 
             stopwatch.Stop();
 
-            Console.WriteLine($"LOOK AT ME: the loop took {stopwatch.Elapsed} to complete and received {energyResults.Count} messages");
+            Console.WriteLine($"LOOK AT ME: the loop took {stopwatch.Elapsed} to complete and received {EnergyCalculationResults.Count} messages");
         }
     }
 }
