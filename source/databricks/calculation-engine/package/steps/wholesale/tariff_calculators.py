@@ -20,9 +20,7 @@ total_quantity = "total_quantity"
 charge_count = "charge_count"
 
 
-def calculate_tariff_price_per_ga_co_es(
-    spark: SparkSession, tariffs: DataFrame
-) -> DataFrame:
+def calculate_tariff_price_per_ga_co_es(tariffs: DataFrame) -> DataFrame:
     # sum quantity and count charges
     agg_df = sum_quantity_and_count_charges(tariffs)
 
@@ -32,6 +30,7 @@ def calculate_tariff_price_per_ga_co_es(
     # join with agg_df
     df = join_with_agg_df(df, agg_df)
 
+    spark = SparkSession.builder.getOrCreate()
     return spark.createDataFrame(df.rdd, calculate_tariff_price_per_ga_co_es_schema)
 
 

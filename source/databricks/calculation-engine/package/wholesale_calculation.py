@@ -14,16 +14,21 @@
 
 
 from pyspark.sql import DataFrame
+import pyspark.sql.functions as F
 import package.steps.wholesale.wholesale_initializer as init
 from package.steps.wholesale.tariff_calculators import calculate_tariff_price_per_ga_co_es
-from package.codelists import ChargeResolution
+from package.codelists import ChargeResolution, MeteringPointType
+from package.constants import Colname
 from package.calculation_input import CalculationInputReader
+
 
 def execute(
     calculation_input_reader: CalculationInputReader,
     metering_points_periods_df: DataFrame,  # TODO: use enriched_time_series
     time_series_point_df: DataFrame,  # TODO: use enriched_time_series
 ) -> None:
+
+    metering_points_periods_df = _get_production_and_consumption_metering_points(metering_points_periods_df)
 
     # Read charge data from delta tables
     charge_master_data = calculation_input_reader.read_charge_master_data_periods()
@@ -36,7 +41,14 @@ def execute(
         charge_master_data,
         charge_links,
         charge_prices,
-        ChargeResolution.hour
+        ChargeResolution.HOUR
     )
 
-    # hourly_tariff_per_ga_co_es = calculate_tariff_price_per_ga_co_es(tariffs_hourly)
+    hourly_tariff_per_ga_co_es = calculate_tariff_price_per_ga_co_es(tariffs_hourly)
+
+
+def _get_production_and_consumption_metering_points(metering_points_periods_df: DataFrame) -> DataFrame:
+    return metering_points_periods_df.filter(
+        F.col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value
+        | F.col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value
+    )

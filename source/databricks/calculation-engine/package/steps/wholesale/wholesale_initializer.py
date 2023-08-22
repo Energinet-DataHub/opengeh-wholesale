@@ -34,9 +34,7 @@ def get_tariff_charges(
         charge_prices,
         charge_links,
         metering_points,
-        market_roles,
         ChargeType.TARIFF,
-        ChargeType.tariff,
     )
 
     # group by time series on metering point id and resolution and sum quantity
@@ -93,8 +91,8 @@ def get_charges_based_on_resolution(
     return df
 
 
-def get_charges_based_on_charge_type(charge_master_data: DataFrame, charge_type: ChargeType) -> DataFrame:
-    df = charge_master_data.filter(col(Colname.charge_type) == charge_type.value)
+def get_charges_based_on_charge_type(charge_master_data: DataFrame, charge_type: str) -> DataFrame:
+    df = charge_master_data.filter(col(Colname.charge_type) == charge_type)
     return df
 
 
@@ -263,7 +261,7 @@ def __join_properties_on_charges_with_given_charge_type(
     charge_prices: DataFrame,
     charge_links: DataFrame,
     metering_points: DataFrame,
-    charge_type: ChargeType,
+    charge_type: str,
 ) -> DataFrame:
     # filter on charge_type
     charge_master_data = get_charges_based_on_charge_type(charge_master_data, charge_type)
