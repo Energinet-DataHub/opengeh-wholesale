@@ -40,7 +40,6 @@ from package.schemas import (
     charges_schema,
     charge_links_schema,
     charge_prices_schema,
-    market_roles_schema,
     metering_point_schema,
     time_series_point_schema,
 )
@@ -214,31 +213,6 @@ def charge_prices_factory(spark):
         )
 
         return spark.createDataFrame(pandas_df, schema=charge_prices_schema)
-
-    return factory
-
-
-@pytest.fixture(scope="session")
-def market_roles_factory(spark):
-    def factory(
-        from_date: datetime,
-        to_date: datetime,
-        metering_point_id=DataframeDefaults.default_metering_point_id,
-        energy_supplier_id=DataframeDefaults.default_energy_supplier_id,
-    ):
-        pandas_df = pd.DataFrame().append(
-            [
-                {
-                    Colname.energy_supplier_id: energy_supplier_id,
-                    Colname.metering_point_id: metering_point_id,
-                    Colname.from_date: from_date,
-                    Colname.to_date: to_date,
-                }
-            ],
-            ignore_index=True,
-        )
-
-        return spark.createDataFrame(pandas_df, schema=market_roles_schema)
 
     return factory
 

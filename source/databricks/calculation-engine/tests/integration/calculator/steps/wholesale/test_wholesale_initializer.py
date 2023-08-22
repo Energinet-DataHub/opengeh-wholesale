@@ -30,18 +30,15 @@ from package.schemas import (
     charge_prices_schema,
     charge_links_schema,
     metering_point_schema,
-    market_roles_schema,
 )
 from package.schemas import time_series_point_schema
 from tests.helpers.test_schemas import (
     charges_with_prices_schema,
-    charges_with_price_and_links_schema,
     charges_with_price_and_links_and_market_roles_schema,
     charges_complete_schema,
 )
 from pyspark.sql.functions import col
 import pytest
-import pandas as pd
 from package.constants import Colname
 
 
@@ -470,42 +467,6 @@ market_roles_dataset = [
     ("1", "D01", datetime(2020, 1, 1, 0, 0), datetime(2020, 2, 1, 0, 0))
 ]
 
-
-# Shared
-metering_points_dataset_1 = [
-    (
-        "D01",
-        "E17",
-        "1",
-        "P1D",
-        "2",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        datetime(2020, 1, 1, 0, 0),
-        datetime(2020, 2, 1, 0, 0),
-    )
-]
-metering_points_dataset_2 = [
-    (
-        "D01",
-        "E17",
-        "1",
-        "P1D",
-        "2",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        datetime(2020, 1, 1, 0, 0),
-        datetime(2020, 2, 1, 0, 0),
-    )
-]
-
-
 # Shared
 charges_with_price_and_links_and_market_roles_dataset_1 = [
     (
@@ -578,6 +539,7 @@ metering_points_dataset = [
         "1",
         datetime(2020, 1, 1, 0, 0),
         datetime(2020, 2, 1, 0, 0),
+        "1",
     )
 ]
 

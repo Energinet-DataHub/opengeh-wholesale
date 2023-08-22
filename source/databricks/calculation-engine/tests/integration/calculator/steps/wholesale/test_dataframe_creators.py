@@ -19,7 +19,6 @@ from package.schemas import (
     charge_links_schema,
     charge_prices_schema,
     metering_point_schema,
-    market_roles_schema,
 )
 from package.schemas.output import calculate_daily_subscription_price_schema
 from package.schemas import time_series_point_schema
@@ -100,23 +99,6 @@ def test_charge_prices(charge_prices_factory):
     assert result[Colname.charge_time] == time
 
 
-def test_market_roles(market_roles_factory):
-    from_date = datetime(2020, 1, 1, 0, 0)
-    to_date = datetime(2020, 1, 2, 0, 0)
-    df = market_roles_factory(from_date, to_date)
-    result = df.collect()[0]
-    assert len(df.columns) == len(market_roles_schema.fields)
-    assert (
-        result[Colname.energy_supplier_id]
-        == DataframeDefaults.default_energy_supplier_id
-    )
-    assert (
-        result[Colname.metering_point_id] == DataframeDefaults.default_metering_point_id
-    )
-    assert result[Colname.from_date] == from_date
-    assert result[Colname.to_date] == to_date
-
-
 def test_metering_point(metering_point_factory):
     from_date = datetime(2020, 1, 1, 0, 0)
     to_date = datetime(2020, 1, 2, 0, 0)
@@ -149,6 +131,10 @@ def test_metering_point(metering_point_factory):
     assert result[Colname.product] == DataframeDefaults.default_product
     assert result[Colname.from_date] == from_date
     assert result[Colname.to_date] == to_date
+    assert (
+        result[Colname.energy_supplier_id]
+        == DataframeDefaults.default_energy_supplier_id
+    )
 
 
 def test_time_series(time_series_factory):
