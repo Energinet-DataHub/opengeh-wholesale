@@ -16,7 +16,7 @@ using System.Reflection;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 
-public class ResultColumnNames
+public class EnergyResultColumnNames
 {
     public const string Quantity = "quantity";
     public const string GridArea = "grid_area";
@@ -34,7 +34,7 @@ public class ResultColumnNames
 
     public static IEnumerable<string> GetAllNames()
     {
-        var fieldInfos = typeof(ResultColumnNames).GetFields(BindingFlags.Public | BindingFlags.Static);
+        var fieldInfos = typeof(EnergyResultColumnNames).GetFields(BindingFlags.Public | BindingFlags.Static);
         return fieldInfos.Select(x => x.GetValue(null)).Cast<string>().ToList();
     }
 

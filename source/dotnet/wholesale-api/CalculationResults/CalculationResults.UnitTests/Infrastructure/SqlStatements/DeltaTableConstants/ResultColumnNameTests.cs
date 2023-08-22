@@ -36,9 +36,9 @@ public class ResultColumnNameTests
             expectedColumnTypes.Add((string)expectedField.type);
         }
 
-        var fieldInfos = typeof(ResultColumnNames).GetFields(BindingFlags.Public | BindingFlags.Static);
+        var fieldInfos = typeof(EnergyResultColumnNames).GetFields(BindingFlags.Public | BindingFlags.Static);
         var actualColumnNames = fieldInfos.Select(x => x.GetValue(null)).Cast<string>().ToList();
-        var actualColumnTypes = actualColumnNames.Select(ResultColumnNames.GetType).ToList();
+        var actualColumnTypes = actualColumnNames.Select(EnergyResultColumnNames.GetType).ToList();
 
         // Assert
         actualColumnNames.Should().BeEquivalentTo(expectedColumnNames);

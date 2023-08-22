@@ -51,7 +51,7 @@ public class DatabricksSchemaManager
 
     public string SchemaName => DeltaTableOptions.Value.SCHEMA_NAME;
 
-    public string ResultTableName => DeltaTableOptions.Value.RESULT_TABLE_NAME;
+    public string EnergyResultTableName => DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME;
 
     /// <summary>
     /// Executes all the SQL scripts in the respective folder migration_scripts.
@@ -113,7 +113,7 @@ public class DatabricksSchemaManager
     {
         return sqlStatement
             .Replace("{OUTPUT_DATABASE_NAME}", SchemaName)
-            .Replace("{ENERGY_RESULT_TABLE_NAME}", DeltaTableOptions.Value.RESULT_TABLE_NAME)
+            .Replace("{ENERGY_RESULT_TABLE_NAME}", DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME)
             .Replace("{TEST}", "--");
     }
 

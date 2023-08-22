@@ -38,8 +38,8 @@ public class SettlementReportResultQueriesTests
     private readonly Instant _somePeriodEnd = Instant.FromUtc(2021, 3, 31, 10, 15);
     private readonly string[] _someGridAreas = { "123", "456", };
     private readonly TableChunk _someTableChunk = TableTestHelper.CreateTableForSettlementReport(3);
-    private readonly string[] _columnNames = { ResultColumnNames.GridArea, ResultColumnNames.BatchProcessType, ResultColumnNames.Time, ResultColumnNames.TimeSeriesType, ResultColumnNames.Quantity, };
-    private readonly IOptions<DeltaTableOptions> _someDeltaTableOptions = Options.Create(new DeltaTableOptions { SCHEMA_NAME = "someSchema", RESULT_TABLE_NAME = "someTable", });
+    private readonly string[] _columnNames = { EnergyResultColumnNames.GridArea, EnergyResultColumnNames.BatchProcessType, EnergyResultColumnNames.Time, EnergyResultColumnNames.TimeSeriesType, EnergyResultColumnNames.Quantity, };
+    private readonly IOptions<DeltaTableOptions> _someDeltaTableOptions = Options.Create(new DeltaTableOptions { SCHEMA_NAME = "someSchema", ENERGY_RESULTS_TABLE_NAME = "someTable", });
 
     [Theory]
     [AutoMoqData]
