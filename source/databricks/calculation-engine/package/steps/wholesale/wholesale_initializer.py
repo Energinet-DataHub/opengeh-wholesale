@@ -61,9 +61,7 @@ def get_fee_charges(
         charge_prices,
         charge_links,
         metering_points,
-        market_roles,
         ChargeType.FEE,
-        ChargeType.fee,
     )
 
 
@@ -78,9 +76,7 @@ def get_subscription_charges(
         charge_prices,
         charge_links,
         metering_points,
-        market_roles,
         ChargeType.SUBSCRIPTION,
-        ChargeType.subscription,
     )
 
 

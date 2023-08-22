@@ -28,12 +28,27 @@ def execute(
     time_series_point_df: DataFrame,  # TODO: use enriched_time_series
 ) -> None:
 
+    # Get input data
     metering_points_periods_df = _get_production_and_consumption_metering_points(metering_points_periods_df)
-
-    # Read charge data from delta tables
     charge_master_data = calculation_input_reader.read_charge_master_data_periods()
     charge_links = calculation_input_reader.read_charge_links_periods()
     charge_prices = calculation_input_reader.read_charge_price_points()
+
+    # Calculate and write to storage
+    _calculate_tariff_charges(metering_points_periods_df,
+                              time_series_point_df,
+                              charge_master_data,
+                              charge_links,
+                              charge_prices)
+
+
+def _calculate_tariff_charges(
+    metering_points_periods_df: DataFrame,
+    time_series_point_df: DataFrame,
+    charge_master_data: DataFrame,
+    charge_links: DataFrame,
+    charge_prices: DataFrame
+) -> None:
 
     tariffs_hourly = init.get_tariff_charges(
         metering_points_periods_df,
@@ -45,6 +60,7 @@ def execute(
     )
 
     hourly_tariff_per_ga_co_es = calculate_tariff_price_per_ga_co_es(tariffs_hourly)
+    hourly_tariff_per_ga_co_es.printSchema()  # TODO JMG: remove and write to storage instead
 
 
 def _get_production_and_consumption_metering_points(metering_points_periods_df: DataFrame) -> DataFrame:
