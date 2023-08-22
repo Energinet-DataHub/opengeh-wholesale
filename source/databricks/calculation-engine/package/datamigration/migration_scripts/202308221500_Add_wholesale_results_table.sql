@@ -8,8 +8,9 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.wholesale_results
 
     grid_area STRING NOT NULL,
     energy_supplier_id STRING,
-    -- Energy quantity in kWh for the given observation time.
+    -- Energy quantity in for the given observation time and duration as defined by `resolution`.
     -- Null when quality is missing.
+    -- Null for monthly sums.
     -- Example: 1234.534
     quantity DECIMAL(18, 3),
     quantity_unit STRING NOT NULL,
@@ -18,7 +19,8 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.wholesale_results
     time TIMESTAMP NOT NULL,
     resolution STRING NOT NULL,
 
-    metering_point_type STRING NOT NULL,
+    -- Null when monthly sum
+    metering_point_type STRING,
     settlement_method STRING NOT NULL,
 
     energy_currency STRING NOT NULL,
