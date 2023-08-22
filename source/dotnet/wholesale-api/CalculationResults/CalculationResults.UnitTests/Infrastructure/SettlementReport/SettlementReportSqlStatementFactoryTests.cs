@@ -30,7 +30,7 @@ public class SettlementReportSqlStatementFactoryTests
     private readonly Instant _defaultPeriodStart = Instant.FromUtc(2022, 10, 12, 1, 0);
     private readonly Instant _defaultPeriodEnd = Instant.FromUtc(2022, 10, 12, 3, 0);
     private readonly string _schemaName = new DeltaTableOptions().SCHEMA_NAME;
-    private readonly string _tableName = new DeltaTableOptions().RESULT_TABLE_NAME;
+    private readonly string _tableName = new DeltaTableOptions().ENERGY_RESULTS_TABLE_NAME;
 
     [Fact]
     public void Create_WhenEnergySupplierIsNull_ReturnsExpectedSqlStatement()
@@ -74,11 +74,11 @@ LEFT JOIN {_schemaName}.{_tableName} t2
         AND t1.batch_process_type = t2.batch_process_type
         AND t1.aggregation_level = t2.aggregation_level
 WHERE t2.time IS NULL
-    AND t1.{ResultColumnNames.GridArea} IN (123,234,345)
-    AND t1.{ResultColumnNames.TimeSeriesType} IN ('production','flex_consumption','non_profiled_consumption','net_exchange_per_ga','total_consumption')
-    AND t1.{ResultColumnNames.BatchProcessType} = 'BalanceFixing'
-    AND t1.{ResultColumnNames.Time} BETWEEN '2022-10-12T01:00:00Z' AND '2022-10-12T03:00:00Z'
-    AND t1.{ResultColumnNames.AggregationLevel} = '{DeltaTableAggregationLevel.GridArea}'
+    AND t1.{EnergyResultColumnNames.GridArea} IN (123,234,345)
+    AND t1.{EnergyResultColumnNames.TimeSeriesType} IN ('production','flex_consumption','non_profiled_consumption','net_exchange_per_ga','total_consumption')
+    AND t1.{EnergyResultColumnNames.BatchProcessType} = 'BalanceFixing'
+    AND t1.{EnergyResultColumnNames.Time} BETWEEN '2022-10-12T01:00:00Z' AND '2022-10-12T03:00:00Z'
+    AND t1.{EnergyResultColumnNames.AggregationLevel} = '{DeltaTableAggregationLevel.GridArea}'
 ORDER BY t1.time
 ";
     }
@@ -98,12 +98,12 @@ LEFT JOIN {_schemaName}.{_tableName} t2
         AND t1.batch_process_type = t2.batch_process_type
         AND t1.aggregation_level = t2.aggregation_level
 WHERE t2.time IS NULL
-    AND t1.{ResultColumnNames.GridArea} IN (123,234,345)
-    AND t1.{ResultColumnNames.TimeSeriesType} IN ('production','flex_consumption','non_profiled_consumption')
-    AND t1.{ResultColumnNames.BatchProcessType} = 'BalanceFixing'
-    AND t1.{ResultColumnNames.Time} BETWEEN '2022-10-12T01:00:00Z' AND '2022-10-12T03:00:00Z'
-    AND t1.{ResultColumnNames.AggregationLevel} = '{DeltaTableAggregationLevel.EnergySupplierAndGridArea}'
-    AND t1.{ResultColumnNames.EnergySupplierId} = '{energySupplier}'
+    AND t1.{EnergyResultColumnNames.GridArea} IN (123,234,345)
+    AND t1.{EnergyResultColumnNames.TimeSeriesType} IN ('production','flex_consumption','non_profiled_consumption')
+    AND t1.{EnergyResultColumnNames.BatchProcessType} = 'BalanceFixing'
+    AND t1.{EnergyResultColumnNames.Time} BETWEEN '2022-10-12T01:00:00Z' AND '2022-10-12T03:00:00Z'
+    AND t1.{EnergyResultColumnNames.AggregationLevel} = '{DeltaTableAggregationLevel.EnergySupplierAndGridArea}'
+    AND t1.{EnergyResultColumnNames.EnergySupplierId} = '{energySupplier}'
 ORDER BY t1.time
 ";
     }
