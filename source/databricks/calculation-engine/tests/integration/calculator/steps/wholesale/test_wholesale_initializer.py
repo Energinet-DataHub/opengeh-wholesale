@@ -17,7 +17,6 @@ from decimal import Decimal
 from package.steps.wholesale.wholesale_initializer import (
     join_with_charge_prices,
     join_with_charge_links,
-    join_with_martket_roles,
     join_with_metering_points,
     explode_subscription,
     get_charges_based_on_resolution,
@@ -473,31 +472,6 @@ market_roles_dataset = [
 
 
 # Shared
-@pytest.mark.parametrize(
-    "charges_with_price_and_links,market_roles,expected",
-    [
-        (charges_with_price_and_links_dataset_1, market_roles_dataset, 1),
-        (charges_with_price_and_links_dataset_2, market_roles_dataset, 0),
-        (charges_with_price_and_links_dataset_3, market_roles_dataset, 1),
-        (charges_with_price_and_links_dataset_4, market_roles_dataset, 0),
-    ],
-)
-def test__join_with_martket_roles__joins_on_metering_point_id_and_time_is_between_from_and_to_date(
-    spark, charges_with_price_and_links, market_roles, expected
-):
-    # Arrange
-    charges_with_price_and_links = spark.createDataFrame(
-        charges_with_price_and_links, schema=charges_with_price_and_links_schema
-    )
-    market_roles = spark.createDataFrame(market_roles, schema=market_roles_schema)
-
-    # Act
-    result = join_with_martket_roles(charges_with_price_and_links, market_roles)
-
-    # Assert
-    assert result.count() == expected
-
-
 metering_points_dataset_1 = [
     (
         "D01",
