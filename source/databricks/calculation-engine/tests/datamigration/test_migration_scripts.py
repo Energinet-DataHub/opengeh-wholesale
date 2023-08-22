@@ -25,49 +25,49 @@ from package.codelists import (
     TimeSeriesType,
     TimeSeriesQuality,
 )
-from package.constants import ResultTableColName
+from package.constants import EnergyResultTableColName
 from package.infrastructure import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
-from package.schemas import results_schema
+from package.schemas import energy_results_schema
 
 
 def _create_df(spark: SparkSession) -> DataFrame:
     row = {
-        ResultTableColName.grid_area: "543",
-        ResultTableColName.energy_supplier_id: "energy_supplier_id",
-        ResultTableColName.balance_responsible_id: "balance_responsible_id",
-        ResultTableColName.quantity: Decimal("1.123"),
-        ResultTableColName.quantity_quality: "missing",
-        ResultTableColName.time: datetime(2020, 1, 1, 0, 0),
-        ResultTableColName.aggregation_level: "total_ga",
-        ResultTableColName.time_series_type: "production",
-        ResultTableColName.batch_id: "batch_id",
-        ResultTableColName.batch_process_type: "BalanceFixing",
-        ResultTableColName.batch_execution_time_start: datetime(2020, 1, 1, 0, 0),
-        ResultTableColName.from_grid_area: "843",
-        ResultTableColName.calculation_result_id: "6033ab5c-436b-44e9-8a79-90489d324e53"
+        EnergyResultTableColName.grid_area: "543",
+        EnergyResultTableColName.energy_supplier_id: "energy_supplier_id",
+        EnergyResultTableColName.balance_responsible_id: "balance_responsible_id",
+        EnergyResultTableColName.quantity: Decimal("1.123"),
+        EnergyResultTableColName.quantity_quality: "missing",
+        EnergyResultTableColName.time: datetime(2020, 1, 1, 0, 0),
+        EnergyResultTableColName.aggregation_level: "total_ga",
+        EnergyResultTableColName.time_series_type: "production",
+        EnergyResultTableColName.batch_id: "batch_id",
+        EnergyResultTableColName.batch_process_type: "BalanceFixing",
+        EnergyResultTableColName.batch_execution_time_start: datetime(2020, 1, 1, 0, 0),
+        EnergyResultTableColName.from_grid_area: "843",
+        EnergyResultTableColName.calculation_result_id: "6033ab5c-436b-44e9-8a79-90489d324e53"
     }
-    return spark.createDataFrame(data=[row], schema=results_schema)
+    return spark.createDataFrame(data=[row], schema=energy_results_schema)
 
 
 @pytest.mark.parametrize(
     "column_name,invalid_column_value",
     [
-        (ResultTableColName.batch_id, None),
-        (ResultTableColName.batch_execution_time_start, None),
-        (ResultTableColName.batch_process_type, None),
-        (ResultTableColName.batch_process_type, "foo"),
-        (ResultTableColName.time_series_type, None),
-        (ResultTableColName.time_series_type, "foo"),
-        (ResultTableColName.grid_area, None),
-        (ResultTableColName.grid_area, "12"),
-        (ResultTableColName.grid_area, "1234"),
-        (ResultTableColName.from_grid_area, "12"),
-        (ResultTableColName.from_grid_area, "1234"),
-        (ResultTableColName.time, None),
-        (ResultTableColName.quantity_quality, None),
-        (ResultTableColName.quantity_quality, "foo"),
-        (ResultTableColName.aggregation_level, None),
-        (ResultTableColName.aggregation_level, "foo"),
+        (EnergyResultTableColName.batch_id, None),
+        (EnergyResultTableColName.batch_execution_time_start, None),
+        (EnergyResultTableColName.batch_process_type, None),
+        (EnergyResultTableColName.batch_process_type, "foo"),
+        (EnergyResultTableColName.time_series_type, None),
+        (EnergyResultTableColName.time_series_type, "foo"),
+        (EnergyResultTableColName.grid_area, None),
+        (EnergyResultTableColName.grid_area, "12"),
+        (EnergyResultTableColName.grid_area, "1234"),
+        (EnergyResultTableColName.from_grid_area, "12"),
+        (EnergyResultTableColName.from_grid_area, "1234"),
+        (EnergyResultTableColName.time, None),
+        (EnergyResultTableColName.quantity_quality, None),
+        (EnergyResultTableColName.quantity_quality, "foo"),
+        (EnergyResultTableColName.aggregation_level, None),
+        (EnergyResultTableColName.aggregation_level, "foo"),
     ],
 )
 def test__migrated_table_rejects_invalid_data(
@@ -102,20 +102,20 @@ max_decimal = Decimal(f"{'9'*15}.999")  # Precision=18 and scale=3
 @pytest.mark.parametrize(
     "column_name,column_value",
     [
-        (ResultTableColName.batch_id, "some string"),
-        (ResultTableColName.grid_area, "123"),
-        (ResultTableColName.grid_area, "007"),
-        (ResultTableColName.from_grid_area, None),
-        (ResultTableColName.from_grid_area, "123"),
-        (ResultTableColName.from_grid_area, "007"),
-        (ResultTableColName.balance_responsible_id, None),
-        (ResultTableColName.balance_responsible_id, "some string"),
-        (ResultTableColName.energy_supplier_id, None),
-        (ResultTableColName.energy_supplier_id, "some string"),
-        (ResultTableColName.quantity, None),
-        (ResultTableColName.quantity, Decimal("1.123")),
-        (ResultTableColName.quantity, max_decimal),
-        (ResultTableColName.quantity, -max_decimal),
+        (EnergyResultTableColName.batch_id, "some string"),
+        (EnergyResultTableColName.grid_area, "123"),
+        (EnergyResultTableColName.grid_area, "007"),
+        (EnergyResultTableColName.from_grid_area, None),
+        (EnergyResultTableColName.from_grid_area, "123"),
+        (EnergyResultTableColName.from_grid_area, "007"),
+        (EnergyResultTableColName.balance_responsible_id, None),
+        (EnergyResultTableColName.balance_responsible_id, "some string"),
+        (EnergyResultTableColName.energy_supplier_id, None),
+        (EnergyResultTableColName.energy_supplier_id, "some string"),
+        (EnergyResultTableColName.quantity, None),
+        (EnergyResultTableColName.quantity, Decimal("1.123")),
+        (EnergyResultTableColName.quantity, max_decimal),
+        (EnergyResultTableColName.quantity, -max_decimal),
     ],
 )
 def test__migrated_table_accepts_valid_data(
@@ -137,10 +137,10 @@ def test__migrated_table_accepts_valid_data(
 @pytest.mark.parametrize(
     "column_name,column_value",
     [
-        *[(ResultTableColName.batch_process_type, x.value) for x in ProcessType],
-        *[(ResultTableColName.time_series_type, x.value) for x in TimeSeriesType],
-        *[(ResultTableColName.quantity_quality, x.value) for x in TimeSeriesQuality],
-        *[(ResultTableColName.aggregation_level, x.value) for x in AggregationLevel],
+        *[(EnergyResultTableColName.batch_process_type, x.value) for x in ProcessType],
+        *[(EnergyResultTableColName.time_series_type, x.value) for x in TimeSeriesType],
+        *[(EnergyResultTableColName.quantity_quality, x.value) for x in TimeSeriesQuality],
+        *[(EnergyResultTableColName.aggregation_level, x.value) for x in AggregationLevel],
     ],
 )
 def test__migrated_table_accepts_enum_value(
@@ -181,7 +181,7 @@ def test__migrated_table_does_not_round_valid_decimal(
     result_df = _create_df(spark)
     result_df = result_df.withColumn("quantity", lit(quantity))
     batch_id = str(uuid.uuid4())
-    result_df = result_df.withColumn(ResultTableColName.batch_id, lit(batch_id))
+    result_df = result_df.withColumn(EnergyResultTableColName.batch_id, lit(batch_id))
 
     # Act
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
@@ -190,7 +190,7 @@ def test__migrated_table_does_not_round_valid_decimal(
 
     # Assert
     actual_df = spark.read.table(f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}").where(
-        col(ResultTableColName.batch_id) == batch_id
+        col(EnergyResultTableColName.batch_id) == batch_id
     )
     assert actual_df.collect()[0].quantity == quantity
 

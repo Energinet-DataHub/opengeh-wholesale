@@ -21,7 +21,7 @@ from package.codelists import (
     AggregationLevel,
     TimeSeriesType,
 )
-from package.constants import ResultTableColName
+from package.constants import EnergyResultTableColName
 
 ALL_ENERGY_RESULT_TYPES = {
     (
@@ -172,9 +172,9 @@ def test__balance_fixing_result__is_created(
 ) -> None:
     # Arrange
     result_df = (
-        balance_fixing_results_df.where(F.col(ResultTableColName.batch_id) == C.executed_balance_fixing_batch_id)
-        .where(F.col(ResultTableColName.time_series_type) == time_series_type)
-        .where(F.col(ResultTableColName.aggregation_level) == aggregation_level)
+        balance_fixing_results_df.where(F.col(EnergyResultTableColName.batch_id) == C.executed_balance_fixing_batch_id)
+        .where(F.col(EnergyResultTableColName.time_series_type) == time_series_type)
+        .where(F.col(EnergyResultTableColName.aggregation_level) == aggregation_level)
     )
 
     # Act: Calculator job is executed just once per session. See the fixtures `balance_fixing_results_df` and `executed_balance_fixing`
@@ -188,9 +188,9 @@ def test__balance_fixing_result__has_expected_number_of_result_types(
 ) -> None:
     # Arrange
     actual_result_type_count = (
-        balance_fixing_results_df.where(F.col(ResultTableColName.batch_id) == C.executed_balance_fixing_batch_id)
-        .where(F.col(ResultTableColName.batch_id) == C.executed_balance_fixing_batch_id)
-        .select(ResultTableColName.time_series_type, ResultTableColName.aggregation_level).distinct().count()
+        balance_fixing_results_df.where(F.col(EnergyResultTableColName.batch_id) == C.executed_balance_fixing_batch_id)
+        .where(F.col(EnergyResultTableColName.batch_id) == C.executed_balance_fixing_batch_id)
+        .select(EnergyResultTableColName.time_series_type, EnergyResultTableColName.aggregation_level).distinct().count()
     )
 
     # Act: Calculator job is executed just once per session. See the fixtures `results_df` and `executed_wholesale_fixing`
@@ -209,9 +209,9 @@ def test__wholesale_result__is_created(
 ) -> None:
     # Arrange
     result_df = (
-        wholesale_fixing_results_df.where(F.col(ResultTableColName.batch_id) == C.executed_wholesale_batch_id)
-        .where(F.col(ResultTableColName.time_series_type) == time_series_type)
-        .where(F.col(ResultTableColName.aggregation_level) == aggregation_level)
+        wholesale_fixing_results_df.where(F.col(EnergyResultTableColName.batch_id) == C.executed_wholesale_batch_id)
+        .where(F.col(EnergyResultTableColName.time_series_type) == time_series_type)
+        .where(F.col(EnergyResultTableColName.aggregation_level) == aggregation_level)
     )
 
     # Act: Calculator job is executed just once per session. See the fixtures `results_df` and `executed_wholesale_fixing`
@@ -225,9 +225,9 @@ def test__wholesale_result__has_expected_number_of_result_types(
 ) -> None:
     # Arrange
     actual_result_type_count = (
-        wholesale_fixing_results_df.where(F.col(ResultTableColName.batch_id) == C.executed_wholesale_batch_id)
-        .where(F.col(ResultTableColName.batch_id) == C.executed_wholesale_batch_id)
-        .select(ResultTableColName.time_series_type, ResultTableColName.aggregation_level).distinct().count()
+        wholesale_fixing_results_df.where(F.col(EnergyResultTableColName.batch_id) == C.executed_wholesale_batch_id)
+        .where(F.col(EnergyResultTableColName.batch_id) == C.executed_wholesale_batch_id)
+        .select(EnergyResultTableColName.time_series_type, EnergyResultTableColName.aggregation_level).distinct().count()
     )
 
     # Act: Calculator job is executed just once per session. See the fixtures `results_df` and `executed_wholesale_fixing`

@@ -55,7 +55,7 @@ def _substitute_placeholders(statement: str, migration_args: MigrationScriptArgs
             .replace("{CONTAINER_PATH}", migration_args.storage_container_path)  # abfss://...
             .replace("{OUTPUT_DATABASE_NAME}", OUTPUT_DATABASE_NAME)  # "wholesale_output"
             .replace("{OUTPUT_FOLDER}", OUTPUT_FOLDER)  # "calculation-output"
-            .replace("{ENERGY_RESULT_TABLE_NAME}", ENERGY_RESULT_TABLE_NAME)  # "result"
+            .replace("{ENERGY_RESULT_TABLE_NAME}", ENERGY_RESULT_TABLE_NAME)  # "energy_results"
             .replace("{TEST}", TEST))  # ""
 
 
