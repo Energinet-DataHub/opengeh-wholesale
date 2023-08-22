@@ -8,16 +8,15 @@ resource "azurerm_key_vault_certificate" "dh2_certificate" {
   }
 }
 
-resource "null_resource" "import_dh2_certificate_to_function_app" {
-  triggers = {
-    always_run = "${timestamp()}"
-  }
+data "azurerm_key_vault_secret" "dh2_certificate_secret" {
+  name         = azurerm_key_vault_certificate.dh2_certificate.name
+  key_vault_id = module.kv_internal.id
+}
 
-  provisioner "local-exec" {
-    command     = "az functionapp config ssl import --resource-group ${azurerm_resource_group.this.name} --name ${module.func_migration.name} --key-vault ${module.kv_internal.name} --key-vault-certificate-name ${azurerm_key_vault_certificate.dh2_certificate.name}"
-    interpreter = ["pwsh", "-Command"]
-  }
-  depends_on = [
-    azurerm_key_vault_certificate.dh2_certificate
-  ]
+resource "azurerm_app_service_certificate" "dh2_certificate_app" {
+  name                = "cert-pwd-migration-dh2-authentication-app"
+  resource_group_name = azurerm_resource_group.this.name
+  location            = azurerm_resource_group.this.location
+  pfx_blob            = data.azurerm_key_vault_secret.dh2_certificate_secret.value
+  app_service_plan_id = data.azurerm_key_vault_secret.plan_shared_id.value
 }
