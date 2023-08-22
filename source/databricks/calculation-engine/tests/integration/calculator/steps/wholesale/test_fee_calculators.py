@@ -25,7 +25,6 @@ from package.steps.wholesale.fee_calculators import (
 )
 from package.steps.wholesale.wholesale_initializer import get_fee_charges
 import pytest
-import pandas as pd
 
 
 def test__calculate_fee_charge_price__simple(
@@ -34,7 +33,6 @@ def test__calculate_fee_charge_price__simple(
     charge_links_factory,
     charge_prices_factory,
     metering_point_factory,
-    market_roles_factory,
     calculate_fee_charge_price_factory,
 ):
     # Test that calculate_fee_charge_price does as expected in with the most simple dataset
@@ -46,7 +44,6 @@ def test__calculate_fee_charge_price__simple(
     charge_links_df = charge_links_factory(from_date, to_date)
     charge_prices_df = charge_prices_factory(time)
     metering_point_df = metering_point_factory(from_date, to_date)
-    market_roles_df = market_roles_factory(from_date, to_date)
 
     expected_time = datetime(2020, 1, 1, 0, 0)
     expected_charge_price = charge_prices_df.collect()[0][Colname.charge_price]
@@ -59,7 +56,6 @@ def test__calculate_fee_charge_price__simple(
         charge_prices_df,
         charge_links_df,
         metering_point_df,
-        market_roles_df,
     )
     result = calculate_fee_charge_price(spark, fee_charges)
     expected = calculate_fee_charge_price_factory(
@@ -79,7 +75,6 @@ def test__calculate_fee_charge_price__two_fees(
     charge_links_factory,
     charge_prices_factory,
     metering_point_factory,
-    market_roles_factory,
     calculate_fee_charge_price_factory,
 ):
     # Test that calculate_fee_charge_price does as expected with two fees on the same day
@@ -90,7 +85,6 @@ def test__calculate_fee_charge_price__two_fees(
     charges_df = charges_factory(from_date, to_date, charge_type=ChargeType.FEE)
     charge_links_df = charge_links_factory(from_date, to_date)
     metering_point_df = metering_point_factory(from_date, to_date)
-    market_roles_df = market_roles_factory(from_date, to_date)
 
     fee_1_charge_prices_charge_price = Decimal("3.124544")
     fee_1_charge_prices_df = charge_prices_factory(
@@ -113,7 +107,6 @@ def test__calculate_fee_charge_price__two_fees(
         charge_prices_df,
         charge_links_df,
         metering_point_df,
-        market_roles_df,
     )
     result = calculate_fee_charge_price(spark, fee_charges).orderBy(
         Colname.charge_price

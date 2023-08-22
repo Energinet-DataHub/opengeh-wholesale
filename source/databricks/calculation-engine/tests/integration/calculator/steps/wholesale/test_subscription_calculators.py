@@ -13,18 +13,10 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime
-from pyspark.sql.types import (
-    DecimalType,
-    StructType,
-    StructField,
-    StringType,
-    TimestampType,
-)
 from tests.helpers.test_schemas import (
     charges_flex_consumption_schema,
     charges_per_day_schema,
 )
-from package.codelists import MeteringPointType, SettlementMethod
 
 from package.steps.wholesale.subscription_calculators import (
     calculate_daily_subscription_price,
@@ -35,7 +27,6 @@ from package.steps.wholesale.subscription_calculators import (
 from package.steps.wholesale.wholesale_initializer import get_subscription_charges
 from calendar import monthrange
 import pytest
-import pandas as pd
 from package.constants import Colname
 
 
@@ -45,7 +36,6 @@ def test__calculate_daily_subscription_price__simple(
     charge_links_factory,
     charge_prices_factory,
     metering_point_factory,
-    market_roles_factory,
     calculate_daily_subscription_price_factory,
 ):
     # Test that calculate_daily_subscription_price does as expected in with the most simple dataset
@@ -57,7 +47,6 @@ def test__calculate_daily_subscription_price__simple(
     charge_links_df = charge_links_factory(from_date, to_date)
     charge_prices_df = charge_prices_factory(time)
     metering_point_df = metering_point_factory(from_date, to_date)
-    market_roles_df = market_roles_factory(from_date, to_date)
 
     expected_date = datetime(2020, 1, 1, 0, 0)
     expected_charge_price = charge_prices_df.collect()[0][Colname.charge_price]
@@ -72,7 +61,6 @@ def test__calculate_daily_subscription_price__simple(
         charge_prices_df,
         charge_links_df,
         metering_point_df,
-        market_roles_df,
     )
     result = calculate_daily_subscription_price(spark, subscription_charges)
     expected = calculate_daily_subscription_price_factory(
@@ -93,7 +81,6 @@ def test__calculate_daily_subscription_price__charge_price_change(
     charge_links_factory,
     charge_prices_factory,
     metering_point_factory,
-    market_roles_factory,
     calculate_daily_subscription_price_factory,
 ):
     # Test that calculate_daily_subscription_price act as expected when charge price changes in a given period
@@ -103,7 +90,6 @@ def test__calculate_daily_subscription_price__charge_price_change(
     charges_df = charges_factory(from_date, to_date)
     charge_links_df = charge_links_factory(from_date, to_date)
     metering_point_df = metering_point_factory(from_date, to_date)
-    market_roles_df = market_roles_factory(from_date, to_date)
 
     subscription_1_charge_prices_charge_price = Decimal("3.124544")
     subcription_1_charge_prices_time = from_date
@@ -147,7 +133,6 @@ def test__calculate_daily_subscription_price__charge_price_change(
         charge_prices_df,
         charge_links_df,
         metering_point_df,
-        market_roles_df,
     )
     result = calculate_daily_subscription_price(spark, subscription_charges).orderBy(
         Colname.charge_time
@@ -179,7 +164,6 @@ def test__calculate_daily_subscription_price__charge_price_change_with_two_diffe
     charge_links_factory,
     charge_prices_factory,
     metering_point_factory,
-    market_roles_factory,
     calculate_daily_subscription_price_factory,
 ):
     # Test that calculate_daily_subscription_price act as expected when charge price changes in a given period for two different charge keys
@@ -196,7 +180,6 @@ def test__calculate_daily_subscription_price__charge_price_change_with_two_diffe
         charge_links_factory(from_date, to_date, charge_key=charge_key)
     )
     metering_point_df = metering_point_factory(from_date, to_date)
-    market_roles_df = market_roles_factory(from_date, to_date)
 
     subscription_1_charge_prices_charge_price = Decimal("3.124544")
     subcription_2_charge_prices_time = datetime(2020, 2, 1, 0, 0)
@@ -239,7 +222,6 @@ def test__calculate_daily_subscription_price__charge_price_change_with_two_diffe
         charge_prices_df,
         charge_links_df,
         metering_point_df,
-        market_roles_df,
     )
     result = calculate_daily_subscription_price(spark, subscription_charges).orderBy(
         Colname.charge_time, Colname.charge_key

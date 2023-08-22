@@ -257,9 +257,10 @@ def metering_point_factory(spark):
         from_grid_area=DataframeDefaults.default_from_grid_area,
         metering_method=DataframeDefaults.default_metering_method,
         parent_metering_point_id=DataframeDefaults.default_parent_metering_point_id,
-        unit=DataframeDefaults.default_unit,
         product=DataframeDefaults.default_product,
+        energy_supplier_id=DataframeDefaults.default_energy_supplier_id,
     ):
+        unit = DataframeDefaults.default_unit
         pandas_df = pd.DataFrame().append(
             [
                 {
@@ -276,6 +277,7 @@ def metering_point_factory(spark):
                     Colname.product: product,
                     Colname.from_date: from_date,
                     Colname.to_date: to_date,
+                    Colname.energy_supplier_id: energy_supplier_id,
                 }
             ],
             ignore_index=True,
