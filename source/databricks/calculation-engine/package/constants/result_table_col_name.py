@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-class ResultTableColName:
+class EnergyResultColumnNames:
     batch_id = "batch_id"
     batch_execution_time_start = "batch_execution_time_start"
     batch_process_type = "batch_process_type"

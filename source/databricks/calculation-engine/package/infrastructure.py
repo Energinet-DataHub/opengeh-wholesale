@@ -27,7 +27,7 @@ CHARGE_PRICE_POINTS_TABLE_NAME = "charge_price_points"
 
 # Output database and tables
 OUTPUT_DATABASE_NAME = "wholesale_output"
-ENERGY_RESULT_TABLE_NAME = "result"
+ENERGY_RESULT_TABLE_NAME = "energy_results"
 TEST = ""
 
 # Paths

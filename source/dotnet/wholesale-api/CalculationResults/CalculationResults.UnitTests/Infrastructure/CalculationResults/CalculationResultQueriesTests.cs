@@ -116,11 +116,11 @@ public class CalculationResultQueriesTests
         // Assert
         actual.Id.Should().Be(_calculationResultId0);
         actual.BatchId.Should().Be(Guid.Parse(_row0BatchId));
-        actual.GridArea.Should().Be(_tableChunk[0, ResultColumnNames.GridArea]);
+        actual.GridArea.Should().Be(_tableChunk[0, EnergyResultColumnNames.GridArea]);
         actual.TimeSeriesType.Should().Be(TimeSeriesType.NonProfiledConsumption);
-        actual.BalanceResponsibleId.Should().Be(_tableChunk[0, ResultColumnNames.BalanceResponsibleId]);
-        actual.EnergySupplierId.Should().Be(_tableChunk[0, ResultColumnNames.EnergySupplierId]);
-        actual.BatchId.Should().Be(_tableChunk[0, ResultColumnNames.BatchId]);
+        actual.BalanceResponsibleId.Should().Be(_tableChunk[0, EnergyResultColumnNames.BalanceResponsibleId]);
+        actual.EnergySupplierId.Should().Be(_tableChunk[0, EnergyResultColumnNames.EnergySupplierId]);
+        actual.BatchId.Should().Be(_tableChunk[0, EnergyResultColumnNames.BatchId]);
         actual.ProcessType.Should().Be(batch.ProcessType);
         actual.PeriodStart.Should().Be(batch.PeriodStart.ToInstant());
         actual.PeriodEnd.Should().Be(batch.PeriodEnd.ToInstant());
@@ -166,14 +166,14 @@ public class CalculationResultQueriesTests
         // Arrange
         var listA = new List<KeyValuePair<string, string>>
         {
-            new(ResultColumnNames.BatchId, "batchId"),
-            new(ResultColumnNames.CalculationResultId, calculationResultIdA),
+            new(EnergyResultColumnNames.BatchId, "batchId"),
+            new(EnergyResultColumnNames.CalculationResultId, calculationResultIdA),
         };
         var sqlResultRowA = new TestRow(listA);
         var listB = new List<KeyValuePair<string, string>>
         {
-            new(ResultColumnNames.BatchId, "batchId"),
-            new(ResultColumnNames.CalculationResultId, calculationResultIdB),
+            new(EnergyResultColumnNames.BatchId, "batchId"),
+            new(EnergyResultColumnNames.CalculationResultId, calculationResultIdB),
         };
         var sqlResultRowB = new TestRow(listB);
 

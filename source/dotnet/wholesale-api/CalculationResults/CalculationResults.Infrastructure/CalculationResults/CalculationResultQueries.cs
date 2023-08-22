@@ -78,36 +78,36 @@ public class CalculationResultQueries : ICalculationResultQueries
     {
         return $@"
 SELECT {string.Join(", ", SqlColumnNames)}
-FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.RESULT_TABLE_NAME}
-WHERE {ResultColumnNames.BatchId} = '{batchId}'
-ORDER BY {ResultColumnNames.CalculationResultId}, {ResultColumnNames.Time}
+FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME}
+WHERE {EnergyResultColumnNames.BatchId} = '{batchId}'
+ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames.Time}
 ";
     }
 
     public static string[] SqlColumnNames { get; } =
     {
-        ResultColumnNames.BatchId,
-        ResultColumnNames.GridArea,
-        ResultColumnNames.FromGridArea,
-        ResultColumnNames.TimeSeriesType,
-        ResultColumnNames.EnergySupplierId,
-        ResultColumnNames.BalanceResponsibleId,
-        ResultColumnNames.Time,
-        ResultColumnNames.Quantity,
-        ResultColumnNames.QuantityQuality,
-        ResultColumnNames.CalculationResultId,
+        EnergyResultColumnNames.BatchId,
+        EnergyResultColumnNames.GridArea,
+        EnergyResultColumnNames.FromGridArea,
+        EnergyResultColumnNames.TimeSeriesType,
+        EnergyResultColumnNames.EnergySupplierId,
+        EnergyResultColumnNames.BalanceResponsibleId,
+        EnergyResultColumnNames.Time,
+        EnergyResultColumnNames.Quantity,
+        EnergyResultColumnNames.QuantityQuality,
+        EnergyResultColumnNames.CalculationResultId,
     };
 
     public static bool BelongsToDifferentResults(SqlResultRow row, SqlResultRow otherRow)
     {
-        return row[ResultColumnNames.CalculationResultId] != otherRow[ResultColumnNames.CalculationResultId];
+        return row[EnergyResultColumnNames.CalculationResultId] != otherRow[EnergyResultColumnNames.CalculationResultId];
     }
 
     private static TimeSeriesPoint CreateTimeSeriesPoint(SqlResultRow row)
     {
-        var time = SqlResultValueConverters.ToDateTimeOffset(row[ResultColumnNames.Time])!.Value;
-        var quantity = SqlResultValueConverters.ToDecimal(row[ResultColumnNames.Quantity])!.Value;
-        var quality = SqlResultValueConverters.ToQuantityQuality(row[ResultColumnNames.QuantityQuality]);
+        var time = SqlResultValueConverters.ToDateTimeOffset(row[EnergyResultColumnNames.Time])!.Value;
+        var quantity = SqlResultValueConverters.ToDecimal(row[EnergyResultColumnNames.Quantity])!.Value;
+        var quality = SqlResultValueConverters.ToQuantityQuality(row[EnergyResultColumnNames.QuantityQuality]);
         return new TimeSeriesPoint(time, quantity, quality);
     }
 
@@ -116,12 +116,12 @@ ORDER BY {ResultColumnNames.CalculationResultId}, {ResultColumnNames.Time}
         SqlResultRow sqlResultRow,
         List<TimeSeriesPoint> timeSeriesPoints)
     {
-        var id = SqlResultValueConverters.ToGuid(sqlResultRow[ResultColumnNames.CalculationResultId]);
-        var timeSeriesType = SqlResultValueConverters.ToTimeSeriesType(sqlResultRow[ResultColumnNames.TimeSeriesType]);
-        var energySupplierId = sqlResultRow[ResultColumnNames.EnergySupplierId];
-        var balanceResponsibleId = sqlResultRow[ResultColumnNames.BalanceResponsibleId];
-        var gridArea = sqlResultRow[ResultColumnNames.GridArea];
-        var fromGridArea = sqlResultRow[ResultColumnNames.FromGridArea];
+        var id = SqlResultValueConverters.ToGuid(sqlResultRow[EnergyResultColumnNames.CalculationResultId]);
+        var timeSeriesType = SqlResultValueConverters.ToTimeSeriesType(sqlResultRow[EnergyResultColumnNames.TimeSeriesType]);
+        var energySupplierId = sqlResultRow[EnergyResultColumnNames.EnergySupplierId];
+        var balanceResponsibleId = sqlResultRow[EnergyResultColumnNames.BalanceResponsibleId];
+        var gridArea = sqlResultRow[EnergyResultColumnNames.GridArea];
+        var fromGridArea = sqlResultRow[EnergyResultColumnNames.FromGridArea];
         return new CalculationResult(
             id,
             batch.BatchId,
