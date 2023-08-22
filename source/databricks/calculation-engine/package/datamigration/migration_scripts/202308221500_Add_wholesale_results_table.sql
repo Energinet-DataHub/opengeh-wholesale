@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.wholesale_results
 (
-    calculation_id STRING NOT NULL,
-    calculation_type STRING NOT NULL,
-    calculation_execution_time_start TIMESTAMP NOT NULL,
+    batch_id STRING NOT NULL,
+    process_type STRING NOT NULL,
+    execution_time_start TIMESTAMP NOT NULL,
     
     result_id STRING NOT NULL,
 
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.wholesale_results
     charge_id STRING,
     charge_type STRING,
     charge_owner_id STRING,
-    is_tax BOOLEAN,
+    is_tax BOOLEAN
 )
 USING DELTA
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used. 
