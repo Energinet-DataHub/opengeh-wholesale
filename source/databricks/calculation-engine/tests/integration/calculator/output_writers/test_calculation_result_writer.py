@@ -28,7 +28,7 @@ from package.codelists import (
     TimeSeriesQuality,
     TimeSeriesType,
 )
-from package.constants import Colname, EnergyResultTableColName
+from package.constants import Colname, EnergyResultColumnNames
 from package.infrastructure import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
 from package.output_writers.calculation_result_writer import CalculationResultWriter, _get_column_group_for_calculation_result_id
 from tests.contract_utils import assert_contract_matches_schema, get_column_names_from_contract
@@ -138,7 +138,7 @@ def test__write__writes_aggregation_level(
 
     # Assert
     actual_df = spark.read.table(TABLE_NAME).where(
-        col(EnergyResultTableColName.batch_id) == batch_id
+        col(EnergyResultColumnNames.batch_id) == batch_id
     )
     assert actual_df.collect()[0]["aggregation_level"] == aggregation_level.value
 
@@ -150,18 +150,18 @@ batch_id = "some batch id"  # Needed in both test param and test implementation
 @pytest.mark.parametrize(
     "column_name, column_value",
     [
-        (EnergyResultTableColName.batch_id, batch_id),
-        (EnergyResultTableColName.batch_execution_time_start, DEFAULT_BATCH_EXECUTION_START),
-        (EnergyResultTableColName.batch_process_type, DEFAULT_PROCESS_TYPE.value),
-        (EnergyResultTableColName.time_series_type, DEFAULT_TIME_SERIES_TYPE.value),
-        (EnergyResultTableColName.grid_area, DEFAULT_GRID_AREA),
-        (EnergyResultTableColName.from_grid_area, DEFAULT_FROM_GRID_AREA),
-        (EnergyResultTableColName.balance_responsible_id, DEFAULT_BALANCE_RESPONSIBLE_ID),
-        (EnergyResultTableColName.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
-        (EnergyResultTableColName.time, datetime(2020, 1, 1, 0, 0)),
-        (EnergyResultTableColName.quantity, Decimal("1.100")),
-        (EnergyResultTableColName.quantity_quality, DEFAULT_QUALITY.value),
-        (EnergyResultTableColName.aggregation_level, DEFAULT_AGGREGATION_LEVEL.value),
+        (EnergyResultColumnNames.batch_id, batch_id),
+        (EnergyResultColumnNames.batch_execution_time_start, DEFAULT_BATCH_EXECUTION_START),
+        (EnergyResultColumnNames.batch_process_type, DEFAULT_PROCESS_TYPE.value),
+        (EnergyResultColumnNames.time_series_type, DEFAULT_TIME_SERIES_TYPE.value),
+        (EnergyResultColumnNames.grid_area, DEFAULT_GRID_AREA),
+        (EnergyResultColumnNames.from_grid_area, DEFAULT_FROM_GRID_AREA),
+        (EnergyResultColumnNames.balance_responsible_id, DEFAULT_BALANCE_RESPONSIBLE_ID),
+        (EnergyResultColumnNames.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
+        (EnergyResultColumnNames.time, datetime(2020, 1, 1, 0, 0)),
+        (EnergyResultColumnNames.quantity, Decimal("1.100")),
+        (EnergyResultColumnNames.quantity_quality, DEFAULT_QUALITY.value),
+        (EnergyResultColumnNames.aggregation_level, DEFAULT_AGGREGATION_LEVEL.value),
     ],
 )
 def test__write__writes_column(
@@ -188,7 +188,7 @@ def test__write__writes_column(
 
     # Assert
     actual_df = spark.read.table(TABLE_NAME).where(
-        col(EnergyResultTableColName.batch_id) == batch_id
+        col(EnergyResultColumnNames.batch_id) == batch_id
     )
     assert actual_df.collect()[0][column_name] == column_value
 
@@ -217,7 +217,7 @@ def test__write__writes_columns_matching_contract(
 
     # Assert
     actual_df = spark.read.table(TABLE_NAME).where(
-        col(EnergyResultTableColName.batch_id) == batch_id
+        col(EnergyResultColumnNames.batch_id) == batch_id
     )
 
     assert_contract_matches_schema(contract_path, actual_df.schema)
@@ -242,16 +242,16 @@ def test__write__writes_calculation_result_id(spark: SparkSession, contracts_pat
     )
 
     # Assert
-    actual_df = spark.read.table(TABLE_NAME).select(col(EnergyResultTableColName.calculation_result_id))
+    actual_df = spark.read.table(TABLE_NAME).select(col(EnergyResultColumnNames.calculation_result_id))
 
     assert actual_df.distinct().count() == EXPECTED_NUMBER_OF_CALCULATION_RESULT_IDS
 
 
 def test__get_column_group_for_calculation_result_id__returns_expected_column_names() -> None:
     # Arrange
-    expected_column_names = [EnergyResultTableColName.batch_id, EnergyResultTableColName.batch_execution_time_start, EnergyResultTableColName.batch_process_type,
-                             EnergyResultTableColName.grid_area, EnergyResultTableColName.time_series_type, EnergyResultTableColName.aggregation_level,
-                             EnergyResultTableColName.from_grid_area, EnergyResultTableColName.balance_responsible_id, EnergyResultTableColName.energy_supplier_id]
+    expected_column_names = [EnergyResultColumnNames.batch_id, EnergyResultColumnNames.batch_execution_time_start, EnergyResultColumnNames.batch_process_type,
+                             EnergyResultColumnNames.grid_area, EnergyResultColumnNames.time_series_type, EnergyResultColumnNames.aggregation_level,
+                             EnergyResultColumnNames.from_grid_area, EnergyResultColumnNames.balance_responsible_id, EnergyResultColumnNames.energy_supplier_id]
 
     # Act
     actual = _get_column_group_for_calculation_result_id()
@@ -265,8 +265,8 @@ def test__get_column_group_for_calculation_result_id__excludes_exepected_other_c
     # This class is a guard against adding new columns without considering how the column affects the generation of calculation result IDs
 
     # Arrange
-    expected_other_columns = [EnergyResultTableColName.time,
-                              EnergyResultTableColName.quantity_quality, EnergyResultTableColName.quantity, EnergyResultTableColName.calculation_result_id]
+    expected_other_columns = [EnergyResultColumnNames.time,
+                              EnergyResultColumnNames.quantity_quality, EnergyResultColumnNames.quantity, EnergyResultColumnNames.calculation_result_id]
     contract_path = f"{contracts_path}/result-table-column-names.json"
     all_columns = get_column_names_from_contract(contract_path)
 
