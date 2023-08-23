@@ -19,6 +19,7 @@ from package.codelists import (
 )
 from package.infrastructure import paths
 
+
 def test__creates_hour_for_total_ga__with_expected_columns_names(
     spark: SparkSession,
     data_lake_path: str,
