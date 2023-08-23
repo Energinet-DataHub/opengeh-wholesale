@@ -17,7 +17,7 @@ from io import StringIO
 
 from azure.storage.filedatalake import DataLakeServiceClient
 from azure.identity import ClientSecretCredential
-from package import infrastructure
+from package.infrastructure import paths
 from typing import Any
 
 
@@ -28,7 +28,7 @@ class DataLakeFileManager:
         credential: ClientSecretCredential,
         container_name: str,
     ):
-        data_storage_account_url = infrastructure.get_storage_account_url(
+        data_storage_account_url = paths.get_storage_account_url(
             data_storage_account_name
         )
         self.file_system_client = DataLakeServiceClient(
