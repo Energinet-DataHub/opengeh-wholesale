@@ -14,3 +14,4 @@
 
 
 from .energy_results_schema import energy_results_schema
+from .wholesale_results_schema import wholesale_results_schema
