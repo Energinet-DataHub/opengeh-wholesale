@@ -105,8 +105,8 @@ def test__migrated_table_rejects_invalid_data(
 min_18_3_decimal = Decimal(f"-{'9'*15}.999")  # Precision=18 and scale=3
 max_18_3_decimal = Decimal(f"{'9'*15}.999")  # Precision=18 and scale=3
 
-min_18_6_decimal = Decimal(f"-{'9'*15}.999999")  # Precision=18 and scale=6
-max_18_6_decimal = Decimal(f"{'9'*15}.999999")  # Precision=18 and scale=6
+min_18_6_decimal = Decimal(f"-{'9'*12}.999999")  # Precision=18 and scale=6
+max_18_6_decimal = Decimal(f"{'9'*12}.999999")  # Precision=18 and scale=6
 
 actor_gln = "1234567890123"
 actor_eic = "1234567890123456"
