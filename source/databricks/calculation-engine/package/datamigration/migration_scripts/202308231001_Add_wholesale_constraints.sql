@@ -29,7 +29,7 @@ ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
 GO
 
 ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
-    ADD CONSTRAINT resolution_chk CHECK (resolution IN ('hour', 'day', 'month'))
+    ADD CONSTRAINT resolution_chk CHECK (resolution IN ('PT1H', 'P1D', 'P1M'))
 GO
 
 ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results

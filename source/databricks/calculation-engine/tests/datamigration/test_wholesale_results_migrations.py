@@ -19,6 +19,7 @@ from pyspark.sql.functions import lit, col
 import pytest
 import uuid
 
+from package.codelists import ChargeResolution
 from package.constants import WholesaleResultColumnNames
 from package.infrastructure import OUTPUT_DATABASE_NAME, WHOLESALE_RESULT_TABLE_NAME
 from package.schemas.calculation_output import wholesale_results_schema
@@ -167,7 +168,7 @@ def test__migrated_table_accepts_valid_data(
         *[(WholesaleResultColumnNames.calculation_type, x) for x in ["WholesaleFixing", "FirstCorrectionSettlement", "SecondCorrectionSettlement", "ThirdCorrectionSettlement"]],
         *[(WholesaleResultColumnNames.quantity_unit, x) for x in ["kWh", "pcs"]],
         *[(WholesaleResultColumnNames.quantity_quality, x) for x in ["missing", "calculated", "incomplete"]],
-        *[(WholesaleResultColumnNames.resolution, x) for x in ["hour", "day", "month"]],
+        *[(WholesaleResultColumnNames.resolution, x.value) for x in ChargeResolution],
         *[(WholesaleResultColumnNames.metering_point_type, x) for x in ["production", "consumption", "child"]],
         *[(WholesaleResultColumnNames.settlement_method, x) for x in ["non_profiled", "flex"]],
         *[(WholesaleResultColumnNames.charge_type, x) for x in ["subscription", "fee", "tariff"]],
