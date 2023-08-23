@@ -20,4 +20,3 @@ from .calculate_tariff_price_per_ga_co_es_schema import (
     calculate_tariff_price_per_ga_co_es_schema,
 )
 from .charges_schema import charges_schema, charge_links_schema, charge_prices_schema
-from .metering_point_schema import metering_point_schema
