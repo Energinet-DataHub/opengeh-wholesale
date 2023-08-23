@@ -27,7 +27,7 @@ from package.codelists import (
 )
 from package.constants import EnergyResultColumnNames
 from package.infrastructure import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
-from package.schemas.calculation_output import energy_results_schema
+from package.calculation_output.schemas import energy_results_schema
 
 
 def _create_df(spark: SparkSession) -> DataFrame:
