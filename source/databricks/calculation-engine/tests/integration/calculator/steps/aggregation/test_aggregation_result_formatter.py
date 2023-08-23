@@ -21,7 +21,7 @@ from package.codelists import (
 from package.steps.aggregation.transformations import (
     create_dataframe_from_aggregation_result_schema,
 )
-from package.schemas.output import aggregation_result_schema
+from package.steps.schemas import aggregation_result_schema
 import pytest
 import pandas as pd
 from tests.helpers import DataframeDefaults

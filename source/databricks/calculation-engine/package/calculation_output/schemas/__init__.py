@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .colname import Colname
-from .basis_data_colname import BasisDataColname
-from .partition_key_name import PartitionKeyName
-from .energy_result_column_names import EnergyResultColumnNames
-from .wholesale_result_column_names import WholesaleResultColumnNames
+
+from .energy_results_schema import energy_results_schema
+from .wholesale_results_schema import wholesale_results_schema

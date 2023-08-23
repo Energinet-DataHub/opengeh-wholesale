@@ -19,7 +19,7 @@ from package.codelists import (
     TimeSeriesQuality,
 )
 from package.steps.aggregation import calculate_positive_grid_loss
-from package.schemas.output import aggregation_result_schema
+from package.steps.schemas import aggregation_result_schema
 from package.steps.aggregation.transformations import (
     create_dataframe_from_aggregation_result_schema,
 )

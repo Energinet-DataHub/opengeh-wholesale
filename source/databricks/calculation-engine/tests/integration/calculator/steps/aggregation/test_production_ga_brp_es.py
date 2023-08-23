@@ -23,7 +23,7 @@ from package.codelists import (
     MeteringPointResolution,
     TimeSeriesQuality,
 )
-from package.schemas.output import aggregation_result_schema
+from package.steps.schemas import aggregation_result_schema
 from pyspark.sql import DataFrame, SparkSession
 import pyspark.sql.functions as F
 from pyspark.sql.types import DecimalType

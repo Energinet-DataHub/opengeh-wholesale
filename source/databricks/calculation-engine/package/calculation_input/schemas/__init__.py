@@ -11,15 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from package.constants import Colname
-from pyspark.sql.types import StructType, StructField, StringType
 
-integration_event_schema = StructType(
-    [
-        StructField(Colname.event_id, StringType()),
-        StructField(Colname.processed_date, StringType()),
-        StructField(Colname.event_name, StringType()),
-        StructField(Colname.domain, StringType()),
-        StructField("body", StringType()),
-    ]
-)
+from .charge_link_periods_schema import charge_link_periods_schema
+from .charge_master_data_periods_schema import charge_master_data_periods_schema
+from .charge_price_points_schema import charge_price_points_schema
+from .imbalance_price_schema import imbalance_price_schema
+from .metering_point_period_schema import metering_point_period_schema
+from .time_series_point_schema import time_series_point_schema

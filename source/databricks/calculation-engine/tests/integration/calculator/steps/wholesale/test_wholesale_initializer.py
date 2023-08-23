@@ -14,6 +14,7 @@
 
 from datetime import datetime
 from decimal import Decimal
+from pyspark.sql import SparkSession, DataFrame
 from package.steps.wholesale.wholesale_initializer import (
     join_with_charge_prices,
     join_with_charge_links,
@@ -25,16 +26,14 @@ from package.steps.wholesale.wholesale_initializer import (
     get_charges_based_on_charge_type,
 )
 from package.codelists import ChargeType, ChargeResolution
-from package.schemas import (
+from package.steps.schemas import (
     charges_schema,
     charge_prices_schema,
     charge_links_schema,
-    metering_point_schema,
 )
-from package.schemas import time_series_point_schema
+from package.calculation_input.schemas import time_series_point_schema, metering_point_period_schema
 from tests.helpers.test_schemas import (
     charges_with_prices_schema,
-    charges_with_price_and_links_and_market_roles_schema,
     charges_with_price_and_links_schema,
     charges_complete_schema,
 )
@@ -100,8 +99,8 @@ charges_dataset = [
     ],
 )
 def test__get_charges_based_on_resolution__filters_on_resolution_hour_or_day_only_for_tariff(
-    spark, charges, resolution_duration, expected
-):
+    spark: SparkSession, charges: DataFrame, resolution_duration: ChargeResolution, expected: int
+) -> None:
     # Arrange
     charges = spark.createDataFrame(charges, schema=charges_schema)
 
@@ -192,8 +191,8 @@ charges_dataset = [
     ],
 )
 def test__get_charges_based_on_charge_type__filters_on_one_charge_type(
-    spark, charges, charge_type, expected
-):
+    spark: SparkSession, charges: DataFrame, charge_type: str, expected: int
+) -> None:
     # Arrange
     charges = spark.createDataFrame(charges, schema=charges_schema)
 
@@ -229,8 +228,8 @@ charge_prices_dataset = [
     "charges,charge_prices,expected", [(charges_dataset, charge_prices_dataset, 2)]
 )
 def test__join_with_charge_prices__joins_on_charge_key(
-    spark, charges, charge_prices, expected
-):
+    spark: SparkSession, charges: DataFrame, charge_prices: DataFrame, expected: int
+) -> None:
     # Arrange
     charges = spark.createDataFrame(charges, schema=charges_schema)
     charge_prices = spark.createDataFrame(charge_prices, schema=charge_prices_schema)
@@ -311,8 +310,8 @@ subscription_charges_with_prices_dataset_4 = [
     ],
 )
 def test__explode_subscription__explodes_into_rows_based_on_number_of_days_between_from_and_to_date(
-    spark, subscription_charges_with_prices, expected
-):
+    spark: SparkSession, subscription_charges_with_prices: DataFrame, expected: int
+) -> None:
     # Arrange
     subscription_charges_with_prices = spark.createDataFrame(
         subscription_charges_with_prices, schema=charges_with_prices_schema
@@ -397,8 +396,8 @@ charge_links_dataset = [
     ],
 )
 def test__join_with_charge_links__joins_on_charge_key_and_time_is_between_from_and_to_date(
-    spark, charges_with_prices, charge_links, expected
-):
+    spark: SparkSession, charges_with_prices: DataFrame, charge_links: DataFrame, expected: int
+) -> None:
     # Arrange
     charges_with_prices = spark.createDataFrame(
         charges_with_prices, schema=charges_with_prices_schema
@@ -412,64 +411,10 @@ def test__join_with_charge_links__joins_on_charge_key_and_time_is_between_from_a
     assert result.count() == expected
 
 
-charges_with_price_and_links_dataset_1 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        "P1D",
-        "No",
-        datetime(2020, 1, 15, 0, 0),
-        Decimal("200.50"),
-        "D01",
-    )
-]
-charges_with_price_and_links_dataset_2 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        "P1D",
-        "No",
-        datetime(2020, 2, 1, 0, 0),
-        Decimal("200.50"),
-        "D01",
-    )
-]
-charges_with_price_and_links_dataset_3 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        "P1D",
-        "No",
-        datetime(2020, 1, 1, 0, 0),
-        Decimal("200.50"),
-        "D01",
-    )
-]
-charges_with_price_and_links_dataset_4 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        "P1D",
-        "No",
-        datetime(2020, 1, 15, 0, 0),
-        Decimal("200.50"),
-        "D02",
-    )
-]
-market_roles_dataset = [
-    ("1", "D01", datetime(2020, 1, 1, 0, 0), datetime(2020, 2, 1, 0, 0))
-]
-
-
 # Shared
+DEFAULT_METERING_POINT_ID = "123"
+ANOTHER_METERING_POINT_ID = "456"
+
 charges_with_price_and_links_dataset_1 = [
     (
         "001-D01-001",
@@ -480,7 +425,7 @@ charges_with_price_and_links_dataset_1 = [
         "No",
         datetime(2020, 1, 15, 0, 0),
         Decimal("200.50"),
-        "D01",
+        DEFAULT_METERING_POINT_ID,
     )
 ]
 charges_with_price_and_links_and_dataset_2 = [
@@ -493,7 +438,7 @@ charges_with_price_and_links_and_dataset_2 = [
         "No",
         datetime(2020, 2, 1, 0, 0),
         Decimal("200.50"),
-        "D01",
+        DEFAULT_METERING_POINT_ID,
     )
 ]
 charges_with_price_and_links_dataset_3 = [
@@ -506,7 +451,7 @@ charges_with_price_and_links_dataset_3 = [
         "No",
         datetime(2020, 1, 1, 0, 0),
         Decimal("200.50"),
-        "D01",
+        DEFAULT_METERING_POINT_ID,
     )
 ]
 charges_with_price_and_links_dataset_4 = [
@@ -519,14 +464,15 @@ charges_with_price_and_links_dataset_4 = [
         "No",
         datetime(2020, 1, 15, 0, 0),
         Decimal("200.50"),
-        "D02",
+        ANOTHER_METERING_POINT_ID,
     )
 ]
 metering_points_dataset = [
     (
-        "D01",
+        DEFAULT_METERING_POINT_ID,
         "E17",
-        "1",
+        None,
+        "D01",
         "1",
         "P1D",
         "2",
@@ -534,10 +480,8 @@ metering_points_dataset = [
         "1",
         "1",
         "1",
-        "1",
         datetime(2020, 1, 1, 0, 0),
         datetime(2020, 2, 1, 0, 0),
-        "1",
     )
 ]
 
@@ -569,15 +513,15 @@ metering_points_dataset = [
     ],
 )
 def test__join_with_metering_points__joins_on_metering_point_id_and_time_is_between_from_and_to_date(
-    spark, charges_with_price_and_links, metering_points, expected
-):
+    spark: SparkSession, charges_with_price_and_links: DataFrame, metering_points: DataFrame, expected: int
+) -> None:
     # Arrange
     charges_with_price_and_links = spark.createDataFrame(
         charges_with_price_and_links,
         schema=charges_with_price_and_links_schema,
     )
     metering_points = spark.createDataFrame(
-        metering_points, schema=metering_point_schema
+        metering_points, schema=metering_point_period_schema
     )
 
     # Act
@@ -626,8 +570,8 @@ time_series_dataset_1 = [
     ],
 )
 def test__group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
-    spark, time_series, resolution_duration, expected_count, expected_quantity
-):
+    spark: SparkSession, time_series: DataFrame, resolution_duration: ChargeResolution, expected_count: int, expected_quantity: int
+) -> None:
     # Arrange
     time_series = spark.createDataFrame(time_series, schema=time_series_point_schema)
 
@@ -679,8 +623,8 @@ charges_complete_dataset_1 = [
     [(charges_complete_dataset_1, grouped_time_series_dataset_1, 1)],
 )
 def test__join_with_grouped_time_series__joins_on_metering_point_and_time(
-    spark, charges_complete, grouped_time_series, expected
-):
+    spark: SparkSession, charges_complete: DataFrame, grouped_time_series: DataFrame, expected: int
+) -> None:
     # Arrange
     grouped_time_series = spark.createDataFrame(
         grouped_time_series, schema=time_series_point_schema

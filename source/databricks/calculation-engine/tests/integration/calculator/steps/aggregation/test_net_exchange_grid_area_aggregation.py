@@ -19,7 +19,7 @@ from datetime import datetime, timedelta
 from package.constants import Colname
 from package.steps.aggregation import aggregate_net_exchange_per_ga
 from package.codelists import MeteringPointType, TimeSeriesQuality
-from package.schemas.output import aggregation_result_schema
+from package.steps.schemas import aggregation_result_schema
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import window, col
 
