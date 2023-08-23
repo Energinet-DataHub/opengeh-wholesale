@@ -15,9 +15,9 @@
 from azure.identity import ClientSecretCredential
 import importlib.resources
 
-import package.environment_variables as env_vars
-from package.infrastructure import WHOLESALE_CONTAINER_NAME
-from package.storage_account_access.data_lake_file_manager import DataLakeFileManager
+import package.infrastructure.environment_variables as env_vars
+from package.infrastructure.paths import WHOLESALE_CONTAINER_NAME
+from package.infrastructure.storage_account_access.data_lake_file_manager import DataLakeFileManager
 from .committed_migrations import download_committed_migrations
 import package.datamigration.constants as c
 

@@ -20,7 +20,7 @@ from pyspark.sql.window import Window
 
 from package.codelists import TimeSeriesType, AggregationLevel, ProcessType
 from package.constants import Colname, EnergyResultColumnNames
-from package.infrastructure import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
+from package.infrastructure.paths import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
 
 
 class CalculationResultWriter:

@@ -17,4 +17,4 @@ import pytest
 
 @pytest.fixture(scope="session")
 def test_files_folder_path(integration_tests_path: str) -> str:
-    return f"{integration_tests_path}/calculator/test_files"
+    return f"{integration_tests_path}/test_files"
