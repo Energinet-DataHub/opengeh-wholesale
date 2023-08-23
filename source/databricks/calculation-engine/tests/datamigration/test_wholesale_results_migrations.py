@@ -128,7 +128,7 @@ actor_eic = "1234567890123456"
         (WholesaleResultColumnNames.quantity_unit, "kWh"),
         (WholesaleResultColumnNames.quantity_quality, "missing"),
         (WholesaleResultColumnNames.time, datetime(2020, 1, 1, 0, 0)),
-        (WholesaleResultColumnNames.resolution, "month"),
+        (WholesaleResultColumnNames.resolution, "P1D"),
         (WholesaleResultColumnNames.metering_point_type, None),
         (WholesaleResultColumnNames.metering_point_type, "child"),
         (WholesaleResultColumnNames.settlement_method, None),
