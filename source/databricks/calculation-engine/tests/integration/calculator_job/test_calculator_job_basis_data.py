@@ -17,8 +17,7 @@ from . import configuration as C
 from package.codelists import (
     BasisDataType,
 )
-import package.infrastructure as infra
-
+from package.infrastructure import paths
 
 def test__creates_hour_for_total_ga__with_expected_columns_names(
     spark: SparkSession,
@@ -26,7 +25,7 @@ def test__creates_hour_for_total_ga__with_expected_columns_names(
     executed_balance_fixing: None,
 ) -> None:
     # Arrange
-    basis_data_relative_path = infra.get_basis_data_path(
+    basis_data_relative_path = paths.get_basis_data_path(
         BasisDataType.TIME_SERIES_HOUR, C.executed_balance_fixing_batch_id, "805"
     )
 
@@ -50,7 +49,7 @@ def test__creates_hour_for_es_per_ga__with_expected_columns_names(
     executed_balance_fixing: None,
 ) -> None:
     # Arrange
-    basis_data_relative_path = infra.get_basis_data_path(
+    basis_data_relative_path = paths.get_basis_data_path(
         BasisDataType.TIME_SERIES_HOUR,
         C.executed_balance_fixing_batch_id,
         "805",
@@ -77,7 +76,7 @@ def test__creates_quarter_for_total_ga__with_expected_columns_names(
     executed_balance_fixing: None,
 ) -> None:
     # Arrange
-    relative_path = infra.get_basis_data_path(
+    relative_path = paths.get_basis_data_path(
         BasisDataType.TIME_SERIES_QUARTER, C.executed_balance_fixing_batch_id, "805"
     )
 
@@ -102,7 +101,7 @@ def test__creates_quarter_for_es_per_ga__with_expected_columns_names(
     executed_balance_fixing: None,
 ) -> None:
     # Arrange
-    relative_path = infra.get_basis_data_path(
+    relative_path = paths.get_basis_data_path(
         BasisDataType.TIME_SERIES_QUARTER,
         C.executed_balance_fixing_batch_id,
         "805",
@@ -130,10 +129,10 @@ def test__creates_quarter_for_total_ga__per_grid_area(
     executed_balance_fixing: None,
 ) -> None:
     # Arrange
-    basis_data_relative_path_805 = infra.get_basis_data_path(
+    basis_data_relative_path_805 = paths.get_basis_data_path(
         BasisDataType.TIME_SERIES_QUARTER, C.executed_balance_fixing_batch_id, "805"
     )
-    basis_data_relative_path_806 = infra.get_basis_data_path(
+    basis_data_relative_path_806 = paths.get_basis_data_path(
         BasisDataType.TIME_SERIES_QUARTER, C.executed_balance_fixing_batch_id, "806"
     )
 
@@ -163,13 +162,13 @@ def test__creates_quarter_for_es_per_ga__per_energy_supplier(
     executed_balance_fixing: None,
 ) -> None:
     # Arrange
-    basis_data_relative_path_a = infra.get_basis_data_path(
+    basis_data_relative_path_a = paths.get_basis_data_path(
         BasisDataType.TIME_SERIES_QUARTER,
         C.executed_balance_fixing_batch_id,
         "805",
         C.energy_supplier_gln_a,
     )
-    basis_data_relative_path_b = infra.get_basis_data_path(
+    basis_data_relative_path_b = paths.get_basis_data_path(
         BasisDataType.TIME_SERIES_QUARTER,
         C.executed_balance_fixing_batch_id,
         "805",
@@ -202,10 +201,10 @@ def test__creates_hour_for_total_ga__per_grid_area(
     executed_balance_fixing: None,
 ) -> None:
     # Arrange
-    basis_data_relative_path_805 = infra.get_basis_data_path(
+    basis_data_relative_path_805 = paths.get_basis_data_path(
         BasisDataType.TIME_SERIES_HOUR, C.executed_balance_fixing_batch_id, "805"
     )
-    basis_data_relative_path_806 = infra.get_basis_data_path(
+    basis_data_relative_path_806 = paths.get_basis_data_path(
         BasisDataType.TIME_SERIES_HOUR, C.executed_balance_fixing_batch_id, "806"
     )
 
@@ -235,13 +234,13 @@ def test__creates_hour_for_es_per_ga__per_energy_supplier(
     executed_balance_fixing: None,
 ) -> None:
     # Arrange
-    basis_data_relative_path_a = infra.get_basis_data_path(
+    basis_data_relative_path_a = paths.get_basis_data_path(
         BasisDataType.TIME_SERIES_HOUR,
         C.executed_balance_fixing_batch_id,
         "805",
         C.energy_supplier_gln_a,
     )
-    basis_data_relative_path_b = infra.get_basis_data_path(
+    basis_data_relative_path_b = paths.get_basis_data_path(
         BasisDataType.TIME_SERIES_HOUR,
         C.executed_balance_fixing_batch_id,
         "805",
@@ -274,7 +273,7 @@ def test__master_basis_data_for_total_ga_has_expected_columns_names(
     executed_balance_fixing: None,
 ) -> None:
     # Arrange
-    basis_data_path = infra.get_basis_data_path(
+    basis_data_path = paths.get_basis_data_path(
         BasisDataType.MASTER_BASIS_DATA, C.executed_balance_fixing_batch_id, "805"
     )
 
@@ -304,7 +303,7 @@ def test__master_basis_data_for_es_per_ga_has_expected_columns_names(
     executed_balance_fixing: None,
 ) -> None:
     # Arrange
-    basis_data_path = infra.get_basis_data_path(
+    basis_data_path = paths.get_basis_data_path(
         BasisDataType.MASTER_BASIS_DATA,
         C.executed_balance_fixing_batch_id,
         "805",
@@ -336,10 +335,10 @@ def test__creates_master_basis_data_per_grid_area(
     executed_balance_fixing: None,
 ) -> None:
     # Arrange
-    basis_data_path_805 = infra.get_basis_data_path(
+    basis_data_path_805 = paths.get_basis_data_path(
         BasisDataType.MASTER_BASIS_DATA, C.executed_balance_fixing_batch_id, "805"
     )
-    basis_data_path_806 = infra.get_basis_data_path(
+    basis_data_path_806 = paths.get_basis_data_path(
         BasisDataType.MASTER_BASIS_DATA, C.executed_balance_fixing_batch_id, "806"
     )
 

@@ -17,7 +17,7 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Any, Callable
 
-import package.infrastructure as infra
+from package.infrastructure import paths
 import pytest
 from package.codelists import (
     BasisDataType,
@@ -102,11 +102,11 @@ def _create_metering_point_period(
 
 def _get_basis_data_paths(calculation_filetype: CalculationFileType) -> str:
     if calculation_filetype == CalculationFileType.MASTER_BASIS_DATA_FOR_TOTAL_GA:
-        return infra.get_basis_data_path(
+        return paths.get_basis_data_path(
             BasisDataType.MASTER_BASIS_DATA, DEFAULT_BATCH_ID, DEFAULT_GRID_AREA
         )
     elif calculation_filetype == CalculationFileType.MASTER_BASIS_DATA_FOR_ES_PER_GA:
-        return infra.get_basis_data_path(
+        return paths.get_basis_data_path(
             BasisDataType.MASTER_BASIS_DATA,
             DEFAULT_BATCH_ID,
             DEFAULT_GRID_AREA,
@@ -115,24 +115,24 @@ def _get_basis_data_paths(calculation_filetype: CalculationFileType) -> str:
     elif (
         calculation_filetype == CalculationFileType.TIME_SERIES_QUARTER_BASIS_DATA_FOR_TOTAL_GA
     ):
-        return infra.get_basis_data_path(
+        return paths.get_basis_data_path(
             BasisDataType.TIME_SERIES_QUARTER, DEFAULT_BATCH_ID, DEFAULT_GRID_AREA
         )
     elif (
         calculation_filetype == CalculationFileType.TIME_SERIES_QUARTER_BASIS_DATA_FOR_ES_PER_GA
     ):
-        return infra.get_basis_data_path(
+        return paths.get_basis_data_path(
             BasisDataType.TIME_SERIES_QUARTER,
             DEFAULT_BATCH_ID,
             DEFAULT_GRID_AREA,
             DEFAULT_ENERGY_SUPPLIER,
         )
     elif calculation_filetype == CalculationFileType.TIME_SERIES_HOUR_BASIS_DATA:
-        return infra.get_basis_data_path(
+        return paths.get_basis_data_path(
             BasisDataType.TIME_SERIES_HOUR, DEFAULT_BATCH_ID, DEFAULT_GRID_AREA
         )
     elif calculation_filetype == CalculationFileType.TIME_SERIES_HOUR_BASIS_DATA_FOR_ES_PER_GA:
-        return infra.get_basis_data_path(
+        return paths.get_basis_data_path(
             BasisDataType.TIME_SERIES_HOUR,
             DEFAULT_BATCH_ID,
             DEFAULT_GRID_AREA,
