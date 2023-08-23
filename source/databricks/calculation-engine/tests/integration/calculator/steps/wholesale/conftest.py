@@ -40,7 +40,6 @@ from package.schemas.internal import (
     charges_schema,
     charge_links_schema,
     charge_prices_schema,
-    metering_point_schema,
 )
 from package.schemas.calculation_input import time_series_point_schema, metering_point_period_schema
 from package.constants import Colname

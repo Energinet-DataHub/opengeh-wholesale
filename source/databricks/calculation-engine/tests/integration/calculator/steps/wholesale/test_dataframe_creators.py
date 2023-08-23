@@ -19,9 +19,8 @@ from package.schemas.internal import (
     charges_schema,
     charge_links_schema,
     charge_prices_schema,
-    metering_point_schema,
 )
-from package.schemas.calculation_input import time_series_point_schema
+from package.schemas.calculation_input import time_series_point_schema, metering_point_period_schema
 from tests.helpers import DataframeDefaults
 
 
@@ -104,7 +103,7 @@ def test_metering_point(metering_point_factory):
     to_date = datetime(2020, 1, 2, 0, 0)
     df = metering_point_factory(from_date, to_date)
     result = df.collect()[0]
-    assert len(df.columns) == len(metering_point_schema.fields)
+    assert len(df.columns) == len(metering_point_period_schema.fields)
     assert result[Colname.metering_point_id] == DataframeDefaults.default_metering_point_id
     assert result[Colname.metering_point_type] == DataframeDefaults.default_metering_point_type
     assert result[Colname.calculation_type] == DataframeDefaults.default_calculation_type
