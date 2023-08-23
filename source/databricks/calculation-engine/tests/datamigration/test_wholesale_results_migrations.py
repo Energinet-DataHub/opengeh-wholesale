@@ -37,7 +37,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
         WholesaleResultColumnNames.quantity_quality: "missing",
         WholesaleResultColumnNames.time: datetime(2020, 1, 1, 0, 0),
         WholesaleResultColumnNames.quantity_unit: "kWh",
-        WholesaleResultColumnNames.resolution: "hour",
+        WholesaleResultColumnNames.resolution: "P1D",
         WholesaleResultColumnNames.metering_point_type: "production",
         WholesaleResultColumnNames.settlement_method: "flex",
         WholesaleResultColumnNames.price: Decimal("1.123"),
