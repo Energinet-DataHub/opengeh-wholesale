@@ -23,7 +23,7 @@ from package.codelists import (
     SettlementMethod,
     TimeSeriesQuality,
 )
-from package.schemas.internal import aggregation_result_schema
+from package.steps.schemas import aggregation_result_schema
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col, window
 from typing import Callable

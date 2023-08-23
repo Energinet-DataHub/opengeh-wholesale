@@ -27,7 +27,7 @@
 # limitations under the License.
 
 from package.codelists import ChargeType
-from package.schemas.internal import (
+from package.steps.schemas import (
     calculate_daily_subscription_price_schema,
     calculate_fee_charge_price_schema,
 )
@@ -36,13 +36,13 @@ import pytest
 import pandas as pd
 from datetime import datetime
 from decimal import Decimal
-from package.schemas.internal import (
+from package.steps.schemas import (
     charges_schema,
     charge_links_schema,
     charge_prices_schema,
     metering_point_schema,
 )
-from package.schemas.calculation_input import time_series_point_schema
+from package.calculation_input.schemas import time_series_point_schema
 from package.constants import Colname
 
 

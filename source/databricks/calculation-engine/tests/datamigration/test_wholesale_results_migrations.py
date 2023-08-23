@@ -22,7 +22,7 @@ import uuid
 from package.codelists import ChargeResolution
 from package.constants import WholesaleResultColumnNames
 from package.infrastructure import OUTPUT_DATABASE_NAME, WHOLESALE_RESULT_TABLE_NAME
-from package.schemas.calculation_output import wholesale_results_schema
+from package.calculation_output.schemas import wholesale_results_schema
 
 
 def _create_df(spark: SparkSession) -> DataFrame:

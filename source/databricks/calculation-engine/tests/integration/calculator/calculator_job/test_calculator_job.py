@@ -18,7 +18,7 @@ from pyspark.sql.functions import StructType
 import pytest
 from unittest.mock import patch, Mock
 from package.calculator_job import start
-from package.schemas.calculation_input import (
+from package.calculation_input.schemas import (
     time_series_point_schema, metering_point_period_schema, charge_link_periods_schema, charge_master_data_periods_schema, charge_price_points_schema
 )
 import package.infrastructure as infra
