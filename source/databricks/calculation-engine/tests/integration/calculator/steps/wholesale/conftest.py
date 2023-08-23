@@ -36,13 +36,13 @@ import pytest
 import pandas as pd
 from datetime import datetime
 from decimal import Decimal
-from package.schemas import (
+from package.schemas.internal import (
     charges_schema,
     charge_links_schema,
     charge_prices_schema,
     metering_point_schema,
-    time_series_point_schema,
 )
+from package.schemas.calculation_input import time_series_point_schema
 from package.constants import Colname
 
 
