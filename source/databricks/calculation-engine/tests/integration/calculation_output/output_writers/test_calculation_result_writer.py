@@ -266,7 +266,9 @@ def test__get_column_group_for_calculation_result_id__excludes_exepected_other_c
 
     # Arrange
     expected_other_columns = [EnergyResultColumnNames.time,
-                              EnergyResultColumnNames.quantity_quality, EnergyResultColumnNames.quantity, EnergyResultColumnNames.calculation_result_id]
+                              EnergyResultColumnNames.quantity_quality,
+                              EnergyResultColumnNames.quantity,
+                              EnergyResultColumnNames.calculation_result_id]
     contract_path = f"{contracts_path}/result-table-column-names.json"
     all_columns = get_column_names_from_contract(contract_path)
 

@@ -28,7 +28,7 @@ import package.calculation_input.grid_loss_responsible as grid_loss_responsible
 from package.infrastructure.calculator_args import CalculatorArgs
 from package.codelists.process_type import ProcessType
 from package.constants import Colname
-import package.infrastructure as infra
+from package.infrastructure import paths
 from package.calculation_input.schemas import (
     time_series_point_schema, metering_point_period_schema, charge_master_data_periods_schema, charge_price_points_schema, charge_link_periods_schema
 )
@@ -78,7 +78,7 @@ def energy_input_data_written_to_delta(
     _write_input_test_data_to_table(
         spark,
         file_name=f"{test_files_folder_path}/MeteringPointsPeriods.csv",
-        table_name=infra.METERING_POINT_PERIODS_TABLE_NAME,
+        table_name=paths.METERING_POINT_PERIODS_TABLE_NAME,
         schema=metering_point_period_schema,
         table_location=f"{calculation_input_path}/metering_point_periods"
     )
@@ -87,7 +87,7 @@ def energy_input_data_written_to_delta(
     _write_input_test_data_to_table(
         spark,
         file_name=f"{test_files_folder_path}/TimeSeriesPoints.csv",
-        table_name=infra.TIME_SERIES_POINTS_TABLE_NAME,
+        table_name=paths.TIME_SERIES_POINTS_TABLE_NAME,
         schema=time_series_point_schema,
         table_location=f"{calculation_input_path}/time_series_points"
     )
@@ -103,7 +103,7 @@ def price_input_data_written_to_delta(
     _write_input_test_data_to_table(
         spark,
         file_name=f"{test_files_folder_path}/ChargeMasterDataPeriods.csv",
-        table_name=infra.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME,
+        table_name=paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME,
         schema=charge_master_data_periods_schema,
         table_location=f"{calculation_input_path}/charge_master_data_periods"
     )
@@ -112,7 +112,7 @@ def price_input_data_written_to_delta(
     _write_input_test_data_to_table(
         spark,
         file_name=f"{test_files_folder_path}/ChargeLinkPeriods.csv",
-        table_name=infra.CHARGE_LINK_PERIODS_TABLE_NAME,
+        table_name=paths.CHARGE_LINK_PERIODS_TABLE_NAME,
         schema=charge_link_periods_schema,
         table_location=f"{calculation_input_path}/charge_link_periods"
     )
@@ -121,7 +121,7 @@ def price_input_data_written_to_delta(
     _write_input_test_data_to_table(
         spark,
         file_name=f"{test_files_folder_path}/ChargePricePoints.csv",
-        table_name=infra.CHARGE_PRICE_POINTS_TABLE_NAME,
+        table_name=paths.CHARGE_PRICE_POINTS_TABLE_NAME,
         schema=charge_price_points_schema,
         table_location=f"{calculation_input_path}/charge_price_points"
     )
@@ -169,7 +169,7 @@ def balance_fixing_results_df(
     spark: SparkSession,
     executed_balance_fixing: None,
 ) -> DataFrame:
-    results_df = spark.read.table(f"{infra.OUTPUT_DATABASE_NAME}.{infra.ENERGY_RESULT_TABLE_NAME}")
+    results_df = spark.read.table(f"{paths.OUTPUT_DATABASE_NAME}.{paths.ENERGY_RESULT_TABLE_NAME}")
     return results_df.where(F.col(Colname.batch_id) == C.executed_balance_fixing_batch_id)
 
 
@@ -178,7 +178,7 @@ def wholesale_fixing_results_df(
     spark: SparkSession,
     executed_wholesale_fixing: None,
 ) -> DataFrame:
-    results_df = spark.read.table(f"{infra.OUTPUT_DATABASE_NAME}.{infra.ENERGY_RESULT_TABLE_NAME}")
+    results_df = spark.read.table(f"{paths.OUTPUT_DATABASE_NAME}.{paths.ENERGY_RESULT_TABLE_NAME}")
     return results_df.where(F.col(Colname.batch_id) == C.executed_wholesale_batch_id)
 
 
@@ -189,8 +189,8 @@ def _write_input_test_data_to_table(
         table_location: str,
         schema: StructType,
 ) -> None:
-    spark.sql(f"CREATE DATABASE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}")
-    spark.sql(f"CREATE TABLE IF NOT EXISTS {infra.INPUT_DATABASE_NAME}.{table_name} USING DELTA LOCATION '{table_location}'")
+    spark.sql(f"CREATE DATABASE IF NOT EXISTS {paths.INPUT_DATABASE_NAME}")
+    spark.sql(f"CREATE TABLE IF NOT EXISTS {paths.INPUT_DATABASE_NAME}.{table_name} USING DELTA LOCATION '{table_location}'")
 
     df = spark.read.csv(
         file_name,
@@ -199,5 +199,5 @@ def _write_input_test_data_to_table(
     )
 
     df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(
-        f"{infra.INPUT_DATABASE_NAME}.{table_name}"
+        f"{paths.INPUT_DATABASE_NAME}.{table_name}"
     )
