@@ -11,12 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import enum
-
-
-class SchemaNames(enum.Enum):
-    Master = 1  # the schema of the Master data
-    MessageBody = 2  # the schema of the json content of the message itself
-    Parsed = 3  # the schema of the json content plus the Enqueued time from Event Hub
-    Parquet = 4  # the schema of the enriched time series data stored in parquet format
-    DistributionList = 5  # the schema of the distribution list in the Master data
+from .aggregation_result_schema import aggregation_result_schema
+from .calculate_daily_subscription_price_schema import (
+    calculate_daily_subscription_price_schema,
+)
+from .calculate_fee_charge_price_schema import calculate_fee_charge_price_schema
+from .calculate_tariff_price_per_ga_co_es_schema import (
+    calculate_tariff_price_per_ga_co_es_schema,
+)
+from .charges_schema import charges_schema, charge_links_schema, charge_prices_schema
+from .metering_point_schema import metering_point_schema

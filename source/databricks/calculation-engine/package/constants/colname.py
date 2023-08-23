@@ -14,7 +14,6 @@
 
 
 class Colname:
-    market_role = "market_role"
     positive_grid_loss = "positive_grid_loss"
     negative_grid_loss = "negative_grid_loss"
     aggregation_level = "aggregation_level"
