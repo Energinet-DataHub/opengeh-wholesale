@@ -13,6 +13,7 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime
+from typing import Optional
 from package.codelists import (
     ChargeResolution,
     ChargeType,
@@ -34,6 +35,7 @@ class DataframeDefaults:
     default_positive_grid_loss: Decimal = Decimal("1.234")
     default_negative_grid_loss: Decimal = Decimal("1.234")
     default_balance_responsible_id: str = "1"
+    default_calculation_type: Optional[str] = None
     default_charge_id: str = const_charge_id
     default_charge_key: str = (
         f"{const_charge_id}-{const_charge_type}-{const_charge_owner}"
@@ -47,7 +49,6 @@ class DataframeDefaults:
     default_energy_supplier_id: str = "1"
     default_from_grid_area: str = "chargea"
     default_grid_area: str = "500"
-    default_metering_method: str = "1"
     default_metering_point_id: str = "D01"
     default_metering_point_type: str = MeteringPointType.CONSUMPTION.value
     default_parent_metering_point_id: str = "1"
