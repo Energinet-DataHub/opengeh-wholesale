@@ -63,8 +63,6 @@ def _create_df(spark: SparkSession) -> DataFrame:
         (WholesaleResultColumnNames.grid_area, "12"),
         (WholesaleResultColumnNames.grid_area, "1234"),
         (WholesaleResultColumnNames.energy_supplier_id, "neither-16-nor-13-digits-long"),
-        #(WholesaleResultColumnNames.quantity, Decimal("1234567890123456789")),
-        #(WholesaleResultColumnNames.quantity, Decimal("0.1234")),
         (WholesaleResultColumnNames.quantity_unit, None),
         (WholesaleResultColumnNames.quantity_unit, "foo"),
         (WholesaleResultColumnNames.quantity_quality, None),
