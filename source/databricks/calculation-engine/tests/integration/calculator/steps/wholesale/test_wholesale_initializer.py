@@ -26,12 +26,12 @@ from package.steps.wholesale.wholesale_initializer import (
     get_charges_based_on_charge_type,
 )
 from package.codelists import ChargeType, ChargeResolution
-from package.schemas.internal import (
+from package.steps.schemas import (
     charges_schema,
     charge_prices_schema,
     charge_links_schema,
 )
-from package.schemas.calculation_input import time_series_point_schema, metering_point_period_schema
+from package.calculation_input.schemas import time_series_point_schema, metering_point_period_schema
 from tests.helpers.test_schemas import (
     charges_with_prices_schema,
     charges_with_price_and_links_schema,

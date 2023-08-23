@@ -13,4 +13,19 @@
 # limitations under the License.
 
 
-from .energy_results_schema import energy_results_schema
+from .result_column_names import ResultColumnNames
+
+
+class WholesaleResultColumnNames(ResultColumnNames):
+    quantity_unit = "quantity_unit"
+    resolution = "resolution"
+
+    metering_point_type = "metering_point_type"
+    settlement_method = "settlement_method"
+    price = "price"
+    amount = "amount"
+    is_tax = "is_tax"
+
+    charge_id = "charge_id"
+    charge_type = "charge_type"
+    charge_owner_id = "charge_owner_id"

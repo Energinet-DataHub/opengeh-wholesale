@@ -13,20 +13,14 @@
 # limitations under the License.
 
 
-class EnergyResultColumnNames:
-    batch_id = "batch_id"
-    batch_execution_time_start = "batch_execution_time_start"
-    batch_process_type = "batch_process_type"
+class ResultColumnNames:
+    calculation_id = "calculation_id"
+    calculation_execution_time_start = "calculation_execution_time_start"
+    calculation_type = "calculation_type"
     calculation_result_id = "calculation_result_id"
-    time_series_type = "time_series_type"
+
     grid_area = "grid_area"
-    from_grid_area = "out_grid_area"
-    """The delta table column name ought to be renamed to 'from_grid_area'.
-    It is, however, rather complicated compared to the value unless using Delta Lake column mapping,
-    which comes with its own set of problems/limitations."""
-    balance_responsible_id = "balance_responsible_id"
     energy_supplier_id = "energy_supplier_id"
     time = "time"
     quantity = "quantity"
     quantity_quality = "quantity_quality"
-    aggregation_level = "aggregation_level"
