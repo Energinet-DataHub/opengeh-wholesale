@@ -8,9 +8,9 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.wholesale_results
 
     grid_area STRING NOT NULL,
     energy_supplier_id STRING,
-    -- Energy quantity in for the given observation time and duration as defined by `resolution`.
+    -- Energy quantity for the given observation time and duration as defined by `resolution`.
     -- Null when quality is missing.
-    -- Null for monthly sums.
+    -- Null when monthly sum.
     -- Example: 1234.534
     quantity DECIMAL(18, 3),
     quantity_unit STRING NOT NULL,
@@ -21,15 +21,21 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.wholesale_results
 
     -- Null when monthly sum
     metering_point_type STRING,
-    settlement_method STRING NOT NULL,
+    -- Null when metering point type is production
+    settlement_method STRING,
 
     energy_currency STRING NOT NULL,
-    price DECIMAL(18, 3),
-    amount DECIMAL(18, 3) NOT NULL,
+    -- Null when monthly sum.
+    price DECIMAL(18, 6),
+    amount DECIMAL(18, 6) NOT NULL,
 
+    -- Null when monthly sum.
     charge_id STRING,
+    -- Null when monthly sum.
     charge_type STRING,
+    -- Null when monthly sum.
     charge_owner_id STRING,
+    -- Null when monthly sum.
     is_tax BOOLEAN
 )
 USING DELTA
