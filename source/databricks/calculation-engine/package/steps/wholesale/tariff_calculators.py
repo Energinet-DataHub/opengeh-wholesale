@@ -11,28 +11,38 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, sum, count
-from package.schemas.output import calculate_tariff_price_per_ga_co_es_schema
 from package.constants import Colname
 
-total_quantity = "total_quantity"
-charge_count = "charge_count"
 
-
-def calculate_tariff_price_per_ga_co_es(
-    spark: SparkSession, tariffs: DataFrame
-) -> DataFrame:
+def calculate_tariff_price_per_ga_co_es(tariffs: DataFrame) -> DataFrame:
     # sum quantity and count charges
     agg_df = sum_quantity_and_count_charges(tariffs)
 
     # select distinct tariffs
-    df = select_distinct_tariffs(tariffs)
+    df = select_distinct_tariffs(tariffs)  # Why is this needed?
 
     # join with agg_df
     df = join_with_agg_df(df, agg_df)
 
-    return spark.createDataFrame(df.rdd, calculate_tariff_price_per_ga_co_es_schema)
+    return df.select(
+        Colname.energy_supplier_id,
+        Colname.grid_area,
+        Colname.charge_time,
+        Colname.metering_point_type,
+        Colname.settlement_method,
+        Colname.charge_key,
+        Colname.charge_id,
+        Colname.charge_type,
+        Colname.charge_owner,
+        Colname.charge_tax,
+        Colname.resolution,
+        Colname.charge_price,
+        Colname.total_quantity,
+        Colname.charge_count,
+        Colname.total_amount,
+    )
 
 
 def sum_quantity_and_count_charges(tariffs: DataFrame) -> DataFrame:
@@ -46,8 +56,8 @@ def sum_quantity_and_count_charges(tariffs: DataFrame) -> DataFrame:
             Colname.charge_key,
         )
         .agg(
-            sum(Colname.quantity).alias(total_quantity),
-            count(Colname.metering_point_id).alias(charge_count),
+            sum(Colname.quantity).alias(Colname.total_quantity),
+            count(Colname.metering_point_id).alias(Colname.charge_count),
         )
         .select("*")
         .distinct()
@@ -87,7 +97,7 @@ def join_with_agg_df(df: DataFrame, agg_df: DataFrame) -> DataFrame:
             ],
             "inner",
         )
-        .withColumn("total_amount", col(Colname.charge_price) * col(total_quantity))
+        .withColumn("total_amount", col(Colname.charge_price) * col(Colname.total_quantity))
         .orderBy(
             [
                 Colname.charge_key,

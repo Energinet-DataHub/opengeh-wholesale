@@ -17,7 +17,6 @@ from decimal import Decimal
 from package.steps.wholesale.wholesale_initializer import (
     join_with_charge_prices,
     join_with_charge_links,
-    join_with_martket_roles,
     join_with_metering_points,
     explode_subscription,
     get_charges_based_on_resolution,
@@ -31,18 +30,15 @@ from package.schemas import (
     charge_prices_schema,
     charge_links_schema,
     metering_point_schema,
-    market_roles_schema,
 )
 from package.schemas import time_series_point_schema
 from tests.helpers.test_schemas import (
     charges_with_prices_schema,
     charges_with_price_and_links_schema,
-    charges_with_price_and_links_and_market_roles_schema,
     charges_complete_schema,
 )
 from pyspark.sql.functions import col
 import pytest
-import pandas as pd
 from package.constants import Colname
 
 
@@ -467,73 +463,9 @@ charges_with_price_and_links_dataset_4 = [
         "D02",
     )
 ]
-market_roles_dataset = [
-    ("1", "D01", datetime(2020, 1, 1, 0, 0), datetime(2020, 2, 1, 0, 0))
-]
-
 
 # Shared
-@pytest.mark.parametrize(
-    "charges_with_price_and_links,market_roles,expected",
-    [
-        (charges_with_price_and_links_dataset_1, market_roles_dataset, 1),
-        (charges_with_price_and_links_dataset_2, market_roles_dataset, 0),
-        (charges_with_price_and_links_dataset_3, market_roles_dataset, 1),
-        (charges_with_price_and_links_dataset_4, market_roles_dataset, 0),
-    ],
-)
-def test__join_with_martket_roles__joins_on_metering_point_id_and_time_is_between_from_and_to_date(
-    spark, charges_with_price_and_links, market_roles, expected
-):
-    # Arrange
-    charges_with_price_and_links = spark.createDataFrame(
-        charges_with_price_and_links, schema=charges_with_price_and_links_schema
-    )
-    market_roles = spark.createDataFrame(market_roles, schema=market_roles_schema)
-
-    # Act
-    result = join_with_martket_roles(charges_with_price_and_links, market_roles)
-
-    # Assert
-    assert result.count() == expected
-
-
-metering_points_dataset_1 = [
-    (
-        "D01",
-        "E17",
-        "1",
-        "P1D",
-        "2",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        datetime(2020, 1, 1, 0, 0),
-        datetime(2020, 2, 1, 0, 0),
-    )
-]
-metering_points_dataset_2 = [
-    (
-        "D01",
-        "E17",
-        "1",
-        "P1D",
-        "2",
-        "1",
-        "1",
-        "1",
-        "1",
-        "1",
-        datetime(2020, 1, 1, 0, 0),
-        datetime(2020, 2, 1, 0, 0),
-    )
-]
-
-
-# Shared
-charges_with_price_and_links_and_market_roles_dataset_1 = [
+charges_with_price_and_links_dataset_1 = [
     (
         "001-D01-001",
         "001",
@@ -544,10 +476,9 @@ charges_with_price_and_links_and_market_roles_dataset_1 = [
         datetime(2020, 1, 15, 0, 0),
         Decimal("200.50"),
         "D01",
-        "1",
     )
 ]
-charges_with_price_and_links_and_market_roles_dataset_2 = [
+charges_with_price_and_links_and_dataset_2 = [
     (
         "001-D01-001",
         "001",
@@ -558,10 +489,9 @@ charges_with_price_and_links_and_market_roles_dataset_2 = [
         datetime(2020, 2, 1, 0, 0),
         Decimal("200.50"),
         "D01",
-        "1",
     )
 ]
-charges_with_price_and_links_and_market_roles_dataset_3 = [
+charges_with_price_and_links_dataset_3 = [
     (
         "001-D01-001",
         "001",
@@ -572,10 +502,9 @@ charges_with_price_and_links_and_market_roles_dataset_3 = [
         datetime(2020, 1, 1, 0, 0),
         Decimal("200.50"),
         "D01",
-        "1",
     )
 ]
-charges_with_price_and_links_and_market_roles_dataset_4 = [
+charges_with_price_and_links_dataset_4 = [
     (
         "001-D01-001",
         "001",
@@ -586,7 +515,6 @@ charges_with_price_and_links_and_market_roles_dataset_4 = [
         datetime(2020, 1, 15, 0, 0),
         Decimal("200.50"),
         "D02",
-        "1",
     )
 ]
 metering_points_dataset = [
@@ -604,43 +532,44 @@ metering_points_dataset = [
         "1",
         datetime(2020, 1, 1, 0, 0),
         datetime(2020, 2, 1, 0, 0),
+        "1",
     )
 ]
 
 
 # Shared
 @pytest.mark.parametrize(
-    "charges_with_price_and_links_and_market_roles,metering_points,expected",
+    "charges_with_price_and_links,metering_points,expected",
     [
         (
-            charges_with_price_and_links_and_market_roles_dataset_1,
+            charges_with_price_and_links_dataset_1,
             metering_points_dataset,
             1,
         ),
         (
-            charges_with_price_and_links_and_market_roles_dataset_2,
+            charges_with_price_and_links_and_dataset_2,
             metering_points_dataset,
             0,
         ),
         (
-            charges_with_price_and_links_and_market_roles_dataset_3,
+            charges_with_price_and_links_dataset_3,
             metering_points_dataset,
             1,
         ),
         (
-            charges_with_price_and_links_and_market_roles_dataset_4,
+            charges_with_price_and_links_dataset_4,
             metering_points_dataset,
             0,
         ),
     ],
 )
 def test__join_with_metering_points__joins_on_metering_point_id_and_time_is_between_from_and_to_date(
-    spark, charges_with_price_and_links_and_market_roles, metering_points, expected
+    spark, charges_with_price_and_links, metering_points, expected
 ):
     # Arrange
-    charges_with_price_and_links_and_market_roles = spark.createDataFrame(
-        charges_with_price_and_links_and_market_roles,
-        schema=charges_with_price_and_links_and_market_roles_schema,
+    charges_with_price_and_links = spark.createDataFrame(
+        charges_with_price_and_links,
+        schema=charges_with_price_and_links_schema,
     )
     metering_points = spark.createDataFrame(
         metering_points, schema=metering_point_schema
@@ -648,7 +577,7 @@ def test__join_with_metering_points__joins_on_metering_point_id_and_time_is_betw
 
     # Act
     result = join_with_metering_points(
-        charges_with_price_and_links_and_market_roles, metering_points
+        charges_with_price_and_links, metering_points
     )
 
     # Assert

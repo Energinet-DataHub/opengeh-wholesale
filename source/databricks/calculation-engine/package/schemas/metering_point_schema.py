@@ -35,5 +35,6 @@ metering_point_schema = StructType(
         StructField(Colname.product, StringType()),
         StructField(Colname.from_date, TimestampType(), False),
         StructField(Colname.to_date, TimestampType(), False),
+        StructField(Colname.energy_supplier_id, StringType(), True),
     ]
 )

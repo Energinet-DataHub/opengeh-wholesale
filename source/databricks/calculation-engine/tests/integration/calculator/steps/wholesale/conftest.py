@@ -40,7 +40,6 @@ from package.schemas import (
     charges_schema,
     charge_links_schema,
     charge_prices_schema,
-    market_roles_schema,
     metering_point_schema,
     time_series_point_schema,
 )
@@ -219,31 +218,6 @@ def charge_prices_factory(spark):
 
 
 @pytest.fixture(scope="session")
-def market_roles_factory(spark):
-    def factory(
-        from_date: datetime,
-        to_date: datetime,
-        metering_point_id=DataframeDefaults.default_metering_point_id,
-        energy_supplier_id=DataframeDefaults.default_energy_supplier_id,
-    ):
-        pandas_df = pd.DataFrame().append(
-            [
-                {
-                    Colname.energy_supplier_id: energy_supplier_id,
-                    Colname.metering_point_id: metering_point_id,
-                    Colname.from_date: from_date,
-                    Colname.to_date: to_date,
-                }
-            ],
-            ignore_index=True,
-        )
-
-        return spark.createDataFrame(pandas_df, schema=market_roles_schema)
-
-    return factory
-
-
-@pytest.fixture(scope="session")
 def metering_point_factory(spark):
     def factory(
         from_date: datetime,
@@ -257,9 +231,10 @@ def metering_point_factory(spark):
         from_grid_area=DataframeDefaults.default_from_grid_area,
         metering_method=DataframeDefaults.default_metering_method,
         parent_metering_point_id=DataframeDefaults.default_parent_metering_point_id,
-        unit=DataframeDefaults.default_unit,
         product=DataframeDefaults.default_product,
+        energy_supplier_id=DataframeDefaults.default_energy_supplier_id,
     ):
+        unit = DataframeDefaults.default_unit
         pandas_df = pd.DataFrame().append(
             [
                 {
@@ -276,6 +251,7 @@ def metering_point_factory(spark):
                     Colname.product: product,
                     Colname.from_date: from_date,
                     Colname.to_date: to_date,
+                    Colname.energy_supplier_id: energy_supplier_id,
                 }
             ],
             ignore_index=True,
