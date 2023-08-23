@@ -1,9 +1,12 @@
 CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.wholesale_results
 (
+    -- 36 characters UUID
     calculation_id STRING NOT NULL,
+    -- Enum
     calculation_type STRING NOT NULL,
     calculation_execution_time_start TIMESTAMP NOT NULL,
     
+    -- 36 characters UUID
     calculation_result_id STRING NOT NULL,
 
     grid_area STRING NOT NULL,
@@ -21,20 +24,20 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.wholesale_results
 
     -- Null when monthly sum
     metering_point_type STRING,
-    -- Null when metering point type is production
+    -- Null when metering point type is not consumption
     settlement_method STRING,
 
     -- Null when monthly sum.
     price DECIMAL(18, 6),
     amount DECIMAL(18, 6) NOT NULL,
 
-    -- Null when monthly sum.
+    -- Null when total sum.
     charge_id STRING,
-    -- Null when monthly sum.
+    -- Null when total sum.
     charge_type STRING,
-    -- Null when monthly sum.
+    -- Null when total sum.
     charge_owner_id STRING,
-    -- Null when monthly sum.
+    -- Applies only to tariff. Null when subscription or fee.
     is_tax BOOLEAN
 )
 USING DELTA
