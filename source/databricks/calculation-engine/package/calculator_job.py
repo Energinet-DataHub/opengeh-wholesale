@@ -15,16 +15,16 @@
 
 import sys
 from pyspark.sql import SparkSession
-from package import (
-    energy_calculation,
+from package.calculation import energy_calculation
+from package.infrastructure import (
     db_logging,
     initialize_spark,
     log,
 )
 import package.calculation_input as input
-from package.calculator_args import CalculatorArgs, get_calculator_args
-import package.steps.setup as setup
-from package.storage_account_access import islocked
+from package.infrastructure.calculator_args import CalculatorArgs, get_calculator_args
+import package.calculation.setup as setup
+from package.infrastructure.storage_account_access import islocked
 
 
 def _start_calculator(args: CalculatorArgs, spark: SparkSession) -> None:

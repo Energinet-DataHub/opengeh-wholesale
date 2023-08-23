@@ -16,14 +16,14 @@ import importlib
 from azure.identity import ClientSecretCredential
 from typing import Any
 
-from package import infrastructure, initialize_spark, log
-import package.environment_variables as env_vars
+from package.infrastructure import paths, initialize_spark, log
+import package.infrastructure.environment_variables as env_vars
 from .committed_migrations import upload_committed_migration
-from package.infrastructure import WHOLESALE_CONTAINER_NAME, OUTPUT_FOLDER
-from package.storage_account_access.data_lake_file_manager import DataLakeFileManager
+from package.infrastructure.paths import WHOLESALE_CONTAINER_NAME, OUTPUT_FOLDER
+from package.infrastructure.storage_account_access.data_lake_file_manager import DataLakeFileManager
 from .migration_script_args import MigrationScriptArgs
 from .uncommitted_migrations import get_uncommitted_migrations
-from package.infrastructure import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME, TEST
+from package.infrastructure.paths import OUTPUT_DATABASE_NAME, TEST
 import package.datamigration.constants as c
 
 
@@ -78,7 +78,7 @@ def _migrate_data_lake(
     uncommitted_migrations = get_uncommitted_migrations(file_manager)
     uncommitted_migrations.sort()
 
-    storage_account_url = infrastructure.get_storage_account_url(
+    storage_account_url = paths.get_storage_account_url(
         storage_account_name,
     )
 
