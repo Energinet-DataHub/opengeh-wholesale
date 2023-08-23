@@ -42,7 +42,7 @@ from package.schemas.internal import (
     charge_prices_schema,
     metering_point_schema,
 )
-from package.schemas.calculation_input import time_series_point_schema
+from package.schemas.calculation_input import time_series_point_schema, metering_point_period_schema
 from package.constants import Colname
 
 
@@ -229,35 +229,29 @@ def metering_point_factory(spark):
         resolution=DataframeDefaults.default_metering_point_resolution,
         to_grid_area=DataframeDefaults.default_to_grid_area,
         from_grid_area=DataframeDefaults.default_from_grid_area,
-        metering_method=DataframeDefaults.default_metering_method,
         parent_metering_point_id=DataframeDefaults.default_parent_metering_point_id,
-        product=DataframeDefaults.default_product,
         energy_supplier_id=DataframeDefaults.default_energy_supplier_id,
+        balance_responsible_id=DataframeDefaults.default_balance_responsible_id,
     ):
-        unit = DataframeDefaults.default_unit
-        pandas_df = pd.DataFrame().append(
-            [
-                {
-                    Colname.metering_point_id: metering_point_id,
-                    Colname.metering_point_type: metering_point_type,
-                    Colname.settlement_method: settlement_method,
-                    Colname.grid_area: grid_area,
-                    Colname.resolution: resolution,
-                    Colname.to_grid_area: to_grid_area,
-                    Colname.from_grid_area: from_grid_area,
-                    Colname.metering_method: metering_method,
-                    Colname.parent_metering_point_id: parent_metering_point_id,
-                    Colname.unit: unit,
-                    Colname.product: product,
-                    Colname.from_date: from_date,
-                    Colname.to_date: to_date,
-                    Colname.energy_supplier_id: energy_supplier_id,
-                }
-            ],
-            ignore_index=True,
-        )
+        data = [
+            {
+                Colname.metering_point_id: metering_point_id,
+                Colname.metering_point_type: metering_point_type,
+                Colname.calculation_type: DataframeDefaults.default_calculation_type,
+                Colname.settlement_method: settlement_method,
+                Colname.grid_area: grid_area,
+                Colname.resolution: resolution,
+                Colname.from_grid_area: from_grid_area,
+                Colname.to_grid_area: to_grid_area,
+                Colname.parent_metering_point_id: parent_metering_point_id,
+                Colname.energy_supplier_id: energy_supplier_id,
+                Colname.balance_responsible_id: balance_responsible_id,
+                Colname.from_date: from_date,
+                Colname.to_date: to_date,
+            }
+        ]
 
-        return spark.createDataFrame(pandas_df, schema=metering_point_schema)
+        return spark.createDataFrame(data, schema=metering_point_period_schema)
 
     return factory
 

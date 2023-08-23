@@ -29,7 +29,6 @@ metering_point_schema = StructType(
         StructField(Colname.resolution, StringType(), False),
         StructField(Colname.to_grid_area, StringType()),
         StructField(Colname.from_grid_area, StringType()),
-        StructField(Colname.metering_method, StringType(), False),
         StructField(Colname.parent_metering_point_id, StringType()),
         StructField(Colname.unit, StringType(), False),
         StructField(Colname.product, StringType()),
