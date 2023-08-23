@@ -17,8 +17,8 @@ from datetime import datetime
 import package.steps.aggregation as agg_steps
 import package.steps.setup as setup
 from package.codelists import TimeSeriesType, AggregationLevel, ProcessType
-from package.output_writers.basis_data_writer import BasisDataWriter
-from package.output_writers.calculation_result_writer import CalculationResultWriter
+from package.calculation_output.output_writers.basis_data_writer import BasisDataWriter
+from package.calculation_output.output_writers.calculation_result_writer import CalculationResultWriter
 from pyspark.sql import DataFrame
 from typing import Tuple
 

@@ -29,7 +29,7 @@ from package.calculator_args import CalculatorArgs
 from package.codelists.process_type import ProcessType
 from package.constants import Colname
 import package.infrastructure as infra
-from package.schemas.calculation_input import (
+from package.calculation_input.schemas import (
     time_series_point_schema, metering_point_period_schema, charge_master_data_periods_schema, charge_price_points_schema, charge_link_periods_schema
 )
 

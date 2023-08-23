@@ -21,7 +21,7 @@ from package.steps.aggregation import (
     aggregate_net_exchange_per_neighbour_ga,
 )
 from package.codelists import MeteringPointType, TimeSeriesQuality
-from package.schemas.internal import aggregation_result_schema
+from package.steps.schemas import aggregation_result_schema
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 from pyspark.sql.functions import col, window
 
