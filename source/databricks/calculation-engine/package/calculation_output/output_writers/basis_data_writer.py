@@ -12,21 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from datetime import datetime
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
 
 import package.basis_data as basis_data
-import package.infrastructure as infra
+from package.infrastructure import paths
 from package.constants import PartitionKeyName, BasisDataColname
 from package.codelists import AggregationLevel, BasisDataType
 
 
 class BasisDataWriter:
     def __init__(self, container_path: str, batch_id: str):
-        self.__master_basis_data_path = f"{container_path}/{infra.get_basis_data_root_path(BasisDataType.MASTER_BASIS_DATA, batch_id)}"
-        self.__time_series_quarter_path = f"{container_path}/{infra.get_basis_data_root_path(BasisDataType.TIME_SERIES_QUARTER, batch_id)}"
-        self.__time_series_hour_path = f"{container_path}/{infra.get_basis_data_root_path(BasisDataType.TIME_SERIES_HOUR, batch_id)}"
+        self.__master_basis_data_path = f"{container_path}/{paths.get_basis_data_root_path(BasisDataType.MASTER_BASIS_DATA, batch_id)}"
+        self.__time_series_quarter_path = f"{container_path}/{paths.get_basis_data_root_path(BasisDataType.TIME_SERIES_QUARTER, batch_id)}"
+        self.__time_series_hour_path = f"{container_path}/{paths.get_basis_data_root_path(BasisDataType.TIME_SERIES_HOUR, batch_id)}"
 
     def write(
         self,
