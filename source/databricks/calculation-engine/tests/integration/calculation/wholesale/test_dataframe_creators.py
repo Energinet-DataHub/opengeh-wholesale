@@ -22,8 +22,7 @@ from package.calculation.wholesale.schemas.charges_schema import (
     charge_links_schema,
     charge_prices_schema,
 )
-from package.calculation.schemas import metering_point_schema
-from package.calculation_input.schemas import time_series_point_schema
+from package.calculation_input.schemas import time_series_point_schema, metering_point_period_schema
 from tests.helpers import DataframeDefaults
 
 
@@ -106,37 +105,20 @@ def test_metering_point(metering_point_factory):
     to_date = datetime(2020, 1, 2, 0, 0)
     df = metering_point_factory(from_date, to_date)
     result = df.collect()[0]
-    assert len(df.columns) == len(metering_point_schema.fields)
-    assert (
-        result[Colname.metering_point_id] == DataframeDefaults.default_metering_point_id
-    )
-    assert (
-        result[Colname.metering_point_type]
-        == DataframeDefaults.default_metering_point_type
-    )
-    assert (
-        result[Colname.settlement_method] == DataframeDefaults.default_settlement_method
-    )
+    assert len(df.columns) == len(metering_point_period_schema.fields)
+    assert result[Colname.metering_point_id] == DataframeDefaults.default_metering_point_id
+    assert result[Colname.metering_point_type] == DataframeDefaults.default_metering_point_type
+    assert result[Colname.calculation_type] == DataframeDefaults.default_calculation_type
+    assert result[Colname.settlement_method] == DataframeDefaults.default_settlement_method
     assert result[Colname.grid_area] == DataframeDefaults.default_grid_area
-    assert (
-        result[Colname.resolution]
-        == DataframeDefaults.default_metering_point_resolution
-    )
-    assert result[Colname.to_grid_area] == DataframeDefaults.default_to_grid_area
+    assert result[Colname.resolution] == DataframeDefaults.default_metering_point_resolution
     assert result[Colname.from_grid_area] == DataframeDefaults.default_from_grid_area
-    assert result[Colname.metering_method] == DataframeDefaults.default_metering_method
-    assert (
-        result[Colname.parent_metering_point_id]
-        == DataframeDefaults.default_parent_metering_point_id
-    )
-    assert result[Colname.unit] == DataframeDefaults.default_unit
-    assert result[Colname.product] == DataframeDefaults.default_product
+    assert result[Colname.to_grid_area] == DataframeDefaults.default_to_grid_area
+    assert result[Colname.parent_metering_point_id] == DataframeDefaults.default_parent_metering_point_id
+    assert result[Colname.energy_supplier_id] == DataframeDefaults.default_energy_supplier_id
+    assert result[Colname.balance_responsible_id] == DataframeDefaults.default_balance_responsible_id
     assert result[Colname.from_date] == from_date
     assert result[Colname.to_date] == to_date
-    assert (
-        result[Colname.energy_supplier_id]
-        == DataframeDefaults.default_energy_supplier_id
-    )
 
 
 def test_time_series(time_series_factory):
