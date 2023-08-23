@@ -15,7 +15,7 @@ from pyspark.sql import DataFrame, SparkSession
 
 from pyspark.sql.functions import lit
 from package.constants import Colname
-from package.schemas.internal import aggregation_result_schema
+from package.steps.schemas import aggregation_result_schema
 from package.codelists import TimeSeriesQuality
 
 

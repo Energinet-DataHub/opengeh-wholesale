@@ -14,14 +14,14 @@
 from datetime import datetime
 from decimal import Decimal
 from package.constants import Colname
-from package.schemas.internal import (
+from package.steps.schemas import (
     calculate_daily_subscription_price_schema,
     charges_schema,
     charge_links_schema,
     charge_prices_schema,
     metering_point_schema,
 )
-from package.schemas.calculation_input import time_series_point_schema
+from package.calculation_input.schemas import time_series_point_schema
 from tests.helpers import DataframeDefaults
 
 
