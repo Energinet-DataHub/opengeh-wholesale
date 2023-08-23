@@ -29,8 +29,6 @@ from package.codelists import (
     MeteringPointResolution,
 )
 from package.constants import Colname, BasisDataColname
-from package.db_logging import debug
-from datetime import datetime
 
 
 def get_master_basis_data_df(

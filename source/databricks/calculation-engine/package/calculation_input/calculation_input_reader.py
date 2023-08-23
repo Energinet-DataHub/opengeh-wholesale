@@ -15,7 +15,7 @@
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import concat_ws, col
 from package.constants import Colname
-import package.infrastructure as infra
+from package.infrastructure import paths
 
 
 class CalculationInputReader:
@@ -26,23 +26,23 @@ class CalculationInputReader:
         self.__spark = spark
 
     def read_metering_point_periods(self) -> DataFrame:
-        return self.__spark.read.table(f"{infra.INPUT_DATABASE_NAME}.{infra.METERING_POINT_PERIODS_TABLE_NAME}")
+        return self.__spark.read.table(f"{paths.INPUT_DATABASE_NAME}.{paths.METERING_POINT_PERIODS_TABLE_NAME}")
 
     def read_time_series_points(self) -> DataFrame:
-        return self.__spark.read.table(f"{infra.INPUT_DATABASE_NAME}.{infra.TIME_SERIES_POINTS_TABLE_NAME}")
+        return self.__spark.read.table(f"{paths.INPUT_DATABASE_NAME}.{paths.TIME_SERIES_POINTS_TABLE_NAME}")
 
     def read_charge_links_periods(self) -> DataFrame:
-        df = self.__spark.read.table(f"{infra.INPUT_DATABASE_NAME}.{infra.CHARGE_LINK_PERIODS_TABLE_NAME}")
+        df = self.__spark.read.table(f"{paths.INPUT_DATABASE_NAME}.{paths.CHARGE_LINK_PERIODS_TABLE_NAME}")
         df = _add_charge_key_column(df)
         return df
 
     def read_charge_master_data_periods(self) -> DataFrame:
-        df = self.__spark.read.table(f"{infra.INPUT_DATABASE_NAME}.{infra.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}")
+        df = self.__spark.read.table(f"{paths.INPUT_DATABASE_NAME}.{paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}")
         df = _add_charge_key_column(df)
         return df
 
     def read_charge_price_points(self) -> DataFrame:
-        df = self.__spark.read.table(f"{infra.INPUT_DATABASE_NAME}.{infra.CHARGE_PRICE_POINTS_TABLE_NAME}")
+        df = self.__spark.read.table(f"{paths.INPUT_DATABASE_NAME}.{paths.CHARGE_PRICE_POINTS_TABLE_NAME}")
         df = _add_charge_key_column(df)
         return df
 

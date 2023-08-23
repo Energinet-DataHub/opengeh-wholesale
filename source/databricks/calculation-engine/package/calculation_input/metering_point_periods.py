@@ -19,7 +19,6 @@ from pyspark.sql.functions import (
     when,
 )
 from package.constants import Colname
-from package.db_logging import debug
 from datetime import datetime
 from package.calculation_input import CalculationInputReader, get_batch_grid_areas_df, check_all_grid_areas_have_metering_points
 
