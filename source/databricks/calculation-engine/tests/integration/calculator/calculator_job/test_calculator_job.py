@@ -17,7 +17,7 @@ from pyspark.sql import SparkSession
 import pytest
 from unittest.mock import patch, Mock
 from package.calculator_job import start
-from package.schemas import time_series_point_schema
+from package.schemas.calculation_input import time_series_point_schema
 
 
 def test__published_time_series_points_contract_matches_schema_from_input_time_series_points(
