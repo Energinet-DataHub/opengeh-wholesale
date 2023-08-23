@@ -17,7 +17,6 @@ import sys
 from pyspark.sql import SparkSession
 from package.calculation import energy_calculation, wholesale_calculation
 from package.infrastructure import (
-from package import (
     db_logging,
     initialize_spark,
     log,
