@@ -1,10 +1,10 @@
 CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.wholesale_results
 (
     batch_id STRING NOT NULL,
-    process_type STRING NOT NULL,
-    execution_time_start TIMESTAMP NOT NULL,
+    batch_process_type STRING NOT NULL,
+    batch_execution_time_start TIMESTAMP NOT NULL,
     
-    result_id STRING NOT NULL,
+    calculation_result_id STRING NOT NULL,
 
     grid_area STRING NOT NULL,
     energy_supplier_id STRING,
@@ -24,7 +24,6 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.wholesale_results
     -- Null when metering point type is production
     settlement_method STRING,
 
-    energy_currency STRING NOT NULL,
     -- Null when monthly sum.
     price DECIMAL(18, 6),
     amount DECIMAL(18, 6) NOT NULL,
