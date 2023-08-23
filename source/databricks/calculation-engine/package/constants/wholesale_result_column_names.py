@@ -12,8 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .colname import Colname
-from .basis_data_colname import BasisDataColname
-from .partition_key_name import PartitionKeyName
-from .energy_result_column_names import EnergyResultColumnNames
-from .wholesale_result_column_names import WholesaleResultColumnNames
+
+from .result_column_names import ResultColumnNames
+
+
+class WholesaleResultColumnNames(ResultColumnNames):
+    quantity_unit = "quantity_unit"
+    resolution = "resolution"
+
+    metering_point_type = "metering_point_type"
+    settlement_method = "settlement_method"
+    price = "price"
+    amount = "amount"
+    is_tax = "is_tax"
+
+    charge_id = "charge_id"
+    charge_type = "charge_type"
+    charge_owner_id = "charge_owner_id"

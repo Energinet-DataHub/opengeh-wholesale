@@ -30,15 +30,15 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.wholesale_results
     -- Null when monthly sum.
     price DECIMAL(18, 6),
     amount DECIMAL(18, 6) NOT NULL,
+    -- Applies only to tariff. Null when subscription or fee.
+    is_tax BOOLEAN,
 
     -- Null when total sum.
     charge_id STRING,
     -- Null when total sum.
     charge_type STRING,
     -- Null when total sum.
-    charge_owner_id STRING,
-    -- Applies only to tariff. Null when subscription or fee.
-    is_tax BOOLEAN
+    charge_owner_id STRING
 )
 USING DELTA
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used. 

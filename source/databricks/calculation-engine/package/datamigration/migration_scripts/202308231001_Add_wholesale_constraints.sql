@@ -16,7 +16,7 @@ GO
 
 -- Length is 16 when EIC and 13 when GLN
 ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
-    ADD CONSTRAINT energy_supplier_id_chk CHECK (LENGTH(energy_supplier_id) = 13 OR LENGTH(energy_supplier_id) = 16)
+    ADD CONSTRAINT energy_supplier_id_chk CHECK (energy_supplier_id IS NULL OR LENGTH(energy_supplier_id) = 13 OR LENGTH(energy_supplier_id) = 16)
 GO
 
 -- Unit is kWh when tariff, and pcs (number of pieces) when subscription or fee
@@ -33,11 +33,11 @@ ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
 GO
 
 ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
-    ADD CONSTRAINT metering_point_type_chk CHECK (metering_point_type IN ('consumption', 'production', 'child'))
+    ADD CONSTRAINT metering_point_type_chk CHECK (metering_point_type IS NULL OR metering_point_type IN ('consumption', 'production', 'child'))
 GO
 
 ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
-    ADD CONSTRAINT settlement_method_chk CHECK (settlement_method IN ('non_profiled', 'flex'))
+    ADD CONSTRAINT settlement_method_chk CHECK (settlement_method IS NULL OR settlement_method IN ('non_profiled', 'flex'))
 GO
 
 -- TODO: Any constraints for charge_id?
