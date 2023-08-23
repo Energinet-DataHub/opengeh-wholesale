@@ -28,6 +28,7 @@
 
 from package.codelists import ChargeType
 from package.calculation.wholesale.schemas.calculate_daily_subscription_price_schema import calculate_daily_subscription_price_schema
+from package.calculation.wholesale.schemas.calculate_fee_charge_price_schema import calculate_fee_charge_price_schema
 from tests.helpers import DataframeDefaults
 import pytest
 import pandas as pd
