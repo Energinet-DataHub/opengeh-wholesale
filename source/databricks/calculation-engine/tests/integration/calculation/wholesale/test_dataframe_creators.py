@@ -14,7 +14,7 @@
 from datetime import datetime
 from decimal import Decimal
 from package.constants import Colname
-from package.calculation.wholesale.schemas import (
+from package.calculation.wholesale.schemas.calculate_daily_subscription_price_schema import (
     calculate_daily_subscription_price_schema,
 )
 from package.calculation.wholesale.schemas.charges_schema import (
