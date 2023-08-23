@@ -11,15 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from package.constants import Colname
-from pyspark.sql.types import StructType, StructField, StringType
 
-integration_event_schema = StructType(
-    [
-        StructField(Colname.event_id, StringType()),
-        StructField(Colname.processed_date, StringType()),
-        StructField(Colname.event_name, StringType()),
-        StructField(Colname.domain, StringType()),
-        StructField("body", StringType()),
-    ]
-)
+
+from .energy_results_schema import energy_results_schema
