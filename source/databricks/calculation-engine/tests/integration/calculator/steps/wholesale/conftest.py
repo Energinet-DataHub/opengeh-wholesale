@@ -27,7 +27,7 @@
 # limitations under the License.
 
 from package.codelists import ChargeType
-from package.schemas.output import (
+from package.schemas.internal import (
     calculate_daily_subscription_price_schema,
     calculate_fee_charge_price_schema,
 )
