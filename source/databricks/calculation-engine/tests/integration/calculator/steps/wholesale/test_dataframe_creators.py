@@ -19,7 +19,6 @@ from package.steps.schemas import (
     charges_schema,
     charge_links_schema,
     charge_prices_schema,
-    metering_point_schema,
 )
 from package.calculation_input.schemas import time_series_point_schema, metering_point_period_schema
 from tests.helpers import DataframeDefaults
