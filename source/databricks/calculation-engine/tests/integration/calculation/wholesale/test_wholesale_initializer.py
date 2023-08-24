@@ -45,6 +45,7 @@ from package.constants import Colname
 
 DEFAULT_FROM_DATE = datetime(2020, 1, 1, 0, 0)
 DEFAULT_TO_DATE = datetime(2020, 2, 1, 0, 0)
+DEFAULT_TIME = datetime(2020, 1, 1, 0, 0)
 
 charges_dataset = [
     (
@@ -644,32 +645,14 @@ def test__join_with_grouped_time_series__joins_on_metering_point_and_time(
     assert result.count() == expected
 
 
-def test__get_tariff_charges__when_no_charge_data_match_the_resolution__returns_empty_tariffs(
-    metering_point_period_factory: Callable[..., DataFrame],
-    time_series_factory: Callable[..., DataFrame],
-    charge_master_data_factory: Callable[..., DataFrame],
-    charge_links_factory: Callable[..., DataFrame],
-    charge_prices_factory: Callable[..., DataFrame],
-) -> None:
-    # Arrange
-    observation_time = datetime(2020, 1, 2, 0, 0)
-    charge_time = observation_time
-    metering_point_period = metering_point_period_factory(DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
-    time_series = time_series_factory(observation_time)
-    charge_master_data = charge_master_data_factory(
-        DEFAULT_FROM_DATE,
-        DEFAULT_TO_DATE,
-        charge_type=ChargeType.TARIFF,
-        charge_resolution=ChargeResolution.DAY,
-    )
-    charge_links = charge_links_factory(DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
-    charge_prices = charge_prices_factory(charge_time)
+@pytest.fixture(scope="session")
+def default_time_series_point(time_series_factory: Callable[..., DataFrame]) -> DataFrame:
+    return time_series_factory(DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
 
-    # Act
-    tariffs = get_tariff_charges(metering_point_period, time_series, charge_master_data, charge_links, charge_prices, ChargeResolution.HOUR)
 
-    # Assert
-    assert tariffs.count() == 0
+@pytest.fixture(scope="session")
+def default_metering_point_period(metering_point_period_factory: Callable[..., DataFrame]) -> DataFrame:
+    return metering_point_period_factory(DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
 
 
 @pytest.fixture(scope="session")
@@ -701,13 +684,42 @@ def default_charge_master_data(charge_master_data_factory: Callable[..., DataFra
 
 
 @pytest.fixture(scope="session")
-def default_metering_point_period(metering_point_period_factory: Callable[..., DataFrame]) -> DataFrame:
-    return metering_point_period_factory(DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
+def default_charge_links(charge_links_factory: Callable[..., DataFrame]) -> DataFrame:
+    return charge_links_factory(DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
 
 
 @pytest.fixture(scope="session")
-def default_charge_links(charge_links_factory: Callable[..., DataFrame]) -> DataFrame:
-    return charge_links_factory(DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
+def default_charge_price_point(charge_prices_factory: Callable[..., DataFrame]) -> DataFrame:
+    return charge_prices_factory(time=DEFAULT_TIME)
+
+
+def test__get_tariff_charges__when_no_charge_data_match_the_resolution__returns_empty_tariffs(
+    default_metering_point_period: DataFrame,
+    default_time_series_point: DataFrame,
+    default_charge_links: DataFrame,
+    default_charge_price_point: DataFrame,
+    charge_master_data_factory: Callable[..., DataFrame],
+) -> None:
+    # Arrange
+    charge_master_data = charge_master_data_factory(
+        DEFAULT_FROM_DATE,
+        DEFAULT_TO_DATE,
+        charge_type=ChargeType.TARIFF,
+        charge_resolution=ChargeResolution.DAY,
+    )
+
+    # Act
+    tariffs = get_tariff_charges(
+        default_metering_point_period,
+        default_time_series_point,
+        charge_master_data,
+        default_charge_links,
+        default_charge_price_point,
+        ChargeResolution.HOUR
+    )
+
+    # Assert
+    assert tariffs.count() == 0
 
 
 def test__get_tariff_charges__returns_expected_quantities(
