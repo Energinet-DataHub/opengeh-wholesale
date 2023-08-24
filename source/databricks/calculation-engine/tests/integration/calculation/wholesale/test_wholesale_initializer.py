@@ -647,7 +647,7 @@ def test__join_with_grouped_time_series__joins_on_metering_point_and_time(
 
 @pytest.fixture(scope="session")
 def default_time_series_point(time_series_factory: Callable[..., DataFrame]) -> DataFrame:
-    return time_series_factory(DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
+    return time_series_factory(DEFAULT_TIME)
 
 
 @pytest.fixture(scope="session")
@@ -764,3 +764,90 @@ def test__get_tariff_charges__returns_expected_quantities(
     assert tariffs.collect()[0][Colname.quantity] == expected_quantities[0]
     assert tariffs.collect()[1][Colname.quantity] == expected_quantities[1]
     assert tariffs.collect()[2][Colname.quantity] == expected_quantities[2]
+
+
+def _create_overlapping_hour_tariffs(
+        charge_master_data_factory: Callable[..., DataFrame],
+        charge_links_factory: Callable[..., DataFrame],
+        charge_prices_factory: Callable[..., DataFrame],
+        charge_key_1: str,
+        charge_key_2: str,
+) -> tuple[DataFrame, DataFrame, DataFrame]:
+    charge_master_data = (
+        charge_master_data_factory(
+            DEFAULT_FROM_DATE,
+            DEFAULT_TO_DATE,
+            charge_key=charge_key_1,
+            charge_type=ChargeType.TARIFF,
+            charge_resolution=ChargeResolution.HOUR,
+        )
+        .union(
+            charge_master_data_factory(
+                DEFAULT_FROM_DATE,
+                DEFAULT_TO_DATE,
+                charge_key=charge_key_2,
+                charge_type=ChargeType.TARIFF,
+                charge_resolution=ChargeResolution.HOUR,
+            )
+        )
+    )
+    charge_links = (
+        charge_links_factory(
+            DEFAULT_FROM_DATE,
+            DEFAULT_TO_DATE,
+            charge_key=charge_key_1,
+        )
+        .union(
+            charge_links_factory(
+                DEFAULT_FROM_DATE,
+                DEFAULT_TO_DATE,
+                charge_key=charge_key_2,
+            )
+        )
+    )
+    charge_prices = (
+        charge_prices_factory(
+            DEFAULT_TIME, charge_key_1
+        )
+        .union(
+            charge_prices_factory(
+                DEFAULT_TIME, charge_key_2
+            )
+        )
+    )
+
+    return charge_master_data, charge_links, charge_prices
+
+
+def test__get_tariff_charges__when_two_tariff_overlap__returns_both_tariffs(
+    default_metering_point_period: DataFrame,
+    default_time_series_point: DataFrame,
+    charge_links_factory: Callable[..., DataFrame],
+    charge_prices_factory: Callable[..., DataFrame],
+    charge_master_data_factory: Callable[..., DataFrame],
+) -> None:
+    # Arrange
+    charge_key_1 = "charge_key_1"
+    charge_key_2 = "charge_key_2"
+    charge_master_data, charge_links, charge_prices = _create_overlapping_hour_tariffs(
+        charge_master_data_factory,
+        charge_links_factory,
+        charge_prices_factory,
+        charge_key_1,
+        charge_key_2,
+    )
+
+    # Act
+    tariffs = get_tariff_charges(
+        default_metering_point_period,
+        default_time_series_point,
+        charge_master_data,
+        charge_links,
+        charge_prices,
+        ChargeResolution.HOUR
+    )
+
+    # Assert
+    assert tariffs.count() == 2
+    assert tariffs.collect()[0][Colname.charge_key] == charge_key_1
+    assert tariffs.collect()[1][Colname.charge_key] == charge_key_2
