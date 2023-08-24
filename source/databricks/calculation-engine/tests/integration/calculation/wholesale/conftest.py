@@ -26,13 +26,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from datetime import datetime
+from decimal import Decimal
+from pyspark.sql import SparkSession, DataFrame
+import pytest
+from typing import Callable
 from package.codelists import ChargeType
 from package.calculation.wholesale.schemas.calculate_daily_subscription_price_schema import calculate_daily_subscription_price_schema
 from package.calculation.wholesale.schemas.calculate_fee_charge_price_schema import calculate_fee_charge_price_schema
 from tests.helpers import DataframeDefaults
-import pytest
-from datetime import datetime
-from decimal import Decimal
 from package.calculation.wholesale.schemas.charges_schema import (
     charges_schema,
     charge_links_schema,
@@ -43,22 +45,23 @@ from package.constants import Colname
 
 
 @pytest.fixture(scope="session")
-def calculate_daily_subscription_price_factory(spark):
+def calculate_daily_subscription_price_factory(spark: SparkSession) -> Callable[..., DataFrame]:
     def factory(
-        time=datetime,
-        price_per_day=Decimal,
-        charge_count=int,
-        total_daily_charge_price=Decimal,
-        charge_key=DataframeDefaults.default_charge_key,
-        charge_id=DataframeDefaults.default_charge_id,
-        charge_type=DataframeDefaults.default_charge_type,
-        charge_owner=DataframeDefaults.default_charge_owner,
-        charge_price=DataframeDefaults.default_charge_price,
-        metering_point_type=DataframeDefaults.default_metering_point_type,
-        settlement_method=DataframeDefaults.default_settlement_method,
-        grid_area=DataframeDefaults.default_grid_area,
-        energy_supplier_id=DataframeDefaults.default_energy_supplier_id,
-    ):
+        time: datetime,
+        price_per_day: Decimal,
+        charge_count: int,
+        total_daily_charge_price: Decimal = DataframeDefaults.default_charge_price,
+        charge_key: str = DataframeDefaults.default_charge_key,
+        charge_id: str = DataframeDefaults.default_charge_id,
+        charge_type: str = DataframeDefaults.default_charge_type,
+        charge_owner: str = DataframeDefaults.default_charge_owner,
+        charge_price: Decimal = DataframeDefaults.default_charge_price,
+        metering_point_type: str = DataframeDefaults.default_metering_point_type,
+        settlement_method: str = DataframeDefaults.default_settlement_method,
+        grid_area: str = DataframeDefaults.default_grid_area,
+        energy_supplier_id: str = DataframeDefaults.default_energy_supplier_id,
+    ) -> DataFrame:
+
         data = [
             {
                 Colname.charge_key: charge_key,
@@ -83,21 +86,22 @@ def calculate_daily_subscription_price_factory(spark):
 
 
 @pytest.fixture(scope="session")
-def calculate_fee_charge_price_factory(spark):
+def calculate_fee_charge_price_factory(spark: SparkSession) -> Callable[..., DataFrame]:
     def factory(
-        time=datetime,
-        charge_count=int,
-        total_daily_charge_price=Decimal,
-        charge_key=DataframeDefaults.default_charge_key,
-        charge_id=DataframeDefaults.default_charge_id,
-        charge_type=ChargeType.FEE,
-        charge_owner=DataframeDefaults.default_charge_owner,
-        charge_price=DataframeDefaults.default_charge_price,
-        metering_point_type=DataframeDefaults.default_metering_point_type,
-        settlement_method=DataframeDefaults.default_settlement_method,
-        grid_area=DataframeDefaults.default_grid_area,
-        energy_supplier_id=DataframeDefaults.default_energy_supplier_id,
-    ):
+        time: datetime,
+        charge_count: int,
+        total_daily_charge_price: Decimal,
+        charge_key: str = DataframeDefaults.default_charge_key,
+        charge_id: str = DataframeDefaults.default_charge_id,
+        charge_type: str = ChargeType.FEE,
+        charge_owner: str = DataframeDefaults.default_charge_owner,
+        charge_price: Decimal = DataframeDefaults.default_charge_price,
+        metering_point_type: str = DataframeDefaults.default_metering_point_type,
+        settlement_method: str = DataframeDefaults.default_settlement_method,
+        grid_area: str = DataframeDefaults.default_grid_area,
+        energy_supplier_id: str = DataframeDefaults.default_energy_supplier_id,
+    ) -> DataFrame:
+
         data = [
             {
                 Colname.charge_key: charge_key,
@@ -123,18 +127,19 @@ def calculate_fee_charge_price_factory(spark):
 
 
 @pytest.fixture(scope="session")
-def charges_factory(spark):
+def charges_factory(spark: SparkSession) -> Callable[..., DataFrame]:
     def factory(
         from_date: datetime,
         to_date: datetime,
-        charge_key=DataframeDefaults.default_charge_key,
-        charge_id=DataframeDefaults.default_charge_id,
-        charge_type=DataframeDefaults.default_charge_type,
-        charge_owner=DataframeDefaults.default_charge_owner,
-        charge_resolution=DataframeDefaults.default_charge_resolution,
-        charge_tax=DataframeDefaults.default_charge_tax,
-        currency=DataframeDefaults.default_currency,
-    ):
+        charge_key: str = DataframeDefaults.default_charge_key,
+        charge_id: str = DataframeDefaults.default_charge_id,
+        charge_type: str = DataframeDefaults.default_charge_type,
+        charge_owner: str = DataframeDefaults.default_charge_owner,
+        charge_resolution: str = DataframeDefaults.default_charge_resolution,
+        charge_tax: str = DataframeDefaults.default_charge_tax,
+        currency: str = DataframeDefaults.default_currency,
+    ) -> DataFrame:
+
         data = [
             {
                 Colname.charge_key: charge_key,
@@ -155,13 +160,14 @@ def charges_factory(spark):
 
 
 @pytest.fixture(scope="session")
-def charge_links_factory(spark):
+def charge_links_factory(spark: SparkSession) -> Callable[..., DataFrame]:
     def factory(
         from_date: datetime,
         to_date: datetime,
-        charge_key=DataframeDefaults.default_charge_key,
-        metering_point_id=DataframeDefaults.default_metering_point_id,
-    ):
+        charge_key: str = DataframeDefaults.default_charge_key,
+        metering_point_id: str = DataframeDefaults.default_metering_point_id,
+    ) -> DataFrame:
+
         data = [
             {
                 Colname.charge_key: charge_key,
@@ -177,12 +183,12 @@ def charge_links_factory(spark):
 
 
 @pytest.fixture(scope="session")
-def charge_prices_factory(spark):
+def charge_prices_factory(spark: SparkSession) -> Callable[..., DataFrame]:
     def factory(
         time: datetime,
-        charge_key=DataframeDefaults.default_charge_key,
-        charge_price=DataframeDefaults.default_charge_price,
-    ):
+        charge_key: str = DataframeDefaults.default_charge_key,
+        charge_price: Decimal = DataframeDefaults.default_charge_price,
+    ) -> DataFrame:
         data = [
             {
                 Colname.charge_key: charge_key,
@@ -197,21 +203,21 @@ def charge_prices_factory(spark):
 
 
 @pytest.fixture(scope="session")
-def metering_point_factory(spark):
+def metering_point_factory(spark: SparkSession) -> Callable[..., DataFrame]:
     def factory(
         from_date: datetime,
         to_date: datetime,
-        metering_point_id=DataframeDefaults.default_metering_point_id,
-        metering_point_type=DataframeDefaults.default_metering_point_type,
-        settlement_method=DataframeDefaults.default_settlement_method,
-        grid_area=DataframeDefaults.default_grid_area,
-        resolution=DataframeDefaults.default_metering_point_resolution,
-        to_grid_area=DataframeDefaults.default_to_grid_area,
-        from_grid_area=DataframeDefaults.default_from_grid_area,
-        parent_metering_point_id=DataframeDefaults.default_parent_metering_point_id,
-        energy_supplier_id=DataframeDefaults.default_energy_supplier_id,
-        balance_responsible_id=DataframeDefaults.default_balance_responsible_id,
-    ):
+        metering_point_id: str = DataframeDefaults.default_metering_point_id,
+        metering_point_type: str = DataframeDefaults.default_metering_point_type,
+        settlement_method: str = DataframeDefaults.default_settlement_method,
+        grid_area: str = DataframeDefaults.default_grid_area,
+        resolution: str = DataframeDefaults.default_metering_point_resolution,
+        to_grid_area: str = DataframeDefaults.default_to_grid_area,
+        from_grid_area: str = DataframeDefaults.default_from_grid_area,
+        parent_metering_point_id: str = DataframeDefaults.default_parent_metering_point_id,
+        energy_supplier_id: str = DataframeDefaults.default_energy_supplier_id,
+        balance_responsible_id: str = DataframeDefaults.default_balance_responsible_id,
+    ) -> DataFrame:
         data = [
             {
                 Colname.metering_point_id: metering_point_id,
@@ -236,13 +242,13 @@ def metering_point_factory(spark):
 
 
 @pytest.fixture(scope="session")
-def time_series_factory(spark):
+def time_series_factory(spark: SparkSession) -> Callable[..., DataFrame]:
     def factory(
         time: datetime,
-        metering_point_id=DataframeDefaults.default_metering_point_id,
+        metering_point_id: str = DataframeDefaults.default_metering_point_id,
         quantity=DataframeDefaults.default_quantity,
         ts_quality=DataframeDefaults.default_quality,
-    ):
+    ) -> DataFrame:
         data = [
             {
                 Colname.metering_point_id: metering_point_id,

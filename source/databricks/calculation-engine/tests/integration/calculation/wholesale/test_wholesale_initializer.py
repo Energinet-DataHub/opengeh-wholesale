@@ -15,12 +15,14 @@
 from datetime import datetime
 from decimal import Decimal
 from pyspark.sql import SparkSession, DataFrame
+from typing import Callable
 from package.calculation.wholesale.wholesale_initializer import (
     join_with_charge_prices,
     join_with_charge_links,
     join_with_metering_points,
     explode_subscription,
     get_charges_based_on_resolution,
+    get_tariff_charges,
     group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity,
     join_with_grouped_time_series,
     get_charges_based_on_charge_type,
@@ -638,3 +640,14 @@ def test__join_with_grouped_time_series__joins_on_metering_point_and_time(
 
     # Assert
     assert result.count() == expected
+
+
+def test__get_tariff_charges__(metering_point_factory: Callable[..., DataFrame], time_series_factory: Callable[..., DataFrame]) -> None:
+    # Arrange
+    metering_point_period = metering_point_factory()
+    time_series = time_series_factory()
+
+    # Act
+    tariffs = get_tariff_charges(metering_point_period, time_series, charge_)
+
+    # Assert
