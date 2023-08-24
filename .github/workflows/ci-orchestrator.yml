@@ -97,12 +97,27 @@ jobs:
       infrastructure_path: ./integration-test/terraform
     secrets: inherit
 
+  # If we have multiple Structurizr DSL files in the same repository, we can support rendering them by:
+  #  1. Adding a job per file
+  #  2. Ensure these jobs are executed in serial (by using 'needs')
+  #  3. Ensure that later jobs are executed even if some are skipped (by using 'if' and 'always()')
+  #
+  # If the jobs where instead executed in parallel and more than one needed to make an auto commit,
+  # the second commit would fail.
   render_c4model_deployment:
     needs: changes
     if: ${{ needs.changes.outputs.render_c4model_deployment == 'true' }}
     uses: Energinet-DataHub/.github/.github/workflows/structurizr-render-diagrams.yml@v12
     with:
       structurizr_workspace_filename: deployment
+    secrets:
+      pat_token_retrigger_workflow: ${{ secrets.pat_token_repo_workflow }}
+  render_c4model_ownership_views:
+    needs: [changes, render_c4model_deployment]
+    if: ${{ always() && needs.changes.outputs.render_c4model_ownership_views == 'true' }}
+    uses: Energinet-DataHub/.github/.github/workflows/structurizr-render-diagrams.yml@v12
+    with:
+      structurizr_workspace_filename: ownership-views
     secrets:
       pat_token_retrigger_workflow: ${{ secrets.pat_token_repo_workflow }}
 
@@ -122,7 +137,8 @@ jobs:
         shared_resources_ci,
         ui_ci,
         wholesale_ci,
-        render_c4model_deployment
+        render_c4model_deployment,
+        render_c4model_ownership_views,
       ]
     if: |
       always()

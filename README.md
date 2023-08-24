@@ -72,3 +72,15 @@ The deployment C4 model and rendered diagrams are located in the folder hierarch
 - `/deployment/*.png`: A PNG file per view described in the Structurizr DSL.
 
 Maintenance of the C4 model should be performed using VS Code and a local version of Structurizr Lite running in Docker. See [DataHub base model](https://github.com/Energinet-DataHub/opengeh-arch-diagrams#datahub-base-model) for a description of how to do this.
+
+## Ownership diagrams
+
+The same technique mentioned for Deployment diagrams are used for creating additional "ownership views".
+
+These diagrams visualize the ownership (by team) of each model element (typically software systems or containers).
+
+The ownership views and rendered diagrams are located in the folder hierarchy [docs/diagrams/c4-model](./docs/diagrams/c4-model/) and consists of:
+
+- `ownership-views.dsl`: Structurizr DSL extending the `dh3` software system by referencing domain C4 models using `!include`, adding views to visualize ownership.
+- `ownership-views.json`: Structurizr layout information for views.
+- `/ownership-views/*.png`: A PNG file per view described in the Structurizr DSL.

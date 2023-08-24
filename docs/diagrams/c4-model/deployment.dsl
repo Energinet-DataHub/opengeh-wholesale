@@ -28,7 +28,7 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
 
             # Include Migration model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACDNGUTKCMPKJEK7WIEGFGXKZFFEAAA
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACFOVCSKTGX6RHQSBKJAKU2WZHGUCLA
         }
 
         # Deployment model
@@ -66,7 +66,7 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
                     technology "Azure AD B2C"
                     tags "Microsoft Azure - Azure AD B2C"
 
-                    commonB2CInstance = containerInstance commonB2C
+                    sharedB2CInstance = containerInstance dh3.sharedB2C
                 }
 
                 deploymentNode "API Gateway" {
@@ -174,7 +174,7 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
                     technology "Azure Storage Account"
                     tags "Microsoft Azure - Storage Accounts"
 
-                    dropZoneStorageInstance = containerInstance dropZoneStorage
+                    dh2DropZoneStorageInstance = containerInstance dh2DropZoneStorage
                 }
                 deploymentNode "Data Lake (Migration)" {
                     description ""
@@ -269,7 +269,7 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
         deployment dh3 "Production" "Production_focus_OAuth" {
             title "[Deployment] DataHub 3.0 Azure AD B2C"
             description "'As-is' view of all relationships to and from the Azure AD B2C"
-            include ->commonB2CInstance->
+            include ->sharedB2CInstance->
             exclude "relationship.tag==Container Diagram"
             exclude "relationship.tag==Simple View"
         }
