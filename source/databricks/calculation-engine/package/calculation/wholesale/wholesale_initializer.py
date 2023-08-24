@@ -39,7 +39,7 @@ def get_tariff_charges(
 
     # group by time series on metering point id and resolution and sum quantity
     grouped_time_series = (
-        group_by_time_series_on_metericng_point_id_and_resolution_and_sum_quantity(
+        group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
             time_series, resolution_duration
         )
     )
