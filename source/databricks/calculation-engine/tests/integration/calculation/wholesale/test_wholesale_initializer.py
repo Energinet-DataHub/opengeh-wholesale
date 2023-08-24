@@ -702,15 +702,52 @@ def test__get_tariff_charges__when_charge_data_match_the_resolution__returns_emp
     assert tariffs.count() == 0
 
 
+@pytest.fixture(scope="session")
+def default_charge_master_data(charge_master_data_factory: Callable[..., DataFrame]) -> DataFrame:
+    return (
+        charge_master_data_factory(
+            DEFAULT_FROM_DATE,
+            DEFAULT_TO_DATE,
+            charge_type=ChargeType.TARIFF,
+            charge_resolution=ChargeResolution.HOUR,
+        )
+        .union(
+            charge_master_data_factory(
+                DEFAULT_FROM_DATE,
+                DEFAULT_TO_DATE,
+                charge_type=ChargeType.FEE,
+                charge_resolution=ChargeResolution.HOUR,
+            )
+        )
+        .union(
+            charge_master_data_factory(
+                DEFAULT_FROM_DATE,
+                DEFAULT_TO_DATE,
+                charge_type=ChargeType.SUBSCRIPTION,
+                charge_resolution=ChargeResolution.HOUR,
+            )
+        )
+    )
+
+
+@pytest.fixture(scope="session")
+def default_metering_point_period(metering_point_period_factory: Callable[..., DataFrame]) -> DataFrame:
+    return metering_point_period_factory(DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
+
+
+@pytest.fixture(scope="session")
+def default_charge_links(charge_links_factory: Callable[..., DataFrame]) -> DataFrame:
+    return charge_links_factory(DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
+
+
 def test__get_tariff_charges__returns_expected_quantities(
-    metering_point_period_factory: Callable[..., DataFrame],
+    default_charge_master_data: DataFrame,
+    default_metering_point_period: DataFrame,
+    default_charge_links: DataFrame,
     time_series_factory: Callable[..., DataFrame],
-    charge_master_data_factory: Callable[..., DataFrame],
-    charge_links_factory: Callable[..., DataFrame],
     charge_prices_factory: Callable[..., DataFrame],
 ) -> None:
     # Arrange
-    metering_point_period = metering_point_period_factory(DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
     first_hour_start = DEFAULT_FROM_DATE + timedelta(hours=1)
     second_hour_start = first_hour_start + timedelta(hours=1)
     third_hour_start = first_hour_start + timedelta(hours=2)
@@ -722,15 +759,8 @@ def test__get_tariff_charges__returns_expected_quantities(
         .union(time_series_factory(second_hour_start + timedelta(minutes=45), quantity=Decimal(5)))  # hour 2, quarter 4
         .union(time_series_factory(third_hour_start, quantity=Decimal(6)))                           # hour 3, quarter 1
     )
-    # expected_quantities = [1, 14, 6]
+    expected_quantities = [1, 14, 6]
 
-    charge_master_data = charge_master_data_factory(
-        DEFAULT_FROM_DATE,
-        DEFAULT_TO_DATE,
-        charge_type=ChargeType.TARIFF,
-        charge_resolution=ChargeResolution.HOUR,
-    )
-    charge_links = charge_links_factory(DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
     charge_prices = (
         charge_prices_factory(time=first_hour_start)           # hour 1
         .union(charge_prices_factory(time=second_hour_start))  # hour 2
@@ -738,9 +768,17 @@ def test__get_tariff_charges__returns_expected_quantities(
     )
 
     # Act
-    tariffs = get_tariff_charges(metering_point_period, time_series, charge_master_data, charge_links, charge_prices, ChargeResolution.HOUR)
-
-    tariffs.show()
+    tariffs = get_tariff_charges(
+        default_metering_point_period,
+        time_series,
+        default_charge_master_data,
+        default_charge_links,
+        charge_prices,
+        ChargeResolution.HOUR
+    )
 
     # Assert
-    assert tariffs.count() == 3
+    assert tariffs.count() == len(expected_quantities)
+    assert tariffs.collect()[0][Colname.quantity] == expected_quantities[0]
+    assert tariffs.collect()[1][Colname.quantity] == expected_quantities[1]
+    assert tariffs.collect()[2][Colname.quantity] == expected_quantities[2]
