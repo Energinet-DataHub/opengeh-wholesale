@@ -13,9 +13,4 @@ resource "azurerm_key_vault_access_policy" "kv_shared_access_policy_app_webapi" 
     "List",
     "Get"
   ]
-  key_permissions = [
-    "Get",
-    "List",
-    "Sign"
-  ]
 }
