@@ -246,8 +246,8 @@ def time_series_factory(spark: SparkSession) -> Callable[..., DataFrame]:
     def factory(
         time: datetime,
         metering_point_id: str = DataframeDefaults.default_metering_point_id,
-        quantity=DataframeDefaults.default_quantity,
-        ts_quality=DataframeDefaults.default_quality,
+        quantity: Decimal = DataframeDefaults.default_quantity,
+        ts_quality: str = DataframeDefaults.default_quality,
     ) -> DataFrame:
         data = [
             {
