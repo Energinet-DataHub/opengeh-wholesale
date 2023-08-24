@@ -15,8 +15,8 @@
 
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, when
-import package.steps.wholesale.wholesale_initializer as init
-from package.steps.wholesale.tariff_calculators import calculate_tariff_price_per_ga_co_es
+import package.calculation.wholesale.wholesale_initializer as init
+from package.calculation.wholesale.tariff_calculators import calculate_tariff_price_per_ga_co_es
 from package.codelists import ChargeResolution, MeteringPointType
 from package.constants import Colname
 from package.calculation_input import CalculationInputReader
