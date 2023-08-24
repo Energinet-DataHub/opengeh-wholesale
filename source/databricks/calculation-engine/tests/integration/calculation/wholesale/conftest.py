@@ -203,7 +203,7 @@ def charge_prices_factory(spark: SparkSession) -> Callable[..., DataFrame]:
 
 
 @pytest.fixture(scope="session")
-def metering_point_factory(spark: SparkSession) -> Callable[..., DataFrame]:
+def metering_point_period_factory(spark: SparkSession) -> Callable[..., DataFrame]:
     def factory(
         from_date: datetime,
         to_date: datetime,

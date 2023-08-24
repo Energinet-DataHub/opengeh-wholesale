@@ -100,10 +100,10 @@ def test_charge_prices(charge_prices_factory):
     assert result[Colname.charge_time] == time
 
 
-def test_metering_point(metering_point_factory):
+def test_metering_point(metering_point_period_factory):
     from_date = datetime(2020, 1, 1, 0, 0)
     to_date = datetime(2020, 1, 2, 0, 0)
-    df = metering_point_factory(from_date, to_date)
+    df = metering_point_period_factory(from_date, to_date)
     result = df.collect()[0]
     assert len(df.columns) == len(metering_point_period_schema.fields)
     assert result[Colname.metering_point_id] == DataframeDefaults.default_metering_point_id

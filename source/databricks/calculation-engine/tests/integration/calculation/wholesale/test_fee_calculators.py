@@ -32,7 +32,7 @@ def test__calculate_fee_charge_price__simple(
     charges_factory,
     charge_links_factory,
     charge_prices_factory,
-    metering_point_factory,
+    metering_point_period_factory,
     calculate_fee_charge_price_factory,
 ):
     # Test that calculate_fee_charge_price does as expected in with the most simple dataset
@@ -43,7 +43,7 @@ def test__calculate_fee_charge_price__simple(
     charges_df = charges_factory(from_date, to_date, charge_type=ChargeType.FEE)
     charge_links_df = charge_links_factory(from_date, to_date)
     charge_prices_df = charge_prices_factory(time)
-    metering_point_df = metering_point_factory(from_date, to_date)
+    metering_point_df = metering_point_period_factory(from_date, to_date)
 
     expected_time = datetime(2020, 1, 1, 0, 0)
     expected_charge_price = charge_prices_df.collect()[0][Colname.charge_price]
@@ -74,7 +74,7 @@ def test__calculate_fee_charge_price__two_fees(
     charges_factory,
     charge_links_factory,
     charge_prices_factory,
-    metering_point_factory,
+    metering_point_period_factory,
     calculate_fee_charge_price_factory,
 ):
     # Test that calculate_fee_charge_price does as expected with two fees on the same day
@@ -84,7 +84,7 @@ def test__calculate_fee_charge_price__two_fees(
     time = datetime(2020, 1, 1, 0, 0)
     charges_df = charges_factory(from_date, to_date, charge_type=ChargeType.FEE)
     charge_links_df = charge_links_factory(from_date, to_date)
-    metering_point_df = metering_point_factory(from_date, to_date)
+    metering_point_df = metering_point_period_factory(from_date, to_date)
 
     fee_1_charge_prices_charge_price = Decimal("3.124544")
     fee_1_charge_prices_df = charge_prices_factory(

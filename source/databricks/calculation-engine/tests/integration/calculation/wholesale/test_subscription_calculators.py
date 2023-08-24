@@ -35,7 +35,7 @@ def test__calculate_daily_subscription_price__simple(
     charges_factory,
     charge_links_factory,
     charge_prices_factory,
-    metering_point_factory,
+    metering_point_period_factory,
     calculate_daily_subscription_price_factory,
 ):
     # Test that calculate_daily_subscription_price does as expected in with the most simple dataset
@@ -46,7 +46,7 @@ def test__calculate_daily_subscription_price__simple(
     charges_df = charges_factory(from_date, to_date)
     charge_links_df = charge_links_factory(from_date, to_date)
     charge_prices_df = charge_prices_factory(time)
-    metering_point_df = metering_point_factory(from_date, to_date)
+    metering_point_df = metering_point_period_factory(from_date, to_date)
 
     expected_date = datetime(2020, 1, 1, 0, 0)
     expected_charge_price = charge_prices_df.collect()[0][Colname.charge_price]
@@ -80,7 +80,7 @@ def test__calculate_daily_subscription_price__charge_price_change(
     charges_factory,
     charge_links_factory,
     charge_prices_factory,
-    metering_point_factory,
+    metering_point_period_factory,
     calculate_daily_subscription_price_factory,
 ):
     # Test that calculate_daily_subscription_price act as expected when charge price changes in a given period
@@ -89,7 +89,7 @@ def test__calculate_daily_subscription_price__charge_price_change(
     to_date = datetime(2020, 2, 2, 0, 0)
     charges_df = charges_factory(from_date, to_date)
     charge_links_df = charge_links_factory(from_date, to_date)
-    metering_point_df = metering_point_factory(from_date, to_date)
+    metering_point_df = metering_point_period_factory(from_date, to_date)
 
     subscription_1_charge_prices_charge_price = Decimal("3.124544")
     subcription_1_charge_prices_time = from_date
@@ -163,7 +163,7 @@ def test__calculate_daily_subscription_price__charge_price_change_with_two_diffe
     charges_factory,
     charge_links_factory,
     charge_prices_factory,
-    metering_point_factory,
+    metering_point_period_factory,
     calculate_daily_subscription_price_factory,
 ):
     # Test that calculate_daily_subscription_price act as expected when charge price changes in a given period for two different charge keys
@@ -179,7 +179,7 @@ def test__calculate_daily_subscription_price__charge_price_change_with_two_diffe
     charge_links_df = charge_links_df.union(
         charge_links_factory(from_date, to_date, charge_key=charge_key)
     )
-    metering_point_df = metering_point_factory(from_date, to_date)
+    metering_point_df = metering_point_period_factory(from_date, to_date)
 
     subscription_1_charge_prices_charge_price = Decimal("3.124544")
     subcription_2_charge_prices_time = datetime(2020, 2, 1, 0, 0)
