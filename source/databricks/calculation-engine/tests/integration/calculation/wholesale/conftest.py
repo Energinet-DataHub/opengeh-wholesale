@@ -31,7 +31,7 @@ from decimal import Decimal
 from pyspark.sql import SparkSession, DataFrame
 import pytest
 from typing import Callable
-from package.codelists import ChargeType
+from package.codelists import ChargeType, ChargeResolution
 from package.calculation.wholesale.schemas.calculate_daily_subscription_price_schema import calculate_daily_subscription_price_schema
 from package.calculation.wholesale.schemas.calculate_fee_charge_price_schema import calculate_fee_charge_price_schema
 from tests.helpers import DataframeDefaults
@@ -135,7 +135,7 @@ def charge_master_data_factory(spark: SparkSession) -> Callable[..., DataFrame]:
         charge_id: str = DataframeDefaults.default_charge_id,
         charge_type: str = DataframeDefaults.default_charge_type,
         charge_owner: str = DataframeDefaults.default_charge_owner,
-        charge_resolution: str = DataframeDefaults.default_charge_resolution,
+        charge_resolution: ChargeResolution = DataframeDefaults.default_charge_resolution,
         charge_tax: str = DataframeDefaults.default_charge_tax,
         currency: str = DataframeDefaults.default_currency,
     ) -> DataFrame:
@@ -146,7 +146,7 @@ def charge_master_data_factory(spark: SparkSession) -> Callable[..., DataFrame]:
                 Colname.charge_id: charge_id,
                 Colname.charge_type: charge_type,
                 Colname.charge_owner: charge_owner,
-                Colname.resolution: charge_resolution,
+                Colname.resolution: charge_resolution.value,
                 Colname.charge_tax: charge_tax,
                 Colname.currency: currency,
                 Colname.from_date: from_date,

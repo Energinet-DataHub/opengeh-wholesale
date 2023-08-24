@@ -656,7 +656,12 @@ def test__get_tariff_charges__(
     charge_time = observation_time
     metering_point_period = metering_point_period_factory(from_date, to_date)
     time_series = time_series_factory(observation_time)
-    charge_master_data = charge_master_data_factory(from_date, to_date)
+    charge_master_data = charge_master_data_factory(
+        from_date,
+        to_date,
+        charge_type=ChargeType.TARIFF,
+        charge_resolution=ChargeResolution.HOUR,
+    )
     charge_links = charge_links_factory(from_date, to_date)
     charge_prices = charge_prices_factory(charge_time)
 
