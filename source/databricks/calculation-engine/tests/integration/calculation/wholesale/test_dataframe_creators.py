@@ -59,17 +59,17 @@ def test_calculate_daily_subscription_price(calculate_daily_subscription_price_f
     )
 
 
-def test_charges(charges_factory):
+def test_charges(charge_master_data_factory):
     from_date = datetime(2020, 1, 1, 0, 0)
     to_date = datetime(2020, 1, 2, 0, 0)
-    df = charges_factory(from_date, to_date)
+    df = charge_master_data_factory(from_date, to_date)
     result = df.collect()[0]
     assert len(df.columns) == len(charges_schema.fields)
     assert result[Colname.charge_key] == DataframeDefaults.default_charge_key
     assert result[Colname.charge_id] == DataframeDefaults.default_charge_id
     assert result[Colname.charge_type] == DataframeDefaults.default_charge_type
     assert result[Colname.charge_owner] == DataframeDefaults.default_charge_owner
-    assert result[Colname.resolution] == DataframeDefaults.default_charge_resolution
+    assert result[Colname.resolution] == DataframeDefaults.default_charge_resolution.value
     assert result[Colname.charge_tax] == DataframeDefaults.default_charge_tax
     assert result[Colname.currency] == DataframeDefaults.default_currency
     assert result[Colname.from_date] == from_date
@@ -100,10 +100,10 @@ def test_charge_prices(charge_prices_factory):
     assert result[Colname.charge_time] == time
 
 
-def test_metering_point(metering_point_factory):
+def test_metering_point(metering_point_period_factory):
     from_date = datetime(2020, 1, 1, 0, 0)
     to_date = datetime(2020, 1, 2, 0, 0)
-    df = metering_point_factory(from_date, to_date)
+    df = metering_point_period_factory(from_date, to_date)
     result = df.collect()[0]
     assert len(df.columns) == len(metering_point_period_schema.fields)
     assert result[Colname.metering_point_id] == DataframeDefaults.default_metering_point_id
