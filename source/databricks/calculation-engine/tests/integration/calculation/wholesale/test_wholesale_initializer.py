@@ -642,12 +642,26 @@ def test__join_with_grouped_time_series__joins_on_metering_point_and_time(
     assert result.count() == expected
 
 
-def test__get_tariff_charges__(metering_point_factory: Callable[..., DataFrame], time_series_factory: Callable[..., DataFrame]) -> None:
+def test__get_tariff_charges__(
+    metering_point_period_factory: Callable[..., DataFrame],
+    time_series_factory: Callable[..., DataFrame],
+    charge_master_data_factory: Callable[..., DataFrame],
+    charge_links_factory: Callable[..., DataFrame],
+    charge_prices_factory: Callable[..., DataFrame],
+) -> None:
     # Arrange
-    metering_point_period = metering_point_factory()
-    time_series = time_series_factory()
+    from_date = datetime(2020, 1, 1, 0, 0)
+    to_date = datetime(2020, 2, 1, 0, 0)
+    observation_time = datetime(2020, 1, 2, 0, 0)
+    charge_time = observation_time
+    metering_point_period = metering_point_period_factory(from_date, to_date)
+    time_series = time_series_factory(observation_time)
+    charge_master_data = charge_master_data_factory(from_date, to_date)
+    charge_links = charge_links_factory(from_date, to_date)
+    charge_prices = charge_prices_factory(charge_time)
 
     # Act
-    tariffs = get_tariff_charges(metering_point_period, time_series, charge_)
+    tariffs = get_tariff_charges(metering_point_period, time_series, charge_master_data, charge_links, charge_prices, ChargeResolution.HOUR)
 
     # Assert
+    assert tariffs.count() > 0

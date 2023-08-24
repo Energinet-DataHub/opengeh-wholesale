@@ -29,7 +29,7 @@ import pytest
 
 def test__calculate_fee_charge_price__simple(
     spark,
-    charges_factory,
+    charge_master_data_factory,
     charge_links_factory,
     charge_prices_factory,
     metering_point_period_factory,
@@ -40,7 +40,7 @@ def test__calculate_fee_charge_price__simple(
     from_date = datetime(2020, 1, 1, 0, 0)
     to_date = datetime(2020, 1, 2, 0, 0)
     time = datetime(2020, 1, 1, 0, 0)
-    charges_df = charges_factory(from_date, to_date, charge_type=ChargeType.FEE)
+    charges_df = charge_master_data_factory(from_date, to_date, charge_type=ChargeType.FEE)
     charge_links_df = charge_links_factory(from_date, to_date)
     charge_prices_df = charge_prices_factory(time)
     metering_point_df = metering_point_period_factory(from_date, to_date)
@@ -71,7 +71,7 @@ def test__calculate_fee_charge_price__simple(
 
 def test__calculate_fee_charge_price__two_fees(
     spark,
-    charges_factory,
+    charge_master_data_factory,
     charge_links_factory,
     charge_prices_factory,
     metering_point_period_factory,
@@ -82,7 +82,7 @@ def test__calculate_fee_charge_price__two_fees(
     from_date = datetime(2020, 1, 1, 0, 0)
     to_date = datetime(2020, 1, 2, 0, 0)
     time = datetime(2020, 1, 1, 0, 0)
-    charges_df = charges_factory(from_date, to_date, charge_type=ChargeType.FEE)
+    charges_df = charge_master_data_factory(from_date, to_date, charge_type=ChargeType.FEE)
     charge_links_df = charge_links_factory(from_date, to_date)
     metering_point_df = metering_point_period_factory(from_date, to_date)
 

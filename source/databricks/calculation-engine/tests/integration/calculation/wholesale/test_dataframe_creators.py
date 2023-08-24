@@ -59,10 +59,10 @@ def test_calculate_daily_subscription_price(calculate_daily_subscription_price_f
     )
 
 
-def test_charges(charges_factory):
+def test_charges(charge_master_data_factory):
     from_date = datetime(2020, 1, 1, 0, 0)
     to_date = datetime(2020, 1, 2, 0, 0)
-    df = charges_factory(from_date, to_date)
+    df = charge_master_data_factory(from_date, to_date)
     result = df.collect()[0]
     assert len(df.columns) == len(charges_schema.fields)
     assert result[Colname.charge_key] == DataframeDefaults.default_charge_key

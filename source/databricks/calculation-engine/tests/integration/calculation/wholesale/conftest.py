@@ -127,7 +127,7 @@ def calculate_fee_charge_price_factory(spark: SparkSession) -> Callable[..., Dat
 
 
 @pytest.fixture(scope="session")
-def charges_factory(spark: SparkSession) -> Callable[..., DataFrame]:
+def charge_master_data_factory(spark: SparkSession) -> Callable[..., DataFrame]:
     def factory(
         from_date: datetime,
         to_date: datetime,
