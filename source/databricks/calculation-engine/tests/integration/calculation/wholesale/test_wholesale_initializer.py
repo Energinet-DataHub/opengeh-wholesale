@@ -674,7 +674,7 @@ def test__get_tariff_charges__(
     assert tariffs.count() == 1
 
 
-def test__get_tariff_charges__when_charge_data_match_the_resolution__returns_empty_tariffs(
+def test__get_tariff_charges__when_no_charge_data_match_the_resolution__returns_empty_tariffs(
     metering_point_period_factory: Callable[..., DataFrame],
     time_series_factory: Callable[..., DataFrame],
     charge_master_data_factory: Callable[..., DataFrame],
