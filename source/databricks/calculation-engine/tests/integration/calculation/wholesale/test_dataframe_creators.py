@@ -69,7 +69,7 @@ def test_charges(charge_master_data_factory):
     assert result[Colname.charge_id] == DataframeDefaults.default_charge_id
     assert result[Colname.charge_type] == DataframeDefaults.default_charge_type
     assert result[Colname.charge_owner] == DataframeDefaults.default_charge_owner
-    assert result[Colname.resolution] == DataframeDefaults.default_charge_resolution
+    assert result[Colname.resolution] == DataframeDefaults.default_charge_resolution.value
     assert result[Colname.charge_tax] == DataframeDefaults.default_charge_tax
     assert result[Colname.currency] == DataframeDefaults.default_currency
     assert result[Colname.from_date] == from_date

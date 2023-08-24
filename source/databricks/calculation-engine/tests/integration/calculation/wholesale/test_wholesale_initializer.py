@@ -669,4 +669,4 @@ def test__get_tariff_charges__(
     tariffs = get_tariff_charges(metering_point_period, time_series, charge_master_data, charge_links, charge_prices, ChargeResolution.HOUR)
 
     # Assert
-    assert tariffs.count() > 0
+    assert tariffs.count() == 1
