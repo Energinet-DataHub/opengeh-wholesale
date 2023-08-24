@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 from pyspark.sql import SparkSession, DataFrame
 from typing import Callable
@@ -43,6 +43,8 @@ from pyspark.sql.functions import col
 import pytest
 from package.constants import Colname
 
+DEFAULT_FROM_DATE = datetime(2020, 1, 1, 0, 0)
+DEFAULT_TO_DATE = datetime(2020, 2, 1, 0, 0)
 
 charges_dataset = [
     (
@@ -670,3 +672,75 @@ def test__get_tariff_charges__(
 
     # Assert
     assert tariffs.count() == 1
+
+
+def test__get_tariff_charges__when_charge_data_match_the_resolution__returns_empty_tariffs(
+    metering_point_period_factory: Callable[..., DataFrame],
+    time_series_factory: Callable[..., DataFrame],
+    charge_master_data_factory: Callable[..., DataFrame],
+    charge_links_factory: Callable[..., DataFrame],
+    charge_prices_factory: Callable[..., DataFrame],
+) -> None:
+    # Arrange
+    observation_time = datetime(2020, 1, 2, 0, 0)
+    charge_time = observation_time
+    metering_point_period = metering_point_period_factory(DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
+    time_series = time_series_factory(observation_time)
+    charge_master_data = charge_master_data_factory(
+        DEFAULT_FROM_DATE,
+        DEFAULT_TO_DATE,
+        charge_type=ChargeType.TARIFF,
+        charge_resolution=ChargeResolution.DAY,
+    )
+    charge_links = charge_links_factory(DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
+    charge_prices = charge_prices_factory(charge_time)
+
+    # Act
+    tariffs = get_tariff_charges(metering_point_period, time_series, charge_master_data, charge_links, charge_prices, ChargeResolution.HOUR)
+
+    # Assert
+    assert tariffs.count() == 0
+
+
+def test__get_tariff_charges__returns_expected_quantities(
+    metering_point_period_factory: Callable[..., DataFrame],
+    time_series_factory: Callable[..., DataFrame],
+    charge_master_data_factory: Callable[..., DataFrame],
+    charge_links_factory: Callable[..., DataFrame],
+    charge_prices_factory: Callable[..., DataFrame],
+) -> None:
+    # Arrange
+    metering_point_period = metering_point_period_factory(DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
+    first_hour_start = DEFAULT_FROM_DATE + timedelta(hours=1)
+    second_hour_start = first_hour_start + timedelta(hours=1)
+    third_hour_start = first_hour_start + timedelta(hours=2)
+    time_series = (
+        time_series_factory(first_hour_start + timedelta(minutes=45), quantity=Decimal(1))           # hour 1, quarter 4
+        .union(time_series_factory(second_hour_start, quantity=Decimal(2)))                          # hour 2, quarter 1
+        .union(time_series_factory(second_hour_start + timedelta(minutes=15), quantity=Decimal(3)))  # hour 2, quarter 2
+        .union(time_series_factory(second_hour_start + timedelta(minutes=30), quantity=Decimal(4)))  # hour 2, quarter 3
+        .union(time_series_factory(second_hour_start + timedelta(minutes=45), quantity=Decimal(5)))  # hour 2, quarter 4
+        .union(time_series_factory(third_hour_start, quantity=Decimal(6)))                           # hour 3, quarter 1
+    )
+    # expected_quantities = [1, 14, 6]
+
+    charge_master_data = charge_master_data_factory(
+        DEFAULT_FROM_DATE,
+        DEFAULT_TO_DATE,
+        charge_type=ChargeType.TARIFF,
+        charge_resolution=ChargeResolution.HOUR,
+    )
+    charge_links = charge_links_factory(DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
+    charge_prices = (
+        charge_prices_factory(time=first_hour_start)           # hour 1
+        .union(charge_prices_factory(time=second_hour_start))  # hour 2
+        .union(charge_prices_factory(time=third_hour_start))   # hour 3
+    )
+
+    # Act
+    tariffs = get_tariff_charges(metering_point_period, time_series, charge_master_data, charge_links, charge_prices, ChargeResolution.HOUR)
+
+    tariffs.show()
+
+    # Assert
+    assert tariffs.count() == 3
