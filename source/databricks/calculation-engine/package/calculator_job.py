@@ -30,11 +30,10 @@ def start() -> None:
 
     args = get_calculator_args()
 
-    spark = initialize_spark()
-
     db_logging.loglevel = "information"
     if islocked(args.data_storage_account_name, args.data_storage_account_credentials):
         log("Exiting because storage is locked due to data migrations running.")
         sys.exit(3)
 
+    spark = initialize_spark()
     calculation.execute(args, spark)
