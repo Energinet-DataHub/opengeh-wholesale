@@ -28,7 +28,7 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
 
             # Include Migration model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACFOVCSKTGX6RHQSBKJAKU2WZHGUCLA
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACFOVCSLT4IK47PRDVRMCO6GZHHG6LQ
         }
 
         # Deployment model
@@ -76,6 +76,14 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
 
                     bffApiInstance = containerInstance bffApi
                     ediApiInstance = containerInstance ediApi
+                }
+
+                deploymentNode "Key Vault" {
+                    description ""
+                    technology "Azure Key Vault"
+                    tags "Microsoft Azure - Key Vaults"
+
+                    sharedKeyVaultInstance = containerInstance dh3.sharedKeyVault
                 }
 
                 deploymentNode "Service Bus" {
