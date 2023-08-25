@@ -34,7 +34,6 @@ class WholesaleCalculationResultWriter:
         self.__process_type = process_type.value
         self.__execution_time_start = execution_time_start
 
-    # TODO BJM: Add tests
     def write(
         self,
         df: DataFrame,
@@ -43,13 +42,11 @@ class WholesaleCalculationResultWriter:
         df = self._add_calculation_result_id(df)
         df = self._fix_metering_point_type(df)
         df = self._fix_settlement_method(df)
-        df.printSchema()  # TODO BJM: Remove
         df = self._select_output_columns(df)
 
         df.write.format("delta").mode("append").option(
             "mergeSchema", "false"
         ).insertInto(f"{OUTPUT_DATABASE_NAME}.{WHOLESALE_RESULT_TABLE_NAME}")
-        df.show()  # TODO BJM: Remove
 
     def _add_metadata(self, df: DataFrame):
         return (
