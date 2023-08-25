@@ -15,7 +15,8 @@
 
 import sys
 from pyspark.sql import SparkSession
-from package.calculation import energy_calculation
+from package.calculation import energy_calculation, wholesale_calculation
+from package.codelists import ProcessType
 from package.infrastructure import (
     db_logging,
     initialize_spark,
@@ -29,8 +30,10 @@ from package.infrastructure.storage_account_access import islocked
 
 def _start_calculator(args: CalculatorArgs, spark: SparkSession) -> None:
 
+    calculation_input_reader = input.CalculationInputReader(spark)
+
     metering_point_periods_df, time_series_points_df, grid_loss_responsible_df = input.get_calculation_input(
-        spark,
+        calculation_input_reader,
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
         args.batch_grid_areas,
@@ -53,6 +56,13 @@ def _start_calculator(args: CalculatorArgs, spark: SparkSession) -> None:
         grid_loss_responsible_df,
         args.time_zone,
     )
+
+    if args.batch_process_type == ProcessType.WHOLESALE_FIXING:
+        wholesale_calculation.execute(
+            calculation_input_reader,
+            metering_point_periods_df,
+            time_series_points_df,
+        )
 
 
 # The start() method should only have its name updated in correspondence with the wheels entry point for it.
