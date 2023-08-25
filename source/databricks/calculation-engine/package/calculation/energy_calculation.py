@@ -17,8 +17,8 @@ from datetime import datetime
 import package.calculation.energy as agg_steps
 import package.calculation.setup as setup
 from package.codelists import TimeSeriesType, AggregationLevel, ProcessType
-from package.calculation_output.output_writers.basis_data_writer import BasisDataWriter
-from package.calculation_output.output_writers.calculation_result_writer import CalculationResultWriter
+from package.calculation_output.basis_data_writer import BasisDataWriter
+from package.calculation_output.energy_calculation_result_writer import EnergyCalculationResultWriter
 from pyspark.sql import DataFrame
 from typing import Tuple
 
@@ -34,7 +34,7 @@ def execute(
     time_zone: str,
 ) -> None:
 
-    calculation_result_writer = CalculationResultWriter(
+    calculation_result_writer = EnergyCalculationResultWriter(
         batch_id,
         batch_process_type,
         batch_execution_time_start,
@@ -60,7 +60,7 @@ def execute(
 
 def _calculate(
     process_type: ProcessType,
-    result_writer: CalculationResultWriter,
+    result_writer: EnergyCalculationResultWriter,
     enriched_time_series_point_df: DataFrame,
     grid_loss_responsible_df: DataFrame,
 ) -> None:
@@ -124,7 +124,7 @@ def _calculate(
 
 def _calculate_net_exchange(
     process_type: ProcessType,
-    result_writer: CalculationResultWriter,
+    result_writer: EnergyCalculationResultWriter,
     enriched_time_series: DataFrame
 ) -> DataFrame:
 
@@ -160,7 +160,7 @@ def _calculate_consumption_per_ga_and_brp_and_es(
 
 
 def _calculate_temporay_production_per_per_ga_and_brp_and_es(
-    result_writer: CalculationResultWriter,
+    result_writer: EnergyCalculationResultWriter,
     enriched_time_series: DataFrame,
 ) -> DataFrame:
     temporay_production_per_per_ga_and_brp_and_es = (
@@ -179,7 +179,7 @@ def _calculate_temporay_production_per_per_ga_and_brp_and_es(
 
 
 def _calculate_temporay_flex_consumption_per_per_ga_and_brp_and_es(
-    result_writer: CalculationResultWriter,
+    result_writer: EnergyCalculationResultWriter,
     enriched_time_series: DataFrame,
 ) -> DataFrame:
     temporay_flex_consumption_per_ga_and_brp_and_es = (
@@ -198,7 +198,7 @@ def _calculate_temporay_flex_consumption_per_per_ga_and_brp_and_es(
 
 
 def _calculate_grid_loss(
-    result_writer: CalculationResultWriter,
+    result_writer: EnergyCalculationResultWriter,
     net_exchange_per_ga: DataFrame,
     temporay_production_per_ga_and_brp_and_es: DataFrame,
     temporay_flex_consumption_per_ga_and_brp_and_es: DataFrame,
@@ -266,7 +266,7 @@ def _calculate_adjust_flex_consumption_per_ga_and_brp_and_es(
 
 def _calculate_production(
     process_type: ProcessType,
-    result_writer: CalculationResultWriter,
+    result_writer: EnergyCalculationResultWriter,
     production_per_ga_and_brp_and_es: DataFrame,
 ) -> DataFrame:
 
@@ -315,7 +315,7 @@ def _calculate_production(
 
 def _calculate_flex_consumption(
     process_type: ProcessType,
-    result_writer: CalculationResultWriter,
+    result_writer: EnergyCalculationResultWriter,
     flex_consumption_per_ga_and_brp_and_es: DataFrame,
 ) -> None:
 
@@ -362,7 +362,7 @@ def _calculate_flex_consumption(
 
 def _calculate_non_profiled_consumption(
     process_type: ProcessType,
-    result_writer: CalculationResultWriter,
+    result_writer: EnergyCalculationResultWriter,
     consumption_per_ga_and_brp_and_es: DataFrame,
 ) -> None:
 
@@ -409,7 +409,7 @@ def _calculate_non_profiled_consumption(
 
 
 def _calculate_total_consumption(
-    result_writer: CalculationResultWriter,
+    result_writer: EnergyCalculationResultWriter,
     production_per_ga: DataFrame,
     net_exchange_per_ga: DataFrame,
 ) -> None:

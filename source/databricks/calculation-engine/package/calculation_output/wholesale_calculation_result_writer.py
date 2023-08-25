@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .spark_initializor import initialize_spark
-from .db_logging import log, debug, loglevel
-from .args_helper import valid_date, valid_list, valid_log_level
-from .environment_variables import EnvironmentVariable
+
+class WholesaleCalculationResultWriter:
+    pass
