@@ -12,12 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from azure.identity import ClientSecretCredential
 import configargparse
 from configargparse import argparse
-from dataclasses import dataclass
-from datetime import datetime
 import sys
+from package.calculation.calculator_args import CalculatorArgs
 from package.infrastructure import (
     valid_date,
     valid_list,
@@ -26,20 +24,6 @@ from package.infrastructure import (
 )
 import package.infrastructure.environment_variables as env_vars
 from package.codelists.process_type import ProcessType
-
-
-@dataclass
-class CalculatorArgs:
-    data_storage_account_name: str
-    data_storage_account_credentials: ClientSecretCredential
-    wholesale_container_path: str
-    batch_id: str
-    batch_grid_areas: list[str]
-    batch_period_start_datetime: datetime
-    batch_period_end_datetime: datetime
-    batch_process_type: ProcessType
-    batch_execution_time_start: datetime
-    time_zone: str
 
 
 def get_calculator_args() -> CalculatorArgs:

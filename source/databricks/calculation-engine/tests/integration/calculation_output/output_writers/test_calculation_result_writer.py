@@ -30,7 +30,7 @@ from package.codelists import (
 )
 from package.constants import Colname, EnergyResultColumnNames
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
-from package.calculation_output.output_writers.calculation_result_writer import CalculationResultWriter, _get_column_group_for_calculation_result_id
+from package.calculation_output.energy_calculation_result_writer import EnergyCalculationResultWriter, _get_column_group_for_calculation_result_id
 from tests.contract_utils import assert_contract_matches_schema, get_column_names_from_contract
 from typing import Any
 
@@ -123,7 +123,7 @@ def test__write__writes_aggregation_level(
     row = [_create_result_row()]
     result_df = _create_result_df(spark, row)
     batch_id = str(uuid.uuid4())
-    sut = CalculationResultWriter(
+    sut = EnergyCalculationResultWriter(
         batch_id,
         DEFAULT_PROCESS_TYPE,
         DEFAULT_BATCH_EXECUTION_START,
@@ -173,7 +173,7 @@ def test__write__writes_column(
     # Arrange
     row = [_create_result_row()]
     result_df = _create_result_df(spark, row)
-    sut = CalculationResultWriter(
+    sut = EnergyCalculationResultWriter(
         batch_id,
         DEFAULT_PROCESS_TYPE,
         DEFAULT_BATCH_EXECUTION_START,
@@ -202,7 +202,7 @@ def test__write__writes_columns_matching_contract(
     contract_path = f"{contracts_path}/result-table-column-names.json"
     row = [_create_result_row()]
     result_df = _create_result_df(spark, row)
-    sut = CalculationResultWriter(
+    sut = EnergyCalculationResultWriter(
         batch_id,
         DEFAULT_PROCESS_TYPE,
         DEFAULT_BATCH_EXECUTION_START,
@@ -228,7 +228,7 @@ def test__write__writes_calculation_result_id(spark: SparkSession, contracts_pat
     # Arrange
     result_df = _create_result_df_corresponding_to_four_calculation_results(spark)
     EXPECTED_NUMBER_OF_CALCULATION_RESULT_IDS = 4
-    sut = CalculationResultWriter(
+    sut = EnergyCalculationResultWriter(
         batch_id,
         DEFAULT_PROCESS_TYPE,
         DEFAULT_BATCH_EXECUTION_START,

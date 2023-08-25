@@ -23,7 +23,7 @@ from package.constants import Colname, EnergyResultColumnNames
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
 
 
-class CalculationResultWriter:
+class EnergyCalculationResultWriter:
     def __init__(
         self,
         batch_id: str,

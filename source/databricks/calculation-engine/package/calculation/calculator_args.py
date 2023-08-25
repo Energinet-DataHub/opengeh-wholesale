@@ -12,4 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .basis_data_writer import BasisDataWriter
+from azure.identity import ClientSecretCredential
+from dataclasses import dataclass
+from datetime import datetime
+from package.codelists.process_type import ProcessType
+
+
+@dataclass
+class CalculatorArgs:
+    data_storage_account_name: str
+    data_storage_account_credentials: ClientSecretCredential
+    wholesale_container_path: str
+    batch_id: str
+    batch_grid_areas: list[str]
+    batch_period_start_datetime: datetime
+    batch_period_end_datetime: datetime
+    batch_process_type: ProcessType
+    batch_execution_time_start: datetime
+    time_zone: str

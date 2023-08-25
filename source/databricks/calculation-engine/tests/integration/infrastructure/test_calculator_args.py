@@ -15,7 +15,7 @@
 import re
 import pytest
 from unittest.mock import patch
-from package.infrastructure.calculator_args import get_calculator_args
+from package.calculator_job_args import get_calculator_args
 from package.infrastructure.environment_variables import EnvironmentVariable
 
 
