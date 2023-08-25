@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, sum, count
+from pyspark.sql.functions import col, sum, count, lit
 from package.constants import Colname
 
 
@@ -42,6 +42,8 @@ def calculate_tariff_price_per_ga_co_es(tariffs: DataFrame) -> DataFrame:
         Colname.total_quantity,
         Colname.charge_count,
         Colname.total_amount,
+        lit("kWh").alias(Colname.unit),  # TODO BJM: Use enum?
+        lit("calculated").alias(Colname.quality),  # TODO JMG: Replace with correct value
     )
 
 

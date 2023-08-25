@@ -20,10 +20,12 @@ from package.calculation.wholesale.tariff_calculators import calculate_tariff_pr
 from package.codelists import ChargeResolution, MeteringPointType
 from package.constants import Colname
 from package.calculation_input import CalculationInputReader
+from package.calculation_output.wholesale_calculation_result_writer import WholesaleCalculationResultWriter
 
 
 def execute(
     calculation_input_reader: CalculationInputReader,
+    wholesale_calculation_result_writer: WholesaleCalculationResultWriter,
     metering_points_periods_df: DataFrame,  # TODO: use enriched_time_series
     time_series_point_df: DataFrame,  # TODO: use enriched_time_series
 ) -> None:
@@ -35,7 +37,8 @@ def execute(
     charge_prices = calculation_input_reader.read_charge_price_points()
 
     # Calculate and write to storage
-    _calculate_tariff_charges(metering_points_periods_df,
+    _calculate_tariff_charges(wholesale_calculation_result_writer,
+                              metering_points_periods_df,
                               time_series_point_df,
                               charge_master_data,
                               charge_links,
@@ -43,6 +46,7 @@ def execute(
 
 
 def _calculate_tariff_charges(
+    wholesale_calculation_result_writer: WholesaleCalculationResultWriter,
     metering_points_periods_df: DataFrame,
     time_series_point_df: DataFrame,
     charge_master_data: DataFrame,
@@ -60,7 +64,7 @@ def _calculate_tariff_charges(
     )
 
     hourly_tariff_per_ga_co_es = calculate_tariff_price_per_ga_co_es(tariffs_hourly)
-    hourly_tariff_per_ga_co_es.printSchema()  # TODO JMG: remove and write to storage instead
+    wholesale_calculation_result_writer.write(hourly_tariff_per_ga_co_es)
 
 
 def _get_production_and_consumption_metering_points(metering_points_periods_df: DataFrame) -> DataFrame:
