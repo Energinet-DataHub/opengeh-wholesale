@@ -2,7 +2,6 @@
 # showing how domain services (containers) are deployed onto infrastructure (deployment nodes).
 
 workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-arch-diagrams/main/docs/diagrams/c4-model/dh-base-model.dsl {
-
     model {
         #
         # DataHub 3.0 (extends)
@@ -28,7 +27,7 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
 
             # Include Migration model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACFOVCSLT4IK47PRDVRMCO6GZHHG6LQ
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACFOVCSK32JIZRG3TEZ6BARQZHIRTZA
         }
 
         # Deployment model
@@ -76,6 +75,17 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
 
                     bffApiInstance = containerInstance bffApi
                     ediApiInstance = containerInstance ediApi
+                }
+
+                # Experiment:
+                # We would like all (most) resources to appear on our deployment diagram,
+                # but we don't want to add elements to the base model if they don't
+                # appear in significant "flows". Hence we have decided to add this
+                # as an infrastructure node for the moment.
+                infrastructureNode "Appliction Insights" {
+                    description ""
+                    technology "Azure Application Insights"
+                    tags "Microsoft Azure - Application Insights"
                 }
 
                 deploymentNode "Key Vault" {
