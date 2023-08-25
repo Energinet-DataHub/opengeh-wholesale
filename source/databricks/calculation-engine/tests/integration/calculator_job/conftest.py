@@ -21,11 +21,9 @@ import pytest
 from unittest.mock import patch
 
 from . import configuration as C
-from package.calculator_job import (
-    _start_calculator,
-)
+import package.calculation as calculation
 import package.calculation_input.grid_loss_responsible as grid_loss_responsible
-from package.infrastructure.calculator_args import CalculatorArgs
+from package.calculation.calculator_args import CalculatorArgs
 from package.codelists.process_type import ProcessType
 from package.constants import Colname
 from package.infrastructure import paths
@@ -142,7 +140,7 @@ def executed_balance_fixing(
     without awaiting the execution in each test."""
 
     with patch.object(grid_loss_responsible, '_get_all_grid_loss_responsible', return_value=grid_loss_responsible_test_data):
-        _start_calculator(calculator_args_balance_fixing, spark)
+        calculation.execute(calculator_args_balance_fixing, spark)
 
 
 @pytest.fixture(scope="session")
@@ -161,7 +159,7 @@ def executed_wholesale_fixing(
     without awaiting the execution in each test."""
 
     with patch.object(grid_loss_responsible, '_get_all_grid_loss_responsible', return_value=grid_loss_responsible_test_data):
-        _start_calculator(calculator_args_wholesale_fixing, spark)
+        calculation.execute(calculator_args_wholesale_fixing, spark)
 
 
 @pytest.fixture(scope="session")
