@@ -48,7 +48,7 @@ class WholesaleCalculationResultWriter:
             "mergeSchema", "false"
         ).insertInto(f"{OUTPUT_DATABASE_NAME}.{WHOLESALE_RESULT_TABLE_NAME}")
 
-    def _add_metadata(self, df: DataFrame):
+    def _add_metadata(self, df: DataFrame) -> DataFrame:
         return (
             df.withColumn(Colname.batch_id, lit(self.__batch_id))
             .withColumn(Colname.batch_process_type, lit(self.__process_type))
