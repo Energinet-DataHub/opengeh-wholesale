@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 
@@ -22,4 +23,6 @@ public interface ICalculationResultQueries
     /// Get all results for a given batch.
     /// </summary>
     IAsyncEnumerable<CalculationResult> GetAsync(Guid batchId);
+
+    IAsyncEnumerable<CalculationResult> GetAsync(Instant fromPeriod, Instant toPeriod, TimeSeriesType timeSeriesType);
 }

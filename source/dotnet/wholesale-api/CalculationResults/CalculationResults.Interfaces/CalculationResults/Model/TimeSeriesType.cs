@@ -27,4 +27,5 @@ public enum TimeSeriesType
     TotalConsumption = 9,
     TempFlexConsumption = 10,
     TempProduction = 11,
+    TotalProduction = 12,
 }

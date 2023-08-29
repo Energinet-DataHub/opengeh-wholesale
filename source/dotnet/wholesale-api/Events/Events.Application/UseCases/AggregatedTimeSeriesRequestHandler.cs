@@ -12,12 +12,55 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using NodaTime;
+
 namespace Energinet.DataHub.Wholesale.Events.Application.UseCases;
 
 public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHandler
 {
+    private readonly ICalculationResultQueries _calculationResultQueries;
+    private readonly ServiceBusClient _servicebusclient;
+
+    public AggregatedTimeSeriesRequestHandler(ICalculationResultQueries calculationResultQueries)
+    {
+        _calculationResultQueries = calculationResultQueries;
+        _servicebusclient = new ServiceBusClient("connectionstring");
+    }
+
     public async Task ProcessAsync(CancellationToken cancellationToken)
     {
+        var processor = _servicebusclient.CreateProcessor("queueName");
+        try
+        {
+            processor.ProcessMessageAsync += ProcessMessageAsync;
+            processor.ProcessErrorAsync += ProcessErrorAsync;
+        }
+        finally
+        {
+            await processor.DisposeAsync().ConfigureAwait(false);
+            await _servicebusclient.DisposeAsync().ConfigureAwait(false);
+        }
+
         await Task.CompletedTask.ConfigureAwait(false);
+    }
+
+    private Task ProcessErrorAsync(ProcessErrorEventArgs arg)
+    {
+        throw new NotImplementedException();
+    }
+
+    private async Task ProcessMessageAsync(ProcessMessageEventArgs arg)
+    {
+        // create the request from the protobuf message
+        // call the query service
+        var timeseriesRequested =
+            _calculationResultQueries.GetAsync(Instant.MinValue, Instant.MaxValue, TimeSeriesType.TotalProduction);
+        // create the response
+        // send the response to EDI inbox.
+        await arg.CompleteMessageAsync(arg.Message).ConfigureAwait(false);
+        throw new NotImplementedException();
     }
 }
