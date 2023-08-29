@@ -21,7 +21,7 @@ namespace Energinet.DataHub.Wholesale.Events.Application.Workers;
 /// <summary>
 /// Worker invoking processing requests for aggregated time series.
 /// </summary>
-public class AggregatedTimeSeriesRequestTrigger : RepeatingTrigger<IProcessAggregatedTimeSeriesRequestHandler>
+public class AggregatedTimeSeriesRequestTrigger : RepeatingTrigger<IAggregatedTimeSeriesRequestHandler>
 {
     private const int DelayInSecondsBeforeNextExecution = 20;
 
@@ -33,10 +33,10 @@ public class AggregatedTimeSeriesRequestTrigger : RepeatingTrigger<IProcessAggre
     }
 
     protected override async Task ExecuteAsync(
-        IProcessAggregatedTimeSeriesRequestHandler processAggregatedTimeSeriesRequestHandler,
+        IAggregatedTimeSeriesRequestHandler aggregatedTimeSeriesRequestHandler,
         CancellationToken cancellationToken,
         Action isAliveCallback)
     {
-        await processAggregatedTimeSeriesRequestHandler.ProcessAsync(cancellationToken).ConfigureAwait(false);
+        await aggregatedTimeSeriesRequestHandler.ProcessAsync(cancellationToken).ConfigureAwait(false);
     }
 }

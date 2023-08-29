@@ -22,7 +22,7 @@ public class ProcessAggregatedTimeSeriesRequestHandlerTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public async Task ProcessAsync_can_be_called(ProcessAggregatedTimeSeriesRequestHandler sut)
+    public async Task ProcessAsync_can_be_called(AggregatedTimeSeriesRequestHandler sut)
     {
         await sut.ProcessAsync(CancellationToken.None);
     }

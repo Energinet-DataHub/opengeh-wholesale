@@ -41,7 +41,7 @@ public static class EventsRegistration
 
         serviceCollection.AddScoped<ICalculationResultIntegrationEventFactory, CalculationResultIntegrationEventFactory>();
 
-        serviceCollection.AddScoped<IProcessAggregatedTimeSeriesRequestHandler, ProcessAggregatedTimeSeriesRequestHandler>();
+        serviceCollection.AddScoped<IAggregatedTimeSeriesRequestHandler, AggregatedTimeSeriesRequestHandler>();
 
         serviceCollection.AddApplications();
         serviceCollection.AddInfrastructure();

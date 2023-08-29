@@ -14,7 +14,7 @@
 
 namespace Energinet.DataHub.Wholesale.Events.Application.UseCases;
 
-public interface IProcessAggregatedTimeSeriesRequestHandler
+public interface IAggregatedTimeSeriesRequestHandler
 {
     /// <summary>
     /// Handles the process of consuming the request for aggregated time series, then getting the required time series and creating and sending the response.

@@ -14,7 +14,7 @@
 
 namespace Energinet.DataHub.Wholesale.Events.Application.UseCases;
 
-public class ProcessAggregatedTimeSeriesRequestHandler : IProcessAggregatedTimeSeriesRequestHandler
+public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHandler
 {
     public async Task ProcessAsync(CancellationToken cancellationToken)
     {
