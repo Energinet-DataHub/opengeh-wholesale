@@ -27,7 +27,7 @@ public class AggregatedTimeSeriesRequestTrigger : RepeatingTrigger<IProcessAggre
 
     public AggregatedTimeSeriesRequestTrigger(
         IServiceProvider serviceProvider,
-        ILogger logger)
+        ILogger<AggregatedTimeSeriesRequestTrigger> logger)
         : base(serviceProvider, logger, TimeSpan.FromSeconds(DelayInSecondsBeforeNextExecution))
     {
     }
