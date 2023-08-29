@@ -25,7 +25,7 @@ import package.calculation as calculation
 import package.calculation_input.grid_loss_responsible as grid_loss_responsible
 from package.calculation.calculator_args import CalculatorArgs
 from package.codelists.process_type import ProcessType
-from package.constants import Colname
+from package.constants import EnergyResultColumnNames, WholesaleResultColumnNames
 from package.infrastructure import paths
 from package.calculation_input.schemas import (
     time_series_point_schema, metering_point_period_schema, charge_master_data_periods_schema, charge_price_points_schema, charge_link_periods_schema
@@ -168,16 +168,25 @@ def balance_fixing_results_df(
     executed_balance_fixing: None,
 ) -> DataFrame:
     results_df = spark.read.table(f"{paths.OUTPUT_DATABASE_NAME}.{paths.ENERGY_RESULT_TABLE_NAME}")
-    return results_df.where(F.col(Colname.batch_id) == C.executed_balance_fixing_batch_id)
+    return results_df.where(F.col(EnergyResultColumnNames.batch_id) == C.executed_balance_fixing_batch_id)
 
 
 @pytest.fixture(scope="session")
-def wholesale_fixing_results_df(
+def wholesale_fixing_energy_results_df(
     spark: SparkSession,
     executed_wholesale_fixing: None,
 ) -> DataFrame:
     results_df = spark.read.table(f"{paths.OUTPUT_DATABASE_NAME}.{paths.ENERGY_RESULT_TABLE_NAME}")
-    return results_df.where(F.col(Colname.batch_id) == C.executed_wholesale_batch_id)
+    return results_df.where(F.col(EnergyResultColumnNames.batch_id) == C.executed_wholesale_batch_id)
+
+
+@pytest.fixture(scope="session")
+def wholesale_fixing_wholesale_results_df(
+    spark: SparkSession,
+    executed_wholesale_fixing: None,
+) -> DataFrame:
+    results_df = spark.read.table(f"{paths.OUTPUT_DATABASE_NAME}.{paths.WHOLESALE_RESULT_TABLE_NAME}")
+    return results_df.where(F.col(WholesaleResultColumnNames.calculation_id) == C.executed_wholesale_batch_id)
 
 
 def _write_input_test_data_to_table(
