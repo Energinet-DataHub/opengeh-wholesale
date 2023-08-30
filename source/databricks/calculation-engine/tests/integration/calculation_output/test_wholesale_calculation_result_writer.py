@@ -12,14 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from decimal import Decimal
 from typing import List
 
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col
 import pytest
-import uuid
 
 from package.codelists import (
     ChargeQuality,
@@ -107,9 +106,6 @@ def _create_result_row(
 
 def _create_result_df(spark: SparkSession, row: List[dict]) -> DataFrame:
     return spark.createDataFrame(data=row)
-    # .withColumn(
-    #     Colname.sum_quantity, col(Colname.sum_quantity).cast("decimal(18, 3)")
-    # )
 
 
 def _create_result_df_corresponding_to_multiple_calculation_results(spark: SparkSession) -> DataFrame:
@@ -120,9 +116,15 @@ def _create_result_df_corresponding_to_multiple_calculation_results(spark: Spark
         _create_result_row(grid_area="003")]
 
     return spark.createDataFrame(data=rows)
-    # .withColumn(
-    #     Colname.sum_quantity, col(Colname.sum_quantity).cast("decimal(18, 3)")
-    # )
+
+
+@pytest.fixture(scope="session")
+def sut() -> WholesaleCalculationResultWriter:
+    return WholesaleCalculationResultWriter(
+        DEFAULT_BATCH_ID,
+        DEFAULT_PROCESS_TYPE,
+        DEFAULT_BATCH_EXECUTION_START,
+    )
 
 
 @pytest.mark.parametrize(
@@ -138,8 +140,6 @@ def _create_result_df_corresponding_to_multiple_calculation_results(spark: Spark
         (WholesaleResultColumnNames.quantity_quality, DEFAULT_QUALITY.value),
         (WholesaleResultColumnNames.time, DEFAULT_CHARGE_TIME),
         (WholesaleResultColumnNames.resolution, DEFAULT_RESOLUTION.value),
-        # (WholesaleResultColumnNames.metering_point_type, DEFAULT_METERING_POINT_TYPE.value),  # TODO BJM: Separate test
-        # (WholesaleResultColumnNames.settlement_method, DEFAULT_SETTLEMENT_METHOD.value),  # TODO BJM: Separate test
         (WholesaleResultColumnNames.price, DEFAULT_CHARGE_PRICE),
         (WholesaleResultColumnNames.amount, DEFAULT_TOTAL_AMOUNT),
         (WholesaleResultColumnNames.is_tax, DEFAULT_CHARGE_TAX),
@@ -149,6 +149,7 @@ def _create_result_df_corresponding_to_multiple_calculation_results(spark: Spark
     ],
 )
 def test__write__writes_column(
+    sut: WholesaleCalculationResultWriter,
     spark: SparkSession,
     column_name: str,
     column_value: Any,
@@ -159,11 +160,6 @@ def test__write__writes_column(
     # Arrange
     row = [_create_result_row()]
     result_df = _create_result_df(spark, row)
-    sut = WholesaleCalculationResultWriter(
-        DEFAULT_BATCH_ID,
-        DEFAULT_PROCESS_TYPE,
-        DEFAULT_BATCH_EXECUTION_START,
-    )
 
     # Act
     sut.write(result_df)
@@ -177,16 +173,14 @@ def test__write__writes_column(
     assert actual_row[column_name] == column_value
 
 
-def test__write__writes_calculation_result_id(spark: SparkSession, migrations_executed_per_test: None) -> None:
+def test__write__writes_calculation_result_id(
+        sut: WholesaleCalculationResultWriter,
+        spark: SparkSession,
+        migrations_executed_per_test: None) -> None:
 
     # Arrange
     result_df = _create_result_df_corresponding_to_multiple_calculation_results(spark)
-    EXPECTED_NUMBER_OF_CALCULATION_RESULT_IDS = 3
-    sut = WholesaleCalculationResultWriter(
-        DEFAULT_BATCH_ID,
-        DEFAULT_PROCESS_TYPE,
-        DEFAULT_BATCH_EXECUTION_START,
-    )
+    expected_number_of_calculation_result_ids = 3
 
     # Act
     sut.write(result_df)
@@ -194,10 +188,11 @@ def test__write__writes_calculation_result_id(spark: SparkSession, migrations_ex
     # Assert
     actual_df = spark.read.table(TABLE_NAME).select(col(WholesaleResultColumnNames.calculation_result_id))
 
-    assert actual_df.distinct().count() == EXPECTED_NUMBER_OF_CALCULATION_RESULT_IDS
+    assert actual_df.distinct().count() == expected_number_of_calculation_result_ids
 
 
-def test__get_column_group_for_calculation_result_id__returns_expected_column_names() -> None:
+def test__get_column_group_for_calculation_result_id__returns_expected_column_names(
+        sut: WholesaleCalculationResultWriter,) -> None:
     # Arrange
     expected_column_names = [
         Colname.batch_id,
@@ -207,11 +202,6 @@ def test__get_column_group_for_calculation_result_id__returns_expected_column_na
         Colname.charge_owner,
         Colname.energy_supplier_id,
     ]
-    sut = WholesaleCalculationResultWriter(
-        DEFAULT_BATCH_ID,
-        DEFAULT_PROCESS_TYPE,
-        DEFAULT_BATCH_EXECUTION_START,
-    )
 
     # Act
     actual = sut._get_column_group_for_calculation_result_id()
@@ -220,9 +210,11 @@ def test__get_column_group_for_calculation_result_id__returns_expected_column_na
     assert actual == expected_column_names
 
 
-def test__get_column_group_for_calculation_result_id__excludes_exepected_other_column_names(contracts_path: str) -> None:
+def test__get_column_group_for_calculation_result_id__excludes_expected_other_column_names(
+        sut: WholesaleCalculationResultWriter) -> None:
 
-    # This class is a guard against adding new columns without considering how the column affects the generation of calculation result IDs
+    # This class is a guard against adding new columns without considering how the column affects the generation of
+    # calculation result IDs
 
     # Arrange
     expected_excluded_columns = [
@@ -242,11 +234,6 @@ def test__get_column_group_for_calculation_result_id__excludes_exepected_other_c
         WholesaleResultColumnNames.is_tax,
         WholesaleResultColumnNames.charge_id]
     all_columns = [attr for attr in dir(WholesaleResultColumnNames) if not attr.startswith("__")]
-    sut = WholesaleCalculationResultWriter(
-        DEFAULT_BATCH_ID,
-        DEFAULT_PROCESS_TYPE,
-        DEFAULT_BATCH_EXECUTION_START,
-    )
 
     # Act
     included_columns = sut._get_column_group_for_calculation_result_id()
@@ -254,3 +241,42 @@ def test__get_column_group_for_calculation_result_id__excludes_exepected_other_c
     # Assert
     excluded_columns = set(all_columns) - set(included_columns)
     assert set(excluded_columns) == set(expected_excluded_columns)
+
+
+@pytest.mark.parametrize("metering_point_type,expected", [
+    [MeteringPointType.CONSUMPTION, "consumption"],
+    [MeteringPointType.PRODUCTION, "production"],
+    [MeteringPointType.EXCHANGE, "exchange"],
+])
+def test___fix_metering_point_type(
+        spark: SparkSession,
+        metering_point_type: MeteringPointType,
+        expected: str) -> None:
+    # Arrange
+    row = _create_result_row(metering_point_type=metering_point_type)
+    df = _create_result_df(spark, [row])
+
+    # Act
+    actual = WholesaleCalculationResultWriter._fix_metering_point_type(df)
+
+    # Assert
+    assert actual.collect()[0][Colname.metering_point_type] == expected
+
+
+@pytest.mark.parametrize("settlement_method,expected", [
+    [SettlementMethod.FLEX, "flex"],
+    [SettlementMethod.NON_PROFILED, "non_profiled"],
+])
+def test___fix_settlement_method_type(
+        spark: SparkSession,
+        settlement_method: SettlementMethod,
+        expected: str) -> None:
+    # Arrange
+    row = _create_result_row(settlement_method=settlement_method)
+    df = _create_result_df(spark, [row])
+
+    # Act
+    actual = WholesaleCalculationResultWriter._fix_settlement_method(df)
+
+    # Assert
+    assert actual.collect()[0][Colname.settlement_method] == expected
