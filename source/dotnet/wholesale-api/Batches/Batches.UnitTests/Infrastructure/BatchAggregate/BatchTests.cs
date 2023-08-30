@@ -65,10 +65,18 @@ public class BatchTests
     [InlineData("2022-12-31T23:00Z", "2022-01-30T23:00Z", false)] // Does not include last day of the month
     [InlineData("2022-01-01T23:00Z", "2022-01-31T23:00Z", false)] // Does not include first day of the month
     [InlineData("2022-11-30T23:00Z", "2022-01-31T23:00Z", false)] // Two months
-    [InlineData("2021-12-31T23:00Z", "2022-01-31T23:00Z", true)] // Winter time
-    [InlineData("2022-05-31T22:00Z", "2022-06-30T22:00Z", true)] // Summer time
-    [InlineData("2022-02-28T23:00Z", "2022-03-31T22:00Z", true)] // Winter to summer time
-    [InlineData("2022-09-30T22:00Z", "2022-10-31T23:00Z", true)] // Summer to winter time
+    [InlineData("2021-12-31T23:00Z", "2022-01-31T23:00Z", true)] // January
+    [InlineData("2022-01-31T23:00Z", "2022-02-28T23:00Z", true)] // February
+    [InlineData("2022-02-28T23:00Z", "2022-03-31T22:00Z", true)] // March
+    [InlineData("2022-03-31T22:00Z", "2022-04-30T22:00Z", true)] // April
+    [InlineData("2022-04-30T22:00Z", "2022-05-31T22:00Z", true)] // May
+    [InlineData("2022-05-31T22:00Z", "2022-06-30T22:00Z", true)] // June
+    [InlineData("2022-06-30T22:00Z", "2022-07-31T22:00Z", true)] // July
+    [InlineData("2022-07-31T22:00Z", "2022-08-31T22:00Z", true)] // August
+    [InlineData("2022-08-31T22:00Z", "2022-09-30T22:00Z", true)] // September
+    [InlineData("2022-09-30T22:00Z", "2022-10-31T23:00Z", true)] // October
+    [InlineData("2022-10-31T23:00Z", "2022-11-30T23:00Z", true)] // November
+    [InlineData("2022-11-30T23:00Z", "2022-12-31T23:00Z", true)] // December
     public void Ctor_WhenWholesaleFixingPeriodIsNotEntireMonth_ThrowsBusinessValidationException(DateTimeOffset startDate, DateTimeOffset endDate, bool isEntireMonth)
     {
         // Arrange
