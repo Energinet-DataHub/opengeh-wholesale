@@ -19,7 +19,7 @@ import pyspark.sql.functions as f
 from pyspark.sql.window import Window
 
 from package.codelists import (
-    InputMeteringPointType,
+    MeteringPointType,
     ProcessType,
 )
 from package.constants import Colname, WholesaleResultColumnNames
@@ -72,20 +72,20 @@ class WholesaleCalculationResultWriter:
     def _fix_metering_point_type(df: DataFrame) -> DataFrame:
         return df.withColumn(
             Colname.metering_point_type,
-            when(col(Colname.metering_point_type) == "E17", lit("consumption"))
-            .when(col(Colname.metering_point_type) == "E18", lit("production"))
-            .when(col(Colname.metering_point_type) == "D01", lit("ve_production"))
-            .when(col(Colname.metering_point_type) == "D05", lit("net_production"))
-            .when(col(Colname.metering_point_type) == "D06", lit("supply_to_grid"))
-            .when(col(Colname.metering_point_type) == "D07", lit("consumption_from_grid"))
-            .when(col(Colname.metering_point_type) == "D08", lit("wholesale_services_information"))
-            .when(col(Colname.metering_point_type) == "D09", lit("own_production"))
-            .when(col(Colname.metering_point_type) == "D10", lit("net_from_grid"))
-            .when(col(Colname.metering_point_type) == "D11", lit("net_to_grid"))
-            .when(col(Colname.metering_point_type) == "D12", lit("total_consumption"))
-            .when(col(Colname.metering_point_type) == "D14", lit("electrical_heating"))
-            .when(col(Colname.metering_point_type) == "D15", lit("net_consumption"))
-            .when(col(Colname.metering_point_type) == "D19", lit("effect_settlement"))
+            when(col(Colname.metering_point_type) == "E17", lit(MeteringPointType.CONSUMPTION.value))
+            .when(col(Colname.metering_point_type) == "E18", lit(MeteringPointType.PRODUCTION.value))
+            .when(col(Colname.metering_point_type) == "D01", lit(MeteringPointType.VE_PRODUCTION.value))
+            .when(col(Colname.metering_point_type) == "D05", lit(MeteringPointType.NET_PRODUCTION.value))
+            .when(col(Colname.metering_point_type) == "D06", lit(MeteringPointType.SUPPLY_TO_GRID.value))
+            .when(col(Colname.metering_point_type) == "D07", lit(MeteringPointType.CONSUMPTION_FROM_GRID.value))
+            .when(col(Colname.metering_point_type) == "D08", lit(MeteringPointType.WHOLESALE_SERVICES_INFORMATION.value))
+            .when(col(Colname.metering_point_type) == "D09", lit(MeteringPointType.OWN_PRODUCTION.value))
+            .when(col(Colname.metering_point_type) == "D10", lit(MeteringPointType.NET_FROM_GRID.value))
+            .when(col(Colname.metering_point_type) == "D11", lit(MeteringPointType.NET_TO_GRID.value))
+            .when(col(Colname.metering_point_type) == "D12", lit(MeteringPointType.TOTAL_CONSUMPTION.value))
+            .when(col(Colname.metering_point_type) == "D14", lit(MeteringPointType.ELECTRICAL_HEATING.value))
+            .when(col(Colname.metering_point_type) == "D15", lit(MeteringPointType.NET_CONSUMPTION.value))
+            .when(col(Colname.metering_point_type) == "D19", lit(MeteringPointType.EFFECT_SETTLEMENT.value))
         )
 
     @staticmethod

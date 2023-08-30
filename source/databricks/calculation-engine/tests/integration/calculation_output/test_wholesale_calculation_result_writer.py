@@ -28,7 +28,7 @@ from package.codelists import (
     InputMeteringPointType,
     MeteringPointType,
     ProcessType,
-    SettlementMethod,
+    InputSettlementMethod,
 )
 from package.constants import Colname, WholesaleResultColumnNames
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME, WHOLESALE_RESULT_TABLE_NAME
@@ -48,7 +48,7 @@ DEFAULT_ENERGY_SUPPLIER_ID = "9876543210123"
 DEFAULT_GRID_AREA = "543"
 DEFAULT_CHARGE_TIME = datetime(2022, 6, 10, 13, 30)
 DEFAULT_METERING_POINT_TYPE = InputMeteringPointType.ELECTRICAL_HEATING
-DEFAULT_SETTLEMENT_METHOD = SettlementMethod.FLEX
+DEFAULT_SETTLEMENT_METHOD = InputSettlementMethod.FLEX
 DEFAULT_CHARGE_KEY = "40000-tariff-5790001330552"
 DEFAULT_CHARGE_ID = "4000"
 DEFAULT_CHARGE_TYPE = ChargeType.TARIFF
@@ -68,7 +68,7 @@ def _create_result_row(
     grid_area: str = DEFAULT_GRID_AREA,
     charge_time: datetime = DEFAULT_CHARGE_TIME,
     metering_point_type: InputMeteringPointType = DEFAULT_METERING_POINT_TYPE,
-    settlement_method: SettlementMethod = DEFAULT_SETTLEMENT_METHOD,
+    settlement_method: InputSettlementMethod = DEFAULT_SETTLEMENT_METHOD,
     charge_key: str = DEFAULT_CHARGE_KEY,
     charge_id: str = DEFAULT_CHARGE_ID,
     charge_type: ChargeType = DEFAULT_CHARGE_TYPE,
@@ -277,12 +277,12 @@ def test___fix_metering_point_type(
 
 
 @pytest.mark.parametrize("settlement_method,expected", [
-    [SettlementMethod.FLEX, "flex"],
-    [SettlementMethod.NON_PROFILED, "non_profiled"],
+    [InputSettlementMethod.FLEX, "flex"],
+    [InputSettlementMethod.NON_PROFILED, "non_profiled"],
 ])
 def test___fix_settlement_method_type(
         spark: SparkSession,
-        settlement_method: SettlementMethod,
+        settlement_method: InputSettlementMethod,
         expected: str) -> None:
     # Arrange
     row = _create_result_row(settlement_method=settlement_method)

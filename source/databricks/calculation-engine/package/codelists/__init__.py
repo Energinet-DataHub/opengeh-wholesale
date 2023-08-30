@@ -19,6 +19,7 @@ from .charge_resolution import ChargeResolution
 from .charge_type import ChargeType
 from .charge_unit import ChargeUnit
 from .input_metering_point_type import InputMeteringPointType
+from .input_settlement_method import InputSettlementMethod
 from .metering_point_resolution import MeteringPointResolution
 from .metering_point_type import MeteringPointType
 from .process_type import ProcessType
