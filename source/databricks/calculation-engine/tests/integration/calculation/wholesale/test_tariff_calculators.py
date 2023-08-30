@@ -184,6 +184,3 @@ def test__join_with_agg_df__gets_the_expected_total_amount(
 
     # Assert
     assert result.collect()[0][Colname.total_amount] == expected_total_amount
-
-
-
