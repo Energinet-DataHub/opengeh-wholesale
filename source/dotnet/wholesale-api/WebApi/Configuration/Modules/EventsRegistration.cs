@@ -68,11 +68,10 @@ public static class EventsRegistration
 
     private static void RegisterHostedServices(IServiceCollection serviceCollection)
     {
-        serviceCollection.AddHostedService<AggregatedTimeSeriesRequestTrigger>();
+        serviceCollection.AddHostedService<AggregatedTimeSeriesServiceBusWorker>();
         serviceCollection.AddHostedService<RegisterCompletedBatchesTrigger>();
         serviceCollection
             .AddHealthChecks()
-            .AddRepeatingTriggerHealthCheck<AggregatedTimeSeriesRequestTrigger>(TimeSpan.FromMinutes(1))
             .AddRepeatingTriggerHealthCheck<RegisterCompletedBatchesTrigger>(TimeSpan.FromMinutes(1));
     }
 }
