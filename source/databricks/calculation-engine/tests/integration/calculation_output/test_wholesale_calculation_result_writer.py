@@ -264,7 +264,7 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
 def test___fix_metering_point_type(
         spark: SparkSession,
         metering_point_type: InputMeteringPointType,
-        expected: str) -> None:
+        expected: MeteringPointType) -> None:
     # Arrange
     row = _create_result_row(metering_point_type=metering_point_type)
     df = _create_result_df(spark, [row])
@@ -273,7 +273,7 @@ def test___fix_metering_point_type(
     actual = WholesaleCalculationResultWriter._fix_metering_point_type(df)
 
     # Assert
-    assert actual.collect()[0][Colname.metering_point_type] == expected
+    assert actual.collect()[0][Colname.metering_point_type] == expected.value
 
 
 @pytest.mark.parametrize("settlement_method,expected", [
