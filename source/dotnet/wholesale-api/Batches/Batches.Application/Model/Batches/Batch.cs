@@ -102,7 +102,7 @@ public class Batch
     private static bool IsEntireMonth(ZonedDateTime periodStart, ZonedDateTime periodEnd)
     {
         // Validate that period start is first day of the month
-        if (periodStart.Day != 1)
+        if (periodStart.Day != 1 || periodStart.TimeOfDay != LocalTime.Midnight)
             return false;
 
         var daysInMonth = DateTime.DaysInMonth(periodStart.Year, periodStart.Month);
