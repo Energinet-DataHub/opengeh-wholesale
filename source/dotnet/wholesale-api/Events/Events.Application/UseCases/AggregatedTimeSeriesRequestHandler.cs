@@ -29,10 +29,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
     {
         // create the request from the protobuf message
         // call the query service
-        // var timeseriesRequested =
-        //     _calculationResultQueries.GetAsync(Instant.MinValue, Instant.MaxValue, TimeSeriesType.TotalProduction);
         // create the response
-        // var reply = CreateAcceptedResponseFromWholesale(message);
         // send the response to EDI inbox.
         return Task.CompletedTask;
     }
