@@ -15,7 +15,8 @@
 from enum import Enum
 
 
-class ChargeType(Enum):
-    SUBSCRIPTION = "subscription"
-    FEE = "fee"
-    TARIFF = "tariff"
+class ChargeUnit(Enum):
+    KWH = "kWh"
+    """Applies to tariffs"""
+    PIECES = "pcs"
+    """Applies to fees and subscriptions"""
