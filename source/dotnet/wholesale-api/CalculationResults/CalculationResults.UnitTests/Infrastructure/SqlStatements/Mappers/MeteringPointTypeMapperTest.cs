@@ -26,20 +26,10 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 public class MeteringPointTypeMapperTests
 {
     [Fact]
-    public async Task FromDeltaTableValue_ReturnsValidMeteringPointType()
+    public async Task QuantityQuality_Matches_Contract()
     {
-        // Arrange
-        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.Enums.time-series-type.json");
-        var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
-
-        foreach (var validDeltaValue in validDeltaValues)
-        {
-            // Act
-            var actual = MeteringPointTypeMapper.FromDeltaTableValue(validDeltaValue);
-
-            // Assert it's a defined enum value (and not null)
-            actual.Should().BeDefined();
-        }
+        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.Contracts.Enums.metering-point-type.json");
+        await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<MeteringPointType>(stream);
     }
 
     [Theory]

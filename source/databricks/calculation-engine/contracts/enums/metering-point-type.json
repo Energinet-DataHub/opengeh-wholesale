@@ -2,63 +2,63 @@
   "literals": [
     {
       "name": "PRODUCTION",
-      "value": "E18"
+      "value": "production"
     },
     {
       "name": "CONSUMPTION",
-      "value": "E17"
+      "value": "consumption"
     },
     {
       "name": "EXCHANGE",
-      "value": "E20"
+      "value": "exchange"
     },
     {
       "name": "VE_PRODUCTION",
-      "value": "D01"
+      "value": "ve_production"
     },
     {
       "name": "NET_PRODUCTION",
-      "value": "D05"
+      "value": "net_production"
     },
     {
       "name": "SUPPLY_TO_GRID",
-      "value": "D06"
+      "value": "supply_to_grid"
     },
     {
       "name": "CONSUMPTION_FROM_GRID",
-      "value": "D07"
+      "value": "consumption_from_grid"
     },
     {
       "name": "WHOLESALE_SERVICES_INFORMATION",
-      "value": "D08"
+      "value": "wholesale_services_information"
     },
     {
       "name": "OWN_PRODUCTION",
-      "value": "D09"
+      "value": "own_production"
     },
     {
       "name": "NET_FROM_GRID",
-      "value": "D10"
+      "value": "net_from_grid"
     },
     {
       "name": "NET_TO_GRID",
-      "value": "D11"
+      "value": "net_to_grid"
     },
     {
       "name": "TOTAL_CONSUMPTION",
-      "value": "D12"
+      "value": "total_consumption"
     },
     {
       "name": "ELECTRICAL_HEATING",
-      "value": "D14"
+      "value": "electrical_heating"
     },
     {
       "name": "NET_CONSUMPTION",
-      "value": "D15"
+      "value": "net_consumption"
     },
     {
       "name": "EFFECT_SETTLEMENT",
-      "value": "D19"
+      "value": "effect_settlement"
     }
   ]
 }

@@ -19,7 +19,7 @@ import pyspark.sql.functions as f
 from pyspark.sql.window import Window
 
 from package.codelists import (
-    MeteringPointType,
+    InputMeteringPointType,
     ProcessType,
 )
 from package.constants import Colname, WholesaleResultColumnNames

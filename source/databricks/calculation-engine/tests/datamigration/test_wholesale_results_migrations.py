@@ -137,7 +137,7 @@ actor_eic = "1234567890123456"
         (WholesaleResultColumnNames.time, datetime(2020, 1, 1, 0, 0)),
         (WholesaleResultColumnNames.resolution, "P1D"),
         (WholesaleResultColumnNames.metering_point_type, None),
-        (WholesaleResultColumnNames.metering_point_type, "child"),
+        (WholesaleResultColumnNames.metering_point_type, "consumption"),
         (WholesaleResultColumnNames.settlement_method, None),
         (WholesaleResultColumnNames.settlement_method, "flex"),
         (WholesaleResultColumnNames.price, None),

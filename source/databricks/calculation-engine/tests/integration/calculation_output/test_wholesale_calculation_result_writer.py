@@ -25,6 +25,7 @@ from package.codelists import (
     ChargeResolution,
     ChargeType,
     ChargeUnit,
+    InputMeteringPointType,
     MeteringPointType,
     ProcessType,
     SettlementMethod,
@@ -46,7 +47,7 @@ DEFAULT_BATCH_EXECUTION_START = datetime(2022, 6, 10, 13, 15)
 DEFAULT_ENERGY_SUPPLIER_ID = "9876543210123"
 DEFAULT_GRID_AREA = "543"
 DEFAULT_CHARGE_TIME = datetime(2022, 6, 10, 13, 30)
-DEFAULT_METERING_POINT_TYPE = MeteringPointType.ELECTRICAL_HEATING
+DEFAULT_METERING_POINT_TYPE = InputMeteringPointType.ELECTRICAL_HEATING
 DEFAULT_SETTLEMENT_METHOD = SettlementMethod.FLEX
 DEFAULT_CHARGE_KEY = "40000-tariff-5790001330552"
 DEFAULT_CHARGE_ID = "4000"
@@ -66,7 +67,7 @@ def _create_result_row(
     energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
     grid_area: str = DEFAULT_GRID_AREA,
     charge_time: datetime = DEFAULT_CHARGE_TIME,
-    metering_point_type: MeteringPointType = DEFAULT_METERING_POINT_TYPE,
+    metering_point_type: InputMeteringPointType = DEFAULT_METERING_POINT_TYPE,
     settlement_method: SettlementMethod = DEFAULT_SETTLEMENT_METHOD,
     charge_key: str = DEFAULT_CHARGE_KEY,
     charge_id: str = DEFAULT_CHARGE_ID,
@@ -245,24 +246,24 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
 
 # Exchange metering points are not used in wholesale calculations
 @pytest.mark.parametrize("metering_point_type,expected", [
-    [MeteringPointType.CONSUMPTION, "consumption"],
-    [MeteringPointType.PRODUCTION, "production"],
-    [MeteringPointType.VE_PRODUCTION, "ve_production"],
-    [MeteringPointType.NET_PRODUCTION, "net_production"],
-    [MeteringPointType.SUPPLY_TO_GRID, "supply_to_grid"],
-    [MeteringPointType.CONSUMPTION_FROM_GRID, "consumption_from_grid"],
-    [MeteringPointType.WHOLESALE_SERVICES_INFORMATION, "wholesale_services_information"],
-    [MeteringPointType.OWN_PRODUCTION, "own_production"],
-    [MeteringPointType.NET_FROM_GRID, "net_from_grid"],
-    [MeteringPointType.NET_TO_GRID, "net_to_grid"],
-    [MeteringPointType.TOTAL_CONSUMPTION, "total_consumption"],
-    [MeteringPointType.ELECTRICAL_HEATING, "electrical_heating"],
-    [MeteringPointType.NET_CONSUMPTION, "net_consumption"],
-    [MeteringPointType.EFFECT_SETTLEMENT, "effect_settlement"],
+    [InputMeteringPointType.CONSUMPTION, MeteringPointType.CONSUMPTION],
+    [InputMeteringPointType.PRODUCTION, MeteringPointType.PRODUCTION],
+    [InputMeteringPointType.VE_PRODUCTION, MeteringPointType.VE_PRODUCTION],
+    [InputMeteringPointType.NET_PRODUCTION, MeteringPointType.NET_PRODUCTION],
+    [InputMeteringPointType.SUPPLY_TO_GRID, MeteringPointType.SUPPLY_TO_GRID],
+    [InputMeteringPointType.CONSUMPTION_FROM_GRID, MeteringPointType.CONSUMPTION_FROM_GRID],
+    [InputMeteringPointType.WHOLESALE_SERVICES_INFORMATION, MeteringPointType.WHOLESALE_SERVICES_INFORMATION],
+    [InputMeteringPointType.OWN_PRODUCTION, MeteringPointType.OWN_PRODUCTION],
+    [InputMeteringPointType.NET_FROM_GRID, MeteringPointType.NET_FROM_GRID],
+    [InputMeteringPointType.NET_TO_GRID, MeteringPointType.NET_TO_GRID],
+    [InputMeteringPointType.TOTAL_CONSUMPTION, MeteringPointType.TOTAL_CONSUMPTION],
+    [InputMeteringPointType.ELECTRICAL_HEATING, MeteringPointType.ELECTRICAL_HEATING],
+    [InputMeteringPointType.NET_CONSUMPTION, MeteringPointType.NET_CONSUMPTION],
+    [InputMeteringPointType.EFFECT_SETTLEMENT, MeteringPointType.EFFECT_SETTLEMENT],
 ])
 def test___fix_metering_point_type(
         spark: SparkSession,
-        metering_point_type: MeteringPointType,
+        metering_point_type: InputMeteringPointType,
         expected: str) -> None:
     # Arrange
     row = _create_result_row(metering_point_type=metering_point_type)

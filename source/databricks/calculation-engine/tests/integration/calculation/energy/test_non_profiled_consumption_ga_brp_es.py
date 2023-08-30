@@ -19,7 +19,7 @@ from package.calculation.energy.aggregators import (
     _aggregate_per_ga_and_brp_and_es,
 )
 from package.codelists import (
-    MeteringPointType,
+    InputMeteringPointType,
     SettlementMethod,
     TimeSeriesQuality,
 )
@@ -31,8 +31,8 @@ import pytest
 import pandas as pd
 from pandas.core.frame import DataFrame as PandasDataFrame
 
-e_17 = MeteringPointType.CONSUMPTION.value
-e_18 = MeteringPointType.PRODUCTION.value
+e_17 = InputMeteringPointType.CONSUMPTION.value
+e_18 = InputMeteringPointType.PRODUCTION.value
 e_02 = SettlementMethod.NON_PROFILED.value
 
 # Default time series data point values
@@ -221,7 +221,7 @@ def test_consumption_test_filter_by_domain_is_pressent(
     df = time_series_row_factory()
     aggregated_df = _aggregate_per_ga_and_brp_and_es(
         df,
-        MeteringPointType.CONSUMPTION,
+        InputMeteringPointType.CONSUMPTION,
         SettlementMethod.NON_PROFILED,
     )
     assert aggregated_df.count() == 1
@@ -233,7 +233,7 @@ def test_consumption_test_filter_by_domain_is_not_pressent(
     df = time_series_row_factory()
     aggregated_df = _aggregate_per_ga_and_brp_and_es(
         df,
-        MeteringPointType.CONSUMPTION,
+        InputMeteringPointType.CONSUMPTION,
         SettlementMethod.FLEX,
     )
     assert aggregated_df.count() == 0

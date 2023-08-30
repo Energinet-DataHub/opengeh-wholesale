@@ -18,6 +18,7 @@ from .charge_quality import ChargeQuality
 from .charge_resolution import ChargeResolution
 from .charge_type import ChargeType
 from .charge_unit import ChargeUnit
+from .input_metering_point_type import InputMeteringPointType
 from .metering_point_resolution import MeteringPointResolution
 from .metering_point_type import MeteringPointType
 from .process_type import ProcessType
