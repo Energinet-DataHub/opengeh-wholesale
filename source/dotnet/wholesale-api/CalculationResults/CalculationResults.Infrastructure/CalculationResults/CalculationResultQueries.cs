@@ -75,11 +75,6 @@ public class CalculationResultQueries : ICalculationResultQueries
         _logger.LogDebug("Fetched all {ResultCount} results for batch {BatchId}", resultCount, batchId);
     }
 
-    public IAsyncEnumerable<CalculationResult> GetAsync(Instant fromPeriod, Instant toPeriod, TimeSeriesType timeSeriesType)
-    {
-        throw new NotImplementedException();
-    }
-
     private string CreateBatchResultsSql(Guid batchId)
     {
         return $@"
