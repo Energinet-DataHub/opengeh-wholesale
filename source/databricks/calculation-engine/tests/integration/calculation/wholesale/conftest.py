@@ -93,7 +93,7 @@ def calculate_fee_charge_price_factory(spark: SparkSession) -> Callable[..., Dat
         total_daily_charge_price: Decimal,
         charge_key: str = DataframeDefaults.default_charge_key,
         charge_id: str = DataframeDefaults.default_charge_id,
-        charge_type: str = ChargeType.FEE,
+        charge_type: str = ChargeType.FEE.value,
         charge_owner: str = DataframeDefaults.default_charge_owner,
         charge_price: Decimal = DataframeDefaults.default_charge_price,
         metering_point_type: str = DataframeDefaults.default_metering_point_type,

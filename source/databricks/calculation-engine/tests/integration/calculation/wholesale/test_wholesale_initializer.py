@@ -196,7 +196,7 @@ charges_dataset = [
     ],
 )
 def test__get_charges_based_on_charge_type__filters_on_one_charge_type(
-    spark: SparkSession, charges: DataFrame, charge_type: str, expected: int
+    spark: SparkSession, charges: DataFrame, charge_type: ChargeType, expected: int
 ) -> None:
     # Arrange
     charges = spark.createDataFrame(charges, schema=charges_schema)
