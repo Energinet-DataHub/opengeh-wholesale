@@ -15,10 +15,6 @@ locals {
       role         = "billingagent"
       display_name = "Billing Agent"
     }
-    eloverblik = {
-      role         = "eloverblik"
-      display_name = "El Overblik"
-    }
     energysupplier = {
       role         = "energysupplier"
       display_name = "Energy Supplier"
