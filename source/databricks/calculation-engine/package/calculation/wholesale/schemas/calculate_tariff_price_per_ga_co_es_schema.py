@@ -35,7 +35,7 @@ calculate_tariff_price_per_ga_co_es_schema = StructType(
         StructField(Colname.charge_type, StringType(), False),
         StructField(Colname.charge_owner, StringType(), False),
         StructField(Colname.charge_tax, StringType(), False),
-        StructField(Colname.resolution, StringType(), False),
+        StructField(Colname.charge_resolution, StringType(), False),
         StructField(Colname.charge_price, DecimalType(18, 8), False),
         StructField(Colname.total_quantity, DecimalType(18, 8), False),
         StructField(Colname.charge_count, IntegerType(), False),
