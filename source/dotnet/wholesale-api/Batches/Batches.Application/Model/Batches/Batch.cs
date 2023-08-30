@@ -58,7 +58,7 @@ public class Batch
     /// <param name="dateTimeZone"></param>
     /// <param name="validationErrors"></param>
     /// <returns>If the parameters are valid for a Batch</returns>
-    public static bool IsValid(
+    private static bool IsValid(
         IEnumerable<GridAreaCode> gridAreaCodes,
         ProcessType processType,
         Instant periodStart,
@@ -74,11 +74,14 @@ public class Batch
         if (periodStart >= periodEnd)
             errors.Add("periodStart is greater or equal to periodEnd");
 
+        var periodStartInTimeZone = new ZonedDateTime(periodStart, dateTimeZone);
+        var periodEndInTimeZone = new ZonedDateTime(periodEnd, dateTimeZone);
+
         // Validate that period end is set to midnight
-        if (new ZonedDateTime(periodEnd, dateTimeZone).TimeOfDay != LocalTime.Midnight)
+        if (periodEndInTimeZone.TimeOfDay != LocalTime.Midnight)
             errors.Add($"The period end '{periodEnd.ToString()}' must be midnight.");
 
-        if (new ZonedDateTime(periodStart, dateTimeZone).TimeOfDay != LocalTime.Midnight)
+        if (periodStartInTimeZone.TimeOfDay != LocalTime.Midnight)
             errors.Add($"The period start '{periodStart.ToString()}' must be midnight.");
 
         if (processType is ProcessType.WholesaleFixing
@@ -86,7 +89,7 @@ public class Batch
             or ProcessType.SecondCorrectionSettlement
             or ProcessType.ThirdCorrectionSettlement)
         {
-            if (!IsEntireMonth(periodStart, periodEnd))
+            if (!IsEntireMonth(periodStartInTimeZone, periodEndInTimeZone))
             {
                 errors.Add($"The period (start: {periodStart} end: {periodEnd}) has to be an entire month when using process type {processType}.");
             }
@@ -96,23 +99,18 @@ public class Batch
         return !errors.Any();
     }
 
-    private static bool IsEntireMonth(Instant periodStart, Instant periodEnd)
+    private static bool IsEntireMonth(ZonedDateTime periodStart, ZonedDateTime periodEnd)
     {
-        var periodStartDateTime = periodStart.InUtc().ToDateTimeUtc();
-        var periodEndDateTime = periodEnd.InUtc().ToDateTimeUtc();
-
-        // Check if periodStart is the last day of a month
-        if (periodStartDateTime.Day != DateTime.DaysInMonth(periodStartDateTime.Year, periodStartDateTime.Month))
-        {
+        // Validate that period start is first day of the month
+        if (periodStart.Day != 1)
             return false;
-        }
 
-        // Check if periodEnd is the last day of the next month
-        if (periodEndDateTime.Day != DateTime.DaysInMonth(periodEndDateTime.Year, periodEndDateTime.Month) ||
-            periodEndDateTime.AddMonths(-1).Day != DateTime.DaysInMonth(periodStartDateTime.Year, periodStartDateTime.Month))
-        {
+        var daysInMonth = DateTime.DaysInMonth(periodStart.Year, periodStart.Month);
+        var expectedEndDate = periodStart.Plus(Duration.FromDays(daysInMonth));
+
+        // Validate that period end is last day of the month
+        if (periodEnd != expectedEndDate)
             return false;
-        }
 
         return true;
     }
