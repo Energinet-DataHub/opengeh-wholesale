@@ -115,7 +115,7 @@ class WholesaleCalculationResultWriter:
             col(Colname.unit).alias(WholesaleResultColumnNames.quantity_unit),
             col(Colname.quality).alias(WholesaleResultColumnNames.quantity_quality),
             col(Colname.charge_time).alias(WholesaleResultColumnNames.time),
-            col(Colname.resolution).alias(WholesaleResultColumnNames.resolution),
+            col(Colname.charge_resolution).alias(WholesaleResultColumnNames.resolution),
             col(Colname.metering_point_type).alias(WholesaleResultColumnNames.metering_point_type),
             col(Colname.settlement_method).alias(WholesaleResultColumnNames.settlement_method),
             col(Colname.charge_price).alias(WholesaleResultColumnNames.price),
@@ -130,7 +130,7 @@ class WholesaleCalculationResultWriter:
     def _get_column_group_for_calculation_result_id() -> list[str]:
         return [
             Colname.batch_id,
-            Colname.resolution,
+            Colname.charge_resolution,
             Colname.charge_type,
             Colname.grid_area,
             Colname.charge_owner,
