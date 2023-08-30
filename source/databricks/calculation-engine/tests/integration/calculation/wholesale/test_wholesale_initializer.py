@@ -51,7 +51,7 @@ charges_dataset = [
     (
         "001-D01-001",
         "001",
-        ChargeType.TARIFF,
+        ChargeType.TARIFF.value,
         "001",
         ChargeResolution.DAY.value,
         "No",
@@ -62,7 +62,7 @@ charges_dataset = [
     (
         "001-D01-001",
         "001",
-        ChargeType.TARIFF,
+        ChargeType.TARIFF.value,
         "001",
         ChargeResolution.DAY.value,
         "No",
@@ -73,7 +73,7 @@ charges_dataset = [
     (
         "001-D01-001",
         "001",
-        ChargeType.TARIFF,
+        ChargeType.TARIFF.value,
         "001",
         ChargeResolution.HOUR.value,
         "No",
@@ -84,7 +84,7 @@ charges_dataset = [
     (
         "001-D01-001",
         "001",
-        ChargeType.TARIFF,
+        ChargeType.TARIFF.value,
         "001",
         ChargeResolution.MONTH.value,
         "No",
@@ -120,7 +120,7 @@ charges_dataset = [
     (
         "001-D01-001",
         "001",
-        ChargeType.TARIFF,
+        ChargeType.TARIFF.value,
         "001",
         ChargeResolution.DAY.value,
         "No",
@@ -131,7 +131,7 @@ charges_dataset = [
     (
         "001-D01-001",
         "001",
-        ChargeType.TARIFF,
+        ChargeType.TARIFF.value,
         "001",
         ChargeResolution.DAY.value,
         "No",
@@ -142,7 +142,7 @@ charges_dataset = [
     (
         "001-D01-001",
         "001",
-        ChargeType.SUBSCRIPTION,
+        ChargeType.SUBSCRIPTION.value,
         "001",
         ChargeResolution.DAY.value,
         "No",
@@ -153,7 +153,7 @@ charges_dataset = [
     (
         "001-D01-001",
         "001",
-        ChargeType.SUBSCRIPTION,
+        ChargeType.SUBSCRIPTION.value,
         "001",
         ChargeResolution.DAY.value,
         "No",
@@ -164,7 +164,7 @@ charges_dataset = [
     (
         "001-D01-001",
         "001",
-        ChargeType.FEE,
+        ChargeType.FEE.value,
         "001",
         ChargeResolution.DAY.value,
         "No",
@@ -175,7 +175,7 @@ charges_dataset = [
     (
         "001-D01-001",
         "001",
-        ChargeType.TARIFF,
+        ChargeType.TARIFF.value,
         "001",
         ChargeResolution.DAY.value,
         "No",
@@ -196,7 +196,7 @@ charges_dataset = [
     ],
 )
 def test__get_charges_based_on_charge_type__filters_on_one_charge_type(
-    spark: SparkSession, charges: DataFrame, charge_type: str, expected: int
+    spark: SparkSession, charges: DataFrame, charge_type: ChargeType, expected: int
 ) -> None:
     # Arrange
     charges = spark.createDataFrame(charges, schema=charges_schema)
@@ -570,8 +570,8 @@ time_series_dataset_1 = [
 @pytest.mark.parametrize(
     "time_series,resolution_duration,expected_count,expected_quantity",
     [
-        (time_series_dataset_1, ChargeResolution.DAY.value, 2, 30),
-        (time_series_dataset_1, ChargeResolution.HOUR.value, 3, 20),
+        (time_series_dataset_1, ChargeResolution.DAY, 2, 30),
+        (time_series_dataset_1, ChargeResolution.HOUR, 3, 20),
     ],
 )
 def test__group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
@@ -661,23 +661,23 @@ def default_charge_master_data(charge_master_data_factory: Callable[..., DataFra
         charge_master_data_factory(
             DEFAULT_FROM_DATE,
             DEFAULT_TO_DATE,
-            charge_type=ChargeType.TARIFF,
-            charge_resolution=ChargeResolution.HOUR,
+            charge_type=ChargeType.TARIFF.value,
+            charge_resolution=ChargeResolution.HOUR.value,
         )
         .union(
             charge_master_data_factory(
                 DEFAULT_FROM_DATE,
                 DEFAULT_TO_DATE,
-                charge_type=ChargeType.FEE,
-                charge_resolution=ChargeResolution.HOUR,
+                charge_type=ChargeType.FEE.value,
+                charge_resolution=ChargeResolution.HOUR.value,
             )
         )
         .union(
             charge_master_data_factory(
                 DEFAULT_FROM_DATE,
                 DEFAULT_TO_DATE,
-                charge_type=ChargeType.SUBSCRIPTION,
-                charge_resolution=ChargeResolution.HOUR,
+                charge_type=ChargeType.SUBSCRIPTION.value,
+                charge_resolution=ChargeResolution.HOUR.value,
             )
         )
     )
@@ -704,8 +704,8 @@ def test__get_tariff_charges__when_no_charge_data_match_the_resolution__returns_
     charge_master_data = charge_master_data_factory(
         DEFAULT_FROM_DATE,
         DEFAULT_TO_DATE,
-        charge_type=ChargeType.TARIFF,
-        charge_resolution=ChargeResolution.DAY,
+        charge_type=ChargeType.TARIFF.value,
+        charge_resolution=ChargeResolution.DAY.value,
     )
 
     # Act
@@ -778,16 +778,16 @@ def _create_overlapping_hour_tariffs(
             DEFAULT_FROM_DATE,
             DEFAULT_TO_DATE,
             charge_key=charge_key_1,
-            charge_type=ChargeType.TARIFF,
-            charge_resolution=ChargeResolution.HOUR,
+            charge_type=ChargeType.TARIFF.value,
+            charge_resolution=ChargeResolution.HOUR.value,
         )
         .union(
             charge_master_data_factory(
                 DEFAULT_FROM_DATE,
                 DEFAULT_TO_DATE,
                 charge_key=charge_key_2,
-                charge_type=ChargeType.TARIFF,
-                charge_resolution=ChargeResolution.HOUR,
+                charge_type=ChargeType.TARIFF.value,
+                charge_resolution=ChargeResolution.HOUR.value,
             )
         )
     )
