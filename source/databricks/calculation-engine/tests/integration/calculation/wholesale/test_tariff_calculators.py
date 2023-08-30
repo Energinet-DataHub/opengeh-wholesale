@@ -20,9 +20,9 @@ from tests.helpers.test_schemas import (
 )
 from package.codelists import ChargeType
 from package.calculation.wholesale.tariff_calculators import (
+    sum_quantity_and_count_charges,
     select_distinct_tariffs,
     join_with_agg_df,
-    calculate_tariff_price_per_ga_co_es,
 )
 import pytest
 import pandas as pd
@@ -85,14 +85,14 @@ tariffs_dataset = [
     "tariffs,expected_charge_count,expected_quantity",
     [(tariffs_dataset, 2, Decimal("2.002"))],
 )
-def test__calculate_tariff_price_per_ga_co_es__counts_quantity_and_sums_up_amount_of_charges(
+def test__sum_quantity_and_count_charges__counts_quantity_and_sums_up_amount_of_charges(
     spark, tariffs, expected_charge_count, expected_quantity
 ):
     # Arrange
     tariffs = spark.createDataFrame(tariffs, schema=tariff_schema)
 
     # Act
-    result = calculate_tariff_price_per_ga_co_es(tariffs)
+    result = sum_quantity_and_count_charges(tariffs)
 
     # Assert
     result_collect = result.collect()
@@ -184,6 +184,3 @@ def test__join_with_agg_df__gets_the_expected_total_amount(
 
     # Assert
     assert result.collect()[0][Colname.total_amount] == expected_total_amount
-
-
-
