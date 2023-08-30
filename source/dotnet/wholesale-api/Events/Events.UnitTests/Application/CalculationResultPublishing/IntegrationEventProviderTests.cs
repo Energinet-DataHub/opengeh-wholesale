@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Reflection;
 using AutoFixture.Xunit2;
+using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Internal;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
@@ -195,6 +197,22 @@ public class IntegrationEventProviderTests
 
         // Assert
         actual.Should().BeEquivalentTo(new[] { integrationEvent1, integrationEvent2, integrationEvent3, integrationEvent4 });
+    }
+
+    [Fact]
+    public void AProvider_MustImplement_IIntegrationEventProvider()
+    {
+        // Arrange
+        var assembly = Assembly.GetAssembly(typeof(Energinet.DataHub.Wholesale.Events.Application.Root));
+        var interfaceType = typeof(IIntegrationEventProvider);
+
+        // Act
+        var actualImplementations = assembly!.GetTypes()
+            .Where(type => interfaceType.IsAssignableFrom(type) && !type.IsInterface)
+            .ToList();
+
+        // Assert
+        Assert.True(actualImplementations.Count == 1, "The interface IIntegrationEventProvider must be implemented.");
     }
 
     private async IAsyncEnumerable<T> AsAsyncEnumerable<T>(params T[] items)
