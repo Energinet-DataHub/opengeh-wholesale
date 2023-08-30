@@ -138,7 +138,7 @@ def test__write__writes_aggregation_level(
 
     # Assert
     actual_df = spark.read.table(TABLE_NAME).where(
-        col(EnergyResultColumnNames.batch_id) == batch_id
+        col(EnergyResultColumnNames.calculation_id) == batch_id
     )
     assert actual_df.collect()[0]["aggregation_level"] == aggregation_level.value
 
@@ -150,9 +150,9 @@ batch_id = "some batch id"  # Needed in both test param and test implementation
 @pytest.mark.parametrize(
     "column_name, column_value",
     [
-        (EnergyResultColumnNames.batch_id, batch_id),
-        (EnergyResultColumnNames.batch_execution_time_start, DEFAULT_BATCH_EXECUTION_START),
-        (EnergyResultColumnNames.batch_process_type, DEFAULT_PROCESS_TYPE.value),
+        (EnergyResultColumnNames.calculation_id, batch_id),
+        (EnergyResultColumnNames.calculation_execution_time_start, DEFAULT_BATCH_EXECUTION_START),
+        (EnergyResultColumnNames.calculation_type, DEFAULT_PROCESS_TYPE.value),
         (EnergyResultColumnNames.time_series_type, DEFAULT_TIME_SERIES_TYPE.value),
         (EnergyResultColumnNames.grid_area, DEFAULT_GRID_AREA),
         (EnergyResultColumnNames.from_grid_area, DEFAULT_FROM_GRID_AREA),
@@ -188,7 +188,7 @@ def test__write__writes_column(
 
     # Assert
     actual_df = spark.read.table(TABLE_NAME).where(
-        col(EnergyResultColumnNames.batch_id) == batch_id
+        col(EnergyResultColumnNames.calculation_id) == batch_id
     )
     assert actual_df.collect()[0][column_name] == column_value
 
@@ -217,7 +217,7 @@ def test__write__writes_columns_matching_contract(
 
     # Assert
     actual_df = spark.read.table(TABLE_NAME).where(
-        col(EnergyResultColumnNames.batch_id) == batch_id
+        col(EnergyResultColumnNames.calculation_id) == batch_id
     )
 
     assert_contract_matches_schema(contract_path, actual_df.schema)
@@ -249,7 +249,8 @@ def test__write__writes_calculation_result_id(spark: SparkSession, contracts_pat
 
 def test__get_column_group_for_calculation_result_id__returns_expected_column_names() -> None:
     # Arrange
-    expected_column_names = [EnergyResultColumnNames.batch_id, EnergyResultColumnNames.batch_execution_time_start, EnergyResultColumnNames.batch_process_type,
+    expected_column_names = [EnergyResultColumnNames.calculation_id, EnergyResultColumnNames.calculation_execution_time_start,
+                             EnergyResultColumnNames.calculation_type,
                              EnergyResultColumnNames.grid_area, EnergyResultColumnNames.time_series_type, EnergyResultColumnNames.aggregation_level,
                              EnergyResultColumnNames.from_grid_area, EnergyResultColumnNames.balance_responsible_id, EnergyResultColumnNames.energy_supplier_id]
 
