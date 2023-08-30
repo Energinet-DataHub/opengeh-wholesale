@@ -21,7 +21,6 @@ from pyspark.sql.functions import col
 import pytest
 
 from package.codelists import (
-    ChargeMeteringPointType,
     ChargeQuality,
     ChargeResolution,
     ChargeType,
@@ -47,7 +46,7 @@ DEFAULT_BATCH_EXECUTION_START = datetime(2022, 6, 10, 13, 15)
 DEFAULT_ENERGY_SUPPLIER_ID = "9876543210123"
 DEFAULT_GRID_AREA = "543"
 DEFAULT_CHARGE_TIME = datetime(2022, 6, 10, 13, 30)
-DEFAULT_METERING_POINT_TYPE = MeteringPointType.D07
+DEFAULT_METERING_POINT_TYPE = MeteringPointType.ELECTRICAL_HEATING
 DEFAULT_SETTLEMENT_METHOD = SettlementMethod.FLEX
 DEFAULT_CHARGE_KEY = "40000-tariff-5790001330552"
 DEFAULT_CHARGE_ID = "4000"
@@ -244,27 +243,27 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
     assert set(excluded_columns) == set(expected_excluded_columns)
 
 
+# Exchange metering points are not used in wholesale calculations
 @pytest.mark.parametrize("metering_point_type,expected", [
-    [MeteringPointType.CONSUMPTION, ChargeMeteringPointType.CONSUMPTION],
-    [MeteringPointType.PRODUCTION, ChargeMeteringPointType.PRODUCTION],
-    [MeteringPointType.D01, ChargeMeteringPointType.CHILD],
-    [MeteringPointType.D05, ChargeMeteringPointType.CHILD],
-    [MeteringPointType.D05, ChargeMeteringPointType.CHILD],
-    [MeteringPointType.D06, ChargeMeteringPointType.CHILD],
-    [MeteringPointType.D07, ChargeMeteringPointType.CHILD],
-    [MeteringPointType.D08, ChargeMeteringPointType.CHILD],
-    [MeteringPointType.D09, ChargeMeteringPointType.CHILD],
-    [MeteringPointType.D10, ChargeMeteringPointType.CHILD],
-    [MeteringPointType.D11, ChargeMeteringPointType.CHILD],
-    [MeteringPointType.D12, ChargeMeteringPointType.CHILD],
-    [MeteringPointType.D14, ChargeMeteringPointType.CHILD],
-    [MeteringPointType.D15, ChargeMeteringPointType.CHILD],
-    [MeteringPointType.D19, ChargeMeteringPointType.CHILD],
+    [MeteringPointType.CONSUMPTION, "consumption"],
+    [MeteringPointType.PRODUCTION, "production"],
+    [MeteringPointType.VE_PRODUCTION, "ve_production"],
+    [MeteringPointType.NET_PRODUCTION, "net_production"],
+    [MeteringPointType.SUPPLY_TO_GRID, "supply_to_grid"],
+    [MeteringPointType.CONSUMPTION_FROM_GRID, "consumption_from_grid"],
+    [MeteringPointType.WHOLESALE_SERVICES_INFORMATION, "wholesale_services_information"],
+    [MeteringPointType.OWN_PRODUCTION, "own_production"],
+    [MeteringPointType.NET_FROM_GRID, "net_from_grid"],
+    [MeteringPointType.NET_TO_GRID, "net_to_grid"],
+    [MeteringPointType.TOTAL_CONSUMPTION, "total_consumption"],
+    [MeteringPointType.ELECTRICAL_HEATING, "electrical_heating"],
+    [MeteringPointType.NET_CONSUMPTION, "net_consumption"],
+    [MeteringPointType.EFFECT_SETTLEMENT, "effect_settlement"],
 ])
 def test___fix_metering_point_type(
         spark: SparkSession,
         metering_point_type: MeteringPointType,
-        expected: ChargeMeteringPointType) -> None:
+        expected: str) -> None:
     # Arrange
     row = _create_result_row(metering_point_type=metering_point_type)
     df = _create_result_df(spark, [row])
@@ -273,7 +272,7 @@ def test___fix_metering_point_type(
     actual = WholesaleCalculationResultWriter._fix_metering_point_type(df)
 
     # Assert
-    assert actual.collect()[0][Colname.metering_point_type] == expected.value
+    assert actual.collect()[0][Colname.metering_point_type] == expected
 
 
 @pytest.mark.parametrize("settlement_method,expected", [

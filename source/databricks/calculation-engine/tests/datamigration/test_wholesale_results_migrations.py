@@ -20,13 +20,12 @@ import pytest
 import uuid
 
 from package.codelists import (
-    ChargeMeteringPointType,
     ChargeQuality,
     ChargeResolution,
     ChargeType,
     ChargeUnit,
+    MeteringPointType,
     ProcessType,
-    SettlementMethod,
 )
 from package.constants import WholesaleResultColumnNames
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME, WHOLESALE_RESULT_TABLE_NAME
@@ -169,7 +168,6 @@ def test__migrated_table_accepts_valid_data(
     )
 
 
-# TODO BJM: Introduce the missing enums
 @pytest.mark.parametrize(
     "column_name,column_value",
     [
@@ -181,7 +179,7 @@ def test__migrated_table_accepts_valid_data(
         *[(WholesaleResultColumnNames.quantity_unit, x.value) for x in ChargeUnit],
         *[(WholesaleResultColumnNames.quantity_quality, x.value) for x in ChargeQuality],
         *[(WholesaleResultColumnNames.resolution, x.value) for x in ChargeResolution],
-        *[(WholesaleResultColumnNames.metering_point_type, x.value) for x in ChargeMeteringPointType],
+        *[(WholesaleResultColumnNames.metering_point_type, x.value) for x in MeteringPointType],
         # Update to use `SettlementMethod` when its values have been renamed
         *[(WholesaleResultColumnNames.settlement_method, x) for x in ["flex", "non_profiled"]],
         *[(WholesaleResultColumnNames.charge_type, x.value) for x in ChargeType],

@@ -13,51 +13,51 @@
       "value": "E20"
     },
     {
-      "name": "D01",
+      "name": "VE_PRODUCTION",
       "value": "D01"
     },
     {
-      "name": "D05",
+      "name": "NET_PRODUCTION",
       "value": "D05"
     },
     {
-      "name": "D06",
+      "name": "SUPPLY_TO_GRID",
       "value": "D06"
     },
     {
-      "name": "D07",
+      "name": "CONSUMPTION_FROM_GRID",
       "value": "D07"
     },
     {
-      "name": "D08",
+      "name": "WHOLESALE_SERVICES_INFORMATION",
       "value": "D08"
     },
     {
-      "name": "D09",
+      "name": "OWN_PRODUCTION",
       "value": "D09"
     },
     {
-      "name": "D10",
+      "name": "NET_FROM_GRID",
       "value": "D10"
     },
     {
-      "name": "D11",
+      "name": "NET_TO_GRID",
       "value": "D11"
     },
     {
-      "name": "D12",
+      "name": "TOTAL_CONSUMPTION",
       "value": "D12"
     },
     {
-      "name": "D14",
+      "name": "ELECTRICAL_HEATING",
       "value": "D14"
     },
     {
-      "name": "D15",
+      "name": "NET_CONSUMPTION",
       "value": "D15"
     },
     {
-      "name": "D19",
+      "name": "EFFECT_SETTLEMENT",
       "value": "D19"
     }
   ]

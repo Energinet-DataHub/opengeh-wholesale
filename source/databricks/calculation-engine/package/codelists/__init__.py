@@ -15,7 +15,6 @@
 from .aggregation_level import AggregationLevel
 from .basis_data_type import BasisDataType
 from .charge_quality import ChargeQuality
-from .charge_metering_point_type import ChargeMeteringPointType
 from .charge_resolution import ChargeResolution
 from .charge_type import ChargeType
 from .charge_unit import ChargeUnit
