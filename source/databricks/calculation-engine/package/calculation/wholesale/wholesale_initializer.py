@@ -150,7 +150,7 @@ def join_with_charge_links(df: DataFrame, charge_links: DataFrame) -> DataFrame:
         df[Colname.charge_type],
         df[Colname.charge_owner],
         df[Colname.charge_tax],
-        df[Colname.resolution],
+        df[Colname.charge_resolution],
         df[Colname.charge_time],
         df[Colname.charge_price],
         charge_links[Colname.metering_point_id],
