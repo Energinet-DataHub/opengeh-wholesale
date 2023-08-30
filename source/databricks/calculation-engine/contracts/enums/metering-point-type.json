@@ -11,6 +11,54 @@
     {
       "name": "EXCHANGE",
       "value": "E20"
+    },
+    {
+      "name": "D01",
+      "value": "D01"
+    },
+    {
+      "name": "D05",
+      "value": "D05"
+    },
+    {
+      "name": "D06",
+      "value": "D06"
+    },
+    {
+      "name": "D07",
+      "value": "D07"
+    },
+    {
+      "name": "D08",
+      "value": "D08"
+    },
+    {
+      "name": "D09",
+      "value": "D09"
+    },
+    {
+      "name": "D10",
+      "value": "D10"
+    },
+    {
+      "name": "D11",
+      "value": "D11"
+    },
+    {
+      "name": "D12",
+      "value": "D12"
+    },
+    {
+      "name": "D14",
+      "value": "D14"
+    },
+    {
+      "name": "D15",
+      "value": "D15"
+    },
+    {
+      "name": "D19",
+      "value": "D19"
     }
   ]
 }

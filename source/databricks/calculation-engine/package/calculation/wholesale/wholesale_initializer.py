@@ -87,8 +87,8 @@ def get_charges_based_on_resolution(
     return df
 
 
-def get_charges_based_on_charge_type(charge_master_data: DataFrame, charge_type: str) -> DataFrame:
-    df = charge_master_data.filter(col(Colname.charge_type) == charge_type)
+def get_charges_based_on_charge_type(charge_master_data: DataFrame, charge_type: ChargeType) -> DataFrame:
+    df = charge_master_data.filter(col(Colname.charge_type) == charge_type.value)
     return df
 
 
@@ -242,10 +242,10 @@ def __get_window_duration_string_based_on_resolution(
 ) -> str:
     window_duration_string = "1 hour"
 
-    if resolution_duration == ChargeResolution.DAY.value:
+    if resolution_duration == ChargeResolution.DAY:
         window_duration_string = "1 day"
 
-    if resolution_duration == ChargeResolution.MONTH.value:
+    if resolution_duration == ChargeResolution.MONTH:
         raise NotImplementedError("Month not yet implemented")
 
     return window_duration_string
@@ -257,7 +257,7 @@ def __join_properties_on_charges_with_given_charge_type(
     charge_prices: DataFrame,
     charge_links: DataFrame,
     metering_points: DataFrame,
-    charge_type: str,
+    charge_type: ChargeType,
 ) -> DataFrame:
     # filter on charge_type
     charge_master_data = get_charges_based_on_charge_type(charge_master_data, charge_type)

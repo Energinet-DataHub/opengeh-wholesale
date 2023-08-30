@@ -33,7 +33,7 @@ tariffs_dataset = [
     (
         "001-D01-001",
         "001",
-        ChargeType.TARIFF,
+        ChargeType.TARIFF.value,
         "001",
         "P1D",
         "No",
@@ -49,7 +49,7 @@ tariffs_dataset = [
     (
         "001-D01-001",
         "001",
-        ChargeType.TARIFF,
+        ChargeType.TARIFF.value,
         "001",
         "P1D",
         "No",
@@ -65,7 +65,7 @@ tariffs_dataset = [
     (
         "001-D01-002",
         "001",
-        ChargeType.TARIFF,
+        ChargeType.TARIFF.value,
         "001",
         "P1D",
         "No",
@@ -118,7 +118,7 @@ tariffs_distinct_dataset = [
     (
         "001-D01-001",
         "001",
-        ChargeType.TARIFF,
+        ChargeType.TARIFF.value,
         "001",
         "P1D",
         "No",
@@ -132,7 +132,7 @@ tariffs_distinct_dataset = [
     (
         "001-D01-002",
         "001",
-        ChargeType.TARIFF,
+        ChargeType.TARIFF.value,
         "001",
         "P1D",
         "No",
