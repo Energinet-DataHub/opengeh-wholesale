@@ -19,6 +19,7 @@ using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Energinet.DataHub.Wholesale.Events.Application.Triggers;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
+using Energinet.DataHub.Wholesale.Events.Application.Workers;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedBatches;
@@ -34,22 +35,20 @@ public static class EventsRegistration
         this IServiceCollection serviceCollection,
         Func<IServiceProvider, CommunicationSettings> communicationSettingsFactory)
     {
-        serviceCollection.AddHostedService<RegisterCompletedBatchesTrigger>();
-
         serviceCollection.AddScoped<ICompletedBatchRepository, CompletedBatchRepository>();
         serviceCollection.AddScoped<ICompletedBatchFactory, CompletedBatchFactory>();
         serviceCollection.AddScoped<IRegisterCompletedBatchesHandler, RegisterCompletedBatchesHandler>();
 
         serviceCollection.AddScoped<ICalculationResultIntegrationEventFactory, CalculationResultIntegrationEventFactory>();
 
+        serviceCollection.AddScoped<IAggregatedTimeSeriesRequestHandler, AggregatedTimeSeriesRequestHandler>();
+
         serviceCollection.AddApplications();
         serviceCollection.AddInfrastructure();
 
         serviceCollection.AddCommunication<IntegrationEventProvider>(communicationSettingsFactory);
 
-        serviceCollection
-            .AddHealthChecks()
-            .AddRepeatingTriggerHealthCheck<RegisterCompletedBatchesTrigger>(TimeSpan.FromMinutes(1));
+        RegisterHostedServices(serviceCollection);
     }
 
     private static void AddApplications(this IServiceCollection services)
@@ -65,5 +64,15 @@ public static class EventsRegistration
     {
         serviceCollection.AddScoped<IEventsDatabaseContext, EventsDatabaseContext>();
         serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
+    }
+
+    private static void RegisterHostedServices(IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddHostedService<AggregatedTimeSeriesRequestTrigger>();
+        serviceCollection.AddHostedService<RegisterCompletedBatchesTrigger>();
+        serviceCollection
+            .AddHealthChecks()
+            .AddRepeatingTriggerHealthCheck<AggregatedTimeSeriesRequestTrigger>(TimeSpan.FromMinutes(1))
+            .AddRepeatingTriggerHealthCheck<RegisterCompletedBatchesTrigger>(TimeSpan.FromMinutes(1));
     }
 }
