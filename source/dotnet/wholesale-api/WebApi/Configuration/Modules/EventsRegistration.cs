@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Core.Messaging.Communication;
@@ -23,6 +24,7 @@ using Energinet.DataHub.Wholesale.Events.Application.Workers;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedBatches;
+using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
 
@@ -33,7 +35,7 @@ public static class EventsRegistration
 {
     public static void AddEventsModule(
         this IServiceCollection serviceCollection,
-        Func<IServiceProvider, CommunicationSettings> communicationSettingsFactory)
+        ServiceBusOptions serviceBusOptions)
     {
         serviceCollection.AddScoped<ICompletedBatchRepository, CompletedBatchRepository>();
         serviceCollection.AddScoped<ICompletedBatchFactory, CompletedBatchFactory>();
@@ -46,9 +48,14 @@ public static class EventsRegistration
         serviceCollection.AddApplications();
         serviceCollection.AddInfrastructure();
 
-        serviceCollection.AddCommunication<IntegrationEventProvider>(communicationSettingsFactory);
+        serviceCollection.AddCommunication<IntegrationEventProvider>(_ => new CommunicationSettings
+        {
+            ServiceBusIntegrationEventWriteConnectionString =
+                serviceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING,
+            IntegrationEventTopicName = serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
+        });
 
-        RegisterHostedServices(serviceCollection);
+        RegisterHostedServices(serviceCollection, serviceBusOptions);
     }
 
     private static void AddApplications(this IServiceCollection services)
@@ -66,9 +73,16 @@ public static class EventsRegistration
         serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
     }
 
-    private static void RegisterHostedServices(IServiceCollection serviceCollection)
+    private static void RegisterHostedServices(IServiceCollection serviceCollection, ServiceBusOptions serviceBusOptions)
     {
-        serviceCollection.AddHostedService<AggregatedTimeSeriesServiceBusWorker>();
+        var sb = new ServiceBusClient(serviceBusOptions.SERVICE_BUS_LISTEN_CONNECTION_STRING);
+        var inboxProcessor = sb.CreateProcessor("sbq-wholesale-inbox");
+        serviceCollection.AddHostedService<AggregatedTimeSeriesServiceBusWorker>(
+            provider =>
+                new AggregatedTimeSeriesServiceBusWorker(
+                    provider.GetRequiredService<IAggregatedTimeSeriesRequestHandler>(),
+                    inboxProcessor,
+                    provider.GetRequiredService<ILogger<AggregatedTimeSeriesRequestHandler>>()));
         serviceCollection.AddHostedService<RegisterCompletedBatchesTrigger>();
         serviceCollection
             .AddHealthChecks()

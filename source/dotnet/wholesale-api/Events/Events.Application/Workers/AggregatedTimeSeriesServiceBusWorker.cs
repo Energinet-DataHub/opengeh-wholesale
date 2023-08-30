@@ -25,17 +25,17 @@ namespace Energinet.DataHub.Wholesale.Events.Application.Workers;
 public class AggregatedTimeSeriesServiceBusWorker : BackgroundService, IAsyncDisposable
 {
     private readonly IAggregatedTimeSeriesRequestHandler _aggregatedTimeSeriesRequestHandler;
+    private readonly ServiceBusProcessor _serviceBusProcessor;
     private readonly ILogger<AggregatedTimeSeriesRequestHandler> _logger;
-    private readonly ServiceBusClient _serviceBusClient;
-    private ServiceBusProcessor? _serviceBusProcessor;
 
     public AggregatedTimeSeriesServiceBusWorker(
         IAggregatedTimeSeriesRequestHandler aggregatedTimeSeriesRequestHandler,
+        ServiceBusProcessor serviceBusProcessor,
         ILogger<AggregatedTimeSeriesRequestHandler> logger)
     {
         _aggregatedTimeSeriesRequestHandler = aggregatedTimeSeriesRequestHandler;
+        _serviceBusProcessor = serviceBusProcessor;
         _logger = logger;
-        _serviceBusClient = new ServiceBusClient("ConnectionString");
     }
 
     public override async Task StopAsync(CancellationToken cancellationToken)
@@ -49,14 +49,12 @@ public class AggregatedTimeSeriesServiceBusWorker : BackgroundService, IAsyncDis
 
     public async ValueTask DisposeAsync()
     {
-        await _serviceBusClient.DisposeAsync().ConfigureAwait(false);
         if (_serviceBusProcessor != null) await _serviceBusProcessor.DisposeAsync().ConfigureAwait(false);
         GC.SuppressFinalize(this);
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _serviceBusProcessor = _serviceBusClient.CreateProcessor("Queue");
         _serviceBusProcessor.ProcessMessageAsync += ProcessMessageAsync;
         _serviceBusProcessor.ProcessErrorAsync += ProcessErrorAsync;
 
