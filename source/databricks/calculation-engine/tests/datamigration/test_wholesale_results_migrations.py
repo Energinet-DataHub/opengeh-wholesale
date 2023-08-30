@@ -19,7 +19,15 @@ from pyspark.sql.functions import lit, col
 import pytest
 import uuid
 
-from package.codelists import ChargeResolution
+from package.codelists import (
+    ChargeMeteringPointType,
+    ChargeQuality,
+    ChargeResolution,
+    ChargeType,
+    ChargeUnit,
+    ProcessType,
+    SettlementMethod,
+)
 from package.constants import WholesaleResultColumnNames
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME, WHOLESALE_RESULT_TABLE_NAME
 from package.calculation_output.schemas import wholesale_results_schema
@@ -165,13 +173,18 @@ def test__migrated_table_accepts_valid_data(
 @pytest.mark.parametrize(
     "column_name,column_value",
     [
-        *[(WholesaleResultColumnNames.calculation_type, x) for x in ["WholesaleFixing", "FirstCorrectionSettlement", "SecondCorrectionSettlement", "ThirdCorrectionSettlement"]],
-        *[(WholesaleResultColumnNames.quantity_unit, x) for x in ["kWh", "pcs"]],
-        *[(WholesaleResultColumnNames.quantity_quality, x) for x in ["missing", "calculated", "incomplete"]],
+        *[(WholesaleResultColumnNames.calculation_type, x) for x in [
+            ProcessType.WHOLESALE_FIXING.value,
+            ProcessType.FIRST_CORRECTION_SETTLEMENT.value,
+            ProcessType.SECOND_CORRECTION_SETTLEMENT.value,
+            ProcessType.THIRD_CORRECTION_SETTLEMENT.value]],
+        *[(WholesaleResultColumnNames.quantity_unit, x.value) for x in ChargeUnit],
+        *[(WholesaleResultColumnNames.quantity_quality, x.value) for x in ChargeQuality],
         *[(WholesaleResultColumnNames.resolution, x.value) for x in ChargeResolution],
-        *[(WholesaleResultColumnNames.metering_point_type, x) for x in ["production", "consumption", "child"]],
-        *[(WholesaleResultColumnNames.settlement_method, x) for x in ["non_profiled", "flex"]],
-        *[(WholesaleResultColumnNames.charge_type, x) for x in ["subscription", "fee", "tariff"]],
+        *[(WholesaleResultColumnNames.metering_point_type, x.value) for x in ChargeMeteringPointType],
+        # Update to use `SettlementMethod` when its values have been renamed
+        *[(WholesaleResultColumnNames.settlement_method, x) for x in ["flex", "non_profiled"]],
+        *[(WholesaleResultColumnNames.charge_type, x.value) for x in ChargeType],
     ],
 )
 def test__migrated_table_accepts_enum_value(
