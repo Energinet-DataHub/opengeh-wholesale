@@ -16,7 +16,7 @@ from enum import Enum
 import pytest
 from package.codelists import (
     AggregationLevel,
-    InputMeteringPointType,
+    MeteringPointType,
     ProcessType,
     TimeSeriesQuality,
     TimeSeriesType,
@@ -29,7 +29,7 @@ from tests.contract_utils import assert_codelist_matches_contract
     "contract_file,code_list",
     [
         ("aggregation-level.json", AggregationLevel),
-        ("metering-point-type.json", InputMeteringPointType),
+        ("metering-point-type.json", MeteringPointType),
         ("process-type.json", ProcessType),
         ("quantity-quality.json", TimeSeriesQuality),
         ("time-series-type.json", TimeSeriesType),
