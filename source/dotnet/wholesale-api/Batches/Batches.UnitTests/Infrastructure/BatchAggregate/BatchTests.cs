@@ -21,6 +21,7 @@ using FluentAssertions;
 using Moq;
 using NodaTime;
 using NodaTime.Extensions;
+using Test.Core.AcceptanceTest;
 using Xunit;
 using Xunit.Categories;
 
@@ -59,6 +60,52 @@ public class BatchTests
             DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
             Guid.NewGuid()));
         actual.Message.Should().Contain("Batch must contain at least one grid area code");
+    }
+
+    [Theory]
+    [InlineAutoMoqData(ProcessType.WholesaleFixing)]
+    [InlineAutoMoqData(ProcessType.FirstCorrectionSettlement)]
+    [InlineAutoMoqData(ProcessType.SecondCorrectionSettlement)]
+    [InlineAutoMoqData(ProcessType.ThirdCorrectionSettlement)]
+    [Trait(Traits.AcceptanceTest, "488")]
+    public void Ctor_WhenWholesaleAndCorrectionProcessTypesAndPeriodIsMoreThanAMonth_ThrowsBusinessValidationException(ProcessType processType)
+    {
+        // Arrange & Act
+        var actual = Assert.Throws<BusinessValidationException>(() => new BatchBuilder()
+            .WithProcessType(processType)
+            .WithPeriodEnd(Instant.FromDateTimeOffset(BatchBuilder.FirstOfJanuary2022.AddDays(32)))
+            .Build());
+
+        // Assert
+        actual.Message.Should().Contain($"The period (start: 2021-12-31T23:00:00Z end: 2022-02-01T23:00:00Z) has to be an entire month when using process type {processType}");
+    }
+
+    [Theory]
+    [InlineAutoMoqData(ProcessType.WholesaleFixing, 30, false)]
+    [InlineAutoMoqData(ProcessType.WholesaleFixing, 31, true)]
+    [InlineAutoMoqData(ProcessType.WholesaleFixing, 32, false)]
+    [InlineAutoMoqData(ProcessType.FirstCorrectionSettlement, 30, false)]
+    [InlineAutoMoqData(ProcessType.FirstCorrectionSettlement, 31, true)]
+    [InlineAutoMoqData(ProcessType.FirstCorrectionSettlement, 32, false)]
+    [InlineAutoMoqData(ProcessType.SecondCorrectionSettlement, 30, false)]
+    [InlineAutoMoqData(ProcessType.SecondCorrectionSettlement, 31, true)]
+    [InlineAutoMoqData(ProcessType.SecondCorrectionSettlement, 32, false)]
+    [InlineAutoMoqData(ProcessType.ThirdCorrectionSettlement, 30, false)]
+    [InlineAutoMoqData(ProcessType.ThirdCorrectionSettlement, 31, true)]
+    [InlineAutoMoqData(ProcessType.ThirdCorrectionSettlement, 32, false)]
+    [InlineAutoMoqData(ProcessType.BalanceFixing, 30, true)]
+    [InlineAutoMoqData(ProcessType.Aggregation, 30, true)]
+    [Trait(Traits.AcceptanceTest, "488")]
+    public void Ctor_PeriodsCombinedWithProcessTypes_AreValidOrInvalid(ProcessType processType, int days, bool isValid)
+    {
+        // Arrange & Act
+        var actual = Record.Exception(() => new BatchBuilder()
+            .WithProcessType(processType)
+            .WithPeriodEnd(Instant.FromDateTimeOffset(BatchBuilder.FirstOfJanuary2022.AddDays(days)))
+            .Build());
+
+        // Assert
+        Assert.Equal(isValid, actual == null);
     }
 
     [Theory]
