@@ -56,7 +56,6 @@ public class AggregatedTimeSeriesServiceBusWorker : BackgroundService, IAsyncDis
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        // TODO: should we add a filter or consume all messages
         _serviceBusProcessor = _serviceBusClient.CreateProcessor("Queue");
         _serviceBusProcessor.ProcessMessageAsync += ProcessMessageAsync;
         _serviceBusProcessor.ProcessErrorAsync += ProcessErrorAsync;
@@ -76,10 +75,6 @@ public class AggregatedTimeSeriesServiceBusWorker : BackgroundService, IAsyncDis
 
     private async Task ProcessMessageAsync(ProcessMessageEventArgs arg)
     {
-        // TODO: (madu): this requires a filter to be set up, to ensure we only handle this specific type.
-        // var data = arg.Message.Body.ToObjectFromJson<AggregatedTimeSeriesRequest>();
-        // TODO: (madu): retry?? e.g. an unexpected exception ~ timeout exception
-        // TODO: (madu): idempotency? Should this be handled in EDI.
         await _aggregatedTimeSeriesRequestHandler.ProcessAsync(arg.CancellationToken).ConfigureAwait(false);
         await arg.CompleteMessageAsync(arg.Message).ConfigureAwait(false);
     }
