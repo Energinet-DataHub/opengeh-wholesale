@@ -63,6 +63,7 @@ def sum_quantity_and_count_charges(tariffs: DataFrame) -> DataFrame:
             count(Colname.metering_point_id).alias(Colname.charge_count),
         )
         .select("*")
+        .distinct()
     )
     return agg_df
 
