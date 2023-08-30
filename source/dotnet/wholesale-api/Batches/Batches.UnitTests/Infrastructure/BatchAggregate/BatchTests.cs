@@ -61,27 +61,6 @@ public class BatchTests
         actual.Message.Should().Contain("Batch must contain at least one grid area code");
     }
 
-    // [Theory]
-    //
-    // public void Ctor_WhenWholesaleFixingPeriodIsEntireMonth_CreatesExpectedBatch(DateTimeOffset startDate, DateTimeOffset endDate)
-    // {
-    //     // Arrange
-    //     var someGridAreas = new List<GridAreaCode> { new("004"), new("805") };
-    //
-    //     // Act and Assert
-    //     var actual = new Batch(
-    //         SystemClock.Instance.GetCurrentInstant(),
-    //         ProcessType.WholesaleFixing,
-    //         someGridAreas,
-    //         Instant.FromDateTimeOffset(startDate),
-    //         Instant.FromDateTimeOffset(endDate),
-    //         SystemClock.Instance.GetCurrentInstant(),
-    //         DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
-    //         Guid.NewGuid());
-    //
-    //     actual.PeriodStart.Should().Be(Instant.FromDateTimeOffset(startDate));
-    //     actual.PeriodEnd.Should().Be(Instant.FromDateTimeOffset(endDate));
-    // }
     [Theory]
     [InlineData("2022-12-31T23:00Z", "2022-01-30T23:00Z", false)] // Does not include last day of the month
     [InlineData("2022-01-01T23:00Z", "2022-01-31T23:00Z", false)] // Does not include first day of the month

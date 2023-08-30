@@ -102,21 +102,6 @@ public class Batch
     private static bool IsEntireMonth(ZonedDateTime periodStart, ZonedDateTime periodEnd)
     {
         return periodStart.Day == 1 && periodEnd.LocalDateTime == periodStart.LocalDateTime.PlusMonths(1);
-
-        // // Validate that period start is first day of the month
-        // if (periodStart.Day != 1 || periodStart.TimeOfDay != LocalTime.Midnight)
-        //     return false;
-        //
-        // // var daysInMonth = DateTime.DaysInMonth(periodStart.Year, periodStart.Month);
-        // // var expectedEndDate = periodStart.Plus(Duration.FromDays(daysInMonth));
-        // var daysInMonth = DateTime.DaysInMonth(periodStart.Year, periodStart.Month);
-        // var expectedEndDate = periodStart.Plus(Duration.FromDays(daysInMonth));
-        //
-        // // Validate that period end is last day of the month
-        // if (periodEnd != expectedEndDate)
-        //     return false;
-        //
-        // return true;
     }
 
     /// <summary>
