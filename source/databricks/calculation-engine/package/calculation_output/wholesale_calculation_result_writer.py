@@ -71,7 +71,18 @@ class WholesaleCalculationResultWriter:
             Colname.metering_point_type,
             when(col(Colname.metering_point_type) == "E17", lit("consumption"))
             .when(col(Colname.metering_point_type) == "E18", lit("production"))
-            .when(col(Colname.metering_point_type) == "E20", lit("exchange"))
+            .when(col(Colname.metering_point_type) == "D01", lit("child"))
+            .when(col(Colname.metering_point_type) == "D05", lit("child"))
+            .when(col(Colname.metering_point_type) == "D06", lit("child"))
+            .when(col(Colname.metering_point_type) == "D07", lit("child"))
+            .when(col(Colname.metering_point_type) == "D08", lit("child"))
+            .when(col(Colname.metering_point_type) == "D09", lit("child"))
+            .when(col(Colname.metering_point_type) == "D10", lit("child"))
+            .when(col(Colname.metering_point_type) == "D11", lit("child"))
+            .when(col(Colname.metering_point_type) == "D12", lit("child"))
+            .when(col(Colname.metering_point_type) == "D14", lit("child"))
+            .when(col(Colname.metering_point_type) == "D15", lit("child"))
+            .when(col(Colname.metering_point_type) == "D19", lit("child"))
         )
 
     @staticmethod

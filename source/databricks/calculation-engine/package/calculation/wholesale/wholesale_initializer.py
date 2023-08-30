@@ -242,10 +242,10 @@ def __get_window_duration_string_based_on_resolution(
 ) -> str:
     window_duration_string = "1 hour"
 
-    if resolution_duration == ChargeResolution.DAY.value:
+    if resolution_duration == ChargeResolution.DAY:
         window_duration_string = "1 day"
 
-    if resolution_duration == ChargeResolution.MONTH.value:
+    if resolution_duration == ChargeResolution.MONTH:
         raise NotImplementedError("Month not yet implemented")
 
     return window_duration_string

@@ -15,19 +15,7 @@
 from enum import Enum
 
 
-class MeteringPointType(Enum):
-    PRODUCTION = "E18"
-    CONSUMPTION = "E17"
-    EXCHANGE = "E20"
-    D01 = "D01"
-    D05 = "D05"
-    D06 = "D06"
-    D07 = "D07"
-    D08 = "D08"
-    D09 = "D09"
-    D10 = "D10"
-    D11 = "D11"
-    D12 = "D12"
-    D14 = "D14"
-    D15 = "D15"
-    D19 = "D19"
+class ChargeMeteringPointType(Enum):
+    PRODUCTION = "production"
+    CONSUMPTION = "consumption"
+    CHILD = "child"

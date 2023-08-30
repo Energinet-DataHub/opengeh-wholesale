@@ -44,7 +44,7 @@ class DataframeDefaults:
     default_charge_price: Decimal = Decimal("1.123456")
     default_charge_tax: str = "true"
     default_charge_type: str = const_charge_type.value
-    default_charge_resolution: ChargeResolution = ChargeResolution.DAY
+    default_charge_resolution: str = ChargeResolution.DAY.value
     default_currency: str = "DDK"
     default_energy_supplier_id: str = "1"
     default_from_grid_area: str = "chargea"
