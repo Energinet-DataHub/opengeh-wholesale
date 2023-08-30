@@ -37,12 +37,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\enums\*.json">
-        <Link>DeltaTableContracts\Contracts\Enums\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\**">
+        <Link>DeltaTableContracts\%(RecursiveDir)%(Filename)%(Extension)</Link>
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </EmbeddedResource>
-      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\result-table-column-names.json">
-        <Link>DeltaTableContracts\Contracts\result-table-column-names.json</Link>
       </EmbeddedResource>
     </ItemGroup>
 

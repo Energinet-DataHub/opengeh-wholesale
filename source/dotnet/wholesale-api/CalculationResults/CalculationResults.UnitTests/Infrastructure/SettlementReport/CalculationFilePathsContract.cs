@@ -42,7 +42,7 @@ public class CalculationFilePathsContract
 
     public static async Task<CalculationFilePathsContract> GetAsync()
     {
-        await using var stream = EmbeddedResources.GetStream("BasisData.calculation-file-paths.yml");
+        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.calculation-file-paths.yml");
         var deserializer = new YamlDotNet.Serialization.DeserializerBuilder()
             .WithNamingConvention(UnderscoredNamingConvention.Instance)
             .Build();
