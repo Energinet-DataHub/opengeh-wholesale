@@ -15,7 +15,7 @@
 from enum import Enum
 
 
-class ChargeType(Enum):
-    SUBSCRIPTION = "subscription"
-    FEE = "fee"
-    TARIFF = "tariff"
+class ChargeMeteringPointType(Enum):
+    PRODUCTION = "production"
+    CONSUMPTION = "consumption"
+    CHILD = "child"

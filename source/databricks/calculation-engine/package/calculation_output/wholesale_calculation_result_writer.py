@@ -15,7 +15,7 @@
 from datetime import datetime
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, lit, first, when
-import pyspark.sql.functions as F
+import pyspark.sql.functions as f
 from pyspark.sql.window import Window
 
 from package.codelists import ProcessType
@@ -59,30 +59,42 @@ class WholesaleCalculationResultWriter:
         )
 
     def _add_calculation_result_id(self, df: DataFrame) -> DataFrame:
-        df = df.withColumn(WholesaleResultColumnNames.calculation_result_id, F.expr("uuid()"))
+        df = df.withColumn(WholesaleResultColumnNames.calculation_result_id, f.expr("uuid()"))
         window = Window.partitionBy(self._get_column_group_for_calculation_result_id())
         return df.withColumn(
             WholesaleResultColumnNames.calculation_result_id,
             first(col(WholesaleResultColumnNames.calculation_result_id)).over(window))
 
-    def _fix_metering_point_type(self, df: DataFrame) -> DataFrame:
+    @staticmethod
+    def _fix_metering_point_type(df: DataFrame) -> DataFrame:
         return df.withColumn(
             Colname.metering_point_type,
             when(col(Colname.metering_point_type) == "E17", lit("consumption"))
             .when(col(Colname.metering_point_type) == "E18", lit("production"))
-            .when(col(Colname.metering_point_type) == "E20", lit("exchange"))
-            .otherwise(lit("Consumption")),
+            .when(col(Colname.metering_point_type) == "D01", lit("child"))
+            .when(col(Colname.metering_point_type) == "D05", lit("child"))
+            .when(col(Colname.metering_point_type) == "D06", lit("child"))
+            .when(col(Colname.metering_point_type) == "D07", lit("child"))
+            .when(col(Colname.metering_point_type) == "D08", lit("child"))
+            .when(col(Colname.metering_point_type) == "D09", lit("child"))
+            .when(col(Colname.metering_point_type) == "D10", lit("child"))
+            .when(col(Colname.metering_point_type) == "D11", lit("child"))
+            .when(col(Colname.metering_point_type) == "D12", lit("child"))
+            .when(col(Colname.metering_point_type) == "D14", lit("child"))
+            .when(col(Colname.metering_point_type) == "D15", lit("child"))
+            .when(col(Colname.metering_point_type) == "D19", lit("child"))
         )
 
-    def _fix_settlement_method(self, df: DataFrame) -> DataFrame:
+    @staticmethod
+    def _fix_settlement_method(df: DataFrame) -> DataFrame:
         return df.withColumn(
             Colname.settlement_method,
             when(col(Colname.settlement_method) == "D01", lit("flex"))
             .when(col(Colname.settlement_method) == "E02", lit("non_profiled"))
-            .otherwise(lit("flex")),
         )
 
-    def _select_output_columns(self, df: DataFrame) -> DataFrame:
+    @staticmethod
+    def _select_output_columns(df: DataFrame) -> DataFrame:
         # Map column names to the Delta table field names
         # Note: The order of the columns must match the order of the columns in the Delta table
         return df.select(
@@ -111,7 +123,8 @@ class WholesaleCalculationResultWriter:
             col(Colname.charge_owner).alias(WholesaleResultColumnNames.charge_owner_id),
         )
 
-    def _get_column_group_for_calculation_result_id(self) -> list[str]:
+    @staticmethod
+    def _get_column_group_for_calculation_result_id() -> list[str]:
         return [
             Colname.batch_id,
             Colname.resolution,
