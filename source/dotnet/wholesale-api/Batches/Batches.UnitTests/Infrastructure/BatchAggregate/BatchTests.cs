@@ -61,34 +61,35 @@ public class BatchTests
         actual.Message.Should().Contain("Batch must contain at least one grid area code");
     }
 
-    [Theory]
-
-    public void Ctor_WhenWholesaleFixingPeriodIsEntireMonth_CreatesExpectedBatch(DateTimeOffset startDate, DateTimeOffset endDate)
-    {
-        // Arrange
-        var someGridAreas = new List<GridAreaCode> { new("004"), new("805") };
-
-        // Act and Assert
-        var actual = new Batch(
-            SystemClock.Instance.GetCurrentInstant(),
-            ProcessType.WholesaleFixing,
-            someGridAreas,
-            Instant.FromDateTimeOffset(startDate),
-            Instant.FromDateTimeOffset(endDate),
-            SystemClock.Instance.GetCurrentInstant(),
-            DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
-            Guid.NewGuid());
-
-        actual.PeriodStart.Should().Be(Instant.FromDateTimeOffset(startDate));
-        actual.PeriodEnd.Should().Be(Instant.FromDateTimeOffset(endDate));
-    }
-
+    // [Theory]
+    //
+    // public void Ctor_WhenWholesaleFixingPeriodIsEntireMonth_CreatesExpectedBatch(DateTimeOffset startDate, DateTimeOffset endDate)
+    // {
+    //     // Arrange
+    //     var someGridAreas = new List<GridAreaCode> { new("004"), new("805") };
+    //
+    //     // Act and Assert
+    //     var actual = new Batch(
+    //         SystemClock.Instance.GetCurrentInstant(),
+    //         ProcessType.WholesaleFixing,
+    //         someGridAreas,
+    //         Instant.FromDateTimeOffset(startDate),
+    //         Instant.FromDateTimeOffset(endDate),
+    //         SystemClock.Instance.GetCurrentInstant(),
+    //         DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
+    //         Guid.NewGuid());
+    //
+    //     actual.PeriodStart.Should().Be(Instant.FromDateTimeOffset(startDate));
+    //     actual.PeriodEnd.Should().Be(Instant.FromDateTimeOffset(endDate));
+    // }
     [Theory]
     [InlineData("2022-12-31T23:00Z", "2022-01-30T23:00Z", false)] // Does not include last day of the month
     [InlineData("2022-01-01T23:00Z", "2022-01-31T23:00Z", false)] // Does not include first day of the month
     [InlineData("2022-11-30T23:00Z", "2022-01-31T23:00Z", false)] // Two months
-    [InlineData("2021-12-31T23:00Z", "2022-01-31T23:00Z", true)]
-    [InlineData("2022-05-31T22:00Z", "2022-06-30T22:00Z", true)]
+    [InlineData("2021-12-31T23:00Z", "2022-01-31T23:00Z", true)] // Winter time
+    [InlineData("2022-05-31T22:00Z", "2022-06-30T22:00Z", true)] // Summer time
+    [InlineData("2022-02-28T23:00Z", "2022-03-31T22:00Z", true)] // Winter to summer time
+    [InlineData("2022-09-30T22:00Z", "2022-10-31T23:00Z", true)] // Summer to winter time
     public void Ctor_WhenWholesaleFixingPeriodIsNotEntireMonth_ThrowsBusinessValidationException(DateTimeOffset startDate, DateTimeOffset endDate, bool isEntireMonth)
     {
         // Arrange
