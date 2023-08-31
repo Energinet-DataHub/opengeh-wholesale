@@ -267,9 +267,11 @@ def __join_properties_on_charges_with_given_charge_type(
 ) -> DataFrame:
     # filter on charge_type
     charge_master_data = get_charges_based_on_charge_type(charge_master_data, charge_type)
+    log(f"charge_master_data.count(): {charge_master_data.count()}")
 
     # join charge prices with charge_master_data
     charges_with_prices = join_with_charge_prices(charge_master_data, charge_prices)
+    log(f"charges_with_prices.count(): {charges_with_prices.count()}")
 
     if charge_type == ChargeType.SUBSCRIPTION:
         # Explode dataframe: create row for each day the time period from and to date
@@ -279,8 +281,11 @@ def __join_properties_on_charges_with_given_charge_type(
     charges_with_price_and_links = join_with_charge_links(
         charges_with_prices, charge_links
     )
+    log(f"charges_with_price_and_links.count(): {charges_with_price_and_links.count()}")
 
     df = join_with_metering_points(charges_with_price_and_links, metering_points)
+
+    log(f"join_with_metering_points.count(): {df.count()}")
 
     if charge_type != ChargeType.TARIFF:
         df = df.select(
