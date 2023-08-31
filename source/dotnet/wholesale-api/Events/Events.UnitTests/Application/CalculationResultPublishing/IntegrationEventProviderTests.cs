@@ -25,6 +25,7 @@ using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using FluentAssertions;
 using Moq;
 using NodaTime;
+using Test.Core.AcceptanceTest;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Application.CalculationResultPublishing;
@@ -200,6 +201,7 @@ public class IntegrationEventProviderTests
     }
 
     [Fact]
+    [Trait(Traits.AcceptanceTest, "488")]
     public void AProvider_MustImplement_IIntegrationEventProvider()
     {
         // Arrange

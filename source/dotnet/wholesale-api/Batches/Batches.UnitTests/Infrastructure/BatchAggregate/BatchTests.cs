@@ -124,6 +124,7 @@ public class BatchTests
     [InlineData("2022-09-30T22:00Z", "2022-10-31T23:00Z", true)] // October
     [InlineData("2022-10-31T23:00Z", "2022-11-30T23:00Z", true)] // November
     [InlineData("2022-11-30T23:00Z", "2022-12-31T23:00Z", true)] // December
+    [Trait(Traits.AcceptanceTest, "488")]
     public void Ctor_WhenWholesaleFixingPeriodIsNotEntireMonth_ThrowsBusinessValidationException(DateTimeOffset startDate, DateTimeOffset endDate, bool isEntireMonth)
     {
         // Arrange
