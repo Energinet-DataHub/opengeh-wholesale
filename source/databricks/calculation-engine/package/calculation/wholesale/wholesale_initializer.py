@@ -16,6 +16,7 @@ from pyspark.sql.dataframe import DataFrame
 from pyspark.sql.functions import col, window, expr, explode, month, year
 from package.codelists import ChargeType, ChargeResolution
 from package.constants import Colname
+from package.infrastructure import log
 
 
 def get_tariff_charges(
@@ -29,6 +30,7 @@ def get_tariff_charges(
     # filter on resolution
     charge_master_data = get_charges_based_on_resolution(charge_master_data, resolution_duration)
 
+    log(f"charge_master_data.count(): {charge_master_data.count()}")
     df = __join_properties_on_charges_with_given_charge_type(
         charge_master_data,
         charge_prices,
@@ -36,6 +38,7 @@ def get_tariff_charges(
         metering_points,
         ChargeType.TARIFF,
     )
+    log(f"__join_properties_on_charges_with_given_charge_type.count(): {df.count()}")
 
     # group by time series on metering point id and resolution and sum quantity
     grouped_time_series = (
@@ -43,9 +46,12 @@ def get_tariff_charges(
             time_series, resolution_duration
         )
     )
+    log(f"grouped_time_series.count(): {grouped_time_series.count()}")
 
     # join with grouped time series
     df = join_with_grouped_time_series(df, grouped_time_series)
+
+    log(f"join_with_grouped_time_series.count(): {df.count()}")
 
     return df
 
