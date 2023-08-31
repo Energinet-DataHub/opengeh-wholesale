@@ -142,12 +142,14 @@ def explode_subscription(charges_with_prices: DataFrame) -> DataFrame:
 
 
 def join_with_charge_links(df: DataFrame, charge_links: DataFrame) -> DataFrame:
+    df.show(10)
+    charge_links.show(10)
     df = df.join(
         charge_links,
         [
             df[Colname.charge_key] == charge_links[Colname.charge_key],
-            df[Colname.charge_time] >= charge_links[Colname.from_date],
-            df[Colname.charge_time] < charge_links[Colname.to_date],
+            # df[Colname.charge_time] >= charge_links[Colname.from_date],
+            # df[Colname.charge_time] < charge_links[Colname.to_date],
         ],
         "inner",
     ).select(
@@ -302,3 +304,4 @@ def __join_properties_on_charges_with_given_charge_type(
         )
 
     return df
+
