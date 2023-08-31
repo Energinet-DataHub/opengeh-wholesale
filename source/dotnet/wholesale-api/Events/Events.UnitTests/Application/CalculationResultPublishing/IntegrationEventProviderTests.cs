@@ -25,7 +25,7 @@ using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using FluentAssertions;
 using Moq;
 using NodaTime;
-using Test.Core.AcceptanceTest;
+using Test.Core.Attributes;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Application.CalculationResultPublishing;
@@ -201,7 +201,7 @@ public class IntegrationEventProviderTests
     }
 
     [Fact]
-    [Trait(Traits.AcceptanceTest, "488")]
+    [AcceptanceTest]
     public void AProvider_MustImplement_IIntegrationEventProvider()
     {
         // Arrange
@@ -214,7 +214,7 @@ public class IntegrationEventProviderTests
             .ToList();
 
         // Assert
-        Assert.True(actualImplementations.Count == 1, "The interface IIntegrationEventProvider must be implemented.");
+        Assert.True(actualImplementations.Count == 1, $"The interface {nameof(IIntegrationEventProvider)} must be implemented.");
     }
 
     private async IAsyncEnumerable<T> AsAsyncEnumerable<T>(params T[] items)

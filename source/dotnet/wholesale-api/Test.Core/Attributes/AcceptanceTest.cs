@@ -12,9 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Test.Core.AcceptanceTest;
+namespace Test.Core.Attributes;
 
-public abstract class Traits
+public class AcceptanceTest : Attribute
 {
-    public const string AcceptanceTest = "AcceptanceTest";
 }

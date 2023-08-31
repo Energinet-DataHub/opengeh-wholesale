@@ -21,7 +21,7 @@ using FluentAssertions;
 using Moq;
 using NodaTime;
 using NodaTime.Extensions;
-using Test.Core.AcceptanceTest;
+using Test.Core.Attributes;
 using Xunit;
 using Xunit.Categories;
 
@@ -63,11 +63,11 @@ public class BatchTests
     }
 
     [Theory]
+    [AcceptanceTest]
     [InlineAutoMoqData(ProcessType.WholesaleFixing)]
     [InlineAutoMoqData(ProcessType.FirstCorrectionSettlement)]
     [InlineAutoMoqData(ProcessType.SecondCorrectionSettlement)]
     [InlineAutoMoqData(ProcessType.ThirdCorrectionSettlement)]
-    [Trait(Traits.AcceptanceTest, "488")]
     public void Ctor_WhenWholesaleAndCorrectionProcessTypesAndPeriodIsMoreThanAMonth_ThrowsBusinessValidationException(ProcessType processType)
     {
         // Arrange & Act
@@ -81,6 +81,7 @@ public class BatchTests
     }
 
     [Theory]
+    [AcceptanceTest]
     [InlineAutoMoqData(ProcessType.WholesaleFixing, 30, false)]
     [InlineAutoMoqData(ProcessType.WholesaleFixing, 31, true)]
     [InlineAutoMoqData(ProcessType.WholesaleFixing, 32, false)]
@@ -95,20 +96,22 @@ public class BatchTests
     [InlineAutoMoqData(ProcessType.ThirdCorrectionSettlement, 32, false)]
     [InlineAutoMoqData(ProcessType.BalanceFixing, 30, true)]
     [InlineAutoMoqData(ProcessType.Aggregation, 30, true)]
-    [Trait(Traits.AcceptanceTest, "488")]
     public void Ctor_PeriodsCombinedWithProcessTypes_AreValidOrInvalid(ProcessType processType, int days, bool isValid)
     {
         // Arrange & Act
-        var actual = Record.Exception(() => new BatchBuilder()
+        var batchBuilder = new BatchBuilder()
             .WithProcessType(processType)
-            .WithPeriodEnd(Instant.FromDateTimeOffset(BatchBuilder.FirstOfJanuary2022.AddDays(days)))
-            .Build());
+            .WithPeriodEnd(Instant.FromDateTimeOffset(BatchBuilder.FirstOfJanuary2022.AddDays(days)));
+
+        // Act
+        var actual = Record.Exception(() => batchBuilder.Build());
 
         // Assert
         Assert.Equal(isValid, actual == null);
     }
 
     [Theory]
+    [AcceptanceTest]
     [InlineData("2022-12-31T23:00Z", "2022-01-30T23:00Z", false)] // Does not include last day of the month
     [InlineData("2022-01-01T23:00Z", "2022-01-31T23:00Z", false)] // Does not include first day of the month
     [InlineData("2022-11-30T23:00Z", "2022-01-31T23:00Z", false)] // Two months
@@ -124,7 +127,6 @@ public class BatchTests
     [InlineData("2022-09-30T22:00Z", "2022-10-31T23:00Z", true)] // October
     [InlineData("2022-10-31T23:00Z", "2022-11-30T23:00Z", true)] // November
     [InlineData("2022-11-30T23:00Z", "2022-12-31T23:00Z", true)] // December
-    [Trait(Traits.AcceptanceTest, "488")]
     public void Ctor_WhenWholesaleFixingPeriodIsNotEntireMonth_ThrowsBusinessValidationException(DateTimeOffset startDate, DateTimeOffset endDate, bool isEntireMonth)
     {
         // Arrange
