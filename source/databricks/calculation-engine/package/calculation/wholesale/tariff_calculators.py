@@ -17,6 +17,7 @@ from package.codelists import ChargeQuality, ChargeUnit
 from package.constants import Colname
 from package.infrastructure import log
 
+
 def calculate_tariff_price_per_ga_co_es(tariffs: DataFrame) -> DataFrame:
 
     log(f"tariffs count: {tariffs.count()}")
