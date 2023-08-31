@@ -17,9 +17,9 @@ from typing import Optional
 from package.codelists import (
     ChargeResolution,
     ChargeType,
-    MeteringPointType,
+    InputMeteringPointType,
     MeteringPointResolution,
-    SettlementMethod,
+    InputSettlementMethod,
 )
 
 const_charge_id = "001"
@@ -50,13 +50,13 @@ class DataframeDefaults:
     default_from_grid_area: str = "chargea"
     default_grid_area: str = "500"
     default_metering_point_id: str = "D01"
-    default_metering_point_type: str = MeteringPointType.CONSUMPTION.value
+    default_metering_point_type: str = InputMeteringPointType.CONSUMPTION.value
     default_parent_metering_point_id: str = "1"
     default_product: str = "chargea"
     default_quality: str = "E01"
     default_quantity: Decimal = Decimal("1.123")
     default_metering_point_resolution: str = MeteringPointResolution.HOUR.value
-    default_settlement_method: str = SettlementMethod.FLEX.value
+    default_settlement_method: str = InputSettlementMethod.FLEX.value
     default_sum_quantity: Decimal = Decimal("1.234")
     default_time_window_end: datetime = datetime(2020, 1, 1, 1, 0)
     default_time_window_start: datetime = datetime(2020, 1, 1, 0, 0)

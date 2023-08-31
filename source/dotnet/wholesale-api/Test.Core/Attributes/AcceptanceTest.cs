@@ -12,26 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+namespace Test.Core.Attributes;
 
-/// <summary>
-/// Defines metering point type
-/// </summary>
-public enum MeteringPointType
+public class AcceptanceTest : Attribute
 {
-    Consumption = 0,
-    Production = 1,
-    Exchange = 2,
-    VeProduction = 3,
-    NetProduction = 4,
-    SupplyToGrid = 5,
-    ConsumptionFromGrid = 6,
-    WholesaleServicesInformation = 7,
-    OwnProduction = 8,
-    NetFromGrid = 9,
-    NetToGrid = 10,
-    TotalConsumption = 11,
-    ElectricalHeating = 12,
-    NetConsumption = 13,
-    EffectSettlement = 14,
 }
