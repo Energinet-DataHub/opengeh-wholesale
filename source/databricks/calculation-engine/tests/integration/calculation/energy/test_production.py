@@ -14,7 +14,7 @@
 from decimal import Decimal
 from datetime import datetime, timedelta
 from package.codelists import (
-    MeteringPointType,
+    InputMeteringPointType,
     MeteringPointResolution,
     TimeSeriesQuality,
 )
@@ -94,7 +94,7 @@ def test_data_factory(
                             Colname.quality: [TimeSeriesQuality.ESTIMATED.value],
                             Colname.resolution: [MeteringPointResolution.HOUR.value],
                             Colname.metering_point_type: [
-                                MeteringPointType.PRODUCTION.value
+                                InputMeteringPointType.PRODUCTION.value
                             ],
                         },
                         ignore_index=True,
