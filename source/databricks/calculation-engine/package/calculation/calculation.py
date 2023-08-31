@@ -52,6 +52,8 @@ def execute(args: CalculatorArgs, spark: SparkSession) -> None:
         args.time_zone,
     )
 
+    log(f"Done with energy calcualtion, and process type is: {args.batch_process_type.value}")
+
     if args.batch_process_type == ProcessType.WHOLESALE_FIXING:
         log(f"Executing wholesale calculation for batch {args.batch_id}")
 
