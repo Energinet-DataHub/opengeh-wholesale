@@ -21,6 +21,7 @@ from pyspark.sql.window import Window
 from package.codelists import ProcessType
 from package.constants import Colname, WholesaleResultColumnNames
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME, WHOLESALE_RESULT_TABLE_NAME
+from package.infrastructure import log
 
 
 class WholesaleCalculationResultWriter:
@@ -47,6 +48,8 @@ class WholesaleCalculationResultWriter:
         df.write.format("delta").mode("append").option(
             "mergeSchema", "false"
         ).insertInto(f"{OUTPUT_DATABASE_NAME}.{WHOLESALE_RESULT_TABLE_NAME}")
+
+        log("Done writing to wholesale result table.")
 
     def _add_metadata(self, df: DataFrame) -> DataFrame:
         return (
