@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Core.Messaging.Communication;
@@ -75,14 +74,12 @@ public static class EventsRegistration
 
     private static void RegisterHostedServices(IServiceCollection serviceCollection, ServiceBusOptions serviceBusOptions)
     {
-        var sb = new ServiceBusClient(serviceBusOptions.SERVICE_BUS_LISTEN_CONNECTION_STRING);
-        var inboxProcessor = sb.CreateProcessor("sbq-wholesale-inbox");
         serviceCollection.AddHostedService<AggregatedTimeSeriesServiceBusWorker>(
             provider =>
                 new AggregatedTimeSeriesServiceBusWorker(
                     provider.GetRequiredService<IAggregatedTimeSeriesRequestHandler>(),
-                    inboxProcessor,
-                    provider.GetRequiredService<ILogger<AggregatedTimeSeriesRequestHandler>>()));
+                    provider.GetRequiredService<ILogger<AggregatedTimeSeriesRequestHandler>>(),
+                    serviceBusOptions.SERVICE_BUS_LISTEN_CONNECTION_STRING));
         serviceCollection.AddHostedService<RegisterCompletedBatchesTrigger>();
         serviceCollection
             .AddHealthChecks()
