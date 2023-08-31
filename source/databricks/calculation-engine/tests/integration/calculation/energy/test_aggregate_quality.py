@@ -14,7 +14,7 @@
 from datetime import datetime, timedelta
 from package.constants import Colname
 from pyspark.sql.types import StructType, StringType, TimestampType
-from package.codelists import MeteringPointType, TimeSeriesQuality
+from package.codelists import InputMeteringPointType, TimeSeriesQuality
 from package.calculation.energy.transformations import aggregate_quality
 import pytest
 import pandas as pd
@@ -68,7 +68,7 @@ def test_data_factory(spark, schema):
             pandas_df = pandas_df.append(
                 {
                     Colname.grid_area: str(1),
-                    Colname.metering_point_type: MeteringPointType.CONSUMPTION.value,
+                    Colname.metering_point_type: InputMeteringPointType.CONSUMPTION.value,
                     Colname.observation_time: default_obs_time + timedelta(hours=1),
                     Colname.quality: df_qualities[i],
                 },

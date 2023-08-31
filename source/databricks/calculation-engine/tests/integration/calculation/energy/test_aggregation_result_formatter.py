@@ -14,7 +14,7 @@
 from decimal import Decimal
 from datetime import datetime
 from package.codelists import (
-    MeteringPointType,
+    InputMeteringPointType,
     MeteringPointResolution,
     TimeSeriesQuality,
 )
@@ -82,7 +82,7 @@ def agg_result_factory(spark: SparkSession) -> Callable[..., DataFrame]:
         resolution: str = MeteringPointResolution.HOUR.value,
         sum_quantity: Decimal = Decimal("1.234"),
         quality: str = TimeSeriesQuality.ESTIMATED.value,
-        metering_point_type: str = MeteringPointType.CONSUMPTION.value,
+        metering_point_type: str = InputMeteringPointType.CONSUMPTION.value,
     ) -> DataFrame:
         return spark.createDataFrame(
             pd.DataFrame().append(
@@ -125,7 +125,7 @@ def test__create_dataframe_from_aggregation_result_schema__match_expected_datafr
         time_window_end=datetime(2020, 1, 1, 1, 0),
         sum_quantity=Decimal("1.234"),
         quality=TimeSeriesQuality.ESTIMATED.value,
-        metering_point_type=MeteringPointType.CONSUMPTION.value,
+        metering_point_type=InputMeteringPointType.CONSUMPTION.value,
     )
     # Act
     actual = create_dataframe_from_aggregation_result_schema(result)

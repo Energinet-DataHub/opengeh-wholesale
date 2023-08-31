@@ -18,13 +18,13 @@ import pandas as pd
 from datetime import datetime, timedelta
 from package.constants import Colname
 from package.calculation.energy import aggregate_net_exchange_per_ga
-from package.codelists import MeteringPointType, TimeSeriesQuality
+from package.codelists import InputMeteringPointType, TimeSeriesQuality
 from package.calculation.energy.schemas import aggregation_result_schema
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import window, col
 
 
-e_20 = MeteringPointType.EXCHANGE.value
+e_20 = InputMeteringPointType.EXCHANGE.value
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_obs_time = datetime.strptime(
     "2020-01-01T00:00:00+0000", date_time_formatting_string

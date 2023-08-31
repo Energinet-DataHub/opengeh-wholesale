@@ -20,11 +20,11 @@ import pytest
 import uuid
 
 from package.codelists import (
-    ChargeMeteringPointType,
     ChargeQuality,
     ChargeResolution,
     ChargeType,
     ChargeUnit,
+    MeteringPointType,
     ProcessType,
     SettlementMethod,
 )
@@ -138,7 +138,7 @@ actor_eic = "1234567890123456"
         (WholesaleResultColumnNames.time, datetime(2020, 1, 1, 0, 0)),
         (WholesaleResultColumnNames.resolution, "P1D"),
         (WholesaleResultColumnNames.metering_point_type, None),
-        (WholesaleResultColumnNames.metering_point_type, "child"),
+        (WholesaleResultColumnNames.metering_point_type, "consumption"),
         (WholesaleResultColumnNames.settlement_method, None),
         (WholesaleResultColumnNames.settlement_method, "flex"),
         (WholesaleResultColumnNames.price, None),
@@ -169,7 +169,6 @@ def test__migrated_table_accepts_valid_data(
     )
 
 
-# TODO BJM: Introduce the missing enums
 @pytest.mark.parametrize(
     "column_name,column_value",
     [
@@ -181,9 +180,8 @@ def test__migrated_table_accepts_valid_data(
         *[(WholesaleResultColumnNames.quantity_unit, x.value) for x in ChargeUnit],
         *[(WholesaleResultColumnNames.quantity_quality, x.value) for x in ChargeQuality],
         *[(WholesaleResultColumnNames.resolution, x.value) for x in ChargeResolution],
-        *[(WholesaleResultColumnNames.metering_point_type, x.value) for x in ChargeMeteringPointType],
-        # Update to use `SettlementMethod` when its values have been renamed
-        *[(WholesaleResultColumnNames.settlement_method, x) for x in ["flex", "non_profiled"]],
+        *[(WholesaleResultColumnNames.metering_point_type, x.value) for x in MeteringPointType],
+        *[(WholesaleResultColumnNames.settlement_method, x.value) for x in SettlementMethod],
         *[(WholesaleResultColumnNames.charge_type, x.value) for x in ChargeType],
     ],
 )

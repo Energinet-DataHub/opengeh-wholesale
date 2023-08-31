@@ -16,7 +16,7 @@ from datetime import datetime
 
 from package.codelists import (
     TimeSeriesQuality,
-    MeteringPointType,
+    InputMeteringPointType,
     MeteringPointResolution,
 )
 
@@ -117,12 +117,12 @@ def agg_net_exchange_factory(spark, net_exchange_schema):
                     MeteringPointResolution.HOUR.value,
                 ],
                 Colname.metering_point_type: [
-                    MeteringPointType.CONSUMPTION.value,
-                    MeteringPointType.CONSUMPTION.value,
-                    MeteringPointType.CONSUMPTION.value,
-                    MeteringPointType.CONSUMPTION.value,
-                    MeteringPointType.CONSUMPTION.value,
-                    MeteringPointType.CONSUMPTION.value,
+                    InputMeteringPointType.CONSUMPTION.value,
+                    InputMeteringPointType.CONSUMPTION.value,
+                    InputMeteringPointType.CONSUMPTION.value,
+                    InputMeteringPointType.CONSUMPTION.value,
+                    InputMeteringPointType.CONSUMPTION.value,
+                    InputMeteringPointType.CONSUMPTION.value,
                 ],
             }
         )
@@ -201,12 +201,12 @@ def agg_production_factory(spark, production_schema):
                     MeteringPointResolution.HOUR.value,
                 ],
                 Colname.metering_point_type: [
-                    MeteringPointType.PRODUCTION.value,
-                    MeteringPointType.PRODUCTION.value,
-                    MeteringPointType.PRODUCTION.value,
-                    MeteringPointType.PRODUCTION.value,
-                    MeteringPointType.PRODUCTION.value,
-                    MeteringPointType.PRODUCTION.value,
+                    InputMeteringPointType.PRODUCTION.value,
+                    InputMeteringPointType.PRODUCTION.value,
+                    InputMeteringPointType.PRODUCTION.value,
+                    InputMeteringPointType.PRODUCTION.value,
+                    InputMeteringPointType.PRODUCTION.value,
+                    InputMeteringPointType.PRODUCTION.value,
                 ],
             }
         )
@@ -240,7 +240,7 @@ def agg_total_production_factory(spark, production_schema):
                 Colname.sum_quantity: Decimal(1.0),
                 Colname.quality: quality,
                 Colname.resolution: [MeteringPointResolution.HOUR.value],
-                Colname.metering_point_type: [MeteringPointType.PRODUCTION.value],
+                Colname.metering_point_type: [InputMeteringPointType.PRODUCTION.value],
             },
             ignore_index=True,
         )
@@ -278,7 +278,7 @@ def agg_total_net_exchange_factory(spark, net_exchange_schema):
                 Colname.sum_quantity: Decimal(1.0),
                 Colname.quality: quality,
                 Colname.resolution: [MeteringPointResolution.HOUR.value],
-                Colname.metering_point_type: [MeteringPointType.EXCHANGE.value],
+                Colname.metering_point_type: [InputMeteringPointType.EXCHANGE.value],
             },
             ignore_index=True,
         )
