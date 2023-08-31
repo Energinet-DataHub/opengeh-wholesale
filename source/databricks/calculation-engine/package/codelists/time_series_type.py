@@ -16,6 +16,9 @@ from enum import Enum
 
 
 class TimeSeriesType(Enum):
+    """
+    The type of the aggregated time series type of an energy calculation.
+    """
     PRODUCTION = "production"
     NON_PROFILED_CONSUMPTION = "non_profiled_consumption"
     NET_EXCHANGE_PER_NEIGHBORING_GA = "net_exchange_per_neighboring_ga"
