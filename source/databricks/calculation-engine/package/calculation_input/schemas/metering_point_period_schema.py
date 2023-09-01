@@ -27,7 +27,7 @@ Periods (given by `FromDate` and `ToDate`) must not overlap and must not have ga
 
 Only periods meeting the following requirements are included:
 - metering point is connected (E22) or disconnected (E23)
-- metering point (E17 and E18) has energy supplier
+- metering point consumption (E17) and production (E18) has energy supplier
 - child metering points where parent has energy supplier
 
 Data must be stored in a Delta table.
@@ -63,7 +63,7 @@ metering_point_period_schema = StructType(
         # Example: PT1H
         StructField("resolution", StringType(), False),
         # 3 character grid area code uniquely identifying the from-grid area. All characters must be digits (0-9).
-        # The code has a value for E20 (exchange) metering points. For all other types it's null.
+        # The code has a value for exchange (E20) metering points. For all other types it's null.
         # Used in balance fixing and settlement.
         # Example: 122
         StructField("from_grid_area_code", StringType(), True),

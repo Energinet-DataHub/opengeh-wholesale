@@ -20,7 +20,7 @@ from package.codelists import (
     ProcessType,
     TimeSeriesQuality,
     TimeSeriesType,
-    InputSettlementMethod,
+    SettlementMethod,
 )
 from tests.contract_utils import assert_codelist_matches_contract
 
@@ -33,7 +33,7 @@ from tests.contract_utils import assert_codelist_matches_contract
         ("process-type.json", ProcessType),
         ("quantity-quality.json", TimeSeriesQuality),
         ("time-series-type.json", TimeSeriesType),
-        ("settlement-method.json", InputSettlementMethod),
+        ("settlement-method.json", SettlementMethod),
     ],
 )
 def test_codelist_matches_contract(
