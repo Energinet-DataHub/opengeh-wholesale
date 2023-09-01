@@ -12,12 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+
 namespace Energinet.DataHub.Wholesale.Events.Application.UseCases;
 
 public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHandler
 {
-    public async Task ProcessAsync(CancellationToken cancellationToken)
+    private readonly ICalculationResultQueries _calculationResultQueries;
+
+    public AggregatedTimeSeriesRequestHandler(ICalculationResultQueries calculationResultQueries)
     {
-        await Task.CompletedTask.ConfigureAwait(false);
+        _calculationResultQueries = calculationResultQueries;
+    }
+
+    public Task ProcessAsync(CancellationToken cancellationToken)
+    {
+        // create the request from the protobuf message
+        // call the query service
+        // create the response
+        // send the response to EDI inbox.
+        return Task.CompletedTask;
     }
 }
