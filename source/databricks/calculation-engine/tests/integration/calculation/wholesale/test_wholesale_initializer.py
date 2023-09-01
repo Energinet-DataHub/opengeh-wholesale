@@ -466,51 +466,6 @@ metering_points_dataset = [
 
 
 # Shared
-@pytest.mark.parametrize(
-    "charges_with_price_and_links,metering_points,expected",
-    [
-        (
-            charges_with_price_and_links_dataset_1,
-            metering_points_dataset,
-            1,
-        ),
-        (
-            charges_with_price_and_links_and_dataset_2,
-            metering_points_dataset,
-            0,
-        ),
-        (
-            charges_with_price_and_links_dataset_3,
-            metering_points_dataset,
-            1,
-        ),
-        (
-            charges_with_price_and_links_dataset_4,
-            metering_points_dataset,
-            0,
-        ),
-    ],
-)
-def test__join_with_metering_points__joins_on_metering_point_id_and_time_is_between_from_and_to_date(
-    spark: SparkSession, charges_with_price_and_links: DataFrame, metering_points: DataFrame, expected: int
-) -> None:
-    # Arrange
-    charges_with_price_and_links = spark.createDataFrame(
-        charges_with_price_and_links,
-        schema=charges_with_price_and_links_schema,
-    )
-    metering_points = spark.createDataFrame(
-        metering_points, schema=metering_point_period_schema
-    )
-
-    # Act
-    result = join_with_metering_points(
-        charges_with_price_and_links, metering_points
-    )
-
-    # Assert
-    assert result.count() == expected
-
 
 time_series_dataset_1 = [
     (

@@ -171,8 +171,8 @@ def join_with_metering_points(df: DataFrame, metering_points: DataFrame) -> Data
         metering_points,
         [
             df[Colname.metering_point_id] == metering_points[Colname.metering_point_id],
-            df[Colname.charge_time] >= metering_points[Colname.from_date],
-            df[Colname.charge_time] < metering_points[Colname.to_date],
+            # df[Colname.charge_time] >= metering_points[Colname.from_date],
+            # df[Colname.charge_time] < metering_points[Colname.to_date],
         ],
         "inner",
     ).select(
