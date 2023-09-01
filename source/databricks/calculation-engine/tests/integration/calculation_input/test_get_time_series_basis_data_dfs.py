@@ -14,7 +14,7 @@
 
 from datetime import timedelta
 import pytest
-from package.codelists import MeteringPointResolution, InputMeteringPointType
+from package.codelists import MeteringPointResolution, MeteringPointType
 from package.constants import Colname
 from decimal import Decimal
 from package.calculation_input.basis_data import get_time_series_basis_data_dfs
@@ -39,7 +39,7 @@ def enriched_time_series_factory(spark, timestamp_factory):
         quantity=Decimal("1"),
         grid_area="805",
         metering_point_id="the_metering_point_id",
-        metering_point_type=InputMeteringPointType.PRODUCTION.value,
+        metering_point_type=MeteringPointType.PRODUCTION.value,
         time="2022-06-08T22:00:00.000Z",
         number_of_points=1,
     ):

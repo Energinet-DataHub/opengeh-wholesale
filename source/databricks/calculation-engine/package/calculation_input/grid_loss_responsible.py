@@ -22,7 +22,7 @@ from pyspark.sql.types import StringType, StructType, StructField, TimestampType
 from package.constants import Colname
 from pyspark.sql.functions import col, when
 from datetime import datetime
-from package.codelists import InputMeteringPointType
+from package.codelists import MeteringPointType
 
 
 DEFAULT_FROM_TIME = datetime.strptime("2000-01-01T23:00:00+0000", "%Y-%m-%dT%H:%M:%S%z")
@@ -52,10 +52,10 @@ def get_grid_loss_responsible(grid_areas: list[str]) -> DataFrame:
     grid_loss_responsible_df = _get_all_grid_loss_responsible()
 
     grid_loss_responsible_df = grid_loss_responsible_df.withColumn(
-        Colname.is_positive_grid_loss_responsible, when(col(Colname.metering_point_type) == InputMeteringPointType.CONSUMPTION.value, True)
+        Colname.is_positive_grid_loss_responsible, when(col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value, True)
         .otherwise(False))
     grid_loss_responsible_df = grid_loss_responsible_df.withColumn(
-        Colname.is_negative_grid_loss_responsible, when(col(Colname.metering_point_type) == InputMeteringPointType.PRODUCTION.value, True)
+        Colname.is_negative_grid_loss_responsible, when(col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value, True)
         .otherwise(False))
 
     grid_loss_responsible_df = grid_loss_responsible_df.select(
