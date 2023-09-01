@@ -304,4 +304,3 @@ def __join_properties_on_charges_with_given_charge_type(
         )
 
     return df
-
