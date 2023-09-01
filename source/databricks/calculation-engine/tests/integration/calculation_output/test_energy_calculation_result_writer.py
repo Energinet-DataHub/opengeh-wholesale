@@ -90,7 +90,7 @@ def _create_result_df_corresponding_to_four_calculation_results(spark: SparkSess
     OTHER_TIME_WINDOW_END = OTHER_TIME_WINDOW_START + timedelta(hours=1)
     OTHER_GRID_AREA = "111"
     OTHER_FROM_GRID_AREA = "222"
-    OTHER_ENERGY_SUPPLIER_ID = "other_energy_supplier"
+    OTHER_ENERGY_SUPPLIER_ID = "1234567890123"
 
     rows = [
         # First result
@@ -144,7 +144,7 @@ def test__write__writes_aggregation_level(
 
 
 # The batch id is used in parameterized test executed using xdist, which does not allow parameters to change
-batch_id = "some batch id"  # Needed in both test param and test implementation
+batch_id = "9252d7a0-4363-42cc-a2d6-e04c026523f8"  # Needed in both test param and test implementation
 
 
 @pytest.mark.parametrize(
