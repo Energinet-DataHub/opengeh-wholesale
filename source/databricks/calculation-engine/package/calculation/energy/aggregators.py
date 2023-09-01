@@ -15,7 +15,7 @@ from decimal import Decimal
 
 from package.codelists import (
     InputMeteringPointType,
-    InputSettlementMethod,
+    SettlementMethod,
     TimeSeriesQuality,
 )
 from package.constants import Colname
@@ -37,7 +37,7 @@ def aggregate_non_profiled_consumption_ga_brp_es(
     return _aggregate_per_ga_and_brp_and_es(
         enriched_time_series,
         InputMeteringPointType.CONSUMPTION,
-        InputSettlementMethod.NON_PROFILED,
+        SettlementMethod.NON_PROFILED,
     )
 
 
@@ -45,7 +45,7 @@ def aggregate_flex_consumption_ga_brp_es(enriched_time_series: DataFrame) -> Dat
     return _aggregate_per_ga_and_brp_and_es(
         enriched_time_series,
         InputMeteringPointType.CONSUMPTION,
-        InputSettlementMethod.FLEX,
+        SettlementMethod.FLEX,
     )
 
 
@@ -58,7 +58,7 @@ def aggregate_production_ga_brp_es(enriched_time_series: DataFrame) -> DataFrame
 def _aggregate_per_ga_and_brp_and_es(
     df: DataFrame,
     market_evaluation_point_type: InputMeteringPointType,
-    settlement_method: Union[InputSettlementMethod, None],
+    settlement_method: Union[SettlementMethod, None],
 ) -> DataFrame:
     """This function creates a intermediate result, which is subsequently used as input to achieve result for different process steps.
 

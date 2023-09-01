@@ -14,7 +14,7 @@
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col, last_day, dayofmonth, count, sum
 from pyspark.sql.types import DecimalType
-from package.codelists import InputMeteringPointType, InputSettlementMethod
+from package.codelists import InputMeteringPointType, SettlementMethod
 from package.calculation.wholesale.schemas.calculate_daily_subscription_price_schema import calculate_daily_subscription_price_schema
 from package.constants import Colname
 
@@ -41,7 +41,7 @@ def filter_on_metering_point_type_and_settlement_method(
 ) -> DataFrame:
     charges_per_day_flex_consumption = subscription_charges.filter(
         col(Colname.metering_point_type) == InputMeteringPointType.CONSUMPTION.value
-    ).filter(col(Colname.settlement_method) == InputSettlementMethod.FLEX.value)
+    ).filter(col(Colname.settlement_method) == SettlementMethod.FLEX.value)
     return charges_per_day_flex_consumption
 
 

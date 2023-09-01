@@ -20,17 +20,11 @@ from package.calculation.energy.aggregators import (
 )
 from package.codelists import (
     InputMeteringPointType,
-    InputSettlementMethod,
+    SettlementMethod,
     TimeSeriesQuality,
 )
 from package.calculation.energy.schemas import aggregation_result_schema
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.types import (
-    StructType,
-    StringType,
-    DecimalType,
-    TimestampType,
-)
 from pyspark.sql.functions import col, window
 from typing import Callable
 import pytest
@@ -41,12 +35,10 @@ from pandas.core.frame import DataFrame as PandasDataFrame
 e_20 = InputMeteringPointType.EXCHANGE.value
 e_17 = InputMeteringPointType.CONSUMPTION.value
 e_18 = InputMeteringPointType.PRODUCTION.value
-e_02 = InputSettlementMethod.NON_PROFILED.value
-d_01 = InputSettlementMethod.FLEX.value
 
 # Default time series data point values
 default_point_type = e_17
-default_settlement_method = d_01
+default_settlement_method = SettlementMethod.FLEX.value
 default_domain = "D1"
 default_responsible = "R1"
 default_supplier = "S1"
@@ -144,14 +136,14 @@ def test_filters_out_incorrect_point_type(
 @pytest.mark.parametrize(
     "settlement_method",
     [
-        pytest.param(e_02, id="should filter out E02"),
+        pytest.param(SettlementMethod.NON_PROFILED.value),
     ],
 )
 def test_filters_out_incorrect_settlement_method(
     settlement_method: str, time_series_row_factory: Callable[..., DataFrame]
 ) -> None:
     """
-    Aggregator should filter out all non "D01" SettlementMethod rows
+    Aggregator should filter out all non flex SettlementMethod rows
     """
     df = time_series_row_factory(settlement_method=settlement_method)
     aggregated_df = aggregate_flex_consumption_ga_brp_es(df)
@@ -253,7 +245,7 @@ def test_flex_consumption_test_filter_by_domain_is_present(
     aggregated_df = _aggregate_per_ga_and_brp_and_es(
         df,
         InputMeteringPointType.CONSUMPTION,
-        InputSettlementMethod.FLEX,
+        SettlementMethod.FLEX,
     )
     assert aggregated_df.count() == 1
 
@@ -265,6 +257,6 @@ def test_flex_consumption_test_filter_by_domain_is_not_present(
     aggregated_df = _aggregate_per_ga_and_brp_and_es(
         df,
         InputMeteringPointType.CONSUMPTION,
-        InputSettlementMethod.NON_PROFILED,
+        SettlementMethod.NON_PROFILED,
     )
     assert aggregated_df.count() == 0
