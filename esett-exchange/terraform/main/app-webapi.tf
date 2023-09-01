@@ -23,3 +23,11 @@ module "app_webapi" {
     "DatabaseSettings:ConnectionString"    = local.MS_ESETT_EXCHANGE_CONNECTION_STRING
   }
 }
+
+module "kvs_app_esett_webapi_base_url" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
+
+  name         = "app-esett-webapi-base-url"
+  value        = "https://${module.app_webapi.default_hostname}"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
