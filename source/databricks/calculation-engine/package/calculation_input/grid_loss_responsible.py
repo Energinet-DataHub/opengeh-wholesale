@@ -16,7 +16,6 @@ By having a conftest.py in this directory, we are able to add all packages
 defined in the geh_stream directory in our tests.
 """
 
-import os
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.types import StringType, StructType, StructField, TimestampType
 from package.constants import Colname
@@ -44,11 +43,6 @@ GRID_AREA_RESPONSIBLE = [
 
 
 def get_grid_loss_responsible(grid_areas: list[str]) -> DataFrame:
-
-    # script_dir = os.path.dirname(os.path.normpath(__file__))
-    # file_path = os.path.join(script_dir, 'GridLossResponsible.csv')
-    # grid_loss_responsible_df = spark.read.option("header", True).csv(file_path, schema=schema)
-
     grid_loss_responsible_df = _get_all_grid_loss_responsible()
 
     grid_loss_responsible_df = grid_loss_responsible_df.withColumn(
