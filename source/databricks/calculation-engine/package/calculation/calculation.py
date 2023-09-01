@@ -17,6 +17,7 @@ from pyspark.sql import SparkSession
 from package.codelists import ProcessType
 import package.calculation_input as input
 from package.calculation_output.wholesale_calculation_result_writer import WholesaleCalculationResultWriter
+from package.infrastructure import log
 from .calculator_args import CalculatorArgs
 from . import energy_calculation, wholesale_calculation
 from . import setup
@@ -51,7 +52,11 @@ def execute(args: CalculatorArgs, spark: SparkSession) -> None:
         args.time_zone,
     )
 
+    log(f"Done with energy calcualtion, and process type is: {args.batch_process_type.value}")
+
     if args.batch_process_type == ProcessType.WHOLESALE_FIXING:
+        log(f"Executing wholesale calculation for batch {args.batch_id}")
+
         wholesale_calculation_result_writer = WholesaleCalculationResultWriter(
             args.batch_id,
             args.batch_process_type,

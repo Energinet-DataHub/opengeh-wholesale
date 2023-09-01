@@ -21,6 +21,7 @@ from package.codelists import ChargeResolution, InputMeteringPointType
 from package.constants import Colname
 from package.calculation_input import CalculationInputReader
 from package.calculation_output.wholesale_calculation_result_writer import WholesaleCalculationResultWriter
+from package.infrastructure import log
 
 
 def execute(
@@ -64,6 +65,7 @@ def _calculate_tariff_charges(
     )
 
     hourly_tariff_per_ga_co_es = calculate_tariff_price_per_ga_co_es(tariffs_hourly)
+    log("Ready to write wholesale calculation result. Row count: " + str(hourly_tariff_per_ga_co_es.count()))
     wholesale_calculation_result_writer.write(hourly_tariff_per_ga_co_es)
 
 

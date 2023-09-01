@@ -15,17 +15,27 @@ from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, sum, count, lit
 from package.codelists import ChargeQuality, ChargeUnit
 from package.constants import Colname
+from package.infrastructure import log
 
 
 def calculate_tariff_price_per_ga_co_es(tariffs: DataFrame) -> DataFrame:
+
+    log(f"tariffs count: {tariffs.count()}")
+
     # sum quantity and count charges
     agg_df = sum_quantity_and_count_charges(tariffs)
+
+    log(f"agg_df count: {agg_df.count()}")
 
     # select distinct tariffs
     df = select_distinct_tariffs(tariffs)  # Why is this needed?
 
+    log(f"df distinct count: {df.count()}")
+
     # join with agg_df
     df = join_with_agg_df(df, agg_df)
+
+    log(f"df = join_with_agg_df: {df.count()}")
 
     return df.select(
         Colname.energy_supplier_id,
