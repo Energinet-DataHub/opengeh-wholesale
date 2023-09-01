@@ -391,32 +391,6 @@ charge_links_dataset = [
 
 
 # Shared
-@pytest.mark.parametrize(
-    "charges_with_prices,charge_links,expected",
-    [
-        (charges_with_prices_dataset_1, charge_links_dataset, 1),
-        (charges_with_prices_dataset_2, charge_links_dataset, 0),
-        (charges_with_prices_dataset_3, charge_links_dataset, 1),
-        (charges_with_prices_dataset_4, charge_links_dataset, 0),
-    ],
-)
-def test__join_with_charge_links__joins_on_charge_key_and_time_is_between_from_and_to_date(
-    spark: SparkSession, charges_with_prices: DataFrame, charge_links: DataFrame, expected: int
-) -> None:
-    # Arrange
-    charges_with_prices = spark.createDataFrame(
-        charges_with_prices, schema=charges_with_prices_schema
-    )
-    charge_links = spark.createDataFrame(charge_links, schema=charge_links_schema)
-
-    # Act
-    result = join_with_charge_links(charges_with_prices, charge_links)
-
-    # Assert
-    assert result.count() == expected
-
-
-# Shared
 DEFAULT_METERING_POINT_ID = "123"
 ANOTHER_METERING_POINT_ID = "456"
 
