@@ -28,7 +28,6 @@ public class CompositionRootTests
     [Fact]
     public void AllServicesConstructSuccessfully()
     {
-        // TODO BJM: Does this find problems with `IHostedService`s?
         Host.CreateDefaultBuilder()
             .ConfigureWebHostDefaults(webBuilder =>
             {
