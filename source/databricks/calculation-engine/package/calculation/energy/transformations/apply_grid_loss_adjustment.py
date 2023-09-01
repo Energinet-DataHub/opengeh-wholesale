@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from package.codelists import MeteringPointType
+from package.codelists import InputMeteringPointType
 from package.calculation.energy.transformations import (
     create_dataframe_from_aggregation_result_schema
 )
@@ -35,7 +35,7 @@ def adjust_production(
         negative_grid_loss_result_df,
         grid_loss_responsible_df,
         Colname.is_negative_grid_loss_responsible,
-        MeteringPointType.PRODUCTION.value
+        InputMeteringPointType.PRODUCTION.value
     )
 
 
@@ -50,7 +50,7 @@ def adjust_flex_consumption(
         positive_grid_loss_result_df,
         grid_loss_responsible_df,
         Colname.is_positive_grid_loss_responsible,
-        MeteringPointType.CONSUMPTION.value
+        InputMeteringPointType.CONSUMPTION.value
     )
 
 

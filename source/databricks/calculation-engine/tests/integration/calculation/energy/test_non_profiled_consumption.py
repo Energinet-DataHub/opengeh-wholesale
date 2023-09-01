@@ -14,7 +14,7 @@
 from decimal import Decimal
 from datetime import datetime
 from package.codelists import (
-    MeteringPointType,
+    InputMeteringPointType,
     MeteringPointResolution,
     TimeSeriesQuality,
 )
@@ -121,12 +121,12 @@ def agg_result_factory(
                     MeteringPointResolution.HOUR.value,
                 ],
                 Colname.metering_point_type: [
-                    MeteringPointType.CONSUMPTION.value,
-                    MeteringPointType.CONSUMPTION.value,
-                    MeteringPointType.CONSUMPTION.value,
-                    MeteringPointType.CONSUMPTION.value,
-                    MeteringPointType.CONSUMPTION.value,
-                    MeteringPointType.CONSUMPTION.value,
+                    InputMeteringPointType.CONSUMPTION.value,
+                    InputMeteringPointType.CONSUMPTION.value,
+                    InputMeteringPointType.CONSUMPTION.value,
+                    InputMeteringPointType.CONSUMPTION.value,
+                    InputMeteringPointType.CONSUMPTION.value,
+                    InputMeteringPointType.CONSUMPTION.value,
                 ],
             }
         )

@@ -35,30 +35,14 @@
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
     </ItemGroup>
-  
+
     <ItemGroup>
-      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\enums\aggregation-level.json">
-        <Link>DeltaTableContracts\Contracts\Enums\aggregation-level.json</Link>
-      </EmbeddedResource>
-      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\calculation-file-paths.yml">
-        <Link>BasisData\calculation-file-paths.yml</Link>
-      </EmbeddedResource>
-      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\enums\process-type.json">
-        <Link>DeltaTableContracts\Contracts\Enums\process-type.json</Link>
-      </EmbeddedResource>
-      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\enums\quantity-quality.json">
-        <Link>DeltaTableContracts\Contracts\Enums\quantity-quality.json</Link>
-      </EmbeddedResource>
-      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\enums\settlement-method.json">
-        <Link>DeltaTableContracts\Contracts\Enums\settlement-method.json</Link>
-      </EmbeddedResource>
-      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\enums\time-series-type.json">
-        <Link>DeltaTableContracts\Contracts\Enums\time-series-type.json</Link>
-      </EmbeddedResource>
-      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\result-table-column-names.json">
-        <Link>DeltaTableContracts\Contracts\result-table-column-names.json</Link>
+      <EmbeddedResource Include="..\..\..\..\databricks\calculation-engine\contracts\**">
+        <Link>DeltaTableContracts\%(RecursiveDir)%(Filename)%(Extension)</Link>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </EmbeddedResource>
     </ItemGroup>
+
     <ItemGroup>
       <ProjectReference Include="..\..\Test.Core\Test.Core.csproj" />
       <ProjectReference Include="..\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" />

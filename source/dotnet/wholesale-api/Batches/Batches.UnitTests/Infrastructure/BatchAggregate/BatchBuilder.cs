@@ -22,8 +22,10 @@ namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchAggr
 
 public class BatchBuilder
 {
-    private readonly Instant _periodStart;
-    private readonly Instant _periodEnd;
+    public static readonly DateTimeOffset FirstOfJanuary2022 = DateTimeOffset.Parse("2021-12-31T23:00Z");
+
+    private Instant _periodStart;
+    private Instant _periodEnd;
 
     private BatchExecutionState? _state;
     private List<GridAreaCode> _gridAreaCodes = new() { new("805") };
@@ -33,9 +35,8 @@ public class BatchBuilder
     {
         // Create a valid period representing January in a +01:00 offset (e.g. time zone "Europe/Copenhagen")
         // In order to be valid the last millisecond must be omitted
-        var firstOfJanuary = DateTimeOffset.Parse("2021-12-31T23:00Z");
-        _periodStart = Instant.FromDateTimeOffset(firstOfJanuary);
-        _periodEnd = Instant.FromDateTimeOffset(firstOfJanuary.AddMonths(1));
+        _periodStart = Instant.FromDateTimeOffset(FirstOfJanuary2022);
+        _periodEnd = Instant.FromDateTimeOffset(FirstOfJanuary2022.AddMonths(1));
     }
 
     public BatchBuilder WithStateSubmitted()
@@ -77,6 +78,18 @@ public class BatchBuilder
     public BatchBuilder WithProcessType(ProcessType processType)
     {
         _processType = processType;
+        return this;
+    }
+
+    public BatchBuilder WithPeriodStart(Instant periodStart)
+    {
+        _periodStart = periodStart;
+        return this;
+    }
+
+    public BatchBuilder WithPeriodEnd(Instant periodEnd)
+    {
+        _periodEnd = periodEnd;
         return this;
     }
 
