@@ -18,7 +18,7 @@ from unittest.mock import patch, Mock
 from package.calculation_input import get_metering_point_periods_df
 from package.codelists import (
     InputMeteringPointType,
-    InputSettlementMethod,
+    SettlementMethod,
     MeteringPointResolution,
 )
 from package.constants import Colname
@@ -33,7 +33,7 @@ grid_area_link_id = "the-grid-area-link-id"
 metering_point_id = "the-metering-point-id"
 energy_supplier_id = "the-energy-supplier-id"
 metering_point_type = InputMeteringPointType.PRODUCTION.value
-settlement_method = InputSettlementMethod.FLEX.value
+settlement_method = SettlementMethod.FLEX.value
 resolution = MeteringPointResolution.HOUR.value
 date_time_formatting_string = "%Y-%m-%dT%H:%M"
 # +02:00 dates (e.g. danish DST)

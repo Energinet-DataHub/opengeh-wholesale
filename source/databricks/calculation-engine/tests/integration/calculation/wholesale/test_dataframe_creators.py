@@ -23,7 +23,7 @@ from package.calculation.wholesale.schemas.charges_schema import (
     charge_prices_schema,
 )
 from package.calculation_input.schemas import time_series_point_schema, metering_point_period_schema
-from tests.helpers import DataframeDefaults
+from tests.integration.calculation.dataframe_defaults import DataframeDefaults
 
 
 def test_calculate_daily_subscription_price(calculate_daily_subscription_price_factory):

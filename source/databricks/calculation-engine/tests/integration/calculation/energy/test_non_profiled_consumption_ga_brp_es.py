@@ -20,7 +20,7 @@ from package.calculation.energy.aggregators import (
 )
 from package.codelists import (
     InputMeteringPointType,
-    InputSettlementMethod,
+    SettlementMethod,
     TimeSeriesQuality,
 )
 from package.calculation.energy.schemas import aggregation_result_schema
@@ -33,7 +33,7 @@ from pandas.core.frame import DataFrame as PandasDataFrame
 
 e_17 = InputMeteringPointType.CONSUMPTION.value
 e_18 = InputMeteringPointType.PRODUCTION.value
-e_02 = InputSettlementMethod.NON_PROFILED.value
+e_02 = SettlementMethod.NON_PROFILED.value
 
 # Default time series data point values
 default_point_type = e_17
@@ -222,7 +222,7 @@ def test_consumption_test_filter_by_domain_is_pressent(
     aggregated_df = _aggregate_per_ga_and_brp_and_es(
         df,
         InputMeteringPointType.CONSUMPTION,
-        InputSettlementMethod.NON_PROFILED,
+        SettlementMethod.NON_PROFILED,
     )
     assert aggregated_df.count() == 1
 
@@ -234,7 +234,7 @@ def test_consumption_test_filter_by_domain_is_not_pressent(
     aggregated_df = _aggregate_per_ga_and_brp_and_es(
         df,
         InputMeteringPointType.CONSUMPTION,
-        InputSettlementMethod.FLEX,
+        SettlementMethod.FLEX,
     )
     assert aggregated_df.count() == 0
 

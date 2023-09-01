@@ -13,7 +13,8 @@
 # limitations under the License.
 
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import concat_ws, col
+from pyspark.sql.functions import concat_ws, col, when, lit
+from package.codelists import InputSettlementMethod, SettlementMethod
 from package.constants import Colname
 from package.infrastructure import paths
 
@@ -26,7 +27,9 @@ class CalculationInputReader:
         self.__spark = spark
 
     def read_metering_point_periods(self) -> DataFrame:
-        return self.__spark.read.table(f"{paths.INPUT_DATABASE_NAME}.{paths.METERING_POINT_PERIODS_TABLE_NAME}")
+        df = self.__spark.read.table(f"{paths.INPUT_DATABASE_NAME}.{paths.METERING_POINT_PERIODS_TABLE_NAME}")
+        df = _fix_settlement_method(df)
+        return df
 
     def read_time_series_points(self) -> DataFrame:
         return self.__spark.read.table(f"{paths.INPUT_DATABASE_NAME}.{paths.TIME_SERIES_POINTS_TABLE_NAME}")
@@ -45,6 +48,14 @@ class CalculationInputReader:
         df = self.__spark.read.table(f"{paths.INPUT_DATABASE_NAME}.{paths.CHARGE_PRICE_POINTS_TABLE_NAME}")
         df = _add_charge_key_column(df)
         return df
+
+
+def _fix_settlement_method(df: DataFrame) -> DataFrame:
+    return df.withColumn(
+        Colname.settlement_method,
+        when(col(Colname.settlement_method) == InputSettlementMethod.FLEX.value, lit(SettlementMethod.FLEX.value))
+        .when(col(Colname.settlement_method) == InputSettlementMethod.NON_PROFILED.value, lit(SettlementMethod.NON_PROFILED.value))
+    )
 
 
 def _add_charge_key_column(charge_df: DataFrame) -> DataFrame:
