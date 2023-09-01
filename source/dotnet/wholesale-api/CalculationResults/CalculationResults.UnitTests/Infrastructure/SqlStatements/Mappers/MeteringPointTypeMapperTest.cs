@@ -28,7 +28,7 @@ public class MeteringPointTypeMapperTests
     [Fact]
     public async Task QuantityQuality_Matches_Contract()
     {
-        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.enums.metering-point-type.json");
+        await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.enums.metering-point-type.json");
         await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<MeteringPointType>(stream);
     }
 

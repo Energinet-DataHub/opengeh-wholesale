@@ -26,7 +26,7 @@ public class QuantityQualityMapperTests
     [Fact]
     public async Task QuantityQuality_Matches_Contract()
     {
-        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.enums.quantity-quality.json");
+        await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.enums.quantity-quality.json");
         await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<QuantityQuality>(stream);
     }
 
@@ -48,7 +48,7 @@ public class QuantityQualityMapperTests
     public async Task FromDeltaTableValue_MapsAllValidDeltaTableValues()
     {
         // Arrange
-        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.enums.quantity-quality.json");
+        await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.enums.quantity-quality.json");
         var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
 
         foreach (var validDeltaValue in validDeltaValues)
