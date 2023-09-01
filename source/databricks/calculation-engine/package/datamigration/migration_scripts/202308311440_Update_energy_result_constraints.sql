@@ -1,4 +1,4 @@
-ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_resultslt
+ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
     DROP CONSTRAINT IF EXISTS energy_supplier_id_chk
 GO
 ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
