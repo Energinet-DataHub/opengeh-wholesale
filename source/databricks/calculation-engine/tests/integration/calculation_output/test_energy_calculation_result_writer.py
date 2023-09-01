@@ -144,7 +144,7 @@ def test__write__writes_aggregation_level(
 
 
 # The batch id is used in parameterized test executed using xdist, which does not allow parameters to change
-batch_id = "9252d7a0-4363-42cc-a2d6-e04c026523f8"  # Needed in both test param and test implementation
+batch_id = "some batch id"  # Needed in both test param and test implementation
 
 
 @pytest.mark.parametrize(
