@@ -26,7 +26,6 @@ from package.codelists import (
     ChargeType,
     ChargeUnit,
     MeteringPointType,
-    MeteringPointType,
     ProcessType,
     SettlementMethod,
 )
