@@ -28,7 +28,7 @@ public class ProcessTypeMapperTests
     [Fact]
     public async Task ProcessType_Matches_Contract()
     {
-        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.enums.process-type.json");
+        await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.enums.process-type.json");
         await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<ProcessType>(stream);
     }
 
@@ -42,7 +42,7 @@ public class ProcessTypeMapperTests
     public async Task ToDeltaTableValue_ReturnsValidDeltaValue(ProcessType processType)
     {
         // Arrange
-        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.enums.process-type.json");
+        await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.enums.process-type.json");
         var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
 
         // Act
