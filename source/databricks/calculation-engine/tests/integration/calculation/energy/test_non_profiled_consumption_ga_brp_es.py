@@ -19,7 +19,7 @@ from package.calculation.energy.aggregators import (
     _aggregate_per_ga_and_brp_and_es,
 )
 from package.codelists import (
-    InputMeteringPointType,
+    MeteringPointType,
     SettlementMethod,
     TimeSeriesQuality,
 )
@@ -31,13 +31,9 @@ import pytest
 import pandas as pd
 from pandas.core.frame import DataFrame as PandasDataFrame
 
-e_17 = InputMeteringPointType.CONSUMPTION.value
-e_18 = InputMeteringPointType.PRODUCTION.value
-e_02 = SettlementMethod.NON_PROFILED.value
-
 # Default time series data point values
-default_point_type = e_17
-default_settlement_method = e_02
+default_point_type = MeteringPointType.CONSUMPTION.value
+default_settlement_method = SettlementMethod.NON_PROFILED.value
 default_domain = "D1"
 default_responsible = "R1"
 default_supplier = "S1"
@@ -118,9 +114,9 @@ def test_consumption_supplier_aggregator_filters_out_incorrect_point_type(
     time_series_row_factory: Callable[..., DataFrame],
 ) -> None:
     """
-    Aggregator should filter out all non "E17" MarketEvaluationPointType rows
+    Aggregator should filter out all non-consumption MarketEvaluationPointType rows
     """
-    time_series = time_series_row_factory(point_type=e_18)
+    time_series = time_series_row_factory(point_type=MeteringPointType.PRODUCTION.value)
     aggregated_df = aggregate_non_profiled_consumption_ga_brp_es(time_series)
     assert aggregated_df.count() == 0
 
@@ -221,7 +217,7 @@ def test_consumption_test_filter_by_domain_is_pressent(
     df = time_series_row_factory()
     aggregated_df = _aggregate_per_ga_and_brp_and_es(
         df,
-        InputMeteringPointType.CONSUMPTION,
+        MeteringPointType.CONSUMPTION,
         SettlementMethod.NON_PROFILED,
     )
     assert aggregated_df.count() == 1
@@ -233,7 +229,7 @@ def test_consumption_test_filter_by_domain_is_not_pressent(
     df = time_series_row_factory()
     aggregated_df = _aggregate_per_ga_and_brp_and_es(
         df,
-        InputMeteringPointType.CONSUMPTION,
+        MeteringPointType.CONSUMPTION,
         SettlementMethod.FLEX,
     )
     assert aggregated_df.count() == 0

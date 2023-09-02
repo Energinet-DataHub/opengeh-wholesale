@@ -17,7 +17,7 @@ from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, when
 import package.calculation.wholesale.wholesale_initializer as init
 from package.calculation.wholesale.tariff_calculators import calculate_tariff_price_per_ga_co_es
-from package.codelists import ChargeResolution, InputMeteringPointType
+from package.codelists import ChargeResolution, MeteringPointType
 from package.constants import Colname
 from package.calculation_input import CalculationInputReader
 from package.calculation_output.wholesale_calculation_result_writer import WholesaleCalculationResultWriter
@@ -69,6 +69,6 @@ def _calculate_tariff_charges(
 
 def _get_production_and_consumption_metering_points(metering_points_periods_df: DataFrame) -> DataFrame:
     return metering_points_periods_df.filter(
-        (col(Colname.metering_point_type) == InputMeteringPointType.CONSUMPTION.value)
-        | (col(Colname.metering_point_type) == InputMeteringPointType.PRODUCTION.value)
+        (col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value)
+        | (col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value)
     )
