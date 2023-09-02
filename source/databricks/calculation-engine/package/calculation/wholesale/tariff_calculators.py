@@ -22,7 +22,7 @@ def calculate_tariff_price_per_ga_co_es(tariffs: DataFrame) -> DataFrame:
 
     agg_df = _sum_quantity_and_count_charges(tariffs)
 
-    df = _join_with_agg_df(df, agg_df)
+    df = _join_with_agg_df(tariffs, agg_df)
 
     return df.select(
         Colname.energy_supplier_id,
