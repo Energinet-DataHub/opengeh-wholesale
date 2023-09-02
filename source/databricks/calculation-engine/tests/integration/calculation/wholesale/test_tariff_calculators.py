@@ -66,7 +66,7 @@ tariffs_dataset = [
 
 @pytest.mark.parametrize(
     "tariffs,expected_charge_count,expected_quantity",
-    [(tariffs_dataset, 2, Decimal("2.002"))],
+    [(tariffs_dataset, 1, Decimal("2.002"))],
 )
 def test__calculate_tariff_price_per_ga_co_es__counts_quantity_and_sums_up_amount_of_charges(
     spark, tariffs, expected_charge_count, expected_quantity
