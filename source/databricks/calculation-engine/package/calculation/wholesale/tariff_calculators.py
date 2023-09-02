@@ -18,14 +18,11 @@ from package.constants import Colname
 
 
 def calculate_tariff_price_per_ga_co_es(tariffs: DataFrame) -> DataFrame:
-    # sum quantity and count charges
-    agg_df = sum_quantity_and_count_charges(tariffs)
+    """Calculate tariff price per grid area, charge owner and energy supplier."""
 
-    # select distinct tariffs
-    df = select_distinct_tariffs(tariffs)  # Why is this needed?
+    agg_df = _sum_quantity_and_count_charges(tariffs)
 
-    # join with agg_df
-    df = join_with_agg_df(df, agg_df)
+    df = _join_with_agg_df(df, agg_df)
 
     return df.select(
         Colname.energy_supplier_id,
@@ -48,7 +45,7 @@ def calculate_tariff_price_per_ga_co_es(tariffs: DataFrame) -> DataFrame:
     )
 
 
-def sum_quantity_and_count_charges(tariffs: DataFrame) -> DataFrame:
+def _sum_quantity_and_count_charges(tariffs: DataFrame) -> DataFrame:
     agg_df = (
         tariffs.groupBy(
             Colname.grid_area,
@@ -67,25 +64,7 @@ def sum_quantity_and_count_charges(tariffs: DataFrame) -> DataFrame:
     return agg_df
 
 
-def select_distinct_tariffs(tariffs: DataFrame) -> DataFrame:
-    df = tariffs.select(
-        tariffs[Colname.charge_key],
-        tariffs[Colname.charge_id],
-        tariffs[Colname.charge_type],
-        tariffs[Colname.charge_owner],
-        tariffs[Colname.charge_tax],
-        tariffs[Colname.charge_resolution],
-        tariffs[Colname.charge_time],
-        tariffs[Colname.charge_price],
-        tariffs[Colname.energy_supplier_id],
-        tariffs[Colname.metering_point_type],
-        tariffs[Colname.settlement_method],
-        tariffs[Colname.grid_area],
-    ).distinct()
-    return df
-
-
-def join_with_agg_df(df: DataFrame, agg_df: DataFrame) -> DataFrame:
+def _join_with_agg_df(df: DataFrame, agg_df: DataFrame) -> DataFrame:
     df = (
         df.join(
             agg_df,
@@ -99,7 +78,7 @@ def join_with_agg_df(df: DataFrame, agg_df: DataFrame) -> DataFrame:
             ],
             "inner",
         )
-        .withColumn("total_amount", col(Colname.charge_price) * col(Colname.total_quantity))
+        .withColumn(Colname.total_amount, col(Colname.charge_price) * col(Colname.total_quantity))
         .orderBy(
             [
                 Colname.charge_key,

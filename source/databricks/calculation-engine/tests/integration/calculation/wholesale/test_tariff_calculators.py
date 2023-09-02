@@ -20,8 +20,7 @@ from tests.helpers.test_schemas import (
 )
 from package.codelists import ChargeType, SettlementMethod
 from package.calculation.wholesale.tariff_calculators import (
-    select_distinct_tariffs,
-    join_with_agg_df,
+    _join_with_agg_df,
     calculate_tariff_price_per_ga_co_es,
 )
 import pytest
@@ -30,22 +29,6 @@ from package.constants import Colname
 
 
 tariffs_dataset = [
-    (
-        "001-D01-001",
-        "001",
-        ChargeType.TARIFF.value,
-        "001",
-        "P1D",
-        "No",
-        datetime(2020, 1, 1, 0, 0),
-        Decimal("200.50"),
-        SettlementMethod.FLEX.value,
-        "1",
-        "E17",
-        "E22",
-        "1",
-        Decimal("1.0005"),
-    ),
     (
         "001-D01-001",
         "001",
@@ -98,20 +81,6 @@ def test__calculate_tariff_price_per_ga_co_es__counts_quantity_and_sums_up_amoun
     result_collect = result.collect()
     assert result_collect[0][Colname.charge_count] == expected_charge_count
     assert result_collect[0][Colname.total_quantity] == expected_quantity
-
-
-@pytest.mark.parametrize("tariffs,expected_count", [(tariffs_dataset, 2)])
-def test__select_distinct_tariffs__selects_distinct_tariffs(
-    spark, tariffs, expected_count
-):
-    # Arrange
-    tariffs = spark.createDataFrame(tariffs, schema=tariff_schema)
-
-    # Act
-    result = select_distinct_tariffs(tariffs)
-
-    # Assert
-    assert result.count() == expected_count
 
 
 tariffs_distinct_dataset = [
@@ -180,7 +149,7 @@ def test__join_with_agg_df__gets_the_expected_total_amount(
     agg_df = spark.createDataFrame(agg_df, schema=tariff_sum_and_count_schema)
 
     # Act
-    result = join_with_agg_df(tariffs, agg_df)
+    result = _join_with_agg_df(tariffs, agg_df)
 
     # Assert
     assert result.collect()[0][Colname.total_amount] == expected_total_amount
