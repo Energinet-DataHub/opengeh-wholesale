@@ -114,7 +114,6 @@ public class IntegrationEventProviderTests
         completedBatch.PublishedTime.Should().Be(instant);
     }
 
-    // TODO BJM: Redundant?
     [Theory]
     [InlineAutoMoqData]
     public void GetAsync_WhenMultipleUnpublishedBatches_FetchesResultsForEach(
