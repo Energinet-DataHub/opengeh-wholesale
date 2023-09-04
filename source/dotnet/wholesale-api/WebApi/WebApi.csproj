@@ -24,14 +24,14 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AspNetCore.HealthChecks.AzureServiceBus" Version="6.1.0" />
+    <PackageReference Include="AspNetCore.HealthChecks.AzureServiceBus" Version="7.0.0" />
     <PackageReference Include="Energinet.DataHub.Core.App.Common.Security" Version="7.5.1" />
     <PackageReference Include="Energinet.DataHub.Core.App.WebApp" Version="7.5.1" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.1.0" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="7.0.8" />
-    <PackageReference Include="Microsoft.Extensions.Logging.AzureAppServices" Version="7.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Logging.AzureAppServices" Version="7.0.10" />
     <PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" Version="7.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageReference Update="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.3">

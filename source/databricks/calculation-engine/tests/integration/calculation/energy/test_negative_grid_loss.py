@@ -14,7 +14,7 @@
 from decimal import Decimal
 from datetime import datetime
 from package.codelists import (
-    InputMeteringPointType,
+    MeteringPointType,
     MeteringPointResolution,
     TimeSeriesQuality,
 )
@@ -80,7 +80,7 @@ def agg_result_factory(
                     Colname.sum_quantity: Decimal(-12.567),
                     Colname.quality: TimeSeriesQuality.ESTIMATED.value,
                     Colname.resolution: MeteringPointResolution.HOUR.value,
-                    Colname.metering_point_type: InputMeteringPointType.EXCHANGE.value,
+                    Colname.metering_point_type: MeteringPointType.EXCHANGE.value,
                 },
                 {
                     Colname.grid_area: str(2),
@@ -91,7 +91,7 @@ def agg_result_factory(
                     Colname.sum_quantity: Decimal(34.32),
                     Colname.quality: TimeSeriesQuality.ESTIMATED.value,
                     Colname.resolution: MeteringPointResolution.HOUR.value,
-                    Colname.metering_point_type: InputMeteringPointType.EXCHANGE.value,
+                    Colname.metering_point_type: MeteringPointType.EXCHANGE.value,
                 },
                 {
                     Colname.grid_area: str(3),
@@ -102,7 +102,7 @@ def agg_result_factory(
                     Colname.sum_quantity: Decimal(0.0),
                     Colname.quality: TimeSeriesQuality.ESTIMATED.value,
                     Colname.resolution: MeteringPointResolution.HOUR.value,
-                    Colname.metering_point_type: InputMeteringPointType.EXCHANGE.value,
+                    Colname.metering_point_type: MeteringPointType.EXCHANGE.value,
                 },
             ],
             ignore_index=True,
