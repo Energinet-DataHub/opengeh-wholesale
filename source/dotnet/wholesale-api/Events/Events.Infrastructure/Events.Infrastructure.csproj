@@ -6,7 +6,7 @@
   <ItemGroup>
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.16.1" />
     <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.15.0" />
-    <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="7.5.1" />
+    <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="7.5.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.8" />
     <PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" Version="7.0.0" />
     <PackageReference Include="Google.Protobuf" Version="3.23.4" />
