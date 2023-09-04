@@ -17,35 +17,39 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
 using Energinet.DataHub.Wholesale.Events.Application.Options;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Events.IntegrationTests.Fixture;
 
 public class ServiceBusSenderFixture : IAsyncLifetime, IAsyncDisposable
 {
-    private readonly ServiceBusClient _client;
-    private readonly ServiceBusSender _sender;
-    private readonly string _connectionString;
     private readonly ServiceBusResourceProvider _serviceBusResourceProvider;
     private readonly string _queueName = "sbq-wholesale-inbox";
 
     public ServiceBusSenderFixture()
     {
         var integrationTestConfiguration = new IntegrationTestConfiguration();
-        _connectionString = integrationTestConfiguration.ServiceBusConnectionString;
+        ServiceBusOptions = Options.Create(
+            new ServiceBusOptions
+            {
+                SERVICE_BUS_LISTEN_CONNECTION_STRING = integrationTestConfiguration.ServiceBusConnectionString,
+            });
 
-        _client = new ServiceBusClient(_connectionString);
-        _sender = _client.CreateSender(_queueName);
         _serviceBusResourceProvider = new ServiceBusResourceProvider(
-            _connectionString,
+            ServiceBusOptions.Value.SERVICE_BUS_LISTEN_CONNECTION_STRING,
             new TestDiagnosticsLogger());
     }
 
+    public IOptions<ServiceBusOptions> ServiceBusOptions { get; }
+
     public async Task InitializeAsync()
     {
-        await _serviceBusResourceProvider
-            .BuildQueue(_queueName)
-            .SetEnvironmentVariableToQueueName(nameof(ServiceBusOptions.SERVICE_BUS_INBOX_QUEUE_NAME))
+        var builder = _serviceBusResourceProvider
+            .BuildQueue(_queueName);
+        builder
+            .Do(queueProperties => ServiceBusOptions.Value.SERVICE_BUS_INBOX_QUEUE_NAME = queueProperties.Name);
+        await builder
             .CreateAsync();
     }
 
@@ -63,7 +67,9 @@ public class ServiceBusSenderFixture : IAsyncLifetime, IAsyncDisposable
 
     internal Task PublishAsync(string eventName, byte[] eventPayload)
     {
-        return _sender.SendMessageAsync(CreateAggregatedTimeSeriesRequestMessage(eventName, eventPayload));
+        var client = new ServiceBusClient(ServiceBusOptions.Value.SERVICE_BUS_LISTEN_CONNECTION_STRING);
+        var sender = client.CreateSender(ServiceBusOptions.Value.SERVICE_BUS_INBOX_QUEUE_NAME);
+        return sender.SendMessageAsync(CreateAggregatedTimeSeriesRequestMessage(eventName, eventPayload));
     }
 
     private ServiceBusMessage CreateAggregatedTimeSeriesRequestMessage(string eventName, byte[] eventPayload)
@@ -75,8 +81,6 @@ public class ServiceBusSenderFixture : IAsyncLifetime, IAsyncDisposable
 
     private async ValueTask DisposeCoreAsync()
     {
-        await _client.DisposeAsync().ConfigureAwait(false);
-        await _sender.DisposeAsync().ConfigureAwait(false);
         await _serviceBusResourceProvider.DisposeAsync().ConfigureAwait(false);
     }
 }

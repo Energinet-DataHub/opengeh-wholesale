@@ -75,12 +75,7 @@ public static class EventsRegistration
 
     private static void RegisterHostedServices(IServiceCollection serviceCollection, Energinet.DataHub.Wholesale.Events.Application.Options.ServiceBusOptions serviceBusOptions)
     {
-        serviceCollection.AddHostedService<AggregatedTimeSeriesServiceBusWorker>(
-            provider =>
-                new AggregatedTimeSeriesServiceBusWorker(
-                    provider.GetRequiredService<IAggregatedTimeSeriesRequestHandler>(),
-                    provider.GetRequiredService<ILogger<AggregatedTimeSeriesRequestHandler>>(),
-                    serviceBusOptions));
+        serviceCollection.AddHostedService<AggregatedTimeSeriesServiceBusWorker>();
         serviceCollection.AddHostedService<RegisterCompletedBatchesTrigger>();
         serviceCollection
             .AddHealthChecks()

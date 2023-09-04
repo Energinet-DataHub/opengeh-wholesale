@@ -17,6 +17,7 @@ using Energinet.DataHub.Wholesale.Events.Application.Options;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.Workers;
 
@@ -28,18 +29,18 @@ public class AggregatedTimeSeriesServiceBusWorker : BackgroundService, IAsyncDis
     private readonly IAggregatedTimeSeriesRequestHandler _aggregatedTimeSeriesRequestHandler;
     private readonly ServiceBusClient _serviceBusClient;
     private readonly ILogger<AggregatedTimeSeriesRequestHandler> _logger;
-    private readonly ServiceBusOptions _serviceBusOptions;
+    private readonly ServiceBusOptions _options;
     private ServiceBusProcessor? _serviceBusProcessor;
 
     public AggregatedTimeSeriesServiceBusWorker(
         IAggregatedTimeSeriesRequestHandler aggregatedTimeSeriesRequestHandler,
         ILogger<AggregatedTimeSeriesRequestHandler> logger,
-        ServiceBusOptions serviceBusOptions)
+        IOptions<ServiceBusOptions> options)
     {
-        _serviceBusClient = new ServiceBusClient(serviceBusOptions.SERVICE_BUS_LISTEN_CONNECTION_STRING);
+        _serviceBusClient = new ServiceBusClient(options.Value.SERVICE_BUS_LISTEN_CONNECTION_STRING);
         _aggregatedTimeSeriesRequestHandler = aggregatedTimeSeriesRequestHandler;
         _logger = logger;
-        _serviceBusOptions = serviceBusOptions;
+        _options = options.Value;
     }
 
     public override async Task StopAsync(CancellationToken cancellationToken)
@@ -60,7 +61,7 @@ public class AggregatedTimeSeriesServiceBusWorker : BackgroundService, IAsyncDis
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _serviceBusProcessor = _serviceBusClient.CreateProcessor(_serviceBusOptions.SERVICE_BUS_INBOX_QUEUE_NAME);
+        _serviceBusProcessor = _serviceBusClient.CreateProcessor(_options.SERVICE_BUS_INBOX_QUEUE_NAME);
 
         _serviceBusProcessor.ProcessMessageAsync += ProcessMessageAsync;
         _serviceBusProcessor.ProcessErrorAsync += ProcessErrorAsync;

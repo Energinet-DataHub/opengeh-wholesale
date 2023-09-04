@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Events.Application.Options;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Energinet.DataHub.Wholesale.Events.Application.Workers;
 using Energinet.DataHub.Wholesale.Events.IntegrationTests.Fixture;
@@ -32,22 +31,22 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
         _sender = fixture;
     }
 
-
-    [Fact]
-    public async Task Can_Receive_aggregated_time_series_request_service_bus_message()
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task Can_Receive_aggregated_time_series_request_service_bus_message(
+        Mock<IAggregatedTimeSeriesRequestHandler> handlerMock,
+        Mock<ILogger<AggregatedTimeSeriesRequestHandler>> loggerMock)
     {
-        var handlerMock = new Mock<AggregatedTimeSeriesRequestHandler>();
-        var loggerMock = new Mock<ILogger<AggregatedTimeSeriesRequestHandler>>();
-
         var sut = new AggregatedTimeSeriesServiceBusWorker(
             handlerMock.Object,
             loggerMock.Object,
-            "HEJ CONNECTION STRING");
+            _sender.ServiceBusOptions);
 
         await sut.StartAsync(CancellationToken.None).ConfigureAwait(false);
 
-        await _sender.PublishAsync("kenneth", new byte[10]);
-
-        handlerMock.Verify(handler => handler.ProcessAsync(CancellationToken.None), Times.Once);
+        await _sender.PublishAsync("EventName", new byte[10]);
+        // time to await service bus to notify handler about a new message.
+        Thread.Sleep(1000);
+        handlerMock.Verify(handler => handler.ProcessAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 }
