@@ -69,6 +69,6 @@ def _calculate_tariff_charges(
 
 def _get_production_and_consumption_metering_points(metering_points_periods_df: DataFrame) -> DataFrame:
     return metering_points_periods_df.filter(
-        (col(Colname.metering_point_type) == InputMeteringPointType.CONSUMPTION.value)
+        (col(Colname.metering_point_type) != InputMeteringPointType.EXCHANGE.value)
         | (col(Colname.metering_point_type) == InputMeteringPointType.PRODUCTION.value)
     )
