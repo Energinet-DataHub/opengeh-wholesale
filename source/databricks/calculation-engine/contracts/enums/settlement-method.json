@@ -2,11 +2,11 @@
   "literals": [
     {
       "name": "FLEX",
-      "value": "D01"
+      "value": "flex"
     },
     {
       "name": "NON_PROFILED",
-      "value": "E02"
+      "value": "non_profiled"
     }
   ]
 }

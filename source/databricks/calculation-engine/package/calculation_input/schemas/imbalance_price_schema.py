@@ -14,7 +14,6 @@
 
 from pyspark.sql.types import (
     DecimalType,
-    IntegerType,
     StructField,
     StringType,
     TimestampType,
@@ -30,7 +29,6 @@ Imbalance prices originates at NOIS.
 Data must be stored in a Delta table.
 The table must be partitioned by the observation time elements: year/month/date.
 New data must be appended.
-TODO z-ordered desc by registration time?
 """
 imbalance_price_schema = StructType(
     [
@@ -47,15 +45,6 @@ imbalance_price_schema = StructType(
         # The time where the price applies in UTC.
         # Resolution is per hour.
         StructField("Time", TimestampType(), False),
-
-        # The year part of the `Time`. Used for partition.
-        StructField("Time_Year", IntegerType(), False),
-
-        # The month part of the `Time`. Used for partition.
-        StructField("Time_Month", IntegerType(), False),
-
-        # The day part (1-31) of the `Time`. Used for partition.
-        StructField("Time_Day", IntegerType(), False),
 
         # The time when the imbalance price was received from NOIS.
         # TODO Only needed if we don't create snapshots

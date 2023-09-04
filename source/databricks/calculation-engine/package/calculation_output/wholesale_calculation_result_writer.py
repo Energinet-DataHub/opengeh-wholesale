@@ -45,7 +45,6 @@ class WholesaleCalculationResultWriter:
         df = self._add_metadata(df)
         df = self._add_calculation_result_id(df)
         df = self._fix_metering_point_type(df)
-        df = self._fix_settlement_method(df)
         df = self._select_output_columns(df)
 
         df.write.format("delta").mode("append").option(
@@ -90,14 +89,6 @@ class WholesaleCalculationResultWriter:
                   lit(MeteringPointType.ELECTRICAL_HEATING.value))
             .when(col(Colname.metering_point_type) == InputMeteringPointType.NET_CONSUMPTION.value, lit(MeteringPointType.NET_CONSUMPTION.value))
             .when(col(Colname.metering_point_type) == InputMeteringPointType.EFFECT_SETTLEMENT.value, lit(MeteringPointType.EFFECT_SETTLEMENT.value))
-        )
-
-    @staticmethod
-    def _fix_settlement_method(df: DataFrame) -> DataFrame:
-        return df.withColumn(
-            Colname.settlement_method,
-            when(col(Colname.settlement_method) == "D01", lit("flex"))
-            .when(col(Colname.settlement_method) == "E02", lit("non_profiled"))
         )
 
     @staticmethod

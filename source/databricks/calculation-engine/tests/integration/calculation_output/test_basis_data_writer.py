@@ -23,6 +23,7 @@ from package.codelists import (
     BasisDataType,
     MeteringPointResolution,
     InputMeteringPointType,
+    SettlementMethod,
     TimeSeriesQuality,
 )
 from package.constants import Colname
@@ -90,7 +91,7 @@ def _create_metering_point_period(
         Colname.from_date: PERIOD_START,
         Colname.to_date: PERIOD_END,
         Colname.metering_point_type: "the_metering_point_type",
-        Colname.settlement_method: "D01",
+        Colname.settlement_method: SettlementMethod.FLEX.value,
         Colname.from_grid_area: "",
         Colname.to_grid_area: "",
         Colname.resolution: resolution.value,
