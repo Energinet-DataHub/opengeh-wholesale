@@ -104,6 +104,9 @@ public class Startup
         serviceCollection.AddOptions<DataLakeOptions>().Bind(Configuration);
         serviceCollection.AddOptions<DeltaTableOptions>();
 
+        // Config Events Module
+        serviceCollection.AddOptions<Energinet.DataHub.Wholesale.Events.Application.Options.ServiceBusOptions>().Bind(Configuration);
+
         AddJwtTokenSecurity(serviceCollection);
         AddHealthCheck(serviceCollection);
         serviceCollection.AddApplicationInsightsTelemetry(options => options.EnableAdaptiveSampling = false);

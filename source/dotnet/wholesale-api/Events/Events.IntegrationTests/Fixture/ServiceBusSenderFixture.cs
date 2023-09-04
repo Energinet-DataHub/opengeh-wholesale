@@ -14,21 +14,44 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
+using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
+using Energinet.DataHub.Core.TestCommon.Diagnostics;
+using Energinet.DataHub.Wholesale.Events.Application.Options;
+using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Events.IntegrationTests.Fixture;
 
-public class ServiceBusSenderFixture : IAsyncDisposable
+public class ServiceBusSenderFixture : IAsyncLifetime, IAsyncDisposable
 {
     private readonly ServiceBusClient _client;
     private readonly ServiceBusSender _sender;
+    private readonly string _connectionString;
+    private readonly ServiceBusResourceProvider _serviceBusResourceProvider;
+    private readonly string _queueName = "sbq-wholesale-inbox";
 
     public ServiceBusSenderFixture()
     {
         var integrationTestConfiguration = new IntegrationTestConfiguration();
-        var connectionString = integrationTestConfiguration.ServiceBusConnectionString;
+        _connectionString = integrationTestConfiguration.ServiceBusConnectionString;
 
-        _client = new ServiceBusClient(connectionString);
-        _sender = _client.CreateSender("sbq-wholesale-inbox");
+        _client = new ServiceBusClient(_connectionString);
+        _sender = _client.CreateSender(_queueName);
+        _serviceBusResourceProvider = new ServiceBusResourceProvider(
+            _connectionString,
+            new TestDiagnosticsLogger());
+    }
+
+    public async Task InitializeAsync()
+    {
+        await _serviceBusResourceProvider
+            .BuildQueue(_queueName)
+            .SetEnvironmentVariableToQueueName(nameof(ServiceBusOptions.SERVICE_BUS_INBOX_QUEUE_NAME))
+            .CreateAsync();
+    }
+
+    async Task IAsyncLifetime.DisposeAsync()
+    {
+        await Task.CompletedTask.ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()
@@ -54,5 +77,6 @@ public class ServiceBusSenderFixture : IAsyncDisposable
     {
         await _client.DisposeAsync().ConfigureAwait(false);
         await _sender.DisposeAsync().ConfigureAwait(false);
+        await _serviceBusResourceProvider.DisposeAsync().ConfigureAwait(false);
     }
 }

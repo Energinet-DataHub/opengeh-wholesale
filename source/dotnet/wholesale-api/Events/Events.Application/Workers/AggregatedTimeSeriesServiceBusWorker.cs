@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Wholesale.Events.Application.Options;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -27,16 +28,18 @@ public class AggregatedTimeSeriesServiceBusWorker : BackgroundService, IAsyncDis
     private readonly IAggregatedTimeSeriesRequestHandler _aggregatedTimeSeriesRequestHandler;
     private readonly ServiceBusClient _serviceBusClient;
     private readonly ILogger<AggregatedTimeSeriesRequestHandler> _logger;
+    private readonly ServiceBusOptions _serviceBusOptions;
     private ServiceBusProcessor? _serviceBusProcessor;
 
     public AggregatedTimeSeriesServiceBusWorker(
         IAggregatedTimeSeriesRequestHandler aggregatedTimeSeriesRequestHandler,
         ILogger<AggregatedTimeSeriesRequestHandler> logger,
-        string serviceBusConnectionString)
+        ServiceBusOptions serviceBusOptions)
     {
-        _serviceBusClient = new ServiceBusClient(serviceBusConnectionString);
+        _serviceBusClient = new ServiceBusClient(serviceBusOptions.SERVICE_BUS_LISTEN_CONNECTION_STRING);
         _aggregatedTimeSeriesRequestHandler = aggregatedTimeSeriesRequestHandler;
         _logger = logger;
+        _serviceBusOptions = serviceBusOptions;
     }
 
     public override async Task StopAsync(CancellationToken cancellationToken)
@@ -57,7 +60,7 @@ public class AggregatedTimeSeriesServiceBusWorker : BackgroundService, IAsyncDis
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _serviceBusProcessor = _serviceBusClient.CreateProcessor("sbq-wholesale-inbox");
+        _serviceBusProcessor = _serviceBusClient.CreateProcessor(_serviceBusOptions.SERVICE_BUS_INBOX_QUEUE_NAME);
 
         _serviceBusProcessor.ProcessMessageAsync += ProcessMessageAsync;
         _serviceBusProcessor.ProcessErrorAsync += ProcessErrorAsync;

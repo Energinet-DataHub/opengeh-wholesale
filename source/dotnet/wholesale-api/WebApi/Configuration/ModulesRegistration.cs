@@ -43,7 +43,9 @@ internal static class ServiceCollectionExtensions
             sqlWarehouseOptions.DATABRICKS_WORKSPACE_TOKEN,
             sqlWarehouseOptions.DATABRICKS_WORKSPACE_URL);
 
-        serviceCollection.AddEventsModule(configuration.Get<ServiceBusOptions>()!);
+        serviceCollection.AddEventsModule(
+            configuration.Get<ServiceBusOptions>()!,
+            configuration.Get<Energinet.DataHub.Wholesale.Events.Application.Options.ServiceBusOptions>()!);
 
         // Add registration that are used by more than one module
         serviceCollection.AddShared(configuration);
