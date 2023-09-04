@@ -40,6 +40,7 @@ module "app_wholesale_api" {
     SERVICE_BUS_LISTEN_CONNECTION_STRING = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-listen-connection-string)"
     SERVICE_BUS_MANAGE_CONNECTION_STRING = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-manage-connection-string)"
     INTEGRATIONEVENTS_TOPIC_NAME         = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbt-sharedres-integrationevent-received-name)"
+    INBOX_MESSAGE_QUEUE_NAME             = module.sbq_wholesale_inbox_messagequeue.name
 
     # Databricks
     DATABRICKS_WORKSPACE_TOKEN = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=dbw-shared-workspace-token)"
