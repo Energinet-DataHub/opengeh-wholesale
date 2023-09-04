@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Test.Core;
 using YamlDotNet.Serialization.NamingConventions;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SettlementReport;
@@ -42,7 +43,7 @@ public class CalculationFilePathsContract
 
     public static async Task<CalculationFilePathsContract> GetAsync()
     {
-        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.calculation-file-paths.yml");
+        await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.calculation-file-paths.yml");
         var deserializer = new YamlDotNet.Serialization.DeserializerBuilder()
             .WithNamingConvention(UnderscoredNamingConvention.Instance)
             .Build();

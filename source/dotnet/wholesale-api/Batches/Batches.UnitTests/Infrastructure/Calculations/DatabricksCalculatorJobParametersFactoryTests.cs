@@ -18,10 +18,10 @@ using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Common.Models;
 using FluentAssertions;
-using Microsoft.Azure.Databricks.Client;
 using Microsoft.Azure.Databricks.Client.Models;
 using NodaTime;
 using NodaTime.Extensions;
+using Test.Core;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.Calculations;
@@ -44,7 +44,7 @@ public class DatabricksCalculatorJobParametersFactoryTests
             DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
             Guid.NewGuid());
 
-        using var stream = EmbeddedResources.GetStream("Infrastructure.Calculations.calculation-job-parameters-reference.txt");
+        using var stream = EmbeddedResources.GetStream<Root>("Infrastructure.Calculations.calculation-job-parameters-reference.txt");
         using var reader = new StreamReader(stream);
 
         var pythonParams = reader
