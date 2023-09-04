@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pytest
-from package.codelists import InputMeteringPointType, MeteringPointResolution
+from package.codelists import MeteringPointType, MeteringPointResolution
 from package.calculation_input.basis_data import get_master_basis_data_df
 from datetime import datetime
 
@@ -25,7 +25,7 @@ def metering_point_period_df_factory(spark, timestamp_factory):
         grid_area_code="some-grid-area",
         from_date: datetime = timestamp_factory("2022-06-08T22:00:00.000Z"),
         to_date: datetime = timestamp_factory("2022-06-10T22:00:00.000Z"),
-        meteringpoint_type=InputMeteringPointType.PRODUCTION.value,
+        meteringpoint_type=MeteringPointType.PRODUCTION.value,
         from_grid_area="some-from-grid-area",
         to_grid_area="some-to-grid-area",
         settlement_method="some-settlement-method",
@@ -101,7 +101,7 @@ def test__columns_have_expected_values(
     expected_grid_area_code = "some-grid-area"
     expected_from_date = timestamp_factory("2022-06-08T22:00:00.000Z")
     expected_to_date = timestamp_factory("2022-06-09T22:00:00.000Z")
-    expected_meteringpoint_type = "E18"
+    expected_meteringpoint_type = MeteringPointType.PRODUCTION.value
     expected_from_grid_area = "some-from-grid-area"
     expected_to_grid_area = "some-to-grid-area"
     expected_settlement_method = "some-settlement-method"
@@ -112,7 +112,7 @@ def test__columns_have_expected_values(
         grid_area_code=expected_grid_area_code,
         from_date=expected_from_date,
         to_date=expected_to_date,
-        meteringpoint_type=InputMeteringPointType.PRODUCTION.value,
+        meteringpoint_type=MeteringPointType.PRODUCTION.value,
         from_grid_area=expected_from_grid_area,
         to_grid_area=expected_to_grid_area,
         settlement_method=expected_settlement_method,

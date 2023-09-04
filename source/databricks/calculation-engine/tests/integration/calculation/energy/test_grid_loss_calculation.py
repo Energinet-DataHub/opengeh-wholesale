@@ -15,7 +15,7 @@ from decimal import Decimal
 from datetime import datetime, timedelta
 from enum import Enum
 from package.codelists import (
-    InputMeteringPointType,
+    MeteringPointType,
     MeteringPointResolution,
     TimeSeriesQuality,
 )
@@ -120,7 +120,7 @@ def agg_result_factory(
                         Colname.sum_quantity: Decimal(20 + i),
                         Colname.quality: TimeSeriesQuality.ESTIMATED.value,
                         Colname.resolution: MeteringPointResolution.HOUR.value,
-                        Colname.metering_point_type: InputMeteringPointType.EXCHANGE.value,
+                        Colname.metering_point_type: MeteringPointType.EXCHANGE.value,
                     },
                     ignore_index=True,
                 )
@@ -151,7 +151,7 @@ def agg_result_factory(
                         Colname.sum_quantity: Decimal(13 + i),
                         Colname.quality: TimeSeriesQuality.ESTIMATED.value,
                         Colname.resolution: MeteringPointResolution.HOUR.value,
-                        Colname.metering_point_type: InputMeteringPointType.CONSUMPTION.value,
+                        Colname.metering_point_type: MeteringPointType.CONSUMPTION.value,
                     },
                     ignore_index=True,
                 )
@@ -184,7 +184,7 @@ def agg_result_factory(
                         Colname.sum_quantity: Decimal(14 + i),
                         Colname.quality: TimeSeriesQuality.ESTIMATED.value,
                         Colname.resolution: MeteringPointResolution.HOUR.value,
-                        Colname.metering_point_type: InputMeteringPointType.CONSUMPTION.value,
+                        Colname.metering_point_type: MeteringPointType.CONSUMPTION.value,
                     },
                     ignore_index=True,
                 )
@@ -217,7 +217,7 @@ def agg_result_factory(
                         Colname.sum_quantity: Decimal(50 + i),
                         Colname.quality: TimeSeriesQuality.ESTIMATED.value,
                         Colname.resolution: MeteringPointResolution.HOUR.value,
-                        Colname.metering_point_type: InputMeteringPointType.PRODUCTION.value,
+                        Colname.metering_point_type: MeteringPointType.PRODUCTION.value,
                     },
                     ignore_index=True,
                 )
@@ -280,12 +280,12 @@ def agg_net_exchange_factory(
                     MeteringPointResolution.HOUR.value,
                 ],
                 Colname.metering_point_type: [
-                    InputMeteringPointType.EXCHANGE.value,
-                    InputMeteringPointType.EXCHANGE.value,
-                    InputMeteringPointType.EXCHANGE.value,
-                    InputMeteringPointType.EXCHANGE.value,
-                    InputMeteringPointType.EXCHANGE.value,
-                    InputMeteringPointType.EXCHANGE.value,
+                    MeteringPointType.EXCHANGE.value,
+                    MeteringPointType.EXCHANGE.value,
+                    MeteringPointType.EXCHANGE.value,
+                    MeteringPointType.EXCHANGE.value,
+                    MeteringPointType.EXCHANGE.value,
+                    MeteringPointType.EXCHANGE.value,
                 ],
             }
         )
@@ -349,12 +349,12 @@ def agg_flex_consumption_factory(
                     MeteringPointResolution.HOUR.value,
                 ],
                 Colname.metering_point_type: [
-                    InputMeteringPointType.CONSUMPTION.value,
-                    InputMeteringPointType.CONSUMPTION.value,
-                    InputMeteringPointType.CONSUMPTION.value,
-                    InputMeteringPointType.CONSUMPTION.value,
-                    InputMeteringPointType.CONSUMPTION.value,
-                    InputMeteringPointType.CONSUMPTION.value,
+                    MeteringPointType.CONSUMPTION.value,
+                    MeteringPointType.CONSUMPTION.value,
+                    MeteringPointType.CONSUMPTION.value,
+                    MeteringPointType.CONSUMPTION.value,
+                    MeteringPointType.CONSUMPTION.value,
+                    MeteringPointType.CONSUMPTION.value,
                 ],
             }
         )
@@ -420,12 +420,12 @@ def agg_hourly_consumption_factory(
                     MeteringPointResolution.HOUR.value,
                 ],
                 Colname.metering_point_type: [
-                    InputMeteringPointType.CONSUMPTION.value,
-                    InputMeteringPointType.CONSUMPTION.value,
-                    InputMeteringPointType.CONSUMPTION.value,
-                    InputMeteringPointType.CONSUMPTION.value,
-                    InputMeteringPointType.CONSUMPTION.value,
-                    InputMeteringPointType.CONSUMPTION.value,
+                    MeteringPointType.CONSUMPTION.value,
+                    MeteringPointType.CONSUMPTION.value,
+                    MeteringPointType.CONSUMPTION.value,
+                    MeteringPointType.CONSUMPTION.value,
+                    MeteringPointType.CONSUMPTION.value,
+                    MeteringPointType.CONSUMPTION.value,
                 ],
             }
         )
@@ -491,12 +491,12 @@ def agg_hourly_production_factory(
                     MeteringPointResolution.HOUR.value,
                 ],
                 Colname.metering_point_type: [
-                    InputMeteringPointType.PRODUCTION.value,
-                    InputMeteringPointType.PRODUCTION.value,
-                    InputMeteringPointType.PRODUCTION.value,
-                    InputMeteringPointType.PRODUCTION.value,
-                    InputMeteringPointType.PRODUCTION.value,
-                    InputMeteringPointType.PRODUCTION.value,
+                    MeteringPointType.PRODUCTION.value,
+                    MeteringPointType.PRODUCTION.value,
+                    MeteringPointType.PRODUCTION.value,
+                    MeteringPointType.PRODUCTION.value,
+                    MeteringPointType.PRODUCTION.value,
+                    MeteringPointType.PRODUCTION.value,
                 ],
             }
         )

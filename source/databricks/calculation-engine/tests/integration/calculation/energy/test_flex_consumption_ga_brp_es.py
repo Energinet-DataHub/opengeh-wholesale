@@ -19,7 +19,7 @@ from package.calculation.energy.aggregators import (
     _aggregate_per_ga_and_brp_and_es,
 )
 from package.codelists import (
-    InputMeteringPointType,
+    MeteringPointType,
     SettlementMethod,
     TimeSeriesQuality,
 )
@@ -32,12 +32,8 @@ import pandas as pd
 from pandas.core.frame import DataFrame as PandasDataFrame
 
 
-e_20 = InputMeteringPointType.EXCHANGE.value
-e_17 = InputMeteringPointType.CONSUMPTION.value
-e_18 = InputMeteringPointType.PRODUCTION.value
-
 # Default time series data point values
-default_point_type = e_17
+default_point_type = MeteringPointType.CONSUMPTION.value
 default_settlement_method = SettlementMethod.FLEX.value
 default_domain = "D1"
 default_responsible = "R1"
@@ -118,15 +114,15 @@ def check_aggregation_row(
 @pytest.mark.parametrize(
     "point_type",
     [
-        pytest.param(e_18, id="should filter out E18"),
-        pytest.param(e_20, id="should filter out E20"),
+        pytest.param(MeteringPointType.PRODUCTION.value, id="should filter out E18"),
+        pytest.param(MeteringPointType.EXCHANGE.value, id="should filter out E20"),
     ],
 )
 def test_filters_out_incorrect_point_type(
     point_type: str, time_series_row_factory: Callable[..., DataFrame]
 ) -> None:
     """
-    Aggregator should filter out all non "E17" MarketEvaluationPointType rows
+    Aggregator should filter out all non-consumption MarketEvaluationPointType rows
     """
     df = time_series_row_factory(point_type=point_type)
     aggregated_df = aggregate_flex_consumption_ga_brp_es(df)
@@ -244,7 +240,7 @@ def test_flex_consumption_test_filter_by_domain_is_present(
     df = time_series_row_factory()
     aggregated_df = _aggregate_per_ga_and_brp_and_es(
         df,
-        InputMeteringPointType.CONSUMPTION,
+        MeteringPointType.CONSUMPTION,
         SettlementMethod.FLEX,
     )
     assert aggregated_df.count() == 1
@@ -256,7 +252,7 @@ def test_flex_consumption_test_filter_by_domain_is_not_present(
     df = time_series_row_factory()
     aggregated_df = _aggregate_per_ga_and_brp_and_es(
         df,
-        InputMeteringPointType.CONSUMPTION,
+        MeteringPointType.CONSUMPTION,
         SettlementMethod.NON_PROFILED,
     )
     assert aggregated_df.count() == 0
