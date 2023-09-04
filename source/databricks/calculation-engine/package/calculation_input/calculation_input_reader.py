@@ -14,7 +14,12 @@
 
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import concat_ws, col, when, lit
-from package.codelists import InputSettlementMethod, SettlementMethod
+from package.codelists import (
+    InputMeteringPointType,
+    InputSettlementMethod,
+    MeteringPointType,
+    SettlementMethod,
+)
 from package.constants import Colname
 from package.infrastructure import paths
 
@@ -29,6 +34,7 @@ class CalculationInputReader:
     def read_metering_point_periods(self) -> DataFrame:
         df = self.__spark.read.table(f"{paths.INPUT_DATABASE_NAME}.{paths.METERING_POINT_PERIODS_TABLE_NAME}")
         df = _fix_settlement_method(df)
+        df = _fix_metering_point_type(df)
         return df
 
     def read_time_series_points(self) -> DataFrame:
@@ -48,6 +54,29 @@ class CalculationInputReader:
         df = self.__spark.read.table(f"{paths.INPUT_DATABASE_NAME}.{paths.CHARGE_PRICE_POINTS_TABLE_NAME}")
         df = _add_charge_key_column(df)
         return df
+
+
+def _fix_metering_point_type(df: DataFrame) -> DataFrame:
+    return df.withColumn(
+        Colname.metering_point_type,
+        when(col(Colname.metering_point_type) == InputMeteringPointType.CONSUMPTION.value, lit(MeteringPointType.CONSUMPTION.value))
+        .when(col(Colname.metering_point_type) == InputMeteringPointType.PRODUCTION.value, lit(MeteringPointType.PRODUCTION.value))
+        .when(col(Colname.metering_point_type) == InputMeteringPointType.EXCHANGE.value, lit(MeteringPointType.EXCHANGE.value))
+        .when(col(Colname.metering_point_type) == InputMeteringPointType.VE_PRODUCTION.value, lit(MeteringPointType.VE_PRODUCTION.value))
+        .when(col(Colname.metering_point_type) == InputMeteringPointType.NET_PRODUCTION.value, lit(MeteringPointType.NET_PRODUCTION.value))
+        .when(col(Colname.metering_point_type) == InputMeteringPointType.SUPPLY_TO_GRID.value, lit(MeteringPointType.SUPPLY_TO_GRID.value))
+        .when(col(Colname.metering_point_type) == InputMeteringPointType.CONSUMPTION_FROM_GRID.value,
+              lit(MeteringPointType.CONSUMPTION_FROM_GRID.value))
+        .when(col(Colname.metering_point_type) == InputMeteringPointType.WHOLESALE_SERVICES_INFORMATION.value,
+              lit(MeteringPointType.WHOLESALE_SERVICES_INFORMATION.value))
+        .when(col(Colname.metering_point_type) == InputMeteringPointType.OWN_PRODUCTION.value, lit(MeteringPointType.OWN_PRODUCTION.value))
+        .when(col(Colname.metering_point_type) == InputMeteringPointType.NET_FROM_GRID.value, lit(MeteringPointType.NET_FROM_GRID.value))
+        .when(col(Colname.metering_point_type) == InputMeteringPointType.NET_TO_GRID.value, lit(MeteringPointType.NET_TO_GRID.value))
+        .when(col(Colname.metering_point_type) == InputMeteringPointType.TOTAL_CONSUMPTION.value, lit(MeteringPointType.TOTAL_CONSUMPTION.value))
+        .when(col(Colname.metering_point_type) == InputMeteringPointType.ELECTRICAL_HEATING.value, lit(MeteringPointType.ELECTRICAL_HEATING.value))
+        .when(col(Colname.metering_point_type) == InputMeteringPointType.NET_CONSUMPTION.value, lit(MeteringPointType.NET_CONSUMPTION.value))
+        .when(col(Colname.metering_point_type) == InputMeteringPointType.EFFECT_SETTLEMENT.value, lit(MeteringPointType.EFFECT_SETTLEMENT.value))
+    )
 
 
 def _fix_settlement_method(df: DataFrame) -> DataFrame:

@@ -17,7 +17,7 @@ from typing import Optional
 from package.codelists import (
     ChargeResolution,
     ChargeType,
-    InputMeteringPointType,
+    MeteringPointType,
     MeteringPointResolution,
     SettlementMethod,
 )
@@ -50,7 +50,7 @@ class DataframeDefaults:
     default_from_grid_area: str = "chargea"
     default_grid_area: str = "500"
     default_metering_point_id: str = "some-metering-point-id"
-    default_metering_point_type: str = InputMeteringPointType.CONSUMPTION.value
+    default_metering_point_type: str = MeteringPointType.CONSUMPTION.value
     default_parent_metering_point_id: str = "1"
     default_product: str = "chargea"
     default_quality: str = "E01"

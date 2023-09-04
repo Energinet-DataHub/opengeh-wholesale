@@ -18,13 +18,12 @@ import pandas as pd
 from datetime import datetime, timedelta
 from package.constants import Colname
 from package.calculation.energy import aggregate_net_exchange_per_ga
-from package.codelists import InputMeteringPointType, TimeSeriesQuality
+from package.codelists import MeteringPointType, TimeSeriesQuality
 from package.calculation.energy.schemas import aggregation_result_schema
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import window, col
 
 
-e_20 = InputMeteringPointType.EXCHANGE.value
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_obs_time = datetime.strptime(
     "2020-01-01T00:00:00+0000", date_time_formatting_string
@@ -53,7 +52,7 @@ def enriched_time_series_data_frame(spark: SparkSession) -> DataFrame:
     for quarter_number in range(numberOfQuarters):
         pandas_df = add_row_of_data(
             pandas_df,
-            e_20,
+            MeteringPointType.EXCHANGE.value,
             "B",
             "A",
             Decimal(2) * quarter_number,
@@ -62,7 +61,7 @@ def enriched_time_series_data_frame(spark: SparkSession) -> DataFrame:
 
         pandas_df = add_row_of_data(
             pandas_df,
-            e_20,
+            MeteringPointType.EXCHANGE.value,
             "B",
             "A",
             Decimal("0.5") * quarter_number,
@@ -70,7 +69,7 @@ def enriched_time_series_data_frame(spark: SparkSession) -> DataFrame:
         )
         pandas_df = add_row_of_data(
             pandas_df,
-            e_20,
+            MeteringPointType.EXCHANGE.value,
             "B",
             "A",
             Decimal("0.7") * quarter_number,
@@ -79,7 +78,7 @@ def enriched_time_series_data_frame(spark: SparkSession) -> DataFrame:
 
         pandas_df = add_row_of_data(
             pandas_df,
-            e_20,
+            MeteringPointType.EXCHANGE.value,
             "A",
             "B",
             Decimal(3) * quarter_number,
@@ -87,7 +86,7 @@ def enriched_time_series_data_frame(spark: SparkSession) -> DataFrame:
         )
         pandas_df = add_row_of_data(
             pandas_df,
-            e_20,
+            MeteringPointType.EXCHANGE.value,
             "A",
             "B",
             Decimal("0.9") * quarter_number,
@@ -95,7 +94,7 @@ def enriched_time_series_data_frame(spark: SparkSession) -> DataFrame:
         )
         pandas_df = add_row_of_data(
             pandas_df,
-            e_20,
+            MeteringPointType.EXCHANGE.value,
             "A",
             "B",
             Decimal("1.2") * quarter_number,
@@ -104,7 +103,7 @@ def enriched_time_series_data_frame(spark: SparkSession) -> DataFrame:
 
         pandas_df = add_row_of_data(
             pandas_df,
-            e_20,
+            MeteringPointType.EXCHANGE.value,
             "C",
             "A",
             Decimal("0.7") * quarter_number,
@@ -112,7 +111,7 @@ def enriched_time_series_data_frame(spark: SparkSession) -> DataFrame:
         )
         pandas_df = add_row_of_data(
             pandas_df,
-            e_20,
+            MeteringPointType.EXCHANGE.value,
             "A",
             "C",
             Decimal("1.1") * quarter_number,
@@ -120,7 +119,7 @@ def enriched_time_series_data_frame(spark: SparkSession) -> DataFrame:
         )
         pandas_df = add_row_of_data(
             pandas_df,
-            e_20,
+            MeteringPointType.EXCHANGE.value,
             "A",
             "C",
             Decimal("1.5") * quarter_number,
@@ -129,7 +128,7 @@ def enriched_time_series_data_frame(spark: SparkSession) -> DataFrame:
         # "D" only appears as a from-grid-area (case used to prove bug in implementation)
         pandas_df = add_row_of_data(
             pandas_df,
-            e_20,
+            MeteringPointType.EXCHANGE.value,
             "A",
             "D",
             Decimal("1.6") * quarter_number,
@@ -138,7 +137,7 @@ def enriched_time_series_data_frame(spark: SparkSession) -> DataFrame:
         # "E" only appears as a to-grid-area (case used to prove bug in implementation)
         pandas_df = add_row_of_data(
             pandas_df,
-            e_20,
+            MeteringPointType.EXCHANGE.value,
             "E",
             "F",
             Decimal("44.4") * quarter_number,
@@ -147,7 +146,7 @@ def enriched_time_series_data_frame(spark: SparkSession) -> DataFrame:
         # Test sign of net exchange. Net exchange should be TO - FROM
         pandas_df = add_row_of_data(
             pandas_df,
-            e_20,
+            MeteringPointType.EXCHANGE.value,
             "X",
             "Y",
             Decimal("42") * quarter_number,
@@ -155,7 +154,7 @@ def enriched_time_series_data_frame(spark: SparkSession) -> DataFrame:
         )
         pandas_df = add_row_of_data(
             pandas_df,
-            e_20,
+            MeteringPointType.EXCHANGE.value,
             "Y",
             "X",
             Decimal("12") * quarter_number,
