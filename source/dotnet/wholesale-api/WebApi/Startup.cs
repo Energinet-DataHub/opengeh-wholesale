@@ -171,6 +171,7 @@ public class Startup
     {
         var serviceBusOptions = Configuration.Get<ServiceBusOptions>()!;
         var dataLakeOptions = Configuration.Get<DataLakeOptions>()!;
+        var databricksOptions = Configuration.Get<DatabricksOptions>()!;
         serviceCollection.AddHealthChecks()
             .AddLiveCheck()
             .AddDbContextCheck<EventsDatabaseContext>(name: "SqlDatabaseContextCheck")
@@ -178,7 +179,8 @@ public class Startup
             .AddAzureServiceBusTopic(
                 serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
                 serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
-                name: "IntegrationEventsTopicExists");
+                name: "IntegrationEventsTopicExists")
+            .DatabricksJobsApiCheck("DatabricksJobsApi");
     }
 
     /// <summary>
