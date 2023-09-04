@@ -19,7 +19,7 @@ using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks
 {
-    public static class DatabricksJobsApiChecksBuilderExtensions
+    public static class DatabricksJobsApiHealthChecksBuilderExtensions
     {
         public static IHealthChecksBuilder DatabricksJobsApiCheck(this IHealthChecksBuilder builder, string name)
         {
