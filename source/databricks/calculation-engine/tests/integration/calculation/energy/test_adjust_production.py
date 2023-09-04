@@ -14,7 +14,7 @@
 from decimal import Decimal
 from datetime import datetime
 from package.codelists import (
-    InputMeteringPointType,
+    MeteringPointType,
     MeteringPointResolution,
     TimeSeriesQuality,
 )
@@ -44,7 +44,7 @@ default_sum_quantity = Decimal(1)
 default_negative_grid_loss = Decimal(3)
 default_aggregated_quality = TimeSeriesQuality.ESTIMATED.value
 default_resolution = MeteringPointResolution.HOUR.value
-default_metering_point_type = InputMeteringPointType.PRODUCTION.value
+default_metering_point_type = MeteringPointType.PRODUCTION.value
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_time_window = {
@@ -435,5 +435,5 @@ def test_that_the_correct_metering_point_type_is_put_on_the_result(
         result_df.filter(col(Colname.energy_supplier_id) == "A").collect()[0][
             Colname.metering_point_type
         ]
-        == InputMeteringPointType.PRODUCTION.value
+        == MeteringPointType.PRODUCTION.value
     )

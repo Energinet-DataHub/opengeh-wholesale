@@ -27,7 +27,7 @@ from package.calculation.wholesale.wholesale_initializer import (
     join_with_grouped_time_series,
     get_charges_based_on_charge_type,
 )
-from package.codelists import ChargeType, ChargeResolution
+from package.codelists import ChargeType, ChargeResolution, MeteringPointType, SettlementMethod
 from package.calculation.wholesale.schemas.charges_schema import (
     charges_schema,
     charge_prices_schema,
@@ -475,9 +475,9 @@ charges_with_price_and_links_dataset_4 = [
 metering_points_dataset = [
     (
         DEFAULT_METERING_POINT_ID,
-        "E17",
+        MeteringPointType.CONSUMPTION.value,
         None,
-        "D01",
+        SettlementMethod.FLEX.value,
         "1",
         "P1D",
         "2",
@@ -615,8 +615,8 @@ charges_complete_dataset_1 = [
         Decimal("200.50"),
         "D01",
         "1",
-        "E17",
-        "E22",
+        MeteringPointType.CONSUMPTION.value,
+        SettlementMethod.NON_PROFILED.value,
         "1",
     )
 ]

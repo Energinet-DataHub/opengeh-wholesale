@@ -25,10 +25,9 @@ from package.codelists import (
     ChargeResolution,
     ChargeType,
     ChargeUnit,
-    InputMeteringPointType,
     MeteringPointType,
     ProcessType,
-    InputSettlementMethod,
+    SettlementMethod,
 )
 from package.constants import Colname, WholesaleResultColumnNames
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME, WHOLESALE_RESULT_TABLE_NAME
@@ -47,8 +46,9 @@ DEFAULT_BATCH_EXECUTION_START = datetime(2022, 6, 10, 13, 15)
 DEFAULT_ENERGY_SUPPLIER_ID = "9876543210123"
 DEFAULT_GRID_AREA = "543"
 DEFAULT_CHARGE_TIME = datetime(2022, 6, 10, 13, 30)
-DEFAULT_METERING_POINT_TYPE = InputMeteringPointType.ELECTRICAL_HEATING
-DEFAULT_SETTLEMENT_METHOD = InputSettlementMethod.FLEX
+DEFAULT_INPUT_METERING_POINT_TYPE = MeteringPointType.ELECTRICAL_HEATING
+DEFAULT_METERING_POINT_TYPE = MeteringPointType.ELECTRICAL_HEATING  # Must correspond with the input type above
+DEFAULT_SETTLEMENT_METHOD = SettlementMethod.FLEX
 DEFAULT_CHARGE_KEY = "40000-tariff-5790001330552"
 DEFAULT_CHARGE_ID = "4000"
 DEFAULT_CHARGE_TYPE = ChargeType.TARIFF
@@ -67,8 +67,8 @@ def _create_result_row(
     energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
     grid_area: str = DEFAULT_GRID_AREA,
     charge_time: datetime = DEFAULT_CHARGE_TIME,
-    metering_point_type: InputMeteringPointType = DEFAULT_METERING_POINT_TYPE,
-    settlement_method: InputSettlementMethod = DEFAULT_SETTLEMENT_METHOD,
+    metering_point_type: MeteringPointType = DEFAULT_INPUT_METERING_POINT_TYPE,
+    settlement_method: SettlementMethod = DEFAULT_SETTLEMENT_METHOD,
     charge_key: str = DEFAULT_CHARGE_KEY,
     charge_id: str = DEFAULT_CHARGE_ID,
     charge_type: ChargeType = DEFAULT_CHARGE_TYPE,
@@ -141,6 +141,8 @@ def sut() -> WholesaleCalculationResultWriter:
         (WholesaleResultColumnNames.quantity_quality, DEFAULT_QUALITY.value),
         (WholesaleResultColumnNames.time, DEFAULT_CHARGE_TIME),
         (WholesaleResultColumnNames.resolution, DEFAULT_RESOLUTION.value),
+        (WholesaleResultColumnNames.metering_point_type, DEFAULT_METERING_POINT_TYPE.value),
+        (WholesaleResultColumnNames.settlement_method, DEFAULT_SETTLEMENT_METHOD.value),
         (WholesaleResultColumnNames.price, DEFAULT_CHARGE_PRICE),
         (WholesaleResultColumnNames.amount, DEFAULT_TOTAL_AMOUNT),
         (WholesaleResultColumnNames.is_tax, DEFAULT_CHARGE_TAX),
@@ -156,7 +158,7 @@ def test__write__writes_column(
     column_value: Any,
     migrations_executed: None,
 ) -> None:
-    """Test all columns except calculation_result_id"""
+    """Test all columns except calculation_result_id. It is tested separatedly in another test."""
 
     # Arrange
     row = [_create_result_row()]
@@ -242,54 +244,3 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
     # Assert
     excluded_columns = set(all_columns) - set(included_columns)
     assert set(excluded_columns) == set(expected_excluded_columns)
-
-
-# Exchange metering points are not used in wholesale calculations
-@pytest.mark.parametrize("metering_point_type,expected", [
-    [InputMeteringPointType.CONSUMPTION, MeteringPointType.CONSUMPTION],
-    [InputMeteringPointType.PRODUCTION, MeteringPointType.PRODUCTION],
-    [InputMeteringPointType.VE_PRODUCTION, MeteringPointType.VE_PRODUCTION],
-    [InputMeteringPointType.NET_PRODUCTION, MeteringPointType.NET_PRODUCTION],
-    [InputMeteringPointType.SUPPLY_TO_GRID, MeteringPointType.SUPPLY_TO_GRID],
-    [InputMeteringPointType.CONSUMPTION_FROM_GRID, MeteringPointType.CONSUMPTION_FROM_GRID],
-    [InputMeteringPointType.WHOLESALE_SERVICES_INFORMATION, MeteringPointType.WHOLESALE_SERVICES_INFORMATION],
-    [InputMeteringPointType.OWN_PRODUCTION, MeteringPointType.OWN_PRODUCTION],
-    [InputMeteringPointType.NET_FROM_GRID, MeteringPointType.NET_FROM_GRID],
-    [InputMeteringPointType.NET_TO_GRID, MeteringPointType.NET_TO_GRID],
-    [InputMeteringPointType.TOTAL_CONSUMPTION, MeteringPointType.TOTAL_CONSUMPTION],
-    [InputMeteringPointType.ELECTRICAL_HEATING, MeteringPointType.ELECTRICAL_HEATING],
-    [InputMeteringPointType.NET_CONSUMPTION, MeteringPointType.NET_CONSUMPTION],
-    [InputMeteringPointType.EFFECT_SETTLEMENT, MeteringPointType.EFFECT_SETTLEMENT],
-])
-def test___fix_metering_point_type(
-        spark: SparkSession,
-        metering_point_type: InputMeteringPointType,
-        expected: MeteringPointType) -> None:
-    # Arrange
-    row = _create_result_row(metering_point_type=metering_point_type)
-    df = _create_result_df(spark, [row])
-
-    # Act
-    actual = WholesaleCalculationResultWriter._fix_metering_point_type(df)
-
-    # Assert
-    assert actual.collect()[0][Colname.metering_point_type] == expected.value
-
-
-@pytest.mark.parametrize("settlement_method,expected", [
-    [InputSettlementMethod.FLEX, "flex"],
-    [InputSettlementMethod.NON_PROFILED, "non_profiled"],
-])
-def test___fix_settlement_method_type(
-        spark: SparkSession,
-        settlement_method: InputSettlementMethod,
-        expected: str) -> None:
-    # Arrange
-    row = _create_result_row(settlement_method=settlement_method)
-    df = _create_result_df(spark, [row])
-
-    # Act
-    actual = WholesaleCalculationResultWriter._fix_settlement_method(df)
-
-    # Assert
-    assert actual.collect()[0][Colname.settlement_method] == expected

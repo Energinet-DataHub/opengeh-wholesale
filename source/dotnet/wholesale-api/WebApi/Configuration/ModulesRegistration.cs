@@ -43,17 +43,7 @@ internal static class ServiceCollectionExtensions
             sqlWarehouseOptions.DATABRICKS_WORKSPACE_TOKEN,
             sqlWarehouseOptions.DATABRICKS_WORKSPACE_URL);
 
-        serviceCollection.AddEventsModule(_ =>
-        {
-            var serviceBusOptions = configuration.Get<ServiceBusOptions>()!;
-
-            return new CommunicationSettings
-            {
-                ServiceBusIntegrationEventWriteConnectionString =
-                    serviceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING,
-                IntegrationEventTopicName = serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
-            };
-        });
+        serviceCollection.AddEventsModule(configuration.Get<ServiceBusOptions>()!);
 
         // Add registration that are used by more than one module
         serviceCollection.AddShared(configuration);

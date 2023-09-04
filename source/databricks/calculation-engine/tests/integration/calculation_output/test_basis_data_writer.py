@@ -22,7 +22,8 @@ import pytest
 from package.codelists import (
     BasisDataType,
     MeteringPointResolution,
-    InputMeteringPointType,
+    MeteringPointType,
+    SettlementMethod,
     TimeSeriesQuality,
 )
 from package.constants import Colname
@@ -69,7 +70,7 @@ def _create_enriched_time_series_point(
 ) -> dict[str, Any]:
     data = {
         Colname.metering_point_id: "metering_point_id",
-        Colname.metering_point_type: InputMeteringPointType.PRODUCTION.value,
+        Colname.metering_point_type: MeteringPointType.PRODUCTION.value,
         Colname.grid_area: DEFAULT_GRID_AREA,
         Colname.balance_responsible_id: "someId",
         Colname.energy_supplier_id: DEFAULT_ENERGY_SUPPLIER,
@@ -90,7 +91,7 @@ def _create_metering_point_period(
         Colname.from_date: PERIOD_START,
         Colname.to_date: PERIOD_END,
         Colname.metering_point_type: "the_metering_point_type",
-        Colname.settlement_method: "D01",
+        Colname.settlement_method: SettlementMethod.FLEX.value,
         Colname.from_grid_area: "",
         Colname.to_grid_area: "",
         Colname.resolution: resolution.value,

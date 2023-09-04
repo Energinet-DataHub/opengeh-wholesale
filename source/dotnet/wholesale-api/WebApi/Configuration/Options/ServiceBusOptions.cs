@@ -27,4 +27,9 @@ public class ServiceBusOptions
     public string SERVICE_BUS_MANAGE_CONNECTION_STRING { get; set; } = string.Empty;
 
     public string INTEGRATIONEVENTS_TOPIC_NAME { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Connection string to listen to the wholesale domain service bus queues and topics.
+    /// </summary>
+    public string SERVICE_BUS_LISTEN_CONNECTION_STRING { get; set; } = string.Empty;
 }
