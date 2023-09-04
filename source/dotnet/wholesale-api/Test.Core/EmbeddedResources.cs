@@ -14,9 +14,8 @@
 
 using System.Reflection;
 
-namespace Energinet.DataHub.Wholesale.Batches.UnitTests;
+namespace Test.Core;
 
-// TODO BJM: Copied from other project. Can we share instead? Possibly in Test.Core?
 public static class EmbeddedResources
 {
     /// <summary>
@@ -24,11 +23,15 @@ public static class EmbeddedResources
     /// Example: <example>Stuff.MyFile.txt</example>.
     /// It is the responsibility of the caller to dispose the stream.
     /// </summary>
-    public static Stream GetStream(string relativeDocumentPath)
+    /// <param name="relativeDocumentPath">The relative namespace and document path. Dot-separated.</param>
+    /// <typeparam name="TRoot">
+    /// A type with the root namespace.
+    /// I.e. the <paramref name="relativeDocumentPath"/> is relative to the namespace of this type.</typeparam>
+    public static Stream GetStream<TRoot>(string relativeDocumentPath)
     {
-        var resourceName = $"{typeof(Root).Namespace}.{relativeDocumentPath}";
+        var resourceName = $"{typeof(TRoot).Namespace}.{relativeDocumentPath}";
 
-        var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
+        var stream = Assembly.GetAssembly(typeof(TRoot))!.GetManifestResourceStream(resourceName);
 
         if (stream == null) throw new ArgumentException($"Resource '{resourceName}' not found.");
         return stream;

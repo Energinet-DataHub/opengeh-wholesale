@@ -17,7 +17,7 @@ from tests.helpers.test_schemas import (
     charges_flex_consumption_schema,
 )
 from package.constants import Colname
-from package.codelists import ChargeType
+from package.codelists import ChargeType, SettlementMethod
 from package.calculation.wholesale.fee_calculators import (
     calculate_fee_charge_price,
     filter_on_metering_point_type_and_settlement_method,
@@ -138,7 +138,7 @@ fee_charges_dataset_1 = [
         Decimal("200.50"),
         datetime(2020, 1, 1, 0, 0),
         "E17",
-        "D01",
+        SettlementMethod.FLEX.value,
         "001",
         1,
     )
@@ -152,7 +152,7 @@ fee_charges_dataset_2 = [
         Decimal("200.50"),
         datetime(2020, 2, 1, 0, 0),
         "E18",
-        "D01",
+        SettlementMethod.FLEX.value,
         "001",
         1,
     )
@@ -166,7 +166,7 @@ fee_charges_dataset_3 = [
         Decimal("200.50"),
         datetime(2020, 2, 1, 0, 0),
         "E17",
-        "D02",
+        SettlementMethod.NON_PROFILED.value,
         "001",
         1,
     )
@@ -180,7 +180,7 @@ fee_charges_dataset_4 = [
         Decimal("200.50"),
         datetime(2020, 2, 1, 0, 0),
         "E18",
-        "D02",
+        SettlementMethod.NON_PROFILED.value,
         "001",
         1,
     )
@@ -196,7 +196,7 @@ fee_charges_dataset_4 = [
         (fee_charges_dataset_4, 0),
     ],
 )
-def test__filter_on_metering_point_type_and_settlement_method__filters_on_E17_and_D01(
+def test__filter_on_metering_point_type_and_settlement_method__filters_on_E17_and_flex(
     spark, fee_charges, expected
 ):
     # Arrange
@@ -220,7 +220,7 @@ charges_flex_consumption_dataset_1 = [
         Decimal("100.10"),
         datetime(2020, 1, 1, 0, 0),
         "E17",
-        "D01",
+        SettlementMethod.FLEX.value,
         "001",
         1,
     )
@@ -234,7 +234,7 @@ charges_flex_consumption_dataset_2 = [
         Decimal("100.10"),
         datetime(2020, 1, 1, 0, 0),
         "E17",
-        "D01",
+        SettlementMethod.FLEX.value,
         "001",
         1,
     ),
@@ -246,7 +246,7 @@ charges_flex_consumption_dataset_2 = [
         Decimal("100.10"),
         datetime(2020, 1, 1, 0, 0),
         "E17",
-        "D01",
+        SettlementMethod.FLEX.value,
         "001",
         1,
     ),
@@ -260,7 +260,7 @@ charges_flex_consumption_dataset_3 = [
         Decimal("100.10"),
         datetime(2020, 1, 1, 0, 0),
         "E17",
-        "D01",
+        SettlementMethod.FLEX.value,
         "001",
         1,
     ),
@@ -272,7 +272,7 @@ charges_flex_consumption_dataset_3 = [
         Decimal("100.10"),
         datetime(2020, 1, 2, 0, 0),
         "E17",
-        "D01",
+        SettlementMethod.FLEX.value,
         "001",
         1,
     ),

@@ -29,7 +29,7 @@ public class TimeSeriesTypeMapperTests
     [Fact]
     public async Task TimeSeriesType_Matches_Contract()
     {
-        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.enums.time-series-type.json");
+        await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.enums.time-series-type.json");
         await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<TimeSeriesType>(stream);
     }
 
@@ -37,7 +37,7 @@ public class TimeSeriesTypeMapperTests
     public async Task FromDeltaTableValue_MapsAllValidDeltaTableValues()
     {
         // Arrange
-        await using var stream = EmbeddedResources.GetStream("DeltaTableContracts.enums.time-series-type.json");
+        await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.enums.time-series-type.json");
         var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
 
         foreach (var validDeltaValue in validDeltaValues)

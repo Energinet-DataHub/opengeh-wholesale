@@ -18,7 +18,7 @@ from tests.helpers.test_schemas import (
     tariff_sum_and_count_schema,
     tariff_distinct_schema,
 )
-from package.codelists import ChargeType
+from package.codelists import ChargeType, SettlementMethod
 from package.calculation.wholesale.tariff_calculators import (
     select_distinct_tariffs,
     join_with_agg_df,
@@ -39,7 +39,7 @@ tariffs_dataset = [
         "No",
         datetime(2020, 1, 1, 0, 0),
         Decimal("200.50"),
-        "D01",
+        SettlementMethod.FLEX.value,
         "1",
         "E17",
         "E22",
@@ -55,7 +55,7 @@ tariffs_dataset = [
         "No",
         datetime(2020, 1, 1, 0, 0),
         Decimal("200.50"),
-        "D01",
+        SettlementMethod.FLEX.value,
         "1",
         "E17",
         "E22",
@@ -71,7 +71,7 @@ tariffs_dataset = [
         "No",
         datetime(2020, 1, 15, 0, 0),
         Decimal("200.50"),
-        "D01",
+        SettlementMethod.FLEX.value,
         "1",
         "E17",
         "E22",
@@ -126,7 +126,7 @@ tariffs_distinct_dataset = [
         Decimal("200.50"),
         "1",
         "E17",
-        "D01",
+        SettlementMethod.FLEX.value,
         "1",
     ),
     (
@@ -140,7 +140,7 @@ tariffs_distinct_dataset = [
         Decimal("200.50"),
         "1",
         "E17",
-        "D01",
+        SettlementMethod.FLEX.value,
         "1",
     ),
 ]
@@ -150,7 +150,7 @@ agg_dataset = [
         "1",
         datetime(2020, 1, 1, 0, 0),
         "E17",
-        "D01",
+        SettlementMethod.FLEX.value,
         "001-D01-001",
         Decimal("2.002"),
         2,
@@ -160,7 +160,7 @@ agg_dataset = [
         "1",
         datetime(2020, 1, 15, 0, 0),
         "E17",
-        "D01",
+        SettlementMethod.FLEX.value,
         "001-D01-002",
         Decimal("1.000"),
         1,
