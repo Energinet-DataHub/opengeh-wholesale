@@ -43,15 +43,6 @@ DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
 DEFAULT_METERING_POINT_ID = "123456789012345678901234567"
 DEFAULT_METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
 DEFAULT_SETTLEMENT_METHOD = SettlementMethod.FLEX
-
-
-# TODO: Amount input: 6 decimals
-#       Calculate using 8 decimals
-#       Output: 6 decimals
-
-
-# TODO: Quantity input: 3 decimals
-#       Output: 3 decimals
 DEFAULT_QUANTITY = Decimal("1.005")
 
 
@@ -219,3 +210,25 @@ def test__calculate_tariff_price_per_ga_co_es__does_not_aggregate_across_group_s
 
     # Assert
     assert actual.count() == 2
+
+
+@pytest.mark.parametrize(
+    "column_name, expected_precision",
+    [
+        (Colname.total_amount, 6),
+        (Colname.quantity, 3),
+        (Colname.charge_price, 6),
+    ]
+)
+def test__calculate_tariff_price_per_ga_co_es__returns_df_with_expected_precisions(
+    spark: SparkSession, column_name: str, expected_precision: int
+) -> None:
+    # Arrange
+    rows = [_create_tariff_hour_row()]
+    tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
+
+    # Act
+    actual = calculate_tariff_price_per_ga_co_es(tariffs)
+
+    # Assert
+    assert actual.schema[column_name].precision == expected_precision
