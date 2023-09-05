@@ -85,6 +85,7 @@ jobs:
       tests_dll_file_path: \source\dotnet\wholesale-api\Events\Events.IntegrationTests\bin\Release\net7.0\Energinet.DataHub.Wholesale.Events.IntegrationTests.dll
       download_attempt_limit: 20
       use_azure_functions_tools: true
+      environment: AzureAuth
       azure_keyvault_url: ${{ vars.integration_test_azure_keyvault_url }}
 
   dotnet_ci_test_events:
