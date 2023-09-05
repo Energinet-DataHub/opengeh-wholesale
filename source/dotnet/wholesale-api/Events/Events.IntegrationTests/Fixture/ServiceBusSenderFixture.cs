@@ -66,11 +66,11 @@ public class ServiceBusSenderFixture : IAsyncLifetime, IAsyncDisposable
         await Task.CompletedTask.ConfigureAwait(false);
     }
 
-    internal Task PublishAsync(string message)
+    internal async Task PublishAsync(string message)
     {
-        var client = new ServiceBusClient(ServiceBusOptions.Value.SERVICE_BUS_LISTEN_CONNECTION_STRING);
-        var sender = client.CreateSender(ServiceBusOptions.Value.INBOX_MESSAGE_QUEUE_NAME);
-        return sender.SendMessageAsync(CreateAggregatedTimeSeriesRequestMessage(message));
+        await using var client = new ServiceBusClient(ServiceBusOptions.Value.SERVICE_BUS_LISTEN_CONNECTION_STRING);
+        await using var sender = client.CreateSender(ServiceBusOptions.Value.INBOX_MESSAGE_QUEUE_NAME);
+        await sender.SendMessageAsync(CreateAggregatedTimeSeriesRequestMessage(message));
     }
 
     private ServiceBusMessage CreateAggregatedTimeSeriesRequestMessage(string body)
