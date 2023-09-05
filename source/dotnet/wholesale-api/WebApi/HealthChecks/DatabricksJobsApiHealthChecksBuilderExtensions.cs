@@ -21,15 +21,13 @@ namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks
 {
     public static class DatabricksJobsApiHealthChecksBuilderExtensions
     {
-        public static IHealthChecksBuilder DatabricksJobsApiCheck(this IHealthChecksBuilder builder, string name)
+        public static IHealthChecksBuilder AddDatabricksJobsApiCheck(this IHealthChecksBuilder builder, DatabricksOptions options, string name)
         {
             return builder.AddAsyncCheck(name, async () =>
             {
                 try
                 {
-                    var serviceProvider = builder.Services.BuildServiceProvider();
-                    var options = serviceProvider.GetService<IOptions<DatabricksOptions>>()!;
-                    var client = new JobsApiClient(options!);
+                    var client = new JobsApiClient(Options.Create(options));
                     await client.Jobs.List().ConfigureAwait(false);
                     return HealthCheckResult.Healthy();
                 }
