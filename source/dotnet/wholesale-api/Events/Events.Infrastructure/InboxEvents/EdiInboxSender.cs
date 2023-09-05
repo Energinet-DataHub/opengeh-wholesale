@@ -21,24 +21,25 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.InboxEvents;
 
 public class EdiInboxSender : IEdiInboxSender, IAsyncDisposable
 {
-    private readonly EdiInboxOptions _options;
     private readonly ServiceBusClient _serviceBusClient;
+    private readonly ServiceBusSender _sender;
 
-    public EdiInboxSender(IOptions<EdiInboxOptions> options)
+    public EdiInboxSender(IOptions<EdiInboxOptions> ediOptions)
     {
-        _options = options.Value;
-        _serviceBusClient = new ServiceBusClient(_options.EDI_INBOX_CONNECTION_STRING);
+        var options = ediOptions.Value;
+        _serviceBusClient = new ServiceBusClient(options.EDI_INBOX_CONNECTION_STRING);
+        _sender = _serviceBusClient.CreateSender(options.EDI_INBOX_QUEUE_NAME);
     }
 
     public async Task SendAsync(ServiceBusMessage message, CancellationToken cancellationToken)
     {
-        var sender = _serviceBusClient.CreateSender(_options.EDI_INBOX_QUEUE_NAME);
-        await sender.SendMessageAsync(message, cancellationToken).ConfigureAwait(false);
+        await _sender.SendMessageAsync(message, cancellationToken).ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()
     {
         await _serviceBusClient.DisposeAsync().ConfigureAwait(false);
+        await _sender.DisposeAsync().ConfigureAwait(false);
         GC.SuppressFinalize(this);
     }
 }
