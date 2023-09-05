@@ -183,7 +183,10 @@ public class Startup
                 name: "IntegrationEventsTopicExists")
             .AddDatabricksJobsApiCheck(
                 databricksOptions,
-                "DatabricksJobsApiCheck");
+                "DatabricksJobsApiCheck")
+            .AddDatabricksSqlStatementsApiCheck(
+                databricksOptions,
+                "DatabricksSqlStatementsApiCheck");
     }
 
     /// <summary>
