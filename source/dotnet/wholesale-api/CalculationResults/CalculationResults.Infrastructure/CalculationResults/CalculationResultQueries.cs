@@ -21,8 +21,10 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatement
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
+using Energinet.DataHub.Wholesale.Common.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NodaTime;
 using NodaTime.Extensions;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
@@ -72,6 +74,47 @@ public class CalculationResultQueries : ICalculationResultQueries
         }
 
         _logger.LogDebug("Fetched all {ResultCount} results for batch {BatchId}", resultCount, batchId);
+    }
+
+    public async IAsyncEnumerable<CalculationResult> GetAsync(CalculationResultRequest request)
+    {
+        var sql = CreateRequestSql(request);
+        var timeSeriesPoints = new List<TimeSeriesPoint>();
+        SqlResultRow? currentRow = null;
+        var resultCount = 0;
+
+        await foreach (var nextRow in _sqlStatementClient.ExecuteAsync(sql).ConfigureAwait(false))
+        {
+            var timeSeriesPoint = CreateTimeSeriesPoint(nextRow);
+
+            if (currentRow != null && BelongsToDifferentResults(currentRow, nextRow))
+            {
+                yield return CreateCalculationResult(request, currentRow, timeSeriesPoints);
+                resultCount++;
+                timeSeriesPoints = new List<TimeSeriesPoint>();
+            }
+
+            timeSeriesPoints.Add(timeSeriesPoint);
+            currentRow = nextRow;
+        }
+
+        if (currentRow != null)
+        {
+            yield return CreateCalculationResult(request, currentRow, timeSeriesPoints);
+            resultCount++;
+        }
+
+        _logger.LogDebug("Fetched all {ResultCount} results", resultCount);
+    }
+
+    private string CreateRequestSql(CalculationResultRequest request)
+    {
+        return $@"
+SELECT {string.Join(", ", SqlColumnNames)}
+FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME}
+WHERE {EnergyResultColumnNames.TimeSeriesType} = '{request.TimeSeriesType}'
+ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames.Time}
+";
     }
 
     private string CreateBatchResultsSql(Guid batchId)
@@ -133,6 +176,32 @@ ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames
             batch.ProcessType,
             batch.PeriodStart.ToInstant(),
             batch.PeriodEnd.ToInstant(),
+            fromGridArea);
+    }
+
+    private static CalculationResult CreateCalculationResult(
+        object request,
+        SqlResultRow sqlResultRow,
+        List<TimeSeriesPoint> timeSeriesPoints)
+    {
+        var id = SqlResultValueConverters.ToGuid(sqlResultRow[EnergyResultColumnNames.CalculationResultId]);
+        var timeSeriesType = SqlResultValueConverters.ToTimeSeriesType(sqlResultRow[EnergyResultColumnNames.TimeSeriesType]);
+        var energySupplierId = sqlResultRow[EnergyResultColumnNames.EnergySupplierId];
+        var balanceResponsibleId = sqlResultRow[EnergyResultColumnNames.BalanceResponsibleId];
+        var gridArea = sqlResultRow[EnergyResultColumnNames.GridArea];
+        var fromGridArea = sqlResultRow[EnergyResultColumnNames.FromGridArea];
+        var batchId = sqlResultRow[EnergyResultColumnNames.BatchId];
+        return new CalculationResult(
+            id,
+            Guid.Parse(batchId),
+            gridArea,
+            timeSeriesType,
+            energySupplierId,
+            balanceResponsibleId,
+            timeSeriesPoints.ToArray(),
+            ProcessType.BalanceFixing,
+            Instant.FromUtc(2000, 1, 1, 1, 1),
+            Instant.FromUtc(2000, 1, 10, 1, 1),
             fromGridArea);
     }
 }

@@ -20,12 +20,14 @@ using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
+using NodaTime;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.CalculationResults;
@@ -74,6 +76,30 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
             .ToArray()
             .Should()
             .Equal(FirstQuantity, SecondQuantity, ThirdQuantity, FourthQuantity, FifthQuantity, SixthQuantity);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetAsync_RequestFromEnergySupplierTotalProduction_ReturnsMultipleResults(
+        CalculationResultQueries sut)
+    {
+        var request = CreateRequest();
+        // Act
+        var actual = await sut.GetAsync(request).ToListAsync();
+
+        actual.Should().NotBeNull();
+        actual.Count.Should().BeGreaterThan(0);
+    }
+
+    private CalculationResultRequest CreateRequest(
+        TimeSeriesType? timeSeriesType = null,
+        Instant? startOfPeriod = null,
+        Instant? endOfPeriod = null)
+    {
+        return new CalculationResultRequest(
+            timeSeriesType ?? TimeSeriesType.Production,
+            startOfPeriod ?? Instant.FromUtc(2020, 1, 1, 1, 1),
+            endOfPeriod ?? Instant.FromUtc(2020, 1, 2, 1, 1));
     }
 
     private async Task AddCreatedRowsInArbitraryOrderAsync(IOptions<DeltaTableOptions> options)

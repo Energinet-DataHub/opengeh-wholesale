@@ -12,20 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
-public interface ICalculationResultQueries
-{
-    /// <summary>
-    /// Get all results for a given batch.
-    /// </summary>
-    IAsyncEnumerable<CalculationResult> GetAsync(Guid batchId);
-
-    /// <summary>
-    /// Gets all result for a given request.
-    /// </summary>
-    /// <param name="request"></param>
-    IAsyncEnumerable<CalculationResult> GetAsync(CalculationResultRequest request);
-}
+public record CalculationResultRequest(
+    TimeSeriesType TimeSeriesType,
+    Instant StartOfPeriod,
+    Instant EndOfPeriod);
