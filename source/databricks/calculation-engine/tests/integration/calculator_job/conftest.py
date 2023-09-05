@@ -205,9 +205,6 @@ def _write_input_test_data_to_table(
         schema=schema,
     )
 
-    # Fix nullability, which is lost for CSV sources
-    df = spark.createDataFrame(df.rdd, schema)
-
     df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(
         f"{paths.INPUT_DATABASE_NAME}.{table_name}"
     )

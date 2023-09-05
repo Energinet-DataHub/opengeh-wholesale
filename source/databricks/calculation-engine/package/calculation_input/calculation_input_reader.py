@@ -22,7 +22,7 @@ from package.codelists import (
 )
 from package.constants import Colname
 from package.infrastructure import paths
-from .schemas import charge_link_periods_schema, charge_master_data_periods_schema, charge_price_points_schema, metering_point_period_schema, time_series_point_schema
+
 
 class CalculationInputReader:
     def __init__(
@@ -47,10 +47,6 @@ class CalculationInputReader:
 
     def read_charge_master_data_periods(self) -> DataFrame:
         df = self.__spark.read.table(f"{paths.INPUT_DATABASE_NAME}.{paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}")
-
-        if df.schema != charge_master_data_periods_schema:
-            raise ValueError(f"Schema mismatch in {paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}")
-
         df = _add_charge_key_column(df)
         return df
 

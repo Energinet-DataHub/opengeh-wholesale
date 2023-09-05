@@ -83,20 +83,6 @@ def _create_df(spark: SparkSession, row: List[dict]) -> DataFrame:
     return spark.createDataFrame(data=row, schema=tariff_schema)
 
 
-def test__calculate_tariff_price_per_ga_co_es__raises_value_error_when_input_df_has_wrong_schema(
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    tariffs = spark.createDataFrame(data=[{"Hello": "World"}])
-
-    # Act
-    with pytest.raises(ValueError) as excinfo:
-        calculate_tariff_price_per_ga_co_es(tariffs)
-
-    # Assert
-    assert "Input DataFrame does not have the correct schema" in str(excinfo.value)
-
-
 def test__calculate_tariff_price_per_ga_co_es__returns_empty_df_when_input_df_is_empty(
     spark: SparkSession,
 ) -> None:

@@ -60,9 +60,6 @@ def calculate_tariff_price_per_ga_co_es(tariffs: DataFrame) -> DataFrame:
     So responsibility of creating results per resolution is managed outside this module.
     """
 
-    if tariffs.schema != tariff_schema:
-        raise ValueError("Input DataFrame does not have the correct schema")
-
     df = _sum_quantity_and_count_charges(tariffs)
 
     return df.select(
