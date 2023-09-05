@@ -12,25 +12,41 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
+using Google.Protobuf;
+using Google.Protobuf.WellKnownTypes;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.UseCases;
 
 public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHandler
 {
     private readonly ICalculationResultQueries _calculationResultQueries;
+    private readonly IEdiInboxSender _ediInboxSender;
+    private readonly IAggregatedTimeSeriesMessageFactory _aggregatedTimeSeriesMessageFactory;
 
-    public AggregatedTimeSeriesRequestHandler(ICalculationResultQueries calculationResultQueries)
+    public AggregatedTimeSeriesRequestHandler(
+        ICalculationResultQueries calculationResultQueries,
+        IEdiInboxSender ediInboxSender,
+        IAggregatedTimeSeriesMessageFactory aggregatedTimeSeriesMessageFactory)
     {
         _calculationResultQueries = calculationResultQueries;
+        _ediInboxSender = ediInboxSender;
+        _aggregatedTimeSeriesMessageFactory = aggregatedTimeSeriesMessageFactory;
     }
 
-    public Task ProcessAsync(object message, CancellationToken cancellationToken)
+    public async Task ProcessAsync(object request, CancellationToken cancellationToken)
     {
         // create the request from the protobuf message
         // call the query service
+        var result = new List<object>();
         // create the response
+        var message = _aggregatedTimeSeriesMessageFactory.Create(result);
+
         // send the response to EDI inbox.
-        return Task.CompletedTask;
+        await _ediInboxSender.SendAsync(message, cancellationToken).ConfigureAwait(false);
     }
 }

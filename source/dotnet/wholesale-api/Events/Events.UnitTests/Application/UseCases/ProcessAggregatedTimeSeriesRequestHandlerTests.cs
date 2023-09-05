@@ -13,7 +13,9 @@
 // limitations under the License.
 
 using AutoFixture.Xunit2;
+using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Moq;
 using Xunit;
@@ -25,7 +27,7 @@ public class ProcessAggregatedTimeSeriesRequestHandlerTests
     [Theory]
     [InlineAutoMoqData]
     public async Task ProcessAsync_can_be_called(
-        [Frozen] Mock<IEdiServiceBus> ediServiceBus,
+        [Frozen] Mock<IEdiInboxSender> sender,
         AggregatedTimeSeriesRequestHandler sut)
     {
         // Arrange
@@ -35,6 +37,10 @@ public class ProcessAggregatedTimeSeriesRequestHandlerTests
         await sut.ProcessAsync(o, CancellationToken.None);
 
         // Assert
-        ediServiceBus.Verify(bus => bus.Publish(), Times.Once);
+        sender.Verify(
+            bus => bus.SendAsync(
+            It.IsAny<ServiceBusMessage>(),
+            It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 }
