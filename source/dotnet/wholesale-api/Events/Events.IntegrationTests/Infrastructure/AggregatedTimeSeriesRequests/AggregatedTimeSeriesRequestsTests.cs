@@ -37,16 +37,26 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
         Mock<IAggregatedTimeSeriesRequestHandler> handlerMock,
         Mock<ILogger<AggregatedTimeSeriesRequestHandler>> loggerMock)
     {
+        // Arrange
+        var are = new AutoResetEvent(false);
+        handlerMock
+            .Setup(handler => handler.ProcessAsync(It.IsAny<CancellationToken>()))
+            .Callback(() =>
+            {
+                are.Set();
+            });
+
         var sut = new AggregatedTimeSeriesServiceBusWorker(
             handlerMock.Object,
             loggerMock.Object,
             _sender.ServiceBusOptions);
 
+        // Act
         await sut.StartAsync(CancellationToken.None).ConfigureAwait(false);
-
         await _sender.PublishAsync("Hello World");
-        // time to await service bus to notify handler about a new message.
-        Thread.Sleep(1000);
-        handlerMock.Verify(handler => handler.ProcessAsync(It.IsAny<CancellationToken>()), Times.Once);
+
+        // Assert
+        var wasSignaled = are.WaitOne(timeout: TimeSpan.FromSeconds(1));
+        Assert.True(wasSignaled);
     }
 }
