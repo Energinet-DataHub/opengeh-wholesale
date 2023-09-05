@@ -21,6 +21,8 @@ module "app_webapi" {
     "JwtBearerSettings:InternalOpenIdUrl"  = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-open-id-url)"
     "JwtBearerSettings:BackendBffAppId"    = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-bff-app-id)"
     "DatabaseSettings:ConnectionString"    = local.MS_ESETT_EXCHANGE_CONNECTION_STRING
+    "BlobStorageSettings:AccountUri"       = local.ESETT_DOCUMENT_STORAGE_ACCOUNT_URI
+    "BlobStorageSettings:ContainerName"    = local.ESETT_DOCUMENT_STORAGE_CONTAINER_NAME
   }
 }
 
