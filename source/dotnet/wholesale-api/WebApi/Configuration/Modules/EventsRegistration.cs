@@ -35,7 +35,7 @@ public static class EventsRegistration
     public static void AddEventsModule(
         this IServiceCollection serviceCollection,
         ServiceBusOptions serviceBusOptions,
-        Energinet.DataHub.Wholesale.Events.Application.Options.ServiceBusOptions serviceBusOptions2)
+        Energinet.DataHub.Wholesale.Events.Application.Options.ServiceBusOptions eventsServiceBusOptions)
     {
         serviceCollection.AddScoped<ICompletedBatchRepository, CompletedBatchRepository>();
         serviceCollection.AddScoped<ICompletedBatchFactory, CompletedBatchFactory>();
@@ -55,7 +55,7 @@ public static class EventsRegistration
             IntegrationEventTopicName = serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
         });
 
-        RegisterHostedServices(serviceCollection, serviceBusOptions2);
+        RegisterHostedServices(serviceCollection, eventsServiceBusOptions);
     }
 
     private static void AddApplications(this IServiceCollection services)

@@ -29,11 +29,10 @@ public class OptionsTests
     [InlineAutoMoqData(typeof(AppInsightOptions), 1, "APPINSIGHTS_INSTRUMENTATIONKEY")]
     [InlineAutoMoqData(
         typeof(ServiceBusOptions),
-        4,
+        3,
         "SERVICE_BUS_SEND_CONNECTION_STRING",
         "SERVICE_BUS_MANAGE_CONNECTION_STRING",
-        "INTEGRATIONEVENTS_TOPIC_NAME",
-        "SERVICE_BUS_LISTEN_CONNECTION_STRING")]
+        "INTEGRATIONEVENTS_TOPIC_NAME")]
     [InlineAutoMoqData(typeof(DateTimeOptions), 1, "TIME_ZONE")]
     [InlineAutoMoqData(typeof(ConnectionStringsOptions), 1, "DB_CONNECTION_STRING")]
     [InlineAutoMoqData(typeof(DatabricksOptions), 3, "DATABRICKS_WORKSPACE_URL", "DATABRICKS_WORKSPACE_TOKEN", "DATABRICKS_WAREHOUSE_ID")]
