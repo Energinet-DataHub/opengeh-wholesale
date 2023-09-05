@@ -208,3 +208,11 @@ def _write_input_test_data_to_table(
     df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(
         f"{paths.INPUT_DATABASE_NAME}.{table_name}"
     )
+
+    _fix_missing_not_null_constraints(spark, schema)
+
+
+def _fix_missing_not_null_constraints(spark: SparkSession, schema: StructType) -> None:
+    for field in schema:
+        if not field.nullable:
+            spark.sql(f"ALTER TABLE {paths.INPUT_DATABASE_NAME}.{table_name} ALTER COLUMN {field.name} DROP NOT NULL")
