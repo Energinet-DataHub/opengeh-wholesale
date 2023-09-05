@@ -61,7 +61,7 @@ public class AggregatedTimeSeriesServiceBusWorker : BackgroundService, IAsyncDis
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _serviceBusProcessor = _serviceBusClient.CreateProcessor(_options.SERVICE_BUS_INBOX_QUEUE_NAME);
+        _serviceBusProcessor = _serviceBusClient.CreateProcessor(_options.INBOX_MESSAGE_QUEUE_NAME);
 
         _serviceBusProcessor.ProcessMessageAsync += ProcessMessageAsync;
         _serviceBusProcessor.ProcessErrorAsync += ProcessErrorAsync;

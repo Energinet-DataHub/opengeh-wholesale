@@ -48,7 +48,7 @@ public class ServiceBusSenderFixture : IAsyncLifetime, IAsyncDisposable
         var builder = _serviceBusResourceProvider
             .BuildQueue(_queueName);
         builder
-            .Do(queueProperties => ServiceBusOptions.Value.SERVICE_BUS_INBOX_QUEUE_NAME = queueProperties.Name);
+            .Do(queueProperties => ServiceBusOptions.Value.INBOX_MESSAGE_QUEUE_NAME = queueProperties.Name);
         await builder
             .CreateAsync();
     }
@@ -69,7 +69,7 @@ public class ServiceBusSenderFixture : IAsyncLifetime, IAsyncDisposable
     internal Task PublishAsync(string message)
     {
         var client = new ServiceBusClient(ServiceBusOptions.Value.SERVICE_BUS_LISTEN_CONNECTION_STRING);
-        var sender = client.CreateSender(ServiceBusOptions.Value.SERVICE_BUS_INBOX_QUEUE_NAME);
+        var sender = client.CreateSender(ServiceBusOptions.Value.INBOX_MESSAGE_QUEUE_NAME);
         return sender.SendMessageAsync(CreateAggregatedTimeSeriesRequestMessage(message));
     }
 

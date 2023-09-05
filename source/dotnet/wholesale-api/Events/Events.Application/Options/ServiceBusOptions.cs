@@ -21,5 +21,5 @@ public class ServiceBusOptions
     /// </summary>
     public string SERVICE_BUS_LISTEN_CONNECTION_STRING { get; set; } = string.Empty;
 
-    public string SERVICE_BUS_INBOX_QUEUE_NAME { get; set; } = string.Empty;
+    public string INBOX_MESSAGE_QUEUE_NAME { get; set; } = string.Empty;
 }

@@ -88,7 +88,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
             Environment.SetEnvironmentVariable(nameof(Energinet.DataHub.Wholesale.Events.Application.Options.ServiceBusOptions.SERVICE_BUS_LISTEN_CONNECTION_STRING), ServiceBusResourceProvider.ConnectionString);
             await ServiceBusResourceProvider
                 .BuildQueue("sbq-wholesale-inbox")
-                .SetEnvironmentVariableToQueueName(nameof(Energinet.DataHub.Wholesale.Events.Application.Options.ServiceBusOptions.SERVICE_BUS_INBOX_QUEUE_NAME))
+                .SetEnvironmentVariableToQueueName(nameof(Energinet.DataHub.Wholesale.Events.Application.Options.ServiceBusOptions.INBOX_MESSAGE_QUEUE_NAME))
                 .CreateAsync();
 
             Environment.SetEnvironmentVariable(nameof(DateTimeOptions.TIME_ZONE), "Europe/Copenhagen");
