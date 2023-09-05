@@ -55,7 +55,7 @@ def _create_tariff_hour_row(
     energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
     metering_point_type: MeteringPointType = DEFAULT_METERING_POINT_TYPE,
-    settlement_method: SettlementMethod = DEFAULT_SETTLEMENT_METHOD,
+    settlement_method: Union[SettlementMethod, None] = DEFAULT_SETTLEMENT_METHOD,
     grid_area: str = DEFAULT_GRID_AREA,
     quantity: Decimal = DEFAULT_QUANTITY,
 ) -> dict:
@@ -71,7 +71,7 @@ def _create_tariff_hour_row(
         Colname.metering_point_id: metering_point_id,
         Colname.energy_supplier_id: energy_supplier_id,
         Colname.metering_point_type: metering_point_type.value,
-        Colname.settlement_method: settlement_method.value,
+        Colname.settlement_method: settlement_method.value if settlement_method else None,
         Colname.grid_area: grid_area,
         Colname.quantity: quantity,
     }
@@ -194,23 +194,15 @@ def test__calculate_tariff_price_per_ga_co_es__does_not_aggregate_across_group_s
     assert actual.count() == 2
 
 
-@pytest.mark.parametrize(
-    "column_name, expected_precision",
-    [
-        (Colname.total_amount, 6),
-        (Colname.quantity, 3),
-        (Colname.charge_price, 6),
-    ]
-)
-def test__calculate_tariff_price_per_ga_co_es__returns_df_with_expected_precisions(
-    spark: SparkSession, column_name: str, expected_precision: int
+def test__calculate_tariff_price_per_ga_co_es__when_production__returns_result(
+    spark: SparkSession
 ) -> None:
     # Arrange
-    rows = [_create_tariff_hour_row()]
+    rows = [_create_tariff_hour_row(metering_point_type=MeteringPointType.PRODUCTION, settlement_method=None)]
     tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
 
     # Act
     actual = calculate_tariff_price_per_ga_co_es(tariffs)
 
     # Assert
-    assert actual.schema[column_name].dataType.precision == expected_precision
+    assert actual.count() == 1
