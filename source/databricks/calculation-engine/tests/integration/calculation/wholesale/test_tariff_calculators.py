@@ -79,10 +79,6 @@ def _create_tariff_hour_row(
     return row
 
 
-def _create_df(spark: SparkSession, row: List[dict]) -> DataFrame:
-    return spark.createDataFrame(data=row, schema=tariff_schema)
-
-
 def test__calculate_tariff_price_per_ga_co_es__returns_empty_df_when_input_df_is_empty(
     spark: SparkSession,
 ) -> None:
@@ -217,4 +213,4 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_expected_precisio
     actual = calculate_tariff_price_per_ga_co_es(tariffs)
 
     # Assert
-    assert actual.schema[column_name].precision == expected_precision
+    assert actual.schema[column_name].dataType.precision == expected_precision
