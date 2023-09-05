@@ -86,6 +86,7 @@ jobs:
       download_attempt_limit: 20
       use_azure_functions_tools: true
       environment: AzureAuth
+      run_integration_tests: true
       azure_integrationtest_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
       azure_integrationtest_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
       azure_integrationtest_spn_id: ${{ vars.integration_test_azure_spn_id_oidc }}
