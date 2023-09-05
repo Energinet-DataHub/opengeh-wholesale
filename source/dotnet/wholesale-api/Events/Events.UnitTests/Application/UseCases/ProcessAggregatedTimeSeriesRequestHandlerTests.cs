@@ -12,18 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
+using Moq;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Events.UnitTests.Application.Workers;
+namespace Energinet.DataHub.Wholesale.Events.UnitTests.Application.UseCases;
 
 public class ProcessAggregatedTimeSeriesRequestHandlerTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public async Task ProcessAsync_can_be_called(AggregatedTimeSeriesRequestHandler sut)
+    public async Task ProcessAsync_can_be_called(
+        [Frozen] Mock<IEdiServiceBus> ediServiceBus,
+        AggregatedTimeSeriesRequestHandler sut)
     {
-        await sut.ProcessAsync(CancellationToken.None);
+        // Arrange
+        var o = new object();
+
+        // Act
+        await sut.ProcessAsync(o, CancellationToken.None);
+
+        // Assert
+        ediServiceBus.Verify(bus => bus.Publish(), Times.Once);
     }
 }

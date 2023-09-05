@@ -25,7 +25,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         _calculationResultQueries = calculationResultQueries;
     }
 
-    public Task ProcessAsync(CancellationToken cancellationToken)
+    public Task ProcessAsync(object message, CancellationToken cancellationToken)
     {
         // create the request from the protobuf message
         // call the query service
