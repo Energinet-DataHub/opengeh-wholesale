@@ -53,34 +53,29 @@ public class ServiceBusSenderFixture : IAsyncLifetime, IAsyncDisposable
             .CreateAsync();
     }
 
-    async Task IAsyncLifetime.DisposeAsync()
-    {
-        await Task.CompletedTask.ConfigureAwait(false);
-    }
-
     public async ValueTask DisposeAsync()
     {
-        await DisposeCoreAsync().ConfigureAwait(false);
-
+        await _serviceBusResourceProvider.DisposeAsync();
+        await _serviceBusResourceProvider.DisposeAsync().ConfigureAwait(false);
         GC.SuppressFinalize(this);
     }
 
-    internal Task PublishAsync(string eventName, byte[] eventPayload)
+    async Task IAsyncLifetime.DisposeAsync()
+    {
+        await DisposeAsync();
+        await Task.CompletedTask.ConfigureAwait(false);
+    }
+
+    internal Task PublishAsync(string message)
     {
         var client = new ServiceBusClient(ServiceBusOptions.Value.SERVICE_BUS_LISTEN_CONNECTION_STRING);
         var sender = client.CreateSender(ServiceBusOptions.Value.SERVICE_BUS_INBOX_QUEUE_NAME);
-        return sender.SendMessageAsync(CreateAggregatedTimeSeriesRequestMessage(eventName, eventPayload));
+        return sender.SendMessageAsync(CreateAggregatedTimeSeriesRequestMessage(message));
     }
 
-    private ServiceBusMessage CreateAggregatedTimeSeriesRequestMessage(string eventName, byte[] eventPayload)
+    private ServiceBusMessage CreateAggregatedTimeSeriesRequestMessage(string body)
     {
-        var message = new ServiceBusMessage(
-            "hello world");
+        var message = new ServiceBusMessage(body);
         return message;
-    }
-
-    private async ValueTask DisposeCoreAsync()
-    {
-        await _serviceBusResourceProvider.DisposeAsync().ConfigureAwait(false);
     }
 }

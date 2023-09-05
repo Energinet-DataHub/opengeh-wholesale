@@ -34,8 +34,7 @@ public static class EventsRegistration
 {
     public static void AddEventsModule(
         this IServiceCollection serviceCollection,
-        ServiceBusOptions serviceBusOptions,
-        Energinet.DataHub.Wholesale.Events.Application.Options.ServiceBusOptions eventsServiceBusOptions)
+        ServiceBusOptions serviceBusOptions)
     {
         serviceCollection.AddScoped<ICompletedBatchRepository, CompletedBatchRepository>();
         serviceCollection.AddScoped<ICompletedBatchFactory, CompletedBatchFactory>();
@@ -55,7 +54,7 @@ public static class EventsRegistration
             IntegrationEventTopicName = serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
         });
 
-        RegisterHostedServices(serviceCollection, eventsServiceBusOptions);
+        RegisterHostedServices(serviceCollection);
     }
 
     private static void AddApplications(this IServiceCollection services)
@@ -73,7 +72,7 @@ public static class EventsRegistration
         serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
     }
 
-    private static void RegisterHostedServices(IServiceCollection serviceCollection, Energinet.DataHub.Wholesale.Events.Application.Options.ServiceBusOptions serviceBusOptions)
+    private static void RegisterHostedServices(IServiceCollection serviceCollection)
     {
         serviceCollection.AddHostedService<AggregatedTimeSeriesServiceBusWorker>();
         serviceCollection.AddHostedService<RegisterCompletedBatchesTrigger>();

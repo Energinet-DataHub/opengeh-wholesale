@@ -44,7 +44,7 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
 
         await sut.StartAsync(CancellationToken.None).ConfigureAwait(false);
 
-        await _sender.PublishAsync("EventName", new byte[10]);
+        await _sender.PublishAsync("Hello World");
         // time to await service bus to notify handler about a new message.
         Thread.Sleep(1000);
         handlerMock.Verify(handler => handler.ProcessAsync(It.IsAny<CancellationToken>()), Times.Once);

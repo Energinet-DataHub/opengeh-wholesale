@@ -16,7 +16,6 @@ using Azure.Identity;
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.JsonSerialization;
-using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Wholesale.Common.Databricks;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Energinet.DataHub.Wholesale.Common.DatabricksClient;
@@ -44,8 +43,7 @@ internal static class ServiceCollectionExtensions
             sqlWarehouseOptions.DATABRICKS_WORKSPACE_URL);
 
         serviceCollection.AddEventsModule(
-            configuration.Get<ServiceBusOptions>()!,
-            configuration.Get<Energinet.DataHub.Wholesale.Events.Application.Options.ServiceBusOptions>()!);
+            configuration.Get<ServiceBusOptions>()!);
 
         // Add registration that are used by more than one module
         serviceCollection.AddShared(configuration);
