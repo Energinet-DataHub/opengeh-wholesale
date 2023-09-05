@@ -19,7 +19,7 @@ from package.calculation.energy.aggregators import (
     _aggregate_per_ga_and_brp_and_es,
 )
 from package.codelists import (
-    InputMeteringPointType,
+    MeteringPointType,
     MeteringPointResolution,
     TimeSeriesQuality,
 )
@@ -31,16 +31,12 @@ import pytest
 from typing import Callable, Optional
 from pandas.core.frame import DataFrame as PandasDataFrame
 
-e_17 = InputMeteringPointType.CONSUMPTION.value
-e_18 = InputMeteringPointType.PRODUCTION.value
-e_20 = InputMeteringPointType.EXCHANGE.value
-
 minimum_quantity = Decimal("0.001")
 grid_area_code_805 = "805"
 grid_area_code_806 = "806"
 
 # Default time series data point values
-default_metering_point_type = e_18
+default_metering_point_type = MeteringPointType.PRODUCTION.value
 default_grid_area = grid_area_code_805
 default_responsible = "R1"
 default_supplier = "S1"
@@ -138,15 +134,15 @@ def check_aggregation_row(
 @pytest.mark.parametrize(
     "metering_point_type",
     [
-        pytest.param(e_17, id="invalid because metering point type is consumption"),
-        pytest.param(e_20, id="invalid because metering point type is exchange"),
+        pytest.param(MeteringPointType.CONSUMPTION.value, id="invalid because metering point type is consumption"),
+        pytest.param(MeteringPointType.EXCHANGE.value, id="invalid because metering point type is exchange"),
     ],
 )
 def test_production_aggregator_filters_out_incorrect_point_type(
     metering_point_type: str, enriched_time_series_factory: Callable[..., DataFrame]
 ) -> None:
     """
-    Aggregator should filter out all non "E18" MarketEvaluationPointType rows
+    Aggregator should filter out all non-production MarketEvaluationPointType rows
     """
     enriched_time_series = enriched_time_series_factory(
         metering_point_type=metering_point_type
@@ -246,7 +242,7 @@ def test_production_test_filter_by_domain_is_pressent(
 ) -> None:
     df = enriched_time_series_factory()
     aggregated_df = _aggregate_per_ga_and_brp_and_es(
-        df, InputMeteringPointType.PRODUCTION, None
+        df, MeteringPointType.PRODUCTION, None
     )
     assert aggregated_df.count() == 1
 
@@ -259,7 +255,7 @@ def test__quarterly_sums_correctly(
     df = enriched_time_series_quarterly_same_time_factory(
         first_quantity=Decimal("1"), second_quantity=Decimal("2")
     )
-    result_df = _aggregate_per_ga_and_brp_and_es(df, InputMeteringPointType.PRODUCTION, None)
+    result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
     assert result_df.first().sum_quantity == 3
 
 
@@ -352,7 +348,7 @@ def test__position_is_based_on_time_correctly(
         second_grid_area_code=grid_area_code_805,
     )
     result_df = _aggregate_per_ga_and_brp_and_es(
-        df, InputMeteringPointType.PRODUCTION, None
+        df, MeteringPointType.PRODUCTION, None
     ).collect()
 
     assert result_df[0]["position"] == 1
@@ -386,7 +382,7 @@ def test__that_grid_area_code_in_input_is_in_output(
 ) -> None:
     "Test that the grid area codes in input are in result"
     df = enriched_time_series_quarterly_same_time_factory()
-    result_df = _aggregate_per_ga_and_brp_and_es(df, InputMeteringPointType.PRODUCTION, None)
+    result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
     assert result_df.first().grid_area_code == str(grid_area_code_805)
 
 
@@ -395,7 +391,7 @@ def test__each_grid_area_has_a_sum(
 ) -> None:
     """Test that multiple GridAreas receive each their calculation for a period"""
     df = enriched_time_series_quarterly_same_time_factory(second_grid_area_code="806")
-    result_df = _aggregate_per_ga_and_brp_and_es(df, InputMeteringPointType.PRODUCTION, None)
+    result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
     assert result_df.where("grid_area_code == 805").count() == 1
     assert result_df.where("grid_area_code == 806").count() == 1
 
@@ -471,7 +467,7 @@ def test__quality_is_lowest_common_denominator_among_measured_estimated_and_miss
         .union(enriched_time_series_factory(quality=quality_2))
         .union(enriched_time_series_factory(quality=quality_3))
     )
-    result_df = _aggregate_per_ga_and_brp_and_es(df, InputMeteringPointType.PRODUCTION, None)
+    result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
     assert result_df.first().quality == expected_quality
 
 
@@ -480,7 +476,7 @@ def test__when_time_series_point_is_missing__quality_has_value_incomplete(
 ) -> None:
     df = enriched_time_series_factory().withColumn("quality", F.lit(None))
 
-    result_df = _aggregate_per_ga_and_brp_and_es(df, InputMeteringPointType.PRODUCTION, None)
+    result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
     assert result_df.first().quality == TimeSeriesQuality.MISSING.value
 
 
@@ -490,5 +486,5 @@ def test__when_time_series_point_is_missing__quantity_is_0(
     df = enriched_time_series_factory().withColumn(
         "quarter_quantity", F.lit(None).cast(DecimalType())
     )
-    result_df = _aggregate_per_ga_and_brp_and_es(df, InputMeteringPointType.PRODUCTION, None)
+    result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
     assert result_df.first().sum_quantity == Decimal("0.000")
