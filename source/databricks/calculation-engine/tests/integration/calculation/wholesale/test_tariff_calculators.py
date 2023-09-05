@@ -194,9 +194,15 @@ def test__calculate_tariff_price_per_ga_co_es__does_not_aggregate_across_group_s
     assert actual.count() == 2
 
 
-def test__calculate_tariff_price_per_ga_co_es__when_production__returns_result(
+def test__calculate_tariff_price_per_ga_co_es__when_settlement_method_is_null__returns_result(
     spark: SparkSession
 ) -> None:
+    """
+    Settlement method being null is a permutation that should be tested.
+    This is the case for all but consumption metering points.
+    This test tests for one of these examples.
+    """
+
     # Arrange
     rows = [_create_tariff_hour_row(metering_point_type=MeteringPointType.PRODUCTION, settlement_method=None)]
     tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
