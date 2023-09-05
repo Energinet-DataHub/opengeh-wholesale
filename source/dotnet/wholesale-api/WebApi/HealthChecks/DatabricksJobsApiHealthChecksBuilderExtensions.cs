@@ -27,7 +27,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks
             {
                 try
                 {
-                    var client = new JobsApiClient(Options.Create(options));
+                    using var client = new JobsApiClient(Options.Create(options));
                     await client.Jobs.List().ConfigureAwait(false);
                     return HealthCheckResult.Healthy();
                 }
