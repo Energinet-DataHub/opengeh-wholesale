@@ -168,7 +168,7 @@ def balance_fixing_results_df(
     executed_balance_fixing: None,
 ) -> DataFrame:
     results_df = spark.read.table(f"{paths.OUTPUT_DATABASE_NAME}.{paths.ENERGY_RESULT_TABLE_NAME}")
-    return results_df.where(F.col(EnergyResultColumnNames.batch_id) == C.executed_balance_fixing_batch_id)
+    return results_df.where(F.col(EnergyResultColumnNames.calculation_id) == C.executed_balance_fixing_batch_id)
 
 
 @pytest.fixture(scope="session")
@@ -177,7 +177,7 @@ def wholesale_fixing_energy_results_df(
     executed_wholesale_fixing: None,
 ) -> DataFrame:
     results_df = spark.read.table(f"{paths.OUTPUT_DATABASE_NAME}.{paths.ENERGY_RESULT_TABLE_NAME}")
-    return results_df.where(F.col(EnergyResultColumnNames.batch_id) == C.executed_wholesale_batch_id)
+    return results_df.where(F.col(EnergyResultColumnNames.calculation_id) == C.executed_wholesale_batch_id)
 
 
 @pytest.fixture(scope="session")

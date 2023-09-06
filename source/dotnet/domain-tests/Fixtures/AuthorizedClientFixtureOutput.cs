@@ -74,12 +74,12 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
         private async Task<Guid> StartWholesaleCalculation()
         {
-            var startDate = new DateTimeOffset(2021, 12, 31, 23, 0, 0, TimeSpan.Zero);
-            var endDate = new DateTimeOffset(2022, 1, 31, 23, 0, 0, TimeSpan.Zero);
+            var startDate = new DateTimeOffset(2023, 1, 31, 23, 0, 0, TimeSpan.Zero);
+            var endDate = new DateTimeOffset(2023, 2, 28, 23, 0, 0, TimeSpan.Zero);
             var batchRequestDto = new BatchRequestDto
             {
                 ProcessType = ProcessType.WholesaleFixing,
-                GridAreaCodes = new List<string> { "543" },
+                GridAreaCodes = new List<string> { "804" },
                 StartDate = startDate,
                 EndDate = endDate,
             };

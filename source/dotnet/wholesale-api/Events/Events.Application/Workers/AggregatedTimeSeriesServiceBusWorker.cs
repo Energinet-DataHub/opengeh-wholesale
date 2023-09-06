@@ -13,9 +13,11 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Wholesale.Events.Application.Options;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.Workers;
 
@@ -25,16 +27,16 @@ namespace Energinet.DataHub.Wholesale.Events.Application.Workers;
 public class AggregatedTimeSeriesServiceBusWorker : BackgroundService, IAsyncDisposable
 {
     private readonly IAggregatedTimeSeriesRequestHandler _aggregatedTimeSeriesRequestHandler;
-    private readonly ServiceBusClient _serviceBusClient;
     private readonly ILogger<AggregatedTimeSeriesRequestHandler> _logger;
-    private ServiceBusProcessor? _serviceBusProcessor;
+    private readonly ServiceBusProcessor _serviceBusProcessor;
 
     public AggregatedTimeSeriesServiceBusWorker(
         IAggregatedTimeSeriesRequestHandler aggregatedTimeSeriesRequestHandler,
         ILogger<AggregatedTimeSeriesRequestHandler> logger,
-        string serviceBusConnectionString)
+        IOptions<ServiceBusOptions> options,
+        ServiceBusClient serviceBusClient)
     {
-        _serviceBusClient = new ServiceBusClient(serviceBusConnectionString);
+        _serviceBusProcessor = serviceBusClient.CreateProcessor(options.Value.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME);
         _aggregatedTimeSeriesRequestHandler = aggregatedTimeSeriesRequestHandler;
         _logger = logger;
     }
@@ -42,22 +44,19 @@ public class AggregatedTimeSeriesServiceBusWorker : BackgroundService, IAsyncDis
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
         _logger.LogDebug("Stopping the service bus subscription");
-
-        if (_serviceBusProcessor != null)
-            await _serviceBusProcessor.CloseAsync(cancellationToken).ConfigureAwait(false);
+        await _serviceBusProcessor.CloseAsync(cancellationToken).ConfigureAwait(false);
         await base.StopAsync(cancellationToken).ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()
     {
-        await _serviceBusClient.DisposeAsync().ConfigureAwait(false);
-        if (_serviceBusProcessor != null) await _serviceBusProcessor.DisposeAsync().ConfigureAwait(false);
+        await _serviceBusProcessor.DisposeAsync().ConfigureAwait(false);
         GC.SuppressFinalize(this);
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _serviceBusProcessor = _serviceBusClient.CreateProcessor("sbq-wholesale-inbox");
+        if (_serviceBusProcessor == null) throw new ArgumentNullException();
 
         _serviceBusProcessor.ProcessMessageAsync += ProcessMessageAsync;
         _serviceBusProcessor.ProcessErrorAsync += ProcessErrorAsync;
@@ -77,7 +76,7 @@ public class AggregatedTimeSeriesServiceBusWorker : BackgroundService, IAsyncDis
 
     private async Task ProcessMessageAsync(ProcessMessageEventArgs arg)
     {
-        await _aggregatedTimeSeriesRequestHandler.ProcessAsync(arg.CancellationToken).ConfigureAwait(false);
+        await _aggregatedTimeSeriesRequestHandler.ProcessAsync(arg.Message, arg.CancellationToken).ConfigureAwait(false);
         await arg.CompleteMessageAsync(arg.Message).ConfigureAwait(false);
     }
 }

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
+namespace Energinet.DataHub.Wholesale.Events.Application.Options;
 
 public class ServiceBusOptions
 {
@@ -29,7 +29,12 @@ public class ServiceBusOptions
     public string INTEGRATIONEVENTS_TOPIC_NAME { get; set; } = string.Empty;
 
     /// <summary>
-    /// Connection string to listen to the wholesale domain service bus queues and topics.
+    /// The inbox to receive instructions to be processed by this domain.
     /// </summary>
-    public string SERVICE_BUS_LISTEN_CONNECTION_STRING { get; set; } = string.Empty;
+    public string WHOLESALE_INBOX_MESSAGE_QUEUE_NAME { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Queue name for the EDI inbox.
+    /// </summary>
+    public string EDI_INBOX_MESSAGE_QUEUE_NAME { get; set; } = string.Empty;
 }

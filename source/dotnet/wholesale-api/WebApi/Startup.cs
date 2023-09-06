@@ -21,13 +21,16 @@ using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Energinet.DataHub.Wholesale.Common.Security;
+using Energinet.DataHub.Wholesale.Events.Application.Options;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Energinet.DataHub.Wholesale.WebApi.HealthChecks;
+using Energinet.DataHub.Wholesale.WebApi.HealthChecks.Databricks;
 using Energinet.DataHub.Wholesale.WebApi.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.Extensions.Azure;
 using Microsoft.OpenApi.Models;
 
 namespace Energinet.DataHub.Wholesale.WebApi;
@@ -104,6 +107,12 @@ public class Startup
         serviceCollection.AddOptions<DataLakeOptions>().Bind(Configuration);
         serviceCollection.AddOptions<DeltaTableOptions>();
 
+        // ServiceBus
+        serviceCollection.AddAzureClients(builder =>
+        {
+            builder.AddServiceBusClient(Configuration.Get<ServiceBusOptions>()!.SERVICE_BUS_MANAGE_CONNECTION_STRING);
+        });
+
         AddJwtTokenSecurity(serviceCollection);
         AddHealthCheck(serviceCollection);
         serviceCollection.AddApplicationInsightsTelemetry(options => options.EnableAdaptiveSampling = false);
@@ -178,7 +187,9 @@ public class Startup
             .AddAzureServiceBusTopic(
                 serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
                 serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
-                name: "IntegrationEventsTopicExists");
+                name: "IntegrationEventsTopicExists")
+            .AddDatabricksJobsApiHealthCheck(_ => Configuration.Get<DatabricksOptions>()!, name: "DatabricksJobsApiCheck")
+            .AddDatabricksSqlStatementsApiHealthCheck(_ => Configuration.Get<DatabricksOptions>()!, name: "DatabricksSqlStatementsApiCheck");
     }
 
     /// <summary>

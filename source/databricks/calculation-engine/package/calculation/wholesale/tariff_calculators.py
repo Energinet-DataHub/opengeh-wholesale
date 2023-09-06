@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, sum, count, lit
+from pyspark.sql.functions import col, count, lit, sum
 from pyspark.sql.types import (
     BooleanType,
     DecimalType,
@@ -34,7 +34,7 @@ tariff_schema = StructType(
         StructField(Colname.charge_tax, BooleanType(), False),
         StructField(Colname.charge_resolution, StringType(), False),
         StructField(Colname.charge_time, TimestampType(), False),
-        StructField(Colname.charge_price, DecimalType(18, 8), False),
+        StructField(Colname.charge_price, DecimalType(18, 6), False),
         StructField(Colname.metering_point_id, StringType(), False),
         StructField(Colname.energy_supplier_id, StringType(), False),
         StructField(Colname.metering_point_type, StringType(), False),

@@ -33,16 +33,16 @@ from package.calculation_output.schemas import energy_results_schema
 def _create_df(spark: SparkSession) -> DataFrame:
     row = {
         EnergyResultColumnNames.grid_area: "543",
-        EnergyResultColumnNames.energy_supplier_id: "energy_supplier_id",
-        EnergyResultColumnNames.balance_responsible_id: "balance_responsible_id",
+        EnergyResultColumnNames.energy_supplier_id: "1234567890123",
+        EnergyResultColumnNames.balance_responsible_id: "9876543210987",
         EnergyResultColumnNames.quantity: Decimal("1.123"),
         EnergyResultColumnNames.quantity_quality: "missing",
         EnergyResultColumnNames.time: datetime(2020, 1, 1, 0, 0),
         EnergyResultColumnNames.aggregation_level: "total_ga",
         EnergyResultColumnNames.time_series_type: "production",
-        EnergyResultColumnNames.batch_id: "batch_id",
-        EnergyResultColumnNames.batch_process_type: "BalanceFixing",
-        EnergyResultColumnNames.batch_execution_time_start: datetime(2020, 1, 1, 0, 0),
+        EnergyResultColumnNames.calculation_id: "9252d7a0-4363-42cc-a2d6-e04c026523f8",
+        EnergyResultColumnNames.calculation_type: "BalanceFixing",
+        EnergyResultColumnNames.calculation_execution_time_start: datetime(2020, 1, 1, 0, 0),
         EnergyResultColumnNames.from_grid_area: "843",
         EnergyResultColumnNames.calculation_result_id: "6033ab5c-436b-44e9-8a79-90489d324e53"
     }
@@ -52,10 +52,10 @@ def _create_df(spark: SparkSession) -> DataFrame:
 @pytest.mark.parametrize(
     "column_name,invalid_column_value",
     [
-        (EnergyResultColumnNames.batch_id, None),
-        (EnergyResultColumnNames.batch_execution_time_start, None),
-        (EnergyResultColumnNames.batch_process_type, None),
-        (EnergyResultColumnNames.batch_process_type, "foo"),
+        (EnergyResultColumnNames.calculation_id, None),
+        (EnergyResultColumnNames.calculation_execution_time_start, None),
+        (EnergyResultColumnNames.calculation_type, None),
+        (EnergyResultColumnNames.calculation_type, "foo"),
         (EnergyResultColumnNames.time_series_type, None),
         (EnergyResultColumnNames.time_series_type, "foo"),
         (EnergyResultColumnNames.grid_area, None),
@@ -102,16 +102,16 @@ max_decimal = Decimal(f"{'9'*15}.999")  # Precision=18 and scale=3
 @pytest.mark.parametrize(
     "column_name,column_value",
     [
-        (EnergyResultColumnNames.batch_id, "some string"),
+        (EnergyResultColumnNames.calculation_id, "9252d7a0-4363-42cc-a2d6-e04c026523f8"),
         (EnergyResultColumnNames.grid_area, "123"),
         (EnergyResultColumnNames.grid_area, "007"),
         (EnergyResultColumnNames.from_grid_area, None),
         (EnergyResultColumnNames.from_grid_area, "123"),
         (EnergyResultColumnNames.from_grid_area, "007"),
         (EnergyResultColumnNames.balance_responsible_id, None),
-        (EnergyResultColumnNames.balance_responsible_id, "some string"),
+        (EnergyResultColumnNames.balance_responsible_id, "1234567890123"),
         (EnergyResultColumnNames.energy_supplier_id, None),
-        (EnergyResultColumnNames.energy_supplier_id, "some string"),
+        (EnergyResultColumnNames.energy_supplier_id, "1234567890123"),
         (EnergyResultColumnNames.quantity, None),
         (EnergyResultColumnNames.quantity, Decimal("1.123")),
         (EnergyResultColumnNames.quantity, max_decimal),
@@ -137,7 +137,7 @@ def test__migrated_table_accepts_valid_data(
 @pytest.mark.parametrize(
     "column_name,column_value",
     [
-        *[(EnergyResultColumnNames.batch_process_type, x.value) for x in ProcessType],
+        *[(EnergyResultColumnNames.calculation_type, x.value) for x in ProcessType],
         *[(EnergyResultColumnNames.time_series_type, x.value) for x in TimeSeriesType],
         *[(EnergyResultColumnNames.quantity_quality, x.value) for x in TimeSeriesQuality],
         *[(EnergyResultColumnNames.aggregation_level, x.value) for x in AggregationLevel],
@@ -181,7 +181,7 @@ def test__migrated_table_does_not_round_valid_decimal(
     result_df = _create_df(spark)
     result_df = result_df.withColumn("quantity", lit(quantity))
     batch_id = str(uuid.uuid4())
-    result_df = result_df.withColumn(EnergyResultColumnNames.batch_id, lit(batch_id))
+    result_df = result_df.withColumn(EnergyResultColumnNames.calculation_id, lit(batch_id))
 
     # Act
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
@@ -190,7 +190,7 @@ def test__migrated_table_does_not_round_valid_decimal(
 
     # Assert
     actual_df = spark.read.table(f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}").where(
-        col(EnergyResultColumnNames.batch_id) == batch_id
+        col(EnergyResultColumnNames.calculation_id) == batch_id
     )
     assert actual_df.collect()[0].quantity == quantity
 
