@@ -8,7 +8,7 @@ ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
     DROP CONSTRAINT IF EXISTS batch_id_chk
 GO
 ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
-    DROP CONSTRAINT IF EXISTS calculation_result_id_chk
+    DROP CONSTRAINT IF EXISTS calculation_id_chk
 GO
 
 -- Length is 16 when EIC and 13 when GLN
@@ -20,7 +20,7 @@ ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
     ADD CONSTRAINT balance_responsible_id_chk CHECK (balance_responsible_id IS NULL OR LENGTH(balance_responsible_id) = 13 OR LENGTH(balance_responsible_id) = 16)
 GO
 ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
-    ADD CONSTRAINT batch_id_chk CHECK (LENGTH(batch_id) = 36)
+    ADD CONSTRAINT calculation_id_chk CHECK (LENGTH(calculation_id) = 36)
 GO
 ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
     ADD CONSTRAINT calculation_result_id_chk CHECK (LENGTH(calculation_result_id) = 36)
