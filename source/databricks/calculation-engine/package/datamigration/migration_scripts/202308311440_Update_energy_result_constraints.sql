@@ -5,10 +5,10 @@ ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
     DROP CONSTRAINT IF EXISTS balance_responsible_id_chk
 GO
 ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
-    DROP CONSTRAINT IF EXISTS batch_id_chk
+    DROP CONSTRAINT IF EXISTS calculation_id_chk
 GO
 ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
-    DROP CONSTRAINT IF EXISTS calculation_id_chk
+    DROP CONSTRAINT IF EXISTS calculation_result_id_chk
 GO
 
 -- Length is 16 when EIC and 13 when GLN
