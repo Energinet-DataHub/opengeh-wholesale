@@ -59,6 +59,6 @@ data "azurerm_key_vault_secret" "mssql_data_elastic_pool_id" {
 }
 
 data "azurerm_key_vault_secret" "sbt_domainrelay_integrationevent_received_id" {
-  name         = "sbt-sharedres-integrationevent-received-id"
+  name         = "sbt-shres-integrationevent-received-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }

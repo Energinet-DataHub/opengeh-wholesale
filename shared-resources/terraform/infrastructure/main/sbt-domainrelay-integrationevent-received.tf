@@ -9,7 +9,7 @@ module "sbt_domainrelay_integrationevent_received" {
 module "kvs_sbt_domainrelay_integrationevent_received_id" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
 
-  name         = "${module.sbt_domainrelay_integrationevent_received.name}-id" # name will be sbt-sharedres-integrationevent-received-id due to naming convention enforced by the TF module
+  name         = "sbt-shres-integrationevent-received-id"
   value        = module.sbt_domainrelay_integrationevent_received.id
   key_vault_id = module.kv_shared.id
 }
@@ -17,7 +17,7 @@ module "kvs_sbt_domainrelay_integrationevent_received_id" {
 module "kvs_sbt_domainrelay_integrationevent_received_name" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
 
-  name         = "${module.sbt_domainrelay_integrationevent_received.name}-name" # name will be sbt-sharedres-integrationevent-received-name due to naming convention enforced by the TF module
+  name         = "sbt-shres-integrationevent-received-name"
   value        = module.sbt_domainrelay_integrationevent_received.name
   key_vault_id = module.kv_shared.id
 }

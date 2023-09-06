@@ -39,7 +39,7 @@ module "app_wholesale_api" {
     SERVICE_BUS_SEND_CONNECTION_STRING   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-send-connection-string)"
     SERVICE_BUS_LISTEN_CONNECTION_STRING = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-listen-connection-string)"
     SERVICE_BUS_MANAGE_CONNECTION_STRING = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-manage-connection-string)"
-    INTEGRATIONEVENTS_TOPIC_NAME         = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbt-sharedres-integrationevent-received-name)"
+    INTEGRATIONEVENTS_TOPIC_NAME         = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbt-shres-integrationevent-received-name)"
     EDI_INBOX_MESSAGE_QUEUE_NAME         = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbq-edi-inbox-messagequeue-name)"
     WHOLESALE_INBOX_MESSAGE_QUEUE_NAME   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbq-wholesale-inbox-messagequeue-name)"
 
