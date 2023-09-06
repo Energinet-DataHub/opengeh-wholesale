@@ -38,12 +38,13 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
         Mock<ILogger<AggregatedTimeSeriesRequestHandler>> loggerMock)
     {
         // Arrange
-        var are = new AutoResetEvent(false);
+        var messageHasBeenReceivedEvent = new AutoResetEvent(false);
+        // ProcessAsync is expected to trigger when a service bus message has been received.
         handlerMock
             .Setup(handler => handler.ProcessAsync(It.IsAny<CancellationToken>()))
             .Callback(() =>
             {
-                are.Set();
+                messageHasBeenReceivedEvent.Set();
             });
 
         var sut = new AggregatedTimeSeriesServiceBusWorker(
@@ -57,7 +58,7 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
         await _sender.PublishAsync("Hello World");
 
         // Assert
-        var wasSignaled = are.WaitOne(timeout: TimeSpan.FromSeconds(1));
-        Assert.True(wasSignaled);
+        var messageHasBeenReceived = messageHasBeenReceivedEvent.WaitOne(timeout: TimeSpan.FromSeconds(1));
+        Assert.True(messageHasBeenReceived);
     }
 }
