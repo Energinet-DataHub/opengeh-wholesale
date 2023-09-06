@@ -45,7 +45,7 @@ public static class EventsRegistration
         serviceCollection.AddScoped<ICalculationResultIntegrationEventFactory, CalculationResultIntegrationEventFactory>();
 
         serviceCollection.AddScoped<IAggregatedTimeSeriesRequestHandler, AggregatedTimeSeriesRequestHandler>();
-        serviceCollection.AddSingleton<IEdiInboxSender, EdiInboxSender>();
+        serviceCollection.AddSingleton<IEdiClient, EdiClient>();
         serviceCollection.AddScoped<IAggregatedTimeSeriesMessageFactory, AggregatedTimeSeriesMessageFactory>();
 
         serviceCollection.AddApplications();

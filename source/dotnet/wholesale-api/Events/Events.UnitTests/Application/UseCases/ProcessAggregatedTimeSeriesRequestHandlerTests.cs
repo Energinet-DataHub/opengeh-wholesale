@@ -31,7 +31,7 @@ public class ProcessAggregatedTimeSeriesRequestHandlerTests
     [InlineAutoMoqData]
     public async Task ProcessAsync_WithEmptyRequest_SendsRejectedEdiMessage(
         [Frozen] Mock<ICalculationResultQueries> calculationResultQueriesMock,
-        [Frozen] Mock<IEdiInboxSender> senderMock,
+        [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<AggregatedTimeSeriesMessageFactory> aggregatedTimeSeriesMessageFactoryMock)
     {
         // Arrange

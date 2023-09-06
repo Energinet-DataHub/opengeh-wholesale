@@ -19,7 +19,7 @@ namespace Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
 public interface IAggregatedTimeSeriesMessageFactory
 {
     /// <summary>
-    /// Creates a aggregated time series service bus message
+    /// Creates a service bus message based on aggregated time series
     /// </summary>
     /// <param name="aggregatedTimeSeries"></param>
     public ServiceBusMessage Create(List<object> aggregatedTimeSeries);

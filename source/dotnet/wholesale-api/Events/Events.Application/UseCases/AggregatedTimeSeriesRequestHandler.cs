@@ -12,29 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
-using Google.Protobuf;
-using Google.Protobuf.WellKnownTypes;
-using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.UseCases;
 
 public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHandler
 {
     private readonly ICalculationResultQueries _calculationResultQueries;
-    private readonly IEdiInboxSender _ediInboxSender;
+    private readonly IEdiClient _ediClient;
     private readonly IAggregatedTimeSeriesMessageFactory _aggregatedTimeSeriesMessageFactory;
 
     public AggregatedTimeSeriesRequestHandler(
         ICalculationResultQueries calculationResultQueries,
-        IEdiInboxSender ediInboxSender,
+        IEdiClient ediClient,
         IAggregatedTimeSeriesMessageFactory aggregatedTimeSeriesMessageFactory)
     {
         _calculationResultQueries = calculationResultQueries;
-        _ediInboxSender = ediInboxSender;
+        _ediClient = ediClient;
         _aggregatedTimeSeriesMessageFactory = aggregatedTimeSeriesMessageFactory;
     }
 
@@ -47,6 +42,6 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         var message = _aggregatedTimeSeriesMessageFactory.Create(result);
 
         // send the response to EDI inbox.
-        await _ediInboxSender.SendAsync(message, cancellationToken).ConfigureAwait(false);
+        await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
     }
 }

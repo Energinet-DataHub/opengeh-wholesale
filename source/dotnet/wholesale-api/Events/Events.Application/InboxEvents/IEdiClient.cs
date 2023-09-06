@@ -12,12 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Events.Application.Options;
+using Azure.Messaging.ServiceBus;
 
-public class EdiInboxOptions
+namespace Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
+
+public interface IEdiClient
 {
     /// <summary>
-    /// Queue name for the EDI inbox.
+    /// Responsible of sending a message to EDI inbox
     /// </summary>
-    public string EDI_INBOX_MESSAGE_QUEUE_NAME { get; set; } = string.Empty;
+    public Task SendAsync(ServiceBusMessage message, CancellationToken cancellationToken);
 }

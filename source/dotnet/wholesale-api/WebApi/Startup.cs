@@ -107,8 +107,6 @@ public class Startup
         serviceCollection.AddOptions<DataLakeOptions>().Bind(Configuration);
         serviceCollection.AddOptions<DeltaTableOptions>();
 
-        serviceCollection.AddOptions<EdiInboxOptions>().Bind(Configuration);
-
         // ServiceBus
         serviceCollection.AddAzureClients(builder =>
         {

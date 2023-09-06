@@ -19,14 +19,13 @@ using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.InboxEvents;
 
-public class EdiInboxSender : IEdiInboxSender, IAsyncDisposable
+public class EdiClient : IEdiClient, IAsyncDisposable
 {
     private readonly ServiceBusSender _sender;
 
-    public EdiInboxSender(IOptions<EdiInboxOptions> ediOptions, ServiceBusClient serviceBusClient)
+    public EdiClient(IOptions<ServiceBusOptions> serviceBusOptions, ServiceBusClient serviceBusClient)
     {
-        var options = ediOptions.Value;
-        _sender = serviceBusClient.CreateSender(options.EDI_INBOX_MESSAGE_QUEUE_NAME);
+        _sender = serviceBusClient.CreateSender(serviceBusOptions.Value.EDI_INBOX_MESSAGE_QUEUE_NAME);
     }
 
     public async Task SendAsync(ServiceBusMessage message, CancellationToken cancellationToken)
