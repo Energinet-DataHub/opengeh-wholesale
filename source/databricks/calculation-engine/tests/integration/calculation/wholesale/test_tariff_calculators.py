@@ -212,3 +212,63 @@ def test__calculate_tariff_price_per_ga_co_es__when_settlement_method_is_null__r
 
     # Assert
     assert actual.count() == 1
+
+
+@pytest.mark.parametrize(
+    "column_name, expected_scale",
+    [
+        (Colname.total_amount, 6),
+        (Colname.total_quantity, 3),
+        (Colname.charge_price, 6),
+    ]
+)
+def test__calculate_tariff_price_per_ga_co_es__returns_df_with_expected_scale(
+    spark: SparkSession, column_name: str, expected_scale: int
+) -> None:
+    # Arrange
+    rows = [_create_tariff_hour_row()]
+    tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
+
+    # Act
+    actual = calculate_tariff_price_per_ga_co_es(tariffs)
+
+    # Assert
+    assert actual.schema[column_name].dataType.scale == expected_scale
+
+
+def test__calculate_tariff_price_per_ga_co_es__when_production__returns_df_with_expected_precision(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    rows = [_create_tariff_hour_row()]
+    tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
+
+    # Act
+    actual = calculate_tariff_price_per_ga_co_es(tariffs)
+
+    # Assert
+    assert actual.schema[Colname.total_amount].dataType.precision >= 18
+
+
+@pytest.mark.parametrize(
+    "charge_price, quantity, expected_total_amount",
+    [
+        (Decimal("0.000001"), Decimal("0.499"), Decimal("0.000000")),
+        (Decimal("0.000001"), Decimal("0.500"), Decimal("0.000001")),
+        (Decimal("0.000499"), Decimal("0.001"), Decimal("0.000000")),
+        (Decimal("0.000500"), Decimal("0.001"), Decimal("0.000001")),
+    ]
+)
+def test__calculate_tariff_price_per_ga_co_es__rounds_total_amount_correctly(
+    spark: SparkSession, charge_price: Decimal, quantity: Decimal, expected_total_amount: Decimal
+) -> None:
+    # Arrange
+    rows = [_create_tariff_hour_row(charge_price=charge_price, quantity=quantity)]
+    tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
+
+    # Act
+    actual = calculate_tariff_price_per_ga_co_es(tariffs)
+
+    # Assert
+    actual_amount = actual.collect()[0][Colname.total_amount]
+    assert actual_amount == expected_total_amount
