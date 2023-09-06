@@ -29,23 +29,16 @@ public class DatabricksSqlStatementsApiHealthRegistration : IHealthCheck
 
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken)
     {
-        try
-        {
-            using var httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri(_options.DATABRICKS_WORKSPACE_URL);
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _options.DATABRICKS_WORKSPACE_TOKEN);
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            httpClient.BaseAddress = new Uri(_options.DATABRICKS_WORKSPACE_URL);
-            var url = $"{_options.DATABRICKS_WORKSPACE_URL}/api/2.0/sql/warehouses/{_options.DATABRICKS_WAREHOUSE_ID}";
-            var response = await httpClient
-                .GetAsync(url, cancellationToken)
-                .ConfigureAwait(false);
+        using var httpClient = new HttpClient();
+        httpClient.BaseAddress = new Uri(_options.DATABRICKS_WORKSPACE_URL);
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _options.DATABRICKS_WORKSPACE_TOKEN);
+        httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        httpClient.BaseAddress = new Uri(_options.DATABRICKS_WORKSPACE_URL);
+        var url = $"{_options.DATABRICKS_WORKSPACE_URL}/api/2.0/sql/warehouses/{_options.DATABRICKS_WAREHOUSE_ID}";
+        var response = await httpClient
+            .GetAsync(url, cancellationToken)
+            .ConfigureAwait(false);
 
-            return response.IsSuccessStatusCode ? HealthCheckResult.Healthy() : HealthCheckResult.Unhealthy();
-        }
-        catch (Exception)
-        {
-            return HealthCheckResult.Unhealthy();
-        }
+        return response.IsSuccessStatusCode ? HealthCheckResult.Healthy() : HealthCheckResult.Unhealthy();
     }
 }

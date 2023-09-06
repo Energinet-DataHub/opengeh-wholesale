@@ -12,26 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Common.Databricks;
-using Energinet.DataHub.Wholesale.Common.Databricks.Options;
-using Energinet.DataHub.Wholesale.Common.DatabricksClient;
+using Azure.Identity;
+using Azure.Storage.Files.DataLake;
+using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Options;
 
-namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks.Databricks;
+namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks.DataLake;
 
-public class DatabricksJobsApiHealthRegistration : IHealthCheck
+public class DataLakeHealthRegistration : IHealthCheck
 {
-    private readonly IJobsApiClient _jobsApiClient;
+    private readonly DataLakeOptions _options;
 
-    public DatabricksJobsApiHealthRegistration(IJobsApiClient jobsApiClient)
+    public DataLakeHealthRegistration(DataLakeOptions options)
     {
-        _jobsApiClient = jobsApiClient;
+        _options = options;
     }
 
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken)
     {
-        await _jobsApiClient.Jobs.List(1, 0, null, false, cancellationToken).ConfigureAwait(false);
-        return HealthCheckResult.Healthy();
+        var serviceClient = new DataLakeServiceClient(new Uri(_options.STORAGE_ACCOUNT_URI), new DefaultAzureCredential());
+        var fileSystemClient = serviceClient.GetFileSystemClient(_options.STORAGE_CONTAINER_NAME);
+
+        return await fileSystemClient.ExistsAsync(cancellationToken).ConfigureAwait(false)
+            ? HealthCheckResult.Healthy()
+            : HealthCheckResult.Unhealthy();
     }
 }

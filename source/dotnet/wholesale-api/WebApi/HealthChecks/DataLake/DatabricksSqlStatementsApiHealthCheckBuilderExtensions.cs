@@ -13,17 +13,19 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
-using Energinet.DataHub.Wholesale.Common.DatabricksClient;
+using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
+using Energinet.DataHub.Wholesale.WebApi.HealthChecks.Databricks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks.Databricks;
+namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks.DataLake;
 
-public static class DatabricksJobsApiHealthCheckBuilderExtensions
+public static class DataLakeHealthCheckBuilderExtensions
 {
-    private const string Name = "DatabricksJobsApiHealthCheck";
+    private const string Name = "DataLakeHealthCheck";
 
-    public static IHealthChecksBuilder AddDatabricksJobsApiHealthCheck(
+    public static IHealthChecksBuilder AddDataLakeHealthCheck(
         this IHealthChecksBuilder builder,
+        Func<IServiceProvider, DataLakeOptions> options,
         string? name = default,
         HealthStatus? failureStatus = default,
         IEnumerable<string>? tags = default,
@@ -31,7 +33,7 @@ public static class DatabricksJobsApiHealthCheckBuilderExtensions
     {
         return builder.Add(new HealthCheckRegistration(
             name ?? Name,
-            serviceProvider => new DatabricksJobsApiHealthRegistration(serviceProvider.GetRequiredService<IJobsApiClient>()),
+            serviceProvider => new DataLakeHealthRegistration(options(serviceProvider)),
             failureStatus,
             tags,
             timeout));

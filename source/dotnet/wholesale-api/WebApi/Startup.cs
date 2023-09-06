@@ -26,6 +26,7 @@ using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Energinet.DataHub.Wholesale.WebApi.HealthChecks;
 using Energinet.DataHub.Wholesale.WebApi.HealthChecks.Databricks;
+using Energinet.DataHub.Wholesale.WebApi.HealthChecks.DataLake;
 using Energinet.DataHub.Wholesale.WebApi.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
@@ -172,17 +173,16 @@ public class Startup
     private void AddHealthCheck(IServiceCollection serviceCollection)
     {
         var serviceBusOptions = Configuration.Get<ServiceBusOptions>()!;
-        var dataLakeOptions = Configuration.Get<DataLakeOptions>()!;
         serviceCollection.AddHealthChecks()
             .AddLiveCheck()
             .AddDbContextCheck<EventsDatabaseContext>(name: "SqlDatabaseContextCheck")
-            .AddDataLakeContainerCheck(dataLakeOptions.STORAGE_ACCOUNT_URI, dataLakeOptions.STORAGE_CONTAINER_NAME)
             .AddAzureServiceBusTopic(
                 serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
                 serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
                 name: "IntegrationEventsTopicExists")
-            .AddDatabricksJobsApiHealthCheck(_ => Configuration.Get<DatabricksOptions>()!, name: "DatabricksJobsApiCheck")
-            .AddDatabricksSqlStatementsApiHealthCheck(_ => Configuration.Get<DatabricksOptions>()!, name: "DatabricksSqlStatementsApiCheck");
+            .AddDataLakeHealthCheck(_ => Configuration.Get<DataLakeOptions>()!)
+            .AddDatabricksJobsApiHealthCheck()
+            .AddDatabricksSqlStatementsApiHealthCheck(_ => Configuration.Get<DatabricksOptions>()!);
     }
 
     /// <summary>
