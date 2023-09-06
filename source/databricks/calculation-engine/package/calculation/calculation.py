@@ -18,7 +18,8 @@ from package.codelists import ProcessType
 import package.calculation_input as input
 from package.calculation_output.wholesale_calculation_result_writer import WholesaleCalculationResultWriter
 from .calculator_args import CalculatorArgs
-from . import energy_calculation, wholesale_calculation
+from .energy import energy_calculation
+from .wholesale import wholesale_calculation
 from . import setup
 
 
