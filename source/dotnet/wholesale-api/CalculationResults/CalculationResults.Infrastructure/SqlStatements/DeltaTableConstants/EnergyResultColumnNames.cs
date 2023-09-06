@@ -26,9 +26,9 @@ public class EnergyResultColumnNames
     public const string Time = "time";
     public const string AggregationLevel = "aggregation_level";
     public const string TimeSeriesType = "time_series_type";
-    public const string BatchId = "batch_id";
-    public const string BatchProcessType = "batch_process_type";
-    public const string BatchExecutionTimeStart = "batch_execution_time_start";
+    public const string BatchId = "calculation_id";
+    public const string BatchProcessType = "calculation_type";
+    public const string BatchExecutionTimeStart = "calculation_execution_time_start";
     public const string FromGridArea = "out_grid_area";
     public const string CalculationResultId = "calculation_result_id";
 
