@@ -24,8 +24,13 @@ namespace Energinet.DataHub.Wholesale.Events.IntegrationTests.Fixture;
 
 public class ServiceBusSenderFixture : IAsyncLifetime, IAsyncDisposable
 {
+    public IOptions<ServiceBusOptions> ServiceBusOptions { get; }
+
+    public ServiceBusClient ServiceBusClient { get; }
+
     private readonly ServiceBusResourceProvider _serviceBusResourceProvider;
     private readonly string _queueName = "sbq-wholesale-inbox";
+    private readonly ServiceBusSender _sender;
 
     public ServiceBusSenderFixture()
     {
@@ -33,22 +38,23 @@ public class ServiceBusSenderFixture : IAsyncLifetime, IAsyncDisposable
         ServiceBusOptions = Options.Create(
             new ServiceBusOptions
             {
-                SERVICE_BUS_LISTEN_CONNECTION_STRING = integrationTestConfiguration.ServiceBusConnectionString,
+                SERVICE_BUS_MANAGE_CONNECTION_STRING = integrationTestConfiguration.ServiceBusConnectionString,
             });
 
         _serviceBusResourceProvider = new ServiceBusResourceProvider(
-            ServiceBusOptions.Value.SERVICE_BUS_LISTEN_CONNECTION_STRING,
+            ServiceBusOptions.Value.SERVICE_BUS_MANAGE_CONNECTION_STRING,
             new TestDiagnosticsLogger());
-    }
 
-    public IOptions<ServiceBusOptions> ServiceBusOptions { get; }
+        ServiceBusClient = new ServiceBusClient(ServiceBusOptions.Value.SERVICE_BUS_MANAGE_CONNECTION_STRING);
+        _sender = ServiceBusClient.CreateSender(ServiceBusOptions.Value.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME);
+    }
 
     public async Task InitializeAsync()
     {
         var builder = _serviceBusResourceProvider
             .BuildQueue(_queueName);
         builder
-            .Do(queueProperties => ServiceBusOptions.Value.INBOX_MESSAGE_QUEUE_NAME = queueProperties.Name);
+            .Do(queueProperties => ServiceBusOptions.Value.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME = queueProperties.Name);
         await builder
             .CreateAsync();
     }
@@ -56,7 +62,8 @@ public class ServiceBusSenderFixture : IAsyncLifetime, IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         await _serviceBusResourceProvider.DisposeAsync();
-        await _serviceBusResourceProvider.DisposeAsync().ConfigureAwait(false);
+        await _sender.DisposeAsync();
+        await ServiceBusClient.DisposeAsync();
         GC.SuppressFinalize(this);
     }
 
@@ -68,9 +75,7 @@ public class ServiceBusSenderFixture : IAsyncLifetime, IAsyncDisposable
 
     internal async Task PublishAsync(string message)
     {
-        await using var client = new ServiceBusClient(ServiceBusOptions.Value.SERVICE_BUS_LISTEN_CONNECTION_STRING);
-        await using var sender = client.CreateSender(ServiceBusOptions.Value.INBOX_MESSAGE_QUEUE_NAME);
-        await sender.SendMessageAsync(CreateAggregatedTimeSeriesRequestMessage(message));
+        await _sender.SendMessageAsync(CreateAggregatedTimeSeriesRequestMessage(message));
     }
 
     private ServiceBusMessage CreateAggregatedTimeSeriesRequestMessage(string body)

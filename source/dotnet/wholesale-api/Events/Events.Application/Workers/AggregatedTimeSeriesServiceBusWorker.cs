@@ -27,41 +27,36 @@ namespace Energinet.DataHub.Wholesale.Events.Application.Workers;
 public class AggregatedTimeSeriesServiceBusWorker : BackgroundService, IAsyncDisposable
 {
     private readonly IAggregatedTimeSeriesRequestHandler _aggregatedTimeSeriesRequestHandler;
-    private readonly ServiceBusClient _serviceBusClient;
     private readonly ILogger<AggregatedTimeSeriesRequestHandler> _logger;
-    private readonly ServiceBusOptions _options;
-    private ServiceBusProcessor? _serviceBusProcessor;
+    private readonly ServiceBusProcessor _serviceBusProcessor;
 
     public AggregatedTimeSeriesServiceBusWorker(
         IAggregatedTimeSeriesRequestHandler aggregatedTimeSeriesRequestHandler,
         ILogger<AggregatedTimeSeriesRequestHandler> logger,
-        IOptions<ServiceBusOptions> options)
+        IOptions<ServiceBusOptions> options,
+        ServiceBusClient serviceBusClient)
     {
-        _serviceBusClient = new ServiceBusClient(options.Value.SERVICE_BUS_LISTEN_CONNECTION_STRING);
+        _serviceBusProcessor = serviceBusClient.CreateProcessor(options.Value.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME);
         _aggregatedTimeSeriesRequestHandler = aggregatedTimeSeriesRequestHandler;
         _logger = logger;
-        _options = options.Value;
     }
 
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
         _logger.LogDebug("Stopping the service bus subscription");
-
-        if (_serviceBusProcessor != null)
-            await _serviceBusProcessor.CloseAsync(cancellationToken).ConfigureAwait(false);
+        await _serviceBusProcessor.CloseAsync(cancellationToken).ConfigureAwait(false);
         await base.StopAsync(cancellationToken).ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()
     {
-        await _serviceBusClient.DisposeAsync().ConfigureAwait(false);
-        if (_serviceBusProcessor != null) await _serviceBusProcessor.DisposeAsync().ConfigureAwait(false);
+        await _serviceBusProcessor.DisposeAsync().ConfigureAwait(false);
         GC.SuppressFinalize(this);
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _serviceBusProcessor = _serviceBusClient.CreateProcessor(_options.INBOX_MESSAGE_QUEUE_NAME);
+        if (_serviceBusProcessor == null) throw new ArgumentNullException();
 
         _serviceBusProcessor.ProcessMessageAsync += ProcessMessageAsync;
         _serviceBusProcessor.ProcessErrorAsync += ProcessErrorAsync;

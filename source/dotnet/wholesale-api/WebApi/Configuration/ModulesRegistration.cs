@@ -19,6 +19,7 @@ using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Wholesale.Common.Databricks;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Energinet.DataHub.Wholesale.Common.DatabricksClient;
+using Energinet.DataHub.Wholesale.Events.Application.Options;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
@@ -42,8 +43,7 @@ internal static class ServiceCollectionExtensions
             sqlWarehouseOptions.DATABRICKS_WORKSPACE_TOKEN,
             sqlWarehouseOptions.DATABRICKS_WORKSPACE_URL);
 
-        serviceCollection.AddEventsModule(
-            configuration.Get<ServiceBusOptions>()!);
+        serviceCollection.AddEventsModule(configuration.Get<ServiceBusOptions>()!);
 
         // Add registration that are used by more than one module
         serviceCollection.AddShared(configuration);

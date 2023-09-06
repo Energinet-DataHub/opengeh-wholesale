@@ -15,6 +15,7 @@
 using System.Reflection;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
+using Energinet.DataHub.Wholesale.Events.Application.Options;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using FluentAssertions;
 using Xunit;

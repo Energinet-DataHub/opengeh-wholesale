@@ -17,9 +17,19 @@ namespace Energinet.DataHub.Wholesale.Events.Application.Options;
 public class ServiceBusOptions
 {
     /// <summary>
-    /// Connection string to listen to the wholesale domain service bus queues and topics.
+    /// Connection string to subscribe to the wholesale domain service bus queues and topics.
     /// </summary>
-    public string SERVICE_BUS_LISTEN_CONNECTION_STRING { get; set; } = string.Empty;
+    public string SERVICE_BUS_SEND_CONNECTION_STRING { get; set; } = string.Empty;
 
-    public string INBOX_MESSAGE_QUEUE_NAME { get; set; } = string.Empty;
+    /// <summary>
+    /// Connection string to manage the wholesale domain service bus namespace.
+    /// </summary>
+    public string SERVICE_BUS_MANAGE_CONNECTION_STRING { get; set; } = string.Empty;
+
+    public string INTEGRATIONEVENTS_TOPIC_NAME { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The inbox to receive instructions to be processed by this domain.
+    /// </summary>
+    public string WHOLESALE_INBOX_MESSAGE_QUEUE_NAME { get; set; } = string.Empty;
 }

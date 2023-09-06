@@ -21,6 +21,7 @@ using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Energinet.DataHub.Wholesale.Common.Security;
+using Energinet.DataHub.Wholesale.Events.Application.Options;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
@@ -28,6 +29,7 @@ using Energinet.DataHub.Wholesale.WebApi.HealthChecks;
 using Energinet.DataHub.Wholesale.WebApi.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.Extensions.Azure;
 using Microsoft.OpenApi.Models;
 
 namespace Energinet.DataHub.Wholesale.WebApi;
@@ -104,8 +106,11 @@ public class Startup
         serviceCollection.AddOptions<DataLakeOptions>().Bind(Configuration);
         serviceCollection.AddOptions<DeltaTableOptions>();
 
-        // Config Events Module
-        serviceCollection.AddOptions<Energinet.DataHub.Wholesale.Events.Application.Options.ServiceBusOptions>().Bind(Configuration);
+        // ServiceBus
+        serviceCollection.AddAzureClients(builder =>
+        {
+            builder.AddServiceBusClient(Configuration.Get<ServiceBusOptions>()!.SERVICE_BUS_MANAGE_CONNECTION_STRING);
+        });
 
         AddJwtTokenSecurity(serviceCollection);
         AddHealthCheck(serviceCollection);

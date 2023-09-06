@@ -49,7 +49,8 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
         var sut = new AggregatedTimeSeriesServiceBusWorker(
             handlerMock.Object,
             loggerMock.Object,
-            _sender.ServiceBusOptions);
+            _sender.ServiceBusOptions,
+            _sender.ServiceBusClient);
 
         // Act
         await sut.StartAsync(CancellationToken.None).ConfigureAwait(false);

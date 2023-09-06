@@ -18,6 +18,7 @@ using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
+using Energinet.DataHub.Wholesale.Events.Application.Options;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.Components;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.Database;
@@ -85,10 +86,10 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
             Environment.SetEnvironmentVariable(nameof(ServiceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING), ServiceBusResourceProvider.ConnectionString);
 
             // Add events configuration variables
-            Environment.SetEnvironmentVariable(nameof(Energinet.DataHub.Wholesale.Events.Application.Options.ServiceBusOptions.SERVICE_BUS_LISTEN_CONNECTION_STRING), ServiceBusResourceProvider.ConnectionString);
+            Environment.SetEnvironmentVariable(nameof(Energinet.DataHub.Wholesale.Events.Application.Options.ServiceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING), ServiceBusResourceProvider.ConnectionString);
             await ServiceBusResourceProvider
                 .BuildQueue("sbq-wholesale-inbox")
-                .SetEnvironmentVariableToQueueName(nameof(Energinet.DataHub.Wholesale.Events.Application.Options.ServiceBusOptions.INBOX_MESSAGE_QUEUE_NAME))
+                .SetEnvironmentVariableToQueueName(nameof(Energinet.DataHub.Wholesale.Events.Application.Options.ServiceBusOptions.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME))
                 .CreateAsync();
 
             Environment.SetEnvironmentVariable(nameof(DateTimeOptions.TIME_ZONE), "Europe/Copenhagen");
