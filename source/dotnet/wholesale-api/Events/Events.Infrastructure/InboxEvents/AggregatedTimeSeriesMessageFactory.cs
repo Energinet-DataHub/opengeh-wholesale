@@ -22,9 +22,9 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.InboxEvents;
 
 public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFactory
 {
-    /*
-     * THIS IS ALL MOCKED DATA
-     */
+    /// <summary>
+    /// THIS IS ALL MOCKED DATA
+    /// </summary>
     public ServiceBusMessage Create(List<object> aggregatedTimeSeries)
     {
         var body = aggregatedTimeSeries.Any()
