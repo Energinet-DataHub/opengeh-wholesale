@@ -32,4 +32,9 @@ public class ServiceBusOptions
     /// The inbox to receive instructions to be processed by this domain.
     /// </summary>
     public string WHOLESALE_INBOX_MESSAGE_QUEUE_NAME { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Queue name for the EDI inbox.
+    /// </summary>
+    public string EDI_INBOX_MESSAGE_QUEUE_NAME { get; set; } = string.Empty;
 }

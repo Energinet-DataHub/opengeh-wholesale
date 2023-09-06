@@ -1,0 +1,50 @@
+﻿/* Copyright 2020 Energinet DataHub A/S
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License2");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+syntax = "proto3";
+
+option csharp_namespace = "Energinet.DataHub.Edi.Responses";
+
+message AggregatedTimeSeriesRequestRejected {
+  repeated RejectReason reject_reasons = 1;
+}
+
+// Contains all errors for the request
+message RejectReason {
+  ErrorCodes error_code = 1;
+  optional string error_message = 2;
+}
+
+enum ErrorCodes {
+  ERROR_CODES_UNSPECIFIED = 0;
+  
+  // E16: Energy supplier is not valid for the period
+  ERROR_CODES_INVALID_ENERGY_SUPPLIER_FOR_PERIOD = 1;
+  
+  // E18: Balance responsible is not valid for the period
+  ERROR_CODES_INVALID_BALANCE_RESPONSIBLE_FOR_PERIOD = 2;
+  
+  // E0I: Grid operator is not valid
+  ERROR_CODES_INVALID_GRID_OPERATOR = 3;
+  
+  // E0H: No data for the period
+  ERROR_CODES_NO_DATA_FOR_PERIOD = 4;
+  
+  // E50: Invalid period
+  ERROR_CODES_INVALID_PERIOD = 5;
+  
+  // D11: Impossible search criteria combination
+  ERROR_CODES_IMPOSSIBLE_SEARCH_CRITERIA_COMBINATION = 6;
+}
