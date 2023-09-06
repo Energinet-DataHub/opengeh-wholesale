@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Common.Databricks.Options;
-using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
-using Energinet.DataHub.Wholesale.WebApi.HealthChecks.Databricks;
+using Azure.Storage.Files.DataLake;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks.DataLake;
@@ -25,7 +23,6 @@ public static class DataLakeHealthCheckBuilderExtensions
 
     public static IHealthChecksBuilder AddDataLakeHealthCheck(
         this IHealthChecksBuilder builder,
-        Func<IServiceProvider, DataLakeOptions> options,
         string? name = default,
         HealthStatus? failureStatus = default,
         IEnumerable<string>? tags = default,
@@ -33,7 +30,7 @@ public static class DataLakeHealthCheckBuilderExtensions
     {
         return builder.Add(new HealthCheckRegistration(
             name ?? Name,
-            serviceProvider => new DataLakeHealthRegistration(options(serviceProvider)),
+            serviceProvider => new DataLakeHealthRegistration(serviceProvider.GetRequiredService<DataLakeFileSystemClient>()),
             failureStatus,
             tags,
             timeout));

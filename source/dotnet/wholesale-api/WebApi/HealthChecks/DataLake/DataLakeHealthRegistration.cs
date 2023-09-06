@@ -12,28 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Identity;
 using Azure.Storage.Files.DataLake;
-using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks.DataLake;
 
 public class DataLakeHealthRegistration : IHealthCheck
 {
-    private readonly DataLakeOptions _options;
+    private readonly DataLakeFileSystemClient _dataLakeFileSystemClient;
 
-    public DataLakeHealthRegistration(DataLakeOptions options)
+    public DataLakeHealthRegistration(DataLakeFileSystemClient dataLakeFileSystemClient)
     {
-        _options = options;
+        _dataLakeFileSystemClient = dataLakeFileSystemClient;
     }
 
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken)
     {
-        var serviceClient = new DataLakeServiceClient(new Uri(_options.STORAGE_ACCOUNT_URI), new DefaultAzureCredential());
-        var fileSystemClient = serviceClient.GetFileSystemClient(_options.STORAGE_CONTAINER_NAME);
-
-        return await fileSystemClient.ExistsAsync(cancellationToken).ConfigureAwait(false)
+        return await _dataLakeFileSystemClient.ExistsAsync(cancellationToken).ConfigureAwait(false)
             ? HealthCheckResult.Healthy()
             : HealthCheckResult.Unhealthy();
     }

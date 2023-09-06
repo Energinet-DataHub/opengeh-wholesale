@@ -24,13 +24,11 @@ using Energinet.DataHub.Wholesale.Common.Security;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
-using Energinet.DataHub.Wholesale.WebApi.HealthChecks;
 using Energinet.DataHub.Wholesale.WebApi.HealthChecks.Databricks;
 using Energinet.DataHub.Wholesale.WebApi.HealthChecks.DataLake;
 using Energinet.DataHub.Wholesale.WebApi.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 namespace Energinet.DataHub.Wholesale.WebApi;
@@ -180,7 +178,7 @@ public class Startup
                 serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
                 serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
                 name: "IntegrationEventsTopicExists")
-            .AddDataLakeHealthCheck(_ => Configuration.Get<DataLakeOptions>()!)
+            .AddDataLakeHealthCheck()
             .AddDatabricksJobsApiHealthCheck()
             .AddDatabricksSqlStatementsApiHealthCheck(_ => Configuration.Get<DatabricksOptions>()!);
     }
