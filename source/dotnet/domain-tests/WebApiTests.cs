@@ -138,7 +138,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             [DomainFact]
             public void When_WholesaleCalculationBatchIsCompleted_Then_BatchIsReceivedOnTopicSubscription()
             {
-                _wholesaleCalculationResults.Count.Should().Be(53);
+                _wholesaleCalculationResults.Count.Should().Be(137);
             }
 
             [DomainFact]
