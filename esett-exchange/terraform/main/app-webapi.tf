@@ -24,6 +24,12 @@ module "app_webapi" {
     "BlobStorageSettings:AccountUri"       = local.ESETT_DOCUMENT_STORAGE_ACCOUNT_URI
     "BlobStorageSettings:ContainerName"    = local.ESETT_DOCUMENT_STORAGE_CONTAINER_NAME
   }
+  role_assignments = [
+    {
+      resource_id          = module.storage_esett_documents.id
+      role_definition_name = "Storage Blob Data Contributor"
+    }
+  ]
 }
 
 module "kvs_app_esett_webapi_base_url" {
