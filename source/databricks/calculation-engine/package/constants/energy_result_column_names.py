@@ -17,10 +17,6 @@ from .result_column_names import ResultColumnNames
 
 
 class EnergyResultColumnNames(ResultColumnNames):
-    batch_id = "batch_id"
-    batch_execution_time_start = "batch_execution_time_start"
-    batch_process_type = "batch_process_type"
-
     time_series_type = "time_series_type"
     from_grid_area = "out_grid_area"
     """The delta table column name ought to be renamed to 'from_grid_area'.

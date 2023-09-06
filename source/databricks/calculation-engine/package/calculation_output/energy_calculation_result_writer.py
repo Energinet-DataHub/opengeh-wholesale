@@ -65,12 +65,12 @@ class EnergyCalculationResultWriter:
             col(Colname.time_window_start).alias(EnergyResultColumnNames.time),
             lit(aggregation_level.value).alias(EnergyResultColumnNames.aggregation_level),
             lit(time_series_type.value).alias(EnergyResultColumnNames.time_series_type),
-            col(Colname.batch_id).alias(EnergyResultColumnNames.batch_id),
+            col(Colname.batch_id).alias(EnergyResultColumnNames.calculation_id),
             col(Colname.batch_process_type).alias(
-                EnergyResultColumnNames.batch_process_type
+                EnergyResultColumnNames.calculation_type
             ),
             col(Colname.batch_execution_time_start).alias(
-                EnergyResultColumnNames.batch_execution_time_start
+                EnergyResultColumnNames.calculation_execution_time_start
             ),
             col(Colname.from_grid_area).alias(EnergyResultColumnNames.from_grid_area),
         )
@@ -85,6 +85,6 @@ class EnergyCalculationResultWriter:
 
 
 def _get_column_group_for_calculation_result_id() -> list[str]:
-    return [EnergyResultColumnNames.batch_id, EnergyResultColumnNames.batch_execution_time_start, EnergyResultColumnNames.batch_process_type,
+    return [EnergyResultColumnNames.calculation_id, EnergyResultColumnNames.calculation_execution_time_start, EnergyResultColumnNames.calculation_type,
             EnergyResultColumnNames.grid_area, EnergyResultColumnNames.time_series_type, EnergyResultColumnNames.aggregation_level,
             EnergyResultColumnNames.from_grid_area, EnergyResultColumnNames.balance_responsible_id, EnergyResultColumnNames.energy_supplier_id]

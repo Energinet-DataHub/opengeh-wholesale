@@ -1,15 +1,15 @@
 {
     "fields": [
       {
-        "name": "batch_id",
+        "name": "calculation_id",
         "type": "string"
       },
       {
-        "name": "batch_execution_time_start",
+        "name": "calculation_execution_time_start",
         "type": "timestamp"
       },
       {
-        "name": "batch_process_type",
+        "name": "calculation_type",
         "type": "string"
       },
       {
