@@ -20,6 +20,9 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Batches.Application;
 
+/// <summary>
+/// Worlds best client
+/// </summary>
 public class BatchesClient : IBatchesClient
 {
     private readonly IBatchRepository _batchRepository;
