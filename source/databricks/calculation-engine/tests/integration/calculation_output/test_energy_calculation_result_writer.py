@@ -140,7 +140,7 @@ def test__write__writes_aggregation_level(
     actual_df = spark.read.table(TABLE_NAME).where(
         col(EnergyResultColumnNames.calculation_id) == batch_id
     )
-    assert actual_df.collect()[0]["aggregation_level"] == aggregation_level.value
+    assert actual_df.collect()[0][Colname.aggregation_level] == aggregation_level.value
 
 
 # The batch id is used in parameterized test executed using xdist, which does not allow parameters to change
@@ -199,7 +199,7 @@ def test__write__writes_columns_matching_contract(
     migrations_executed: None,
 ) -> None:
     # Arrange
-    contract_path = f"{contracts_path}/result-table-column-names.json"
+    contract_path = f"{contracts_path}/energy-result-table-column-names.json"
     row = [_create_result_row()]
     result_df = _create_result_df(spark, row)
     sut = EnergyCalculationResultWriter(
@@ -249,10 +249,15 @@ def test__write__writes_calculation_result_id(spark: SparkSession, contracts_pat
 
 def test__get_column_group_for_calculation_result_id__returns_expected_column_names() -> None:
     # Arrange
-    expected_column_names = [EnergyResultColumnNames.calculation_id, EnergyResultColumnNames.calculation_execution_time_start,
+    expected_column_names = [EnergyResultColumnNames.calculation_id,
+                             EnergyResultColumnNames.calculation_execution_time_start,
                              EnergyResultColumnNames.calculation_type,
-                             EnergyResultColumnNames.grid_area, EnergyResultColumnNames.time_series_type, EnergyResultColumnNames.aggregation_level,
-                             EnergyResultColumnNames.from_grid_area, EnergyResultColumnNames.balance_responsible_id, EnergyResultColumnNames.energy_supplier_id]
+                             EnergyResultColumnNames.grid_area,
+                             EnergyResultColumnNames.time_series_type,
+                             EnergyResultColumnNames.aggregation_level,
+                             EnergyResultColumnNames.from_grid_area,
+                             EnergyResultColumnNames.balance_responsible_id,
+                             EnergyResultColumnNames.energy_supplier_id]
 
     # Act
     actual = _get_column_group_for_calculation_result_id()
@@ -270,13 +275,11 @@ def test__get_column_group_for_calculation_result_id__excludes_exepected_other_c
                               EnergyResultColumnNames.quantity_quality,
                               EnergyResultColumnNames.quantity,
                               EnergyResultColumnNames.calculation_result_id]
-    contract_path = f"{contracts_path}/result-table-column-names.json"
+    contract_path = f"{contracts_path}/energy-result-table-column-names.json"
     all_columns = get_column_names_from_contract(contract_path)
 
     # Act
     included_columns = _get_column_group_for_calculation_result_id()
-    print(all_columns)
-    print(included_columns)
     actual_other_columns = set(all_columns) - set(included_columns)
 
     # Assert
