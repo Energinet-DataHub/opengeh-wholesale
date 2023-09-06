@@ -88,6 +88,21 @@ variable "backend_bff_app_scope" {
   description = "The qualified value of the scope needed by the frontend app to access backend BFF app."
 }
 
+variable "backend_timeseriesapi_app_id" {
+  type        = string
+  description = "The Application ID of the backend TimeSeriesApi app registration."
+}
+
+variable "eloverblik_timeseriesapi_client_app_id" {
+  type        = string
+  description = "The Application ID of the Eloverblik TimeSeriesApi client app registration."
+}
+
+variable "eloverblik_timeseriesapi_client_secret" {
+  type        = string
+  description = "The client secret of the Eloverblik TimeSeriesApi client app registration."
+}
+
 variable "authentication_sign_in_user_flow_id" {
   type        = string
   description = "The id of the user flow used for signing users in."

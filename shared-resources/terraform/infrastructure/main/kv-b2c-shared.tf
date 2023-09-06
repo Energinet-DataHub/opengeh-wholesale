@@ -22,6 +22,30 @@ module "kvs_backend_b2b_app_sp_id" {
   key_vault_id = module.kv_shared.id
 }
 
+module "kvs_backend_timeseriesapi_app_id" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
+
+  name         = "backend-timeseriesapi-app-id"
+  value        = var.backend_timeseriesapi_app_id
+  key_vault_id = module.kv_shared.id
+}
+
+module "kvs_eloverblik_timeseriesapi_client_app_id" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
+
+  name         = "eloverblik-timeseriesapi-client-app-id"
+  value        = var.eloverblik_timeseriesapi_client_app_id
+  key_vault_id = module.kv_shared.id
+}
+
+module "kvs_eloverblik_timeseriesapi_client_secret" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
+
+  name         = "eloverblik-timeseriesapi-client-secret"
+  value        = var.eloverblik_timeseriesapi_client_secret
+  key_vault_id = module.kv_shared.id
+}
+
 module "kvs_backend_bff_app_id" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
 

@@ -1,6 +1,7 @@
 locals {
-  b2b_id_uri = "https://${var.b2c_tenant_name}.onmicrosoft.com/backend-b2b"
-  bff_id_uri = "https://${var.b2c_tenant_name}.onmicrosoft.com/backend-bff"
+  b2b_id_uri           = "https://${var.b2c_tenant_name}.onmicrosoft.com/backend-b2b"
+  bff_id_uri           = "https://${var.b2c_tenant_name}.onmicrosoft.com/backend-bff"
+  timeseriesapi_id_uri = "https://${var.b2c_tenant_name}.onmicrosoft.com/backend-timeseriesapi"
 
   app_roles = {
     balanceresponsibleparty = {
@@ -54,6 +55,13 @@ locals {
     serialenergytrader = {
       role         = "serialenergytrader"
       display_name = "Serial Energy Trader"
+    }
+  }
+
+  timeseriesapi_app_roles = {
+    eloverblik = {
+      role         = "eloverblik"
+      display_name = "ElOverblik"
     }
   }
 }

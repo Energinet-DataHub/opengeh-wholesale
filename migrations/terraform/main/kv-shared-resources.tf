@@ -62,3 +62,43 @@ data "azurerm_key_vault_secret" "plan_shared_id" {
   name         = "plan-services-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+data "azurerm_key_vault_secret" "apim_instance_name" {
+  name         = "apim-instance-name"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "apim_instance_resource_group_name" {
+  name         = "apim-instance-resource-group-name"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "apim_timeseriesapi_app_id" {
+  name         = "backend-timeseriesapi-app-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "apim_eloverblik_timeseriesapi_client_app_id" {
+  name         = "eloverblik-timeseriesapi-client-app-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "apim_eloverblik_timeseriesapi_client_secret" {
+  name         = "eloverblik-timeseriesapi-client-secret"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "apim_b2c_tenant_id" {
+  name         = "b2c-tenant-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "apim_logger_id" {
+  name         = "apim-logger-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "apim_oauth_server_name" {
+  name         = "apim-oauth-server-name"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}

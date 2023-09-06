@@ -63,3 +63,21 @@ output "authentication_mitid_invitation_user_flow_id" {
   value       = data.external.user_flows.result.mitIdInviteUserFlowId
   sensitive   = false
 }
+
+output "backend_timeseriesapi_app_id" {
+  description = "The Application ID of the backend TimeSeriesApi app registration."
+  value       = azuread_application.backend_timeseriesapi_app.application_id
+  sensitive   = false
+}
+
+output "eloverblik_timeseriesapi_client_app_id" {
+  description = "The Application ID of the ElOverblik TimeSeriesApi client app registration."
+  value       = azuread_application.eloverblik_timeseriesapi_client_app.application_id
+  sensitive   = false
+}
+
+output "eloverblik_timeseriesapi_client_secret" {
+  description = "The client secret of the ElOverblik TimeSeriesApi client app registration."
+  value       = azuread_application_password.eloverblik_timeseriesapi_client_secret.value
+  sensitive   = true
+}
