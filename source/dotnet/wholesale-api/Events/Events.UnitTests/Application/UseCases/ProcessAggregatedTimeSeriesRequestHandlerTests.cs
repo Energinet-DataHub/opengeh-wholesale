@@ -15,8 +15,11 @@
 using AutoFixture.Xunit2;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Edi.Responses;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.InboxEvents;
 using Moq;
 using Xunit;
 
@@ -26,20 +29,26 @@ public class ProcessAggregatedTimeSeriesRequestHandlerTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public async Task ProcessAsync_can_be_called(
-        [Frozen] Mock<IEdiInboxSender> sender,
-        AggregatedTimeSeriesRequestHandler sut)
+    public async Task ProcessAsync_WithEmptyRequest_SendsRejectedEdiMessage(
+        [Frozen] Mock<ICalculationResultQueries> calculationResultQueriesMock,
+        [Frozen] Mock<IEdiInboxSender> senderMock,
+        [Frozen] Mock<AggregatedTimeSeriesMessageFactory> aggregatedTimeSeriesMessageFactoryMock)
     {
         // Arrange
-        var o = new object();
+        var expectedRejectedSubject = nameof(AggregatedTimeSeriesRequestRejected);
+        var request = new object();
+        var sut = new AggregatedTimeSeriesRequestHandler(
+            calculationResultQueriesMock.Object,
+            senderMock.Object,
+            aggregatedTimeSeriesMessageFactoryMock.Object);
 
         // Act
-        await sut.ProcessAsync(o, CancellationToken.None);
+        await sut.ProcessAsync(request, CancellationToken.None);
 
         // Assert
-        sender.Verify(
+        senderMock.Verify(
             bus => bus.SendAsync(
-            It.IsAny<ServiceBusMessage>(),
+            It.Is<ServiceBusMessage>(message => message.Subject.Equals(expectedRejectedSubject)),
             It.IsAny<CancellationToken>()),
             Times.Once);
     }

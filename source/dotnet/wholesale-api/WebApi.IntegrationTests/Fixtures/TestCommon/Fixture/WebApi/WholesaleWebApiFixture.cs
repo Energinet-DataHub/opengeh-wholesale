@@ -97,9 +97,9 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
 
             await ServiceBusResourceProvider
                 .BuildQueue("sbq-edi-inbox")
-                .SetEnvironmentVariableToQueueName(nameof(EdiInboxOptions.EDI_INBOX_QUEUE_NAME))
+                .SetEnvironmentVariableToQueueName(nameof(EdiInboxOptions.EDI_INBOX_MESSAGE_QUEUE_NAME))
                 .CreateAsync();
-            Environment.SetEnvironmentVariable(nameof(EdiInboxOptions.EDI_INBOX_CONNECTION_STRING), ServiceBusResourceProvider.ConnectionString);
+            Environment.SetEnvironmentVariable(nameof(EdiInboxOptions.EDI_INBOX_MESSAGE_QUEUE_NAME), ServiceBusResourceProvider.ConnectionString);
 
             Environment.SetEnvironmentVariable(nameof(DateTimeOptions.TIME_ZONE), "Europe/Copenhagen");
 

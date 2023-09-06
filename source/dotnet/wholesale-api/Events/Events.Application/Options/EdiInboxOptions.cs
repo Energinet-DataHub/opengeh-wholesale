@@ -17,12 +17,7 @@ namespace Energinet.DataHub.Wholesale.Events.Application.Options;
 public class EdiInboxOptions
 {
     /// <summary>
-    /// Connection string for EDI inbox.
-    /// </summary>
-    public string EDI_INBOX_CONNECTION_STRING { get; set; } = string.Empty;
-
-    /// <summary>
     /// Queue name for the EDI inbox.
     /// </summary>
-    public string EDI_INBOX_QUEUE_NAME { get; set; } = string.Empty;
+    public string EDI_INBOX_MESSAGE_QUEUE_NAME { get; set; } = string.Empty;
 }

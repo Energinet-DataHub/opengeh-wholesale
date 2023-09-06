@@ -39,6 +39,7 @@ public class OptionsTests
     [InlineAutoMoqData(typeof(ConnectionStringsOptions), 1, "DB_CONNECTION_STRING")]
     [InlineAutoMoqData(typeof(DatabricksOptions), 3, "DATABRICKS_WORKSPACE_URL", "DATABRICKS_WORKSPACE_TOKEN", "DATABRICKS_WAREHOUSE_ID")]
     [InlineAutoMoqData(typeof(DeltaTableOptions), 2, "SCHEMA_NAME", "ENERGY_RESULTS_TABLE_NAME")]
+    [InlineAutoMoqData(typeof(EdiInboxOptions), 1, "EDI_INBOX_MESSAGE_QUEUE_NAME")]
     public void Options_HaveTheCorrectSettingNamesAndNumberOfSettings(Type sut, int settingsCount, params string[] expectedNames)
     {
         // Arrange & Act
