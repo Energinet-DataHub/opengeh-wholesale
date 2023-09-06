@@ -14,28 +14,31 @@
 
 using Energinet.DataHub.Wholesale.Common.Databricks;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
+using Energinet.DataHub.Wholesale.Common.DatabricksClient;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 
-namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks
+namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks.Databricks;
+
+public class DatabricksJobsApiHealthRegistration : IHealthCheck
 {
-    public static class DatabricksJobsApiHealthChecksBuilderExtensions
+    private readonly IJobsApiClient _jobsApiClient;
+
+    public DatabricksJobsApiHealthRegistration(IJobsApiClient jobsApiClient)
     {
-        public static IHealthChecksBuilder AddDatabricksJobsApiCheck(this IHealthChecksBuilder builder, DatabricksOptions options, string name)
+        _jobsApiClient = jobsApiClient;
+    }
+
+    public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken)
+    {
+        try
         {
-            return builder.AddAsyncCheck(name, async () =>
-            {
-                try
-                {
-                    using var client = new JobsApiClient(Options.Create(options));
-                    await client.Jobs.List().ConfigureAwait(false);
-                    return HealthCheckResult.Healthy();
-                }
-                catch (Exception)
-                {
-                    return HealthCheckResult.Unhealthy();
-                }
-            });
+            await _jobsApiClient.Jobs.List(1, 0, null, false, cancellationToken).ConfigureAwait(false);
+            return HealthCheckResult.Healthy();
+        }
+        catch (Exception)
+        {
+            return HealthCheckResult.Unhealthy();
         }
     }
 }

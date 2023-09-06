@@ -25,6 +25,7 @@ using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Energinet.DataHub.Wholesale.WebApi.HealthChecks;
+using Energinet.DataHub.Wholesale.WebApi.HealthChecks.Databricks;
 using Energinet.DataHub.Wholesale.WebApi.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
@@ -172,7 +173,6 @@ public class Startup
     {
         var serviceBusOptions = Configuration.Get<ServiceBusOptions>()!;
         var dataLakeOptions = Configuration.Get<DataLakeOptions>()!;
-        var databricksOptions = Configuration.Get<DatabricksOptions>()!;
         serviceCollection.AddHealthChecks()
             .AddLiveCheck()
             .AddDbContextCheck<EventsDatabaseContext>(name: "SqlDatabaseContextCheck")
@@ -181,12 +181,8 @@ public class Startup
                 serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
                 serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
                 name: "IntegrationEventsTopicExists")
-            .AddDatabricksJobsApiCheck(
-                databricksOptions,
-                "DatabricksJobsApiCheck")
-            .AddDatabricksSqlStatementsApiCheck(
-                databricksOptions,
-                "DatabricksSqlStatementsApiCheck");
+            .AddDatabricksJobsApiHealthCheck(_ => Configuration.Get<DatabricksOptions>()!, name: "DatabricksJobsApiCheck")
+            .AddDatabricksSqlStatementsApiHealthCheck(_ => Configuration.Get<DatabricksOptions>()!, name: "DatabricksSqlStatementsApiCheck");
     }
 
     /// <summary>
