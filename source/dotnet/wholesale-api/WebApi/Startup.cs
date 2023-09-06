@@ -30,7 +30,7 @@ using Energinet.DataHub.Wholesale.WebApi.HealthChecks.Databricks;
 using Energinet.DataHub.Wholesale.WebApi.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Azure;
 using Microsoft.OpenApi.Models;
 
 namespace Energinet.DataHub.Wholesale.WebApi;
@@ -108,6 +108,12 @@ public class Startup
         serviceCollection.AddOptions<DeltaTableOptions>();
 
         serviceCollection.AddOptions<EdiInboxOptions>().Bind(Configuration);
+
+        // ServiceBus
+        serviceCollection.AddAzureClients(builder =>
+        {
+            builder.AddServiceBusClient(Configuration.Get<ServiceBusOptions>()!.SERVICE_BUS_MANAGE_CONNECTION_STRING);
+        });
 
         AddJwtTokenSecurity(serviceCollection);
         AddHealthCheck(serviceCollection);
