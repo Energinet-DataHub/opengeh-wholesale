@@ -76,7 +76,7 @@ public class AggregatedTimeSeriesServiceBusWorker : BackgroundService, IAsyncDis
 
     private async Task ProcessMessageAsync(ProcessMessageEventArgs arg)
     {
-        await _aggregatedTimeSeriesRequestHandler.ProcessAsync(arg.CancellationToken).ConfigureAwait(false);
+        await _aggregatedTimeSeriesRequestHandler.ProcessAsync(arg.Message, arg.CancellationToken).ConfigureAwait(false);
         await arg.CompleteMessageAsync(arg.Message).ConfigureAwait(false);
     }
 }

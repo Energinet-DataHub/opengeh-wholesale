@@ -17,14 +17,15 @@ using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
 using Energinet.DataHub.Wholesale.Events.Application.Options;
 using Energinet.DataHub.Wholesale.Events.Application.Triggers;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Energinet.DataHub.Wholesale.Events.Application.Workers;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.InboxEvents;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedBatches;
-using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
 
@@ -44,6 +45,8 @@ public static class EventsRegistration
         serviceCollection.AddScoped<ICalculationResultIntegrationEventFactory, CalculationResultIntegrationEventFactory>();
 
         serviceCollection.AddScoped<IAggregatedTimeSeriesRequestHandler, AggregatedTimeSeriesRequestHandler>();
+        serviceCollection.AddSingleton<IEdiClient, EdiClient>();
+        serviceCollection.AddScoped<IAggregatedTimeSeriesMessageFactory, AggregatedTimeSeriesMessageFactory>();
 
         serviceCollection.AddApplications();
         serviceCollection.AddInfrastructure();
