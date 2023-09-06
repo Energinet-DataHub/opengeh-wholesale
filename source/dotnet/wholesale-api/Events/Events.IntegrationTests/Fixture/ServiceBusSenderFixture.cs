@@ -30,7 +30,7 @@ public class ServiceBusSenderFixture : IAsyncLifetime, IAsyncDisposable
 
     private readonly ServiceBusResourceProvider _serviceBusResourceProvider;
     private readonly string _queueName = "sbq-wholesale-inbox";
-    private readonly ServiceBusSender _sender;
+    private ServiceBusSender? _sender;
 
     public ServiceBusSenderFixture()
     {
@@ -46,7 +46,6 @@ public class ServiceBusSenderFixture : IAsyncLifetime, IAsyncDisposable
             new TestDiagnosticsLogger());
 
         ServiceBusClient = new ServiceBusClient(ServiceBusOptions.Value.SERVICE_BUS_MANAGE_CONNECTION_STRING);
-        _sender = ServiceBusClient.CreateSender(ServiceBusOptions.Value.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME);
     }
 
     public async Task InitializeAsync()
@@ -57,12 +56,13 @@ public class ServiceBusSenderFixture : IAsyncLifetime, IAsyncDisposable
             .Do(queueProperties => ServiceBusOptions.Value.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME = queueProperties.Name);
         await builder
             .CreateAsync();
+        _sender = ServiceBusClient.CreateSender(ServiceBusOptions.Value.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME);
     }
 
     public async ValueTask DisposeAsync()
     {
         await _serviceBusResourceProvider.DisposeAsync();
-        await _sender.DisposeAsync();
+        if (_sender != null) await _sender.DisposeAsync();
         await ServiceBusClient.DisposeAsync();
         GC.SuppressFinalize(this);
     }
@@ -75,7 +75,7 @@ public class ServiceBusSenderFixture : IAsyncLifetime, IAsyncDisposable
 
     internal async Task PublishAsync(string message)
     {
-        await _sender.SendMessageAsync(CreateAggregatedTimeSeriesRequestMessage(message));
+        if (_sender != null) await _sender.SendMessageAsync(CreateAggregatedTimeSeriesRequestMessage(message));
     }
 
     private ServiceBusMessage CreateAggregatedTimeSeriesRequestMessage(string body)
