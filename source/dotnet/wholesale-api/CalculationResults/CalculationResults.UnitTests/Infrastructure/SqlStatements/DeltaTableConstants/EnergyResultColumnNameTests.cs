@@ -20,13 +20,13 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SqlStatements.DeltaTableConstants;
 
-public class ResultColumnNameTests
+public class EnergyResultColumnNameTests
 {
     [Fact]
-    public async Task ResultColumnNames_MatchesContract()
+    public async Task EnergyResultColumnNames_MatchesContract()
     {
         // Arrange
-        await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.result-table-column-names.json");
+        await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.energy-result-table-column-names.json");
         var contractDescription = await ContractComplianceTestHelper.GetJsonObjectAsync(stream);
         var expectedColumnNames = new List<string>();
         var expectedColumnTypes = new List<string>();

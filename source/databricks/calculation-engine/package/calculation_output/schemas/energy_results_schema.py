@@ -37,10 +37,10 @@ energy_results_schema = StructType(
         StructField(EnergyResultColumnNames.time, TimestampType(), False),
         StructField(EnergyResultColumnNames.aggregation_level, StringType(), False),
         StructField(EnergyResultColumnNames.time_series_type, StringType(), False),
-        StructField(EnergyResultColumnNames.batch_id, StringType(), False),
-        StructField(EnergyResultColumnNames.batch_process_type, StringType(), False),
+        StructField(EnergyResultColumnNames.calculation_id, StringType(), False),
+        StructField(EnergyResultColumnNames.calculation_type, StringType(), False),
         StructField(
-            EnergyResultColumnNames.batch_execution_time_start, TimestampType(), False
+            EnergyResultColumnNames.calculation_execution_time_start, TimestampType(), False
         ),
         # The time when the energy was consumed/produced/exchanged
         StructField(EnergyResultColumnNames.from_grid_area, StringType(), True),
