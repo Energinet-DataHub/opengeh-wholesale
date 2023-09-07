@@ -38,15 +38,6 @@ variable "developers_security_group_object_id" {
   default     = null
 }
 
-variable "kv_secrets" {
-  type = list(object({
-    name  = string
-    value = string
-  }))
-  description = "(Optional) App IDs and Client Secrets that can be used to retrieve access tokens for certain scenarios"
-  default     = null
-}
-
 variable "shared_resources_keyvault_name" {
   type        = string
   description = "Name of the KeyVault, that contains the shared secrets"
