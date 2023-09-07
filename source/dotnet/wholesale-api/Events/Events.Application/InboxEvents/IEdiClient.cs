@@ -12,18 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Events.Application.UseCases;
-using Xunit;
+using Azure.Messaging.ServiceBus;
 
-namespace Energinet.DataHub.Wholesale.Events.UnitTests.Application.Workers;
+namespace Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
 
-public class ProcessAggregatedTimeSeriesRequestHandlerTests
+public interface IEdiClient
 {
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task ProcessAsync_can_be_called(AggregatedTimeSeriesRequestHandler sut)
-    {
-        await sut.ProcessAsync(CancellationToken.None);
-    }
+    /// <summary>
+    /// Responsible of sending a message to EDI inbox
+    /// </summary>
+    public Task SendAsync(ServiceBusMessage message, CancellationToken cancellationToken);
 }

@@ -90,7 +90,7 @@ def test__energy_result__is_created(
 ) -> None:
     # Arrange
     result_df = (
-        wholesale_fixing_energy_results_df.where(F.col(EnergyResultColumnNames.batch_id) == C.executed_wholesale_batch_id)
+        wholesale_fixing_energy_results_df.where(F.col(EnergyResultColumnNames.calculation_id) == C.executed_wholesale_batch_id)
         .where(F.col(EnergyResultColumnNames.time_series_type) == time_series_type)
         .where(F.col(EnergyResultColumnNames.aggregation_level) == aggregation_level)
     )
@@ -106,8 +106,8 @@ def test__energy_result__has_expected_number_of_types(
 ) -> None:
     # Arrange
     actual_result_type_count = (
-        wholesale_fixing_energy_results_df.where(F.col(EnergyResultColumnNames.batch_id) == C.executed_wholesale_batch_id)
-        .where(F.col(EnergyResultColumnNames.batch_id) == C.executed_wholesale_batch_id)
+        wholesale_fixing_energy_results_df.where(F.col(EnergyResultColumnNames.calculation_id) == C.executed_wholesale_batch_id)
+        .where(F.col(EnergyResultColumnNames.calculation_id) == C.executed_wholesale_batch_id)
         .select(EnergyResultColumnNames.time_series_type, EnergyResultColumnNames.aggregation_level).distinct().count()
     )
 
