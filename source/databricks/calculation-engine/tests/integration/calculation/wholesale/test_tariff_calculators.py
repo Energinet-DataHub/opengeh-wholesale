@@ -15,7 +15,7 @@
 from decimal import Decimal
 from datetime import datetime, timedelta
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import year, month, count, sum
+from pyspark.sql.functions import year, month, count, sum, first, lit
 import pytest
 from typing import Any, List, Union
 
@@ -280,39 +280,51 @@ def test_stuff(
 ) -> None:
     # Arrange
     rows = [
-        _create_tariff_hour_row(),
+        _create_tariff_hour_row(charge_time=datetime(2020, 1, 1, 0)),
         _create_tariff_hour_row(charge_time=datetime(2020, 1, 1, 1)),
+        _create_tariff_hour_row(charge_time=datetime(2020, 1, 1, 2)),
+        _create_tariff_hour_row(charge_time=datetime(2020, 1, 1, 2), metering_point_type=MeteringPointType.PRODUCTION),
         _create_tariff_hour_row(charge_time=datetime(2020, 2, 1, 0))
     ]
     tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
 
     # Act
     actual = calculate_tariff_price_per_ga_co_es(tariffs)
-    actual.show()
     df = actual
-    df = df.withColumn("year", year(df["charge_time"]))
-    df = df.withColumn("month", month(df["charge_time"]))
-    # agg_df = (
-    #     df.groupBy(
-    #         Colname.energy_supplier_id,
-    #         Colname.grid_area,
-    #         Colname.charge_time,
-    #         Colname.metering_point_type,
-    #         Colname.settlement_method,
-    #         Colname.charge_key,
-    #         Colname.charge_id,
-    #         Colname.charge_type,
-    #         Colname.charge_owner,
-    #         Colname.charge_tax,
-    #         Colname.charge_resolution,
-    #         Colname.charge_price,
-    #     )
-    #     .agg(
-    #         sum(Colname.quantity).alias(Colname.total_quantity),
-    #         count(Colname.metering_point_id).alias(Colname.charge_count),
-    #     )
-    # )
-    df.show()
+    df = df.withColumn("year", year(df["observation_time"]))
+    df = df.withColumn("month", month(df["observation_time"]))
+    agg_df = (
+        df.groupBy(
+            Colname.energy_supplier_id,
+            Colname.grid_area,
+            "year",
+            "month",
+            Colname.charge_key,
+            Colname.charge_id,
+            Colname.charge_type,
+            Colname.charge_owner,
+        )
+        .agg(
+            sum(Colname.total_amount).alias(Colname.total_amount),
+            count(Colname.charge_count).alias(Colname.charge_count),
+            first(Colname.charge_tax).alias(Colname.charge_tax),
+            lit(ChargeResolution.MONTH.value).alias(Colname.charge_resolution),
+        )
+        .select(
+            Colname.energy_supplier_id,
+            Colname.grid_area,
+            Colname.charge_key,
+            Colname.charge_id,
+            Colname.charge_type,
+            Colname.charge_owner,
+            Colname.charge_tax,
+            Colname.total_amount,
+            Colname.charge_count,
+        )
+    )
+    agg_df.show()
 
     # Assert
+    assert agg_df.collect()[0][Colname.total_amount] == Decimal("8.040020")
+    assert agg_df.collect()[1][Colname.total_amount] == Decimal("2.010005")
     # assert actual.schema[Colname.total_amount].dataType.precision >= 1
