@@ -838,7 +838,7 @@ def test__get_tariff_charges__when_two_tariff_overlap__returns_both_tariffs(
     )
 
     # Act
-    tariffs = get_tariff_charges(
+    tariffs_df = get_tariff_charges(
         default_metering_point_period,
         default_time_series_point,
         charge_master_data,
@@ -848,6 +848,7 @@ def test__get_tariff_charges__when_two_tariff_overlap__returns_both_tariffs(
     )
 
     # Assert
-    assert tariffs.count() == 2
-    assert tariffs.collect()[0][Colname.charge_key] == charge_key_1
-    assert tariffs.collect()[1][Colname.charge_key] == charge_key_2
+    assert tariffs_df.count() == 2
+    tariffs = tariffs_df.sort(Colname.charge_key).collect()
+    assert tariffs[0][Colname.charge_key] == charge_key_1
+    assert tariffs[1][Colname.charge_key] == charge_key_2

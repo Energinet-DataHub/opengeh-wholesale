@@ -117,7 +117,7 @@ def test__balance_fixing_result__is_created(
 ) -> None:
     # Arrange
     result_df = (
-        balance_fixing_results_df.where(F.col(EnergyResultColumnNames.batch_id) == C.executed_balance_fixing_batch_id)
+        balance_fixing_results_df.where(F.col(EnergyResultColumnNames.calculation_id) == C.executed_balance_fixing_batch_id)
         .where(F.col(EnergyResultColumnNames.time_series_type) == time_series_type)
         .where(F.col(EnergyResultColumnNames.aggregation_level) == aggregation_level)
     )
@@ -133,8 +133,8 @@ def test__balance_fixing_result__has_expected_number_of_result_types(
 ) -> None:
     # Arrange
     actual_result_type_count = (
-        balance_fixing_results_df.where(F.col(EnergyResultColumnNames.batch_id) == C.executed_balance_fixing_batch_id)
-        .where(F.col(EnergyResultColumnNames.batch_id) == C.executed_balance_fixing_batch_id)
+        balance_fixing_results_df.where(F.col(EnergyResultColumnNames.calculation_id) == C.executed_balance_fixing_batch_id)
+        .where(F.col(EnergyResultColumnNames.calculation_id) == C.executed_balance_fixing_batch_id)
         .select(EnergyResultColumnNames.time_series_type, EnergyResultColumnNames.aggregation_level).distinct().count()
     )
 
