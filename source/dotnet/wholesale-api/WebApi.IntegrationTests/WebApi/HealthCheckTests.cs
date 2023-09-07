@@ -43,7 +43,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi
             actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var actualContent = await actualResponse.Content.ReadAsStringAsync();
-            actualContent.Should().Be(Enum.GetName(typeof(HealthStatus), HealthStatus.Healthy));
+            actualContent.Should().StartWith("{\"status\":\"Healthy\"");
         }
 
         [Fact]
@@ -56,7 +56,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi
             actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var actualContent = await actualResponse.Content.ReadAsStringAsync();
-            actualContent.Should().Be(Enum.GetName(typeof(HealthStatus), HealthStatus.Healthy));
+            actualContent.Should().StartWith("{\"status\":\"Healthy\"");
         }
     }
 }
