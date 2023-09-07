@@ -37,10 +37,11 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
     public async Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken)
     {
         // create the request from the protobuf message
+        var aggregatedTimeSeriesRequestMessage = _aggregatedTimeSeriesMessageFactory.GetAggregatedTimeSeriesRequest(receivedMessage);
         // call the query service
         var result = new List<object>();
         // create the response
-        var message = _aggregatedTimeSeriesMessageFactory.Create(result, referenceId);
+        var message = _aggregatedTimeSeriesMessageFactory.CreateResponse(result, referenceId, true);
 
         // send the response to EDI inbox.
         await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);

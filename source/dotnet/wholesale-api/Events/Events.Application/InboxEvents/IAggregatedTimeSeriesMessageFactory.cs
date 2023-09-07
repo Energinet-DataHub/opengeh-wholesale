@@ -23,5 +23,12 @@ public interface IAggregatedTimeSeriesMessageFactory
     /// </summary>
     /// <param name="aggregatedTimeSeries"></param>
     /// <param name="referenceId"></param>
-    public ServiceBusMessage Create(List<object> aggregatedTimeSeries, string referenceId);
+    /// <param name="rejected">Temporary switch for generating accepted or rejected message</param>
+    public ServiceBusMessage CreateResponse(List<object> aggregatedTimeSeries, string referenceId, bool rejected);
+
+    /// <summary>
+    /// Responsible for deserializing the received message.
+    /// </summary>
+    /// <param name="request"></param>
+    AggregatedTimeSeriesRequest GetAggregatedTimeSeriesRequest(ServiceBusReceivedMessage request);
 }
