@@ -40,9 +40,10 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
     {
         // Arrange
         var messageHasBeenReceivedEvent = new AutoResetEvent(false);
+        var expectedReferenceId = Guid.NewGuid().ToString();
         // ProcessAsync is expected to trigger when a service bus message has been received.
         handlerMock
-            .Setup(handler => handler.ProcessAsync(It.IsAny<ServiceBusReceivedMessage>(), It.IsAny<CancellationToken>()))
+            .Setup(handler => handler.ProcessAsync(It.IsAny<ServiceBusReceivedMessage>(), expectedReferenceId, It.IsAny<CancellationToken>()))
             .Callback(() =>
             {
                 messageHasBeenReceivedEvent.Set();
@@ -56,7 +57,7 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
 
         // Act
         await sut.StartAsync(CancellationToken.None).ConfigureAwait(false);
-        await _sender.PublishAsync("Hello World");
+        await _sender.PublishAsync("Hello World", expectedReferenceId);
 
         // Assert
         var messageHasBeenReceived = messageHasBeenReceivedEvent.WaitOne(timeout: TimeSpan.FromSeconds(1));

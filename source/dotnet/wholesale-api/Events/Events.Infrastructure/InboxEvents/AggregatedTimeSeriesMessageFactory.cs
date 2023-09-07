@@ -35,10 +35,9 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
         {
             Body = new BinaryData(body.ToByteArray()),
             Subject = body.GetType().Name,
-            MessageId = referenceId,
         };
 
-        message.ApplicationProperties.Add("ReferenceId", Guid.NewGuid().ToString());
+        message.ApplicationProperties.Add("ReferenceId", referenceId);
         return message;
     }
 

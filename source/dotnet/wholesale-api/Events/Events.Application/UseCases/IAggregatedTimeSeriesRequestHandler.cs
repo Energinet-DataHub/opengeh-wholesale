@@ -22,6 +22,7 @@ public interface IAggregatedTimeSeriesRequestHandler
     /// Handles the process of consuming the request for aggregated time series, then getting the required time series and creating and sending the response.
     /// </summary>
     /// <param name="receivedMessage"></param>
+    /// <param name="referenceId"></param>
     /// <param name="cancellationToken"></param>
-    Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, CancellationToken cancellationToken);
+    Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken);
 }

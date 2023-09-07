@@ -37,18 +37,25 @@ public class ProcessAggregatedTimeSeriesRequestHandlerTests
     {
         // Arrange
         var expectedRejectedSubject = nameof(AggregatedTimeSeriesRequestRejected);
+        var expectedReferenceId = Guid.NewGuid().ToString();
         var sut = new AggregatedTimeSeriesRequestHandler(
             calculationResultQueriesMock.Object,
             senderMock.Object,
             aggregatedTimeSeriesMessageFactoryMock.Object);
 
         // Act
-        await sut.ProcessAsync(receivedMessageMock.Object, CancellationToken.None);
+        await sut.ProcessAsync(
+            receivedMessageMock.Object,
+            expectedReferenceId,
+            CancellationToken.None);
 
         // Assert
         senderMock.Verify(
             bus => bus.SendAsync(
-            It.Is<ServiceBusMessage>(message => message.Subject.Equals(expectedRejectedSubject)),
+            It.Is<ServiceBusMessage>(message =>
+                message.Subject.Equals(expectedRejectedSubject)
+                && message.ApplicationProperties.ContainsKey("ReferenceId")
+                && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
             It.IsAny<CancellationToken>()),
             Times.Once);
     }
