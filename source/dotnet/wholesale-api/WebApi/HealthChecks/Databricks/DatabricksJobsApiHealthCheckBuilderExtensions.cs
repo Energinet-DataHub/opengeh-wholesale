@@ -24,7 +24,6 @@ public static class DatabricksJobsApiHealthCheckBuilderExtensions
 
     public static IHealthChecksBuilder AddDatabricksJobsApiHealthCheck(
         this IHealthChecksBuilder builder,
-        Func<IServiceProvider, DatabricksOptions> options,
         string? name = default,
         HealthStatus? failureStatus = default,
         IEnumerable<string>? tags = default,
