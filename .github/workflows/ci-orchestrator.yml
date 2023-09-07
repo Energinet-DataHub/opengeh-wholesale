@@ -97,6 +97,15 @@ jobs:
       infrastructure_path: ./integration-test/terraform
     secrets: inherit
 
+  health_checks_ui_ci:
+    needs: changes
+    if: ${{ needs.changes.outputs.health_checks_ui_ci == 'true' }}
+    uses: ./.github/workflows/infrastructure-build-prerelease.yml
+    with:
+      release_name_prefix: health_checks_ui_infrastructure
+      infrastructure_path: ./health-checks-ui/terraform
+    secrets: inherit
+
   # If we have multiple Structurizr DSL files in the same repository, we can support rendering them by:
   #  1. Adding a job per file
   #  2. Ensure these jobs are executed in serial (by using 'needs')
@@ -137,6 +146,8 @@ jobs:
         shared_resources_ci,
         ui_ci,
         wholesale_ci,
+        integration_test_ci,
+        health_checks_ui_ci,
         render_c4model_deployment,
         render_c4model_ownership_views,
       ]
