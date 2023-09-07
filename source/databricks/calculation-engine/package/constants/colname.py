@@ -50,6 +50,7 @@ class Colname:
     parent_metering_point_id = "parent_metering_point_id"
     position = "position"
     price_per_day = "price_per_day"
+    qualities = "qualities"
     quality = "quality"
     quantity = "quantity"
     resolution = "resolution"
