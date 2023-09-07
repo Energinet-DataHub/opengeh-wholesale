@@ -73,14 +73,15 @@ public class ServiceBusSenderFixture : IAsyncLifetime, IAsyncDisposable
         await Task.CompletedTask.ConfigureAwait(false);
     }
 
-    internal async Task PublishAsync(string message)
+    internal async Task PublishAsync(string message, string referenceId)
     {
-        if (_sender != null) await _sender.SendMessageAsync(CreateAggregatedTimeSeriesRequestMessage(message));
+        if (_sender != null) await _sender.SendMessageAsync(CreateAggregatedTimeSeriesRequestMessage(message, referenceId));
     }
 
-    private ServiceBusMessage CreateAggregatedTimeSeriesRequestMessage(string body)
+    private ServiceBusMessage CreateAggregatedTimeSeriesRequestMessage(string body, string referenceId)
     {
         var message = new ServiceBusMessage(body);
+        message.ApplicationProperties.Add("ReferenceId", referenceId);
         return message;
     }
 }

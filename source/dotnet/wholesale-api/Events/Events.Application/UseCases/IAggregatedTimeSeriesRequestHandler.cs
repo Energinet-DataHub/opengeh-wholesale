@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Messaging.ServiceBus;
+
 namespace Energinet.DataHub.Wholesale.Events.Application.UseCases;
 
 public interface IAggregatedTimeSeriesRequestHandler
@@ -19,7 +21,8 @@ public interface IAggregatedTimeSeriesRequestHandler
     /// <summary>
     /// Handles the process of consuming the request for aggregated time series, then getting the required time series and creating and sending the response.
     /// </summary>
-    /// <param name="message"></param>
+    /// <param name="receivedMessage"></param>
+    /// <param name="referenceId"></param>
     /// <param name="cancellationToken"></param>
-    Task ProcessAsync(object message, CancellationToken cancellationToken);
+    Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken);
 }

@@ -76,7 +76,17 @@ public class AggregatedTimeSeriesServiceBusWorker : BackgroundService, IAsyncDis
 
     private async Task ProcessMessageAsync(ProcessMessageEventArgs arg)
     {
-        await _aggregatedTimeSeriesRequestHandler.ProcessAsync(arg.Message, arg.CancellationToken).ConfigureAwait(false);
+        if (
+            arg.Message.ApplicationProperties.TryGetValue("ReferenceId", out var referenceIdPropertyValue)
+            && referenceIdPropertyValue is string referenceId)
+        {
+            await _aggregatedTimeSeriesRequestHandler.ProcessAsync(arg.Message, referenceId, arg.CancellationToken).ConfigureAwait(false);
+        }
+        else
+        {
+            _logger.LogError("Missing reference id for Service Bus Message. MessageId: {MessageId}, Subject: {Subject}", arg.Message.MessageId, arg.Message.Subject);
+        }
+
         await arg.CompleteMessageAsync(arg.Message).ConfigureAwait(false);
     }
 }
