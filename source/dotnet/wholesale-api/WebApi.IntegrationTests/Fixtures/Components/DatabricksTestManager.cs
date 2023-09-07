@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
+
 namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.Components
 {
     public sealed class DatabricksTestManager : IAsyncDisposable
@@ -25,7 +27,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.Component
 
         public string DatabricksUrl { get; set; } = "http://localhost:8000/";
 
-        public string DatabricksToken { get; } = "no_token";
+        public string DatabricksToken { get; set; } = "no_token";
 
         public void BeginListen()
         {
