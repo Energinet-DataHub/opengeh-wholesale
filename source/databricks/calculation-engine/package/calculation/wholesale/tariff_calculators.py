@@ -104,7 +104,7 @@ def _sum_quantity_and_count_charges(tariffs: DataFrame) -> DataFrame:
         .agg(
             sum(Colname.quantity).alias(Colname.total_quantity),
             count(Colname.metering_point_id).alias(Colname.charge_count),
-            collect_set(Colname.quality).alias(Colname.qualities),
+            collect_set(Colname.qualities).alias(Colname.qualities),
         )
     )
     return agg_df

@@ -14,8 +14,9 @@
 
 from datetime import datetime
 from decimal import Decimal
+from typing import Union
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import lit, col
+from pyspark.sql.functions import lit, col, array
 import pytest
 import uuid
 
@@ -75,7 +76,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
         (WholesaleResultColumnNames.quantity_unit, None),
         (WholesaleResultColumnNames.quantity_unit, "foo"),
         (WholesaleResultColumnNames.quantity_qualities, None),
-        (WholesaleResultColumnNames.quantity_qualities, "foo"),
+        (WholesaleResultColumnNames.quantity_qualities, []),
         (WholesaleResultColumnNames.quantity_qualities, ["foo"]),
         (WholesaleResultColumnNames.time, None),
         (WholesaleResultColumnNames.resolution, None),
@@ -88,12 +89,13 @@ def _create_df(spark: SparkSession) -> DataFrame:
 def test__migrated_table_rejects_invalid_data(
     spark: SparkSession,
     column_name: str,
-    invalid_column_value: str,
+    invalid_column_value: Union[str, list],
     migrations_executed: None,
 ) -> None:
     # Arrange
     results_df = _create_df(spark)
-    invalid_df = results_df.withColumn(column_name, lit(invalid_column_value))
+    f = array if isinstance(invalid_column_value, list) else lit
+    invalid_df = results_df.withColumn(column_name, f(invalid_column_value))
 
     # Act
     with pytest.raises(Exception) as ex:
@@ -157,12 +159,13 @@ actor_eic = "1234567890123456"
 def test__migrated_table_accepts_valid_data(
     spark: SparkSession,
     column_name: str,
-    column_value: str,
+    column_value: Union[str, list],
     migrations_executed: None,
 ) -> None:
     # Arrange
     result_df = _create_df(spark)
-    result_df = result_df.withColumn(column_name, lit(column_value))
+    f = array if isinstance(column_value, list) else lit
+    result_df = result_df.withColumn(column_name, f(column_value))
 
     # Act and assert: Expectation is that no exception is raised
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
