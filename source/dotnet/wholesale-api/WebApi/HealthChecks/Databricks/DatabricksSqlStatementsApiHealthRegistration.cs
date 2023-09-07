@@ -20,16 +20,18 @@ namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks.Databricks;
 
 public class DatabricksSqlStatementsApiHealthRegistration : IHealthCheck
 {
+    private readonly IHttpClientFactory _httpClientFactory;
     private readonly DatabricksOptions _options;
 
-    public DatabricksSqlStatementsApiHealthRegistration(DatabricksOptions options)
+    public DatabricksSqlStatementsApiHealthRegistration(IHttpClientFactory httpClientFactory, DatabricksOptions options)
     {
+        _httpClientFactory = httpClientFactory;
         _options = options;
     }
 
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken)
     {
-        using var httpClient = new HttpClient();
+        using var httpClient = _httpClientFactory.CreateClient();
         httpClient.BaseAddress = new Uri(_options.DATABRICKS_WORKSPACE_URL);
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _options.DATABRICKS_WORKSPACE_TOKEN);
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
