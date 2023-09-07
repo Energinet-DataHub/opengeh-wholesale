@@ -31,7 +31,7 @@ resource "databricks_sql_alert" "duplicates_time_series_silver" {
     value  = "0"
     muted  = false
   }
-  parent         = "folders/${databricks_directory.shared_alerts_dir.object_id}"
+  parent = "folders/${databricks_directory.shared_alerts_dir.object_id}"
 }
 
 # job for duplicates in silver.time_series
@@ -84,7 +84,7 @@ resource "databricks_sql_alert" "duplicates_time_series_gold" {
     value  = "0"
     muted  = false
   }
-  parent         = "folders/${databricks_directory.shared_alerts_dir.object_id}"
+  parent = "folders/${databricks_directory.shared_alerts_dir.object_id}"
 }
 
 # job for duplicates in wholesale.time_series_points
@@ -137,7 +137,7 @@ resource "databricks_sql_alert" "duplicates_time_series_wholesale" {
     value  = "0"
     muted  = false
   }
-  parent         = "folders/${databricks_directory.shared_alerts_dir.object_id}"
+  parent = "folders/${databricks_directory.shared_alerts_dir.object_id}"
 }
 
 # job for duplicates in wholesale.time_series_points
@@ -190,7 +190,7 @@ resource "databricks_sql_alert" "duplicates_time_series_eloverblik" {
     value  = "0"
     muted  = false
   }
-  parent         = "folders/${databricks_directory.shared_alerts_dir.object_id}"
+  parent = "folders/${databricks_directory.shared_alerts_dir.object_id}"
 }
 
 # job for duplicates in eloverblik.time_series_points
@@ -244,7 +244,7 @@ resource "databricks_sql_alert" "duplicates_metering_points_gold" {
     value  = "0"
     muted  = false
   }
-  parent         = "folders/${databricks_directory.shared_alerts_dir.object_id}"
+  parent = "folders/${databricks_directory.shared_alerts_dir.object_id}"
 }
 
 # job for duplicates in gold.metering_points
@@ -297,7 +297,7 @@ resource "databricks_sql_alert" "duplicates_metering_point_periods_wholesale" {
     value  = "0"
     muted  = false
   }
-  parent         = "folders/${databricks_directory.shared_alerts_dir.object_id}"
+  parent = "folders/${databricks_directory.shared_alerts_dir.object_id}"
 }
 
 # job for duplicates in wholesale.metering_point_periods

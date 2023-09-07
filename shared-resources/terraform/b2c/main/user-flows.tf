@@ -3,5 +3,5 @@ data "external" "user_flows" {
     var.b2c_tenant_id,
     var.b2c_client_id,
     var.b2c_client_secret,
-    data.external.mitid_provider.result.mitId]
+  data.external.mitid_provider.result.mitId]
 }

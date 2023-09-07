@@ -13,7 +13,7 @@
   # Besides, the batch overview page in the front-end shows failed status
   enabled     = false
   query       = <<-QUERY
-  DatabricksJobs 
+  DatabricksJobs
 | where OperationName == "Microsoft.Databricks/jobs/runFailed"
 | where parse_json(RequestParams).taskKey startswith "calculator_job"
   QUERY

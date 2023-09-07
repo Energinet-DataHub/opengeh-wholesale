@@ -15,7 +15,7 @@ resource "azurerm_key_vault_key" "token_sign" {
 
   rotation_policy {
     automatic {
-      time_before_expiry  = "P30D"
+      time_before_expiry = "P30D"
     }
 
     expire_after         = "P11M"

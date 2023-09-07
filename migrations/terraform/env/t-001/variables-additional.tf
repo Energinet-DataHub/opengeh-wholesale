@@ -8,7 +8,7 @@ variable "cert_pwd_migration_dh2_authentication_key1" {
   description = "Password for the certificate"
 
   validation {
-    condition = length(var.cert_pwd_migration_dh2_authentication_key1) > 0
+    condition     = length(var.cert_pwd_migration_dh2_authentication_key1) > 0
     error_message = "The password for the certificate must be specified."
   }
 }
