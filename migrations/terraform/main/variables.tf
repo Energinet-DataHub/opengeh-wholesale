@@ -59,3 +59,9 @@ variable "developers_security_group_object_id" {
   description = "(Optional) The Object ID of the Azure AD security group containing DataHub developers."
   default     = null
 }
+
+variable "migration_team_security_group_object_id" {
+  type        = string
+  description = "(Optional) The Object ID of the Azure AD security group containing Migrations team members."
+  default     = null
+}

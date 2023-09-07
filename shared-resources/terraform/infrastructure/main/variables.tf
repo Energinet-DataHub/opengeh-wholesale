@@ -175,6 +175,12 @@ variable "developers_security_group_object_id" {
   default     = null
 }
 
+variable "platform_team_security_group_object_id" {
+  type        = string
+  description = "(Optional) The Object ID of the Azure AD security group containing Outlaws developers."
+  default     = null
+}
+
 variable "ad_group_directory_reader" {
   type        = string
   description = "(Optional) Name of a Active Directory group with the Directory Reader permission."
