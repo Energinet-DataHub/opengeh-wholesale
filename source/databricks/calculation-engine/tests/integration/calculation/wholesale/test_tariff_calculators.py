@@ -77,7 +77,7 @@ def _create_tariff_hour_row(
         Colname.settlement_method: settlement_method.value if settlement_method else None,
         Colname.grid_area: grid_area,
         Colname.quantity: quantity,
-        Colname.quality: quality.value,
+        Colname.qualities: [quality.value],
     }
 
     return row
