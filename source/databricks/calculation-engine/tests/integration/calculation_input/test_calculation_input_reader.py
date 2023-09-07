@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from datetime import datetime
+from unittest import mock
 import pytest
 from pyspark.sql import SparkSession
 from package.codelists import (
@@ -24,18 +25,14 @@ from package.codelists import (
 from package.calculation_input import CalculationInputReader
 from package.calculation_input.schemas import metering_point_period_schema
 from package.constants import Colname
-from package.infrastructure import paths
 
 
-METERING_POINT_PERIODS_TABLE_NAME = f"{paths.INPUT_DATABASE_NAME}.{paths.METERING_POINT_PERIODS_TABLE_NAME}"
-
-
-def _overwrite_table_data_with_new_row(
+def _create_row(
     spark: SparkSession,
     metering_point_type: InputMeteringPointType = InputMeteringPointType.CONSUMPTION,
     settlement_method: InputSettlementMethod = InputSettlementMethod.FLEX,
-) -> None:
-    row = {
+) -> dict:
+    return {
         Colname.metering_point_id: "foo",
         Colname.metering_point_type: metering_point_type.value,
         Colname.calculation_type: "foo",
@@ -50,9 +47,6 @@ def _overwrite_table_data_with_new_row(
         Colname.from_date: datetime(2022, 6, 8, 22, 0, 0),
         Colname.to_date: datetime(2022, 6, 8, 22, 0, 0),
     }
-
-    df = spark.createDataFrame(data=[row], schema=metering_point_period_schema)
-    df.write.format("delta").mode("overwrite").insertInto(METERING_POINT_PERIODS_TABLE_NAME)
 
 
 @pytest.mark.parametrize("metering_point_type,expected", [
@@ -74,14 +68,16 @@ def _overwrite_table_data_with_new_row(
 ])
 def test___read_metering_point_periods__returns_df_with_correct_metering_point_types(
         spark: SparkSession,
-        energy_input_data_written_to_delta: None,  # The purpose is to have the input tables available
         metering_point_type: InputMeteringPointType,
         expected: MeteringPointType) -> None:
     # Arrange
-    _overwrite_table_data_with_new_row(spark, metering_point_type=metering_point_type)
+    row = _create_row(spark, metering_point_type=metering_point_type)
+    df = spark.createDataFrame(data=[row], schema=metering_point_period_schema)
+    sut = CalculationInputReader(spark)
 
     # Act
-    actual = CalculationInputReader(spark).read_metering_point_periods()
+    with mock.patch.object(sut, "_read_table", return_value=df):
+        actual = sut.read_metering_point_periods()
 
     # Assert
     assert actual.collect()[0][Colname.metering_point_type] == expected.value
@@ -93,14 +89,15 @@ def test___read_metering_point_periods__returns_df_with_correct_metering_point_t
 ])
 def test___read_metering_point_periods__returns_df_with_correct_settlemet_methods(
         spark: SparkSession,
-        energy_input_data_written_to_delta: None,  # The purpose is to have the input tables available
         settlement_method: InputSettlementMethod,
         expected: SettlementMethod) -> None:
-    # Arrange
-    _overwrite_table_data_with_new_row(spark, settlement_method=settlement_method)
+    row = _create_row(spark, settlement_method=settlement_method)
+    df = spark.createDataFrame(data=[row], schema=metering_point_period_schema)
+    sut = CalculationInputReader(spark)
 
     # Act
-    actual = CalculationInputReader(spark).read_metering_point_periods()
+    with mock.patch.object(sut, "_read_table", return_value=df):
+        actual = sut.read_metering_point_periods()
 
     # Assert
     assert actual.collect()[0][Colname.settlement_method] == expected.value
