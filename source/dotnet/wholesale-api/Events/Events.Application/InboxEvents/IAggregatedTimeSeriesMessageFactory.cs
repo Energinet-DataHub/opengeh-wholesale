@@ -22,5 +22,6 @@ public interface IAggregatedTimeSeriesMessageFactory
     /// Creates a service bus message based on aggregated time series
     /// </summary>
     /// <param name="aggregatedTimeSeries"></param>
-    public ServiceBusMessage Create(List<object> aggregatedTimeSeries);
+    /// <param name="referenceId"></param>
+    public ServiceBusMessage Create(List<object> aggregatedTimeSeries, string referenceId);
 }

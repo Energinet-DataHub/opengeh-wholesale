@@ -32,18 +32,18 @@ public class ProcessAggregatedTimeSeriesRequestHandlerTests
     public async Task ProcessAsync_WithEmptyRequest_SendsRejectedEdiMessage(
         [Frozen] Mock<ICalculationResultQueries> calculationResultQueriesMock,
         [Frozen] Mock<IEdiClient> senderMock,
-        [Frozen] Mock<AggregatedTimeSeriesMessageFactory> aggregatedTimeSeriesMessageFactoryMock)
+        [Frozen] Mock<AggregatedTimeSeriesMessageFactory> aggregatedTimeSeriesMessageFactoryMock,
+        Mock<ServiceBusReceivedMessage> receivedMessageMock)
     {
         // Arrange
         var expectedRejectedSubject = nameof(AggregatedTimeSeriesRequestRejected);
-        var request = new object();
         var sut = new AggregatedTimeSeriesRequestHandler(
             calculationResultQueriesMock.Object,
             senderMock.Object,
             aggregatedTimeSeriesMessageFactoryMock.Object);
 
         // Act
-        await sut.ProcessAsync(request, CancellationToken.None);
+        await sut.ProcessAsync(receivedMessageMock.Object, CancellationToken.None);
 
         // Assert
         senderMock.Verify(

@@ -25,7 +25,7 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
     /// <summary>
     /// THIS IS ALL MOCKED DATA
     /// </summary>
-    public ServiceBusMessage Create(List<object> aggregatedTimeSeries)
+    public ServiceBusMessage Create(List<object> aggregatedTimeSeries, string referenceId)
     {
         var body = aggregatedTimeSeries.Any()
             ? CreateAcceptedResponse()
@@ -35,7 +35,7 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
         {
             Body = new BinaryData(body.ToByteArray()),
             Subject = body.GetType().Name,
-            MessageId = Guid.NewGuid().ToString(),
+            MessageId = referenceId,
         };
 
         message.ApplicationProperties.Add("ReferenceId", Guid.NewGuid().ToString());

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Energinet.DataHub.Wholesale.Events.Application.Workers;
@@ -41,7 +42,7 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
         var messageHasBeenReceivedEvent = new AutoResetEvent(false);
         // ProcessAsync is expected to trigger when a service bus message has been received.
         handlerMock
-            .Setup(handler => handler.ProcessAsync(It.IsAny<object>(), It.IsAny<CancellationToken>()))
+            .Setup(handler => handler.ProcessAsync(It.IsAny<ServiceBusReceivedMessage>(), It.IsAny<CancellationToken>()))
             .Callback(() =>
             {
                 messageHasBeenReceivedEvent.Set();
