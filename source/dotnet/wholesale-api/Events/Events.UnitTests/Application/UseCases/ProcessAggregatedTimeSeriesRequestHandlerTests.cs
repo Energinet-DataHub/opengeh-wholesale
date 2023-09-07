@@ -32,23 +32,30 @@ public class ProcessAggregatedTimeSeriesRequestHandlerTests
     public async Task ProcessAsync_WithEmptyRequest_SendsRejectedEdiMessage(
         [Frozen] Mock<ICalculationResultQueries> calculationResultQueriesMock,
         [Frozen] Mock<IEdiClient> senderMock,
-        [Frozen] Mock<AggregatedTimeSeriesMessageFactory> aggregatedTimeSeriesMessageFactoryMock)
+        [Frozen] Mock<AggregatedTimeSeriesMessageFactory> aggregatedTimeSeriesMessageFactoryMock,
+        Mock<ServiceBusReceivedMessage> receivedMessageMock)
     {
         // Arrange
         var expectedRejectedSubject = nameof(AggregatedTimeSeriesRequestRejected);
-        var request = new object();
+        var expectedReferenceId = Guid.NewGuid().ToString();
         var sut = new AggregatedTimeSeriesRequestHandler(
             calculationResultQueriesMock.Object,
             senderMock.Object,
             aggregatedTimeSeriesMessageFactoryMock.Object);
 
         // Act
-        await sut.ProcessAsync(request, CancellationToken.None);
+        await sut.ProcessAsync(
+            receivedMessageMock.Object,
+            expectedReferenceId,
+            CancellationToken.None);
 
         // Assert
         senderMock.Verify(
             bus => bus.SendAsync(
-            It.Is<ServiceBusMessage>(message => message.Subject.Equals(expectedRejectedSubject)),
+            It.Is<ServiceBusMessage>(message =>
+                message.Subject.Equals(expectedRejectedSubject)
+                && message.ApplicationProperties.ContainsKey("ReferenceId")
+                && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
             It.IsAny<CancellationToken>()),
             Times.Once);
     }
