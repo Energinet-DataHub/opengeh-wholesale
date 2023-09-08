@@ -27,6 +27,7 @@ from package.calculation_input.schemas import metering_point_period_schema, char
 from package.constants import Colname
 from pyspark.sql.types import StructType
 from pyspark.sql.utils import AnalysisException
+from pyspark.sql.functions import lit
 
 
 def _create_row(
@@ -133,9 +134,10 @@ def test__exception(
     row = _create_row(spark)
     sut = CalculationInputReader(spark)
     df = spark.createDataFrame(data=[row], schema=expectedschema)
+    df = df.withColumn("test", lit("test"))
 
     # Act & Assert
-    with pytest.raises(AnalysisException) as exc:
+    with pytest.raises(AnalysisException) as exception:
         with mock.patch.object(sut, "_read_table", return_value=df):
             sut.read_metering_point_periods()
-    assert "Schema mismatch" in str(exc.value)
+    assert "Schema mismatch" in str(exception.value)
