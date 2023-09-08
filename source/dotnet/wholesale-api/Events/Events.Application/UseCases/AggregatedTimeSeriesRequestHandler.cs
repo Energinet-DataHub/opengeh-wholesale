@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
 
@@ -22,24 +23,31 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
     private readonly ICalculationResultQueries _calculationResultQueries;
     private readonly IEdiClient _ediClient;
     private readonly IAggregatedTimeSeriesMessageFactory _aggregatedTimeSeriesMessageFactory;
+    private readonly IAggregatedTimeSeriesRequestMessageParser _aggregatedTimeSeriesRequestMessageParser;
 
     public AggregatedTimeSeriesRequestHandler(
         ICalculationResultQueries calculationResultQueries,
         IEdiClient ediClient,
+        IAggregatedTimeSeriesRequestMessageParser aggregatedTimeSeriesRequestMessageParser,
         IAggregatedTimeSeriesMessageFactory aggregatedTimeSeriesMessageFactory)
     {
         _calculationResultQueries = calculationResultQueries;
         _ediClient = ediClient;
+        _aggregatedTimeSeriesRequestMessageParser = aggregatedTimeSeriesRequestMessageParser;
         _aggregatedTimeSeriesMessageFactory = aggregatedTimeSeriesMessageFactory;
     }
 
-    public async Task ProcessAsync(object request, CancellationToken cancellationToken)
+    public async Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken)
     {
         // create the request from the protobuf message
+        var aggregatedTimeSeriesRequestMessage = _aggregatedTimeSeriesRequestMessageParser.Parse(receivedMessage);
         // call the query service
         var result = new List<object>();
         // create the response
-        var message = _aggregatedTimeSeriesMessageFactory.Create(result);
+        var message = _aggregatedTimeSeriesMessageFactory.Create(
+            result,
+            referenceId,
+            isRejected: aggregatedTimeSeriesRequestMessage.TimeSeriesType != TimeSeriesType.Production);
 
         // send the response to EDI inbox.
         await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
