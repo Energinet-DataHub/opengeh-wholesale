@@ -70,7 +70,7 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
     private AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea? MapAggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea(
         AggregatedTimeSeriesRequestContract aggregatedTimeSeriesRequest)
     {
-        if (aggregatedTimeSeriesRequest.AggregationLevelCase == Edi.Requests.AggregatedTimeSeriesRequest
+        if (aggregatedTimeSeriesRequest.AggregationLevelCase != Edi.Requests.AggregatedTimeSeriesRequest
                 .AggregationLevelOneofCase.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea)
             return null;
 
@@ -83,7 +83,7 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
     private AggregationPerBalanceResponsiblePartyPerGridArea? MapAggregationPerBalanceResponsiblePartyPerGridArea(
         AggregatedTimeSeriesRequestContract aggregatedTimeSeriesRequest)
     {
-        if (aggregatedTimeSeriesRequest.AggregationLevelCase == Edi.Requests.AggregatedTimeSeriesRequest
+        if (aggregatedTimeSeriesRequest.AggregationLevelCase != Edi.Requests.AggregatedTimeSeriesRequest
                 .AggregationLevelOneofCase.AggregationPerBalanceresponsiblepartyPerGridarea)
             return null;
 
@@ -96,7 +96,7 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
     private AggregationPerEnergySupplierPerGridArea? MapAggregationPerEnergySupplierPerGridArea(
         AggregatedTimeSeriesRequestContract aggregatedTimeSeriesRequest)
     {
-        if (aggregatedTimeSeriesRequest.AggregationLevelCase == Edi.Requests.AggregatedTimeSeriesRequest
+        if (aggregatedTimeSeriesRequest.AggregationLevelCase != Edi.Requests.AggregatedTimeSeriesRequest
                 .AggregationLevelOneofCase.AggregationPerEnergysupplierPerGridarea)
             return null;
 
