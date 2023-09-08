@@ -22,6 +22,9 @@ from package.codelists import (
 )
 from package.constants import Colname
 from package.infrastructure import paths
+from pyspark.sql.types import StructType
+from pyspark.sql.utils import AnalysisException
+from .schemas import charge_price_points_schema, metering_point_period_schema
 
 
 class CalculationInputReader:
@@ -33,6 +36,7 @@ class CalculationInputReader:
 
     def read_metering_point_periods(self) -> DataFrame:
         df = self._read_table(f"{paths.INPUT_DATABASE_NAME}.{paths.METERING_POINT_PERIODS_TABLE_NAME}")
+        self._throw_exception_if_schema_mismatch(df, metering_point_period_schema)
         df = self._fix_settlement_method(df)
         df = self._fix_metering_point_type(df)
         return df
@@ -90,3 +94,7 @@ class CalculationInputReader:
 
     def _add_charge_key_column(self, charge_df: DataFrame) -> DataFrame:
         return charge_df.withColumn(Colname.charge_key, concat_ws("-", col(Colname.charge_id), col(Colname.charge_owner), col(Colname.charge_type)))
+
+    def _throw_exception_if_schema_mismatch(self, df: DataFrame, schema: StructType) -> None:
+        if df.schema != schema:
+            raise AnalysisException(f"Schema mismatch error. Got {df.schema} expected {schema}")

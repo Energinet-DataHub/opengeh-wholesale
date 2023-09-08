@@ -23,8 +23,9 @@ from package.codelists import (
     SettlementMethod,
 )
 from package.calculation_input import CalculationInputReader
-from package.calculation_input.schemas import metering_point_period_schema
+from package.calculation_input.schemas import metering_point_period_schema, charge_price_points_schema
 from package.constants import Colname
+from pyspark.sql.types import StructType
 
 
 def _create_row(
@@ -101,3 +102,20 @@ def test___read_metering_point_periods__returns_df_with_correct_settlemet_method
 
     # Assert
     assert actual.collect()[0][Colname.settlement_method] == expected.value
+
+
+@pytest.mark.parametrize("expectedschema", [
+    [metering_point_period_schema],
+])
+def test___read_metering_point_periods__returns_df_with_correct_settlemet_methods2(
+        spark: SparkSession,
+        expectedschema: StructType) -> None:
+
+    # Arrange
+    row = _create_row(spark)
+    sut = CalculationInputReader(spark)
+    df = spark.createDataFrame(data=[row], schema=expectedschema)
+
+    # Act & Assert
+    with mock.patch.object(sut, "_read_table", return_value=df):
+        sut.read_metering_point_periods()
