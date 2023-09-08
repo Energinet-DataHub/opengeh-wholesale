@@ -14,10 +14,10 @@ module "apima_timeseriesapi" {
   logger_verbosity           = "verbose"
   path                       = "timeseriesapi"
   backend_service_url        = "https://${module.app_time_series_api.default_hostname}"
-  # import = {
-  #   content_format = "openapi+json"
-  #   content_value  = data.local_file.swagger_file.content
-  # }
+  import = {
+    content_format = "openapi+json"
+    content_value  = data.local_file.swagger_file.content
+  }
   policies = [
     {
       xml_content = <<XML
@@ -54,6 +54,6 @@ module "apima_timeseriesapi" {
   ]
 }
 
-# data "local_file" "swagger_file" {
-#   filename = "${path.module}/../../swagger.json"
-# }
+data "local_file" "swagger_file" {
+  filename = "${path.module}/../../swagger.json"
+}
