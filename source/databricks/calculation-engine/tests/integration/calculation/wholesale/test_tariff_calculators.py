@@ -14,6 +14,7 @@
 
 from decimal import Decimal
 from datetime import datetime, timedelta
+import uuid
 from pyspark.sql import SparkSession, DataFrame
 import pytest
 from typing import Any, List, Union
@@ -44,6 +45,7 @@ DEFAULT_METERING_POINT_ID = "123456789012345678901234567"
 DEFAULT_METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
 DEFAULT_SETTLEMENT_METHOD = SettlementMethod.FLEX
 DEFAULT_QUANTITY = Decimal("1.005")
+DEFAULT_QUALITY = ChargeQuality.CALCULATED
 
 
 def _create_tariff_hour_row(
@@ -58,6 +60,7 @@ def _create_tariff_hour_row(
     settlement_method: Union[SettlementMethod, None] = DEFAULT_SETTLEMENT_METHOD,
     grid_area: str = DEFAULT_GRID_AREA,
     quantity: Decimal = DEFAULT_QUANTITY,
+    quality: ChargeQuality = DEFAULT_QUALITY,
 ) -> dict:
     row = {
         Colname.charge_key: charge_key or f"{charge_id}-{ChargeType.TARIFF.value}-{charge_owner}",
@@ -74,6 +77,7 @@ def _create_tariff_hour_row(
         Colname.settlement_method: settlement_method.value if settlement_method else None,
         Colname.grid_area: grid_area,
         Colname.quantity: quantity,
+        Colname.qualities: [quality.value],
     }
 
     return row
@@ -118,7 +122,7 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_correct_columns(
     assert Colname.charge_count in actual.columns
     assert Colname.total_amount in actual.columns
     assert Colname.unit in actual.columns
-    assert Colname.quality in actual.columns
+    assert Colname.qualities in actual.columns
 
 
 def test__calculate_tariff_price_per_ga_co_es__returns_df_with_expected_values(
@@ -156,7 +160,26 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_expected_values(
     assert actual_row[Colname.charge_count] == 3
     assert actual_row[Colname.total_amount] == Decimal("6.030015")  # 3 * DEFAULT_CHARGE_PRICE * DEFAULT_QUANTITY rounded to 6 decimals
     assert actual_row[Colname.unit] == ChargeUnit.KWH.value
-    assert actual_row[Colname.quality] == ChargeQuality.CALCULATED.value
+    assert actual_row[Colname.qualities] == [ChargeQuality.CALCULATED.value]
+
+
+def test__calculate_tariff_price_per_ga_co_es__returns_all_qualities(
+    spark: SparkSession,
+) -> None:
+    # Arrange: A number of rows with different qualities. All rows should be aggregated into a single row containing all the qualities.
+    expected_qualities = [ChargeQuality.CALCULATED, ChargeQuality.ESTIMATED, ChargeQuality.MEASURED]
+    expected_quality_values = [quality.value for quality in expected_qualities]
+
+    rows = [_create_tariff_hour_row(metering_point_id=str(uuid.uuid4()), quality=quality) for quality in expected_qualities]
+    tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
+
+    # Act
+    actual = calculate_tariff_price_per_ga_co_es(tariffs)
+
+    # Assert
+    actual_row = actual.collect()[0]
+    actual_qualities = actual_row[Colname.qualities]
+    assert set(actual_qualities) == set(expected_quality_values)
 
 
 @pytest.mark.parametrize(

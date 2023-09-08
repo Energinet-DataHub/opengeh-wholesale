@@ -23,4 +23,3 @@ class ResultColumnNames:
     energy_supplier_id = "energy_supplier_id"
     time = "time"
     quantity = "quantity"
-    quantity_quality = "quantity_quality"

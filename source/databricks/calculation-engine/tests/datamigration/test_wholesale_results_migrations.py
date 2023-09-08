@@ -14,8 +14,9 @@
 
 from datetime import datetime
 from decimal import Decimal
+from typing import Union
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import lit, col
+from pyspark.sql.functions import array, col, lit
 import pytest
 import uuid
 
@@ -42,7 +43,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
         WholesaleResultColumnNames.grid_area: "543",
         WholesaleResultColumnNames.energy_supplier_id: "1234567890123",
         WholesaleResultColumnNames.quantity: Decimal("1.123"),
-        WholesaleResultColumnNames.quantity_quality: "missing",
+        WholesaleResultColumnNames.quantity_qualities: ["missing"],
         WholesaleResultColumnNames.time: datetime(2020, 1, 1, 0, 0),
         WholesaleResultColumnNames.quantity_unit: "kWh",
         WholesaleResultColumnNames.resolution: "P1D",
@@ -74,8 +75,9 @@ def _create_df(spark: SparkSession) -> DataFrame:
         (WholesaleResultColumnNames.energy_supplier_id, "neither-16-nor-13-digits-long"),
         (WholesaleResultColumnNames.quantity_unit, None),
         (WholesaleResultColumnNames.quantity_unit, "foo"),
-        (WholesaleResultColumnNames.quantity_quality, None),
-        (WholesaleResultColumnNames.quantity_quality, "foo"),
+        (WholesaleResultColumnNames.quantity_qualities, None),
+        (WholesaleResultColumnNames.quantity_qualities, []),
+        (WholesaleResultColumnNames.quantity_qualities, ["foo"]),
         (WholesaleResultColumnNames.time, None),
         (WholesaleResultColumnNames.resolution, None),
         (WholesaleResultColumnNames.resolution, "foo"),
@@ -87,12 +89,16 @@ def _create_df(spark: SparkSession) -> DataFrame:
 def test__migrated_table_rejects_invalid_data(
     spark: SparkSession,
     column_name: str,
-    invalid_column_value: str,
+    invalid_column_value: Union[str, list],
     migrations_executed: None,
 ) -> None:
     # Arrange
     results_df = _create_df(spark)
-    invalid_df = results_df.withColumn(column_name, lit(invalid_column_value))
+
+    if isinstance(invalid_column_value, list):
+        invalid_df = results_df.withColumn(column_name, array(*map(lit, invalid_column_value)))
+    else:
+        invalid_df = results_df.withColumn(column_name, lit(invalid_column_value))
 
     # Act
     with pytest.raises(Exception) as ex:
@@ -134,7 +140,7 @@ actor_eic = "1234567890123456"
         (WholesaleResultColumnNames.quantity, max_18_3_decimal),
         (WholesaleResultColumnNames.quantity, min_18_3_decimal),
         (WholesaleResultColumnNames.quantity_unit, "kWh"),
-        (WholesaleResultColumnNames.quantity_quality, "missing"),
+        (WholesaleResultColumnNames.quantity_qualities, ["missing", "estimated"]),
         (WholesaleResultColumnNames.time, datetime(2020, 1, 1, 0, 0)),
         (WholesaleResultColumnNames.resolution, "P1D"),
         (WholesaleResultColumnNames.metering_point_type, None),
@@ -156,12 +162,16 @@ actor_eic = "1234567890123456"
 def test__migrated_table_accepts_valid_data(
     spark: SparkSession,
     column_name: str,
-    column_value: str,
+    column_value: Union[str, list],
     migrations_executed: None,
 ) -> None:
     # Arrange
     result_df = _create_df(spark)
-    result_df = result_df.withColumn(column_name, lit(column_value))
+
+    if isinstance(column_value, list):
+        result_df = result_df.withColumn(column_name, array(*map(lit, column_value)))
+    else:
+        result_df = result_df.withColumn(column_name, lit(column_value))
 
     # Act and assert: Expectation is that no exception is raised
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
@@ -178,7 +188,7 @@ def test__migrated_table_accepts_valid_data(
             ProcessType.SECOND_CORRECTION_SETTLEMENT.value,
             ProcessType.THIRD_CORRECTION_SETTLEMENT.value]],
         *[(WholesaleResultColumnNames.quantity_unit, x.value) for x in ChargeUnit],
-        *[(WholesaleResultColumnNames.quantity_quality, x.value) for x in ChargeQuality],
+        *[(WholesaleResultColumnNames.quantity_qualities, [x.value]) for x in ChargeQuality],
         *[(WholesaleResultColumnNames.resolution, x.value) for x in ChargeResolution],
         *[(WholesaleResultColumnNames.metering_point_type, x.value) for x in MeteringPointType],
         *[(WholesaleResultColumnNames.settlement_method, x.value) for x in SettlementMethod],
@@ -195,7 +205,11 @@ def test__migrated_table_accepts_enum_value(
 
     # Arrange
     result_df = _create_df(spark)
-    result_df = result_df.withColumn(column_name, lit(column_value))
+
+    if isinstance(column_value, list):
+        result_df = result_df.withColumn(column_name, array(*map(lit, column_value)))
+    else:
+        result_df = result_df.withColumn(column_name, lit(column_value))
 
     # Act and assert: Expectation is that no exception is raised
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
