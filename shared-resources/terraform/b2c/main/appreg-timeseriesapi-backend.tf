@@ -15,7 +15,7 @@ resource "azuread_application" "backend_timeseriesapi_app" {
     id                   = random_uuid.backend_timeseriesapi_app_role.result
     value                = "eloverblik"
     display_name         = "ElOverblik"
-    description          = "An application scope representing ElOverblik."
+    description          = "TimeSeriesApi backend Application Scope for ElOverblik."
   }
 }
 
