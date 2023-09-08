@@ -38,6 +38,7 @@ public class ProcessAggregatedTimeSeriesRequestHandlerTests
     public async Task ProcessAsync_WithTotalProductionPerGridAreaRequest_SendsAcceptedEdiMessage(
         [Frozen] Mock<ICalculationResultQueries> calculationResultQueriesMock,
         [Frozen] Mock<IEdiClient> senderMock,
+        [Frozen] Mock<AggregatedTimeSeriesRequestMessageParser> aggregatedTimeSeriesRequestMessageParseMock,
         [Frozen] Mock<AggregatedTimeSeriesMessageFactory> aggregatedTimeSeriesMessageFactoryMock)
     {
         // Arrange
@@ -62,6 +63,7 @@ public class ProcessAggregatedTimeSeriesRequestHandlerTests
         var sut = new AggregatedTimeSeriesRequestHandler(
             calculationResultQueriesMock.Object,
             senderMock.Object,
+            aggregatedTimeSeriesRequestMessageParseMock.Object,
             aggregatedTimeSeriesMessageFactoryMock.Object);
 
         // Act
