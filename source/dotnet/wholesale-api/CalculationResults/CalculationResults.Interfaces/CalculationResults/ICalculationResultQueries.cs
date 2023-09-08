@@ -27,5 +27,5 @@ public interface ICalculationResultQueries
     /// Gets all result for a given request.
     /// </summary>
     /// <param name="request"></param>
-    IAsyncEnumerable<CalculationResult> GetAsync(CalculationResultRequest request);
+    IAsyncEnumerable<CalculationResult> GetAsync(object request);
 }

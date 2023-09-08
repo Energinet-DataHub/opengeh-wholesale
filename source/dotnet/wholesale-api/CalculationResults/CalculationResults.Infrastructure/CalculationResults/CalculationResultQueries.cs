@@ -76,7 +76,7 @@ public class CalculationResultQueries : ICalculationResultQueries
         _logger.LogDebug("Fetched all {ResultCount} results for batch {BatchId}", resultCount, batchId);
     }
 
-    public async IAsyncEnumerable<CalculationResult> GetAsync(CalculationResultRequest request)
+    public async IAsyncEnumerable<CalculationResult> GetAsync(object request)
     {
         var sql = CreateRequestSql(request);
         var timeSeriesPoints = new List<TimeSeriesPoint>();
@@ -107,7 +107,7 @@ public class CalculationResultQueries : ICalculationResultQueries
         _logger.LogDebug("Fetched all {ResultCount} results", resultCount);
     }
 
-    private string CreateRequestSql(CalculationResultRequest request)
+    private string CreateRequestSql(dynamic request)
     {
         return $@"
 SELECT {string.Join(", ", SqlColumnNames)}

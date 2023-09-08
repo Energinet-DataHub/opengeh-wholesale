@@ -91,15 +91,17 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
         actual.Count.Should().BeGreaterThan(0);
     }
 
-    private CalculationResultRequest CreateRequest(
+    private dynamic CreateRequest(
         TimeSeriesType? timeSeriesType = null,
         Instant? startOfPeriod = null,
         Instant? endOfPeriod = null)
     {
-        return new CalculationResultRequest(
-            timeSeriesType ?? TimeSeriesType.Production,
-            startOfPeriod ?? Instant.FromUtc(2020, 1, 1, 1, 1),
-            endOfPeriod ?? Instant.FromUtc(2020, 1, 2, 1, 1));
+        return new
+        {
+            TimeSeriesType = timeSeriesType ?? TimeSeriesType.Production,
+            StartOfPeriod = startOfPeriod ?? Instant.FromUtc(2020, 1, 1, 1, 1),
+            EndOfPeriod = endOfPeriod ?? Instant.FromUtc(2020, 1, 2, 1, 1),
+        };
     }
 
     private async Task AddCreatedRowsInArbitraryOrderAsync(IOptions<DeltaTableOptions> options)
