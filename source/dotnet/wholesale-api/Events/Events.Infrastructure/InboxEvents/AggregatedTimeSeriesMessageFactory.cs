@@ -18,33 +18,27 @@ using Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using NodaTime.Serialization.Protobuf;
-using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
-using Period = Energinet.DataHub.Edi.Responses.Period;
-using TimeSeriesType = Energinet.DataHub.Edi.Responses.TimeSeriesType;
+using AggregatedTimeSeriesRequestContract = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
+using PeriodContract = Energinet.DataHub.Edi.Responses.Period;
+using TimeSeriesTypeContract = Energinet.DataHub.Edi.Responses.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.InboxEvents;
 
 public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFactory
 {
-    public Application.InboxEvents.AggregatedTimeSeriesRequest GetAggregatedTimeSeriesRequest(ServiceBusReceivedMessage request)
+    public AggregatedTimeSeriesRequest GetAggregatedTimeSeriesRequest(ServiceBusReceivedMessage request)
     {
-        var aggregatedTimeSeriesRequest = AggregatedTimeSeriesRequest.Parser.ParseFrom(request.Body);
+        var aggregatedTimeSeriesRequest = AggregatedTimeSeriesRequestContract.Parser.ParseFrom(request.Body);
 
         if (aggregatedTimeSeriesRequest.AggregationLevelCase ==
-            AggregatedTimeSeriesRequest.AggregationLevelOneofCase.None)
+            AggregatedTimeSeriesRequestContract.AggregationLevelOneofCase.None)
             throw new InvalidOperationException("Unknown aggregation level");
 
-        return new Energinet.DataHub.Wholesale.Events.Application.InboxEvents.AggregatedTimeSeriesRequest(
-            MapPeriod(aggregatedTimeSeriesRequest.Period),
-            MapTimeSeriesType(aggregatedTimeSeriesRequest.TimeSeriesType),
-            aggregatedTimeSeriesRequest.AggregationLevelCase == AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerGridarea ? MapAggregationPerGridArea(aggregatedTimeSeriesRequest.AggregationPerGridarea) : null,
-            aggregatedTimeSeriesRequest.AggregationLevelCase == AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerEnergysupplierPerGridarea ? MapAggregationPerEnergySupplierPerGridArea(aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerGridarea) : null,
-            aggregatedTimeSeriesRequest.AggregationLevelCase == AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerBalanceresponsiblepartyPerGridarea ? MapAggregationPerBalanceResponsiblePartyPerGridArea(aggregatedTimeSeriesRequest.AggregationPerBalanceresponsiblepartyPerGridarea) : null,
-            aggregatedTimeSeriesRequest.AggregationLevelCase == AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea ? MapAggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea(aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea) : null);
+        return MapAggregatedTimeSeriesRequest(aggregatedTimeSeriesRequest);
     }
 
     /// <summary>
-    /// THIS IS ALL MOCKED DATA
+    /// THIS IS RETURNING MOCKED DATA
     /// </summary>
     public ServiceBusMessage CreateResponse(List<object> aggregatedTimeSeries, string referenceId, bool isRejected)
     {
@@ -60,6 +54,17 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
 
         message.ApplicationProperties.Add("ReferenceId", referenceId);
         return message;
+    }
+
+    private AggregatedTimeSeriesRequest MapAggregatedTimeSeriesRequest(AggregatedTimeSeriesRequestContract aggregatedTimeSeriesRequest)
+    {
+        return new AggregatedTimeSeriesRequest(
+            MapPeriod(aggregatedTimeSeriesRequest.Period),
+            MapTimeSeriesType(aggregatedTimeSeriesRequest.TimeSeriesType),
+            aggregatedTimeSeriesRequest.AggregationLevelCase == Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerGridarea ? MapAggregationPerGridArea(aggregatedTimeSeriesRequest.AggregationPerGridarea) : null,
+            aggregatedTimeSeriesRequest.AggregationLevelCase == Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerEnergysupplierPerGridarea ? MapAggregationPerEnergySupplierPerGridArea(aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerGridarea) : null,
+            aggregatedTimeSeriesRequest.AggregationLevelCase == Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerBalanceresponsiblepartyPerGridarea ? MapAggregationPerBalanceResponsiblePartyPerGridArea(aggregatedTimeSeriesRequest.AggregationPerBalanceresponsiblepartyPerGridarea) : null,
+            aggregatedTimeSeriesRequest.AggregationLevelCase == Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea ? MapAggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea(aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea) : null);
     }
 
     private AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea MapAggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea(
@@ -98,12 +103,12 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
     {
         return timeSeriesType switch
         {
-            Edi.Requests.TimeSeriesType.Production => Energinet.DataHub.Wholesale.Events.Application.InboxEvents.TimeSeriesType.Production,
-            Edi.Requests.TimeSeriesType.FlexConsumption => Energinet.DataHub.Wholesale.Events.Application.InboxEvents.TimeSeriesType.FlexConsumption,
-            Edi.Requests.TimeSeriesType.NonProfiledConsumption => Energinet.DataHub.Wholesale.Events.Application.InboxEvents.TimeSeriesType.NonProfiledConsumption,
-            Edi.Requests.TimeSeriesType.NetExchangePerGa => Energinet.DataHub.Wholesale.Events.Application.InboxEvents.TimeSeriesType.NetExchangePerGa,
-            Edi.Requests.TimeSeriesType.NetExchangePerNeighboringGa => Energinet.DataHub.Wholesale.Events.Application.InboxEvents.TimeSeriesType.NetExchangePerNeighboringGa,
-            Edi.Requests.TimeSeriesType.TotalConsumption => Energinet.DataHub.Wholesale.Events.Application.InboxEvents.TimeSeriesType.TotalConsumption,
+            Edi.Requests.TimeSeriesType.Production => Application.InboxEvents.TimeSeriesType.Production,
+            Edi.Requests.TimeSeriesType.FlexConsumption => Application.InboxEvents.TimeSeriesType.FlexConsumption,
+            Edi.Requests.TimeSeriesType.NonProfiledConsumption => Application.InboxEvents.TimeSeriesType.NonProfiledConsumption,
+            Edi.Requests.TimeSeriesType.NetExchangePerGa => Application.InboxEvents.TimeSeriesType.NetExchangePerGa,
+            Edi.Requests.TimeSeriesType.NetExchangePerNeighboringGa => Application.InboxEvents.TimeSeriesType.NetExchangePerNeighboringGa,
+            Edi.Requests.TimeSeriesType.TotalConsumption => Application.InboxEvents.TimeSeriesType.TotalConsumption,
             Edi.Requests.TimeSeriesType.Unspecified => throw new InvalidOperationException("Unknown time series type"),
             _ => throw new InvalidOperationException("Unknown time series type"),
         };
@@ -147,7 +152,7 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
             Time = new Timestamp() { Seconds = 1, },
         };
 
-        var period = new Period()
+        var period = new PeriodContract()
         {
             StartOfPeriod = new Timestamp() { Seconds = 1, },
             EndOfPeriod = new Timestamp() { Seconds = 2, },
@@ -160,7 +165,7 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
             QuantityUnit = QuantityUnit.Kwh,
             Period = period,
             TimeSeriesPoints = { point },
-            TimeSeriesType = TimeSeriesType.Production,
+            TimeSeriesType = TimeSeriesTypeContract.Production,
         };
     }
 }

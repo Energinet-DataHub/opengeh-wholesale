@@ -14,11 +14,12 @@
 
 namespace Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
 
-public record AggregatedTimeSeriesRequest(
-    Period Period,
-    TimeSeriesType TimeSeriesType,
-    AggregationPerGridArea? AggregationPerGridArea,
-    AggregationPerEnergySupplierPerGridArea? AggregationPerEnergySupplierPerGridArea,
-    AggregationPerBalanceResponsiblePartyPerGridArea? AggregationPerBalanceResponsiblePartyPerGridArea,
-    AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea?
-        AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea);
+public enum TimeSeriesType
+{
+    NonProfiledConsumption,
+    FlexConsumption,
+    Production,
+    NetExchangePerGa,
+    NetExchangePerNeighboringGa,
+    TotalConsumption,
+}
