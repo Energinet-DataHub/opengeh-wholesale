@@ -51,8 +51,8 @@ public class AggregatedTimeSeriesRequestMessageParser : IAggregatedTimeSeriesReq
 
         return new AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea(
             aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.GridAreaCode,
-            aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.BalanceResponsiblePartyGlnOrEic,
-            aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.EnergySupplierGlnOrEic);
+            aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.BalanceResponsiblePartyId,
+            aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.EnergySupplierId);
     }
 
     private AggregationPerBalanceResponsiblePartyPerGridArea? MapAggregationPerBalanceResponsiblePartyPerGridArea(
@@ -64,8 +64,8 @@ public class AggregatedTimeSeriesRequestMessageParser : IAggregatedTimeSeriesReq
 
         return new AggregationPerBalanceResponsiblePartyPerGridArea(
             aggregatedTimeSeriesRequest.AggregationPerBalanceresponsiblepartyPerGridarea.GridAreaCode,
-            aggregatedTimeSeriesRequest.AggregationPerBalanceresponsiblepartyPerGridarea.BalanceResponsiblePartyGlnOrEic,
-            aggregatedTimeSeriesRequest.AggregationPerBalanceresponsiblepartyPerGridarea.EnergySupplierGlnOrEic);
+            aggregatedTimeSeriesRequest.AggregationPerBalanceresponsiblepartyPerGridarea.BalanceResponsiblePartyId,
+            aggregatedTimeSeriesRequest.AggregationPerBalanceresponsiblepartyPerGridarea.EnergySupplierId);
     }
 
     private AggregationPerEnergySupplierPerGridArea? MapAggregationPerEnergySupplierPerGridArea(
@@ -77,8 +77,8 @@ public class AggregatedTimeSeriesRequestMessageParser : IAggregatedTimeSeriesReq
 
         return new AggregationPerEnergySupplierPerGridArea(
             aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerGridarea.GridAreaCode,
-            aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerGridarea.BalanceResponsiblePartyGlnOrEic,
-            aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerGridarea.EnergySupplierGlnOrEic);
+            aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerGridarea.BalanceResponsiblePartyId,
+            aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerGridarea.EnergySupplierId);
     }
 
     private AggregationPerGridArea? MapAggregationPerGridArea(Edi.Requests.AggregatedTimeSeriesRequest aggregatedTimeSeriesRequest)
