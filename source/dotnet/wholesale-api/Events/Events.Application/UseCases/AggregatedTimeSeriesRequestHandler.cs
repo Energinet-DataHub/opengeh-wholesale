@@ -41,7 +41,10 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         // call the query service
         var result = new List<object>();
         // create the response
-        var message = _aggregatedTimeSeriesMessageFactory.CreateResponse(result, referenceId, true);
+        var message = _aggregatedTimeSeriesMessageFactory.CreateResponse(
+            result,
+            referenceId,
+            isRejected: aggregatedTimeSeriesRequestMessage.TimeSeriesType != TimeSeriesType.Production);
 
         // send the response to EDI inbox.
         await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);

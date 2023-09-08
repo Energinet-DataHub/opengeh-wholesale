@@ -46,9 +46,9 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
     /// <summary>
     /// THIS IS ALL MOCKED DATA
     /// </summary>
-    public ServiceBusMessage CreateResponse(List<object> aggregatedTimeSeries, string referenceId, bool rejected)
+    public ServiceBusMessage CreateResponse(List<object> aggregatedTimeSeries, string referenceId, bool isRejected)
     {
-        var body = rejected
+        var body = isRejected
             ? CreateRejectedResponse()
             : CreateAcceptedResponse();
 
