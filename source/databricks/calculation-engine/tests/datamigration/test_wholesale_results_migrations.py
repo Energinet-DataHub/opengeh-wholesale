@@ -16,7 +16,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Union
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import lit, col, array
+from pyspark.sql.functions import array, col, lit
 import pytest
 import uuid
 
@@ -94,8 +94,11 @@ def test__migrated_table_rejects_invalid_data(
 ) -> None:
     # Arrange
     results_df = _create_df(spark)
-    f = array if isinstance(invalid_column_value, list) else lit
-    invalid_df = results_df.withColumn(column_name, f(invalid_column_value))
+
+    if isinstance(invalid_column_value, list):
+        invalid_df = results_df.withColumn(column_name, array(*map(lit, invalid_column_value)))
+    else:
+        invalid_df = results_df.withColumn(column_name, lit(invalid_column_value))
 
     # Act
     with pytest.raises(Exception) as ex:
@@ -137,7 +140,7 @@ actor_eic = "1234567890123456"
         (WholesaleResultColumnNames.quantity, max_18_3_decimal),
         (WholesaleResultColumnNames.quantity, min_18_3_decimal),
         (WholesaleResultColumnNames.quantity_unit, "kWh"),
-        (WholesaleResultColumnNames.quantity_qualities, ["missing"]),
+        (WholesaleResultColumnNames.quantity_qualities, ["missing", "estimated"]),
         (WholesaleResultColumnNames.time, datetime(2020, 1, 1, 0, 0)),
         (WholesaleResultColumnNames.resolution, "P1D"),
         (WholesaleResultColumnNames.metering_point_type, None),
@@ -164,8 +167,11 @@ def test__migrated_table_accepts_valid_data(
 ) -> None:
     # Arrange
     result_df = _create_df(spark)
-    f = array if isinstance(column_value, list) else lit
-    result_df = result_df.withColumn(column_name, f(column_value))
+
+    if isinstance(column_value, list):
+        result_df = result_df.withColumn(column_name, array(*map(lit, column_value)))
+    else:
+        result_df = result_df.withColumn(column_name, lit(column_value))
 
     # Act and assert: Expectation is that no exception is raised
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
@@ -199,7 +205,11 @@ def test__migrated_table_accepts_enum_value(
 
     # Arrange
     result_df = _create_df(spark)
-    result_df = result_df.withColumn(column_name, lit(column_value))
+
+    if isinstance(column_value, list):
+        result_df = result_df.withColumn(column_name, array(*map(lit, column_value)))
+    else:
+        result_df = result_df.withColumn(column_name, lit(column_value))
 
     # Act and assert: Expectation is that no exception is raised
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(

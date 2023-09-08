@@ -28,7 +28,7 @@ GO
 -- Add new qualities constraint to check that all qualities are valid and at least one is present
 ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
     ADD CONSTRAINT quantity_qualities_chk
-    CHECK (array_size(array_except(quantity_qualities, array('missing', 'calculated', 'incomplete', 'estimated'))) = 0
+    CHECK (array_size(array_except(quantity_qualities, array('missing', 'calculated', 'measured', 'estimated'))) = 0
            AND array_size(quantity_qualities) > 0)
 GO
 
