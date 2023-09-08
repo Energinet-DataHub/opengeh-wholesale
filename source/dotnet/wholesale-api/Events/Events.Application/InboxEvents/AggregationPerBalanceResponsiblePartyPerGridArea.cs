@@ -12,17 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Messaging.ServiceBus;
-
 namespace Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
 
-public interface IAggregatedTimeSeriesMessageFactory
-{
-    /// <summary>
-    /// Creates a service bus message based on aggregated time series
-    /// </summary>
-    /// <param name="aggregatedTimeSeries"></param>
-    /// <param name="referenceId"></param>
-    /// <param name="isRejected">Temporary switch for generating accepted or rejected message</param>
-    public ServiceBusMessage Create(List<object> aggregatedTimeSeries, string referenceId, bool isRejected);
-}
+public record AggregationPerBalanceResponsiblePartyPerGridArea(string GridAreaCode, string BalanceResponsiblePartyGlnOrEic, string EnergySupplierGlnOrEic);
