@@ -15,6 +15,7 @@ from decimal import Decimal
 from datetime import datetime
 from typing import Optional
 from package.codelists import (
+    ChargeQuality,
     ChargeResolution,
     ChargeType,
     MeteringPointType,
@@ -53,7 +54,7 @@ class DataframeDefaults:
     default_metering_point_type: str = MeteringPointType.CONSUMPTION.value
     default_parent_metering_point_id: str = "1"
     default_product: str = "chargea"
-    default_quality: str = "E01"
+    default_quality: str = ChargeQuality.CALCULATED.value
     default_quantity: Decimal = Decimal("1.123")
     default_metering_point_resolution: str = MeteringPointResolution.HOUR.value
     default_settlement_method: str = SettlementMethod.FLEX.value
