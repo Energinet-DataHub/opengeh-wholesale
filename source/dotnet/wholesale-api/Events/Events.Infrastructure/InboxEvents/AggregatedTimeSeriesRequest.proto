@@ -19,7 +19,7 @@ import "google/protobuf/timestamp.proto";
 option csharp_namespace = "Energinet.DataHub.Edi.Requests";
 
 message AggregatedTimeSeriesRequest {
-  optional TimeSeriesType time_series_type = 1;
+  TimeSeriesType time_series_type = 1;
   Period period = 2;
   oneof aggregation_level {
     AggregationPerGridArea aggregation_per_gridarea = 3;
@@ -58,9 +58,9 @@ message AggregationPerEnergySupplierPerGridArea {
    */
   string grid_area_code = 1;
 
-  string BalanceResponsiblePartyGlnOrEic = 2;
+  string balance_responsible_party_id = 2;
 
-  string EnergySupplierGlnOrEic = 3;
+  string energy_supplier_id = 3;
 }
 
 message AggregationPerBalanceResponsiblePartyPerGridArea {
@@ -73,9 +73,9 @@ message AggregationPerBalanceResponsiblePartyPerGridArea {
    */
   string grid_area_code = 1;
 
-  string BalanceResponsiblePartyGlnOrEic = 2;
+  string balance_responsible_party_id = 2;
 
-  string EnergySupplierGlnOrEic = 3;
+  string energy_supplier_id = 3;
 }
 
 message AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea {
@@ -88,9 +88,9 @@ message AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea {
    */
   string grid_area_code = 1;
 
-  string BalanceResponsiblePartyGlnOrEic = 2;
+  string balance_responsible_party_id = 2;
 
-  string EnergySupplierGlnOrEic = 3;
+  string energy_supplier_id = 3;
 }
 
 enum TimeSeriesType {
