@@ -1,7 +1,7 @@
 resource "azurerm_monitor_action_group" "edi" {
   name                = "ag-edi-${lower(var.environment_short)}-${lower(var.environment_instance)}"
   resource_group_name = azurerm_resource_group.this.name
-  short_name          = "ag-ed-${lower(var.environment_short)}-${lower(var.environment_instance)}"
+  short_name          = "ag-edi"
 
   email_receiver {
     name                    = "Alerts-Edi-${lower(var.domain_name_short)}-${lower(var.environment_short)}-${lower(var.environment_instance)}"
