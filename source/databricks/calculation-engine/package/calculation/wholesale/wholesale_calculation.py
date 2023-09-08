@@ -14,7 +14,7 @@
 
 
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, when
+from pyspark.sql.functions import col, when, year, month, count, first, sum, lit
 import package.calculation.wholesale.wholesale_initializer as init
 from package.calculation.wholesale.tariff_calculators import calculate_tariff_price_per_ga_co_es
 from package.codelists import ChargeResolution, MeteringPointType
@@ -72,3 +72,38 @@ def _get_production_and_consumption_metering_points(metering_points_periods_df: 
         (col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value)
         | (col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value)
     )
+
+  
+def group_by_monthly(df: DataFrame) -> DataFrame:
+    df = df.withColumn("year", year(df["observation_time"]))
+    df = df.withColumn("month", month(df["observation_time"]))
+    agg_df = (
+        df.groupBy(
+            Colname.energy_supplier_id,
+            Colname.grid_area,
+            "year",
+            "month",
+            Colname.charge_key,
+            Colname.charge_id,
+            Colname.charge_type,
+            Colname.charge_owner,
+        )
+        .agg(
+            sum(Colname.total_amount).alias(Colname.total_amount),
+            count(Colname.charge_count).alias(Colname.charge_count),
+            first(Colname.charge_tax).alias(Colname.charge_tax),
+            lit(ChargeResolution.MONTH.value).alias(Colname.charge_resolution),
+        )
+        .select(
+            Colname.energy_supplier_id,
+            Colname.grid_area,
+            Colname.charge_key,
+            Colname.charge_id,
+            Colname.charge_type,
+            Colname.charge_owner,
+            Colname.charge_tax,
+            Colname.total_amount,
+            Colname.charge_count,
+        )
+    )
+    return agg_df

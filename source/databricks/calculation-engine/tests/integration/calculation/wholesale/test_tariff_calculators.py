@@ -15,7 +15,6 @@
 from decimal import Decimal
 from datetime import datetime, timedelta
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import year, month, count, sum, first, lit
 import pytest
 from typing import Any, List, Union
 
@@ -31,6 +30,7 @@ from package.calculation.wholesale.tariff_calculators import (
     tariff_schema,
     calculate_tariff_price_per_ga_co_es,
 )
+from package.calculation.wholesale.wholesale_calculation import group_by_monthly
 from package.constants import Colname
 
 
@@ -289,42 +289,9 @@ def test_stuff(
     tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
 
     # Act
-    actual = calculate_tariff_price_per_ga_co_es(tariffs)
-    df = actual
-    df = df.withColumn("year", year(df["observation_time"]))
-    df = df.withColumn("month", month(df["observation_time"]))
-    agg_df = (
-        df.groupBy(
-            Colname.energy_supplier_id,
-            Colname.grid_area,
-            "year",
-            "month",
-            Colname.charge_key,
-            Colname.charge_id,
-            Colname.charge_type,
-            Colname.charge_owner,
-        )
-        .agg(
-            sum(Colname.total_amount).alias(Colname.total_amount),
-            count(Colname.charge_count).alias(Colname.charge_count),
-            first(Colname.charge_tax).alias(Colname.charge_tax),
-            lit(ChargeResolution.MONTH.value).alias(Colname.charge_resolution),
-        )
-        .select(
-            Colname.energy_supplier_id,
-            Colname.grid_area,
-            Colname.charge_key,
-            Colname.charge_id,
-            Colname.charge_type,
-            Colname.charge_owner,
-            Colname.charge_tax,
-            Colname.total_amount,
-            Colname.charge_count,
-        )
-    )
-    agg_df.show()
+    actual = group_by_monthly(calculate_tariff_price_per_ga_co_es(tariffs))
 
     # Assert
-    assert agg_df.collect()[0][Colname.total_amount] == Decimal("8.040020")
-    assert agg_df.collect()[1][Colname.total_amount] == Decimal("2.010005")
+    assert actual.collect()[0][Colname.total_amount] == Decimal("8.040020")
+    assert actual.collect()[1][Colname.total_amount] == Decimal("2.010005")
     # assert actual.schema[Colname.total_amount].dataType.precision >= 1
