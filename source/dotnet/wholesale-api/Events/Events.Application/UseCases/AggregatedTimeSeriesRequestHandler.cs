@@ -23,24 +23,31 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
     private readonly ICalculationResultQueries _calculationResultQueries;
     private readonly IEdiClient _ediClient;
     private readonly IAggregatedTimeSeriesMessageFactory _aggregatedTimeSeriesMessageFactory;
+    private readonly IAggregatedTimeSeriesRequestMessageParser _aggregatedTimeSeriesRequestMessageParser;
 
     public AggregatedTimeSeriesRequestHandler(
         ICalculationResultQueries calculationResultQueries,
         IEdiClient ediClient,
+        IAggregatedTimeSeriesRequestMessageParser aggregatedTimeSeriesRequestMessageParser,
         IAggregatedTimeSeriesMessageFactory aggregatedTimeSeriesMessageFactory)
     {
         _calculationResultQueries = calculationResultQueries;
         _ediClient = ediClient;
+        _aggregatedTimeSeriesRequestMessageParser = aggregatedTimeSeriesRequestMessageParser;
         _aggregatedTimeSeriesMessageFactory = aggregatedTimeSeriesMessageFactory;
     }
 
     public async Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken)
     {
         // create the request from the protobuf message
+        var aggregatedTimeSeriesRequestMessage = _aggregatedTimeSeriesRequestMessageParser.Parse(receivedMessage);
         // call the query service
         var result = new List<object>();
         // create the response
-        var message = _aggregatedTimeSeriesMessageFactory.Create(result, referenceId);
+        var message = _aggregatedTimeSeriesMessageFactory.Create(
+            result,
+            referenceId,
+            isRejected: aggregatedTimeSeriesRequestMessage.TimeSeriesType != TimeSeriesType.Production);
 
         // send the response to EDI inbox.
         await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);

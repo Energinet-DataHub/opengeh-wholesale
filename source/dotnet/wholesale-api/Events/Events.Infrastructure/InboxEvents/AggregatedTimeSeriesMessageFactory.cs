@@ -17,19 +17,21 @@ using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
+using PeriodContract = Energinet.DataHub.Edi.Responses.Period;
+using TimeSeriesTypeContract = Energinet.DataHub.Edi.Responses.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.InboxEvents;
 
 public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFactory
 {
     /// <summary>
-    /// THIS IS ALL MOCKED DATA
+    /// THIS IS RETURNING MOCKED DATA
     /// </summary>
-    public ServiceBusMessage Create(List<object> aggregatedTimeSeries, string referenceId)
+    public ServiceBusMessage Create(List<object> aggregatedTimeSeries, string referenceId, bool isRejected)
     {
-        var body = aggregatedTimeSeries.Any()
-            ? CreateAcceptedResponse()
-            : CreateRejectedResponse();
+        var body = isRejected
+            ? CreateRejectedResponse()
+            : CreateAcceptedResponse();
 
         var message = new ServiceBusMessage()
         {
@@ -74,7 +76,7 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
             Time = new Timestamp() { Seconds = 1, },
         };
 
-        var period = new Period()
+        var period = new PeriodContract()
         {
             StartOfPeriod = new Timestamp() { Seconds = 1, },
             EndOfPeriod = new Timestamp() { Seconds = 2, },
@@ -87,7 +89,7 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
             QuantityUnit = QuantityUnit.Kwh,
             Period = period,
             TimeSeriesPoints = { point },
-            TimeSeriesType = TimeSeriesType.Production,
+            TimeSeriesType = TimeSeriesTypeContract.Production,
         };
     }
 }
