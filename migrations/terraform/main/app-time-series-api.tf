@@ -21,6 +21,12 @@ module "app_time_series_api" {
   app_settings = {
     "TimeZone" = "Europe/Copenhagen"
 
+    # Azure AD
+    "AzureAd__Instance"     = "https://login.microsoftonline.com/"
+    "AzureAd__TenantId"     = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=b2c-tenant-id)"
+    "AzureAd__ClientId"     = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=eloverblik-timeseriesapi-client-app-id)"
+    "AzureAd__ResourceId"   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-timeseriesapi-app-id)"
+
     # Databricks
     "DatabricksOptions__WorkspaceToken" = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=dbw-shared-workspace-token)"
     "DatabricksOptions__WorkspaceUrl"   = "https://${data.azurerm_key_vault_secret.dbw_databricks_workspace_url.value}"
