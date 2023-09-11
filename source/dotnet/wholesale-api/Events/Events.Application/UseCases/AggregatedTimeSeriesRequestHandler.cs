@@ -78,7 +78,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         return aggregationLevel switch
         {
             AggregationLevel.GridArea => CalculationAggregationLevel.GridArea,
-            _ => throw new InvalidOperationException("Unknown time series type"),
+            _ => throw new InvalidOperationException("Unknown aggregation level"),
         };
     }
 
