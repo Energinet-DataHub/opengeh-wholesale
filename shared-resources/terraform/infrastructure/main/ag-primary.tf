@@ -6,6 +6,7 @@ module "ag_primary" {
   environment_short    = var.environment_short
   environment_instance = var.environment_instance
   resource_group_name  = azurerm_resource_group.this.name
+  location             = azurerm_resource_group.this.location
 
   short_name             = "Primary"
   email_receiver_name    = "DevOps"

@@ -3,9 +3,10 @@ variable "subscription_id" {
   description = "Subscription that the infrastructure code is deployed into."
 }
 
-variable "resource_group_name" {
+variable "resource_group_name" { # Should be deleted when old subscriptions are deleted
   type        = string
   description = "Resource Group that the infrastructure code is deployed into."
+  default = ""
 }
 
 variable "environment_short" {

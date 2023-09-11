@@ -39,10 +39,6 @@ module "mssql_data" {
     min_capacity = 0
     max_capacity = 100
   }
-
-  depends_on = [
-    module.ag_primary
-  ]
 }
 
 resource "azurerm_mssql_firewall_rule" "github_largerunner" {
