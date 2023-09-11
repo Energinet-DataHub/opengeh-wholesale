@@ -32,6 +32,7 @@ module "func_migration" {
     WEBSITE_LOAD_CERTIFICATES                       = "*"
     StorageAccountSettings__Dh2StorageAccountUri    = "https://${module.st_dh2data.name}.blob.core.windows.net"
     StorageAccountSettings__TimeSeriesContainerName = azurerm_storage_container.dh2_timeseries_synchronization.name
-    DataHub2ClientSettings__EndpointAddress         = "https://b2b.te7.datahub.dk"
+    DataHub2ClientSettings__EndpointAddress         = "https://b2b.te7.datahub.dk",
+    FeatureManagement__DataHub2HealthCheck          = var.feature_flag_datahub2_healthcheck
   }
 }

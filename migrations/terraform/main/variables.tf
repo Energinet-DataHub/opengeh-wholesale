@@ -65,3 +65,9 @@ variable "migration_team_security_group_object_id" {
   description = "(Optional) The Object ID of the Azure AD security group containing Migrations team members."
   default     = null
 }
+
+variable "feature_flag_datahub2_healthcheck" {
+  type        = bool
+  description = "(Optional) Enables datahub2 healthcheck endpoint"
+  default     = true
+}
