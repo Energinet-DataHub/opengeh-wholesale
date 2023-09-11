@@ -14,10 +14,13 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Edi.Responses;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using PeriodContract = Energinet.DataHub.Edi.Responses.Period;
+using QuantityQuality = Energinet.DataHub.Edi.Responses.QuantityQuality;
+using TimeSeriesPoint = Energinet.DataHub.Edi.Responses.TimeSeriesPoint;
 using TimeSeriesTypeContract = Energinet.DataHub.Edi.Responses.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.InboxEvents;
@@ -27,7 +30,7 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
     /// <summary>
     /// THIS IS RETURNING MOCKED DATA
     /// </summary>
-    public ServiceBusMessage Create(List<object> aggregatedTimeSeries, string referenceId, bool isRejected)
+    public ServiceBusMessage Create(IList<CalculationResult> calculationResults, string referenceId, bool isRejected)
     {
         var body = isRejected
             ? CreateRejectedResponse()

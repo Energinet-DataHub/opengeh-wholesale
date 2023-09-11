@@ -14,7 +14,10 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
+using CalculationTimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType;
+using TimeSeriesType = Energinet.DataHub.Wholesale.Events.Application.InboxEvents.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.UseCases;
 
@@ -41,8 +44,12 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
     {
         // create the request from the protobuf message
         var aggregatedTimeSeriesRequestMessage = _aggregatedTimeSeriesRequestMessageParser.Parse(receivedMessage);
+
         // call the query service
-        var result = new List<object>();
+        var result = await GetCalculationResultsAsync(
+            aggregatedTimeSeriesRequestMessage,
+            cancellationToken).ConfigureAwait(false);
+
         // create the response
         var message = _aggregatedTimeSeriesMessageFactory.Create(
             result,
@@ -51,5 +58,31 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
 
         // send the response to EDI inbox.
         await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
+    }
+
+    private async Task<List<CalculationResult>> GetCalculationResultsAsync(
+        AggregatedTimeSeriesRequest aggregatedTimeSeriesRequestMessage,
+        CancellationToken cancellationToken)
+    {
+        var query = new CalculationResultQuery(
+            MapTimeSeriesType(aggregatedTimeSeriesRequestMessage.TimeSeriesType),
+            aggregatedTimeSeriesRequestMessage.Period.Start,
+            aggregatedTimeSeriesRequestMessage.Period.Start);
+        return await _calculationResultQueries.GetAsync(query)
+            .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+    }
+
+    private CalculationTimeSeriesType MapTimeSeriesType(TimeSeriesType timeSeriesType)
+    {
+        return timeSeriesType switch
+        {
+            TimeSeriesType.Production => CalculationTimeSeriesType.Production,
+            TimeSeriesType.FlexConsumption => CalculationTimeSeriesType.FlexConsumption,
+            TimeSeriesType.NonProfiledConsumption => CalculationTimeSeriesType.NonProfiledConsumption,
+            TimeSeriesType.NetExchangePerGa => CalculationTimeSeriesType.NetExchangePerGa,
+            TimeSeriesType.NetExchangePerNeighboringGa => CalculationTimeSeriesType.NetExchangePerNeighboringGa,
+            TimeSeriesType.TotalConsumption => CalculationTimeSeriesType.TotalConsumption,
+            _ => throw new InvalidOperationException("Unknown time series type"),
+        };
     }
 }

@@ -76,9 +76,9 @@ public class CalculationResultQueries : ICalculationResultQueries
         _logger.LogDebug("Fetched all {ResultCount} results for batch {BatchId}", resultCount, batchId);
     }
 
-    public async IAsyncEnumerable<CalculationResult> GetAsync(object request)
+    public async IAsyncEnumerable<CalculationResult> GetAsync(CalculationResultQuery query)
     {
-        var sql = CreateRequestSql(request);
+        var sql = CreateRequestSql(query);
         var timeSeriesPoints = new List<TimeSeriesPoint>();
         SqlResultRow? currentRow = null;
         var resultCount = 0;
@@ -89,7 +89,7 @@ public class CalculationResultQueries : ICalculationResultQueries
 
             if (currentRow != null && BelongsToDifferentResults(currentRow, nextRow))
             {
-                yield return CreateCalculationResult(request, currentRow, timeSeriesPoints);
+                yield return CreateCalculationResult(query, currentRow, timeSeriesPoints);
                 resultCount++;
                 timeSeriesPoints = new List<TimeSeriesPoint>();
             }
@@ -100,21 +100,21 @@ public class CalculationResultQueries : ICalculationResultQueries
 
         if (currentRow != null)
         {
-            yield return CreateCalculationResult(request, currentRow, timeSeriesPoints);
+            yield return CreateCalculationResult(query, currentRow, timeSeriesPoints);
             resultCount++;
         }
 
         _logger.LogDebug("Fetched all {ResultCount} results", resultCount);
     }
 
-    private string CreateRequestSql(dynamic request)
+    private string CreateRequestSql(CalculationResultQuery query)
     {
         return $@"
-SELECT {string.Join(", ", SqlColumnNames)}
-FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME}
-WHERE {EnergyResultColumnNames.TimeSeriesType} = '{request.TimeSeriesType}'
-ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames.Time}
-";
+    SELECT {string.Join(", ", SqlColumnNames)}
+    FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME}
+    WHERE {EnergyResultColumnNames.TimeSeriesType} = '{query.TimeSeriesType}'
+    ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames.Time}
+    ";
     }
 
     private string CreateBatchResultsSql(Guid batchId)

@@ -83,25 +83,26 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
     public async Task GetAsync_RequestFromEnergySupplierTotalProduction_ReturnsMultipleResults(
         CalculationResultQueries sut)
     {
+        // Arrange
         var request = CreateRequest();
+
         // Act
         var actual = await sut.GetAsync(request).ToListAsync();
 
+        // Assert
         actual.Should().NotBeNull();
         actual.Count.Should().BeGreaterThan(0);
     }
 
-    private dynamic CreateRequest(
+    private CalculationResultQuery CreateRequest(
         TimeSeriesType? timeSeriesType = null,
         Instant? startOfPeriod = null,
         Instant? endOfPeriod = null)
     {
-        return new
-        {
-            TimeSeriesType = timeSeriesType ?? TimeSeriesType.Production,
-            StartOfPeriod = startOfPeriod ?? Instant.FromUtc(2020, 1, 1, 1, 1),
-            EndOfPeriod = endOfPeriod ?? Instant.FromUtc(2020, 1, 2, 1, 1),
-        };
+        return new CalculationResultQuery(
+            TimeSeriesType: timeSeriesType ?? TimeSeriesType.Production,
+            StartOfPeriod: startOfPeriod ?? Instant.FromUtc(2020, 1, 1, 1, 1),
+            EndOfPeriod: endOfPeriod ?? Instant.FromUtc(2020, 1, 2, 1, 1));
     }
 
     private async Task AddCreatedRowsInArbitraryOrderAsync(IOptions<DeltaTableOptions> options)

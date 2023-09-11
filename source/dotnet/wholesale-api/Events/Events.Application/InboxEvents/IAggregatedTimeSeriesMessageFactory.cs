@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
 
@@ -21,8 +22,8 @@ public interface IAggregatedTimeSeriesMessageFactory
     /// <summary>
     /// Creates a service bus message based on aggregated time series
     /// </summary>
-    /// <param name="aggregatedTimeSeries"></param>
+    /// <param name="calculationResults"></param>
     /// <param name="referenceId"></param>
     /// <param name="isRejected">Temporary switch for generating accepted or rejected message</param>
-    public ServiceBusMessage Create(List<object> aggregatedTimeSeries, string referenceId, bool isRejected);
+    public ServiceBusMessage Create(IList<CalculationResult> calculationResults, string referenceId, bool isRejected);
 }
