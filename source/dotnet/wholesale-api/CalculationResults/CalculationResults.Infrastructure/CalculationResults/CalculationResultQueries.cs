@@ -209,6 +209,7 @@ ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames
             energySupplierId,
             balanceResponsibleId,
             timeSeriesPoints.ToArray(),
+            // Should we load this from the batch?
             ProcessType.BalanceFixing,
             query.StartOfPeriod,
             query.EndOfPeriod,

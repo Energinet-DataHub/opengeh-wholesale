@@ -80,13 +80,14 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_RequestFromTotalProduction_ReturnsMultipleResults(
+    public async Task GetAsync_RequestFromGridOperatorTotalProduction_ReturnsResult(
         Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
         Mock<IBatchesClient> batchesClientMock,
         Mock<ILogger<CalculationResultQueries>> calculationResultQueriesLoggerMock)
     {
         // Arrange
-        const int expectedResultCount = 1;
+        const int expectedResultsCount = 1;
+        const int expectedTimeSeriesPointsCount = 2;
         var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
         await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
         var sqlStatementClient = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
@@ -99,8 +100,8 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
 
         // Assert
         actual.Should().NotBeNull();
-        actual.Count.Should().Be(expectedResultCount);
-        actual.FirstOrDefault()!.TimeSeriesPoints.Count().Should().Be(2);
+        actual.Count.Should().Be(expectedResultsCount);
+        actual.FirstOrDefault()!.TimeSeriesPoints.Count().Should().Be(expectedTimeSeriesPointsCount);
     }
 
     [Theory]

@@ -44,21 +44,17 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
 
     public async Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken)
     {
-        // create the request from the protobuf message
         var aggregatedTimeSeriesRequestMessage = _aggregatedTimeSeriesRequestMessageParser.Parse(receivedMessage);
 
-        // call the query service
         var result = await GetCalculationResultsAsync(
             aggregatedTimeSeriesRequestMessage,
             cancellationToken).ConfigureAwait(false);
 
-        // create the response
         var message = _aggregatedTimeSeriesMessageFactory.Create(
             result,
             referenceId,
             isRejected: aggregatedTimeSeriesRequestMessage.TimeSeriesType != TimeSeriesType.Production);
 
-        // send the response to EDI inbox.
         await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
     }
 
@@ -69,7 +65,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         var query = new CalculationResultQuery(
             nameof(aggregatedTimeSeriesRequestMessage.TimeSeriesType),
             aggregatedTimeSeriesRequestMessage.Period.Start,
-            aggregatedTimeSeriesRequestMessage.Period.Start,
+            aggregatedTimeSeriesRequestMessage.Period.End,
             MapGridAreaCode(aggregatedTimeSeriesRequestMessage),
             MapAggregationLevel(aggregatedTimeSeriesRequestMessage.AggregationLevel));
 
@@ -77,7 +73,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
             .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
-    private CalculationAggregationLevel MapAggregationLevel(AggregationLevel aggregationLevel)
+    private static CalculationAggregationLevel MapAggregationLevel(AggregationLevel aggregationLevel)
     {
         return aggregationLevel switch
         {
@@ -86,7 +82,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         };
     }
 
-    private string MapGridAreaCode(AggregatedTimeSeriesRequest aggregatedTimeSeriesRequestMessage)
+    private static string MapGridAreaCode(AggregatedTimeSeriesRequest aggregatedTimeSeriesRequestMessage)
     {
         var gridAreaCode = aggregatedTimeSeriesRequestMessage.AggregationPerGridArea?.GridAreaCode
                               ?? aggregatedTimeSeriesRequestMessage.AggregationPerBalanceResponsiblePartyPerGridArea?.GridAreaCode
