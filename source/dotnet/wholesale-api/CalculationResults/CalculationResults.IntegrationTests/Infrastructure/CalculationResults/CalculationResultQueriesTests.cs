@@ -42,6 +42,7 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
     private const string FifthQuantity = "5.555";
     private const string SixthQuantity = "6.666";
     private readonly DatabricksSqlStatementApiFixture _fixture;
+    private static bool _ensureDataIsAddedOnce;
 
     public CalculationResultQueriesTests(DatabricksSqlStatementApiFixture fixture)
     {
@@ -146,6 +147,7 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
 
     private async Task AddCreatedRowsInArbitraryOrderAsync(IOptions<DeltaTableOptions> options)
     {
+        if (_ensureDataIsAddedOnce) return;
         const string firstCalculationResultId = "b55b6f74-386f-49eb-8b56-63fae62e4fc7";
         const string secondCalculationResultId = "c2bdceba-b58b-4190-a873-eded0ed50c20";
         const string thirdCalculationResultId = "d2bdceba-b58b-4190-a873-eded0ed50c20";
@@ -166,6 +168,8 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
 
         // mix up the order of the rows
         var rows = new List<IEnumerable<string>> { row3, row5, row1, row2, row6, row4, };
+
         await _fixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(options.Value.ENERGY_RESULTS_TABLE_NAME, rows);
+        _ensureDataIsAddedOnce = true;
     }
 }
