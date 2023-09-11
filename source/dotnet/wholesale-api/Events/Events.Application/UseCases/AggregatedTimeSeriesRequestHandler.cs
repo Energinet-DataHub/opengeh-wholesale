@@ -16,6 +16,8 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
+using AggregationLevel = Energinet.DataHub.Wholesale.Events.Application.InboxEvents.AggregationLevel;
+using CalculationAggregationLevel = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.AggregationLevel;
 using CalculationTimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType;
 using TimeSeriesType = Energinet.DataHub.Wholesale.Events.Application.InboxEvents.TimeSeriesType;
 
@@ -69,17 +71,19 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
             aggregatedTimeSeriesRequestMessage.Period.Start,
             aggregatedTimeSeriesRequestMessage.Period.Start,
             MapGridAreaCode(aggregatedTimeSeriesRequestMessage),
-            MapAggregationLevel(aggregatedTimeSeriesRequestMessage));
+            MapAggregationLevel(aggregatedTimeSeriesRequestMessage.AggregationLevel));
 
         return await _calculationResultQueries.GetAsync(query)
             .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
-    private AggregationLevel MapAggregationLevel(AggregatedTimeSeriesRequest aggregatedTimeSeriesRequestMessage)
+    private CalculationAggregationLevel MapAggregationLevel(AggregationLevel aggregationLevel)
     {
-        if (aggregatedTimeSeriesRequestMessage.AggregationPerGridArea != null)
-            return AggregationLevel.GridArea;
-        throw new InvalidOperationException($"Unknown aggregation level: {aggregatedTimeSeriesRequestMessage}");
+        return aggregationLevel switch
+        {
+            AggregationLevel.GridArea => CalculationAggregationLevel.GridArea,
+            _ => throw new InvalidOperationException("Unknown time series type"),
+        };
     }
 
     private string MapGridAreaCode(AggregatedTimeSeriesRequest aggregatedTimeSeriesRequestMessage)

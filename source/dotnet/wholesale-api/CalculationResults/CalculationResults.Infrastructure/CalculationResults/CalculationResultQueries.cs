@@ -24,7 +24,6 @@ using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Energinet.DataHub.Wholesale.Common.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using NodaTime;
 using NodaTime.Extensions;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
@@ -109,7 +108,6 @@ public class CalculationResultQueries : ICalculationResultQueries
 
     private string CreateRequestSql(CalculationResultQuery query)
     {
-        var i = query.StartOfPeriod.ToDateTimeUtc();
         return $@"
     SELECT {string.Join(", ", SqlColumnNames)}
     FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME}
@@ -192,7 +190,7 @@ ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames
     }
 
     private static CalculationResult CreateCalculationResult(
-        object request,
+        CalculationResultQuery query,
         SqlResultRow sqlResultRow,
         List<TimeSeriesPoint> timeSeriesPoints)
     {
@@ -212,8 +210,8 @@ ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames
             balanceResponsibleId,
             timeSeriesPoints.ToArray(),
             ProcessType.BalanceFixing,
-            Instant.FromUtc(2000, 1, 1, 1, 1),
-            Instant.FromUtc(2000, 1, 10, 1, 1),
+            query.StartOfPeriod,
+            query.EndOfPeriod,
             fromGridArea);
     }
 }

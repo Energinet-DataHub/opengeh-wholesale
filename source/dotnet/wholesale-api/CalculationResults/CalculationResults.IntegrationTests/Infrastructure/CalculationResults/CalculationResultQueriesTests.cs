@@ -135,9 +135,8 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
         Instant? endOfPeriod = null,
         string gridArea = "101")
     {
-        var p = nameof(TimeSeriesType.Production);
         return new CalculationResultQuery(
-            TimeSeriesType: timeSeriesType ?? p,
+            TimeSeriesType: timeSeriesType ?? nameof(TimeSeriesType.Production),
             StartOfPeriod: startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
             EndOfPeriod: endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0),
             GridArea: gridArea,

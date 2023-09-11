@@ -34,12 +34,23 @@ public class AggregatedTimeSeriesRequestMessageParser : IAggregatedTimeSeriesReq
     private AggregatedTimeSeriesRequest MapAggregatedTimeSeriesRequest(Edi.Requests.AggregatedTimeSeriesRequest aggregatedTimeSeriesRequest)
     {
         return new AggregatedTimeSeriesRequest(
+            MapAggregationLevel(aggregatedTimeSeriesRequest.AggregationLevelCase),
             MapPeriod(aggregatedTimeSeriesRequest.Period),
             MapTimeSeriesType(aggregatedTimeSeriesRequest.TimeSeriesType),
             MapAggregationPerGridArea(aggregatedTimeSeriesRequest),
             MapAggregationPerEnergySupplierPerGridArea(aggregatedTimeSeriesRequest),
             MapAggregationPerBalanceResponsiblePartyPerGridArea(aggregatedTimeSeriesRequest),
             MapAggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea(aggregatedTimeSeriesRequest));
+    }
+
+    private AggregationLevel MapAggregationLevel(Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase aggregationLevelCase)
+    {
+        return aggregationLevelCase switch
+        {
+            Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerGridarea => AggregationLevel.GridArea,
+            Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.None => throw new InvalidOperationException("Unknown aggregation level"),
+            _ => throw new InvalidOperationException("Unknown aggregation level"),
+        };
     }
 
     private AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea? MapAggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea(
