@@ -80,29 +80,67 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_RequestFromEnergySupplierTotalProduction_ReturnsMultipleResults(
-        CalculationResultQueries sut)
+    public async Task GetAsync_RequestFromTotalProduction_ReturnsMultipleResults(
+        Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
+        Mock<IBatchesClient> batchesClientMock,
+        Mock<ILogger<CalculationResultQueries>> calculationResultQueriesLoggerMock)
     {
         // Arrange
+        const int expectedResultCount = 1;
+        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
+        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
+        var sqlStatementClient = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
+
         var request = CreateRequest();
+        var sut = new CalculationResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions, calculationResultQueriesLoggerMock.Object);
 
         // Act
         var actual = await sut.GetAsync(request).ToListAsync();
 
         // Assert
         actual.Should().NotBeNull();
-        actual.Count.Should().BeGreaterThan(0);
+        actual.Count.Should().Be(expectedResultCount);
+        actual.FirstOrDefault()!.TimeSeriesPoints.Count().Should().Be(2);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetAsync_RequestFromGridOperatorTotalProductionInWrongPeriod_ReturnsNoResults(
+        Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
+        Mock<IBatchesClient> batchesClientMock,
+        Mock<ILogger<CalculationResultQueries>> calculationResultQueriesLoggerMock)
+    {
+        // Arrange
+        const int expectedResultCount = 0;
+        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
+        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
+        var sqlStatementClient = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
+
+        var request = CreateRequest(
+            startOfPeriod: Instant.FromUtc(2020, 1, 1, 1, 1),
+            endOfPeriod: Instant.FromUtc(2021, 1, 2, 1, 1));
+        var sut = new CalculationResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions, calculationResultQueriesLoggerMock.Object);
+
+        // Act
+        var actual = await sut.GetAsync(request).ToListAsync();
+
+        // Assert
+        actual.Should().NotBeNull();
+        actual.Count.Should().Be(expectedResultCount);
     }
 
     private CalculationResultQuery CreateRequest(
-        TimeSeriesType? timeSeriesType = null,
+        string? timeSeriesType = null,
         Instant? startOfPeriod = null,
-        Instant? endOfPeriod = null)
+        Instant? endOfPeriod = null,
+        string gridArea = "101")
     {
+        var p = nameof(TimeSeriesType.Production);
         return new CalculationResultQuery(
-            TimeSeriesType: timeSeriesType ?? TimeSeriesType.Production,
-            StartOfPeriod: startOfPeriod ?? Instant.FromUtc(2020, 1, 1, 1, 1),
-            EndOfPeriod: endOfPeriod ?? Instant.FromUtc(2020, 1, 2, 1, 1));
+            TimeSeriesType: timeSeriesType ?? p,
+            StartOfPeriod: startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
+            EndOfPeriod: endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0),
+            GridArea: gridArea);
     }
 
     private async Task AddCreatedRowsInArbitraryOrderAsync(IOptions<DeltaTableOptions> options)

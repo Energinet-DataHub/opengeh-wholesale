@@ -16,4 +16,8 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
-public record CalculationResultQuery(TimeSeriesType TimeSeriesType, Instant StartOfPeriod, Instant EndOfPeriod);
+public record CalculationResultQuery(
+    string TimeSeriesType,
+    Instant StartOfPeriod,
+    Instant EndOfPeriod,
+    string GridArea);

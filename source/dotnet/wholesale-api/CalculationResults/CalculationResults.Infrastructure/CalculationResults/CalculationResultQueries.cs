@@ -109,10 +109,14 @@ public class CalculationResultQueries : ICalculationResultQueries
 
     private string CreateRequestSql(CalculationResultQuery query)
     {
+        var i = query.StartOfPeriod.ToDateTimeUtc();
         return $@"
     SELECT {string.Join(", ", SqlColumnNames)}
     FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME}
-    WHERE {EnergyResultColumnNames.TimeSeriesType} = '{query.TimeSeriesType}'
+    WHERE {EnergyResultColumnNames.TimeSeriesType} = '{query.TimeSeriesType.ToLower()}'
+    AND {EnergyResultColumnNames.GridArea} = '{query.GridArea}'
+    AND {EnergyResultColumnNames.Time} >= '{query.StartOfPeriod.ToString()}'
+    AND {EnergyResultColumnNames.Time} <= '{query.EndOfPeriod.ToString()}'
     ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames.Time}
     ";
     }

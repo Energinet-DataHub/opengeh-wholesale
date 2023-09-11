@@ -65,24 +65,25 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         CancellationToken cancellationToken)
     {
         var query = new CalculationResultQuery(
-            MapTimeSeriesType(aggregatedTimeSeriesRequestMessage.TimeSeriesType),
+            nameof(aggregatedTimeSeriesRequestMessage.TimeSeriesType),
             aggregatedTimeSeriesRequestMessage.Period.Start,
-            aggregatedTimeSeriesRequestMessage.Period.Start);
+            aggregatedTimeSeriesRequestMessage.Period.Start,
+            MapGridAreaCode(aggregatedTimeSeriesRequestMessage));
+
         return await _calculationResultQueries.GetAsync(query)
             .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
-    private CalculationTimeSeriesType MapTimeSeriesType(TimeSeriesType timeSeriesType)
+    private string MapGridAreaCode(AggregatedTimeSeriesRequest aggregatedTimeSeriesRequestMessage)
     {
-        return timeSeriesType switch
-        {
-            TimeSeriesType.Production => CalculationTimeSeriesType.Production,
-            TimeSeriesType.FlexConsumption => CalculationTimeSeriesType.FlexConsumption,
-            TimeSeriesType.NonProfiledConsumption => CalculationTimeSeriesType.NonProfiledConsumption,
-            TimeSeriesType.NetExchangePerGa => CalculationTimeSeriesType.NetExchangePerGa,
-            TimeSeriesType.NetExchangePerNeighboringGa => CalculationTimeSeriesType.NetExchangePerNeighboringGa,
-            TimeSeriesType.TotalConsumption => CalculationTimeSeriesType.TotalConsumption,
-            _ => throw new InvalidOperationException("Unknown time series type"),
-        };
+        var gridAreaCode = aggregatedTimeSeriesRequestMessage.AggregationPerGridArea?.GridAreaCode
+                              ?? aggregatedTimeSeriesRequestMessage.AggregationPerBalanceResponsiblePartyPerGridArea?.GridAreaCode
+                              ?? aggregatedTimeSeriesRequestMessage.AggregationPerEnergySupplierPerGridArea?.GridAreaCode
+                              ?? aggregatedTimeSeriesRequestMessage.AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea?
+                                  .GridAreaCode;
+        if (gridAreaCode is null)
+            throw new InvalidOperationException($"Unknown grid area code: {gridAreaCode}.");
+
+        return gridAreaCode;
     }
 }
