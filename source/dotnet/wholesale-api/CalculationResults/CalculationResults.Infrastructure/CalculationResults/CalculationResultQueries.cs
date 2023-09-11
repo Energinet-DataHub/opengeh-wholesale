@@ -114,11 +114,19 @@ public class CalculationResultQueries : ICalculationResultQueries
     SELECT {string.Join(", ", SqlColumnNames)}
     FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME}
     WHERE {EnergyResultColumnNames.TimeSeriesType} = '{query.TimeSeriesType.ToLower()}'
+    AND {EnergyResultColumnNames.AggregationLevel} = '{MapAggregationLevel(query.AggregationLevel)}'
     AND {EnergyResultColumnNames.GridArea} = '{query.GridArea}'
     AND {EnergyResultColumnNames.Time} >= '{query.StartOfPeriod.ToString()}'
     AND {EnergyResultColumnNames.Time} <= '{query.EndOfPeriod.ToString()}'
     ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames.Time}
     ";
+    }
+
+    private string MapAggregationLevel(AggregationLevel queryAggregationLevel)
+    {
+        if (queryAggregationLevel == AggregationLevel.GridArea)
+            return DeltaTableAggregationLevel.GridArea;
+        throw new InvalidOperationException($"Unsupported aggregation level: {queryAggregationLevel}");
     }
 
     private string CreateBatchResultsSql(Guid batchId)

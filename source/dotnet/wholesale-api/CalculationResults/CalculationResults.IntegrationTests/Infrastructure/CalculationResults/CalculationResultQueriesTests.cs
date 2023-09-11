@@ -140,7 +140,8 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
             TimeSeriesType: timeSeriesType ?? p,
             StartOfPeriod: startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
             EndOfPeriod: endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0),
-            GridArea: gridArea);
+            GridArea: gridArea,
+            AggregationLevel: AggregationLevel.GridArea);
     }
 
     private async Task AddCreatedRowsInArbitraryOrderAsync(IOptions<DeltaTableOptions> options)

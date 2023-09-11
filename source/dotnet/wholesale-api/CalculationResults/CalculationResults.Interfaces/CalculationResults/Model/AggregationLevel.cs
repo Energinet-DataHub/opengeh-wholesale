@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using NodaTime;
-
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
-public record CalculationResultQuery(
-    string TimeSeriesType,
-    Instant StartOfPeriod,
-    Instant EndOfPeriod,
-    string GridArea,
-    AggregationLevel AggregationLevel);
+public enum AggregationLevel
+{
+    GridArea,
+    EnergySupplierAndGridArea,
+    BalanceResponsibleAndGridArea,
+    EnergySupplierAndBalanceResponsibleAndGridArea,
+}
