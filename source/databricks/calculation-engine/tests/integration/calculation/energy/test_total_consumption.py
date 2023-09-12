@@ -289,8 +289,12 @@ def agg_total_net_exchange_factory(spark, net_exchange_schema):
 
 
 def test_grid_area_total_consumption(agg_net_exchange_factory, agg_production_factory):
-    net_exchange_per_ga = create_dataframe_from_aggregation_result_schema(agg_net_exchange_factory())
-    production_ga = create_dataframe_from_aggregation_result_schema(agg_production_factory())
+    net_exchange_per_ga = create_dataframe_from_aggregation_result_schema(
+        agg_net_exchange_factory()
+    )
+    production_ga = create_dataframe_from_aggregation_result_schema(
+        agg_production_factory()
+    )
     aggregated_df = calculate_total_consumption(net_exchange_per_ga, production_ga)
     aggregated_df_collect = aggregated_df.collect()
     assert (

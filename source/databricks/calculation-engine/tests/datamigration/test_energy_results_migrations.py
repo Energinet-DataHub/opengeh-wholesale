@@ -42,9 +42,11 @@ def _create_df(spark: SparkSession) -> DataFrame:
         EnergyResultColumnNames.time_series_type: "production",
         EnergyResultColumnNames.calculation_id: "9252d7a0-4363-42cc-a2d6-e04c026523f8",
         EnergyResultColumnNames.calculation_type: "BalanceFixing",
-        EnergyResultColumnNames.calculation_execution_time_start: datetime(2020, 1, 1, 0, 0),
+        EnergyResultColumnNames.calculation_execution_time_start: datetime(
+            2020, 1, 1, 0, 0
+        ),
         EnergyResultColumnNames.from_grid_area: "843",
-        EnergyResultColumnNames.calculation_result_id: "6033ab5c-436b-44e9-8a79-90489d324e53"
+        EnergyResultColumnNames.calculation_result_id: "6033ab5c-436b-44e9-8a79-90489d324e53",
     }
     return spark.createDataFrame(data=[row], schema=energy_results_schema)
 
@@ -102,7 +104,10 @@ max_decimal = Decimal(f"{'9'*15}.999")  # Precision=18 and scale=3
 @pytest.mark.parametrize(
     "column_name,column_value",
     [
-        (EnergyResultColumnNames.calculation_id, "9252d7a0-4363-42cc-a2d6-e04c026523f8"),
+        (
+            EnergyResultColumnNames.calculation_id,
+            "9252d7a0-4363-42cc-a2d6-e04c026523f8",
+        ),
         (EnergyResultColumnNames.grid_area, "123"),
         (EnergyResultColumnNames.grid_area, "007"),
         (EnergyResultColumnNames.from_grid_area, None),
@@ -139,8 +144,14 @@ def test__migrated_table_accepts_valid_data(
     [
         *[(EnergyResultColumnNames.calculation_type, x.value) for x in ProcessType],
         *[(EnergyResultColumnNames.time_series_type, x.value) for x in TimeSeriesType],
-        *[(EnergyResultColumnNames.quantity_quality, x.value) for x in TimeSeriesQuality],
-        *[(EnergyResultColumnNames.aggregation_level, x.value) for x in AggregationLevel],
+        *[
+            (EnergyResultColumnNames.quantity_quality, x.value)
+            for x in TimeSeriesQuality
+        ],
+        *[
+            (EnergyResultColumnNames.aggregation_level, x.value)
+            for x in AggregationLevel
+        ],
     ],
 )
 def test__migrated_table_accepts_enum_value(
@@ -181,7 +192,9 @@ def test__migrated_table_does_not_round_valid_decimal(
     result_df = _create_df(spark)
     result_df = result_df.withColumn("quantity", lit(quantity))
     batch_id = str(uuid.uuid4())
-    result_df = result_df.withColumn(EnergyResultColumnNames.calculation_id, lit(batch_id))
+    result_df = result_df.withColumn(
+        EnergyResultColumnNames.calculation_id, lit(batch_id)
+    )
 
     # Act
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
@@ -189,9 +202,9 @@ def test__migrated_table_does_not_round_valid_decimal(
     )
 
     # Assert
-    actual_df = spark.read.table(f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}").where(
-        col(EnergyResultColumnNames.calculation_id) == batch_id
-    )
+    actual_df = spark.read.table(
+        f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}"
+    ).where(col(EnergyResultColumnNames.calculation_id) == batch_id)
     assert actual_df.collect()[0].quantity == quantity
 
 
@@ -205,7 +218,9 @@ def test__result_table__is_not_managed(
     Thus we check whether the table is managed by comparing its location to the location of the database/schema.
     """
     database_details = spark.sql(f"DESCRIBE DATABASE {OUTPUT_DATABASE_NAME}")
-    table_details = spark.sql(f"DESCRIBE DETAIL {OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}")
+    table_details = spark.sql(
+        f"DESCRIBE DETAIL {OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}"
+    )
 
     database_location = database_details.where(
         col("info_name") == "Location"

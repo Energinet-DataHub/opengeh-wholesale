@@ -115,7 +115,8 @@ def test__create_dataframe_from_aggregation_result_schema__can_create_a_datafram
 
 
 def test__create_dataframe_from_aggregation_result_schema__match_expected_dataframe(
-    agg_result_factory: Callable[..., DataFrame], aggregation_result_factory: Callable[..., DataFrame]
+    agg_result_factory: Callable[..., DataFrame],
+    aggregation_result_factory: Callable[..., DataFrame],
 ) -> None:
     # Arrange
     result = agg_result_factory()

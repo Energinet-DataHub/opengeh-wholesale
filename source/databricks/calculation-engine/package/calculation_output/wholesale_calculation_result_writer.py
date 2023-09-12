@@ -22,7 +22,10 @@ from package.codelists import (
     ProcessType,
 )
 from package.constants import Colname, WholesaleResultColumnNames
-from package.infrastructure.paths import OUTPUT_DATABASE_NAME, WHOLESALE_RESULT_TABLE_NAME
+from package.infrastructure.paths import (
+    OUTPUT_DATABASE_NAME,
+    WHOLESALE_RESULT_TABLE_NAME,
+)
 
 
 class WholesaleCalculationResultWriter:
@@ -59,11 +62,14 @@ class WholesaleCalculationResultWriter:
         )
 
     def _add_calculation_result_id(self, df: DataFrame) -> DataFrame:
-        df = df.withColumn(WholesaleResultColumnNames.calculation_result_id, f.expr("uuid()"))
+        df = df.withColumn(
+            WholesaleResultColumnNames.calculation_result_id, f.expr("uuid()")
+        )
         window = Window.partitionBy(self._get_column_group_for_calculation_result_id())
         return df.withColumn(
             WholesaleResultColumnNames.calculation_result_id,
-            first(col(WholesaleResultColumnNames.calculation_result_id)).over(window))
+            first(col(WholesaleResultColumnNames.calculation_result_id)).over(window),
+        )
 
     @staticmethod
     def _select_output_columns(df: DataFrame) -> DataFrame:
@@ -71,7 +77,9 @@ class WholesaleCalculationResultWriter:
         # Note: The order of the columns must match the order of the columns in the Delta table
         return df.select(
             col(Colname.batch_id).alias(WholesaleResultColumnNames.calculation_id),
-            col(Colname.batch_process_type).alias(WholesaleResultColumnNames.calculation_type),
+            col(Colname.batch_process_type).alias(
+                WholesaleResultColumnNames.calculation_type
+            ),
             col(Colname.batch_execution_time_start).alias(
                 WholesaleResultColumnNames.calculation_execution_time_start
             ),
@@ -85,8 +93,12 @@ class WholesaleCalculationResultWriter:
             col(Colname.qualities).alias(WholesaleResultColumnNames.quantity_qualities),
             col(Colname.charge_time).alias(WholesaleResultColumnNames.time),
             col(Colname.charge_resolution).alias(WholesaleResultColumnNames.resolution),
-            col(Colname.metering_point_type).alias(WholesaleResultColumnNames.metering_point_type),
-            col(Colname.settlement_method).alias(WholesaleResultColumnNames.settlement_method),
+            col(Colname.metering_point_type).alias(
+                WholesaleResultColumnNames.metering_point_type
+            ),
+            col(Colname.settlement_method).alias(
+                WholesaleResultColumnNames.settlement_method
+            ),
             col(Colname.charge_price).alias(WholesaleResultColumnNames.price),
             col(Colname.total_amount).alias(WholesaleResultColumnNames.amount),
             col(Colname.charge_tax).alias(WholesaleResultColumnNames.is_tax),

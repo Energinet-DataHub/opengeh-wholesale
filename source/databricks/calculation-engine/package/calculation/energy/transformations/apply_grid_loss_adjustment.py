@@ -13,7 +13,7 @@
 # limitations under the License.
 from package.codelists import MeteringPointType
 from package.calculation.energy.transformations import (
-    create_dataframe_from_aggregation_result_schema
+    create_dataframe_from_aggregation_result_schema,
 )
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, when, lit
@@ -28,14 +28,14 @@ adjusted_sum_quantity = "adjusted_sum_quantity"
 def adjust_production(
     production_result_df: DataFrame,
     negative_grid_loss_result_df: DataFrame,
-    grid_loss_responsible_df: DataFrame
+    grid_loss_responsible_df: DataFrame,
 ) -> DataFrame:
     return _apply_grid_loss_adjustment(
         production_result_df,
         negative_grid_loss_result_df,
         grid_loss_responsible_df,
         Colname.is_negative_grid_loss_responsible,
-        MeteringPointType.PRODUCTION.value
+        MeteringPointType.PRODUCTION.value,
     )
 
 
@@ -43,14 +43,14 @@ def adjust_production(
 def adjust_flex_consumption(
     flex_consumption_result_df: DataFrame,
     positive_grid_loss_result_df: DataFrame,
-    grid_loss_responsible_df: DataFrame
+    grid_loss_responsible_df: DataFrame,
 ) -> DataFrame:
     return _apply_grid_loss_adjustment(
         flex_consumption_result_df,
         positive_grid_loss_result_df,
         grid_loss_responsible_df,
         Colname.is_positive_grid_loss_responsible,
-        MeteringPointType.CONSUMPTION.value
+        MeteringPointType.CONSUMPTION.value,
     )
 
 
@@ -59,7 +59,7 @@ def _apply_grid_loss_adjustment(
     grid_loss_result_df: DataFrame,
     grid_loss_responsible_df: DataFrame,
     grid_loss_responsible_type_col: str,
-    metering_point_type: str
+    metering_point_type: str,
 ) -> DataFrame:
     # select columns from dataframe that contains information about metering points registered as negative or positive grid loss to use in join.
     glr_df = grid_loss_responsible_df.selectExpr(
