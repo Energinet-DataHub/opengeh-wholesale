@@ -73,8 +73,3 @@ message EnergyResult {
 
   repeated TimeSeriesPoint time_series_points = 20;
 }
-
-
-
-
-
