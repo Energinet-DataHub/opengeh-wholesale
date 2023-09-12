@@ -32,7 +32,6 @@ from package.calculation_input.schemas import (
     charge_master_data_periods_schema)
 from package.constants import Colname
 from pyspark.sql.types import StructType
-from pyspark.sql.utils import AnalysisException
 from pyspark.sql.functions import lit
 
 
@@ -212,17 +211,17 @@ def test___read_charge_master_periods__returns_df(spark: SparkSession) -> None:
         sut.read_charge_master_data_periods()
 
 
-@pytest.mark.parametrize("expectedschema", [
+@pytest.mark.parametrize("expected_schema", [
    metering_point_period_schema,
 ])
 def test__read_metering_point_periods_schema__throws_exception_when_schema_mismatch(
         spark: SparkSession,
-        expectedschema: StructType) -> None:
+        expected_schema: StructType) -> None:
 
     # Arrange
     row = _create_metering_point_period_row()
     sut = CalculationInputReader(spark)
-    df = spark.createDataFrame(data=[row], schema=expectedschema)
+    df = spark.createDataFrame(data=[row], schema=expected_schema)
     df = df.withColumn("test", lit("test"))
     is_exception_thrown = False
 
