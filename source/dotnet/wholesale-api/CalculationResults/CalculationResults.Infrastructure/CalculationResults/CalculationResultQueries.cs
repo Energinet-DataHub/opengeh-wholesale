@@ -201,6 +201,7 @@ ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames
         var gridArea = sqlResultRow[EnergyResultColumnNames.GridArea];
         var fromGridArea = sqlResultRow[EnergyResultColumnNames.FromGridArea];
         var batchId = sqlResultRow[EnergyResultColumnNames.BatchId];
+
         return new CalculationResult(
             id,
             Guid.Parse(batchId),
@@ -209,7 +210,6 @@ ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames
             energySupplierId,
             balanceResponsibleId,
             timeSeriesPoints.ToArray(),
-            // Should we load this from the batch?
             ProcessType.BalanceFixing,
             query.StartOfPeriod,
             query.EndOfPeriod,

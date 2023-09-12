@@ -42,7 +42,6 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
     private const string FifthQuantity = "5.555";
     private const string SixthQuantity = "6.666";
     private readonly DatabricksSqlStatementApiFixture _fixture;
-    private static bool _ensureDataIsAddedOnce;
 
     public CalculationResultQueriesTests(DatabricksSqlStatementApiFixture fixture)
     {
@@ -87,22 +86,30 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
         Mock<ILogger<CalculationResultQueries>> calculationResultQueriesLoggerMock)
     {
         // Arrange
-        const int expectedResultsCount = 1;
-        const int expectedTimeSeriesPointsCount = 2;
+        var gridAreaFilter = "101";
+        var timeSeriesTypeFilter = TimeSeriesType.Production;
+        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
+        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
         await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
         var sqlStatementClient = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
-
-        var request = CreateRequest();
+        var request = CreateRequest(
+            gridArea: gridAreaFilter,
+            timeSeriesType: timeSeriesTypeFilter.ToString(),
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter);
         var sut = new CalculationResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions, calculationResultQueriesLoggerMock.Object);
 
         // Act
         var actual = await sut.GetAsync(request).ToListAsync();
 
         // Assert
-        actual.Should().NotBeNull();
-        actual.Count.Should().Be(expectedResultsCount);
-        actual.FirstOrDefault()!.TimeSeriesPoints.Count().Should().Be(expectedTimeSeriesPointsCount);
+        actual.Should().NotBeEmpty();
+        actual.Should().OnlyContain(
+            result => result.GridArea.Equals(gridAreaFilter)
+              && result.PeriodStart == startOfPeriodFilter
+              && result.PeriodEnd == endOfPeriodFilter
+              && result.TimeSeriesType.Equals(timeSeriesTypeFilter));
     }
 
     [Theory]
@@ -113,7 +120,6 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
         Mock<ILogger<CalculationResultQueries>> calculationResultQueriesLoggerMock)
     {
         // Arrange
-        const int expectedResultCount = 0;
         var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
         await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
         var sqlStatementClient = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
@@ -127,8 +133,7 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
         var actual = await sut.GetAsync(request).ToListAsync();
 
         // Assert
-        actual.Should().NotBeNull();
-        actual.Count.Should().Be(expectedResultCount);
+        actual.Should().BeEmpty();
     }
 
     private CalculationResultQuery CreateRequest(
@@ -147,7 +152,6 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
 
     private async Task AddCreatedRowsInArbitraryOrderAsync(IOptions<DeltaTableOptions> options)
     {
-        if (_ensureDataIsAddedOnce) return;
         const string firstCalculationResultId = "b55b6f74-386f-49eb-8b56-63fae62e4fc7";
         const string secondCalculationResultId = "c2bdceba-b58b-4190-a873-eded0ed50c20";
         const string thirdCalculationResultId = "d2bdceba-b58b-4190-a873-eded0ed50c20";
@@ -170,6 +174,5 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
         var rows = new List<IEnumerable<string>> { row3, row5, row1, row2, row6, row4, };
 
         await _fixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(options.Value.ENERGY_RESULTS_TABLE_NAME, rows);
-        _ensureDataIsAddedOnce = true;
     }
 }
