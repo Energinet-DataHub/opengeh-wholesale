@@ -24,7 +24,13 @@ from package.constants import Colname
 from package.infrastructure import paths
 from pyspark.sql.types import StructType
 from pyspark.sql.utils import AnalysisException
-from .schemas import charge_price_points_schema, metering_point_period_schema
+from .schemas import (
+    charge_price_points_schema,
+    metering_point_period_schema,
+    time_series_point_schema,
+    charge_link_periods_schema,
+    charge_master_data_periods_schema
+)
 
 
 class CalculationInputReader:
@@ -42,25 +48,32 @@ class CalculationInputReader:
         return df
 
     def read_time_series_points(self) -> DataFrame:
-        return self._read_table(f"{paths.INPUT_DATABASE_NAME}.{paths.TIME_SERIES_POINTS_TABLE_NAME}")
+        df = self._read_table(f"{paths.INPUT_DATABASE_NAME}.{paths.TIME_SERIES_POINTS_TABLE_NAME}")
+        self._throw_exception_if_schema_mismatch(df, time_series_point_schema)
+        return df
 
     def read_charge_links_periods(self) -> DataFrame:
         df = self._read_table(f"{paths.INPUT_DATABASE_NAME}.{paths.CHARGE_LINK_PERIODS_TABLE_NAME}")
+        self._throw_exception_if_schema_mismatch(df, charge_link_periods_schema)
         df = self._add_charge_key_column(df)
         return df
 
     def read_charge_master_data_periods(self) -> DataFrame:
         df = self._read_table(f"{paths.INPUT_DATABASE_NAME}.{paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}")
+        self._throw_exception_if_schema_mismatch(df, charge_master_data_periods_schema)
         df = self._add_charge_key_column(df)
         return df
 
     def read_charge_price_points(self) -> DataFrame:
         df = self._read_table(f"{paths.INPUT_DATABASE_NAME}.{paths.CHARGE_PRICE_POINTS_TABLE_NAME}")
+        self._throw_exception_if_schema_mismatch(df, charge_price_points_schema)
         df = self._add_charge_key_column(df)
+
         return df
 
     def _read_table(self, table_name: str) -> DataFrame:
         return self.__spark.read.table(table_name)
+
 
     def _fix_metering_point_type(self, df: DataFrame) -> DataFrame:
         return df.withColumn(
@@ -95,6 +108,7 @@ class CalculationInputReader:
     def _add_charge_key_column(self, charge_df: DataFrame) -> DataFrame:
         return charge_df.withColumn(Colname.charge_key, concat_ws("-", col(Colname.charge_id), col(Colname.charge_owner), col(Colname.charge_type)))
 
-    def _throw_exception_if_schema_mismatch(self, df: DataFrame, schema: StructType) -> None:
+    @staticmethod
+    def _throw_exception_if_schema_mismatch(df: DataFrame, schema: StructType) -> None:
         if df.schema != schema:
             raise AnalysisException(f"Schema mismatch error. Got {df.schema} expected {schema}")
