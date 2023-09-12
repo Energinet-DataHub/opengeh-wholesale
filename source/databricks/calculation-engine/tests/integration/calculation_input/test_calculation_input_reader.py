@@ -33,7 +33,7 @@ from package.calculation_input.schemas import (
 from package.constants import Colname
 from pyspark.sql.types import StructType
 from pyspark.sql.functions import lit
-from pyspark.sql.utils import AnalysisException
+
 
 def _create_metering_point_period_row(
     metering_point_type: InputMeteringPointType = InputMeteringPointType.CONSUMPTION,
@@ -75,6 +75,7 @@ def _create_time_series_point_row(
         Colname.quality: "foo",
         Colname.observation_time: datetime(2022, 6, 8, 22, 0, 0),
     }
+
 
 def _create_charge_link_period_row(
 ) -> dict:
@@ -210,4 +211,5 @@ def test__read_data__throws_exception_when_schema_mismatch(
             is_exception_thrown = True
 
     # Assert
-    assert is_exception_thrown == True
+    if is_exception_thrown: assert True
+    else: assert False

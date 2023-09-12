@@ -68,12 +68,10 @@ class CalculationInputReader:
         df = self._read_table(f"{paths.INPUT_DATABASE_NAME}.{paths.CHARGE_PRICE_POINTS_TABLE_NAME}")
         self._throw_exception_if_schema_mismatch(df, charge_price_points_schema)
         df = self._add_charge_key_column(df)
-
         return df
 
     def _read_table(self, table_name: str) -> DataFrame:
         return self.__spark.read.table(table_name)
-
 
     def _fix_metering_point_type(self, df: DataFrame) -> DataFrame:
         return df.withColumn(
