@@ -49,14 +49,13 @@ public class AggregatedTimeSeriesMessageFactoryTests
 
         // Act
         var response = sut.Create(new List<CalculationResult> { calculationResult }, expectedReferenceId, isRejected: false);
-        var responseBody = AggregatedTimeSeriesRequestAccepted.Parser.ParseFrom(response.Body);
 
         // Assert
         Assert.NotNull(response);
         Assert.True(response.ApplicationProperties.ContainsKey("ReferenceId"));
         Assert.Equal(expectedReferenceId, response.ApplicationProperties["ReferenceId"].ToString());
         Assert.Equal(expectedAcceptedSubject, response.Subject);
-        Assert.IsType<AggregatedTimeSeriesRequestAccepted>(responseBody);
+        var responseBody = AggregatedTimeSeriesRequestAccepted.Parser.ParseFrom(response.Body);
         Assert.All(responseBody.Series, serie =>
         {
             Assert.Equal(_gridArea, serie.GridArea);
