@@ -21,7 +21,7 @@ using TimeSeriesPoint = Energinet.DataHub.Wholesale.Contracts.Events.TimeSeriesP
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 
-public class EnergyResultFactory
+public class EnergyResultFactory : IEnergyResultFactory
 {
     public Contracts.EnergyResult Create(EnergyResult energyResult)
     {

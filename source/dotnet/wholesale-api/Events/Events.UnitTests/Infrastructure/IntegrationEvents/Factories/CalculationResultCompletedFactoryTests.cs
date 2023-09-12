@@ -54,7 +54,7 @@ public class CalculationResultCompletedFactoryTests
         var expected = CreateExpected(calculationResult);
 
         // Act
-        var actual = sut.Create(calculationResult);
+        var actual = sut.CreateDeprecated(calculationResult);
 
         // Assert
         actual.Should().BeEquivalentTo(expected);
@@ -72,7 +72,7 @@ public class CalculationResultCompletedFactoryTests
         var expected = CreateExpected(calculationResult);
 
         // Act
-        var actual = sut.Create(calculationResult);
+        var actual = sut.CreateDeprecated(calculationResult);
 
         // Assert
         actual.Should().BeEquivalentTo(expected);
@@ -90,7 +90,7 @@ public class CalculationResultCompletedFactoryTests
         var expected = CreateExpected(calculationResult);
 
         // Act
-        var actual = sut.Create(calculationResult);
+        var actual = sut.CreateDeprecated(calculationResult);
 
         // Assert
         actual.Should().BeEquivalentTo(expected);
@@ -106,7 +106,7 @@ public class CalculationResultCompletedFactoryTests
         var expected = CreateExpected(calculationResult);
 
         // Act
-        var actual = sut.Create(calculationResult);
+        var actual = sut.CreateDeprecated(calculationResult);
 
         // Assert
         actual.Should().BeEquivalentTo(expected);

@@ -36,7 +36,7 @@ public class CalculationResultIntegrationEventFactoryTests
     {
         // Arrange
         calculationResultCompletedFactoryMock
-            .Setup(x => x.Create(energyResult))
+            .Setup(x => x.CreateDeprecated(energyResult))
             .Returns(calculationResultCompleted);
 
         // Act
