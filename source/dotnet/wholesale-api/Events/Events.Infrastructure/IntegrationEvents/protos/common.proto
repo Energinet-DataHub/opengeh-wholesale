@@ -16,7 +16,7 @@
 syntax = "proto3";
 import "google/protobuf/timestamp.proto";
 
-option csharp_namespace = "Energinet.DataHub.Wholesale.Contracts.Events";
+option csharp_namespace = "Energinet.DataHub.Wholesale.Contracts";
 
 message AggregationPerGridArea {
     /*
@@ -39,7 +39,7 @@ message AggregationPerEnergySupplierPerGridArea {
      */
     string grid_area_code = 1;
 
-    string EnergySupplierGlnOrEic = 2;
+    string EnergySupplierId = 2;
 }
 
 message AggregationPerBalanceResponsiblePartyPerGridArea {
@@ -52,7 +52,7 @@ message AggregationPerBalanceResponsiblePartyPerGridArea {
      */
     string grid_area_code = 1;
 
-    string BalanceResponsiblePartyGlnOrEic = 2;
+    string BalanceResponsibleId = 2;
 }
 
 message AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea {
@@ -65,9 +65,9 @@ message AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea {
      */
     string grid_area_code = 1;
 
-    string BalanceResponsiblePartyGlnOrEic = 2;
+    string BalanceResponsibleId = 2;
 
-    string EnergySupplierGlnOrEic = 3;
+    string EnergySupplierId = 3;
 }
 
 enum ProcessType {
