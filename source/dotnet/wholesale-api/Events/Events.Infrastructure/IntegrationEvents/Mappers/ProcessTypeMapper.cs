@@ -18,7 +18,7 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Ma
 
 public static class ProcessTypeMapper
 {
-    public static ProcessType MapProcessType(Common.Models.ProcessType processType)
+    public static ProcessType MapProcessTypeDeprecated(Common.Models.ProcessType processType)
     {
         return processType switch
         {
@@ -28,6 +28,20 @@ public static class ProcessTypeMapper
             Common.Models.ProcessType.FirstCorrectionSettlement => ProcessType.FirstCorrectionSettlement,
             Common.Models.ProcessType.SecondCorrectionSettlement => ProcessType.SecondCorrectionSettlement,
             Common.Models.ProcessType.ThirdCorrectionSettlement => ProcessType.ThirdCorrectionSettlement,
+            _ => throw new ArgumentException($"No matching 'ProcessType' for: {processType.ToString()}"),
+        };
+    }
+
+    public static Contracts.Protobuf.ProcessType MapProcessType(Common.Models.ProcessType processType)
+    {
+        return processType switch
+        {
+            Common.Models.ProcessType.Aggregation => Contracts.Protobuf.ProcessType.Aggregation,
+            Common.Models.ProcessType.BalanceFixing => Contracts.Protobuf.ProcessType.BalanceFixing,
+            Common.Models.ProcessType.WholesaleFixing => Contracts.Protobuf.ProcessType.WholesaleFixing,
+            Common.Models.ProcessType.FirstCorrectionSettlement => Contracts.Protobuf.ProcessType.FirstCorrectionSettlement,
+            Common.Models.ProcessType.SecondCorrectionSettlement => Contracts.Protobuf.ProcessType.SecondCorrectionSettlement,
+            Common.Models.ProcessType.ThirdCorrectionSettlement => Contracts.Protobuf.ProcessType.ThirdCorrectionSettlement,
             _ => throw new ArgumentException($"No matching 'ProcessType' for: {processType.ToString()}"),
         };
     }

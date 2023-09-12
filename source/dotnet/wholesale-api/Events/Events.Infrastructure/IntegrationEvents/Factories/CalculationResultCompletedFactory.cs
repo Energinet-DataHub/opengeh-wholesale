@@ -96,11 +96,11 @@ public class CalculationResultCompletedFactory : ICalculationResultCompletedFact
         {
             BatchId = result.BatchId.ToString(),
             Resolution = Resolution.Quarter,
-            ProcessType = ProcessTypeMapper.MapProcessType(result.ProcessType),
+            ProcessType = ProcessTypeMapper.MapProcessTypeDeprecated(result.ProcessType),
             QuantityUnit = QuantityUnit.Kwh,
             PeriodStartUtc = result.PeriodStart.ToTimestamp(),
             PeriodEndUtc = result.PeriodEnd.ToTimestamp(),
-            TimeSeriesType = TimeSeriesTypeMapper.MapTimeSeriesType(result.TimeSeriesType),
+            TimeSeriesType = TimeSeriesTypeMapper.MapTimeSeriesTypeDeprecated(result.TimeSeriesType),
         };
         if (result.FromGridArea != null)
             calculationResultCompleted.FromGridAreaCode = result.FromGridArea;
@@ -111,7 +111,7 @@ public class CalculationResultCompletedFactory : ICalculationResultCompletedFact
                 {
                     Quantity = new DecimalValue(timeSeriesPoint.Quantity),
                     Time = timeSeriesPoint.Time.ToTimestamp(),
-                    QuantityQuality = QuantityQualityMapper.MapQuantityQuality(timeSeriesPoint.Quality),
+                    QuantityQuality = QuantityQualityMapper.MapQuantityQualityDeprecated(timeSeriesPoint.Quality),
                 }));
         return calculationResultCompleted;
     }

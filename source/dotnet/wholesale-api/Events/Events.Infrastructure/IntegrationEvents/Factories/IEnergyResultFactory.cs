@@ -13,11 +13,10 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
-using Energinet.DataHub.Wholesale.Contracts.Events;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 
 public interface IEnergyResultFactory
 {
-    Contracts.EnergyResult Create(EnergyResult result);
+    Contracts.Protobuf.EnergyResult Create(EnergyResult result);
 }
