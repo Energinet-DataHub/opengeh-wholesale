@@ -21,5 +21,5 @@ public interface ICalculationResultQueries
     /// <summary>
     /// Get all results for a given batch.
     /// </summary>
-    IAsyncEnumerable<CalculationResult> GetAsync(Guid batchId);
+    IAsyncEnumerable<EnergyResult> GetAsync(Guid batchId);
 }
