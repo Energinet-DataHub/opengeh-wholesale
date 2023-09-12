@@ -31,15 +31,15 @@ public static class QuantityQualityMapper
         };
     }
 
-    public static Contracts.Protobuf.QuantityQuality MapQuantityQuality(CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality quantityQuality)
+    public static QuantityQuality MapQuantityQuality(CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality quantityQuality)
     {
         return quantityQuality switch
         {
-            CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Estimated => Contracts.Protobuf.QuantityQuality.Estimated,
-            CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Incomplete => Contracts.Protobuf.QuantityQuality.Incomplete,
-            CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Measured => Contracts.Protobuf.QuantityQuality.Measured,
-            CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Missing => Contracts.Protobuf.QuantityQuality.Missing,
-            CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Calculated => Contracts.Protobuf.QuantityQuality.Calculated,
+            CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Estimated => QuantityQuality.Estimated,
+            CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Incomplete => QuantityQuality.Incomplete,
+            CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Measured => QuantityQuality.Measured,
+            CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Missing => QuantityQuality.Missing,
+            CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Calculated => QuantityQuality.Calculated,
             _ => throw new ArgumentException($"No matching 'QuantityQuality' for: {quantityQuality.ToString()}"),
         };
     }

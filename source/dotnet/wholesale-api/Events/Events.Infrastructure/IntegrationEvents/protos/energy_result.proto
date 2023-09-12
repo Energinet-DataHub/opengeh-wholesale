@@ -18,7 +18,7 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 import "common.proto";
 
-option csharp_namespace = "Energinet.DataHub.Wholesale.Contracts.Protobuf";
+option csharp_namespace = "Energinet.DataHub.Wholesale.Contracts.Events";
 
 /*
  * CalculationResultReady Integration Event.

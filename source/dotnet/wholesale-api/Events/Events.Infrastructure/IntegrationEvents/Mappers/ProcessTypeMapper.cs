@@ -32,16 +32,16 @@ public static class ProcessTypeMapper
         };
     }
 
-    public static Contracts.Protobuf.ProcessType MapProcessType(Common.Models.ProcessType processType)
+    public static Contracts.Events.ProcessType MapProcessType(Common.Models.ProcessType processType)
     {
         return processType switch
         {
-            Common.Models.ProcessType.Aggregation => Contracts.Protobuf.ProcessType.Aggregation,
-            Common.Models.ProcessType.BalanceFixing => Contracts.Protobuf.ProcessType.BalanceFixing,
-            Common.Models.ProcessType.WholesaleFixing => Contracts.Protobuf.ProcessType.WholesaleFixing,
-            Common.Models.ProcessType.FirstCorrectionSettlement => Contracts.Protobuf.ProcessType.FirstCorrectionSettlement,
-            Common.Models.ProcessType.SecondCorrectionSettlement => Contracts.Protobuf.ProcessType.SecondCorrectionSettlement,
-            Common.Models.ProcessType.ThirdCorrectionSettlement => Contracts.Protobuf.ProcessType.ThirdCorrectionSettlement,
+            Common.Models.ProcessType.Aggregation => ProcessType.Aggregation,
+            Common.Models.ProcessType.BalanceFixing => ProcessType.BalanceFixing,
+            Common.Models.ProcessType.WholesaleFixing => ProcessType.WholesaleFixing,
+            Common.Models.ProcessType.FirstCorrectionSettlement => ProcessType.FirstCorrectionSettlement,
+            Common.Models.ProcessType.SecondCorrectionSettlement => ProcessType.SecondCorrectionSettlement,
+            Common.Models.ProcessType.ThirdCorrectionSettlement => ProcessType.ThirdCorrectionSettlement,
             _ => throw new ArgumentException($"No matching 'ProcessType' for: {processType.ToString()}"),
         };
     }

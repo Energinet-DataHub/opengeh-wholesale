@@ -14,13 +14,13 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 using FluentAssertions;
 using Google.Protobuf;
 using Moq;
 using Xunit;
+using EnergyResult = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResult;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.EventPublishers;
 
@@ -36,7 +36,7 @@ public class CalculationResultIntegrationEventFactoryTests
     {
         // Arrange
         calculationResultCompletedFactoryMock
-            .Setup(x => x.CreateDeprecated(energyResult))
+            .Setup(x => x.Create(energyResult))
             .Returns(calculationResultCompleted);
 
         // Act

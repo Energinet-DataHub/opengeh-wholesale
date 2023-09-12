@@ -33,8 +33,8 @@ public class CalculationResultCompletedTests
             AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea = new AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea
             {
                 GridAreaCode = "543",
-                EnergySupplierGlnOrEic = "1234567890123456",
-                BalanceResponsiblePartyGlnOrEic = "1234567890123456",
+                EnergySupplierId = "1234567890123456",
+                BalanceResponsibleId = "1234567890123456",
             },
             PeriodStartUtc = new Timestamp(),
             PeriodEndUtc = new Timestamp(),

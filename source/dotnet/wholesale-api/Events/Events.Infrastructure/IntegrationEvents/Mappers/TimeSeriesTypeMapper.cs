@@ -37,21 +37,20 @@ public static class TimeSeriesTypeMapper
         };
     }
 
-    public static Contracts.Protobuf.TimeSeriesType MapTimeSeriesType(CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType timeSeriesType)
+    public static TimeSeriesType MapTimeSeriesType(CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType timeSeriesType)
     {
         return timeSeriesType switch
         {
-            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.Production => Contracts.Protobuf.TimeSeriesType.Production,
-            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.FlexConsumption => Contracts.Protobuf.TimeSeriesType.FlexConsumption,
-            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.NonProfiledConsumption => Contracts.Protobuf.TimeSeriesType.NonProfiledConsumption,
-            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.NetExchangePerGa => Contracts.Protobuf.TimeSeriesType.NetExchangePerGa,
-            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.NetExchangePerNeighboringGa => Contracts.Protobuf.TimeSeriesType.NetExchangePerNeighboringGa,
-            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.GridLoss => Contracts.Protobuf.TimeSeriesType.GridLoss,
-            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.NegativeGridLoss => Contracts.Protobuf.TimeSeriesType.NegativeGridLoss,
-            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.PositiveGridLoss => Contracts.Protobuf.TimeSeriesType.PositiveGridLoss,
-            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.TotalConsumption => Contracts.Protobuf.TimeSeriesType.TotalConsumption,
-            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.TempFlexConsumption => Contracts.Protobuf.TimeSeriesType.TempFlexConsumption,
-            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.TempProduction => Contracts.Protobuf.TimeSeriesType.TempProduction,
+            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.Production => TimeSeriesType.Production,
+            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.FlexConsumption => TimeSeriesType.FlexConsumption,
+            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.NetExchangePerGa => TimeSeriesType.NetExchangePerGa,
+            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.NetExchangePerNeighboringGa => TimeSeriesType.NetExchangePerNeighboringGa,
+            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.GridLoss => TimeSeriesType.GridLoss,
+            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.NegativeGridLoss => TimeSeriesType.NegativeGridLoss,
+            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.PositiveGridLoss => TimeSeriesType.PositiveGridLoss,
+            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.TotalConsumption => TimeSeriesType.TotalConsumption,
+            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.TempFlexConsumption => TimeSeriesType.TempFlexConsumption,
+            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.TempProduction => TimeSeriesType.TempProduction,
             _ => throw new ArgumentException($"No matching 'TimeSeriesType' for: {timeSeriesType.ToString()}"),
         };
     }
