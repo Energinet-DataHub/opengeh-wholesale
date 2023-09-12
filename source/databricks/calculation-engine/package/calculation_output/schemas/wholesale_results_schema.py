@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from pyspark.sql.types import (
+    ArrayType,
     BooleanType,
     DecimalType,
     StringType,
@@ -37,7 +38,7 @@ wholesale_results_schema = StructType(
         StructField(WholesaleResultColumnNames.energy_supplier_id, StringType(), True),
         StructField(WholesaleResultColumnNames.quantity, DecimalType(18, 3), True),
         StructField(WholesaleResultColumnNames.quantity_unit, StringType(), True),
-        StructField(WholesaleResultColumnNames.quantity_quality, StringType(), False),
+        StructField(WholesaleResultColumnNames.quantity_qualities, ArrayType(StringType()), False),
         StructField(WholesaleResultColumnNames.time, TimestampType(), False),
         StructField(WholesaleResultColumnNames.resolution, StringType(), False),
         StructField(WholesaleResultColumnNames.metering_point_type, StringType(), False),

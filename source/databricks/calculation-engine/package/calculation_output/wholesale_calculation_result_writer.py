@@ -82,7 +82,7 @@ class WholesaleCalculationResultWriter:
             ),
             col(Colname.total_quantity).alias(WholesaleResultColumnNames.quantity),
             col(Colname.unit).alias(WholesaleResultColumnNames.quantity_unit),
-            col(Colname.quality).alias(WholesaleResultColumnNames.quantity_quality),
+            col(Colname.qualities).alias(WholesaleResultColumnNames.quantity_qualities),
             col(Colname.charge_time).alias(WholesaleResultColumnNames.time),
             col(Colname.charge_resolution).alias(WholesaleResultColumnNames.resolution),
             col(Colname.metering_point_type).alias(WholesaleResultColumnNames.metering_point_type),

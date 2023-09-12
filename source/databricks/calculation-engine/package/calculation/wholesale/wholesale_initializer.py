@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from pyspark.sql.dataframe import DataFrame
-from pyspark.sql.functions import col, window, expr, explode, month, year
+from pyspark.sql.functions import col, collect_set, window, expr, explode, month, year, sum
 from package.codelists import ChargeType, ChargeResolution
 from package.constants import Colname
 
@@ -38,11 +38,8 @@ def get_tariff_charges(
     )
 
     # group by time series on metering point id and resolution and sum quantity
-    grouped_time_series = (
-        group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
-            time_series, resolution_duration
-        )
-    )
+    grouped_time_series = group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
+        time_series, resolution_duration)
 
     # join with grouped time series
     df = join_with_grouped_time_series(df, grouped_time_series)
@@ -196,10 +193,13 @@ def group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
                 __get_window_duration_string_based_on_resolution(resolution_duration),
             ),
         )
-        .sum(Colname.quantity)
-        .withColumnRenamed(f"sum({Colname.quantity})", Colname.quantity)
+        .agg(
+            sum(Colname.quantity).alias(Colname.quantity),
+            collect_set(Colname.quality).alias(Colname.qualities),
+        )
         .selectExpr(
             Colname.quantity,
+            Colname.qualities,
             Colname.metering_point_id,
             f"window.{Colname.start} as {Colname.charge_time}",
         )
@@ -233,6 +233,7 @@ def join_with_grouped_time_series(
         df[Colname.settlement_method],
         df[Colname.grid_area],
         grouped_time_series[Colname.quantity],
+        grouped_time_series[Colname.qualities],
     )
     return df
 

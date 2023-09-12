@@ -15,6 +15,13 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql.types import (
+    DecimalType,
+    StringType,
+    StructField,
+    StructType,
+    TimestampType,
+)
 from typing import Callable
 from package.calculation.wholesale.wholesale_initializer import (
     join_with_charge_prices,
@@ -27,7 +34,13 @@ from package.calculation.wholesale.wholesale_initializer import (
     join_with_grouped_time_series,
     get_charges_based_on_charge_type,
 )
-from package.codelists import ChargeType, ChargeResolution, MeteringPointType, SettlementMethod
+from package.codelists import (
+    ChargeQuality,
+    ChargeType,
+    ChargeResolution,
+    MeteringPointType,
+    SettlementMethod,
+)
 from package.calculation.wholesale.schemas.charges_schema import (
     charges_schema,
     charge_prices_schema,
@@ -542,25 +555,25 @@ time_series_dataset_1 = [
     (
         "D01",
         Decimal("10"),
-        "D01",
+        [ChargeQuality.CALCULATED.value, ChargeQuality.ESTIMATED.value],
         datetime(2020, 1, 15, 5, 0),
     ),
     (
         "D01",
         Decimal("10"),
-        "D01",
+        [ChargeQuality.CALCULATED.value, ChargeQuality.ESTIMATED.value],
         datetime(2020, 1, 15, 1, 0),
     ),
     (
         "D01",
         Decimal("10"),
-        "D01",
+        [ChargeQuality.CALCULATED.value, ChargeQuality.ESTIMATED.value],
         datetime(2020, 1, 15, 1, 30),
     ),
     (
         "D01",
         Decimal("10"),
-        "D01",
+        [ChargeQuality.CALCULATED.value, ChargeQuality.ESTIMATED.value],
         datetime(2020, 1, 16, 1, 0),
     ),
 ]
@@ -599,7 +612,7 @@ grouped_time_series_dataset_1 = [
     (
         "D01",
         Decimal("10"),
-        "D01",
+        [ChargeQuality.CALCULATED.value, ChargeQuality.ESTIMATED.value],
         datetime(2020, 1, 15, 0, 0),
     )
 ]
@@ -622,6 +635,16 @@ charges_complete_dataset_1 = [
 ]
 
 
+grouped_time_series_point_schema = StructType(
+    [
+        StructField(Colname.metering_point_id, StringType(), False),
+        StructField(Colname.quantity, DecimalType(18, 6), True),
+        StructField(Colname.qualities, StringType(), False),
+        StructField(Colname.observation_time, TimestampType(), False),
+    ]
+)
+
+
 # Tariff only
 @pytest.mark.parametrize(
     "charges_complete,grouped_time_series,expected",
@@ -632,7 +655,7 @@ def test__join_with_grouped_time_series__joins_on_metering_point_and_time(
 ) -> None:
     # Arrange
     grouped_time_series = spark.createDataFrame(
-        grouped_time_series, schema=time_series_point_schema
+        grouped_time_series, schema=grouped_time_series_point_schema
     )
     charges_complete = spark.createDataFrame(
         charges_complete, schema=charges_complete_schema
