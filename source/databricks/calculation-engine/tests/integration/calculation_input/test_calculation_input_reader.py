@@ -211,5 +211,7 @@ def test__read_data__throws_exception_when_schema_mismatch(
             is_exception_thrown = True
 
     # Assert
-    if is_exception_thrown: assert True
-    else: assert False
+    if is_exception_thrown:
+        assert True
+    else:
+        assert False
