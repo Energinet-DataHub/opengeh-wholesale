@@ -157,11 +157,11 @@ def test___read_metering_point_periods__returns_df_with_correct_settlement_metho
 
 
 @pytest.mark.parametrize("expected_schema, method_name, create_row", [
-    (metering_point_period_schema, "read_metering_point_periods", _create_metering_point_period_row),
-    (time_series_point_schema, "read_time_series_points", _create_time_series_point_row),
-    (charge_master_data_periods_schema, "read_charge_master_data_periods", _create_charge_master_period_row),
-    (charge_link_periods_schema, "read_charge_links_periods", _create_charge_link_period_row),
-    (charge_price_points_schema, "read_charge_price_points", _create_change_price_point_row),
+    (metering_point_period_schema, CalculationInputReader.read_metering_point_periods, _create_metering_point_period_row),
+    (time_series_point_schema, CalculationInputReader.read_time_series_points, _create_time_series_point_row),
+    (charge_master_data_periods_schema, CalculationInputReader.read_charge_master_data_periods, _create_charge_master_period_row),
+    (charge_link_periods_schema, CalculationInputReader.read_charge_links_periods, _create_charge_link_period_row),
+    (charge_price_points_schema, CalculationInputReader.read_charge_price_points, _create_change_price_point_row),
 ])
 def test__read_data__returns_df(
         spark: SparkSession,
@@ -173,19 +173,19 @@ def test__read_data__returns_df(
     row = create_row()
     sut = CalculationInputReader(spark)
     df = spark.createDataFrame(data=[row], schema=expected_schema)
+    method = getattr(sut, str(method_name.__name__))
 
     # Act & Assert
     with mock.patch.object(sut, "_read_table", return_value=df):
-        method = getattr(sut, method_name)
         method()
 
 
 @pytest.mark.parametrize("expected_schema, method_name, create_row", [
-    (metering_point_period_schema, "read_metering_point_periods", _create_metering_point_period_row),
-    (time_series_point_schema, "read_time_series_points", _create_time_series_point_row),
-    (charge_master_data_periods_schema, "read_charge_master_data_periods", _create_charge_master_period_row),
-    (charge_link_periods_schema, "read_charge_links_periods", _create_charge_link_period_row),
-    (charge_price_points_schema, "read_charge_price_points", _create_change_price_point_row),
+    (metering_point_period_schema, CalculationInputReader.read_metering_point_periods, _create_metering_point_period_row),
+    (time_series_point_schema, CalculationInputReader.read_time_series_points, _create_time_series_point_row),
+    (charge_master_data_periods_schema, CalculationInputReader.read_charge_master_data_periods, _create_charge_master_period_row),
+    (charge_link_periods_schema, CalculationInputReader.read_charge_links_periods, _create_charge_link_period_row),
+    (charge_price_points_schema, CalculationInputReader.read_charge_price_points, _create_change_price_point_row),
 ])
 def test__read_data__throws_exception_when_schema_mismatch(
         spark: SparkSession,
@@ -198,12 +198,12 @@ def test__read_data__throws_exception_when_schema_mismatch(
     sut = CalculationInputReader(spark)
     df = spark.createDataFrame(data=[row], schema=expected_schema)
     df = df.withColumn("test", lit("test"))
+    method = getattr(sut, str(method_name.__name__))
     is_exception_thrown = False
 
     # Act
     with mock.patch.object(sut, "_read_table", return_value=df):
         try:
-            method = getattr(sut, method_name)
             method()
             print("This test fails because the schemas are identical!")
         except Exception:
