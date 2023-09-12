@@ -32,7 +32,7 @@ public class ProcessTypeMapperTests
     public void MapProcessType_WhenCalled_MapsCorrectly(ProcessType processType, Wholesale.Contracts.Events.ProcessType expected)
     {
         // Act & Assert
-        ProcessTypeMapper.MapProcessType(processType).Should().Be(expected);
+        ProcessTypeMapper.MapProcessTypeDeprecated(processType).Should().Be(expected);
     }
 
     [Fact]
@@ -41,7 +41,7 @@ public class ProcessTypeMapperTests
         foreach (var processType in Enum.GetValues(typeof(ProcessType)).Cast<ProcessType>())
         {
             // Act
-            var actual = ProcessTypeMapper.MapProcessType(processType);
+            var actual = ProcessTypeMapper.MapProcessTypeDeprecated(processType);
 
             // Assert: Is defined (and implicitly that it didn't throw exception)
             Enum.IsDefined(typeof(Contracts.Events.ProcessType), actual).Should().BeTrue();

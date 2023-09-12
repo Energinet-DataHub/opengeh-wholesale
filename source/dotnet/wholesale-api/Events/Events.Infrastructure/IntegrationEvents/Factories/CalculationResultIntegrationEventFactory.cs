@@ -13,10 +13,10 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Messaging.Communication.Internal;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Google.Protobuf;
+using EnergyResult = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResult;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories
 {
@@ -29,10 +29,10 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Fa
             _calculationResultCompletedFactory = calculationResultCompletedFactory;
         }
 
-        public IntegrationEvent Create(CalculationResult calculationResult)
+        public IntegrationEvent Create(EnergyResult energyResult)
         {
-            var @event = _calculationResultCompletedFactory.Create(calculationResult);
-            return CreateIntegrationEvent(@event, calculationResult.Id);
+            var calculationResultMessage = _calculationResultCompletedFactory.Create(energyResult);
+            return CreateIntegrationEvent(calculationResultMessage, energyResult.Id);
         }
 
         private IntegrationEvent CreateIntegrationEvent(IMessage protobufMessage, Guid calculationResultId)

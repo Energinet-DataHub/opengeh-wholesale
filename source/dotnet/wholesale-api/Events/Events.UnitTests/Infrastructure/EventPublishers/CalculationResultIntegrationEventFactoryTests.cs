@@ -14,13 +14,13 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 using FluentAssertions;
 using Google.Protobuf;
 using Moq;
 using Xunit;
+using EnergyResult = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResult;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.EventPublishers;
 
@@ -30,22 +30,22 @@ public class CalculationResultIntegrationEventFactoryTests
     [AutoMoqData]
     public void Create_ReturnsExpectedIntegrationEvent(
         CalculationResultCompleted calculationResultCompleted,
-        CalculationResult calculationResult,
+        EnergyResult energyResult,
         [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
         CalculationResultIntegrationEventFactory sut)
     {
         // Arrange
         calculationResultCompletedFactoryMock
-            .Setup(x => x.Create(calculationResult))
+            .Setup(x => x.Create(energyResult))
             .Returns(calculationResultCompleted);
 
         // Act
-        var actual = sut.Create(calculationResult);
+        var actual = sut.Create(energyResult);
 
         // Assert
         actual.EventName.Should().Be(CalculationResultCompleted.EventName);
         actual.Message.ToByteArray().Should().BeEquivalentTo(calculationResultCompleted.ToByteArray());
         actual.EventMinorVersion.Should().Be(CalculationResultCompleted.EventMinorVersion);
-        actual.EventIdentification.Should().Be(calculationResult.Id);
+        actual.EventIdentification.Should().Be(energyResult.Id);
     }
 }

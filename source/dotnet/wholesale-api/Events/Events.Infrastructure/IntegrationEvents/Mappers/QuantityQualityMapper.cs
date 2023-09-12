@@ -18,6 +18,19 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Ma
 
 public static class QuantityQualityMapper
 {
+    public static QuantityQuality MapQuantityQualityDeprecated(CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality quantityQuality)
+    {
+        return quantityQuality switch
+        {
+            CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Estimated => QuantityQuality.Estimated,
+            CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Incomplete => QuantityQuality.Incomplete,
+            CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Measured => QuantityQuality.Measured,
+            CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Missing => QuantityQuality.Missing,
+            CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Calculated => QuantityQuality.Calculated,
+            _ => throw new ArgumentException($"No matching 'QuantityQuality' for: {quantityQuality.ToString()}"),
+        };
+    }
+
     public static QuantityQuality MapQuantityQuality(CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality quantityQuality)
     {
         return quantityQuality switch

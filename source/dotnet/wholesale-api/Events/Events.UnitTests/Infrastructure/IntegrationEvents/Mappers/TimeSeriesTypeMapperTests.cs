@@ -35,7 +35,7 @@ public class TimeSeriesTypeMapperTests
     public void MapTimeSeriesType_WhenCalled_MapsCorrectly(TimeSeriesType timeSeriesType, Wholesale.Contracts.Events.TimeSeriesType expected)
     {
         // Act & Assert
-        TimeSeriesTypeMapper.MapTimeSeriesType(timeSeriesType).Should().Be(expected);
+        TimeSeriesTypeMapper.MapTimeSeriesTypeDeprecated(timeSeriesType).Should().Be(expected);
     }
 
     [Fact]
@@ -44,7 +44,7 @@ public class TimeSeriesTypeMapperTests
         foreach (var timeSeriesType in Enum.GetValues(typeof(TimeSeriesType)).Cast<TimeSeriesType>())
         {
             // Act
-            var actual = TimeSeriesTypeMapper.MapTimeSeriesType(timeSeriesType);
+            var actual = TimeSeriesTypeMapper.MapTimeSeriesTypeDeprecated(timeSeriesType);
 
             // Assert: Is defined (and implicitly that it didn't throw exception)
             Enum.IsDefined(typeof(Contracts.Events.TimeSeriesType), actual).Should().BeTrue();

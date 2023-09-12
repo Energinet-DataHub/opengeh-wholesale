@@ -18,7 +18,21 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Ma
 
 public static class ProcessTypeMapper
 {
-    public static ProcessType MapProcessType(Common.Models.ProcessType processType)
+    public static ProcessType MapProcessTypeDeprecated(Common.Models.ProcessType processType)
+    {
+        return processType switch
+        {
+            Common.Models.ProcessType.Aggregation => ProcessType.Aggregation,
+            Common.Models.ProcessType.BalanceFixing => ProcessType.BalanceFixing,
+            Common.Models.ProcessType.WholesaleFixing => ProcessType.WholesaleFixing,
+            Common.Models.ProcessType.FirstCorrectionSettlement => ProcessType.FirstCorrectionSettlement,
+            Common.Models.ProcessType.SecondCorrectionSettlement => ProcessType.SecondCorrectionSettlement,
+            Common.Models.ProcessType.ThirdCorrectionSettlement => ProcessType.ThirdCorrectionSettlement,
+            _ => throw new ArgumentException($"No matching 'ProcessType' for: {processType.ToString()}"),
+        };
+    }
+
+    public static Contracts.Events.ProcessType MapProcessType(Common.Models.ProcessType processType)
     {
         return processType switch
         {

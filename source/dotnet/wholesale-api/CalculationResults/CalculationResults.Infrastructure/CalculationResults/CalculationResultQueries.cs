@@ -42,7 +42,7 @@ public class CalculationResultQueries : ICalculationResultQueries
         _logger = logger;
     }
 
-    public async IAsyncEnumerable<CalculationResult> GetAsync(Guid batchId)
+    public async IAsyncEnumerable<EnergyResult> GetAsync(Guid batchId)
     {
         var batch = await _batchesClient.GetAsync(batchId).ConfigureAwait(false);
         var sql = CreateBatchResultsSql(batchId);
@@ -111,7 +111,7 @@ ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames
         return new TimeSeriesPoint(time, quantity, quality);
     }
 
-    private static CalculationResult CreateCalculationResult(
+    private static EnergyResult CreateCalculationResult(
         BatchDto batch,
         SqlResultRow sqlResultRow,
         List<TimeSeriesPoint> timeSeriesPoints)
@@ -122,7 +122,7 @@ ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames
         var balanceResponsibleId = sqlResultRow[EnergyResultColumnNames.BalanceResponsibleId];
         var gridArea = sqlResultRow[EnergyResultColumnNames.GridArea];
         var fromGridArea = sqlResultRow[EnergyResultColumnNames.FromGridArea];
-        return new CalculationResult(
+        return new EnergyResult(
             id,
             batch.BatchId,
             gridArea,

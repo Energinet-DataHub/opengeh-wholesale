@@ -14,7 +14,6 @@
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
-using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Types;
 using FluentAssertions;
@@ -112,9 +111,9 @@ public class CalculationResultCompletedFactoryTests
         actual.Should().BeEquivalentTo(expected);
     }
 
-    private CalculationResult CreateCalculationResult()
+    private EnergyResult CreateCalculationResult()
     {
-        return new CalculationResult(
+        return new EnergyResult(
             _id,
             _batchId,
             _gridArea,
@@ -133,21 +132,21 @@ public class CalculationResultCompletedFactoryTests
             _fromGridArea);
     }
 
-    private CalculationResultCompleted CreateExpected(CalculationResult calculationResult)
+    private Contracts.Events.CalculationResultCompleted CreateExpected(EnergyResult energyResult)
     {
-        var calculationResultCompleted = new CalculationResultCompleted
+        var calculationResultCompleted = new Contracts.Events.CalculationResultCompleted
         {
-            BatchId = calculationResult.BatchId.ToString(),
-            Resolution = Resolution.Quarter,
-            ProcessType = ProcessType.Aggregation,
-            QuantityUnit = QuantityUnit.Kwh,
-            PeriodStartUtc = calculationResult.PeriodStart.ToTimestamp(),
-            PeriodEndUtc = calculationResult.PeriodEnd.ToTimestamp(),
+            BatchId = energyResult.BatchId.ToString(),
+            Resolution = Contracts.Events.Resolution.Quarter,
+            ProcessType = Contracts.Events.ProcessType.Aggregation,
+            QuantityUnit = Contracts.Events.QuantityUnit.Kwh,
+            PeriodStartUtc = energyResult.PeriodStart.ToTimestamp(),
+            PeriodEndUtc = energyResult.PeriodEnd.ToTimestamp(),
             TimeSeriesType = Contracts.Events.TimeSeriesType.FlexConsumption,
-            FromGridAreaCode = calculationResult.FromGridArea,
+            FromGridAreaCode = energyResult.FromGridArea,
         };
         calculationResultCompleted.TimeSeriesPoints.AddRange(
-            calculationResult.TimeSeriesPoints.Select(
+            energyResult.TimeSeriesPoints.Select(
                 p => new Contracts.Events.TimeSeriesPoint
                 {
                     Time = p.Time.ToTimestamp(),
@@ -155,36 +154,36 @@ public class CalculationResultCompletedFactoryTests
                     QuantityQuality = Contracts.Events.QuantityQuality.Estimated,
                 }));
 
-        if (calculationResult.EnergySupplierId == null && calculationResult.BalanceResponsibleId == null)
+        if (energyResult.EnergySupplierId == null && energyResult.BalanceResponsibleId == null)
         {
-            calculationResultCompleted.AggregationPerGridarea = new AggregationPerGridArea { GridAreaCode = calculationResult.GridArea };
+            calculationResultCompleted.AggregationPerGridarea = new Contracts.Events.AggregationPerGridArea { GridAreaCode = energyResult.GridArea };
         }
-        else if (calculationResult.BalanceResponsibleId != null && calculationResult.EnergySupplierId != null)
+        else if (energyResult.BalanceResponsibleId != null && energyResult.EnergySupplierId != null)
         {
             calculationResultCompleted.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea =
-                new AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea
+                new Contracts.Events.AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea
                 {
-                    GridAreaCode = calculationResult.GridArea,
-                    EnergySupplierGlnOrEic = calculationResult.EnergySupplierId,
-                    BalanceResponsiblePartyGlnOrEic = calculationResult.BalanceResponsibleId,
+                    GridAreaCode = energyResult.GridArea,
+                    EnergySupplierId = energyResult.EnergySupplierId,
+                    BalanceResponsibleId = energyResult.BalanceResponsibleId,
                 };
         }
-        else if (calculationResult.BalanceResponsibleId == null && calculationResult.EnergySupplierId != null)
+        else if (energyResult.BalanceResponsibleId == null && energyResult.EnergySupplierId != null)
         {
             calculationResultCompleted.AggregationPerEnergysupplierPerGridarea =
-                new AggregationPerEnergySupplierPerGridArea
+                new Contracts.Events.AggregationPerEnergySupplierPerGridArea
                 {
-                    GridAreaCode = calculationResult.GridArea,
-                    EnergySupplierGlnOrEic = calculationResult.EnergySupplierId,
+                    GridAreaCode = energyResult.GridArea,
+                    EnergySupplierId = energyResult.EnergySupplierId,
                 };
         }
         else
         {
             calculationResultCompleted.AggregationPerBalanceresponsiblepartyPerGridarea =
-                new AggregationPerBalanceResponsiblePartyPerGridArea
+                new Contracts.Events.AggregationPerBalanceResponsiblePartyPerGridArea
                 {
-                    GridAreaCode = calculationResult.GridArea,
-                    BalanceResponsiblePartyGlnOrEic = calculationResult.BalanceResponsibleId,
+                    GridAreaCode = energyResult.GridArea,
+                    BalanceResponsibleId = energyResult.BalanceResponsibleId,
                 };
         }
 
