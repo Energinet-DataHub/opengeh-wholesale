@@ -20,7 +20,7 @@ import "google/protobuf/wrappers.proto";
 option csharp_namespace = "Energinet.DataHub.Wholesale.Contracts.Events";
 
 /*
- * CalculationResultReady Integration Event.
+ * DEPRECATED: Use energy_result instead.
  *
  * A calculation will result in one or more calculation results. Each result is
  * publishes as an instance of this type.
