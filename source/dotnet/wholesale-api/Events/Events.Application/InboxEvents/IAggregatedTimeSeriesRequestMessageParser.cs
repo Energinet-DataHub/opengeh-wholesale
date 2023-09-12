@@ -14,15 +14,13 @@
 
 using Azure.Messaging.ServiceBus;
 
-namespace Energinet.DataHub.Wholesale.Events.Application.UseCases;
+namespace Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
 
-public interface IAggregatedTimeSeriesRequestHandler
+public interface IAggregatedTimeSeriesRequestMessageParser
 {
     /// <summary>
-    /// Handles the process of consuming the request for aggregated time series, then getting the required time series and creating and sending the response.
+    /// Responsible for parsing the received message.
     /// </summary>
-    /// <param name="receivedMessage"></param>
-    /// <param name="referenceId"></param>
-    /// <param name="cancellationToken"></param>
-    Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken);
+    /// <param name="request"></param>
+    AggregatedTimeSeriesRequest Parse(ServiceBusReceivedMessage request);
 }

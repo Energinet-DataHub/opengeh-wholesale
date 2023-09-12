@@ -99,7 +99,7 @@ def _create_result_row(
         Colname.charge_count: charge_count,
         Colname.total_amount: total_amount,
         Colname.unit: unit.value,
-        Colname.quality: quality.value,
+        Colname.qualities: [quality.value],
     }
 
     return row
@@ -138,7 +138,7 @@ def sut() -> WholesaleCalculationResultWriter:
         (WholesaleResultColumnNames.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
         (WholesaleResultColumnNames.quantity, DEFAULT_TOTAL_QUANTITY),
         (WholesaleResultColumnNames.quantity_unit, DEFAULT_UNIT.value),
-        (WholesaleResultColumnNames.quantity_quality, DEFAULT_QUALITY.value),
+        (WholesaleResultColumnNames.quantity_qualities, [DEFAULT_QUALITY.value]),
         (WholesaleResultColumnNames.time, DEFAULT_CHARGE_TIME),
         (WholesaleResultColumnNames.resolution, DEFAULT_RESOLUTION.value),
         (WholesaleResultColumnNames.metering_point_type, DEFAULT_METERING_POINT_TYPE.value),
@@ -228,7 +228,7 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
         WholesaleResultColumnNames.grid_area,
         WholesaleResultColumnNames.quantity,
         WholesaleResultColumnNames.quantity_unit,
-        WholesaleResultColumnNames.quantity_quality,
+        WholesaleResultColumnNames.quantity_qualities,
         WholesaleResultColumnNames.time,
         WholesaleResultColumnNames.metering_point_type,
         WholesaleResultColumnNames.settlement_method,
