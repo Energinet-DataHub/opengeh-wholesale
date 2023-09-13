@@ -19,10 +19,11 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Protobuf Include="IntegrationEvents/*.proto">
+    <Protobuf Include="IntegrationEvents/Protobuf/*.proto">
       <GrpcServices>None</GrpcServices>
       <Access>Public</Access>
       <ProtoCompile>True</ProtoCompile>
+      <ProtoRoot>IntegrationEvents/Protobuf/</ProtoRoot>
       <CompileOutputs>True</CompileOutputs>
       <OutputDir>obj\contracts</OutputDir>
       <Generator>MSBuild:Compile</Generator>
