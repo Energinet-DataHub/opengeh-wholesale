@@ -94,7 +94,7 @@ public class CalculationResultQueries : ICalculationResultQueries
         return $@"
     SELECT {string.Join(", ", SqlColumnNames)}
     FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME}
-    WHERE {EnergyResultColumnNames.TimeSeriesType} = '{query.TimeSeriesType.ToLower()}'
+    WHERE {EnergyResultColumnNames.TimeSeriesType} = '{MapTimeSerieType(query.TimeSeriesType)}'
     AND {EnergyResultColumnNames.AggregationLevel} = '{MapAggregationLevel(query.AggregationLevel)}'
     AND {EnergyResultColumnNames.GridArea} = '{query.GridArea}'
     AND {EnergyResultColumnNames.Time} >= '{query.StartOfPeriod.ToString()}'
@@ -111,6 +111,15 @@ FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_N
 WHERE {EnergyResultColumnNames.BatchId} = '{batchId}'
 ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames.Time}
 ";
+    }
+
+    private string MapTimeSerieType(TimeSeriesType queryTimeSeriesType)
+    {
+        return queryTimeSeriesType switch
+        {
+            TimeSeriesType.Production => DeltaTableTimeSeriesType.Production,
+            _ => throw new InvalidOperationException($"Unknown time series type: {queryTimeSeriesType}"),
+        };
     }
 
     private string MapAggregationLevel(AggregationLevel queryAggregationLevel)

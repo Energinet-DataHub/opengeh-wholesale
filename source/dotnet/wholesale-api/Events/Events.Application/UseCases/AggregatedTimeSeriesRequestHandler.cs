@@ -62,7 +62,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         CancellationToken cancellationToken)
     {
         var query = new CalculationResultQuery(
-            nameof(aggregatedTimeSeriesRequestMessage.TimeSeriesType),
+            MapTimeSerieType(aggregatedTimeSeriesRequestMessage.TimeSeriesType),
             aggregatedTimeSeriesRequestMessage.Period.Start,
             aggregatedTimeSeriesRequestMessage.Period.End,
             MapGridAreaCode(aggregatedTimeSeriesRequestMessage),
@@ -70,6 +70,14 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
 
         return await _calculationResultQueries.GetAsync(query)
             .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+    }
+
+    private CalculationTimeSeriesType MapTimeSerieType(TimeSeriesType timeSeriesType)
+    {
+        return timeSeriesType switch {
+            TimeSeriesType.Production => CalculationTimeSeriesType.Production,
+            _ => throw new InvalidOperationException($"Unknown time series type: {timeSeriesType}"),
+        };
     }
 
     private static CalculationAggregationLevel MapAggregationLevel(AggregatedTimeSeriesRequest aggregatedTimeSeriesRequestMessage)
