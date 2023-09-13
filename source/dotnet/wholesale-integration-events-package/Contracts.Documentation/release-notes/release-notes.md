@@ -1,6 +1,7 @@
 # Wholesale Contracts Release notes
 
 ## Version 4.2.0
+
 Added EnergyResultProduced as a new event
 
 ## Version 4.1.0
