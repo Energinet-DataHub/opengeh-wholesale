@@ -15,15 +15,15 @@
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
-using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
-using Energinet.DataHub.Wholesale.Common.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NodaTime;
 using NodaTime.Extensions;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
@@ -47,37 +47,20 @@ public class CalculationResultQueries : ICalculationResultQueries
     {
         var batch = await _batchesClient.GetAsync(batchId).ConfigureAwait(false);
         var sql = CreateBatchResultsSql(batchId);
-        var timeSeriesPoints = new List<TimeSeriesPoint>();
-        SqlResultRow? currentRow = null;
-        var resultCount = 0;
-
-        await foreach (var nextRow in _sqlStatementClient.ExecuteAsync(sql).ConfigureAwait(false))
-        {
-            var timeSeriesPoint = CreateTimeSeriesPoint(nextRow);
-
-            if (currentRow != null && BelongsToDifferentResults(currentRow, nextRow))
-            {
-                yield return CreateCalculationResult(batch, currentRow, timeSeriesPoints);
-                resultCount++;
-                timeSeriesPoints = new List<TimeSeriesPoint>();
-            }
-
-            timeSeriesPoints.Add(timeSeriesPoint);
-            currentRow = nextRow;
-        }
-
-        if (currentRow != null)
-        {
-            yield return CreateCalculationResult(batch, currentRow, timeSeriesPoints);
-            resultCount++;
-        }
-
-        _logger.LogDebug("Fetched all {ResultCount} results for batch {BatchId}", resultCount, batchId);
+        await foreach (var p in GetInternalAsync(sql, batch.PeriodStart.ToInstant(), batch.PeriodEnd.ToInstant()))
+            yield return p;
+        _logger.LogDebug("Fetched all calculation results for batch {BatchId}", batchId);
     }
 
     public async IAsyncEnumerable<CalculationResult> GetAsync(CalculationResultQuery query)
     {
         var sql = CreateRequestSql(query);
+        await foreach (var p in GetInternalAsync(sql, query.StartOfPeriod, query.EndOfPeriod))
+            yield return p;
+    }
+
+    private async IAsyncEnumerable<CalculationResult> GetInternalAsync(string sql, Instant periodStart, Instant periodEnd)
+    {
         var timeSeriesPoints = new List<TimeSeriesPoint>();
         SqlResultRow? currentRow = null;
         var resultCount = 0;
@@ -88,7 +71,7 @@ public class CalculationResultQueries : ICalculationResultQueries
 
             if (currentRow != null && BelongsToDifferentResults(currentRow, nextRow))
             {
-                yield return CreateCalculationResult(query, currentRow, timeSeriesPoints);
+                yield return CreateCalculationResult(currentRow, timeSeriesPoints, periodStart, periodEnd);
                 resultCount++;
                 timeSeriesPoints = new List<TimeSeriesPoint>();
             }
@@ -99,11 +82,11 @@ public class CalculationResultQueries : ICalculationResultQueries
 
         if (currentRow != null)
         {
-            yield return CreateCalculationResult(query, currentRow, timeSeriesPoints);
+            yield return CreateCalculationResult(currentRow, timeSeriesPoints, periodStart, periodEnd);
             resultCount++;
         }
 
-        _logger.LogDebug("Fetched all {ResultCount} results", resultCount);
+        _logger.LogDebug("Fetched {ResultCount} calculation results", resultCount);
     }
 
     private string CreateRequestSql(CalculationResultQuery query)
@@ -120,13 +103,6 @@ public class CalculationResultQueries : ICalculationResultQueries
     ";
     }
 
-    private string MapAggregationLevel(AggregationLevel queryAggregationLevel)
-    {
-        if (queryAggregationLevel == AggregationLevel.GridArea)
-            return DeltaTableAggregationLevel.GridArea;
-        throw new InvalidOperationException($"Unsupported aggregation level: {queryAggregationLevel}");
-    }
-
     private string CreateBatchResultsSql(Guid batchId)
     {
         return $@"
@@ -135,6 +111,13 @@ FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_N
 WHERE {EnergyResultColumnNames.BatchId} = '{batchId}'
 ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames.Time}
 ";
+    }
+
+    private string MapAggregationLevel(AggregationLevel queryAggregationLevel)
+    {
+        if (queryAggregationLevel == AggregationLevel.GridArea)
+            return DeltaTableAggregationLevel.GridArea;
+        throw new InvalidOperationException($"Unsupported aggregation level: {queryAggregationLevel}");
     }
 
     public static string[] SqlColumnNames { get; } =
@@ -149,6 +132,7 @@ ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames
         EnergyResultColumnNames.Quantity,
         EnergyResultColumnNames.QuantityQuality,
         EnergyResultColumnNames.CalculationResultId,
+        EnergyResultColumnNames.BatchProcessType,
     };
 
     public static bool BelongsToDifferentResults(SqlResultRow row, SqlResultRow otherRow)
@@ -165,34 +149,10 @@ ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames
     }
 
     private static CalculationResult CreateCalculationResult(
-        BatchDto batch,
         SqlResultRow sqlResultRow,
-        List<TimeSeriesPoint> timeSeriesPoints)
-    {
-        var id = SqlResultValueConverters.ToGuid(sqlResultRow[EnergyResultColumnNames.CalculationResultId]);
-        var timeSeriesType = SqlResultValueConverters.ToTimeSeriesType(sqlResultRow[EnergyResultColumnNames.TimeSeriesType]);
-        var energySupplierId = sqlResultRow[EnergyResultColumnNames.EnergySupplierId];
-        var balanceResponsibleId = sqlResultRow[EnergyResultColumnNames.BalanceResponsibleId];
-        var gridArea = sqlResultRow[EnergyResultColumnNames.GridArea];
-        var fromGridArea = sqlResultRow[EnergyResultColumnNames.FromGridArea];
-        return new CalculationResult(
-            id,
-            batch.BatchId,
-            gridArea,
-            timeSeriesType,
-            energySupplierId,
-            balanceResponsibleId,
-            timeSeriesPoints.ToArray(),
-            batch.ProcessType,
-            batch.PeriodStart.ToInstant(),
-            batch.PeriodEnd.ToInstant(),
-            fromGridArea);
-    }
-
-    private static CalculationResult CreateCalculationResult(
-        CalculationResultQuery query,
-        SqlResultRow sqlResultRow,
-        List<TimeSeriesPoint> timeSeriesPoints)
+        List<TimeSeriesPoint> timeSeriesPoints,
+        Instant periodStart,
+        Instant periodEnd)
     {
         var id = SqlResultValueConverters.ToGuid(sqlResultRow[EnergyResultColumnNames.CalculationResultId]);
         var timeSeriesType = SqlResultValueConverters.ToTimeSeriesType(sqlResultRow[EnergyResultColumnNames.TimeSeriesType]);
@@ -201,6 +161,7 @@ ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames
         var gridArea = sqlResultRow[EnergyResultColumnNames.GridArea];
         var fromGridArea = sqlResultRow[EnergyResultColumnNames.FromGridArea];
         var batchId = sqlResultRow[EnergyResultColumnNames.BatchId];
+        var processType = sqlResultRow[EnergyResultColumnNames.BatchProcessType];
 
         return new CalculationResult(
             id,
@@ -210,9 +171,9 @@ ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames
             energySupplierId,
             balanceResponsibleId,
             timeSeriesPoints.ToArray(),
-            ProcessType.BalanceFixing,
-            query.StartOfPeriod,
-            query.EndOfPeriod,
+            ProcessTypeMapper.FromDeltaTableValue(processType),
+            periodStart,
+            periodEnd,
             fromGridArea);
     }
 }
