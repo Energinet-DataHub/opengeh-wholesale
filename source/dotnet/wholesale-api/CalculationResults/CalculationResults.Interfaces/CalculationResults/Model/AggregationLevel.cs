@@ -12,20 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
-
-public interface ICalculationResultQueries
+public enum AggregationLevel
 {
-    /// <summary>
-    /// Get all results for a given batch.
-    /// </summary>
-    IAsyncEnumerable<CalculationResult> GetAsync(Guid batchId);
-
-    /// <summary>
-    /// Gets all result for a given request.
-    /// </summary>
-    /// <param name="query"></param>
-    IAsyncEnumerable<CalculationResult> GetAsync(CalculationResultQuery query);
+    GridArea,
+    EnergySupplierAndGridArea,
+    BalanceResponsibleAndGridArea,
+    EnergySupplierAndBalanceResponsibleAndGridArea,
 }
