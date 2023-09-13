@@ -73,7 +73,7 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
-    <Protobuf Include="../../wholesale-api/Events/Events.Infrastructure/IntegrationEvents/*.proto">
+    <Protobuf Include="../../wholesale-api/Events/Events.Infrastructure/IntegrationEvents/Protos/*.proto">
       <GrpcServices>None</GrpcServices>
       <Access>Public</Access>
       <ProtoCompile>True</ProtoCompile>

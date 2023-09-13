@@ -22,11 +22,4 @@
       <ProjectReference Include="..\Contracts\Contracts.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Content Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\calculation_result_completed.proto">
-        <Link>calculation_result_completed.proto</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-    </ItemGroup>
-
 </Project>

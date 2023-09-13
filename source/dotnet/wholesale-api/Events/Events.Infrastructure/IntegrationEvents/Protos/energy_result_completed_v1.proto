@@ -18,14 +18,14 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 import "common_v1.proto";
 
-option csharp_namespace = "Energinet.DataHub.Wholesale.Contracts.Protobuf.EnergyResult.V1";
+option csharp_namespace = "Energinet.DataHub.Wholesale.Contracts.IntegrationEvents";
 
 
 /*
  * A calculation will result in one or more energy results. Each result is
  * publishes as an instance of this type.
  */
-message EnergyResult {
+message EnergyResultCompletedV1 {
   /*
    * The ID of the batch creating the calculation result.
    * The ID is a UUID consisting of hexadecimal digits in the form XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX.

@@ -16,7 +16,7 @@
 syntax = "proto3";
 import "google/protobuf/timestamp.proto";
 
-option csharp_namespace = "Energinet.DataHub.Wholesale.Contracts.Protobuf.Common.V1";
+option csharp_namespace = "Energinet.DataHub.Wholesale.Contracts.IntegrationEvents";
 
 message AggregationPerGridArea {
     /*
