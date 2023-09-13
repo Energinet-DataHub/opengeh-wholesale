@@ -1,5 +1,8 @@
 # Wholesale Contracts Release notes
 
+## Version 4.2.0
+Added EnergyResultProduced as a new event
+
 ## Version 4.1.0
 
 Add wholesale process types to process type enum of the integration event contract.
