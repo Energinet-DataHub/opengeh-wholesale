@@ -23,7 +23,7 @@ option csharp_namespace = "Energinet.DataHub.Wholesale.Contracts.IntegrationEven
 
 /*
  * A calculation will result in one or more energy results. Each result is
- * publishes as an instance of this type.
+ * published as an instance of this type.
  */
 message EnergyResultProducedV1 {
   /*
