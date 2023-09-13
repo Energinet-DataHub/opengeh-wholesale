@@ -27,11 +27,11 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
 
             # Include Migration model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACFOVCSL7UKMGR2YKX3CYHOMZHOBU2Q
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACCM3YJBSMBU2J6ODMB4XTJWZIBUSIQ
         }
 
         # Deployment model
-        deploymentEnvironment "Production" {
+        deploymentEnvironment "Production (prod_001)" {
             # Computer
             deploymentNode "User's computer" {
                 description ""
@@ -43,6 +43,28 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
                     tags "Microsoft Azure - Browser"
 
                     frontendSinglePageApplicationInstance = containerInstance frontendSinglePageApplication
+                }
+            }
+
+            # SendGrid
+            deploymentNode "SendGrid" {
+                description ""
+                technology "Twilio SendGrid"
+
+                deploymentNode "Internal Shared SendGrid" {
+                    description "Sending emails to Teams when pipelines fail"
+                    technology "Twilio SendGrid"
+                    tags "Intermediate Technology" "SaaS" "Microsoft Azure - SendGrid Accounts"
+
+                    sharedInternalSendGridInstance = containerInstance dh3.sharedInternalSendGrid
+                }
+
+                deploymentNode "External Shared SendGrid" {
+                    description "Sending emails when inviting users"
+                    technology "Twilio SendGrid"
+                    tags "Intermediate Technology" "SaaS" "Microsoft Azure - SendGrid Accounts"
+
+                    sharedExternalSendGridInstance = containerInstance dh3.sharedExternalSendGrid
                 }
             }
 
@@ -275,7 +297,7 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             exclude "relationship.tag==Simple View"
         }
 
-        deployment dh3 "Production" "Production_no_OAuth" {
+        deployment dh3 "Production (prod_001)" "Production_no_OAuth" {
             title "[Deployment] DataHub 3.0 (Detailed, no OAuth)"
             description "Detailed 'as-is' view of all domains and infrastructure dependencies. Excludes 'OAuth' relationships"
             include *
@@ -284,7 +306,7 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             exclude "relationship.tag==Simple View"
         }
 
-        deployment dh3 "Production" "Production_focus_OAuth" {
+        deployment dh3 "Production (prod_001)" "Production_focus_OAuth" {
             title "[Deployment] DataHub 3.0 Azure AD B2C"
             description "'As-is' view of all relationships to and from the Azure AD B2C"
             include ->sharedB2CInstance->
