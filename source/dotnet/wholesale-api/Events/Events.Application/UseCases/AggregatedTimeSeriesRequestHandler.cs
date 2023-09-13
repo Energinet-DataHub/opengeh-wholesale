@@ -16,9 +16,9 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
+using Energinet.DataHub.Wholesale.Events.Application.UseCases.Mappers;
 using CalculationAggregationLevel = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.AggregationLevel;
 using CalculationTimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType;
-using TimeSeriesType = Energinet.DataHub.Wholesale.Events.Application.InboxEvents.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.UseCases;
 
@@ -52,7 +52,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         var message = _aggregatedTimeSeriesMessageFactory.Create(
             result,
             referenceId,
-            isRejected: aggregatedTimeSeriesRequestMessage.TimeSeriesType != TimeSeriesType.Production);
+            isRejected: !result.Any());
 
         await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
     }
@@ -62,28 +62,12 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         CancellationToken cancellationToken)
     {
         var query = new CalculationResultQuery(
-            nameof(aggregatedTimeSeriesRequestMessage.TimeSeriesType),
+            TimeSeriesTypeMapper.MapTimeSerieType(aggregatedTimeSeriesRequestMessage.TimeSeriesType),
             aggregatedTimeSeriesRequestMessage.Period.Start,
             aggregatedTimeSeriesRequestMessage.Period.End,
-            MapGridAreaCode(aggregatedTimeSeriesRequestMessage),
-            MapAggregationLevel(aggregatedTimeSeriesRequestMessage));
+            aggregatedTimeSeriesRequestMessage.AggregationPerGridArea?.GridAreaCode ?? throw new InvalidOperationException($"Unknown grid area code"));
 
         return await _calculationResultQueries.GetAsync(query)
             .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-    }
-
-    private static CalculationAggregationLevel MapAggregationLevel(AggregatedTimeSeriesRequest aggregatedTimeSeriesRequestMessage)
-    {
-        if (aggregatedTimeSeriesRequestMessage.AggregationPerGridArea != null)
-            return CalculationAggregationLevel.GridArea;
-        throw new InvalidOperationException($"Unknown aggregation level: {aggregatedTimeSeriesRequestMessage}");
-    }
-
-    private static string MapGridAreaCode(AggregatedTimeSeriesRequest aggregatedTimeSeriesRequestMessage)
-    {
-        var gridAreaCode = aggregatedTimeSeriesRequestMessage.AggregationPerGridArea?.GridAreaCode
-                           ?? throw new InvalidOperationException($"Unknown grid area code");
-
-        return gridAreaCode;
     }
 }
