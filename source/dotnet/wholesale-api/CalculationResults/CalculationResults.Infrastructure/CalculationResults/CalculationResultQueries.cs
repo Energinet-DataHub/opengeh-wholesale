@@ -118,6 +118,7 @@ ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames
         return queryTimeSeriesType switch
         {
             TimeSeriesType.Production => DeltaTableTimeSeriesType.Production,
+            TimeSeriesType.TotalConsumption => DeltaTableTimeSeriesType.TotalConsumption,
             _ => throw new InvalidOperationException($"Unknown time series type: {queryTimeSeriesType}"),
         };
     }

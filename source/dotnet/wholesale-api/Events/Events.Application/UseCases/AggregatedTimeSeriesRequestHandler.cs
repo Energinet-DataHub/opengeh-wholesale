@@ -52,7 +52,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         var message = _aggregatedTimeSeriesMessageFactory.Create(
             result,
             referenceId,
-            isRejected: aggregatedTimeSeriesRequestMessage.TimeSeriesType != TimeSeriesType.Production);
+            isRejected: !result.Any());
 
         await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
     }
@@ -76,6 +76,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
     {
         return timeSeriesType switch {
             TimeSeriesType.Production => CalculationTimeSeriesType.Production,
+            TimeSeriesType.TotalConsumption => CalculationTimeSeriesType.TotalConsumption,
             _ => throw new InvalidOperationException($"Unknown time series type: {timeSeriesType}"),
         };
     }
