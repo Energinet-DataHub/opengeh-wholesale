@@ -11,7 +11,7 @@ variable "tenant_id" {
 variable "resource_group_name" {
   type        = string
   description = "Resource Group that the infrastructure code is deployed into."
-  default = ""
+  default     = ""
 }
 
 variable "enable_health_check_alerts" {
@@ -83,9 +83,4 @@ variable "cert_pwd_migration_dh2_authentication_key1" {
   type        = string
   description = "Password for the certificate"
   default     = ""
-
-  validation {
-    condition     = length(var.cert_pwd_migration_dh2_authentication_key1) > 0
-    error_message = "The password for the certificate must be specified."
-  }
 }
