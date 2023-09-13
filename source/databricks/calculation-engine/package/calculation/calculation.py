@@ -16,9 +16,7 @@
 from pyspark.sql import SparkSession
 from package.codelists import ProcessType
 import package.calculation_input as input
-from package.calculation_output.wholesale_calculation_result_writer import (
-    WholesaleCalculationResultWriter,
-)
+from package.calculation_output.wholesale_calculation_result_writer import WholesaleCalculationResultWriter
 from .calculator_args import CalculatorArgs
 from .energy import energy_calculation
 from .wholesale import wholesale_calculation
@@ -26,13 +24,10 @@ from . import setup
 
 
 def execute(args: CalculatorArgs, spark: SparkSession) -> None:
+
     calculation_input_reader = input.CalculationInputReader(spark)
 
-    (
-        metering_point_periods_df,
-        time_series_points_df,
-        grid_loss_responsible_df,
-    ) = input.get_calculation_input(
+    metering_point_periods_df, time_series_points_df, grid_loss_responsible_df = input.get_calculation_input(
         calculation_input_reader,
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
@@ -59,7 +54,9 @@ def execute(args: CalculatorArgs, spark: SparkSession) -> None:
 
     if args.batch_process_type == ProcessType.WHOLESALE_FIXING:
         wholesale_calculation_result_writer = WholesaleCalculationResultWriter(
-            args.batch_id, args.batch_process_type, args.batch_execution_time_start
+            args.batch_id,
+            args.batch_process_type,
+            args.batch_execution_time_start
         )
 
         wholesale_calculation.execute(

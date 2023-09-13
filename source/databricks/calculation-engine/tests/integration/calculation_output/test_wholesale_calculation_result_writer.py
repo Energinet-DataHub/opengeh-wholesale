@@ -30,13 +30,8 @@ from package.codelists import (
     SettlementMethod,
 )
 from package.constants import Colname, WholesaleResultColumnNames
-from package.infrastructure.paths import (
-    OUTPUT_DATABASE_NAME,
-    WHOLESALE_RESULT_TABLE_NAME,
-)
-from package.calculation_output.wholesale_calculation_result_writer import (
-    WholesaleCalculationResultWriter,
-)
+from package.infrastructure.paths import OUTPUT_DATABASE_NAME, WHOLESALE_RESULT_TABLE_NAME
+from package.calculation_output.wholesale_calculation_result_writer import WholesaleCalculationResultWriter
 from typing import Any
 
 
@@ -52,9 +47,7 @@ DEFAULT_ENERGY_SUPPLIER_ID = "9876543210123"
 DEFAULT_GRID_AREA = "543"
 DEFAULT_CHARGE_TIME = datetime(2022, 6, 10, 13, 30)
 DEFAULT_INPUT_METERING_POINT_TYPE = MeteringPointType.ELECTRICAL_HEATING
-DEFAULT_METERING_POINT_TYPE = (
-    MeteringPointType.ELECTRICAL_HEATING
-)  # Must correspond with the input type above
+DEFAULT_METERING_POINT_TYPE = MeteringPointType.ELECTRICAL_HEATING  # Must correspond with the input type above
 DEFAULT_SETTLEMENT_METHOD = SettlementMethod.FLEX
 DEFAULT_CHARGE_KEY = "40000-tariff-5790001330552"
 DEFAULT_CHARGE_ID = "4000"
@@ -116,15 +109,12 @@ def _create_result_df(spark: SparkSession, row: List[dict]) -> DataFrame:
     return spark.createDataFrame(data=row)
 
 
-def _create_result_df_corresponding_to_multiple_calculation_results(
-    spark: SparkSession,
-) -> DataFrame:
+def _create_result_df_corresponding_to_multiple_calculation_results(spark: SparkSession) -> DataFrame:
     # 3 calculation results with just one row each
     rows = [
         _create_result_row(grid_area="001"),
         _create_result_row(grid_area="002"),
-        _create_result_row(grid_area="003"),
-    ]
+        _create_result_row(grid_area="003")]
 
     return spark.createDataFrame(data=rows)
 
@@ -143,10 +133,7 @@ def sut() -> WholesaleCalculationResultWriter:
     [
         (WholesaleResultColumnNames.calculation_id, DEFAULT_BATCH_ID),
         (WholesaleResultColumnNames.calculation_type, DEFAULT_PROCESS_TYPE.value),
-        (
-            WholesaleResultColumnNames.calculation_execution_time_start,
-            DEFAULT_BATCH_EXECUTION_START,
-        ),
+        (WholesaleResultColumnNames.calculation_execution_time_start, DEFAULT_BATCH_EXECUTION_START),
         (WholesaleResultColumnNames.grid_area, DEFAULT_GRID_AREA),
         (WholesaleResultColumnNames.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
         (WholesaleResultColumnNames.quantity, DEFAULT_TOTAL_QUANTITY),
@@ -154,10 +141,7 @@ def sut() -> WholesaleCalculationResultWriter:
         (WholesaleResultColumnNames.quantity_qualities, [DEFAULT_QUALITY.value]),
         (WholesaleResultColumnNames.time, DEFAULT_CHARGE_TIME),
         (WholesaleResultColumnNames.resolution, DEFAULT_RESOLUTION.value),
-        (
-            WholesaleResultColumnNames.metering_point_type,
-            DEFAULT_METERING_POINT_TYPE.value,
-        ),
+        (WholesaleResultColumnNames.metering_point_type, DEFAULT_METERING_POINT_TYPE.value),
         (WholesaleResultColumnNames.settlement_method, DEFAULT_SETTLEMENT_METHOD.value),
         (WholesaleResultColumnNames.price, DEFAULT_CHARGE_PRICE),
         (WholesaleResultColumnNames.amount, DEFAULT_TOTAL_AMOUNT),
@@ -193,10 +177,10 @@ def test__write__writes_column(
 
 
 def test__write__writes_calculation_result_id(
-    sut: WholesaleCalculationResultWriter,
-    spark: SparkSession,
-    migrations_executed_per_test: None,
-) -> None:
+        sut: WholesaleCalculationResultWriter,
+        spark: SparkSession,
+        migrations_executed_per_test: None) -> None:
+
     # Arrange
     result_df = _create_result_df_corresponding_to_multiple_calculation_results(spark)
     expected_number_of_calculation_result_ids = 3
@@ -205,16 +189,13 @@ def test__write__writes_calculation_result_id(
     sut.write(result_df)
 
     # Assert
-    actual_df = spark.read.table(TABLE_NAME).select(
-        col(WholesaleResultColumnNames.calculation_result_id)
-    )
+    actual_df = spark.read.table(TABLE_NAME).select(col(WholesaleResultColumnNames.calculation_result_id))
 
     assert actual_df.distinct().count() == expected_number_of_calculation_result_ids
 
 
 def test__get_column_group_for_calculation_result_id__returns_expected_column_names(
-    sut: WholesaleCalculationResultWriter,
-) -> None:
+        sut: WholesaleCalculationResultWriter,) -> None:
     # Arrange
     expected_column_names = [
         Colname.batch_id,
@@ -233,8 +214,8 @@ def test__get_column_group_for_calculation_result_id__returns_expected_column_na
 
 
 def test__get_column_group_for_calculation_result_id__excludes_expected_other_column_names(
-    sut: WholesaleCalculationResultWriter,
-) -> None:
+        sut: WholesaleCalculationResultWriter) -> None:
+
     # This class is a guard against adding new columns without considering how the column affects the generation of
     # calculation result IDs
 
@@ -254,11 +235,8 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
         WholesaleResultColumnNames.price,
         WholesaleResultColumnNames.amount,
         WholesaleResultColumnNames.is_tax,
-        WholesaleResultColumnNames.charge_id,
-    ]
-    all_columns = [
-        attr for attr in dir(WholesaleResultColumnNames) if not attr.startswith("__")
-    ]
+        WholesaleResultColumnNames.charge_id]
+    all_columns = [attr for attr in dir(WholesaleResultColumnNames) if not attr.startswith("__")]
 
     # Act
     included_columns = sut._get_column_group_for_calculation_result_id()

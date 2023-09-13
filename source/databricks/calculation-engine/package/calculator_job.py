@@ -27,6 +27,7 @@ import package.calculation as calculation
 # The start() method should only have its name updated in correspondence with the wheels entry point for it.
 # Further the method must remain parameterless because it will be called from the entry point when deployed.
 def start() -> None:
+
     args = get_calculator_args()
 
     db_logging.loglevel = "information"

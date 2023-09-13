@@ -32,29 +32,20 @@ from pyspark.sql import SparkSession, DataFrame
 import pytest
 from typing import Callable
 from package.codelists import ChargeType
-from package.calculation.wholesale.schemas.calculate_daily_subscription_price_schema import (
-    calculate_daily_subscription_price_schema,
-)
-from package.calculation.wholesale.schemas.calculate_fee_charge_price_schema import (
-    calculate_fee_charge_price_schema,
-)
+from package.calculation.wholesale.schemas.calculate_daily_subscription_price_schema import calculate_daily_subscription_price_schema
+from package.calculation.wholesale.schemas.calculate_fee_charge_price_schema import calculate_fee_charge_price_schema
 from tests.integration.calculation.dataframe_defaults import DataframeDefaults
 from package.calculation.wholesale.schemas.charges_schema import (
     charges_schema,
     charge_links_schema,
     charge_prices_schema,
 )
-from package.calculation_input.schemas import (
-    time_series_point_schema,
-    metering_point_period_schema,
-)
+from package.calculation_input.schemas import time_series_point_schema, metering_point_period_schema
 from package.constants import Colname
 
 
 @pytest.fixture(scope="session")
-def calculate_daily_subscription_price_factory(
-    spark: SparkSession,
-) -> Callable[..., DataFrame]:
+def calculate_daily_subscription_price_factory(spark: SparkSession) -> Callable[..., DataFrame]:
     def factory(
         time: datetime,
         price_per_day: Decimal,
@@ -70,6 +61,7 @@ def calculate_daily_subscription_price_factory(
         grid_area: str = DataframeDefaults.default_grid_area,
         energy_supplier_id: str = DataframeDefaults.default_energy_supplier_id,
     ) -> DataFrame:
+
         data = [
             {
                 Colname.charge_key: charge_key,
@@ -88,9 +80,7 @@ def calculate_daily_subscription_price_factory(
             }
         ]
 
-        return spark.createDataFrame(
-            data, schema=calculate_daily_subscription_price_schema
-        )
+        return spark.createDataFrame(data, schema=calculate_daily_subscription_price_schema)
 
     return factory
 
@@ -111,6 +101,7 @@ def calculate_fee_charge_price_factory(spark: SparkSession) -> Callable[..., Dat
         grid_area: str = DataframeDefaults.default_grid_area,
         energy_supplier_id: str = DataframeDefaults.default_energy_supplier_id,
     ) -> DataFrame:
+
         data = [
             {
                 Colname.charge_key: charge_key,
@@ -128,7 +119,9 @@ def calculate_fee_charge_price_factory(spark: SparkSession) -> Callable[..., Dat
             }
         ]
 
-        return spark.createDataFrame(data, schema=calculate_fee_charge_price_schema)
+        return spark.createDataFrame(
+            data, schema=calculate_fee_charge_price_schema
+        )
 
     return factory
 
@@ -146,6 +139,7 @@ def charge_master_data_factory(spark: SparkSession) -> Callable[..., DataFrame]:
         charge_tax: str = DataframeDefaults.default_charge_tax,
         currency: str = DataframeDefaults.default_currency,
     ) -> DataFrame:
+
         data = [
             {
                 Colname.charge_key: charge_key,
@@ -173,6 +167,7 @@ def charge_links_factory(spark: SparkSession) -> Callable[..., DataFrame]:
         charge_key: str = DataframeDefaults.default_charge_key,
         metering_point_id: str = DataframeDefaults.default_metering_point_id,
     ) -> DataFrame:
+
         data = [
             {
                 Colname.charge_key: charge_key,

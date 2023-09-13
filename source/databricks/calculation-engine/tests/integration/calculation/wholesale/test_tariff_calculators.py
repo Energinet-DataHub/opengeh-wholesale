@@ -25,7 +25,7 @@ from package.codelists import (
     ChargeType,
     ChargeUnit,
     MeteringPointType,
-    SettlementMethod,
+    SettlementMethod
 )
 from package.calculation.wholesale.tariff_calculators import (
     tariff_schema,
@@ -63,8 +63,7 @@ def _create_tariff_hour_row(
     quality: ChargeQuality = DEFAULT_QUALITY,
 ) -> dict:
     row = {
-        Colname.charge_key: charge_key
-        or f"{charge_id}-{ChargeType.TARIFF.value}-{charge_owner}",
+        Colname.charge_key: charge_key or f"{charge_id}-{ChargeType.TARIFF.value}-{charge_owner}",
         Colname.charge_id: charge_id,
         Colname.charge_type: ChargeType.TARIFF.value,
         Colname.charge_owner: charge_owner,
@@ -75,9 +74,7 @@ def _create_tariff_hour_row(
         Colname.metering_point_id: metering_point_id,
         Colname.energy_supplier_id: energy_supplier_id,
         Colname.metering_point_type: metering_point_type.value,
-        Colname.settlement_method: settlement_method.value
-        if settlement_method
-        else None,
+        Colname.settlement_method: settlement_method.value if settlement_method else None,
         Colname.grid_area: grid_area,
         Colname.quantity: quantity,
         Colname.qualities: [quality.value],
@@ -161,9 +158,7 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_expected_values(
     assert actual_row[Colname.charge_price] == DEFAULT_CHARGE_PRICE
     assert actual_row[Colname.total_quantity] == 3 * DEFAULT_QUANTITY
     assert actual_row[Colname.charge_count] == 3
-    assert actual_row[Colname.total_amount] == Decimal(
-        "6.030015"
-    )  # 3 * DEFAULT_CHARGE_PRICE * DEFAULT_QUANTITY rounded to 6 decimals
+    assert actual_row[Colname.total_amount] == Decimal("6.030015")  # 3 * DEFAULT_CHARGE_PRICE * DEFAULT_QUANTITY rounded to 6 decimals
     assert actual_row[Colname.unit] == ChargeUnit.KWH.value
     assert actual_row[Colname.qualities] == [ChargeQuality.CALCULATED.value]
 
@@ -172,17 +167,10 @@ def test__calculate_tariff_price_per_ga_co_es__returns_all_qualities(
     spark: SparkSession,
 ) -> None:
     # Arrange: A number of rows with different qualities. All rows should be aggregated into a single row containing all the qualities.
-    expected_qualities = [
-        ChargeQuality.CALCULATED,
-        ChargeQuality.ESTIMATED,
-        ChargeQuality.MEASURED,
-    ]
+    expected_qualities = [ChargeQuality.CALCULATED, ChargeQuality.ESTIMATED, ChargeQuality.MEASURED]
     expected_quality_values = [quality.value for quality in expected_qualities]
 
-    rows = [
-        _create_tariff_hour_row(metering_point_id=str(uuid.uuid4()), quality=quality)
-        for quality in expected_qualities
-    ]
+    rows = [_create_tariff_hour_row(metering_point_id=str(uuid.uuid4()), quality=quality) for quality in expected_qualities]
     tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
 
     # Act
@@ -199,21 +187,13 @@ def test__calculate_tariff_price_per_ga_co_es__returns_all_qualities(
     [
         ("grid_area", "1", "2"),
         ("energy_supplier_id", "1", "2"),
-        (
-            "metering_point_type",
-            MeteringPointType.CONSUMPTION,
-            MeteringPointType.PRODUCTION,
-        ),
+        ("metering_point_type", MeteringPointType.CONSUMPTION, MeteringPointType.PRODUCTION),
         ("settlement_method", SettlementMethod.FLEX, SettlementMethod.NON_PROFILED),
         ("charge_key", "1", "2"),
         ("charge_id", "1", "2"),
         ("charge_owner", "1", "2"),
-        (
-            "charge_time",
-            DEFAULT_CHARGE_TIME_HOUR_0,
-            DEFAULT_CHARGE_TIME_HOUR_0 + timedelta(hours=1),
-        ),
-    ],
+        ("charge_time", DEFAULT_CHARGE_TIME_HOUR_0, DEFAULT_CHARGE_TIME_HOUR_0 + timedelta(hours=1)),
+    ]
 )
 def test__calculate_tariff_price_per_ga_co_es__does_not_aggregate_across_group_splitting_columns(
     spark: SparkSession, column_name: str, value: Any, other_value: Any
@@ -238,7 +218,7 @@ def test__calculate_tariff_price_per_ga_co_es__does_not_aggregate_across_group_s
 
 
 def test__calculate_tariff_price_per_ga_co_es__when_settlement_method_is_null__returns_result(
-    spark: SparkSession,
+    spark: SparkSession
 ) -> None:
     """
     Settlement method being null is a permutation that should be tested.
@@ -247,11 +227,7 @@ def test__calculate_tariff_price_per_ga_co_es__when_settlement_method_is_null__r
     """
 
     # Arrange
-    rows = [
-        _create_tariff_hour_row(
-            metering_point_type=MeteringPointType.PRODUCTION, settlement_method=None
-        )
-    ]
+    rows = [_create_tariff_hour_row(metering_point_type=MeteringPointType.PRODUCTION, settlement_method=None)]
     tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
 
     # Act
@@ -267,7 +243,7 @@ def test__calculate_tariff_price_per_ga_co_es__when_settlement_method_is_null__r
         (Colname.total_amount, 6),
         (Colname.total_quantity, 3),
         (Colname.charge_price, 6),
-    ],
+    ]
 )
 def test__calculate_tariff_price_per_ga_co_es__returns_df_with_expected_scale(
     spark: SparkSession, column_name: str, expected_scale: int
@@ -304,13 +280,10 @@ def test__calculate_tariff_price_per_ga_co_es__when_production__returns_df_with_
         (Decimal("0.000001"), Decimal("0.500"), Decimal("0.000001")),
         (Decimal("0.000499"), Decimal("0.001"), Decimal("0.000000")),
         (Decimal("0.000500"), Decimal("0.001"), Decimal("0.000001")),
-    ],
+    ]
 )
 def test__calculate_tariff_price_per_ga_co_es__rounds_total_amount_correctly(
-    spark: SparkSession,
-    charge_price: Decimal,
-    quantity: Decimal,
-    expected_total_amount: Decimal,
+    spark: SparkSession, charge_price: Decimal, quantity: Decimal, expected_total_amount: Decimal
 ) -> None:
     # Arrange
     rows = [_create_tariff_hour_row(charge_price=charge_price, quantity=quantity)]

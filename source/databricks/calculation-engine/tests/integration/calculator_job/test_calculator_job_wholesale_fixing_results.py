@@ -81,8 +81,7 @@ ENERGY_RESULT_TYPES = {
 
 
 @pytest.mark.parametrize(
-    "time_series_type, aggregation_level",
-    ENERGY_RESULT_TYPES,
+    "time_series_type, aggregation_level", ENERGY_RESULT_TYPES,
 )
 def test__energy_result__is_created(
     wholesale_fixing_energy_results_df: DataFrame,
@@ -91,10 +90,7 @@ def test__energy_result__is_created(
 ) -> None:
     # Arrange
     result_df = (
-        wholesale_fixing_energy_results_df.where(
-            F.col(EnergyResultColumnNames.calculation_id)
-            == C.executed_wholesale_batch_id
-        )
+        wholesale_fixing_energy_results_df.where(F.col(EnergyResultColumnNames.calculation_id) == C.executed_wholesale_batch_id)
         .where(F.col(EnergyResultColumnNames.time_series_type) == time_series_type)
         .where(F.col(EnergyResultColumnNames.aggregation_level) == aggregation_level)
     )
@@ -110,20 +106,9 @@ def test__energy_result__has_expected_number_of_types(
 ) -> None:
     # Arrange
     actual_result_type_count = (
-        wholesale_fixing_energy_results_df.where(
-            F.col(EnergyResultColumnNames.calculation_id)
-            == C.executed_wholesale_batch_id
-        )
-        .where(
-            F.col(EnergyResultColumnNames.calculation_id)
-            == C.executed_wholesale_batch_id
-        )
-        .select(
-            EnergyResultColumnNames.time_series_type,
-            EnergyResultColumnNames.aggregation_level,
-        )
-        .distinct()
-        .count()
+        wholesale_fixing_energy_results_df.where(F.col(EnergyResultColumnNames.calculation_id) == C.executed_wholesale_batch_id)
+        .where(F.col(EnergyResultColumnNames.calculation_id) == C.executed_wholesale_batch_id)
+        .select(EnergyResultColumnNames.time_series_type, EnergyResultColumnNames.aggregation_level).distinct().count()
     )
 
     # Act: Calculator job is executed just once per session. See the fixtures `results_df` and `executed_wholesale_fixing`
@@ -136,9 +121,8 @@ def test__wholesale_result__is_created(
     wholesale_fixing_wholesale_results_df: DataFrame,
 ) -> None:
     # Arrange
-    result_df = wholesale_fixing_wholesale_results_df.where(
-        F.col(WholesaleResultColumnNames.calculation_id)
-        == C.executed_wholesale_batch_id
+    result_df = (
+        wholesale_fixing_wholesale_results_df.where(F.col(WholesaleResultColumnNames.calculation_id) == C.executed_wholesale_batch_id)
     )
 
     # Act: Calculator job is executed just once per session. See the fixtures `results_df` and `executed_wholesale_fixing`

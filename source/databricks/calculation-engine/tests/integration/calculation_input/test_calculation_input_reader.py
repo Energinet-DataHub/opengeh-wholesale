@@ -49,40 +49,27 @@ def _create_row(
     }
 
 
-@pytest.mark.parametrize(
-    "metering_point_type,expected",
-    [
-        [InputMeteringPointType.CONSUMPTION, MeteringPointType.CONSUMPTION],
-        [InputMeteringPointType.PRODUCTION, MeteringPointType.PRODUCTION],
-        [InputMeteringPointType.EXCHANGE, MeteringPointType.EXCHANGE],
-        [InputMeteringPointType.VE_PRODUCTION, MeteringPointType.VE_PRODUCTION],
-        [InputMeteringPointType.NET_PRODUCTION, MeteringPointType.NET_PRODUCTION],
-        [InputMeteringPointType.SUPPLY_TO_GRID, MeteringPointType.SUPPLY_TO_GRID],
-        [
-            InputMeteringPointType.CONSUMPTION_FROM_GRID,
-            MeteringPointType.CONSUMPTION_FROM_GRID,
-        ],
-        [
-            InputMeteringPointType.WHOLESALE_SERVICES_INFORMATION,
-            MeteringPointType.WHOLESALE_SERVICES_INFORMATION,
-        ],
-        [InputMeteringPointType.OWN_PRODUCTION, MeteringPointType.OWN_PRODUCTION],
-        [InputMeteringPointType.NET_FROM_GRID, MeteringPointType.NET_FROM_GRID],
-        [InputMeteringPointType.NET_TO_GRID, MeteringPointType.NET_TO_GRID],
-        [InputMeteringPointType.TOTAL_CONSUMPTION, MeteringPointType.TOTAL_CONSUMPTION],
-        [
-            InputMeteringPointType.ELECTRICAL_HEATING,
-            MeteringPointType.ELECTRICAL_HEATING,
-        ],
-        [InputMeteringPointType.NET_CONSUMPTION, MeteringPointType.NET_CONSUMPTION],
-        [InputMeteringPointType.EFFECT_SETTLEMENT, MeteringPointType.EFFECT_SETTLEMENT],
-    ],
-)
+@pytest.mark.parametrize("metering_point_type,expected", [
+    [InputMeteringPointType.CONSUMPTION, MeteringPointType.CONSUMPTION],
+    [InputMeteringPointType.PRODUCTION, MeteringPointType.PRODUCTION],
+    [InputMeteringPointType.EXCHANGE, MeteringPointType.EXCHANGE],
+    [InputMeteringPointType.VE_PRODUCTION, MeteringPointType.VE_PRODUCTION],
+    [InputMeteringPointType.NET_PRODUCTION, MeteringPointType.NET_PRODUCTION],
+    [InputMeteringPointType.SUPPLY_TO_GRID, MeteringPointType.SUPPLY_TO_GRID],
+    [InputMeteringPointType.CONSUMPTION_FROM_GRID, MeteringPointType.CONSUMPTION_FROM_GRID],
+    [InputMeteringPointType.WHOLESALE_SERVICES_INFORMATION, MeteringPointType.WHOLESALE_SERVICES_INFORMATION],
+    [InputMeteringPointType.OWN_PRODUCTION, MeteringPointType.OWN_PRODUCTION],
+    [InputMeteringPointType.NET_FROM_GRID, MeteringPointType.NET_FROM_GRID],
+    [InputMeteringPointType.NET_TO_GRID, MeteringPointType.NET_TO_GRID],
+    [InputMeteringPointType.TOTAL_CONSUMPTION, MeteringPointType.TOTAL_CONSUMPTION],
+    [InputMeteringPointType.ELECTRICAL_HEATING, MeteringPointType.ELECTRICAL_HEATING],
+    [InputMeteringPointType.NET_CONSUMPTION, MeteringPointType.NET_CONSUMPTION],
+    [InputMeteringPointType.EFFECT_SETTLEMENT, MeteringPointType.EFFECT_SETTLEMENT],
+])
 def test___read_metering_point_periods__returns_df_with_correct_metering_point_types(
-    spark: SparkSession,
-    metering_point_type: InputMeteringPointType,
-    expected: MeteringPointType,
-) -> None:
+        spark: SparkSession,
+        metering_point_type: InputMeteringPointType,
+        expected: MeteringPointType) -> None:
     # Arrange
     row = _create_row(spark, metering_point_type=metering_point_type)
     df = spark.createDataFrame(data=[row], schema=metering_point_period_schema)
@@ -96,18 +83,14 @@ def test___read_metering_point_periods__returns_df_with_correct_metering_point_t
     assert actual.collect()[0][Colname.metering_point_type] == expected.value
 
 
-@pytest.mark.parametrize(
-    "settlement_method,expected",
-    [
-        [InputSettlementMethod.FLEX, SettlementMethod.FLEX],
-        [InputSettlementMethod.NON_PROFILED, SettlementMethod.NON_PROFILED],
-    ],
-)
+@pytest.mark.parametrize("settlement_method,expected", [
+    [InputSettlementMethod.FLEX, SettlementMethod.FLEX],
+    [InputSettlementMethod.NON_PROFILED, SettlementMethod.NON_PROFILED],
+])
 def test___read_metering_point_periods__returns_df_with_correct_settlemet_methods(
-    spark: SparkSession,
-    settlement_method: InputSettlementMethod,
-    expected: SettlementMethod,
-) -> None:
+        spark: SparkSession,
+        settlement_method: InputSettlementMethod,
+        expected: SettlementMethod) -> None:
     row = _create_row(spark, settlement_method=settlement_method)
     df = spark.createDataFrame(data=[row], schema=metering_point_period_schema)
     sut = CalculationInputReader(spark)

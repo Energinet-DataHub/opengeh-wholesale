@@ -7,7 +7,6 @@
 	"extensions": [
 		"ms-dotnettools.dotnet-interactive-vscode",
 		"ms-python.python",
-		"ms-python.black-formatter",
 		"littlefoxteam.vscode-python-test-adapter",
 		"hbenl.vscode-test-explorer",
 		"eamodio.gitlens",

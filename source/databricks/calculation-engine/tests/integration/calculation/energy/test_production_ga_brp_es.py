@@ -134,14 +134,8 @@ def check_aggregation_row(
 @pytest.mark.parametrize(
     "metering_point_type",
     [
-        pytest.param(
-            MeteringPointType.CONSUMPTION.value,
-            id="invalid because metering point type is consumption",
-        ),
-        pytest.param(
-            MeteringPointType.EXCHANGE.value,
-            id="invalid because metering point type is exchange",
-        ),
+        pytest.param(MeteringPointType.CONSUMPTION.value, id="invalid because metering point type is consumption"),
+        pytest.param(MeteringPointType.EXCHANGE.value, id="invalid because metering point type is exchange"),
     ],
 )
 def test_production_aggregator_filters_out_incorrect_point_type(

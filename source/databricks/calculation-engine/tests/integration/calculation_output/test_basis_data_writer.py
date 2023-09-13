@@ -114,15 +114,13 @@ def _get_basis_data_paths(calculation_filetype: CalculationFileType) -> str:
             DEFAULT_ENERGY_SUPPLIER,
         )
     elif (
-        calculation_filetype
-        == CalculationFileType.TIME_SERIES_QUARTER_BASIS_DATA_FOR_TOTAL_GA
+        calculation_filetype == CalculationFileType.TIME_SERIES_QUARTER_BASIS_DATA_FOR_TOTAL_GA
     ):
         return paths.get_basis_data_path(
             BasisDataType.TIME_SERIES_QUARTER, DEFAULT_BATCH_ID, DEFAULT_GRID_AREA
         )
     elif (
-        calculation_filetype
-        == CalculationFileType.TIME_SERIES_QUARTER_BASIS_DATA_FOR_ES_PER_GA
+        calculation_filetype == CalculationFileType.TIME_SERIES_QUARTER_BASIS_DATA_FOR_ES_PER_GA
     ):
         return paths.get_basis_data_path(
             BasisDataType.TIME_SERIES_QUARTER,
@@ -134,10 +132,7 @@ def _get_basis_data_paths(calculation_filetype: CalculationFileType) -> str:
         return paths.get_basis_data_path(
             BasisDataType.TIME_SERIES_HOUR, DEFAULT_BATCH_ID, DEFAULT_GRID_AREA
         )
-    elif (
-        calculation_filetype
-        == CalculationFileType.TIME_SERIES_HOUR_BASIS_DATA_FOR_ES_PER_GA
-    ):
+    elif calculation_filetype == CalculationFileType.TIME_SERIES_HOUR_BASIS_DATA_FOR_ES_PER_GA:
         return paths.get_basis_data_path(
             BasisDataType.TIME_SERIES_HOUR,
             DEFAULT_BATCH_ID,

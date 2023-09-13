@@ -55,9 +55,7 @@ def test__entry_point__list_migrations_in_package__prints_some(
     installed_package: None,
 ) -> None:
     # Act
-    output = subprocess.check_output(
-        ["list_migrations_in_package"], universal_newlines=True
-    )
+    output = subprocess.check_output(["list_migrations_in_package"], universal_newlines=True)
 
     # Assert: This test will fail if the selected migration is being deleted
     migrations = output.replace("\r\n", "\n").split("\n")

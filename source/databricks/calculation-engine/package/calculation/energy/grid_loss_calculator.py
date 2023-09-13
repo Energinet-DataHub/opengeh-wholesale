@@ -156,9 +156,7 @@ def calculate_positive_grid_loss(grid_loss: DataFrame) -> DataFrame:
 
 
 # Function to calculate total consumption (step 21)
-def calculate_total_consumption(
-    agg_net_exchange: DataFrame, agg_production: DataFrame
-) -> DataFrame:
+def calculate_total_consumption(agg_net_exchange: DataFrame, agg_production: DataFrame) -> DataFrame:
     result_production = (
         agg_production.selectExpr(
             Colname.grid_area,

@@ -34,16 +34,23 @@ from package.constants import Colname, BasisDataColname
 def get_master_basis_data_df(
     metering_point_df: DataFrame,
 ) -> DataFrame:
-    return metering_point_df.select(
-        col(Colname.metering_point_id).alias(BasisDataColname.metering_point_id),
-        col(Colname.from_date).alias(BasisDataColname.valid_from),
-        col(Colname.to_date).alias(BasisDataColname.valid_to),
-        col(Colname.grid_area).alias(BasisDataColname.grid_area),
-        col(Colname.to_grid_area).alias(BasisDataColname.to_grid_area),
-        col(Colname.from_grid_area).alias(BasisDataColname.from_grid_area),
-        col(Colname.metering_point_type).alias(BasisDataColname.metering_point_type),
-        col(Colname.settlement_method).alias(BasisDataColname.settlement_method),
-        col(Colname.energy_supplier_id).alias((BasisDataColname.energy_supplier_id)),
+    return (
+        metering_point_df
+        .select(
+            col(Colname.metering_point_id).alias(BasisDataColname.metering_point_id),
+            col(Colname.from_date).alias(BasisDataColname.valid_from),
+            col(Colname.to_date).alias(BasisDataColname.valid_to),
+            col(Colname.grid_area).alias(BasisDataColname.grid_area),
+            col(Colname.to_grid_area).alias(BasisDataColname.to_grid_area),
+            col(Colname.from_grid_area).alias(BasisDataColname.from_grid_area),
+            col(Colname.metering_point_type).alias(
+                BasisDataColname.metering_point_type
+            ),
+            col(Colname.settlement_method).alias(BasisDataColname.settlement_method),
+            col(Colname.energy_supplier_id).alias(
+                (BasisDataColname.energy_supplier_id)
+            ),
+        )
     )
 
 

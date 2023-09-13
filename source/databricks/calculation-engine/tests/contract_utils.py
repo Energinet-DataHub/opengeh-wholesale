@@ -73,4 +73,4 @@ def get_message_type(contract_path: str) -> None:
 
 def get_column_names_from_contract(contract_path: str) -> list[str]:
     schema = read_contract(contract_path)["fields"]
-    return [colname["name"] for colname in schema]
+    return [colname['name'] for colname in schema]

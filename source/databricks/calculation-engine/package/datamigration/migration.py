@@ -20,9 +20,7 @@ from package.infrastructure import paths, initialize_spark, log
 import package.infrastructure.environment_variables as env_vars
 from .committed_migrations import upload_committed_migration
 from package.infrastructure.paths import WHOLESALE_CONTAINER_NAME, OUTPUT_FOLDER
-from package.infrastructure.storage_account_access.data_lake_file_manager import (
-    DataLakeFileManager,
-)
+from package.infrastructure.storage_account_access.data_lake_file_manager import DataLakeFileManager
 from .migration_script_args import MigrationScriptArgs
 from .uncommitted_migrations import get_uncommitted_migrations
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME, TEST
@@ -52,23 +50,16 @@ def split_string_by_go(string: str) -> list[str]:
     return [s for s in sections if s and not s.isspace()]
 
 
-def _substitute_placeholders(
-    statement: str, migration_args: MigrationScriptArgs
-) -> str:
-    return (
-        statement.replace(
-            "{CONTAINER_PATH}", migration_args.storage_container_path
-        )  # abfss://...
-        .replace("{OUTPUT_DATABASE_NAME}", OUTPUT_DATABASE_NAME)  # "wholesale_output"
-        .replace("{OUTPUT_FOLDER}", OUTPUT_FOLDER)  # "calculation-output"
-        .replace("{TEST}", TEST)
-    )  # ""
+def _substitute_placeholders(statement: str, migration_args: MigrationScriptArgs) -> str:
+    return (statement
+            .replace("{CONTAINER_PATH}", migration_args.storage_container_path)  # abfss://...
+            .replace("{OUTPUT_DATABASE_NAME}", OUTPUT_DATABASE_NAME)  # "wholesale_output"
+            .replace("{OUTPUT_FOLDER}", OUTPUT_FOLDER)  # "calculation-output"
+            .replace("{TEST}", TEST))  # ""
 
 
 def _apply_migration(migration_name: str, migration_args: MigrationScriptArgs) -> None:
-    sql_content = importlib.resources.read_text(
-        f"{c.WHEEL_NAME}.{c.MIGRATION_SCRIPTS_FOLDER_PATH}", f"{migration_name}.sql"
-    )
+    sql_content = importlib.resources.read_text(f"{c.WHEEL_NAME}.{c.MIGRATION_SCRIPTS_FOLDER_PATH}", f"{migration_name}.sql")
 
     for statement_template in split_string_by_go(sql_content):
         statement = _substitute_placeholders(statement_template, migration_args)

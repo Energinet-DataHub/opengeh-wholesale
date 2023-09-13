@@ -28,9 +28,7 @@ class CalculationFileType(Enum):
     TIME_SERIES_QUARTER_BASIS_DATA_FOR_ES_PER_GA = (
         "time_series_quarter_basis_data_file_for_es_per_ga"
     )
-    TIME_SERIES_HOUR_BASIS_DATA_FOR_ES_PER_GA = (
-        "time_series_hour_basis_data_file_for_es_per_ga"
-    )
+    TIME_SERIES_HOUR_BASIS_DATA_FOR_ES_PER_GA = "time_series_hour_basis_data_file_for_es_per_ga"
     MASTER_BASIS_DATA_FOR_ES_PER_GA = "master_basis_data_file_for_es_per_ga"
 
 
