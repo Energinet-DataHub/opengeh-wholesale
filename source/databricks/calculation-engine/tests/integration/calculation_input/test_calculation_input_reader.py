@@ -15,6 +15,7 @@
 from datetime import datetime
 from unittest import mock
 import pytest
+from decimal import Decimal
 from pyspark.sql import SparkSession
 from package.codelists import (
     InputMeteringPointType,
@@ -23,12 +24,18 @@ from package.codelists import (
     SettlementMethod,
 )
 from package.calculation_input import CalculationInputReader
-from package.calculation_input.schemas import metering_point_period_schema
+from package.calculation_input.schemas import (
+    metering_point_period_schema,
+    charge_price_points_schema,
+    time_series_point_schema,
+    charge_link_periods_schema,
+    charge_master_data_periods_schema)
 from package.constants import Colname
+from pyspark.sql.types import StructType
+from pyspark.sql.functions import lit
 
 
-def _create_row(
-    spark: SparkSession,
+def _create_metering_point_period_row(
     metering_point_type: InputMeteringPointType = InputMeteringPointType.CONSUMPTION,
     settlement_method: InputSettlementMethod = InputSettlementMethod.FLEX,
 ) -> dict:
@@ -44,6 +51,53 @@ def _create_row(
         Colname.parent_metering_point_id: "foo",
         Colname.energy_supplier_id: "foo",
         Colname.balance_responsible_id: "foo",
+        Colname.from_date: datetime(2022, 6, 8, 22, 0, 0),
+        Colname.to_date: datetime(2022, 6, 8, 22, 0, 0),
+    }
+
+
+def _create_change_price_point_row(
+) -> dict:
+    return {
+        Colname.charge_id: "foo",
+        Colname.charge_type: "foo",
+        Colname.charge_owner: "foo",
+        Colname.charge_price: Decimal("1.123456"),
+        Colname.observation_time: datetime(2022, 6, 8, 22, 0, 0),
+    }
+
+
+def _create_time_series_point_row(
+) -> dict:
+    return {
+        Colname.metering_point_id: "foo",
+        Colname.quantity: Decimal("1.123456"),
+        Colname.quality: "foo",
+        Colname.observation_time: datetime(2022, 6, 8, 22, 0, 0),
+    }
+
+
+def _create_charge_link_period_row(
+) -> dict:
+    return {
+        Colname.charge_id: "foo",
+        Colname.charge_type: "foo",
+        Colname.charge_owner: "foo",
+        Colname.metering_point_id: "foo",
+        Colname.quantity: 1,
+        Colname.from_date: datetime(2022, 6, 8, 22, 0, 0),
+        Colname.to_date: datetime(2022, 6, 8, 22, 0, 0),
+    }
+
+
+def _create_charge_master_period_row(
+) -> dict:
+    return {
+        Colname.charge_id: "foo",
+        Colname.charge_type: "foo",
+        Colname.charge_owner: "foo",
+        Colname.resolution: "foo",
+        Colname.charge_tax: False,
         Colname.from_date: datetime(2022, 6, 8, 22, 0, 0),
         Colname.to_date: datetime(2022, 6, 8, 22, 0, 0),
     }
@@ -71,7 +125,7 @@ def test___read_metering_point_periods__returns_df_with_correct_metering_point_t
         metering_point_type: InputMeteringPointType,
         expected: MeteringPointType) -> None:
     # Arrange
-    row = _create_row(spark, metering_point_type=metering_point_type)
+    row = _create_metering_point_period_row(metering_point_type=metering_point_type)
     df = spark.createDataFrame(data=[row], schema=metering_point_period_schema)
     sut = CalculationInputReader(spark)
 
@@ -87,11 +141,11 @@ def test___read_metering_point_periods__returns_df_with_correct_metering_point_t
     [InputSettlementMethod.FLEX, SettlementMethod.FLEX],
     [InputSettlementMethod.NON_PROFILED, SettlementMethod.NON_PROFILED],
 ])
-def test___read_metering_point_periods__returns_df_with_correct_settlemet_methods(
+def test___read_metering_point_periods__returns_df_with_correct_settlement_methods(
         spark: SparkSession,
         settlement_method: InputSettlementMethod,
         expected: SettlementMethod) -> None:
-    row = _create_row(spark, settlement_method=settlement_method)
+    row = _create_metering_point_period_row(settlement_method=settlement_method)
     df = spark.createDataFrame(data=[row], schema=metering_point_period_schema)
     sut = CalculationInputReader(spark)
 
@@ -101,3 +155,63 @@ def test___read_metering_point_periods__returns_df_with_correct_settlemet_method
 
     # Assert
     assert actual.collect()[0][Colname.settlement_method] == expected.value
+
+
+@pytest.mark.parametrize("expected_schema, method_name, create_row", [
+    (metering_point_period_schema, CalculationInputReader.read_metering_point_periods, _create_metering_point_period_row),
+    (time_series_point_schema, CalculationInputReader.read_time_series_points, _create_time_series_point_row),
+    (charge_master_data_periods_schema, CalculationInputReader.read_charge_master_data_periods, _create_charge_master_period_row),
+    (charge_link_periods_schema, CalculationInputReader.read_charge_links_periods, _create_charge_link_period_row),
+    (charge_price_points_schema, CalculationInputReader.read_charge_price_points, _create_change_price_point_row),
+])
+def test__read_data__returns_df(
+        spark: SparkSession,
+        expected_schema: StructType,
+        method_name: str,
+        create_row: any) -> None:
+
+    # Arrange
+    row = create_row()
+    sut = CalculationInputReader(spark)
+    df = spark.createDataFrame(data=[row], schema=expected_schema)
+    method = getattr(sut, str(method_name.__name__))
+
+    # Act & Assert
+    with mock.patch.object(sut, "_read_table", return_value=df):
+        method()
+
+
+@pytest.mark.parametrize("expected_schema, method_name, create_row", [
+    (metering_point_period_schema, CalculationInputReader.read_metering_point_periods, _create_metering_point_period_row),
+    (time_series_point_schema, CalculationInputReader.read_time_series_points, _create_time_series_point_row),
+    (charge_master_data_periods_schema, CalculationInputReader.read_charge_master_data_periods, _create_charge_master_period_row),
+    (charge_link_periods_schema, CalculationInputReader.read_charge_links_periods, _create_charge_link_period_row),
+    (charge_price_points_schema, CalculationInputReader.read_charge_price_points, _create_change_price_point_row),
+])
+def test__read_data__throws_exception_when_schema_mismatch(
+        spark: SparkSession,
+        expected_schema: StructType,
+        method_name: str,
+        create_row: any) -> None:
+
+    # Arrange
+    row = create_row()
+    sut = CalculationInputReader(spark)
+    df = spark.createDataFrame(data=[row], schema=expected_schema)
+    df = df.withColumn("test", lit("test"))
+    method = getattr(sut, str(method_name.__name__))
+    is_exception_thrown = False
+
+    # Act
+    with mock.patch.object(sut, "_read_table", return_value=df):
+        try:
+            method()
+            print("This test fails because the schemas are identical!")
+        except Exception:
+            is_exception_thrown = True
+
+    # Assert
+    if is_exception_thrown:
+        assert True
+    else:
+        assert False
