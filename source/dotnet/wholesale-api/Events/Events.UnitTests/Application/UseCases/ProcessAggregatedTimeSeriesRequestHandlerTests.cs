@@ -17,15 +17,20 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.InboxEvents;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Moq;
+using NodaTime;
 using Xunit;
 using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 using AggregationPerGridArea = Energinet.DataHub.Edi.Requests.AggregationPerGridArea;
+using CalculationQuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
+using CalculationTimeSeriesPoint = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesPoint;
 using Period = Energinet.DataHub.Edi.Requests.Period;
 using TimeSeriesType = Energinet.DataHub.Edi.Requests.TimeSeriesType;
 
@@ -60,6 +65,11 @@ public class ProcessAggregatedTimeSeriesRequestHandlerTests
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(request.ToByteArray()));
 
+        var calculationResults = new List<CalculationResult> { CreateCalculationResult() };
+        calculationResultQueriesMock.Setup(calculationResultQueries =>
+                calculationResultQueries.GetAsync(It.IsAny<CalculationResultQuery>()))
+            .Returns(() => calculationResults.ToAsyncEnumerable());
+
         var sut = new AggregatedTimeSeriesRequestHandler(
             calculationResultQueriesMock.Object,
             senderMock.Object,
@@ -81,5 +91,21 @@ public class ProcessAggregatedTimeSeriesRequestHandlerTests
                 && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
             It.IsAny<CancellationToken>()),
             Times.Once);
+    }
+
+    private CalculationResult CreateCalculationResult()
+    {
+        return new CalculationResult(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "543",
+            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.Production,
+            "1223456",
+            "123456",
+            timeSeriesPoints: new CalculationTimeSeriesPoint[] { new(DateTime.Now, 0, CalculationQuantityQuality.Measured) },
+            ProcessType.Aggregation,
+            Instant.FromUtc(2022, 12, 31, 23, 0),
+            Instant.FromUtc(2023, 1, 31, 23, 0),
+            null);
     }
 }
