@@ -36,7 +36,7 @@ using TimeSeriesType = Energinet.DataHub.Edi.Requests.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Application.UseCases;
 
-public class ProcessAggregatedTimeSeriesRequestHandlerTests
+public class AggregatedTimeSeriesRequestHandlerTests
 {
     [Theory]
     [InlineAutoMoqData]
