@@ -20,5 +20,4 @@ public record CalculationResultQuery(
     TimeSeriesType TimeSeriesType,
     Instant StartOfPeriod,
     Instant EndOfPeriod,
-    string GridArea,
-    AggregationLevel AggregationLevel);
+    string GridArea);

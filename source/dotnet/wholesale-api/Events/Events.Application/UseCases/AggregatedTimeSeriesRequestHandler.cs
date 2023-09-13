@@ -65,8 +65,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
             MapTimeSerieType(aggregatedTimeSeriesRequestMessage.TimeSeriesType),
             aggregatedTimeSeriesRequestMessage.Period.Start,
             aggregatedTimeSeriesRequestMessage.Period.End,
-            MapGridAreaCode(aggregatedTimeSeriesRequestMessage),
-            MapAggregationLevel(aggregatedTimeSeriesRequestMessage));
+            MapGridAreaCode(aggregatedTimeSeriesRequestMessage));
 
         return await _calculationResultQueries.GetAsync(query)
             .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -79,13 +78,6 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
             TimeSeriesType.TotalConsumption => CalculationTimeSeriesType.TotalConsumption,
             _ => throw new InvalidOperationException($"Unknown time series type: {timeSeriesType}"),
         };
-    }
-
-    private static CalculationAggregationLevel MapAggregationLevel(AggregatedTimeSeriesRequest aggregatedTimeSeriesRequestMessage)
-    {
-        if (aggregatedTimeSeriesRequestMessage.AggregationPerGridArea != null)
-            return CalculationAggregationLevel.GridArea;
-        throw new InvalidOperationException($"Unknown aggregation level: {aggregatedTimeSeriesRequestMessage}");
     }
 
     private static string MapGridAreaCode(AggregatedTimeSeriesRequest aggregatedTimeSeriesRequestMessage)

@@ -94,8 +94,8 @@ public class CalculationResultQueries : ICalculationResultQueries
         return $@"
     SELECT {string.Join(", ", SqlColumnNames)}
     FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME}
-    WHERE {EnergyResultColumnNames.TimeSeriesType} = '{MapTimeSerieType(query.TimeSeriesType)}'
-    AND {EnergyResultColumnNames.AggregationLevel} = '{MapAggregationLevel(query.AggregationLevel)}'
+    WHERE {EnergyResultColumnNames.TimeSeriesType} = '{TimeSeriesTypeMapper.ToDeltaTableValue(query.TimeSeriesType)}'
+    AND {EnergyResultColumnNames.AggregationLevel} = '{AggregationLevelMapper.ToDeltaTableValue(query.TimeSeriesType, null, null)}'
     AND {EnergyResultColumnNames.GridArea} = '{query.GridArea}'
     AND {EnergyResultColumnNames.Time} >= '{query.StartOfPeriod.ToString()}'
     AND {EnergyResultColumnNames.Time} <= '{query.EndOfPeriod.ToString()}'
@@ -111,23 +111,6 @@ FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_N
 WHERE {EnergyResultColumnNames.BatchId} = '{batchId}'
 ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames.Time}
 ";
-    }
-
-    private string MapTimeSerieType(TimeSeriesType queryTimeSeriesType)
-    {
-        return queryTimeSeriesType switch
-        {
-            TimeSeriesType.Production => DeltaTableTimeSeriesType.Production,
-            TimeSeriesType.TotalConsumption => DeltaTableTimeSeriesType.TotalConsumption,
-            _ => throw new InvalidOperationException($"Unknown time series type: {queryTimeSeriesType}"),
-        };
-    }
-
-    private string MapAggregationLevel(AggregationLevel queryAggregationLevel)
-    {
-        if (queryAggregationLevel == AggregationLevel.GridArea)
-            return DeltaTableAggregationLevel.GridArea;
-        throw new InvalidOperationException($"Unsupported aggregation level: {queryAggregationLevel}");
     }
 
     public static string[] SqlColumnNames { get; } =
