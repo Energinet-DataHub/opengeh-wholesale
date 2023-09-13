@@ -95,7 +95,7 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
         var sqlStatementClient = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
         var request = CreateRequest(
             gridArea: gridAreaFilter,
-            timeSeriesType: timeSeriesTypeFilter.ToString(),
+            timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
         var sut = new CalculationResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions, calculationResultQueriesLoggerMock.Object);
@@ -137,17 +137,16 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
     }
 
     private CalculationResultQuery CreateRequest(
-        string? timeSeriesType = null,
+        TimeSeriesType? timeSeriesType = null,
         Instant? startOfPeriod = null,
         Instant? endOfPeriod = null,
         string gridArea = "101")
     {
         return new CalculationResultQuery(
-            TimeSeriesType: timeSeriesType ?? nameof(TimeSeriesType.Production),
+            TimeSeriesType: timeSeriesType ?? TimeSeriesType.Production,
             StartOfPeriod: startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
             EndOfPeriod: endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0),
-            GridArea: gridArea,
-            AggregationLevel: AggregationLevel.GridArea);
+            GridArea: gridArea);
     }
 
     private async Task AddCreatedRowsInArbitraryOrderAsync(IOptions<DeltaTableOptions> options)
