@@ -25,7 +25,7 @@ option csharp_namespace = "Energinet.DataHub.Wholesale.Contracts.IntegrationEven
  * A calculation will result in one or more energy results. Each result is
  * publishes as an instance of this type.
  */
-message EnergyResultCompletedV1 {
+message EnergyResultProducedV1 {
   /*
    * The ID of the batch creating the calculation result.
    * The ID is a UUID consisting of hexadecimal digits in the form XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX.
