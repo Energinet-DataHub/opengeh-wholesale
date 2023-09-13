@@ -11,6 +11,7 @@ variable "tenant_id" {
 variable "resource_group_name" {
   type        = string
   description = "Resource Group that the infrastructure code is deployed into."
+  default = ""
 }
 
 variable "enable_health_check_alerts" {
