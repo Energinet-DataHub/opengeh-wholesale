@@ -14,4 +14,13 @@
 
 namespace Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
 
-public record AggregationPerGridArea(string GridAreaCode, string GridAreaResponsible);
+public record AggregationPerGridArea : AggregationPerLevel
+{
+    public AggregationPerGridArea(string gridAreaCode, string gridAreaResponsible)
+        : base(gridAreaCode, null, null)
+    {
+        GridAreaResponsible = gridAreaResponsible;
+    }
+
+    public string GridAreaResponsible { get; init; }
+}

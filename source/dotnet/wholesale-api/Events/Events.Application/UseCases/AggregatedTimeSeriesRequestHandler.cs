@@ -70,7 +70,9 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
             TimeSeriesTypeMapper.MapTimeSerieType(aggregatedTimeSeriesRequestMessage.TimeSeriesType),
             aggregatedTimeSeriesRequestMessage.Period.Start,
             aggregatedTimeSeriesRequestMessage.Period.End,
-            aggregatedTimeSeriesRequestMessage.AggregationPerGridArea?.GridAreaCode ?? throw new InvalidOperationException($"Unknown grid area code"));
+            aggregatedTimeSeriesRequestMessage.AggregationPerLevel.GridAreaCode,
+            aggregatedTimeSeriesRequestMessage.AggregationPerLevel.EnergySupplierId,
+            aggregatedTimeSeriesRequestMessage.AggregationPerLevel.BalanceResponsibleId);
 
         var calculationResults = await _calculationResultQueries.GetAsync(query)
             .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);

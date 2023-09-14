@@ -14,4 +14,5 @@
 
 namespace Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
 
-public record AggregationPerBalanceResponsiblePartyPerGridArea(string GridAreaCode, string BalanceResponsiblePartyGlnOrEic, string EnergySupplierGlnOrEic);
+public record AggregationPerBalanceResponsiblePartyPerGridArea(string GridAreaCode, string BalanceResponsiblePartyGlnOrEic)
+    : AggregationPerLevel(GridAreaCode, null, BalanceResponsiblePartyGlnOrEic);

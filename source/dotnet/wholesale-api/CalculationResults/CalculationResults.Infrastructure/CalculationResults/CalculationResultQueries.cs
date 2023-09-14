@@ -96,10 +96,12 @@ public class CalculationResultQueries : ICalculationResultQueries
     SELECT {string.Join(", ", SqlColumnNames)}
     FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME}
     WHERE {EnergyResultColumnNames.TimeSeriesType} = '{TimeSeriesTypeMapper.ToDeltaTableValue(query.TimeSeriesType)}'
-    AND {EnergyResultColumnNames.AggregationLevel} = '{AggregationLevelMapper.ToDeltaTableValue(query.TimeSeriesType, null, null)}'
+    AND {EnergyResultColumnNames.AggregationLevel} = '{AggregationLevelMapper.ToDeltaTableValue(query.TimeSeriesType, query.EnergySupplierId, query.BalanceResponsibleId)}'
     AND {EnergyResultColumnNames.GridArea} = '{query.GridArea}'
     AND {EnergyResultColumnNames.Time} >= '{query.StartOfPeriod.ToString()}'
     AND {EnergyResultColumnNames.Time} <= '{query.EndOfPeriod.ToString()}'
+    AND {query.EnergySupplierId == null || query.EnergySupplierId == EnergyResultColumnNames.EnergySupplierId}
+    AND {query.BalanceResponsibleId == null || query.BalanceResponsibleId == EnergyResultColumnNames.BalanceResponsibleId}
     ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames.Time}
     ";
     }
