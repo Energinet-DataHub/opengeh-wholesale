@@ -323,8 +323,8 @@ def test__calculate_tariff_price_per_ga_co_es__rounds_total_amount_correctly(
     # Assert
     actual_amount = actual.collect()[0][Colname.total_amount]
     assert actual_amount == expected_total_amount
-    
-    
+
+
 def test_stuff(
     spark: SparkSession,
 ) -> None:
@@ -333,8 +333,11 @@ def test_stuff(
         _create_tariff_hour_row(charge_time=datetime(2020, 1, 1, 0)),
         _create_tariff_hour_row(charge_time=datetime(2020, 1, 1, 1)),
         _create_tariff_hour_row(charge_time=datetime(2020, 1, 1, 2)),
-        _create_tariff_hour_row(charge_time=datetime(2020, 1, 1, 2), metering_point_type=MeteringPointType.PRODUCTION),
-        _create_tariff_hour_row(charge_time=datetime(2020, 2, 1, 0))
+        _create_tariff_hour_row(
+            charge_time=datetime(2020, 1, 1, 2),
+            metering_point_type=MeteringPointType.PRODUCTION,
+        ),
+        _create_tariff_hour_row(charge_time=datetime(2020, 2, 1, 0)),
     ]
     tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
 

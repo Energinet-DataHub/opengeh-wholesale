@@ -81,7 +81,7 @@ def _get_production_and_consumption_metering_points(
         | (col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value)
     )
 
-  
+
 def group_by_monthly(df: DataFrame) -> DataFrame:
     df = df.withColumn("year", year(df["observation_time"]))
     df = df.withColumn("month", month(df["observation_time"]))
