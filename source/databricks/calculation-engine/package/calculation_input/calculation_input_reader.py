@@ -32,26 +32,36 @@ class CalculationInputReader:
         self.__spark = spark
 
     def read_metering_point_periods(self) -> DataFrame:
-        df = self._read_table(f"{paths.INPUT_DATABASE_NAME}.{paths.METERING_POINT_PERIODS_TABLE_NAME}")
+        df = self._read_table(
+            f"{paths.INPUT_DATABASE_NAME}.{paths.METERING_POINT_PERIODS_TABLE_NAME}"
+        )
         df = self._fix_settlement_method(df)
         df = self._fix_metering_point_type(df)
         return df
 
     def read_time_series_points(self) -> DataFrame:
-        return self._read_table(f"{paths.INPUT_DATABASE_NAME}.{paths.TIME_SERIES_POINTS_TABLE_NAME}")
+        return self._read_table(
+            f"{paths.INPUT_DATABASE_NAME}.{paths.TIME_SERIES_POINTS_TABLE_NAME}"
+        )
 
     def read_charge_links_periods(self) -> DataFrame:
-        df = self._read_table(f"{paths.INPUT_DATABASE_NAME}.{paths.CHARGE_LINK_PERIODS_TABLE_NAME}")
+        df = self._read_table(
+            f"{paths.INPUT_DATABASE_NAME}.{paths.CHARGE_LINK_PERIODS_TABLE_NAME}"
+        )
         df = self._add_charge_key_column(df)
         return df
 
     def read_charge_master_data_periods(self) -> DataFrame:
-        df = self._read_table(f"{paths.INPUT_DATABASE_NAME}.{paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}")
+        df = self._read_table(
+            f"{paths.INPUT_DATABASE_NAME}.{paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}"
+        )
         df = self._add_charge_key_column(df)
         return df
 
     def read_charge_price_points(self) -> DataFrame:
-        df = self._read_table(f"{paths.INPUT_DATABASE_NAME}.{paths.CHARGE_PRICE_POINTS_TABLE_NAME}")
+        df = self._read_table(
+            f"{paths.INPUT_DATABASE_NAME}.{paths.CHARGE_PRICE_POINTS_TABLE_NAME}"
+        )
         df = self._add_charge_key_column(df)
         return df
 
@@ -61,32 +71,103 @@ class CalculationInputReader:
     def _fix_metering_point_type(self, df: DataFrame) -> DataFrame:
         return df.withColumn(
             Colname.metering_point_type,
-            when(col(Colname.metering_point_type) == InputMeteringPointType.CONSUMPTION.value, lit(MeteringPointType.CONSUMPTION.value))
-            .when(col(Colname.metering_point_type) == InputMeteringPointType.PRODUCTION.value, lit(MeteringPointType.PRODUCTION.value))
-            .when(col(Colname.metering_point_type) == InputMeteringPointType.EXCHANGE.value, lit(MeteringPointType.EXCHANGE.value))
-            .when(col(Colname.metering_point_type) == InputMeteringPointType.VE_PRODUCTION.value, lit(MeteringPointType.VE_PRODUCTION.value))
-            .when(col(Colname.metering_point_type) == InputMeteringPointType.NET_PRODUCTION.value, lit(MeteringPointType.NET_PRODUCTION.value))
-            .when(col(Colname.metering_point_type) == InputMeteringPointType.SUPPLY_TO_GRID.value, lit(MeteringPointType.SUPPLY_TO_GRID.value))
-            .when(col(Colname.metering_point_type) == InputMeteringPointType.CONSUMPTION_FROM_GRID.value,
-                  lit(MeteringPointType.CONSUMPTION_FROM_GRID.value))
-            .when(col(Colname.metering_point_type) == InputMeteringPointType.WHOLESALE_SERVICES_INFORMATION.value,
-                  lit(MeteringPointType.WHOLESALE_SERVICES_INFORMATION.value))
-            .when(col(Colname.metering_point_type) == InputMeteringPointType.OWN_PRODUCTION.value, lit(MeteringPointType.OWN_PRODUCTION.value))
-            .when(col(Colname.metering_point_type) == InputMeteringPointType.NET_FROM_GRID.value, lit(MeteringPointType.NET_FROM_GRID.value))
-            .when(col(Colname.metering_point_type) == InputMeteringPointType.NET_TO_GRID.value, lit(MeteringPointType.NET_TO_GRID.value))
-            .when(col(Colname.metering_point_type) == InputMeteringPointType.TOTAL_CONSUMPTION.value, lit(MeteringPointType.TOTAL_CONSUMPTION.value))
-            .when(col(Colname.metering_point_type) == InputMeteringPointType.ELECTRICAL_HEATING.value,
-                  lit(MeteringPointType.ELECTRICAL_HEATING.value))
-            .when(col(Colname.metering_point_type) == InputMeteringPointType.NET_CONSUMPTION.value, lit(MeteringPointType.NET_CONSUMPTION.value))
-            .when(col(Colname.metering_point_type) == InputMeteringPointType.EFFECT_SETTLEMENT.value, lit(MeteringPointType.EFFECT_SETTLEMENT.value))
+            when(
+                col(Colname.metering_point_type)
+                == InputMeteringPointType.CONSUMPTION.value,
+                lit(MeteringPointType.CONSUMPTION.value),
+            )
+            .when(
+                col(Colname.metering_point_type)
+                == InputMeteringPointType.PRODUCTION.value,
+                lit(MeteringPointType.PRODUCTION.value),
+            )
+            .when(
+                col(Colname.metering_point_type)
+                == InputMeteringPointType.EXCHANGE.value,
+                lit(MeteringPointType.EXCHANGE.value),
+            )
+            .when(
+                col(Colname.metering_point_type)
+                == InputMeteringPointType.VE_PRODUCTION.value,
+                lit(MeteringPointType.VE_PRODUCTION.value),
+            )
+            .when(
+                col(Colname.metering_point_type)
+                == InputMeteringPointType.NET_PRODUCTION.value,
+                lit(MeteringPointType.NET_PRODUCTION.value),
+            )
+            .when(
+                col(Colname.metering_point_type)
+                == InputMeteringPointType.SUPPLY_TO_GRID.value,
+                lit(MeteringPointType.SUPPLY_TO_GRID.value),
+            )
+            .when(
+                col(Colname.metering_point_type)
+                == InputMeteringPointType.CONSUMPTION_FROM_GRID.value,
+                lit(MeteringPointType.CONSUMPTION_FROM_GRID.value),
+            )
+            .when(
+                col(Colname.metering_point_type)
+                == InputMeteringPointType.WHOLESALE_SERVICES_INFORMATION.value,
+                lit(MeteringPointType.WHOLESALE_SERVICES_INFORMATION.value),
+            )
+            .when(
+                col(Colname.metering_point_type)
+                == InputMeteringPointType.OWN_PRODUCTION.value,
+                lit(MeteringPointType.OWN_PRODUCTION.value),
+            )
+            .when(
+                col(Colname.metering_point_type)
+                == InputMeteringPointType.NET_FROM_GRID.value,
+                lit(MeteringPointType.NET_FROM_GRID.value),
+            )
+            .when(
+                col(Colname.metering_point_type)
+                == InputMeteringPointType.NET_TO_GRID.value,
+                lit(MeteringPointType.NET_TO_GRID.value),
+            )
+            .when(
+                col(Colname.metering_point_type)
+                == InputMeteringPointType.TOTAL_CONSUMPTION.value,
+                lit(MeteringPointType.TOTAL_CONSUMPTION.value),
+            )
+            .when(
+                col(Colname.metering_point_type)
+                == InputMeteringPointType.ELECTRICAL_HEATING.value,
+                lit(MeteringPointType.ELECTRICAL_HEATING.value),
+            )
+            .when(
+                col(Colname.metering_point_type)
+                == InputMeteringPointType.NET_CONSUMPTION.value,
+                lit(MeteringPointType.NET_CONSUMPTION.value),
+            )
+            .when(
+                col(Colname.metering_point_type)
+                == InputMeteringPointType.EFFECT_SETTLEMENT.value,
+                lit(MeteringPointType.EFFECT_SETTLEMENT.value),
+            ),
         )
 
     def _fix_settlement_method(self, df: DataFrame) -> DataFrame:
         return df.withColumn(
             Colname.settlement_method,
-            when(col(Colname.settlement_method) == InputSettlementMethod.FLEX.value, lit(SettlementMethod.FLEX.value))
-            .when(col(Colname.settlement_method) == InputSettlementMethod.NON_PROFILED.value, lit(SettlementMethod.NON_PROFILED.value))
+            when(
+                col(Colname.settlement_method) == InputSettlementMethod.FLEX.value,
+                lit(SettlementMethod.FLEX.value),
+            ).when(
+                col(Colname.settlement_method)
+                == InputSettlementMethod.NON_PROFILED.value,
+                lit(SettlementMethod.NON_PROFILED.value),
+            ),
         )
 
     def _add_charge_key_column(self, charge_df: DataFrame) -> DataFrame:
-        return charge_df.withColumn(Colname.charge_key, concat_ws("-", col(Colname.charge_id), col(Colname.charge_owner), col(Colname.charge_type)))
+        return charge_df.withColumn(
+            Colname.charge_key,
+            concat_ws(
+                "-",
+                col(Colname.charge_id),
+                col(Colname.charge_owner),
+                col(Colname.charge_type),
+            ),
+        )

@@ -16,18 +16,12 @@ import configargparse
 from configargparse import argparse
 import sys
 from package.calculation.calculator_args import CalculatorArgs
-from package.infrastructure import (
-    valid_date,
-    valid_list,
-    log,
-    paths
-)
+from package.infrastructure import valid_date, valid_list, log, paths
 import package.infrastructure.environment_variables as env_vars
 from package.codelists.process_type import ProcessType
 
 
 def get_calculator_args() -> CalculatorArgs:
-
     job_args = _get_valid_args_or_throw(sys.argv[1:])
     log(f"Job arguments: {str(job_args)}")
 
@@ -38,9 +32,7 @@ def get_calculator_args() -> CalculatorArgs:
     calculator_args = CalculatorArgs(
         data_storage_account_name=storage_account_name,
         data_storage_account_credentials=credential,
-        wholesale_container_path=paths.get_container_root_path(
-            storage_account_name
-        ),
+        wholesale_container_path=paths.get_container_root_path(storage_account_name),
         batch_id=job_args.batch_id,
         batch_grid_areas=job_args.batch_grid_areas,
         batch_period_start_datetime=job_args.batch_period_start_datetime,

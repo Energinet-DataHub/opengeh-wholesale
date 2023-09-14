@@ -24,6 +24,7 @@ using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.InboxEvents;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NodaTime;
 using Xunit;
@@ -44,12 +45,12 @@ public class AggregatedTimeSeriesRequestHandlerTests
         [Frozen] Mock<ICalculationResultQueries> calculationResultQueriesMock,
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<AggregatedTimeSeriesRequestMessageParser> aggregatedTimeSeriesRequestMessageParseMock,
-        [Frozen] Mock<AggregatedTimeSeriesMessageFactory> aggregatedTimeSeriesMessageFactoryMock)
+        [Frozen] Mock<AggregatedTimeSeriesMessageFactory> aggregatedTimeSeriesMessageFactoryMock,
+        [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> loggerMock)
     {
         // Arrange
-        var expectedAcceptedSubject = nameof(AggregatedTimeSeriesRequestAccepted);
+        const string expectedAcceptedSubject = nameof(AggregatedTimeSeriesRequestAccepted);
         var expectedReferenceId = Guid.NewGuid().ToString();
-
         var request = new AggregatedTimeSeriesRequest
         {
             AggregationPerGridarea = new AggregationPerGridArea(),
@@ -60,7 +61,6 @@ public class AggregatedTimeSeriesRequestHandlerTests
                 EndOfPeriod = new Timestamp(),
             },
         };
-
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(request.ToByteArray()));
@@ -74,7 +74,8 @@ public class AggregatedTimeSeriesRequestHandlerTests
             calculationResultQueriesMock.Object,
             senderMock.Object,
             aggregatedTimeSeriesRequestMessageParseMock.Object,
-            aggregatedTimeSeriesMessageFactoryMock.Object);
+            aggregatedTimeSeriesMessageFactoryMock.Object,
+            loggerMock.Object);
 
         // Act
         await sut.ProcessAsync(

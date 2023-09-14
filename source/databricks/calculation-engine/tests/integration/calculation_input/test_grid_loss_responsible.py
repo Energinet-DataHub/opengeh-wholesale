@@ -17,9 +17,8 @@ from package.calculation_input import get_grid_loss_responsible
 
 
 def test__get_grid_loss_responsible__returns_returns_non_empty_list() -> None:
-
     # Arrange
-    grid_areas = ['804']
+    grid_areas = ["804"]
 
     # Act
     grid_loss_responsible = get_grid_loss_responsible(grid_areas)
@@ -29,10 +28,11 @@ def test__get_grid_loss_responsible__returns_returns_non_empty_list() -> None:
 
 
 @pytest.mark.acceptance_test
-def test__get_grid_loss_responsible__when_no_grid_loss_responsible_in_grid_area__raise_exception() -> None:
-
+def test__get_grid_loss_responsible__when_no_grid_loss_responsible_in_grid_area__raise_exception() -> (
+    None
+):
     # Arrange
-    grid_areas = ['grid_area_without_grid_loss_responsible']
+    grid_areas = ["grid_area_without_grid_loss_responsible"]
 
     # Act and Assert
     with pytest.raises(Exception):

@@ -54,9 +54,10 @@ public class CalculationResultQueries : ICalculationResultQueries
 
     public async IAsyncEnumerable<EnergyResult> GetAsync(CalculationResultQuery query)
     {
-        var sql = CreateRequestSql(query);
-        await foreach (var p in GetInternalAsync(sql, query.StartOfPeriod, query.EndOfPeriod))
+        var sqlStatement = CreateRequestSql(query);
+        await foreach (var p in GetInternalAsync(sqlStatement, query.StartOfPeriod, query.EndOfPeriod))
             yield return p;
+        _logger.LogDebug("Fetched all calculation results for sql statement {SqlStatement}", sqlStatement);
     }
 
     private async IAsyncEnumerable<EnergyResult> GetInternalAsync(string sql, Instant periodStart, Instant periodEnd)

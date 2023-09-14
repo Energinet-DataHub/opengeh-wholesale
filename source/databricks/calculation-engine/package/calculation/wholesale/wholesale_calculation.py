@@ -16,11 +16,15 @@
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, when
 import package.calculation.wholesale.wholesale_initializer as init
-from package.calculation.wholesale.tariff_calculators import calculate_tariff_price_per_ga_co_es
+from package.calculation.wholesale.tariff_calculators import (
+    calculate_tariff_price_per_ga_co_es,
+)
 from package.codelists import ChargeResolution, MeteringPointType
 from package.constants import Colname
 from package.calculation_input import CalculationInputReader
-from package.calculation_output.wholesale_calculation_result_writer import WholesaleCalculationResultWriter
+from package.calculation_output.wholesale_calculation_result_writer import (
+    WholesaleCalculationResultWriter,
+)
 
 
 def execute(
@@ -29,20 +33,23 @@ def execute(
     metering_points_periods_df: DataFrame,  # TODO: use enriched_time_series
     time_series_point_df: DataFrame,  # TODO: use enriched_time_series
 ) -> None:
-
     # Get input data
-    metering_points_periods_df = _get_production_and_consumption_metering_points(metering_points_periods_df)
+    metering_points_periods_df = _get_production_and_consumption_metering_points(
+        metering_points_periods_df
+    )
     charge_master_data = calculation_input_reader.read_charge_master_data_periods()
     charge_links = calculation_input_reader.read_charge_links_periods()
     charge_prices = calculation_input_reader.read_charge_price_points()
 
     # Calculate and write to storage
-    _calculate_tariff_charges(wholesale_calculation_result_writer,
-                              metering_points_periods_df,
-                              time_series_point_df,
-                              charge_master_data,
-                              charge_links,
-                              charge_prices)
+    _calculate_tariff_charges(
+        wholesale_calculation_result_writer,
+        metering_points_periods_df,
+        time_series_point_df,
+        charge_master_data,
+        charge_links,
+        charge_prices,
+    )
 
 
 def _calculate_tariff_charges(
@@ -51,23 +58,24 @@ def _calculate_tariff_charges(
     time_series_point_df: DataFrame,
     charge_master_data: DataFrame,
     charge_links: DataFrame,
-    charge_prices: DataFrame
+    charge_prices: DataFrame,
 ) -> None:
-
     tariffs_hourly = init.get_tariff_charges(
         metering_points_periods_df,
         time_series_point_df,
         charge_master_data,
         charge_links,
         charge_prices,
-        ChargeResolution.HOUR
+        ChargeResolution.HOUR,
     )
 
     hourly_tariff_per_ga_co_es = calculate_tariff_price_per_ga_co_es(tariffs_hourly)
     wholesale_calculation_result_writer.write(hourly_tariff_per_ga_co_es)
 
 
-def _get_production_and_consumption_metering_points(metering_points_periods_df: DataFrame) -> DataFrame:
+def _get_production_and_consumption_metering_points(
+    metering_points_periods_df: DataFrame,
+) -> DataFrame:
     return metering_points_periods_df.filter(
         (col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value)
         | (col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value)
