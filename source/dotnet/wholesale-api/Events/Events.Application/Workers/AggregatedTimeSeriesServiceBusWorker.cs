@@ -82,8 +82,8 @@ public class AggregatedTimeSeriesServiceBusWorker : BackgroundService, IAsyncDis
             _logger.LogError(
                 arg.Exception,
                 "Process message encountered an exception. ErrorSource: {ErrorSource}, Entity Path: {EntityPath}",
-                arg.ErrorSource,
-                arg.EntityPath);
+                arg.ErrorSource, // Source of the error. For example, a Message completion operation failed.
+                arg.EntityPath); // The entity path for which the exception occurred. For example, the entity path of the queue.
         }
 
         return Task.CompletedTask;
