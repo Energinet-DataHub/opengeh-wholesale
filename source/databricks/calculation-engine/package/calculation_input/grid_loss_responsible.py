@@ -27,7 +27,7 @@ from package.codelists import MeteringPointType
 DEFAULT_FROM_TIME = datetime.strptime("2000-01-01T23:00:00+0000", "%Y-%m-%dT%H:%M:%S%z")
 
 # fmt: off
-GRID_AREA_RESPONSIBLE = [   # noqa
+GRID_AREA_RESPONSIBLE = [
     ('571313180480500149', 804, DEFAULT_FROM_TIME, None, MeteringPointType.PRODUCTION.value, '8100000000108'), # noqa
     ('570715000000682292', 512, DEFAULT_FROM_TIME, None, MeteringPointType.PRODUCTION.value, '5790002437717'), # noqa
     ('571313154313676325', 543, DEFAULT_FROM_TIME, None, MeteringPointType.PRODUCTION.value, '5790002437717'), # noqa
