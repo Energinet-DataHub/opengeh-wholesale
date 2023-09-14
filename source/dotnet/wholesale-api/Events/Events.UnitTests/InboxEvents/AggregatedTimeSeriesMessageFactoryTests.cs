@@ -48,7 +48,7 @@ public class AggregatedTimeSeriesMessageFactoryTests
         var sut = new AggregatedTimeSeriesMessageFactory();
 
         // Act
-        var response = sut.Create(new List<CalculationResult> { calculationResult }, expectedReferenceId, isRejected: false);
+        var response = sut.Create(new List<EnergyResult> { calculationResult }, expectedReferenceId, isRejected: false);
 
         // Assert
         Assert.NotNull(response);
@@ -66,9 +66,9 @@ public class AggregatedTimeSeriesMessageFactoryTests
         });
     }
 
-    private CalculationResult CreateCalculationResult()
+    private EnergyResult CreateCalculationResult()
     {
-        return new CalculationResult(
+        return new EnergyResult(
             _id,
             _batchId,
             _gridArea,

@@ -112,9 +112,9 @@ public class CalculationResultCompletedFactoryTests
         actual.Should().BeEquivalentTo(expected);
     }
 
-    private CalculationResult CreateCalculationResult()
+    private EnergyResult CreateCalculationResult()
     {
-        return new CalculationResult(
+        return new EnergyResult(
             _id,
             _batchId,
             _gridArea,
@@ -133,21 +133,21 @@ public class CalculationResultCompletedFactoryTests
             _fromGridArea);
     }
 
-    private CalculationResultCompleted CreateExpected(CalculationResult calculationResult)
+    private CalculationResultCompleted CreateExpected(EnergyResult energyResult)
     {
         var calculationResultCompleted = new CalculationResultCompleted
         {
-            BatchId = calculationResult.BatchId.ToString(),
+            BatchId = energyResult.BatchId.ToString(),
             Resolution = Resolution.Quarter,
             ProcessType = ProcessType.Aggregation,
             QuantityUnit = QuantityUnit.Kwh,
-            PeriodStartUtc = calculationResult.PeriodStart.ToTimestamp(),
-            PeriodEndUtc = calculationResult.PeriodEnd.ToTimestamp(),
+            PeriodStartUtc = energyResult.PeriodStart.ToTimestamp(),
+            PeriodEndUtc = energyResult.PeriodEnd.ToTimestamp(),
             TimeSeriesType = Contracts.Events.TimeSeriesType.FlexConsumption,
-            FromGridAreaCode = calculationResult.FromGridArea,
+            FromGridAreaCode = energyResult.FromGridArea,
         };
         calculationResultCompleted.TimeSeriesPoints.AddRange(
-            calculationResult.TimeSeriesPoints.Select(
+            energyResult.TimeSeriesPoints.Select(
                 p => new Contracts.Events.TimeSeriesPoint
                 {
                     Time = p.Time.ToTimestamp(),
@@ -155,27 +155,27 @@ public class CalculationResultCompletedFactoryTests
                     QuantityQuality = Contracts.Events.QuantityQuality.Estimated,
                 }));
 
-        if (calculationResult.EnergySupplierId == null && calculationResult.BalanceResponsibleId == null)
+        if (energyResult.EnergySupplierId == null && energyResult.BalanceResponsibleId == null)
         {
-            calculationResultCompleted.AggregationPerGridarea = new AggregationPerGridArea { GridAreaCode = calculationResult.GridArea };
+            calculationResultCompleted.AggregationPerGridarea = new AggregationPerGridArea { GridAreaCode = energyResult.GridArea };
         }
-        else if (calculationResult.BalanceResponsibleId != null && calculationResult.EnergySupplierId != null)
+        else if (energyResult.BalanceResponsibleId != null && energyResult.EnergySupplierId != null)
         {
             calculationResultCompleted.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea =
                 new AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea
                 {
-                    GridAreaCode = calculationResult.GridArea,
-                    EnergySupplierGlnOrEic = calculationResult.EnergySupplierId,
-                    BalanceResponsiblePartyGlnOrEic = calculationResult.BalanceResponsibleId,
+                    GridAreaCode = energyResult.GridArea,
+                    EnergySupplierGlnOrEic = energyResult.EnergySupplierId,
+                    BalanceResponsiblePartyGlnOrEic = energyResult.BalanceResponsibleId,
                 };
         }
-        else if (calculationResult.BalanceResponsibleId == null && calculationResult.EnergySupplierId != null)
+        else if (energyResult.BalanceResponsibleId == null && energyResult.EnergySupplierId != null)
         {
             calculationResultCompleted.AggregationPerEnergysupplierPerGridarea =
                 new AggregationPerEnergySupplierPerGridArea
                 {
-                    GridAreaCode = calculationResult.GridArea,
-                    EnergySupplierGlnOrEic = calculationResult.EnergySupplierId,
+                    GridAreaCode = energyResult.GridArea,
+                    EnergySupplierGlnOrEic = energyResult.EnergySupplierId,
                 };
         }
         else
@@ -183,8 +183,8 @@ public class CalculationResultCompletedFactoryTests
             calculationResultCompleted.AggregationPerBalanceresponsiblepartyPerGridarea =
                 new AggregationPerBalanceResponsiblePartyPerGridArea
                 {
-                    GridAreaCode = calculationResult.GridArea,
-                    BalanceResponsiblePartyGlnOrEic = calculationResult.BalanceResponsibleId,
+                    GridAreaCode = energyResult.GridArea,
+                    BalanceResponsiblePartyGlnOrEic = energyResult.BalanceResponsibleId,
                 };
         }
 

@@ -28,7 +28,7 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.InboxEvents;
 
 public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFactory
 {
-    public ServiceBusMessage Create(IList<CalculationResult> calculationResults, string referenceId, bool isRejected)
+    public ServiceBusMessage Create(IList<EnergyResult> calculationResults, string referenceId, bool isRejected)
     {
         var body = isRejected
             ? CreateRejectedResponse()
@@ -59,7 +59,7 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
         };
     }
 
-    private static IMessage CreateAcceptedResponse(IList<CalculationResult> calculationResults)
+    private static IMessage CreateAcceptedResponse(IList<EnergyResult> calculationResults)
     {
         var response = new AggregatedTimeSeriesRequestAccepted();
 
@@ -71,24 +71,24 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
         return response;
     }
 
-    private static Serie CreateSerie(CalculationResult calculationResult)
+    private static Serie CreateSerie(EnergyResult energyResult)
     {
-        var points = CreateTimeSeriesPoints(calculationResult);
+        var points = CreateTimeSeriesPoints(energyResult);
 
         var period = new PeriodContract()
         {
-            StartOfPeriod = new Timestamp() { Seconds = calculationResult.PeriodStart.ToUnixTimeSeconds(), },
-            EndOfPeriod = new Timestamp() { Seconds = calculationResult.PeriodEnd.ToUnixTimeSeconds(), },
+            StartOfPeriod = new Timestamp() { Seconds = energyResult.PeriodStart.ToUnixTimeSeconds(), },
+            EndOfPeriod = new Timestamp() { Seconds = energyResult.PeriodEnd.ToUnixTimeSeconds(), },
             Resolution = Resolution.Pt15M,
         };
 
         return new Serie()
         {
-            GridArea = calculationResult.GridArea,
+            GridArea = energyResult.GridArea,
             QuantityUnit = QuantityUnit.Kwh,
             Period = period,
             TimeSeriesPoints = { points },
-            TimeSeriesType = MapTimeSeriesType(calculationResult.TimeSeriesType),
+            TimeSeriesType = MapTimeSeriesType(energyResult.TimeSeriesType),
         };
     }
 
@@ -101,11 +101,11 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
         };
     }
 
-    private static IList<TimeSeriesPoint> CreateTimeSeriesPoints(CalculationResult calculationResult)
+    private static IList<TimeSeriesPoint> CreateTimeSeriesPoints(EnergyResult energyResult)
     {
         const decimal nanoFactor = 1_000_000_000;
         var points = new List<TimeSeriesPoint>();
-        foreach (var timeSeriesPoint in calculationResult.TimeSeriesPoints)
+        foreach (var timeSeriesPoint in energyResult.TimeSeriesPoints)
         {
             var units = decimal.ToInt64(timeSeriesPoint.Quantity);
             var nanos = decimal.ToInt32((timeSeriesPoint.Quantity - units) * nanoFactor);
