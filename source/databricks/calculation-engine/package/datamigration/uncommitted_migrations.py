@@ -17,15 +17,23 @@ import importlib.resources
 
 import package.infrastructure.environment_variables as env_vars
 from package.infrastructure.paths import WHOLESALE_CONTAINER_NAME
-from package.infrastructure.storage_account_access.data_lake_file_manager import DataLakeFileManager
+from package.infrastructure.storage_account_access.data_lake_file_manager import (
+    DataLakeFileManager,
+)
 from .committed_migrations import download_committed_migrations
 import package.datamigration.constants as c
 
 
 def _get_all_migrations() -> list[str]:
-    migration_files = list(importlib.resources.contents(f'{c.WHEEL_NAME}.{c.MIGRATION_SCRIPTS_FOLDER_PATH}'))
+    migration_files = list(
+        importlib.resources.contents(
+            f"{c.WHEEL_NAME}.{c.MIGRATION_SCRIPTS_FOLDER_PATH}"
+        )
+    )
     migration_files.sort()
-    return [file.removesuffix(".sql") for file in migration_files if file.endswith(".sql")]
+    return [
+        file.removesuffix(".sql") for file in migration_files if file.endswith(".sql")
+    ]
 
 
 def _print_count(

@@ -30,18 +30,27 @@ wholesale_results_schema = StructType(
         StructField(WholesaleResultColumnNames.calculation_id, StringType(), False),
         StructField(WholesaleResultColumnNames.calculation_type, StringType(), False),
         StructField(
-            WholesaleResultColumnNames.calculation_execution_time_start, TimestampType(), False
+            WholesaleResultColumnNames.calculation_execution_time_start,
+            TimestampType(),
+            False,
         ),
-        StructField(WholesaleResultColumnNames.calculation_result_id, StringType(), False),
-
+        StructField(
+            WholesaleResultColumnNames.calculation_result_id, StringType(), False
+        ),
         StructField(WholesaleResultColumnNames.grid_area, StringType(), False),
         StructField(WholesaleResultColumnNames.energy_supplier_id, StringType(), True),
         StructField(WholesaleResultColumnNames.quantity, DecimalType(18, 3), True),
         StructField(WholesaleResultColumnNames.quantity_unit, StringType(), True),
-        StructField(WholesaleResultColumnNames.quantity_qualities, ArrayType(StringType()), False),
+        StructField(
+            WholesaleResultColumnNames.quantity_qualities,
+            ArrayType(StringType()),
+            False,
+        ),
         StructField(WholesaleResultColumnNames.time, TimestampType(), False),
         StructField(WholesaleResultColumnNames.resolution, StringType(), False),
-        StructField(WholesaleResultColumnNames.metering_point_type, StringType(), False),
+        StructField(
+            WholesaleResultColumnNames.metering_point_type, StringType(), False
+        ),
         StructField(WholesaleResultColumnNames.settlement_method, StringType(), False),
         StructField(WholesaleResultColumnNames.price, DecimalType(18, 6), False),
         StructField(WholesaleResultColumnNames.amount, DecimalType(18, 6), False),
