@@ -44,6 +44,8 @@ GRID_AREA_RESPONSIBLE = [
 # fmt: on
 
 
+
+
 def get_grid_loss_responsible(grid_areas: list[str]) -> DataFrame:
     grid_loss_responsible_df = _get_all_grid_loss_responsible()
 
