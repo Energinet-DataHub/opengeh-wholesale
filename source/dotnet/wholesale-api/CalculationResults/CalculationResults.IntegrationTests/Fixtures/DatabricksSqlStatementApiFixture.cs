@@ -26,7 +26,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtur
 ///   1. 'InitializeAsync()' which is called before the first test in the test class is executed.
 ///   2. 'DisposeAsync()' which is called after the last test in the test class has been executed.
 /// </summary>
-public class DatabricksSqlStatementApiFixture
+public class DatabricksSqlStatementApiFixture : IAsyncLifetime
 {
     public DatabricksSqlStatementApiFixture()
     {
@@ -38,6 +38,16 @@ public class DatabricksSqlStatementApiFixture
     public DatabricksSchemaManager DatabricksSchemaManager { get; }
 
     private Mock<IOptions<Core.Databricks.SqlStatementExecution.Internal.AppSettings.DatabricksOptions>> DatabricksOptionsMock { get; }
+
+    public async Task InitializeAsync()
+    {
+        await DatabricksSchemaManager.CreateSchemaAsync();
+    }
+
+    public async Task DisposeAsync()
+    {
+        await DatabricksSchemaManager.DropSchemaAsync();
+    }
 
     public SqlStatementClient CreateSqlStatementClient(Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock, Mock<ILogger<SqlStatementClient>> loggerMock2)
     {

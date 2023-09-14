@@ -31,7 +31,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SettlementReports;
 
-public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlStatementApiFixture>, IAsyncLifetime
+public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlStatementApiFixture>
 {
     private const ProcessType DefaultProcessType = ProcessType.BalanceFixing;
     private const string GridAreaA = "805";
@@ -44,16 +44,6 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
     public SettlementReportResultQueriesTests(DatabricksSqlStatementApiFixture fixture)
     {
         _fixture = fixture;
-    }
-
-    public async Task InitializeAsync()
-    {
-        await _fixture.DatabricksSchemaManager.CreateSchemaAsync();
-    }
-
-    public async Task DisposeAsync()
-    {
-        await _fixture.DatabricksSchemaManager.DropSchemaAsync();
     }
 
     [Theory]
