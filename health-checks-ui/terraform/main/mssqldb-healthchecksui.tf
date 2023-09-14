@@ -13,6 +13,8 @@ module "mssqldb_health_checks_ui" {
   server_id            = data.azurerm_mssql_server.mssqlsrv.id
   sql_server_name      = data.azurerm_mssql_server.mssqlsrv.name
 
+  elastic_pool_id      = data.azurerm_key_vault_secret.mssql_data_elastic_pool_id.value
+
   monitor_alerts_action_group_id     = data.azurerm_key_vault_secret.primary_action_group_id.value
   monitor_alerts_resource_group_name = azurerm_resource_group.this.name
 }

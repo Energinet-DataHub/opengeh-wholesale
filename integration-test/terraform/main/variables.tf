@@ -23,10 +23,6 @@ variable "domain_name_short" {
   description = "Shortest possible edition of the domain name."
 }
 
-variable "project_name" {
-  type = string
-}
-
 variable "github_username" {
   type        = string
   description = "Username used to access Github from Databricks jobs."

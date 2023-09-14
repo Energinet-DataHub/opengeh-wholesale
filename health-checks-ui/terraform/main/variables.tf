@@ -23,21 +23,6 @@ variable "domain_name_short" {
   description = "Shortest possible edition of the domain name."
 }
 
-variable "project_name" {
-  type = string
-}
-
-variable "github_personal_access_token" {
-  type        = string
-  description = "Personal access token for Github access"
-}
-
-variable "developers_security_group_object_id" {
-  type        = string
-  description = "(Optional) The Object ID of the Azure AD security group containing DataHub developers."
-  default     = null
-}
-
 variable "shared_resources_keyvault_name" {
   type        = string
   description = "Name of the KeyVault, that contains the shared secrets"
@@ -46,6 +31,12 @@ variable "shared_resources_keyvault_name" {
 variable "shared_resources_resource_group_name" {
   type        = string
   description = "Name of the Resource Group, that contains the shared resources."
+}
+
+variable "developer_ad_group_name" {
+  type        = string
+  description = "(Optional) Name of the AD group containing developers to have read access to SQL database."
+  default     = ""
 }
 
 variable "hosted_deployagent_public_ip_range" {
