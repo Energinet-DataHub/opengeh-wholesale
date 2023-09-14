@@ -17,6 +17,9 @@ from .batch_grid_areas import (
     check_all_grid_areas_have_metering_points,
 )
 from .calculation_input_reader import CalculationInputReader
-from .grid_loss_responsible import get_grid_loss_responsible, _get_all_grid_loss_responsible
+from .grid_loss_responsible import (
+    get_grid_loss_responsible,
+    _get_all_grid_loss_responsible,
+)
 from .metering_point_periods import get_metering_point_periods_df
 from .get_calculation_input import get_calculation_input

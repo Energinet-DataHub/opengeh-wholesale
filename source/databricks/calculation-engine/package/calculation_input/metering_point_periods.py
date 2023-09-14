@@ -20,7 +20,11 @@ from pyspark.sql.functions import (
 )
 from package.constants import Colname
 from datetime import datetime
-from package.calculation_input import CalculationInputReader, get_batch_grid_areas_df, check_all_grid_areas_have_metering_points
+from package.calculation_input import (
+    CalculationInputReader,
+    get_batch_grid_areas_df,
+    check_all_grid_areas_have_metering_points,
+)
 
 
 def get_metering_point_periods_df(
@@ -29,12 +33,15 @@ def get_metering_point_periods_df(
     period_end_datetime: datetime,
     batch_grid_areas: list[str],
 ) -> DataFrame:
-
     metering_points_periods_df = calculation_input_reader.read_metering_point_periods()
 
-    metering_points_periods_df = _filter_by_grid_area(metering_points_periods_df, batch_grid_areas)
+    metering_points_periods_df = _filter_by_grid_area(
+        metering_points_periods_df, batch_grid_areas
+    )
 
-    metering_points_periods_df = _filter_by_period(metering_points_periods_df, period_start_datetime, period_end_datetime)
+    metering_points_periods_df = _filter_by_period(
+        metering_points_periods_df, period_start_datetime, period_end_datetime
+    )
 
     metering_points_periods_df = metering_points_periods_df.select(
         Colname.metering_point_id,
@@ -53,14 +60,13 @@ def get_metering_point_periods_df(
     return metering_points_periods_df
 
 
-def _filter_by_grid_area(metering_points_periods_df: DataFrame, batch_grid_areas: list[str]) -> DataFrame:
-
+def _filter_by_grid_area(
+    metering_points_periods_df: DataFrame, batch_grid_areas: list[str]
+) -> DataFrame:
     spark = SparkSession.builder.getOrCreate()
     grid_area_df = get_batch_grid_areas_df(batch_grid_areas, spark)
 
-    check_all_grid_areas_have_metering_points(
-        grid_area_df, metering_points_periods_df
-    )
+    check_all_grid_areas_have_metering_points(grid_area_df, metering_points_periods_df)
 
     grid_area_df = grid_area_df.withColumnRenamed(Colname.grid_area, "ga_GridAreaCode")
     metering_points_periods_df = metering_points_periods_df.join(
@@ -76,9 +82,8 @@ def _filter_by_grid_area(metering_points_periods_df: DataFrame, batch_grid_areas
 def _filter_by_period(
     metering_points_periods_df: DataFrame,
     period_start_datetime: datetime,
-    period_end_datetime: datetime
+    period_end_datetime: datetime,
 ) -> DataFrame:
-
     metering_point_periods_df = metering_points_periods_df.where(
         col(Colname.from_date) < period_end_datetime
     ).where(
