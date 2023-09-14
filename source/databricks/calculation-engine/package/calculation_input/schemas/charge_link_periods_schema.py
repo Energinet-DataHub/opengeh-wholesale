@@ -41,29 +41,23 @@ charge_link_periods_schema = StructType(
         # The ID is provided by the charge owner (actor).
         # Example: 0010643756
         StructField("charge_id", StringType(), False),
-
         # "subscription" | "fee" | "tariff"
         # Example: subscription
         StructField("charge_type", StringType(), False),
-
         # The unique GLN/EIC number of the charge owner (actor)
         # Example: 8100000000030
         StructField("charge_owner_id", StringType(), False),
-
         # GSRN (18 characters) that uniquely identifies the metering point
         # The field is from the charge link.
         # Example: 578710000000000103
         StructField("metering_point_id", StringType(), False),
-
         # Quantity (also known as factor)
         # Value is 1 or larger. For tariffs it's always 1.
         # The field is from the charge link.
         StructField("quantity", IntegerType(), False),
-
         # The start date of the link period. The start date must be the UTC time of the beginning of a date in the given timezone/DST.
         # The date is inclusive.
         StructField("from_date", TimestampType(), False),
-
         # The to-date of the link period. The to-date must be the UTC time of the beginning of a date in the given timezone/DST.
         # The moment is exclusive.
         # All but the `to_date` of the last period must have value. The `to_date` of the last period can be null for subscriptions and tariffs.

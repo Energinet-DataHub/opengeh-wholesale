@@ -79,7 +79,9 @@ def calculate_tariff_price_per_ga_co_es(tariffs: DataFrame) -> DataFrame:
         Colname.charge_price,
         Colname.total_quantity,
         Colname.charge_count,
-        (col(Colname.charge_price) * col(Colname.total_quantity)).alias(Colname.total_amount),
+        (col(Colname.charge_price) * col(Colname.total_quantity)).alias(
+            Colname.total_amount
+        ),
         lit(ChargeUnit.KWH.value).alias(Colname.unit),
         Colname.qualities,
     )
@@ -87,25 +89,22 @@ def calculate_tariff_price_per_ga_co_es(tariffs: DataFrame) -> DataFrame:
 
 def _sum_quantity_and_count_charges(tariffs: DataFrame) -> DataFrame:
     # Group by all columns that actually defines the groups, but also the additional columns that need to be present after aggregation
-    agg_df = (
-        tariffs.groupBy(
-            Colname.energy_supplier_id,
-            Colname.grid_area,
-            Colname.charge_time,
-            Colname.metering_point_type,
-            Colname.settlement_method,
-            Colname.charge_key,
-            Colname.charge_id,
-            Colname.charge_type,
-            Colname.charge_owner,
-            Colname.charge_tax,
-            Colname.charge_resolution,
-            Colname.charge_price,
-        )
-        .agg(
-            sum(Colname.quantity).alias(Colname.total_quantity),
-            count(Colname.metering_point_id).alias(Colname.charge_count),
-            flatten(collect_set(Colname.qualities)).alias(Colname.qualities),
-        )
+    agg_df = tariffs.groupBy(
+        Colname.energy_supplier_id,
+        Colname.grid_area,
+        Colname.charge_time,
+        Colname.metering_point_type,
+        Colname.settlement_method,
+        Colname.charge_key,
+        Colname.charge_id,
+        Colname.charge_type,
+        Colname.charge_owner,
+        Colname.charge_tax,
+        Colname.charge_resolution,
+        Colname.charge_price,
+    ).agg(
+        sum(Colname.quantity).alias(Colname.total_quantity),
+        count(Colname.metering_point_id).alias(Colname.charge_count),
+        flatten(collect_set(Colname.qualities)).alias(Colname.qualities),
     )
     return agg_df

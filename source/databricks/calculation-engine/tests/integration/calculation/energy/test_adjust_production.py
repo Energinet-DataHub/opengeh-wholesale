@@ -149,7 +149,9 @@ def expected_schema() -> StructType:
 
 
 @pytest.fixture(scope="module")
-def hourly_production_result_row_factory(spark: SparkSession, hourly_production_result_schema: StructType) -> Callable[..., DataFrame]:
+def hourly_production_result_row_factory(
+    spark: SparkSession, hourly_production_result_schema: StructType
+) -> Callable[..., DataFrame]:
     """
     Factory to generate a single row of  data, with default parameters as specified above.
     """
@@ -182,7 +184,9 @@ def hourly_production_result_row_factory(spark: SparkSession, hourly_production_
 
 
 @pytest.fixture(scope="module")
-def negative_grid_loss_result_row_factory(spark: SparkSession, negative_grid_loss_result_schema: StructType) -> Callable[..., DataFrame]:
+def negative_grid_loss_result_row_factory(
+    spark: SparkSession, negative_grid_loss_result_schema: StructType
+) -> Callable[..., DataFrame]:
     """
     Factory to generate a single row of  data, with default parameters as specified above.
     """
@@ -211,7 +215,9 @@ def negative_grid_loss_result_row_factory(spark: SparkSession, negative_grid_los
 
 
 @pytest.fixture(scope="module")
-def sys_cor_row_factory(spark: SparkSession, sys_cor_schema: StructType) -> Callable[..., DataFrame]:
+def sys_cor_row_factory(
+    spark: SparkSession, sys_cor_schema: StructType
+) -> Callable[..., DataFrame]:
     """
     Factory to generate a single row of  data, with default parameters as specified above.
     """
@@ -254,11 +260,11 @@ def test_grid_area_negative_grid_loss_is_added_to_grid_loss_responsible_energy_s
         negative_grid_loss_result_row_factory()
     )
 
-    grid_loss_sys_cor_master_data = sys_cor_row_factory(
-        supplier="A"
-    )
+    grid_loss_sys_cor_master_data = sys_cor_row_factory(supplier="A")
 
-    result_df = adjust_production(production, negative_grid_loss, grid_loss_sys_cor_master_data)
+    result_df = adjust_production(
+        production, negative_grid_loss, grid_loss_sys_cor_master_data
+    )
 
     assert (
         result_df.filter(col(Colname.energy_supplier_id) == "A").collect()[0][
@@ -281,11 +287,11 @@ def test_grid_area_grid_loss_is_not_added_to_non_grid_loss_energy_responsible(
         negative_grid_loss_result_row_factory()
     )
 
-    grid_loss_sys_cor_master_data = sys_cor_row_factory(
-        supplier="B"
-    )
+    grid_loss_sys_cor_master_data = sys_cor_row_factory(supplier="B")
 
-    result_df = adjust_production(production, negative_grid_loss, grid_loss_sys_cor_master_data)
+    result_df = adjust_production(
+        production, negative_grid_loss, grid_loss_sys_cor_master_data
+    )
 
     assert (
         result_df.filter(col(Colname.energy_supplier_id) == "A").collect()[0][
@@ -312,11 +318,11 @@ def test_result_dataframe_contains_same_number_of_results_with_same_energy_suppl
         negative_grid_loss_result_row_factory()
     )
 
-    grid_loss_sys_cor_master_data = sys_cor_row_factory(
-        supplier="C"
-    )
+    grid_loss_sys_cor_master_data = sys_cor_row_factory(supplier="C")
 
-    result_df = adjust_production(production, negative_grid_loss, grid_loss_sys_cor_master_data)
+    result_df = adjust_production(
+        production, negative_grid_loss, grid_loss_sys_cor_master_data
+    )
 
     result_df_collect = result_df.collect()
     assert result_df.count() == 3
@@ -385,11 +391,11 @@ def test_correct_negative_grid_loss_entry_is_used_to_determine_energy_responsibl
         supplier="B", valid_from=time_window_3["start"], valid_to=None
     )
 
-    grid_loss_sys_cor_master_data = sc_row_1.union(
-        sc_row_2
-    ).union(sc_row_3)
+    grid_loss_sys_cor_master_data = sc_row_1.union(sc_row_2).union(sc_row_3)
 
-    result_df = adjust_production(production, negative_grid_loss, grid_loss_sys_cor_master_data)
+    result_df = adjust_production(
+        production, negative_grid_loss, grid_loss_sys_cor_master_data
+    )
 
     assert result_df.count() == 3
     assert (
@@ -425,11 +431,11 @@ def test_that_the_correct_metering_point_type_is_put_on_the_result(
         negative_grid_loss_result_row_factory()
     )
 
-    grid_loss_sys_cor_master_data = sys_cor_row_factory(
-        supplier="A"
-    )
+    grid_loss_sys_cor_master_data = sys_cor_row_factory(supplier="A")
 
-    result_df = adjust_production(production, negative_grid_loss, grid_loss_sys_cor_master_data)
+    result_df = adjust_production(
+        production, negative_grid_loss, grid_loss_sys_cor_master_data
+    )
 
     assert (
         result_df.filter(col(Colname.energy_supplier_id) == "A").collect()[0][

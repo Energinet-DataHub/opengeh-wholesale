@@ -30,8 +30,14 @@ from package.codelists import (
 )
 from package.constants import Colname, EnergyResultColumnNames
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
-from package.calculation_output.energy_calculation_result_writer import EnergyCalculationResultWriter, _get_column_group_for_calculation_result_id
-from tests.contract_utils import assert_contract_matches_schema, get_column_names_from_contract
+from package.calculation_output.energy_calculation_result_writer import (
+    EnergyCalculationResultWriter,
+    _get_column_group_for_calculation_result_id,
+)
+from tests.contract_utils import (
+    assert_contract_matches_schema,
+    get_column_names_from_contract,
+)
 from typing import Any
 
 DEFAULT_BATCH_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
@@ -84,8 +90,9 @@ def _create_result_df(spark: SparkSession, row: List[dict]) -> DataFrame:
     )
 
 
-def _create_result_df_corresponding_to_four_calculation_results(spark: SparkSession) -> DataFrame:
-
+def _create_result_df_corresponding_to_four_calculation_results(
+    spark: SparkSession,
+) -> DataFrame:
     OTHER_TIME_WINDOW_START = DEFAULT_TIME_WINDOW_END
     OTHER_TIME_WINDOW_END = OTHER_TIME_WINDOW_START + timedelta(hours=1)
     OTHER_GRID_AREA = "111"
@@ -95,15 +102,27 @@ def _create_result_df_corresponding_to_four_calculation_results(spark: SparkSess
     rows = [
         # First result
         _create_result_row(),
-        _create_result_row(time_window_start=OTHER_TIME_WINDOW_START, time_window_end=OTHER_TIME_WINDOW_END),
+        _create_result_row(
+            time_window_start=OTHER_TIME_WINDOW_START,
+            time_window_end=OTHER_TIME_WINDOW_END,
+        ),
         # Second result
         _create_result_row(grid_area=OTHER_GRID_AREA),
-        _create_result_row(grid_area=OTHER_GRID_AREA, time_window_start=OTHER_TIME_WINDOW_START, time_window_end=OTHER_TIME_WINDOW_END),
+        _create_result_row(
+            grid_area=OTHER_GRID_AREA,
+            time_window_start=OTHER_TIME_WINDOW_START,
+            time_window_end=OTHER_TIME_WINDOW_END,
+        ),
         # Third result
         _create_result_row(from_grid_area=OTHER_FROM_GRID_AREA),
-        _create_result_row(from_grid_area=OTHER_FROM_GRID_AREA, time_window_start=OTHER_TIME_WINDOW_START, time_window_end=OTHER_TIME_WINDOW_END),
+        _create_result_row(
+            from_grid_area=OTHER_FROM_GRID_AREA,
+            time_window_start=OTHER_TIME_WINDOW_START,
+            time_window_end=OTHER_TIME_WINDOW_END,
+        ),
         # Fourth result
-        _create_result_row(energy_supplier_id=OTHER_ENERGY_SUPPLIER_ID)]
+        _create_result_row(energy_supplier_id=OTHER_ENERGY_SUPPLIER_ID),
+    ]
 
     return spark.createDataFrame(data=rows).withColumn(
         Colname.sum_quantity, col(Colname.sum_quantity).cast("decimal(18, 3)")
@@ -151,12 +170,18 @@ batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"  # Needed in both test param a
     "column_name, column_value",
     [
         (EnergyResultColumnNames.calculation_id, batch_id),
-        (EnergyResultColumnNames.calculation_execution_time_start, DEFAULT_BATCH_EXECUTION_START),
+        (
+            EnergyResultColumnNames.calculation_execution_time_start,
+            DEFAULT_BATCH_EXECUTION_START,
+        ),
         (EnergyResultColumnNames.calculation_type, DEFAULT_PROCESS_TYPE.value),
         (EnergyResultColumnNames.time_series_type, DEFAULT_TIME_SERIES_TYPE.value),
         (EnergyResultColumnNames.grid_area, DEFAULT_GRID_AREA),
         (EnergyResultColumnNames.from_grid_area, DEFAULT_FROM_GRID_AREA),
-        (EnergyResultColumnNames.balance_responsible_id, DEFAULT_BALANCE_RESPONSIBLE_ID),
+        (
+            EnergyResultColumnNames.balance_responsible_id,
+            DEFAULT_BALANCE_RESPONSIBLE_ID,
+        ),
         (EnergyResultColumnNames.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
         (EnergyResultColumnNames.time, datetime(2020, 1, 1, 0, 0)),
         (EnergyResultColumnNames.quantity, Decimal("1.100")),
@@ -223,8 +248,9 @@ def test__write__writes_columns_matching_contract(
     assert_contract_matches_schema(contract_path, actual_df.schema)
 
 
-def test__write__writes_calculation_result_id(spark: SparkSession, contracts_path: str, migrations_executed_per_test: None) -> None:
-
+def test__write__writes_calculation_result_id(
+    spark: SparkSession, contracts_path: str, migrations_executed_per_test: None
+) -> None:
     # Arrange
     result_df = _create_result_df_corresponding_to_four_calculation_results(spark)
     EXPECTED_NUMBER_OF_CALCULATION_RESULT_IDS = 4
@@ -242,22 +268,28 @@ def test__write__writes_calculation_result_id(spark: SparkSession, contracts_pat
     )
 
     # Assert
-    actual_df = spark.read.table(TABLE_NAME).select(col(EnergyResultColumnNames.calculation_result_id))
+    actual_df = spark.read.table(TABLE_NAME).select(
+        col(EnergyResultColumnNames.calculation_result_id)
+    )
 
     assert actual_df.distinct().count() == EXPECTED_NUMBER_OF_CALCULATION_RESULT_IDS
 
 
-def test__get_column_group_for_calculation_result_id__returns_expected_column_names() -> None:
+def test__get_column_group_for_calculation_result_id__returns_expected_column_names() -> (
+    None
+):
     # Arrange
-    expected_column_names = [EnergyResultColumnNames.calculation_id,
-                             EnergyResultColumnNames.calculation_execution_time_start,
-                             EnergyResultColumnNames.calculation_type,
-                             EnergyResultColumnNames.grid_area,
-                             EnergyResultColumnNames.time_series_type,
-                             EnergyResultColumnNames.aggregation_level,
-                             EnergyResultColumnNames.from_grid_area,
-                             EnergyResultColumnNames.balance_responsible_id,
-                             EnergyResultColumnNames.energy_supplier_id]
+    expected_column_names = [
+        EnergyResultColumnNames.calculation_id,
+        EnergyResultColumnNames.calculation_execution_time_start,
+        EnergyResultColumnNames.calculation_type,
+        EnergyResultColumnNames.grid_area,
+        EnergyResultColumnNames.time_series_type,
+        EnergyResultColumnNames.aggregation_level,
+        EnergyResultColumnNames.from_grid_area,
+        EnergyResultColumnNames.balance_responsible_id,
+        EnergyResultColumnNames.energy_supplier_id,
+    ]
 
     # Act
     actual = _get_column_group_for_calculation_result_id()
@@ -266,15 +298,18 @@ def test__get_column_group_for_calculation_result_id__returns_expected_column_na
     assert actual == expected_column_names
 
 
-def test__get_column_group_for_calculation_result_id__excludes_exepected_other_column_names(contracts_path: str) -> None:
-
+def test__get_column_group_for_calculation_result_id__excludes_exepected_other_column_names(
+    contracts_path: str,
+) -> None:
     # This class is a guard against adding new columns without considering how the column affects the generation of calculation result IDs
 
     # Arrange
-    expected_other_columns = [EnergyResultColumnNames.time,
-                              EnergyResultColumnNames.quantity_quality,
-                              EnergyResultColumnNames.quantity,
-                              EnergyResultColumnNames.calculation_result_id]
+    expected_other_columns = [
+        EnergyResultColumnNames.time,
+        EnergyResultColumnNames.quantity_quality,
+        EnergyResultColumnNames.quantity,
+        EnergyResultColumnNames.calculation_result_id,
+    ]
     contract_path = f"{contracts_path}/energy-result-table-column-names.json"
     all_columns = get_column_names_from_contract(contract_path)
 

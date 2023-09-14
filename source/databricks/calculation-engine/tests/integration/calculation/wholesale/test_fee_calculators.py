@@ -40,7 +40,9 @@ def test__calculate_fee_charge_price__simple(
     from_date = datetime(2020, 1, 1, 0, 0)
     to_date = datetime(2020, 1, 2, 0, 0)
     time = datetime(2020, 1, 1, 0, 0)
-    charges_df = charge_master_data_factory(from_date, to_date, charge_type=ChargeType.FEE.value)
+    charges_df = charge_master_data_factory(
+        from_date, to_date, charge_type=ChargeType.FEE.value
+    )
     charge_links_df = charge_links_factory(from_date, to_date)
     charge_prices_df = charge_prices_factory(time)
     metering_point_df = metering_point_period_factory(from_date, to_date)
@@ -82,7 +84,9 @@ def test__calculate_fee_charge_price__two_fees(
     from_date = datetime(2020, 1, 1, 0, 0)
     to_date = datetime(2020, 1, 2, 0, 0)
     time = datetime(2020, 1, 1, 0, 0)
-    charges_df = charge_master_data_factory(from_date, to_date, charge_type=ChargeType.FEE.value)
+    charges_df = charge_master_data_factory(
+        from_date, to_date, charge_type=ChargeType.FEE.value
+    )
     charge_links_df = charge_links_factory(from_date, to_date)
     metering_point_df = metering_point_period_factory(from_date, to_date)
 
