@@ -35,6 +35,7 @@
 			"editor.formatOnSave": true
 		},
 		"python.formatting.provider": "black",
+		"black-formatter.args": ["--line-length", "88"],
 		"python.defaultInterpreterPath": "/opt/conda/bin/python",
 		"python.languageServer": "Pylance",
 		"markdownlint.config": {
