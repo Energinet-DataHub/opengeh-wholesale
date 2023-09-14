@@ -29,6 +29,8 @@ public class AggregatedTimeSeriesServiceBusWorker : BackgroundService, IAsyncDis
     private readonly IAggregatedTimeSeriesRequestHandler _aggregatedTimeSeriesRequestHandler;
     private readonly ILogger<AggregatedTimeSeriesRequestHandler> _logger;
     private readonly ServiceBusProcessor _serviceBusProcessor;
+    private readonly string _serviceName;
+    private readonly Dictionary<string, object> _loggingScope;
 
     public AggregatedTimeSeriesServiceBusWorker(
         IAggregatedTimeSeriesRequestHandler aggregatedTimeSeriesRequestHandler,
@@ -39,13 +41,19 @@ public class AggregatedTimeSeriesServiceBusWorker : BackgroundService, IAsyncDis
         _serviceBusProcessor = serviceBusClient.CreateProcessor(options.Value.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME);
         _aggregatedTimeSeriesRequestHandler = aggregatedTimeSeriesRequestHandler;
         _logger = logger;
+
+        _serviceName = GetType().Name;
+        _loggingScope = new Dictionary<string, object> { ["HostedService"] = _serviceName };
     }
 
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        _logger.LogDebug("Stopping the service bus subscription");
-        await _serviceBusProcessor.CloseAsync(cancellationToken).ConfigureAwait(false);
-        await base.StopAsync(cancellationToken).ConfigureAwait(false);
+        using (_logger.BeginScope(_loggingScope))
+        {
+            await _serviceBusProcessor.CloseAsync(cancellationToken).ConfigureAwait(false);
+            await base.StopAsync(cancellationToken).ConfigureAwait(false);
+            _logger.LogWarning("{Worker} has stopped at {Time}", _serviceName, DateTimeOffset.Now);
+        }
     }
 
     public async ValueTask DisposeAsync()
@@ -57,34 +65,49 @@ public class AggregatedTimeSeriesServiceBusWorker : BackgroundService, IAsyncDis
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         if (_serviceBusProcessor == null) throw new ArgumentNullException();
+        using (_logger.BeginScope(_loggingScope))
+        {
+            _logger.LogInformation("{Worker} started", _serviceName);
+            _serviceBusProcessor.ProcessMessageAsync += ProcessMessageAsync;
+            _serviceBusProcessor.ProcessErrorAsync += ProcessErrorAsync;
 
-        _serviceBusProcessor.ProcessMessageAsync += ProcessMessageAsync;
-        _serviceBusProcessor.ProcessErrorAsync += ProcessErrorAsync;
-
-        await _serviceBusProcessor.StartProcessingAsync(stoppingToken).ConfigureAwait(false);
+            await _serviceBusProcessor.StartProcessingAsync(stoppingToken).ConfigureAwait(false);
+        }
     }
 
     private Task ProcessErrorAsync(ProcessErrorEventArgs arg)
     {
-        _logger.LogError(
-            arg.Exception,
-            "Message handler encountered an exception. ErrorSource: {ErrorSource}, Entity Path: {EntityPath}",
-            arg.ErrorSource,
-            arg.EntityPath);
+        using (_logger.BeginScope(_loggingScope))
+        {
+            _logger.LogError(
+                arg.Exception,
+                "Process message encountered an exception. ErrorSource: {ErrorSource}, Entity Path: {EntityPath}",
+                arg.ErrorSource,
+                arg.EntityPath);
+        }
+
         return Task.CompletedTask;
     }
 
     private async Task ProcessMessageAsync(ProcessMessageEventArgs arg)
     {
-        if (
-            arg.Message.ApplicationProperties.TryGetValue("ReferenceId", out var referenceIdPropertyValue)
-            && referenceIdPropertyValue is string referenceId)
+        var loggingScope = new Dictionary<string, object>(_loggingScope)
         {
-            await _aggregatedTimeSeriesRequestHandler.ProcessAsync(arg.Message, referenceId, arg.CancellationToken).ConfigureAwait(false);
-        }
-        else
+            ["MessageId"] = arg.Message.MessageId,
+            ["Subject"] = arg.Message.Subject,
+        };
+        using (_logger.BeginScope(loggingScope))
         {
-            _logger.LogError("Missing reference id for Service Bus Message. MessageId: {MessageId}, Subject: {Subject}", arg.Message.MessageId, arg.Message.Subject);
+            if (
+                arg.Message.ApplicationProperties.TryGetValue("ReferenceId", out var referenceIdPropertyValue)
+                && referenceIdPropertyValue is string referenceId)
+            {
+                await _aggregatedTimeSeriesRequestHandler.ProcessAsync(arg.Message, referenceId, arg.CancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                _logger.LogError("Missing reference id for Service Bus Message");
+            }
         }
 
         await arg.CompleteMessageAsync(arg.Message).ConfigureAwait(false);
