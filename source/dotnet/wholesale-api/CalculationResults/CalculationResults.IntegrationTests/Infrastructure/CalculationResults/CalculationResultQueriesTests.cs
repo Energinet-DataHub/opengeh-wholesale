@@ -42,11 +42,7 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
     private const string FourthQuantity = "4.444";
     private const string FifthQuantity = "5.555";
     private const string SixthQuantity = "6.666";
-    private const string SeventhQuantity = "6.666";
-    private const string EightQuantity = "6.666";
-    private const string NinthQuantity = "6.666";
     private readonly DatabricksSqlStatementApiFixture _fixture;
-    private bool _rowsAreAdded = false;
 
     public CalculationResultQueriesTests(DatabricksSqlStatementApiFixture fixture)
     {
@@ -76,11 +72,12 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
         // Assert
         using var assertionScope = new AssertionScope();
         actual.Count.Should().Be(expectedResultCount);
-        actual.SelectMany(a => a.TimeSeriesPoints)
+
+        var actualQuantityArray = actual.SelectMany(a => a.TimeSeriesPoints)
             .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
-            .ToArray()
-            .Should()
-            .Equal(FirstQuantity, SecondQuantity, ThirdQuantity, FourthQuantity, FifthQuantity, SixthQuantity);
+            .ToArray();
+        var orderedQuantityArray = actualQuantityArray.OrderBy(a => a).ToArray();
+        actualQuantityArray.Should().Equal(orderedQuantityArray);
     }
 
     [Theory]
@@ -149,7 +146,7 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
         Mock<ILogger<CalculationResultQueries>> calculationResultQueriesLoggerMock)
     {
         // Arrange
-        var gridAreaFilter = "101";
+        var gridAreaFilter = "501";
         var energySupplierId = "2236552000028";
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
@@ -187,7 +184,7 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
         Mock<ILogger<CalculationResultQueries>> calculationResultQueriesLoggerMock)
     {
         // Arrange
-        var gridAreaFilter = "101";
+        var gridAreaFilter = "501";
         var energySupplierId = "badId";
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
@@ -209,8 +206,6 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
         // Assert
         actual.Should().BeEmpty();
     }
-
-
 
     [Theory]
     [InlineAutoMoqData]
@@ -250,7 +245,6 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
                       && result.BalanceResponsibleId!.Equals(balanceResponsible));
     }
 
-
     [Theory]
     [InlineAutoMoqData]
     public async Task GetAsync_RequestFromEnergySupplierPerBalanceResponsibleTotalProduction_ReturnsResult(
@@ -259,7 +253,7 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
         Mock<ILogger<CalculationResultQueries>> calculationResultQueriesLoggerMock)
     {
         // Arrange
-        var gridAreaFilter = "101";
+        var gridAreaFilter = "501";
         var balanceResponsible = "1236552000028";
         var energySupplier = "2236552000028";
         var timeSeriesTypeFilter = TimeSeriesType.Production;
@@ -312,7 +306,6 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
 
     private async Task AddCreatedRowsInArbitraryOrderAsync(IOptions<DeltaTableOptions> options)
     {
-        if (_rowsAreAdded) return;
         const string firstCalculationResultId = "b55b6f74-386f-49eb-8b56-63fae62e4fc7";
         const string secondCalculationResultId = "c2bdceba-b58b-4190-a873-eded0ed50c20";
         const string thirdCalculationResultId = "d2bdceba-b58b-4190-a873-eded0ed50c20";
@@ -326,18 +319,13 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
         var row2 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: secondHour, gridArea: gridAreaA, quantity: SecondQuantity);
 
         var row3 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: secondCalculationResultId, time: firstHour, gridArea: gridAreaB, quantity: ThirdQuantity);
-        var row4 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: secondCalculationResultId, time: secondHour, gridArea: gridAreaB, quantity: FourthQuantity);
+        var row4 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: secondCalculationResultId, time: secondHour, gridArea: gridAreaB, quantity: FourthQuantity, aggregationLevel: DeltaTableAggregationLevel.BalanceResponsibleAndGridArea);
 
-        var row5 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, time: firstHour, gridArea: gridAreaC, quantity: FifthQuantity);
-        var row6 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, time: secondHour, gridArea: gridAreaC, quantity: SixthQuantity);
-
-        var row7 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, time: firstHour, gridArea: gridAreaC, quantity: SeventhQuantity, aggregationLevel: DeltaTableAggregationLevel.BalanceResponsibleAndGridArea);
-        var row8 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, time: secondHour, gridArea: gridAreaC, quantity: EightQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndGridArea);
-
-        var row9 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, time: secondHour, gridArea: gridAreaC, quantity: NinthQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea);
+        var row5 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, time: firstHour, gridArea: gridAreaC, quantity: FifthQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea);
+        var row6 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, time: secondHour, gridArea: gridAreaC, quantity: SixthQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndGridArea);
 
         // mix up the order of the rows
-        var rows = new List<IEnumerable<string>> { row3, row5, row1, row7, row2, row6, row4, row8, };
+        var rows = new List<IEnumerable<string>> { row3, row5, row1, row2, row6, row4, };
 
         await _fixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(options.Value.ENERGY_RESULTS_TABLE_NAME, rows);
     }

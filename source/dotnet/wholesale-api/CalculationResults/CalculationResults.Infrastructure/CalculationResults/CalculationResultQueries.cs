@@ -100,8 +100,8 @@ public class CalculationResultQueries : ICalculationResultQueries
     AND {EnergyResultColumnNames.GridArea} = '{query.GridArea}'
     AND {EnergyResultColumnNames.Time} >= '{query.StartOfPeriod.ToString()}'
     AND {EnergyResultColumnNames.Time} <= '{query.EndOfPeriod.ToString()}'
-    AND {query.EnergySupplierId == null || query.EnergySupplierId == EnergyResultColumnNames.EnergySupplierId}
-    AND {query.BalanceResponsibleId == null || query.BalanceResponsibleId == EnergyResultColumnNames.BalanceResponsibleId}
+    AND ({EnergyResultColumnNames.EnergySupplierId} = '{query.EnergySupplierId}' OR '{query.EnergySupplierId}' = '{string.Empty}')
+    AND ({EnergyResultColumnNames.BalanceResponsibleId} = '{query.BalanceResponsibleId}' OR '{query.BalanceResponsibleId}' = '{string.Empty}')
     ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames.Time}
     ";
     }
