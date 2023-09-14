@@ -47,14 +47,14 @@ public class CalculationResultCompletedFactoryTests
         CalculationResultCompletedFactory sut)
     {
         // Arrange
-        var calculationResult = CreateCalculationResult();
-        calculationResult.SetPrivateProperty(r => r.EnergySupplierId, null);
-        calculationResult.SetPrivateProperty(r => r.BalanceResponsibleId, null);
+        var energyResult = CreateEnergyResult();
+        energyResult.SetPrivateProperty(r => r.EnergySupplierId, null);
+        energyResult.SetPrivateProperty(r => r.BalanceResponsibleId, null);
 
-        var expected = CreateExpected(calculationResult);
+        var expected = CreateExpected(energyResult);
 
         // Act
-        var actual = sut.Create(calculationResult);
+        var actual = sut.Create(energyResult);
 
         // Assert
         actual.Should().BeEquivalentTo(expected);
@@ -66,13 +66,13 @@ public class CalculationResultCompletedFactoryTests
         CalculationResultCompletedFactory sut)
     {
         // Arrange
-        var calculationResult = CreateCalculationResult();
-        calculationResult.SetPrivateProperty(r => r.BalanceResponsibleId, null);
+        var energyResult = CreateEnergyResult();
+        energyResult.SetPrivateProperty(r => r.BalanceResponsibleId, null);
 
-        var expected = CreateExpected(calculationResult);
+        var expected = CreateExpected(energyResult);
 
         // Act
-        var actual = sut.Create(calculationResult);
+        var actual = sut.Create(energyResult);
 
         // Assert
         actual.Should().BeEquivalentTo(expected);
@@ -84,13 +84,13 @@ public class CalculationResultCompletedFactoryTests
         CalculationResultCompletedFactory sut)
     {
         // Arrange
-        var calculationResult = CreateCalculationResult();
-        calculationResult.SetPrivateProperty(r => r.EnergySupplierId, null);
+        var energyResult = CreateEnergyResult();
+        energyResult.SetPrivateProperty(r => r.EnergySupplierId, null);
 
-        var expected = CreateExpected(calculationResult);
+        var expected = CreateExpected(energyResult);
 
         // Act
-        var actual = sut.Create(calculationResult);
+        var actual = sut.Create(energyResult);
 
         // Assert
         actual.Should().BeEquivalentTo(expected);
@@ -102,17 +102,17 @@ public class CalculationResultCompletedFactoryTests
         CalculationResultCompletedFactory sut)
     {
         // Arrange
-        var calculationResult = CreateCalculationResult();
-        var expected = CreateExpected(calculationResult);
+        var energyResult = CreateEnergyResult();
+        var expected = CreateExpected(energyResult);
 
         // Act
-        var actual = sut.Create(calculationResult);
+        var actual = sut.Create(energyResult);
 
         // Assert
         actual.Should().BeEquivalentTo(expected);
     }
 
-    private EnergyResult CreateCalculationResult()
+    private EnergyResult CreateEnergyResult()
     {
         return new EnergyResult(
             _id,

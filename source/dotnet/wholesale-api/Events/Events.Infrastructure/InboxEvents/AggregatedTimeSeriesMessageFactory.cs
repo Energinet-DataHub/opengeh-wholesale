@@ -59,13 +59,13 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
         };
     }
 
-    private static IMessage CreateAcceptedResponse(IList<EnergyResult> calculationResults)
+    private static IMessage CreateAcceptedResponse(IList<EnergyResult> energyResults)
     {
         var response = new AggregatedTimeSeriesRequestAccepted();
 
-        foreach (var calculationResult in calculationResults)
+        foreach (var energyResult in energyResults)
         {
-            response.Series.Add(CreateSerie(calculationResult));
+            response.Series.Add(CreateSerie(energyResult));
         }
 
         return response;
