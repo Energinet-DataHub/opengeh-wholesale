@@ -15,7 +15,11 @@
 from typing import Tuple
 from datetime import datetime
 from pyspark.sql import DataFrame
-from package.calculation_input import get_metering_point_periods_df, get_grid_loss_responsible, CalculationInputReader
+from package.calculation_input import (
+    get_metering_point_periods_df,
+    get_grid_loss_responsible,
+    CalculationInputReader,
+)
 
 
 def get_calculation_input(
@@ -24,12 +28,11 @@ def get_calculation_input(
     batch_period_end_datetime: datetime,
     batch_grid_areas: list[str],
 ) -> Tuple[DataFrame, DataFrame, DataFrame]:
-
     metering_point_periods_df = get_metering_point_periods_df(
         calculation_input_reader,
         batch_period_start_datetime,
         batch_period_end_datetime,
-        batch_grid_areas
+        batch_grid_areas,
     )
 
     time_series_points_df = calculation_input_reader.read_time_series_points()

@@ -14,22 +14,25 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Edi.Responses;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
+using PeriodContract = Energinet.DataHub.Edi.Responses.Period;
+using QuantityQuality = Energinet.DataHub.Edi.Responses.QuantityQuality;
+using TimeSeriesPoint = Energinet.DataHub.Edi.Responses.TimeSeriesPoint;
+using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType;
+using TimeSeriesTypeContract = Energinet.DataHub.Edi.Responses.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.InboxEvents;
 
 public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFactory
 {
-    /// <summary>
-    /// THIS IS ALL MOCKED DATA
-    /// </summary>
-    public ServiceBusMessage Create(List<object> aggregatedTimeSeries, string referenceId)
+    public ServiceBusMessage Create(IList<CalculationResult> calculationResults, string referenceId, bool isRejected)
     {
-        var body = aggregatedTimeSeries.Any()
-            ? CreateAcceptedResponse()
-            : CreateRejectedResponse();
+        var body = isRejected
+            ? CreateRejectedResponse()
+            : CreateAcceptedResponse(calculationResults);
 
         var message = new ServiceBusMessage()
         {
@@ -56,38 +59,78 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
         };
     }
 
-    private static IMessage CreateAcceptedResponse()
+    private static IMessage CreateAcceptedResponse(IList<CalculationResult> calculationResults)
     {
         var response = new AggregatedTimeSeriesRequestAccepted();
-        response.Series.Add(CreateSerie());
+
+        foreach (var calculationResult in calculationResults)
+        {
+            response.Series.Add(CreateSerie(calculationResult));
+        }
 
         return response;
     }
 
-    private static Serie CreateSerie()
+    private static Serie CreateSerie(CalculationResult calculationResult)
     {
-        var quantity = new DecimalValue() { Units = 12345, Nanos = 123450000, };
-        var point = new TimeSeriesPoint()
-        {
-            Quantity = quantity,
-            QuantityQuality = QuantityQuality.Incomplete,
-            Time = new Timestamp() { Seconds = 1, },
-        };
+        var points = CreateTimeSeriesPoints(calculationResult);
 
-        var period = new Period()
+        var period = new PeriodContract()
         {
-            StartOfPeriod = new Timestamp() { Seconds = 1, },
-            EndOfPeriod = new Timestamp() { Seconds = 2, },
+            StartOfPeriod = new Timestamp() { Seconds = calculationResult.PeriodStart.ToUnixTimeSeconds(), },
+            EndOfPeriod = new Timestamp() { Seconds = calculationResult.PeriodEnd.ToUnixTimeSeconds(), },
             Resolution = Resolution.Pt15M,
         };
 
         return new Serie()
         {
-            GridArea = "543",   // the grid area code of the metered data responsible we have as an actor, when we test in EDI
+            GridArea = calculationResult.GridArea,
             QuantityUnit = QuantityUnit.Kwh,
             Period = period,
-            TimeSeriesPoints = { point },
-            TimeSeriesType = TimeSeriesType.Production,
+            TimeSeriesPoints = { points },
+            TimeSeriesType = MapTimeSeriesType(calculationResult.TimeSeriesType),
+        };
+    }
+
+    private static TimeSeriesTypeContract MapTimeSeriesType(TimeSeriesType timeSeriesType)
+    {
+        return timeSeriesType switch
+        {
+            TimeSeriesType.Production => TimeSeriesTypeContract.Production,
+            _ => throw new ArgumentOutOfRangeException($"Unknown time series type {nameof(timeSeriesType)}"),
+        };
+    }
+
+    private static IList<TimeSeriesPoint> CreateTimeSeriesPoints(CalculationResult calculationResult)
+    {
+        const decimal nanoFactor = 1_000_000_000;
+        var points = new List<TimeSeriesPoint>();
+        foreach (var timeSeriesPoint in calculationResult.TimeSeriesPoints)
+        {
+            var units = decimal.ToInt64(timeSeriesPoint.Quantity);
+            var nanos = decimal.ToInt32((timeSeriesPoint.Quantity - units) * nanoFactor);
+            var point = new TimeSeriesPoint()
+            {
+                Quantity = new DecimalValue() { Units = units, Nanos = nanos },
+                QuantityQuality = MapQuantityQuality(timeSeriesPoint.Quality),
+                Time = new Timestamp() { Seconds = timeSeriesPoint.Time.ToUnixTimeSeconds(), },
+            };
+            points.Add(point);
+        }
+
+        return points;
+    }
+
+    private static QuantityQuality MapQuantityQuality(CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality quality)
+    {
+        return quality switch
+        {
+            CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Incomplete => QuantityQuality.Incomplete,
+            CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Estimated => QuantityQuality.Estimated,
+            CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Measured => QuantityQuality.Measured,
+            CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Calculated => QuantityQuality.Calculated,
+            CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Missing => QuantityQuality.Missing,
+            _ => throw new ArgumentOutOfRangeException($"Unknown quality {nameof(quality)}"),
         };
     }
 }

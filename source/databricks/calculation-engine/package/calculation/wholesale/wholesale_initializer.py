@@ -13,7 +13,16 @@
 # limitations under the License.
 
 from pyspark.sql.dataframe import DataFrame
-from pyspark.sql.functions import col, window, expr, explode, month, year
+from pyspark.sql.functions import (
+    col,
+    collect_set,
+    window,
+    expr,
+    explode,
+    month,
+    year,
+    sum,
+)
 from package.codelists import ChargeType, ChargeResolution
 from package.constants import Colname
 
@@ -27,7 +36,9 @@ def get_tariff_charges(
     resolution_duration: ChargeResolution,
 ) -> DataFrame:
     # filter on resolution
-    charge_master_data = get_charges_based_on_resolution(charge_master_data, resolution_duration)
+    charge_master_data = get_charges_based_on_resolution(
+        charge_master_data, resolution_duration
+    )
 
     df = __join_properties_on_charges_with_given_charge_type(
         charge_master_data,
@@ -83,11 +94,15 @@ def get_subscription_charges(
 def get_charges_based_on_resolution(
     charge_master_data: DataFrame, resolution_duration: ChargeResolution
 ) -> DataFrame:
-    df = charge_master_data.filter(col(Colname.charge_resolution) == resolution_duration.value)
+    df = charge_master_data.filter(
+        col(Colname.charge_resolution) == resolution_duration.value
+    )
     return df
 
 
-def get_charges_based_on_charge_type(charge_master_data: DataFrame, charge_type: ChargeType) -> DataFrame:
+def get_charges_based_on_charge_type(
+    charge_master_data: DataFrame, charge_type: ChargeType
+) -> DataFrame:
     df = charge_master_data.filter(col(Colname.charge_type) == charge_type.value)
     return df
 
@@ -196,10 +211,13 @@ def group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
                 __get_window_duration_string_based_on_resolution(resolution_duration),
             ),
         )
-        .sum(Colname.quantity)
-        .withColumnRenamed(f"sum({Colname.quantity})", Colname.quantity)
+        .agg(
+            sum(Colname.quantity).alias(Colname.quantity),
+            collect_set(Colname.quality).alias(Colname.qualities),
+        )
         .selectExpr(
             Colname.quantity,
+            Colname.qualities,
             Colname.metering_point_id,
             f"window.{Colname.start} as {Colname.charge_time}",
         )
@@ -233,6 +251,7 @@ def join_with_grouped_time_series(
         df[Colname.settlement_method],
         df[Colname.grid_area],
         grouped_time_series[Colname.quantity],
+        grouped_time_series[Colname.qualities],
     )
     return df
 
@@ -260,7 +279,9 @@ def __join_properties_on_charges_with_given_charge_type(
     charge_type: ChargeType,
 ) -> DataFrame:
     # filter on charge_type
-    charge_master_data = get_charges_based_on_charge_type(charge_master_data, charge_type)
+    charge_master_data = get_charges_based_on_charge_type(
+        charge_master_data, charge_type
+    )
 
     # join charge prices with charge_master_data
     charges_with_prices = join_with_charge_prices(charge_master_data, charge_prices)

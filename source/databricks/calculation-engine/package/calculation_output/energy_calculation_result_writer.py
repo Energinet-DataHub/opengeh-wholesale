@@ -63,7 +63,9 @@ class EnergyCalculationResultWriter:
             col(Colname.sum_quantity).alias(EnergyResultColumnNames.quantity),
             col(Colname.quality).alias(EnergyResultColumnNames.quantity_quality),
             col(Colname.time_window_start).alias(EnergyResultColumnNames.time),
-            lit(aggregation_level.value).alias(EnergyResultColumnNames.aggregation_level),
+            lit(aggregation_level.value).alias(
+                EnergyResultColumnNames.aggregation_level
+            ),
             lit(time_series_type.value).alias(EnergyResultColumnNames.time_series_type),
             col(Colname.batch_id).alias(EnergyResultColumnNames.calculation_id),
             col(Colname.batch_process_type).alias(
@@ -75,9 +77,14 @@ class EnergyCalculationResultWriter:
             col(Colname.from_grid_area).alias(EnergyResultColumnNames.from_grid_area),
         )
 
-        df = df.withColumn(EnergyResultColumnNames.calculation_result_id, F.expr("uuid()"))
+        df = df.withColumn(
+            EnergyResultColumnNames.calculation_result_id, F.expr("uuid()")
+        )
         window = Window.partitionBy(_get_column_group_for_calculation_result_id())
-        df = df.withColumn(EnergyResultColumnNames.calculation_result_id, first(col(EnergyResultColumnNames.calculation_result_id)).over(window))
+        df = df.withColumn(
+            EnergyResultColumnNames.calculation_result_id,
+            first(col(EnergyResultColumnNames.calculation_result_id)).over(window),
+        )
 
         df.write.format("delta").mode("append").option(
             "mergeSchema", "false"
@@ -85,6 +92,14 @@ class EnergyCalculationResultWriter:
 
 
 def _get_column_group_for_calculation_result_id() -> list[str]:
-    return [EnergyResultColumnNames.calculation_id, EnergyResultColumnNames.calculation_execution_time_start, EnergyResultColumnNames.calculation_type,
-            EnergyResultColumnNames.grid_area, EnergyResultColumnNames.time_series_type, EnergyResultColumnNames.aggregation_level,
-            EnergyResultColumnNames.from_grid_area, EnergyResultColumnNames.balance_responsible_id, EnergyResultColumnNames.energy_supplier_id]
+    return [
+        EnergyResultColumnNames.calculation_id,
+        EnergyResultColumnNames.calculation_execution_time_start,
+        EnergyResultColumnNames.calculation_type,
+        EnergyResultColumnNames.grid_area,
+        EnergyResultColumnNames.time_series_type,
+        EnergyResultColumnNames.aggregation_level,
+        EnergyResultColumnNames.from_grid_area,
+        EnergyResultColumnNames.balance_responsible_id,
+        EnergyResultColumnNames.energy_supplier_id,
+    ]

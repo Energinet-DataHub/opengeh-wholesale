@@ -14,7 +14,13 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.Common.Logging;
 using Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
+using Energinet.DataHub.Wholesale.Events.Application.UseCases.Mappers;
+using Microsoft.Extensions.Logging;
+using CalculationAggregationLevel = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.AggregationLevel;
+using CalculationTimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.UseCases;
 
@@ -23,26 +29,53 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
     private readonly ICalculationResultQueries _calculationResultQueries;
     private readonly IEdiClient _ediClient;
     private readonly IAggregatedTimeSeriesMessageFactory _aggregatedTimeSeriesMessageFactory;
+    private readonly ILogger<AggregatedTimeSeriesRequestHandler> _logger;
+    private readonly IAggregatedTimeSeriesRequestMessageParser _aggregatedTimeSeriesRequestMessageParser;
 
     public AggregatedTimeSeriesRequestHandler(
         ICalculationResultQueries calculationResultQueries,
         IEdiClient ediClient,
-        IAggregatedTimeSeriesMessageFactory aggregatedTimeSeriesMessageFactory)
+        IAggregatedTimeSeriesRequestMessageParser aggregatedTimeSeriesRequestMessageParser,
+        IAggregatedTimeSeriesMessageFactory aggregatedTimeSeriesMessageFactory,
+        ILogger<AggregatedTimeSeriesRequestHandler> logger)
     {
         _calculationResultQueries = calculationResultQueries;
         _ediClient = ediClient;
+        _aggregatedTimeSeriesRequestMessageParser = aggregatedTimeSeriesRequestMessageParser;
         _aggregatedTimeSeriesMessageFactory = aggregatedTimeSeriesMessageFactory;
+        _logger = logger;
     }
 
     public async Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken)
     {
-        // create the request from the protobuf message
-        // call the query service
-        var result = new List<object>();
-        // create the response
-        var message = _aggregatedTimeSeriesMessageFactory.Create(result, referenceId);
+        var aggregatedTimeSeriesRequestMessage = _aggregatedTimeSeriesRequestMessageParser.Parse(receivedMessage);
 
-        // send the response to EDI inbox.
+        var result = await GetCalculationResultsAsync(
+            aggregatedTimeSeriesRequestMessage,
+            cancellationToken).ConfigureAwait(false);
+
+        var message = _aggregatedTimeSeriesMessageFactory.Create(
+            result,
+            referenceId,
+            isRejected: !result.Any());
+
         await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
+    }
+
+    private async Task<List<CalculationResult>> GetCalculationResultsAsync(
+        AggregatedTimeSeriesRequest aggregatedTimeSeriesRequestMessage,
+        CancellationToken cancellationToken)
+    {
+        var query = new CalculationResultQuery(
+            TimeSeriesTypeMapper.MapTimeSerieType(aggregatedTimeSeriesRequestMessage.TimeSeriesType),
+            aggregatedTimeSeriesRequestMessage.Period.Start,
+            aggregatedTimeSeriesRequestMessage.Period.End,
+            aggregatedTimeSeriesRequestMessage.AggregationPerGridArea?.GridAreaCode ?? throw new InvalidOperationException($"Unknown grid area code"));
+
+        var calculationResults = await _calculationResultQueries.GetAsync(query)
+            .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+
+        _logger.LogDebug("Found {Count} calculation results based on {Query} query.", calculationResults.Count, query.Dump());
+        return calculationResults;
     }
 }

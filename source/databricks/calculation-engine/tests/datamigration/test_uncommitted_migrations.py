@@ -13,7 +13,9 @@
 # limitations under the License.
 
 from unittest.mock import patch, Mock
-from package.infrastructure.storage_account_access.data_lake_file_manager import DataLakeFileManager
+from package.infrastructure.storage_account_access.data_lake_file_manager import (
+    DataLakeFileManager,
+)
 
 from package.datamigration.uncommitted_migrations import (
     _get_all_migrations,
