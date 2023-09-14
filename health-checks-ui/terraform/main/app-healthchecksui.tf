@@ -23,7 +23,7 @@ module "app_health_checks_ui" {
   app_settings = {
     # Health Checks to monitor
     "HealthChecksUI__HealthChecks__0__Name" = "Health Check UI"
-    "HealthChecksUI__HealthChecks__0__Uri"  = "/monitor/ready"
+    "HealthChecksUI__HealthChecks__0__Uri"  = "https://app-healthchecksui-health-${lower(var.environment_short)}-${lower(var.environment_instance)}.azurewebsites.net/monitor/ready"
     "HealthChecksUI__HealthChecks__1__Name" = "BFF: Web API"
     "HealthChecksUI__HealthChecks__1__Uri"  = "https://app-bff-fe-${lower(var.environment_short)}-${lower(var.environment_instance)}.azurewebsites.net/monitor/ready"
     "HealthChecksUI__HealthChecks__2__Name" = "Market Participant: Web API"
