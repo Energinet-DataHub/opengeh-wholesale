@@ -25,5 +25,5 @@ public interface IAggregatedTimeSeriesMessageFactory
     /// <param name="calculationResults"></param>
     /// <param name="referenceId"></param>
     /// <param name="isRejected">Temporary switch for generating accepted or rejected message</param>
-    public ServiceBusMessage Create(IList<EnergyResult> calculationResults, string referenceId, bool isRejected);
+    public ServiceBusMessage Create(IList<CalculationResult> calculationResults, string referenceId, bool isRejected);
 }

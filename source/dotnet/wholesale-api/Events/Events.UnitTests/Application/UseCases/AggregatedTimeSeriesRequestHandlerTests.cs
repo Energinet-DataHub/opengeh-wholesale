@@ -65,7 +65,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(request.ToByteArray()));
 
-        var calculationResults = new List<EnergyResult> { CreateEnergyResult() };
+        var calculationResults = new List<CalculationResult> { CreateCalculationResult() };
         calculationResultQueriesMock.Setup(calculationResultQueries =>
                 calculationResultQueries.GetAsync(It.IsAny<CalculationResultQuery>()))
             .Returns(() => calculationResults.ToAsyncEnumerable());
@@ -94,9 +94,9 @@ public class AggregatedTimeSeriesRequestHandlerTests
             Times.Once);
     }
 
-    private EnergyResult CreateEnergyResult()
+    private CalculationResult CreateCalculationResult()
     {
-        return new EnergyResult(
+        return new CalculationResult(
             Guid.NewGuid(),
             Guid.NewGuid(),
             "543",

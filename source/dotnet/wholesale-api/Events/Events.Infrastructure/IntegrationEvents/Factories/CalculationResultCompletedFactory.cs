@@ -23,21 +23,21 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Fa
 
 public class CalculationResultCompletedFactory : ICalculationResultCompletedFactory
 {
-    public CalculationResultCompleted Create(EnergyResult energyResult)
+    public CalculationResultCompleted Create(CalculationResult calculationResult)
     {
-        if (energyResult.EnergySupplierId == null && energyResult.BalanceResponsibleId == null)
-            return CreateForGridArea(energyResult);
+        if (calculationResult.EnergySupplierId == null && calculationResult.BalanceResponsibleId == null)
+            return CreateForGridArea(calculationResult);
 
-        if (energyResult.EnergySupplierId != null && energyResult.BalanceResponsibleId == null)
-            return CreateForEnergySupplier(energyResult);
+        if (calculationResult.EnergySupplierId != null && calculationResult.BalanceResponsibleId == null)
+            return CreateForEnergySupplier(calculationResult);
 
-        if (energyResult.EnergySupplierId == null && energyResult.BalanceResponsibleId != null)
-            return CreateForBalanceResponsibleParty(energyResult);
+        if (calculationResult.EnergySupplierId == null && calculationResult.BalanceResponsibleId != null)
+            return CreateForBalanceResponsibleParty(calculationResult);
 
-        return CreateForEnergySupplierByBalanceResponsibleParty(energyResult);
+        return CreateForEnergySupplierByBalanceResponsibleParty(calculationResult);
     }
 
-    private CalculationResultCompleted CreateForGridArea(EnergyResult result)
+    private CalculationResultCompleted CreateForGridArea(CalculationResult result)
     {
         var calculationResultCompleted = CreateInternal(result);
         calculationResultCompleted.AggregationPerGridarea = new AggregationPerGridArea
@@ -49,7 +49,7 @@ public class CalculationResultCompletedFactory : ICalculationResultCompletedFact
     }
 
     private CalculationResultCompleted CreateForEnergySupplier(
-        EnergyResult result)
+        CalculationResult result)
     {
         var calculationResultCompleted = CreateInternal(result);
         calculationResultCompleted.AggregationPerEnergysupplierPerGridarea = new AggregationPerEnergySupplierPerGridArea
@@ -62,7 +62,7 @@ public class CalculationResultCompletedFactory : ICalculationResultCompletedFact
     }
 
     private CalculationResultCompleted CreateForBalanceResponsibleParty(
-        EnergyResult result)
+        CalculationResult result)
     {
         var calculationResultCompleted = CreateInternal(result);
         calculationResultCompleted.AggregationPerBalanceresponsiblepartyPerGridarea =
@@ -76,7 +76,7 @@ public class CalculationResultCompletedFactory : ICalculationResultCompletedFact
     }
 
     private CalculationResultCompleted CreateForEnergySupplierByBalanceResponsibleParty(
-        EnergyResult result)
+        CalculationResult result)
     {
         var calculationResultCompleted = CreateInternal(result);
         calculationResultCompleted.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea =
@@ -90,7 +90,7 @@ public class CalculationResultCompletedFactory : ICalculationResultCompletedFact
         return calculationResultCompleted;
     }
 
-    private static CalculationResultCompleted CreateInternal(EnergyResult result)
+    private static CalculationResultCompleted CreateInternal(CalculationResult result)
     {
         var calculationResultCompleted = new CalculationResultCompleted
         {

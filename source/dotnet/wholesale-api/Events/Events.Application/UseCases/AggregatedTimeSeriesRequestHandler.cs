@@ -62,7 +62,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
     }
 
-    private async Task<List<EnergyResult>> GetCalculationResultsAsync(
+    private async Task<List<CalculationResult>> GetCalculationResultsAsync(
         AggregatedTimeSeriesRequest aggregatedTimeSeriesRequestMessage,
         CancellationToken cancellationToken)
     {

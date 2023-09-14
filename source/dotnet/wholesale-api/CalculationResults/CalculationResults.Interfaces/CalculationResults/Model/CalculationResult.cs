@@ -17,9 +17,9 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
-public sealed class EnergyResult
+public sealed class CalculationResult
 {
-    public EnergyResult(
+    public CalculationResult(
         Guid id,
         Guid batchId,
         string gridArea,
