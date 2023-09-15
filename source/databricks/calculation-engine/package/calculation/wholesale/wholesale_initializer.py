@@ -13,7 +13,16 @@
 # limitations under the License.
 
 from pyspark.sql.dataframe import DataFrame
-from pyspark.sql.functions import col, window, expr, explode, month, year
+from pyspark.sql.functions import (
+    col,
+    collect_set,
+    window,
+    expr,
+    explode,
+    month,
+    year,
+    sum,
+)
 from pyspark.sql.types import DecimalType
 
 from package.codelists import ChargeType, ChargeResolution
@@ -209,6 +218,10 @@ def group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
                 Colname.observation_time,
                 __get_window_duration_string_based_on_resolution(resolution_duration),
             ),
+        )
+        .agg(
+            sum(Colname.quantity).alias(Colname.quantity),
+            collect_set(Colname.quality).alias(Colname.qualities),
         )
         .sum(Colname.quantity)
         .withColumnRenamed(f"sum({Colname.quantity})", Colname.quantity)
