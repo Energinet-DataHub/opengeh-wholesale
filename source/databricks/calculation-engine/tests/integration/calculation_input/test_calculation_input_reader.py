@@ -273,7 +273,7 @@ def test__read_data__returns_df(
         ),
     ],
 )
-def test__read_data__throws_exception_when_schema_mismatch(
+def test__read_data__raises_value_error_when_schema_mismatch(
     spark: SparkSession, expected_schema: StructType, method_name: str, create_row: any
 ) -> None:
     # Arrange
