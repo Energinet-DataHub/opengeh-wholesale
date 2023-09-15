@@ -15,7 +15,9 @@ from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col, last_day, dayofmonth, count, sum
 from pyspark.sql.types import DecimalType
 from package.codelists import MeteringPointType, SettlementMethod
-from package.calculation.wholesale.schemas.calculate_daily_subscription_price_schema import calculate_daily_subscription_price_schema
+from package.calculation.wholesale.schemas.calculate_daily_subscription_price_schema import (
+    calculate_daily_subscription_price_schema,
+)
 from package.constants import Colname
 
 

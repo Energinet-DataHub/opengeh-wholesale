@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Common.Logging;
@@ -29,5 +30,13 @@ public static class LoggerExtensions
         [CallerLineNumber] int? lineNumber = null)
     {
         logger.LogDebug("Entering {MethodName} in {FilePath}:{LineNo}", methodName, sourceFile, lineNumber);
+    }
+
+    /// <summary>
+    /// Utility method to log entire objects.
+    /// </summary>
+    public static string Dump(this object o)
+    {
+        return JsonSerializer.Serialize(o);
     }
 }

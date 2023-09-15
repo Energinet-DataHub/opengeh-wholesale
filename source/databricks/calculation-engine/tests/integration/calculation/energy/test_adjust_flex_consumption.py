@@ -149,7 +149,9 @@ def expected_schema() -> StructType:
 
 
 @pytest.fixture(scope="module")
-def flex_consumption_result_row_factory(spark: SparkSession, flex_consumption_result_schema: StructType) -> Callable[..., DataFrame]:
+def flex_consumption_result_row_factory(
+    spark: SparkSession, flex_consumption_result_schema: StructType
+) -> Callable[..., DataFrame]:
     """
     Factory to generate a single row of  data, with default parameters as specified above.
     """
@@ -182,7 +184,9 @@ def flex_consumption_result_row_factory(spark: SparkSession, flex_consumption_re
 
 
 @pytest.fixture(scope="module")
-def positive_grid_loss_result_row_factory(spark: SparkSession, positive_grid_loss_result_schema: StructType) -> Callable[..., DataFrame]:
+def positive_grid_loss_result_row_factory(
+    spark: SparkSession, positive_grid_loss_result_schema: StructType
+) -> Callable[..., DataFrame]:
     """
     Factory to generate a single row of  data, with default parameters as specified above.
     """
@@ -211,7 +215,9 @@ def positive_grid_loss_result_row_factory(spark: SparkSession, positive_grid_los
 
 
 @pytest.fixture(scope="module")
-def grid_loss_sys_cor_row_factory(spark: SparkSession, grid_loss_sys_cor_schema: StructType) -> Callable[..., DataFrame]:
+def grid_loss_sys_cor_row_factory(
+    spark: SparkSession, grid_loss_sys_cor_schema: StructType
+) -> Callable[..., DataFrame]:
     """
     Factory to generate a single row of  data, with default parameters as specified above.
     """
@@ -256,7 +262,9 @@ def test_grid_area_grid_loss_is_added_to_grid_loss_energy_responsible(
 
     grid_loss_sys_cor_master_data = grid_loss_sys_cor_row_factory(supplier="A")
 
-    result_df = adjust_flex_consumption(flex_consumption, positive_grid_loss, grid_loss_sys_cor_master_data)
+    result_df = adjust_flex_consumption(
+        flex_consumption, positive_grid_loss, grid_loss_sys_cor_master_data
+    )
 
     assert (
         result_df.filter(col(Colname.energy_supplier_id) == "A").collect()[0][
@@ -281,7 +289,9 @@ def test_grid_area_grid_loss_is_not_added_to_non_grid_loss_energy_responsible(
 
     grid_loss_sys_cor_master_data = grid_loss_sys_cor_row_factory(supplier="B")
 
-    result_df = adjust_flex_consumption(flex_consumption, positive_grid_loss, grid_loss_sys_cor_master_data)
+    result_df = adjust_flex_consumption(
+        flex_consumption, positive_grid_loss, grid_loss_sys_cor_master_data
+    )
 
     assert (
         result_df.filter(col(Colname.energy_supplier_id) == "A").collect()[0][
@@ -310,7 +320,9 @@ def test_result_dataframe_contains_same_number_of_results_with_same_energy_suppl
 
     grid_loss_sys_cor_master_data = grid_loss_sys_cor_row_factory(supplier="C")
 
-    result_df = adjust_flex_consumption(flex_consumption, positive_grid_loss, grid_loss_sys_cor_master_data)
+    result_df = adjust_flex_consumption(
+        flex_consumption, positive_grid_loss, grid_loss_sys_cor_master_data
+    )
 
     result_df_collect = result_df.collect()
     assert result_df.count() == 3
@@ -379,11 +391,11 @@ def test_correct_grid_loss_entry_is_used_to_determine_energy_responsible_for_the
         supplier="B", valid_from=time_window_3["start"], valid_to=None
     )
 
-    grid_loss_sys_cor_master_data = glsc_row_1.union(
-        glsc_row_2
-    ).union(glsc_row_3)
+    grid_loss_sys_cor_master_data = glsc_row_1.union(glsc_row_2).union(glsc_row_3)
 
-    result_df = adjust_flex_consumption(flex_consumption, positive_grid_loss, grid_loss_sys_cor_master_data)
+    result_df = adjust_flex_consumption(
+        flex_consumption, positive_grid_loss, grid_loss_sys_cor_master_data
+    )
 
     assert result_df.count() == 3
     assert (
@@ -421,7 +433,9 @@ def test_that_the_correct_metering_point_type_is_put_on_the_result(
 
     grid_loss_sys_cor_master_data = grid_loss_sys_cor_row_factory(supplier="A")
 
-    result_df = adjust_flex_consumption(flex_consumption, positive_grid_loss, grid_loss_sys_cor_master_data)
+    result_df = adjust_flex_consumption(
+        flex_consumption, positive_grid_loss, grid_loss_sys_cor_master_data
+    )
 
     assert (
         result_df.filter(col(Colname.energy_supplier_id) == "A").collect()[0][
