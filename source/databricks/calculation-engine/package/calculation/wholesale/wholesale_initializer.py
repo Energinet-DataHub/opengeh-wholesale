@@ -223,7 +223,6 @@ def group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
             sum(Colname.quantity).alias(Colname.quantity),
             collect_set(Colname.quality).alias(Colname.qualities),
         )
-        .sum(Colname.quantity)
         .withColumnRenamed(f"sum({Colname.quantity})", Colname.quantity)
         .selectExpr(
             Colname.quantity,
