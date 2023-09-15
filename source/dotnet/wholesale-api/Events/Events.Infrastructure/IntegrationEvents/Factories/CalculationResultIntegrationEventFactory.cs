@@ -29,10 +29,10 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Fa
             _calculationResultCompletedFactory = calculationResultCompletedFactory;
         }
 
-        public IntegrationEvent Create(CalculationResult calculationResult)
+        public IntegrationEvent Create(EnergyResult energyResult)
         {
-            var @event = _calculationResultCompletedFactory.Create(calculationResult);
-            return CreateIntegrationEvent(@event, calculationResult.Id);
+            var @event = _calculationResultCompletedFactory.Create(energyResult);
+            return CreateIntegrationEvent(@event, energyResult.Id);
         }
 
         private IntegrationEvent CreateIntegrationEvent(IMessage protobufMessage, Guid calculationResultId)
