@@ -63,7 +63,9 @@ def calculate_tariff_price_per_ga_co_es(tariffs: DataFrame) -> DataFrame:
     """
 
     if tariffs.schema != tariff_schema:
-        raise ValueError(f"Schema mismatch. Expected {tariff_schema}, but got {tariffs.schema}.")
+        raise ValueError(
+            f"Schema mismatch. Expected {tariff_schema}, but got {tariffs.schema}."
+        )
 
     df = _sum_quantity_and_count_charges(tariffs)
 
