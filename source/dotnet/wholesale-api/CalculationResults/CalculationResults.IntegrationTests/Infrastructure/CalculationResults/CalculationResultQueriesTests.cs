@@ -147,7 +147,7 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
     {
         // Arrange
         var gridAreaFilter = "501";
-        var energySupplierId = "2236552000028";
+        var energySupplierId = "4321987654321";
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
@@ -216,7 +216,7 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
     {
         // Arrange
         var gridAreaFilter = "101";
-        var balanceResponsible = "1236552000028";
+        var balanceResponsible = "1234567891234";
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
@@ -254,8 +254,8 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
     {
         // Arrange
         var gridAreaFilter = "501";
-        var balanceResponsible = "1236552000028";
-        var energySupplier = "2236552000028";
+        var balanceResponsible = "1234567891234";
+        var energySupplier = "4321987654321";
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
@@ -314,15 +314,17 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
         const string gridAreaA = "301";
         const string gridAreaB = "101";
         const string gridAreaC = "501";
+        const string energySupplier = "4321987654321";
+        const string balanceResponsibleId = "1234567891234";
 
         var row1 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: firstHour, gridArea: gridAreaA, quantity: FirstQuantity);
         var row2 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: secondHour, gridArea: gridAreaA, quantity: SecondQuantity);
 
         var row3 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: secondCalculationResultId, time: firstHour, gridArea: gridAreaB, quantity: ThirdQuantity);
-        var row4 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: secondCalculationResultId, time: secondHour, gridArea: gridAreaB, quantity: FourthQuantity, aggregationLevel: DeltaTableAggregationLevel.BalanceResponsibleAndGridArea);
+        var row4 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: secondCalculationResultId, time: secondHour, gridArea: gridAreaB, quantity: FourthQuantity, aggregationLevel: DeltaTableAggregationLevel.BalanceResponsibleAndGridArea, balanceResponsibleId: balanceResponsibleId);
 
-        var row5 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, time: firstHour, gridArea: gridAreaC, quantity: FifthQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea);
-        var row6 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, time: secondHour, gridArea: gridAreaC, quantity: SixthQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndGridArea);
+        var row5 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, time: firstHour, gridArea: gridAreaC, quantity: FifthQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea, balanceResponsibleId: balanceResponsibleId, energySupplierId: energySupplier);
+        var row6 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, time: secondHour, gridArea: gridAreaC, quantity: SixthQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndGridArea, energySupplierId: energySupplier);
 
         // mix up the order of the rows
         var rows = new List<IEnumerable<string>> { row3, row5, row1, row2, row6, row4, };
