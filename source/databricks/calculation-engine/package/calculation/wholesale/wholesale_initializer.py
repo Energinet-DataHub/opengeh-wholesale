@@ -23,7 +23,7 @@ from pyspark.sql.functions import (
     year,
     sum,
 )
-from pyspark.sql.types import DecimalType, StructField, StringType, ArrayType
+from pyspark.sql.types import DecimalType, StringType, ArrayType
 
 from package.codelists import ChargeType, ChargeResolution
 from package.constants import Colname
