@@ -14,6 +14,8 @@
 
 from pyspark.sql.dataframe import DataFrame
 from pyspark.sql.functions import col, window, expr, explode, month, year
+from pyspark.sql.types import DecimalType
+
 from package.codelists import ChargeType, ChargeResolution
 from package.constants import Colname
 
@@ -27,7 +29,9 @@ def get_tariff_charges(
     resolution_duration: ChargeResolution,
 ) -> DataFrame:
     # filter on resolution
-    charge_master_data = get_charges_based_on_resolution(charge_master_data, resolution_duration)
+    charge_master_data = get_charges_based_on_resolution(
+        charge_master_data, resolution_duration
+    )
 
     df = __join_properties_on_charges_with_given_charge_type(
         charge_master_data,
@@ -46,6 +50,12 @@ def get_tariff_charges(
 
     # join with grouped time series
     df = join_with_grouped_time_series(df, grouped_time_series)
+
+    # When constructing the tariff dataframe some column types need not be nullable
+    # because the construct should make it impossible for them to be null.
+    df.schema[Colname.quantity].nullable = False
+    df.schema[Colname.metering_point_type].nullable = False
+    df.schema[Colname.energy_supplier_id].nullable = False
 
     return df
 
@@ -83,11 +93,15 @@ def get_subscription_charges(
 def get_charges_based_on_resolution(
     charge_master_data: DataFrame, resolution_duration: ChargeResolution
 ) -> DataFrame:
-    df = charge_master_data.filter(col(Colname.charge_resolution) == resolution_duration.value)
+    df = charge_master_data.filter(
+        col(Colname.charge_resolution) == resolution_duration.value
+    )
     return df
 
 
-def get_charges_based_on_charge_type(charge_master_data: DataFrame, charge_type: ChargeType) -> DataFrame:
+def get_charges_based_on_charge_type(
+    charge_master_data: DataFrame, charge_type: ChargeType
+) -> DataFrame:
     df = charge_master_data.filter(col(Colname.charge_type) == charge_type.value)
     return df
 
@@ -204,6 +218,13 @@ def group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
             f"window.{Colname.start} as {Colname.charge_time}",
         )
     )
+
+    # The sum operator creates by default a column as a double type (28,6).
+    # It must be cast to a decimal type (18,3) to conform to the tariff schema.
+    grouped_time_series = grouped_time_series.withColumn(
+        Colname.quantity, col(Colname.quantity).cast(DecimalType(18, 3))
+    )
+
     return grouped_time_series
 
 
@@ -260,7 +281,9 @@ def __join_properties_on_charges_with_given_charge_type(
     charge_type: ChargeType,
 ) -> DataFrame:
     # filter on charge_type
-    charge_master_data = get_charges_based_on_charge_type(charge_master_data, charge_type)
+    charge_master_data = get_charges_based_on_charge_type(
+        charge_master_data, charge_type
+    )
 
     # join charge prices with charge_master_data
     charges_with_prices = join_with_charge_prices(charge_master_data, charge_prices)
