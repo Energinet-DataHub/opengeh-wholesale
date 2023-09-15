@@ -36,7 +36,7 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
     [InlineAutoMoqData]
     public async Task Can_Receive_aggregated_time_series_request_service_bus_message(
         Mock<IAggregatedTimeSeriesRequestHandler> handlerMock,
-        Mock<ILogger<AggregatedTimeSeriesRequestHandler>> loggerMock)
+        Mock<ILogger<AggregatedTimeSeriesServiceBusWorker>> loggerMock)
     {
         // Arrange
         var messageHasBeenReceivedEvent = new AutoResetEvent(false);
