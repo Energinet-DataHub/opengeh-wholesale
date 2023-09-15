@@ -72,6 +72,9 @@ def _calculate_tariff_charges(
     hourly_tariff_per_ga_co_es = calculate_tariff_price_per_ga_co_es(tariffs_hourly)
     wholesale_calculation_result_writer.write(hourly_tariff_per_ga_co_es)
 
+    monthly_tariff_per_ga_co_es = group_by_monthly(hourly_tariff_per_ga_co_es)
+    wholesale_calculation_result_writer.write(monthly_tariff_per_ga_co_es)
+
 
 def _get_production_and_consumption_metering_points(
     metering_points_periods_df: DataFrame,

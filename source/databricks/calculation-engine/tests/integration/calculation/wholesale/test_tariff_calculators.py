@@ -361,4 +361,5 @@ def test_stuff(
     # Assert
     assert actual.collect()[0][Colname.total_amount] == Decimal("8.040020")
     assert actual.collect()[1][Colname.total_amount] == Decimal("2.010005")
+    assert actual.count() == 2
     # assert actual.schema[Colname.total_amount].dataType.precision >= 1
