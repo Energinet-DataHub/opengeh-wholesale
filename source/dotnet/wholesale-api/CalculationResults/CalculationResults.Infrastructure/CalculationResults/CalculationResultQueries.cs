@@ -47,16 +47,16 @@ public class CalculationResultQueries : ICalculationResultQueries
     {
         var batch = await _batchesClient.GetAsync(batchId).ConfigureAwait(false);
         var sql = CreateBatchResultsSql(batchId);
-        await foreach (var p in GetInternalAsync(sql, batch.PeriodStart.ToInstant(), batch.PeriodEnd.ToInstant()))
-            yield return p;
+        await foreach (var calculationResult in GetInternalAsync(sql, batch.PeriodStart.ToInstant(), batch.PeriodEnd.ToInstant()))
+            yield return calculationResult;
         _logger.LogDebug("Fetched all calculation results for batch {BatchId}", batchId);
     }
 
     public async IAsyncEnumerable<EnergyResult> GetAsync(CalculationResultQuery query)
     {
         var sqlStatement = CreateRequestSql(query);
-        await foreach (var p in GetInternalAsync(sqlStatement, query.StartOfPeriod, query.EndOfPeriod))
-            yield return p;
+        await foreach (var calculationResult in GetInternalAsync(sqlStatement, query.StartOfPeriod, query.EndOfPeriod))
+            yield return calculationResult;
         _logger.LogDebug("Fetched all calculation results for sql statement {SqlStatement}", sqlStatement);
     }
 
