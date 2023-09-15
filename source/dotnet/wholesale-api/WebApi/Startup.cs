@@ -19,6 +19,7 @@ using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
 using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.Logging.LoggingScopeMiddleware;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Energinet.DataHub.Wholesale.Common.Security;
 using Energinet.DataHub.Wholesale.Events.Application.Options;
@@ -27,7 +28,6 @@ using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Energinet.DataHub.Wholesale.WebApi.HealthChecks.Databricks;
 using Energinet.DataHub.Wholesale.WebApi.HealthChecks.DataLake;
-using Energinet.DataHub.Wholesale.WebApi.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Azure;
@@ -119,7 +119,7 @@ public class Startup
         AddCorrelationContext(serviceCollection);
 
         serviceCollection.AddUserAuthentication<FrontendUser, FrontendUserProvider>();
-        serviceCollection.AddLoggingScope(DomainName);
+        serviceCollection.AddHttpLoggingScope(DomainName);
     }
 
     public void Configure(IApplicationBuilder app)
