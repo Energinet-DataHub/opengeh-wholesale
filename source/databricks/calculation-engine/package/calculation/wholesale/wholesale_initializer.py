@@ -255,6 +255,7 @@ def join_with_grouped_time_series(
         df[Colname.settlement_method],
         df[Colname.grid_area],
         grouped_time_series[Colname.quantity],
+        grouped_time_series[Colname.qualities],
     )
     return df
 
