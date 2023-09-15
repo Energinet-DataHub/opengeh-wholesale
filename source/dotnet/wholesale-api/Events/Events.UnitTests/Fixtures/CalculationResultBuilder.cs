@@ -56,9 +56,9 @@ public sealed class CalculationResultBuilder
         return this;
     }
 
-    public CalculationResult Build()
+    public EnergyResult Build()
     {
-        return new CalculationResult(
+        return new EnergyResult(
             Guid.NewGuid(),
             _batchId,
             "543",

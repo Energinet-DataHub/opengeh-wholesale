@@ -188,7 +188,15 @@ public class Startup
                 name: "IntegrationEventsTopicExists")
             .AddDataLakeHealthCheck()
             .AddDatabricksJobsApiHealthCheck()
-            .AddDatabricksSqlStatementsApiHealthCheck(_ => Configuration.Get<DatabricksOptions>()!);
+            .AddDatabricksSqlStatementsApiHealthCheck(_ => Configuration.Get<DatabricksOptions>()!)
+            .AddAzureServiceBusQueue(
+                serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
+                serviceBusOptions.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME,
+                name: "WholesaleInboxEventsQueueExists")
+            .AddAzureServiceBusQueue(
+                serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
+                serviceBusOptions.EDI_INBOX_MESSAGE_QUEUE_NAME,
+                name: "EdiInboxEventsQueueExists");
     }
 
     /// <summary>

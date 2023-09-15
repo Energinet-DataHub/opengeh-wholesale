@@ -52,7 +52,7 @@ public class AggregatedTimeSeriesServiceBusWorker : BackgroundService, IAsyncDis
         {
             await _serviceBusProcessor.CloseAsync(cancellationToken).ConfigureAwait(false);
             await base.StopAsync(cancellationToken).ConfigureAwait(false);
-            _logger.LogWarning("{Worker} has stopped at {Time}", _serviceName, DateTimeOffset.Now);
+            _logger.LogWarning("{Worker} has stopped", _serviceName);
         }
     }
 
