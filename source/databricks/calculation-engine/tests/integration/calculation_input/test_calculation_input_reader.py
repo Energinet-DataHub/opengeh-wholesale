@@ -233,7 +233,7 @@ def test__read_data__returns_df(
     row = create_row()
     reader = CalculationInputReader(spark)
     df = spark.createDataFrame(data=[row], schema=expected_schema)
-    sut = getattr(reader, str(method_name.__name__))
+    sut = getattr(reader, method_name.__name__)
 
     # Act
     with mock.patch.object(reader, "_read_table", return_value=df):
@@ -281,7 +281,7 @@ def test__read_data__raises_value_error_when_schema_mismatch(
     sut = CalculationInputReader(spark)
     df = spark.createDataFrame(data=[row], schema=expected_schema)
     df = df.withColumn("test", lit("test"))
-    method = getattr(sut, str(method_name.__name__))
+    method = getattr(sut, method_name.__name__)
     is_exception_thrown = False
 
     # Act
