@@ -26,7 +26,7 @@ Read about community for Green Energy Hub [here](https://github.com/Energinet-Da
 
 Please note that we have provided a [Dictionary](https://github.com/Energinet-DataHub/green-energy-hub/tree/main/docs/dictionary-and-concepts) to help understand many of the terms used throughout the repository.
 
-## Thanks to all the people who already contributed!
+## Thanks to all the people who already contributed
 
 <a href="https://github.com/Energinet-DataHub/opengeh-wholesale/graphs/contributors">
   <img src="https://contributors-img.web.app/image?repo=Energinet-DataHub/opengeh-wholesale" />
