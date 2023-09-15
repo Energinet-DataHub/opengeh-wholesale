@@ -23,6 +23,8 @@ from pyspark.sql.functions import (
     year,
     sum,
 )
+from pyspark.sql.types import DecimalType, StringType, ArrayType
+
 from package.codelists import ChargeType, ChargeResolution
 from package.constants import Colname
 
@@ -58,6 +60,12 @@ def get_tariff_charges(
     # join with grouped time series
     df = join_with_grouped_time_series(df, grouped_time_series)
 
+    # When constructing the tariff dataframe some column types need to be not nullable (or nullable)
+    # The construct should make it impossible for them to be null (or not null).
+    # df.schema[Colname.qualities].nullable = True
+    df.schema[Colname.quantity].nullable = False
+    df.schema[Colname.metering_point_type].nullable = False
+    df.schema[Colname.energy_supplier_id].nullable = False
     return df
 
 
@@ -215,6 +223,7 @@ def group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
             sum(Colname.quantity).alias(Colname.quantity),
             collect_set(Colname.quality).alias(Colname.qualities),
         )
+        .withColumnRenamed(f"sum({Colname.quantity})", Colname.quantity)
         .selectExpr(
             Colname.quantity,
             Colname.qualities,
@@ -222,6 +231,17 @@ def group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
             f"window.{Colname.start} as {Colname.charge_time}",
         )
     )
+
+    # The sum operator creates by default a column as a double type (28,6).
+    # It must be cast to a decimal type (18,3) to conform to the tariff schema.
+    grouped_time_series = grouped_time_series.withColumn(
+        Colname.quantity, col(Colname.quantity).cast(DecimalType(18, 3))
+    )
+
+    grouped_time_series = grouped_time_series.withColumn(
+        Colname.qualities, col(Colname.qualities).cast(ArrayType(StringType(), True))
+    )
+
     return grouped_time_series
 
 
