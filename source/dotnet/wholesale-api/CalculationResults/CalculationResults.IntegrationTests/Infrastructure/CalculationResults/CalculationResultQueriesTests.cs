@@ -50,7 +50,7 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_ReturnsExpectedCalculationResult(
+    public async Task GetAsync_ReturnsExpectedEnergyResult(
         Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
         Mock<IBatchesClient> batchesClientMock,
         BatchDto batch,
