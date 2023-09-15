@@ -2,7 +2,7 @@
 
 ## Version 4.2.0
 
-Added EnergyResultProduced as a new event
+Added 'EnergyResultProducedV1'  as a new event
 
 ## Version 4.1.0
 

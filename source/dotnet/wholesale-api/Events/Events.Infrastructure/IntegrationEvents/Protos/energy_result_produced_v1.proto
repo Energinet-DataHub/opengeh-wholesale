@@ -27,11 +27,11 @@ option csharp_namespace = "Energinet.DataHub.Wholesale.Contracts.IntegrationEven
  */
 message EnergyResultProducedV1 {
   /*
-   * The ID of the batch creating the calculation result.
+   * The ID of the calculation creating the result.
    * The ID is a UUID consisting of hexadecimal digits in the form XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX.
    * Example: 65801e3c-5131-426e-b1bb-7b186349c996
    */
-  string batch_id = 1;
+  string calculation_id = 1;
 
   // The level at which the result is aggregated.
   oneof aggregation_level {
@@ -67,7 +67,7 @@ message EnergyResultProducedV1 {
    * The exchange goes into the grid area specified in the aggregation.
    * Only applies to results with exchange time series types.
    */
-  google.protobuf.StringValue from_grid_area_code = 16;
+  optional google.protobuf.StringValue from_grid_area_code = 16;
 
-  repeated TimeSeriesPoint time_series_points = 20;
+  repeated EnergyTimeSeriesPoint time_series_points = 20;
 }

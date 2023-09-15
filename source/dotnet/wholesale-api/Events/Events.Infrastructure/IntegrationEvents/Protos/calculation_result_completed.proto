@@ -68,7 +68,7 @@ message CalculationResultCompleted {
    * The exchange goes into the grid area specified in the aggregation.
    * Only applies to results with exchange time series types.
    */
-  google.protobuf.StringValue from_grid_area_code = 16;
+  optional google.protobuf.StringValue from_grid_area_code = 16;
 
   repeated TimeSeriesPoint time_series_points = 20;
 }
