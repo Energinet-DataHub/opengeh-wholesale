@@ -16,7 +16,7 @@ from datetime import datetime
 from decimal import Decimal
 from unittest import mock
 import pytest
-from pyspark.sql import SparkSession
+from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import lit
 
 from package.codelists import (
@@ -231,13 +231,16 @@ def test__read_data__returns_df(
 ) -> None:
     # Arrange
     row = create_row()
-    sut = CalculationInputReader(spark)
+    reader = CalculationInputReader(spark)
     df = spark.createDataFrame(data=[row], schema=expected_schema)
-    method = getattr(sut, str(method_name.__name__))
+    sut = getattr(reader, str(method_name.__name__))
 
-    # Act & Assert
-    with mock.patch.object(sut, "_read_table", return_value=df):
-        method()
+    # Act
+    with mock.patch.object(reader, "_read_table", return_value=df):
+        actual = sut()
+
+    # Assert
+    assert isinstance(actual, DataFrame)
 
 
 @pytest.mark.parametrize(
@@ -294,3 +297,52 @@ def test__read_data__throws_exception_when_schema_mismatch(
         assert True
     else:
         assert False
+
+
+@pytest.mark.parametrize(
+    "expected_schema, method_name, create_row",
+    [
+        (
+            metering_point_period_schema,
+            CalculationInputReader.read_metering_point_periods,
+            _create_metering_point_period_row,
+        ),
+        (
+            time_series_point_schema,
+            CalculationInputReader.read_time_series_points,
+            _create_time_series_point_row,
+        ),
+        (
+            charge_master_data_periods_schema,
+            CalculationInputReader.read_charge_master_data_periods,
+            _create_charge_master_period_row,
+        ),
+        (
+            charge_link_periods_schema,
+            CalculationInputReader.read_charge_links_periods,
+            _create_charge_link_period_row,
+        ),
+        (
+            charge_price_points_schema,
+            CalculationInputReader.read_charge_price_points,
+            _create_change_price_point_row,
+        ),
+    ],
+)
+def test__read_data__throws_exception_when_schema_mismatch2(
+    spark: SparkSession,
+    expected_schema: StructType,
+    method_name: str,
+    create_row: any,
+) -> None:
+    # Arrange
+    row = create_row()
+    reader = CalculationInputReader(spark)
+    df = spark.createDataFrame(data=[row], schema=expected_schema)
+    df = df.withColumn("test", lit("test"))
+    sut = getattr(reader, str(method_name.__name__))
+
+    # Act & Assert
+    with mock.patch.object(reader, "_read_table", return_value=df):
+        with pytest.raises(Exception):
+            sut()
