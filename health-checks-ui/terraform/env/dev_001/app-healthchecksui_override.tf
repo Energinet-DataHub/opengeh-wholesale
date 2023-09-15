@@ -21,7 +21,7 @@ module "app_health_checks_ui" {
     "HealthChecksUI__HealthChecks__7__Uri"  = "https://app-timeseriesapi-mig-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/ready"
     "HealthChecksUI__HealthChecks__8__Name" = "eSett: ECP Inbox Function"
     "HealthChecksUI__HealthChecks__8__Uri"  = "https://func-ecp-inbox-esett-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/ready"
-    "HealthChecksUI__HealthChecks__9__Name" = "eSett: ECP Outbounx Function"
+    "HealthChecksUI__HealthChecks__9__Name" = "eSett: ECP Outbound Function"
     "HealthChecksUI__HealthChecks__9__Uri"  = "https://func-ecp-outbox-esett-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/ready"
     "HealthChecksUI__HealthChecks__10__Name" = "eSett: Exchange Event Receiver Function"
     "HealthChecksUI__HealthChecks__10__Uri"  = "https://func-exchange-event-receiver-esett-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/ready"
