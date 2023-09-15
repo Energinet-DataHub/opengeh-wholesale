@@ -43,7 +43,7 @@ public class CalculationResultQueries : ICalculationResultQueries
         _logger = logger;
     }
 
-    public async IAsyncEnumerable<CalculationResult> GetAsync(Guid batchId)
+    public async IAsyncEnumerable<EnergyResult> GetAsync(Guid batchId)
     {
         var batch = await _batchesClient.GetAsync(batchId).ConfigureAwait(false);
         var sql = CreateBatchResultsSql(batchId);
@@ -52,7 +52,7 @@ public class CalculationResultQueries : ICalculationResultQueries
         _logger.LogDebug("Fetched all calculation results for batch {BatchId}", batchId);
     }
 
-    public async IAsyncEnumerable<CalculationResult> GetAsync(CalculationResultQuery query)
+    public async IAsyncEnumerable<EnergyResult> GetAsync(CalculationResultQuery query)
     {
         var sqlStatement = CreateRequestSql(query);
         await foreach (var calculationResult in GetInternalAsync(sqlStatement, query.StartOfPeriod, query.EndOfPeriod))
@@ -60,7 +60,7 @@ public class CalculationResultQueries : ICalculationResultQueries
         _logger.LogDebug("Fetched all calculation results for sql statement {SqlStatement}", sqlStatement);
     }
 
-    private async IAsyncEnumerable<CalculationResult> GetInternalAsync(string sql, Instant periodStart, Instant periodEnd)
+    private async IAsyncEnumerable<EnergyResult> GetInternalAsync(string sql, Instant periodStart, Instant periodEnd)
     {
         var timeSeriesPoints = new List<TimeSeriesPoint>();
         SqlResultRow? currentRow = null;
@@ -72,7 +72,7 @@ public class CalculationResultQueries : ICalculationResultQueries
 
             if (currentRow != null && BelongsToDifferentResults(currentRow, nextRow))
             {
-                yield return CreateCalculationResult(currentRow, timeSeriesPoints, periodStart, periodEnd);
+                yield return CreateEnergyResult(currentRow, timeSeriesPoints, periodStart, periodEnd);
                 resultCount++;
                 timeSeriesPoints = new List<TimeSeriesPoint>();
             }
@@ -83,7 +83,7 @@ public class CalculationResultQueries : ICalculationResultQueries
 
         if (currentRow != null)
         {
-            yield return CreateCalculationResult(currentRow, timeSeriesPoints, periodStart, periodEnd);
+            yield return CreateEnergyResult(currentRow, timeSeriesPoints, periodStart, periodEnd);
             resultCount++;
         }
 
@@ -142,7 +142,7 @@ ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames
         return new TimeSeriesPoint(time, quantity, quality);
     }
 
-    private static CalculationResult CreateCalculationResult(
+    private static EnergyResult CreateEnergyResult(
         SqlResultRow sqlResultRow,
         List<TimeSeriesPoint> timeSeriesPoints,
         Instant periodStart,
@@ -157,7 +157,7 @@ ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames
         var batchId = sqlResultRow[EnergyResultColumnNames.BatchId];
         var processType = sqlResultRow[EnergyResultColumnNames.BatchProcessType];
 
-        return new CalculationResult(
+        return new EnergyResult(
             id,
             Guid.Parse(batchId),
             gridArea,

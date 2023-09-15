@@ -151,9 +151,9 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
 
     private async Task AddCreatedRowsInArbitraryOrderAsync(IOptions<DeltaTableOptions> options)
     {
-        const string firstCalculationResultId = "b55b6f74-386f-49eb-8b56-63fae62e4fc7";
-        const string secondCalculationResultId = "c2bdceba-b58b-4190-a873-eded0ed50c20";
-        const string thirdCalculationResultId = "d2bdceba-b58b-4190-a873-eded0ed50c20";
+        const string firstCalculationResultId = "aaaaaaaa-386f-49eb-8b56-63fae62e4fc7";
+        const string secondCalculationResultId = "bbbbbbbb-b58b-4190-a873-eded0ed50c20";
+        const string thirdCalculationResultId = "cccccccc-b58b-4190-a873-eded0ed50c20";
         const string firstHour = "2022-01-01T01:00:00.000Z";
         const string secondHour = "2022-01-01T02:00:00.000Z";
         const string gridAreaA = "301";
