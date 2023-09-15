@@ -31,7 +31,9 @@ public static class DatabricksSqlStatementsApiHealthCheckBuilderExtensions
     {
         return builder.Add(new HealthCheckRegistration(
             name ?? Name,
-            serviceProvider => new DatabricksSqlStatementsApiHealthRegistration(options(serviceProvider)),
+            serviceProvider => new DatabricksSqlStatementsApiHealthRegistration(
+                serviceProvider.GetRequiredService<IHttpClientFactory>(),
+                options(serviceProvider)),
             failureStatus,
             tags,
             timeout));

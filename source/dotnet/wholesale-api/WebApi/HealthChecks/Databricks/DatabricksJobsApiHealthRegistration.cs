@@ -31,14 +31,7 @@ public class DatabricksJobsApiHealthRegistration : IHealthCheck
 
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken)
     {
-        try
-        {
-            await _jobsApiClient.Jobs.List(1, 0, null, false, cancellationToken).ConfigureAwait(false);
-            return HealthCheckResult.Healthy();
-        }
-        catch (Exception)
-        {
-            return HealthCheckResult.Unhealthy();
-        }
+        await _jobsApiClient.Jobs.List(1, 0, null, false, cancellationToken).ConfigureAwait(false);
+        return HealthCheckResult.Healthy();
     }
 }

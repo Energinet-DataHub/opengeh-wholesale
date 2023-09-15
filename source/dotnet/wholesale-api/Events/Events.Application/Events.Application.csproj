@@ -4,7 +4,7 @@
     <RootNamespace>Energinet.DataHub.Wholesale.Events.Application</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="7.5.3" />
+    <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="7.6.0" />
     <PackageReference Include="Energinet.DataHub.Core.Messaging" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
@@ -12,6 +12,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="System.Linq.Async" Version="6.0.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Batches\Batches.Interfaces\Batches.Interfaces.csproj" />

@@ -15,6 +15,13 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql.types import (
+    DecimalType,
+    StringType,
+    StructField,
+    StructType,
+    TimestampType,
+)
 from typing import Callable
 from package.calculation.wholesale.wholesale_initializer import (
     join_with_charge_prices,
@@ -27,13 +34,22 @@ from package.calculation.wholesale.wholesale_initializer import (
     join_with_grouped_time_series,
     get_charges_based_on_charge_type,
 )
-from package.codelists import ChargeType, ChargeResolution, MeteringPointType, SettlementMethod
+from package.codelists import (
+    ChargeQuality,
+    ChargeType,
+    ChargeResolution,
+    MeteringPointType,
+    SettlementMethod,
+)
 from package.calculation.wholesale.schemas.charges_schema import (
     charges_schema,
     charge_prices_schema,
     charge_links_schema,
 )
-from package.calculation_input.schemas import time_series_point_schema, metering_point_period_schema
+from package.calculation_input.schemas import (
+    time_series_point_schema,
+    metering_point_period_schema,
+)
 from tests.helpers.test_schemas import (
     charges_with_prices_schema,
     charges_with_price_and_links_schema,
@@ -104,7 +120,10 @@ charges_dataset = [
     ],
 )
 def test__get_charges_based_on_resolution__filters_on_resolution_hour_or_day_only_for_tariff(
-    spark: SparkSession, charges: DataFrame, resolution_duration: ChargeResolution, expected: int
+    spark: SparkSession,
+    charges: DataFrame,
+    resolution_duration: ChargeResolution,
+    expected: int,
 ) -> None:
     # Arrange
     charges = spark.createDataFrame(charges, schema=charges_schema)
@@ -401,7 +420,10 @@ charge_links_dataset = [
     ],
 )
 def test__join_with_charge_links__joins_on_charge_key_and_time_is_between_from_and_to_date(
-    spark: SparkSession, charges_with_prices: DataFrame, charge_links: DataFrame, expected: int
+    spark: SparkSession,
+    charges_with_prices: DataFrame,
+    charge_links: DataFrame,
+    expected: int,
 ) -> None:
     # Arrange
     charges_with_prices = spark.createDataFrame(
@@ -518,7 +540,10 @@ metering_points_dataset = [
     ],
 )
 def test__join_with_metering_points__joins_on_metering_point_id_and_time_is_between_from_and_to_date(
-    spark: SparkSession, charges_with_price_and_links: DataFrame, metering_points: DataFrame, expected: int
+    spark: SparkSession,
+    charges_with_price_and_links: DataFrame,
+    metering_points: DataFrame,
+    expected: int,
 ) -> None:
     # Arrange
     charges_with_price_and_links = spark.createDataFrame(
@@ -530,9 +555,7 @@ def test__join_with_metering_points__joins_on_metering_point_id_and_time_is_betw
     )
 
     # Act
-    result = join_with_metering_points(
-        charges_with_price_and_links, metering_points
-    )
+    result = join_with_metering_points(charges_with_price_and_links, metering_points)
 
     # Assert
     assert result.count() == expected
@@ -542,25 +565,25 @@ time_series_dataset_1 = [
     (
         "D01",
         Decimal("10"),
-        "D01",
+        [ChargeQuality.CALCULATED.value, ChargeQuality.ESTIMATED.value],
         datetime(2020, 1, 15, 5, 0),
     ),
     (
         "D01",
         Decimal("10"),
-        "D01",
+        [ChargeQuality.CALCULATED.value, ChargeQuality.ESTIMATED.value],
         datetime(2020, 1, 15, 1, 0),
     ),
     (
         "D01",
         Decimal("10"),
-        "D01",
+        [ChargeQuality.CALCULATED.value, ChargeQuality.ESTIMATED.value],
         datetime(2020, 1, 15, 1, 30),
     ),
     (
         "D01",
         Decimal("10"),
-        "D01",
+        [ChargeQuality.CALCULATED.value, ChargeQuality.ESTIMATED.value],
         datetime(2020, 1, 16, 1, 0),
     ),
 ]
@@ -575,7 +598,11 @@ time_series_dataset_1 = [
     ],
 )
 def test__group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
-    spark: SparkSession, time_series: DataFrame, resolution_duration: ChargeResolution, expected_count: int, expected_quantity: int
+    spark: SparkSession,
+    time_series: DataFrame,
+    resolution_duration: ChargeResolution,
+    expected_count: int,
+    expected_quantity: int,
 ) -> None:
     # Arrange
     time_series = spark.createDataFrame(time_series, schema=time_series_point_schema)
@@ -599,7 +626,7 @@ grouped_time_series_dataset_1 = [
     (
         "D01",
         Decimal("10"),
-        "D01",
+        [ChargeQuality.CALCULATED.value, ChargeQuality.ESTIMATED.value],
         datetime(2020, 1, 15, 0, 0),
     )
 ]
@@ -622,17 +649,30 @@ charges_complete_dataset_1 = [
 ]
 
 
+grouped_time_series_point_schema = StructType(
+    [
+        StructField(Colname.metering_point_id, StringType(), False),
+        StructField(Colname.quantity, DecimalType(18, 6), True),
+        StructField(Colname.qualities, StringType(), False),
+        StructField(Colname.observation_time, TimestampType(), False),
+    ]
+)
+
+
 # Tariff only
 @pytest.mark.parametrize(
     "charges_complete,grouped_time_series,expected",
     [(charges_complete_dataset_1, grouped_time_series_dataset_1, 1)],
 )
 def test__join_with_grouped_time_series__joins_on_metering_point_and_time(
-    spark: SparkSession, charges_complete: DataFrame, grouped_time_series: DataFrame, expected: int
+    spark: SparkSession,
+    charges_complete: DataFrame,
+    grouped_time_series: DataFrame,
+    expected: int,
 ) -> None:
     # Arrange
     grouped_time_series = spark.createDataFrame(
-        grouped_time_series, schema=time_series_point_schema
+        grouped_time_series, schema=grouped_time_series_point_schema
     )
     charges_complete = spark.createDataFrame(
         charges_complete, schema=charges_complete_schema
@@ -646,17 +686,23 @@ def test__join_with_grouped_time_series__joins_on_metering_point_and_time(
 
 
 @pytest.fixture(scope="session")
-def default_time_series_point(time_series_factory: Callable[..., DataFrame]) -> DataFrame:
+def default_time_series_point(
+    time_series_factory: Callable[..., DataFrame]
+) -> DataFrame:
     return time_series_factory(DEFAULT_TIME)
 
 
 @pytest.fixture(scope="session")
-def default_metering_point_period(metering_point_period_factory: Callable[..., DataFrame]) -> DataFrame:
+def default_metering_point_period(
+    metering_point_period_factory: Callable[..., DataFrame]
+) -> DataFrame:
     return metering_point_period_factory(DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
 
 
 @pytest.fixture(scope="session")
-def default_charge_master_data(charge_master_data_factory: Callable[..., DataFrame]) -> DataFrame:
+def default_charge_master_data(
+    charge_master_data_factory: Callable[..., DataFrame]
+) -> DataFrame:
     return (
         charge_master_data_factory(
             DEFAULT_FROM_DATE,
@@ -689,7 +735,9 @@ def default_charge_links(charge_links_factory: Callable[..., DataFrame]) -> Data
 
 
 @pytest.fixture(scope="session")
-def default_charge_price_point(charge_prices_factory: Callable[..., DataFrame]) -> DataFrame:
+def default_charge_price_point(
+    charge_prices_factory: Callable[..., DataFrame]
+) -> DataFrame:
     return charge_prices_factory(time=DEFAULT_TIME)
 
 
@@ -715,7 +763,7 @@ def test__get_tariff_charges__when_no_charge_data_match_the_resolution__returns_
         charge_master_data,
         default_charge_links,
         default_charge_price_point,
-        ChargeResolution.HOUR
+        ChargeResolution.HOUR,
     )
 
     # Assert
@@ -734,19 +782,37 @@ def test__get_tariff_charges__returns_expected_quantities(
     second_hour_start = first_hour_start + timedelta(hours=1)
     third_hour_start = first_hour_start + timedelta(hours=2)
     time_series = (
-        time_series_factory(first_hour_start + timedelta(minutes=45), quantity=Decimal(1))           # hour 1, quarter 4
-        .union(time_series_factory(second_hour_start, quantity=Decimal(2)))                          # hour 2, quarter 1
-        .union(time_series_factory(second_hour_start + timedelta(minutes=15), quantity=Decimal(3)))  # hour 2, quarter 2
-        .union(time_series_factory(second_hour_start + timedelta(minutes=30), quantity=Decimal(4)))  # hour 2, quarter 3
-        .union(time_series_factory(second_hour_start + timedelta(minutes=45), quantity=Decimal(5)))  # hour 2, quarter 4
-        .union(time_series_factory(third_hour_start, quantity=Decimal(6)))                           # hour 3, quarter 1
+        time_series_factory(
+            first_hour_start + timedelta(minutes=45), quantity=Decimal(1)
+        )  # hour 1, quarter 4
+        .union(
+            time_series_factory(second_hour_start, quantity=Decimal(2))
+        )  # hour 2, quarter 1
+        .union(
+            time_series_factory(
+                second_hour_start + timedelta(minutes=15), quantity=Decimal(3)
+            )
+        )  # hour 2, quarter 2
+        .union(
+            time_series_factory(
+                second_hour_start + timedelta(minutes=30), quantity=Decimal(4)
+            )
+        )  # hour 2, quarter 3
+        .union(
+            time_series_factory(
+                second_hour_start + timedelta(minutes=45), quantity=Decimal(5)
+            )
+        )  # hour 2, quarter 4
+        .union(
+            time_series_factory(third_hour_start, quantity=Decimal(6))
+        )  # hour 3, quarter 1
     )
     expected_quantities = [1, 14, 6]
 
     charge_prices = (
-        charge_prices_factory(time=first_hour_start)           # hour 1
+        charge_prices_factory(time=first_hour_start)  # hour 1
         .union(charge_prices_factory(time=second_hour_start))  # hour 2
-        .union(charge_prices_factory(time=third_hour_start))   # hour 3
+        .union(charge_prices_factory(time=third_hour_start))  # hour 3
     )
 
     # Act
@@ -756,7 +822,7 @@ def test__get_tariff_charges__returns_expected_quantities(
         default_charge_master_data,
         default_charge_links,
         charge_prices,
-        ChargeResolution.HOUR
+        ChargeResolution.HOUR,
     )
 
     # Assert
@@ -767,53 +833,40 @@ def test__get_tariff_charges__returns_expected_quantities(
 
 
 def _create_overlapping_hour_tariffs(
-        charge_master_data_factory: Callable[..., DataFrame],
-        charge_links_factory: Callable[..., DataFrame],
-        charge_prices_factory: Callable[..., DataFrame],
-        charge_key_1: str,
-        charge_key_2: str,
+    charge_master_data_factory: Callable[..., DataFrame],
+    charge_links_factory: Callable[..., DataFrame],
+    charge_prices_factory: Callable[..., DataFrame],
+    charge_key_1: str,
+    charge_key_2: str,
 ) -> tuple[DataFrame, DataFrame, DataFrame]:
-    charge_master_data = (
+    charge_master_data = charge_master_data_factory(
+        DEFAULT_FROM_DATE,
+        DEFAULT_TO_DATE,
+        charge_key=charge_key_1,
+        charge_type=ChargeType.TARIFF.value,
+        charge_resolution=ChargeResolution.HOUR.value,
+    ).union(
         charge_master_data_factory(
             DEFAULT_FROM_DATE,
             DEFAULT_TO_DATE,
-            charge_key=charge_key_1,
+            charge_key=charge_key_2,
             charge_type=ChargeType.TARIFF.value,
             charge_resolution=ChargeResolution.HOUR.value,
         )
-        .union(
-            charge_master_data_factory(
-                DEFAULT_FROM_DATE,
-                DEFAULT_TO_DATE,
-                charge_key=charge_key_2,
-                charge_type=ChargeType.TARIFF.value,
-                charge_resolution=ChargeResolution.HOUR.value,
-            )
-        )
     )
-    charge_links = (
+    charge_links = charge_links_factory(
+        DEFAULT_FROM_DATE,
+        DEFAULT_TO_DATE,
+        charge_key=charge_key_1,
+    ).union(
         charge_links_factory(
             DEFAULT_FROM_DATE,
             DEFAULT_TO_DATE,
-            charge_key=charge_key_1,
-        )
-        .union(
-            charge_links_factory(
-                DEFAULT_FROM_DATE,
-                DEFAULT_TO_DATE,
-                charge_key=charge_key_2,
-            )
+            charge_key=charge_key_2,
         )
     )
-    charge_prices = (
-        charge_prices_factory(
-            DEFAULT_TIME, charge_key_1
-        )
-        .union(
-            charge_prices_factory(
-                DEFAULT_TIME, charge_key_2
-            )
-        )
+    charge_prices = charge_prices_factory(DEFAULT_TIME, charge_key_1).union(
+        charge_prices_factory(DEFAULT_TIME, charge_key_2)
     )
 
     return charge_master_data, charge_links, charge_prices
@@ -844,7 +897,7 @@ def test__get_tariff_charges__when_two_tariff_overlap__returns_both_tariffs(
         charge_master_data,
         charge_links,
         charge_prices,
-        ChargeResolution.HOUR
+        ChargeResolution.HOUR,
     )
 
     # Assert

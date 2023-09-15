@@ -61,8 +61,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 // Assert
                 actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-                var content = await actualResponse.Content.ReadAsStringAsync();
-                content.Should().Contain("Healthy");
+                var actualContent = await actualResponse.Content.ReadAsStringAsync();
+                actualContent.Should().StartWith("{\"status\":\"Healthy\"");
             }
 
             /// <summary>

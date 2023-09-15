@@ -22,4 +22,10 @@ public interface ICalculationResultQueries
     /// Get all results for a given batch.
     /// </summary>
     IAsyncEnumerable<CalculationResult> GetAsync(Guid batchId);
+
+    /// <summary>
+    /// Gets all result for a given request.
+    /// </summary>
+    /// <param name="query"></param>
+    IAsyncEnumerable<CalculationResult> GetAsync(CalculationResultQuery query);
 }
