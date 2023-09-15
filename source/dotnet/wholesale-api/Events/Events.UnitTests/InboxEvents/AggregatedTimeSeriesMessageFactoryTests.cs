@@ -44,11 +44,11 @@ public class AggregatedTimeSeriesMessageFactoryTests
         // Arrange
         var expectedAcceptedSubject = nameof(AggregatedTimeSeriesRequestAccepted);
         var expectedReferenceId = "123456789";
-        var calculationResult = CreateCalculationResult();
+        var energyResult = CreateEnergyResult();
         var sut = new AggregatedTimeSeriesMessageFactory();
 
         // Act
-        var response = sut.Create(new List<CalculationResult> { calculationResult }, expectedReferenceId, isRejected: false);
+        var response = sut.Create(new List<EnergyResult> { energyResult }, expectedReferenceId, isRejected: false);
 
         // Assert
         Assert.NotNull(response);
@@ -62,13 +62,13 @@ public class AggregatedTimeSeriesMessageFactoryTests
             Assert.Equal(Energinet.DataHub.Edi.Responses.TimeSeriesType.Production, serie.TimeSeriesType);
             Assert.Equal(new Timestamp() { Seconds = _periodStart.ToUnixTimeSeconds() }, serie.Period.StartOfPeriod);
             Assert.Equal(new Timestamp() { Seconds = _periodEnd.ToUnixTimeSeconds() }, serie.Period.EndOfPeriod);
-            Assert.Equal(calculationResult.TimeSeriesPoints.Length, serie.TimeSeriesPoints.Count);
+            Assert.Equal(energyResult.TimeSeriesPoints.Length, serie.TimeSeriesPoints.Count);
         });
     }
 
-    private CalculationResult CreateCalculationResult()
+    private EnergyResult CreateEnergyResult()
     {
-        return new CalculationResult(
+        return new EnergyResult(
             _id,
             _batchId,
             _gridArea,

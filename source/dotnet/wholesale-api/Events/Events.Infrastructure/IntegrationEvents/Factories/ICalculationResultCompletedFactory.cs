@@ -19,5 +19,5 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Fa
 
 public interface ICalculationResultCompletedFactory
 {
-    CalculationResultCompleted Create(CalculationResult result);
+    CalculationResultCompleted Create(EnergyResult result);
 }
