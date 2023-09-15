@@ -39,7 +39,7 @@ class CalculationInputReader:
         self.__spark = spark
 
     def read_metering_point_periods(self) -> DataFrame:
-        df = self.__spark.read.table(
+        df = self._read_table(
             f"{paths.INPUT_DATABASE_NAME}.{paths.METERING_POINT_PERIODS_TABLE_NAME}"
         )
 
@@ -54,7 +54,7 @@ class CalculationInputReader:
         return df
 
     def read_time_series_points(self) -> DataFrame:
-        df = self.__spark.read.table(
+        df = self._read_table(
             f"{paths.INPUT_DATABASE_NAME}.{paths.TIME_SERIES_POINTS_TABLE_NAME}"
         )
 
@@ -65,7 +65,7 @@ class CalculationInputReader:
         return df
 
     def read_charge_links_periods(self) -> DataFrame:
-        df = self.__spark.read.table(
+        df = self._read_table(
             f"{paths.INPUT_DATABASE_NAME}.{paths.CHARGE_LINK_PERIODS_TABLE_NAME}"
         )
 
@@ -77,7 +77,7 @@ class CalculationInputReader:
         return df
 
     def read_charge_master_data_periods(self) -> DataFrame:
-        df = self.__spark.read.table(
+        df = self._read_table(
             f"{paths.INPUT_DATABASE_NAME}.{paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}"
         )
 
@@ -91,7 +91,7 @@ class CalculationInputReader:
         return df
 
     def read_charge_price_points(self) -> DataFrame:
-        df = self.__spark.read.table(
+        df = self._read_table(
             f"{paths.INPUT_DATABASE_NAME}.{paths.CHARGE_PRICE_POINTS_TABLE_NAME}"
         )
 
@@ -101,6 +101,9 @@ class CalculationInputReader:
 
         df = _add_charge_key_column(df)
         return df
+
+    def _read_table(self, table_name: str) -> DataFrame:
+        return self.__spark.read.table(table_name)
 
 
 def _fix_metering_point_type(df: DataFrame) -> DataFrame:
