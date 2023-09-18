@@ -101,6 +101,7 @@ def group_by_monthly(df: DataFrame) -> DataFrame:
         )
         .agg(
             sum(Colname.total_amount).alias(Colname.total_amount),
+            sum(Colname.total_quantity).alias(Colname.total_quantity),
             count(Colname.charge_count).alias(Colname.charge_count),
             first(Colname.charge_tax).alias(Colname.charge_tax),
             lit(ChargeResolution.MONTH.value).alias(Colname.charge_resolution),
@@ -116,6 +117,7 @@ def group_by_monthly(df: DataFrame) -> DataFrame:
             Colname.total_amount,
             Colname.charge_count,
             Colname.charge_resolution,
+            Colname.total_quantity,
         )
     )
     return agg_df
