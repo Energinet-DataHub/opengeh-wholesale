@@ -12,11 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from datetime import timedelta
+import time
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
 
 import package.calculation_input.basis_data as basis_data
-from package.infrastructure import paths
+from package.infrastructure import paths, log
 from package.constants import PartitionKeyName, BasisDataColname
 from package.codelists import AggregationLevel, BasisDataType
 
@@ -33,6 +35,11 @@ class BasisDataWriter:
         enriched_time_series_point_df: DataFrame,
         time_zone: str,
     ) -> None:
+
+        # TIMER #
+        start_time = time.time()
+        # TIMER #
+
         (
             timeseries_quarter_df,
             timeseries_hour_df,
@@ -44,6 +51,11 @@ class BasisDataWriter:
             metering_points_periods_df
         )
 
+        # TIMER #
+        duration = time.time() - start_time
+        log(f"Get basis data took: {str(timedelta(seconds=duration))}")        
+        # TIMER #
+
         self._write(master_basis_data_df, timeseries_quarter_df, timeseries_hour_df)
 
     def _write(
@@ -52,16 +64,34 @@ class BasisDataWriter:
         timeseries_quarter_df: DataFrame,
         timeseries_hour_df: DataFrame,
     ) -> None:
+
+        # TIMER #
+        start_time = time.time()
+        # TIMER #
+
         self._write_ga_basis_data(
             master_basis_data_df,
             timeseries_quarter_df,
             timeseries_hour_df,
         )
+
+        # TIMER #
+        duration = time.time() - start_time
+        log(f"_write_ga_basis_data took: {str(timedelta(seconds=duration))}")
+        start_time = time.time()
+        # TIMER #
+
         self._write_es_basis_data(
             master_basis_data_df,
             timeseries_quarter_df,
             timeseries_hour_df,
         )
+
+        # TIMER #
+        duration = time.time() - start_time
+        log(f"_write_es_basis_data took: {str(timedelta(seconds=duration))}")
+        # TIMER #
+
 
     def _write_ga_basis_data(
         self,
