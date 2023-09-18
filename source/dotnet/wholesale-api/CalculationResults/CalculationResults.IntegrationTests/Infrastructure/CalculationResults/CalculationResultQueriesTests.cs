@@ -32,7 +32,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.CalculationResults;
 
-public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatementApiFixture>
+public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatementApiFixture>, IAsyncLifetime
 {
     private const string BatchId = "019703e7-98ee-45c1-b343-0cbf185a47d9";
     private const string FirstQuantity = "1.111";
@@ -46,6 +46,18 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
     public CalculationResultQueriesTests(DatabricksSqlStatementApiFixture fixture)
     {
         _fixture = fixture;
+    }
+
+    public async Task InitializeAsync()
+    {
+        // Called once per test. This is important to avoid the tests to interfere with each other.
+        await _fixture.DatabricksSchemaManager.CreateSchemaAsync();
+    }
+
+    public async Task DisposeAsync()
+    {
+        // Called once per test. This is important to avoid the tests to interfere with each other.
+        await _fixture.DatabricksSchemaManager.DropSchemaAsync();
     }
 
     [Theory]
