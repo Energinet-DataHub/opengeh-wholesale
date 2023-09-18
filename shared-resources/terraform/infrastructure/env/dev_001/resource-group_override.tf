@@ -1,4 +1,4 @@
 resource "azurerm_resource_group" "this" {
-  name     = "rg-main-${local.resources_suffix}"
+  name     = "rg-${local.resources_suffix}"
   location = "West Europe"
 }
