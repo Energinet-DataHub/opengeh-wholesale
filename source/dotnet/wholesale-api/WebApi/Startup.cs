@@ -183,26 +183,26 @@ public class Startup
         serviceCollection.AddHealthChecks()
             .AddLiveCheck()
             .AddDbContextCheck<EventsDatabaseContext>(
-                name: HealthCheck.SqlDatabaseContext)
+                name: HealthCheckNames.SqlDatabaseContext)
             .AddAzureServiceBusTopic(
                 serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
                 serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
-                name: HealthCheck.IntegrationEventsTopic)
+                name: HealthCheckNames.IntegrationEventsTopic)
             .AddDataLakeHealthCheck(
-                name: HealthCheck.DataLake)
+                name: HealthCheckNames.DataLake)
             .AddDatabricksJobsApiHealthCheck(
-                name: HealthCheck.DatabricksJobsApi)
+                name: HealthCheckNames.DatabricksJobsApi)
             .AddDatabricksSqlStatementsApiHealthCheck(
                 _ => Configuration.Get<DatabricksOptions>()!,
-                name: HealthCheck.DatabricksSqlStatementsApi)
+                name: HealthCheckNames.DatabricksSqlStatementsApi)
             .AddAzureServiceBusQueue(
                 serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
                 serviceBusOptions.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME,
-                name: HealthCheck.WholesaleInboxEventsQueue)
+                name: HealthCheckNames.WholesaleInboxEventsQueue)
             .AddAzureServiceBusQueue(
                 serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
                 serviceBusOptions.EDI_INBOX_MESSAGE_QUEUE_NAME,
-                name: HealthCheck.EdiInboxEventsQueue);
+                name: HealthCheckNames.EdiInboxEventsQueue);
     }
 
     /// <summary>

@@ -64,7 +64,7 @@ public class HealthCheckTests : WebApiTestBase
     public async Task When_RequestReadyStatus_Then_AllHealthChecksMustBeInResponse()
     {
         // Arrange
-        var type = typeof(HealthCheck);
+        var type = typeof(HealthCheckNames);
         var expectedHealthCheckNames = type.GetProperties(BindingFlags.Public).Select(x => x.Name);
 
         // Act
