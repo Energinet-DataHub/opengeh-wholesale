@@ -63,6 +63,14 @@ public class AggregatedTimeSeriesMessageFactoryTests
             Assert.Equal(new Timestamp() { Seconds = _periodStart.ToUnixTimeSeconds() }, serie.Period.StartOfPeriod);
             Assert.Equal(new Timestamp() { Seconds = _periodEnd.ToUnixTimeSeconds() }, serie.Period.EndOfPeriod);
             Assert.Equal(energyResult.TimeSeriesPoints.Length, serie.TimeSeriesPoints.Count);
+
+            var expected = CreateExpectedTimeSeries(energyResult.TimeSeriesPoints.ToList());
+            for (var i = 0; i < energyResult.TimeSeriesPoints.Length; i++)
+            {
+                Assert.Equal(expected[i].Time, serie.TimeSeriesPoints[i].Time);
+                Assert.Equal(expected[i].Quantity, serie.TimeSeriesPoints[i].Quantity);
+                Assert.Equal(expected[i].QuantityQuality, serie.TimeSeriesPoints[i].QuantityQuality);
+            }
         });
     }
 
@@ -85,5 +93,25 @@ public class AggregatedTimeSeriesMessageFactoryTests
             _periodStart,
             _periodEnd,
             _fromGridArea);
+    }
+
+    private List<Energinet.DataHub.Edi.Responses.TimeSeriesPoint> CreateExpectedTimeSeries(List<TimeSeriesPoint> timeSeriesPoint)
+    {
+        var expected = new List<Energinet.DataHub.Edi.Responses.TimeSeriesPoint>();
+        expected.AddRange(timeSeriesPoint.Select(point => new Energinet.DataHub.Edi.Responses.TimeSeriesPoint()
+        {
+            Time = new Timestamp() { Seconds = point.Time.ToUnixTimeSeconds() },
+            Quantity =
+                new DecimalValue()
+                {
+                    Units = decimal.ToInt64(point.Quantity),
+                    Nanos = decimal.ToInt32((point.Quantity - decimal.ToInt64(point.Quantity)) * 1_000_000_000),
+                },
+            QuantityQuality = point.Quality == QuantityQuality.Estimated
+                ? Energinet.DataHub.Edi.Responses.QuantityQuality.Estimated
+                : Energinet.DataHub.Edi.Responses.QuantityQuality.Measured,
+        }));
+
+        return expected;
     }
 }
