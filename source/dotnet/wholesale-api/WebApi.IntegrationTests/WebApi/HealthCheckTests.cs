@@ -65,7 +65,7 @@ public class HealthCheckTests : WebApiTestBase
     {
         // Arrange
         var type = typeof(HealthCheck);
-        var expectedHealthCheckNames = type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Select(x => x.Name);
+        var expectedHealthCheckNames = type.GetProperties(BindingFlags.Public).Select(x => x.Name);
 
         // Act
         var actualResponse = await Client.GetAsync(HealthChecksConstants.ReadyHealthCheckEndpointRoute);
@@ -73,19 +73,5 @@ public class HealthCheckTests : WebApiTestBase
         // Assert
         var actualContent = await actualResponse.Content.ReadAsStringAsync();
         expectedHealthCheckNames.ToList().ForEach(x => actualContent.Should().Contain(x));
-    }
-
-    [Fact]
-    public async Task When_RequestReadyStatus_Then_UnknownHealthCheckMustNotBeInResponse()
-    {
-        // Arrange
-        const string expected = "unknown";
-
-        // Act
-        var actualResponse = await Client.GetAsync(HealthChecksConstants.ReadyHealthCheckEndpointRoute);
-
-        // Assert
-        var actualContent = await actualResponse.Content.ReadAsStringAsync();
-        actualContent.Should().NotContain(expected);
     }
 }

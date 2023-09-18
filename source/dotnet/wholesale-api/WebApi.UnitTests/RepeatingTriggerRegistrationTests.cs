@@ -22,7 +22,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests;
 
-public class RepeatingTriggerHealthChecksTests
+public class RepeatingTriggerRegistrationTests
 {
     [Theory]
     [InlineAutoData(typeof(RegisterCompletedBatchesTrigger))]
