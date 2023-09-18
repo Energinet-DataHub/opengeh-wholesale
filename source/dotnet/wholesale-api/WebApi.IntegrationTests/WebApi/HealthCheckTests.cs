@@ -37,7 +37,7 @@ public class HealthCheckTests : WebApiTestBase
     [Fact]
     public async Task When_RequestLivenessStatus_Then_ResponseIsOkAndHealthy()
     {
-        // Arrange + Act
+        // Act
         var actualResponse = await Client.GetAsync(HealthChecksConstants.LiveHealthCheckEndpointRoute);
 
         // Assert
