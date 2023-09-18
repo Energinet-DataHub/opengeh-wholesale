@@ -58,7 +58,7 @@ message EnergyResultProducedV1 {
    */
   google.protobuf.Timestamp period_end_utc = 13;
 
-  Resolution resolution = 14;
+  EnergyResolution resolution = 14;
 
   QuantityUnit quantity_unit = 15;
 
@@ -70,4 +70,34 @@ message EnergyResultProducedV1 {
   optional google.protobuf.StringValue from_grid_area_code = 16;
 
   repeated EnergyTimeSeriesPoint time_series_points = 20;
+}
+
+enum TimeSeriesType {
+    /*
+     * Unspecified is unused but according to best practice.
+     * Read more at https://protobuf.dev/programming-guides/style/#enums.
+     */
+    TIME_SERIES_TYPE_UNSPECIFIED = 0;
+    TIME_SERIES_TYPE_PRODUCTION = 1;
+    TIME_SERIES_TYPE_NON_PROFILED_CONSUMPTION = 2;
+    TIME_SERIES_TYPE_FLEX_CONSUMPTION = 3;
+    TIME_SERIES_TYPE_NET_EXCHANGE_PER_GA = 4;
+    TIME_SERIES_TYPE_NET_EXCHANGE_PER_NEIGHBORING_GA = 5;
+    TIME_SERIES_TYPE_GRID_LOSS = 6;
+    TIME_SERIES_TYPE_NEGATIVE_GRID_LOSS = 7;
+    TIME_SERIES_TYPE_POSITIVE_GRID_LOSS = 8;
+    TIME_SERIES_TYPE_TOTAL_CONSUMPTION = 9;
+    TIME_SERIES_TYPE_TEMP_FLEX_CONSUMPTION = 10;
+    TIME_SERIES_TYPE_TEMP_PRODUCTION = 11;
+}
+
+enum EnergyResolution {
+    /*
+     * Unspecified is unused but according to best practice.
+     * Read more at https://protobuf.dev/programming-guides/style/#enums.
+     */
+    RESOLUTION_UNSPECIFIED = 0;
+
+    // States that each time series point represents a time interval of one quarter (15 minutes).
+    RESOLUTION_QUARTER = 1;
 }
