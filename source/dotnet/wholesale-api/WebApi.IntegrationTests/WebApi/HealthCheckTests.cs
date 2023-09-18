@@ -13,50 +13,79 @@
 // limitations under the License.
 
 using System.Net;
+using System.Reflection;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
+using Energinet.DataHub.Wholesale.WebApi.HealthChecks;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon.Fixture.WebApi;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.WebApi;
 using FluentAssertions;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi
+namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi;
+
+public class HealthCheckTests : WebApiTestBase
 {
-    public class HealthCheckTests : WebApiTestBase
+    public HealthCheckTests(
+        WholesaleWebApiFixture wholesaleWebApiFixture,
+        WebApiFactory factory,
+        ITestOutputHelper testOutputHelper)
+        : base(wholesaleWebApiFixture, factory, testOutputHelper)
     {
-        public HealthCheckTests(
-            WholesaleWebApiFixture wholesaleWebApiFixture,
-            WebApiFactory factory,
-            ITestOutputHelper testOutputHelper)
-            : base(wholesaleWebApiFixture, factory, testOutputHelper)
-        {
-        }
+    }
 
-        [Fact]
-        public async Task When_RequestLivenessStatus_Then_ResponseIsOkAndHealthy()
-        {
-            // Arrange + Act
-            var actualResponse = await Client.GetAsync(HealthChecksConstants.LiveHealthCheckEndpointRoute);
+    [Fact]
+    public async Task When_RequestLivenessStatus_Then_ResponseIsOkAndHealthy()
+    {
+        // Arrange + Act
+        var actualResponse = await Client.GetAsync(HealthChecksConstants.LiveHealthCheckEndpointRoute);
 
-            // Assert
-            actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        // Assert
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var actualContent = await actualResponse.Content.ReadAsStringAsync();
-            actualContent.Should().StartWith("{\"status\":\"Healthy\"");
-        }
+        var actualContent = await actualResponse.Content.ReadAsStringAsync();
+        actualContent.Should().StartWith("{\"status\":\"Healthy\"");
+    }
 
-        [Fact]
-        public async Task When_RequestReadinessStatus_Then_ResponseIsOkAndHealthy()
-        {
-            // Act
-            var actualResponse = await Client.GetAsync(HealthChecksConstants.ReadyHealthCheckEndpointRoute);
+    [Fact]
+    public async Task When_RequestReadinessStatus_Then_ResponseIsOkAndHealthy()
+    {
+        // Act
+        var actualResponse = await Client.GetAsync(HealthChecksConstants.ReadyHealthCheckEndpointRoute);
 
-            // Assert
-            actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        // Assert
+        actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var actualContent = await actualResponse.Content.ReadAsStringAsync();
-            actualContent.Should().StartWith("{\"status\":\"Healthy\"");
-        }
+        var actualContent = await actualResponse.Content.ReadAsStringAsync();
+        actualContent.Should().StartWith("{\"status\":\"Healthy\"");
+    }
+
+    [Fact]
+    public async Task When_RequestReadyStatus_Then_AllHealthChecksMustBeInResponse()
+    {
+        // Arrange
+        var type = typeof(HealthCheck);
+        var expectedHealthCheckNames = type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Select(x => x.Name);
+
+        // Act
+        var actualResponse = await Client.GetAsync(HealthChecksConstants.ReadyHealthCheckEndpointRoute);
+
+        // Assert
+        var actualContent = await actualResponse.Content.ReadAsStringAsync();
+        expectedHealthCheckNames.ToList().ForEach(x => actualContent.Should().Contain(x));
+    }
+
+    [Fact]
+    public async Task When_RequestReadyStatus_Then_UnknownHealthCheckMustNotBeInResponse()
+    {
+        // Arrange
+        const string expected = "unknown";
+
+        // Act
+        var actualResponse = await Client.GetAsync(HealthChecksConstants.ReadyHealthCheckEndpointRoute);
+
+        // Assert
+        var actualContent = await actualResponse.Content.ReadAsStringAsync();
+        actualContent.Should().NotContain(expected);
     }
 }
