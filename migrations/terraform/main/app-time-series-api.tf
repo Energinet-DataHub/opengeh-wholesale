@@ -33,10 +33,9 @@ module "app_time_series_api" {
     "DatabricksOptions__WarehouseId"    = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-databricks-sql-endpoint-id)"
 
     # Logging
-    "Logging__LogLevel__Default"                      = "Information"
-    "Logging__LogLevel__Microsoft.Hosting.Lifetime"   = "Information"
-    "Logging__LogLevel__Energinet.Datahub.Migrations" = "Warning"
-    "Logging__LogLevel__Energinet.Datahub.Core"       = "Warning"
+    "Logging__ApplicationInsights__LogLevel__Default"                       = "Warning"
+    "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Migrations"  = "Information"
+    "Logging__ApplicationInsights__LogLevel__Energinet.Datahub.Core"        = "Information"
   }
 
   role_assignments = [
