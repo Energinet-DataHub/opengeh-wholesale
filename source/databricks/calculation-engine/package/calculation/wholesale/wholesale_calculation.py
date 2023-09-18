@@ -115,6 +115,7 @@ def group_by_monthly(df: DataFrame) -> DataFrame:
             Colname.charge_tax,
             Colname.total_amount,
             Colname.charge_count,
+            Colname.charge_resolution
         )
     )
     return agg_df
