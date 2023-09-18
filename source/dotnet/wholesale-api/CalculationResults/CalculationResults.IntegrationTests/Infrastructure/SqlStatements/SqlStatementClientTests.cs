@@ -32,7 +32,6 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
         _fixture = fixture;
     }
 
-
     public async Task InitializeAsync()
     {
         // Called once per test. This is important to avoid the tests to interfere with each other.
