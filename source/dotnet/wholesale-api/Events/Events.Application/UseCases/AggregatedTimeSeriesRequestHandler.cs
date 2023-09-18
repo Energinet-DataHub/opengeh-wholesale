@@ -62,7 +62,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
     }
 
-    private async Task<List<CalculationResult>> GetCalculationResultsAsync(
+    private async Task<List<EnergyResult>> GetCalculationResultsAsync(
         AggregatedTimeSeriesRequest aggregatedTimeSeriesRequestMessage,
         CancellationToken cancellationToken)
     {
@@ -77,7 +77,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         var calculationResults = await _calculationResultQueries.GetAsync(query)
             .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
-        _logger.LogDebug("Found {Count} calculation results based on {Query} query.", calculationResults.Count, query.Dump());
+        _logger.LogDebug("Found {Count} calculation results based on {Query} query.", calculationResults.Count, query.ToJsonString());
         return calculationResults;
     }
 }

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Core.Logging.LoggingScopeMiddleware.Internal;
 using Energinet.DataHub.Wholesale.Events.Application.Options;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Microsoft.Extensions.Hosting;
@@ -27,14 +28,14 @@ namespace Energinet.DataHub.Wholesale.Events.Application.Workers;
 public class AggregatedTimeSeriesServiceBusWorker : BackgroundService, IAsyncDisposable
 {
     private readonly IAggregatedTimeSeriesRequestHandler _aggregatedTimeSeriesRequestHandler;
-    private readonly ILogger<AggregatedTimeSeriesRequestHandler> _logger;
+    private readonly ILogger<AggregatedTimeSeriesServiceBusWorker> _logger;
     private readonly ServiceBusProcessor _serviceBusProcessor;
     private readonly string _serviceName;
-    private readonly Dictionary<string, object> _loggingScope;
+    private readonly LoggingScope _loggingScope;
 
     public AggregatedTimeSeriesServiceBusWorker(
         IAggregatedTimeSeriesRequestHandler aggregatedTimeSeriesRequestHandler,
-        ILogger<AggregatedTimeSeriesRequestHandler> logger,
+        ILogger<AggregatedTimeSeriesServiceBusWorker> logger,
         IOptions<ServiceBusOptions> options,
         ServiceBusClient serviceBusClient)
     {
@@ -43,7 +44,7 @@ public class AggregatedTimeSeriesServiceBusWorker : BackgroundService, IAsyncDis
         _logger = logger;
 
         _serviceName = GetType().Name;
-        _loggingScope = new Dictionary<string, object> { ["HostedService"] = _serviceName };
+        _loggingScope = new LoggingScope { ["HostedService"] = _serviceName };
     }
 
     public override async Task StopAsync(CancellationToken cancellationToken)
@@ -52,7 +53,7 @@ public class AggregatedTimeSeriesServiceBusWorker : BackgroundService, IAsyncDis
         {
             await _serviceBusProcessor.CloseAsync(cancellationToken).ConfigureAwait(false);
             await base.StopAsync(cancellationToken).ConfigureAwait(false);
-            _logger.LogWarning("{Worker} has stopped at {Time}", _serviceName, DateTimeOffset.Now);
+            _logger.LogWarning("{Worker} has stopped", _serviceName);
         }
     }
 
@@ -91,11 +92,17 @@ public class AggregatedTimeSeriesServiceBusWorker : BackgroundService, IAsyncDis
 
     private async Task ProcessMessageAsync(ProcessMessageEventArgs arg)
     {
-        var loggingScope = new Dictionary<string, object>(_loggingScope)
+        var loggingScope = new LoggingScope
         {
             ["MessageId"] = arg.Message.MessageId,
             ["Subject"] = arg.Message.Subject,
         };
+
+        foreach (var (key, value) in _loggingScope)
+        {
+            loggingScope[key] = value;
+        }
+
         using (_logger.BeginScope(loggingScope))
         {
             if (

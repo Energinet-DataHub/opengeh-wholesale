@@ -21,11 +21,11 @@ public interface ICalculationResultQueries
     /// <summary>
     /// Get all results for a given batch.
     /// </summary>
-    IAsyncEnumerable<CalculationResult> GetAsync(Guid batchId);
+    IAsyncEnumerable<EnergyResult> GetAsync(Guid batchId);
 
     /// <summary>
     /// Gets all result for a given request.
     /// </summary>
     /// <param name="query"></param>
-    IAsyncEnumerable<CalculationResult> GetAsync(CalculationResultQuery query);
+    IAsyncEnumerable<EnergyResult> GetAsync(CalculationResultQuery query);
 }

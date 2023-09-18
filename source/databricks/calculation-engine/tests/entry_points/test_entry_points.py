@@ -64,6 +64,16 @@ def test__entry_point__list_migrations_in_package__prints_some(
     assert any("202304191400_Add_result_table" in m for m in migrations)
 
 
+def test__entry_point__list_migrations_in_package__can_load_entry_point(
+    installed_package: None,
+) -> None:
+    # Act
+    entry_point = _load_entry_point("list_migrations_in_package")
+
+    # Assert
+    assert entry_point is not None
+
+
 def test__entry_point__lock_storage__can_load_entry_point(
     installed_package: None,
 ) -> None:

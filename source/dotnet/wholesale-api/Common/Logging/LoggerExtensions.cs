@@ -35,7 +35,7 @@ public static class LoggerExtensions
     /// <summary>
     /// Utility method to log entire objects.
     /// </summary>
-    public static string Dump(this object o)
+    public static string ToJsonString(this object o)
     {
         return JsonSerializer.Serialize(o);
     }
