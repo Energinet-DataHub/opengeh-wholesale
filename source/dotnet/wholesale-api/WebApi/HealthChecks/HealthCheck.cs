@@ -14,7 +14,7 @@
 
 namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks;
 
-public static class HealthCheck
+public static class HealthCheckNames
 {
     public const string WholesaleInboxEventsQueue = "HealthCheck";
     public const string EdiInboxEventsQueue = "EdiInboxEventsQueueHealthCheck";
