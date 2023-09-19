@@ -14,7 +14,17 @@
 
 
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, when
+from pyspark.sql.functions import (
+    col,
+    year,
+    month,
+    count,
+    first,
+    sum,
+    lit,
+    collect_set,
+    flatten,
+)
 import package.calculation.wholesale.wholesale_initializer as init
 from package.calculation.wholesale.tariff_calculators import (
     calculate_tariff_price_per_ga_co_es,
@@ -70,7 +80,10 @@ def _calculate_tariff_charges(
     )
 
     hourly_tariff_per_ga_co_es = calculate_tariff_price_per_ga_co_es(tariffs_hourly)
-    wholesale_calculation_result_writer.write(hourly_tariff_per_ga_co_es)
+    (wholesale_calculation_result_writer.write(hourly_tariff_per_ga_co_es))
+
+    monthly_tariff_per_ga_co_es = group_by_monthly(hourly_tariff_per_ga_co_es)
+    wholesale_calculation_result_writer.write(monthly_tariff_per_ga_co_es)
 
 
 def _get_production_and_consumption_metering_points(
@@ -80,3 +93,48 @@ def _get_production_and_consumption_metering_points(
         (col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value)
         | (col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value)
     )
+
+
+def group_by_monthly(df: DataFrame) -> DataFrame:
+    df = df.withColumn("year", year(df["observation_time"]))
+    df = df.withColumn("month", month(df["observation_time"]))
+    agg_df = (
+        df.groupBy(
+            Colname.energy_supplier_id,
+            Colname.grid_area,
+            "year",
+            "month",
+            Colname.charge_key,
+            Colname.charge_id,
+            Colname.charge_type,
+            Colname.charge_owner,
+        )
+        .agg(
+            sum(Colname.total_amount).alias(Colname.total_amount),
+            sum(Colname.total_quantity).alias(Colname.total_quantity),
+            sum(Colname.charge_price).alias(Colname.charge_price),
+            count(Colname.charge_count).alias(Colname.charge_count),
+            first(Colname.charge_tax).alias(Colname.charge_tax),
+            lit(ChargeResolution.MONTH.value).alias(Colname.charge_resolution),
+            first(Colname.unit).alias(Colname.unit),
+            first(Colname.observation_time).alias(Colname.charge_time),
+            flatten(collect_set(Colname.qualities)).alias(Colname.qualities),
+        )
+        .select(
+            col(Colname.grid_area),
+            col(Colname.energy_supplier_id),
+            col(Colname.total_quantity),
+            col(Colname.unit),
+            col(Colname.qualities),
+            col(Colname.charge_time),
+            col(Colname.charge_resolution),
+            col(Colname.charge_price),
+            col(Colname.total_amount),
+            col(Colname.charge_tax),
+            col(Colname.charge_id),
+            col(Colname.charge_type),
+            col(Colname.charge_owner),
+        )
+    )
+
+    return agg_df

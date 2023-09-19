@@ -31,6 +31,7 @@ from package.calculation.wholesale.tariff_calculators import (
     tariff_schema,
     calculate_tariff_price_per_ga_co_es,
 )
+from package.calculation.wholesale.wholesale_calculation import group_by_monthly
 from package.constants import Colname
 
 
@@ -336,3 +337,31 @@ def test__calculate_tariff_price_per_ga_co_es__rounds_total_amount_correctly(
     # Assert
     actual_amount = actual.collect()[0][Colname.total_amount]
     assert actual_amount == expected_total_amount
+
+
+def test_stuff(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    rows = [
+        _create_tariff_hour_row(
+            charge_time=datetime(2020, 1, 1, 0), quality=ChargeQuality.ESTIMATED
+        ),
+        _create_tariff_hour_row(charge_time=datetime(2020, 1, 1, 1)),
+        _create_tariff_hour_row(charge_time=datetime(2020, 1, 1, 2)),
+        _create_tariff_hour_row(
+            charge_time=datetime(2020, 1, 1, 2),
+            metering_point_type=MeteringPointType.PRODUCTION,
+        ),
+        _create_tariff_hour_row(charge_time=datetime(2020, 2, 1, 0)),
+    ]
+    tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
+
+    # Act
+    actual = group_by_monthly(calculate_tariff_price_per_ga_co_es(tariffs))
+
+    # Assert
+    assert actual.collect()[0][Colname.total_amount] == Decimal("8.040020")
+    assert actual.collect()[1][Colname.total_amount] == Decimal("2.010005")
+    assert actual.count() == 2
+    # assert actual.schema[Colname.total_amount].dataType.precision >= 1
