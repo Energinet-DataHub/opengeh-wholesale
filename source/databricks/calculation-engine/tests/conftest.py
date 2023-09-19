@@ -32,6 +32,11 @@ from package.infrastructure.paths import OUTPUT_DATABASE_NAME
 
 
 @pytest.fixture(scope="session")
+def test_files_folder_path(tests_path: str) -> str:
+    return f"{tests_path}/test_files"
+
+
+@pytest.fixture(scope="session")
 def spark() -> SparkSession:
     return configure_spark_with_delta_pip(  # see https://docs.delta.io/latest/quick-start.html#python
         SparkSession.builder.config("spark.sql.streaming.schemaInference", True)
@@ -63,7 +68,7 @@ def file_path_finder() -> Callable[[str], str]:
     Returns the path of the file.
     Please note that this only works if current folder haven't been changed prior using `os.chdir()`.
     The correctness also relies on the prerequisite that this function is actually located in a
-    file located directly in the integration tests folder.
+    file located directly in the tests folder.
     """
 
     def finder(file: str) -> str:
@@ -78,7 +83,7 @@ def source_path(file_path_finder: Callable[[str], str]) -> str:
     Returns the <repo-root>/source folder path.
     Please note that this only works if current folder haven't been changed prior using `os.chdir()`.
     The correctness also relies on the prerequisite that this function is actually located in a
-    file located directly in the integration tests folder.
+    file located directly in the tests folder.
     """
     return file_path_finder(f"{__file__}/../../..")
 
@@ -89,7 +94,7 @@ def databricks_path(source_path: str) -> str:
     Returns the source/databricks folder path.
     Please note that this only works if current folder haven't been changed prior using `os.chdir()`.
     The correctness also relies on the prerequisite that this function is actually located in a
-    file located directly in the integration tests folder.
+    file located directly in the tests folder.
     """
     return f"{source_path}/databricks"
 
@@ -100,7 +105,7 @@ def calculation_engine_path(databricks_path: str) -> str:
     Returns the <repo-root>/source folder path.
     Please note that this only works if current folder haven't been changed prior using `os.chdir()`.
     The correctness also relies on the prerequisite that this function is actually located in a
-    file located directly in the integration tests folder.
+    file located directly in the tests folder.
     """
     return f"{databricks_path}/calculation-engine"
 
@@ -111,19 +116,9 @@ def contracts_path(calculation_engine_path: str) -> str:
     Returns the source/contract folder path.
     Please note that this only works if current folder haven't been changed prior using `os.chdir()`.
     The correctness also relies on the prerequisite that this function is actually located in a
-    file located directly in the integration tests folder.
+    file located directly in the tests folder.
     """
     return f"{calculation_engine_path}/contracts"
-
-
-@pytest.fixture(scope="session")
-def tests_path(calculation_engine_path: str) -> str:
-    return f"{calculation_engine_path}/tests"
-
-
-@pytest.fixture(scope="session")
-def tests_temp_path(tests_path: str) -> str:
-    return f"{tests_path}/__temp__"
 
 
 @pytest.fixture(scope="session")
@@ -140,19 +135,19 @@ def timestamp_factory() -> Callable[[str], Optional[datetime]]:
 
 
 @pytest.fixture(scope="session")
-def integration_tests_path(calculation_engine_path: str) -> str:
+def tests_path(calculation_engine_path: str) -> str:
     """
-    Returns the integration tests folder path.
+    Returns the tests folder path.
     Please note that this only works if current folder haven't been changed prior using `os.chdir()`.
     The correctness also relies on the prerequisite that this function is actually located in a
-    file located directly in the integration tests folder.
+    file located directly in the tests folder.
     """
-    return f"{calculation_engine_path}/tests/integration"
+    return f"{calculation_engine_path}/tests"
 
 
 @pytest.fixture(scope="session")
-def data_lake_path(integration_tests_path: str, worker_id: str) -> str:
-    return f"{integration_tests_path}/__data_lake__/{worker_id}"
+def data_lake_path(tests_path: str, worker_id: str) -> str:
+    return f"{tests_path}/__data_lake__/{worker_id}"
 
 
 @pytest.fixture(scope="session")
