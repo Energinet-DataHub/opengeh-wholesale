@@ -119,6 +119,7 @@ jobs:
     uses: Energinet-DataHub/.github/.github/workflows/structurizr-render-diagrams.yml@v12
     with:
       structurizr_workspace_filename: deployment
+      included_model_filename: platform-tools
     secrets:
       pat_token_retrigger_workflow: ${{ secrets.pat_token_repo_workflow }}
   render_c4model_ownership_views:

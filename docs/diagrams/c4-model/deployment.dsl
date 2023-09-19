@@ -13,6 +13,9 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             # A domain-to-domain relationship should be specified in the "client" of a "client->server" dependency, and
             # hence domains that doesn't depend on others, should be listed first.
 
+            # Include platform tools
+            !include ./platform-tools.dsl
+
             # Include Market Participant model
             !include https://raw.githubusercontent.com/Energinet-DataHub/geh-market-participant/main/docs/diagrams/c4-model/model.dsl
 
@@ -27,7 +30,7 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
 
             # Include Migration model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACCM3YJBSMBU2J6ODMB4XTJWZIBUSIQ
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACFOVCSLR7DJSIWGKXJAZC3IZIJTYKA
         }
 
         # Deployment model
@@ -131,6 +134,13 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
                     technology "App Service Plan"
                     tags "Microsoft Azure - App Service Plans"
 
+                    deploymentNode "Health Checks UI" {
+                        description ""
+                        technology "App Service"
+                        tags "Microsoft Azure - App Services"
+
+                        hcAppInstance = containerInstance hcApp
+                    }
                     deploymentNode "BFF Web API" {
                         description ""
                         technology "App Service"
@@ -185,6 +195,13 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
                         technology "SQL Elastic Pool"
                         tags "Microsoft Azure - SQL Elastic Pools"
 
+                        deploymentNode "Health Checks DB" {
+                            description ""
+                            technology "SQL Database"
+                            tags "Microsoft Azure - SQL Database"
+
+                            hcDbInstance = containerInstance hcDb
+                        }
                         deploymentNode "Wholesale DB" {
                             description ""
                             technology "SQL Database"
@@ -260,6 +277,13 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             exclude "relationship.tag==Deployment Diagram"
             exclude "relationship.tag==OAuth"
             exclude "element.tag==Intermediate Technology"
+        }
+
+        container dh3 "Tools" {
+            title "[Container] DataHub 3.0 - Platform Tools (Detailed with OAuth)"
+            include ->toolDomain->
+            exclude "relationship.tag==Deployment Diagram"
+            exclude "relationship.tag==Simple View"
         }
 
         container dh3 "Frontend" {

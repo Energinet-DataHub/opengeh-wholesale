@@ -100,6 +100,7 @@ jobs:
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*
             render_c4model_deployment:
+              - 'docs/diagrams/c4-model/platform-tools.dsl'
               - 'docs/diagrams/c4-model/deployment.dsl'
               - 'docs/diagrams/c4-model/deployment.json'
             render_c4model_ownership_views:
