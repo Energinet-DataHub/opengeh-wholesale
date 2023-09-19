@@ -23,7 +23,7 @@ from package.calculation.wholesale.fee_calculators import (
     filter_on_metering_point_type_and_settlement_method,
     get_count_of_charges_and_total_daily_charge_price,
 )
-from package.calculation.wholesale.wholesale_initializer import _get_fee_charges
+from package.calculation.wholesale.wholesale_initializer import get_fee_charges
 import pytest
 
 
@@ -53,7 +53,7 @@ def test__calculate_fee_charge_price__simple(
     expected_charge_count = 1
 
     # Act
-    fee_charges = _get_fee_charges(
+    fee_charges = get_fee_charges(
         charges_df,
         charge_prices_df,
         charge_links_df,
@@ -106,7 +106,7 @@ def test__calculate_fee_charge_price__two_fees(
     expected_charge_count = 2
 
     # Act
-    fee_charges = _get_fee_charges(
+    fee_charges = get_fee_charges(
         charges_df,
         charge_prices_df,
         charge_links_df,

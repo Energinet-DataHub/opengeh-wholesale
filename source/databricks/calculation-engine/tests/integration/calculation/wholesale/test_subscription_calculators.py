@@ -25,7 +25,7 @@ from package.calculation.wholesale.subscription_calculators import (
     filter_on_metering_point_type_and_settlement_method,
     get_count_of_charges_and_total_daily_charge_price,
 )
-from package.calculation.wholesale.wholesale_initializer import _get_subscription_charges
+from package.calculation.wholesale.wholesale_initializer import get_subscription_charges
 from calendar import monthrange
 import pytest
 from package.constants import Colname
@@ -57,7 +57,7 @@ def test__calculate_daily_subscription_price__simple(
     expected_subscription_count = 1
 
     # Act
-    subscription_charges = _get_subscription_charges(
+    subscription_charges = get_subscription_charges(
         charges_df,
         charge_prices_df,
         charge_links_df,
@@ -129,7 +129,7 @@ def test__calculate_daily_subscription_price__charge_price_change(
     expected_subscription_count = 1
 
     # Act
-    subscription_charges = _get_subscription_charges(
+    subscription_charges = get_subscription_charges(
         charges_df,
         charge_prices_df,
         charge_links_df,
@@ -218,7 +218,7 @@ def test__calculate_daily_subscription_price__charge_price_change_with_two_diffe
     )
 
     # Act
-    subscription_charges = _get_subscription_charges(
+    subscription_charges = get_subscription_charges(
         charges_df,
         charge_prices_df,
         charge_links_df,

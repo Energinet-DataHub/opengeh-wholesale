@@ -69,7 +69,7 @@ def get_tariff_charges(
     return df
 
 
-def _get_fee_charges(
+def get_fee_charges(
     charge_master_data: DataFrame,
     charge_prices: DataFrame,
     charge_links: DataFrame,
@@ -84,7 +84,7 @@ def _get_fee_charges(
     )
 
 
-def _get_subscription_charges(
+def get_subscription_charges(
     charge_master_data: DataFrame,
     charge_prices: DataFrame,
     charge_links: DataFrame,
