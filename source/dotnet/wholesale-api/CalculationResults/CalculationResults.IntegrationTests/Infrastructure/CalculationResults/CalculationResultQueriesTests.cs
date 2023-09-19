@@ -300,8 +300,8 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
             StartOfPeriod: startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
             EndOfPeriod: endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0),
             GridArea: gridArea,
-            energySupplierId,
-            balanceResponsibleId);
+            EnergySupplierId: energySupplierId,
+            BalanceResponsibleId: balanceResponsibleId);
     }
 
     private async Task AddCreatedRowsInArbitraryOrderAsync(IOptions<DeltaTableOptions> options)
