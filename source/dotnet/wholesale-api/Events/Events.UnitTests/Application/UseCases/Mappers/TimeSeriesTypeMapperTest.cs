@@ -24,6 +24,10 @@ public class TimeSeriesTypeMapperTests
 {
     [Theory]
     [InlineData(TimeSeriesType.Production, CalculationTimeSeriesType.Production)]
+    [InlineData(TimeSeriesType.FlexConsumption, CalculationTimeSeriesType.FlexConsumption)]
+    [InlineData(TimeSeriesType.TotalConsumption, CalculationTimeSeriesType.TotalConsumption)]
+    [InlineData(TimeSeriesType.NetExchangePerGa, CalculationTimeSeriesType.NetExchangePerGa)]
+    [InlineData(TimeSeriesType.NonProfiledConsumption, CalculationTimeSeriesType.NonProfiledConsumption)]
     public void ToCalculationTimeSerieType_ReturnsExpectedType(TimeSeriesType type, CalculationTimeSeriesType expected)
     {
         // Act

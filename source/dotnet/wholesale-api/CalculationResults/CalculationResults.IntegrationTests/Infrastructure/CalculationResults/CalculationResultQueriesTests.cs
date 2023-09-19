@@ -147,7 +147,7 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
     {
         // Arrange
         var gridAreaFilter = "501";
-        var energySupplierId = "4321987654321";
+        var energySupplierIdFilter = "4321987654321";
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
@@ -159,7 +159,7 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter,
-            energySupplierId: energySupplierId);
+            energySupplierId: energySupplierIdFilter);
         var sut = new CalculationResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions, calculationResultQueriesLoggerMock.Object);
 
         // Act
@@ -173,7 +173,7 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
                       && result.PeriodEnd == endOfPeriodFilter
                       && result.TimeSeriesType.Equals(timeSeriesTypeFilter)
                       && !result.EnergySupplierId.IsNullOrEmpty()
-                      && result.EnergySupplierId!.Equals(energySupplierId));
+                      && result.EnergySupplierId!.Equals(energySupplierIdFilter));
     }
 
     [Theory]
@@ -216,7 +216,7 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
     {
         // Arrange
         var gridAreaFilter = "101";
-        var balanceResponsible = "1234567891234";
+        var balanceResponsibleIdFilter = "1234567891234";
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
@@ -228,7 +228,7 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter,
-            balanceResponsibleId: balanceResponsible);
+            balanceResponsibleId: balanceResponsibleIdFilter);
         var sut = new CalculationResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions, calculationResultQueriesLoggerMock.Object);
 
         // Act
@@ -242,7 +242,7 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
                       && result.PeriodEnd == endOfPeriodFilter
                       && result.TimeSeriesType.Equals(timeSeriesTypeFilter)
                       && !result.BalanceResponsibleId.IsNullOrEmpty()
-                      && result.BalanceResponsibleId!.Equals(balanceResponsible));
+                      && result.BalanceResponsibleId!.Equals(balanceResponsibleIdFilter));
     }
 
     [Theory]
@@ -254,8 +254,8 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
     {
         // Arrange
         var gridAreaFilter = "501";
-        var balanceResponsible = "1234567891234";
-        var energySupplier = "4321987654321";
+        var balanceResponsibleIdFilter = "1234567891234";
+        var energySupplierIdFilter = "4321987654321";
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
@@ -267,8 +267,8 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter,
-            energySupplierId: energySupplier,
-            balanceResponsibleId: balanceResponsible);
+            energySupplierId: energySupplierIdFilter,
+            balanceResponsibleId: balanceResponsibleIdFilter);
         var sut = new CalculationResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions, calculationResultQueriesLoggerMock.Object);
 
         // Act
@@ -282,9 +282,9 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
                       && result.PeriodEnd == endOfPeriodFilter
                       && result.TimeSeriesType.Equals(timeSeriesTypeFilter)
                       && !result.BalanceResponsibleId.IsNullOrEmpty()
-                      && result.BalanceResponsibleId!.Equals(balanceResponsible)
+                      && result.BalanceResponsibleId!.Equals(balanceResponsibleIdFilter)
                       && !result.EnergySupplierId.IsNullOrEmpty()
-                      && result.EnergySupplierId!.Equals(energySupplier));
+                      && result.EnergySupplierId!.Equals(energySupplierIdFilter));
     }
 
     private CalculationResultQuery CreateRequest(

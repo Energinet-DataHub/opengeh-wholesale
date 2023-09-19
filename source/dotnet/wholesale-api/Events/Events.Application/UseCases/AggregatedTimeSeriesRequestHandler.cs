@@ -70,9 +70,9 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
             TimeSeriesTypeMapper.MapTimeSerieType(aggregatedTimeSeriesRequestMessage.TimeSeriesType),
             aggregatedTimeSeriesRequestMessage.Period.Start,
             aggregatedTimeSeriesRequestMessage.Period.End,
-            aggregatedTimeSeriesRequestMessage.AggregationPerLevel.GridAreaCode,
-            aggregatedTimeSeriesRequestMessage.AggregationPerLevel.EnergySupplierId,
-            aggregatedTimeSeriesRequestMessage.AggregationPerLevel.BalanceResponsibleId);
+            aggregatedTimeSeriesRequestMessage.AggregationPerRolePerGridArea.GridAreaCode,
+            aggregatedTimeSeriesRequestMessage.AggregationPerRolePerGridArea.EnergySupplierId,
+            aggregatedTimeSeriesRequestMessage.AggregationPerRolePerGridArea.BalanceResponsibleId);
 
         var calculationResults = await _calculationResultQueries.GetAsync(query)
             .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
