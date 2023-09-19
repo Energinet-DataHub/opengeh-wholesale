@@ -24,15 +24,15 @@ from pyspark.sql.types import (
 )
 from typing import Callable
 from package.calculation.wholesale.wholesale_initializer import (
-    join_with_charge_prices,
-    join_with_charge_links,
-    join_with_metering_points,
-    explode_subscription,
-    get_charges_based_on_resolution,
+    _join_with_charge_prices,
+    _join_with_charge_links,
+    _join_with_metering_points,
+    _explode_subscription,
+    _get_charges_based_on_resolution,
     get_tariff_charges,
-    group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity,
-    join_with_grouped_time_series,
-    get_charges_based_on_charge_type,
+    _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity,
+    _join_with_grouped_time_series,
+    _get_charges_based_on_charge_type,
 )
 from package.codelists import (
     ChargeQuality,
@@ -129,7 +129,7 @@ def test__get_charges_based_on_resolution__filters_on_resolution_hour_or_day_onl
     charges = spark.createDataFrame(charges, schema=charges_schema)
 
     # Act
-    result = get_charges_based_on_resolution(charges, resolution_duration)
+    result = _get_charges_based_on_resolution(charges, resolution_duration)
 
     # Assert
     assert result.count() == expected
@@ -221,7 +221,7 @@ def test__get_charges_based_on_charge_type__filters_on_one_charge_type(
     charges = spark.createDataFrame(charges, schema=charges_schema)
 
     # Act
-    result = get_charges_based_on_charge_type(charges, charge_type)
+    result = _get_charges_based_on_charge_type(charges, charge_type)
 
     # Assert
     assert result.count() == expected
@@ -259,7 +259,7 @@ def test__join_with_charge_prices__joins_on_charge_key(
     charge_prices = spark.createDataFrame(charge_prices, schema=charge_prices_schema)
 
     # Act
-    result = join_with_charge_prices(charges, charge_prices)
+    result = _join_with_charge_prices(charges, charge_prices)
 
     # Assert
     assert result.count() == expected
@@ -342,7 +342,7 @@ def test__explode_subscription__explodes_into_rows_based_on_number_of_days_betwe
     )
 
     # Act
-    result = explode_subscription(subscription_charges_with_prices)
+    result = _explode_subscription(subscription_charges_with_prices)
 
     # Assert
     assert result.count() == expected
@@ -432,7 +432,7 @@ def test__join_with_charge_links__joins_on_charge_key_and_time_is_between_from_a
     charge_links = spark.createDataFrame(charge_links, schema=charge_links_schema)
 
     # Act
-    result = join_with_charge_links(charges_with_prices, charge_links)
+    result = _join_with_charge_links(charges_with_prices, charge_links)
 
     # Assert
     assert result.count() == expected
@@ -555,7 +555,7 @@ def test__join_with_metering_points__joins_on_metering_point_id_and_time_is_betw
     )
 
     # Act
-    result = join_with_metering_points(charges_with_price_and_links, metering_points)
+    result = _join_with_metering_points(charges_with_price_and_links, metering_points)
 
     # Assert
     assert result.count() == expected
@@ -608,7 +608,7 @@ def test__group_by_time_series_on_metering_point_id_and_resolution_and_sum_quant
     time_series = spark.createDataFrame(time_series, schema=time_series_point_schema)
 
     # Act
-    result = group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
+    result = _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
         time_series, resolution_duration
     )
     result = result.orderBy(
@@ -679,7 +679,7 @@ def test__join_with_grouped_time_series__joins_on_metering_point_and_time(
     )
 
     # Act
-    result = join_with_grouped_time_series(charges_complete, grouped_time_series)
+    result = _join_with_grouped_time_series(charges_complete, grouped_time_series)
 
     # Assert
     assert result.count() == expected

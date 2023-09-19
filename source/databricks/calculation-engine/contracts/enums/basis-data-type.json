@@ -1,0 +1,16 @@
+{
+  "literals": [
+    {
+      "name": "TIME_SERIES_QUARTER",
+      "value": "time_series_quarter"
+    },
+    {
+      "name": "TIME_SERIES_HOUR",
+      "value": "time_series_hour"
+    },
+    {
+      "name": "MASTER_BASIS_DATA",
+      "value": "master_basis_data"
+    }
+  ]
+}
