@@ -118,8 +118,6 @@ def group_by_monthly(df: DataFrame) -> DataFrame:
             lit(ChargeResolution.MONTH.value).alias(Colname.charge_resolution),
             first(Colname.unit).alias(Colname.unit),
             first(Colname.observation_time).alias(Colname.charge_time),
-            first(Colname.metering_point_type).alias(Colname.metering_point_type),
-            first(Colname.settlement_method).alias(Colname.settlement_method),
             flatten(collect_set(Colname.qualities)).alias(Colname.qualities),
         )
         .select(
@@ -130,8 +128,6 @@ def group_by_monthly(df: DataFrame) -> DataFrame:
             col(Colname.qualities),
             col(Colname.charge_time),
             col(Colname.charge_resolution),
-            col(Colname.metering_point_type),
-            col(Colname.settlement_method),
             col(Colname.charge_price),
             col(Colname.total_amount),
             col(Colname.charge_tax),
