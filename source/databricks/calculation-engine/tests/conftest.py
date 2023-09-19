@@ -122,16 +122,6 @@ def contracts_path(calculation_engine_path: str) -> str:
 
 
 @pytest.fixture(scope="session")
-def tests_path(calculation_engine_path: str) -> str:
-    return f"{calculation_engine_path}/tests"
-
-
-@pytest.fixture(scope="session")
-def tests_temp_path(tests_path: str) -> str:
-    return f"{tests_path}/__temp__"
-
-
-@pytest.fixture(scope="session")
 def timestamp_factory() -> Callable[[str], Optional[datetime]]:
     "Creates timestamp from utc string in correct format yyyy-mm-ddThh:mm:ss.nnnZ"
 
