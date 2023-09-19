@@ -344,7 +344,9 @@ def test_stuff(
 ) -> None:
     # Arrange
     rows = [
-        _create_tariff_hour_row(charge_time=datetime(2020, 1, 1, 0)),
+        _create_tariff_hour_row(
+            charge_time=datetime(2020, 1, 1, 0), quality=ChargeQuality.ESTIMATED
+        ),
         _create_tariff_hour_row(charge_time=datetime(2020, 1, 1, 1)),
         _create_tariff_hour_row(charge_time=datetime(2020, 1, 1, 2)),
         _create_tariff_hour_row(

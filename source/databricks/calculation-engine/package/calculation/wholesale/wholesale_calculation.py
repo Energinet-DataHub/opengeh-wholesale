@@ -14,7 +14,17 @@
 
 
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, when, year, month, count, first, sum, lit, collect_set
+from pyspark.sql.functions import (
+    col,
+    year,
+    month,
+    count,
+    first,
+    sum,
+    lit,
+    collect_set,
+    flatten,
+)
 import package.calculation.wholesale.wholesale_initializer as init
 from package.calculation.wholesale.tariff_calculators import (
     calculate_tariff_price_per_ga_co_es,
@@ -70,7 +80,7 @@ def _calculate_tariff_charges(
     )
 
     hourly_tariff_per_ga_co_es = calculate_tariff_price_per_ga_co_es(tariffs_hourly)
-    wholesale_calculation_result_writer.write(hourly_tariff_per_ga_co_es)
+    (wholesale_calculation_result_writer.write(hourly_tariff_per_ga_co_es))
 
     monthly_tariff_per_ga_co_es = group_by_monthly(hourly_tariff_per_ga_co_es)
     wholesale_calculation_result_writer.write(monthly_tariff_per_ga_co_es)
@@ -86,10 +96,8 @@ def _get_production_and_consumption_metering_points(
 
 
 def group_by_monthly(df: DataFrame) -> DataFrame:
-    df.show()
     df = df.withColumn("year", year(df["observation_time"]))
     df = df.withColumn("month", month(df["observation_time"]))
-    df.printSchema()
     agg_df = (
         df.groupBy(
             Colname.energy_supplier_id,
@@ -112,7 +120,7 @@ def group_by_monthly(df: DataFrame) -> DataFrame:
             first(Colname.observation_time).alias(Colname.charge_time),
             first(Colname.metering_point_type).alias(Colname.metering_point_type),
             first(Colname.settlement_method).alias(Colname.settlement_method),
-            collect_set(Colname.qualities).alias(Colname.qualities),
+            flatten(collect_set(Colname.qualities)).alias(Colname.qualities),
         )
         .select(
             col(Colname.grid_area),
@@ -132,6 +140,5 @@ def group_by_monthly(df: DataFrame) -> DataFrame:
             col(Colname.charge_owner),
         )
     )
-    agg_df.printSchema()
-    agg_df.show()
+
     return agg_df
