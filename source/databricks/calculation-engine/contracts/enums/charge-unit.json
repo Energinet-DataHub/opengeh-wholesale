@@ -1,0 +1,12 @@
+{
+  "literals": [
+    {
+      "name": "KWH",
+      "value": "kWh"
+    },
+    {
+      "name": "PIECES",
+      "value": "pcs"
+    }
+  ]
+}

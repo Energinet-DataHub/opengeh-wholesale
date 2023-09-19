@@ -1,0 +1,16 @@
+{
+  "literals": [
+    {
+      "name": "SUBSCRIPTION",
+      "value": "subscription"
+    },
+    {
+      "name": "FEE",
+      "value": "fee"
+    },
+    {
+      "name": "TARIFF",
+      "value": "tariff"
+    }
+  ]
+}

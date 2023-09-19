@@ -14,26 +14,27 @@
 
 from enum import Enum
 import pytest
-from package.codelists import (
-    AggregationLevel,
-    MeteringPointType,
-    ProcessType,
-    TimeSeriesQuality,
-    TimeSeriesType,
-    SettlementMethod,
-)
+
+import package.codelists as enums
+
 from tests.contract_utils import assert_codelist_matches_contract
 
 
 @pytest.mark.parametrize(
     "contract_file,code_list",
     [
-        ("aggregation-level.json", AggregationLevel),
-        ("metering-point-type.json", MeteringPointType),
-        ("process-type.json", ProcessType),
-        ("quantity-quality.json", TimeSeriesQuality),
-        ("time-series-type.json", TimeSeriesType),
-        ("settlement-method.json", SettlementMethod),
+        ("aggregation-level.json", enums.AggregationLevel),
+        ("basis-data-type.json", enums.BasisDataType),
+        ("charge-quality.json", enums.ChargeQuality),
+        ("charge-resolution.json", enums.ChargeResolution),
+        ("charge-type.json", enums.ChargeType),
+        ("charge-unit.json", enums.ChargeUnit),
+        ("metering-point-resolution.json", enums.MeteringPointResolution),
+        ("metering-point-type.json", enums.MeteringPointType),
+        ("process-type.json", enums.ProcessType),
+        ("quantity-quality.json", enums.TimeSeriesQuality),
+        ("settlement-method.json", enums.SettlementMethod),
+        ("time-series-type.json", enums.TimeSeriesType),
     ],
 )
 def test_codelist_matches_contract(
