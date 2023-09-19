@@ -12,13 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+from datetime import timedelta
+import time
 from pyspark.sql import SparkSession
 from package.codelists import ProcessType
 import package.calculation_input as input
 from package.calculation_output.wholesale_calculation_result_writer import (
     WholesaleCalculationResultWriter,
 )
+from package.infrastructure import log
 from .calculator_args import CalculatorArgs
 from .energy import energy_calculation
 from .wholesale import wholesale_calculation
@@ -27,6 +29,10 @@ from . import setup
 
 def execute(args: CalculatorArgs, spark: SparkSession) -> None:
     calculation_input_reader = input.CalculationInputReader(spark)
+
+    # TIMER #
+    start_time = time.time()
+    # TIMER #
 
     (
         metering_point_periods_df,
@@ -39,12 +45,23 @@ def execute(args: CalculatorArgs, spark: SparkSession) -> None:
         args.batch_grid_areas,
     )
 
+    # TIMER ##
+    duration = time.time() - start_time
+    log(f"get_calculation_input took: {str(timedelta(seconds=duration))} ")
+    start_time = time.time()
+    # TIMER ##
+
     enriched_time_series_point_df = setup.get_enriched_time_series_points_df(
         time_series_points_df,
         metering_point_periods_df,
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
     )
+
+    # TIMER #
+    duration = time.time() - start_time
+    log(f"get_enriched_time_series_points_df took: {str(timedelta(seconds=duration))}")
+    # TIMER #
 
     energy_calculation.execute(
         args.batch_id,
