@@ -23,7 +23,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SqlStatements;
 
-public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFixture>, IAsyncLifetime
+public class SqlStatementClientTests : IAsyncLifetime
 {
     private readonly DatabricksSqlStatementApiFixture _fixture;
 
