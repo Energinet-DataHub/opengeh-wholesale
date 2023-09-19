@@ -1,0 +1,16 @@
+{
+  "literals": [
+    {
+      "name": "MONTH",
+      "value": "P1M"
+    },
+    {
+      "name": "DAY",
+      "value": "P1D"
+    },
+    {
+      "name": "HOUR",
+      "value": "PT1H"
+    }
+  ]
+}
