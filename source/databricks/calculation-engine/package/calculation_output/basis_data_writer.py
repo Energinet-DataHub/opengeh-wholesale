@@ -53,7 +53,7 @@ class BasisDataWriter:
 
         # TIMER #
         duration = time.time() - start_time
-        log(f"Get basis data took: {str(timedelta(seconds=duration))}")        
+        log(f"Get basis data took: {str(timedelta(seconds=duration))}")
         # TIMER #
 
         self._write(master_basis_data_df, timeseries_quarter_df, timeseries_hour_df)
@@ -91,7 +91,6 @@ class BasisDataWriter:
         duration = time.time() - start_time
         log(f"_write_es_basis_data took: {str(timedelta(seconds=duration))}")
         # TIMER #
-
 
     def _write_ga_basis_data(
         self,
