@@ -32,25 +32,25 @@ public class AggregatedTimeSeriesRequestMessageParser : IAggregatedTimeSeriesReq
         return new AggregatedTimeSeriesRequest(
             MapPeriod(aggregatedTimeSeriesRequest.Period),
             MapTimeSeriesType(aggregatedTimeSeriesRequest.TimeSeriesType),
-            MapAggregationLevelScope(aggregatedTimeSeriesRequest));
+            MapAggregationPerRoleAndGridArea(aggregatedTimeSeriesRequest));
     }
 
-    private AggregationPerRolePerGridArea MapAggregationLevelScope(Edi.Requests.AggregatedTimeSeriesRequest aggregatedTimeSeriesRequest)
+    private AggregationPerRoleAndGridArea MapAggregationPerRoleAndGridArea(Edi.Requests.AggregatedTimeSeriesRequest aggregatedTimeSeriesRequest)
     {
         return aggregatedTimeSeriesRequest.AggregationLevelCase switch
         {
             Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerGridarea =>
-                new AggregationPerRolePerGridArea(GridAreaCode: aggregatedTimeSeriesRequest.AggregationPerGridarea.GridAreaCode),
+                new AggregationPerRoleAndGridArea(GridAreaCode: aggregatedTimeSeriesRequest.AggregationPerGridarea.GridAreaCode),
             Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerEnergysupplierPerGridarea =>
-                new AggregationPerRolePerGridArea(
+                new AggregationPerRoleAndGridArea(
                     GridAreaCode: aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerGridarea.GridAreaCode,
                     EnergySupplierId: aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerGridarea.EnergySupplierId),
             Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerBalanceresponsiblepartyPerGridarea =>
-                new AggregationPerRolePerGridArea(
+                new AggregationPerRoleAndGridArea(
                     GridAreaCode: aggregatedTimeSeriesRequest.AggregationPerBalanceresponsiblepartyPerGridarea.GridAreaCode,
                     BalanceResponsibleId: aggregatedTimeSeriesRequest.AggregationPerBalanceresponsiblepartyPerGridarea.BalanceResponsiblePartyId),
             Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea =>
-                new AggregationPerRolePerGridArea(
+                new AggregationPerRoleAndGridArea(
                     GridAreaCode: aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.GridAreaCode,
                     EnergySupplierId: aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.EnergySupplierId,
                     BalanceResponsibleId: aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.BalanceResponsiblePartyId),

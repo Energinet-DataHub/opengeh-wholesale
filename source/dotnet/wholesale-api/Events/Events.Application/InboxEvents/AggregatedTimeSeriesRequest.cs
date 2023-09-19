@@ -17,4 +17,4 @@ namespace Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
 public record AggregatedTimeSeriesRequest(
     Period Period,
     TimeSeriesType TimeSeriesType,
-    AggregationPerRolePerGridArea AggregationPerRolePerGridArea);
+    AggregationPerRoleAndGridArea AggregationPerRoleAndGridArea);
