@@ -19,13 +19,14 @@ using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
 using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
-using Energinet.DataHub.Core.Logging.LoggingScopeMiddleware;
+using Energinet.DataHub.Core.Logging.LoggingMiddleware;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Energinet.DataHub.Wholesale.Common.Security;
 using Energinet.DataHub.Wholesale.Events.Application.Options;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
+using Energinet.DataHub.Wholesale.WebApi.HealthChecks;
 using Energinet.DataHub.Wholesale.WebApi.HealthChecks.Databricks;
 using Energinet.DataHub.Wholesale.WebApi.HealthChecks.DataLake;
 using Microsoft.AspNetCore.Mvc;
@@ -181,22 +182,27 @@ public class Startup
         var serviceBusOptions = Configuration.Get<ServiceBusOptions>()!;
         serviceCollection.AddHealthChecks()
             .AddLiveCheck()
-            .AddDbContextCheck<EventsDatabaseContext>(name: "SqlDatabaseContextCheck")
+            .AddDbContextCheck<EventsDatabaseContext>(
+                name: HealthCheckNames.SqlDatabaseContext)
             .AddAzureServiceBusTopic(
                 serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
                 serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
-                name: "IntegrationEventsTopicExists")
-            .AddDataLakeHealthCheck()
-            .AddDatabricksJobsApiHealthCheck()
-            .AddDatabricksSqlStatementsApiHealthCheck(_ => Configuration.Get<DatabricksOptions>()!)
+                name: HealthCheckNames.IntegrationEventsTopic)
+            .AddDataLakeHealthCheck(
+                name: HealthCheckNames.DataLake)
+            .AddDatabricksJobsApiHealthCheck(
+                name: HealthCheckNames.DatabricksJobsApi)
+            .AddDatabricksSqlStatementsApiHealthCheck(
+                _ => Configuration.Get<DatabricksOptions>()!,
+                name: HealthCheckNames.DatabricksSqlStatementsApi)
             .AddAzureServiceBusQueue(
                 serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
                 serviceBusOptions.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME,
-                name: "WholesaleInboxEventsQueueExists")
+                name: HealthCheckNames.WholesaleInboxEventsQueue)
             .AddAzureServiceBusQueue(
                 serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
                 serviceBusOptions.EDI_INBOX_MESSAGE_QUEUE_NAME,
-                name: "EdiInboxEventsQueueExists");
+                name: HealthCheckNames.EdiInboxEventsQueue);
     }
 
     /// <summary>
