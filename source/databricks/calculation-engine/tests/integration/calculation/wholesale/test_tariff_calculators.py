@@ -339,7 +339,7 @@ def test__calculate_tariff_price_per_ga_co_es__rounds_total_amount_correctly(
     assert actual_amount == expected_total_amount
 
 
-def test_stuff(
+def test__group_by_monthly__on_tariff(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -363,5 +363,5 @@ def test_stuff(
     # Assert
     assert actual.collect()[0][Colname.total_amount] == Decimal("8.040020")
     assert actual.collect()[1][Colname.total_amount] == Decimal("2.010005")
+    assert actual.collect()[0][Colname.qualities] == ["calculated", "estimated"]
     assert actual.count() == 2
-    # assert actual.schema[Colname.total_amount].dataType.precision >= 1
