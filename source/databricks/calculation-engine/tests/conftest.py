@@ -32,6 +32,11 @@ from package.infrastructure.paths import OUTPUT_DATABASE_NAME
 
 
 @pytest.fixture(scope="session")
+def test_files_folder_path(integration_tests_path: str) -> str:
+    return f"{integration_tests_path}/test_files"
+
+
+@pytest.fixture(scope="session")
 def spark() -> SparkSession:
     return configure_spark_with_delta_pip(  # see https://docs.delta.io/latest/quick-start.html#python
         SparkSession.builder.config("spark.sql.streaming.schemaInference", True)
