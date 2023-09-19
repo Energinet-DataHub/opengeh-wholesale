@@ -17,6 +17,9 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             # A domain-to-domain relationship should be specified in the "client" of a "client->server" dependency, and
             # hence domains that doesn't depend on others, should be listed first.
 
+            # Include platform tools
+            !include ./platform-tools.dsl
+
             # Include Market Participant model
             !include https://raw.githubusercontent.com/Energinet-DataHub/geh-market-participant/main/docs/diagrams/c4-model/model.dsl
 
@@ -30,7 +33,7 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             !include https://raw.githubusercontent.com/Energinet-DataHub/greenforce-frontend/main/docs/diagrams/c4-model/model.dsl
 
             # Include Migration model - requires a token because its located in a private repository
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACFOVCSKTGX6RHQSBKJAKU2WZHGUCLA
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACFOVCSKVICTKNZNHHH7QTS2ZIJWBVQ
         }
     }
 
@@ -47,10 +50,10 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             include "element.tag==Mandalorian"
             exclude "* -> *"
         }
-        container dh3 "Phoenix" {
-            title "Owned by Phoenix"
+        container dh3 "Mosaic" {
+            title "Owned by Mosaic"
             description ""
-            include "element.tag==Phoenix"
+            include "element.tag==Mosaic"
             exclude "* -> *"
         }
         container dh3 "Titans" {

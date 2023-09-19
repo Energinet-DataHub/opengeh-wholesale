@@ -30,7 +30,7 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
 
             # Include Migration model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACFOVCSLR7DJSIWGKXJAZC3IZIJTYKA
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACFOVCSKVICTKNZNHHH7QTS2ZIJWBVQ
         }
 
         # Deployment model
@@ -190,6 +190,14 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
                     technology "Azure SQL Server"
                     tags "Microsoft Azure - SQL Server"
 
+                    deploymentNode "EDI Database" {
+                        description ""
+                        technology "SQL Database"
+                        tags "Microsoft Azure - SQL Database"
+
+                        ediDbInstance = containerInstance ediDb
+                    }
+
                     deploymentNode "Elastic Pool" {
                         description ""
                         technology "SQL Elastic Pool"
@@ -215,13 +223,6 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
                             tags "Microsoft Azure - SQL Database"
 
                             markpartDbInstance = containerInstance markpartDb
-                        }
-                        deploymentNode "EDI Database" {
-                            description ""
-                            technology "SQL Database"
-                            tags "Microsoft Azure - SQL Database"
-
-                            ediDbInstance = containerInstance ediDb
                         }
                     }
                 }
