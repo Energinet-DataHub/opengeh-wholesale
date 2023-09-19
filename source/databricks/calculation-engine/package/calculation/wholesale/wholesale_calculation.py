@@ -14,7 +14,7 @@
 
 
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, when, year, month, count, first, sum, lit
+from pyspark.sql.functions import col, when, year, month, count, first, sum, lit, collect_set
 import package.calculation.wholesale.wholesale_initializer as init
 from package.calculation.wholesale.tariff_calculators import (
     calculate_tariff_price_per_ga_co_es,
@@ -86,8 +86,10 @@ def _get_production_and_consumption_metering_points(
 
 
 def group_by_monthly(df: DataFrame) -> DataFrame:
+    df.show()
     df = df.withColumn("year", year(df["observation_time"]))
     df = df.withColumn("month", month(df["observation_time"]))
+    df.printSchema()
     agg_df = (
         df.groupBy(
             Colname.energy_supplier_id,
@@ -102,22 +104,34 @@ def group_by_monthly(df: DataFrame) -> DataFrame:
         .agg(
             sum(Colname.total_amount).alias(Colname.total_amount),
             sum(Colname.total_quantity).alias(Colname.total_quantity),
+            sum(Colname.charge_price).alias(Colname.charge_price),
             count(Colname.charge_count).alias(Colname.charge_count),
             first(Colname.charge_tax).alias(Colname.charge_tax),
             lit(ChargeResolution.MONTH.value).alias(Colname.charge_resolution),
+            first(Colname.unit).alias(Colname.unit),
+            first(Colname.observation_time).alias(Colname.charge_time),
+            first(Colname.metering_point_type).alias(Colname.metering_point_type),
+            first(Colname.settlement_method).alias(Colname.settlement_method),
+            collect_set(Colname.qualities).alias(Colname.qualities),
         )
         .select(
-            Colname.energy_supplier_id,
-            Colname.grid_area,
-            Colname.charge_key,
-            Colname.charge_id,
-            Colname.charge_type,
-            Colname.charge_owner,
-            Colname.charge_tax,
-            Colname.total_amount,
-            Colname.charge_count,
-            Colname.charge_resolution,
-            Colname.total_quantity,
+            col(Colname.grid_area),
+            col(Colname.energy_supplier_id),
+            col(Colname.total_quantity),
+            col(Colname.unit),
+            col(Colname.qualities),
+            col(Colname.charge_time),
+            col(Colname.charge_resolution),
+            col(Colname.metering_point_type),
+            col(Colname.settlement_method),
+            col(Colname.charge_price),
+            col(Colname.total_amount),
+            col(Colname.charge_tax),
+            col(Colname.charge_id),
+            col(Colname.charge_type),
+            col(Colname.charge_owner),
         )
     )
+    agg_df.printSchema()
+    agg_df.show()
     return agg_df
