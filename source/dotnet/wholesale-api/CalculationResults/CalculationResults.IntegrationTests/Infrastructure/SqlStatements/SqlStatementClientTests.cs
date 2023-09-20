@@ -29,11 +29,11 @@ public class SqlStatementClientTests
     private readonly ILogger<DatabricksSqlStatusResponseParser> _loggerResponseParserStub;
     private readonly ILogger<SqlStatementClient> _loggerSqlClientStub;
 
-    public SqlStatementClientTests(Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerResponseParserStub, Mock<ILogger<SqlStatementClient>> loggerSqlClientStub)
+    public SqlStatementClientTests()
     {
         _fixture = new DatabricksSqlStatementApiFixture();
-        _loggerResponseParserStub = loggerResponseParserStub.Object;
-        _loggerSqlClientStub = loggerSqlClientStub.Object;
+        _loggerResponseParserStub = new Mock<ILogger<DatabricksSqlStatusResponseParser>>().Object;
+        _loggerSqlClientStub = new Mock<ILogger<SqlStatementClient>>().Object;
     }
 
     [Fact]

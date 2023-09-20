@@ -39,17 +39,17 @@ public class DatabricksSqlStatementApiFixture
 
     private Mock<IOptions<Core.Databricks.SqlStatementExecution.Internal.AppSettings.DatabricksOptions>> DatabricksOptionsMock { get; }
 
-    public SqlStatementClient CreateSqlStatementClient(ILogger<DatabricksSqlStatusResponseParser> loggerMock, ILogger<SqlStatementClient> loggerMock2)
+    public SqlStatementClient CreateSqlStatementClient(ILogger<DatabricksSqlStatusResponseParser> loggerParser, ILogger<SqlStatementClient> loggerSqlCLient)
     {
         var databricksSqlChunkResponseParser = new DatabricksSqlChunkResponseParser();
         var sqlStatementClient = new SqlStatementClient(
             new HttpClient(),
             DatabricksOptionsMock.Object,
             new DatabricksSqlResponseParser(
-                new DatabricksSqlStatusResponseParser(loggerMock, databricksSqlChunkResponseParser),
+                new DatabricksSqlStatusResponseParser(loggerParser, databricksSqlChunkResponseParser),
                 databricksSqlChunkResponseParser,
                 new DatabricksSqlChunkDataResponseParser()),
-            loggerMock2);
+            loggerSqlCLient);
         return sqlStatementClient;
     }
 

@@ -46,12 +46,12 @@ public class CalculationResultQueriesTests : IAsyncLifetime
     private readonly ILogger<SqlStatementClient> _loggerSqlClientStub;
     private readonly ILogger<CalculationResultQueries> _loggerCalculationResultQueriesStub;
 
-    public CalculationResultQueriesTests(Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerResponseParserStub, Mock<ILogger<SqlStatementClient>> loggerSqlClientStub, Mock<ILogger<CalculationResultQueries>> loggerCalculationResultQueriesStub)
+    public CalculationResultQueriesTests()
     {
         _fixture = new DatabricksSqlStatementApiFixture();
-        _loggerResponseParserStub = loggerResponseParserStub.Object;
-        _loggerSqlClientStub = loggerSqlClientStub.Object;
-        _loggerCalculationResultQueriesStub = loggerCalculationResultQueriesStub.Object;
+        _loggerResponseParserStub = new Mock<ILogger<DatabricksSqlStatusResponseParser>>().Object;
+        _loggerSqlClientStub = new Mock<ILogger<SqlStatementClient>>().Object;
+        _loggerCalculationResultQueriesStub = new Mock<ILogger<CalculationResultQueries>>().Object;
     }
 
     public Task InitializeAsync()
