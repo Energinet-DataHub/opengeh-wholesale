@@ -93,17 +93,23 @@ public class CalculationResultQueries : ICalculationResultQueries
     private string CreateRequestSql(CalculationResultQuery query)
     {
         return $@"
-    SELECT {string.Join(", ", SqlColumnNames)}
-    FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME}
-    WHERE {EnergyResultColumnNames.TimeSeriesType} = '{TimeSeriesTypeMapper.ToDeltaTableValue(query.TimeSeriesType)}'
-    AND {EnergyResultColumnNames.AggregationLevel} = '{AggregationLevelMapper.ToDeltaTableValue(query.TimeSeriesType, query.EnergySupplierId, query.BalanceResponsibleId)}'
-    AND {EnergyResultColumnNames.GridArea} = '{query.GridArea}'
-    AND {EnergyResultColumnNames.Time} >= '{query.StartOfPeriod.ToString()}'
-    AND {EnergyResultColumnNames.Time} <= '{query.EndOfPeriod.ToString()}'
-    AND ({EnergyResultColumnNames.EnergySupplierId} = '{query.EnergySupplierId}' OR '{query.EnergySupplierId}' = '{string.Empty}')
-    AND ({EnergyResultColumnNames.BalanceResponsibleId} = '{query.BalanceResponsibleId}' OR '{query.BalanceResponsibleId}' = '{string.Empty}')
-    ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames.Time}
-    ";
+            SELECT {string.Join(", ", SqlColumnNames.Select(columenName => $"t1.{columenName}"))}
+            FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} t1
+            LEFT JOIN {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} t2
+                ON t1.{EnergyResultColumnNames.Time} = t2.{EnergyResultColumnNames.Time}
+                    AND t1.{EnergyResultColumnNames.BatchExecutionTimeStart} < t2.{EnergyResultColumnNames.BatchExecutionTimeStart}
+                    AND t1.{EnergyResultColumnNames.GridArea} = t2.{EnergyResultColumnNames.GridArea}
+                    AND COALESCE(t1.{EnergyResultColumnNames.FromGridArea}, 'N/A') = COALESCE(t2.{EnergyResultColumnNames.FromGridArea}, 'N/A')
+                    AND t1.{EnergyResultColumnNames.TimeSeriesType} = t2.{EnergyResultColumnNames.TimeSeriesType}
+                    AND t1.{EnergyResultColumnNames.BatchProcessType} = t2.{EnergyResultColumnNames.BatchProcessType}
+                    AND t1.{EnergyResultColumnNames.AggregationLevel} = t2.{EnergyResultColumnNames.AggregationLevel}
+            WHERE t2.time IS NULL
+                AND t1.{EnergyResultColumnNames.GridArea} IN ({query.GridArea})
+                AND t1.{EnergyResultColumnNames.TimeSeriesType} IN ('{TimeSeriesTypeMapper.ToDeltaTableValue(query.TimeSeriesType)}')
+                AND t1.{EnergyResultColumnNames.Time} BETWEEN '{query.StartOfPeriod.ToString()}' AND '{query.EndOfPeriod.ToString()}'
+                AND t1.{EnergyResultColumnNames.AggregationLevel} = '{AggregationLevelMapper.ToDeltaTableValue(query.TimeSeriesType, null, null)}'
+            ORDER BY t1.time
+            ";
     }
 
     private string CreateBatchResultsSql(Guid batchId)
