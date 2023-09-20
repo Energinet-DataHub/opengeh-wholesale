@@ -15,6 +15,7 @@
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Energinet.DataHub.Wholesale.Common.DatabricksClient;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks.Databricks;
 
@@ -24,6 +25,7 @@ public static class DatabricksJobsApiHealthCheckBuilderExtensions
 
     public static IHealthChecksBuilder AddDatabricksJobsApiHealthCheck(
         this IHealthChecksBuilder builder,
+        Func<IServiceProvider, DatabricksOptions> options,
         string? name = default,
         HealthStatus? failureStatus = default,
         IEnumerable<string>? tags = default,
@@ -31,7 +33,10 @@ public static class DatabricksJobsApiHealthCheckBuilderExtensions
     {
         return builder.Add(new HealthCheckRegistration(
             name ?? Name,
-            serviceProvider => new DatabricksJobsApiHealthRegistration(serviceProvider.GetRequiredService<IJobsApiClient>()),
+            serviceProvider => new DatabricksJobsApiHealthRegistration(
+                serviceProvider.GetRequiredService<IJobsApiClient>(),
+                serviceProvider.GetRequiredService<IClock>(),
+                options(serviceProvider)),
             failureStatus,
             tags,
             timeout));

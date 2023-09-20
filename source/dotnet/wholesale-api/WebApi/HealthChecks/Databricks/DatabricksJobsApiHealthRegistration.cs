@@ -12,26 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Common.Databricks;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Energinet.DataHub.Wholesale.Common.DatabricksClient;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Options;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks.Databricks;
 
 public class DatabricksJobsApiHealthRegistration : IHealthCheck
 {
     private readonly IJobsApiClient _jobsApiClient;
+    private readonly IClock _clock;
+    private readonly DatabricksOptions _options;
 
-    public DatabricksJobsApiHealthRegistration(IJobsApiClient jobsApiClient)
+    public DatabricksJobsApiHealthRegistration(IJobsApiClient jobsApiClient, IClock clock, DatabricksOptions options)
     {
         _jobsApiClient = jobsApiClient;
+        _clock = clock;
+        _options = options;
     }
 
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken)
     {
-        await _jobsApiClient.Jobs.List(1, 0, null, false, cancellationToken).ConfigureAwait(false);
+        var currentHour = _clock.GetCurrentInstant().ToDateTimeUtc().Hour;
+        if (_options.DATABRICKS_HEALTH_CHECK_START_HOUR.Hour <= currentHour && currentHour <= _options.DATABRICKS_HEALTH_CHECK_END_HOUR.Hour)
+        {
+            await _jobsApiClient.Jobs.List(1, 0, null, false, cancellationToken).ConfigureAwait(false);
+        }
+
         return HealthCheckResult.Healthy();
     }
 }
