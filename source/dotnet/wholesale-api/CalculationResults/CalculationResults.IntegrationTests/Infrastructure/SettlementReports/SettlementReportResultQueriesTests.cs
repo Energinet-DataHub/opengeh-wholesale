@@ -31,30 +31,23 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SettlementReports;
 
-[Collection(nameof(SettlementReportResultQueriesTests))]
 public class SettlementReportResultQueriesTests
 {
     private const ProcessType DefaultProcessType = ProcessType.BalanceFixing;
     private const string GridAreaA = "805";
     private const string GridAreaB = "111";
     private readonly string[] _gridAreaCodes = { GridAreaA, GridAreaB };
-    private readonly DatabricksSqlStatementApiFixture _fixture;
     private readonly Instant _january1St = Instant.FromUtc(2022, 1, 1, 0, 0, 0);
     private readonly Instant _january5Th = Instant.FromUtc(2022, 1, 5, 0, 0, 0);
 
-    public SettlementReportResultQueriesTests(DatabricksSqlStatementApiFixture fixture)
-    {
-        _fixture = fixture;
-    }
-
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetRowsAsync_ReturnsExpectedReportRows(Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock)
+    public async Task GetRowsAsync_ReturnsExpectedReportRows(Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock, DatabricksSqlStatementApiFixture fixture)
     {
         // Arrange
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        var expectedSettlementReportRow = await InsertRowsFromMultipleBatches(deltaTableOptions);
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
+        var deltaTableOptions = fixture.DatabricksSchemaManager.DeltaTableOptions;
+        var expectedSettlementReportRow = await InsertRowsFromMultipleBatches(deltaTableOptions, fixture.DatabricksSchemaManager);
+        var sqlStatementClient = fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
         var sut = new SettlementReportResultQueries(sqlStatementClient, deltaTableOptions);
 
         // Act
@@ -64,7 +57,7 @@ public class SettlementReportResultQueriesTests
         actual.Should().BeEquivalentTo(expectedSettlementReportRow);
     }
 
-    private async Task<List<SettlementReportResultRow>> InsertRowsFromMultipleBatches(IOptions<DeltaTableOptions> options)
+    private static async Task<List<SettlementReportResultRow>> InsertRowsFromMultipleBatches(IOptions<DeltaTableOptions> options, DatabricksSchemaManager databricksSchemaManager)
     {
         const string january1st = "2022-01-01T01:00:00.000Z";
         const string january2nd = "2022-01-02T01:00:00.000Z";
@@ -98,7 +91,7 @@ public class SettlementReportResultQueriesTests
         var batch4Row2 = EnergyResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: june1st, time: january2nd, batchProcessType: DeltaTableProcessType.Aggregation, gridArea: GridAreaA, quantity: quantity42);
 
         var rows = new List<IEnumerable<string>> { batch1Row1, batch1Row2, batch2Row1, batch2Row2, batch3Row1, batch3Row2, batch4Row1, batch4Row2, };
-        await _fixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(options.Value.ENERGY_RESULTS_TABLE_NAME, rows);
+        await databricksSchemaManager.InsertAsync<EnergyResultColumnNames>(options.Value.ENERGY_RESULTS_TABLE_NAME, rows);
 
         var expectedSettlementReportRows = new List<SettlementReportResultRow>
         {
