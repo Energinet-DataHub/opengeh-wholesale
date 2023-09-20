@@ -49,7 +49,7 @@ public class SqlStatementClientTests : IAsyncLifetime
     public async Task ExecuteSqlStatementAsync_WhenQueryFromDatabricks_ReturnsExpectedData()
     {
         // Arrange
-        await AddDataToEnergyResultTableAsync(_fixture.DatabricksSchemaManager);
+        await AddDataToEnergyResultTableAsync();
         var sut = _fixture.CreateSqlStatementClient(_loggerResponseParserStub, _loggerSqlClientStub);
 
         var sqlStatement = $@"SELECT * FROM {_fixture.DatabricksSchemaManager.SchemaName}.{_fixture.DatabricksSchemaManager.EnergyResultTableName}";
@@ -78,12 +78,12 @@ public class SqlStatementClientTests : IAsyncLifetime
         actual.Should().Be(expectedRowCount);
     }
 
-    private static async Task AddDataToEnergyResultTableAsync(DatabricksSchemaManager databricksSchemaManager)
+    private async Task AddDataToEnergyResultTableAsync()
     {
         var values = GetSomeEnergyResultDeltaTableRow();
-        var deltaTableOptions = databricksSchemaManager.DeltaTableOptions;
-        await databricksSchemaManager.InsertAsync<EnergyResultColumnNames>(deltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME, values);
-        await databricksSchemaManager.InsertAsync<EnergyResultColumnNames>(deltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME, values);
+        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
+        await _fixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(deltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME, values);
+        await _fixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(deltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME, values);
     }
 
     private static IList<string> GetSomeEnergyResultDeltaTableRow()
