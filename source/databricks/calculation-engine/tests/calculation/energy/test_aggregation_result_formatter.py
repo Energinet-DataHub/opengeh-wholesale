@@ -24,7 +24,7 @@ from package.calculation.energy.transformations import (
 from package.calculation.energy.schemas import aggregation_result_schema
 import pytest
 import pandas as pd
-from tests.integration.calculation.dataframe_defaults import DataframeDefaults
+from tests.calculation.dataframe_defaults import DataframeDefaults
 from package.constants import Colname
 from typing import Callable
 from pyspark.sql import DataFrame, SparkSession
