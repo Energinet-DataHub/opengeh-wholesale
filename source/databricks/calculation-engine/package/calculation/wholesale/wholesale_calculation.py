@@ -24,6 +24,7 @@ from pyspark.sql.functions import (
     lit,
     collect_set,
     flatten,
+    min,
 )
 import package.calculation.wholesale.wholesale_initializer as init
 from package.calculation.wholesale.tariff_calculators import (
@@ -117,7 +118,7 @@ def group_by_monthly(df: DataFrame) -> DataFrame:
             first(Colname.charge_tax).alias(Colname.charge_tax),
             lit(ChargeResolution.MONTH.value).alias(Colname.charge_resolution),
             first(Colname.unit).alias(Colname.unit),
-            first(Colname.observation_time).alias(Colname.charge_time),
+            min(Colname.observation_time).alias(Colname.charge_time),
             lit(None).alias(Colname.metering_point_type),
             lit(None).alias(Colname.settlement_method),
             flatten(collect_set(Colname.qualities)).alias(Colname.qualities),
