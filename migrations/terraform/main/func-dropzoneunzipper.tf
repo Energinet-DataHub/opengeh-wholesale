@@ -38,6 +38,7 @@ module "func_dropzoneunzipper" {
     # Event Hub settings
     INGRESS_EVENT_HUB_CONNECTION_STRING = azurerm_eventhub_namespace.eventhub_namespace_dropzone.default_primary_connection_string
     INGRESS_EVENT_HUB_NAME              = azurerm_eventhub.eventhub_dropzone_zipped.name
+    INGRESS_EVENT_HUB_CONSUMER_GROUP    = azurerm_eventhub_consumer_group.consumer_group_dropzone_zipped.name
   }
   # Role assigments is needed to connect to the storage accounts using URI
   role_assignments = [
