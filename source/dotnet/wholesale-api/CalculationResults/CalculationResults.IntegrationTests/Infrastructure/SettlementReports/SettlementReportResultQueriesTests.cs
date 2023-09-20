@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
-using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
@@ -43,11 +42,11 @@ public class SettlementReportResultQueriesTests
     private readonly ILogger<DatabricksSqlStatusResponseParser> _loggerResponseParserStub;
     private readonly ILogger<SqlStatementClient> _loggerSqlClientStub;
 
-    public SettlementReportResultQueriesTests(Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerResponseParserStub, Mock<ILogger<SqlStatementClient>> loggerSqlClientStub)
+    public SettlementReportResultQueriesTests()
     {
         _fixture = new DatabricksSqlStatementApiFixture();
-        _loggerResponseParserStub = loggerResponseParserStub.Object;
-        _loggerSqlClientStub = loggerSqlClientStub.Object;
+        _loggerResponseParserStub = new Mock<ILogger<DatabricksSqlStatusResponseParser>>().Object;
+        _loggerSqlClientStub = new Mock<ILogger<SqlStatementClient>>().Object;
     }
 
     [Fact]
