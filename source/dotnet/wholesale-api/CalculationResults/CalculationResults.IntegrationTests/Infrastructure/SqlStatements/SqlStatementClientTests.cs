@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
-using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using FluentAssertions;
@@ -23,23 +22,35 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SqlStatements;
 
-public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFixture>
+public class SqlStatementClientTests : IAsyncLifetime
 {
     private readonly DatabricksSqlStatementApiFixture _fixture;
+    private readonly ILogger<DatabricksSqlStatusResponseParser> _loggerResponseParserStub;
+    private readonly ILogger<SqlStatementClient> _loggerSqlClientStub;
 
-    public SqlStatementClientTests(DatabricksSqlStatementApiFixture fixture)
+    public SqlStatementClientTests()
     {
-        _fixture = fixture;
+        _fixture = new DatabricksSqlStatementApiFixture();
+        _loggerResponseParserStub = new Mock<ILogger<DatabricksSqlStatusResponseParser>>().Object;
+        _loggerSqlClientStub = new Mock<ILogger<SqlStatementClient>>().Object;
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task ExecuteSqlStatementAsync_WhenQueryFromDatabricks_ReturnsExpectedData(
-        Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock)
+    public Task InitializeAsync()
+    {
+        return _fixture.DatabricksSchemaManager.CreateSchemaAsync();
+    }
+
+    public Task DisposeAsync()
+    {
+        return _fixture.DatabricksSchemaManager.DropSchemaAsync();
+    }
+
+    [Fact]
+    public async Task ExecuteSqlStatementAsync_WhenQueryFromDatabricks_ReturnsExpectedData()
     {
         // Arrange
         await AddDataToEnergyResultTableAsync();
-        var sut = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
+        var sut = _fixture.CreateSqlStatementClient(_loggerResponseParserStub, _loggerSqlClientStub);
 
         var sqlStatement = $@"SELECT * FROM {_fixture.DatabricksSchemaManager.SchemaName}.{_fixture.DatabricksSchemaManager.EnergyResultTableName}";
 
@@ -50,13 +61,12 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
         actual.Count.Should().Be(2);
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task ExecuteAsync_WhenMultipleChunks_ReturnsAllRows(Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock)
+    [Fact]
+    public async Task ExecuteAsync_WhenMultipleChunks_ReturnsAllRows()
     {
         // Arrange
-        var expectedRowCount = 100;
-        var sut = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
+        const int expectedRowCount = 100;
+        var sut = _fixture.CreateSqlStatementClient(_loggerResponseParserStub, _loggerSqlClientStub);
 
         // Arrange: The result of this query spans multiple chunks
         var sqlStatement = $@"select r.id, 'some value' as value from range({expectedRowCount}) as r";
@@ -78,10 +88,10 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
 
     private static IList<string> GetSomeEnergyResultDeltaTableRow()
     {
-        var time = "2022-03-11T03:00:00.000Z";
-        var batchExecutionTimeStart = "2022-03-11T03:00:00.000Z";
-        var gridAreaB = "123";
-        var quantity21 = "1.23";
+        const string time = "2022-03-11T03:00:00.000Z";
+        const string batchExecutionTimeStart = "2022-03-11T03:00:00.000Z";
+        const string gridAreaB = "123";
+        const string quantity21 = "1.23";
         var row = EnergyResultDeltaTableHelper.CreateRowValues(
             batchExecutionTimeStart: batchExecutionTimeStart,
             time: time,

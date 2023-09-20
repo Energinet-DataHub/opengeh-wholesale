@@ -30,7 +30,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.CalculationResults;
 
-public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatementApiFixture>
+public class CalculationResultQueriesTests : IAsyncLifetime
 {
     private const string BatchId = "019703e7-98ee-45c1-b343-0cbf185a47d9";
     private const string FirstQuantity = "1.111";
@@ -40,28 +40,40 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
     private const string FifthQuantity = "5.555";
     private const string SixthQuantity = "6.666";
     private readonly DatabricksSqlStatementApiFixture _fixture;
+    private readonly ILogger<DatabricksSqlStatusResponseParser> _loggerResponseParserStub;
+    private readonly ILogger<SqlStatementClient> _loggerSqlClientStub;
+    private readonly ILogger<CalculationResultQueries> _loggerCalculationResultQueriesStub;
 
-    public CalculationResultQueriesTests(DatabricksSqlStatementApiFixture fixture)
+    public CalculationResultQueriesTests()
     {
-        _fixture = fixture;
+        _fixture = new DatabricksSqlStatementApiFixture();
+        _loggerResponseParserStub = new Mock<ILogger<DatabricksSqlStatusResponseParser>>().Object;
+        _loggerSqlClientStub = new Mock<ILogger<SqlStatementClient>>().Object;
+        _loggerCalculationResultQueriesStub = new Mock<ILogger<CalculationResultQueries>>().Object;
+    }
+
+    public Task InitializeAsync()
+    {
+        return _fixture.DatabricksSchemaManager.CreateSchemaAsync();
+    }
+
+    public Task DisposeAsync()
+    {
+        return _fixture.DatabricksSchemaManager.DropSchemaAsync();
     }
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_ReturnsExpectedCalculationResult(
-        Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
-        Mock<IBatchesClient> batchesClientMock,
-        BatchDto batch,
-        Mock<ILogger<CalculationResultQueries>> calculationResultQueriesLoggerMock)
+    public async Task GetAsync_ReturnsExpectedCalculationResult(Mock<IBatchesClient> batchesClientMock, BatchDto batch)
     {
         // Arrange
         const int expectedResultCount = 3;
         var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
         await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
         batch = batch with { BatchId = Guid.Parse(BatchId) };
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
+        var sqlStatementClient = _fixture.CreateSqlStatementClient(_loggerResponseParserStub, _loggerSqlClientStub);
         batchesClientMock.Setup(b => b.GetAsync(It.IsAny<Guid>())).ReturnsAsync(batch);
-        var sut = new CalculationResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions, calculationResultQueriesLoggerMock.Object);
+        var sut = new CalculationResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions, _loggerCalculationResultQueriesStub);
 
         // Act
         var actual = await sut.GetAsync(batch.BatchId).ToListAsync();

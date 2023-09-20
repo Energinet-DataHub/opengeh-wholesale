@@ -26,7 +26,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtur
 ///   1. 'InitializeAsync()' which is called before the first test in the test class is executed.
 ///   2. 'DisposeAsync()' which is called after the last test in the test class has been executed.
 /// </summary>
-public class DatabricksSqlStatementApiFixture : IAsyncLifetime
+public class DatabricksSqlStatementApiFixture
 {
     public DatabricksSqlStatementApiFixture()
     {
@@ -39,27 +39,17 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
 
     private Mock<IOptions<Core.Databricks.SqlStatementExecution.Internal.AppSettings.DatabricksOptions>> DatabricksOptionsMock { get; }
 
-    public async Task InitializeAsync()
-    {
-        await DatabricksSchemaManager.CreateSchemaAsync();
-    }
-
-    public async Task DisposeAsync()
-    {
-        await DatabricksSchemaManager.DropSchemaAsync();
-    }
-
-    public SqlStatementClient CreateSqlStatementClient(Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock, Mock<ILogger<SqlStatementClient>> loggerMock2)
+    public SqlStatementClient CreateSqlStatementClient(ILogger<DatabricksSqlStatusResponseParser> loggerParser, ILogger<SqlStatementClient> loggerSqlCLient)
     {
         var databricksSqlChunkResponseParser = new DatabricksSqlChunkResponseParser();
         var sqlStatementClient = new SqlStatementClient(
             new HttpClient(),
             DatabricksOptionsMock.Object,
             new DatabricksSqlResponseParser(
-                new DatabricksSqlStatusResponseParser(loggerMock.Object, databricksSqlChunkResponseParser),
+                new DatabricksSqlStatusResponseParser(loggerParser, databricksSqlChunkResponseParser),
                 databricksSqlChunkResponseParser,
                 new DatabricksSqlChunkDataResponseParser()),
-            loggerMock2.Object);
+            loggerSqlCLient);
         return sqlStatementClient;
     }
 
