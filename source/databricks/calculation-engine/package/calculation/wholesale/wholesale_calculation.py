@@ -133,6 +133,7 @@ def group_by_monthly(df: DataFrame, time_zone: str) -> DataFrame:
             lit(None).alias(Colname.settlement_method),
             flatten(collect_set(Colname.qualities)).alias(Colname.qualities),
         )
+        .orderBy(Colname.charge_time)
         .select(
             col(Colname.grid_area),
             col(Colname.energy_supplier_id),

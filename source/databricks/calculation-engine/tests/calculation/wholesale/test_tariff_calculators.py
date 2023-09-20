@@ -364,8 +364,9 @@ def test__group_by_monthly__on_tariff(
     )
 
     # Assert
-    assert actual.collect()[0][Colname.total_amount] == Decimal("8.040020")
-    assert actual.collect()[1][Colname.total_amount] == Decimal("2.010005")
-    assert actual.collect()[0][Colname.qualities] == ["calculated", "estimated"]
-    assert actual.collect()[0][Colname.charge_time] == datetime(2019, 12, 31, 23)
+    assert actual.collect()[0][Colname.total_amount] == Decimal("2.010005")
+    assert actual.collect()[1][Colname.total_amount] == Decimal("8.040020")
+    assert actual.collect()[2][Colname.total_amount] == Decimal("2.010005")
+    assert actual.collect()[1][Colname.qualities] == ["calculated", "estimated"]
+    assert actual.collect()[1][Colname.charge_time] == datetime(2019, 12, 31, 23)
     assert actual.count() == 3
