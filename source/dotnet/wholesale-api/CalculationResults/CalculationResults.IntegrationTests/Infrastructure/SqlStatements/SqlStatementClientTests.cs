@@ -28,10 +28,10 @@ public class SqlStatementClientTests
     [Theory]
     [InlineAutoMoqData]
     public async Task ExecuteSqlStatementAsync_WhenQueryFromDatabricks_ReturnsExpectedData(
-        DatabricksSqlStatementApiFixture fixture,
         Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock)
     {
         // Arrange
+        await using var fixture = new DatabricksSqlStatementApiFixture();
         await AddDataToEnergyResultTableAsync(fixture.DatabricksSchemaManager);
         var sut = fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
 
@@ -46,11 +46,10 @@ public class SqlStatementClientTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task ExecuteAsync_WhenMultipleChunks_ReturnsAllRows(
-        DatabricksSqlStatementApiFixture fixture,
-        Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock)
+    public async Task ExecuteAsync_WhenMultipleChunks_ReturnsAllRows(Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock)
     {
         // Arrange
+        await using var fixture = new DatabricksSqlStatementApiFixture();
         const int expectedRowCount = 100;
         var sut = fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
 
@@ -74,10 +73,10 @@ public class SqlStatementClientTests
 
     private static IList<string> GetSomeEnergyResultDeltaTableRow()
     {
-        var time = "2022-03-11T03:00:00.000Z";
-        var batchExecutionTimeStart = "2022-03-11T03:00:00.000Z";
-        var gridAreaB = "123";
-        var quantity21 = "1.23";
+        const string time = "2022-03-11T03:00:00.000Z";
+        const string batchExecutionTimeStart = "2022-03-11T03:00:00.000Z";
+        const string gridAreaB = "123";
+        const string quantity21 = "1.23";
         var row = EnergyResultDeltaTableHelper.CreateRowValues(
             batchExecutionTimeStart: batchExecutionTimeStart,
             time: time,

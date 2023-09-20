@@ -48,10 +48,10 @@ public class CalculationResultQueriesTests
         Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
         Mock<IBatchesClient> batchesClientMock,
         BatchDto batch,
-        Mock<ILogger<CalculationResultQueries>> calculationResultQueriesLoggerMock,
-        DatabricksSqlStatementApiFixture fixture)
+        Mock<ILogger<CalculationResultQueries>> calculationResultQueriesLoggerMock)
     {
         // Arrange
+        await using var fixture = new DatabricksSqlStatementApiFixture();
         const int expectedResultCount = 3;
         var deltaTableOptions = fixture.DatabricksSchemaManager.DeltaTableOptions;
         await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions, fixture.DatabricksSchemaManager);
@@ -78,10 +78,10 @@ public class CalculationResultQueriesTests
     public async Task GetAsync_RequestFromGridOperatorTotalProduction_ReturnsResult(
         Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
         Mock<IBatchesClient> batchesClientMock,
-        Mock<ILogger<CalculationResultQueries>> calculationResultQueriesLoggerMock,
-        DatabricksSqlStatementApiFixture fixture)
+        Mock<ILogger<CalculationResultQueries>> calculationResultQueriesLoggerMock)
     {
         // Arrange
+        await using var fixture = new DatabricksSqlStatementApiFixture();
         const string gridAreaFilter = "101";
         const TimeSeriesType timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
@@ -120,10 +120,10 @@ public class CalculationResultQueriesTests
     public async Task GetAsync_RequestFromGridOperatorTotalProductionInWrongPeriod_ReturnsNoResults(
         Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
         Mock<IBatchesClient> batchesClientMock,
-        Mock<ILogger<CalculationResultQueries>> calculationResultQueriesLoggerMock,
-        DatabricksSqlStatementApiFixture fixture)
+        Mock<ILogger<CalculationResultQueries>> calculationResultQueriesLoggerMock)
     {
         // Arrange
+        await using var fixture = new DatabricksSqlStatementApiFixture();
         var deltaTableOptions = fixture.DatabricksSchemaManager.DeltaTableOptions;
         await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions, fixture.DatabricksSchemaManager);
         var sqlStatementClient = fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
