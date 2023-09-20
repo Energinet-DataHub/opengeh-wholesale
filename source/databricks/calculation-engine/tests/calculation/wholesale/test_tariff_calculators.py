@@ -362,8 +362,6 @@ def test__group_by_monthly__on_tariff(
     actual = group_by_monthly(
         calculate_tariff_price_per_ga_co_es(tariffs), "Europe/Copenhagen"
     )
-    actual.show()
-    actual.printSchema()
 
     # Assert
     assert actual.collect()[0][Colname.total_amount] == Decimal("8.040020")
