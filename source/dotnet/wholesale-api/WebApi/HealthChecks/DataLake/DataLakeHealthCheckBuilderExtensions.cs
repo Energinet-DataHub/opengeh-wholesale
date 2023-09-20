@@ -13,7 +13,10 @@
 // limitations under the License.
 
 using Azure.Storage.Files.DataLake;
+using Energinet.DataHub.Wholesale.Common.Databricks.Options;
+using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks.DataLake;
 
@@ -23,6 +26,7 @@ public static class DataLakeHealthCheckBuilderExtensions
 
     public static IHealthChecksBuilder AddDataLakeHealthCheck(
         this IHealthChecksBuilder builder,
+        Func<IServiceProvider, DataLakeOptions> options,
         string? name = default,
         HealthStatus? failureStatus = default,
         IEnumerable<string>? tags = default,
@@ -30,7 +34,10 @@ public static class DataLakeHealthCheckBuilderExtensions
     {
         return builder.Add(new HealthCheckRegistration(
             name ?? Name,
-            serviceProvider => new DataLakeHealthRegistration(serviceProvider.GetRequiredService<DataLakeFileSystemClient>()),
+            serviceProvider => new DataLakeHealthRegistration(
+                serviceProvider.GetRequiredService<DataLakeFileSystemClient>(),
+                serviceProvider.GetRequiredService<IClock>(),
+                options(serviceProvider)),
             failureStatus,
             tags,
             timeout));
