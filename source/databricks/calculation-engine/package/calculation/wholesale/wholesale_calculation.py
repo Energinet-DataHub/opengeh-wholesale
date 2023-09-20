@@ -38,7 +38,6 @@ from package.calculation_input import CalculationInputReader
 from package.calculation_output.wholesale_calculation_result_writer import (
     WholesaleCalculationResultWriter,
 )
-import pytz
 
 
 def execute(
@@ -64,6 +63,7 @@ def execute(
         charge_master_data,
         charge_links,
         charge_prices,
+        time_zone,
     )
 
 
