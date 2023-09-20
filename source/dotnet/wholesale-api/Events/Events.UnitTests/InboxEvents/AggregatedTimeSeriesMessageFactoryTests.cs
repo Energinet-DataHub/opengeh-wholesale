@@ -16,8 +16,8 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.InboxEvents;
+using FluentAssertions;
 using Google.Protobuf.WellKnownTypes;
-using Moq;
 using NodaTime;
 using Xunit;
 using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
@@ -48,30 +48,20 @@ public class AggregatedTimeSeriesMessageFactoryTests
         var sut = new AggregatedTimeSeriesMessageFactory();
 
         // Act
-        var response = sut.Create(new List<EnergyResult> { energyResult }, expectedReferenceId, isRejected: false);
+        var response = sut.Create(energyResult, expectedReferenceId);
 
         // Assert
-        Assert.NotNull(response);
-        Assert.True(response.ApplicationProperties.ContainsKey("ReferenceId"));
-        Assert.Equal(expectedReferenceId, response.ApplicationProperties["ReferenceId"].ToString());
-        Assert.Equal(expectedAcceptedSubject, response.Subject);
-        var responseBody = AggregatedTimeSeriesRequestAccepted.Parser.ParseFrom(response.Body);
-        Assert.All(responseBody.Series, serie =>
-        {
-            Assert.Equal(_gridArea, serie.GridArea);
-            Assert.Equal(Energinet.DataHub.Edi.Responses.TimeSeriesType.Production, serie.TimeSeriesType);
-            Assert.Equal(new Timestamp() { Seconds = _periodStart.ToUnixTimeSeconds() }, serie.Period.StartOfPeriod);
-            Assert.Equal(new Timestamp() { Seconds = _periodEnd.ToUnixTimeSeconds() }, serie.Period.EndOfPeriod);
-            Assert.Equal(energyResult.TimeSeriesPoints.Length, serie.TimeSeriesPoints.Count);
+        response.Should().NotBeNull();
+        response.ApplicationProperties.ContainsKey("ReferenceId").Should().BeTrue();
+        response.ApplicationProperties["ReferenceId"].ToString().Should().Be(expectedReferenceId);
+        response.Subject.Should().Be(expectedAcceptedSubject);
 
-            var expected = CreateExpectedTimeSeries(energyResult.TimeSeriesPoints.ToList());
-            for (var i = 0; i < energyResult.TimeSeriesPoints.Length; i++)
-            {
-                Assert.Equal(expected[i].Time, serie.TimeSeriesPoints[i].Time);
-                Assert.Equal(expected[i].Quantity, serie.TimeSeriesPoints[i].Quantity);
-                Assert.Equal(expected[i].QuantityQuality, serie.TimeSeriesPoints[i].QuantityQuality);
-            }
-        });
+        var responseBody = AggregatedTimeSeriesRequestAccepted.Parser.ParseFrom(response.Body);
+        responseBody.GridArea.Should().Be(_gridArea);
+        responseBody.TimeSeriesType.Should().Be(Energinet.DataHub.Edi.Responses.TimeSeriesType.Production);
+        responseBody.Period.StartOfPeriod.Should().Be(new Timestamp() { Seconds = _periodStart.ToUnixTimeSeconds() });
+        responseBody.Period.EndOfPeriod.Should().Be(new Timestamp() { Seconds = _periodEnd.ToUnixTimeSeconds() });
+        responseBody.TimeSeriesPoints.Count.Should().Be(energyResult.TimeSeriesPoints.Length);
     }
 
     private EnergyResult CreateEnergyResult()
@@ -93,25 +83,5 @@ public class AggregatedTimeSeriesMessageFactoryTests
             _periodStart,
             _periodEnd,
             _fromGridArea);
-    }
-
-    private List<Energinet.DataHub.Edi.Responses.TimeSeriesPoint> CreateExpectedTimeSeries(List<TimeSeriesPoint> timeSeriesPoint)
-    {
-        var expected = new List<Energinet.DataHub.Edi.Responses.TimeSeriesPoint>();
-        expected.AddRange(timeSeriesPoint.Select(point => new Energinet.DataHub.Edi.Responses.TimeSeriesPoint()
-        {
-            Time = new Timestamp() { Seconds = point.Time.ToUnixTimeSeconds() },
-            Quantity =
-                new DecimalValue()
-                {
-                    Units = decimal.ToInt64(point.Quantity),
-                    Nanos = decimal.ToInt32((point.Quantity - decimal.ToInt64(point.Quantity)) * 1_000_000_000),
-                },
-            QuantityQuality = point.Quality == QuantityQuality.Estimated
-                ? Energinet.DataHub.Edi.Responses.QuantityQuality.Estimated
-                : Energinet.DataHub.Edi.Responses.QuantityQuality.Measured,
-        }));
-
-        return expected;
     }
 }

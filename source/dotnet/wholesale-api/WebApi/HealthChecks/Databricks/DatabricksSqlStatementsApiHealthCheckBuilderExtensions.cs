@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.WebApi.HealthChecks.Databricks;
 
@@ -33,6 +34,7 @@ public static class DatabricksSqlStatementsApiHealthCheckBuilderExtensions
             name ?? Name,
             serviceProvider => new DatabricksSqlStatementsApiHealthRegistration(
                 serviceProvider.GetRequiredService<IHttpClientFactory>(),
+                serviceProvider.GetRequiredService<IClock>(),
                 options(serviceProvider)),
             failureStatus,
             tags,

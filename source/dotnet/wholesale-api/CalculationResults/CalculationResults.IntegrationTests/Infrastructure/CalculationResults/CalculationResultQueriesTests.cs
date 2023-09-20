@@ -20,14 +20,12 @@ using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
-using NodaTime;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.CalculationResults;
@@ -71,243 +69,11 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
         // Assert
         using var assertionScope = new AssertionScope();
         actual.Count.Should().Be(expectedResultCount);
-
         actual.SelectMany(a => a.TimeSeriesPoints)
             .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
             .ToArray()
             .Should()
-            .Equal(FirstQuantity, SecondQuantity, ThirdQuantity, FourthQuantity, FifthQuantity, FifthQuantity, SixthQuantity, SixthQuantity);
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetAsync_RequestFromGridOperatorTotalProduction_ReturnsResult(
-        Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
-        Mock<IBatchesClient> batchesClientMock,
-        Mock<ILogger<CalculationResultQueries>> calculationResultQueriesLoggerMock)
-    {
-        // Arrange
-        var gridAreaFilter = "101";
-        var timeSeriesTypeFilter = TimeSeriesType.Production;
-        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
-        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
-        var request = CreateRequest(
-            gridArea: gridAreaFilter,
-            timeSeriesType: timeSeriesTypeFilter,
-            startOfPeriod: startOfPeriodFilter,
-            endOfPeriod: endOfPeriodFilter);
-        var sut = new CalculationResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions, calculationResultQueriesLoggerMock.Object);
-
-        // Act
-        var actual = await sut.GetAsync(request).ToListAsync();
-
-        // Assert
-        actual.Should().NotBeEmpty();
-        actual.Count.Should().Be(1);
-        actual.Should().OnlyContain(
-            result => result.GridArea.Equals(gridAreaFilter)
-              && result.PeriodStart == startOfPeriodFilter
-              && result.PeriodEnd == endOfPeriodFilter
-              && result.TimeSeriesType.Equals(timeSeriesTypeFilter));
-        actual.Select(x => x.TimeSeriesPoints).Count().Should().Be(1);
-        actual.SelectMany(a => a.TimeSeriesPoints)
-            .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
-            .ToArray()
-            .Should()
-            .Equal(FifthQuantity, SixthQuantity);
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetAsync_RequestFromGridOperatorTotalProductionInWrongPeriod_ReturnsNoResults(
-        Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
-        Mock<IBatchesClient> batchesClientMock,
-        Mock<ILogger<CalculationResultQueries>> calculationResultQueriesLoggerMock)
-    {
-        // Arrange
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
-
-        var request = CreateRequest(
-            startOfPeriod: Instant.FromUtc(2020, 1, 1, 1, 1),
-            endOfPeriod: Instant.FromUtc(2021, 1, 2, 1, 1));
-        var sut = new CalculationResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions, calculationResultQueriesLoggerMock.Object);
-
-        // Act
-        var actual = await sut.GetAsync(request).ToListAsync();
-
-        // Assert
-        actual.Should().BeEmpty();
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetAsync_RequestFromEnergySupplierTotalProduction_ReturnsResult(
-        Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
-        Mock<IBatchesClient> batchesClientMock,
-        Mock<ILogger<CalculationResultQueries>> calculationResultQueriesLoggerMock)
-    {
-        // Arrange
-        var gridAreaFilter = "501";
-        var energySupplierIdFilter = "4321987654321";
-        var timeSeriesTypeFilter = TimeSeriesType.Production;
-        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
-        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
-        var request = CreateRequest(
-            gridArea: gridAreaFilter,
-            timeSeriesType: timeSeriesTypeFilter,
-            startOfPeriod: startOfPeriodFilter,
-            endOfPeriod: endOfPeriodFilter,
-            energySupplierId: energySupplierIdFilter);
-        var sut = new CalculationResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions, calculationResultQueriesLoggerMock.Object);
-
-        // Act
-        var actual = await sut.GetAsync(request).ToListAsync();
-
-        // Assert
-        actual.Should().NotBeEmpty();
-        actual.Should().OnlyContain(
-            result => result.GridArea.Equals(gridAreaFilter)
-                      && result.PeriodStart == startOfPeriodFilter
-                      && result.PeriodEnd == endOfPeriodFilter
-                      && result.TimeSeriesType.Equals(timeSeriesTypeFilter)
-                      && !string.IsNullOrEmpty(result.EnergySupplierId)
-                      && result.EnergySupplierId!.Equals(energySupplierIdFilter));
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetAsync_RequestFromEnergySupplierTotalProductionBadId_ReturnsNoResults(
-        Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
-        Mock<IBatchesClient> batchesClientMock,
-        Mock<ILogger<CalculationResultQueries>> calculationResultQueriesLoggerMock)
-    {
-        // Arrange
-        var gridAreaFilter = "501";
-        var energySupplierId = "badId";
-        var timeSeriesTypeFilter = TimeSeriesType.Production;
-        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
-        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
-        var request = CreateRequest(
-            gridArea: gridAreaFilter,
-            timeSeriesType: timeSeriesTypeFilter,
-            startOfPeriod: startOfPeriodFilter,
-            endOfPeriod: endOfPeriodFilter,
-            energySupplierId: energySupplierId);
-        var sut = new CalculationResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions, calculationResultQueriesLoggerMock.Object);
-
-        // Act
-        var actual = await sut.GetAsync(request).ToListAsync();
-
-        // Assert
-        actual.Should().BeEmpty();
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetAsync_RequestFromBalanceResponsibleTotalProduction_ReturnsResult(
-        Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
-        Mock<IBatchesClient> batchesClientMock,
-        Mock<ILogger<CalculationResultQueries>> calculationResultQueriesLoggerMock)
-    {
-        // Arrange
-        var gridAreaFilter = "101";
-        var balanceResponsibleIdFilter = "1234567891234";
-        var timeSeriesTypeFilter = TimeSeriesType.Production;
-        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
-        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
-        var request = CreateRequest(
-            gridArea: gridAreaFilter,
-            timeSeriesType: timeSeriesTypeFilter,
-            startOfPeriod: startOfPeriodFilter,
-            endOfPeriod: endOfPeriodFilter,
-            balanceResponsibleId: balanceResponsibleIdFilter);
-        var sut = new CalculationResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions, calculationResultQueriesLoggerMock.Object);
-
-        // Act
-        var actual = await sut.GetAsync(request).ToListAsync();
-
-        // Assert
-        actual.Should().NotBeEmpty();
-        actual.Should().OnlyContain(
-            result => result.GridArea.Equals(gridAreaFilter)
-                      && result.PeriodStart == startOfPeriodFilter
-                      && result.PeriodEnd == endOfPeriodFilter
-                      && result.TimeSeriesType.Equals(timeSeriesTypeFilter)
-                      && !string.IsNullOrEmpty(result.BalanceResponsibleId)
-                      && result.BalanceResponsibleId!.Equals(balanceResponsibleIdFilter));
-    }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetAsync_RequestFromEnergySupplierPerBalanceResponsibleTotalProduction_ReturnsResult(
-        Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
-        Mock<IBatchesClient> batchesClientMock,
-        Mock<ILogger<CalculationResultQueries>> calculationResultQueriesLoggerMock)
-    {
-        // Arrange
-        var gridAreaFilter = "501";
-        var balanceResponsibleIdFilter = "1234567891234";
-        var energySupplierIdFilter = "4321987654321";
-        var timeSeriesTypeFilter = TimeSeriesType.Production;
-        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
-        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
-        var request = CreateRequest(
-            gridArea: gridAreaFilter,
-            timeSeriesType: timeSeriesTypeFilter,
-            startOfPeriod: startOfPeriodFilter,
-            endOfPeriod: endOfPeriodFilter,
-            energySupplierId: energySupplierIdFilter,
-            balanceResponsibleId: balanceResponsibleIdFilter);
-        var sut = new CalculationResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions, calculationResultQueriesLoggerMock.Object);
-
-        // Act
-        var actual = await sut.GetAsync(request).ToListAsync();
-
-        // Assert
-        actual.Should().NotBeEmpty();
-        actual.Should().OnlyContain(
-            result => result.GridArea.Equals(gridAreaFilter)
-                      && result.PeriodStart == startOfPeriodFilter
-                      && result.PeriodEnd == endOfPeriodFilter
-                      && result.TimeSeriesType.Equals(timeSeriesTypeFilter)
-                      && !string.IsNullOrEmpty(result.BalanceResponsibleId)
-                      && result.BalanceResponsibleId!.Equals(balanceResponsibleIdFilter)
-                      && !string.IsNullOrEmpty(result.EnergySupplierId)
-                      && result.EnergySupplierId!.Equals(energySupplierIdFilter));
-    }
-
-    private CalculationResultQuery CreateRequest(
-        TimeSeriesType? timeSeriesType = null,
-        Instant? startOfPeriod = null,
-        Instant? endOfPeriod = null,
-        string gridArea = "101",
-        string? energySupplierId = null,
-        string? balanceResponsibleId = null)
-    {
-        return new CalculationResultQuery(
-            TimeSeriesType: timeSeriesType ?? TimeSeriesType.Production,
-            StartOfPeriod: startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
-            EndOfPeriod: endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0),
-            GridArea: gridArea,
-            EnergySupplierId: energySupplierId,
-            BalanceResponsibleId: balanceResponsibleId);
+            .Equal(FirstQuantity, SecondQuantity, ThirdQuantity, FourthQuantity, FifthQuantity, SixthQuantity);
     }
 
     private async Task AddCreatedRowsInArbitraryOrderAsync(IOptions<DeltaTableOptions> options)
@@ -320,24 +86,18 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
         const string gridAreaA = "301";
         const string gridAreaB = "101";
         const string gridAreaC = "501";
-        const string energySupplier = "4321987654321";
-        const string balanceResponsibleId = "1234567891234";
 
         var row1 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: firstHour, gridArea: gridAreaA, quantity: FirstQuantity);
         var row2 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: secondHour, gridArea: gridAreaA, quantity: SecondQuantity);
 
         var row3 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: secondCalculationResultId, time: firstHour, gridArea: gridAreaB, quantity: ThirdQuantity);
-        var row4 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: secondCalculationResultId, time: secondHour, gridArea: gridAreaB, quantity: FourthQuantity, aggregationLevel: DeltaTableAggregationLevel.BalanceResponsibleAndGridArea, balanceResponsibleId: balanceResponsibleId);
+        var row4 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: secondCalculationResultId, time: secondHour, gridArea: gridAreaB, quantity: FourthQuantity);
 
-        var row5 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, time: firstHour, gridArea: gridAreaC, quantity: FifthQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea, balanceResponsibleId: balanceResponsibleId, energySupplierId: energySupplier);
-        var row6 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, time: secondHour, gridArea: gridAreaC, quantity: SixthQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndGridArea, energySupplierId: energySupplier);
-
-        var row7 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, time: firstHour, gridArea: gridAreaB, quantity: FifthQuantity, batchExecutionTimeStart: "2022-03-12T03:00:00.000Z");
-        var row8 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, time: secondHour, gridArea: gridAreaB, quantity: SixthQuantity, batchExecutionTimeStart: "2022-03-12T03:00:00.000Z");
+        var row5 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, time: firstHour, gridArea: gridAreaC, quantity: FifthQuantity);
+        var row6 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, time: secondHour, gridArea: gridAreaC, quantity: SixthQuantity);
 
         // mix up the order of the rows
-        var rows = new List<IEnumerable<string>> { row3, row5, row1, row2, row6, row4, row7, row8 };
-        await _fixture.DatabricksSchemaManager.EmptyAsync(options.Value.ENERGY_RESULTS_TABLE_NAME);
+        var rows = new List<IEnumerable<string>> { row3, row5, row1, row2, row6, row4 };
         await _fixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(options.Value.ENERGY_RESULTS_TABLE_NAME, rows);
     }
 }

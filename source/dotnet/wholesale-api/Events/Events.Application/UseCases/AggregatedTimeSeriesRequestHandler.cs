@@ -26,20 +26,20 @@ namespace Energinet.DataHub.Wholesale.Events.Application.UseCases;
 
 public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHandler
 {
-    private readonly ICalculationResultQueries _calculationResultQueries;
+    private readonly IRequestCalculationResultQueries _requestCalculationResultQueries;
     private readonly IEdiClient _ediClient;
     private readonly IAggregatedTimeSeriesMessageFactory _aggregatedTimeSeriesMessageFactory;
     private readonly ILogger<AggregatedTimeSeriesRequestHandler> _logger;
     private readonly IAggregatedTimeSeriesRequestMessageParser _aggregatedTimeSeriesRequestMessageParser;
 
     public AggregatedTimeSeriesRequestHandler(
-        ICalculationResultQueries calculationResultQueries,
+        IRequestCalculationResultQueries requestCalculationResultQueries,
         IEdiClient ediClient,
         IAggregatedTimeSeriesRequestMessageParser aggregatedTimeSeriesRequestMessageParser,
         IAggregatedTimeSeriesMessageFactory aggregatedTimeSeriesMessageFactory,
         ILogger<AggregatedTimeSeriesRequestHandler> logger)
     {
-        _calculationResultQueries = calculationResultQueries;
+        _requestCalculationResultQueries = requestCalculationResultQueries;
         _ediClient = ediClient;
         _aggregatedTimeSeriesRequestMessageParser = aggregatedTimeSeriesRequestMessageParser;
         _aggregatedTimeSeriesMessageFactory = aggregatedTimeSeriesMessageFactory;
@@ -56,13 +56,12 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
 
         var message = _aggregatedTimeSeriesMessageFactory.Create(
             result,
-            referenceId,
-            isRejected: !result.Any());
+            referenceId);
 
         await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
     }
 
-    private async Task<List<EnergyResult>> GetCalculationResultsAsync(
+    private async Task<EnergyResult?> GetCalculationResultsAsync(
         AggregatedTimeSeriesRequest aggregatedTimeSeriesRequestMessage,
         CancellationToken cancellationToken)
     {
@@ -74,10 +73,10 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
             aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea.EnergySupplierId,
             aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea.BalanceResponsibleId);
 
-        var calculationResults = await _calculationResultQueries.GetAsync(query)
-            .ToListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+        var calculationResult = await _requestCalculationResultQueries.GetAsync(query)
+            .ConfigureAwait(false);
 
-        _logger.LogDebug("Found {Count} calculation results based on {Query} query.", calculationResults.Count, query.ToJsonString());
-        return calculationResults;
+        _logger.LogDebug("Found {CalculationResult} calculation results based on {Query} query.", calculationResult?.ToJsonString(), query.ToJsonString());
+        return calculationResult;
     }
 }

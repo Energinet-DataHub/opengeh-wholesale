@@ -30,4 +30,16 @@ public class DatabricksOptions
     /// The databricks warehouse id.
     /// </summary>
     public string DATABRICKS_WAREHOUSE_ID { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Defines the hour of the day when the health check DataLake should start.
+    /// The default value is 6:00 AM.
+    /// </summary>
+    public TimeOnly DATABRICKS_HEALTH_CHECK_START_HOUR { get; set; } = new(6, 0);
+
+    /// <summary>
+    /// Defines the hour of the day when the health check towards DataLake should end.
+    /// The default value is 8:00 PM.
+    /// </summary>
+    public TimeOnly DATABRICKS_HEALTH_CHECK_END_HOUR { get; set; } = new(20, 0);
 }
