@@ -26,7 +26,6 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using Moq;
 using NodaTime;
 using Xunit;
@@ -179,7 +178,7 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
                       && result.PeriodStart == startOfPeriodFilter
                       && result.PeriodEnd == endOfPeriodFilter
                       && result.TimeSeriesType.Equals(timeSeriesTypeFilter)
-                      && !result.EnergySupplierId.IsNullOrEmpty()
+                      && !string.IsNullOrEmpty(result.EnergySupplierId)
                       && result.EnergySupplierId!.Equals(energySupplierIdFilter));
     }
 
@@ -248,7 +247,7 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
                       && result.PeriodStart == startOfPeriodFilter
                       && result.PeriodEnd == endOfPeriodFilter
                       && result.TimeSeriesType.Equals(timeSeriesTypeFilter)
-                      && !result.BalanceResponsibleId.IsNullOrEmpty()
+                      && !string.IsNullOrEmpty(result.BalanceResponsibleId)
                       && result.BalanceResponsibleId!.Equals(balanceResponsibleIdFilter));
     }
 
@@ -288,9 +287,9 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
                       && result.PeriodStart == startOfPeriodFilter
                       && result.PeriodEnd == endOfPeriodFilter
                       && result.TimeSeriesType.Equals(timeSeriesTypeFilter)
-                      && !result.BalanceResponsibleId.IsNullOrEmpty()
+                      && !string.IsNullOrEmpty(result.BalanceResponsibleId)
                       && result.BalanceResponsibleId!.Equals(balanceResponsibleIdFilter)
-                      && !result.EnergySupplierId.IsNullOrEmpty()
+                      && !string.IsNullOrEmpty(result.EnergySupplierId)
                       && result.EnergySupplierId!.Equals(energySupplierIdFilter));
     }
 
