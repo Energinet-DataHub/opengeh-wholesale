@@ -189,8 +189,10 @@ public class Startup
                 serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
                 name: HealthCheckNames.IntegrationEventsTopic)
             .AddDataLakeHealthCheck(
+                _ => Configuration.Get<DataLakeOptions>()!,
                 name: HealthCheckNames.DataLake)
             .AddDatabricksJobsApiHealthCheck(
+                _ => Configuration.Get<DatabricksOptions>()!,
                 name: HealthCheckNames.DatabricksJobsApi)
             .AddDatabricksSqlStatementsApiHealthCheck(
                 _ => Configuration.Get<DatabricksOptions>()!,
