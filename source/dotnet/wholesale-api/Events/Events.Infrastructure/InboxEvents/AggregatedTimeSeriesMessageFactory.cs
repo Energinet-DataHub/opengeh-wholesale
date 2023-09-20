@@ -28,11 +28,11 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.InboxEvents;
 
 public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFactory
 {
-    public ServiceBusMessage Create(IList<EnergyResult> calculationResults, string referenceId, bool isRejected)
+    public ServiceBusMessage Create(EnergyResult? calculationResult, string referenceId)
     {
-        var body = isRejected
+        var body = calculationResult is null
             ? CreateRejectedResponse()
-            : CreateAcceptedResponse(calculationResults);
+            : CreateAcceptedResponse(calculationResult);
 
         var message = new ServiceBusMessage()
         {
@@ -59,14 +59,11 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
         };
     }
 
-    private static IMessage CreateAcceptedResponse(IList<EnergyResult> energyResults)
+    private static IMessage CreateAcceptedResponse(EnergyResult energyResult)
     {
         var response = new AggregatedTimeSeriesRequestAccepted();
 
-        foreach (var energyResult in energyResults)
-        {
-            response.Series.Add(CreateSerie(energyResult));
-        }
+        response.Serie = CreateSerie(energyResult);
 
         return response;
     }

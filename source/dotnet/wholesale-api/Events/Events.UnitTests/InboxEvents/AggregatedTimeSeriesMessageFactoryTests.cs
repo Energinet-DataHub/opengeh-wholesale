@@ -48,7 +48,7 @@ public class AggregatedTimeSeriesMessageFactoryTests
         var sut = new AggregatedTimeSeriesMessageFactory();
 
         // Act
-        var response = sut.Create(new List<EnergyResult> { energyResult }, expectedReferenceId, isRejected: false);
+        var response = sut.Create(energyResult, expectedReferenceId);
 
         // Assert
         Assert.NotNull(response);
@@ -56,14 +56,12 @@ public class AggregatedTimeSeriesMessageFactoryTests
         Assert.Equal(expectedReferenceId, response.ApplicationProperties["ReferenceId"].ToString());
         Assert.Equal(expectedAcceptedSubject, response.Subject);
         var responseBody = AggregatedTimeSeriesRequestAccepted.Parser.ParseFrom(response.Body);
-        Assert.All(responseBody.Series, serie =>
-        {
-            Assert.Equal(_gridArea, serie.GridArea);
-            Assert.Equal(Energinet.DataHub.Edi.Responses.TimeSeriesType.Production, serie.TimeSeriesType);
-            Assert.Equal(new Timestamp() { Seconds = _periodStart.ToUnixTimeSeconds() }, serie.Period.StartOfPeriod);
-            Assert.Equal(new Timestamp() { Seconds = _periodEnd.ToUnixTimeSeconds() }, serie.Period.EndOfPeriod);
-            Assert.Equal(energyResult.TimeSeriesPoints.Length, serie.TimeSeriesPoints.Count);
-        });
+
+        Assert.Equal(_gridArea, responseBody.Serie.GridArea);
+        Assert.Equal(Energinet.DataHub.Edi.Responses.TimeSeriesType.Production, responseBody.Serie.TimeSeriesType);
+        Assert.Equal(new Timestamp() { Seconds = _periodStart.ToUnixTimeSeconds() }, responseBody.Serie.Period.StartOfPeriod);
+        Assert.Equal(new Timestamp() { Seconds = _periodEnd.ToUnixTimeSeconds() }, responseBody.Serie.Period.EndOfPeriod);
+        Assert.Equal(energyResult.TimeSeriesPoints.Length, responseBody.Serie.TimeSeriesPoints.Count);
     }
 
     private EnergyResult CreateEnergyResult()

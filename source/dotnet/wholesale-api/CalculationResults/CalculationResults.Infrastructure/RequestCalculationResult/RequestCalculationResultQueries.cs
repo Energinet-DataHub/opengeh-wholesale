@@ -14,7 +14,6 @@
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
-using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
@@ -24,93 +23,78 @@ using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NodaTime;
-using NodaTime.Extensions;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.RequestCalculationResult;
 
-public class CalculationResultQueries : ICalculationResultQueries
+public class RequestCalculationResultQueries : IRequestCalculationResultQueries
 {
     private readonly ISqlStatementClient _sqlStatementClient;
-    private readonly IBatchesClient _batchesClient;
     private readonly DeltaTableOptions _deltaTableOptions;
-    private readonly ILogger<CalculationResultQueries> _logger;
+    private readonly ILogger<RequestCalculationResultQueries> _logger;
 
-    public CalculationResultQueries(ISqlStatementClient sqlStatementClient, IBatchesClient batchesClient, IOptions<DeltaTableOptions> deltaTableOptions, ILogger<CalculationResultQueries> logger)
+    public RequestCalculationResultQueries(
+        ISqlStatementClient sqlStatementClient,
+        IOptions<DeltaTableOptions> deltaTableOptions,
+        ILogger<RequestCalculationResultQueries> logger)
     {
         _sqlStatementClient = sqlStatementClient;
-        _batchesClient = batchesClient;
         _deltaTableOptions = deltaTableOptions.Value;
         _logger = logger;
     }
 
-    public async IAsyncEnumerable<EnergyResult> GetAsync(Guid batchId)
+    public async Task<EnergyResult?> GetAsync(CalculationResultQuery query)
     {
-        var batch = await _batchesClient.GetAsync(batchId).ConfigureAwait(false);
-        var sql = CreateBatchResultsSql(batchId);
-        await foreach (var calculationResult in GetInternalAsync(sql, batch.PeriodStart.ToInstant(), batch.PeriodEnd.ToInstant()))
-            yield return calculationResult;
-        _logger.LogDebug("Fetched all calculation results for batch {BatchId}", batchId);
-    }
-
-    private async IAsyncEnumerable<EnergyResult> GetInternalAsync(string sql, Instant periodStart, Instant periodEnd)
-    {
+        var sqlStatement = CreateRequestSql(query);
         var timeSeriesPoints = new List<TimeSeriesPoint>();
-        SqlResultRow? currentRow = null;
+        SqlResultRow? firstRow = null;
         var resultCount = 0;
-
-        await foreach (var nextRow in _sqlStatementClient.ExecuteAsync(sql).ConfigureAwait(false))
+        await foreach (var currentRow in _sqlStatementClient.ExecuteAsync(sqlStatement).ConfigureAwait(false))
         {
-            var timeSeriesPoint = CreateTimeSeriesPoint(nextRow);
+            if (firstRow is null)
+                firstRow = currentRow;
 
-            if (currentRow != null && BelongsToDifferentResults(currentRow, nextRow))
-            {
-                yield return CreateEnergyResult(currentRow, timeSeriesPoints, periodStart, periodEnd);
-                resultCount++;
-                timeSeriesPoints = new List<TimeSeriesPoint>();
-            }
+            var timeSeriesPoint = CreateTimeSeriesPoint(currentRow);
 
             timeSeriesPoints.Add(timeSeriesPoint);
-            currentRow = nextRow;
-        }
-
-        if (currentRow != null)
-        {
-            yield return CreateEnergyResult(currentRow, timeSeriesPoints, periodStart, periodEnd);
             resultCount++;
         }
 
         _logger.LogDebug("Fetched {ResultCount} calculation results", resultCount);
+        if (firstRow is null) return null;
+
+        return CreateEnergyResult(firstRow, timeSeriesPoints, query.StartOfPeriod,  query.EndOfPeriod);
     }
 
-    private string CreateBatchResultsSql(Guid batchId)
+    private string CreateRequestSql(CalculationResultQuery query)
     {
         return $@"
-SELECT {string.Join(", ", SqlColumnNames)}
-FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME}
-WHERE {EnergyResultColumnNames.BatchId} = '{batchId}'
-ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames.Time}
-";
+            SELECT {string.Join(", ", SqlColumnNames.Select(columenName => $"t1.{columenName}"))}
+            FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} t1
+            LEFT JOIN {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} t2
+                ON t1.{EnergyResultColumnNames.Time} = t2.{EnergyResultColumnNames.Time}
+                    AND t1.{EnergyResultColumnNames.BatchExecutionTimeStart} < t2.{EnergyResultColumnNames.BatchExecutionTimeStart}
+                    AND t1.{EnergyResultColumnNames.GridArea} = t2.{EnergyResultColumnNames.GridArea}
+                    AND COALESCE(t1.{EnergyResultColumnNames.FromGridArea}, 'N/A') = COALESCE(t2.{EnergyResultColumnNames.FromGridArea}, 'N/A')
+                    AND t1.{EnergyResultColumnNames.TimeSeriesType} = t2.{EnergyResultColumnNames.TimeSeriesType}
+                    AND t1.{EnergyResultColumnNames.BatchProcessType} = t2.{EnergyResultColumnNames.BatchProcessType}
+                    AND t1.{EnergyResultColumnNames.AggregationLevel} = t2.{EnergyResultColumnNames.AggregationLevel}
+            WHERE t2.time IS NULL
+                AND t1.{EnergyResultColumnNames.GridArea} IN ({query.GridArea})
+                AND t1.{EnergyResultColumnNames.TimeSeriesType} IN ('{TimeSeriesTypeMapper.ToDeltaTableValue(query.TimeSeriesType)}')
+                AND t1.{EnergyResultColumnNames.Time} BETWEEN '{query.StartOfPeriod.ToString()}' AND '{query.EndOfPeriod.ToString()}'
+                AND t1.{EnergyResultColumnNames.AggregationLevel} = '{AggregationLevelMapper.ToDeltaTableValue(query.TimeSeriesType, null, null)}'
+            ORDER BY t1.time
+            ";
     }
 
     public static string[] SqlColumnNames { get; } =
     {
-        EnergyResultColumnNames.BatchId,
-        EnergyResultColumnNames.GridArea,
-        EnergyResultColumnNames.FromGridArea,
-        EnergyResultColumnNames.TimeSeriesType,
-        EnergyResultColumnNames.EnergySupplierId,
-        EnergyResultColumnNames.BalanceResponsibleId,
-        EnergyResultColumnNames.Time,
-        EnergyResultColumnNames.Quantity,
-        EnergyResultColumnNames.QuantityQuality,
-        EnergyResultColumnNames.CalculationResultId,
-        EnergyResultColumnNames.BatchProcessType,
+        EnergyResultColumnNames.BatchId, EnergyResultColumnNames.GridArea, EnergyResultColumnNames.FromGridArea,
+        EnergyResultColumnNames.TimeSeriesType, EnergyResultColumnNames.EnergySupplierId,
+        EnergyResultColumnNames.BalanceResponsibleId, EnergyResultColumnNames.Time,
+        EnergyResultColumnNames.Quantity, EnergyResultColumnNames.QuantityQuality,
+        EnergyResultColumnNames.CalculationResultId, EnergyResultColumnNames.BatchProcessType,
     };
-
-    public static bool BelongsToDifferentResults(SqlResultRow row, SqlResultRow otherRow)
-    {
-        return row[EnergyResultColumnNames.CalculationResultId] != otherRow[EnergyResultColumnNames.CalculationResultId];
-    }
 
     private static TimeSeriesPoint CreateTimeSeriesPoint(SqlResultRow row)
     {
@@ -127,7 +111,8 @@ ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames
         Instant periodEnd)
     {
         var id = SqlResultValueConverters.ToGuid(sqlResultRow[EnergyResultColumnNames.CalculationResultId]);
-        var timeSeriesType = SqlResultValueConverters.ToTimeSeriesType(sqlResultRow[EnergyResultColumnNames.TimeSeriesType]);
+        var timeSeriesType =
+            SqlResultValueConverters.ToTimeSeriesType(sqlResultRow[EnergyResultColumnNames.TimeSeriesType]);
         var energySupplierId = sqlResultRow[EnergyResultColumnNames.EnergySupplierId];
         var balanceResponsibleId = sqlResultRow[EnergyResultColumnNames.BalanceResponsibleId];
         var gridArea = sqlResultRow[EnergyResultColumnNames.GridArea];

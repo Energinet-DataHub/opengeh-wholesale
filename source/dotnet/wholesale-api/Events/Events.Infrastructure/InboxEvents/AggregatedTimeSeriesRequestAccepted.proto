@@ -19,7 +19,7 @@ import "google/protobuf/timestamp.proto";
 option csharp_namespace = "Energinet.DataHub.Edi.Responses";
 
 message AggregatedTimeSeriesRequestAccepted {
-  repeated Serie series = 1;
+  Serie serie = 1;
 }
 
 message Serie {

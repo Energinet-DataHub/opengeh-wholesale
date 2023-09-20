@@ -42,7 +42,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
     [Theory]
     [InlineAutoMoqData]
     public async Task ProcessAsync_WithTotalProductionPerGridAreaRequest_SendsAcceptedEdiMessage(
-        [Frozen] Mock<ICalculationResultQueries> calculationResultQueriesMock,
+        [Frozen] Mock<IRequestCalculationResultQueries> requestCalculationResultQueriesMock,
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<AggregatedTimeSeriesRequestMessageParser> aggregatedTimeSeriesRequestMessageParseMock,
         [Frozen] Mock<AggregatedTimeSeriesMessageFactory> aggregatedTimeSeriesMessageFactoryMock,
@@ -65,13 +65,13 @@ public class AggregatedTimeSeriesRequestHandlerTests
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(request.ToByteArray()));
 
-        var calculationResults = new List<EnergyResult> { CreateEnergyResult() };
-        calculationResultQueriesMock.Setup(calculationResultQueries =>
+        var calculationResult = CreateEnergyResult();
+        requestCalculationResultQueriesMock.Setup(calculationResultQueries =>
                 calculationResultQueries.GetAsync(It.IsAny<CalculationResultQuery>()))
-            .Returns(() => calculationResults.ToAsyncEnumerable());
+            .ReturnsAsync(() => calculationResult);
 
         var sut = new AggregatedTimeSeriesRequestHandler(
-            calculationResultQueriesMock.Object,
+            requestCalculationResultQueriesMock.Object,
             senderMock.Object,
             aggregatedTimeSeriesRequestMessageParseMock.Object,
             aggregatedTimeSeriesMessageFactoryMock.Object,
