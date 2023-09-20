@@ -67,4 +67,5 @@ def execute(args: CalculatorArgs, spark: SparkSession) -> None:
             wholesale_calculation_result_writer,
             metering_point_periods_df,
             time_series_points_df,
+            args.time_zone,
         )

@@ -48,10 +48,8 @@ wholesale_results_schema = StructType(
         ),
         StructField(WholesaleResultColumnNames.time, TimestampType(), False),
         StructField(WholesaleResultColumnNames.resolution, StringType(), False),
-        StructField(
-            WholesaleResultColumnNames.metering_point_type, StringType(), False
-        ),
-        StructField(WholesaleResultColumnNames.settlement_method, StringType(), False),
+        StructField(WholesaleResultColumnNames.metering_point_type, StringType(), True),
+        StructField(WholesaleResultColumnNames.settlement_method, StringType(), True),
         StructField(WholesaleResultColumnNames.price, DecimalType(18, 6), False),
         StructField(WholesaleResultColumnNames.amount, DecimalType(18, 6), False),
         StructField(WholesaleResultColumnNames.is_tax, BooleanType(), False),
