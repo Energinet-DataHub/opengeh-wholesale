@@ -88,7 +88,7 @@ def _calculate_tariff_charges(
     hourly_tariff_per_ga_co_es = calculate_tariff_price_per_ga_co_es(tariffs_hourly)
     wholesale_calculation_result_writer.write(hourly_tariff_per_ga_co_es)
 
-    monthly_tariff_per_ga_co_es = group_by_monthly(
+    monthly_tariff_per_ga_co_es = sum_within_month(
         hourly_tariff_per_ga_co_es, time_zone
     )
     wholesale_calculation_result_writer.write(monthly_tariff_per_ga_co_es)
@@ -103,7 +103,7 @@ def _get_production_and_consumption_metering_points(
     )
 
 
-def group_by_monthly(df: DataFrame, time_zone: str) -> DataFrame:
+def sum_within_month(df: DataFrame, time_zone: str) -> DataFrame:
     df = df.withColumn(
         Colname.local_date,
         to_date(from_utc_timestamp(col(Colname.observation_time), time_zone)),

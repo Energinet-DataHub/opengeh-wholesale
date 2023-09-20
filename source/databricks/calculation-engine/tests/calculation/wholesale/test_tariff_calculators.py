@@ -31,7 +31,7 @@ from package.calculation.wholesale.tariff_calculators import (
     tariff_schema,
     calculate_tariff_price_per_ga_co_es,
 )
-from package.calculation.wholesale.wholesale_calculation import group_by_monthly
+from package.calculation.wholesale.wholesale_calculation import sum_within_month
 from package.constants import Colname
 
 
@@ -359,7 +359,7 @@ def test__group_by_monthly__on_tariff(
     tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
 
     # Act
-    actual = group_by_monthly(
+    actual = sum_within_month(
         calculate_tariff_price_per_ga_co_es(tariffs), "Europe/Copenhagen"
     )
 
