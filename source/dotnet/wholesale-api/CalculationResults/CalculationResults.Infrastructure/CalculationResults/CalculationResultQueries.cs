@@ -15,6 +15,7 @@
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
@@ -64,7 +65,7 @@ public class CalculationResultQueries : ICalculationResultQueries
 
             if (currentRow != null && BelongsToDifferentResults(currentRow, nextRow))
             {
-                yield return CreateEnergyResult(currentRow, timeSeriesPoints, periodStart, periodEnd);
+                yield return EnergyResultFactory.CreateEnergyResult(currentRow, timeSeriesPoints, periodStart, periodEnd);
                 resultCount++;
                 timeSeriesPoints = new List<TimeSeriesPoint>();
             }
@@ -75,7 +76,7 @@ public class CalculationResultQueries : ICalculationResultQueries
 
         if (currentRow != null)
         {
-            yield return CreateEnergyResult(currentRow, timeSeriesPoints, periodStart, periodEnd);
+            yield return EnergyResultFactory.CreateEnergyResult(currentRow, timeSeriesPoints, periodStart, periodEnd);
             resultCount++;
         }
 
@@ -118,34 +119,5 @@ ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames
         var quantity = SqlResultValueConverters.ToDecimal(row[EnergyResultColumnNames.Quantity])!.Value;
         var quality = SqlResultValueConverters.ToQuantityQuality(row[EnergyResultColumnNames.QuantityQuality]);
         return new TimeSeriesPoint(time, quantity, quality);
-    }
-
-    private static EnergyResult CreateEnergyResult(
-        SqlResultRow sqlResultRow,
-        List<TimeSeriesPoint> timeSeriesPoints,
-        Instant periodStart,
-        Instant periodEnd)
-    {
-        var id = SqlResultValueConverters.ToGuid(sqlResultRow[EnergyResultColumnNames.CalculationResultId]);
-        var timeSeriesType = SqlResultValueConverters.ToTimeSeriesType(sqlResultRow[EnergyResultColumnNames.TimeSeriesType]);
-        var energySupplierId = sqlResultRow[EnergyResultColumnNames.EnergySupplierId];
-        var balanceResponsibleId = sqlResultRow[EnergyResultColumnNames.BalanceResponsibleId];
-        var gridArea = sqlResultRow[EnergyResultColumnNames.GridArea];
-        var fromGridArea = sqlResultRow[EnergyResultColumnNames.FromGridArea];
-        var batchId = sqlResultRow[EnergyResultColumnNames.BatchId];
-        var processType = sqlResultRow[EnergyResultColumnNames.BatchProcessType];
-
-        return new EnergyResult(
-            id,
-            Guid.Parse(batchId),
-            gridArea,
-            timeSeriesType,
-            energySupplierId,
-            balanceResponsibleId,
-            timeSeriesPoints.ToArray(),
-            ProcessTypeMapper.FromDeltaTableValue(processType),
-            periodStart,
-            periodEnd,
-            fromGridArea);
     }
 }

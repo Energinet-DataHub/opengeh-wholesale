@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
@@ -62,7 +63,7 @@ public class RequestCalculationResultQueries : IRequestCalculationResultQueries
         _logger.LogDebug("Fetched {ResultCount} calculation results", resultCount);
         if (firstRow is null) return null;
 
-        return CreateEnergyResult(firstRow, timeSeriesPoints, query.StartOfPeriod,  query.EndOfPeriod);
+        return EnergyResultFactory.CreateEnergyResult(firstRow, timeSeriesPoints, query.StartOfPeriod,  query.EndOfPeriod);
     }
 
     private string CreateRequestSql(CalculationResultQuery query)
@@ -102,35 +103,5 @@ public class RequestCalculationResultQueries : IRequestCalculationResultQueries
         var quantity = SqlResultValueConverters.ToDecimal(row[EnergyResultColumnNames.Quantity])!.Value;
         var quality = SqlResultValueConverters.ToQuantityQuality(row[EnergyResultColumnNames.QuantityQuality]);
         return new TimeSeriesPoint(time, quantity, quality);
-    }
-
-    private static EnergyResult CreateEnergyResult(
-        SqlResultRow sqlResultRow,
-        List<TimeSeriesPoint> timeSeriesPoints,
-        Instant periodStart,
-        Instant periodEnd)
-    {
-        var id = SqlResultValueConverters.ToGuid(sqlResultRow[EnergyResultColumnNames.CalculationResultId]);
-        var timeSeriesType =
-            SqlResultValueConverters.ToTimeSeriesType(sqlResultRow[EnergyResultColumnNames.TimeSeriesType]);
-        var energySupplierId = sqlResultRow[EnergyResultColumnNames.EnergySupplierId];
-        var balanceResponsibleId = sqlResultRow[EnergyResultColumnNames.BalanceResponsibleId];
-        var gridArea = sqlResultRow[EnergyResultColumnNames.GridArea];
-        var fromGridArea = sqlResultRow[EnergyResultColumnNames.FromGridArea];
-        var batchId = sqlResultRow[EnergyResultColumnNames.BatchId];
-        var processType = sqlResultRow[EnergyResultColumnNames.BatchProcessType];
-
-        return new EnergyResult(
-            id,
-            Guid.Parse(batchId),
-            gridArea,
-            timeSeriesType,
-            energySupplierId,
-            balanceResponsibleId,
-            timeSeriesPoints.ToArray(),
-            ProcessTypeMapper.FromDeltaTableValue(processType),
-            periodStart,
-            periodEnd,
-            fromGridArea);
     }
 }
