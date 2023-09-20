@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
-using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using FluentAssertions;
@@ -23,7 +22,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SqlStatements;
 
-public class SqlStatementClientTests
+public class SqlStatementClientTests : IAsyncLifetime
 {
     private readonly DatabricksSqlStatementApiFixture _fixture;
     private readonly ILogger<DatabricksSqlStatusResponseParser> _loggerResponseParserStub;
@@ -34,6 +33,16 @@ public class SqlStatementClientTests
         _fixture = new DatabricksSqlStatementApiFixture();
         _loggerResponseParserStub = new Mock<ILogger<DatabricksSqlStatusResponseParser>>().Object;
         _loggerSqlClientStub = new Mock<ILogger<SqlStatementClient>>().Object;
+    }
+
+    public Task InitializeAsync()
+    {
+        return _fixture.DatabricksSchemaManager.CreateSchemaAsync();
+    }
+
+    public Task DisposeAsync()
+    {
+        return _fixture.DatabricksSchemaManager.DropSchemaAsync();
     }
 
     [Fact]
