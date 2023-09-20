@@ -28,11 +28,11 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.InboxEvents;
 
 public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFactory
 {
-    public ServiceBusMessage Create(IList<EnergyResult> calculationResults, string referenceId, bool isRejected)
+    public ServiceBusMessage Create(EnergyResult? calculationResult, string referenceId)
     {
-        var body = isRejected
+        var body = calculationResult is null
             ? CreateRejectedResponse()
-            : CreateAcceptedResponse(calculationResults);
+            : CreateAcceptedResponse(calculationResult);
 
         var message = new ServiceBusMessage()
         {
@@ -59,19 +59,7 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
         };
     }
 
-    private static IMessage CreateAcceptedResponse(IList<EnergyResult> energyResults)
-    {
-        var response = new AggregatedTimeSeriesRequestAccepted();
-
-        foreach (var energyResult in energyResults)
-        {
-            response.Series.Add(CreateSerie(energyResult));
-        }
-
-        return response;
-    }
-
-    private static Serie CreateSerie(EnergyResult energyResult)
+    private static AggregatedTimeSeriesRequestAccepted CreateAcceptedResponse(EnergyResult energyResult)
     {
         var points = CreateTimeSeriesPoints(energyResult);
 
@@ -82,7 +70,7 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
             Resolution = Resolution.Pt15M,
         };
 
-        return new Serie()
+        return new AggregatedTimeSeriesRequestAccepted()
         {
             GridArea = energyResult.GridArea,
             QuantityUnit = QuantityUnit.Kwh,

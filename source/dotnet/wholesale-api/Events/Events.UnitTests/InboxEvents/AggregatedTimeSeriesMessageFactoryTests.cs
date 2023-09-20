@@ -16,6 +16,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.InboxEvents;
+using FluentAssertions;
 using Google.Protobuf.WellKnownTypes;
 using Moq;
 using NodaTime;
@@ -48,22 +49,20 @@ public class AggregatedTimeSeriesMessageFactoryTests
         var sut = new AggregatedTimeSeriesMessageFactory();
 
         // Act
-        var response = sut.Create(new List<EnergyResult> { energyResult }, expectedReferenceId, isRejected: false);
+        var response = sut.Create(energyResult, expectedReferenceId);
 
         // Assert
-        Assert.NotNull(response);
-        Assert.True(response.ApplicationProperties.ContainsKey("ReferenceId"));
-        Assert.Equal(expectedReferenceId, response.ApplicationProperties["ReferenceId"].ToString());
-        Assert.Equal(expectedAcceptedSubject, response.Subject);
+        response.Should().NotBeNull();
+        response.ApplicationProperties.ContainsKey("ReferenceId").Should().BeTrue();
+        response.ApplicationProperties["ReferenceId"].ToString().Should().Be(expectedReferenceId);
+        response.Subject.Should().Be(expectedAcceptedSubject);
+
         var responseBody = AggregatedTimeSeriesRequestAccepted.Parser.ParseFrom(response.Body);
-        Assert.All(responseBody.Series, serie =>
-        {
-            Assert.Equal(_gridArea, serie.GridArea);
-            Assert.Equal(Energinet.DataHub.Edi.Responses.TimeSeriesType.Production, serie.TimeSeriesType);
-            Assert.Equal(new Timestamp() { Seconds = _periodStart.ToUnixTimeSeconds() }, serie.Period.StartOfPeriod);
-            Assert.Equal(new Timestamp() { Seconds = _periodEnd.ToUnixTimeSeconds() }, serie.Period.EndOfPeriod);
-            Assert.Equal(energyResult.TimeSeriesPoints.Length, serie.TimeSeriesPoints.Count);
-        });
+        responseBody.GridArea.Should().Be(_gridArea);
+        responseBody.TimeSeriesType.Should().Be(Energinet.DataHub.Edi.Responses.TimeSeriesType.Production);
+        responseBody.Period.StartOfPeriod.Should().Be(new Timestamp() { Seconds = _periodStart.ToUnixTimeSeconds() });
+        responseBody.Period.EndOfPeriod.Should().Be(new Timestamp() { Seconds = _periodEnd.ToUnixTimeSeconds() });
+        responseBody.TimeSeriesPoints.Count.Should().Be(energyResult.TimeSeriesPoints.Length);
     }
 
     private EnergyResult CreateEnergyResult()
