@@ -57,11 +57,11 @@ public class AggregatedTimeSeriesMessageFactoryTests
         Assert.Equal(expectedAcceptedSubject, response.Subject);
         var responseBody = AggregatedTimeSeriesRequestAccepted.Parser.ParseFrom(response.Body);
 
-        Assert.Equal(_gridArea, responseBody.Serie.GridArea);
-        Assert.Equal(Energinet.DataHub.Edi.Responses.TimeSeriesType.Production, responseBody.Serie.TimeSeriesType);
-        Assert.Equal(new Timestamp() { Seconds = _periodStart.ToUnixTimeSeconds() }, responseBody.Serie.Period.StartOfPeriod);
-        Assert.Equal(new Timestamp() { Seconds = _periodEnd.ToUnixTimeSeconds() }, responseBody.Serie.Period.EndOfPeriod);
-        Assert.Equal(energyResult.TimeSeriesPoints.Length, responseBody.Serie.TimeSeriesPoints.Count);
+        Assert.Equal(_gridArea, responseBody.GridArea);
+        Assert.Equal(Energinet.DataHub.Edi.Responses.TimeSeriesType.Production, responseBody.TimeSeriesType);
+        Assert.Equal(new Timestamp() { Seconds = _periodStart.ToUnixTimeSeconds() }, responseBody.Period.StartOfPeriod);
+        Assert.Equal(new Timestamp() { Seconds = _periodEnd.ToUnixTimeSeconds() }, responseBody.Period.EndOfPeriod);
+        Assert.Equal(energyResult.TimeSeriesPoints.Length, responseBody.TimeSeriesPoints.Count);
     }
 
     private EnergyResult CreateEnergyResult()

@@ -59,16 +59,7 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
         };
     }
 
-    private static IMessage CreateAcceptedResponse(EnergyResult energyResult)
-    {
-        var response = new AggregatedTimeSeriesRequestAccepted();
-
-        response.Serie = CreateSerie(energyResult);
-
-        return response;
-    }
-
-    private static Serie CreateSerie(EnergyResult energyResult)
+    private static AggregatedTimeSeriesRequestAccepted CreateAcceptedResponse(EnergyResult energyResult)
     {
         var points = CreateTimeSeriesPoints(energyResult);
 
@@ -79,7 +70,7 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
             Resolution = Resolution.Pt15M,
         };
 
-        return new Serie()
+        return new AggregatedTimeSeriesRequestAccepted()
         {
             GridArea = energyResult.GridArea,
             QuantityUnit = QuantityUnit.Kwh,
