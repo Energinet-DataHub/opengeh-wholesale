@@ -73,11 +73,11 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
         using var assertionScope = new AssertionScope();
         actual.Count.Should().Be(expectedResultCount);
 
-        var actualQuantityArray = actual.SelectMany(a => a.TimeSeriesPoints)
+        actual.SelectMany(a => a.TimeSeriesPoints)
             .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
-            .ToArray();
-        var orderedQuantityArray = actualQuantityArray.OrderBy(a => a).ToArray();
-        actualQuantityArray.Should().Equal(orderedQuantityArray);
+            .ToArray()
+            .Should()
+            .Equal(FirstQuantity, SecondQuantity, ThirdQuantity, FourthQuantity, FifthQuantity, FifthQuantity, SixthQuantity, SixthQuantity);
     }
 
     [Theory]
