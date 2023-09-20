@@ -1,0 +1,20 @@
+{
+  "literals": [
+    {
+      "name": "CALCULATED",
+      "value": "calculated"
+    },
+    {
+      "name": "ESTIMATED",
+      "value": "estimated"
+    },
+    {
+      "name": "MEASURED",
+      "value": "measured"
+    },
+    {
+      "name": "MISSING",
+      "value": "missing"
+    }
+  ]
+}
