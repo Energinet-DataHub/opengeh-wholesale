@@ -25,17 +25,25 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infras
 
 public class SqlStatementClientTests
 {
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task ExecuteSqlStatementAsync_WhenQueryFromDatabricks_ReturnsExpectedData(
-        Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock)
+    private readonly DatabricksSqlStatementApiFixture _fixture;
+    private readonly ILogger<DatabricksSqlStatusResponseParser> _loggerResponseParserStub;
+    private readonly ILogger<SqlStatementClient> _loggerSqlClientStub;
+
+    public SqlStatementClientTests(Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerResponseParserStub, Mock<ILogger<SqlStatementClient>> loggerSqlClientStub)
+    {
+        _fixture = new DatabricksSqlStatementApiFixture();
+        _loggerResponseParserStub = loggerResponseParserStub.Object;
+        _loggerSqlClientStub = loggerSqlClientStub.Object;
+    }
+
+    [Fact]
+    public async Task ExecuteSqlStatementAsync_WhenQueryFromDatabricks_ReturnsExpectedData()
     {
         // Arrange
-        await using var fixture = new DatabricksSqlStatementApiFixture();
-        await AddDataToEnergyResultTableAsync(fixture.DatabricksSchemaManager);
-        var sut = fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
+        await AddDataToEnergyResultTableAsync(_fixture.DatabricksSchemaManager);
+        var sut = _fixture.CreateSqlStatementClient(_loggerResponseParserStub, _loggerSqlClientStub);
 
-        var sqlStatement = $@"SELECT * FROM {fixture.DatabricksSchemaManager.SchemaName}.{fixture.DatabricksSchemaManager.EnergyResultTableName}";
+        var sqlStatement = $@"SELECT * FROM {_fixture.DatabricksSchemaManager.SchemaName}.{_fixture.DatabricksSchemaManager.EnergyResultTableName}";
 
         // Act
         var actual = await sut.ExecuteAsync(sqlStatement).ToListAsync();
@@ -44,14 +52,12 @@ public class SqlStatementClientTests
         actual.Count.Should().Be(2);
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task ExecuteAsync_WhenMultipleChunks_ReturnsAllRows(Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock)
+    [Fact]
+    public async Task ExecuteAsync_WhenMultipleChunks_ReturnsAllRows()
     {
         // Arrange
-        await using var fixture = new DatabricksSqlStatementApiFixture();
         const int expectedRowCount = 100;
-        var sut = fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
+        var sut = _fixture.CreateSqlStatementClient(_loggerResponseParserStub, _loggerSqlClientStub);
 
         // Arrange: The result of this query spans multiple chunks
         var sqlStatement = $@"select r.id, 'some value' as value from range({expectedRowCount}) as r";
@@ -63,7 +69,7 @@ public class SqlStatementClientTests
         actual.Should().Be(expectedRowCount);
     }
 
-    private async Task AddDataToEnergyResultTableAsync(DatabricksSchemaManager databricksSchemaManager)
+    private static async Task AddDataToEnergyResultTableAsync(DatabricksSchemaManager databricksSchemaManager)
     {
         var values = GetSomeEnergyResultDeltaTableRow();
         var deltaTableOptions = databricksSchemaManager.DeltaTableOptions;

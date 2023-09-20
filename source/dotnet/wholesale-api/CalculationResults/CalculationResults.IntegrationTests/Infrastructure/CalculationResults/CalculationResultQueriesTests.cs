@@ -32,7 +32,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.CalculationResults;
 
-public class CalculationResultQueriesTests
+public class CalculationResultQueriesTests : IAsyncLifetime
 {
     private const string BatchId = "019703e7-98ee-45c1-b343-0cbf185a47d9";
     private const string FirstQuantity = "1.111";
@@ -41,24 +41,41 @@ public class CalculationResultQueriesTests
     private const string FourthQuantity = "4.444";
     private const string FifthQuantity = "5.555";
     private const string SixthQuantity = "6.666";
+    private readonly DatabricksSqlStatementApiFixture _fixture;
+    private readonly ILogger<DatabricksSqlStatusResponseParser> _loggerResponseParserStub;
+    private readonly ILogger<SqlStatementClient> _loggerSqlClientStub;
+    private readonly ILogger<CalculationResultQueries> _loggerCalculationResultQueriesStub;
+
+    public CalculationResultQueriesTests(Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerResponseParserStub, Mock<ILogger<SqlStatementClient>> loggerSqlClientStub, Mock<ILogger<CalculationResultQueries>> loggerCalculationResultQueriesStub)
+    {
+        _fixture = new DatabricksSqlStatementApiFixture();
+        _loggerResponseParserStub = loggerResponseParserStub.Object;
+        _loggerSqlClientStub = loggerSqlClientStub.Object;
+        _loggerCalculationResultQueriesStub = loggerCalculationResultQueriesStub.Object;
+    }
+
+    public Task InitializeAsync()
+    {
+        return _fixture.DatabricksSchemaManager.CreateSchemaAsync();
+    }
+
+    public Task DisposeAsync()
+    {
+        return _fixture.DatabricksSchemaManager.DropSchemaAsync();
+    }
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_ReturnsExpectedCalculationResult(
-        Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
-        Mock<IBatchesClient> batchesClientMock,
-        BatchDto batch,
-        Mock<ILogger<CalculationResultQueries>> calculationResultQueriesLoggerMock)
+    public async Task GetAsync_ReturnsExpectedCalculationResult(Mock<IBatchesClient> batchesClientMock, BatchDto batch)
     {
         // Arrange
-        await using var fixture = new DatabricksSqlStatementApiFixture();
         const int expectedResultCount = 3;
-        var deltaTableOptions = fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions, fixture.DatabricksSchemaManager);
+        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
+        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
         batch = batch with { BatchId = Guid.Parse(BatchId) };
-        var sqlStatementClient = fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
+        var sqlStatementClient = _fixture.CreateSqlStatementClient(_loggerResponseParserStub, _loggerSqlClientStub);
         batchesClientMock.Setup(b => b.GetAsync(It.IsAny<Guid>())).ReturnsAsync(batch);
-        var sut = new CalculationResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions, calculationResultQueriesLoggerMock.Object);
+        var sut = new CalculationResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions, _loggerCalculationResultQueriesStub);
 
         // Act
         var actual = await sut.GetAsync(batch.BatchId).ToListAsync();
@@ -75,26 +92,22 @@ public class CalculationResultQueriesTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_RequestFromGridOperatorTotalProduction_ReturnsResult(
-        Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
-        Mock<IBatchesClient> batchesClientMock,
-        Mock<ILogger<CalculationResultQueries>> calculationResultQueriesLoggerMock)
+    public async Task GetAsync_RequestFromGridOperatorTotalProduction_ReturnsResult(Mock<IBatchesClient> batchesClientMock)
     {
         // Arrange
-        await using var fixture = new DatabricksSqlStatementApiFixture();
         const string gridAreaFilter = "101";
         const TimeSeriesType timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        var deltaTableOptions = fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions, fixture.DatabricksSchemaManager);
-        var sqlStatementClient = fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
+        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
+        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
+        var sqlStatementClient = _fixture.CreateSqlStatementClient(_loggerResponseParserStub, _loggerSqlClientStub);
         var request = CreateRequest(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
-        var sut = new CalculationResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions, calculationResultQueriesLoggerMock.Object);
+        var sut = new CalculationResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions, _loggerCalculationResultQueriesStub);
 
         // Act
         var actual = await sut.GetAsync(request).ToListAsync();
@@ -117,21 +130,17 @@ public class CalculationResultQueriesTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_RequestFromGridOperatorTotalProductionInWrongPeriod_ReturnsNoResults(
-        Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
-        Mock<IBatchesClient> batchesClientMock,
-        Mock<ILogger<CalculationResultQueries>> calculationResultQueriesLoggerMock)
+    public async Task GetAsync_RequestFromGridOperatorTotalProductionInWrongPeriod_ReturnsNoResults(Mock<IBatchesClient> batchesClientMock)
     {
         // Arrange
-        await using var fixture = new DatabricksSqlStatementApiFixture();
-        var deltaTableOptions = fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions, fixture.DatabricksSchemaManager);
-        var sqlStatementClient = fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
+        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
+        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
+        var sqlStatementClient = _fixture.CreateSqlStatementClient(_loggerResponseParserStub, _loggerSqlClientStub);
 
         var request = CreateRequest(
             startOfPeriod: Instant.FromUtc(2020, 1, 1, 1, 1),
             endOfPeriod: Instant.FromUtc(2021, 1, 2, 1, 1));
-        var sut = new CalculationResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions, calculationResultQueriesLoggerMock.Object);
+        var sut = new CalculationResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions, _loggerCalculationResultQueriesStub);
 
         // Act
         var actual = await sut.GetAsync(request).ToListAsync();
@@ -140,7 +149,7 @@ public class CalculationResultQueriesTests
         actual.Should().BeEmpty();
     }
 
-    private CalculationResultQuery CreateRequest(
+    private static CalculationResultQuery CreateRequest(
         TimeSeriesType? timeSeriesType = null,
         Instant? startOfPeriod = null,
         Instant? endOfPeriod = null,
@@ -153,7 +162,7 @@ public class CalculationResultQueriesTests
             GridArea: gridArea);
     }
 
-    private static async Task AddCreatedRowsInArbitraryOrderAsync(IOptions<DeltaTableOptions> options, DatabricksSchemaManager databricksSchemaManager)
+    private async Task AddCreatedRowsInArbitraryOrderAsync(IOptions<DeltaTableOptions> options)
     {
         const string firstCalculationResultId = "aaaaaaaa-386f-49eb-8b56-63fae62e4fc7";
         const string secondCalculationResultId = "bbbbbbbb-b58b-4190-a873-eded0ed50c20";
@@ -178,6 +187,6 @@ public class CalculationResultQueriesTests
 
         // mix up the order of the rows
         var rows = new List<IEnumerable<string>> { row3, row5, row1, row2, row6, row4, row7, row8 };
-        await databricksSchemaManager.InsertAsync<EnergyResultColumnNames>(options.Value.ENERGY_RESULTS_TABLE_NAME, rows);
+        await _fixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(options.Value.ENERGY_RESULTS_TABLE_NAME, rows);
     }
 }
