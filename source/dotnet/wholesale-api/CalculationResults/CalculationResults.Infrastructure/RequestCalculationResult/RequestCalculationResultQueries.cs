@@ -15,7 +15,6 @@
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
@@ -23,7 +22,6 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.RequestCalculationResult;
 
@@ -54,7 +52,7 @@ public class RequestCalculationResultQueries : IRequestCalculationResultQueries
             if (firstRow is null)
                 firstRow = currentRow;
 
-            var timeSeriesPoint = CreateTimeSeriesPoint(currentRow);
+            var timeSeriesPoint = TimeSeriesPointFactory.CreateTimeSeriesPoint(currentRow);
 
             timeSeriesPoints.Add(timeSeriesPoint);
             resultCount++;
@@ -88,7 +86,7 @@ public class RequestCalculationResultQueries : IRequestCalculationResultQueries
             ";
     }
 
-    public static string[] SqlColumnNames { get; } =
+    private static string[] SqlColumnNames { get; } =
     {
         EnergyResultColumnNames.BatchId, EnergyResultColumnNames.GridArea, EnergyResultColumnNames.FromGridArea,
         EnergyResultColumnNames.TimeSeriesType, EnergyResultColumnNames.EnergySupplierId,
@@ -96,12 +94,4 @@ public class RequestCalculationResultQueries : IRequestCalculationResultQueries
         EnergyResultColumnNames.Quantity, EnergyResultColumnNames.QuantityQuality,
         EnergyResultColumnNames.CalculationResultId, EnergyResultColumnNames.BatchProcessType,
     };
-
-    private static TimeSeriesPoint CreateTimeSeriesPoint(SqlResultRow row)
-    {
-        var time = SqlResultValueConverters.ToDateTimeOffset(row[EnergyResultColumnNames.Time])!.Value;
-        var quantity = SqlResultValueConverters.ToDecimal(row[EnergyResultColumnNames.Quantity])!.Value;
-        var quality = SqlResultValueConverters.ToQuantityQuality(row[EnergyResultColumnNames.QuantityQuality]);
-        return new TimeSeriesPoint(time, quantity, quality);
-    }
 }
