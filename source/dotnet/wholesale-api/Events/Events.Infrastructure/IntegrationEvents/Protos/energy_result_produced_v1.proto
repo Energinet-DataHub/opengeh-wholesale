@@ -67,7 +67,7 @@ message EnergyResultProducedV1 {
    * The exchange goes into the grid area specified in the aggregation.
    * Only applies to results with exchange time series types.
    */
-  optional google.protobuf.StringValue from_grid_area_code = 16;
+   google.protobuf.StringValue from_grid_area_code = 16;
 
   repeated EnergyTimeSeriesPoint time_series_points = 20;
 }

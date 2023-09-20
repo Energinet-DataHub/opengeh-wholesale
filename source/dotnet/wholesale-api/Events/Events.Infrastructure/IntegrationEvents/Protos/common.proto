@@ -103,13 +103,13 @@ message EnergyTimeSeriesPoint {
     optional DecimalValue quantity = 2;
 
     // The aggregated quality currently represents a value suitable for creation of RSM-014 CIM XML messages.
-    QuantityQuality quantity_quality = 3;
+    EnergyQuantityQuality quantity_quality = 3;
 }
 
 /*
  * The quality of the energy quantity.
  */
-enum QuantityQuality {
+enum EnergyQuantityQuality {
     /*
      * Unspecified is unused but according to best practice.
      * Read more at https://protobuf.dev/programming-guides/style/#enums.
