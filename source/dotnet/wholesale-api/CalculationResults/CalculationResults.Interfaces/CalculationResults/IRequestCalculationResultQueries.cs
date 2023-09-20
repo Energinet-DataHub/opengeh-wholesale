@@ -16,10 +16,10 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 
-public interface ICalculationResultQueries
+public interface IRequestCalculationResultQueries
 {
     /// <summary>
-    /// Get all results for a given batch.
+    /// Gets all result for a given request.
     /// </summary>
-    IAsyncEnumerable<EnergyResult> GetAsync(Guid batchId);
+    Task<EnergyResult?> GetAsync(CalculationResultQuery query);
 }
