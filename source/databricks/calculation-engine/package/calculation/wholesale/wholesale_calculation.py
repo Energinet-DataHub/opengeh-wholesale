@@ -25,6 +25,8 @@ from pyspark.sql.functions import (
     collect_set,
     flatten,
     min,
+    to_date,
+    from_utc_timestamp,
 )
 import package.calculation.wholesale.wholesale_initializer as init
 from package.calculation.wholesale.tariff_calculators import (
@@ -36,6 +38,7 @@ from package.calculation_input import CalculationInputReader
 from package.calculation_output.wholesale_calculation_result_writer import (
     WholesaleCalculationResultWriter,
 )
+import pytz
 
 
 def execute(
@@ -43,6 +46,7 @@ def execute(
     wholesale_calculation_result_writer: WholesaleCalculationResultWriter,
     metering_points_periods_df: DataFrame,  # TODO: use enriched_time_series
     time_series_point_df: DataFrame,  # TODO: use enriched_time_series
+    time_zone: str,
 ) -> None:
     # Get input data
     metering_points_periods_df = _get_production_and_consumption_metering_points(
@@ -70,6 +74,7 @@ def _calculate_tariff_charges(
     charge_master_data: DataFrame,
     charge_links: DataFrame,
     charge_prices: DataFrame,
+    time_zone: str,
 ) -> None:
     tariffs_hourly = init.get_tariff_charges(
         metering_points_periods_df,
@@ -83,7 +88,9 @@ def _calculate_tariff_charges(
     hourly_tariff_per_ga_co_es = calculate_tariff_price_per_ga_co_es(tariffs_hourly)
     (wholesale_calculation_result_writer.write(hourly_tariff_per_ga_co_es))
 
-    monthly_tariff_per_ga_co_es = group_by_monthly(hourly_tariff_per_ga_co_es)
+    monthly_tariff_per_ga_co_es = group_by_monthly(
+        hourly_tariff_per_ga_co_es, time_zone
+    )
     wholesale_calculation_result_writer.write(monthly_tariff_per_ga_co_es)
 
 
@@ -96,9 +103,13 @@ def _get_production_and_consumption_metering_points(
     )
 
 
-def group_by_monthly(df: DataFrame) -> DataFrame:
-    df = df.withColumn("year", year(df["observation_time"]))
-    df = df.withColumn("month", month(df["observation_time"]))
+def group_by_monthly(df: DataFrame, time_zone: str) -> DataFrame:
+    df = df.withColumn(
+        Colname.local_date,
+        to_date(from_utc_timestamp(col(Colname.observation_time), time_zone)),
+    )
+    df = df.withColumn("year", year(df[Colname.local_date]))
+    df = df.withColumn("month", month(df[Colname.local_date]))
     agg_df = (
         df.groupBy(
             Colname.energy_supplier_id,
@@ -114,7 +125,6 @@ def group_by_monthly(df: DataFrame) -> DataFrame:
             sum(Colname.total_amount).alias(Colname.total_amount),
             sum(Colname.total_quantity).alias(Colname.total_quantity),
             sum(Colname.charge_price).alias(Colname.charge_price),
-            count(Colname.charge_count).alias(Colname.charge_count),
             first(Colname.charge_tax).alias(Colname.charge_tax),
             lit(ChargeResolution.MONTH.value).alias(Colname.charge_resolution),
             first(Colname.unit).alias(Colname.unit),

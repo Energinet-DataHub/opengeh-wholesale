@@ -348,17 +348,20 @@ def test__group_by_monthly__on_tariff(
         _create_tariff_hour_row(
             charge_time=datetime(2020, 1, 1, 0), quality=ChargeQuality.ESTIMATED
         ),
-        _create_tariff_hour_row(charge_time=datetime(2020, 1, 1, 2)),
+        _create_tariff_hour_row(charge_time=datetime(2019, 12, 31, 23)),
         _create_tariff_hour_row(
             charge_time=datetime(2020, 1, 1, 2),
             metering_point_type=MeteringPointType.PRODUCTION,
         ),
         _create_tariff_hour_row(charge_time=datetime(2020, 2, 1, 0)),
+        _create_tariff_hour_row(charge_time=datetime(2019, 12, 31, 22)),
     ]
     tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
 
     # Act
-    actual = group_by_monthly(calculate_tariff_price_per_ga_co_es(tariffs))
+    actual = group_by_monthly(
+        calculate_tariff_price_per_ga_co_es(tariffs), "Europe/Copenhagen"
+    )
     actual.show()
     actual.printSchema()
 
@@ -366,5 +369,5 @@ def test__group_by_monthly__on_tariff(
     assert actual.collect()[0][Colname.total_amount] == Decimal("8.040020")
     assert actual.collect()[1][Colname.total_amount] == Decimal("2.010005")
     assert actual.collect()[0][Colname.qualities] == ["calculated", "estimated"]
-    assert actual.collect()[0][Colname.charge_time] == datetime(2020, 1, 1, 0)
-    assert actual.count() == 2
+    assert actual.collect()[0][Colname.charge_time] == datetime(2019, 12, 31, 23)
+    assert actual.count() == 3
