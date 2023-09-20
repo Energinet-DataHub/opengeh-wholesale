@@ -90,6 +90,12 @@ public class DatabricksSchemaManager
         await ExecuteSqlAsync(sqlStatement);
     }
 
+    public async Task EmptyAsync(string tableName)
+    {
+        var sqlStatement = $@"DELETE FROM {SchemaName}.{tableName}";
+        await ExecuteSqlAsync(sqlStatement);
+    }
+
     private async Task ExecuteSqlScriptsAsync()
     {
         var sqlScripts = Directory.EnumerateFiles("./migration_sql_scripts", "*.sql");

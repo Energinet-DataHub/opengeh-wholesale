@@ -76,7 +76,7 @@ public class CalculationResultQueriesTests
             .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
             .ToArray()
             .Should()
-            .Equal(FirstQuantity, SecondQuantity, ThirdQuantity, FourthQuantity, FifthQuantity, SixthQuantity);
+            .Equal(FirstQuantity, SecondQuantity, ThirdQuantity, FourthQuantity, FifthQuantity, FifthQuantity, SixthQuantity, SixthQuantity);
     }
 
     [Theory]
@@ -106,11 +106,18 @@ public class CalculationResultQueriesTests
 
         // Assert
         actual.Should().NotBeEmpty();
+        actual.Count.Should().Be(1);
         actual.Should().OnlyContain(
             result => result.GridArea.Equals(gridAreaFilter)
               && result.PeriodStart == startOfPeriodFilter
               && result.PeriodEnd == endOfPeriodFilter
               && result.TimeSeriesType.Equals(timeSeriesTypeFilter));
+        actual.Select(x => x.TimeSeriesPoints).Count().Should().Be(1);
+        actual.SelectMany(a => a.TimeSeriesPoints)
+            .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
+            .ToArray()
+            .Should()
+            .Equal(FifthQuantity, SixthQuantity);
     }
 
     [Theory]
@@ -170,9 +177,12 @@ public class CalculationResultQueriesTests
         var row5 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, time: firstHour, gridArea: gridAreaC, quantity: FifthQuantity);
         var row6 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, time: secondHour, gridArea: gridAreaC, quantity: SixthQuantity);
 
-        // mix up the order of the rows
-        var rows = new List<IEnumerable<string>> { row3, row5, row1, row2, row6, row4, };
+        var row7 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, time: firstHour, gridArea: gridAreaB, quantity: FifthQuantity, batchExecutionTimeStart: "2022-03-12T03:00:00.000Z");
+        var row8 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, time: secondHour, gridArea: gridAreaB, quantity: SixthQuantity, batchExecutionTimeStart: "2022-03-12T03:00:00.000Z");
 
+        // mix up the order of the rows
+        var rows = new List<IEnumerable<string>> { row3, row5, row1, row2, row6, row4, row7, row8 };
+        await _fixture.DatabricksSchemaManager.EmptyAsync(options.Value.ENERGY_RESULTS_TABLE_NAME);
         await _fixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(options.Value.ENERGY_RESULTS_TABLE_NAME, rows);
     }
 }
