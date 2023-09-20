@@ -19,4 +19,16 @@ public class DataLakeOptions
     public string STORAGE_ACCOUNT_URI { get; set; } = string.Empty;
 
     public string STORAGE_CONTAINER_NAME { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Defines the hour of the day when the health check DataLake should start.
+    /// The default value is 6:00 AM.
+    /// </summary>
+    public TimeOnly DATALAKE_HEALTH_CHECK_START { get; set; } = new(6, 0);
+
+    /// <summary>
+    /// Defines the hour of the day when the health check towards DataLake should end.
+    /// The default value is 8:00 PM.
+    /// </summary>
+    public TimeOnly DATALAKE_HEALTH_CHECK_END { get; set; } = new(20, 0);
 }
