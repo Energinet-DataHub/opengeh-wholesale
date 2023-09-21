@@ -494,7 +494,7 @@ def test__sum_within_month__sums_quantity_per_month(
     assert actual.count() == 1
 
 
-def test__sum_within_month__creates_sum_charge_price(
+def test__sum_within_month__sums_charge_price_per_month(
     spark: SparkSession,
 ) -> None:
     # Arrange
