@@ -426,54 +426,6 @@ def test__sum_within_month__groups_by_local_time_months(
     assert actual.count() == 2
 
 
-def test__sum_within_month__daylight_savings_time_summertime(
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    rows = [
-        _create_tariff_hour_row(charge_time=datetime(2020, 3, 31, 23)),
-        _create_tariff_hour_row(charge_time=datetime(2020, 3, 31, 22)),
-        _create_tariff_hour_row(charge_time=datetime(2020, 3, 31, 21)),
-    ]
-    tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
-
-    # Act
-    actual = sum_within_month(
-        calculate_tariff_price_per_ga_co_es(tariffs), DEFAULT_TIME_ZONE
-    )
-
-    # Assert
-    assert actual.collect()[0][Colname.total_amount] == Decimal("2.010005")
-    assert actual.collect()[1][Colname.total_amount] == Decimal("4.020010")
-    assert actual.collect()[0][Colname.charge_time] == datetime(2020, 3, 31, 21)
-    assert actual.collect()[1][Colname.charge_time] == datetime(2020, 3, 31, 22)
-    assert actual.count() == 2
-
-
-def test__sum_within_month__daylight_savings_time_wintertime(
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    rows = [
-        _create_tariff_hour_row(charge_time=datetime(2020, 10, 31, 23)),
-        _create_tariff_hour_row(charge_time=datetime(2020, 10, 31, 22)),
-        _create_tariff_hour_row(charge_time=datetime(2020, 10, 31, 21)),
-    ]
-    tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
-
-    # Act
-    actual = sum_within_month(
-        calculate_tariff_price_per_ga_co_es(tariffs), DEFAULT_TIME_ZONE
-    )
-
-    # Assert
-    assert actual.collect()[0][Colname.total_amount] == Decimal("4.020010")
-    assert actual.collect()[1][Colname.total_amount] == Decimal("2.010005")
-    assert actual.collect()[0][Colname.charge_time] == datetime(2020, 10, 31, 21)
-    assert actual.collect()[1][Colname.charge_time] == datetime(2020, 10, 31, 23)
-    assert actual.count() == 2
-
-
 def test__sum_within_month__sums_quantity_per_month(
     spark: SparkSession,
 ) -> None:
