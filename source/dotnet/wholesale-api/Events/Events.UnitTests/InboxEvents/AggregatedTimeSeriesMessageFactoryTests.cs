@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.InboxEvents;
