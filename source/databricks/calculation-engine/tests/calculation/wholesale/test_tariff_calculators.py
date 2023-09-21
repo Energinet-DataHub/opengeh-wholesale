@@ -363,7 +363,7 @@ def test__sum_within_month__groups_to_month(
     assert actual.count() == 2
 
 
-def test__sum_within_month__group_by_does_not_care_about_metering_point_type(
+def test__sum_within_month__sums_across_metering_point_types(
     spark: SparkSession,
 ) -> None:
     # Arrange
