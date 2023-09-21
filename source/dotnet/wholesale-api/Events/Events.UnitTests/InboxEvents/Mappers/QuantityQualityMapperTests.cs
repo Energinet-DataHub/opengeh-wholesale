@@ -34,4 +34,23 @@ public class QuantityQualityMapperTests
         // Act & Assert
         QuantityQualityMapper.MapQuantityQuality(quantityQuality).Should().Be(expected);
     }
+
+    [Theory]
+    [MemberData(nameof(QuantityQualitys))]
+    public void MapQuantityQuality_WhenCalled_HandlesExpectedType(QuantityQuality quantityQuality)
+    {
+        // Act
+        var actual = () => QuantityQualityMapper.MapQuantityQuality(quantityQuality);
+
+        // Assert
+        actual.Should().NotThrow();
+    }
+
+    public static IEnumerable<object[]> QuantityQualitys()
+    {
+        foreach (var quantityQuality in Enum.GetValues(typeof(QuantityQuality)))
+        {
+            yield return new[] { quantityQuality };
+        }
+    }
 }

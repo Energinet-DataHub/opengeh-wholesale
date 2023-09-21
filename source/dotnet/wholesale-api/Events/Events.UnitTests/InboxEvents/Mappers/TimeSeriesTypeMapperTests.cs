@@ -30,7 +30,6 @@ public class TimeSeriesTypeMapperTests
     [InlineData(TimeSeriesType.NetExchangePerGa, Edi.Responses.TimeSeriesType.NetExchangePerGa)]
     public void MapTimeSeriesType_WhenCalled_MapsCorrectly(TimeSeriesType timeSeriesType, Edi.Responses.TimeSeriesType expected)
     {
-        var timeSerieTypes = Enum.GetValues<TimeSeriesType>().ToList();
         // Act & Assert
         TimeSeriesTypeMapper.MapTimeSeriesType(timeSeriesType).Should().Be(expected);
     }
@@ -47,11 +46,6 @@ public class TimeSeriesTypeMapperTests
         {
             actual.Should()
                 .Throw<NotSupportedTimeSeriesTypeException>();
-        }
-        else if (timeSeriesType is TimeSeriesType.Unspecified)
-        {
-            actual.Should()
-                .Throw<ArgumentOutOfRangeException>();
         }
         else
         {
@@ -75,6 +69,5 @@ public class TimeSeriesTypeMapperTests
             or TimeSeriesType.PositiveGridLoss
             or TimeSeriesType.TempFlexConsumption
             or TimeSeriesType.NetExchangePerNeighboringGa;
-
     }
 }

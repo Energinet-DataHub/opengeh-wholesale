@@ -29,8 +29,19 @@ public static class TimeSeriesTypeMapper
             TimeSeriesType.TotalConsumption => TimeSeriesTypeContract.TotalConsumption,
             TimeSeriesType.FlexConsumption => TimeSeriesTypeContract.FlexConsumption,
             TimeSeriesType.NetExchangePerGa => TimeSeriesTypeContract.NetExchangePerGa,
-            TimeSeriesType.NetExchangePerNeighboringGa => NotSupportedTimeSeriesTypeException($""),
-            _ => throw new NotSupportedTimeSeriesTypeException($"Unknown time series type {nameof(timeSeriesType)}"),
+            TimeSeriesType.GridLoss => throw new NotSupportedTimeSeriesTypeException(
+                $"{timeSeriesType} is not a supported TimeSeriesType For AggregatedTimeSeriesRequestAccepted response."),
+            TimeSeriesType.TempProduction => throw new NotSupportedTimeSeriesTypeException(
+                $"{timeSeriesType} is not a supported TimeSeriesType For AggregatedTimeSeriesRequestAccepted response."),
+            TimeSeriesType.NegativeGridLoss => throw new NotSupportedTimeSeriesTypeException(
+                $"{timeSeriesType} is not a supported TimeSeriesType For AggregatedTimeSeriesRequestAccepted response."),
+            TimeSeriesType.PositiveGridLoss => throw new NotSupportedTimeSeriesTypeException(
+                $"{timeSeriesType} is not a supported TimeSeriesType For AggregatedTimeSeriesRequestAccepted response."),
+            TimeSeriesType.TempFlexConsumption => throw new NotSupportedTimeSeriesTypeException(
+                $"{timeSeriesType} is not a supported TimeSeriesType For AggregatedTimeSeriesRequestAccepted response."),
+            TimeSeriesType.NetExchangePerNeighboringGa => throw new NotSupportedTimeSeriesTypeException(
+                $"{timeSeriesType} is not a supported TimeSeriesType For AggregatedTimeSeriesRequestAccepted response."),
+            _ => throw new ArgumentOutOfRangeException($"Unknown time series type {nameof(timeSeriesType)}"),
         };
     }
 }
