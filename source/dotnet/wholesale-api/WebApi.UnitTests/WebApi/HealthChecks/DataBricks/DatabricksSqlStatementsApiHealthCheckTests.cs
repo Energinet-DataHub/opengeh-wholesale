@@ -33,7 +33,7 @@ public class DatabricksSqlStatementsApiHealthCheckTests
     [InlineAutoMoqData(6, 20, 14, HealthStatus.Healthy, HttpStatusCode.OK)] // Healthy because inside interval and check was successful
     [InlineAutoMoqData(15, 20, 14, HealthStatus.Healthy, HttpStatusCode.OK)] // Healthy because outside interval (hours 15-20)
     [InlineAutoMoqData(14, 14, 14, HealthStatus.Healthy, HttpStatusCode.OK)] // Healthy because just inside interval and check was successful
-    [InlineAutoMoqData(6, 20, 14, HealthStatus.Unhealthy, HttpStatusCode.BadRequest)] // Unhealthy because inside interval nut check was unsuccessful
+    [InlineAutoMoqData(6, 20, 14, HealthStatus.Unhealthy, HttpStatusCode.BadRequest)] // Inside interval but unhealthy because check was unsuccessful
     public async Task Databricks_Interval_HealthCheck_When_Calling_Dependency_Returns_HealthStatus(
         int startHour,
         int endHour,
