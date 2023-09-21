@@ -66,7 +66,7 @@ public class RequestCalculationResultQueries : IRequestCalculationResultQueries
 
     private string CreateRequestSql(CalculationResultQuery query)
     {
-        return $@"
+        var sql = $@"
             SELECT {string.Join(", ", SqlColumnNames.Select(columenName => $"t1.{columenName}"))}
             FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} t1
             LEFT JOIN {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} t2
@@ -81,9 +81,20 @@ public class RequestCalculationResultQueries : IRequestCalculationResultQueries
                 AND t1.{EnergyResultColumnNames.GridArea} IN ({query.GridArea})
                 AND t1.{EnergyResultColumnNames.TimeSeriesType} IN ('{TimeSeriesTypeMapper.ToDeltaTableValue(query.TimeSeriesType)}')
                 AND t1.{EnergyResultColumnNames.Time} BETWEEN '{query.StartOfPeriod.ToString()}' AND '{query.EndOfPeriod.ToString()}'
-                AND t1.{EnergyResultColumnNames.AggregationLevel} = '{AggregationLevelMapper.ToDeltaTableValue(query.TimeSeriesType, null, null)}'
-            ORDER BY t1.time
+                AND t1.{EnergyResultColumnNames.AggregationLevel} = '{AggregationLevelMapper.ToDeltaTableValue(query.TimeSeriesType, query.EnergySupplierId, query.BalanceResponsibleId)}'
             ";
+        if (query.EnergySupplierId != null)
+        {
+            sql += $@"AND t1.{EnergyResultColumnNames.EnergySupplierId} = '{query.EnergySupplierId}'";
+        }
+
+        if (query.BalanceResponsibleId != null)
+        {
+            sql += $@"AND t1.{EnergyResultColumnNames.BalanceResponsibleId} = '{query.BalanceResponsibleId}'";
+        }
+
+        sql += $@"ORDER BY t1.time";
+        return sql;
     }
 
     private static string[] SqlColumnNames { get; } =

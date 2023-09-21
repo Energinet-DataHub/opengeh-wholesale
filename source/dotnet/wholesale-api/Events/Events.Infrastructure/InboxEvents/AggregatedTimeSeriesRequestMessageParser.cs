@@ -24,10 +24,6 @@ public class AggregatedTimeSeriesRequestMessageParser : IAggregatedTimeSeriesReq
     {
         var aggregatedTimeSeriesRequest = Edi.Requests.AggregatedTimeSeriesRequest.Parser.ParseFrom(request.Body);
 
-        if (aggregatedTimeSeriesRequest.AggregationLevelCase ==
-            Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.None)
-            throw new InvalidOperationException("Unknown aggregation level");
-
         return MapAggregatedTimeSeriesRequest(aggregatedTimeSeriesRequest);
     }
 
@@ -36,17 +32,30 @@ public class AggregatedTimeSeriesRequestMessageParser : IAggregatedTimeSeriesReq
         return new AggregatedTimeSeriesRequest(
             MapPeriod(aggregatedTimeSeriesRequest.Period),
             MapTimeSeriesType(aggregatedTimeSeriesRequest.TimeSeriesType),
-            MapAggregationPerGridArea(aggregatedTimeSeriesRequest));
+            MapAggregationPerRoleAndGridArea(aggregatedTimeSeriesRequest));
     }
 
-    private AggregationPerGridArea? MapAggregationPerGridArea(Edi.Requests.AggregatedTimeSeriesRequest aggregatedTimeSeriesRequest)
+    private AggregationPerRoleAndGridArea MapAggregationPerRoleAndGridArea(Edi.Requests.AggregatedTimeSeriesRequest aggregatedTimeSeriesRequest)
     {
-        if (aggregatedTimeSeriesRequest.AggregationLevelCase != Edi.Requests.AggregatedTimeSeriesRequest
-                .AggregationLevelOneofCase.AggregationPerGridarea) return null;
-
-        return new AggregationPerGridArea(
-            aggregatedTimeSeriesRequest.AggregationPerGridarea.GridAreaCode,
-            aggregatedTimeSeriesRequest.AggregationPerGridarea.GridResponsibleId);
+        return aggregatedTimeSeriesRequest.AggregationLevelCase switch
+        {
+            Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerGridarea =>
+                new AggregationPerRoleAndGridArea(GridAreaCode: aggregatedTimeSeriesRequest.AggregationPerGridarea.GridAreaCode),
+            Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerEnergysupplierPerGridarea =>
+                new AggregationPerRoleAndGridArea(
+                    GridAreaCode: aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerGridarea.GridAreaCode,
+                    EnergySupplierId: aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerGridarea.EnergySupplierId),
+            Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerBalanceresponsiblepartyPerGridarea =>
+                new AggregationPerRoleAndGridArea(
+                    GridAreaCode: aggregatedTimeSeriesRequest.AggregationPerBalanceresponsiblepartyPerGridarea.GridAreaCode,
+                    BalanceResponsibleId: aggregatedTimeSeriesRequest.AggregationPerBalanceresponsiblepartyPerGridarea.BalanceResponsiblePartyId),
+            Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea =>
+                new AggregationPerRoleAndGridArea(
+                    GridAreaCode: aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.GridAreaCode,
+                    EnergySupplierId: aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.EnergySupplierId,
+                    BalanceResponsibleId: aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.BalanceResponsiblePartyId),
+            _ => throw new InvalidOperationException("Unknown aggregation level"),
+        };
     }
 
     private TimeSeriesType MapTimeSeriesType(Edi.Requests.TimeSeriesType timeSeriesType)
