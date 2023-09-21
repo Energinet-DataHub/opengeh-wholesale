@@ -14,20 +14,7 @@
 
 
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import (
-    col,
-    year,
-    month,
-    count,
-    first,
-    sum,
-    lit,
-    collect_set,
-    flatten,
-    min,
-    to_date,
-    from_utc_timestamp,
-)
+import pyspark.sql.functions as F
 import package.calculation.wholesale.wholesale_initializer as init
 from package.calculation.wholesale.tariff_calculators import (
     calculate_tariff_price_per_ga_co_es,
@@ -38,6 +25,8 @@ from package.calculation_input import CalculationInputReader
 from package.calculation_output.wholesale_calculation_result_writer import (
     WholesaleCalculationResultWriter,
 )
+from datetime import datetime
+from pytz import timezone
 
 
 def execute(
@@ -98,18 +87,27 @@ def _get_production_and_consumption_metering_points(
     metering_points_periods_df: DataFrame,
 ) -> DataFrame:
     return metering_points_periods_df.filter(
-        (col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value)
-        | (col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value)
+        (F.col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value)
+        | (F.col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value)
     )
 
 
 def sum_within_month(df: DataFrame, time_zone: str) -> DataFrame:
     df = df.withColumn(
         Colname.local_date,
-        to_date(from_utc_timestamp(col(Colname.observation_time), time_zone)),
+        F.to_timestamp(
+            F.from_utc_timestamp(F.col(Colname.observation_time), time_zone)
+        ),
     )
-    df = df.withColumn("year", year(df[Colname.local_date]))
-    df = df.withColumn("month", month(df[Colname.local_date]))
+    df = df.withColumn("year", F.year(df[Colname.local_date]))
+    df = df.withColumn("month", F.month(df[Colname.local_date]))
+    df = df.withColumn(
+        "first_of_month",
+        F.to_utc_timestamp(
+            F.to_timestamp(F.date_trunc("month", Colname.local_date)), tz=time_zone
+        ),
+    )
+
     agg_df = (
         df.groupBy(
             Colname.energy_supplier_id,
@@ -122,31 +120,32 @@ def sum_within_month(df: DataFrame, time_zone: str) -> DataFrame:
             Colname.charge_owner,
         )
         .agg(
-            sum(Colname.total_amount).alias(Colname.total_amount),
-            sum(Colname.total_quantity).alias(Colname.total_quantity),
-            sum(Colname.charge_price).alias(Colname.charge_price),
-            first(Colname.charge_tax).alias(Colname.charge_tax),
-            first(Colname.unit).alias(Colname.unit),
-            min(Colname.observation_time).alias(Colname.charge_time),
-            flatten(collect_set(Colname.qualities)).alias(Colname.qualities),
+            F.sum(Colname.total_amount).alias(Colname.total_amount),
+            F.sum(Colname.total_quantity).alias(Colname.total_quantity),
+            F.sum(Colname.charge_price).alias(Colname.charge_price),
+            # charge_tax is the same for all tariffs in a given month
+            F.first(Colname.charge_tax).alias(Colname.charge_tax),
+            F.first(Colname.unit).alias(Colname.unit),
+            F.lit(F.first("first_of_month")).alias(Colname.charge_time),
+            F.flatten(F.collect_set(Colname.qualities)).alias(Colname.qualities),
         )
         .orderBy(Colname.charge_time)
         .select(
-            col(Colname.grid_area),
-            col(Colname.energy_supplier_id),
-            col(Colname.total_quantity),
-            col(Colname.unit),
-            col(Colname.qualities),
-            col(Colname.charge_time),
-            lit(ChargeResolution.MONTH.value).alias(Colname.charge_resolution),
-            lit(None).alias(Colname.metering_point_type),
-            lit(None).alias(Colname.settlement_method),
-            col(Colname.charge_price),
-            col(Colname.total_amount),
-            col(Colname.charge_tax),
-            col(Colname.charge_id),
-            col(Colname.charge_type),
-            col(Colname.charge_owner),
+            F.col(Colname.grid_area),
+            F.col(Colname.energy_supplier_id),
+            F.col(Colname.total_quantity),
+            F.col(Colname.unit),
+            F.col(Colname.qualities),
+            F.col(Colname.charge_time),
+            F.lit(ChargeResolution.MONTH.value).alias(Colname.charge_resolution),
+            F.lit(None).alias(Colname.metering_point_type),
+            F.lit(None).alias(Colname.settlement_method),
+            F.col(Colname.charge_price),
+            F.col(Colname.total_amount),
+            F.col(Colname.charge_tax),
+            F.col(Colname.charge_id),
+            F.col(Colname.charge_type),
+            F.col(Colname.charge_owner),
         )
     )
 

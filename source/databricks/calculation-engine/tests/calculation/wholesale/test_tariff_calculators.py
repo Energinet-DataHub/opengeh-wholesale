@@ -426,6 +426,24 @@ def test__sum_within_month__groups_by_local_time_months(
     assert actual.count() == 2
 
 
+def test__sum_within_month__charge_time_always_start_of_month(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    rows = [
+        _create_tariff_hour_row(charge_time=datetime(2020, 1, 3, 0)),
+    ]
+    tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
+
+    # Act
+    actual = sum_within_month(
+        calculate_tariff_price_per_ga_co_es(tariffs), DEFAULT_TIME_ZONE
+    )
+
+    # Assert
+    assert actual.collect()[0][Colname.charge_time] == datetime(2019, 12, 31, 23)
+
+
 def test__sum_within_month__sums_quantity_per_month(
     spark: SparkSession,
 ) -> None:
