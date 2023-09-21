@@ -7,6 +7,7 @@ module "mssqldb_esett_exchange" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=v12"
 
   name                               = "esett-exchange"
+  location                           = azurerm_resource_group.this.location
   project_name                       = var.domain_name_short
   environment_short                  = var.environment_short
   environment_instance               = var.environment_instance
