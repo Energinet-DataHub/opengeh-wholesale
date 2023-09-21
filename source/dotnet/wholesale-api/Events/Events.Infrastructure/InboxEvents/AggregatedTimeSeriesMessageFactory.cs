@@ -16,10 +16,10 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.InboxEvents.Mappers;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using PeriodContract = Energinet.DataHub.Edi.Responses.Period;
-using QuantityQuality = Energinet.DataHub.Edi.Responses.QuantityQuality;
 using TimeSeriesPoint = Energinet.DataHub.Edi.Responses.TimeSeriesPoint;
 using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType;
 using TimeSeriesTypeContract = Energinet.DataHub.Edi.Responses.TimeSeriesType;
@@ -76,16 +76,7 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
             QuantityUnit = QuantityUnit.Kwh,
             Period = period,
             TimeSeriesPoints = { points },
-            TimeSeriesType = MapTimeSeriesType(energyResult.TimeSeriesType),
-        };
-    }
-
-    private static TimeSeriesTypeContract MapTimeSeriesType(TimeSeriesType timeSeriesType)
-    {
-        return timeSeriesType switch
-        {
-            TimeSeriesType.Production => TimeSeriesTypeContract.Production,
-            _ => throw new ArgumentOutOfRangeException($"Unknown time series type {nameof(timeSeriesType)}"),
+            TimeSeriesType = TimeSeriesTypeMapper.MapTimeSeriesType(energyResult.TimeSeriesType),
         };
     }
 
@@ -100,25 +91,12 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
             var point = new TimeSeriesPoint()
             {
                 Quantity = new DecimalValue() { Units = units, Nanos = nanos },
-                QuantityQuality = MapQuantityQuality(timeSeriesPoint.Quality),
+                QuantityQuality = QuantityQualityMapper.MapQuantityQuality(timeSeriesPoint.Quality),
                 Time = new Timestamp() { Seconds = timeSeriesPoint.Time.ToUnixTimeSeconds(), },
             };
             points.Add(point);
         }
 
         return points;
-    }
-
-    private static QuantityQuality MapQuantityQuality(CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality quality)
-    {
-        return quality switch
-        {
-            CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Incomplete => QuantityQuality.Incomplete,
-            CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Estimated => QuantityQuality.Estimated,
-            CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Measured => QuantityQuality.Measured,
-            CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Calculated => QuantityQuality.Calculated,
-            CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Missing => QuantityQuality.Missing,
-            _ => throw new ArgumentOutOfRangeException($"Unknown quality {nameof(quality)}"),
-        };
     }
 }
