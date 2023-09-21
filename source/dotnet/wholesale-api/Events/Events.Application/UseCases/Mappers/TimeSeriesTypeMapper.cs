@@ -24,6 +24,10 @@ public static class TimeSeriesTypeMapper
     {
         return timeSeriesType switch {
             TimeSeriesType.Production => CalculationTimeSeriesType.Production,
+            TimeSeriesType.FlexConsumption => CalculationTimeSeriesType.FlexConsumption,
+            TimeSeriesType.TotalConsumption => CalculationTimeSeriesType.TotalConsumption,
+            TimeSeriesType.NetExchangePerGa => CalculationTimeSeriesType.NetExchangePerGa,
+            TimeSeriesType.NonProfiledConsumption => CalculationTimeSeriesType.NonProfiledConsumption,
             _ => throw new InvalidOperationException($"Unknown time series type: {timeSeriesType}"),
         };
     }

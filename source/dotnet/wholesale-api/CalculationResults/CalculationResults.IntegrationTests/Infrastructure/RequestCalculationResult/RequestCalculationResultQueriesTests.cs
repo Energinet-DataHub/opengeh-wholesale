@@ -40,6 +40,7 @@ public class RequestCalculationResultQueriesTests : IClassFixture<DatabricksSqlS
     private const string SecondQuantity = "2.222";
     private const string ThirdQuantity = "3.333";
     private const string FourthQuantity = "4.444";
+    private const string GridAreaCode = "301";
     private readonly DatabricksSqlStatementApiFixture _fixture;
 
     public RequestCalculationResultQueriesTests(DatabricksSqlStatementApiFixture fixture)
@@ -54,7 +55,7 @@ public class RequestCalculationResultQueriesTests : IClassFixture<DatabricksSqlS
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock)
     {
         // Arrange
-        var gridAreaFilter = "101";
+        var gridAreaFilter = GridAreaCode;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
@@ -107,17 +108,174 @@ public class RequestCalculationResultQueriesTests : IClassFixture<DatabricksSqlS
         actual.Should().BeNull();
     }
 
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetAsync_RequestFromEnergySupplierTotalProduction_ReturnsResult(
+        Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
+        Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock)
+    {
+        // Arrange
+        var gridAreaFilter = GridAreaCode;
+        var energySupplierIdFilter = "4321987654321";
+        var timeSeriesTypeFilter = TimeSeriesType.Production;
+        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
+        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
+        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
+        var sqlStatementClient = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
+        var request = CreateRequest(
+            gridArea: gridAreaFilter,
+            timeSeriesType: timeSeriesTypeFilter,
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter,
+            energySupplierId: energySupplierIdFilter);
+        var sut = new RequestCalculationResultQueries(sqlStatementClient, deltaTableOptions, requestCalculationResultQueriesLoggerMock.Object);
+
+        // Act
+        var actual = await sut.GetAsync(request);
+
+        // Assert
+        actual.Should().NotBeNull();
+        actual!.GridArea.Should().Be(gridAreaFilter);
+        actual.PeriodStart.Should().Be(startOfPeriodFilter);
+        actual.PeriodEnd.Should().Be(endOfPeriodFilter);
+        actual.EnergySupplierId.Should().Be(energySupplierIdFilter);
+        actual.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
+        actual.TimeSeriesPoints
+            .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
+            .ToArray()
+            .Should()
+            .Equal(FirstQuantity);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetAsync_RequestFromEnergySupplierTotalProductionBadId_ReturnsNoResults(
+        Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
+        Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock)
+    {
+        // Arrange
+        var gridAreaFilter = GridAreaCode;
+        var energySupplierId = "badId";
+        var timeSeriesTypeFilter = TimeSeriesType.Production;
+        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
+        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
+        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
+        var sqlStatementClient = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
+        var request = CreateRequest(
+            gridArea: gridAreaFilter,
+            timeSeriesType: timeSeriesTypeFilter,
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter,
+            energySupplierId: energySupplierId);
+        var sut = new RequestCalculationResultQueries(sqlStatementClient, deltaTableOptions, requestCalculationResultQueriesLoggerMock.Object);
+
+        // Act
+        var actual = await sut.GetAsync(request);
+
+        // Assert
+        actual.Should().BeNull();
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetAsync_RequestFromBalanceResponsibleTotalProduction_ReturnsResult(
+        Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
+        Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock)
+    {
+        // Arrange
+        var gridAreaFilter = GridAreaCode;
+        var balanceResponsibleIdFilter = "1234567891234";
+        var timeSeriesTypeFilter = TimeSeriesType.Production;
+        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
+        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
+        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
+        var sqlStatementClient = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
+        var request = CreateRequest(
+            gridArea: gridAreaFilter,
+            timeSeriesType: timeSeriesTypeFilter,
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter,
+            balanceResponsibleId: balanceResponsibleIdFilter);
+        var sut = new RequestCalculationResultQueries(sqlStatementClient, deltaTableOptions, requestCalculationResultQueriesLoggerMock.Object);
+
+        // Act
+        var actual = await sut.GetAsync(request);
+
+        // Assert
+        actual.Should().NotBeNull();
+        actual!.GridArea.Should().Be(gridAreaFilter);
+        actual.PeriodStart.Should().Be(startOfPeriodFilter);
+        actual.PeriodEnd.Should().Be(endOfPeriodFilter);
+        actual.BalanceResponsibleId.Should().Be(balanceResponsibleIdFilter);
+        actual.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
+        actual.TimeSeriesPoints
+            .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
+            .ToArray()
+            .Should()
+            .Equal(SecondQuantity);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetAsync_RequestFromEnergySupplierPerBalanceResponsibleTotalProduction_ReturnsResult(
+        Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock,
+        Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock)
+    {
+        // Arrange
+        var gridAreaFilter = GridAreaCode;
+        var balanceResponsibleIdFilter = "1234567891234";
+        var energySupplierIdFilter = "4321987654321";
+        var timeSeriesTypeFilter = TimeSeriesType.Production;
+        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
+        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
+        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
+        var sqlStatementClient = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
+        var request = CreateRequest(
+            gridArea: gridAreaFilter,
+            timeSeriesType: timeSeriesTypeFilter,
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter,
+            energySupplierId: energySupplierIdFilter,
+            balanceResponsibleId: balanceResponsibleIdFilter);
+        var sut = new RequestCalculationResultQueries(sqlStatementClient, deltaTableOptions, requestCalculationResultQueriesLoggerMock.Object);
+
+        // Act
+        var actual = await sut.GetAsync(request);
+
+        // Assert
+        actual.Should().NotBeNull();
+        actual!.GridArea.Should().Be(gridAreaFilter);
+        actual.PeriodStart.Should().Be(startOfPeriodFilter);
+        actual.PeriodEnd.Should().Be(endOfPeriodFilter);
+        actual.EnergySupplierId.Should().Be(energySupplierIdFilter);
+        actual.BalanceResponsibleId.Should().Be(balanceResponsibleIdFilter);
+        actual.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
+        actual.TimeSeriesPoints
+            .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
+            .ToArray()
+            .Should()
+            .Equal(ThirdQuantity);
+    }
+
     private CalculationResultQuery CreateRequest(
         TimeSeriesType? timeSeriesType = null,
         Instant? startOfPeriod = null,
         Instant? endOfPeriod = null,
-        string gridArea = "101")
+        string gridArea = "101",
+        string? energySupplierId = null,
+        string? balanceResponsibleId = null)
     {
         return new CalculationResultQuery(
             TimeSeriesType: timeSeriesType ?? TimeSeriesType.Production,
             StartOfPeriod: startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
             EndOfPeriod: endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0),
-            GridArea: gridArea);
+            GridArea: gridArea,
+            EnergySupplierId: energySupplierId,
+            BalanceResponsibleId: balanceResponsibleId);
     }
 
     private async Task AddCreatedRowsInArbitraryOrderAsync(IOptions<DeltaTableOptions> options)
@@ -127,16 +285,21 @@ public class RequestCalculationResultQueriesTests : IClassFixture<DatabricksSqlS
         const string firstHour = "2022-01-01T01:00:00.000Z";
         const string secondHour = "2022-01-01T02:00:00.000Z";
         const string thirdHour = "2022-01-01T03:00:00.000Z";
-        const string gridAreaA = "101";
+        const string energySupplier = "4321987654321";
+        const string balanceResponsibleId = "1234567891234";
+        var row1 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: firstHour, gridArea: GridAreaCode, quantity: FirstQuantity);
+        var row2 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: secondHour, gridArea: GridAreaCode, quantity: SecondQuantity);
 
-        var row1 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: firstHour, gridArea: gridAreaA, quantity: FirstQuantity);
-        var row2 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: secondHour, gridArea: gridAreaA, quantity: SecondQuantity);
+        var row3 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: secondCalculationResultId, time: secondHour, gridArea: GridAreaCode, quantity: ThirdQuantity, batchExecutionTimeStart: "2022-03-12T03:00:00.000Z");
+        var row4 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: secondCalculationResultId, time: thirdHour, gridArea: GridAreaCode, quantity: FourthQuantity, batchExecutionTimeStart: "2022-03-12T03:00:00.000Z");
 
-        var row3 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: secondCalculationResultId, time: secondHour, gridArea: gridAreaA, quantity: ThirdQuantity, batchExecutionTimeStart: "2022-03-12T03:00:00.000Z");
-        var row4 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: secondCalculationResultId, time: thirdHour, gridArea: gridAreaA, quantity: FourthQuantity, batchExecutionTimeStart: "2022-03-12T03:00:00.000Z");
+        var row5 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: firstHour, gridArea: GridAreaCode, quantity: FirstQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndGridArea, energySupplierId: energySupplier);
+        var row6 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: secondCalculationResultId, time: secondHour, gridArea: GridAreaCode, quantity: SecondQuantity, aggregationLevel: DeltaTableAggregationLevel.BalanceResponsibleAndGridArea, balanceResponsibleId: balanceResponsibleId);
+
+        var row7 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: secondHour, gridArea: GridAreaCode, quantity: ThirdQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea, balanceResponsibleId: balanceResponsibleId, energySupplierId: energySupplier);
 
         // mix up the order of the rows
-        var rows = new List<IEnumerable<string>> { row1, row2, row3, row4 };
+        var rows = new List<IEnumerable<string>> { row1, row2, row3, row4, row5, row6, row7 };
         await _fixture.DatabricksSchemaManager.EmptyAsync(options.Value.ENERGY_RESULTS_TABLE_NAME);
         await _fixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(options.Value.ENERGY_RESULTS_TABLE_NAME, rows);
     }
