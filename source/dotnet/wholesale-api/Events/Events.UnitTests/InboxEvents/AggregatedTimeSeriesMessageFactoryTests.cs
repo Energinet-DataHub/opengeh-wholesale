@@ -18,7 +18,6 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.Events.Infrastructure.InboxEvents;
 using FluentAssertions;
 using Google.Protobuf.WellKnownTypes;
-using Moq;
 using NodaTime;
 using Xunit;
 using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;

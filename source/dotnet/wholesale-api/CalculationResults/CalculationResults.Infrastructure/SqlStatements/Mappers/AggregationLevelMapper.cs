@@ -33,6 +33,13 @@ public static class AggregationLevelMapper
                 if (balanceResponsiblePartyGln != null)
                     return DeltaTableAggregationLevel.BalanceResponsibleAndGridArea;
                 return DeltaTableAggregationLevel.GridArea;
+            case TimeSeriesType.NetExchangePerGa:
+            case TimeSeriesType.TotalConsumption:
+                if (energySupplierGln == null && balanceResponsiblePartyGln == null)
+                    return DeltaTableAggregationLevel.GridArea;
+                throw new InvalidOperationException($"Invalid combination of time series type: {timeSeriesType}," +
+                                                    $" energy supplier: {energySupplierGln}" +
+                                                    $" and balance responsible: {balanceResponsiblePartyGln} .");
             default:
                 throw new NotImplementedException($"Mapping of '{timeSeriesType}' not implemented.");
         }

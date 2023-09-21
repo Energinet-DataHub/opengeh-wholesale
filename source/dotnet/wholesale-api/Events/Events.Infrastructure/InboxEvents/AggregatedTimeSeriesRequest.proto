@@ -58,9 +58,7 @@ message AggregationPerEnergySupplierPerGridArea {
    */
   string grid_area_code = 1;
 
-  string balance_responsible_party_id = 2;
-
-  string energy_supplier_id = 3;
+  string energy_supplier_id = 2;
 }
 
 message AggregationPerBalanceResponsiblePartyPerGridArea {
@@ -74,8 +72,6 @@ message AggregationPerBalanceResponsiblePartyPerGridArea {
   string grid_area_code = 1;
 
   string balance_responsible_party_id = 2;
-
-  string energy_supplier_id = 3;
 }
 
 message AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea {
