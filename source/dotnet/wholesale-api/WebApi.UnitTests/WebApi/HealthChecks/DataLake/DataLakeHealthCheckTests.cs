@@ -23,7 +23,7 @@ using Moq;
 using NodaTime;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.WebApi.HealthChecks.DataBricks;
+namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.WebApi.HealthChecks.DataLake;
 
 public class DataLakeHealthCheckTests
 {
