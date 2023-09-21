@@ -340,7 +340,7 @@ def test__calculate_tariff_price_per_ga_co_es__rounds_total_amount_correctly(
     assert actual_amount == expected_total_amount
 
 
-def test__sum_within_month__groups_to_month(
+def test__sum_within_month__creates_sum_per_month(
     spark: SparkSession,
 ) -> None:
     # Arrange
