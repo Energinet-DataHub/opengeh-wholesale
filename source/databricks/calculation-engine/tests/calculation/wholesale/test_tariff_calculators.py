@@ -47,6 +47,7 @@ DEFAULT_METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
 DEFAULT_SETTLEMENT_METHOD = SettlementMethod.FLEX
 DEFAULT_QUANTITY = Decimal("1.005")
 DEFAULT_QUALITY = ChargeQuality.CALCULATED
+DEFAULT_TIME_ZONE = "Europe/Copenhagen"
 
 
 def _create_tariff_hour_row(
@@ -339,34 +340,88 @@ def test__calculate_tariff_price_per_ga_co_es__rounds_total_amount_correctly(
     assert actual_amount == expected_total_amount
 
 
-def test__sum_within_month__on_tariff(
+def test__sum_within_month__groups_to_month(
     spark: SparkSession,
 ) -> None:
     # Arrange
     rows = [
         _create_tariff_hour_row(charge_time=datetime(2020, 1, 1, 1)),
-        _create_tariff_hour_row(
-            charge_time=datetime(2020, 1, 1, 0), quality=ChargeQuality.ESTIMATED
-        ),
-        _create_tariff_hour_row(charge_time=datetime(2019, 12, 31, 23)),
-        _create_tariff_hour_row(
-            charge_time=datetime(2020, 1, 1, 2),
-            metering_point_type=MeteringPointType.PRODUCTION,
-        ),
+        _create_tariff_hour_row(charge_time=datetime(2020, 1, 1, 0)),
+        _create_tariff_hour_row(charge_time=datetime(2020, 1, 1, 2)),
         _create_tariff_hour_row(charge_time=datetime(2020, 2, 1, 0)),
+    ]
+    tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
+
+    # Act
+    actual = sum_within_month(
+        calculate_tariff_price_per_ga_co_es(tariffs), DEFAULT_TIME_ZONE
+    )
+
+    # Assert
+    assert actual.collect()[0][Colname.total_amount] == Decimal("6.030015")
+    assert actual.collect()[1][Colname.total_amount] == Decimal("2.010005")
+    assert actual.count() == 2
+
+
+def test__sum_within_month__group_by_does_not_care_about_metering_point_type(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    rows = [
+        _create_tariff_hour_row(metering_point_type=MeteringPointType.PRODUCTION),
+        _create_tariff_hour_row(metering_point_type=MeteringPointType.CONSUMPTION),
+    ]
+    tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
+
+    # Act
+    actual = sum_within_month(
+        calculate_tariff_price_per_ga_co_es(tariffs), DEFAULT_TIME_ZONE
+    )
+
+    # Assert
+    assert actual.collect()[0][Colname.total_amount] == Decimal("4.020010")
+    assert actual.count() == 1
+
+
+def test__sum_within_month__joins_qualities(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    rows = [
+        _create_tariff_hour_row(quality=ChargeQuality.CALCULATED),
+        _create_tariff_hour_row(quality=ChargeQuality.ESTIMATED),
+    ]
+    tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
+
+    # Act
+    actual = sum_within_month(
+        calculate_tariff_price_per_ga_co_es(tariffs), DEFAULT_TIME_ZONE
+    )
+
+    # Assert
+    assert actual.collect()[0][Colname.qualities] == ["calculated", "estimated"]
+    assert actual.collect()[0][Colname.total_amount] == Decimal("4.020010")
+    assert actual.count() == 1
+
+
+def test__sum_within_month__use_danish_time_to_group(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    rows = [
+        _create_tariff_hour_row(charge_time=datetime(2020, 1, 1, 0)),
+        _create_tariff_hour_row(charge_time=datetime(2019, 12, 31, 23)),
         _create_tariff_hour_row(charge_time=datetime(2019, 12, 31, 22)),
     ]
     tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
 
     # Act
     actual = sum_within_month(
-        calculate_tariff_price_per_ga_co_es(tariffs), "Europe/Copenhagen"
+        calculate_tariff_price_per_ga_co_es(tariffs), DEFAULT_TIME_ZONE
     )
 
     # Assert
     assert actual.collect()[0][Colname.total_amount] == Decimal("2.010005")
-    assert actual.collect()[1][Colname.total_amount] == Decimal("8.040020")
-    assert actual.collect()[2][Colname.total_amount] == Decimal("2.010005")
-    assert actual.collect()[1][Colname.qualities] == ["calculated", "estimated"]
+    assert actual.collect()[1][Colname.total_amount] == Decimal("4.020010")
     assert actual.collect()[1][Colname.charge_time] == datetime(2019, 12, 31, 23)
-    assert actual.count() == 3
+    assert actual.count() == 2
