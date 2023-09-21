@@ -25,8 +25,6 @@ from package.calculation_input import CalculationInputReader
 from package.calculation_output.wholesale_calculation_result_writer import (
     WholesaleCalculationResultWriter,
 )
-from datetime import datetime
-from pytz import timezone
 
 
 def execute(
