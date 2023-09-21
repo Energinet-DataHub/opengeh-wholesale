@@ -474,7 +474,7 @@ def test__sum_within_month__daylight_savings_time_wintertime(
     assert actual.count() == 2
 
 
-def test__sum_within_month__creates_sum_total_quantity(
+def test__sum_within_month__sums_quantity_per_month(
     spark: SparkSession,
 ) -> None:
     # Arrange
