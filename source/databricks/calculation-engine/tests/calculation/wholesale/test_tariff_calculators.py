@@ -404,7 +404,7 @@ def test__sum_within_month__joins_qualities(
     assert actual.count() == 1
 
 
-def test__sum_within_month__use_danish_time_to_group(
+def test__sum_within_month__groups_by_local_time_months(
     spark: SparkSession,
 ) -> None:
     # Arrange
