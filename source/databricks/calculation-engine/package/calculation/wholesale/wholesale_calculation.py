@@ -125,6 +125,7 @@ def sum_within_month(df: DataFrame, time_zone: str) -> DataFrame:
             F.sum(Colname.charge_price).alias(Colname.charge_price),
             # charge_tax is the same for all tariffs in a given month
             F.first(Colname.charge_tax).alias(Colname.charge_tax),
+            # tariff unit is the same for all tariffs in a given month (kWh)
             F.first(Colname.unit).alias(Colname.unit),
             F.lit(F.first("first_of_month")).alias(Colname.charge_time),
             F.flatten(F.collect_set(Colname.qualities)).alias(Colname.qualities),
