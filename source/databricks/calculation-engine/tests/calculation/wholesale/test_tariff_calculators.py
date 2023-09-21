@@ -472,3 +472,47 @@ def test__sum_within_month__daylight_savings_time_wintertime(
     assert actual.collect()[0][Colname.charge_time] == datetime(2020, 10, 31, 21)
     assert actual.collect()[1][Colname.charge_time] == datetime(2020, 10, 31, 23)
     assert actual.count() == 2
+
+
+def test__sum_within_month__creates_sum_total_quantity(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    rows = [
+        _create_tariff_hour_row(quantity=Decimal("1.111")),
+        _create_tariff_hour_row(quantity=Decimal("1.111")),
+    ]
+    tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
+
+    # Act
+    actual = sum_within_month(
+        calculate_tariff_price_per_ga_co_es(tariffs), DEFAULT_TIME_ZONE
+    )
+
+    # Assert
+    assert actual.collect()[0][Colname.total_quantity] == Decimal("2.222")
+    assert actual.count() == 1
+
+
+def test__sum_within_month__creates_sum_charge_price(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    rows = [
+        _create_tariff_hour_row(
+            charge_time=datetime(2020, 1, 1, 0), charge_price=Decimal("1.111111")
+        ),
+        _create_tariff_hour_row(
+            charge_time=datetime(2020, 1, 1, 1), charge_price=Decimal("1.111111")
+        ),
+    ]
+    tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
+
+    # Act
+    actual = sum_within_month(
+        calculate_tariff_price_per_ga_co_es(tariffs), DEFAULT_TIME_ZONE
+    )
+
+    # Assert
+    assert actual.collect()[0][Colname.charge_price] == Decimal("2.222222")
+    assert actual.count() == 1
