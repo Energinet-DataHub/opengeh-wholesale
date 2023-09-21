@@ -347,7 +347,6 @@ def test__sum_within_month__creates_sum_per_month(
     rows = [
         _create_tariff_hour_row(charge_time=datetime(2020, 1, 1, 1)),
         _create_tariff_hour_row(charge_time=datetime(2020, 1, 1, 0)),
-        _create_tariff_hour_row(charge_time=datetime(2020, 1, 1, 2)),
         _create_tariff_hour_row(charge_time=datetime(2020, 2, 1, 0)),
     ]
     tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
@@ -358,7 +357,7 @@ def test__sum_within_month__creates_sum_per_month(
     )
 
     # Assert
-    assert actual.collect()[0][Colname.total_amount] == Decimal("6.030015")
+    assert actual.collect()[0][Colname.total_amount] == Decimal("4.020010")
     assert actual.collect()[1][Colname.total_amount] == Decimal("2.010005")
     assert actual.count() == 2
 
