@@ -20,7 +20,7 @@ Read more at https://github.com/Mech0z/GitHubGuidelines
 
 Consider the following bullets and remove this TODO section before entering PR ready for review state.
 
-- [ ] Title: Follow [this guide](/Mech0z/GitHubGuidelines)
+- [ ] Title: Follow [this guide](https://github.com/Mech0z/GitHubGuidelines)
 - [ ] References: Add relevant references or remove the section if there are no relevant (GitHub issue) references
 - [ ] Write tests
 - [ ] Update documentation
