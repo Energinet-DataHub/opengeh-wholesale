@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Contracts.Events;
+using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers;
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.Common;
 
 public static class ProcessTypeMapper
 {
