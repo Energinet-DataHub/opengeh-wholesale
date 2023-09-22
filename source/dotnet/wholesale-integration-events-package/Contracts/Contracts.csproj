@@ -87,6 +87,9 @@ limitations under the License.
     <Compile Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\CalculationResultCompleted.cs">
       <Link>IntegrationEvents\CalculationResultCompleted.cs</Link>
     </Compile>
+    <Compile Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\EnergyResultProduced.cs">
+      <Link>IntegrationEvents\EnergyResultProduced.cs</Link>
+    </Compile>
   </ItemGroup>
 
 </Project>
