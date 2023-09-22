@@ -57,7 +57,12 @@ def execute(args: CalculatorArgs, spark: SparkSession) -> None:
         args.time_zone,
     )
 
-    if args.batch_process_type == ProcessType.WHOLESALE_FIXING:
+    if (
+        args.batch_process_type == ProcessType.WHOLESALE_FIXING
+        or args.batch_process_type == ProcessType.FIRST_CORRECTION_SETTLEMENT
+        or args.batch_process_type == ProcessType.SECOND_CORRECTION_SETTLEMENT
+        or args.batch_process_type == ProcessType.THIRD_CORRECTION_SETTLEMENT
+    ):
         wholesale_calculation_result_writer = WholesaleCalculationResultWriter(
             args.batch_id, args.batch_process_type, args.batch_execution_time_start
         )
