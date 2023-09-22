@@ -16,6 +16,16 @@ Read more at https://github.com/Mech0z/GitHubGuidelines
 
 -->
 
+## TODO
+
+Consider the following bullets and remove this TODO section before entering PR ready for review state.
+
+- [ ] Title: Follow [this guide](https://github.com/Mech0z/GitHubGuidelines)
+- [ ] References: Add relevant references or remove the section if there are no relevant (GitHub issue) references
+- [ ] Write tests
+- [ ] Update documentation
+- [ ] Inform team Outlaws if there are relevant C4 changes
+
 ## Description
 
 <!--- Please leave a helpful description of the pull request here. --->
