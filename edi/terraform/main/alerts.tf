@@ -23,14 +23,10 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "edi_alert" {
   description    = "Alert when total results cross threshold"
   enabled        = true
   query          = <<-QUERY
-                  requests
-              | where timestamp > ago(10m) and  success == false
-              | join kind= inner (
-              exceptions
-              | where timestamp > ago(10m)
-                and (cloud_RoleName == 'func-api-${lower(var.domain_name_short)}-${lower(var.environment_short)}-${lower(var.environment_instance)}')
-              ) on operation_Id
-              | project exceptionType = type, failedMethod = method, requestName = name, requestDuration = duration, function = cloud_RoleName
+                  exceptions
+                  | where timestamp > ago(10m)
+                    and cloud_RoleName == 'func-api-${lower(var.domain_name_short)}-${lower(var.environment_short)}-${lower(var.environment_instance)}' 
+                    and (type !has "Energinet.DataHub.EDI" and type !hasprefix "NotSupported")
                 QUERY
   severity       = 1
   frequency      = 5
