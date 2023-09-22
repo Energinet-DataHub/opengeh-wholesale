@@ -35,4 +35,11 @@ public class EnergyResultProducedV1Tests
         // Actually the ".Should().NotBeNull()" part is not necessary, but it's required by the compiler.
         EnergyResultProducedV1.Parser.Should().NotBeNull();
     }
+
+    [Fact]
+    public void EnergyResultProduced_HasCorrectEventName()
+    {
+        // Be careful to change the event name as it is public available and used for transport message meta data in accordance with ADR-008
+        EnergyResultProduced.EventName.Should().Be("EnergyResultProduced");
+    }
 }
