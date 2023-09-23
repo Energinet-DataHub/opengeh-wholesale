@@ -96,8 +96,8 @@ enum EnergyResolution {
      * Unspecified is unused but according to best practice.
      * Read more at https://protobuf.dev/programming-guides/style/#enums.
      */
-    RESOLUTION_UNSPECIFIED = 0;
+    ENERGY_RESOLUTION_UNSPECIFIED = 0;
 
     // States that each time series point represents a time interval of one quarter (15 minutes).
-    RESOLUTION_QUARTER = 1;
+    ENERGY_RESOLUTION_QUARTER = 1;
 }

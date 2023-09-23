@@ -130,12 +130,12 @@ public class EnergyResultProducedV1FactoryTests
             _fromGridArea);
     }
 
-    private EnergyResultProducedV1 CreateExpected(EnergyResult energyResult)
+    private static EnergyResultProducedV1 CreateExpected(EnergyResult energyResult)
     {
         var energyResultProducedV1 = new EnergyResultProducedV1
         {
             CalculationId = energyResult.BatchId.ToString(),
-            Resolution = EnergyResolution.ResolutionQuarter,
+            Resolution = EnergyResolution.Quarter,
             ProcessType = ProcessType.Aggregation,
             QuantityUnit = QuantityUnit.Kwh,
             PeriodStartUtc = energyResult.PeriodStart.ToTimestamp(),
