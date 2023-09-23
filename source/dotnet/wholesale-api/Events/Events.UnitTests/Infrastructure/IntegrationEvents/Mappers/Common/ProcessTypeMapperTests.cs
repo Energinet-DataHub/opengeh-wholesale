@@ -14,22 +14,22 @@
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Common.Models;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.CalculationResultCompleted;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.Common;
 using FluentAssertions;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.Mappers;
+namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.Mappers.Common;
 
 public class ProcessTypeMapperTests
 {
     [Theory]
-    [InlineAutoMoqData(ProcessType.Aggregation, Contracts.Events.ProcessType.Aggregation)]
-    [InlineAutoMoqData(ProcessType.BalanceFixing, Contracts.Events.ProcessType.BalanceFixing)]
-    [InlineAutoMoqData(ProcessType.WholesaleFixing, Contracts.Events.ProcessType.WholesaleFixing)]
-    [InlineAutoMoqData(ProcessType.FirstCorrectionSettlement, Contracts.Events.ProcessType.FirstCorrectionSettlement)]
-    [InlineAutoMoqData(ProcessType.SecondCorrectionSettlement, Contracts.Events.ProcessType.SecondCorrectionSettlement)]
-    [InlineAutoMoqData(ProcessType.ThirdCorrectionSettlement, Contracts.Events.ProcessType.ThirdCorrectionSettlement)]
-    public void MapProcessType_WhenCalled_MapsCorrectly(ProcessType processType, Wholesale.Contracts.Events.ProcessType expected)
+    [InlineAutoMoqData(ProcessType.Aggregation, Contracts.IntegrationEvents.ProcessType.Aggregation)]
+    [InlineAutoMoqData(ProcessType.BalanceFixing, Contracts.IntegrationEvents.ProcessType.BalanceFixing)]
+    [InlineAutoMoqData(ProcessType.WholesaleFixing, Contracts.IntegrationEvents.ProcessType.WholesaleFixing)]
+    [InlineAutoMoqData(ProcessType.FirstCorrectionSettlement, Contracts.IntegrationEvents.ProcessType.FirstCorrectionSettlement)]
+    [InlineAutoMoqData(ProcessType.SecondCorrectionSettlement, Contracts.IntegrationEvents.ProcessType.SecondCorrectionSettlement)]
+    [InlineAutoMoqData(ProcessType.ThirdCorrectionSettlement, Contracts.IntegrationEvents.ProcessType.ThirdCorrectionSettlement)]
+    public void MapProcessType_WhenCalled_MapsCorrectly(ProcessType processType, Wholesale.Contracts.IntegrationEvents.ProcessType expected)
     {
         // Act & Assert
         ProcessTypeMapper.MapProcessType(processType).Should().Be(expected);
