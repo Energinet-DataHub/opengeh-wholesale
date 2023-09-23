@@ -40,6 +40,6 @@ public class EnergyResultProducedV1Tests
     public void EnergyResultProduced_HasCorrectEventName()
     {
         // Be careful to change the event name as it is public available and used for transport message meta data in accordance with ADR-008
-        EnergyResultProduced.EventName.Should().Be("EnergyResultProduced");
+        EnergyResultProducedV1.EventName.Should().Be("EnergyResultProduced");
     }
 }
