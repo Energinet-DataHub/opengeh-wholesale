@@ -1,8 +1,12 @@
 # Wholesale Contracts Release notes
 
+## Version 4.3.0
+
+Added 'EnergyResultProducedV1' as a new event
+
 ## Version 4.2.0
 
-Added 'EnergyResultProducedV1'  as a new event
+Added 'energy_result_produced_v1.proto'
 
 ## Version 4.1.0
 
