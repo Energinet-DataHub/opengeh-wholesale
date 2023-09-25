@@ -38,6 +38,7 @@ from package.calculation_input import CalculationInputReader
 from package.calculation_output.wholesale_calculation_result_writer import (
     WholesaleCalculationResultWriter,
 )
+from .charges_reader import read_charges
 
 
 def execute(
@@ -51,18 +52,14 @@ def execute(
     metering_points_periods_df = _get_production_and_consumption_metering_points(
         metering_points_periods_df
     )
-    charge_master_data = calculation_input_reader.read_charge_master_data_periods()
-    charge_links = calculation_input_reader.read_charge_links_periods()
-    charge_prices = calculation_input_reader.read_charge_price_points()
+    charges_df = read_charges(calculation_input_reader)
 
     # Calculate and write to storage
     _calculate_tariff_charges(
         wholesale_calculation_result_writer,
         metering_points_periods_df,
         time_series_point_df,
-        charge_master_data,
-        charge_links,
-        charge_prices,
+        charges_df,
         time_zone,
     )
 
@@ -71,17 +68,13 @@ def _calculate_tariff_charges(
     wholesale_calculation_result_writer: WholesaleCalculationResultWriter,
     metering_points_periods_df: DataFrame,
     time_series_point_df: DataFrame,
-    charge_master_data: DataFrame,
-    charge_links: DataFrame,
-    charge_prices: DataFrame,
+    charges_df: DataFrame,
     time_zone: str,
 ) -> None:
     tariffs_hourly = init.get_tariff_charges(
         metering_points_periods_df,
         time_series_point_df,
-        charge_master_data,
-        charge_links,
-        charge_prices,
+        charges_df,
         ChargeResolution.HOUR,
     )
 
