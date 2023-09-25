@@ -73,4 +73,5 @@ def execute(args: CalculatorArgs, spark: SparkSession) -> None:
             metering_point_periods_df,
             time_series_points_df,
             args.time_zone,
+            args.batch_period_start_datetime,
         )
