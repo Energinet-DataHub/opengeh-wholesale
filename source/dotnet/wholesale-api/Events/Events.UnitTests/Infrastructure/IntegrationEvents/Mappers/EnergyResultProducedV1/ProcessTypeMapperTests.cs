@@ -13,12 +13,12 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.EnergyResultProducedV1;
 using FluentAssertions;
 using Xunit;
 using ProcessType = Energinet.DataHub.Wholesale.Common.Models.ProcessType;
 
-namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.Mappers;
+namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.Mappers.EnergyResultProducedV1;
 
 public class ProcessTypeMapperTests
 {
