@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Contracts.Events;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers;
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.CalculationResultCompleted;
 
 public static class QuantityQualityMapper
 {
