@@ -13,23 +13,23 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.EnergyResultProducedV1;
 using FluentAssertions;
 using Xunit;
+using ProcessType = Energinet.DataHub.Wholesale.Common.Models.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.Mappers.Common;
 
 public class ProcessTypeMapperTests
 {
     [Theory]
-    [InlineAutoMoqData(ProcessType.Aggregation, Contracts.IntegrationEvents.ProcessType.Aggregation)]
-    [InlineAutoMoqData(ProcessType.BalanceFixing, Contracts.IntegrationEvents.ProcessType.BalanceFixing)]
-    [InlineAutoMoqData(ProcessType.WholesaleFixing, Contracts.IntegrationEvents.ProcessType.WholesaleFixing)]
-    [InlineAutoMoqData(ProcessType.FirstCorrectionSettlement, Contracts.IntegrationEvents.ProcessType.FirstCorrectionSettlement)]
-    [InlineAutoMoqData(ProcessType.SecondCorrectionSettlement, Contracts.IntegrationEvents.ProcessType.SecondCorrectionSettlement)]
-    [InlineAutoMoqData(ProcessType.ThirdCorrectionSettlement, Contracts.IntegrationEvents.ProcessType.ThirdCorrectionSettlement)]
-    public void MapProcessType_WhenCalled_MapsCorrectly(ProcessType processType, Wholesale.Contracts.IntegrationEvents.ProcessType expected)
+    [InlineAutoMoqData(ProcessType.Aggregation,  Contracts.IntegrationEvents.EnergyResultProducedV1.Types.ProcessType.Aggregation)]
+    [InlineAutoMoqData(ProcessType.BalanceFixing,  Contracts.IntegrationEvents.EnergyResultProducedV1.Types.ProcessType.BalanceFixing)]
+    [InlineAutoMoqData(ProcessType.WholesaleFixing,  Contracts.IntegrationEvents.EnergyResultProducedV1.Types.ProcessType.WholesaleFixing)]
+    [InlineAutoMoqData(ProcessType.FirstCorrectionSettlement,  Contracts.IntegrationEvents.EnergyResultProducedV1.Types.ProcessType.FirstCorrectionSettlement)]
+    [InlineAutoMoqData(ProcessType.SecondCorrectionSettlement,  Contracts.IntegrationEvents.EnergyResultProducedV1.Types.ProcessType.SecondCorrectionSettlement)]
+    [InlineAutoMoqData(ProcessType.ThirdCorrectionSettlement,  Contracts.IntegrationEvents.EnergyResultProducedV1.Types.ProcessType.ThirdCorrectionSettlement)]
+    public void MapProcessType_WhenCalled_MapsCorrectly(ProcessType processType, Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV1.Types.ProcessType expected)
     {
         // Act & Assert
         ProcessTypeMapper.MapProcessType(processType).Should().Be(expected);
@@ -44,7 +44,7 @@ public class ProcessTypeMapperTests
             var actual = ProcessTypeMapper.MapProcessType(processType);
 
             // Assert: Is defined (and implicitly that it didn't throw exception)
-            Enum.IsDefined(typeof(Contracts.IntegrationEvents.ProcessType), actual).Should().BeTrue();
+            Enum.IsDefined(typeof(Contracts.IntegrationEvents.EnergyResultProducedV1.Types.ProcessType), actual).Should().BeTrue();
         }
     }
 }
