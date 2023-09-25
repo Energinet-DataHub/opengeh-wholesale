@@ -140,7 +140,7 @@ public class EnergyResultProducedV1FactoryTests
             QuantityUnit = QuantityUnit.Kwh,
             PeriodStartUtc = energyResult.PeriodStart.ToTimestamp(),
             PeriodEndUtc = energyResult.PeriodEnd.ToTimestamp(),
-            TimeSeriesType = Contracts.IntegrationEvents.TimeSeriesType.FlexConsumption,
+            TimeSeriesType = Contracts.IntegrationEvents.EnergyResultProducedV1.FlexConsumption,
             FromGridAreaCode = energyResult.FromGridArea,
         };
         energyResultProducedV1.TimeSeriesPoints.AddRange(

@@ -14,7 +14,6 @@
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.Common;
 using FluentAssertions;
 using Xunit;
 

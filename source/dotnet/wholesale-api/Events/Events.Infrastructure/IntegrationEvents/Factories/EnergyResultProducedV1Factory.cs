@@ -14,10 +14,15 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.Common;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.EnergyResultProducedV1;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Types;
 using Google.Protobuf.WellKnownTypes;
+using AggregationPerBalanceResponsiblePartyPerGridArea = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV1.Types.AggregationPerBalanceResponsiblePartyPerGridArea;
+using AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV1.Types.AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea;
+using AggregationPerEnergySupplierPerGridArea = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV1.Types.AggregationPerEnergySupplierPerGridArea;
+using AggregationPerGridArea = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV1.Types.AggregationPerGridArea;
+using QuantityUnit = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV1.Types.QuantityUnit;
+using TimeSeriesPoint = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV1.Types.TimeSeriesPoint;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 
@@ -95,7 +100,7 @@ public class EnergyResultProducedV1Factory : IEnergyResultProducedFactory
         var calculationResultCompleted = new EnergyResultProducedV1
         {
             CalculationId = result.BatchId.ToString(),
-            Resolution = EnergyResolution.Quarter,
+            Resolution = EnergyResultProducedV1.Types.Resolution.Quarter,
             ProcessType = ProcessTypeMapper.MapProcessType(result.ProcessType),
             QuantityUnit = QuantityUnit.Kwh,
             PeriodStartUtc = result.PeriodStart.ToTimestamp(),
@@ -107,7 +112,7 @@ public class EnergyResultProducedV1Factory : IEnergyResultProducedFactory
 
         calculationResultCompleted.TimeSeriesPoints
             .AddRange(result.TimeSeriesPoints
-                .Select(timeSeriesPoint => new EnergyTimeSeriesPoint()
+                .Select(timeSeriesPoint => new TimeSeriesPoint()
                 {
                     Quantity = new DecimalValue(timeSeriesPoint.Quantity),
                     Time = timeSeriesPoint.Time.ToTimestamp(),
