@@ -20,7 +20,7 @@ public partial class EnergyResultProducedV1
     /// <summary>
     /// The message type for transport message meta data in accordance with ADR-008.
     /// </summary>
-    public const string EventName = "EnergyResultProduced";
+    public const string EventName = "EnergyResultProducedV1";
 
     public const int EventMinorVersion = 1;
 }

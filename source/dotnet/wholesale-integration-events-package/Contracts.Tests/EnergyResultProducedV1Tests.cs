@@ -40,27 +40,27 @@ public class EnergyResultProducedV1Tests
     public void EnergyResultProduced_HasCorrectEventName()
     {
         // Be careful to change the event name as it is public available and used for transport message meta data in accordance with ADR-008
-        EnergyResultProducedV1.EventName.Should().Be("EnergyResultProduced");
+        EnergyResultProducedV1.EventName.Should().Be("EnergyResultProducedV1");
     }
 
     /// <summary>
     /// If this test fails, it probably means that the minor event version has not been bumped, but the contract has changed.
     /// In order to fix you should (probably):
     /// - Bump the minor event version
-    /// - Update the content of the contract reference <see cref="LastKnownContentOfContract"/>
+    /// - Update the content of the contract reference <see cref="LastKnownContentOfEnergyResultProducedV1"/>
     /// </summary>
     [Fact]
-    public void Fail_If_MinorEventVersion_ShouldHaveBeenBumped()
+    public void Fail_If_EnergyResultProducedV1ProtoHasBeenChanged_And_MinorIsNotBumped()
     {
         // Arrange
-        var actualVersion = EnergyResultProducedV1.EventMinorVersion;
+        const int actualVersion = EnergyResultProducedV1.EventMinorVersion;
         var actualContent = File.ReadAllText(@"energy_result_produced_v1.proto");
 
         // Act: There is no assert but the test will fail if the minor event version has not been bumped while the contract has changed.
 
         // Assert (using Assert as it provides a more useful diff than FluentAssertions)
         actualVersion.Should().Be(LastKnownMinorEventVersion);
-        Assert.Equal(LastKnownContentOfContract, actualContent, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
+        Assert.Equal(LastKnownContentOfEnergyResultProducedV1, actualContent, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
     }
 
     /// <summary>
@@ -84,7 +84,7 @@ public class EnergyResultProducedV1Tests
     }
 
     private const int LastKnownMinorEventVersion = 1;
-    private const string LastKnownContentOfContract = @"/* Copyright 2020 Energinet DataHub A/S
+    private const string LastKnownContentOfEnergyResultProducedV1 = @"/* Copyright 2020 Energinet DataHub A/S
  *
  * Licensed under the Apache License, Version 2.0 (the ""License2"");
  * you may not use this file except in compliance with the License.
