@@ -15,6 +15,7 @@
 using Energinet.DataHub.Core.Messaging.Communication.Internal;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Contracts.Events;
+using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Google.Protobuf;
 
@@ -42,7 +43,7 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Fa
         {
             var calculationResultCompleted = _energyResultProducedFactory.Create(energyResult);
             var eventIdentification = Guid.NewGuid();
-            return CreateIntegrationEvent(calculationResultCompleted, eventIdentification, CalculationResultCompleted.EventName, CalculationResultCompleted.EventMinorVersion);
+            return CreateIntegrationEvent(calculationResultCompleted, eventIdentification, EnergyResultProducedV1.EventName, EnergyResultProducedV1.EventMinorVersion);
         }
 
         private IntegrationEvent CreateIntegrationEvent(IMessage protobufMessage, Guid eventIdentification, string eventName, int eventMinorVersion)

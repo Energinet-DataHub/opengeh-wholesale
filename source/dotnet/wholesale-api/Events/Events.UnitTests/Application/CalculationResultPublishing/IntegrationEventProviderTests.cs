@@ -140,6 +140,10 @@ public class IntegrationEventProviderTests
             .Setup(factory => factory.CreateCalculationResultCompleted(energyResult))
             .Returns(anyIntegrationEvent);
 
+        calculationResultIntegrationEventFactoryMock
+            .Setup(factory => factory.CreateEnergyResultProduced(energyResult))
+            .Returns(anyIntegrationEvent);
+
         // Act
         var unused = sut.GetAsync().ToListAsync();
 
