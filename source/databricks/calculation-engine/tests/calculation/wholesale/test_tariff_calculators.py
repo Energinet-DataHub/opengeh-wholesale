@@ -47,7 +47,6 @@ DEFAULT_METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
 DEFAULT_SETTLEMENT_METHOD = SettlementMethod.FLEX
 DEFAULT_QUANTITY = Decimal("1.005")
 DEFAULT_QUALITY = ChargeQuality.CALCULATED
-DEFAULT_TIME_ZONE = "Europe/Copenhagen"
 DEFAULT_PERIOD_START_DATETIME = datetime(2019, 12, 31, 23)
 
 
@@ -354,7 +353,6 @@ def test__sum_within_month__sums_amount_per_month(
     # Act
     actual = sum_within_month(
         calculate_tariff_price_per_ga_co_es(tariffs),
-        DEFAULT_TIME_ZONE,
         DEFAULT_PERIOD_START_DATETIME,
     )
 
@@ -376,7 +374,6 @@ def test__sum_within_month__sums_across_metering_point_types(
     # Act
     actual = sum_within_month(
         calculate_tariff_price_per_ga_co_es(tariffs),
-        DEFAULT_TIME_ZONE,
         DEFAULT_PERIOD_START_DATETIME,
     )
 
@@ -398,7 +395,6 @@ def test__sum_within_month__joins_qualities(
     # Act
     actual = sum_within_month(
         calculate_tariff_price_per_ga_co_es(tariffs),
-        DEFAULT_TIME_ZONE,
         DEFAULT_PERIOD_START_DATETIME,
     )
 
@@ -421,7 +417,6 @@ def test__sum_within_month__groups_by_local_time_months(
     # Act
     actual = sum_within_month(
         calculate_tariff_price_per_ga_co_es(tariffs),
-        DEFAULT_TIME_ZONE,
         DEFAULT_PERIOD_START_DATETIME,
     )
 
@@ -443,7 +438,6 @@ def test__sum_within_month__charge_time_always_start_of_month(
     # Act
     actual = sum_within_month(
         calculate_tariff_price_per_ga_co_es(tariffs),
-        DEFAULT_TIME_ZONE,
         DEFAULT_PERIOD_START_DATETIME,
     )
 
@@ -464,7 +458,6 @@ def test__sum_within_month__sums_quantity_per_month(
     # Act
     actual = sum_within_month(
         calculate_tariff_price_per_ga_co_es(tariffs),
-        DEFAULT_TIME_ZONE,
         DEFAULT_PERIOD_START_DATETIME,
     )
 
@@ -490,7 +483,6 @@ def test__sum_within_month__sums_charge_price_per_month(
     # Act
     actual = sum_within_month(
         calculate_tariff_price_per_ga_co_es(tariffs),
-        DEFAULT_TIME_ZONE,
         DEFAULT_PERIOD_START_DATETIME,
     )
 

@@ -33,7 +33,6 @@ def execute(
     wholesale_calculation_result_writer: WholesaleCalculationResultWriter,
     metering_points_periods_df: DataFrame,  # TODO: use enriched_time_series
     time_series_point_df: DataFrame,  # TODO: use enriched_time_series
-    time_zone: str,
     period_start_datetime: datetime,
 ) -> None:
     # Get input data
@@ -52,7 +51,6 @@ def execute(
         charge_master_data,
         charge_links,
         charge_prices,
-        time_zone,
         period_start_datetime,
     )
 
@@ -64,7 +62,6 @@ def _calculate_tariff_charges(
     charge_master_data: DataFrame,
     charge_links: DataFrame,
     charge_prices: DataFrame,
-    time_zone: str,
     period_start_datetime: datetime,
 ) -> None:
     tariffs_hourly = init.get_tariff_charges(
@@ -80,7 +77,7 @@ def _calculate_tariff_charges(
     wholesale_calculation_result_writer.write(hourly_tariff_per_ga_co_es)
 
     monthly_tariff_per_ga_co_es = sum_within_month(
-        hourly_tariff_per_ga_co_es, time_zone, period_start_datetime
+        hourly_tariff_per_ga_co_es, period_start_datetime
     )
     wholesale_calculation_result_writer.write(monthly_tariff_per_ga_co_es)
 
@@ -94,24 +91,11 @@ def _get_production_and_consumption_metering_points(
     )
 
 
-def sum_within_month(
-    df: DataFrame, time_zone: str, period_start_datetime: datetime
-) -> DataFrame:
-    df = df.withColumn(
-        Colname.local_date,
-        F.to_timestamp(
-            F.from_utc_timestamp(F.col(Colname.observation_time), time_zone)
-        ),
-    )
-    df = df.withColumn("year", F.year(df[Colname.local_date]))
-    df = df.withColumn("month", F.month(df[Colname.local_date]))
-
+def sum_within_month(df: DataFrame, period_start_datetime: datetime) -> DataFrame:
     agg_df = (
         df.groupBy(
             Colname.energy_supplier_id,
             Colname.grid_area,
-            "year",
-            "month",
             Colname.charge_key,
             Colname.charge_id,
             Colname.charge_type,
