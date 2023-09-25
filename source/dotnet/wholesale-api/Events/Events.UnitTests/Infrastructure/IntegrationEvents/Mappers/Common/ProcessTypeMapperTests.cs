@@ -44,7 +44,7 @@ public class ProcessTypeMapperTests
             var actual = ProcessTypeMapper.MapProcessType(processType);
 
             // Assert: Is defined (and implicitly that it didn't throw exception)
-            Enum.IsDefined(typeof(Contracts.Events.ProcessType), actual).Should().BeTrue();
+            Enum.IsDefined(typeof(Contracts.IntegrationEvents.ProcessType), actual).Should().BeTrue();
         }
     }
 }

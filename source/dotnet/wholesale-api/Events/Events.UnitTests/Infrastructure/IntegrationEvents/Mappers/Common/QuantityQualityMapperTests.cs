@@ -43,7 +43,7 @@ public class QuantityQualityMapperTests
             var actual = QuantityQualityMapper.MapQuantityQuality(quality);
 
             // Assert: Is defined (and implicitly that it didn't throw exception)
-            Enum.IsDefined(typeof(Contracts.Events.QuantityQuality), actual).Should().BeTrue();
+            Enum.IsDefined(typeof(Contracts.IntegrationEvents.QuantityQuality), actual).Should().BeTrue();
         }
     }
 }

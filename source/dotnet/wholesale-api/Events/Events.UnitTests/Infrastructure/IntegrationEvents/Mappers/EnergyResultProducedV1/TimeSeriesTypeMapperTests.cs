@@ -47,7 +47,7 @@ public class TimeSeriesTypeMapperTests
             var actual = TimeSeriesTypeMapper.MapTimeSeriesType(timeSeriesType);
 
             // Assert: Is defined (and implicitly that it didn't throw exception)
-            Enum.IsDefined(typeof(Contracts.Events.TimeSeriesType), actual).Should().BeTrue();
+            Enum.IsDefined(typeof(Contracts.IntegrationEvents.TimeSeriesType), actual).Should().BeTrue();
         }
     }
 }
