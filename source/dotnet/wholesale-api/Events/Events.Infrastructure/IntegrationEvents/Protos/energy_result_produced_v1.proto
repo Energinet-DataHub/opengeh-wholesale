@@ -205,5 +205,3 @@ message EnergyResultProducedV1 {
       RESOLUTION_QUARTER = 1;
   }
 }
-
-

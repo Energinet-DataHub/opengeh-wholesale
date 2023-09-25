@@ -82,19 +82,6 @@ message AggregationPerGridArea {
    *   020
    */
   string grid_area_code = 1;
-
-  message AggregationPerEnergySupplierPerGridArea {
-    /*
-     * The grid area code uniquely defining the process in the batch.
-     * The grid area code is a 3 character string consisting solely of digits.
-     * Examples:
-     *   543
-     *   020
-     */
-    string grid_area_code = 1;
-
-    string EnergySupplierGlnOrEic = 2;
-  }
 }
 
 message AggregationPerEnergySupplierPerGridArea {
