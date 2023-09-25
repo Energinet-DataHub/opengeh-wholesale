@@ -40,7 +40,7 @@ public class CalculationResultIntegrationEventFactoryTests
             .Returns(calculationResultCompleted);
 
         // Act
-        var actual = sut.Create(energyResult);
+        var actual = sut.CreateCalculationResultCompleted(energyResult);
 
         // Assert
         actual.EventName.Should().Be(CalculationResultCompleted.EventName);

@@ -61,7 +61,8 @@ public class IntegrationEventProvider : IIntegrationEventProvider
             await foreach (var energyResult in _calculationResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
             {
                 resultCount++;
-                yield return _calculationResultIntegrationEventFactory.Create(energyResult);
+                yield return _calculationResultIntegrationEventFactory.CreateCalculationResultCompleted(energyResult); // Deprecated
+                yield return _calculationResultIntegrationEventFactory.CreateEnergyResultProduced(energyResult);
             }
 
             batch.PublishedTime = _clock.GetCurrentInstant();

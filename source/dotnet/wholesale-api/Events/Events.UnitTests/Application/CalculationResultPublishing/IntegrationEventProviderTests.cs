@@ -75,7 +75,7 @@ public class IntegrationEventProviderTests
             .Returns(AsAsyncEnumerable(energyResult));
 
         calculationResultIntegrationEventFactoryMock
-            .Setup(factory => factory.Create(energyResult))
+            .Setup(factory => factory.CreateCalculationResultCompleted(energyResult))
             .Returns(anyIntegrationEvent);
 
         // Act
@@ -137,7 +137,7 @@ public class IntegrationEventProviderTests
             .Returns(AsAsyncEnumerable(energyResult));
 
         calculationResultIntegrationEventFactoryMock
-            .Setup(factory => factory.Create(energyResult))
+            .Setup(factory => factory.CreateCalculationResultCompleted(energyResult))
             .Returns(anyIntegrationEvent);
 
         // Act
@@ -180,16 +180,16 @@ public class IntegrationEventProviderTests
             .Returns(AsAsyncEnumerable(energyResult3, energyResult4));
 
         calculationResultIntegrationEventFactoryMock
-            .Setup(factory => factory.Create(energyResult1))
+            .Setup(factory => factory.CreateCalculationResultCompleted(energyResult1))
             .Returns(integrationEvent1);
         calculationResultIntegrationEventFactoryMock
-            .SetupSequence(factory => factory.Create(energyResult2))
+            .SetupSequence(factory => factory.CreateCalculationResultCompleted(energyResult2))
             .Returns(integrationEvent2);
         calculationResultIntegrationEventFactoryMock
-            .Setup(factory => factory.Create(energyResult3))
+            .Setup(factory => factory.CreateCalculationResultCompleted(energyResult3))
             .Returns(integrationEvent3);
         calculationResultIntegrationEventFactoryMock
-            .SetupSequence(factory => factory.Create(energyResult4))
+            .SetupSequence(factory => factory.CreateCalculationResultCompleted(energyResult4))
             .Returns(integrationEvent4);
 
         // Act
