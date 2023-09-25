@@ -14,21 +14,20 @@
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers;
 using FluentAssertions;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.Mappers;
+namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.Mappers.Common;
 
 public class QuantityQualityMapperTests
 {
     [Theory]
-    [InlineAutoMoqData(QuantityQuality.Estimated, Contracts.Events.QuantityQuality.Estimated)]
-    [InlineAutoMoqData(QuantityQuality.Incomplete, Contracts.Events.QuantityQuality.Incomplete)]
-    [InlineAutoMoqData(QuantityQuality.Measured, Contracts.Events.QuantityQuality.Measured)]
-    [InlineAutoMoqData(QuantityQuality.Missing, Contracts.Events.QuantityQuality.Missing)]
-    [InlineAutoMoqData(QuantityQuality.Calculated, Contracts.Events.QuantityQuality.Calculated)]
-    public void MapQuantityQuality_WhenCalled_MapsCorrectly(QuantityQuality quantityQuality, Contracts.Events.QuantityQuality expected)
+    [InlineAutoMoqData(QuantityQuality.Estimated, Contracts.IntegrationEvents.QuantityQuality.Estimated)]
+    [InlineAutoMoqData(QuantityQuality.Incomplete, Contracts.IntegrationEvents.QuantityQuality.Incomplete)]
+    [InlineAutoMoqData(QuantityQuality.Measured, Contracts.IntegrationEvents.QuantityQuality.Measured)]
+    [InlineAutoMoqData(QuantityQuality.Missing, Contracts.IntegrationEvents.QuantityQuality.Missing)]
+    [InlineAutoMoqData(QuantityQuality.Calculated, Contracts.IntegrationEvents.QuantityQuality.Calculated)]
+    public void MapQuantityQuality_WhenCalled_MapsCorrectly(QuantityQuality quantityQuality, Contracts.IntegrationEvents.QuantityQuality expected)
     {
         // Act & Assert
         QuantityQualityMapper.MapQuantityQuality(quantityQuality).Should().Be(expected);
@@ -43,7 +42,7 @@ public class QuantityQualityMapperTests
             var actual = QuantityQualityMapper.MapQuantityQuality(quality);
 
             // Assert: Is defined (and implicitly that it didn't throw exception)
-            Enum.IsDefined(typeof(Contracts.Events.QuantityQuality), actual).Should().BeTrue();
+            Enum.IsDefined(typeof(Contracts.IntegrationEvents.QuantityQuality), actual).Should().BeTrue();
         }
     }
 }

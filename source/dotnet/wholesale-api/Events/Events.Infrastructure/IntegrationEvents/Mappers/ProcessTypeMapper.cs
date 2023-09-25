@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Contracts.Events;
+using ProcessType = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV1.Types.ProcessType;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers;
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.EnergyResultProducedV1;
 
 public static class ProcessTypeMapper
 {
-    public static ProcessType MapProcessType(Common.Models.ProcessType processType)
+    public static ProcessType MapProcessType(Wholesale.Common.Models.ProcessType processType)
     {
         return processType switch
         {
