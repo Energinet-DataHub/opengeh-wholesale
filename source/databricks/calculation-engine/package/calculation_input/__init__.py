@@ -22,6 +22,6 @@ from .grid_loss_responsible import (
     _get_all_grid_loss_responsible,
 )
 
-# from .metering_point_periods import get_metering_point_periods_df
+from .metering_point_periods import get_metering_point_periods_df
 from .get_calculation_input import get_calculation_input
 from .charges_reader import read_charges
