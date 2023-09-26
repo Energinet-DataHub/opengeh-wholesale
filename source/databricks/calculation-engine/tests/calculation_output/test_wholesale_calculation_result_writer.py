@@ -34,9 +34,7 @@ from package.infrastructure.paths import (
     OUTPUT_DATABASE_NAME,
     WHOLESALE_RESULT_TABLE_NAME,
 )
-from package.calculation_output.wholesale_calculation_result_writer import (
-    WholesaleCalculationResultWriter,
-)
+from package.calculation_output import WholesaleCalculationResultWriter
 from typing import Any
 
 

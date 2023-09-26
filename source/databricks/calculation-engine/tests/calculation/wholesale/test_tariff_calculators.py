@@ -31,7 +31,9 @@ from package.calculation.wholesale.tariff_calculators import (
     tariff_schema,
     calculate_tariff_price_per_ga_co_es,
 )
-from package.calculation.wholesale.wholesale_calculation import sum_within_month
+from package.calculation.wholesale.tariff_calculators import (
+    sum_within_month,
+)
 from package.constants import Colname
 
 

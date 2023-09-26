@@ -20,8 +20,8 @@ from pyspark.sql.functions import (
 )
 from package.constants import Colname
 from datetime import datetime
-from package.calculation_input import (
-    CalculationInputReader,
+from .calculation_input_reader import CalculationInputReader
+from .batch_grid_areas import (
     get_batch_grid_areas_df,
     check_all_grid_areas_have_metering_points,
 )
