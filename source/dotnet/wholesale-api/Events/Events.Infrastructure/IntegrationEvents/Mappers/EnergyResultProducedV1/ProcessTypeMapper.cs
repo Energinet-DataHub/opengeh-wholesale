@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using ProcessType = Energinet.DataHub.Wholesale.Contracts.Events.ProcessType;
+using ProcessType = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV1.Types.ProcessType;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.CalculationResultCompleted;
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.EnergyResultProducedV1;
 
 public static class ProcessTypeMapper
 {
@@ -22,12 +22,12 @@ public static class ProcessTypeMapper
     {
         return processType switch
         {
-            Wholesale.Common.Models.ProcessType.Aggregation => ProcessType.Aggregation,
-            Wholesale.Common.Models.ProcessType.BalanceFixing => ProcessType.BalanceFixing,
-            Wholesale.Common.Models.ProcessType.WholesaleFixing => ProcessType.WholesaleFixing,
-            Wholesale.Common.Models.ProcessType.FirstCorrectionSettlement => ProcessType.FirstCorrectionSettlement,
-            Wholesale.Common.Models.ProcessType.SecondCorrectionSettlement => ProcessType.SecondCorrectionSettlement,
-            Wholesale.Common.Models.ProcessType.ThirdCorrectionSettlement => ProcessType.ThirdCorrectionSettlement,
+            Common.Models.ProcessType.Aggregation => ProcessType.Aggregation,
+            Common.Models.ProcessType.BalanceFixing => ProcessType.BalanceFixing,
+            Common.Models.ProcessType.WholesaleFixing => ProcessType.WholesaleFixing,
+            Common.Models.ProcessType.FirstCorrectionSettlement => ProcessType.FirstCorrectionSettlement,
+            Common.Models.ProcessType.SecondCorrectionSettlement => ProcessType.SecondCorrectionSettlement,
+            Common.Models.ProcessType.ThirdCorrectionSettlement => ProcessType.ThirdCorrectionSettlement,
             _ => throw new ArgumentException($"No matching 'ProcessType' for: {processType.ToString()}"),
         };
     }

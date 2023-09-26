@@ -23,16 +23,16 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
 public class TimeSeriesTypeMapperTests
 {
     [Theory]
-    [InlineAutoMoqData(TimeSeriesType.Production, Contracts.IntegrationEvents.TimeSeriesType.Production)]
-    [InlineAutoMoqData(TimeSeriesType.FlexConsumption, Contracts.IntegrationEvents.TimeSeriesType.FlexConsumption)]
-    [InlineAutoMoqData(TimeSeriesType.NonProfiledConsumption, Contracts.IntegrationEvents.TimeSeriesType.NonProfiledConsumption)]
-    [InlineAutoMoqData(TimeSeriesType.NetExchangePerGa, Contracts.IntegrationEvents.TimeSeriesType.NetExchangePerGa)]
-    [InlineAutoMoqData(TimeSeriesType.NetExchangePerNeighboringGa, Contracts.IntegrationEvents.TimeSeriesType.NetExchangePerNeighboringGa)]
-    [InlineAutoMoqData(TimeSeriesType.GridLoss, Contracts.IntegrationEvents.TimeSeriesType.GridLoss)]
-    [InlineAutoMoqData(TimeSeriesType.NegativeGridLoss, Contracts.IntegrationEvents.TimeSeriesType.NegativeGridLoss)]
-    [InlineAutoMoqData(TimeSeriesType.PositiveGridLoss, Contracts.IntegrationEvents.TimeSeriesType.PositiveGridLoss)]
-    [InlineAutoMoqData(TimeSeriesType.TotalConsumption, Contracts.IntegrationEvents.TimeSeriesType.TotalConsumption)]
-    public void MapTimeSeriesType_WhenCalled_MapsCorrectly(TimeSeriesType timeSeriesType, Wholesale.Contracts.IntegrationEvents.TimeSeriesType expected)
+    [InlineAutoMoqData(TimeSeriesType.Production,  Contracts.IntegrationEvents.EnergyResultProducedV1.Types.TimeSeriesType.Production)]
+    [InlineAutoMoqData(TimeSeriesType.FlexConsumption,  Contracts.IntegrationEvents.EnergyResultProducedV1.Types.TimeSeriesType.FlexConsumption)]
+    [InlineAutoMoqData(TimeSeriesType.NonProfiledConsumption, Contracts.IntegrationEvents.EnergyResultProducedV1.Types.TimeSeriesType.NonProfiledConsumption)]
+    [InlineAutoMoqData(TimeSeriesType.NetExchangePerGa,  Contracts.IntegrationEvents.EnergyResultProducedV1.Types.TimeSeriesType.NetExchangePerGa)]
+    [InlineAutoMoqData(TimeSeriesType.NetExchangePerNeighboringGa,  Contracts.IntegrationEvents.EnergyResultProducedV1.Types.TimeSeriesType.NetExchangePerNeighboringGa)]
+    [InlineAutoMoqData(TimeSeriesType.GridLoss,  Contracts.IntegrationEvents.EnergyResultProducedV1.Types.TimeSeriesType.GridLoss)]
+    [InlineAutoMoqData(TimeSeriesType.NegativeGridLoss, Contracts.IntegrationEvents.EnergyResultProducedV1.Types.TimeSeriesType.NegativeGridLoss)]
+    [InlineAutoMoqData(TimeSeriesType.PositiveGridLoss, Contracts.IntegrationEvents.EnergyResultProducedV1.Types.TimeSeriesType.PositiveGridLoss)]
+    [InlineAutoMoqData(TimeSeriesType.TotalConsumption,  Contracts.IntegrationEvents.EnergyResultProducedV1.Types.TimeSeriesType.TotalConsumption)]
+    public void MapTimeSeriesType_WhenCalled_MapsCorrectly(TimeSeriesType timeSeriesType,  Contracts.IntegrationEvents.EnergyResultProducedV1.Types.TimeSeriesType expected)
     {
         // Act & Assert
         TimeSeriesTypeMapper.MapTimeSeriesType(timeSeriesType).Should().Be(expected);
@@ -47,7 +47,7 @@ public class TimeSeriesTypeMapperTests
             var actual = TimeSeriesTypeMapper.MapTimeSeriesType(timeSeriesType);
 
             // Assert: Is defined (and implicitly that it didn't throw exception)
-            Enum.IsDefined(typeof(Contracts.Events.TimeSeriesType), actual).Should().BeTrue();
+            Enum.IsDefined(typeof(Contracts.IntegrationEvents.EnergyResultProducedV1.Types.TimeSeriesType), actual).Should().BeTrue();
         }
     }
 }

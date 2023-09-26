@@ -47,10 +47,10 @@ public class EnergyResultProducedV1Tests
     /// If this test fails, it probably means that the minor event version has not been bumped, but the contract has changed.
     /// In order to fix you should (probably):
     /// - Bump the minor event version
-    /// - Update the content of the contract reference <see cref="LastKnownContentOfEnergyResultProducedV1"/>
+    /// - Update the content of the contract reference <see cref="LastKnownContentOfContract"/>
     /// </summary>
     [Fact]
-    public void Fail_If_EnergyResultProducedV1ProtoHasBeenChanged_And_MinorIsNotBumped()
+    public void Fail_If_MinorEventVersion_ShouldHaveBeenBumped()
     {
         // Arrange
         const int actualVersion = EnergyResultProducedV1.EventMinorVersion;
@@ -60,31 +60,11 @@ public class EnergyResultProducedV1Tests
 
         // Assert (using Assert as it provides a more useful diff than FluentAssertions)
         actualVersion.Should().Be(LastKnownMinorEventVersion);
-        Assert.Equal(LastKnownContentOfEnergyResultProducedV1, actualContent, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
-    }
-
-    /// <summary>
-    /// If this test fails, it could mean that the minor event version should  not been bumped, but the contract has changed.
-    /// If common.proto has changed and if it the contract is depending on the change you should (probably):
-    /// - Bump the minor event version
-    /// - Update the content of the contract reference <see cref="LastKnownContentOfCommon"/>
-    /// </summary>
-    [Fact]
-    public void Fail_If_CommonHasBeenChanged_And_MinorIsNotBumped()
-    {
-        // Arrange
-        var actualVersion = EnergyResultProducedV1.EventMinorVersion;
-        var actualContent = File.ReadAllText(@"common.proto");
-
-        // Act: There is no assert but the test will fail if the minor event version has not been bumped while the contract has changed.
-
-        // Assert (using Assert as it provides a more useful diff than FluentAssertions)
-        actualVersion.Should().Be(LastKnownMinorEventVersion);
-        Assert.Equal(LastKnownContentOfCommon, actualContent, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
+        Assert.Equal(LastKnownContentOfContract, actualContent, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
     }
 
     private const int LastKnownMinorEventVersion = 1;
-    private const string LastKnownContentOfEnergyResultProducedV1 = @"/* Copyright 2020 Energinet DataHub A/S
+    private const string LastKnownContentOfContract = @"/* Copyright 2020 Energinet DataHub A/S
  *
  * Licensed under the Apache License, Version 2.0 (the ""License2"");
  * you may not use this file except in compliance with the License.
@@ -102,7 +82,7 @@ public class EnergyResultProducedV1Tests
 syntax = ""proto3"";
 import ""google/protobuf/timestamp.proto"";
 import ""google/protobuf/wrappers.proto"";
-import ""common.proto"";
+import ""decimal_value.proto"";
 
 option csharp_namespace = ""Energinet.DataHub.Wholesale.Contracts.IntegrationEvents"";
 
@@ -144,7 +124,7 @@ message EnergyResultProducedV1 {
    */
   google.protobuf.Timestamp period_end_utc = 13;
 
-  EnergyResolution resolution = 14;
+  Resolution resolution = 14;
 
   QuantityUnit quantity_unit = 15;
 
@@ -155,177 +135,141 @@ message EnergyResultProducedV1 {
    */
    google.protobuf.StringValue from_grid_area_code = 16;
 
-  repeated EnergyTimeSeriesPoint time_series_points = 20;
-}
+  repeated TimeSeriesPoint time_series_points = 20;
 
-enum TimeSeriesType {
-    /*
-     * Unspecified is unused but according to best practice.
-     * Read more at https://protobuf.dev/programming-guides/style/#enums.
-     */
-    TIME_SERIES_TYPE_UNSPECIFIED = 0;
-    TIME_SERIES_TYPE_PRODUCTION = 1;
-    TIME_SERIES_TYPE_NON_PROFILED_CONSUMPTION = 2;
-    TIME_SERIES_TYPE_FLEX_CONSUMPTION = 3;
-    TIME_SERIES_TYPE_NET_EXCHANGE_PER_GA = 4;
-    TIME_SERIES_TYPE_NET_EXCHANGE_PER_NEIGHBORING_GA = 5;
-    TIME_SERIES_TYPE_GRID_LOSS = 6;
-    TIME_SERIES_TYPE_NEGATIVE_GRID_LOSS = 7;
-    TIME_SERIES_TYPE_POSITIVE_GRID_LOSS = 8;
-    TIME_SERIES_TYPE_TOTAL_CONSUMPTION = 9;
-    TIME_SERIES_TYPE_TEMP_FLEX_CONSUMPTION = 10;
-    TIME_SERIES_TYPE_TEMP_PRODUCTION = 11;
-}
+  enum TimeSeriesType {
+      /*
+       * Unspecified is unused but according to best practice.
+       * Read more at https://protobuf.dev/programming-guides/style/#enums.
+       */
+      TIME_SERIES_TYPE_UNSPECIFIED = 0;
+      TIME_SERIES_TYPE_PRODUCTION = 1;
+      TIME_SERIES_TYPE_NON_PROFILED_CONSUMPTION = 2;
+      TIME_SERIES_TYPE_FLEX_CONSUMPTION = 3;
+      TIME_SERIES_TYPE_NET_EXCHANGE_PER_GA = 4;
+      TIME_SERIES_TYPE_NET_EXCHANGE_PER_NEIGHBORING_GA = 5;
+      TIME_SERIES_TYPE_GRID_LOSS = 6;
+      TIME_SERIES_TYPE_NEGATIVE_GRID_LOSS = 7;
+      TIME_SERIES_TYPE_POSITIVE_GRID_LOSS = 8;
+      TIME_SERIES_TYPE_TOTAL_CONSUMPTION = 9;
+      TIME_SERIES_TYPE_TEMP_FLEX_CONSUMPTION = 10;
+      TIME_SERIES_TYPE_TEMP_PRODUCTION = 11;
+  }
 
-enum EnergyResolution {
-    /*
-     * Unspecified is unused but according to best practice.
-     * Read more at https://protobuf.dev/programming-guides/style/#enums.
-     */
-    ENERGY_RESOLUTION_UNSPECIFIED = 0;
+  message AggregationPerGridArea {
+      /*
+       * The grid area code is a 3 character string consisting solely of digits.
+       * Examples:
+       *   543
+       *   020
+       */
+      string grid_area_code = 1;
+  }
 
-    // States that each time series point represents a time interval of one quarter (15 minutes).
-    ENERGY_RESOLUTION_QUARTER = 1;
-}
-";
+  message AggregationPerEnergySupplierPerGridArea {
+      /*
+       * The grid area code is a 3 character string consisting solely of digits.
+       * Examples:
+       *   543
+       *   020
+       */
+      string grid_area_code = 1;
 
-    private const string LastKnownContentOfCommon = @"/* Copyright 2020 Energinet DataHub A/S
- *
- * Licensed under the Apache License, Version 2.0 (the ""License2"");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an ""AS IS"" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+      string energy_supplier_id = 2;
+  }
 
-syntax = ""proto3"";
-import ""google/protobuf/timestamp.proto"";
+  message AggregationPerBalanceResponsiblePartyPerGridArea {
+      /*
+       * The grid area code is a 3 character string consisting solely of digits.
+       * Examples:
+       *   543
+       *   020
+       */
+      string grid_area_code = 1;
 
-option csharp_namespace = ""Energinet.DataHub.Wholesale.Contracts.IntegrationEvents"";
+      string balance_responsible_id = 2;
+  }
 
-message AggregationPerGridArea {
-    /*
-     * The grid area code is a 3 character string consisting solely of digits.
-     * Examples:
-     *   543
-     *   020
-     */
-    string grid_area_code = 1;
-}
+  message AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea {
+      /*
+       * The grid area code is a 3 character string consisting solely of digits.
+       * Examples:
+       *   543
+       *   020
+       */
+      string grid_area_code = 1;
 
-message AggregationPerEnergySupplierPerGridArea {
-    /*
-     * The grid area code is a 3 character string consisting solely of digits.
-     * Examples:
-     *   543
-     *   020
-     */
-    string grid_area_code = 1;
+      string balance_responsible_id = 2;
 
-    string energy_supplier_id = 2;
-}
+      string energy_supplier_id = 3;
+  }
 
-message AggregationPerBalanceResponsiblePartyPerGridArea {
-    /*
-     * The grid area code is a 3 character string consisting solely of digits.
-     * Examples:
-     *   543
-     *   020
-     */
-    string grid_area_code = 1;
+  enum ProcessType {
+      /*
+       * Unspecified is unused but according to best practice.
+       * Read more at https://protobuf.dev/programming-guides/style/#enums.
+       */
+      PROCESS_TYPE_UNSPECIFIED = 0;
+      PROCESS_TYPE_BALANCE_FIXING = 1;
+      PROCESS_TYPE_AGGREGATION = 2;
+      PROCESS_TYPE_WHOLESALE_FIXING = 3;
+      PROCESS_TYPE_FIRST_CORRECTION_SETTLEMENT = 4;
+      PROCESS_TYPE_SECOND_CORRECTION_SETTLEMENT = 5;
+      PROCESS_TYPE_THIRD_CORRECTION_SETTLEMENT = 6;
+  }
 
-    string balance_responsible_id = 2;
-}
+  enum QuantityUnit {
+      /*
+       * Unspecified is unused but according to best practice.
+       * Read more at https://protobuf.dev/programming-guides/style/#enums.
+       */
+      QUANTITY_UNIT_UNSPECIFIED = 0;
 
-message AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea {
-    /*
-     * The grid area code is a 3 character string consisting solely of digits.
-     * Examples:
-     *   543
-     *   020
-     */
-    string grid_area_code = 1;
+      // States that the energy quantity is measured in kWh (kilo Watt hours).
+      QUANTITY_UNIT_KWH = 1;
+  }
 
-    string balance_responsible_id = 2;
+  message TimeSeriesPoint {
 
-    string energy_supplier_id = 3;
-}
+      // The start of the time interval where the energy was produces/consumed.
+      google.protobuf.Timestamp time = 1;
 
-enum ProcessType {
-    /*
-     * Unspecified is unused but according to best practice.
-     * Read more at https://protobuf.dev/programming-guides/style/#enums.
-     */
-    PROCESS_TYPE_UNSPECIFIED = 0;
-    PROCESS_TYPE_BALANCE_FIXING = 1;
-    PROCESS_TYPE_AGGREGATION = 2;
-    PROCESS_TYPE_WHOLESALE_FIXING = 3;
-    PROCESS_TYPE_FIRST_CORRECTION_SETTLEMENT = 4;
-    PROCESS_TYPE_SECOND_CORRECTION_SETTLEMENT = 5;
-    PROCESS_TYPE_THIRD_CORRECTION_SETTLEMENT = 6;
-}
+      /*
+       * 3 digit scale decimal value of the energy quantity.
+       * Value is only set when quality is not set to missing.
+       */
+      optional DecimalValue quantity = 2;
 
-enum QuantityUnit {
-    /*
-     * Unspecified is unused but according to best practice.
-     * Read more at https://protobuf.dev/programming-guides/style/#enums.
-     */
-    QUANTITY_UNIT_UNSPECIFIED = 0;
+      // The aggregated quality currently represents a value suitable for creation of RSM-014 CIM XML messages.
+      QuantityQuality quantity_quality = 3;
+  }
 
-    // States that the energy quantity is measured in kWh (kilo Watt hours).
-    QUANTITY_UNIT_KWH = 1;
-}
+  /*
+   * The quality of the energy quantity.
+   */
+  enum QuantityQuality {
+      /*
+       * Unspecified is unused but according to best practice.
+       * Read more at https://protobuf.dev/programming-guides/style/#enums.
+       */
+      QUANTITY_QUALITY_UNSPECIFIED = 0;
+      QUANTITY_QUALITY_ESTIMATED = 1;
+      QUANTITY_QUALITY_MEASURED = 2;
+      QUANTITY_QUALITY_MISSING = 3;
+      QUANTITY_QUALITY_INCOMPLETE = 4;
+      QUANTITY_QUALITY_CALCULATED = 5;
+  }
 
-message EnergyTimeSeriesPoint {
+  enum Resolution {
+      /*
+       * Unspecified is unused but according to best practice.
+       * Read more at https://protobuf.dev/programming-guides/style/#enums.
+       */
+      RESOLUTION_UNSPECIFIED = 0;
 
-    // The start of the time interval where the energy was produces/consumed.
-    google.protobuf.Timestamp time = 1;
-
-    /*
-     * 3 digit scale decimal value of the energy quantity.
-     * Value is only set when quality is not set to missing.
-     */
-    optional DecimalValue quantity = 2;
-
-    // The aggregated quality currently represents a value suitable for creation of RSM-014 CIM XML messages.
-    QuantityQuality quantity_quality = 3;
-}
-
-/*
- * The quality of the energy quantity.
- */
-enum QuantityQuality {
-    /*
-     * Unspecified is unused but according to best practice.
-     * Read more at https://protobuf.dev/programming-guides/style/#enums.
-     */
-    QUANTITY_QUALITY_UNSPECIFIED = 0;
-    QUANTITY_QUALITY_ESTIMATED = 1;
-    QUANTITY_QUALITY_MEASURED = 2;
-    QUANTITY_QUALITY_MISSING = 3;
-    QUANTITY_QUALITY_INCOMPLETE = 4;
-    QUANTITY_QUALITY_CALCULATED = 5;
-}
-
-/*
- * Representation of a decimal value.
- * See more at https://learn.microsoft.com/en-us/dotnet/architecture/grpc-for-wcf-developers/protobuf-data-types#decimals.
- * Example: 12345.6789 -> { units = 12345, nanos = 678900000 }
- */
-message DecimalValue {
-
-    // Whole units part of the amount
-    int64 units = 1;
-
-    // Nano units of the amount (10^-9)
-    // Must be same sign as units
-    sfixed32 nanos = 2;
+      // States that each time series point represents a time interval of one quarter (15 minutes).
+      RESOLUTION_QUARTER = 1;
+  }
 }
 ";
 }

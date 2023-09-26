@@ -26,11 +26,11 @@ public class EnergyResultsProducedV1Tests
     {
         var largestRsm014Result = new EnergyResultProducedV1()
         {
-            Resolution = EnergyResolution.Quarter,
+            Resolution = EnergyResultProducedV1.Types.Resolution.Quarter,
             CalculationId = Guid.NewGuid().ToString(),
-            ProcessType = ProcessType.Aggregation,
-            QuantityUnit = QuantityUnit.Kwh,
-            AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea = new AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea
+            ProcessType = EnergyResultProducedV1.Types.ProcessType.Aggregation,
+            QuantityUnit = EnergyResultProducedV1.Types.QuantityUnit.Kwh,
+            AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea = new EnergyResultProducedV1.Types.AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea
             {
                 GridAreaCode = "543",
                 EnergySupplierId = "1234567890123456",
@@ -38,14 +38,14 @@ public class EnergyResultsProducedV1Tests
             },
             PeriodStartUtc = new Timestamp(),
             PeriodEndUtc = new Timestamp(),
-            TimeSeriesType = TimeSeriesType.Production,
+            TimeSeriesType = EnergyResultProducedV1.Types.TimeSeriesType.Production,
         };
 
         // 1 month (max 31 days) * 24 hours * 4 quarters
         var maxNumOfPoints = 31 * 24 * 4;
         for (var i = 0; i < maxNumOfPoints; i++)
         {
-            largestRsm014Result.TimeSeriesPoints.Add(new Wholesale.Contracts.IntegrationEvents.EnergyTimeSeriesPoint
+            largestRsm014Result.TimeSeriesPoints.Add(new EnergyResultProducedV1.Types.TimeSeriesPoint
             {
                 Time = new Timestamp(),
                 Quantity = new DecimalValue
@@ -53,7 +53,7 @@ public class EnergyResultsProducedV1Tests
                     Nanos = 123456789,
                     Units = 123456,
                 },
-                QuantityQuality = QuantityQuality.Measured,
+                QuantityQuality = EnergyResultProducedV1.Types.QuantityQuality.Measured,
             });
         }
 

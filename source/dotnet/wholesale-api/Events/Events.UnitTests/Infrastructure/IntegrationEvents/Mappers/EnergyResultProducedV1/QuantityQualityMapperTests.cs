@@ -13,22 +13,23 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.CalculationResultCompleted;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.EnergyResultProducedV1;
+
 using FluentAssertions;
 using Xunit;
 using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
 
-namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.Mappers.CalculationResultCompleted;
+namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.Mappers.EnergyResultProducedV1;
 
 public class QuantityQualityMapperTests
 {
     [Theory]
-    [InlineAutoMoqData(QuantityQuality.Estimated, Contracts.Events.QuantityQuality.Estimated)]
-    [InlineAutoMoqData(QuantityQuality.Incomplete, Contracts.Events.QuantityQuality.Incomplete)]
-    [InlineAutoMoqData(QuantityQuality.Measured, Contracts.Events.QuantityQuality.Measured)]
-    [InlineAutoMoqData(QuantityQuality.Missing, Contracts.Events.QuantityQuality.Missing)]
-    [InlineAutoMoqData(QuantityQuality.Calculated, Contracts.Events.QuantityQuality.Calculated)]
-    public void MapQuantityQuality_WhenCalled_MapsCorrectly(QuantityQuality quantityQuality, Contracts.Events.QuantityQuality expected)
+    [InlineAutoMoqData(QuantityQuality.Estimated, Contracts.IntegrationEvents.EnergyResultProducedV1.Types.QuantityQuality.Estimated)]
+    [InlineAutoMoqData(QuantityQuality.Incomplete, Contracts.IntegrationEvents.EnergyResultProducedV1.Types.QuantityQuality.Incomplete)]
+    [InlineAutoMoqData(QuantityQuality.Measured, Contracts.IntegrationEvents.EnergyResultProducedV1.Types.QuantityQuality.Measured)]
+    [InlineAutoMoqData(QuantityQuality.Missing, Contracts.IntegrationEvents.EnergyResultProducedV1.Types.QuantityQuality.Missing)]
+    [InlineAutoMoqData(QuantityQuality.Calculated, Contracts.IntegrationEvents.EnergyResultProducedV1.Types.QuantityQuality.Calculated)]
+    public void MapQuantityQuality_WhenCalled_MapsCorrectly(QuantityQuality quantityQuality, Contracts.IntegrationEvents.EnergyResultProducedV1.Types.QuantityQuality expected)
     {
         // Act & Assert
         QuantityQualityMapper.MapQuantityQuality(quantityQuality).Should().Be(expected);
@@ -43,7 +44,7 @@ public class QuantityQualityMapperTests
             var actual = QuantityQualityMapper.MapQuantityQuality(quality);
 
             // Assert: Is defined (and implicitly that it didn't throw exception)
-            Enum.IsDefined(typeof(Contracts.Events.QuantityQuality), actual).Should().BeTrue();
+            Enum.IsDefined(typeof(Contracts.IntegrationEvents.EnergyResultProducedV1.Types.QuantityQuality), actual).Should().BeTrue();
         }
     }
 }

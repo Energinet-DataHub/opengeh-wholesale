@@ -13,22 +13,22 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.CalculationResultCompleted;
 using FluentAssertions;
 using Xunit;
+using ProcessType = Energinet.DataHub.Wholesale.Common.Models.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.Mappers.CalculationResultCompleted;
 
 public class ProcessTypeMapperTests
 {
     [Theory]
-    [InlineAutoMoqData(ProcessType.Aggregation, Contracts.Events.ProcessType.Aggregation)]
-    [InlineAutoMoqData(ProcessType.BalanceFixing, Contracts.Events.ProcessType.BalanceFixing)]
-    [InlineAutoMoqData(ProcessType.WholesaleFixing, Contracts.Events.ProcessType.WholesaleFixing)]
-    [InlineAutoMoqData(ProcessType.FirstCorrectionSettlement, Contracts.Events.ProcessType.FirstCorrectionSettlement)]
-    [InlineAutoMoqData(ProcessType.SecondCorrectionSettlement, Contracts.Events.ProcessType.SecondCorrectionSettlement)]
-    [InlineAutoMoqData(ProcessType.ThirdCorrectionSettlement, Contracts.Events.ProcessType.ThirdCorrectionSettlement)]
+    [InlineAutoMoqData(ProcessType.Aggregation,  Contracts.Events.ProcessType.Aggregation)]
+    [InlineAutoMoqData(ProcessType.BalanceFixing,  Contracts.Events.ProcessType.BalanceFixing)]
+    [InlineAutoMoqData(ProcessType.WholesaleFixing,  Contracts.Events.ProcessType.WholesaleFixing)]
+    [InlineAutoMoqData(ProcessType.FirstCorrectionSettlement,  Contracts.Events.ProcessType.FirstCorrectionSettlement)]
+    [InlineAutoMoqData(ProcessType.SecondCorrectionSettlement,  Contracts.Events.ProcessType.SecondCorrectionSettlement)]
+    [InlineAutoMoqData(ProcessType.ThirdCorrectionSettlement,  Contracts.Events.ProcessType.ThirdCorrectionSettlement)]
     public void MapProcessType_WhenCalled_MapsCorrectly(ProcessType processType, Wholesale.Contracts.Events.ProcessType expected)
     {
         // Act & Assert
