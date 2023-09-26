@@ -25,7 +25,7 @@ from package.codelists import (
     MeteringPointType,
     SettlementMethod,
 )
-from package.calculation_input import CalculationInputReader
+from package.calculation_input.calculation_input_reader import CalculationInputReader
 from package.calculation_input.schemas import (
     metering_point_period_schema,
     charge_price_points_schema,

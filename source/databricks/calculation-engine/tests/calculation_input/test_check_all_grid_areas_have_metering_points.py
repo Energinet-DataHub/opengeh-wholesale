@@ -14,7 +14,9 @@
 
 
 import pytest
-from package.calculation_input import check_all_grid_areas_have_metering_points
+from package.calculation_input.batch_grid_areas import (
+    check_all_grid_areas_have_metering_points,
+)
 from package.codelists import (
     MeteringPointResolution,
 )

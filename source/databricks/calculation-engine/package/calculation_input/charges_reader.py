@@ -13,14 +13,14 @@
 # limitations under the License.
 
 
-from pyspark.sql import DataFrame
+from pyspark.sql import DataFrame, SparkSession
 from package.constants import Colname
-from package.calculation_input import CalculationInputReader
+from .calculation_input_reader import CalculationInputReader
 
 
-def read_charges(
-    calculation_input_reader: CalculationInputReader,
-) -> DataFrame:
+def read_charges(spark: SparkSession) -> DataFrame:
+    calculation_input_reader = CalculationInputReader(spark)
+
     charge_master_data_df = calculation_input_reader.read_charge_master_data_periods()
     charge_links_df = calculation_input_reader.read_charge_links_periods()
     charge_prices_df = calculation_input_reader.read_charge_price_points()
