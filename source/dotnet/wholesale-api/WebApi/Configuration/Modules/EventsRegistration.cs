@@ -68,6 +68,8 @@ public static class EventsRegistration
         services
             .AddScoped<ICalculationResultCompletedFactory,
                 CalculationResultCompletedFactory>();
+        services.AddScoped<IEnergyResultProducedFactory,
+            EnergyResultProducedV1Factory>();
     }
 
     private static void AddInfrastructure(
