@@ -16,6 +16,7 @@ using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Contracts.Events;
+using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 using FluentAssertions;
 using Google.Protobuf;
@@ -28,7 +29,7 @@ public class CalculationResultIntegrationEventFactoryTests
 {
     [Theory]
     [AutoMoqData]
-    public void Create_ReturnsExpectedIntegrationEvent(
+    public void CreateCalculationResultCompleted_ReturnsExpectedIntegrationEvent(
         CalculationResultCompleted calculationResultCompleted,
         EnergyResult energyResult,
         [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
@@ -46,6 +47,27 @@ public class CalculationResultIntegrationEventFactoryTests
         actual.EventName.Should().Be(CalculationResultCompleted.EventName);
         actual.Message.ToByteArray().Should().BeEquivalentTo(calculationResultCompleted.ToByteArray());
         actual.EventMinorVersion.Should().Be(CalculationResultCompleted.EventMinorVersion);
-        actual.EventIdentification.Should().Be(energyResult.Id);
+    }
+
+    [Theory]
+    [AutoMoqData]
+    public void CreateEnergyResultProduced_ReturnsExpectedIntegrationEvent(
+        EnergyResultProducedV1 energyResultProduced,
+        EnergyResult energyResult,
+        [Frozen] Mock<IEnergyResultProducedFactory> energyResultProducedFactoryMock,
+        CalculationResultIntegrationEventFactory sut)
+    {
+        // Arrange
+        energyResultProducedFactoryMock
+            .Setup(x => x.Create(energyResult))
+            .Returns(energyResultProduced);
+
+        // Act
+        var actual = sut.CreateEnergyResultProduced(energyResult);
+
+        // Assert
+        actual.EventName.Should().Be(EnergyResultProducedV1.EventName);
+        actual.Message.ToByteArray().Should().BeEquivalentTo(energyResultProduced.ToByteArray());
+        actual.EventMinorVersion.Should().Be(EnergyResultProducedV1.EventMinorVersion);
     }
 }
