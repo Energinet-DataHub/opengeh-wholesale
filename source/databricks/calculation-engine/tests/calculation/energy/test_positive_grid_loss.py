@@ -18,7 +18,7 @@ from package.codelists import (
     MeteringPointResolution,
     TimeSeriesQuality,
 )
-from package.calculation.energy import calculate_positive_grid_loss
+from package.calculation.energy.grid_loss_calculator import calculate_positive_grid_loss
 from package.calculation.energy.schemas import aggregation_result_schema
 from package.calculation.energy.transformations import (
     create_dataframe_from_aggregation_result_schema,
