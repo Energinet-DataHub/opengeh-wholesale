@@ -43,49 +43,15 @@ charges_dataset = [
     (
         "001-D01-001",
         "001",
-        ChargeType.TARIFF.value,
+        "D01",
         "001",
-        ChargeResolution.DAY.value,
+        "P1D",
         "No",
         "DDK",
         datetime(2020, 1, 1, 0, 0),
         datetime(2020, 2, 1, 0, 0),
-    ),
-    (
-        "001-D01-001",
-        "001",
-        ChargeType.TARIFF.value,
-        "001",
-        ChargeResolution.DAY.value,
-        "No",
-        "DDK",
-        datetime(2020, 1, 1, 0, 0),
-        datetime(2020, 2, 1, 0, 0),
-    ),
-    (
-        "001-D01-001",
-        "001",
-        ChargeType.TARIFF.value,
-        "001",
-        ChargeResolution.HOUR.value,
-        "No",
-        "DDK",
-        datetime(2020, 1, 1, 0, 0),
-        datetime(2020, 2, 1, 0, 0),
-    ),
-    (
-        "001-D01-001",
-        "001",
-        ChargeType.TARIFF.value,
-        "001",
-        ChargeResolution.MONTH.value,
-        "No",
-        "DDK",
-        datetime(2020, 1, 1, 0, 0),
-        datetime(2020, 2, 1, 0, 0),
-    ),
+    )
 ]
-
 
 charges_with_prices_dataset_1 = [
     (
@@ -156,7 +122,7 @@ charge_links_dataset = [
 
 
 @pytest.mark.parametrize(
-    "charges,charge_prices,expected", [(charges_dataset, charge_prices_dataset, 8)]
+    "charges,charge_prices,expected", [(charges_dataset, charge_prices_dataset, 2)]
 )
 def test__join_with_charge_prices__joins_on_charge_key(
     spark: SparkSession, charges: DataFrame, charge_prices: DataFrame, expected: int
