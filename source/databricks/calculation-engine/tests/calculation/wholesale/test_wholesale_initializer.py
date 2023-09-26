@@ -42,13 +42,12 @@ from package.codelists import (
 from package.calculation.wholesale.schemas.charges_schema import (
     charges_schema,
 )
-from package.calculation.wholesale.charges_reader import _create_charges_df
+from package.calculation_input.charges_reader import _create_charges_df
 from package.calculation_input.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
 )
 from tests.helpers.test_schemas import (
-    charges_with_prices_schema,
     charges_with_price_and_links_schema,
     charges_complete_schema,
 )

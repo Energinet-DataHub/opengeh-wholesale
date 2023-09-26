@@ -21,7 +21,7 @@ from package.calculation_output.wholesale_calculation_result_writer import (
 )
 from .calculator_args import CalculatorArgs
 from .energy import energy_calculation
-from .wholesale import wholesale_calculation, read_charges
+from .wholesale import wholesale_calculation
 from . import setup
 
 
@@ -67,7 +67,7 @@ def execute(args: CalculatorArgs, spark: SparkSession) -> None:
             args.batch_id, args.batch_process_type, args.batch_execution_time_start
         )
 
-        charges_df = read_charges(calculation_input_reader)
+        charges_df = input.read_charges(calculation_input_reader)
 
         wholesale_calculation.execute(
             wholesale_calculation_result_writer,
