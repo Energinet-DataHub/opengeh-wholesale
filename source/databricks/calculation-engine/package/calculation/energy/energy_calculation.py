@@ -415,7 +415,7 @@ def _calculate_total_consumption(
     production_per_ga: DataFrame,
     net_exchange_per_ga: DataFrame,
 ) -> None:
-    total_consumption = transformations.calculate_total_consumption(
+    total_consumption = grid_loss_aggr.calculate_total_consumption(
         production_per_ga, net_exchange_per_ga
     )
     result_writer.write(
