@@ -173,56 +173,35 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             }
 
             [DomainFact]
-            [InlineData("NonProfiledConsumption", "AggregationPerGridarea")]
-            [InlineData("NonProfiledConsumption", "AggregationPerEnergysupplierPerGridarea")]
-            [InlineData("NonProfiledConsumption", "AggregationPerBalanceresponsiblepartyPerGridarea")]
-            [InlineData("NonProfiledConsumption", "AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea")]
-            [InlineData("Production", "AggregationPerGridarea")]
-            [InlineData("Production", "AggregationPerEnergysupplierPerGridarea")]
-            [InlineData("Production", "AggregationPerBalanceresponsiblepartyPerGridarea")]
-            [InlineData("Production", "AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea")]
-            [InlineData("FlexConsumption", "AggregationPerGridarea")]
-            [InlineData("FlexConsumption", "AggregationPerEnergysupplierPerGridarea")]
-            [InlineData("FlexConsumption", "AggregationPerBalanceresponsiblepartyPerGridarea")]
-            [InlineData("FlexConsumption", "AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea")]
-            [InlineData("NetExchangePerGa", "AggregationPerGridarea")]
-            [InlineData("NetExchangePerNeighboringGa", "AggregationPerGridarea")]
-            [InlineData("GridLoss", "AggregationPerGridarea")]
-            [InlineData("NegativeGridLoss", "AggregationPerGridarea")]
-            [InlineData("PositiveGridLoss", "AggregationPerGridarea")]
-            [InlineData("TotalConsumption", "AggregationPerGridarea")]
-            [InlineData("TempFlexConsumption", "AggregationPerGridarea")]
-            [InlineData("TempProduction", "AggregationPerGridarea")]
-            public void When_BalanceFixingBatchMessagesReceived_Then_ContainsExpectedResultTypes(string timeSeriesType, string aggregationLevel)
+            public void When_BalanceFixingBatchMessagesReceived_Then_ContainsExpectedResultTypes()
             {
                 using (new AssertionScope())
                 {
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromBalanceFixing, timeSeriesType, aggregationLevel).Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_energyResultProducedCompletedFromBalanceFixing, timeSeriesType, aggregationLevel).Should().BeTrue();
+                    foreach (var (timeSeriesType, aggregationLevel) in
+                             ExpectedTimeSeriesTypeAndAggregationLevelForBalanceFixing())
+                    {
+                        CheckIfExistsInCalculationResults(
+                            _calculationResultCompletedFromBalanceFixing,
+                            timeSeriesType,
+                            aggregationLevel).Should().BeTrue();
+                        CheckIfExistsInCalculationResults(
+                            _energyResultProducedCompletedFromBalanceFixing,
+                            timeSeriesType,
+                            aggregationLevel).Should().BeTrue();
+                    }
                 }
             }
 
             [DomainFact]
-            [InlineData("NonProfiledConsumption", "AggregationPerGridarea")]
-            [InlineData("NonProfiledConsumption", "AggregationPerEnergysupplierPerGridarea")]
-            [InlineData("Production", "AggregationPerGridarea")]
-            [InlineData("Production", "AggregationPerEnergysupplierPerGridarea")]
-            [InlineData("FlexConsumption", "AggregationPerGridarea")]
-            [InlineData("FlexConsumption", "AggregationPerEnergysupplierPerGridarea")]
-            [InlineData("NetExchangePerGa", "AggregationPerGridarea")]
-            [InlineData("GridLoss", "AggregationPerGridarea")]
-            [InlineData("NegativeGridLoss", "AggregationPerGridarea")]
-            [InlineData("PositiveGridLoss", "AggregationPerGridarea")]
-            [InlineData("TotalConsumption", "AggregationPerGridarea")]
-            [InlineData("TempFlexConsumption", "AggregationPerGridarea")]
-            [InlineData("TempProduction", "AggregationPerGridarea")]
-
-            public void When_WholesaleFixingBatchIsReceivedOnTopicSubscription_Then_MessagesReceivedContainExpectedResultTypes(string timeSeriesType, string aggregationLevel)
+            public void When_WholesaleFixingBatchIsReceivedOnTopicSubscription_Then_MessagesReceivedContainExpectedResultTypes()
             {
                 using (new AssertionScope())
                 {
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromWholesaleFixing, timeSeriesType, aggregationLevel).Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_energyResultProducedFromWholesaleFixing, timeSeriesType, aggregationLevel).Should().BeTrue();
+                    foreach (var (timeSeriesType, aggregationLevel) in ExpectedTimeSeriesTypeAndAggregationLevelForWholesaleFixing())
+                    {
+                        CheckIfExistsInCalculationResults(_calculationResultCompletedFromWholesaleFixing, timeSeriesType, aggregationLevel).Should().BeTrue();
+                        CheckIfExistsInCalculationResults(_energyResultProducedFromWholesaleFixing, timeSeriesType, aggregationLevel).Should().BeTrue();
+                    }
                 }
             }
 
@@ -292,6 +271,53 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 return calculationResults.Any(
                     obj => Enum.GetName(obj.TimeSeriesType) == timeSeriesType
                            && Enum.GetName(obj.AggregationLevelCase) == aggregationLevel);
+            }
+
+            private static List<(string TimeSeriesType, string AggregationLevel)> ExpectedTimeSeriesTypeAndAggregationLevelForBalanceFixing()
+            {
+                return new List<(string, string)>
+                {
+                    ("NonProfiledConsumption", "AggregationPerGridarea"),
+                    ("NonProfiledConsumption", "AggregationPerEnergysupplierPerGridarea"),
+                    ("NonProfiledConsumption", "AggregationPerBalanceresponsiblepartyPerGridarea"),
+                    ("NonProfiledConsumption", "AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea"),
+                    ("Production", "AggregationPerGridarea"),
+                    ("Production", "AggregationPerEnergysupplierPerGridarea"),
+                    ("Production", "AggregationPerBalanceresponsiblepartyPerGridarea"),
+                    ("Production", "AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea"),
+                    ("FlexConsumption", "AggregationPerGridarea"),
+                    ("FlexConsumption", "AggregationPerEnergysupplierPerGridarea"),
+                    ("FlexConsumption", "AggregationPerBalanceresponsiblepartyPerGridarea"),
+                    ("FlexConsumption", "AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea"),
+                    ("NetExchangePerGa", "AggregationPerGridarea"),
+                    ("NetExchangePerNeighboringGa", "AggregationPerGridarea"),
+                    ("GridLoss", "AggregationPerGridarea"),
+                    ("NegativeGridLoss", "AggregationPerGridarea"),
+                    ("PositiveGridLoss", "AggregationPerGridarea"),
+                    ("TotalConsumption", "AggregationPerGridarea"),
+                    ("TempFlexConsumption", "AggregationPerGridarea"),
+                    ("TempProduction", "AggregationPerGridarea"),
+                };
+            }
+
+            private static List<(string TimeSeriesType, string AggregationLevel)> ExpectedTimeSeriesTypeAndAggregationLevelForWholesaleFixing()
+            {
+                return new List<(string, string)>
+                {
+                    ("NonProfiledConsumption", "AggregationPerGridarea"),
+                    ("NonProfiledConsumption", "AggregationPerEnergysupplierPerGridarea"),
+                    ("Production", "AggregationPerGridarea"),
+                    ("Production", "AggregationPerEnergysupplierPerGridarea"),
+                    ("FlexConsumption", "AggregationPerGridarea"),
+                    ("FlexConsumption", "AggregationPerEnergysupplierPerGridarea"),
+                    ("NetExchangePerGa", "AggregationPerGridarea"),
+                    ("GridLoss", "AggregationPerGridarea"),
+                    ("NegativeGridLoss", "AggregationPerGridarea"),
+                    ("PositiveGridLoss", "AggregationPerGridarea"),
+                    ("TotalConsumption", "AggregationPerGridarea"),
+                    ("TempFlexConsumption", "AggregationPerGridarea"),
+                    ("TempProduction", "AggregationPerGridarea"),
+                };
             }
         }
     }
