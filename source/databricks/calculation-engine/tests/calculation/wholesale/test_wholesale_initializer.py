@@ -24,8 +24,6 @@ from pyspark.sql.types import (
 )
 from typing import Callable
 from package.calculation.wholesale.wholesale_initializer import (
-    _join_with_charge_prices,
-    _join_with_charge_links,
     _join_with_metering_points,
     _explode_subscription,
     _get_charges_based_on_resolution,
@@ -43,9 +41,8 @@ from package.codelists import (
 )
 from package.calculation.wholesale.schemas.charges_schema import (
     charges_schema,
-    charge_prices_schema,
-    charge_links_schema,
 )
+from package.calculation.wholesale.charges_reader import _create_charges_df
 from package.calculation_input.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
@@ -247,24 +244,6 @@ charge_prices_dataset = [
 ]
 
 
-# Shared
-@pytest.mark.parametrize(
-    "charges,charge_prices,expected", [(charges_dataset, charge_prices_dataset, 2)]
-)
-def test__join_with_charge_prices__joins_on_charge_key(
-    spark: SparkSession, charges: DataFrame, charge_prices: DataFrame, expected: int
-) -> None:
-    # Arrange
-    charges = spark.createDataFrame(charges, schema=charges_schema)
-    charge_prices = spark.createDataFrame(charge_prices, schema=charge_prices_schema)
-
-    # Act
-    result = _join_with_charge_prices(charges, charge_prices)
-
-    # Assert
-    assert result.count() == expected
-
-
 subscription_charges_with_prices_dataset_1 = [
     (
         "001-D01-001",
@@ -321,31 +300,6 @@ subscription_charges_with_prices_dataset_4 = [
         Decimal("200.50"),
     )
 ]
-
-
-# Subscription only
-@pytest.mark.parametrize(
-    "subscription_charges_with_prices,expected",
-    [
-        (subscription_charges_with_prices_dataset_1, 31),
-        (subscription_charges_with_prices_dataset_2, 0),
-        (subscription_charges_with_prices_dataset_3, 2),
-        (subscription_charges_with_prices_dataset_4, 0),
-    ],
-)
-def test__explode_subscription__explodes_into_rows_based_on_number_of_days_between_from_and_to_date(
-    spark: SparkSession, subscription_charges_with_prices: DataFrame, expected: int
-) -> None:
-    # Arrange
-    subscription_charges_with_prices = spark.createDataFrame(
-        subscription_charges_with_prices, schema=charges_with_prices_schema
-    )
-
-    # Act
-    result = _explode_subscription(subscription_charges_with_prices)
-
-    # Assert
-    assert result.count() == expected
 
 
 charges_with_prices_dataset_1 = [
@@ -410,35 +364,6 @@ charge_links_dataset = [
 
 
 # Shared
-@pytest.mark.parametrize(
-    "charges_with_prices,charge_links,expected",
-    [
-        (charges_with_prices_dataset_1, charge_links_dataset, 1),
-        (charges_with_prices_dataset_2, charge_links_dataset, 0),
-        (charges_with_prices_dataset_3, charge_links_dataset, 1),
-        (charges_with_prices_dataset_4, charge_links_dataset, 0),
-    ],
-)
-def test__join_with_charge_links__joins_on_charge_key_and_time_is_between_from_and_to_date(
-    spark: SparkSession,
-    charges_with_prices: DataFrame,
-    charge_links: DataFrame,
-    expected: int,
-) -> None:
-    # Arrange
-    charges_with_prices = spark.createDataFrame(
-        charges_with_prices, schema=charges_with_prices_schema
-    )
-    charge_links = spark.createDataFrame(charge_links, schema=charge_links_schema)
-
-    # Act
-    result = _join_with_charge_links(charges_with_prices, charge_links)
-
-    # Assert
-    assert result.count() == expected
-
-
-# Shared
 DEFAULT_METERING_POINT_ID = "123"
 ANOTHER_METERING_POINT_ID = "456"
 
@@ -450,12 +375,14 @@ charges_with_price_and_links_dataset_1 = [
         "001",
         "P1D",
         "No",
+        datetime(2020, 1, 1, 0, 0),
+        datetime(2020, 2, 1, 0, 0),
         datetime(2020, 1, 15, 0, 0),
         Decimal("200.50"),
         DEFAULT_METERING_POINT_ID,
     )
 ]
-charges_with_price_and_links_and_dataset_2 = [
+charges_with_price_and_links_dataset_2 = [
     (
         "001-D01-001",
         "001",
@@ -463,6 +390,8 @@ charges_with_price_and_links_and_dataset_2 = [
         "001",
         "P1D",
         "No",
+        datetime(2020, 1, 1, 0, 0),
+        datetime(2020, 2, 1, 0, 0),
         datetime(2020, 2, 1, 0, 0),
         Decimal("200.50"),
         DEFAULT_METERING_POINT_ID,
@@ -477,6 +406,8 @@ charges_with_price_and_links_dataset_3 = [
         "P1D",
         "No",
         datetime(2020, 1, 1, 0, 0),
+        datetime(2020, 2, 2, 0, 0),
+        datetime(2020, 1, 1, 0, 0),
         Decimal("200.50"),
         DEFAULT_METERING_POINT_ID,
     )
@@ -489,6 +420,8 @@ charges_with_price_and_links_dataset_4 = [
         "001",
         "P1D",
         "No",
+        datetime(2020, 1, 1, 0, 0),
+        datetime(2020, 2, 1, 0, 0),
         datetime(2020, 1, 15, 0, 0),
         Decimal("200.50"),
         ANOTHER_METERING_POINT_ID,
@@ -513,6 +446,93 @@ metering_points_dataset = [
 ]
 
 
+explode_charges_with_price_and_links_dataset_1 = [
+    (
+        "001-D01-001",
+        "001",
+        "D01",
+        "001",
+        "P1D",
+        "No",
+        datetime(2020, 1, 1, 0, 0),
+        datetime(2020, 2, 1, 0, 0),
+        datetime(2020, 1, 2, 0, 0),
+        Decimal("200.50"),
+        DEFAULT_METERING_POINT_ID,
+    )
+]
+explode_charges_with_price_and_links_dataset_2 = [
+    (
+        "001-D01-001",
+        "001",
+        "D01",
+        "001",
+        "P1D",
+        "No",
+        datetime(2020, 1, 1, 0, 0),
+        datetime(2020, 2, 1, 0, 0),
+        datetime(2021, 1, 2, 0, 0),
+        Decimal("200.50"),
+        DEFAULT_METERING_POINT_ID,
+    )
+]
+explode_charges_with_price_and_links_dataset_3 = [
+    (
+        "001-D01-001",
+        "001",
+        "D01",
+        "001",
+        "P1D",
+        "No",
+        datetime(2020, 1, 1, 0, 0),
+        datetime(2020, 2, 2, 0, 0),
+        datetime(2020, 2, 15, 0, 0),
+        Decimal("200.50"),
+        DEFAULT_METERING_POINT_ID,
+    )
+]
+explode_charges_with_price_and_links_dataset_4 = [
+    (
+        "001-D01-001",
+        "001",
+        "D01",
+        "001",
+        "P1D",
+        "No",
+        datetime(2020, 1, 1, 0, 0),
+        datetime(2020, 2, 1, 0, 0),
+        datetime(2020, 3, 1, 0, 0),
+        Decimal("200.50"),
+        ANOTHER_METERING_POINT_ID,
+    )
+]
+
+
+# Subscription only
+@pytest.mark.parametrize(
+    "charges_df,expected",
+    [
+        (explode_charges_with_price_and_links_dataset_1, 31),
+        (explode_charges_with_price_and_links_dataset_2, 0),
+        (explode_charges_with_price_and_links_dataset_3, 2),
+        (explode_charges_with_price_and_links_dataset_4, 0),
+    ],
+)
+def test__explode_subscription__explodes_into_rows_based_on_number_of_days_between_from_and_to_date(
+    spark: SparkSession, charges_df: DataFrame, expected: int
+) -> None:
+    # Arrange
+    charges_df = spark.createDataFrame(
+        charges_df, schema=charges_with_price_and_links_schema
+    )
+
+    # Act
+    result = _explode_subscription(charges_df)
+
+    # Assert
+    assert result.count() == expected
+
+
 # Shared
 @pytest.mark.parametrize(
     "charges_with_price_and_links,metering_points,expected",
@@ -523,7 +543,7 @@ metering_points_dataset = [
             1,
         ),
         (
-            charges_with_price_and_links_and_dataset_2,
+            charges_with_price_and_links_dataset_2,
             metering_points_dataset,
             0,
         ),
@@ -756,13 +776,15 @@ def test__get_tariff_charges__when_no_charge_data_match_the_resolution__returns_
         charge_resolution=ChargeResolution.DAY.value,
     )
 
+    charges_df = _create_charges_df(
+        charge_master_data, default_charge_links, default_charge_price_point
+    )
+
     # Act
     tariffs = get_tariff_charges(
         default_metering_point_period,
         default_time_series_point,
-        charge_master_data,
-        default_charge_links,
-        default_charge_price_point,
+        charges_df,
         ChargeResolution.HOUR,
     )
 
@@ -815,13 +837,15 @@ def test__get_tariff_charges__returns_expected_quantities(
         .union(charge_prices_factory(time=third_hour_start))  # hour 3
     )
 
+    charges_df = _create_charges_df(
+        default_charge_master_data, default_charge_links, charge_prices
+    )
+
     # Act
     tariffs = get_tariff_charges(
         default_metering_point_period,
         time_series,
-        default_charge_master_data,
-        default_charge_links,
-        charge_prices,
+        charges_df,
         ChargeResolution.HOUR,
     )
 
@@ -890,13 +914,13 @@ def test__get_tariff_charges__when_two_tariff_overlap__returns_both_tariffs(
         charge_key_2,
     )
 
+    charges_df = _create_charges_df(charge_master_data, charge_links, charge_prices)
+
     # Act
     tariffs_df = get_tariff_charges(
         default_metering_point_period,
         default_time_series_point,
-        charge_master_data,
-        charge_links,
-        charge_prices,
+        charges_df,
         ChargeResolution.HOUR,
     )
 
