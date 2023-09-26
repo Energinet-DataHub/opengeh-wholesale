@@ -36,8 +36,6 @@ module "func_receiver" {
     ALLOW_TEST_TOKENS                                       = var.allow_test_tokens
     INTEGRATION_EVENTS_TOPIC_NAME                           = local.INTEGRATION_EVENTS_TOPIC_NAME
     BALANCE_FIXING_RESULT_AVAILABLE_EVENT_SUBSCRIPTION_NAME = module.sbtsub_wholesale_process_completed_event_listener.name
-    AGGREGATION_RESULTS_API_URI                             = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=app-wholesale-api-base-url)"
-    AGGREGATION_RESULTS_API_PATH                            = "/v2/processstepresult"
   }
 }
 
