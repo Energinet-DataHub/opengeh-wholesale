@@ -77,6 +77,9 @@ public class IntegrationEventProviderTests
         calculationResultIntegrationEventFactoryMock
             .Setup(factory => factory.CreateCalculationResultCompleted(energyResult))
             .Returns(anyIntegrationEvent);
+        calculationResultIntegrationEventFactoryMock
+            .Setup(factory => factory.CreateEnergyResultProduced(energyResult))
+            .Returns(anyIntegrationEvent);
 
         // Act
         var unused = sut.GetAsync().ToListAsync();
@@ -160,10 +163,14 @@ public class IntegrationEventProviderTests
         EnergyResult energyResult2,
         EnergyResult energyResult3,
         EnergyResult energyResult4,
-        IntegrationEvent integrationEvent1,
-        IntegrationEvent integrationEvent2,
-        IntegrationEvent integrationEvent3,
-        IntegrationEvent integrationEvent4,
+        IntegrationEvent calculationResultCompletedEvent1,
+        IntegrationEvent calculationResultCompletedEvent2,
+        IntegrationEvent calculationResultCompletedEvent3,
+        IntegrationEvent calculationResultCompletedEvent4,
+        IntegrationEvent energyResultProducedEvent1,
+        IntegrationEvent energyResultProducedEvent2,
+        IntegrationEvent energyResultProducedEvent3,
+        IntegrationEvent energyResultProducedEvent4,
         [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
         [Frozen] Mock<ICalculationResultIntegrationEventFactory> calculationResultIntegrationEventFactoryMock,
         [Frozen] Mock<ICalculationResultQueries> calculationResultQueriesMock,
@@ -185,22 +192,47 @@ public class IntegrationEventProviderTests
 
         calculationResultIntegrationEventFactoryMock
             .Setup(factory => factory.CreateCalculationResultCompleted(energyResult1))
-            .Returns(integrationEvent1);
+            .Returns(calculationResultCompletedEvent1);
+        calculationResultIntegrationEventFactoryMock
+            .Setup(factory => factory.CreateEnergyResultProduced(energyResult1))
+            .Returns(energyResultProducedEvent1);
+
         calculationResultIntegrationEventFactoryMock
             .SetupSequence(factory => factory.CreateCalculationResultCompleted(energyResult2))
-            .Returns(integrationEvent2);
+            .Returns(calculationResultCompletedEvent2);
+        calculationResultIntegrationEventFactoryMock
+            .Setup(factory => factory.CreateEnergyResultProduced(energyResult2))
+            .Returns(energyResultProducedEvent2);
+
         calculationResultIntegrationEventFactoryMock
             .Setup(factory => factory.CreateCalculationResultCompleted(energyResult3))
-            .Returns(integrationEvent3);
+            .Returns(calculationResultCompletedEvent3);
+        calculationResultIntegrationEventFactoryMock
+            .Setup(factory => factory.CreateEnergyResultProduced(energyResult3))
+            .Returns(energyResultProducedEvent3);
+
         calculationResultIntegrationEventFactoryMock
             .SetupSequence(factory => factory.CreateCalculationResultCompleted(energyResult4))
-            .Returns(integrationEvent4);
+            .Returns(calculationResultCompletedEvent4);
+        calculationResultIntegrationEventFactoryMock
+            .Setup(factory => factory.CreateEnergyResultProduced(energyResult4))
+            .Returns(energyResultProducedEvent4);
 
         // Act
         var actual = await sut.GetAsync().ToListAsync();
 
         // Assert
-        actual.Should().BeEquivalentTo(new[] { integrationEvent1, integrationEvent2, integrationEvent3, integrationEvent4 });
+        actual.Should().BeEquivalentTo(new[]
+        {
+            calculationResultCompletedEvent1,
+            energyResultProducedEvent1,
+            calculationResultCompletedEvent2,
+            energyResultProducedEvent2,
+            calculationResultCompletedEvent3,
+            energyResultProducedEvent3,
+            calculationResultCompletedEvent4,
+            energyResultProducedEvent4,
+        });
     }
 
     [Fact]
