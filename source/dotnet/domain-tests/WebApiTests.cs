@@ -15,6 +15,7 @@
 using System.IO.Compression;
 using System.Net;
 using Energinet.DataHub.Wholesale.Contracts.Events;
+using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -94,12 +95,16 @@ namespace Energinet.DataHub.Wholesale.DomainTests
 
             private static List<CalculationResultCompleted> _calculationResultCompletedFromBalanceFixing = null!;
             private static List<CalculationResultCompleted> _calculationResultCompletedFromWholesaleFixing = null!;
+            private static List<EnergyResultProducedV1> _energyResultProducedCompletedFromBalanceFixing = null!;
+            private static List<EnergyResultProducedV1> _energyResultProducedFromWholesaleFixing = null!;
 
             public Given_Authorized(AuthorizedClientFixture fixture)
             {
                 Fixture = fixture;
                 _calculationResultCompletedFromBalanceFixing = Fixture.Output.CalculationResultCompletedFromBalanceFixing;
                 _calculationResultCompletedFromWholesaleFixing = Fixture.Output.CalculationResultCompletedFromWholesaleFixing;
+                _energyResultProducedCompletedFromBalanceFixing = Fixture.Output.EnergyResultProducedFromBalanceFixing;
+                _energyResultProducedFromWholesaleFixing = Fixture.Output.EnergyResultProducedFromWholesaleFixing;
             }
 
             private AuthorizedClientFixture Fixture { get; }
@@ -130,83 +135,94 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             }
 
             [DomainFact]
-            public void When_EnergyCalculationBatchIsCompleted_Then_BatchIsReceivedOnTopicSubscription()
+            public void When_BalanceFixingHasCompleted_Then_HasReceivedExpectedNumberOfResults()
             {
                 _calculationResultCompletedFromBalanceFixing.Count.Should().Be(112);
+                _energyResultProducedCompletedFromBalanceFixing.Count.Should().Be(112);
             }
 
             [DomainFact]
-            public void When_WholesaleCalculationBatchIsCompleted_Then_BatchIsReceivedOnTopicSubscription()
+            public void When_WholesaleFixingHasCompleted_Then_HasReceivedExpectedNumberOfResults()
             {
                 _calculationResultCompletedFromWholesaleFixing.Count.Should().Be(137);
+                _energyResultProducedFromWholesaleFixing.Count.Should().Be(137);
             }
 
             [DomainFact]
             public void When_EnergyCalculationBatchIsComplete_Then_MessagesReceivedContainAllTimeSeriesTypes()
             {
-                var actualTimeSeriesTypes = GetTimeSeriesTypes(_calculationResultCompletedFromBalanceFixing);
+                var actualForCalculationResultCompleted = GetTimeSeriesTypes(_calculationResultCompletedFromBalanceFixing);
+                var actualForEnergyResultProduced = GetTimeSeriesTypes(_energyResultProducedCompletedFromBalanceFixing);
                 foreach (var expectedTimeSeriesType in ExpectedTimeSeriesTypesForBalanceFixing)
                 {
-                    actualTimeSeriesTypes.Should().Contain(expectedTimeSeriesType);
+                    actualForCalculationResultCompleted.Should().Contain(expectedTimeSeriesType);
+                    actualForEnergyResultProduced.Should().Contain(expectedTimeSeriesType);
                 }
             }
 
             [DomainFact]
             public void When_WholesaleCalculationBatchIsComplete_Then_MessagesReceivedContainAllTimeSeriesTypes()
             {
-                var actualTimeSeriesTypes = GetTimeSeriesTypes(_calculationResultCompletedFromWholesaleFixing);
+                var actualForCalculationResultCompleted = GetTimeSeriesTypes(_calculationResultCompletedFromWholesaleFixing);
+                var actualForEnergyResultProduced = GetTimeSeriesTypes(_energyResultProducedFromWholesaleFixing);
                 foreach (var expectedTimeSeriesType in ExpectedTimeSeriesTypesForWholesaleFixing)
                 {
-                    actualTimeSeriesTypes.Should().Contain(expectedTimeSeriesType);
+                    actualForCalculationResultCompleted.Should().Contain(expectedTimeSeriesType);
+                    actualForEnergyResultProduced.Should().Contain(expectedTimeSeriesType);
                 }
             }
 
             [DomainFact]
-            public void When_BalanceFixingBatchIsReceivedOnTopicSubscription_Then_MessagesReceivedContainExpectedResultTypes()
+            [InlineData("NonProfiledConsumption", "AggregationPerGridarea")]
+            [InlineData("NonProfiledConsumption", "AggregationPerEnergysupplierPerGridarea")]
+            [InlineData("NonProfiledConsumption", "AggregationPerBalanceresponsiblepartyPerGridarea")]
+            [InlineData("NonProfiledConsumption", "AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea")]
+            [InlineData("Production", "AggregationPerGridarea")]
+            [InlineData("Production", "AggregationPerEnergysupplierPerGridarea")]
+            [InlineData("Production", "AggregationPerBalanceresponsiblepartyPerGridarea")]
+            [InlineData("Production", "AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea")]
+            [InlineData("FlexConsumption", "AggregationPerGridarea")]
+            [InlineData("FlexConsumption", "AggregationPerEnergysupplierPerGridarea")]
+            [InlineData("FlexConsumption", "AggregationPerBalanceresponsiblepartyPerGridarea")]
+            [InlineData("FlexConsumption", "AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea")]
+            [InlineData("NetExchangePerGa", "AggregationPerGridarea")]
+            [InlineData("NetExchangePerNeighboringGa", "AggregationPerGridarea")]
+            [InlineData("GridLoss", "AggregationPerGridarea")]
+            [InlineData("NegativeGridLoss", "AggregationPerGridarea")]
+            [InlineData("PositiveGridLoss", "AggregationPerGridarea")]
+            [InlineData("TotalConsumption", "AggregationPerGridarea")]
+            [InlineData("TempFlexConsumption", "AggregationPerGridarea")]
+            [InlineData("TempProduction", "AggregationPerGridarea")]
+            public void When_BalanceFixingBatchMessagesReceived_Then_ContainsExpectedResultTypes(string timeSeriesType, string aggregationLevel)
             {
                 using (new AssertionScope())
                 {
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromBalanceFixing, "NonProfiledConsumption", "AggregationPerGridarea").Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromBalanceFixing, "NonProfiledConsumption", "AggregationPerEnergysupplierPerGridarea").Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromBalanceFixing, "NonProfiledConsumption", "AggregationPerBalanceresponsiblepartyPerGridarea").Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromBalanceFixing, "NonProfiledConsumption", "AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea").Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromBalanceFixing, "Production", "AggregationPerGridarea").Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromBalanceFixing, "Production", "AggregationPerEnergysupplierPerGridarea").Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromBalanceFixing, "Production", "AggregationPerBalanceresponsiblepartyPerGridarea").Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromBalanceFixing, "Production", "AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea").Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromBalanceFixing, "FlexConsumption", "AggregationPerGridarea").Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromBalanceFixing, "FlexConsumption", "AggregationPerEnergysupplierPerGridarea").Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromBalanceFixing, "FlexConsumption", "AggregationPerBalanceresponsiblepartyPerGridarea").Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromBalanceFixing, "FlexConsumption", "AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea").Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromBalanceFixing, "NetExchangePerGa", "AggregationPerGridarea").Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromBalanceFixing, "NetExchangePerNeighboringGa", "AggregationPerGridarea").Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromBalanceFixing, "GridLoss", "AggregationPerGridarea").Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromBalanceFixing, "NegativeGridLoss", "AggregationPerGridarea").Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromBalanceFixing, "PositiveGridLoss", "AggregationPerGridarea").Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromBalanceFixing, "TotalConsumption", "AggregationPerGridarea").Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromBalanceFixing, "TempFlexConsumption", "AggregationPerGridarea").Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromBalanceFixing, "TempProduction", "AggregationPerGridarea").Should().BeTrue();
+                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromBalanceFixing, timeSeriesType, aggregationLevel).Should().BeTrue();
+                    CheckIfExistsInCalculationResults(_energyResultProducedCompletedFromBalanceFixing, timeSeriesType, aggregationLevel).Should().BeTrue();
                 }
             }
 
             [DomainFact]
-            public void When_WholesaleFixingBatchIsReceivedOnTopicSubscription_Then_MessagesReceivedContainExpectedResultTypes()
+            [InlineData("NonProfiledConsumption", "AggregationPerGridarea")]
+            [InlineData("NonProfiledConsumption", "AggregationPerEnergysupplierPerGridarea")]
+            [InlineData("Production", "AggregationPerGridarea")]
+            [InlineData("Production", "AggregationPerEnergysupplierPerGridarea")]
+            [InlineData("FlexConsumption", "AggregationPerGridarea")]
+            [InlineData("FlexConsumption", "AggregationPerEnergysupplierPerGridarea")]
+            [InlineData("NetExchangePerGa", "AggregationPerGridarea")]
+            [InlineData("GridLoss", "AggregationPerGridarea")]
+            [InlineData("NegativeGridLoss", "AggregationPerGridarea")]
+            [InlineData("PositiveGridLoss", "AggregationPerGridarea")]
+            [InlineData("TotalConsumption", "AggregationPerGridarea")]
+            [InlineData("TempFlexConsumption", "AggregationPerGridarea")]
+            [InlineData("TempProduction", "AggregationPerGridarea")]
+
+            public void When_WholesaleFixingBatchIsReceivedOnTopicSubscription_Then_MessagesReceivedContainExpectedResultTypes(string timeSeriesType, string aggregationLevel)
             {
                 using (new AssertionScope())
                 {
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromWholesaleFixing, "NonProfiledConsumption", "AggregationPerGridarea").Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromWholesaleFixing, "NonProfiledConsumption", "AggregationPerEnergysupplierPerGridarea").Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromWholesaleFixing, "Production", "AggregationPerGridarea").Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromWholesaleFixing, "Production", "AggregationPerEnergysupplierPerGridarea").Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromWholesaleFixing, "FlexConsumption", "AggregationPerGridarea").Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromWholesaleFixing, "FlexConsumption", "AggregationPerEnergysupplierPerGridarea").Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromWholesaleFixing, "NetExchangePerGa", "AggregationPerGridarea").Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromWholesaleFixing, "GridLoss", "AggregationPerGridarea").Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromWholesaleFixing, "NegativeGridLoss", "AggregationPerGridarea").Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromWholesaleFixing, "PositiveGridLoss", "AggregationPerGridarea").Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromWholesaleFixing, "TotalConsumption", "AggregationPerGridarea").Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromWholesaleFixing, "TempFlexConsumption", "AggregationPerGridarea").Should().BeTrue();
-                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromWholesaleFixing, "TempProduction", "AggregationPerGridarea").Should().BeTrue();
+                    CheckIfExistsInCalculationResults(_calculationResultCompletedFromWholesaleFixing, timeSeriesType, aggregationLevel).Should().BeTrue();
+                    CheckIfExistsInCalculationResults(_energyResultProducedFromWholesaleFixing, timeSeriesType, aggregationLevel).Should().BeTrue();
                 }
             }
 
@@ -249,8 +265,25 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 return calculationResults.Select(o => Enum.GetName(o.TimeSeriesType)).Distinct().ToList();
             }
 
+            private List<string?> GetTimeSeriesTypes(List<EnergyResultProducedV1> calculationResults)
+            {
+                return calculationResults.Select(o => Enum.GetName(o.TimeSeriesType)).Distinct().ToList();
+            }
+
             private bool CheckIfExistsInCalculationResults(
                 List<CalculationResultCompleted>? calculationResults,
+                string timeSeriesType,
+                string aggregationLevel)
+            {
+                ArgumentNullException.ThrowIfNull(calculationResults);
+
+                return calculationResults.Any(
+                    obj => Enum.GetName(obj.TimeSeriesType) == timeSeriesType
+                           && Enum.GetName(obj.AggregationLevelCase) == aggregationLevel);
+            }
+
+            private bool CheckIfExistsInCalculationResults(
+                List<EnergyResultProducedV1>? calculationResults,
                 string timeSeriesType,
                 string aggregationLevel)
             {
