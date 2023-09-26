@@ -67,12 +67,10 @@ def execute(args: CalculatorArgs, spark: SparkSession) -> None:
             args.batch_id, args.batch_process_type, args.batch_execution_time_start
         )
 
-        charges_df = input.read_charges(calculation_input_reader)
-
         wholesale_calculation.execute(
+            calculation_input_reader,
             wholesale_calculation_result_writer,
             metering_point_periods_df,
             time_series_points_df,
-            charges_df,
             args.batch_period_start_datetime,
         )
