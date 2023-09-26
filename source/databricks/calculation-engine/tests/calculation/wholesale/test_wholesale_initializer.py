@@ -302,31 +302,6 @@ subscription_charges_with_prices_dataset_4 = [
 ]
 
 
-# Subscription only
-@pytest.mark.parametrize(
-    "subscription_charges_with_prices,expected",
-    [
-        (subscription_charges_with_prices_dataset_1, 31),
-        (subscription_charges_with_prices_dataset_2, 0),
-        (subscription_charges_with_prices_dataset_3, 2),
-        (subscription_charges_with_prices_dataset_4, 0),
-    ],
-)
-def test__explode_subscription__explodes_into_rows_based_on_number_of_days_between_from_and_to_date(
-    spark: SparkSession, subscription_charges_with_prices: DataFrame, expected: int
-) -> None:
-    # Arrange
-    subscription_charges_with_prices = spark.createDataFrame(
-        subscription_charges_with_prices, schema=charges_with_prices_schema
-    )
-
-    # Act
-    result = _explode_subscription(subscription_charges_with_prices)
-
-    # Assert
-    assert result.count() == expected
-
-
 charges_with_prices_dataset_1 = [
     (
         "001-D01-001",
@@ -391,8 +366,6 @@ charge_links_dataset = [
 # Shared
 DEFAULT_METERING_POINT_ID = "123"
 ANOTHER_METERING_POINT_ID = "456"
-DEFAULT_FROM_DATE = datetime(2019, 12, 31, 23, 0)
-DEFAULT_TO_DATE = datetime(2020, 1, 31, 23, 0)
 
 charges_with_price_and_links_dataset_1 = [
     (
@@ -402,14 +375,14 @@ charges_with_price_and_links_dataset_1 = [
         "001",
         "P1D",
         "No",
+        datetime(2020, 1, 1, 0, 0),
+        datetime(2020, 2, 1, 0, 0),
         datetime(2020, 1, 15, 0, 0),
-        DEFAULT_FROM_DATE,
-        DEFAULT_TO_DATE,
         Decimal("200.50"),
         DEFAULT_METERING_POINT_ID,
     )
 ]
-charges_with_price_and_links_and_dataset_2 = [
+charges_with_price_and_links_dataset_2 = [
     (
         "001-D01-001",
         "001",
@@ -417,9 +390,9 @@ charges_with_price_and_links_and_dataset_2 = [
         "001",
         "P1D",
         "No",
+        datetime(2020, 1, 1, 0, 0),
         datetime(2020, 2, 1, 0, 0),
-        DEFAULT_FROM_DATE,
-        DEFAULT_TO_DATE,
+        datetime(2020, 2, 1, 0, 0),
         Decimal("200.50"),
         DEFAULT_METERING_POINT_ID,
     )
@@ -433,8 +406,8 @@ charges_with_price_and_links_dataset_3 = [
         "P1D",
         "No",
         datetime(2020, 1, 1, 0, 0),
-        DEFAULT_FROM_DATE,
-        DEFAULT_TO_DATE,
+        datetime(2020, 2, 2, 0, 0),
+        datetime(2020, 1, 1, 0, 0),
         Decimal("200.50"),
         DEFAULT_METERING_POINT_ID,
     )
@@ -447,9 +420,9 @@ charges_with_price_and_links_dataset_4 = [
         "001",
         "P1D",
         "No",
+        datetime(2020, 1, 1, 0, 0),
+        datetime(2020, 2, 1, 0, 0),
         datetime(2020, 1, 15, 0, 0),
-        DEFAULT_FROM_DATE,
-        DEFAULT_TO_DATE,
         Decimal("200.50"),
         ANOTHER_METERING_POINT_ID,
     )
@@ -473,6 +446,93 @@ metering_points_dataset = [
 ]
 
 
+explode_charges_with_price_and_links_dataset_1 = [
+    (
+        "001-D01-001",
+        "001",
+        "D01",
+        "001",
+        "P1D",
+        "No",
+        datetime(2020, 1, 1, 0, 0),
+        datetime(2020, 2, 1, 0, 0),
+        datetime(2020, 1, 2, 0, 0),
+        Decimal("200.50"),
+        DEFAULT_METERING_POINT_ID,
+    )
+]
+explode_charges_with_price_and_links_dataset_2 = [
+    (
+        "001-D01-001",
+        "001",
+        "D01",
+        "001",
+        "P1D",
+        "No",
+        datetime(2020, 1, 1, 0, 0),
+        datetime(2020, 2, 1, 0, 0),
+        datetime(2021, 1, 2, 0, 0),
+        Decimal("200.50"),
+        DEFAULT_METERING_POINT_ID,
+    )
+]
+explode_charges_with_price_and_links_dataset_3 = [
+    (
+        "001-D01-001",
+        "001",
+        "D01",
+        "001",
+        "P1D",
+        "No",
+        datetime(2020, 1, 1, 0, 0),
+        datetime(2020, 2, 2, 0, 0),
+        datetime(2020, 2, 15, 0, 0),
+        Decimal("200.50"),
+        DEFAULT_METERING_POINT_ID,
+    )
+]
+explode_charges_with_price_and_links_dataset_4 = [
+    (
+        "001-D01-001",
+        "001",
+        "D01",
+        "001",
+        "P1D",
+        "No",
+        datetime(2020, 1, 1, 0, 0),
+        datetime(2020, 2, 1, 0, 0),
+        datetime(2020, 3, 1, 0, 0),
+        Decimal("200.50"),
+        ANOTHER_METERING_POINT_ID,
+    )
+]
+
+
+# Subscription only
+@pytest.mark.parametrize(
+    "charges_df,expected",
+    [
+        (explode_charges_with_price_and_links_dataset_1, 31),
+        (explode_charges_with_price_and_links_dataset_2, 0),
+        (explode_charges_with_price_and_links_dataset_3, 2),
+        (explode_charges_with_price_and_links_dataset_4, 0),
+    ],
+)
+def test__explode_subscription__explodes_into_rows_based_on_number_of_days_between_from_and_to_date(
+    spark: SparkSession, charges_df: DataFrame, expected: int
+) -> None:
+    # Arrange
+    charges_df = spark.createDataFrame(
+        charges_df, schema=charges_with_price_and_links_schema
+    )
+
+    # Act
+    result = _explode_subscription(charges_df)
+
+    # Assert
+    assert result.count() == expected
+
+
 # Shared
 @pytest.mark.parametrize(
     "charges_with_price_and_links,metering_points,expected",
@@ -483,7 +543,7 @@ metering_points_dataset = [
             1,
         ),
         (
-            charges_with_price_and_links_and_dataset_2,
+            charges_with_price_and_links_dataset_2,
             metering_points_dataset,
             0,
         ),

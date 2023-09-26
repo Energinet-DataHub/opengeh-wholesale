@@ -12,45 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from decimal import Decimal
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.types import (
-    DecimalType,
-    StringType,
-    StructField,
-    StructType,
-    TimestampType,
-)
-from typing import Callable
 from package.calculation.wholesale.charges_reader import (
     _join_with_charge_prices,
     _join_with_charge_links,
 )
 from package.codelists import (
-    ChargeQuality,
     ChargeType,
     ChargeResolution,
-    MeteringPointType,
-    SettlementMethod,
 )
 from package.calculation.wholesale.schemas.charges_schema import (
     charges_schema,
     charge_prices_schema,
     charge_links_schema,
 )
-from package.calculation_input.schemas import (
-    time_series_point_schema,
-    metering_point_period_schema,
-)
 from tests.helpers.test_schemas import (
     charges_with_prices_schema,
-    charges_with_price_and_links_schema,
-    charges_complete_schema,
 )
 from pyspark.sql.functions import col
 import pytest
-from package.constants import Colname
+
 
 DEFAULT_FROM_DATE = datetime(2020, 1, 1, 0, 0)
 DEFAULT_TO_DATE = datetime(2020, 2, 1, 0, 0)
