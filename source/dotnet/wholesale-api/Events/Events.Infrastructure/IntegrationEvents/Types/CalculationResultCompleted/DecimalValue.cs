@@ -13,7 +13,7 @@
 // limitations under the License.
 
 // ReSharper disable once CheckNamespace - the namespace must match that of the (protobuf) contracts
-namespace Energinet.DataHub.Wholesale.Contracts.IntegrationEvents
+namespace Energinet.DataHub.Wholesale.Contracts.Events
 {
     /// <summary>
     /// This implementation is taken from https://learn.microsoft.com/en-us/dotnet/architecture/grpc-for-wcf-developers/protobuf-data-types#decimals
