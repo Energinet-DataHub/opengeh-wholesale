@@ -47,6 +47,7 @@ DEFAULT_METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
 DEFAULT_SETTLEMENT_METHOD = SettlementMethod.FLEX
 DEFAULT_QUANTITY = Decimal("1.005")
 DEFAULT_QUALITY = ChargeQuality.CALCULATED
+DEFAULT_PERIOD_START_DATETIME = datetime(2019, 12, 31, 23)
 
 
 def _create_tariff_hour_row(
@@ -339,34 +340,152 @@ def test__calculate_tariff_price_per_ga_co_es__rounds_total_amount_correctly(
     assert actual_amount == expected_total_amount
 
 
-def test__sum_within_month__on_tariff(
+def test__sum_within_month__sums_amount_per_month(
     spark: SparkSession,
 ) -> None:
     # Arrange
     rows = [
         _create_tariff_hour_row(charge_time=datetime(2020, 1, 1, 1)),
-        _create_tariff_hour_row(
-            charge_time=datetime(2020, 1, 1, 0), quality=ChargeQuality.ESTIMATED
-        ),
-        _create_tariff_hour_row(charge_time=datetime(2019, 12, 31, 23)),
-        _create_tariff_hour_row(
-            charge_time=datetime(2020, 1, 1, 2),
-            metering_point_type=MeteringPointType.PRODUCTION,
-        ),
-        _create_tariff_hour_row(charge_time=datetime(2020, 2, 1, 0)),
-        _create_tariff_hour_row(charge_time=datetime(2019, 12, 31, 22)),
+        _create_tariff_hour_row(charge_time=datetime(2020, 1, 1, 0)),
     ]
     tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
 
     # Act
     actual = sum_within_month(
-        calculate_tariff_price_per_ga_co_es(tariffs), "Europe/Copenhagen"
+        calculate_tariff_price_per_ga_co_es(tariffs),
+        DEFAULT_PERIOD_START_DATETIME,
     )
 
     # Assert
-    assert actual.collect()[0][Colname.total_amount] == Decimal("2.010005")
-    assert actual.collect()[1][Colname.total_amount] == Decimal("8.040020")
-    assert actual.collect()[2][Colname.total_amount] == Decimal("2.010005")
-    assert actual.collect()[1][Colname.qualities] == ["calculated", "estimated"]
-    assert actual.collect()[1][Colname.charge_time] == datetime(2019, 12, 31, 23)
-    assert actual.count() == 3
+    assert actual.collect()[0][Colname.total_amount] == Decimal("4.020010")
+    assert actual.count() == 1
+
+
+def test__sum_within_month__sums_across_metering_point_types(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    rows = [
+        _create_tariff_hour_row(metering_point_type=MeteringPointType.PRODUCTION),
+        _create_tariff_hour_row(metering_point_type=MeteringPointType.CONSUMPTION),
+    ]
+    tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
+
+    # Act
+    actual = sum_within_month(
+        calculate_tariff_price_per_ga_co_es(tariffs),
+        DEFAULT_PERIOD_START_DATETIME,
+    )
+
+    # Assert
+    assert actual.collect()[0][Colname.total_amount] == Decimal("4.020010")
+    assert actual.count() == 1
+
+
+def test__sum_within_month__joins_qualities(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    rows = [
+        _create_tariff_hour_row(quality=ChargeQuality.CALCULATED),
+        _create_tariff_hour_row(quality=ChargeQuality.ESTIMATED),
+    ]
+    tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
+
+    # Act
+    actual = sum_within_month(
+        calculate_tariff_price_per_ga_co_es(tariffs),
+        DEFAULT_PERIOD_START_DATETIME,
+    )
+
+    # Assert
+    assert actual.collect()[0][Colname.qualities] == ["calculated", "estimated"]
+    assert actual.collect()[0][Colname.total_amount] == Decimal("4.020010")
+    assert actual.count() == 1
+
+
+def test__sum_within_month__groups_by_local_time_months(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    rows = [
+        _create_tariff_hour_row(charge_time=datetime(2020, 1, 1, 0)),
+        _create_tariff_hour_row(charge_time=datetime(2019, 12, 31, 23)),
+    ]
+    tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
+
+    # Act
+    actual = sum_within_month(
+        calculate_tariff_price_per_ga_co_es(tariffs),
+        DEFAULT_PERIOD_START_DATETIME,
+    )
+
+    # Assert
+    assert actual.collect()[0][Colname.total_amount] == Decimal("4.020010")
+    assert actual.collect()[0][Colname.charge_time] == datetime(2019, 12, 31, 23)
+    assert actual.count() == 1
+
+
+def test__sum_within_month__charge_time_always_start_of_month(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    rows = [
+        _create_tariff_hour_row(charge_time=datetime(2020, 1, 3, 0)),
+    ]
+    tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
+
+    # Act
+    actual = sum_within_month(
+        calculate_tariff_price_per_ga_co_es(tariffs),
+        DEFAULT_PERIOD_START_DATETIME,
+    )
+
+    # Assert
+    assert actual.collect()[0][Colname.charge_time] == datetime(2019, 12, 31, 23)
+
+
+def test__sum_within_month__sums_quantity_per_month(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    rows = [
+        _create_tariff_hour_row(quantity=Decimal("1.111")),
+        _create_tariff_hour_row(quantity=Decimal("1.111")),
+    ]
+    tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
+
+    # Act
+    actual = sum_within_month(
+        calculate_tariff_price_per_ga_co_es(tariffs),
+        DEFAULT_PERIOD_START_DATETIME,
+    )
+
+    # Assert
+    assert actual.collect()[0][Colname.total_quantity] == Decimal("2.222")
+    assert actual.count() == 1
+
+
+def test__sum_within_month__sums_charge_price_per_month(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    rows = [
+        _create_tariff_hour_row(
+            charge_time=datetime(2020, 1, 1, 0), charge_price=Decimal("1.111111")
+        ),
+        _create_tariff_hour_row(
+            charge_time=datetime(2020, 1, 1, 1), charge_price=Decimal("1.111111")
+        ),
+    ]
+    tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
+
+    # Act
+    actual = sum_within_month(
+        calculate_tariff_price_per_ga_co_es(tariffs),
+        DEFAULT_PERIOD_START_DATETIME,
+    )
+
+    # Assert
+    assert actual.collect()[0][Colname.charge_price] == Decimal("2.222222")
+    assert actual.count() == 1
