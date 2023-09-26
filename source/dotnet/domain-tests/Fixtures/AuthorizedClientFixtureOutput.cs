@@ -16,6 +16,7 @@ using System.Diagnostics;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.Contracts.Events;
+using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
 using ProcessType = Energinet.DataHub.Wholesale.DomainTests.Clients.v3.ProcessType;
 
@@ -49,8 +50,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
         public async Task InitializeAsync()
         {
-            EnergyCalculationId = await StartEnergyCalculation();
-            WholesaleCalculationId = await StartWholesaleCalculation();
+            EnergyCalculationId = await StartBalanceFixing();
+            WholesaleCalculationId = await StartWholesaleFixing();
 
             EnergyCalculationIsComplete = await WaitForCalculationToComplete(EnergyCalculationId);
             WholesaleCalculationIsComplete = await WaitForCalculationToComplete(WholesaleCalculationId);
@@ -58,7 +59,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             await CollectResultsFromServiceBus();
         }
 
-        private async Task<Guid> StartEnergyCalculation()
+        private async Task<Guid> StartBalanceFixing()
         {
             var startDate = new DateTimeOffset(2022, 1, 11, 23, 0, 0, TimeSpan.Zero);
             var endDate = new DateTimeOffset(2022, 1, 12, 23, 0, 0, TimeSpan.Zero);
@@ -72,7 +73,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             return await _wholesaleClient.CreateBatchAsync(batchRequestDto);
         }
 
-        private async Task<Guid> StartWholesaleCalculation()
+        private async Task<Guid> StartWholesaleFixing()
         {
             var startDate = new DateTimeOffset(2023, 1, 31, 23, 0, 0, TimeSpan.Zero);
             var endDate = new DateTimeOffset(2023, 2, 28, 23, 0, 0, TimeSpan.Zero);
@@ -115,30 +116,47 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                 var message = await _receiver.ReceiveMessageAsync();
                 if (message?.Body == null)
                 {
-                    // No more messages in the queue AND expected results are anticipated to have been received
-                    if (EnergyCalculationResults.Any() || WholesaleCalculationResults.Any())
+                    if (HasAlreadyReceivedMessage())
                         break;
                 }
                 else
                 {
-                    var data = message.Body.ToArray();
-                    var result = CalculationResultCompleted.Parser.ParseFrom(data);
-
-                    if (result.BatchId == EnergyCalculationId.ToString())
-                    {
-                        EnergyCalculationResults.Add(result);
-                    }
-
-                    if (result.BatchId == WholesaleCalculationId.ToString())
-                    {
-                        WholesaleCalculationResults.Add(result);
-                    }
+                    HandleMessage(message);
                 }
             }
 
             stopwatch.Stop();
 
             Console.WriteLine($"LOOK AT ME: the loop took {stopwatch.Elapsed} to complete and received {EnergyCalculationResults.Count} messages");
+        }
+
+        private void HandleMessage(ServiceBusReceivedMessage message)
+        {
+            var data = message.Body.ToArray();
+            switch (message.Subject)
+            {
+                case CalculationResultCompleted.EventName:
+                    var calculationResultCompleted = CalculationResultCompleted.Parser.ParseFrom(data);
+                    if (calculationResultCompleted.BatchId == EnergyCalculationId.ToString())
+                        EnergyCalculationResults.Add(calculationResultCompleted);
+
+                    if (calculationResultCompleted.BatchId == WholesaleCalculationId.ToString())
+                        WholesaleCalculationResults.Add(calculationResultCompleted);
+                    break;
+                case EnergyResultProducedV1.EventName:
+                    var energyResultProduced = EnergyResultProducedV1.Parser.ParseFrom(data);
+                    // if (energyResultProduced.CalculationId == EnergyCalculationId.ToString())
+                    //     EnergyResultEvents.Add(result);
+                    //
+                    // if (energyResult.CalculationId == WholesaleCalculationId.ToString())
+                    //     WholesaleCalculationResults.Add(result);
+                    break;
+            }
+        }
+
+        private bool HasAlreadyReceivedMessage()
+        {
+            return EnergyCalculationResults.Any() || WholesaleCalculationResults.Any();
         }
     }
 }
