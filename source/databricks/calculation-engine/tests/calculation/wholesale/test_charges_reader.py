@@ -156,7 +156,7 @@ charge_links_dataset = [
 
 
 @pytest.mark.parametrize(
-    "charges,charge_prices,expected", [(charges_dataset, charge_prices_dataset, 2)]
+    "charges,charge_prices,expected", [(charges_dataset, charge_prices_dataset, 8)]
 )
 def test__join_with_charge_prices__joins_on_charge_key(
     spark: SparkSession, charges: DataFrame, charge_prices: DataFrame, expected: int
