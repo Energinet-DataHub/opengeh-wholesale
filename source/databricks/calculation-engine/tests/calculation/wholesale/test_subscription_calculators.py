@@ -26,7 +26,7 @@ from package.calculation.wholesale.subscription_calculators import (
     get_count_of_charges_and_total_daily_charge_price,
 )
 from package.calculation.wholesale.wholesale_initializer import get_subscription_charges
-from package.calculation_input.charges_reader import _create_charges_df
+from package.calculation.wholesale.charges_reader import _create_charges_df
 from calendar import monthrange
 import pytest
 from package.constants import Colname
