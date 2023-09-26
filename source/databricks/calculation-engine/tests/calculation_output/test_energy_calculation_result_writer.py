@@ -30,8 +30,8 @@ from package.codelists import (
 )
 from package.constants import Colname, EnergyResultColumnNames
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
+from package.calculation_output import EnergyCalculationResultWriter
 from package.calculation_output.energy_calculation_result_writer import (
-    EnergyCalculationResultWriter,
     _get_column_group_for_calculation_result_id,
 )
 from tests.contract_utils import (

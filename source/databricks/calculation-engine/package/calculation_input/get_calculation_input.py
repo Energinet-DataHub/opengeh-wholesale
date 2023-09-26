@@ -15,11 +15,9 @@
 from typing import Tuple
 from datetime import datetime
 from pyspark.sql import DataFrame
-from package.calculation_input import (
-    get_metering_point_periods_df,
-    get_grid_loss_responsible,
-    CalculationInputReader,
-)
+from .metering_point_periods import get_metering_point_periods_df
+from .grid_loss_responsible import get_grid_loss_responsible
+from .calculation_input_reader import CalculationInputReader
 
 
 def get_calculation_input(

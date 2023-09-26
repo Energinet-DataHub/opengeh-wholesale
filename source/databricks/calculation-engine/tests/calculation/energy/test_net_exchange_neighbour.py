@@ -17,7 +17,7 @@ from decimal import Decimal
 import pandas as pd
 from datetime import datetime, timedelta
 from package.constants import Colname
-from package.calculation.energy import (
+from package.calculation.energy.exchange_aggregators import (
     aggregate_net_exchange_per_neighbour_ga,
 )
 from package.codelists import MeteringPointType, TimeSeriesQuality

@@ -15,7 +15,7 @@
 
 from pyspark.sql import DataFrame
 from package.constants import Colname
-from .calculation_input_reader import CalculationInputReader
+from package.calculation_input.calculation_input_reader import CalculationInputReader
 
 
 def read_charges(

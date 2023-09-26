@@ -20,7 +20,7 @@ from package.codelists import (
     TimeSeriesQuality,
 )
 
-from package.calculation.energy import (
+from package.calculation.energy.grid_loss_calculator import (
     calculate_grid_loss,
 )
 from package.calculation.energy.transformations import (

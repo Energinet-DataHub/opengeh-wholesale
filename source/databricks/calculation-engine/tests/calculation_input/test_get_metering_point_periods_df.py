@@ -15,7 +15,9 @@
 from datetime import datetime, timedelta
 import pytest
 from unittest.mock import patch, Mock
-from package.calculation_input import get_metering_point_periods_df
+from package.calculation_input.metering_point_periods import (
+    get_metering_point_periods_df,
+)
 from package.codelists import (
     MeteringPointType,
     SettlementMethod,
