@@ -21,26 +21,23 @@ from package.calculation.wholesale.tariff_calculators import (
 )
 from package.codelists import ChargeResolution, MeteringPointType
 from package.constants import Colname
-from package.calculation_input import CalculationInputReader
 from package.calculation_output.wholesale_calculation_result_writer import (
     WholesaleCalculationResultWriter,
 )
-from .charges_reader import read_charges
 from datetime import datetime
 
 
 def execute(
-    calculation_input_reader: CalculationInputReader,
     wholesale_calculation_result_writer: WholesaleCalculationResultWriter,
     metering_points_periods_df: DataFrame,  # TODO: use enriched_time_series
     time_series_point_df: DataFrame,  # TODO: use enriched_time_series
+    charges_df: DataFrame,
     period_start_datetime: datetime,
 ) -> None:
     # Get input data
     metering_points_periods_df = _get_production_and_consumption_metering_points(
         metering_points_periods_df
     )
-    charges_df = read_charges(calculation_input_reader)
 
     # Calculate and write to storage
     _calculate_tariff_charges(

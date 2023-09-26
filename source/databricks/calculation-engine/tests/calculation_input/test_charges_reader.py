@@ -15,13 +15,9 @@
 from datetime import datetime
 from decimal import Decimal
 from pyspark.sql import SparkSession, DataFrame
-from package.calculation.wholesale.charges_reader import (
+from package.calculation_input.charges_reader import (
     _join_with_charge_prices,
     _join_with_charge_links,
-)
-from package.codelists import (
-    ChargeType,
-    ChargeResolution,
 )
 from package.calculation.wholesale.schemas.charges_schema import (
     charges_schema,
@@ -31,7 +27,6 @@ from package.calculation.wholesale.schemas.charges_schema import (
 from tests.helpers.test_schemas import (
     charges_with_prices_schema,
 )
-from pyspark.sql.functions import col
 import pytest
 
 
