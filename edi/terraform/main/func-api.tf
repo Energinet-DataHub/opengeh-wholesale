@@ -27,8 +27,6 @@ module "func_receiver" {
     DB_CONNECTION_STRING                                    = local.CONNECTION_STRING
     EDI_INBOX_MESSAGE_QUEUE_NAME                            = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbq-edi-inbox-messagequeue-name)"
     WHOLESALE_INBOX_MESSAGE_QUEUE_NAME                      = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbq-wholesale-inbox-messagequeue-name)"
-    INCOMING_CHANGE_OF_SUPPLIER_MESSAGE_QUEUE_NAME          = module.sbq_incoming_change_supplier_messagequeue.name
-    INCOMING_AGGREGATED_MEASURE_DATA_QUEUE_NAME             = module.sbq_incoming_aggregated_measure_data_messagequeue.name
     SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_LISTENER = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-listen-connection-string)"
     SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_MANAGE   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-manage-connection-string)"
     SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_SEND     = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-send-connection-string)"
