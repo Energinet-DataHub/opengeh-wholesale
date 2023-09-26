@@ -13,16 +13,7 @@
 # limitations under the License.
 
 from pyspark.sql.dataframe import DataFrame
-from pyspark.sql.functions import (
-    col,
-    collect_set,
-    window,
-    expr,
-    explode,
-    month,
-    year,
-    sum,
-)
+import pyspark.sql.functions as F
 from pyspark.sql.types import DecimalType, StringType, ArrayType
 
 from package.codelists import ChargeType, ChargeResolution
@@ -54,7 +45,8 @@ def get_tariff_charges(
     # join with grouped time series
     df = _join_with_grouped_time_series(df, grouped_time_series)
 
-    # When constructing the tariff dataframe some column types need to be not nullable (or nullable)
+    # When constructing the tariff dataframe some column types need to be not nullable
+    # (or nullable).
     # The construct should make it impossible for them to be null (or not null).
     # df.schema[Colname.qualities].nullable = True
     df.schema[Colname.quantity].nullable = False
@@ -89,28 +81,28 @@ def _get_charges_based_on_resolution(
     charges_df: DataFrame, resolution_duration: ChargeResolution
 ) -> DataFrame:
     return charges_df.filter(
-        col(Colname.charge_resolution) == resolution_duration.value
+        F.col(Colname.charge_resolution) == resolution_duration.value
     )
 
 
 def _get_charges_based_on_charge_type(
     charges_df: DataFrame, charge_type: ChargeType
 ) -> DataFrame:
-    return charges_df.filter(col(Colname.charge_type) == charge_type.value)
+    return charges_df.filter(F.col(Colname.charge_type) == charge_type.value)
 
 
 def _explode_subscription(charges_df: DataFrame) -> DataFrame:
     charges_df = (
         charges_df.withColumn(
             Colname.date,
-            explode(
-                expr(
+            F.explode(
+                F.expr(
                     f"sequence({Colname.from_date}, {Colname.to_date}, interval 1 day)"
                 )
             ),
         )
-        .filter((year(Colname.date) == year(Colname.charge_time)))
-        .filter((month(Colname.date) == month(Colname.charge_time)))
+        .filter((F.year(Colname.date) == F.year(Colname.charge_time)))
+        .filter((F.month(Colname.date) == F.month(Colname.charge_time)))
         .drop(Colname.charge_time)
         .withColumnRenamed(Colname.date, Colname.charge_time)
         .select(
@@ -161,14 +153,14 @@ def _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
     grouped_time_series = (
         time_series.groupBy(
             Colname.metering_point_id,
-            window(
+            F.window(
                 Colname.observation_time,
                 _get_window_duration_string_based_on_resolution(resolution_duration),
             ),
         )
         .agg(
-            sum(Colname.quantity).alias(Colname.quantity),
-            collect_set(Colname.quality).alias(Colname.qualities),
+            F.sum(Colname.quantity).alias(Colname.quantity),
+            F.collect_set(Colname.quality).alias(Colname.qualities),
         )
         .withColumnRenamed(f"sum({Colname.quantity})", Colname.quantity)
         .selectExpr(
@@ -182,11 +174,11 @@ def _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
     # The sum operator creates by default a column as a double type (28,6).
     # It must be cast to a decimal type (18,3) to conform to the tariff schema.
     grouped_time_series = grouped_time_series.withColumn(
-        Colname.quantity, col(Colname.quantity).cast(DecimalType(18, 3))
+        Colname.quantity, F.col(Colname.quantity).cast(DecimalType(18, 3))
     )
 
     grouped_time_series = grouped_time_series.withColumn(
-        Colname.qualities, col(Colname.qualities).cast(ArrayType(StringType(), True))
+        Colname.qualities, F.col(Colname.qualities).cast(ArrayType(StringType(), True))
     )
 
     return grouped_time_series
@@ -237,7 +229,8 @@ def _get_window_duration_string_based_on_resolution(
     return window_duration_string
 
 
-# Join charge_master_data, charge prices, charge links, and metering points together. On given charge type
+# Join charge_master_data, charge prices, charge links, and metering points together.
+# On given charge type.
 def _join_properties_on_charges_with_given_charge_type(
     charges_df: DataFrame,
     metering_points: DataFrame,

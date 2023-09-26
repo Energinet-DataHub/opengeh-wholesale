@@ -18,7 +18,7 @@ from package.codelists import (
     MeteringPointResolution,
     TimeSeriesQuality,
 )
-from package.calculation.energy import (
+from package.calculation.energy.aggregators import (
     aggregate_non_profiled_consumption_ga_es,
     aggregate_non_profiled_consumption_ga_brp,
     aggregate_non_profiled_consumption_ga,
