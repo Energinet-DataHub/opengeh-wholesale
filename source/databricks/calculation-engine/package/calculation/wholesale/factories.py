@@ -159,7 +159,7 @@ def _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
             ),
         )
         .agg(
-            sum(Colname.quantity).alias(Colname.quantity),
+            F.sum(Colname.quantity).alias(Colname.quantity),
             F.collect_set(Colname.quality).alias(Colname.qualities),
         )
         .withColumnRenamed(f"sum({Colname.quantity})", Colname.quantity)

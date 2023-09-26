@@ -26,14 +26,12 @@ from . import setup
 
 
 def execute(args: CalculatorArgs, spark: SparkSession) -> None:
-    calculation_input_reader = input.CalculationInputReader(spark)
-
     (
         metering_point_periods_df,
         time_series_points_df,
         grid_loss_responsible_df,
     ) = input.get_calculation_input(
-        calculation_input_reader,
+        spark,
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
         args.batch_grid_areas,
@@ -67,7 +65,7 @@ def execute(args: CalculatorArgs, spark: SparkSession) -> None:
             args.batch_id, args.batch_process_type, args.batch_execution_time_start
         )
 
-        charges_df = input.read_charges(calculation_input_reader)
+        charges_df = input.read_charges(spark)
 
         wholesale_calculation.execute(
             wholesale_calculation_result_writer,

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import datetime
+from datetime import datetime
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as F
 from pyspark.sql.types import (
@@ -24,7 +24,7 @@ from pyspark.sql.types import (
     StringType,
     TimestampType,
 )
-from package.codelists import ChargeUnit
+from package.codelists import ChargeResolution, ChargeUnit
 from package.constants import Colname
 
 
@@ -60,8 +60,9 @@ def calculate_tariff_price_per_ga_co_es(tariffs: DataFrame) -> DataFrame:
     - metering point type (except exchange metering points)
     - energy supplier
 
-    Resolution has already been filtered, so only one resolution is present in the tariffs data frame.
-    So responsibility of creating results per resolution is managed outside this module.
+    Resolution has already been filtered, so only one resolution is present
+    in the tariffs data frame. So responsibility of creating results per
+    resolution is managed outside this module.
     """
 
     if tariffs.schema != tariff_schema:
