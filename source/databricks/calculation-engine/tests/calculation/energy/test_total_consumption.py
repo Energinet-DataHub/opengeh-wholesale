@@ -20,7 +20,7 @@ from package.codelists import (
     MeteringPointResolution,
 )
 
-from package.calculation.energy import calculate_total_consumption
+from package.calculation.energy.grid_loss_calculator import calculate_total_consumption
 from package.calculation.energy.transformations import (
     create_dataframe_from_aggregation_result_schema,
 )

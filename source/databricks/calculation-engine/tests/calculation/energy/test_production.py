@@ -19,7 +19,7 @@ from package.codelists import (
     TimeSeriesQuality,
 )
 
-from package.calculation.energy import (
+from package.calculation.energy.aggregators import (
     aggregate_production_ga_es,
     aggregate_production_ga_brp,
     aggregate_production_ga,

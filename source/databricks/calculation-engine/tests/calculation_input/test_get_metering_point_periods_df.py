@@ -15,7 +15,9 @@
 from datetime import datetime, timedelta
 import pytest
 from unittest.mock import patch, Mock
-from package.calculation_input import get_metering_point_periods_df
+from package.calculation_input.metering_point_periods import (
+    get_metering_point_periods_df,
+)
 from package.codelists import (
     MeteringPointType,
     SettlementMethod,
@@ -151,7 +153,7 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
     return factory
 
 
-@patch("package.calculation_input.CalculationInputReader")
+@patch("package.calculation_input.calculation_input_reader.CalculationInputReader")
 def test__when_metering_point_period_is_in_grid_areas__returns_metering_point_period(
     mock_calculation_input_reader: Mock,
     metering_points_periods_df_factory: Callable[..., DataFrame],
@@ -173,7 +175,7 @@ def test__when_metering_point_period_is_in_grid_areas__returns_metering_point_pe
     assert raw_master_basis_data.count() == 1
 
 
-@patch("package.calculation_input.CalculationInputReader")
+@patch("package.calculation_input.calculation_input_reader.CalculationInputReader")
 def test__when_type_is_production__returns_metering_point_period(
     mock_calculation_input_reader: Mock,
     metering_points_periods_df_factory: Callable[..., DataFrame],
@@ -198,7 +200,7 @@ def test__when_type_is_production__returns_metering_point_period(
     assert raw_master_basis_data.count() == 1
 
 
-@patch("package.calculation_input.CalculationInputReader")
+@patch("package.calculation_input.calculation_input_reader.CalculationInputReader")
 def test__metering_points_have_expected_columns(
     mock_calculation_input_reader: Mock,
     metering_points_periods_df_factory: Callable[..., DataFrame],
@@ -235,7 +237,7 @@ def test__metering_points_have_expected_columns(
     )
 
 
-@patch("package.calculation_input.CalculationInputReader")
+@patch("package.calculation_input.calculation_input_reader.CalculationInputReader")
 def test__when_period_to_date_is_null__returns_metering_point_period_with_to_date_equal_to_period_end(
     mock_calculation_input_reader: Mock,
     metering_points_periods_df_factory: Callable[..., DataFrame],
@@ -260,7 +262,7 @@ def test__when_period_to_date_is_null__returns_metering_point_period_with_to_dat
     assert raw_master_basis_data.where(col(Colname.to_date) == period_end).count() == 1
 
 
-@patch("package.calculation_input.CalculationInputReader")
+@patch("package.calculation_input.calculation_input_reader.CalculationInputReader")
 def test__get_metering_point_periods_df__from_date_must_not_be_earlier_than_period_start(
     mock_calculation_input_reader: Mock,
     metering_points_periods_df_factory: Callable[..., DataFrame],
@@ -287,7 +289,7 @@ def test__get_metering_point_periods_df__from_date_must_not_be_earlier_than_peri
     assert master_basis_data.collect()[0][Colname.from_date] == period_start
 
 
-@patch("package.calculation_input.CalculationInputReader")
+@patch("package.calculation_input.calculation_input_reader.CalculationInputReader")
 def test__get_metering_point_periods_df__to_date_must_not_be_after_period_end(
     mock_calculation_input_reader: Mock,
     metering_points_periods_df_factory: Callable[..., DataFrame],

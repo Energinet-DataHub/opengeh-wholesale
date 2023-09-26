@@ -17,7 +17,9 @@ from decimal import Decimal
 import pandas as pd
 from datetime import datetime, timedelta
 from package.constants import Colname
-from package.calculation.energy import aggregate_net_exchange_per_ga
+from package.calculation.energy.exchange_aggregators import (
+    aggregate_net_exchange_per_ga,
+)
 from package.codelists import MeteringPointType, TimeSeriesQuality
 from package.calculation.energy.schemas import aggregation_result_schema
 from pyspark.sql import DataFrame, SparkSession

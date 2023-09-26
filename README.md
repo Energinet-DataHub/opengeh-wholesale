@@ -16,6 +16,12 @@ The source code of the repository is provided as-is. We currently do not accept 
 
 For people on the project please read the internal documentation (Confluence) for details on how to contribute or integrate with the domain.
 
+## C4 Diagrams of the Domain
+
+![Simplified](docs/diagrams/c4-model/views/Wholesale.png)
+
+![Detailed with OAuth](docs/diagrams/c4-model/views/WholesaleDetailed.png)
+
 ## Code of Conduct
 
 Learn about code of conduct for Green Energy Hub [here](https://github.com/Energinet-DataHub/green-energy-hub/blob/main/docs/code-of-conduct.md).
