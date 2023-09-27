@@ -12,150 +12,120 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from datetime import datetime
-from decimal import Decimal
+from unittest.mock import patch
 from pyspark.sql import SparkSession, DataFrame
-from package.calculation_input.charges_reader import (
-    _join_with_charge_prices,
-    _join_with_charge_links,
-)
+from package.calculation_input.charges_reader import read_charges
+
+import pytest
+
+from package.calculation_input.delta_table_reader import DeltaTableReader
+from package.codelists import ChargeType
+from package.constants import Colname
+
 from package.calculation.wholesale.schemas.charges_schema import (
     charges_schema,
     charge_prices_schema,
     charge_links_schema,
 )
-from tests.helpers.test_schemas import (
-    charges_with_prices_schema,
-)
-import pytest
+
+DEFAULT_CHARGE_ID = "4000"
+DEFAULT_CHARGE_OWNER = "001"
+DEFAULT_CHARGE_TYPE = ChargeType.TARIFF.value
+DEFAULT_CHARGE_KEY = f"{DEFAULT_CHARGE_ID}-{DEFAULT_CHARGE_TYPE}-{DEFAULT_CHARGE_OWNER}"
 
 
-DEFAULT_FROM_DATE = datetime(2020, 1, 1, 0, 0)
-DEFAULT_TO_DATE = datetime(2020, 2, 1, 0, 0)
-DEFAULT_TIME = datetime(2020, 1, 1, 0, 0)
-
-charges_dataset = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        "P1D",
-        "No",
-        "DDK",
-        datetime(2020, 1, 1, 0, 0),
-        datetime(2020, 2, 1, 0, 0),
-    )
-]
-
-charges_with_prices_dataset_1 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        "P1D",
-        "No",
-        datetime(2020, 1, 1, 0, 0),
-        datetime(2020, 2, 1, 0, 0),
-        datetime(2020, 1, 15, 0, 0),
-        Decimal("200.50"),
-    )
-]
-charges_with_prices_dataset_2 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        "P1D",
-        "No",
-        datetime(2020, 1, 1, 0, 0),
-        datetime(2020, 2, 1, 0, 0),
-        datetime(2021, 2, 1, 0, 0),
-        Decimal("200.50"),
-    )
-]
-charges_with_prices_dataset_3 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        "P1D",
-        "No",
-        datetime(2020, 1, 1, 0, 0),
-        datetime(2020, 2, 1, 0, 0),
-        datetime(2020, 1, 1, 0, 0),
-        Decimal("200.50"),
-    )
-]
-charges_with_prices_dataset_4 = [
-    (
-        "001-D01-002",
-        "001",
-        "D01",
-        "001",
-        "P1D",
-        "No",
-        datetime(2020, 1, 1, 0, 0),
-        datetime(2020, 2, 1, 0, 0),
-        datetime(2020, 1, 15, 0, 0),
-        Decimal("200.50"),
-    )
-]
-
-charge_prices_dataset = [
-    ("001-D01-001", Decimal("200.50"), datetime(2020, 1, 2, 0, 0)),
-    ("001-D01-001", Decimal("100.50"), datetime(2020, 1, 5, 0, 0)),
-    ("001-D01-002", Decimal("100.50"), datetime(2020, 1, 6, 0, 0)),
-]
-
-charge_links_dataset = [
-    ("001-D01-001", "D01", datetime(2020, 1, 1, 0, 0), datetime(2020, 2, 1, 0, 0))
-]
+def _create_charge_master_data_row(
+    charge_key: str = DEFAULT_CHARGE_KEY,
+    charge_id: str = DEFAULT_CHARGE_ID,
+    charge_owner: str = DEFAULT_CHARGE_OWNER,
+    charge_type: str = DEFAULT_CHARGE_TYPE,
+) -> dict:
+    row = {
+        Colname.charge_key: charge_key,
+        Colname.charge_id: charge_id,
+        Colname.charge_owner: charge_owner,
+        Colname.charge_type: charge_type,
+    }
+    return row
 
 
-@pytest.mark.parametrize(
-    "charges,charge_prices,expected", [(charges_dataset, charge_prices_dataset, 2)]
-)
-def test__join_with_charge_prices__joins_on_charge_key(
-    spark: SparkSession, charges: DataFrame, charge_prices: DataFrame, expected: int
+def _create_charge_link_periods_row(
+    charge_key: str = DEFAULT_CHARGE_KEY,
+    charge_id: str = DEFAULT_CHARGE_ID,
+    charge_owner: str = DEFAULT_CHARGE_OWNER,
+    charge_type: str = DEFAULT_CHARGE_TYPE,
+) -> dict:
+    row = {
+        Colname.charge_key: charge_key,
+        Colname.charge_id: charge_id,
+        Colname.charge_owner: charge_owner,
+        Colname.charge_type: charge_type,
+    }
+    return row
+
+
+def _create_charges_prices_points_row(
+    charge_key: str = DEFAULT_CHARGE_KEY,
+    charge_id: str = DEFAULT_CHARGE_ID,
+    charge_owner: str = DEFAULT_CHARGE_OWNER,
+    charge_type: str = DEFAULT_CHARGE_TYPE,
+) -> dict:
+    row = {
+        Colname.charge_key: charge_key,
+        Colname.charge_id: charge_id,
+        Colname.charge_owner: charge_owner,
+        Colname.charge_type: charge_type,
+    }
+    return row
+
+
+# 1 Test combinations ==, >=, <
+# df[Colname.charge_key] == charge_links[Colname.charge_key],
+# 1.1 Test two different charge_keys
+# 1.2 Test two same charge_keys
+
+# 1.3 Test that charge_time is after from_date --- df[Colname.charge_time] >= charge_links[Colname.from_date],
+# 1.4 Test that charge_time is equal to from_date --- df[Colname.charge_time] >= charge_links[Colname.from_date],
+# 1.5 Test that charge_time is before from_date --- df[Colname.charge_time] >= charge_links[Colname.from_date],
+
+# 1.6 df[Colname.charge_time] < charge_links[Colname.to_date],
+
+
+# 2a Test inner join with charge_prices
+# 2b Test inner join with charge_links
+
+# 3 Test schema read_changes?
+
+
+@patch("package.calculation_input.charges_reader.DeltaTableReader")
+def test__join(
+    calculation_input_reader_mock: DeltaTableReader, spark: SparkSession
 ) -> None:
     # Arrange
-    charges = spark.createDataFrame(charges, schema=charges_schema)
-    charge_prices = spark.createDataFrame(charge_prices, schema=charge_prices_schema)
+    charge_master_data_rows = [
+        _create_charge_master_data_row(),
+    ]
 
-    # Act
-    result = _join_with_charge_prices(charges, charge_prices)
+    charge_link_periods_rows = [
+        _create_charge_link_periods_row(),
+    ]
 
-    # Assert
-    assert result.count() == expected
+    charge_prices_points_rows = [
+        _create_charges_prices_points_row(),
+    ]
 
-
-@pytest.mark.parametrize(
-    "charges_with_prices,charge_links,expected",
-    [
-        (charges_with_prices_dataset_1, charge_links_dataset, 1),
-        (charges_with_prices_dataset_2, charge_links_dataset, 0),
-        (charges_with_prices_dataset_3, charge_links_dataset, 1),
-        (charges_with_prices_dataset_4, charge_links_dataset, 0),
-    ],
-)
-def test__join_with_charge_links__joins_on_charge_key_and_time_is_between_from_and_to_date(
-    spark: SparkSession,
-    charges_with_prices: DataFrame,
-    charge_links: DataFrame,
-    expected: int,
-) -> None:
-    # Arrange
-    charges_with_prices = spark.createDataFrame(
-        charges_with_prices, schema=charges_with_prices_schema
+    calculation_input_reader_mock.read_charge_master_data_periods.return_value = (
+        spark.createDataFrame(data=charge_master_data_rows)
     )
-    charge_links = spark.createDataFrame(charge_links, schema=charge_links_schema)
+    calculation_input_reader_mock.read_charge_links_periods.return_value = (
+        spark.createDataFrame(data=charge_link_periods_rows)
+    )
+    calculation_input_reader_mock.read_charge_price_points.return_value = (
+        spark.createDataFrame(data=charge_prices_points_rows)
+    )
 
     # Act
-    result = _join_with_charge_links(charges_with_prices, charge_links)
+    actual = read_charges(calculation_input_reader_mock)
 
     # Assert
-    assert result.count() == expected
+    assert actual.count() == 1
