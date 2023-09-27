@@ -27,10 +27,17 @@ module "app_time_series_api" {
     "AzureAd__ClientId"     = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=eloverblik-timeseriesapi-client-app-id)"
     "AzureAd__ResourceId"   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-timeseriesapi-app-id)"
 
-    # Databricks
+    # Databricks (Deprecated)
     "DatabricksOptions__WorkspaceToken" = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=dbw-shared-workspace-token)"
     "DatabricksOptions__WorkspaceUrl"   = "https://${data.azurerm_key_vault_secret.dbw_databricks_workspace_url.value}"
     "DatabricksOptions__WarehouseId"    = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-databricks-sql-endpoint-id)"
+
+    # Databricks
+    "DATABRICKS_WORKSPACE_TOKEN"          = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=dbw-shared-workspace-token)"
+    "DATABRICKS_WORKSPACE_URL"            = "https://${data.azurerm_key_vault_secret.dbw_databricks_workspace_url.value}"
+    "DATABRICKS_WAREHOUSE_ID"             = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-databricks-sql-endpoint-id)"
+    "DATABRICKS_HEALTH_CHECK_START_HOUR"  = 7
+    "DATABRICKS_HEALTH_CHECK_END_HOUR"    = 18
 
     # Logging
     "Logging__ApplicationInsights__LogLevel__Default"                       = "Warning"
