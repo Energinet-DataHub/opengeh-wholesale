@@ -24,10 +24,10 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public class SettlementReportResultQueries : ISettlementReportResultQueries
 {
-    private readonly ISqlStatementClient _sqlStatementClient;
+    private readonly IDatabricksSqlStatementClient _sqlStatementClient;
     private readonly DeltaTableOptions _deltaTableOptions;
 
-    public SettlementReportResultQueries(ISqlStatementClient sqlStatementClient, IOptions<DeltaTableOptions> deltaTableOptions)
+    public SettlementReportResultQueries(IDatabricksSqlStatementClient sqlStatementClient, IOptions<DeltaTableOptions> deltaTableOptions)
     {
         _sqlStatementClient = sqlStatementClient;
         _deltaTableOptions = deltaTableOptions.Value;

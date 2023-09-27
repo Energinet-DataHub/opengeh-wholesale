@@ -14,6 +14,8 @@
 
 using System.Net;
 using AutoFixture.Xunit2;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Energinet.DataHub.Wholesale.WebApi.HealthChecks.Databricks;
@@ -45,11 +47,11 @@ public class DatabricksSqlStatementsApiHealthCheckTests
         [Frozen] Mock<IClock> clockMock)
     {
         // Arrange
-        var options = new DatabricksOptions
+        var options = new DatabricksSqlStatementOptions
         {
-            DATABRICKS_HEALTH_CHECK_START_HOUR = new TimeOnly(startHour, 0),
-            DATABRICKS_HEALTH_CHECK_END_HOUR = new TimeOnly(endHour, 0),
-            DATABRICKS_WORKSPACE_URL = "https://fake",
+            DatabricksHealthCheckStartHour = startHour,
+            DatabricksHealthCheckEndHour = endHour,
+            WorkspaceUrl = "https://fake",
         };
         clockMock.Setup(x => x.GetCurrentInstant()).Returns(Instant.FromUtc(2021, 1, 1, currentHour, 0));
         httpMessageHandlerMock.Protected()
@@ -60,7 +62,7 @@ public class DatabricksSqlStatementsApiHealthCheckTests
             .ReturnsAsync(new HttpResponseMessage(httpStatusCode));
         using var httpClientMock = new HttpClient(httpMessageHandlerMock.Object);
         httpClientFactoryMock.Setup(x => x.CreateClient(Options.DefaultName)).Returns(httpClientMock);
-        var sut = new DatabricksSqlStatementsApiHealthRegistration(httpClientFactoryMock.Object, clockMock.Object, options);
+        var sut = new DatabricksSqlStatementApiHealthRegistration(httpClientFactoryMock.Object, clockMock.Object, options);
 
         // Act
         var actualHealthStatus = await sut

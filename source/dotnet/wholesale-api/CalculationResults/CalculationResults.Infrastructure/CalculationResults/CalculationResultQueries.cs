@@ -29,12 +29,12 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 
 public class CalculationResultQueries : ICalculationResultQueries
 {
-    private readonly ISqlStatementClient _sqlStatementClient;
+    private readonly IDatabricksSqlStatementClient _sqlStatementClient;
     private readonly IBatchesClient _batchesClient;
     private readonly DeltaTableOptions _deltaTableOptions;
     private readonly ILogger<CalculationResultQueries> _logger;
 
-    public CalculationResultQueries(ISqlStatementClient sqlStatementClient, IBatchesClient batchesClient, IOptions<DeltaTableOptions> deltaTableOptions, ILogger<CalculationResultQueries> logger)
+    public CalculationResultQueries(IDatabricksSqlStatementClient sqlStatementClient, IBatchesClient batchesClient, IOptions<DeltaTableOptions> deltaTableOptions, ILogger<CalculationResultQueries> logger)
     {
         _sqlStatementClient = sqlStatementClient;
         _batchesClient = batchesClient;

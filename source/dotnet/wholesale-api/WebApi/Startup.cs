@@ -19,6 +19,8 @@ using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
 using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.AppSettings;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.Logging.LoggingMiddleware;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Energinet.DataHub.Wholesale.Common.Security;
@@ -104,6 +106,8 @@ public class Startup
         serviceCollection.AddOptions<JwtOptions>().Bind(Configuration);
         serviceCollection.AddOptions<ServiceBusOptions>().Bind(Configuration);
         serviceCollection.AddOptions<DatabricksOptions>().Bind(Configuration);
+        // TODO serviceCollection.AddOptions<DatabricksJobsOptions>().Bind(Configuration);
+        serviceCollection.AddOptions<DatabricksSqlStatementOptions>().Bind(Configuration);
         serviceCollection.AddOptions<DateTimeOptions>().Bind(Configuration);
         serviceCollection.AddOptions<DataLakeOptions>().Bind(Configuration);
         serviceCollection.AddOptions<DeltaTableOptions>();
@@ -194,8 +198,8 @@ public class Startup
             .AddDatabricksJobsApiHealthCheck(
                 _ => Configuration.Get<DatabricksOptions>()!,
                 name: HealthCheckNames.DatabricksJobsApi)
-            .AddDatabricksSqlStatementsApiHealthCheck(
-                _ => Configuration.Get<DatabricksOptions>()!,
+            .AddDatabricksSqlStatementApiHealthCheck(
+                _ => Configuration.Get<DatabricksSqlStatementOptions>()!,
                 name: HealthCheckNames.DatabricksSqlStatementsApi)
             .AddAzureServiceBusQueue(
                 serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,

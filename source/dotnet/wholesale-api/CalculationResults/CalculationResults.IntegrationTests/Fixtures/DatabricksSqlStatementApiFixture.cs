@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
+using Microsoft.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -32,12 +34,12 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
     {
         var integrationTestConfiguration = new IntegrationTestConfiguration();
         DatabricksSchemaManager = new DatabricksSchemaManager(integrationTestConfiguration.DatabricksSettings, "wholesale");
-        DatabricksOptionsMock = CreateDatabricksOptionsMock(DatabricksSchemaManager);
+        DatabricksOptionsMock = CreateDatabricksSqlStatementOptionsMock(DatabricksSchemaManager);
     }
 
     public DatabricksSchemaManager DatabricksSchemaManager { get; }
 
-    private Mock<IOptions<Core.Databricks.SqlStatementExecution.Internal.AppSettings.DatabricksOptions>> DatabricksOptionsMock { get; }
+    private Mock<IOptions<Core.Databricks.SqlStatementExecution.AppSettings.DatabricksSqlStatementOptions>> DatabricksOptionsMock { get; }
 
     public async Task InitializeAsync()
     {
@@ -49,26 +51,27 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
         await DatabricksSchemaManager.DropSchemaAsync();
     }
 
-    public SqlStatementClient CreateSqlStatementClient(Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock, Mock<ILogger<SqlStatementClient>> loggerMock2)
+    public IDatabricksSqlStatementClient CreateSqlStatementClient(Mock<ILogger<SqlStatusResponseParser>> loggerMock, Mock<ILogger<DatabricksSqlStatementClient>> loggerMock2)
     {
-        var databricksSqlChunkResponseParser = new DatabricksSqlChunkResponseParser();
-        var sqlStatementClient = new SqlStatementClient(
-            new HttpClient(),
+        var httpClientFactoryMock = new Mock<IHttpClientFactory>();
+        var sqlChunkResponseParser = new SqlChunkResponseParser();
+        var sqlStatementClient = new DatabricksSqlStatementClient(
+            httpClientFactoryMock.Object,
             DatabricksOptionsMock.Object,
-            new DatabricksSqlResponseParser(
-                new DatabricksSqlStatusResponseParser(loggerMock.Object, databricksSqlChunkResponseParser),
-                databricksSqlChunkResponseParser,
-                new DatabricksSqlChunkDataResponseParser()),
+            new SqlResponseParser(
+                new SqlStatusResponseParser(loggerMock.Object, sqlChunkResponseParser),
+                sqlChunkResponseParser,
+                new SqlChunkDataResponseParser()),
             loggerMock2.Object);
         return sqlStatementClient;
     }
 
-    private static Mock<IOptions<Core.Databricks.SqlStatementExecution.Internal.AppSettings.DatabricksOptions>> CreateDatabricksOptionsMock(DatabricksSchemaManager databricksSchemaManager)
+    private static Mock<IOptions<Core.Databricks.SqlStatementExecution.AppSettings.DatabricksSqlStatementOptions>> CreateDatabricksSqlStatementOptionsMock(DatabricksSchemaManager databricksSchemaManager)
     {
-        var databricksOptionsMock = new Mock<IOptions<Core.Databricks.SqlStatementExecution.Internal.AppSettings.DatabricksOptions>>();
+        var databricksOptionsMock = new Mock<IOptions<Core.Databricks.SqlStatementExecution.AppSettings.DatabricksSqlStatementOptions>>();
         databricksOptionsMock
             .Setup(o => o.Value)
-            .Returns(new Core.Databricks.SqlStatementExecution.Internal.AppSettings.DatabricksOptions
+            .Returns(new Core.Databricks.SqlStatementExecution.AppSettings.DatabricksSqlStatementOptions
             {
                 WorkspaceUrl = databricksSchemaManager.Settings.WorkspaceUrl,
                 WorkspaceToken = databricksSchemaManager.Settings.WorkspaceAccessToken,

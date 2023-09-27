@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
@@ -36,7 +37,7 @@ public static class CalculationResultsRegistration
         string workspaceUrl)
     {
         serviceCollection.AddScoped<ISettlementReportClient, SettlementReportClient>();
-        serviceCollection.AddDatabricks(warehouseId, workspaceToken, workspaceUrl);
+        serviceCollection.AddDatabricksSqlStatementExecution(warehouseId, workspaceToken, workspaceUrl);
         serviceCollection.AddScoped<ISettlementReportResultsCsvWriter, SettlementReportResultsCsvWriter>();
         serviceCollection.AddScoped<IDataLakeClient, DataLakeClient>();
         serviceCollection.AddScoped<IStreamZipper, StreamZipper>();

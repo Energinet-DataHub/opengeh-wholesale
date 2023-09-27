@@ -35,11 +35,11 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
     [Theory]
     [InlineAutoMoqData]
     public async Task ExecuteSqlStatementAsync_WhenQueryFromDatabricks_ReturnsExpectedData(
-        Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock)
+        Mock<ILogger<SqlStatusResponseParser>> loggerMock)
     {
         // Arrange
         await AddDataToEnergyResultTableAsync();
-        var sut = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
+        var sut = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<DatabricksSqlStatementClient>>());
 
         var sqlStatement = $@"SELECT * FROM {_fixture.DatabricksSchemaManager.SchemaName}.{_fixture.DatabricksSchemaManager.EnergyResultTableName}";
 
@@ -52,11 +52,11 @@ public class SqlStatementClientTests : IClassFixture<DatabricksSqlStatementApiFi
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task ExecuteAsync_WhenMultipleChunks_ReturnsAllRows(Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock)
+    public async Task ExecuteAsync_WhenMultipleChunks_ReturnsAllRows(Mock<ILogger<SqlStatusResponseParser>> loggerMock)
     {
         // Arrange
         var expectedRowCount = 100;
-        var sut = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
+        var sut = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<DatabricksSqlStatementClient>>());
 
         // Arrange: The result of this query spans multiple chunks
         var sqlStatement = $@"select r.id, 'some value' as value from range({expectedRowCount}) as r";

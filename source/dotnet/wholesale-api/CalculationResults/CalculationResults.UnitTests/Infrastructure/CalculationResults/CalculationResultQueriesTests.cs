@@ -53,7 +53,7 @@ public class CalculationResultQueriesTests
     public async Task GetAsync_WhenNoRows_ReturnsNoResults(
         BatchDto batch,
         [Frozen] Mock<IBatchesClient> batchesClientMock,
-        [Frozen] Mock<ISqlStatementClient> sqlStatementClientMock,
+        [Frozen] Mock<IDatabricksSqlStatementClient> sqlStatementClientMock,
         CalculationResultQueries sut)
     {
         // Arrange
@@ -78,7 +78,7 @@ public class CalculationResultQueriesTests
     public async Task GetAsync_WhenOneRow_ReturnsSingleResultWithOneTimeSeriesPoint(
         BatchDto batch,
         [Frozen] Mock<IBatchesClient> batchesClientMock,
-        [Frozen] Mock<ISqlStatementClient> sqlStatementClientMock,
+        [Frozen] Mock<IDatabricksSqlStatementClient> sqlStatementClientMock,
         CalculationResultQueries sut)
     {
         // Arrange
@@ -103,7 +103,7 @@ public class CalculationResultQueriesTests
     public async Task GetAsync_ReturnsResultRowWithExpectedValues(
         BatchDto batch,
         [Frozen] Mock<IBatchesClient> batchesClientMock,
-        [Frozen] Mock<ISqlStatementClient> sqlStatementClientMock,
+        [Frozen] Mock<IDatabricksSqlStatementClient> sqlStatementClientMock,
         CalculationResultQueries sut)
     {
         // Arrange
@@ -141,7 +141,7 @@ public class CalculationResultQueriesTests
     public async Task GetAsync_WhenRowsBelongsToDifferentResults_ReturnsMultipleResults(
         BatchDto batch,
         [Frozen] Mock<IBatchesClient> batchesClientMock,
-        [Frozen] Mock<ISqlStatementClient> sqlStatementClientMock,
+        [Frozen] Mock<IDatabricksSqlStatementClient> sqlStatementClientMock,
         CalculationResultQueries sut)
     {
         // Arrange

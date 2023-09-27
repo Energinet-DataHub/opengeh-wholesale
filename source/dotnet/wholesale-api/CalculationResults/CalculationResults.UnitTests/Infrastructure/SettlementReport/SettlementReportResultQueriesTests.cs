@@ -43,7 +43,7 @@ public class SettlementReportResultQueriesTests
 
     [Theory]
     [AutoMoqData]
-    public async Task GetRowsAsync_ReturnsExpectedNumberOfRows(Mock<ISqlStatementClient> mockSqlStatementClient)
+    public async Task GetRowsAsync_ReturnsExpectedNumberOfRows(Mock<IDatabricksSqlStatementClient> mockSqlStatementClient)
     {
         // Arrange
         var asyncResult = ToAsyncEnumerable(_someTableChunk);
@@ -59,7 +59,7 @@ public class SettlementReportResultQueriesTests
 
     [Theory]
     [AutoMoqData]
-    public async Task GetRowsAsync_ReturnsExpectedData(Mock<ISqlStatementClient> mockSqlStatementClient)
+    public async Task GetRowsAsync_ReturnsExpectedData(Mock<IDatabricksSqlStatementClient> mockSqlStatementClient)
     {
         // Arrange
         var row = new[] { "123", "BalanceFixing", "2022-05-16T01:00:00.000Z", "non_profiled_consumption", "1.234" };
