@@ -27,6 +27,7 @@ from package.calculation.calculator_args import CalculatorArgs
 from package.codelists.process_type import ProcessType
 from package.constants import EnergyResultColumnNames, WholesaleResultColumnNames
 from package.infrastructure import paths
+from package.calculation_input import CalculationInput
 from package.calculation_input.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
@@ -146,7 +147,8 @@ def executed_balance_fixing(
         "_get_all_grid_loss_responsible",
         return_value=grid_loss_responsible_test_data,
     ):
-        calculation.execute(calculator_args_balance_fixing, spark)
+        calculation_input = CalculationInput(spark)
+        calculation.execute(calculator_args_balance_fixing, calculation_input)
 
 
 @pytest.fixture(scope="session")
@@ -169,7 +171,8 @@ def executed_wholesale_fixing(
         "_get_all_grid_loss_responsible",
         return_value=grid_loss_responsible_test_data,
     ):
-        calculation.execute(calculator_args_wholesale_fixing, spark)
+        calculation_input = CalculationInput(spark)
+        calculation.execute(calculator_args_wholesale_fixing, calculation_input)
 
 
 @pytest.fixture(scope="session")

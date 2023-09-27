@@ -12,15 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql import DataFrame
 from package.constants import Colname
-from .calculation_input_reader import CalculationInputReader
+from .delta_table_reader import DeltaTableReader
 
 
-def read_charges(spark: SparkSession) -> DataFrame:
-    calculation_input_reader = CalculationInputReader(spark)
-
+def read_charges(calculation_input_reader: DeltaTableReader) -> DataFrame:
     charge_master_data_df = calculation_input_reader.read_charge_master_data_periods()
     charge_links_df = calculation_input_reader.read_charge_links_periods()
     charge_prices_df = calculation_input_reader.read_charge_price_points()
