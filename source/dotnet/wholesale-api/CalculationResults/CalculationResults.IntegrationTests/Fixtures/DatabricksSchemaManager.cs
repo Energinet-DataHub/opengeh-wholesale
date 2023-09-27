@@ -153,6 +153,10 @@ public class DatabricksSchemaManager
 
             state = jsonObject["status"]?["state"]?.ToString() ?? throw new InvalidOperationException("Unable to retrieve 'state' from the responseJsonObject");
 
+            /*
+            Added this retry logic because sometimes for some unknown reason sql statements that came before the current one seem to not be completed even though the state is SUCCEEDED.
+            This can be solved by adding a sleep of 200ms. This is not ideal but it works for now.
+            */
             retryCount++;
             if (state != "SUCCEEDED")
                 Thread.Sleep(200);
