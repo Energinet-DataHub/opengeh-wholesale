@@ -21,11 +21,13 @@ from package.infrastructure import (
 )
 from package.calculator_job_args import get_calculator_args
 from package.infrastructure.storage_account_access import islocked
+from package.calculation_input import CalculationInput
 import package.calculation as calculation
 
 
-# The start() method should only have its name updated in correspondence with the wheels entry point for it.
-# Further the method must remain parameterless because it will be called from the entry point when deployed.
+# The start() method should only have its name updated in correspondence with the
+# wheels entry point for it. Further the method must remain parameterless because
+# it will be called from the entry point when deployed.
 def start() -> None:
     args = get_calculator_args()
 
@@ -35,4 +37,5 @@ def start() -> None:
         sys.exit(3)
 
     spark = initialize_spark()
-    calculation.execute(args, spark)
+    calculation_input = CalculationInput(spark)
+    calculation.execute(args, calculation_input)
