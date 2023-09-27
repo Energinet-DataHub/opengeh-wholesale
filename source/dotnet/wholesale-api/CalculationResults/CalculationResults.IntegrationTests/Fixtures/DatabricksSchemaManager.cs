@@ -111,6 +111,7 @@ public class DatabricksSchemaManager
             {
                 var sql = Replacements(sqlStatement);
                 await ExecuteSqlAsync(sql);
+                Thread.Sleep(1000);
             }
         }
     }
