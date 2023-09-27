@@ -106,9 +106,6 @@ message WholesaleResultProducedV1 {
        */
       optional DecimalValue quantity = 2;
 
-      // Contains all the distinct quantity qualities that contributed to the aggregated sum of this time series point (example: missing, measured)
-      repeated QuantityQuality quantity_qualities = 3;
-
       /*
        * 6 digit scale decimal value of the amount.
        */
@@ -118,21 +115,6 @@ message WholesaleResultProducedV1 {
        * 6 digit scale decimal value of the amount.
        */
       optional DecimalValue amount = 5;
-  }
-
-  /*
-   * The quality of the quantity.
-   */
-  enum QuantityQuality {
-      /*
-       * Unspecified is unused but according to best practice.
-       * Read more at https://protobuf.dev/programming-guides/style/#enums.
-       */
-      QUANTITY_QUALITY_UNSPECIFIED = 0;
-      QUANTITY_QUALITY_ESTIMATED = 1;
-      QUANTITY_QUALITY_MEASURED = 2;
-      QUANTITY_QUALITY_MISSING = 3;
-      QUANTITY_QUALITY_CALCULATED = 4;
   }
 
   /*
