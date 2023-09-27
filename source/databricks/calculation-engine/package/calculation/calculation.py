@@ -13,9 +13,8 @@
 # limitations under the License.
 
 
-from pyspark.sql import SparkSession
 from package.codelists import ProcessType
-import package.calculation_input as input
+from package.calculation_input import CalculationInput
 from package.calculation_output.wholesale_calculation_result_writer import (
     WholesaleCalculationResultWriter,
 )
@@ -25,16 +24,15 @@ from .wholesale import wholesale_calculation
 from . import setup
 
 
-def execute(args: CalculatorArgs, spark: SparkSession) -> None:
-    (
-        metering_point_periods_df,
-        time_series_points_df,
-        grid_loss_responsible_df,
-    ) = input.get_calculation_input(
-        spark,
+def execute(args: CalculatorArgs, calculation_input: CalculationInput) -> None:
+    metering_point_periods_df = calculation_input.get_metering_point_periods_df(
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
         args.batch_grid_areas,
+    )
+    time_series_points_df = calculation_input.get_time_series_points()
+    grid_loss_responsible_df = calculation_input.get_grid_loss_responsible(
+        args.batch_grid_areas
     )
 
     enriched_time_series_point_df = setup.get_enriched_time_series_points_df(
@@ -65,7 +63,7 @@ def execute(args: CalculatorArgs, spark: SparkSession) -> None:
             args.batch_id, args.batch_process_type, args.batch_execution_time_start
         )
 
-        charges_df = input.read_charges(spark)
+        charges_df = calculation_input.get_charges()
 
         wholesale_calculation.execute(
             wholesale_calculation_result_writer,
