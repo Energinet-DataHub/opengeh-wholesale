@@ -20,7 +20,7 @@ from pyspark.sql.functions import (
 )
 from package.constants import Colname
 from datetime import datetime
-from .calculation_input_reader import CalculationInputReader
+from .delta_table_reader import DeltaTableReader
 from .batch_grid_areas import (
     get_batch_grid_areas_df,
     check_all_grid_areas_have_metering_points,
@@ -28,7 +28,7 @@ from .batch_grid_areas import (
 
 
 def get_metering_point_periods_df(
-    calculation_input_reader: CalculationInputReader,
+    calculation_input_reader: DeltaTableReader,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
     batch_grid_areas: list[str],
