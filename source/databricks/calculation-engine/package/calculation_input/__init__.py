@@ -12,5 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .get_calculation_input import get_calculation_input
-from .charges_reader import read_charges
+from .calculation_input import CalculationInput
