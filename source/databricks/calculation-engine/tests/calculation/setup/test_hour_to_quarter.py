@@ -21,7 +21,6 @@ from package.codelists import (
     MeteringPointResolution,
     TimeSeriesQuality,
 )
-from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.types import (
     StructType,
     StringType,
@@ -30,6 +29,7 @@ from pyspark.sql.types import (
     StructField,
 )
 from package.calculation.setup.hour_to_quarter import transform_hour_to_quarter
+from tests.helpers.dataframe_helper import create_dataframe_from_rows
 
 
 enriched_time_series_schema = StructType(
@@ -107,11 +107,6 @@ def _create_enriched_time_series_row(
     return row
 
 
-def create_dataframe_from_rows(rows: list, schema: StructType) -> DataFrame:
-    spark = SparkSession.builder.getOrCreate()
-    return spark.createDataFrame(data=rows, schema=schema)
-
-
 def test__transform_hour_to_quarter__split_hourly_enriched_time_series() -> None:
     # Arrange
     rows = [_create_enriched_time_series_row()]
@@ -119,7 +114,6 @@ def test__transform_hour_to_quarter__split_hourly_enriched_time_series() -> None
 
     # Act
     enriched_time_series_all_quarter = transform_hour_to_quarter(enriched_time_series)
-    enriched_time_series_all_quarter.show()
 
     # Assert
     assert enriched_time_series_all_quarter.count() == 4
