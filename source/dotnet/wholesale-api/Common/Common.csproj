@@ -19,7 +19,7 @@ limitations under the License.
     <RootNamespace>Energinet.DataHub.Wholesale.Common</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="7.6.0" />
+    <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="8.1.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
     <PackageReference Include="Microsoft.Azure.Databricks.Client" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
