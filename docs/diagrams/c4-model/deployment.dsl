@@ -27,10 +27,13 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
 
             # Include Frontend model
             !include https://raw.githubusercontent.com/Energinet-DataHub/greenforce-frontend/main/docs/diagrams/c4-model/model.dsl
+            
+            # Include Esett Exchange model
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-esett-exchange/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACDNGUTLTLMQNYWNAOUI2TCQZIR4JDQ
 
             # Include Migration model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACFOVCSKVICTKNZNHHH7QTS2ZIJWBVQ
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACDNGUTK25CO5XOJZU4Q5EDMZIR4JOA
         }
 
         # Deployment model
@@ -318,6 +321,13 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
         container dh3 "EDI" {
             title "[Container] DataHub 3.0 - EDI (Detailed with OAuth)"
             include ->ediDomain->
+            exclude "relationship.tag==Deployment Diagram"
+            exclude "relationship.tag==Simple View"
+        }
+
+        container dh3 "Esett_Exchange" {
+            title "[Container] DataHub 3.0 - Esett Exchange (Detailed with OAuth)"
+            include ->eSettDomain->
             exclude "relationship.tag==Deployment Diagram"
             exclude "relationship.tag==Simple View"
         }
