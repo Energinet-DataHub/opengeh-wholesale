@@ -29,7 +29,7 @@ module "func_migration" {
   ]
 
   app_settings = {
-    WEBSITE_LOAD_CERTIFICATES                       = "*"
+    WEBSITE_LOAD_CERTIFICATES                       = local.datahub2_certificate_thumbprint
     StorageAccountSettings__Dh2StorageAccountUri    = "https://${module.st_dh2data.name}.blob.core.windows.net"
     StorageAccountSettings__TimeSeriesContainerName = azurerm_storage_container.dh2_timeseries_synchronization.name
     DataHub2ClientSettings__EndpointAddress         = "https://b2b.te7.datahub.dk",
