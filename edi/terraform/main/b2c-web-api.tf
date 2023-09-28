@@ -18,5 +18,8 @@ module "b2c_web_api" {
   ip_restriction_allow_ip_range            = var.hosted_deployagent_public_ip_range
 
   app_settings = {
+    EXTERNAL_OPEN_ID_URL = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-open-id-url)"
+    INTERNAL_OPEN_ID_URL = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-open-id-url)"
+    BACKEND_BFF_APP_ID   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-bff-app-id)"
   }
 }
