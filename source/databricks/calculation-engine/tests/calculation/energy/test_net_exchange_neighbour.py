@@ -20,10 +20,17 @@ from package.constants import Colname
 from package.calculation.energy.exchange_aggregators import (
     aggregate_net_exchange_per_neighbour_ga,
 )
-from package.codelists import MeteringPointType, TimeSeriesQuality
+from package.codelists import (
+    MeteringPointType,
+    TimeSeriesQuality,
+    MeteringPointResolution,
+)
 from package.calculation.energy.schemas import aggregation_result_schema
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 from pyspark.sql.functions import col, window
+from pyspark.sql.types import StructField, StructType
+
+from tests.helpers.dataframe_helper import create_dataframe_from_rows
 
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
@@ -223,3 +230,81 @@ def test_expected_schema(single_quarter_test_data):
         Colname.to_grid_area, Colname.from_grid_area, Colname.time_window
     )
     assert df.schema == aggregation_result_schema
+
+
+enriched_time_series_in_quarter_schema = StructType(
+    [
+        StructField(Colname.grid_area, StringType(), True),
+        StructField(Colname.to_grid_area, StringType(), True),
+        StructField(Colname.from_grid_area, StringType(), True),
+        StructField(Colname.metering_point_id, StringType(), True),
+        StructField(Colname.metering_point_type, StringType(), True),
+        StructField(Colname.resolution, StringType(), True),
+        StructField(Colname.observation_time, TimestampType(), True),
+        StructField(Colname.quantity, DecimalType(18, 6), True),
+        StructField(Colname.quality, StringType(), True),
+        StructField(Colname.energy_supplier_id, StringType(), True),
+        StructField(Colname.balance_responsible_id, StringType(), True),
+        StructField("quarter_time", TimestampType(), True),
+        StructField(
+            Colname.time_window,
+            StructType(
+                [
+                    StructField(Colname.start, TimestampType()),
+                    StructField(Colname.end, TimestampType()),
+                ]
+            ),
+            False,
+        ),
+        StructField("quarter_quantity", DecimalType(18, 6), True),
+    ]
+)
+
+
+def _create_enriched_time_series_in_quarter_row(
+    grid_area: int = "805",
+    to_grid_area: str = "805",
+    from_grid_area: str = "806",
+    metering_point_id: str = "the_metering_point_id",
+    metering_point_type: str = "the_metering_point_type",
+    resolution: str = MeteringPointResolution.QUARTER.value,
+    observation_time: TimestampType() = datetime(2020, 1, 1, 0, 0),
+    quantity: str = Decimal("4.444444"),
+    quality: str = TimeSeriesQuality.ESTIMATED.value,
+    energy_supplier_id: str = "the_energy_supplier_id",
+    balance_responsible_id: str = "the_balance_responsible_id",
+    quarter_time: TimestampType() = datetime(2020, 1, 1, 0, 0),
+    time_window_start: TimestampType() = datetime(2020, 1, 1, 0, 0),
+    time_window_end: TimestampType() = datetime(2020, 1, 1, 15, 0),
+    quarter_quantity: str = Decimal("1.111111"),
+) -> dict:
+    row = {
+        Colname.grid_area: grid_area,
+        Colname.to_grid_area: to_grid_area,
+        Colname.from_grid_area: from_grid_area,
+        Colname.metering_point_id: metering_point_id,
+        Colname.metering_point_type: metering_point_type,
+        Colname.resolution: resolution,
+        Colname.observation_time: observation_time,
+        Colname.quantity: quantity,
+        Colname.quality: quality,
+        Colname.energy_supplier_id: energy_supplier_id,
+        Colname.balance_responsible_id: balance_responsible_id,
+        "quarter_time": quarter_time,
+        Colname.time_window: {
+            Colname.start: time_window_start,
+            Colname.end: time_window_end,
+        },
+        "quarter_quantity": quarter_quantity,
+    }
+
+    return row
+
+
+def test_stuff() -> None:
+    rows = [_create_enriched_time_series_in_quarter_row()]
+    df = create_dataframe_from_rows(
+        rows,
+        enriched_time_series_in_quarter_schema,
+    )
+    df.show()
