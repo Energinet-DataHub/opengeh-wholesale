@@ -51,7 +51,7 @@ public class AggregatedTimeSeriesServiceBusWorker : BackgroundService, IAsyncDis
     {
         using (_logger.BeginScope(_loggingScope))
         {
-            await _serviceBusProcessor.CloseAsync(cancellationToken).ConfigureAwait(false);
+            await _serviceBusProcessor.StopProcessingAsync(cancellationToken).ConfigureAwait(false);
             await base.StopAsync(cancellationToken).ConfigureAwait(false);
             _logger.LogWarning("{Worker} has stopped", _serviceName);
         }
