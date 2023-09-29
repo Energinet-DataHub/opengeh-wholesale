@@ -26,9 +26,14 @@ from package.codelists import (
     MeteringPointResolution,
 )
 from package.calculation.energy.schemas import aggregation_result_schema
-from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
+from pyspark.sql.types import (
+    StructType,
+    StringType,
+    DecimalType,
+    TimestampType,
+    StructField,
+)
 from pyspark.sql.functions import col, window
-from pyspark.sql.types import StructField, StructType
 
 from tests.helpers.dataframe_helper import create_dataframe_from_rows
 
