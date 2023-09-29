@@ -18,7 +18,7 @@ using TimeSeriesTypeContract = Energinet.DataHub.Edi.Responses.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.EDI.Mappers;
 
-using CalculationTimeSeriesType = CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType;
+using CalculationTimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType;
 
 public static class TimeSeriesTypeMapper
 {
