@@ -21,18 +21,8 @@
     </PackageReference>
   </ItemGroup>
   
-
   <ItemGroup>
-    <Protobuf Include="Contracts\AggregatedTimeSeriesRequest.proto">
-      <Generator>MSBuild:Compile</Generator>
-    </Protobuf>
-    <Protobuf Include="Contracts\AggregatedTimeSeriesRequestAccepted.proto">
-      <Generator>MSBuild:Compile</Generator>
-    </Protobuf>
-    <Protobuf Include="Contracts\AggregatedTimeSeriesRequestRejected.proto">
-      <Generator>MSBuild:Compile</Generator>
-    </Protobuf>
-    <Protobuf Include="InboxEvents/*.proto">
+    <Protobuf Include="Contracts/*.proto">
       <GrpcServices>None</GrpcServices>
       <Access>Public</Access>
       <ProtoCompile>True</ProtoCompile>
@@ -42,7 +32,6 @@
     </Protobuf>
   </ItemGroup>
   
-
   <ItemGroup>
     <ProjectReference Include="..\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
   </ItemGroup>
