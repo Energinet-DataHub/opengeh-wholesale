@@ -97,49 +97,19 @@ def _create_charges_prices_points_row(
     return row
 
 
-# 1 Test combinations ==, >=, <
-# df[Colname.charge_key] == charge_links[Colname.charge_key],
-# 1.1 Test two different charge_keys
-# 1.2 Test two same charge_keys
-
-# 1.3 Test that charge_time is after from_date --- df[Colname.charge_time] >= charge_links[Colname.from_date],
-# 1.4 Test that charge_time is equal to from_date --- df[Colname.charge_time] >= charge_links[Colname.from_date],
-# 1.5 Test that charge_time is before from_date --- df[Colname.charge_time] >= charge_links[Colname.from_date],
-
-# 1.6 df[Colname.charge_time] < charge_links[Colname.to_date],
-
-
-# 2a Test inner join with charge_prices
-# 2b Test inner join with charge_links
-
-# 3 Test schema read_changes?
-
-
 @patch("package.calculation_input.charges_reader.DeltaTableReader")
-def test__read_changes_joins_tables_charge_master_charge_link_and_charge_prices__returns_a_joined_data_row(
+def test__read_changes__returns_expected_joined_row_values(
     calculation_input_reader_mock: DeltaTableReader, spark: SparkSession
 ) -> None:
     # Arrange
-    charge_master_data_rows = [
-        _create_charge_master_data_row(),
-    ]
-
-    charge_link_periods_rows = [
-        _create_charge_link_periods_row(),
-    ]
-
-    charge_prices_points_rows = [
-        _create_charges_prices_points_row(),
-    ]
-
     calculation_input_reader_mock.read_charge_master_data_periods.return_value = (
-        spark.createDataFrame(data=charge_master_data_rows)
+        spark.createDataFrame(data=[_create_charge_master_data_row()])
     )
     calculation_input_reader_mock.read_charge_links_periods.return_value = (
-        spark.createDataFrame(data=charge_link_periods_rows)
+        spark.createDataFrame(data=[_create_charge_link_periods_row()])
     )
     calculation_input_reader_mock.read_charge_price_points.return_value = (
-        spark.createDataFrame(data=charge_prices_points_rows)
+        spark.createDataFrame(data=[_create_charges_prices_points_row()])
     )
 
     # Act
