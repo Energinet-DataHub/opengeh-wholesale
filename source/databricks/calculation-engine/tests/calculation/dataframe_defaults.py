@@ -46,6 +46,7 @@ class DataframeDefaults:
     default_charge_tax: str = "true"
     default_charge_type: str = const_charge_type.value
     default_charge_resolution: str = ChargeResolution.DAY.value
+    default_charge_time: datetime = datetime(2020, 1, 1, 0, 0)
     default_currency: str = "DDK"
     default_energy_supplier_id: str = "1"
     default_from_grid_area: str = "chargea"

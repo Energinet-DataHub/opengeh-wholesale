@@ -18,7 +18,7 @@ from package.calculation.wholesale.schemas.calculate_daily_subscription_price_sc
     calculate_daily_subscription_price_schema,
 )
 from package.calculation.wholesale.schemas.charges_schema import (
-    charges_schema,
+    charges_master_data_schema,
     charge_links_schema,
     charge_prices_schema,
 )
@@ -67,7 +67,7 @@ def test_charges(charge_master_data_factory):
     to_date = datetime(2020, 1, 2, 0, 0)
     df = charge_master_data_factory(from_date, to_date)
     result = df.collect()[0]
-    assert len(df.columns) == len(charges_schema.fields)
+    assert len(df.columns) == len(charges_master_data_schema.fields)
     assert result[Colname.charge_key] == DataframeDefaults.default_charge_key
     assert result[Colname.charge_id] == DataframeDefaults.default_charge_id
     assert result[Colname.charge_type] == DataframeDefaults.default_charge_type

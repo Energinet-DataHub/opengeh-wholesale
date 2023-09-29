@@ -21,7 +21,7 @@ from pyspark.sql.types import (
     TimestampType,
 )
 
-charges_schema = StructType(
+charges_master_data_schema = StructType(
     [
         StructField(Colname.charge_key, StringType(), False),
         StructField(Colname.charge_id, StringType(), False),
