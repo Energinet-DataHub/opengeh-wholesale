@@ -13,13 +13,14 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
-namespace EDI.InboxEvents;
+namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Factories;
 
-public interface IEdiClient
+public interface IAggregatedTimeSeriesMessageFactory
 {
     /// <summary>
-    /// Responsible of sending a message to EDI inbox
+    /// Creates a service bus message based on aggregated time series
     /// </summary>
-    public Task SendAsync(ServiceBusMessage message, CancellationToken cancellationToken);
+    public ServiceBusMessage Create(EnergyResult? calculationResult, string referenceId);
 }

@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Edi.Responses;
 
-namespace EDI.InboxEvents.Mappers;
+namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Mappers;
 
 public static class QuantityQualityMapper
 {

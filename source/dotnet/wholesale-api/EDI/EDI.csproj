@@ -1,9 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
+      <AssemblyName>Energinet.DataHub.Wholesale.EDI.UnitTests</AssemblyName>
+      <RootNamespace>Energinet.DataHub.Wholesale.EDI.UnitTests</RootNamespace>
     </PropertyGroup>
 
   <ItemGroup>
@@ -24,31 +23,16 @@
   
 
   <ItemGroup>
+    <Protobuf Include="Contracts\AggregatedTimeSeriesRequest.proto">
+      <Generator>MSBuild:Compile</Generator>
+    </Protobuf>
+    <Protobuf Include="Contracts\AggregatedTimeSeriesRequestAccepted.proto">
+      <Generator>MSBuild:Compile</Generator>
+    </Protobuf>
+    <Protobuf Include="Contracts\AggregatedTimeSeriesRequestRejected.proto">
+      <Generator>MSBuild:Compile</Generator>
+    </Protobuf>
     <Protobuf Include="InboxEvents/*.proto">
-      <GrpcServices>None</GrpcServices>
-      <Access>Public</Access>
-      <ProtoCompile>True</ProtoCompile>
-      <CompileOutputs>True</CompileOutputs>
-      <OutputDir>obj\contracts</OutputDir>
-      <Generator>MSBuild:Compile</Generator>
-    </Protobuf>
-    <Protobuf Include="InboxEvents\Contracts\AggregatedTimeSeriesRequest.proto">
-      <GrpcServices>None</GrpcServices>
-      <Access>Public</Access>
-      <ProtoCompile>True</ProtoCompile>
-      <CompileOutputs>True</CompileOutputs>
-      <OutputDir>obj\contracts</OutputDir>
-      <Generator>MSBuild:Compile</Generator>
-    </Protobuf>
-    <Protobuf Include="InboxEvents\Contracts\AggregatedTimeSeriesRequestAccepted.proto">
-      <GrpcServices>None</GrpcServices>
-      <Access>Public</Access>
-      <ProtoCompile>True</ProtoCompile>
-      <CompileOutputs>True</CompileOutputs>
-      <OutputDir>obj\contracts</OutputDir>
-      <Generator>MSBuild:Compile</Generator>
-    </Protobuf>
-    <Protobuf Include="InboxEvents\Contracts\AggregatedTimeSeriesRequestRejected.proto">
       <GrpcServices>None</GrpcServices>
       <Access>Public</Access>
       <ProtoCompile>True</ProtoCompile>
@@ -62,6 +46,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
   </ItemGroup>
+  
   
   
 </Project>

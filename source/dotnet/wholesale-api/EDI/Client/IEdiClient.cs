@@ -12,14 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace EDI.InboxEvents;
+using Azure.Messaging.ServiceBus;
 
-public enum TimeSeriesType
+namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Client;
+
+public interface IEdiClient
 {
-    NonProfiledConsumption,
-    FlexConsumption,
-    Production,
-    NetExchangePerGa,
-    NetExchangePerNeighboringGa,
-    TotalConsumption,
+    /// <summary>
+    /// Responsible of sending a message to EDI inbox
+    /// </summary>
+#pragma warning disable VSTHRD200
+    public Task SendAsync(ServiceBusMessage message, CancellationToken cancellationToken);
+#pragma warning restore VSTHRD200
 }

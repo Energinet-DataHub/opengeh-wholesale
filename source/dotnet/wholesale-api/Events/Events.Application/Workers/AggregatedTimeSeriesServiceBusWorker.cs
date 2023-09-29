@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
-using EDI;
 using Energinet.DataHub.Core.Logging;
+using Energinet.DataHub.Wholesale.EDI.UnitTests;
 using Energinet.DataHub.Wholesale.Events.Application.Options;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

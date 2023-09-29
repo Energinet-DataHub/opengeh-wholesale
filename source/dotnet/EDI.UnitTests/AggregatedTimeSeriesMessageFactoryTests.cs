@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using EDI.InboxEvents;
 using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Common.Models;
+using Energinet.DataHub.Wholesale.EDI.UnitTests.Factories;
 using FluentAssertions;
 using Google.Protobuf.WellKnownTypes;
 using NodaTime;

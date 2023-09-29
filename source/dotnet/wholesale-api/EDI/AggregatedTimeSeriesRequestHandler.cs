@@ -13,13 +13,16 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
-using EDI.InboxEvents;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Common.Logging;
+using Energinet.DataHub.Wholesale.EDI.UnitTests.Client;
+using Energinet.DataHub.Wholesale.EDI.UnitTests.Factories;
+using Energinet.DataHub.Wholesale.EDI.UnitTests.Mappers;
+using Energinet.DataHub.Wholesale.EDI.UnitTests.Models;
 using Microsoft.Extensions.Logging;
 
-namespace EDI;
+namespace Energinet.DataHub.Wholesale.EDI.UnitTests;
 
 public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHandler
 {
@@ -63,7 +66,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         CancellationToken cancellationToken)
     {
         var query = new CalculationResultQuery(
-            TimeSeriesTypeMapper.MapTimeSerieType(aggregatedTimeSeriesRequestMessage.TimeSeriesType),
+            TimeSeriesTypeMapper.MapTimeSeriesTypeFromEdi(aggregatedTimeSeriesRequestMessage.TimeSeriesType),
             aggregatedTimeSeriesRequestMessage.Period.Start,
             aggregatedTimeSeriesRequestMessage.Period.End,
             aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea.GridAreaCode,

@@ -13,15 +13,15 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
-using EDI.InboxEvents.Mappers;
 using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.EDI.UnitTests.Mappers;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using PeriodContract = Energinet.DataHub.Edi.Responses.Period;
 using TimeSeriesPoint = Energinet.DataHub.Edi.Responses.TimeSeriesPoint;
 
-namespace EDI.InboxEvents;
+namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Factories;
 
 public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFactory
 {
@@ -73,7 +73,7 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
             QuantityUnit = QuantityUnit.Kwh,
             Period = period,
             TimeSeriesPoints = { points },
-            TimeSeriesType = EDI.InboxEvents.Mappers.TimeSeriesTypeMapper.MapTimeSeriesTypeFromCalculationsResult(energyResult.TimeSeriesType),
+            TimeSeriesType = TimeSeriesTypeMapper.MapTimeSeriesTypeFromCalculationsResult(energyResult.TimeSeriesType),
         };
     }
 

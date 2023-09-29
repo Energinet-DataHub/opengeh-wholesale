@@ -12,9 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace EDI.InboxEvents;
+namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Models;
 
-public record AggregatedTimeSeriesRequest(
-    Period Period,
-    TimeSeriesType TimeSeriesType,
-    AggregationPerRoleAndGridArea AggregationPerRoleAndGridArea);
+public enum TimeSeriesType
+{
+    NonProfiledConsumption,
+    FlexConsumption,
+    Production,
+    NetExchangePerGa,
+    NetExchangePerNeighboringGa,
+    TotalConsumption,
+}

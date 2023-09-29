@@ -14,13 +14,13 @@
 
 using AutoFixture.Xunit2;
 using Azure.Messaging.ServiceBus;
-using EDI;
-using EDI.InboxEvents;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Common.Models;
+using Energinet.DataHub.Wholesale.EDI.UnitTests.Client;
+using Energinet.DataHub.Wholesale.EDI.UnitTests.Factories;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.Logging;

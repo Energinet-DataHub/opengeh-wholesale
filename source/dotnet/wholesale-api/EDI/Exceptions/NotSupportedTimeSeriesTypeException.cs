@@ -12,6 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace EDI.InboxEvents;
+namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Exceptions;
 
-public record AggregationPerRoleAndGridArea(string GridAreaCode, string? EnergySupplierId = null, string? BalanceResponsibleId = null);
+public class NotSupportedTimeSeriesTypeException : Exception
+{
+    public NotSupportedTimeSeriesTypeException()
+    {
+    }
+
+    public NotSupportedTimeSeriesTypeException(string message)
+        : base(message)
+    {
+    }
+
+    public NotSupportedTimeSeriesTypeException(string message, Exception innerException)
+        : base(message, innerException)
+    {
+    }
+}
