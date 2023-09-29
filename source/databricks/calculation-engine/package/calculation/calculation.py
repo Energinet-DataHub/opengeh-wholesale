@@ -14,32 +14,33 @@
 
 
 from package.codelists import ProcessType
-from package.calculation_input import CalculationInput
+from .preparation import PreparedDataReader
 from package.calculation_output.wholesale_calculation_result_writer import (
     WholesaleCalculationResultWriter,
 )
 from .calculator_args import CalculatorArgs
 from .energy import energy_calculation
 from .wholesale import wholesale_calculation
-from . import preparation
 
 
-def execute(args: CalculatorArgs, calculation_input: CalculationInput) -> None:
-    metering_point_periods_df = calculation_input.get_metering_point_periods_df(
+def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> None:
+    metering_point_periods_df = prepared_data_reader.get_metering_point_periods_df(
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
         args.batch_grid_areas,
     )
-    time_series_points_df = calculation_input.get_time_series_points()
-    grid_loss_responsible_df = calculation_input.get_grid_loss_responsible(
+    time_series_points_df = prepared_data_reader.get_time_series_points()
+    grid_loss_responsible_df = prepared_data_reader.get_grid_loss_responsible(
         args.batch_grid_areas
     )
 
-    enriched_time_series_point_df = preparation.get_enriched_time_series_points_df(
-        time_series_points_df,
-        metering_point_periods_df,
-        args.batch_period_start_datetime,
-        args.batch_period_end_datetime,
+    enriched_time_series_point_df = (
+        prepared_data_reader.get_enriched_time_series_points_df(
+            time_series_points_df,
+            metering_point_periods_df,
+            args.batch_period_start_datetime,
+            args.batch_period_end_datetime,
+        )
     )
 
     energy_calculation.execute(
@@ -63,7 +64,7 @@ def execute(args: CalculatorArgs, calculation_input: CalculationInput) -> None:
             args.batch_id, args.batch_process_type, args.batch_execution_time_start
         )
 
-        charges_df = calculation_input.get_charges()
+        charges_df = prepared_data_reader.get_charges()
 
         wholesale_calculation.execute(
             wholesale_calculation_result_writer,

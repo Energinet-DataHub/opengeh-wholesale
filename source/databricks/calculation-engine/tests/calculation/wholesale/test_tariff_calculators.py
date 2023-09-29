@@ -15,7 +15,7 @@
 from decimal import Decimal
 from datetime import datetime, timedelta
 import uuid
-from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql import SparkSession
 import pytest
 from typing import Any, List, Union
 

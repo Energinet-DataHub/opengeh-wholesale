@@ -15,7 +15,7 @@
 from datetime import datetime
 from decimal import Decimal
 from pyspark.sql import SparkSession, DataFrame
-from package.calculation_input.charges_reader import (
+from package.calculation.preparation.transformations.charges_reader import (
     _join_with_charge_prices,
     _join_with_charge_links,
 )

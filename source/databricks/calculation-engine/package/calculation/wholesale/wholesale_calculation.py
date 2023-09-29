@@ -15,7 +15,7 @@
 
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as F
-import package.calculation.preparation as factories
+import package.calculation.preparation as preparation
 import package.calculation.wholesale.tariff_calculators as tariffs
 from package.codelists import ChargeResolution, MeteringPointType
 from package.constants import Colname
@@ -54,7 +54,7 @@ def _calculate_tariff_charges(
     charges_df: DataFrame,
     period_start_datetime: datetime,
 ) -> None:
-    tariffs_hourly = factories.get_tariff_charges(
+    tariffs_hourly = preparation.get_tariff_charges(
         metering_points_periods_df,
         time_series_point_df,
         charges_df,
