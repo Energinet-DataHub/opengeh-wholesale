@@ -157,7 +157,6 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_expected_values(
         _create_tariff_hour_row(metering_point_id="3", charge_key=CHARGE_KEY),
     ]
 
-    print(rows)
     tariffs = spark.createDataFrame(data=rows, schema=tariff_schema)
 
     # Act
