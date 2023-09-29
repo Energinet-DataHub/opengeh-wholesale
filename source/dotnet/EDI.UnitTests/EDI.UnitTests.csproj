@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyName>Energinet.DataHub.Wholesale.EDI.UnitTests</AssemblyName>
-    <RootNamespace>EDI.Tests</RootNamespace>
+    <RootNamespace>Energinet.DataHub.Wholesale.EDI.UnitTests</RootNamespace>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>

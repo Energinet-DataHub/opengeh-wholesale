@@ -17,7 +17,7 @@ using Energinet.DataHub.Edi.Responses;
 using FluentAssertions;
 using Xunit;
 
-namespace EDI.Tests.InboxEvents.Mappers;
+namespace Energinet.DataHub.Wholesale.EDI.UnitTests.InboxEvents.Mappers;
 
 public class QuantityQualityMapperTests
 {

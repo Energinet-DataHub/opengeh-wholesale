@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Core;
 using EDI.InboxEvents;
 using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
@@ -21,11 +20,10 @@ using FluentAssertions;
 using Google.Protobuf.WellKnownTypes;
 using NodaTime;
 using Xunit;
-using QuantityQuality = Energinet.DataHub.Edi.Responses.QuantityQuality;
 using TimeSeriesPoint = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesPoint;
 using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType;
 
-namespace EDI.Tests.InboxEvents;
+namespace Energinet.DataHub.Wholesale.EDI.UnitTests.InboxEvents;
 
 public class AggregatedTimeSeriesMessageFactoryTests
 {

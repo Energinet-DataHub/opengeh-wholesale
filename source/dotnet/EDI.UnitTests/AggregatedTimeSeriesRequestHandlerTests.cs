@@ -14,6 +14,7 @@
 
 using AutoFixture.Xunit2;
 using Azure.Messaging.ServiceBus;
+using EDI;
 using EDI.InboxEvents;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Edi.Responses;
@@ -32,7 +33,7 @@ using CalculationTimeSeriesPoint = Energinet.DataHub.Wholesale.CalculationResult
 using Period = Energinet.DataHub.Edi.Requests.Period;
 using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
 
-namespace EDI.Tests;
+namespace Energinet.DataHub.Wholesale.EDI.UnitTests;
 
 public class AggregatedTimeSeriesRequestHandlerTests
 {

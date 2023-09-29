@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
+using EDI;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Energinet.DataHub.Wholesale.Events.Application.Workers;
