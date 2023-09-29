@@ -12,21 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.EDI;
 using Energinet.DataHub.Wholesale.EDI.Client;
 using Energinet.DataHub.Wholesale.EDI.Factories;
-using Energinet.DataHub.Wholesale.Events.Application.Options;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
+namespace Energinet.DataHub.Wholesale.EDI;
 
 /// <summary>
 /// Registration of services required for the Batches module.
 /// </summary>
 public static class EdiRegistration
 {
-    public static void AddEdiModule(
-        this IServiceCollection serviceCollection,
-        ServiceBusOptions serviceBusOptions)
+    public static void AddEdiModule(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddScoped<IAggregatedTimeSeriesRequestHandler, AggregatedTimeSeriesRequestHandler>();
         serviceCollection.AddSingleton<IEdiClient, EdiClient>();
