@@ -20,7 +20,7 @@ import package.calculation.energy.aggregators as aggregators
 import package.calculation.energy.exchange_aggregators as exchange_aggr
 import package.calculation.energy.grid_loss_calculator as grid_loss_aggr
 import package.calculation.energy.transformations as transformations
-import package.calculation.setup as setup
+import package.calculation.preparation as preparation
 from package.codelists import TimeSeriesType, AggregationLevel, ProcessType
 from package.calculation_output.basis_data_writer import BasisDataWriter
 from package.calculation_output.energy_calculation_result_writer import (
@@ -51,7 +51,7 @@ def execute(
         time_zone,
     )
 
-    enriched_time_series_point_df = setup.transform_hour_to_quarter(
+    enriched_time_series_point_df = preparation.transform_hour_to_quarter(
         enriched_time_series_point_df
     )
     _calculate(
