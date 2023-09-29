@@ -13,16 +13,13 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
+using EDI.InboxEvents;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Common.Logging;
-using Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
-using Energinet.DataHub.Wholesale.Events.Application.UseCases.Mappers;
 using Microsoft.Extensions.Logging;
-using CalculationAggregationLevel = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.AggregationLevel;
-using CalculationTimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType;
 
-namespace Energinet.DataHub.Wholesale.Events.Application.UseCases;
+namespace EDI;
 
 public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHandler
 {

@@ -12,14 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Messaging.ServiceBus;
+namespace EDI.InboxEvents;
 
-namespace Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
-
-public interface IEdiClient
-{
-    /// <summary>
-    /// Responsible of sending a message to EDI inbox
-    /// </summary>
-    public Task SendAsync(ServiceBusMessage message, CancellationToken cancellationToken);
-}
+public record AggregatedTimeSeriesRequest(
+    Period Period,
+    TimeSeriesType TimeSeriesType,
+    AggregationPerRoleAndGridArea AggregationPerRoleAndGridArea);

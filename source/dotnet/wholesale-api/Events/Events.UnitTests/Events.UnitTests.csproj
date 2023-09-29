@@ -32,4 +32,7 @@
       <ProjectReference Include="..\..\Test.Core\Test.Core.csproj" />
       <ProjectReference Include="..\Events.Infrastructure\Events.Infrastructure.csproj" />
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Application\UseCases\Mappers\" />
+    </ItemGroup>
 </Project>

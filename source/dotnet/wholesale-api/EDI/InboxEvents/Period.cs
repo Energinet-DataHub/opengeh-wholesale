@@ -12,9 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
+using NodaTime;
 
-public record AggregatedTimeSeriesRequest(
-    Period Period,
-    TimeSeriesType TimeSeriesType,
-    AggregationPerRoleAndGridArea AggregationPerRoleAndGridArea);
+namespace EDI.InboxEvents;
+
+public record Period(Instant Start, Instant End);

@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
+using EDI.InboxEvents;
 
-namespace Energinet.DataHub.Wholesale.Events.Application.UseCases.Mappers;
+namespace EDI;
 
 using CalculationTimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType;
 

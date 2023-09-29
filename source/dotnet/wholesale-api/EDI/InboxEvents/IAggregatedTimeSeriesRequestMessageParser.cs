@@ -14,7 +14,7 @@
 
 using Azure.Messaging.ServiceBus;
 
-namespace Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
+namespace EDI.InboxEvents;
 
 public interface IAggregatedTimeSeriesRequestMessageParser
 {

@@ -12,21 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.InboxEvents.Exceptions;
+using Azure.Messaging.ServiceBus;
 
-public class NotSupportedTimeSeriesTypeException : Exception
+namespace EDI.InboxEvents;
+
+public interface IEdiClient
 {
-    public NotSupportedTimeSeriesTypeException()
-    {
-    }
-
-    public NotSupportedTimeSeriesTypeException(string message)
-        : base(message)
-    {
-    }
-
-    public NotSupportedTimeSeriesTypeException(string message, Exception innerException)
-        : base(message, innerException)
-    {
-    }
+    /// <summary>
+    /// Responsible of sending a message to EDI inbox
+    /// </summary>
+    public Task SendAsync(ServiceBusMessage message, CancellationToken cancellationToken);
 }

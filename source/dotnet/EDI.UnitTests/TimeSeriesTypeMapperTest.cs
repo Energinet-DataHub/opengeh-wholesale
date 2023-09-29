@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
-using Energinet.DataHub.Wholesale.Events.Application.UseCases.Mappers;
+using EDI.InboxEvents;
 using FluentAssertions;
 using Xunit;
 using CalculationTimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType;
 
-namespace Energinet.DataHub.Wholesale.Events.UnitTests.Application.UseCases.Mappers;
+namespace EDI.Tests;
 
 public class TimeSeriesTypeMapperTests
 {

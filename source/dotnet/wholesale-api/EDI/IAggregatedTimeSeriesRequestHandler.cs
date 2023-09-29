@@ -12,6 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
+using Azure.Messaging.ServiceBus;
 
-public record AggregationPerRoleAndGridArea(string GridAreaCode, string? EnergySupplierId = null, string? BalanceResponsibleId = null);
+namespace EDI;
+
+public interface IAggregatedTimeSeriesRequestHandler
+{
+    /// <summary>
+    /// Handles the process of consuming the request for aggregated time series, then getting the required time series and creating and sending the response.
+    /// </summary>
+    /// <param name="receivedMessage"></param>
+    /// <param name="referenceId"></param>
+    /// <param name="cancellationToken"></param>
+    Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken);
+}

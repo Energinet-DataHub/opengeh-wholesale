@@ -12,18 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Core;
+using EDI.InboxEvents;
 using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.InboxEvents;
+using Energinet.DataHub.Wholesale.Common.Models;
 using FluentAssertions;
 using Google.Protobuf.WellKnownTypes;
 using NodaTime;
 using Xunit;
-using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
+using QuantityQuality = Energinet.DataHub.Edi.Responses.QuantityQuality;
 using TimeSeriesPoint = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesPoint;
 using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType;
 
-namespace Energinet.DataHub.Wholesale.Events.UnitTests.InboxEvents;
+namespace EDI.Tests.InboxEvents;
 
 public class AggregatedTimeSeriesMessageFactoryTests
 {
@@ -74,11 +76,11 @@ public class AggregatedTimeSeriesMessageFactoryTests
             _balanceResponsibleId,
             new TimeSeriesPoint[]
             {
-                new(new DateTime(2021, 1, 1), 1, QuantityQuality.Estimated),
-                new(new DateTime(2021, 1, 1), 2, QuantityQuality.Estimated),
-                new(new DateTime(2021, 1, 1), 3, QuantityQuality.Estimated),
+                new(new DateTime(2021, 1, 1), 1, Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Estimated),
+                new(new DateTime(2021, 1, 1), 2, Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Estimated),
+                new(new DateTime(2021, 1, 1), 3, Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Estimated),
             },
-            Common.Models.ProcessType.Aggregation,
+            ProcessType.Aggregation,
             _periodStart,
             _periodEnd,
             _fromGridArea);

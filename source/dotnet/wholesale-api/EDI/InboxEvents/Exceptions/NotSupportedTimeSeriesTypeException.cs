@@ -12,8 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using NodaTime;
+namespace EDI.InboxEvents.Exceptions;
 
-namespace Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
+public class NotSupportedTimeSeriesTypeException : Exception
+{
+    public NotSupportedTimeSeriesTypeException()
+    {
+    }
 
-public record Period(Instant Start, Instant End);
+    public NotSupportedTimeSeriesTypeException(string message)
+        : base(message)
+    {
+    }
+
+    public NotSupportedTimeSeriesTypeException(string message, Exception innerException)
+        : base(message, innerException)
+    {
+    }
+}

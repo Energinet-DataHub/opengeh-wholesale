@@ -12,15 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+namespace EDI.InboxEvents;
 
-namespace Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
-
-public interface IAggregatedTimeSeriesMessageFactory
-{
-    /// <summary>
-    /// Creates a service bus message based on aggregated time series
-    /// </summary>
-    public ServiceBusMessage Create(EnergyResult? calculationResult, string referenceId);
-}
+public record AggregationPerRoleAndGridArea(string GridAreaCode, string? EnergySupplierId = null, string? BalanceResponsibleId = null);
