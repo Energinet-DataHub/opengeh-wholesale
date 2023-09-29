@@ -21,7 +21,7 @@ from package.calculation_output.wholesale_calculation_result_writer import (
 from .calculator_args import CalculatorArgs
 from .energy import energy_calculation
 from .wholesale import wholesale_calculation
-from . import setup
+from . import preparation
 
 
 def execute(args: CalculatorArgs, calculation_input: CalculationInput) -> None:
@@ -35,7 +35,7 @@ def execute(args: CalculatorArgs, calculation_input: CalculationInput) -> None:
         args.batch_grid_areas
     )
 
-    enriched_time_series_point_df = setup.get_enriched_time_series_points_df(
+    enriched_time_series_point_df = preparation.get_enriched_time_series_points_df(
         time_series_points_df,
         metering_point_periods_df,
         args.batch_period_start_datetime,

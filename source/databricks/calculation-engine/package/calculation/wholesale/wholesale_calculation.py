@@ -15,7 +15,7 @@
 
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as F
-import package.calculation.wholesale.factories as factories
+import package.calculation.preparation as factories
 import package.calculation.wholesale.tariff_calculators as tariffs
 from package.codelists import ChargeResolution, MeteringPointType
 from package.constants import Colname

@@ -16,7 +16,7 @@
 import pytest
 from decimal import Decimal
 from datetime import datetime
-from package.calculation.setup import get_enriched_time_series_points_df
+from package.calculation.preparation import get_enriched_time_series_points_df
 from package.constants import Colname
 
 from package.codelists import (
