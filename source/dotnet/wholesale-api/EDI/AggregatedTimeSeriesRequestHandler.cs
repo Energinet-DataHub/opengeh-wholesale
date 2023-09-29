@@ -27,25 +27,25 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
     private readonly IEdiClient _ediClient;
     private readonly IAggregatedTimeSeriesMessageFactory _aggregatedTimeSeriesMessageFactory;
     private readonly ILogger<AggregatedTimeSeriesRequestHandler> _logger;
-    private readonly IAggregatedTimeSeriesRequestMessageParser _aggregatedTimeSeriesRequestMessageParser;
+    private readonly IAggregatedTimeSeriesRequestFactory _aggregatedTimeSeriesRequestFactory;
 
     public AggregatedTimeSeriesRequestHandler(
         IRequestCalculationResultQueries requestCalculationResultQueries,
         IEdiClient ediClient,
-        IAggregatedTimeSeriesRequestMessageParser aggregatedTimeSeriesRequestMessageParser,
+        IAggregatedTimeSeriesRequestFactory aggregatedTimeSeriesRequestFactory,
         IAggregatedTimeSeriesMessageFactory aggregatedTimeSeriesMessageFactory,
         ILogger<AggregatedTimeSeriesRequestHandler> logger)
     {
         _requestCalculationResultQueries = requestCalculationResultQueries;
         _ediClient = ediClient;
-        _aggregatedTimeSeriesRequestMessageParser = aggregatedTimeSeriesRequestMessageParser;
+        _aggregatedTimeSeriesRequestFactory = aggregatedTimeSeriesRequestFactory;
         _aggregatedTimeSeriesMessageFactory = aggregatedTimeSeriesMessageFactory;
         _logger = logger;
     }
 
     public async Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken)
     {
-        var aggregatedTimeSeriesRequestMessage = _aggregatedTimeSeriesRequestMessageParser.Parse(receivedMessage);
+        var aggregatedTimeSeriesRequestMessage = _aggregatedTimeSeriesRequestFactory.Parse(receivedMessage);
 
         var result = await GetCalculationResultsAsync(
             aggregatedTimeSeriesRequestMessage,

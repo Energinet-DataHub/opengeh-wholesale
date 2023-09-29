@@ -17,7 +17,7 @@ using NodaTime.Serialization.Protobuf;
 
 namespace EDI.InboxEvents;
 
-public class AggregatedTimeSeriesRequestMessageParser : IAggregatedTimeSeriesRequestMessageParser
+public class AggregatedTimeSeriesRequestFactory : IAggregatedTimeSeriesRequestFactory
 {
     public AggregatedTimeSeriesRequest Parse(ServiceBusReceivedMessage request)
     {

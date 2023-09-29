@@ -16,7 +16,7 @@ using Azure.Messaging.ServiceBus;
 
 namespace EDI.InboxEvents;
 
-public interface IAggregatedTimeSeriesRequestMessageParser
+public interface IAggregatedTimeSeriesRequestFactory
 {
     /// <summary>
     /// Responsible for parsing the received message.

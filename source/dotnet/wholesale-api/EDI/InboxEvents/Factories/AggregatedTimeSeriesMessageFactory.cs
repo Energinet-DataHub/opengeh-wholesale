@@ -73,7 +73,7 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
             QuantityUnit = QuantityUnit.Kwh,
             Period = period,
             TimeSeriesPoints = { points },
-            TimeSeriesType = EDI.InboxEvents.Mappers.TimeSeriesTypeMapper.MapTimeSeriesType(energyResult.TimeSeriesType),
+            TimeSeriesType = EDI.InboxEvents.Mappers.TimeSeriesTypeMapper.MapTimeSeriesTypeFromCalculationsResult(energyResult.TimeSeriesType),
         };
     }
 

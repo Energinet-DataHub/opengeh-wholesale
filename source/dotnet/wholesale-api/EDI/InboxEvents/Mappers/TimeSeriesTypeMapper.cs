@@ -19,7 +19,7 @@ namespace EDI.InboxEvents.Mappers;
 
 public static class TimeSeriesTypeMapper
 {
-    public static TimeSeriesTypeContract MapTimeSeriesType(Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType timeSeriesType)
+    public static TimeSeriesTypeContract MapTimeSeriesTypeFromCalculationsResult(Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType timeSeriesType)
     {
         return timeSeriesType switch
         {

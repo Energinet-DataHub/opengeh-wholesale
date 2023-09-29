@@ -30,7 +30,7 @@ public class TimeSeriesTypeMapperTests
     public void MapTimeSeriesType_WhenCalled_MapsCorrectly(Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType timeSeriesType, TimeSeriesType expected)
     {
         // Act & Assert
-        global::EDI.InboxEvents.Mappers.TimeSeriesTypeMapper.MapTimeSeriesType(timeSeriesType).Should().Be(expected);
+        global::EDI.InboxEvents.Mappers.TimeSeriesTypeMapper.MapTimeSeriesTypeFromCalculationsResult(timeSeriesType).Should().Be(expected);
     }
 
     [Theory]
@@ -38,7 +38,7 @@ public class TimeSeriesTypeMapperTests
     public void MapTimeSeriesType_WhenCalled_HandlesExpectedType(Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType timeSeriesType)
     {
         // Act
-        var actual = () => global::EDI.InboxEvents.Mappers.TimeSeriesTypeMapper.MapTimeSeriesType(timeSeriesType);
+        var actual = () => global::EDI.InboxEvents.Mappers.TimeSeriesTypeMapper.MapTimeSeriesTypeFromCalculationsResult(timeSeriesType);
 
         // Assert
         if (IsNotSupportedTimeSeriesType(timeSeriesType))

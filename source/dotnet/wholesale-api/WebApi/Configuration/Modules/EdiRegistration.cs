@@ -30,6 +30,6 @@ public static class EdiRegistration
         serviceCollection.AddScoped<IAggregatedTimeSeriesRequestHandler, AggregatedTimeSeriesRequestHandler>();
         serviceCollection.AddSingleton<IEdiClient, EdiClient>();
         serviceCollection.AddScoped<IAggregatedTimeSeriesMessageFactory, AggregatedTimeSeriesMessageFactory>();
-        serviceCollection.AddScoped<IAggregatedTimeSeriesRequestMessageParser, AggregatedTimeSeriesRequestMessageParser>();
+        serviceCollection.AddScoped<IAggregatedTimeSeriesRequestFactory, AggregatedTimeSeriesRequestFactory>();
     }
 }
