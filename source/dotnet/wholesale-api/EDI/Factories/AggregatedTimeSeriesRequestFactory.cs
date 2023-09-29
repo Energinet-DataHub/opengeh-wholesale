@@ -13,10 +13,10 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.Wholesale.EDI.UnitTests.Models;
+using Energinet.DataHub.Wholesale.EDI.Models;
 using NodaTime.Serialization.Protobuf;
 
-namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Factories;
+namespace Energinet.DataHub.Wholesale.EDI.Factories;
 
 public class AggregatedTimeSeriesRequestFactory : IAggregatedTimeSeriesRequestFactory
 {

@@ -15,7 +15,7 @@
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
-namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Factories;
+namespace Energinet.DataHub.Wholesale.EDI.Factories;
 
 public interface IAggregatedTimeSeriesMessageFactory
 {

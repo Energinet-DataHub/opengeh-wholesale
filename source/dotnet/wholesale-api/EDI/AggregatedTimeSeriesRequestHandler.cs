@@ -16,13 +16,13 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Common.Logging;
-using Energinet.DataHub.Wholesale.EDI.UnitTests.Client;
-using Energinet.DataHub.Wholesale.EDI.UnitTests.Factories;
-using Energinet.DataHub.Wholesale.EDI.UnitTests.Mappers;
-using Energinet.DataHub.Wholesale.EDI.UnitTests.Models;
+using Energinet.DataHub.Wholesale.EDI.Client;
+using Energinet.DataHub.Wholesale.EDI.Factories;
+using Energinet.DataHub.Wholesale.EDI.Mappers;
+using Energinet.DataHub.Wholesale.EDI.Models;
 using Microsoft.Extensions.Logging;
 
-namespace Energinet.DataHub.Wholesale.EDI.UnitTests;
+namespace Energinet.DataHub.Wholesale.EDI;
 
 public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHandler
 {

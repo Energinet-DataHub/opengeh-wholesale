@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-      <AssemblyName>Energinet.DataHub.Wholesale.EDI.UnitTests</AssemblyName>
-      <RootNamespace>Energinet.DataHub.Wholesale.EDI.UnitTests</RootNamespace>
+      <AssemblyName>Energinet.DataHub.Wholesale.EDI</AssemblyName>
+      <RootNamespace>Energinet.DataHub.Wholesale.EDI</RootNamespace>
     </PropertyGroup>
 
   <ItemGroup>

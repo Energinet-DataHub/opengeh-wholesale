@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.EDI.UnitTests;
-using Energinet.DataHub.Wholesale.EDI.UnitTests.Client;
-using Energinet.DataHub.Wholesale.EDI.UnitTests.Factories;
+using Energinet.DataHub.Wholesale.EDI;
+using Energinet.DataHub.Wholesale.EDI.Client;
+using Energinet.DataHub.Wholesale.EDI.Factories;
 using Energinet.DataHub.Wholesale.Events.Application.Options;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;

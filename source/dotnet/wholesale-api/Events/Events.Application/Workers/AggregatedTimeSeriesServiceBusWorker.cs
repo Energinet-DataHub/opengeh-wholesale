@@ -14,7 +14,7 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.Logging;
-using Energinet.DataHub.Wholesale.EDI.UnitTests;
+using Energinet.DataHub.Wholesale.EDI;
 using Energinet.DataHub.Wholesale.Events.Application.Options;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

@@ -14,6 +14,6 @@
 
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Models;
+namespace Energinet.DataHub.Wholesale.EDI.Models;
 
 public record Period(Instant Start, Instant End);

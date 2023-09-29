@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.EDI.UnitTests.Mappers;
-using Energinet.DataHub.Wholesale.EDI.UnitTests.Models;
+using Energinet.DataHub.Wholesale.EDI.Mappers;
+using Energinet.DataHub.Wholesale.EDI.Models;
 using FluentAssertions;
 using Xunit;
 using CalculationTimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType;

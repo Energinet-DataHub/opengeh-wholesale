@@ -15,13 +15,13 @@
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
-using Energinet.DataHub.Wholesale.EDI.UnitTests.Mappers;
+using Energinet.DataHub.Wholesale.EDI.Mappers;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using PeriodContract = Energinet.DataHub.Edi.Responses.Period;
 using TimeSeriesPoint = Energinet.DataHub.Edi.Responses.TimeSeriesPoint;
 
-namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Factories;
+namespace Energinet.DataHub.Wholesale.EDI.Factories;
 
 public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFactory
 {

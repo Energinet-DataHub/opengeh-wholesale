@@ -16,7 +16,7 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.Events.Application.Options;
 using Microsoft.Extensions.Options;
 
-namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Client;
+namespace Energinet.DataHub.Wholesale.EDI.Client;
 
 public class EdiClient : IEdiClient, IAsyncDisposable
 {

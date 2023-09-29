@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Exceptions;
+namespace Energinet.DataHub.Wholesale.EDI.Exceptions;
 
 public class NotSupportedTimeSeriesTypeException : Exception
 {

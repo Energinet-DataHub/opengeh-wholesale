@@ -14,7 +14,7 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.EDI.UnitTests;
+using Energinet.DataHub.Wholesale.EDI;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Energinet.DataHub.Wholesale.Events.Application.Workers;
 using Energinet.DataHub.Wholesale.Events.IntegrationTests.Fixture;
