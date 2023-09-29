@@ -13,11 +13,16 @@
 # limitations under the License.
 
 
-from package.codelists import ProcessType
-from .preparation import PreparedDataReader
+from pyspark.sql import DataFrame
+import pyspark.sql.functions as F
+
+from package.codelists import ChargeResolution, MeteringPointType, ProcessType
 from package.calculation_output.wholesale_calculation_result_writer import (
     WholesaleCalculationResultWriter,
 )
+from package.constants import Colname
+
+from .preparation import PreparedDataReader
 from .calculator_args import CalculatorArgs
 from .energy import energy_calculation
 from .wholesale import wholesale_calculation
@@ -65,11 +70,28 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
         )
 
         charges_df = prepared_data_reader.get_charges()
+        metering_points_periods_df = _get_production_and_consumption_metering_points(
+            metering_point_periods_df
+        )
+
+        tariffs_hourly_df = prepared_data_reader.get_tariff_charges(
+            metering_points_periods_df,
+            time_series_points_df,
+            charges_df,
+            ChargeResolution.HOUR,
+        )
 
         wholesale_calculation.execute(
             wholesale_calculation_result_writer,
-            metering_point_periods_df,
-            time_series_points_df,
-            charges_df,
+            tariffs_hourly_df,
             args.batch_period_start_datetime,
         )
+
+
+def _get_production_and_consumption_metering_points(
+    metering_points_periods_df: DataFrame,
+) -> DataFrame:
+    return metering_points_periods_df.filter(
+        (F.col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value)
+        | (F.col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value)
+    )
