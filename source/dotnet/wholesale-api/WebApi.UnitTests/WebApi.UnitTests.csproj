@@ -40,7 +40,7 @@ limitations under the License.
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.3" />
     <PackageReference Include="Moq" Version="4.18.4" />
     <PackageReference Include="xunit" Version="2.4.2" />
-    <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="4.3.3" />
+    <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="4.3.5" />
     <PackageReference Include="xunit.categories" Version="2.0.7" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
