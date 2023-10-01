@@ -38,9 +38,6 @@ class PreparedDataReader:
             grid_areas,
         )
 
-    def get_time_series_points(self) -> DataFrame:
-        return self._table_reader.read_time_series_points()
-
     def get_grid_loss_responsible(self, grid_areas: list[str]) -> DataFrame:
         return T.get_grid_loss_responsible(grid_areas)
 
@@ -72,15 +69,16 @@ class PreparedDataReader:
             metering_points, time_series, charges_df, resolution_duration
         )
 
-    def get_enriched_time_series_points_df(
+    def get_time_series_hour_points_df(
         self,
-        new_timeseries_df: DataFrame,
         master_basis_data_df: DataFrame,
         period_start_datetime: datetime,
         period_end_datetime: datetime,
     ) -> DataFrame:
+        # TODO BJM: Filter time series points by period (will it improve performance)?
+        raw_time_series_points_df = self._table_reader.read_time_series_points()
         return T.get_enriched_time_series_points_df(
-            new_timeseries_df,
+            raw_time_series_points_df,
             master_basis_data_df,
             period_start_datetime,
             period_end_datetime,

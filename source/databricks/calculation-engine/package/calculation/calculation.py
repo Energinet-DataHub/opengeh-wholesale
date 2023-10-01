@@ -21,6 +21,7 @@ from package.calculation_output.wholesale_calculation_result_writer import (
     WholesaleCalculationResultWriter,
 )
 from package.constants import Colname
+from package.calculation_output.basis_data_writer import BasisDataWriter
 
 from .preparation import PreparedDataReader
 from .calculator_args import CalculatorArgs
@@ -34,29 +35,33 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
         args.batch_period_end_datetime,
         args.batch_grid_areas,
     )
-    time_series_points_df = prepared_data_reader.get_time_series_points()
     grid_loss_responsible_df = prepared_data_reader.get_grid_loss_responsible(
         args.batch_grid_areas
     )
 
-    enriched_time_series_point_df = (
-        prepared_data_reader.get_enriched_time_series_points_df(
-            time_series_points_df,
-            metering_point_periods_df,
-            args.batch_period_start_datetime,
-            args.batch_period_end_datetime,
-        )
+    time_series_hour_points_df = prepared_data_reader.get_time_series_hour_points_df(
+        metering_point_periods_df,
+        args.batch_period_start_datetime,
+        args.batch_period_end_datetime,
+    )
+
+    basis_data_writer = BasisDataWriter(args.wholesale_container_path, args.batch_id)
+    basis_data_writer.write(
+        metering_point_periods_df,
+        time_series_hour_points_df,
+        args.time_zone,
+    )
+
+    time_series_quarter_points_df = prepared_data_reader.transform_hour_to_quarter(
+        time_series_hour_points_df
     )
 
     energy_calculation.execute(
         args.batch_id,
         args.batch_process_type,
         args.batch_execution_time_start,
-        args.wholesale_container_path,
-        metering_point_periods_df,
-        enriched_time_series_point_df,
+        time_series_quarter_points_df,
         grid_loss_responsible_df,
-        args.time_zone,
     )
 
     if (
@@ -76,7 +81,7 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
 
         tariffs_hourly_df = prepared_data_reader.get_tariff_charges(
             metering_points_periods_df,
-            time_series_points_df,
+            time_series_quarter_points_df,
             charges_df,
             ChargeResolution.HOUR,
         )
