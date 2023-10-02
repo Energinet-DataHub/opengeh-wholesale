@@ -28,6 +28,8 @@ from package.calculation.preparation.charge_types import (
     _explode_subscription,
     _get_charges_based_on_resolution,
     get_tariff_charges,
+    get_fee_charges,
+    get_subscription_charges,
     _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity,
     _join_with_grouped_time_series,
     _get_charges_based_on_charge_type,
@@ -202,3 +204,43 @@ def test__get_tariff_charges__filters_on_resolution_hour_or_day(
     )
 
     assert actual.collect()[0][Colname.charge_resolution] == charge_resolution.value
+
+
+def test__get_functions__filters_on_correct_charge_type(spark: SparkSession) -> None:
+    metering_point_rows = [_create_metering_point_row()]
+    time_series_rows = [_create_time_series_row()]
+    charges_rows = [
+        _create_charges_row(
+            charge_type=ChargeType.TARIFF,
+        ),
+        _create_charges_row(
+            charge_type=ChargeType.FEE,
+        ),
+        _create_charges_row(
+            charge_type=ChargeType.SUBSCRIPTION,
+        ),
+    ]
+
+    metering_point = _create_dataframe_from_rows(
+        spark, metering_point_rows, metering_point_period_schema
+    )
+    time_series = _create_dataframe_from_rows(
+        spark, time_series_rows, time_series_point_schema
+    )
+    charges = _create_dataframe_from_rows(spark, charges_rows, charges_schema)
+
+    actual_tariff = get_tariff_charges(
+        metering_point,
+        time_series,
+        charges,
+        ChargeResolution.HOUR,
+    )
+    actual_fee = get_fee_charges(charges, metering_point)
+    actual_subscription = get_subscription_charges(charges, metering_point)
+
+    assert actual_tariff.collect()[0][Colname.charge_type] == ChargeType.TARIFF.value
+    assert actual_fee.collect()[0][Colname.charge_type] == ChargeType.FEE.value
+    assert (
+        actual_subscription.collect()[0][Colname.charge_type]
+        == ChargeType.SUBSCRIPTION.value
+    )
