@@ -266,3 +266,52 @@ def test__get_subscription_charges__split_into_days_between_from_and_to_date(
 
     actual_subscription = get_subscription_charges(charges, metering_point)
     assert actual_subscription.count() == 31
+
+
+def test__get_tariff_charges__joins_on_metering_point_id_and_time_is_between_from_and_to_date(
+    spark: SparkSession,
+) -> None:
+    metering_point_rows = [
+        _create_metering_point_row(
+            from_date=datetime(2020, 1, 1, 0), to_date=datetime(2020, 1, 1, 2)
+        ),
+    ]
+    time_series_rows = [
+        _create_time_series_row(observation_time=datetime(2020, 1, 1, 0)),
+        _create_time_series_row(observation_time=datetime(2020, 1, 1, 1)),
+        _create_time_series_row(observation_time=datetime(2020, 1, 1, 2)),
+    ]
+    charges_rows = [
+        _create_charges_row(
+            from_date=datetime(2020, 1, 1, 0),
+            to_date=datetime(2020, 1, 1, 1),
+            charge_time=datetime(2020, 1, 1, 0),
+        ),
+        _create_charges_row(
+            from_date=datetime(2020, 1, 1, 1),
+            to_date=datetime(2020, 1, 1, 2),
+            charge_time=datetime(2020, 1, 1, 1),
+        ),
+        _create_charges_row(
+            from_date=datetime(2020, 1, 1, 2),
+            to_date=datetime(2020, 1, 1, 3),
+            charge_time=datetime(2020, 1, 1, 2),
+        ),
+    ]
+
+    metering_point = _create_dataframe_from_rows(
+        spark, metering_point_rows, metering_point_period_schema
+    )
+    time_series = _create_dataframe_from_rows(
+        spark, time_series_rows, time_series_point_schema
+    )
+    charges = _create_dataframe_from_rows(spark, charges_rows, charges_schema)
+
+    actual = get_tariff_charges(
+        metering_point,
+        time_series,
+        charges,
+        ChargeResolution.HOUR,
+    )
+
+    assert actual.count() == 2
