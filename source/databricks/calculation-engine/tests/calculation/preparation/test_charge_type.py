@@ -244,3 +244,25 @@ def test__get_functions__filters_on_correct_charge_type(spark: SparkSession) -> 
         actual_subscription.collect()[0][Colname.charge_type]
         == ChargeType.SUBSCRIPTION.value
     )
+
+
+def test__get_subscription_charges__split_into_days_between_from_and_to_date(
+    spark: SparkSession,
+) -> None:
+    metering_point_rows = [_create_metering_point_row()]
+    charges_rows = [
+        _create_charges_row(
+            from_date=datetime(2020, 1, 1, 0),
+            to_date=datetime(2020, 2, 1, 0),
+            charge_type=ChargeType.SUBSCRIPTION,
+        ),
+    ]
+
+    metering_point = _create_dataframe_from_rows(
+        spark, metering_point_rows, metering_point_period_schema
+    )
+
+    charges = _create_dataframe_from_rows(spark, charges_rows, charges_schema)
+
+    actual_subscription = get_subscription_charges(charges, metering_point)
+    assert actual_subscription.count() == 31
