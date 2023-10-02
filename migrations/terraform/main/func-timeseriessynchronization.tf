@@ -1,7 +1,7 @@
-module "func_migration" {
+module "func_timeseriessynchronization" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=v12"
 
-  name                                     = "migration"
+  name                                     = "timeseriessynchronization"
   project_name                             = var.domain_name_short
   environment_short                        = var.environment_short
   environment_instance                     = var.environment_instance
