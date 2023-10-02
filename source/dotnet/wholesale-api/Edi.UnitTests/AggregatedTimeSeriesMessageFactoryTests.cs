@@ -14,16 +14,16 @@
 
 using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.InboxEvents;
+using Energinet.DataHub.Wholesale.Common.Models;
+using Energinet.DataHub.Wholesale.EDI.Factories;
 using FluentAssertions;
 using Google.Protobuf.WellKnownTypes;
 using NodaTime;
 using Xunit;
-using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
 using TimeSeriesPoint = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesPoint;
 using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType;
 
-namespace Energinet.DataHub.Wholesale.Events.UnitTests.InboxEvents;
+namespace Energinet.DataHub.Wholesale.EDI.UnitTests;
 
 public class AggregatedTimeSeriesMessageFactoryTests
 {
@@ -74,11 +74,11 @@ public class AggregatedTimeSeriesMessageFactoryTests
             _balanceResponsibleId,
             new TimeSeriesPoint[]
             {
-                new(new DateTime(2021, 1, 1), 1, QuantityQuality.Estimated),
-                new(new DateTime(2021, 1, 1), 2, QuantityQuality.Estimated),
-                new(new DateTime(2021, 1, 1), 3, QuantityQuality.Estimated),
+                new(new DateTime(2021, 1, 1), 1, CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Estimated),
+                new(new DateTime(2021, 1, 1), 2, CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Estimated),
+                new(new DateTime(2021, 1, 1), 3, CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Estimated),
             },
-            Common.Models.ProcessType.Aggregation,
+            ProcessType.Aggregation,
             _periodStart,
             _periodEnd,
             _fromGridArea);

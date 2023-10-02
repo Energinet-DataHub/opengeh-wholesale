@@ -13,11 +13,10 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
 using Energinet.DataHub.Wholesale.Events.Application.Options;
 using Microsoft.Extensions.Options;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.InboxEvents;
+namespace Energinet.DataHub.Wholesale.EDI.Client;
 
 public class EdiClient : IEdiClient, IAsyncDisposable
 {

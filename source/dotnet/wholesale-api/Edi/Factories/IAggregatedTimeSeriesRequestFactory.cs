@@ -13,13 +13,15 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Wholesale.EDI.Models;
 
-namespace Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
+namespace Energinet.DataHub.Wholesale.EDI.Factories;
 
-public interface IEdiClient
+public interface IAggregatedTimeSeriesRequestFactory
 {
     /// <summary>
-    /// Responsible of sending a message to EDI inbox
+    /// Responsible for parsing the received message.
     /// </summary>
-    public Task SendAsync(ServiceBusMessage message, CancellationToken cancellationToken);
+    /// <param name="request"></param>
+    AggregatedTimeSeriesRequest Parse(ServiceBusReceivedMessage request);
 }
