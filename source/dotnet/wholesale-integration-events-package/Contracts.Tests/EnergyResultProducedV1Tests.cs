@@ -107,14 +107,14 @@ message EnergyResultProducedV1 {
     AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea aggregation_per_energysupplier_per_balanceresponsibleparty_per_gridarea = 5;
   }
 
-  ProcessType process_type = 10;
+  CalculationType calculation_type = 10;
 
   TimeSeriesType time_series_type = 11;
 
   /*
    * The beginning of the calculation period.
-   * The time is included in the period and is identical to the time of the first time series point
-   * in the process time series type results.
+   * The time is included in the period and is identical to the time of
+   * the first time series point in the results.
    */
   google.protobuf.Timestamp period_start_utc = 12;
 
@@ -204,18 +204,18 @@ message EnergyResultProducedV1 {
       string energy_supplier_id = 3;
   }
 
-  enum ProcessType {
+  enum CalculationType {
       /*
        * Unspecified is unused but according to best practice.
        * Read more at https://protobuf.dev/programming-guides/style/#enums.
        */
-      PROCESS_TYPE_UNSPECIFIED = 0;
-      PROCESS_TYPE_BALANCE_FIXING = 1;
-      PROCESS_TYPE_AGGREGATION = 2;
-      PROCESS_TYPE_WHOLESALE_FIXING = 3;
-      PROCESS_TYPE_FIRST_CORRECTION_SETTLEMENT = 4;
-      PROCESS_TYPE_SECOND_CORRECTION_SETTLEMENT = 5;
-      PROCESS_TYPE_THIRD_CORRECTION_SETTLEMENT = 6;
+      CALCULATION_TYPE_UNSPECIFIED = 0;
+      CALCULATION_TYPE_BALANCE_FIXING = 1;
+      CALCULATION_TYPE_AGGREGATION = 2;
+      CALCULATION_TYPE_WHOLESALE_FIXING = 3;
+      CALCULATION_TYPE_FIRST_CORRECTION_SETTLEMENT = 4;
+      CALCULATION_TYPE_SECOND_CORRECTION_SETTLEMENT = 5;
+      CALCULATION_TYPE_THIRD_CORRECTION_SETTLEMENT = 6;
   }
 
   enum QuantityUnit {
