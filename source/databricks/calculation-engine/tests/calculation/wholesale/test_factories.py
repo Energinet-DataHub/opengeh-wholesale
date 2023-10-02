@@ -23,7 +23,7 @@ from pyspark.sql.types import (
     TimestampType,
 )
 from typing import Callable
-from package.calculation.wholesale.factories import (
+from package.calculation.preparation.charge_types import (
     _join_with_metering_points,
     _explode_subscription,
     _get_charges_based_on_resolution,
