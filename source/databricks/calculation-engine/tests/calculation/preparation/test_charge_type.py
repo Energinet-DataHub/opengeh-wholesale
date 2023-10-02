@@ -82,7 +82,7 @@ def _create_metering_point_row(
     energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
     balance_responsible_id: str = "balance_responsible_id",
     from_date: datetime = datetime(2020, 1, 1, 0),
-    to_date: datetime = datetime(2020, 1, 1, 1),
+    to_date: datetime = datetime(2020, 2, 1, 0),
 ) -> dict:
     row = {
         Colname.metering_point_id: metering_point_id,
@@ -169,29 +169,20 @@ charges_schema = StructType(
 )
 
 
-def test_get_tarrif_charges(spark: SparkSession) -> None:
-    metering_point_rows = [
-        _create_metering_point_row(
-            from_date=datetime(2020, 1, 1, 0), to_date=datetime(2020, 1, 1, 1)
-        ),
-        _create_metering_point_row(
-            from_date=datetime(2020, 1, 1, 1), to_date=datetime(2020, 1, 1, 2)
-        ),
-    ]
-    time_series_rows = [
-        _create_time_series_row(observation_time=datetime(2020, 1, 1, 0)),
-        _create_time_series_row(observation_time=datetime(2020, 1, 1, 1)),
-    ]
+@pytest.mark.parametrize(
+    "charge_resolution", [ChargeResolution.HOUR, ChargeResolution.DAY]
+)
+def test__get_tariff_charges__filters_on_resolution_hour_or_day(
+    spark: SparkSession, charge_resolution: ChargeResolution
+) -> None:
+    metering_point_rows = [_create_metering_point_row()]
+    time_series_rows = [_create_time_series_row()]
     charges_rows = [
         _create_charges_row(
-            from_date=datetime(2020, 1, 1, 0),
-            to_date=datetime(2020, 1, 1, 1),
-            charge_time=datetime(2020, 1, 1, 0),
+            charge_resolution=ChargeResolution.HOUR,
         ),
         _create_charges_row(
-            from_date=datetime(2020, 1, 1, 0),
-            to_date=datetime(2020, 1, 1, 1),
-            charge_time=datetime(2020, 1, 1, 1),
+            charge_resolution=ChargeResolution.DAY,
         ),
     ]
 
@@ -207,6 +198,7 @@ def test_get_tarrif_charges(spark: SparkSession) -> None:
         metering_point,
         time_series,
         charges,
-        ChargeResolution.HOUR,
+        charge_resolution,
     )
-    actual.show()
+
+    assert actual.collect()[0][Colname.charge_resolution] == charge_resolution.value
