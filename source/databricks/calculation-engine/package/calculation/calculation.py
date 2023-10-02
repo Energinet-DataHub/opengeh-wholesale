@@ -39,10 +39,12 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
         args.batch_grid_areas
     )
 
-    time_series_hour_points_df = prepared_data_reader.get_time_series_hour_points_df(
-        metering_point_periods_df,
-        args.batch_period_start_datetime,
-        args.batch_period_end_datetime,
+    time_series_hour_points_df = (
+        prepared_data_reader.get_basis_data_time_series_points_df(
+            metering_point_periods_df,
+            args.batch_period_start_datetime,
+            args.batch_period_end_datetime,
+        )
     )
 
     basis_data_writer = BasisDataWriter(args.wholesale_container_path, args.batch_id)
