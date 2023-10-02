@@ -14,8 +14,8 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.Logging;
+using Energinet.DataHub.Wholesale.EDI;
 using Energinet.DataHub.Wholesale.Events.Application.Options;
-using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -51,7 +51,7 @@ public class AggregatedTimeSeriesServiceBusWorker : BackgroundService, IAsyncDis
     {
         using (_logger.BeginScope(_loggingScope))
         {
-            await _serviceBusProcessor.CloseAsync(cancellationToken).ConfigureAwait(false);
+            await _serviceBusProcessor.StopProcessingAsync(cancellationToken).ConfigureAwait(false);
             await base.StopAsync(cancellationToken).ConfigureAwait(false);
             _logger.LogWarning("{Worker} has stopped", _serviceName);
         }

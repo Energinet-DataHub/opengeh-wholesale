@@ -25,8 +25,8 @@ limitations under the License.
 
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.AzureServiceBus" Version="7.0.0" />
-    <PackageReference Include="Energinet.DataHub.Core.App.Common.Security" Version="7.6.0" />
-    <PackageReference Include="Energinet.DataHub.Core.App.WebApp" Version="7.6.0" />
+    <PackageReference Include="Energinet.DataHub.Core.App.Common.Security" Version="8.1.0" />
+    <PackageReference Include="Energinet.DataHub.Core.App.WebApp" Version="8.1.0" />
     <PackageReference Include="Energinet.DataHub.Core.Logging.LoggingMiddleware " Version="3.0.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
@@ -36,7 +36,7 @@ limitations under the License.
     <PackageReference Include="Microsoft.Extensions.Logging.AzureAppServices" Version="7.0.10" />
     <PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" Version="7.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-    <PackageReference Update="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.3">
+    <PackageReference Update="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -50,7 +50,7 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.6.40">
+    <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.7.30">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

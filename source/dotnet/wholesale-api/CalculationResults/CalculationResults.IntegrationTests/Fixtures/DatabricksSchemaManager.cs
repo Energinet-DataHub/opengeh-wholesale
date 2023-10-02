@@ -136,17 +136,33 @@ public class DatabricksSchemaManager
             statement = sqlStatement,
             warehouse_id = Settings.WarehouseId,
         };
-        var httpResponse = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
+        var state = string.Empty;
+        var jsonResponse = string.Empty;
+        var retryCount = 0;
+        do
+        {
+            var httpResponse = await _httpClient.PostAsJsonAsync(StatementsEndpointPath, requestObject).ConfigureAwait(false);
 
-        if (!httpResponse.IsSuccessStatusCode)
-            throw new DatabricksSqlException($"Unable to execute SQL statement on Databricks. Status code: {httpResponse.StatusCode}");
+            if (!httpResponse.IsSuccessStatusCode)
+                throw new DatabricksSqlException($"Unable to execute SQL statement on Databricks. Status code: {httpResponse.StatusCode}");
 
-        var jsonResponse = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
-        var settings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None, };
-        var jsonObject = JsonConvert.DeserializeObject<JObject>(jsonResponse, settings) ??
-                         throw new InvalidOperationException();
+            jsonResponse = await httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var settings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None, };
+            var jsonObject = JsonConvert.DeserializeObject<JObject>(jsonResponse, settings) ??
+                             throw new InvalidOperationException();
 
-        var state = jsonObject["status"]?["state"]?.ToString() ?? throw new InvalidOperationException("Unable to retrieve 'state' from the responseJsonObject");
+            state = jsonObject["status"]?["state"]?.ToString() ?? throw new InvalidOperationException("Unable to retrieve 'state' from the responseJsonObject");
+
+            /*
+            Added this retry logic because sometimes for some unknown reason sql statements that came before the current one seem to not be completed even though the state is SUCCEEDED.
+            This can be solved by adding a sleep of 200ms. This is not ideal but it works for now.
+            */
+            retryCount++;
+            if (state != "SUCCEEDED")
+                Thread.Sleep(200);
+        }
+        while (retryCount < 3 && state != "SUCCEEDED");
+
         if (state != "SUCCEEDED")
             throw new DatabricksSqlException($"Failed to execute SQL statement: {sqlStatement}. Response: {jsonResponse}");
     }
