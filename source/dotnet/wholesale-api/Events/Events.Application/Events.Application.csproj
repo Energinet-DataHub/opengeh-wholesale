@@ -23,5 +23,6 @@
     <ProjectReference Include="..\..\Batches\Batches.Interfaces\Batches.Interfaces.csproj" />
     <ProjectReference Include="..\..\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
     <ProjectReference Include="..\..\Common\Common.csproj" />
+    <ProjectReference Include="..\..\Edi\Edi.csproj" />
   </ItemGroup>
 </Project>
