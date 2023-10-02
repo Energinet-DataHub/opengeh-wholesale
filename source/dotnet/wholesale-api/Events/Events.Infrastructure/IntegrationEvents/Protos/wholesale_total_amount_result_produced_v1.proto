@@ -24,7 +24,7 @@ option csharp_namespace = "Energinet.DataHub.Wholesale.Contracts.IntegrationEven
  * A calculation will result in one or more wholesale results with total amounts. Each result is
  * published as an instance of this type.
  */
-message WholesaleResultTotalAmountProducedV1 {
+message WholesaleTotalAmountResultProducedV1 {
   /*
    * The ID of the calculation creating the result.
    * The ID is a UUID consisting of hexadecimal digits in the form XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX.
