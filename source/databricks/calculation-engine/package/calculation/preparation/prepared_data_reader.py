@@ -69,13 +69,15 @@ class PreparedDataReader:
             metering_points, time_series, charges_df, resolution_duration
         )
 
+    def get_raw_time_series_points(self) -> DataFrame:
+        return self._table_reader.read_time_series_points()
+
     def get_time_series_hour_points_df(
         self,
         master_basis_data_df: DataFrame,
         period_start_datetime: datetime,
         period_end_datetime: datetime,
     ) -> DataFrame:
-        # TODO BJM: Filter time series points by period (will it improve performance)?
         raw_time_series_points_df = self._table_reader.read_time_series_points()
         return T.get_enriched_time_series_points_df(
             raw_time_series_points_df,
