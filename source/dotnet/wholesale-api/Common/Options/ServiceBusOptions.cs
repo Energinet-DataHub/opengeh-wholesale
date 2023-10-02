@@ -34,7 +34,7 @@ public class ServiceBusOptions
     public string WHOLESALE_INBOX_MESSAGE_QUEUE_NAME { get; set; } = string.Empty;
 
     /// <summary>
-    /// Queue name for the EDI inbox.
+    /// Queue name for the Edi inbox.
     /// </summary>
     public string EDI_INBOX_MESSAGE_QUEUE_NAME { get; set; } = string.Empty;
 }

@@ -12,9 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
+namespace Energinet.DataHub.Wholesale.EDI.Exceptions;
 
-public record AggregatedTimeSeriesRequest(
-    Period Period,
-    TimeSeriesType TimeSeriesType,
-    AggregationPerRoleAndGridArea AggregationPerRoleAndGridArea);
+public class NotSupportedTimeSeriesTypeException : Exception
+{
+    public NotSupportedTimeSeriesTypeException()
+    {
+    }
+
+    public NotSupportedTimeSeriesTypeException(string message)
+        : base(message)
+    {
+    }
+
+    public NotSupportedTimeSeriesTypeException(string message, Exception innerException)
+        : base(message, innerException)
+    {
+    }
+}

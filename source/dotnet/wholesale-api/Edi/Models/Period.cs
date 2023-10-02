@@ -12,15 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Messaging.ServiceBus;
+using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
+namespace Energinet.DataHub.Wholesale.EDI.Models;
 
-public interface IAggregatedTimeSeriesRequestMessageParser
-{
-    /// <summary>
-    /// Responsible for parsing the received message.
-    /// </summary>
-    /// <param name="request"></param>
-    AggregatedTimeSeriesRequest Parse(ServiceBusReceivedMessage request);
-}
+public record Period(Instant Start, Instant End);

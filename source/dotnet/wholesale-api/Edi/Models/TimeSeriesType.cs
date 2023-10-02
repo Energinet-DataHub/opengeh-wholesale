@@ -12,6 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
+namespace Energinet.DataHub.Wholesale.EDI.Models;
 
-public record AggregationPerRoleAndGridArea(string GridAreaCode, string? EnergySupplierId = null, string? BalanceResponsibleId = null);
+public enum TimeSeriesType
+{
+    NonProfiledConsumption,
+    FlexConsumption,
+    Production,
+    NetExchangePerGa,
+    NetExchangePerNeighboringGa,
+    TotalConsumption,
+}

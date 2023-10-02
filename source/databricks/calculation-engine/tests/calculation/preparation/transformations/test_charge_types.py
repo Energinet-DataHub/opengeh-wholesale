@@ -40,7 +40,7 @@ from package.codelists import (
     SettlementMethod,
 )
 from package.calculation.wholesale.schemas.charges_schema import (
-    charges_schema,
+    charges_master_data_schema,
 )
 from package.calculation.preparation.transformations.charges_reader import (
     _create_charges_df,
@@ -124,7 +124,7 @@ def test__get_charges_based_on_resolution__filters_on_resolution_hour_or_day_onl
     expected: int,
 ) -> None:
     # Arrange
-    charges = spark.createDataFrame(charges, schema=charges_schema)
+    charges = spark.createDataFrame(charges, schema=charges_master_data_schema)
 
     # Act
     result = _get_charges_based_on_resolution(charges, resolution_duration)
@@ -216,7 +216,7 @@ def test__get_charges_based_on_charge_type__filters_on_one_charge_type(
     spark: SparkSession, charges: DataFrame, charge_type: ChargeType, expected: int
 ) -> None:
     # Arrange
-    charges = spark.createDataFrame(charges, schema=charges_schema)
+    charges = spark.createDataFrame(charges, schema=charges_master_data_schema)
 
     # Act
     result = _get_charges_based_on_charge_type(charges, charge_type)
@@ -751,34 +751,36 @@ def default_charge_master_data(
 
 
 @pytest.fixture(scope="session")
-def default_charge_links(charge_links_factory: Callable[..., DataFrame]) -> DataFrame:
-    return charge_links_factory(DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
-
-
-@pytest.fixture(scope="session")
-def default_charge_price_point(
-    charge_prices_factory: Callable[..., DataFrame]
-) -> DataFrame:
-    return charge_prices_factory(time=DEFAULT_TIME)
+def default_charges(charges_factory: Callable[..., DataFrame]) -> DataFrame:
+    return (
+        charges_factory(
+            charge_type=ChargeType.TARIFF.value,
+            charge_resolution=ChargeResolution.HOUR.value,
+        )
+        .union(
+            charges_factory(
+                charge_type=ChargeType.FEE.value,
+                charge_resolution=ChargeResolution.HOUR.value,
+            )
+        )
+        .union(
+            charges_factory(
+                charge_type=ChargeType.SUBSCRIPTION.value,
+                charge_resolution=ChargeResolution.HOUR.value,
+            )
+        )
+    )
 
 
 def test__get_tariff_charges__when_no_charge_data_match_the_resolution__returns_empty_tariffs(
     default_metering_point_period: DataFrame,
     default_time_series_point: DataFrame,
-    default_charge_links: DataFrame,
-    default_charge_price_point: DataFrame,
-    charge_master_data_factory: Callable[..., DataFrame],
+    charges_factory: Callable[..., DataFrame],
 ) -> None:
     # Arrange
-    charge_master_data = charge_master_data_factory(
-        DEFAULT_FROM_DATE,
-        DEFAULT_TO_DATE,
+    charges_df = charges_factory(
         charge_type=ChargeType.TARIFF.value,
         charge_resolution=ChargeResolution.DAY.value,
-    )
-
-    charges_df = _create_charges_df(
-        charge_master_data, default_charge_links, default_charge_price_point
     )
 
     # Act
@@ -794,11 +796,9 @@ def test__get_tariff_charges__when_no_charge_data_match_the_resolution__returns_
 
 
 def test__get_tariff_charges__returns_expected_quantities(
-    default_charge_master_data: DataFrame,
     default_metering_point_period: DataFrame,
-    default_charge_links: DataFrame,
     time_series_factory: Callable[..., DataFrame],
-    charge_prices_factory: Callable[..., DataFrame],
+    charges_factory: Callable[..., DataFrame],
 ) -> None:
     # Arrange
     first_hour_start = DEFAULT_FROM_DATE + timedelta(hours=1)
@@ -832,14 +832,26 @@ def test__get_tariff_charges__returns_expected_quantities(
     )
     expected_quantities = [1, 14, 6]
 
-    charge_prices = (
-        charge_prices_factory(time=first_hour_start)  # hour 1
-        .union(charge_prices_factory(time=second_hour_start))  # hour 2
-        .union(charge_prices_factory(time=third_hour_start))  # hour 3
-    )
-
-    charges_df = _create_charges_df(
-        default_charge_master_data, default_charge_links, charge_prices
+    charges_df = (
+        charges_factory(
+            time=first_hour_start,
+            charge_type=ChargeType.TARIFF.value,
+            charge_resolution=ChargeResolution.HOUR.value,
+        )  # hour 1
+        .union(
+            charges_factory(
+                time=second_hour_start,
+                charge_type=ChargeType.TARIFF.value,
+                charge_resolution=ChargeResolution.HOUR.value,
+            )
+        )  # hour 2
+        .union(
+            charges_factory(
+                time=third_hour_start,
+                charge_type=ChargeType.TARIFF.value,
+                charge_resolution=ChargeResolution.HOUR.value,
+            )
+        )  # hour 3
     )
 
     # Act
