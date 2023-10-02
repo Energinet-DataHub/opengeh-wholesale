@@ -794,11 +794,8 @@ def test__get_tariff_charges__when_no_charge_data_match_the_resolution__returns_
 
 
 def test__get_tariff_charges__returns_expected_quantities(
-    default_charge_master_data: DataFrame,
     default_metering_point_period: DataFrame,
-    default_charge_links: DataFrame,
     time_series_factory: Callable[..., DataFrame],
-    charge_prices_factory: Callable[..., DataFrame],
     charges_factory: Callable[..., DataFrame],
 ) -> None:
     # Arrange
@@ -835,12 +832,24 @@ def test__get_tariff_charges__returns_expected_quantities(
 
     charges_df = (
         charges_factory(
-            time=first_hour_start, charge_type=ChargeType.FEE.value
+            time=first_hour_start,
+            charge_type=ChargeType.TARIFF.value,
+            charge_resolution=ChargeResolution.HOUR.value,
         )  # hour 1
         .union(
-            charges_factory(time=second_hour_start, charge_type=ChargeType.FEE.value)
+            charges_factory(
+                time=second_hour_start,
+                charge_type=ChargeType.TARIFF.value,
+                charge_resolution=ChargeResolution.HOUR.value,
+            )
         )  # hour 2
-        .union(charges_factory(time=third_hour_start))  # hour 3
+        .union(
+            charges_factory(
+                time=third_hour_start,
+                charge_type=ChargeType.TARIFF.value,
+                charge_resolution=ChargeResolution.HOUR.value,
+            )
+        )  # hour 3
     )
 
     # Act

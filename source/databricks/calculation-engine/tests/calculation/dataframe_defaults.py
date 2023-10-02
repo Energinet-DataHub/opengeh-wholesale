@@ -50,6 +50,7 @@ class DataframeDefaults:
     default_currency: str = "DDK"
     default_energy_supplier_id: str = "1"
     default_from_grid_area: str = "chargea"
+    default_from_date: datetime = datetime(2020, 1, 1, 0, 0)
     default_grid_area: str = "500"
     default_metering_point_id: str = "some-metering-point-id"
     default_metering_point_type: str = MeteringPointType.CONSUMPTION.value
@@ -63,4 +64,5 @@ class DataframeDefaults:
     default_time_window_end: datetime = datetime(2020, 1, 1, 1, 0)
     default_time_window_start: datetime = datetime(2020, 1, 1, 0, 0)
     default_to_grid_area: str = "1"
+    default_to_date: datetime = datetime(2020, 1, 2, 0, 0)
     default_unit: str = "chargea"

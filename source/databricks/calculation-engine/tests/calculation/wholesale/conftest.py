@@ -26,6 +26,7 @@ from package.calculation.wholesale.schemas.calculate_fee_charge_price_schema imp
 )
 from tests.calculation.dataframe_defaults import DataframeDefaults
 from package.calculation.wholesale.schemas.charges_schema import (
+    charges_schema,
     charges_master_data_schema,
     charge_links_schema,
     charge_prices_schema,
@@ -213,6 +214,8 @@ def charges_factory(spark: SparkSession) -> Callable[..., DataFrame]:
                 Colname.charge_tax: charge_tax,
                 Colname.charge_resolution: charge_resolution,
                 Colname.charge_time: time,
+                Colname.from_date: DataframeDefaults.default_from_date,
+                Colname.to_date: DataframeDefaults.default_to_date,
                 Colname.charge_price: charge_price,
                 Colname.metering_point_id: DataframeDefaults.default_metering_point_id,
             }
