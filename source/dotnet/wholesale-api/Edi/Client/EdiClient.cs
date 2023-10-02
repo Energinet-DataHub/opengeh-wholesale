@@ -32,9 +32,7 @@ public class EdiClient : IEdiClient, IAsyncDisposable
         await _sender.SendMessageAsync(message, cancellationToken).ConfigureAwait(false);
     }
 
-#pragma warning disable VSTHRD200
     public async ValueTask DisposeAsync()
-#pragma warning restore VSTHRD200
     {
         await _sender.DisposeAsync().ConfigureAwait(false);
         GC.SuppressFinalize(this);

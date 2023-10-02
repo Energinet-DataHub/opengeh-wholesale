@@ -21,7 +21,5 @@ public interface IEdiClient
     /// <summary>
     /// Responsible of sending a message to Edi inbox
     /// </summary>
-#pragma warning disable VSTHRD200
     public Task SendAsync(ServiceBusMessage message, CancellationToken cancellationToken);
-#pragma warning restore VSTHRD200
 }
