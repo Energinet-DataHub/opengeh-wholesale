@@ -16,13 +16,13 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Common.Logging;
-using Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
-using Energinet.DataHub.Wholesale.Events.Application.UseCases.Mappers;
+using Energinet.DataHub.Wholesale.EDI.Client;
+using Energinet.DataHub.Wholesale.EDI.Factories;
+using Energinet.DataHub.Wholesale.EDI.Mappers;
+using Energinet.DataHub.Wholesale.EDI.Models;
 using Microsoft.Extensions.Logging;
-using CalculationAggregationLevel = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.AggregationLevel;
-using CalculationTimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType;
 
-namespace Energinet.DataHub.Wholesale.Events.Application.UseCases;
+namespace Energinet.DataHub.Wholesale.EDI;
 
 public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHandler
 {
@@ -30,25 +30,25 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
     private readonly IEdiClient _ediClient;
     private readonly IAggregatedTimeSeriesMessageFactory _aggregatedTimeSeriesMessageFactory;
     private readonly ILogger<AggregatedTimeSeriesRequestHandler> _logger;
-    private readonly IAggregatedTimeSeriesRequestMessageParser _aggregatedTimeSeriesRequestMessageParser;
+    private readonly IAggregatedTimeSeriesRequestFactory _aggregatedTimeSeriesRequestFactory;
 
     public AggregatedTimeSeriesRequestHandler(
         IRequestCalculationResultQueries requestCalculationResultQueries,
         IEdiClient ediClient,
-        IAggregatedTimeSeriesRequestMessageParser aggregatedTimeSeriesRequestMessageParser,
+        IAggregatedTimeSeriesRequestFactory aggregatedTimeSeriesRequestFactory,
         IAggregatedTimeSeriesMessageFactory aggregatedTimeSeriesMessageFactory,
         ILogger<AggregatedTimeSeriesRequestHandler> logger)
     {
         _requestCalculationResultQueries = requestCalculationResultQueries;
         _ediClient = ediClient;
-        _aggregatedTimeSeriesRequestMessageParser = aggregatedTimeSeriesRequestMessageParser;
+        _aggregatedTimeSeriesRequestFactory = aggregatedTimeSeriesRequestFactory;
         _aggregatedTimeSeriesMessageFactory = aggregatedTimeSeriesMessageFactory;
         _logger = logger;
     }
 
     public async Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken)
     {
-        var aggregatedTimeSeriesRequestMessage = _aggregatedTimeSeriesRequestMessageParser.Parse(receivedMessage);
+        var aggregatedTimeSeriesRequestMessage = _aggregatedTimeSeriesRequestFactory.Parse(receivedMessage);
 
         var result = await GetCalculationResultsAsync(
             aggregatedTimeSeriesRequestMessage,
@@ -66,7 +66,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         CancellationToken cancellationToken)
     {
         var query = new CalculationResultQuery(
-            TimeSeriesTypeMapper.MapTimeSerieType(aggregatedTimeSeriesRequestMessage.TimeSeriesType),
+            TimeSeriesTypeMapper.MapTimeSeriesTypeFromEdi(aggregatedTimeSeriesRequestMessage.TimeSeriesType),
             aggregatedTimeSeriesRequestMessage.Period.Start,
             aggregatedTimeSeriesRequestMessage.Period.End,
             aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea.GridAreaCode,

@@ -19,9 +19,8 @@ using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.Common.Models;
-using Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
-using Energinet.DataHub.Wholesale.Events.Application.UseCases;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.InboxEvents;
+using Energinet.DataHub.Wholesale.EDI.Client;
+using Energinet.DataHub.Wholesale.EDI.Factories;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.Logging;
@@ -30,12 +29,11 @@ using NodaTime;
 using Xunit;
 using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 using AggregationPerGridArea = Energinet.DataHub.Edi.Requests.AggregationPerGridArea;
-using CalculationQuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
 using CalculationTimeSeriesPoint = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesPoint;
 using Period = Energinet.DataHub.Edi.Requests.Period;
-using TimeSeriesType = Energinet.DataHub.Edi.Requests.TimeSeriesType;
+using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
 
-namespace Energinet.DataHub.Wholesale.Events.UnitTests.Application.UseCases;
+namespace Energinet.DataHub.Wholesale.EDI.UnitTests;
 
 public class AggregatedTimeSeriesRequestHandlerTests
 {
@@ -44,7 +42,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
     public async Task ProcessAsync_WithTotalProductionPerGridAreaRequest_SendsAcceptedEdiMessage(
         [Frozen] Mock<IRequestCalculationResultQueries> requestCalculationResultQueriesMock,
         [Frozen] Mock<IEdiClient> senderMock,
-        [Frozen] Mock<AggregatedTimeSeriesRequestMessageParser> aggregatedTimeSeriesRequestMessageParseMock,
+        [Frozen] Mock<AggregatedTimeSeriesRequestFactory> aggregatedTimeSeriesRequestMessageParseMock,
         [Frozen] Mock<AggregatedTimeSeriesMessageFactory> aggregatedTimeSeriesMessageFactoryMock,
         [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> loggerMock)
     {
@@ -54,7 +52,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
         var request = new AggregatedTimeSeriesRequest
         {
             AggregationPerGridarea = new AggregationPerGridArea(),
-            TimeSeriesType = TimeSeriesType.Production,
+            TimeSeriesType = Energinet.DataHub.Edi.Requests.TimeSeriesType.Production,
             Period = new Period()
             {
                 StartOfPeriod = new Timestamp(),
@@ -100,10 +98,10 @@ public class AggregatedTimeSeriesRequestHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             "543",
-            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.Production,
+            Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.Production,
             "1223456",
             "123456",
-            timeSeriesPoints: new CalculationTimeSeriesPoint[] { new(DateTime.Now, 0, CalculationQuantityQuality.Measured) },
+            timeSeriesPoints: new CalculationTimeSeriesPoint[] { new(DateTime.Now, 0, QuantityQuality.Measured) },
             ProcessType.Aggregation,
             Instant.FromUtc(2022, 12, 31, 23, 0),
             Instant.FromUtc(2023, 1, 31, 23, 0),
