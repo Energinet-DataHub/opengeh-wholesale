@@ -21,10 +21,10 @@ option csharp_namespace = "Energinet.DataHub.Wholesale.Contracts.IntegrationEven
 
 
 /*
- * A calculation will result in one or more wholesale results. Each result is
+ * A calculation will result in one or more wholesale results with total amounts. Each result is
  * published as an instance of this type.
  */
-message WholesaleResultProducedV1 {
+message WholesaleResultTotalAmountProducedV1 {
   /*
    * The ID of the calculation creating the result.
    * The ID is a UUID consisting of hexadecimal digits in the form XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX.
@@ -32,7 +32,7 @@ message WholesaleResultProducedV1 {
    */
   string calculation_id = 1;
 
-  ProcessType process_type = 2;
+  CalculationType calculation_type = 2;
 
   /*
    * The beginning of the calculation period.
@@ -51,17 +51,9 @@ message WholesaleResultProducedV1 {
 
   string energy_supplier_id = 9;
 
-  string charge_code = 10;
-
-  ChargeType charge_type = 11;
-
   string charge_owner_id = 12;
 
-  Resolution resolution = 13;
-
-  QuantityUnit quantity_unit = 14;
-
-  repeated TimeSeriesPoint time_series_points = 20;
+  optional DecimalValue amount = 20;
 
    // ---------------------------- NESTED TYPES BELOW ----------------------------------------
 
@@ -75,60 +67,5 @@ message WholesaleResultProducedV1 {
       PROCESS_TYPE_FIRST_CORRECTION_SETTLEMENT = 4;
       PROCESS_TYPE_SECOND_CORRECTION_SETTLEMENT = 5;
       PROCESS_TYPE_THIRD_CORRECTION_SETTLEMENT = 6;
-  }
-
-  enum ChargeType {
-      CHARGE_TYPE_UNSPECIFIED = 0;
-      CHARGE_TYPE_FEE = 1;
-      CHARGE_TYPE_TARIFF = 2;
-      CHARGE_TYPE_SUBSCRIPTION = 3;
-  }
-
-  enum QuantityUnit {
-      /*
-       * Unspecified is unused but according to best practice.
-       * Read more at https://protobuf.dev/programming-guides/style/#enums.
-       */
-      QUANTITY_UNIT_UNSPECIFIED = 0;
-
-      // States that the energy quantity is measured in kWh (kilo Watt hours).
-      QUANTITY_UNIT_KWH = 1;
-
-      QUANTITY_UNIT_PIECES = 2;
-  }
-
-  message TimeSeriesPoint {
-
-      google.protobuf.Timestamp time = 1;
-
-      /*
-       * 3 digit scale decimal value of the energy quantity.
-       */
-      optional DecimalValue quantity = 2;
-
-      /*
-       * 6 digit scale decimal value of the amount.
-       */
-      optional DecimalValue price = 4;
-
-      /*
-       * 6 digit scale decimal value of the amount.
-       */
-      optional DecimalValue amount = 5;
-  }
-
-  /*
-   *  States the duration that each time series point represents
-   */
-  enum Resolution {
-      /*
-       * Unspecified is unused but according to best practice.
-       * Read more at https://protobuf.dev/programming-guides/style/#enums.
-       */
-      RESOLUTION_UNSPECIFIED = 0;
-      // States that each time series point represents a time interval of one month.
-      RESOLUTION_MONTH = 2;
-      RESOLUTION_DAY = 4;
-      RESOLUTION_HOUR = 6;
   }
 }
