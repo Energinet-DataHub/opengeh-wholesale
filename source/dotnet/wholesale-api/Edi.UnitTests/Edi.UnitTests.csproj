@@ -24,7 +24,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\wholesale-api\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
-    <ProjectReference Include="..\wholesale-api\Edi\Edi.csproj" />
+    <ProjectReference Include="..\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
+    <ProjectReference Include="..\Edi\Edi.csproj" />
   </ItemGroup>
 </Project>
