@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <AssemblyName>Energinet.DataHub.Wholesale.EDI.UnitTests</AssemblyName>
-    <RootNamespace>Energinet.DataHub.Wholesale.EDI.UnitTests</RootNamespace>
+    <AssemblyName>Energinet.DataHub.Wholesale.Edi.UnitTests</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Wholesale.Edi.UnitTests</RootNamespace>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
@@ -25,6 +25,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\wholesale-api\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
-    <ProjectReference Include="..\wholesale-api\EDI\EDI.csproj" />
+    <ProjectReference Include="..\wholesale-api\Edi\Edi.csproj" />
   </ItemGroup>
 </Project>

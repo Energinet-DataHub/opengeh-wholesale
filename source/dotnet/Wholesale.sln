@@ -68,13 +68,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Events.UnitTests", "wholesa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Events.IntegrationTests", "wholesale-api\Events\Events.IntegrationTests\Events.IntegrationTests.csproj", "{54AC1F13-F6AE-418B-A21F-AF2C341EC94C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EDI", "wholesale-api\EDI\EDI.csproj", "{4E52E245-D874-4E51-ABFC-C22AD32023D3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Edi", "wholesale-api\Edi\Edi.csproj", "{4E52E245-D874-4E51-ABFC-C22AD32023D3}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EDI", "EDI", "{A4901557-FEEE-4833-AACB-C44D839398F0}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Edi", "Edi", "{A4901557-FEEE-4833-AACB-C44D839398F0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{820FC4AF-166C-4D8E-A7F5-5C0DC09F10C0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EDI.UnitTests", "EDI.UnitTests\EDI.UnitTests.csproj", "{87947D13-E4BC-40F8-AC1E-18D9180D1B47}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Edi.UnitTests", "Edi.UnitTests\Edi.UnitTests.csproj", "{87947D13-E4BC-40F8-AC1E-18D9180D1B47}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
