@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Events.Application.InboxEvents;
-using Energinet.DataHub.Wholesale.Events.Application.UseCases.Mappers;
+using Energinet.DataHub.Wholesale.EDI.Mappers;
+using Energinet.DataHub.Wholesale.EDI.Models;
 using FluentAssertions;
 using Xunit;
 using CalculationTimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType;
 
-namespace Energinet.DataHub.Wholesale.Events.UnitTests.Application.UseCases.Mappers;
+namespace Energinet.DataHub.Wholesale.EDI.UnitTests;
 
 public class TimeSeriesTypeMapperTests
 {
@@ -31,7 +31,7 @@ public class TimeSeriesTypeMapperTests
     public void ToCalculationTimeSerieType_ReturnsExpectedType(TimeSeriesType type, CalculationTimeSeriesType expected)
     {
         // Act
-        var actual = TimeSeriesTypeMapper.MapTimeSerieType(type);
+        var actual = TimeSeriesTypeMapper.MapTimeSeriesTypeFromEdi(type);
 
         // Assert
         actual.Should().Be(expected);
