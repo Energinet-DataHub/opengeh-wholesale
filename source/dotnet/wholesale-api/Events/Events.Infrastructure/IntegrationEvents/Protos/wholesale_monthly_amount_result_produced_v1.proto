@@ -66,37 +66,36 @@ message WholesaleMonthlyAmountResultProducedV1 {
    */
   optional DecimalValue amount = 20;
 
-   // ---------------------------- NESTED TYPES BELOW ----------------------------------------
+  // ---------------------------- NESTED TYPES BELOW ----------------------------------------
 
   enum ProcessType {
-      /*
-       * Unspecified is unused but according to best practice.
-       * Read more at https://protobuf.dev/programming-guides/style/#enums.
-       */
-      PROCESS_TYPE_UNSPECIFIED = 0;
-      PROCESS_TYPE_WHOLESALE_FIXING = 3;
-      PROCESS_TYPE_FIRST_CORRECTION_SETTLEMENT = 4;
-      PROCESS_TYPE_SECOND_CORRECTION_SETTLEMENT = 5;
-      PROCESS_TYPE_THIRD_CORRECTION_SETTLEMENT = 6;
+    /*
+     * Unspecified is unused but according to best practice.
+     * Read more at https://protobuf.dev/programming-guides/style/#enums.
+     */
+    PROCESS_TYPE_UNSPECIFIED = 0;
+    PROCESS_TYPE_WHOLESALE_FIXING = 3;
+    PROCESS_TYPE_FIRST_CORRECTION_SETTLEMENT = 4;
+    PROCESS_TYPE_SECOND_CORRECTION_SETTLEMENT = 5;
+    PROCESS_TYPE_THIRD_CORRECTION_SETTLEMENT = 6;
   }
 
   enum ChargeType {
-      CHARGE_TYPE_UNSPECIFIED = 0;
-      CHARGE_TYPE_FEE = 1;
-      CHARGE_TYPE_TARIFF = 2;
-      CHARGE_TYPE_SUBSCRIPTION = 3;
+    CHARGE_TYPE_UNSPECIFIED = 0;
+    CHARGE_TYPE_FEE = 1;
+    CHARGE_TYPE_TARIFF = 2;
+    CHARGE_TYPE_SUBSCRIPTION = 3;
   }
 
   enum QuantityUnit {
-      /*
-       * Unspecified is unused but according to best practice.
-       * Read more at https://protobuf.dev/programming-guides/style/#enums.
-       */
-      QUANTITY_UNIT_UNSPECIFIED = 0;
+    /*
+     * Unspecified is unused but according to best practice.
+     * Read more at https://protobuf.dev/programming-guides/style/#enums.
+     */
+    QUANTITY_UNIT_UNSPECIFIED = 0;
 
-      // States that the energy quantity is measured in kWh (kilo Watt hours).
-      QUANTITY_UNIT_KWH = 1;
-
-      QUANTITY_UNIT_PIECES = 2;
+    // States that the energy quantity is measured in kWh (kilo Watt hours).
+    QUANTITY_UNIT_KWH = 1;
+    QUANTITY_UNIT_PIECES = 2;
   }
 }

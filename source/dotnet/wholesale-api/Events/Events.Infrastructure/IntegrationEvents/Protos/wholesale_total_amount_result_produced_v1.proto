@@ -51,21 +51,21 @@ message WholesaleTotalAmountResultProducedV1 {
 
   string energy_supplier_id = 9;
 
-  string charge_owner_id = 12;
+  optional string charge_owner_id = 12;
 
   optional DecimalValue amount = 20;
 
-   // ---------------------------- NESTED TYPES BELOW ----------------------------------------
+  // ---------------------------- NESTED TYPES BELOW ----------------------------------------
 
   enum ProcessType {
-      /*
-       * Unspecified is unused but according to best practice.
-       * Read more at https://protobuf.dev/programming-guides/style/#enums.
-       */
-      PROCESS_TYPE_UNSPECIFIED = 0;
-      PROCESS_TYPE_WHOLESALE_FIXING = 3;
-      PROCESS_TYPE_FIRST_CORRECTION_SETTLEMENT = 4;
-      PROCESS_TYPE_SECOND_CORRECTION_SETTLEMENT = 5;
-      PROCESS_TYPE_THIRD_CORRECTION_SETTLEMENT = 6;
+    /*
+     * Unspecified is unused but according to best practice.
+     * Read more at https://protobuf.dev/programming-guides/style/#enums.
+     */
+    PROCESS_TYPE_UNSPECIFIED = 0;
+    PROCESS_TYPE_WHOLESALE_FIXING = 3;
+    PROCESS_TYPE_FIRST_CORRECTION_SETTLEMENT = 4;
+    PROCESS_TYPE_SECOND_CORRECTION_SETTLEMENT = 5;
+    PROCESS_TYPE_THIRD_CORRECTION_SETTLEMENT = 6;
   }
 }
