@@ -16,8 +16,8 @@ from decimal import Decimal
 from datetime import datetime
 from unittest.mock import patch
 from pyspark.sql import SparkSession
-from package.calculation_input.charges_reader import read_charges
-from package.calculation_input.delta_table_reader import DeltaTableReader
+from package.calculation.preparation.transformations import read_charges
+from package.calculation_input.table_reader import TableReader
 from package.codelists import ChargeType
 from package.constants import Colname
 
@@ -97,9 +97,9 @@ def _create_charges_prices_points_row(
     return row
 
 
-@patch("package.calculation_input.charges_reader.DeltaTableReader")
+@patch("package.calculation_input.TableReader")
 def test__read_changes__returns_expected_joined_row_values(
-    calculation_input_reader_mock: DeltaTableReader, spark: SparkSession
+    calculation_input_reader_mock: TableReader, spark: SparkSession
 ) -> None:
     # Arrange
     calculation_input_reader_mock.read_charge_master_data_periods.return_value = (
