@@ -166,7 +166,7 @@ def test__get_tariff_charges__filters_on_resolution(
     assert actual.collect()[0][Colname.charge_resolution] == charge_resolution.value
 
 
-def test__get_tarrif_charges__filters_on_tariff_charge_type(
+def test__get_tariff_charges__filters_on_tariff_charge_type(
     spark: SparkSession,
 ) -> None:
     metering_point_rows = [_create_metering_point_row()]
