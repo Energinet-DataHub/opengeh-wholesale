@@ -24,3 +24,11 @@ module "b2c_web_api" {
     EDI_BASE_URL         = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=func-edi-api-base-url)"
   }
 }
+
+module "kvs_app_edi_b2cwebapi_base_url" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
+
+  name         = "app-edi-b2cwebapi-base-url"
+  value        = "https://${module.b2c_web_api.default_hostname}"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}

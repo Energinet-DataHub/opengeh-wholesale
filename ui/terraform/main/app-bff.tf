@@ -24,6 +24,7 @@ module "bff" {
     ApiClientSettings__MarketParticipantBaseUrl = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=app-markpart-webapi-base-url)"
     ApiClientSettings__WholesaleBaseUrl         = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=app-wholesale-api-base-url)"
     ApiClientSettings__ESettExchangeBaseUrl     = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=app-esett-webapi-base-url)"
+    ApiClientSettings__EdiB2CWebApiBaseUrl      = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=app-edi-b2cwebapi-base-url)"
     EXTERNAL_OPEN_ID_URL                        = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-open-id-url)"
     INTERNAL_OPEN_ID_URL                        = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-open-id-url)"
     BACKEND_BFF_APP_ID                          = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-bff-app-id)"
