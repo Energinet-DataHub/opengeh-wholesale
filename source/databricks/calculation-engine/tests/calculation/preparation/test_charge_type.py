@@ -329,3 +329,28 @@ def test__get_tariff_charges__sums_quantity_when_same_metering_point_and_resolut
     )
 
     assert actual.collect()[0][Colname.quantity] == 2 * DEFAULT_QUANTITY
+
+
+def test__get_tariff_charges__when_no_matching_charge_resolution__returns_empty_tariffs(
+    spark: SparkSession,
+) -> None:
+    metering_point_rows = [_create_metering_point_row()]
+    time_series_rows = [_create_time_series_row()]
+    charges_rows = [_create_charges_row(charge_resolution=ChargeResolution.DAY)]
+
+    metering_point = _create_dataframe_from_rows(
+        spark, metering_point_rows, metering_point_period_schema
+    )
+    time_series = _create_dataframe_from_rows(
+        spark, time_series_rows, time_series_point_schema
+    )
+    charges = _create_dataframe_from_rows(spark, charges_rows, charges_schema)
+
+    actual = get_tariff_charges(
+        metering_point,
+        time_series,
+        charges,
+        ChargeResolution.HOUR,
+    )
+
+    assert actual.count() == 0
