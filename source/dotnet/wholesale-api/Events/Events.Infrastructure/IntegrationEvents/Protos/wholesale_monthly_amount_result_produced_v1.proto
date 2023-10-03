@@ -68,7 +68,7 @@ message WholesaleMonthlyAmountResultProducedV1 {
 
   // ---------------------------- NESTED TYPES BELOW ----------------------------------------
 
-  enum ProcessType {
+  enum CalculationType {
     /*
      * Unspecified is unused but according to best practice.
      * Read more at https://protobuf.dev/programming-guides/style/#enums.

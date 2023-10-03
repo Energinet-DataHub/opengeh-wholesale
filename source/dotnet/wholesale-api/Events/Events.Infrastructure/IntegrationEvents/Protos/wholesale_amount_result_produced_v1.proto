@@ -63,6 +63,9 @@ message WholesaleAmountResultProducedV1 {
 
   MeteringPointType metering_point_type = 15;
 
+  /*
+   * Settlement method is only set when metering point type is 'METERING_POINT_TYPE_CONSUMPTION'.
+   */
   optional SettlementMethod settlement_method = 16;
 
   optional bool is_tax = 17;
@@ -71,16 +74,16 @@ message WholesaleAmountResultProducedV1 {
 
    // ---------------------------- NESTED TYPES BELOW ----------------------------------------
 
-  enum ProcessType {
+  enum CalculationType {
     /*
      * Unspecified is unused but according to best practice.
      * Read more at https://protobuf.dev/programming-guides/style/#enums.
      */
-    PROCESS_TYPE_UNSPECIFIED = 0;
-    PROCESS_TYPE_WHOLESALE_FIXING = 3;
-    PROCESS_TYPE_FIRST_CORRECTION_SETTLEMENT = 4;
-    PROCESS_TYPE_SECOND_CORRECTION_SETTLEMENT = 5;
-    PROCESS_TYPE_THIRD_CORRECTION_SETTLEMENT = 6;
+    CALCULATION_TYPE_UNSPECIFIED = 0;
+    CALCULATION_TYPE_WHOLESALE_FIXING = 3;
+    CALCULATION_TYPE_FIRST_CORRECTION_SETTLEMENT = 4;
+    CALCULATION_TYPE_SECOND_CORRECTION_SETTLEMENT = 5;
+    CALCULATION_TYPE_THIRD_CORRECTION_SETTLEMENT = 6;
   }
 
   enum ChargeType {
@@ -94,6 +97,16 @@ message WholesaleAmountResultProducedV1 {
     CHARGE_TYPE_SUBSCRIPTION = 3;
   }
 
+  enum MeteringPointType {
+    /*
+     * Unspecified is unused but according to best practice.
+     * Read more at https://protobuf.dev/programming-guides/style/#enums.
+     */
+    METERING_POINT_TYPE_UNSPECIFIED = 0;
+    METERING_POINT_TYPE_PRODUCTION = 1;
+    METERING_POINT_TYPE_CONSUMPTION = 2;
+  }
+
   enum QuantityUnit {
     /*
      * Unspecified is unused but according to best practice.
@@ -104,28 +117,6 @@ message WholesaleAmountResultProducedV1 {
     // States that the energy quantity is measured in kWh (kilo Watt hours).
     QUANTITY_UNIT_KWH = 1;
     QUANTITY_UNIT_PIECES = 2;
-  }
-
-  message TimeSeriesPoint {
-
-    google.protobuf.Timestamp time = 1;
-
-    /*
-     * 3 digit scale decimal value of the energy quantity.
-     */
-    optional DecimalValue quantity = 2;
-
-    repeated QuantityQuality quantity_qualities = 3;
-
-    /*
-     * 6 digit scale decimal value of the amount.
-     */
-    optional DecimalValue price = 4;
-
-    /*
-     * 6 digit scale decimal value of the amount.
-     */
-    optional DecimalValue amount = 5;
   }
 
   /*
@@ -154,5 +145,37 @@ message WholesaleAmountResultProducedV1 {
     RESOLUTION_UNSPECIFIED = 0;
     RESOLUTION_DAY = 4;
     RESOLUTION_HOUR = 6;
+  }
+
+  enum SettlementMethod {
+    /*
+     * Unspecified is unused but according to best practice.
+     * Read more at https://protobuf.dev/programming-guides/style/#enums.
+     */
+    SETTLEMENT_METHOD_UNSPECIFIED = 0;
+    SETTLEMENT_FLEX = 4;
+    SETTLEMENT_NON_PROFILED = 6;
+  }
+
+  message TimeSeriesPoint {
+
+    google.protobuf.Timestamp time = 1;
+
+    /*
+     * 3 digit scale decimal value of the energy quantity.
+     */
+    optional DecimalValue quantity = 2;
+
+    repeated QuantityQuality quantity_qualities = 3;
+
+    /*
+     * 6 digit scale decimal value of the amount.
+     */
+    optional DecimalValue price = 4;
+
+    /*
+     * 6 digit scale decimal value of the amount.
+     */
+    optional DecimalValue amount = 5;
   }
 }
