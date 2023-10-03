@@ -16,7 +16,9 @@
 import pytest
 from decimal import Decimal
 from datetime import datetime
-from package.calculation.preparation import get_enriched_time_series_points_df
+from package.calculation.preparation.transformations import (
+    get_basis_data_time_series_points_df,
+)
 from package.constants import Colname
 
 from package.codelists import (
@@ -97,7 +99,7 @@ def test__given_different_from_date_and_to_date__return_dataframe_with_correct_n
     expected_rows,
     resolution,
 ):
-    """Test the outcome of _get_enriched_time_series_points_df with different scenarios.
+    """Test the outcome of _get_basis_data_time_series_points_df with different scenarios.
     expected_rows is the number of rows in the output dataframe when given different parameters,
     FromDate and ToDate on the meteringpoint"""
 
@@ -112,7 +114,7 @@ def test__given_different_from_date_and_to_date__return_dataframe_with_correct_n
     )
 
     # Act
-    actual = get_enriched_time_series_points_df(
+    actual = get_basis_data_time_series_points_df(
         raw_time_series_points,
         metering_point_period_df,
         timestamp_factory(from_date),
@@ -139,7 +141,7 @@ def test__missing_point_has_quantity_null_for_quarterly_resolution(
         to_date=end_time,
     )
     # Act
-    actual = get_enriched_time_series_points_df(
+    actual = get_basis_data_time_series_points_df(
         raw_time_series_points,
         metering_point_period_df,
         timestamp_factory(start_time),
@@ -171,7 +173,7 @@ def test__missing_point_has_quantity_null_for_hourly_resolution(
     )
 
     # Act
-    actual = get_enriched_time_series_points_df(
+    actual = get_basis_data_time_series_points_df(
         raw_time_series_points,
         metering_point_period_df,
         timestamp_factory(start_time),
@@ -200,7 +202,7 @@ def test__missing_point_has_quality_incomplete_for_quarterly_resolution(
     )
 
     # Act
-    actual = get_enriched_time_series_points_df(
+    actual = get_basis_data_time_series_points_df(
         raw_time_series_points,
         metering_point_period_df,
         timestamp_factory(start_time),
@@ -233,7 +235,7 @@ def test__missing_point_has_quality_incomplete_for_hourly_resolution(
     )
 
     # Act
-    actual = get_enriched_time_series_points_df(
+    actual = get_basis_data_time_series_points_df(
         raw_time_series_points,
         metering_point_period_df,
         timestamp_factory(start_time),
@@ -266,7 +268,7 @@ def test__df_is_not_empty_when_no_time_series_points(
     )
 
     # Act
-    actual = get_enriched_time_series_points_df(
+    actual = get_basis_data_time_series_points_df(
         empty_raw_time_series_points,
         metering_point_period_df,
         timestamp_factory(start_time),
@@ -345,7 +347,7 @@ def test__df_has_expected_row_count_according_to_dst(
     )
 
     # Act
-    actual = get_enriched_time_series_points_df(
+    actual = get_basis_data_time_series_points_df(
         raw_time_series_points,
         metering_point_period_df,
         timestamp_factory(period_start),
@@ -424,7 +426,7 @@ def test__support_meteringpoint_period_switch_on_resolution_provides_correct_num
     )
 
     # Act
-    actual = get_enriched_time_series_points_df(
+    actual = get_basis_data_time_series_points_df(
         raw_time_series_points,
         metering_point_period_df.union(second_metering_point_period_df),
         timestamp_factory(from_date),

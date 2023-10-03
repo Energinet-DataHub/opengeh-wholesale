@@ -27,6 +27,7 @@ from package.calculation.wholesale.schemas.calculate_fee_charge_price_schema imp
 from tests.calculation.dataframe_defaults import DataframeDefaults
 from package.calculation.wholesale.schemas.charges_schema import (
     charges_schema,
+    charges_master_data_schema,
     charge_links_schema,
     charge_prices_schema,
 )
@@ -146,7 +147,7 @@ def charge_master_data_factory(spark: SparkSession) -> Callable[..., DataFrame]:
             }
         ]
 
-        return spark.createDataFrame(data, schema=charges_schema)
+        return spark.createDataFrame(data, schema=charges_master_data_schema)
 
     return factory
 
@@ -189,6 +190,38 @@ def charge_prices_factory(spark: SparkSession) -> Callable[..., DataFrame]:
         ]
 
         return spark.createDataFrame(data, schema=charge_prices_schema)
+
+    return factory
+
+
+@pytest.fixture(scope="session")
+def charges_factory(spark: SparkSession) -> Callable[..., DataFrame]:
+    def factory(
+        charge_id: str = DataframeDefaults.default_charge_id,
+        charge_type: str = DataframeDefaults.default_charge_type,
+        charge_owner: str = DataframeDefaults.default_charge_owner,
+        charge_resolution: str = DataframeDefaults.default_charge_resolution,
+        charge_tax: str = DataframeDefaults.default_charge_tax,
+        time: datetime = DataframeDefaults.default_charge_time,
+        charge_price: Decimal = DataframeDefaults.default_charge_price,
+    ) -> DataFrame:
+        data = [
+            {
+                Colname.charge_key: DataframeDefaults.default_charge_key,
+                Colname.charge_id: charge_id,
+                Colname.charge_type: charge_type,
+                Colname.charge_owner: charge_owner,
+                Colname.charge_tax: charge_tax,
+                Colname.charge_resolution: charge_resolution,
+                Colname.charge_time: time,
+                Colname.from_date: DataframeDefaults.default_from_date,
+                Colname.to_date: DataframeDefaults.default_to_date,
+                Colname.charge_price: charge_price,
+                Colname.metering_point_id: DataframeDefaults.default_metering_point_id,
+            }
+        ]
+
+        return spark.createDataFrame(data, schema=charges_schema)
 
     return factory
 

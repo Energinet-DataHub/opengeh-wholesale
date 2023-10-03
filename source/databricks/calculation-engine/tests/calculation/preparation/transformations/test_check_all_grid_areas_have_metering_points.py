@@ -14,7 +14,7 @@
 
 
 import pytest
-from package.calculation_input.batch_grid_areas import (
+from package.calculation.preparation.transformations.batch_grid_areas import (
     check_all_grid_areas_have_metering_points,
 )
 from package.codelists import (
