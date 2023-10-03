@@ -39,7 +39,7 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
         args.batch_grid_areas
     )
 
-    time_series_hour_points_df = (
+    basis_data_time_series_points_df = (
         prepared_data_reader.get_basis_data_time_series_points_df(
             metering_point_periods_df,
             args.batch_period_start_datetime,
@@ -50,12 +50,12 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
     basis_data_writer = BasisDataWriter(args.wholesale_container_path, args.batch_id)
     basis_data_writer.write(
         metering_point_periods_df,
-        time_series_hour_points_df,
+        basis_data_time_series_points_df,
         args.time_zone,
     )
 
     time_series_quarter_points_df = prepared_data_reader.transform_hour_to_quarter(
-        time_series_hour_points_df
+        basis_data_time_series_points_df
     )
 
     energy_calculation.execute(
