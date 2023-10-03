@@ -153,8 +153,8 @@ message WholesaleAmountResultProducedV1 {
      * Read more at https://protobuf.dev/programming-guides/style/#enums.
      */
     SETTLEMENT_METHOD_UNSPECIFIED = 0;
-    SETTLEMENT_FLEX = 4;
-    SETTLEMENT_NON_PROFILED = 6;
+    SETTLEMENT_METHOD_FLEX = 1;
+    SETTLEMENT_METHOD_NON_PROFILED = 2;
   }
 
   message TimeSeriesPoint {
@@ -162,7 +162,8 @@ message WholesaleAmountResultProducedV1 {
     google.protobuf.Timestamp time = 1;
 
     /*
-     * 3 digit scale decimal value of the energy quantity.
+     * 3 digit scale decimal value. The value represents either energy quantity or pieces (dependency on QuantityUnit).
+     * The value can null if no data is present for the given time series point.
      */
     optional DecimalValue quantity = 2;
 
@@ -170,11 +171,13 @@ message WholesaleAmountResultProducedV1 {
 
     /*
      * 6 digit scale decimal value of the amount.
+     * The value can be null if price data is present for the given time series point.
      */
     optional DecimalValue price = 4;
 
     /*
      * 6 digit scale decimal value of the amount.
+     * The value can be null if price or quantity is null
      */
     optional DecimalValue amount = 5;
   }
