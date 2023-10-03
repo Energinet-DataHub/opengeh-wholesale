@@ -14,7 +14,9 @@
 
 import pytest
 from package.codelists import MeteringPointType, MeteringPointResolution
-from package.calculation_input.basis_data import get_master_basis_data_df
+from package.calculation.preparation.transformations.basis_data import (
+    get_master_basis_data_df,
+)
 from datetime import datetime
 
 

@@ -13,7 +13,9 @@
 # limitations under the License.
 
 import pytest
-from package.calculation_input.grid_loss_responsible import get_grid_loss_responsible
+from package.calculation.preparation.transformations.grid_loss_responsible import (
+    get_grid_loss_responsible,
+)
 
 
 def test__get_grid_loss_responsible__returns_returns_non_empty_list() -> None:

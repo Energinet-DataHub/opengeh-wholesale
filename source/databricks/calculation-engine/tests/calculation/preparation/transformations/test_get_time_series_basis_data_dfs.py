@@ -17,7 +17,9 @@ import pytest
 from package.codelists import MeteringPointResolution, MeteringPointType
 from package.constants import Colname
 from decimal import Decimal
-from package.calculation_input.basis_data import get_time_series_basis_data_dfs
+from package.calculation.preparation.transformations.basis_data import (
+    get_time_series_basis_data_dfs,
+)
 from pyspark.sql.functions import lit
 from pyspark.sql.types import (
     StructField,
