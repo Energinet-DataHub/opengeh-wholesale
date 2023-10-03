@@ -20,8 +20,8 @@ import pytest
 from typing import Callable
 from unittest.mock import patch, Mock
 
-from package.calculation_input.delta_table_reader import DeltaTableReader
-from package.calculation_input.metering_point_periods import (
+from package.calculation_input import TableReader
+from package.calculation.preparation.transformations import (
     get_metering_point_periods_df,
 )
 from package.codelists import (

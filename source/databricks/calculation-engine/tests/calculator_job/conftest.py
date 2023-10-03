@@ -22,12 +22,13 @@ from unittest.mock import patch
 
 from . import configuration as C
 import package.calculation as calculation
-import package.calculation_input.grid_loss_responsible as grid_loss_responsible
+from package.calculation.preparation.transformations import grid_loss_responsible
 from package.calculation.calculator_args import CalculatorArgs
 from package.codelists.process_type import ProcessType
 from package.constants import EnergyResultColumnNames, WholesaleResultColumnNames
 from package.infrastructure import paths
-from package.calculation_input import CalculationInput
+from package.calculation_input import TableReader
+from package.calculation.preparation import PreparedDataReader
 from package.calculation_input.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
@@ -147,8 +148,9 @@ def executed_balance_fixing(
         grid_loss_responsible._get_all_grid_loss_responsible.__name__,
         return_value=grid_loss_responsible_test_data,
     ):
-        calculation_input = CalculationInput(spark)
-        calculation.execute(calculator_args_balance_fixing, calculation_input)
+        table_reader = TableReader(spark)
+        prepared_data_reader = PreparedDataReader(table_reader)
+        calculation.execute(calculator_args_balance_fixing, prepared_data_reader)
 
 
 @pytest.fixture(scope="session")
@@ -171,8 +173,9 @@ def executed_wholesale_fixing(
         grid_loss_responsible._get_all_grid_loss_responsible.__name__,
         return_value=grid_loss_responsible_test_data,
     ):
-        calculation_input = CalculationInput(spark)
-        calculation.execute(calculator_args_wholesale_fixing, calculation_input)
+        table_reader = TableReader(spark)
+        prepared_data_reader = PreparedDataReader(table_reader)
+        calculation.execute(calculator_args_wholesale_fixing, prepared_data_reader)
 
 
 @pytest.fixture(scope="session")
@@ -236,7 +239,7 @@ def _write_input_test_data_to_table(
     )
 
 
-def struct_type_to_sql_schema(schema):
+def struct_type_to_sql_schema(schema: StructType) -> str:
     schema_string = ""
     for field in schema.fields:
         field_name = field.name

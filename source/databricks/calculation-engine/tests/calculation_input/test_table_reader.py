@@ -25,7 +25,7 @@ from package.codelists import (
     MeteringPointType,
     SettlementMethod,
 )
-from package.calculation_input.delta_table_reader import DeltaTableReader
+from package.calculation_input.table_reader import TableReader
 from package.calculation_input.schemas import (
     metering_point_period_schema,
     charge_price_points_schema,
@@ -138,7 +138,7 @@ def test___read_metering_point_periods__returns_df_with_correct_metering_point_t
     # Arrange
     row = _create_metering_point_period_row(metering_point_type=metering_point_type)
     df = spark.createDataFrame(data=[row], schema=metering_point_period_schema)
-    sut = DeltaTableReader(spark)
+    sut = TableReader(spark)
 
     # Act
     with mock.patch.object(sut, DeltaTableReader._read_table.__name__, return_value=df):
@@ -162,7 +162,7 @@ def test___read_metering_point_periods__returns_df_with_correct_settlemet_method
 ) -> None:
     row = _create_metering_point_period_row(settlement_method=settlement_method)
     df = spark.createDataFrame(data=[row], schema=metering_point_period_schema)
-    sut = DeltaTableReader(spark)
+    sut = TableReader(spark)
 
     # Act
     with mock.patch.object(sut, DeltaTableReader._read_table.__name__, return_value=df):
@@ -186,7 +186,7 @@ def test___read_metering_point_periods__returns_df_with_correct_settlement_metho
 ) -> None:
     row = _create_metering_point_period_row(settlement_method=settlement_method)
     df = spark.createDataFrame(data=[row], schema=metering_point_period_schema)
-    sut = DeltaTableReader(spark)
+    sut = TableReader(spark)
 
     # Act
     with mock.patch.object(sut, DeltaTableReader._read_table.__name__, return_value=df):
@@ -201,27 +201,27 @@ def test___read_metering_point_periods__returns_df_with_correct_settlement_metho
     [
         (
             metering_point_period_schema,
-            DeltaTableReader.read_metering_point_periods,
+            TableReader.read_metering_point_periods,
             _create_metering_point_period_row,
         ),
         (
             time_series_point_schema,
-            DeltaTableReader.read_time_series_points,
+            TableReader.read_time_series_points,
             _create_time_series_point_row,
         ),
         (
             charge_master_data_periods_schema,
-            DeltaTableReader.read_charge_master_data_periods,
+            TableReader.read_charge_master_data_periods,
             _create_charge_master_period_row,
         ),
         (
             charge_link_periods_schema,
-            DeltaTableReader.read_charge_links_periods,
+            TableReader.read_charge_links_periods,
             _create_charge_link_period_row,
         ),
         (
             charge_price_points_schema,
-            DeltaTableReader.read_charge_price_points,
+            TableReader.read_charge_price_points,
             _create_change_price_point_row,
         ),
     ],
@@ -231,7 +231,7 @@ def test__read_data__returns_df(
 ) -> None:
     # Arrange
     row = create_row()
-    reader = DeltaTableReader(spark)
+    reader = TableReader(spark)
     df = spark.createDataFrame(data=[row], schema=expected_schema)
     sut = getattr(reader, method_name.__name__)
 
@@ -250,27 +250,27 @@ def test__read_data__returns_df(
     [
         (
             metering_point_period_schema,
-            DeltaTableReader.read_metering_point_periods,
+            TableReader.read_metering_point_periods,
             _create_metering_point_period_row,
         ),
         (
             time_series_point_schema,
-            DeltaTableReader.read_time_series_points,
+            TableReader.read_time_series_points,
             _create_time_series_point_row,
         ),
         (
             charge_master_data_periods_schema,
-            DeltaTableReader.read_charge_master_data_periods,
+            TableReader.read_charge_master_data_periods,
             _create_charge_master_period_row,
         ),
         (
             charge_link_periods_schema,
-            DeltaTableReader.read_charge_links_periods,
+            TableReader.read_charge_links_periods,
             _create_charge_link_period_row,
         ),
         (
             charge_price_points_schema,
-            DeltaTableReader.read_charge_price_points,
+            TableReader.read_charge_price_points,
             _create_change_price_point_row,
         ),
     ],
@@ -280,7 +280,7 @@ def test__read_data__raises_value_error_when_schema_mismatch(
 ) -> None:
     # Arrange
     row = create_row()
-    sut = DeltaTableReader(spark)
+    sut = TableReader(spark)
     df = spark.createDataFrame(data=[row], schema=expected_schema)
     df = df.withColumn("test", lit("test"))
     method = getattr(sut, method_name.__name__)
@@ -306,27 +306,27 @@ def test__read_data__raises_value_error_when_schema_mismatch(
     [
         (
             metering_point_period_schema,
-            DeltaTableReader.read_metering_point_periods,
+            TableReader.read_metering_point_periods,
             _create_metering_point_period_row,
         ),
         (
             time_series_point_schema,
-            DeltaTableReader.read_time_series_points,
+            TableReader.read_time_series_points,
             _create_time_series_point_row,
         ),
         (
             charge_master_data_periods_schema,
-            DeltaTableReader.read_charge_master_data_periods,
+            TableReader.read_charge_master_data_periods,
             _create_charge_master_period_row,
         ),
         (
             charge_link_periods_schema,
-            DeltaTableReader.read_charge_links_periods,
+            TableReader.read_charge_links_periods,
             _create_charge_link_period_row,
         ),
         (
             charge_price_points_schema,
-            DeltaTableReader.read_charge_price_points,
+            TableReader.read_charge_price_points,
             _create_change_price_point_row,
         ),
     ],
@@ -339,7 +339,7 @@ def test__read_data__throws_exception_when_schema_mismatch2(
 ) -> None:
     # Arrange
     row = create_row()
-    reader = DeltaTableReader(spark)
+    reader = TableReader(spark)
     df = spark.createDataFrame(data=[row], schema=expected_schema)
     df = df.withColumn("test", lit("test"))
     sut = getattr(reader, str(method_name.__name__))

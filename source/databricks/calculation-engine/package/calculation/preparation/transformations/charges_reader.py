@@ -14,13 +14,13 @@
 
 from pyspark.sql import DataFrame
 from package.constants import Colname
-from .delta_table_reader import DeltaTableReader
+from package.calculation_input import TableReader
 
 
-def read_charges(calculation_input_reader: DeltaTableReader) -> DataFrame:
-    charge_master_data_df = calculation_input_reader.read_charge_master_data_periods()
-    charge_links_df = calculation_input_reader.read_charge_links_periods()
-    charge_prices_df = calculation_input_reader.read_charge_price_points()
+def read_charges(table_reader: TableReader) -> DataFrame:
+    charge_master_data_df = table_reader.read_charge_master_data_periods()
+    charge_links_df = table_reader.read_charge_links_periods()
+    charge_prices_df = table_reader.read_charge_price_points()
 
     return _create_charges_df(charge_master_data_df, charge_links_df, charge_prices_df)
 

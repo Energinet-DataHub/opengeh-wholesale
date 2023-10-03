@@ -22,7 +22,7 @@ from package.codelists import MeteringPointResolution
 from package.infrastructure.db_logging import debug
 
 
-def get_enriched_time_series_points_df(
+def get_basis_data_time_series_points_df(
     new_timeseries_df: DataFrame,
     master_basis_data_df: DataFrame,
     period_start_datetime: datetime,
