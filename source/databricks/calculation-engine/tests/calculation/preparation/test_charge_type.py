@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from decimal import Decimal
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.types import (
@@ -22,17 +22,10 @@ from pyspark.sql.types import (
     StructType,
     TimestampType,
 )
-from typing import Callable
-from package.calculation.preparation.charge_types import (
-    _join_with_metering_points,
-    _explode_subscription,
-    _get_charges_based_on_resolution,
+from package.calculation.preparation.transformations import (
     get_tariff_charges,
     get_fee_charges,
     get_subscription_charges,
-    _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity,
-    _join_with_grouped_time_series,
-    _get_charges_based_on_charge_type,
 )
 from package.codelists import (
     ChargeQuality,
@@ -43,16 +36,10 @@ from package.codelists import (
     MeteringPointResolution,
     TimeSeriesQuality,
 )
-from package.calculation_input.charges_reader import _create_charges_df
 from package.calculation_input.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
 )
-from tests.helpers.test_schemas import (
-    charges_with_price_and_links_schema,
-    charges_complete_schema,
-)
-from pyspark.sql.functions import col
 import pytest
 from package.constants import Colname
 
@@ -206,7 +193,9 @@ def test__get_tariff_charges__filters_on_resolution_hour_or_day(
     assert actual.collect()[0][Colname.charge_resolution] == charge_resolution.value
 
 
-def test__get_functions__filters_on_correct_charge_type(spark: SparkSession) -> None:
+def test__get_charges_functions__filters_on_correct_charge_type(
+    spark: SparkSession,
+) -> None:
     metering_point_rows = [_create_metering_point_row()]
     time_series_rows = [_create_time_series_row()]
     charges_rows = [
@@ -298,6 +287,31 @@ def test__get_tariff_charges__joins_on_metering_point_id_and_time_is_between_fro
             charge_time=datetime(2020, 1, 1, 2),
         ),
     ]
+
+    metering_point = _create_dataframe_from_rows(
+        spark, metering_point_rows, metering_point_period_schema
+    )
+    time_series = _create_dataframe_from_rows(
+        spark, time_series_rows, time_series_point_schema
+    )
+    charges = _create_dataframe_from_rows(spark, charges_rows, charges_schema)
+
+    actual = get_tariff_charges(
+        metering_point,
+        time_series,
+        charges,
+        ChargeResolution.HOUR,
+    )
+
+    assert actual.count() == 2
+
+
+def test__stuff(
+    spark: SparkSession,
+) -> None:
+    metering_point_rows = [_create_metering_point_row()]
+    time_series_rows = [_create_time_series_row()]
+    charges_rows = [_create_charges_row()]
 
     metering_point = _create_dataframe_from_rows(
         spark, metering_point_rows, metering_point_period_schema

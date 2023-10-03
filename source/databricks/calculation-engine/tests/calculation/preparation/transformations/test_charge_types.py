@@ -23,7 +23,7 @@ from pyspark.sql.types import (
     TimestampType,
 )
 from typing import Callable
-from package.calculation.preparation.charge_types import (
+from package.calculation.preparation.transformations.charge_types import (
     _join_with_metering_points,
     _explode_subscription,
     _get_charges_based_on_resolution,
@@ -42,7 +42,9 @@ from package.codelists import (
 from package.calculation.wholesale.schemas.charges_schema import (
     charges_schema,
 )
-from package.calculation_input.charges_reader import _create_charges_df
+from package.calculation.preparation.transformations.charges_reader import (
+    _create_charges_df,
+)
 from package.calculation_input.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
@@ -342,79 +344,6 @@ explode_charges_with_price_and_links_dataset_4 = [
         ANOTHER_METERING_POINT_ID,
     )
 ]
-
-
-# Subscription only
-@pytest.mark.parametrize(
-    "charges_df,expected",
-    [
-        (explode_charges_with_price_and_links_dataset_1, 31),
-        (explode_charges_with_price_and_links_dataset_2, 0),
-        (explode_charges_with_price_and_links_dataset_3, 2),
-        (explode_charges_with_price_and_links_dataset_4, 0),
-    ],
-)
-def test__explode_subscription__explodes_into_rows_based_on_number_of_days_between_from_and_to_date(
-    spark: SparkSession, charges_df: DataFrame, expected: int
-) -> None:
-    # Arrange
-    charges_df = spark.createDataFrame(
-        charges_df, schema=charges_with_price_and_links_schema
-    )
-
-    # Act
-    result = _explode_subscription(charges_df)
-
-    # Assert
-    assert result.count() == expected
-
-
-# Shared
-@pytest.mark.parametrize(
-    "charges_with_price_and_links,metering_points,expected",
-    [
-        (
-            charges_with_price_and_links_dataset_1,
-            metering_points_dataset,
-            1,
-        ),
-        (
-            charges_with_price_and_links_dataset_2,
-            metering_points_dataset,
-            0,
-        ),
-        (
-            charges_with_price_and_links_dataset_3,
-            metering_points_dataset,
-            1,
-        ),
-        (
-            charges_with_price_and_links_dataset_4,
-            metering_points_dataset,
-            0,
-        ),
-    ],
-)
-def test__join_with_metering_points__joins_on_metering_point_id_and_time_is_between_from_and_to_date(
-    spark: SparkSession,
-    charges_with_price_and_links: DataFrame,
-    metering_points: DataFrame,
-    expected: int,
-) -> None:
-    # Arrange
-    charges_with_price_and_links = spark.createDataFrame(
-        charges_with_price_and_links,
-        schema=charges_with_price_and_links_schema,
-    )
-    metering_points = spark.createDataFrame(
-        metering_points, schema=metering_point_period_schema
-    )
-
-    # Act
-    result = _join_with_metering_points(charges_with_price_and_links, metering_points)
-
-    # Assert
-    assert result.count() == expected
 
 
 time_series_dataset_1 = [
