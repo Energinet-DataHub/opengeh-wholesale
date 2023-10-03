@@ -20,9 +20,7 @@ import package.calculation.energy.aggregators as aggregators
 import package.calculation.energy.exchange_aggregators as exchange_aggr
 import package.calculation.energy.grid_loss_calculator as grid_loss_aggr
 import package.calculation.energy.transformations as transformations
-import package.calculation.setup as setup
 from package.codelists import TimeSeriesType, AggregationLevel, ProcessType
-from package.calculation_output.basis_data_writer import BasisDataWriter
 from package.calculation_output.energy_calculation_result_writer import (
     EnergyCalculationResultWriter,
 )
@@ -32,11 +30,8 @@ def execute(
     batch_id: str,
     batch_process_type: ProcessType,
     batch_execution_time_start: datetime,
-    wholesale_container_path: str,
-    metering_points_periods_df: DataFrame,
-    enriched_time_series_point_df: DataFrame,
+    time_series_quarter_points_df: DataFrame,
     grid_loss_responsible_df: DataFrame,
-    time_zone: str,
 ) -> None:
     calculation_result_writer = EnergyCalculationResultWriter(
         batch_id,
@@ -44,20 +39,10 @@ def execute(
         batch_execution_time_start,
     )
 
-    basis_data_writer = BasisDataWriter(wholesale_container_path, batch_id)
-    basis_data_writer.write(
-        metering_points_periods_df,
-        enriched_time_series_point_df,
-        time_zone,
-    )
-
-    enriched_time_series_point_df = setup.transform_hour_to_quarter(
-        enriched_time_series_point_df
-    )
     _calculate(
         batch_process_type,
         calculation_result_writer,
-        enriched_time_series_point_df,
+        time_series_quarter_points_df,
         grid_loss_responsible_df,
     )
 
@@ -65,27 +50,27 @@ def execute(
 def _calculate(
     process_type: ProcessType,
     result_writer: EnergyCalculationResultWriter,
-    enriched_time_series_point_df: DataFrame,
+    time_series_quarter_points_df: DataFrame,
     grid_loss_responsible_df: DataFrame,
 ) -> None:
     net_exchange_per_ga = _calculate_net_exchange(
-        process_type, result_writer, enriched_time_series_point_df
+        process_type, result_writer, time_series_quarter_points_df
     )
 
     temporay_production_per_ga_and_brp_and_es = (
         _calculate_temporay_production_per_per_ga_and_brp_and_es(
-            result_writer, enriched_time_series_point_df
+            result_writer, time_series_quarter_points_df
         )
     )
 
     temporay_flex_consumption_per_ga_and_brp_and_es = (
         _calculate_temporay_flex_consumption_per_per_ga_and_brp_and_es(
-            result_writer, enriched_time_series_point_df
+            result_writer, time_series_quarter_points_df
         )
     )
 
     consumption_per_ga_and_brp_and_es = _calculate_consumption_per_ga_and_brp_and_es(
-        enriched_time_series_point_df
+        time_series_quarter_points_df
     )
 
     positive_grid_loss, negative_grid_loss = _calculate_grid_loss(
@@ -128,12 +113,14 @@ def _calculate(
 def _calculate_net_exchange(
     process_type: ProcessType,
     result_writer: EnergyCalculationResultWriter,
-    enriched_time_series: DataFrame,
+    time_series_quarter_points_df: DataFrame,
 ) -> DataFrame:
     if _is_aggregation_or_balance_fixing(process_type):
         # Could the exchange_per_neighbour_ga be re-used for NET_EXCHANGE_PER_GA?
         exchange_per_neighbour_ga = (
-            exchange_aggr.aggregate_net_exchange_per_neighbour_ga(enriched_time_series)
+            exchange_aggr.aggregate_net_exchange_per_neighbour_ga(
+                time_series_quarter_points_df
+            )
         )
 
         result_writer.write(
@@ -143,7 +130,7 @@ def _calculate_net_exchange(
         )
 
     exchange_per_grid_area = exchange_aggr.aggregate_net_exchange_per_ga(
-        enriched_time_series
+        time_series_quarter_points_df
     )
 
     result_writer.write(
@@ -156,21 +143,23 @@ def _calculate_net_exchange(
 
 
 def _calculate_consumption_per_ga_and_brp_and_es(
-    enriched_time_series: DataFrame,
+    time_series_quarter_points_df: DataFrame,
 ) -> DataFrame:
     # Non-profiled consumption per balance responsible party and energy supplier
     consumption_per_ga_and_brp_and_es = (
-        aggregators.aggregate_non_profiled_consumption_ga_brp_es(enriched_time_series)
+        aggregators.aggregate_non_profiled_consumption_ga_brp_es(
+            time_series_quarter_points_df
+        )
     )
     return consumption_per_ga_and_brp_and_es
 
 
 def _calculate_temporay_production_per_per_ga_and_brp_and_es(
     result_writer: EnergyCalculationResultWriter,
-    enriched_time_series: DataFrame,
+    time_series_quarter_points_df: DataFrame,
 ) -> DataFrame:
     temporay_production_per_per_ga_and_brp_and_es = (
-        aggregators.aggregate_production_ga_brp_es(enriched_time_series)
+        aggregators.aggregate_production_ga_brp_es(time_series_quarter_points_df)
     )
     # temp production per grid area - used as control result for grid loss
     temporay_production_per_ga = aggregators.aggregate_production_ga(
@@ -186,10 +175,10 @@ def _calculate_temporay_production_per_per_ga_and_brp_and_es(
 
 def _calculate_temporay_flex_consumption_per_per_ga_and_brp_and_es(
     result_writer: EnergyCalculationResultWriter,
-    enriched_time_series: DataFrame,
+    time_series_quarter_points_df: DataFrame,
 ) -> DataFrame:
     temporay_flex_consumption_per_ga_and_brp_and_es = (
-        aggregators.aggregate_flex_consumption_ga_brp_es(enriched_time_series)
+        aggregators.aggregate_flex_consumption_ga_brp_es(time_series_quarter_points_df)
     )
     # temp flex consumption per grid area - used as control result for grid loss
     temporay_flex_consumption_per_ga = aggregators.aggregate_flex_consumption_ga(

@@ -21,8 +21,8 @@ from package.infrastructure import (
 )
 from package.calculator_job_args import get_calculator_args
 from package.infrastructure.storage_account_access import islocked
-from package.calculation_input import CalculationInput
-import package.calculation as calculation
+from package import calculation_input
+from package import calculation
 
 
 # The start() method should only have its name updated in correspondence with the
@@ -36,6 +36,10 @@ def start() -> None:
         log("Exiting because storage is locked due to data migrations running.")
         sys.exit(3)
 
+    # Create calculation execution dependencies
     spark = initialize_spark()
-    calculation_input = CalculationInput(spark)
-    calculation.execute(args, calculation_input)
+    delta_table_reader = calculation_input.TableReader(spark)
+    prepared_data_reader = calculation.PreparedDataReader(delta_table_reader)
+
+    # Execute calculation
+    calculation.execute(args, prepared_data_reader)

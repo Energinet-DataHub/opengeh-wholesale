@@ -12,4 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .calculation_input import CalculationInput
+"""
+Package `calculation_input`
+
+Responsible for reading calculation input data from Delta tables.
+Schemas are checked when reading.
+Only minor transformations to data frames are done merely compensating
+for minor inappropriatenesses in the input table formats.
+"""
+
+from .table_reader import TableReader
