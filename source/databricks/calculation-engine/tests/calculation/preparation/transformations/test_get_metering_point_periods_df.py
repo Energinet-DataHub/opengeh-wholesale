@@ -15,7 +15,7 @@
 from datetime import datetime, timedelta
 import pytest
 from unittest.mock import patch, Mock
-from package.calculation_input.metering_point_periods import (
+from package.calculation.preparation.transformations.metering_point_periods import (
     get_metering_point_periods_df,
 )
 from package.codelists import (
@@ -29,9 +29,7 @@ from pyspark.sql import DataFrame
 from pyspark.sql.types import StructType, StructField, StringType, TimestampType
 from typing import Callable
 
-delta_table_reader_symbol = (
-    "package.calculation_input.delta_table_reader.DeltaTableReader"
-)
+delta_table_reader_symbol = "package.calculation_input.TableReader"
 
 # Factory defaults
 grid_area_code = "805"

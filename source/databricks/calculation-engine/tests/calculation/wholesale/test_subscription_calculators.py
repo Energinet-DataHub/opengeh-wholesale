@@ -25,8 +25,10 @@ from package.calculation.wholesale.subscription_calculators import (
     filter_on_metering_point_type_and_settlement_method,
     get_count_of_charges_and_total_daily_charge_price,
 )
-from package.calculation.preparation import get_subscription_charges
-from package.calculation_input.charges_reader import _create_charges_df
+from package.calculation.preparation.transformations import get_subscription_charges
+from package.calculation.preparation.transformations.charges_reader import (
+    _create_charges_df,
+)
 from calendar import monthrange
 import pytest
 from package.constants import Colname

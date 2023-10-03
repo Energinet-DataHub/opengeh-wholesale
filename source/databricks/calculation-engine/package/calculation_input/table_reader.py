@@ -31,7 +31,7 @@ from .schemas import (
 )
 
 
-class DeltaTableReader:
+class TableReader:
     def __init__(
         self,
         spark: SparkSession,
