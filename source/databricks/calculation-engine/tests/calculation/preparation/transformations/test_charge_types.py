@@ -278,7 +278,7 @@ def test__get_subscription_charges__split_into_days_between_from_and_to_date(
     assert actual_subscription.count() == 31
 
 
-def test__get_tariff_charges__joins_on_metering_point_id_and_time_is_between_from_and_to_date(
+def test__get_tariff_charges__only_accepts_charges_in_metering_point_period(
     spark: SparkSession,
 ) -> None:
     metering_point_rows = [
