@@ -22,4 +22,4 @@ def qualname(symbol: Type) -> str:
     Example: `qualname(some_method)`, where `some_method` is a method of a class `Bar`
              in module `foo` will return `foo.Bar.some_method`.
     """
-    return symbol.__module__ + "." + symbol.__name__
+    return symbol.__module__ + "." + symbol.__qualname__
