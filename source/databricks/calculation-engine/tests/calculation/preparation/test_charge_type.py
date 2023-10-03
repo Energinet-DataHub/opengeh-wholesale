@@ -93,7 +93,7 @@ def _create_metering_point_row(
 
 def _create_time_series_row(
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
-    quantity: Decimal = Decimal("1.005"),
+    quantity: Decimal = DEFAULT_QUANTITY,
     quality: TimeSeriesQuality = TimeSeriesQuality.CALCULATED,
     observation_time: datetime = datetime(2020, 1, 1, 0),
 ) -> dict:
@@ -306,11 +306,11 @@ def test__get_tariff_charges__joins_on_metering_point_id_and_time_is_between_fro
     assert actual.count() == 2
 
 
-def test__stuff(
+def test__get_tariff_charges__sums_quantity_when_same_metering_point_and_resolution(
     spark: SparkSession,
 ) -> None:
     metering_point_rows = [_create_metering_point_row()]
-    time_series_rows = [_create_time_series_row()]
+    time_series_rows = [_create_time_series_row(), _create_time_series_row()]
     charges_rows = [_create_charges_row()]
 
     metering_point = _create_dataframe_from_rows(
@@ -328,4 +328,4 @@ def test__stuff(
         ChargeResolution.HOUR,
     )
 
-    assert actual.count() == 2
+    assert actual.collect()[0][Colname.quantity] == 2 * DEFAULT_QUANTITY
