@@ -12,25 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from datetime import datetime, timedelta
+import pytest
+from datetime import datetime
 from decimal import Decimal
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.types import (
-    DecimalType,
-    StringType,
-    StructField,
     StructType,
-    TimestampType,
 )
-from typing import Callable
-from package.calculation.preparation.transformations.charge_types import (
-    _join_with_metering_points,
-    _explode_subscription,
-    _get_charges_based_on_resolution,
+from package.calculation.preparation.transformations import (
     get_tariff_charges,
-    _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity,
-    _join_with_grouped_time_series,
-    _get_charges_based_on_charge_type,
+    get_fee_charges,
+    get_subscription_charges,
 )
 from package.codelists import (
     ChargeQuality,
@@ -38,659 +30,335 @@ from package.codelists import (
     ChargeResolution,
     MeteringPointType,
     SettlementMethod,
-)
-from package.calculation.wholesale.schemas.charges_schema import (
-    charges_schema,
-)
-from package.calculation.preparation.transformations.charges_reader import (
-    _create_charges_df,
+    MeteringPointResolution,
+    TimeSeriesQuality,
 )
 from package.calculation_input.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
 )
-from tests.helpers.test_schemas import (
-    charges_with_price_and_links_schema,
-    charges_complete_schema,
-)
-from pyspark.sql.functions import col
-import pytest
+from package.calculation.wholesale.schemas.charges_schema import charges_schema
 from package.constants import Colname
 
-DEFAULT_FROM_DATE = datetime(2020, 1, 1, 0, 0)
-DEFAULT_TO_DATE = datetime(2020, 2, 1, 0, 0)
-DEFAULT_TIME = datetime(2020, 1, 1, 0, 0)
+DEFAULT_GRID_AREA = "543"
+DEFAULT_CHARGE_ID = "4000"
+DEFAULT_CHARGE_OWNER = "001"
+DEFAULT_CHARGE_TAX = True
+DEFAULT_CHARGE_TIME_HOUR_0 = datetime(2020, 1, 1, 0)
+DEFAULT_CHARGE_PRICE = Decimal("2.000005")
+DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
+DEFAULT_METERING_POINT_ID = "123456789012345678901234567"
+DEFAULT_METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
+DEFAULT_SETTLEMENT_METHOD = SettlementMethod.FLEX
+DEFAULT_QUANTITY = Decimal("1.005")
+DEFAULT_QUALITY = ChargeQuality.CALCULATED
+DEFAULT_PERIOD_START_DATETIME = datetime(2019, 12, 31, 23)
 
 
-charges_dataset = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        "P1D",
-        "No",
-        "DDK",
-        datetime(2020, 1, 1, 0, 0),
-        datetime(2020, 2, 1, 0, 0),
-    )
-]
-charge_prices_dataset = [
-    ("001-D01-001", Decimal("200.50"), datetime(2020, 1, 2, 0, 0)),
-    ("001-D01-001", Decimal("100.50"), datetime(2020, 1, 5, 0, 0)),
-    ("001-D01-002", Decimal("100.50"), datetime(2020, 1, 6, 0, 0)),
-]
+def _create_metering_point_row(
+    metering_point_id: str = DEFAULT_METERING_POINT_ID,
+    metering_point_type: MeteringPointType = DEFAULT_METERING_POINT_TYPE,
+    calculation_type: str = "calculation_type",
+    settlement_method: str = "settlement_method",
+    grid_area: str = "grid_area",
+    resolution: MeteringPointResolution = MeteringPointResolution.HOUR,
+    from_grid_area: str = "from_grid_area",
+    to_grid_area: str = "to_grid_area",
+    parent_metering_point_id: str = "parent_metering_point_id",
+    energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
+    balance_responsible_id: str = "balance_responsible_id",
+    from_date: datetime = datetime(2020, 1, 1, 0),
+    to_date: datetime = datetime(2020, 2, 1, 0),
+) -> dict:
+    row = {
+        Colname.metering_point_id: metering_point_id,
+        Colname.metering_point_type: metering_point_type.value,
+        Colname.calculation_type: calculation_type,
+        Colname.settlement_method: settlement_method,
+        Colname.grid_area: grid_area,
+        Colname.resolution: resolution.value,
+        Colname.from_grid_area: from_grid_area,
+        Colname.to_grid_area: to_grid_area,
+        Colname.parent_metering_point_id: parent_metering_point_id,
+        Colname.energy_supplier_id: energy_supplier_id,
+        Colname.balance_responsible_id: balance_responsible_id,
+        Colname.from_date: from_date,
+        Colname.to_date: to_date,
+    }
+    return row
 
 
-subscription_charges_with_prices_dataset_1 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        "P1D",
-        "No",
-        datetime(2020, 1, 1, 0, 0),
-        datetime(2020, 2, 1, 0, 0),
-        datetime(2020, 1, 2, 0, 0),
-        Decimal("200.50"),
-    )
-]
-subscription_charges_with_prices_dataset_2 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        "P1D",
-        "No",
-        datetime(2020, 1, 1, 0, 0),
-        datetime(2020, 2, 1, 0, 0),
-        datetime(2021, 1, 2, 0, 0),
-        Decimal("200.50"),
-    )
-]
-subscription_charges_with_prices_dataset_3 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        "P1D",
-        "No",
-        datetime(2020, 1, 1, 0, 0),
-        datetime(2020, 2, 2, 0, 0),
-        datetime(2020, 2, 15, 0, 0),
-        Decimal("200.50"),
-    )
-]
-subscription_charges_with_prices_dataset_4 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        "P1D",
-        "No",
-        datetime(2020, 1, 1, 0, 0),
-        datetime(2020, 2, 1, 0, 0),
-        datetime(2020, 3, 1, 0, 0),
-        Decimal("200.50"),
-    )
-]
+def _create_time_series_row(
+    metering_point_id: str = DEFAULT_METERING_POINT_ID,
+    quantity: Decimal = DEFAULT_QUANTITY,
+    quality: TimeSeriesQuality = TimeSeriesQuality.CALCULATED,
+    observation_time: datetime = datetime(2020, 1, 1, 0),
+) -> dict:
+    row = {
+        Colname.metering_point_id: metering_point_id,
+        Colname.quantity: quantity,
+        Colname.quality: quality.value,
+        Colname.observation_time: observation_time,
+    }
+    return row
 
 
-charges_with_prices_dataset_1 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        "P1D",
-        "No",
-        datetime(2020, 1, 1, 0, 0),
-        datetime(2020, 2, 1, 0, 0),
-        datetime(2020, 1, 15, 0, 0),
-        Decimal("200.50"),
-    )
-]
-charges_with_prices_dataset_2 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        "P1D",
-        "No",
-        datetime(2020, 1, 1, 0, 0),
-        datetime(2020, 2, 1, 0, 0),
-        datetime(2021, 2, 1, 0, 0),
-        Decimal("200.50"),
-    )
-]
-charges_with_prices_dataset_3 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        "P1D",
-        "No",
-        datetime(2020, 1, 1, 0, 0),
-        datetime(2020, 2, 1, 0, 0),
-        datetime(2020, 1, 1, 0, 0),
-        Decimal("200.50"),
-    )
-]
-charges_with_prices_dataset_4 = [
-    (
-        "001-D01-002",
-        "001",
-        "D01",
-        "001",
-        "P1D",
-        "No",
-        datetime(2020, 1, 1, 0, 0),
-        datetime(2020, 2, 1, 0, 0),
-        datetime(2020, 1, 15, 0, 0),
-        Decimal("200.50"),
-    )
-]
-charge_links_dataset = [
-    ("001-D01-001", "D01", datetime(2020, 1, 1, 0, 0), datetime(2020, 2, 1, 0, 0))
-]
+def _create_charges_row(
+    charge_key: str = f"{DEFAULT_CHARGE_ID}-{DEFAULT_CHARGE_OWNER}-{ChargeType.TARIFF.value}",
+    charge_id: str = DEFAULT_CHARGE_ID,
+    charge_type: ChargeType = ChargeType.TARIFF,
+    charge_owner: str = DEFAULT_CHARGE_OWNER,
+    charge_tax: bool = DEFAULT_CHARGE_TAX,
+    charge_resolution: ChargeResolution = ChargeResolution.HOUR,
+    charge_time: datetime = DEFAULT_CHARGE_TIME_HOUR_0,
+    from_date: datetime = datetime(2020, 1, 1, 0),
+    to_date: datetime = datetime(2020, 1, 1, 1),
+    charge_price: Decimal = DEFAULT_CHARGE_PRICE,
+    metering_point_id: str = DEFAULT_METERING_POINT_ID,
+) -> dict:
+    row = {
+        Colname.charge_key: charge_key,
+        Colname.charge_id: charge_id,
+        Colname.charge_type: charge_type.value,
+        Colname.charge_owner: charge_owner,
+        Colname.charge_tax: charge_tax,
+        Colname.charge_resolution: charge_resolution.value,
+        Colname.charge_time: charge_time,
+        Colname.from_date: from_date,
+        Colname.to_date: to_date,
+        Colname.charge_price: charge_price,
+        Colname.metering_point_id: metering_point_id,
+    }
+    return row
 
 
-# Shared
-DEFAULT_METERING_POINT_ID = "123"
-ANOTHER_METERING_POINT_ID = "456"
-
-charges_with_price_and_links_dataset_1 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        "P1D",
-        "No",
-        datetime(2020, 1, 1, 0, 0),
-        datetime(2020, 2, 1, 0, 0),
-        datetime(2020, 1, 15, 0, 0),
-        Decimal("200.50"),
-        DEFAULT_METERING_POINT_ID,
-    )
-]
-charges_with_price_and_links_dataset_2 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        "P1D",
-        "No",
-        datetime(2020, 1, 1, 0, 0),
-        datetime(2020, 2, 1, 0, 0),
-        datetime(2020, 2, 1, 0, 0),
-        Decimal("200.50"),
-        DEFAULT_METERING_POINT_ID,
-    )
-]
-charges_with_price_and_links_dataset_3 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        "P1D",
-        "No",
-        datetime(2020, 1, 1, 0, 0),
-        datetime(2020, 2, 2, 0, 0),
-        datetime(2020, 1, 1, 0, 0),
-        Decimal("200.50"),
-        DEFAULT_METERING_POINT_ID,
-    )
-]
-charges_with_price_and_links_dataset_4 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        "P1D",
-        "No",
-        datetime(2020, 1, 1, 0, 0),
-        datetime(2020, 2, 1, 0, 0),
-        datetime(2020, 1, 15, 0, 0),
-        Decimal("200.50"),
-        ANOTHER_METERING_POINT_ID,
-    )
-]
-metering_points_dataset = [
-    (
-        DEFAULT_METERING_POINT_ID,
-        MeteringPointType.CONSUMPTION.value,
-        None,
-        SettlementMethod.FLEX.value,
-        "1",
-        "P1D",
-        "2",
-        "1",
-        "1",
-        "1",
-        "1",
-        datetime(2020, 1, 1, 0, 0),
-        datetime(2020, 2, 1, 0, 0),
-    )
-]
+def _create_dataframe_from_rows(
+    spark: SparkSession, rows: list, schema: StructType
+) -> DataFrame:
+    return spark.createDataFrame(rows, schema=schema)
 
 
-explode_charges_with_price_and_links_dataset_1 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        "P1D",
-        "No",
-        datetime(2020, 1, 1, 0, 0),
-        datetime(2020, 2, 1, 0, 0),
-        datetime(2020, 1, 2, 0, 0),
-        Decimal("200.50"),
-        DEFAULT_METERING_POINT_ID,
-    )
-]
-explode_charges_with_price_and_links_dataset_2 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        "P1D",
-        "No",
-        datetime(2020, 1, 1, 0, 0),
-        datetime(2020, 2, 1, 0, 0),
-        datetime(2021, 1, 2, 0, 0),
-        Decimal("200.50"),
-        DEFAULT_METERING_POINT_ID,
-    )
-]
-explode_charges_with_price_and_links_dataset_3 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        "P1D",
-        "No",
-        datetime(2020, 1, 1, 0, 0),
-        datetime(2020, 2, 2, 0, 0),
-        datetime(2020, 2, 15, 0, 0),
-        Decimal("200.50"),
-        DEFAULT_METERING_POINT_ID,
-    )
-]
-explode_charges_with_price_and_links_dataset_4 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        "P1D",
-        "No",
-        datetime(2020, 1, 1, 0, 0),
-        datetime(2020, 2, 1, 0, 0),
-        datetime(2020, 3, 1, 0, 0),
-        Decimal("200.50"),
-        ANOTHER_METERING_POINT_ID,
-    )
-]
-
-
-time_series_dataset_1 = [
-    (
-        "D01",
-        Decimal("10"),
-        [ChargeQuality.CALCULATED.value, ChargeQuality.ESTIMATED.value],
-        datetime(2020, 1, 15, 5, 0),
-    ),
-    (
-        "D01",
-        Decimal("10"),
-        [ChargeQuality.CALCULATED.value, ChargeQuality.ESTIMATED.value],
-        datetime(2020, 1, 15, 1, 0),
-    ),
-    (
-        "D01",
-        Decimal("10"),
-        [ChargeQuality.CALCULATED.value, ChargeQuality.ESTIMATED.value],
-        datetime(2020, 1, 15, 1, 30),
-    ),
-    (
-        "D01",
-        Decimal("10"),
-        [ChargeQuality.CALCULATED.value, ChargeQuality.ESTIMATED.value],
-        datetime(2020, 1, 16, 1, 0),
-    ),
-]
-
-
-# Tariff only
 @pytest.mark.parametrize(
-    "time_series,resolution_duration,expected_count,expected_quantity",
-    [
-        (time_series_dataset_1, ChargeResolution.DAY, 2, 30),
-        (time_series_dataset_1, ChargeResolution.HOUR, 3, 20),
-    ],
+    "charge_resolution", [ChargeResolution.HOUR, ChargeResolution.DAY]
 )
-def test__group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
-    spark: SparkSession,
-    time_series: DataFrame,
-    resolution_duration: ChargeResolution,
-    expected_count: int,
-    expected_quantity: int,
+def test__get_tariff_charges__filters_on_resolution_hour_or_day(
+    spark: SparkSession, charge_resolution: ChargeResolution
 ) -> None:
-    # Arrange
-    time_series = spark.createDataFrame(time_series, schema=time_series_point_schema)
-
-    # Act
-    result = _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
-        time_series, resolution_duration
-    )
-    result = result.orderBy(
-        col(Colname.quantity).desc()
-    )  # orderby quantity desc to get highest quantity first
-
-    # Assert
-    assert result.count() == expected_count
-    assert (
-        result.collect()[0][Colname.quantity] == expected_quantity
-    )  # expected highest quantity
-
-
-grouped_time_series_dataset_1 = [
-    (
-        "D01",
-        Decimal("10"),
-        [ChargeQuality.CALCULATED.value, ChargeQuality.ESTIMATED.value],
-        datetime(2020, 1, 15, 0, 0),
-    )
-]
-charges_complete_dataset_1 = [
-    (
-        "001-D01-001",
-        "001",
-        "D01",
-        "001",
-        "P1D",
-        "No",
-        datetime(2020, 1, 15, 0, 0),
-        Decimal("200.50"),
-        "D01",
-        "1",
-        MeteringPointType.CONSUMPTION.value,
-        SettlementMethod.NON_PROFILED.value,
-        "1",
-    )
-]
-
-
-grouped_time_series_point_schema = StructType(
-    [
-        StructField(Colname.metering_point_id, StringType(), False),
-        StructField(Colname.quantity, DecimalType(18, 6), True),
-        StructField(Colname.qualities, StringType(), False),
-        StructField(Colname.observation_time, TimestampType(), False),
+    metering_point_rows = [_create_metering_point_row()]
+    time_series_rows = [_create_time_series_row()]
+    charges_rows = [
+        _create_charges_row(
+            charge_resolution=ChargeResolution.HOUR,
+        ),
+        _create_charges_row(
+            charge_resolution=ChargeResolution.DAY,
+        ),
     ]
-)
 
-
-# Tariff only
-@pytest.mark.parametrize(
-    "charges_complete,grouped_time_series,expected",
-    [(charges_complete_dataset_1, grouped_time_series_dataset_1, 1)],
-)
-def test__join_with_grouped_time_series__joins_on_metering_point_and_time(
-    spark: SparkSession,
-    charges_complete: DataFrame,
-    grouped_time_series: DataFrame,
-    expected: int,
-) -> None:
-    # Arrange
-    grouped_time_series = spark.createDataFrame(
-        grouped_time_series, schema=grouped_time_series_point_schema
+    metering_point = _create_dataframe_from_rows(
+        spark, metering_point_rows, metering_point_period_schema
     )
-    charges_complete = spark.createDataFrame(
-        charges_complete, schema=charges_complete_schema
+    time_series = _create_dataframe_from_rows(
+        spark, time_series_rows, time_series_point_schema
     )
+    charges = _create_dataframe_from_rows(spark, charges_rows, charges_schema)
 
-    # Act
-    result = _join_with_grouped_time_series(charges_complete, grouped_time_series)
-
-    # Assert
-    assert result.count() == expected
-
-
-@pytest.fixture(scope="session")
-def default_time_series_point(
-    time_series_factory: Callable[..., DataFrame]
-) -> DataFrame:
-    return time_series_factory(DEFAULT_TIME)
-
-
-@pytest.fixture(scope="session")
-def default_metering_point_period(
-    metering_point_period_factory: Callable[..., DataFrame]
-) -> DataFrame:
-    return metering_point_period_factory(DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
-
-
-@pytest.fixture(scope="session")
-def default_charge_master_data(
-    charge_master_data_factory: Callable[..., DataFrame]
-) -> DataFrame:
-    return (
-        charge_master_data_factory(
-            DEFAULT_FROM_DATE,
-            DEFAULT_TO_DATE,
-            charge_type=ChargeType.TARIFF.value,
-            charge_resolution=ChargeResolution.HOUR.value,
-        )
-        .union(
-            charge_master_data_factory(
-                DEFAULT_FROM_DATE,
-                DEFAULT_TO_DATE,
-                charge_type=ChargeType.FEE.value,
-                charge_resolution=ChargeResolution.HOUR.value,
-            )
-        )
-        .union(
-            charge_master_data_factory(
-                DEFAULT_FROM_DATE,
-                DEFAULT_TO_DATE,
-                charge_type=ChargeType.SUBSCRIPTION.value,
-                charge_resolution=ChargeResolution.HOUR.value,
-            )
-        )
-    )
-
-
-@pytest.fixture(scope="session")
-def default_charge_links(charge_links_factory: Callable[..., DataFrame]) -> DataFrame:
-    return charge_links_factory(DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
-
-
-@pytest.fixture(scope="session")
-def default_charge_price_point(
-    charge_prices_factory: Callable[..., DataFrame]
-) -> DataFrame:
-    return charge_prices_factory(time=DEFAULT_TIME)
-
-
-def test__get_tariff_charges__when_no_charge_data_match_the_resolution__returns_empty_tariffs(
-    default_metering_point_period: DataFrame,
-    default_time_series_point: DataFrame,
-    default_charge_links: DataFrame,
-    default_charge_price_point: DataFrame,
-    charge_master_data_factory: Callable[..., DataFrame],
-) -> None:
-    # Arrange
-    charge_master_data = charge_master_data_factory(
-        DEFAULT_FROM_DATE,
-        DEFAULT_TO_DATE,
-        charge_type=ChargeType.TARIFF.value,
-        charge_resolution=ChargeResolution.DAY.value,
-    )
-
-    charges_df = _create_charges_df(
-        charge_master_data, default_charge_links, default_charge_price_point
-    )
-
-    # Act
-    tariffs = get_tariff_charges(
-        default_metering_point_period,
-        default_time_series_point,
-        charges_df,
-        ChargeResolution.HOUR,
-    )
-
-    # Assert
-    assert tariffs.count() == 0
-
-
-def test__get_tariff_charges__returns_expected_quantities(
-    default_charge_master_data: DataFrame,
-    default_metering_point_period: DataFrame,
-    default_charge_links: DataFrame,
-    time_series_factory: Callable[..., DataFrame],
-    charge_prices_factory: Callable[..., DataFrame],
-) -> None:
-    # Arrange
-    first_hour_start = DEFAULT_FROM_DATE + timedelta(hours=1)
-    second_hour_start = first_hour_start + timedelta(hours=1)
-    third_hour_start = first_hour_start + timedelta(hours=2)
-    time_series = (
-        time_series_factory(
-            first_hour_start + timedelta(minutes=45), quantity=Decimal(1)
-        )  # hour 1, quarter 4
-        .union(
-            time_series_factory(second_hour_start, quantity=Decimal(2))
-        )  # hour 2, quarter 1
-        .union(
-            time_series_factory(
-                second_hour_start + timedelta(minutes=15), quantity=Decimal(3)
-            )
-        )  # hour 2, quarter 2
-        .union(
-            time_series_factory(
-                second_hour_start + timedelta(minutes=30), quantity=Decimal(4)
-            )
-        )  # hour 2, quarter 3
-        .union(
-            time_series_factory(
-                second_hour_start + timedelta(minutes=45), quantity=Decimal(5)
-            )
-        )  # hour 2, quarter 4
-        .union(
-            time_series_factory(third_hour_start, quantity=Decimal(6))
-        )  # hour 3, quarter 1
-    )
-    expected_quantities = [1, 14, 6]
-
-    charge_prices = (
-        charge_prices_factory(time=first_hour_start)  # hour 1
-        .union(charge_prices_factory(time=second_hour_start))  # hour 2
-        .union(charge_prices_factory(time=third_hour_start))  # hour 3
-    )
-
-    charges_df = _create_charges_df(
-        default_charge_master_data, default_charge_links, charge_prices
-    )
-
-    # Act
-    tariffs = get_tariff_charges(
-        default_metering_point_period,
+    actual = get_tariff_charges(
+        metering_point,
         time_series,
-        charges_df,
+        charges,
+        charge_resolution,
+    )
+
+    assert actual.collect()[0][Colname.charge_resolution] == charge_resolution.value
+
+
+def test__get_charges_functions__filters_on_correct_charge_type(
+    spark: SparkSession,
+) -> None:
+    metering_point_rows = [_create_metering_point_row()]
+    time_series_rows = [_create_time_series_row()]
+    charges_rows = [
+        _create_charges_row(
+            charge_type=ChargeType.TARIFF,
+        ),
+        _create_charges_row(
+            charge_type=ChargeType.FEE,
+        ),
+        _create_charges_row(
+            charge_type=ChargeType.SUBSCRIPTION,
+        ),
+    ]
+
+    metering_point = _create_dataframe_from_rows(
+        spark, metering_point_rows, metering_point_period_schema
+    )
+    time_series = _create_dataframe_from_rows(
+        spark, time_series_rows, time_series_point_schema
+    )
+    charges = _create_dataframe_from_rows(spark, charges_rows, charges_schema)
+
+    actual_tariff = get_tariff_charges(
+        metering_point,
+        time_series,
+        charges,
+        ChargeResolution.HOUR,
+    )
+    actual_fee = get_fee_charges(charges, metering_point)
+    actual_subscription = get_subscription_charges(charges, metering_point)
+
+    assert actual_tariff.collect()[0][Colname.charge_type] == ChargeType.TARIFF.value
+    assert actual_fee.collect()[0][Colname.charge_type] == ChargeType.FEE.value
+    assert (
+        actual_subscription.collect()[0][Colname.charge_type]
+        == ChargeType.SUBSCRIPTION.value
+    )
+
+
+def test__get_subscription_charges__split_into_days_between_from_and_to_date(
+    spark: SparkSession,
+) -> None:
+    metering_point_rows = [_create_metering_point_row()]
+    charges_rows = [
+        _create_charges_row(
+            from_date=datetime(2020, 1, 1, 0),
+            to_date=datetime(2020, 2, 1, 0),
+            charge_type=ChargeType.SUBSCRIPTION,
+        ),
+    ]
+
+    metering_point = _create_dataframe_from_rows(
+        spark, metering_point_rows, metering_point_period_schema
+    )
+
+    charges = _create_dataframe_from_rows(spark, charges_rows, charges_schema)
+
+    actual_subscription = get_subscription_charges(charges, metering_point)
+    assert actual_subscription.count() == 31
+
+
+def test__get_tariff_charges__joins_on_metering_point_id_and_time_is_between_from_and_to_date(
+    spark: SparkSession,
+) -> None:
+    metering_point_rows = [
+        _create_metering_point_row(
+            from_date=datetime(2020, 1, 1, 0), to_date=datetime(2020, 1, 1, 2)
+        ),
+    ]
+    time_series_rows = [
+        _create_time_series_row(observation_time=datetime(2020, 1, 1, 0)),
+        _create_time_series_row(observation_time=datetime(2020, 1, 1, 1)),
+        _create_time_series_row(observation_time=datetime(2020, 1, 1, 2)),
+    ]
+    charges_rows = [
+        _create_charges_row(
+            from_date=datetime(2020, 1, 1, 0),
+            to_date=datetime(2020, 1, 1, 1),
+            charge_time=datetime(2020, 1, 1, 0),
+        ),
+        _create_charges_row(
+            from_date=datetime(2020, 1, 1, 1),
+            to_date=datetime(2020, 1, 1, 2),
+            charge_time=datetime(2020, 1, 1, 1),
+        ),
+        _create_charges_row(
+            from_date=datetime(2020, 1, 1, 2),
+            to_date=datetime(2020, 1, 1, 3),
+            charge_time=datetime(2020, 1, 1, 2),
+        ),
+    ]
+
+    metering_point = _create_dataframe_from_rows(
+        spark, metering_point_rows, metering_point_period_schema
+    )
+    time_series = _create_dataframe_from_rows(
+        spark, time_series_rows, time_series_point_schema
+    )
+    charges = _create_dataframe_from_rows(spark, charges_rows, charges_schema)
+
+    actual = get_tariff_charges(
+        metering_point,
+        time_series,
+        charges,
         ChargeResolution.HOUR,
     )
 
-    # Assert
-    assert tariffs.count() == len(expected_quantities)
-    assert tariffs.collect()[0][Colname.quantity] == expected_quantities[0]
-    assert tariffs.collect()[1][Colname.quantity] == expected_quantities[1]
-    assert tariffs.collect()[2][Colname.quantity] == expected_quantities[2]
+    assert actual.count() == 2
 
 
-def _create_overlapping_hour_tariffs(
-    charge_master_data_factory: Callable[..., DataFrame],
-    charge_links_factory: Callable[..., DataFrame],
-    charge_prices_factory: Callable[..., DataFrame],
-    charge_key_1: str,
-    charge_key_2: str,
-) -> tuple[DataFrame, DataFrame, DataFrame]:
-    charge_master_data = charge_master_data_factory(
-        DEFAULT_FROM_DATE,
-        DEFAULT_TO_DATE,
-        charge_key=charge_key_1,
-        charge_type=ChargeType.TARIFF.value,
-        charge_resolution=ChargeResolution.HOUR.value,
-    ).union(
-        charge_master_data_factory(
-            DEFAULT_FROM_DATE,
-            DEFAULT_TO_DATE,
-            charge_key=charge_key_2,
-            charge_type=ChargeType.TARIFF.value,
-            charge_resolution=ChargeResolution.HOUR.value,
-        )
+def test__get_tariff_charges__sums_quantity_when_same_metering_point_and_resolution(
+    spark: SparkSession,
+) -> None:
+    metering_point_rows = [_create_metering_point_row()]
+    time_series_rows = [_create_time_series_row(), _create_time_series_row()]
+    charges_rows = [_create_charges_row()]
+
+    metering_point = _create_dataframe_from_rows(
+        spark, metering_point_rows, metering_point_period_schema
     )
-    charge_links = charge_links_factory(
-        DEFAULT_FROM_DATE,
-        DEFAULT_TO_DATE,
-        charge_key=charge_key_1,
-    ).union(
-        charge_links_factory(
-            DEFAULT_FROM_DATE,
-            DEFAULT_TO_DATE,
-            charge_key=charge_key_2,
-        )
+    time_series = _create_dataframe_from_rows(
+        spark, time_series_rows, time_series_point_schema
     )
-    charge_prices = charge_prices_factory(DEFAULT_TIME, charge_key_1).union(
-        charge_prices_factory(DEFAULT_TIME, charge_key_2)
+    charges = _create_dataframe_from_rows(spark, charges_rows, charges_schema)
+
+    actual = get_tariff_charges(
+        metering_point,
+        time_series,
+        charges,
+        ChargeResolution.HOUR,
     )
 
-    return charge_master_data, charge_links, charge_prices
+    assert actual.collect()[0][Colname.quantity] == 2 * DEFAULT_QUANTITY
+
+
+def test__get_tariff_charges__when_no_matching_charge_resolution__returns_empty_tariffs(
+    spark: SparkSession,
+) -> None:
+    metering_point_rows = [_create_metering_point_row()]
+    time_series_rows = [_create_time_series_row()]
+    charges_rows = [_create_charges_row(charge_resolution=ChargeResolution.DAY)]
+
+    metering_point = _create_dataframe_from_rows(
+        spark, metering_point_rows, metering_point_period_schema
+    )
+    time_series = _create_dataframe_from_rows(
+        spark, time_series_rows, time_series_point_schema
+    )
+    charges = _create_dataframe_from_rows(spark, charges_rows, charges_schema)
+
+    actual = get_tariff_charges(
+        metering_point,
+        time_series,
+        charges,
+        ChargeResolution.HOUR,
+    )
+
+    assert actual.count() == 0
 
 
 def test__get_tariff_charges__when_two_tariff_overlap__returns_both_tariffs(
-    default_metering_point_period: DataFrame,
-    default_time_series_point: DataFrame,
-    charge_links_factory: Callable[..., DataFrame],
-    charge_prices_factory: Callable[..., DataFrame],
-    charge_master_data_factory: Callable[..., DataFrame],
+    spark: SparkSession,
 ) -> None:
-    # Arrange
-    charge_key_1 = "charge_key_1"
-    charge_key_2 = "charge_key_2"
-    charge_master_data, charge_links, charge_prices = _create_overlapping_hour_tariffs(
-        charge_master_data_factory,
-        charge_links_factory,
-        charge_prices_factory,
-        charge_key_1,
-        charge_key_2,
+    metering_point_rows = [_create_metering_point_row()]
+    time_series_rows = [_create_time_series_row()]
+    charges_rows = [
+        _create_charges_row(charge_id="4000"),
+        _create_charges_row(charge_id="3000"),
+    ]
+
+    metering_point = _create_dataframe_from_rows(
+        spark, metering_point_rows, metering_point_period_schema
     )
+    time_series = _create_dataframe_from_rows(
+        spark, time_series_rows, time_series_point_schema
+    )
+    charges = _create_dataframe_from_rows(spark, charges_rows, charges_schema)
 
-    charges_df = _create_charges_df(charge_master_data, charge_links, charge_prices)
-
-    # Act
-    tariffs_df = get_tariff_charges(
-        default_metering_point_period,
-        default_time_series_point,
-        charges_df,
+    actual = get_tariff_charges(
+        metering_point,
+        time_series,
+        charges,
         ChargeResolution.HOUR,
     )
 
-    # Assert
-    assert tariffs_df.count() == 2
-    tariffs = tariffs_df.sort(Colname.charge_key).collect()
-    assert tariffs[0][Colname.charge_key] == charge_key_1
-    assert tariffs[1][Colname.charge_key] == charge_key_2
+    assert actual.count() == 2
