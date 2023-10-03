@@ -141,7 +141,7 @@ def _create_dataframe_from_rows(
 @pytest.mark.parametrize(
     "charge_resolution", [ChargeResolution.HOUR, ChargeResolution.DAY]
 )
-def test__get_tariff_charges__filters_on_resolution_hour_or_day(
+def test__get_tariff_charges__filters_on_resolution(
     spark: SparkSession, charge_resolution: ChargeResolution
 ) -> None:
     metering_point_rows = [_create_metering_point_row()]
