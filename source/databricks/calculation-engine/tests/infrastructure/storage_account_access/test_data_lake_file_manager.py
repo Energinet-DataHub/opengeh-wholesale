@@ -16,15 +16,16 @@ from unittest.mock import patch, Mock
 
 from package.infrastructure.storage_account_access.data_lake_file_manager import (
     DataLakeFileManager,
+    DataLakeServiceClient,
 )
+
+from tests.helpers.type_utils import qualname
 
 DUMMY_STORAGE_ACCOUNT_NAME = "my_storage"
 DUMMY_CONTAINER_NAME = "my_container"
 
 
-@patch(
-    "package.infrastructure.storage_account_access.data_lake_file_manager.DataLakeServiceClient"
-)
+@patch(qualname(DataLakeServiceClient))
 def test__get_file_system_client__calls_service_client_with_container_name(
     mock_data_lake_service_client,
 ):
@@ -42,12 +43,8 @@ def test__get_file_system_client__calls_service_client_with_container_name(
     )
 
 
-@patch(
-    "package.infrastructure.storage_account_access.data_lake_file_manager.DataLakeFileManager.download_file"
-)
-@patch(
-    "package.infrastructure.storage_account_access.data_lake_file_manager.DataLakeServiceClient"
-)
+@patch(qualname(DataLakeFileManager.download_file))
+@patch(qualname(DataLakeServiceClient))
 def test__download_csv__returned_reader_has_all_items(
     mock_data_lake_service_client, mock_download_file
 ):
@@ -70,12 +67,8 @@ def test__download_csv__returned_reader_has_all_items(
     assert row1 == next(csv_reader)
 
 
-@patch(
-    "package.infrastructure.storage_account_access.data_lake_file_manager.DataLakeFileManager.download_file"
-)
-@patch(
-    "package.infrastructure.storage_account_access.data_lake_file_manager.DataLakeServiceClient"
-)
+@patch(qualname(DataLakeFileManager.download_file))
+@patch(qualname(DataLakeServiceClient))
 def test__download_csv__when_empty_file__return_empty_content_in_reader(
     mock_data_lake_service_client, mock_download_file
 ):

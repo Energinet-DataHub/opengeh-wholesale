@@ -97,7 +97,7 @@ def _create_charges_prices_points_row(
     return row
 
 
-@patch("package.calculation_input.charges_reader.DeltaTableReader")
+@patch(DeltaTableReader.__module__ + "." + DeltaTableReader.__name__)
 def test__read_changes__returns_expected_joined_row_values(
     calculation_input_reader_mock: DeltaTableReader, spark: SparkSession
 ) -> None:

@@ -13,8 +13,14 @@
 # limitations under the License.
 
 from datetime import datetime, timedelta
+from pyspark.sql.functions import col
+from pyspark.sql import DataFrame
+from pyspark.sql.types import StructType, StructField, StringType, TimestampType
 import pytest
+from typing import Callable
 from unittest.mock import patch, Mock
+
+from package.calculation_input.delta_table_reader import DeltaTableReader
 from package.calculation_input.metering_point_periods import (
     get_metering_point_periods_df,
 )
@@ -24,14 +30,8 @@ from package.codelists import (
     MeteringPointResolution,
 )
 from package.constants import Colname
-from pyspark.sql.functions import col
-from pyspark.sql import DataFrame
-from pyspark.sql.types import StructType, StructField, StringType, TimestampType
-from typing import Callable
 
-delta_table_reader_symbol = (
-    "package.calculation_input.delta_table_reader.DeltaTableReader"
-)
+from tests.helpers.type_utils import qualname
 
 # Factory defaults
 grid_area_code = "805"
@@ -157,7 +157,7 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
     return factory
 
 
-@patch(delta_table_reader_symbol)
+@patch(qualname(DeltaTableReader))
 def test__when_metering_point_period_is_in_grid_areas__returns_metering_point_period(
     mock_calculation_input_reader: Mock,
     metering_points_periods_df_factory: Callable[..., DataFrame],
@@ -179,7 +179,7 @@ def test__when_metering_point_period_is_in_grid_areas__returns_metering_point_pe
     assert raw_master_basis_data.count() == 1
 
 
-@patch(delta_table_reader_symbol)
+@patch(qualname(DeltaTableReader))
 def test__when_type_is_production__returns_metering_point_period(
     mock_calculation_input_reader: Mock,
     metering_points_periods_df_factory: Callable[..., DataFrame],
@@ -204,7 +204,7 @@ def test__when_type_is_production__returns_metering_point_period(
     assert raw_master_basis_data.count() == 1
 
 
-@patch(delta_table_reader_symbol)
+@patch(qualname(DeltaTableReader))
 def test__metering_points_have_expected_columns(
     mock_calculation_input_reader: Mock,
     metering_points_periods_df_factory: Callable[..., DataFrame],
@@ -241,7 +241,7 @@ def test__metering_points_have_expected_columns(
     )
 
 
-@patch(delta_table_reader_symbol)
+@patch(qualname(DeltaTableReader))
 def test__when_period_to_date_is_null__returns_metering_point_period_with_to_date_equal_to_period_end(
     mock_calculation_input_reader: Mock,
     metering_points_periods_df_factory: Callable[..., DataFrame],
@@ -266,7 +266,7 @@ def test__when_period_to_date_is_null__returns_metering_point_period_with_to_dat
     assert raw_master_basis_data.where(col(Colname.to_date) == period_end).count() == 1
 
 
-@patch(delta_table_reader_symbol)
+@patch(qualname(DeltaTableReader))
 def test__get_metering_point_periods_df__from_date_must_not_be_earlier_than_period_start(
     mock_calculation_input_reader: Mock,
     metering_points_periods_df_factory: Callable[..., DataFrame],
@@ -293,7 +293,7 @@ def test__get_metering_point_periods_df__from_date_must_not_be_earlier_than_peri
     assert master_basis_data.collect()[0][Colname.from_date] == period_start
 
 
-@patch(delta_table_reader_symbol)
+@patch(qualname(DeltaTableReader))
 def test__get_metering_point_periods_df__to_date_must_not_be_after_period_end(
     mock_calculation_input_reader: Mock,
     metering_points_periods_df_factory: Callable[..., DataFrame],

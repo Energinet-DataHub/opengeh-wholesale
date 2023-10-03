@@ -17,7 +17,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import StructType
 import pytest
 from unittest.mock import patch, Mock
-from package.calculator_job import start
+from package.calculator_job import get_calculator_args, islocked, start
 from package.calculation_input.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
@@ -26,6 +26,8 @@ from package.calculation_input.schemas import (
     charge_price_points_schema,
 )
 from package.infrastructure import paths
+
+from tests.helpers.type_utils import qualname
 
 
 def test__input_time_series_point_schema__matches_published_contract(
@@ -102,8 +104,8 @@ def _assert_is_equal(actual_schema: StructType, expected_schema: StructType) -> 
     )
 
 
-@patch("package.calculator_job.get_calculator_args")
-@patch("package.calculator_job.islocked")
+@patch(qualname(get_calculator_args))
+@patch(qualname(islocked))
 def test__when_data_lake_is_locked__return_exit_code_3(
     mock_islocked: Mock,
     mock_get_calculator_args: Mock,

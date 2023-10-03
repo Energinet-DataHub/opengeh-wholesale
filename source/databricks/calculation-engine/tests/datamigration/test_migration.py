@@ -12,19 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import importlib
-import inspect
 from unittest.mock import ANY, patch, call, Mock
 
 import pytest
-from package.datamigration.migration import _migrate_data_lake
-from package.datamigration.migration_script_args import MigrationScriptArgs
+from package.datamigration.migration import (
+    _migrate_data_lake,
+    initialize_spark,
+    DataLakeFileManager,
+    get_uncommitted_migrations,
+    upload_committed_migration,
+    _apply_migration,
+)
 from package.datamigration.uncommitted_migrations import _get_all_migrations
 
+from tests.helpers.type_utils import qualname
 
-@patch("package.datamigration.migration.initialize_spark")
-@patch("package.datamigration.migration.get_uncommitted_migrations")
-@patch("package.datamigration.migration.upload_committed_migration")
+
+@patch(qualname(initialize_spark))
+@patch(qualname(get_uncommitted_migrations))
+@patch(qualname(upload_committed_migration))
 def test__migrate_datalake__when_script_not_found__raise_exception(
     mock_upload_committed_migration,
     mock_uncommitted_migrations,
@@ -39,11 +45,11 @@ def test__migrate_datalake__when_script_not_found__raise_exception(
         _migrate_data_lake("dummy_storage_name", mock_credential)
 
 
-@patch("package.datamigration.migration.initialize_spark")
-@patch("package.datamigration.migration.DataLakeFileManager")
-@patch("package.datamigration.migration.get_uncommitted_migrations")
-@patch("package.datamigration.migration.upload_committed_migration")
-@patch("package.datamigration.migration._apply_migration")
+@patch(qualname(initialize_spark))
+@patch(qualname(DataLakeFileManager))
+@patch(qualname(get_uncommitted_migrations))
+@patch(qualname(upload_committed_migration))
+@patch(qualname(_apply_migration))
 def test__migrate_datalake__upload_called_with_correct_name(
     mock_apply_migration,
     mock_upload_committed_migration,
