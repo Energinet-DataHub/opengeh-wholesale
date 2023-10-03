@@ -17,7 +17,9 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import StructType
 import pytest
 from unittest.mock import patch, Mock
-from package.calculator_job import get_calculator_args, islocked, start
+from package.infrastructure.storage_account_access import islocked
+from package.calculator_job_args import get_calculator_args
+from package.calculator_job import start
 from package.calculation_input.schemas import (
     time_series_point_schema,
     metering_point_period_schema,

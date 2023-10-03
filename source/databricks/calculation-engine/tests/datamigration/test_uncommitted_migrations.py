@@ -28,12 +28,12 @@ DUMMY_STORAGE_KEY = "my_storage"
 DUMMY_CONTAINER_NAME = "my_container"
 
 
-@patch(qualname(_get_all_migrations))
-@patch(qualname(download_committed_migrations))
+@patch(_get_all_migrations.__name__)
+@patch(download_committed_migrations.__name__)
 def test__get_uncommitted_migrations_count__when_no_migration_needed__returns_0(
-    mock_download_committed_migrations,
-    mock_get_all_migrations,
-):
+    mock_download_committed_migrations: Mock,
+    mock_get_all_migrations: Mock,
+) -> None:
     # Arrange
     migration_name_1 = "my_migration1"
     migration_name_2 = "my_migration2"
@@ -51,12 +51,12 @@ def test__get_uncommitted_migrations_count__when_no_migration_needed__returns_0(
     assert len(migrations) == 0
 
 
-@patch(qualname(_get_all_migrations))
-@patch(qualname(download_committed_migrations))
+@patch(_get_all_migrations.__name__)
+@patch(download_committed_migrations.__name__)
 def test__get_uncommitted_migrations_count__when_one_migration_needed__returns_1(
-    mock_download_committed_migrations,
-    mock_get_all_migrations,
-):
+    mock_download_committed_migrations: Mock,
+    mock_get_all_migrations: Mock,
+) -> None:
     # Arrange
     migration_name_1 = "my_migration1"
     migration_name_2 = "my_migration2"
@@ -82,7 +82,7 @@ def test__get_all_migrations__returns_some() -> None:
     assert len(migrations) > 0
 
 
-def test__get_all_migrations__returns_correct_names():
+def test__get_all_migrations__returns_correct_names() -> None:
     # Act
     migrations = _get_all_migrations()
 
@@ -92,7 +92,7 @@ def test__get_all_migrations__returns_correct_names():
 
 
 @patch(qualname(contents))
-def test__get_all_migrations__returns_expected_migrations(mock_importlib):
+def test__get_all_migrations__returns_expected_migrations(mock_importlib) -> None:
     # Arrange
     mock_importlib.return_value = ["my_migration1.sql", "my_migration2.sql"]
     expected_migrations = ["my_migration1", "my_migration2"]

@@ -17,9 +17,11 @@ from unittest.mock import patch, Mock
 
 from package.infrastructure.storage_account_access.lock_storage import (
     _LOCK_FILE_NAME,
-    DataLakeFileManager,
     lock,
     unlock,
+)
+from package.infrastructure.storage_account_access.data_lake_file_manager import (
+    DataLakeFileManager,
 )
 
 from tests.helpers.type_utils import qualname

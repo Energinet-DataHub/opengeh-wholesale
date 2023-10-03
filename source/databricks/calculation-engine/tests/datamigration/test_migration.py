@@ -18,10 +18,12 @@ import pytest
 from package.datamigration.migration import (
     _migrate_data_lake,
     initialize_spark,
-    DataLakeFileManager,
     get_uncommitted_migrations,
     upload_committed_migration,
     _apply_migration,
+)
+from package.infrastructure.storage_account_access.data_lake_file_manager import (
+    DataLakeFileManager,
 )
 from package.datamigration.uncommitted_migrations import _get_all_migrations
 
