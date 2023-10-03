@@ -44,47 +44,47 @@ public class EnergyResultProducedV1Factory : IEnergyResultProducedFactory
 
     private EnergyResultProducedV1 CreateForGridArea(EnergyResult result)
     {
-        var calculationResultCompleted = CreateInternal(result);
-        calculationResultCompleted.AggregationPerGridarea = new AggregationPerGridArea
+        var energyResultProduced = CreateInternal(result);
+        energyResultProduced.AggregationPerGridarea = new AggregationPerGridArea
         {
             GridAreaCode = result.GridArea,
         };
 
-        return calculationResultCompleted;
+        return energyResultProduced;
     }
 
     private EnergyResultProducedV1 CreateForEnergySupplier(
         EnergyResult result)
     {
-        var calculationResultCompleted = CreateInternal(result);
-        calculationResultCompleted.AggregationPerEnergysupplierPerGridarea = new AggregationPerEnergySupplierPerGridArea
+        var energyResultProduced = CreateInternal(result);
+        energyResultProduced.AggregationPerEnergysupplierPerGridarea = new AggregationPerEnergySupplierPerGridArea
         {
             GridAreaCode = result.GridArea,
             EnergySupplierId = result.EnergySupplierId,
         };
 
-        return calculationResultCompleted;
+        return energyResultProduced;
     }
 
     private EnergyResultProducedV1 CreateForBalanceResponsibleParty(
         EnergyResult result)
     {
-        var calculationResultCompleted = CreateInternal(result);
-        calculationResultCompleted.AggregationPerBalanceresponsiblepartyPerGridarea =
+        var energyResultProduced = CreateInternal(result);
+        energyResultProduced.AggregationPerBalanceresponsiblepartyPerGridarea =
             new AggregationPerBalanceResponsiblePartyPerGridArea
             {
                 GridAreaCode = result.GridArea,
                 BalanceResponsibleId = result.BalanceResponsibleId,
             };
 
-        return calculationResultCompleted;
+        return energyResultProduced;
     }
 
     private EnergyResultProducedV1 CreateForEnergySupplierByBalanceResponsibleParty(
         EnergyResult result)
     {
-        var calculationResultCompleted = CreateInternal(result);
-        calculationResultCompleted.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea =
+        var energyResultProduced = CreateInternal(result);
+        energyResultProduced.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea =
             new AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea
             {
                 GridAreaCode = result.GridArea,
@@ -92,12 +92,12 @@ public class EnergyResultProducedV1Factory : IEnergyResultProducedFactory
                 BalanceResponsibleId = result.BalanceResponsibleId,
             };
 
-        return calculationResultCompleted;
+        return energyResultProduced;
     }
 
     private static EnergyResultProducedV1 CreateInternal(EnergyResult result)
     {
-        var calculationResultCompleted = new EnergyResultProducedV1
+        var energyResultProduced = new EnergyResultProducedV1
         {
             CalculationId = result.BatchId.ToString(),
             Resolution = EnergyResultProducedV1.Types.Resolution.Quarter,
@@ -108,9 +108,9 @@ public class EnergyResultProducedV1Factory : IEnergyResultProducedFactory
             TimeSeriesType = TimeSeriesTypeMapper.MapTimeSeriesType(result.TimeSeriesType),
         };
         if (result.FromGridArea != null)
-            calculationResultCompleted.FromGridAreaCode = result.FromGridArea;
+            energyResultProduced.FromGridAreaCode = result.FromGridArea;
 
-        calculationResultCompleted.TimeSeriesPoints
+        energyResultProduced.TimeSeriesPoints
             .AddRange(result.TimeSeriesPoints
                 .Select(timeSeriesPoint => new TimeSeriesPoint()
                 {
@@ -118,6 +118,6 @@ public class EnergyResultProducedV1Factory : IEnergyResultProducedFactory
                     Time = timeSeriesPoint.Time.ToTimestamp(),
                     QuantityQuality = QuantityQualityMapper.MapQuantityQuality(timeSeriesPoint.Quality),
                 }));
-        return calculationResultCompleted;
+        return energyResultProduced;
     }
 }
