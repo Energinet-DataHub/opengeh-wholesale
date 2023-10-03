@@ -166,7 +166,7 @@ def test__get_tariff_charges__filters_on_resolution(
     assert actual.collect()[0][Colname.charge_resolution] == charge_resolution.value
 
 
-def test__get_charges_functions__filters_on_correct_charge_type(
+def test__get_tarrif_charges__filters_on_tariff_charge_type(
     spark: SparkSession,
 ) -> None:
     metering_point_rows = [_create_metering_point_row()]
@@ -197,11 +197,59 @@ def test__get_charges_functions__filters_on_correct_charge_type(
         charges,
         E.ChargeResolution.HOUR,
     )
-    actual_fee = get_fee_charges(charges, metering_point)
-    actual_subscription = get_subscription_charges(charges, metering_point)
 
     assert actual_tariff.collect()[0][Colname.charge_type] == E.ChargeType.TARIFF.value
+
+
+def test__get_fee_charges__filters_on_fee_charge_type(
+    spark: SparkSession,
+) -> None:
+    metering_point_rows = [_create_metering_point_row()]
+    charges_rows = [
+        _create_charges_row(
+            charge_type=E.ChargeType.TARIFF,
+        ),
+        _create_charges_row(
+            charge_type=E.ChargeType.FEE,
+        ),
+        _create_charges_row(
+            charge_type=E.ChargeType.SUBSCRIPTION,
+        ),
+    ]
+
+    metering_point = _create_dataframe_from_rows(
+        spark, metering_point_rows, metering_point_period_schema
+    )
+    charges = _create_dataframe_from_rows(spark, charges_rows, charges_schema)
+
+    actual_fee = get_fee_charges(charges, metering_point)
+
     assert actual_fee.collect()[0][Colname.charge_type] == E.ChargeType.FEE.value
+
+
+def test__get_subscription_charges__filters_on_subscription_charge_type(
+    spark: SparkSession,
+) -> None:
+    metering_point_rows = [_create_metering_point_row()]
+    charges_rows = [
+        _create_charges_row(
+            charge_type=E.ChargeType.TARIFF,
+        ),
+        _create_charges_row(
+            charge_type=E.ChargeType.FEE,
+        ),
+        _create_charges_row(
+            charge_type=E.ChargeType.SUBSCRIPTION,
+        ),
+    ]
+
+    metering_point = _create_dataframe_from_rows(
+        spark, metering_point_rows, metering_point_period_schema
+    )
+    charges = _create_dataframe_from_rows(spark, charges_rows, charges_schema)
+
+    actual_subscription = get_subscription_charges(charges, metering_point)
+
     assert (
         actual_subscription.collect()[0][Colname.charge_type]
         == E.ChargeType.SUBSCRIPTION.value
