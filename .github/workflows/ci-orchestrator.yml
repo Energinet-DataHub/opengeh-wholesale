@@ -33,14 +33,6 @@ jobs:
   changes:
     uses: ./.github/workflows/detect-changes.yml
 
-  #
-  # CodeQL Check
-  #
-  ci_codeql:
-    needs: changes
-    if: ${{ needs.changes.outputs.dotnet == 'true' || needs.changes.outputs.databricks == 'true' }}
-    uses: ./.github/workflows/codeql.yml
-
   ci_dotnet:
     needs: changes
     if: ${{ needs.changes.outputs.dotnet == 'true' }}
@@ -78,7 +70,6 @@ jobs:
     needs:
       [
         ci_base,
-        ci_codeql,
         ci_dotnet,
         ci_databricks,
         ci_packages,
