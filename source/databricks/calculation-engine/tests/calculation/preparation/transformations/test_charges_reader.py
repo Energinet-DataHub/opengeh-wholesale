@@ -16,6 +16,7 @@ from decimal import Decimal
 from datetime import datetime
 from unittest.mock import patch
 
+import pytest
 from pyspark import Row
 from pyspark.sql import SparkSession
 
@@ -82,7 +83,7 @@ def _create_charge_link_periods_row(
     return Row(**row)
 
 
-def _create_charges_prices_points_row(
+def _create_charges_price_points_row(
     charge_key: str = DEFAULT_CHARGE_KEY,
     charge_id: str = DEFAULT_CHARGE_ID,
     charge_owner: str = DEFAULT_CHARGE_OWNER,
@@ -113,7 +114,7 @@ def test__read_changes__returns_expected_joined_row_values(
         data=[_create_charge_link_periods_row()]
     )
     table_reader_mock.read_charge_price_points.return_value = spark.createDataFrame(
-        data=[_create_charges_prices_points_row()]
+        data=[_create_charges_price_points_row()]
     )
 
     # Act
@@ -152,7 +153,7 @@ def test__read_changes__when_multiple_charge_keys__returns_only_rows_with_matchi
         data=[_create_charge_link_periods_row()]
     )
     table_reader_mock.read_charge_price_points.return_value = spark.createDataFrame(
-        data=[_create_charges_prices_points_row()]
+        data=[_create_charges_price_points_row()]
     )
 
     # Act
@@ -162,3 +163,108 @@ def test__read_changes__when_multiple_charge_keys__returns_only_rows_with_matchi
     assert actual.count() == 1
     actual_row = actual.collect()[0]
     assert actual_row[Colname.charge_key] == DEFAULT_CHARGE_KEY
+
+
+@pytest.mark.parametrize(
+    "charge_master_data, charge_links_periods, charge_prices_points, expected_number_of_rows",
+    [
+        (  # Dataset: Charge time is the same as from-date and before to-date -> expected #rows = 1
+            [
+                _create_charge_master_data_row(),
+            ],
+            [
+                _create_charge_link_periods_row(
+                    from_date=datetime(2020, 1, 1, 0, 0),
+                    to_date=datetime(2020, 1, 2, 0, 0),
+                ),
+            ],
+            [
+                _create_charges_price_points_row(
+                    observation_time=datetime(2020, 1, 1, 0, 0)
+                ),
+            ],
+            1,
+        ),
+        (  # Dataset: Charge time is after from-date and before to-date -> expected #rows = 1
+            [
+                _create_charge_master_data_row(),
+            ],
+            [
+                _create_charge_link_periods_row(
+                    from_date=datetime(2020, 1, 1, 0, 0),
+                    to_date=datetime(2020, 1, 2, 0, 0),
+                ),
+            ],
+            [
+                _create_charges_price_points_row(
+                    observation_time=datetime(2020, 1, 1, 1, 0)
+                ),
+            ],
+            1,
+        ),
+        (  # Dataset: Charge time is AFTER to-date -> expected #rows = 0
+            [
+                _create_charge_master_data_row(),
+            ],
+            [
+                _create_charge_link_periods_row(
+                    from_date=datetime(2020, 1, 1, 0, 0),
+                    to_date=datetime(2020, 1, 2, 0, 0),
+                ),
+            ],
+            [
+                _create_charges_price_points_row(
+                    observation_time=datetime(2020, 1, 3, 0, 0)
+                ),
+            ],
+            0,
+        ),
+        (  # Dataset: Charge time is BEFORE from-date -> expected #rows = 0
+            [
+                _create_charge_master_data_row(),
+            ],
+            [
+                _create_charge_link_periods_row(
+                    from_date=datetime(2020, 1, 2, 0, 0),
+                    to_date=datetime(2020, 1, 3, 0, 0),
+                ),
+            ],
+            [
+                _create_charges_price_points_row(
+                    observation_time=datetime(2020, 1, 1, 0, 0)
+                ),
+            ],
+            0,
+        ),
+    ],
+)
+@patch.object(calculation_input, TableReader.__name__)
+def test__read_changes__when_charge_keys_are_different__returns_expected_row(
+    table_reader_mock: TableReader,
+    spark: SparkSession,
+    charge_master_data: list[Row],
+    charge_links_periods: list[Row],
+    charge_prices_points: list[Row],
+    expected_number_of_rows: int,
+) -> None:
+    # Arrange
+    table_reader_mock.read_charge_master_data_periods.return_value = (
+        spark.createDataFrame(charge_master_data)
+    )
+
+    table_reader_mock.read_charge_links_periods.return_value = spark.createDataFrame(
+        charge_links_periods
+    )
+
+    table_reader_mock.read_charge_price_points.return_value = spark.createDataFrame(
+        charge_prices_points
+    )
+
+    # Act
+    actual = read_charges(table_reader_mock)
+
+    # Assert
+    assert actual.count() == expected_number_of_rows
+
+
+# TODO Schema?
