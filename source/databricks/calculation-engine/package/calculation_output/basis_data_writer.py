@@ -15,7 +15,7 @@
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
 
-import package.calculation_input.basis_data as basis_data
+import package.calculation.preparation.transformations.basis_data as basis_data
 from package.infrastructure import paths
 from package.constants import PartitionKeyName, BasisDataColname
 from package.codelists import AggregationLevel, BasisDataType

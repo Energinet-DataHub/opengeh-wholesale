@@ -97,3 +97,9 @@ jobs:
     with:
       tests_dll_file_path: \source\dotnet\wholesale-api\Events\Events.UnitTests\bin\Release\net7.0\Energinet.DataHub.Wholesale.Events.UnitTests.dll
       download_attempt_limit: 20
+
+  dotnet_ci_test_edi:
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v12
+    with:
+      tests_dll_file_path: \source\dotnet\wholesale-api\Edi.UnitTests\bin\Release\net7.0\Energinet.DataHub.Wholesale.Edi.UnitTests.dll
+      download_attempt_limit: 20
