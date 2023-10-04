@@ -16,9 +16,10 @@ from decimal import Decimal
 from datetime import datetime
 from unittest.mock import patch
 
-import pytest
 from pyspark import Row
 from pyspark.sql import SparkSession
+
+from package import calculation_input
 from package.calculation.preparation.transformations import read_charges
 from package.calculation_input.table_reader import TableReader
 from package.codelists import ChargeType
@@ -102,21 +103,21 @@ def _create_charges_prices_points_row(
 
 @patch.object(calculation_input, TableReader.__name__)
 def test__read_changes__returns_expected_joined_row_values(
-    calculation_input_reader_mock: TableReader, spark: SparkSession
+    table_reader_mock: TableReader, spark: SparkSession
 ) -> None:
     # Arrange
-    calculation_input_reader_mock.read_charge_master_data_periods.return_value = (
+    table_reader_mock.read_charge_master_data_periods.return_value = (
         spark.createDataFrame(data=[_create_charge_master_data_row()])
     )
-    calculation_input_reader_mock.read_charge_links_periods.return_value = (
-        spark.createDataFrame(data=[_create_charge_link_periods_row()])
+    table_reader_mock.read_charge_links_periods.return_value = spark.createDataFrame(
+        data=[_create_charge_link_periods_row()]
     )
-    calculation_input_reader_mock.read_charge_price_points.return_value = (
-        spark.createDataFrame(data=[_create_charges_prices_points_row()])
+    table_reader_mock.read_charge_price_points.return_value = spark.createDataFrame(
+        data=[_create_charges_prices_points_row()]
     )
 
     # Act
-    actual = read_charges(calculation_input_reader_mock)
+    actual = read_charges(table_reader_mock)
 
     # Assert
     assert actual.count() == 1
@@ -136,10 +137,10 @@ def test__read_changes__returns_expected_joined_row_values(
 
 @patch.object(calculation_input, TableReader.__name__)
 def test__read_changes__when_charge_keys_are_different__returns_expected_row(
-    calculation_input_reader_mock: TableReader, spark: SparkSession
+    table_reader_mock: TableReader, spark: SparkSession
 ) -> None:
     # Arrange
-    calculation_input_reader_mock.read_charge_master_data_periods.return_value = (
+    table_reader_mock.read_charge_master_data_periods.return_value = (
         spark.createDataFrame(
             data=[
                 _create_charge_master_data_row(),
@@ -147,15 +148,15 @@ def test__read_changes__when_charge_keys_are_different__returns_expected_row(
             ]
         )
     )
-    calculation_input_reader_mock.read_charge_links_periods.return_value = (
-        spark.createDataFrame(data=[_create_charge_link_periods_row()])
+    table_reader_mock.read_charge_links_periods.return_value = spark.createDataFrame(
+        data=[_create_charge_link_periods_row()]
     )
-    calculation_input_reader_mock.read_charge_price_points.return_value = (
-        spark.createDataFrame(data=[_create_charges_prices_points_row()])
+    table_reader_mock.read_charge_price_points.return_value = spark.createDataFrame(
+        data=[_create_charges_prices_points_row()]
     )
 
     # Act
-    actual = read_charges(calculation_input_reader_mock)
+    actual = read_charges(table_reader_mock)
 
     # Assert
     assert actual.count() == 1
