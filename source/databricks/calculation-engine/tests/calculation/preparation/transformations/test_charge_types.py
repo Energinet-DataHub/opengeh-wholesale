@@ -256,14 +256,28 @@ def test__get_subscription_charges__filters_on_subscription_charge_type(
     )
 
 
+@pytest.mark.parametrize(
+    "charge_time, from_date, to_date, expected_day_count",
+    [
+        (datetime(2020, 2, 1, 0), datetime(2020, 2, 1, 0), datetime(2020, 3, 1, 0), 29),
+        (datetime(2021, 2, 1, 0), datetime(2021, 2, 1, 0), datetime(2021, 3, 1, 0), 28),
+    ],
+)
 def test__get_subscription_charges__split_into_days_between_from_and_to_date(
     spark: SparkSession,
+    charge_time: datetime,
+    from_date: datetime,
+    to_date: datetime,
+    expected_day_count: int,
 ) -> None:
-    metering_point_rows = [_create_metering_point_row()]
+    metering_point_rows = [
+        _create_metering_point_row(from_date=from_date, to_date=to_date)
+    ]
     charges_rows = [
         _create_charges_row(
-            from_date=datetime(2020, 1, 1, 0),
-            to_date=datetime(2020, 2, 1, 0),
+            charge_time=charge_time,
+            from_date=from_date,
+            to_date=to_date,
             charge_type=E.ChargeType.SUBSCRIPTION,
         ),
     ]
@@ -275,7 +289,8 @@ def test__get_subscription_charges__split_into_days_between_from_and_to_date(
     charges = _create_dataframe_from_rows(spark, charges_rows, charges_schema)
 
     actual_subscription = get_subscription_charges(charges, metering_point)
-    assert actual_subscription.count() == 31
+
+    assert actual_subscription.count() == expected_day_count
 
 
 def test__get_tariff_charges__only_accepts_charges_in_metering_point_period(
