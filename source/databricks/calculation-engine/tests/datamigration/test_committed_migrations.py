@@ -17,6 +17,7 @@ import csv
 from unittest.mock import patch
 from io import StringIO
 
+from package.infrastructure import storage_account_access
 from package.datamigration.committed_migrations import (
     COMMITTED_MIGRATIONS_FILE_NAME,
     DataLakeFileManager,
@@ -24,10 +25,8 @@ from package.datamigration.committed_migrations import (
     upload_committed_migration,
 )
 
-from tests.helpers.type_utils import qualname
 
-
-@patch(qualname(DataLakeFileManager))
+@patch.object(storage_account_access, DataLakeFileManager.__name__)
 def test__download_committed_migrations__when_file_does_not_exist__returns_empty_list(
     mock_file_manager,
 ):
@@ -42,7 +41,7 @@ def test__download_committed_migrations__when_file_does_not_exist__returns_empty
     assert len(migrations) == 0
 
 
-@patch(qualname(DataLakeFileManager))
+@patch.object(storage_account_access, DataLakeFileManager.__name__)
 def test__download_committed_migrations__returns_correct_items(
     mock_file_manager,
 ):
@@ -61,7 +60,7 @@ def test__download_committed_migrations__returns_correct_items(
     assert migrations[0] == migration_name_1 and migrations[1] == migration_name_2
 
 
-@patch(qualname(DataLakeFileManager))
+@patch.object(storage_account_access, DataLakeFileManager.__name__)
 def test__download_committed_migrations__when_empty_file__returns_empty_list(
     mock_file_manager,
 ):
@@ -75,7 +74,7 @@ def test__download_committed_migrations__when_empty_file__returns_empty_list(
     assert len(migrations) == 0
 
 
-@patch(qualname(DataLakeFileManager))
+@patch.object(storage_account_access, DataLakeFileManager.__name__)
 def test__upload_committed_migration__when_migration_state_file_do_not_exist__create_file(
     mock_file_manager,
 ):
@@ -92,7 +91,7 @@ def test__upload_committed_migration__when_migration_state_file_do_not_exist__cr
     )
 
 
-@patch(qualname(DataLakeFileManager))
+@patch.object(storage_account_access, DataLakeFileManager.__name__)
 def test__upload_committed_migrations__when_migration_state_file_exists__do_not_create_file(
     mock_file_manager,
 ):
@@ -110,7 +109,7 @@ def test__upload_committed_migrations__when_migration_state_file_exists__do_not_
     mock_file_manager.create_file.assert_not_called()
 
 
-@patch(qualname(DataLakeFileManager))
+@patch.object(storage_account_access, DataLakeFileManager.__name__)
 def test__upload_committed_migration__when_unexpected_columns_in_csv__raise_exception(
     mock_file_manager,
 ):
@@ -127,7 +126,7 @@ def test__upload_committed_migration__when_unexpected_columns_in_csv__raise_exce
         upload_committed_migration(mock_file_manager, migration_name)
 
 
-@patch(qualname(DataLakeFileManager))
+@patch.object(storage_account_access, DataLakeFileManager.__name__)
 def test__upload_committed_migration__when_file_is_empty__dont_try_downloading_csv(
     mock_file_manager,
 ):
@@ -142,7 +141,7 @@ def test__upload_committed_migration__when_file_is_empty__dont_try_downloading_c
     mock_file_manager.download_csv.assert_not_called()
 
 
-@patch(qualname(DataLakeFileManager))
+@patch.object(storage_account_access, DataLakeFileManager.__name__)
 def test__upload_committed_migration__append_data_is_called_with_correct_string(
     mock_file_manager,
 ):
