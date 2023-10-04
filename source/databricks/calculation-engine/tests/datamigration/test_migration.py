@@ -13,17 +13,16 @@
 # limitations under the License.
 
 from unittest.mock import ANY, patch, call, Mock
-
 import pytest
+
+import package.datamigration.migration
 from package.datamigration.migration import (
     _migrate_data_lake,
+    DataLakeFileManager,
     initialize_spark,
     get_uncommitted_migrations,
     upload_committed_migration,
     _apply_migration,
-)
-from package.infrastructure.storage_account_access.data_lake_file_manager import (
-    DataLakeFileManager,
 )
 from package.datamigration.uncommitted_migrations import _get_all_migrations
 
@@ -48,7 +47,7 @@ def test__migrate_datalake__when_script_not_found__raise_exception(
 
 
 @patch(qualname(initialize_spark))
-@patch(qualname(DataLakeFileManager))
+@patch(qualname(DataLakeFileManager, package.datamigration.migration))
 @patch(qualname(get_uncommitted_migrations))
 @patch(qualname(upload_committed_migration))
 @patch(qualname(_apply_migration))
