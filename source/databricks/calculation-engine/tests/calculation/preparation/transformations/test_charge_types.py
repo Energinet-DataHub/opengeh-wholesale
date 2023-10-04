@@ -125,7 +125,7 @@ def _create_charges_row(
     return row
 
 
-def _create_tariff_charges_row(
+def _create_expected_tariff_charges_row(
     charge_key: str = f"{DEFAULT_CHARGE_ID}-{DEFAULT_CHARGE_OWNER}-{E.ChargeType.TARIFF.value}",
     charge_id: str = DEFAULT_CHARGE_ID,
     charge_type: E.ChargeType = E.ChargeType.TARIFF,
@@ -179,6 +179,10 @@ def _create_dataframe_from_rows(
 def test__get_tariff_charges__filters_on_resolution(
     spark: SparkSession, charge_resolution: E.ChargeResolution
 ) -> None:
+    """
+    Only charges with the given resolution are accepted.
+    """
+    # Arrange
     metering_point_rows = [_create_metering_point_row()]
     time_series_rows = [_create_time_series_row()]
     charges_rows = [
@@ -198,6 +202,7 @@ def test__get_tariff_charges__filters_on_resolution(
     )
     charges = _create_dataframe_from_rows(spark, charges_rows, charges_schema)
 
+    # Act
     actual = get_tariff_charges(
         metering_point,
         time_series,
@@ -205,6 +210,7 @@ def test__get_tariff_charges__filters_on_resolution(
         charge_resolution,
     )
 
+    # Assert
     assert actual.count() == 1
     assert actual.collect()[0][Colname.charge_resolution] == charge_resolution.value
 
@@ -212,6 +218,7 @@ def test__get_tariff_charges__filters_on_resolution(
 def test__get_tariff_charges__filters_on_tariff_charge_type(
     spark: SparkSession,
 ) -> None:
+    # Arrange
     metering_point_rows = [_create_metering_point_row()]
     time_series_rows = [_create_time_series_row()]
     charges_rows = [
@@ -234,6 +241,7 @@ def test__get_tariff_charges__filters_on_tariff_charge_type(
     )
     charges = _create_dataframe_from_rows(spark, charges_rows, charges_schema)
 
+    # Act
     actual_tariff = get_tariff_charges(
         metering_point,
         time_series,
@@ -241,12 +249,14 @@ def test__get_tariff_charges__filters_on_tariff_charge_type(
         E.ChargeResolution.HOUR,
     )
 
+    # Assert
     assert actual_tariff.collect()[0][Colname.charge_type] == E.ChargeType.TARIFF.value
 
 
 def test__get_fee_charges__filters_on_fee_charge_type(
     spark: SparkSession,
 ) -> None:
+    # Arrange
     metering_point_rows = [_create_metering_point_row()]
     charges_rows = [
         _create_charges_row(
@@ -265,14 +275,17 @@ def test__get_fee_charges__filters_on_fee_charge_type(
     )
     charges = _create_dataframe_from_rows(spark, charges_rows, charges_schema)
 
+    # Act
     actual_fee = get_fee_charges(charges, metering_point)
 
+    # Assert
     assert actual_fee.collect()[0][Colname.charge_type] == E.ChargeType.FEE.value
 
 
 def test__get_subscription_charges__filters_on_subscription_charge_type(
     spark: SparkSession,
 ) -> None:
+    # Arrange
     metering_point_rows = [_create_metering_point_row()]
     charges_rows = [
         _create_charges_row(
@@ -291,8 +304,10 @@ def test__get_subscription_charges__filters_on_subscription_charge_type(
     )
     charges = _create_dataframe_from_rows(spark, charges_rows, charges_schema)
 
+    # Act
     actual_subscription = get_subscription_charges(charges, metering_point)
 
+    # Assert
     assert (
         actual_subscription.collect()[0][Colname.charge_type]
         == E.ChargeType.SUBSCRIPTION.value
@@ -315,6 +330,7 @@ def test__get_subscription_charges__split_into_days_between_from_and_to_date(
     to_date: datetime,
     expected_day_count: int,
 ) -> None:
+    # Arrange
     metering_point_rows = [
         _create_metering_point_row(from_date=from_date, to_date=to_date)
     ]
@@ -333,54 +349,48 @@ def test__get_subscription_charges__split_into_days_between_from_and_to_date(
 
     charges = _create_dataframe_from_rows(spark, charges_rows, charges_schema)
 
+    # Act
     actual_subscription = get_subscription_charges(charges, metering_point)
 
+    # Assert
     assert actual_subscription.count() == expected_day_count
 
 
+@pytest.mark.parametrize(
+    "from_date, to_date, expected_rows",
+    [
+        # charge time before metering point from date - not accepted
+        (datetime(2019, 12, 31, 23), datetime(2020, 1, 1, 0), 0),
+        # charge time equal to metering point from date - accepted
+        (datetime(2020, 1, 1, 0), datetime(2020, 1, 1, 1), 1),
+        # charge time between metering point from and to date - accepted
+        (datetime(2020, 1, 1, 1), datetime(2020, 1, 1, 2), 1),
+        # charge time equal to metering point to date - not accepted
+        (datetime(2020, 1, 1, 2), datetime(2020, 1, 1, 3), 0),
+    ],
+)
 def test__get_tariff_charges__only_accepts_charges_in_metering_point_period(
-    spark: SparkSession,
+    spark: SparkSession, from_date: datetime, to_date: datetime, expected_rows: int
 ) -> None:
     """
     Only charges where charge time is greater than or equal to the metering point from date and
     less than the metering point to date are accepted.
     """
+    # Arrange
     metering_point_rows = [
         _create_metering_point_row(
             from_date=datetime(2020, 1, 1, 0), to_date=datetime(2020, 1, 1, 2)
         ),
     ]
     time_series_rows = [
-        _create_time_series_row(observation_time=datetime(2019, 12, 31, 23)),
-        _create_time_series_row(observation_time=datetime(2020, 1, 1, 0)),
-        _create_time_series_row(observation_time=datetime(2020, 1, 1, 1)),
-        _create_time_series_row(observation_time=datetime(2020, 1, 1, 2)),
+        _create_time_series_row(observation_time=from_date),
     ]
     charges_rows = [
-        # charge time before metering point from date - not accepted
         _create_charges_row(
-            from_date=datetime(2019, 12, 31, 23),
-            to_date=datetime(2020, 1, 1, 0),
-            charge_time=datetime(2019, 12, 31, 23),
-        ),
-        # charge time equal to metering point from date - accepted
-        _create_charges_row(
-            from_date=datetime(2020, 1, 1, 0),
-            to_date=datetime(2020, 1, 1, 1),
-            charge_time=datetime(2020, 1, 1, 0),
-        ),
-        # charge time between metering point from and to date - accepted
-        _create_charges_row(
-            from_date=datetime(2020, 1, 1, 1),
-            to_date=datetime(2020, 1, 1, 2),
-            charge_time=datetime(2020, 1, 1, 1),
-        ),
-        # charge time equal to metering point to date - not accepted
-        _create_charges_row(
-            from_date=datetime(2020, 1, 1, 2),
-            to_date=datetime(2020, 1, 1, 3),
-            charge_time=datetime(2020, 1, 1, 2),
-        ),
+            from_date=from_date,
+            to_date=to_date,
+            charge_time=from_date,
+        )
     ]
 
     metering_point = _create_dataframe_from_rows(
@@ -391,6 +401,7 @@ def test__get_tariff_charges__only_accepts_charges_in_metering_point_period(
     )
     charges = _create_dataframe_from_rows(spark, charges_rows, charges_schema)
 
+    # Act
     actual = get_tariff_charges(
         metering_point,
         time_series,
@@ -398,14 +409,18 @@ def test__get_tariff_charges__only_accepts_charges_in_metering_point_period(
         E.ChargeResolution.HOUR,
     )
 
-    assert actual.count() == 2
-    assert actual.collect()[0][Colname.charge_time] == datetime(2020, 1, 1, 0)
-    assert actual.collect()[1][Colname.charge_time] == datetime(2020, 1, 1, 1)
+    # Assert
+    assert actual.count() == expected_rows
 
 
 def test__get_tariff_charges__when_same_metering_point_and_resolution__sums_quantity(
     spark: SparkSession,
 ) -> None:
+    """
+    When there are multiple time series rows for the same metering point and resolution,
+    with the same observation time, the quantity is summed.
+    """
+    # Arrange
     metering_point_rows = [_create_metering_point_row()]
     time_series_rows = [_create_time_series_row(), _create_time_series_row()]
     charges_rows = [_create_charges_row()]
@@ -418,6 +433,7 @@ def test__get_tariff_charges__when_same_metering_point_and_resolution__sums_quan
     )
     charges = _create_dataframe_from_rows(spark, charges_rows, charges_schema)
 
+    # Act
     actual = get_tariff_charges(
         metering_point,
         time_series,
@@ -425,12 +441,14 @@ def test__get_tariff_charges__when_same_metering_point_and_resolution__sums_quan
         E.ChargeResolution.HOUR,
     )
 
+    # Assert
     assert actual.collect()[0][Colname.quantity] == 2 * DEFAULT_QUANTITY
 
 
 def test__get_tariff_charges__when_no_matching_charge_resolution__returns_empty_tariffs(
     spark: SparkSession,
 ) -> None:
+    # Arrange
     metering_point_rows = [_create_metering_point_row()]
     time_series_rows = [_create_time_series_row()]
     charges_rows = [_create_charges_row(charge_resolution=E.ChargeResolution.DAY)]
@@ -443,6 +461,7 @@ def test__get_tariff_charges__when_no_matching_charge_resolution__returns_empty_
     )
     charges = _create_dataframe_from_rows(spark, charges_rows, charges_schema)
 
+    # Act
     actual = get_tariff_charges(
         metering_point,
         time_series,
@@ -450,12 +469,14 @@ def test__get_tariff_charges__when_no_matching_charge_resolution__returns_empty_
         E.ChargeResolution.HOUR,
     )
 
+    # Assert
     assert actual.count() == 0
 
 
 def test__get_tariff_charges__when_two_tariff_overlap__returns_both_tariffs(
     spark: SparkSession,
 ) -> None:
+    # Arrange
     metering_point_rows = [_create_metering_point_row()]
     time_series_rows = [_create_time_series_row()]
     charges_rows = [
@@ -471,6 +492,7 @@ def test__get_tariff_charges__when_two_tariff_overlap__returns_both_tariffs(
     )
     charges = _create_dataframe_from_rows(spark, charges_rows, charges_schema)
 
+    # Act
     actual = get_tariff_charges(
         metering_point,
         time_series,
@@ -478,12 +500,14 @@ def test__get_tariff_charges__when_two_tariff_overlap__returns_both_tariffs(
         E.ChargeResolution.HOUR,
     )
 
+    # Assert
     assert actual.count() == 2
 
 
 def test__get_tariff_charges__returns_df_with_expected_values(
     spark: SparkSession,
 ) -> None:
+    # Arrange
     metering_point_rows = [_create_metering_point_row()]
     time_series_rows = [
         _create_time_series_row(quality=E.TimeSeriesQuality.CALCULATED),
@@ -491,7 +515,9 @@ def test__get_tariff_charges__returns_df_with_expected_values(
     ]
     charges_rows = [_create_charges_row()]
 
-    tariff_charges_row = [_create_tariff_charges_row(quantity=2 * DEFAULT_QUANTITY)]
+    expected_tariff_charges_row = [
+        _create_expected_tariff_charges_row(quantity=2 * DEFAULT_QUANTITY)
+    ]
 
     metering_point = _create_dataframe_from_rows(
         spark, metering_point_rows, metering_point_period_schema
@@ -502,9 +528,10 @@ def test__get_tariff_charges__returns_df_with_expected_values(
     charges = _create_dataframe_from_rows(spark, charges_rows, charges_schema)
 
     expected_tariff_charges = _create_dataframe_from_rows(
-        spark, tariff_charges_row, tariff_schema
+        spark, expected_tariff_charges_row, tariff_schema
     )
 
+    # Act
     actual = get_tariff_charges(
         metering_point,
         time_series,
@@ -512,4 +539,5 @@ def test__get_tariff_charges__returns_df_with_expected_values(
         E.ChargeResolution.HOUR,
     )
 
+    # Assert
     assert actual.collect() == expected_tariff_charges.collect()
