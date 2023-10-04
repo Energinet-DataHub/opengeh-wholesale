@@ -141,71 +141,19 @@ def test__read_changes__when_charge_keys_are_different__returns_expected_row(
     calculation_input_reader_mock: DeltaTableReader, spark: SparkSession
 ) -> None:
     # Arrange
-    expected_charge_key = "4000-tariff-5790001330552"
     calculation_input_reader_mock.read_charge_master_data_periods.return_value = (
         spark.createDataFrame(
             data=[
-                _create_charge_master_data_row(charge_key=expected_charge_key),
+                _create_charge_master_data_row(),
                 _create_charge_master_data_row(charge_key="4001-tariff-5790001330552"),
             ]
         )
     )
     calculation_input_reader_mock.read_charge_links_periods.return_value = (
-        spark.createDataFrame(
-            data=[_create_charge_link_periods_row(charge_key=expected_charge_key)]
-        )
+        spark.createDataFrame(data=[_create_charge_link_periods_row()])
     )
     calculation_input_reader_mock.read_charge_price_points.return_value = (
-        spark.createDataFrame(
-            data=[_create_charges_prices_points_row(charge_key=expected_charge_key)]
-        )
-    )
-
-    # Act
-    actual = read_charges(calculation_input_reader_mock)
-
-    # Assert
-    assert actual.count() == 1
-    actual_row = actual.collect()[0]
-    assert actual_row[Colname.charge_key] == expected_charge_key
-
-
-@pytest.mark.parametrize(
-    "charge_master_data, charge_links_periods, charge_prices_points",
-    [
-        (
-            [
-                _create_charge_master_data_row(),
-                _create_charge_master_data_row(charge_key="4001-tariff-5790001330552"),
-            ],
-            [
-                _create_charge_link_periods_row(),
-            ],
-            [
-                _create_charges_prices_points_row(),
-            ],
-        )
-    ],
-)
-@patch.object(calculation_input, DeltaTableReader.__name__)
-def test__read_changes__when_charge_keys_are_different__returns_expected_row(
-    calculation_input_reader_mock: DeltaTableReader,
-    spark: SparkSession,
-    charge_master_data: list[Row],
-    charge_links_periods: list[Row],
-    charge_prices_points: list[Row],
-) -> None:
-    # Arrange
-    calculation_input_reader_mock.read_charge_master_data_periods.return_value = (
-        spark.createDataFrame(charge_master_data)
-    )
-
-    calculation_input_reader_mock.read_charge_links_periods.return_value = (
-        spark.createDataFrame(charge_links_periods)
-    )
-
-    calculation_input_reader_mock.read_charge_price_points.return_value = (
-        spark.createDataFrame(charge_prices_points)
+        spark.createDataFrame(data=[_create_charges_prices_points_row()])
     )
 
     # Act
