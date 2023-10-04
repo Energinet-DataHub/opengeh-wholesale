@@ -21,7 +21,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Interfaces.CalculationResults;
 
-public class CalculationResultTests
+public class EnergyResultTests
 {
     [Theory]
     [InlineAutoMoqData]
