@@ -22,6 +22,7 @@ from pyspark.sql import SparkSession
 
 from package import calculation_input
 from package.calculation.preparation.transformations import read_charges
+
 from package.calculation_input.table_reader import TableReader
 from package.codelists import ChargeType
 from package.constants import Colname
@@ -166,105 +167,58 @@ def test__read_changes__when_multiple_charge_keys__returns_only_rows_with_matchi
 
 
 @pytest.mark.parametrize(
-    "charge_master_data, charge_links_periods, charge_prices_points, expected_number_of_rows",
+    "from_date, to_date, charge_time, expect_empty",
     [
-        (  # Dataset: Charge time is the same as from-date and before to-date -> expected #rows = 1
-            [
-                _create_charge_master_data_row(),
-            ],
-            [
-                _create_charge_link_periods_row(
-                    from_date=datetime(2020, 1, 1, 0, 0),
-                    to_date=datetime(2020, 1, 2, 0, 0),
-                ),
-            ],
-            [
-                _create_charges_price_points_row(
-                    observation_time=datetime(2020, 1, 1, 0, 0)
-                ),
-            ],
-            1,
+        (  # Dataset: Charge time is the same as from-date and before to-date -> expect rows
+            datetime(2020, 1, 1, 0, 0),
+            datetime(2020, 1, 2, 0, 0),
+            datetime(2020, 1, 1, 0, 0),
+            False,
         ),
-        (  # Dataset: Charge time is after from-date and before to-date -> expected #rows = 1
-            [
-                _create_charge_master_data_row(),
-            ],
-            [
-                _create_charge_link_periods_row(
-                    from_date=datetime(2020, 1, 1, 0, 0),
-                    to_date=datetime(2020, 1, 2, 0, 0),
-                ),
-            ],
-            [
-                _create_charges_price_points_row(
-                    observation_time=datetime(2020, 1, 1, 1, 0)
-                ),
-            ],
-            1,
+        (  # Dataset: Charge time is after from-date and before to-date -> expect rows
+            datetime(2020, 1, 1, 0, 0),
+            datetime(2020, 1, 2, 0, 0),
+            datetime(2020, 1, 1, 1, 0),
+            False,
         ),
-        (  # Dataset: Charge time is AFTER to-date -> expected #rows = 0
-            [
-                _create_charge_master_data_row(),
-            ],
-            [
-                _create_charge_link_periods_row(
-                    from_date=datetime(2020, 1, 1, 0, 0),
-                    to_date=datetime(2020, 1, 2, 0, 0),
-                ),
-            ],
-            [
-                _create_charges_price_points_row(
-                    observation_time=datetime(2020, 1, 3, 0, 0)
-                ),
-            ],
-            0,
+        (  # Dataset: Charge time is AFTER to-date -> expect no rows
+            datetime(2020, 1, 1, 0, 0),
+            datetime(2020, 1, 2, 0, 0),
+            datetime(2020, 1, 3, 0, 0),
+            True,
         ),
-        (  # Dataset: Charge time is BEFORE from-date -> expected #rows = 0
-            [
-                _create_charge_master_data_row(),
-            ],
-            [
-                _create_charge_link_periods_row(
-                    from_date=datetime(2020, 1, 2, 0, 0),
-                    to_date=datetime(2020, 1, 3, 0, 0),
-                ),
-            ],
-            [
-                _create_charges_price_points_row(
-                    observation_time=datetime(2020, 1, 1, 0, 0)
-                ),
-            ],
-            0,
+        (  # Dataset: Charge time is BEFORE from-date -> expect on rows
+            datetime(2020, 1, 2, 0, 0),
+            datetime(2020, 1, 3, 0, 0),
+            datetime(2020, 1, 1, 0, 0),
+            True,
         ),
     ],
 )
 @patch.object(calculation_input, TableReader.__name__)
-def test__read_changes__when_charge_keys_are_different__returns_expected_row(
+def test__read_changes__when_multiple_charge_keys__returns_only_rows_matching_join_statements(
     table_reader_mock: TableReader,
     spark: SparkSession,
-    charge_master_data: list[Row],
-    charge_links_periods: list[Row],
-    charge_prices_points: list[Row],
-    expected_number_of_rows: int,
+    from_date: datetime,
+    to_date: datetime,
+    charge_time: datetime,
+    expect_empty: bool,
 ) -> None:
     # Arrange
     table_reader_mock.read_charge_master_data_periods.return_value = (
-        spark.createDataFrame(charge_master_data)
+        spark.createDataFrame(data=[_create_charge_master_data_row()])
     )
 
     table_reader_mock.read_charge_links_periods.return_value = spark.createDataFrame(
-        charge_links_periods
+        [_create_charge_link_periods_row(from_date=from_date, to_date=to_date)]
     )
 
     table_reader_mock.read_charge_price_points.return_value = spark.createDataFrame(
-        charge_prices_points
+        [_create_charges_price_points_row(observation_time=charge_time)]
     )
 
     # Act
     actual = read_charges(table_reader_mock)
 
     # Assert
-    assert actual.count() == expected_number_of_rows
-
-
-# TODO Schema?
+    assert actual.isEmpty() == expect_empty
