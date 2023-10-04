@@ -298,27 +298,41 @@ def test__get_subscription_charges__split_into_days_between_from_and_to_date(
 def test__get_tariff_charges__only_accepts_charges_in_metering_point_period(
     spark: SparkSession,
 ) -> None:
+    """
+    Only charges where charge time is greater than or equal to the metering point from date and
+    less than the metering point to date are accepted.
+    """
     metering_point_rows = [
         _create_metering_point_row(
             from_date=datetime(2020, 1, 1, 0), to_date=datetime(2020, 1, 1, 2)
         ),
     ]
     time_series_rows = [
+        _create_time_series_row(observation_time=datetime(2019, 12, 31, 23)),
         _create_time_series_row(observation_time=datetime(2020, 1, 1, 0)),
         _create_time_series_row(observation_time=datetime(2020, 1, 1, 1)),
         _create_time_series_row(observation_time=datetime(2020, 1, 1, 2)),
     ]
     charges_rows = [
+        # charge time before metering point from date - not accepted
+        _create_charges_row(
+            from_date=datetime(2019, 12, 31, 23),
+            to_date=datetime(2020, 1, 1, 0),
+            charge_time=datetime(2019, 12, 31, 23),
+        ),
+        # charge time equal to metering point from date - accepted
         _create_charges_row(
             from_date=datetime(2020, 1, 1, 0),
             to_date=datetime(2020, 1, 1, 1),
             charge_time=datetime(2020, 1, 1, 0),
         ),
+        # charge time between metering point from and to date - accepted
         _create_charges_row(
             from_date=datetime(2020, 1, 1, 1),
             to_date=datetime(2020, 1, 1, 2),
             charge_time=datetime(2020, 1, 1, 1),
         ),
+        # charge time equal to metering point to date - not accepted
         _create_charges_row(
             from_date=datetime(2020, 1, 1, 2),
             to_date=datetime(2020, 1, 1, 3),
@@ -342,6 +356,8 @@ def test__get_tariff_charges__only_accepts_charges_in_metering_point_period(
     )
 
     assert actual.count() == 2
+    assert actual.collect()[0][Colname.charge_time] == datetime(2020, 1, 1, 0)
+    assert actual.collect()[1][Colname.charge_time] == datetime(2020, 1, 1, 1)
 
 
 def test__get_tariff_charges__when_same_metering_point_and_resolution__sums_quantity(
