@@ -15,8 +15,11 @@
 from decimal import Decimal
 from datetime import datetime
 from unittest.mock import patch
+
+from pyspark import Row
 from pyspark.sql import SparkSession
 
+from package import calculation_input
 from package.calculation.preparation.transformations import read_charges
 from package.calculation_input.table_reader import TableReader
 from package.codelists import ChargeType
@@ -46,7 +49,7 @@ def _create_charge_master_data_row(
     resolution: str = DEFAULT_RESOLUTION,
     from_date: datetime = DEFAULT_FROM_DATE,
     to_date: datetime = DEFAULT_TO_DATE,
-) -> dict:
+) -> Row:
     row = {
         Colname.charge_key: charge_key,
         Colname.charge_id: charge_id,
@@ -57,7 +60,7 @@ def _create_charge_master_data_row(
         Colname.from_date: from_date,
         Colname.to_date: to_date,
     }
-    return row
+    return Row(**row)
 
 
 def _create_charge_link_periods_row(
@@ -68,7 +71,7 @@ def _create_charge_link_periods_row(
     from_date: datetime = DEFAULT_FROM_DATE,
     to_date: datetime = DEFAULT_TO_DATE,
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
-) -> dict:
+) -> Row:
     row = {
         Colname.charge_key: charge_key,
         Colname.charge_id: charge_id,
@@ -78,7 +81,7 @@ def _create_charge_link_periods_row(
         Colname.to_date: to_date,
         Colname.metering_point_id: metering_point_id,
     }
-    return row
+    return Row(**row)
 
 
 def _create_charges_prices_points_row(
@@ -88,7 +91,7 @@ def _create_charges_prices_points_row(
     charge_type: str = DEFAULT_CHARGE_TYPE,
     charge_price: Decimal = DEFAULT_CHARGE_PRICE,
     observation_time: datetime = DEFAULT_OBSERVATION_TIME,
-) -> dict:
+) -> Row:
     row = {
         Colname.charge_key: charge_key,
         Colname.charge_id: charge_id,
@@ -97,26 +100,26 @@ def _create_charges_prices_points_row(
         Colname.charge_price: charge_price,
         Colname.observation_time: observation_time,
     }
-    return row
+    return Row(**row)
 
 
-@patch(qualname(TableReader))
+@patch.object(calculation_input, TableReader.__name__)
 def test__read_changes__returns_expected_joined_row_values(
-    calculation_input_reader_mock: TableReader, spark: SparkSession
+    table_reader_mock: TableReader, spark: SparkSession
 ) -> None:
     # Arrange
-    calculation_input_reader_mock.read_charge_master_data_periods.return_value = (
+    table_reader_mock.read_charge_master_data_periods.return_value = (
         spark.createDataFrame(data=[_create_charge_master_data_row()])
     )
-    calculation_input_reader_mock.read_charge_links_periods.return_value = (
-        spark.createDataFrame(data=[_create_charge_link_periods_row()])
+    table_reader_mock.read_charge_links_periods.return_value = spark.createDataFrame(
+        data=[_create_charge_link_periods_row()]
     )
-    calculation_input_reader_mock.read_charge_price_points.return_value = (
-        spark.createDataFrame(data=[_create_charges_prices_points_row()])
+    table_reader_mock.read_charge_price_points.return_value = spark.createDataFrame(
+        data=[_create_charges_prices_points_row()]
     )
 
     # Act
-    actual = read_charges(calculation_input_reader_mock)
+    actual = read_charges(table_reader_mock)
 
     # Assert
     assert actual.count() == 1
@@ -132,3 +135,32 @@ def test__read_changes__returns_expected_joined_row_values(
     assert actual_row[Colname.to_date] == DEFAULT_TO_DATE
     assert actual_row[Colname.observation_time] == DEFAULT_OBSERVATION_TIME
     assert actual_row[Colname.metering_point_id] == DEFAULT_METERING_POINT_ID
+
+
+@patch.object(calculation_input, TableReader.__name__)
+def test__read_changes__when_multiple_charge_keys__returns_only_rows_with_matching_values_from_tables(
+    table_reader_mock: TableReader, spark: SparkSession
+) -> None:
+    # Arrange
+    table_reader_mock.read_charge_master_data_periods.return_value = (
+        spark.createDataFrame(
+            data=[
+                _create_charge_master_data_row(),
+                _create_charge_master_data_row(charge_key="4001-tariff-5790001330552"),
+            ]
+        )
+    )
+    table_reader_mock.read_charge_links_periods.return_value = spark.createDataFrame(
+        data=[_create_charge_link_periods_row()]
+    )
+    table_reader_mock.read_charge_price_points.return_value = spark.createDataFrame(
+        data=[_create_charges_prices_points_row()]
+    )
+
+    # Act
+    actual = read_charges(table_reader_mock)
+
+    # Assert
+    assert actual.count() == 1
+    actual_row = actual.collect()[0]
+    assert actual_row[Colname.charge_key] == DEFAULT_CHARGE_KEY
