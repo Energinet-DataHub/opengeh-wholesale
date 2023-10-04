@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Messaging.Communication.Internal;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.Communication;
 

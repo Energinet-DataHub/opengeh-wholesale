@@ -12,14 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using NodaTime;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
-
-public record CalculationResultQuery(
-    TimeSeriesType TimeSeriesType,
-    Instant StartOfPeriod,
-    Instant EndOfPeriod,
-    string GridArea,
-    string? EnergySupplierId,
-    string? BalanceResponsibleId);
+public enum TimeSeriesType
+{
+    NonProfiledConsumption = 1,
+    FlexConsumption = 2,
+    Production = 3,
+    NetExchangePerGa = 4,
+    NetExchangePerNeighboringGa = 5,
+    GridLoss = 6,
+    NegativeGridLoss = 7,
+    PositiveGridLoss = 8,
+    TotalConsumption = 9,
+    TempFlexConsumption = 10,
+    TempProduction = 11,
+}
