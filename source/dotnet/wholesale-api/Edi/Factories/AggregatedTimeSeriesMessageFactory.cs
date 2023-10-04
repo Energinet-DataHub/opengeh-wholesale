@@ -41,6 +41,13 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
         return message;
     }
 
+    private static IMessage CreateRejectedResponseFromErrors(string dummy)
+    {
+        var response = new AggregatedTimeSeriesRequestRejected();
+        response.RejectReasons.Add(CreateRejectReasonFromErrors(dummy));
+        return response;
+    }
+
     private static IMessage CreateRejectedResponse()
     {
         var response = new AggregatedTimeSeriesRequestRejected();
@@ -49,6 +56,14 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
     }
 
     private static RejectReason CreateRejectReason()
+    {
+        return new RejectReason()
+        {
+            ErrorCode = ErrorCodes.InvalidBalanceResponsibleForPeriod, ErrorMessage = "something went wrong",
+        };
+    }
+
+    private static RejectReason CreateRejectReasonFromErrors(string dummy)
     {
         return new RejectReason()
         {

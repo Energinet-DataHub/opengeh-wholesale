@@ -20,6 +20,7 @@ using Energinet.DataHub.Wholesale.EDI.Client;
 using Energinet.DataHub.Wholesale.EDI.Factories;
 using Energinet.DataHub.Wholesale.EDI.Mappers;
 using Energinet.DataHub.Wholesale.EDI.Models;
+using FluentValidation;
 using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.EDI;
@@ -29,6 +30,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
     private readonly IRequestCalculationResultQueries _requestCalculationResultQueries;
     private readonly IEdiClient _ediClient;
     private readonly IAggregatedTimeSeriesMessageFactory _aggregatedTimeSeriesMessageFactory;
+    private readonly IValidator<AggregatedTimeSeriesRequest> _validator;
     private readonly ILogger<AggregatedTimeSeriesRequestHandler> _logger;
     private readonly IAggregatedTimeSeriesRequestFactory _aggregatedTimeSeriesRequestFactory;
 
@@ -37,12 +39,14 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         IEdiClient ediClient,
         IAggregatedTimeSeriesRequestFactory aggregatedTimeSeriesRequestFactory,
         IAggregatedTimeSeriesMessageFactory aggregatedTimeSeriesMessageFactory,
+        IValidator<AggregatedTimeSeriesRequest> validator,
         ILogger<AggregatedTimeSeriesRequestHandler> logger)
     {
         _requestCalculationResultQueries = requestCalculationResultQueries;
         _ediClient = ediClient;
         _aggregatedTimeSeriesRequestFactory = aggregatedTimeSeriesRequestFactory;
         _aggregatedTimeSeriesMessageFactory = aggregatedTimeSeriesMessageFactory;
+        _validator = validator;
         _logger = logger;
     }
 
@@ -50,9 +54,15 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
     {
         var aggregatedTimeSeriesRequestMessage = _aggregatedTimeSeriesRequestFactory.Parse(receivedMessage);
 
-        var result = await GetCalculationResultsAsync(
-            aggregatedTimeSeriesRequestMessage,
-            cancellationToken).ConfigureAwait(false);
+        var validation = await _validator.ValidateAsync(aggregatedTimeSeriesRequestMessage, cancellationToken).ConfigureAwait(false);
+
+        EnergyResult? result = null;
+        if (validation.IsValid)
+        {
+            result = await GetCalculationResultsAsync(
+                aggregatedTimeSeriesRequestMessage,
+                cancellationToken).ConfigureAwait(false);
+        }
 
         var message = _aggregatedTimeSeriesMessageFactory.Create(
             result,

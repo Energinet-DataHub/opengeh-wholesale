@@ -21,6 +21,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.EDI.Client;
 using Energinet.DataHub.Wholesale.EDI.Factories;
+using FluentValidation;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.Logging;
@@ -44,6 +45,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<AggregatedTimeSeriesRequestFactory> aggregatedTimeSeriesRequestMessageParseMock,
         [Frozen] Mock<AggregatedTimeSeriesMessageFactory> aggregatedTimeSeriesMessageFactoryMock,
+        [Frozen] Mock<IValidator<Energinet.DataHub.Wholesale.EDI.Models.AggregatedTimeSeriesRequest>> validator,
         [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> loggerMock)
     {
         // Arrange
@@ -52,7 +54,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
         var request = new AggregatedTimeSeriesRequest
         {
             AggregationPerGridarea = new AggregationPerGridArea(),
-            TimeSeriesType = Energinet.DataHub.Edi.Requests.TimeSeriesType.Production,
+            TimeSeriesType = Edi.Requests.TimeSeriesType.Production,
             Period = new Period()
             {
                 StartOfPeriod = new Timestamp(),
@@ -73,6 +75,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
             senderMock.Object,
             aggregatedTimeSeriesRequestMessageParseMock.Object,
             aggregatedTimeSeriesMessageFactoryMock.Object,
+            validator.Object,
             loggerMock.Object);
 
         // Act
