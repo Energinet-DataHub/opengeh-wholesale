@@ -21,10 +21,10 @@ option csharp_namespace = "Energinet.DataHub.Wholesale.Contracts.IntegrationEven
 
 
 /*
- * A calculation will result in one or more wholesale results. Each result is
+ * A calculation will result in one or more wholesale results with total amounts. Each result is
  * published as an instance of this type.
  */
-message WholesaleMonthlyAmountResultProducedV1 {
+message TotalMonthlyAmountResultProducedV1 {
   /*
    * The ID of the calculation creating the result.
    * The ID is a UUID consisting of hexadecimal digits in the form XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX.
@@ -51,19 +51,8 @@ message WholesaleMonthlyAmountResultProducedV1 {
 
   string energy_supplier_id = 9;
 
-  string charge_code = 10;
+  optional string charge_owner_id = 12;
 
-  ChargeType charge_type = 11;
-
-  string charge_owner_id = 12;
-
-  QuantityUnit quantity_unit = 14;
-
-  optional bool is_tax = 15;
-
-  /*
-   * 6 digit scale decimal value of the amount.
-   */
   optional DecimalValue amount = 20;
 
   // ---------------------------- NESTED TYPES BELOW ----------------------------------------
@@ -73,29 +62,10 @@ message WholesaleMonthlyAmountResultProducedV1 {
      * Unspecified is unused but according to best practice.
      * Read more at https://protobuf.dev/programming-guides/style/#enums.
      */
-    PROCESS_TYPE_UNSPECIFIED = 0;
-    PROCESS_TYPE_WHOLESALE_FIXING = 3;
-    PROCESS_TYPE_FIRST_CORRECTION_SETTLEMENT = 4;
-    PROCESS_TYPE_SECOND_CORRECTION_SETTLEMENT = 5;
-    PROCESS_TYPE_THIRD_CORRECTION_SETTLEMENT = 6;
-  }
-
-  enum ChargeType {
-    CHARGE_TYPE_UNSPECIFIED = 0;
-    CHARGE_TYPE_FEE = 1;
-    CHARGE_TYPE_TARIFF = 2;
-    CHARGE_TYPE_SUBSCRIPTION = 3;
-  }
-
-  enum QuantityUnit {
-    /*
-     * Unspecified is unused but according to best practice.
-     * Read more at https://protobuf.dev/programming-guides/style/#enums.
-     */
-    QUANTITY_UNIT_UNSPECIFIED = 0;
-
-    // States that the energy quantity is measured in kWh (kilo Watt hours).
-    QUANTITY_UNIT_KWH = 1;
-    QUANTITY_UNIT_PIECES = 2;
+    CALCULATION_TYPE_UNSPECIFIED = 0;
+    CALCULATION_TYPE_WHOLESALE_FIXING = 3;
+    CALCULATION_TYPE_FIRST_CORRECTION_SETTLEMENT = 4;
+    CALCULATION_TYPE_SECOND_CORRECTION_SETTLEMENT = 5;
+    CALCULATION_TYPE_THIRD_CORRECTION_SETTLEMENT = 6;
   }
 }
