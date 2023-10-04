@@ -16,6 +16,7 @@
 from decimal import Decimal
 from datetime import datetime
 from package.constants import Colname
+from pyspark.sql import SparkSession, Row
 
 from package.codelists import (
     MeteringPointResolution,
@@ -28,8 +29,9 @@ from pyspark.sql.types import (
     TimestampType,
     StructField,
 )
-from package.calculation.preparation.transformations.hour_to_quarter import transform_hour_to_quarter
-from tests.helpers.dataframe_helper import create_dataframe_from_rows
+from package.calculation.preparation.transformations.hour_to_quarter import (
+    transform_hour_to_quarter,
+)
 
 
 enriched_time_series_schema = StructType(
@@ -89,7 +91,7 @@ def _create_enriched_time_series_row(
     quality: str = TimeSeriesQuality.ESTIMATED.value,
     energy_supplier_id: str = "the_energy_supplier_id",
     balance_responsible_id: str = "the_balance_responsible_id",
-) -> dict:
+) -> Row:
     row = {
         Colname.grid_area: grid_area,
         Colname.to_grid_area: to_grid_area,
@@ -104,13 +106,15 @@ def _create_enriched_time_series_row(
         Colname.balance_responsible_id: balance_responsible_id,
     }
 
-    return row
+    return Row(**row)
 
 
-def test__transform_hour_to_quarter__split_hourly_enriched_time_series() -> None:
+def test__transform_hour_to_quarter__split_hourly_enriched_time_series(
+    spark: SparkSession,
+) -> None:
     # Arrange
     rows = [_create_enriched_time_series_row()]
-    enriched_time_series = create_dataframe_from_rows(rows, enriched_time_series_schema)
+    enriched_time_series = spark.createDataFrame(rows, enriched_time_series_schema)
 
     # Act
     enriched_time_series_all_quarter = transform_hour_to_quarter(enriched_time_series)
