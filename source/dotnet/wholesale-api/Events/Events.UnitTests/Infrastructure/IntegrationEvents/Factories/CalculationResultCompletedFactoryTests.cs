@@ -24,6 +24,7 @@ using Test.Core;
 using Xunit;
 using QuantityQuality =
     Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
+using QuantityUnit = Energinet.DataHub.Wholesale.Contracts.Events.QuantityUnit;
 using TimeSeriesPoint =
     Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesPoint;
 using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType;

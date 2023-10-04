@@ -54,4 +54,24 @@ public static class SqlResultValueConverters
     {
         return Guid.Parse(value);
     }
+
+    public static ChargeType ToChargeType(string value)
+    {
+        return ChargeTypeMapper.FromDeltaTableValue(value);
+    }
+
+    public static QuantityUnit ToQuantityUnit(string value)
+    {
+        return QuantityUnitMapper.FromDeltaTableValue(value);
+    }
+
+    public static bool ToBool(string value)
+    {
+        return value switch
+        {
+            "True" => true,
+            "False" => false,
+            _ =>throw new ArgumentException($"quality of unknown type:{value}"),
+        };
+    }
 }
