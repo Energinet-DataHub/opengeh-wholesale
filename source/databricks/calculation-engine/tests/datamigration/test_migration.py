@@ -15,7 +15,10 @@
 from unittest.mock import ANY, patch, call, Mock
 import pytest
 
+import package.infrastructure
 import package.datamigration.migration
+import package.datamigration.committed_migrations
+import package.datamigration.uncommitted_migrations
 from package.datamigration.migration import (
     _migrate_data_lake,
     DataLakeFileManager,
@@ -49,15 +52,15 @@ def test__migrate_datalake__when_script_not_found__raise_exception(
 @patch(qualname(initialize_spark))
 @patch(qualname(DataLakeFileManager, package.datamigration.migration))
 @patch(qualname(get_uncommitted_migrations))
-@patch(qualname(upload_committed_migration))
+@patch(qualname(upload_committed_migration, package.datamigration.migration))
 @patch(qualname(_apply_migration))
 def test__migrate_datalake__upload_called_with_correct_name(
-    mock_apply_migration,
-    mock_upload_committed_migration,
-    mock_uncommitted_migrations,
-    mock_file_manager,
-    mock_spark,
-):
+    mock_apply_migration: Mock,
+    mock_upload_committed_migration: Mock,
+    mock_uncommitted_migrations: Mock,
+    mock_file_manager: Mock,
+    mock_spark: Mock,
+) -> None:
     # Arrange
     mock_credential = Mock()
     all_migrations = _get_all_migrations()
