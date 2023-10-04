@@ -15,11 +15,17 @@
 from typing import Any
 
 
-def qualname(symbol: Any) -> str:
+def qualname(symbol: Any, module: Any = None) -> str:
     """
     Returns the fully qualified name of the symbol.
 
-    Example: `qualname(some_method)`, where `some_method` is a method of a class `Bar`
-             in module `foo` will return `foo.Bar.some_method`.
+    Example usage:
+        In unit tests where a symbol is used by a sut where the symbol is loaded
+        from another module than the sut.
+
+    Example:
+        `qualname(some_method)`, where `some_method` is a method of a class `Bar`
+        in module `foo` will return `foo.Bar.some_method`.
     """
-    return symbol.__module__ + "." + symbol.__qualname__
+    module_name = symbol.__module__ if module is None else module.__name__
+    return module_name + "." + symbol.__qualname__

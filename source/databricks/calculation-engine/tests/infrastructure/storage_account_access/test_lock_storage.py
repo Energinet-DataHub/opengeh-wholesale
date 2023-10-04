@@ -15,23 +15,26 @@
 
 from unittest.mock import patch, Mock
 
+import package.infrastructure.storage_account_access.lock_storage
 from package.infrastructure.storage_account_access.lock_storage import (
     _LOCK_FILE_NAME,
+    DataLakeFileManager,
     lock,
     unlock,
-)
-from package.infrastructure.storage_account_access.data_lake_file_manager import (
-    DataLakeFileManager,
 )
 
 from tests.helpers.type_utils import qualname
 
 
-@patch(qualname(DataLakeFileManager))
+@patch(
+    qualname(
+        DataLakeFileManager, package.infrastructure.storage_account_access.lock_storage
+    )
+)
 @patch("package.infrastructure.storage_account_access.lock_storage.env_vars")
 def test__lock__create_file_called_with_correct_name(
     mock_env_vars: Mock, mock_file_manager: Mock
-):
+) -> None:
     # Arrange
     mock_create_file = Mock()
     mock_file_manager.return_value.create_file = mock_create_file
@@ -43,11 +46,15 @@ def test__lock__create_file_called_with_correct_name(
     mock_create_file.assert_called_once_with(_LOCK_FILE_NAME)
 
 
-@patch(qualname(DataLakeFileManager))
+@patch(
+    qualname(
+        DataLakeFileManager, package.infrastructure.storage_account_access.lock_storage
+    )
+)
 @patch("package.infrastructure.storage_account_access.lock_storage.env_vars")
 def test__unlock__delete_file_called_with_correct_name(
     mock_env_vars: Mock, mock_file_manager: Mock
-):
+) -> None:
     # Arrange
     mock_delete_file = Mock()
     mock_file_manager.return_value.delete_file = mock_delete_file
