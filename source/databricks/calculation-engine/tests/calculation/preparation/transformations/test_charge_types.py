@@ -30,6 +30,7 @@ from package.calculation_input.schemas import (
     metering_point_period_schema,
 )
 from package.calculation.wholesale.schemas.charges_schema import charges_schema
+from package.calculation.wholesale.tariff_calculators import tariff_schema
 from package.constants import Colname
 
 DEFAULT_GRID_AREA = "543"
@@ -51,8 +52,8 @@ def _create_metering_point_row(
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
     metering_point_type: E.MeteringPointType = DEFAULT_METERING_POINT_TYPE,
     calculation_type: str = "calculation_type",
-    settlement_method: str = "settlement_method",
-    grid_area: str = "grid_area",
+    settlement_method: E.SettlementMethod = DEFAULT_SETTLEMENT_METHOD,
+    grid_area: str = DEFAULT_GRID_AREA,
     resolution: E.MeteringPointResolution = E.MeteringPointResolution.HOUR,
     from_grid_area: str = "from_grid_area",
     to_grid_area: str = "to_grid_area",
@@ -66,7 +67,7 @@ def _create_metering_point_row(
         Colname.metering_point_id: metering_point_id,
         Colname.metering_point_type: metering_point_type.value,
         Colname.calculation_type: calculation_type,
-        Colname.settlement_method: settlement_method,
+        Colname.settlement_method: settlement_method.value,
         Colname.grid_area: grid_area,
         Colname.resolution: resolution.value,
         Colname.from_grid_area: from_grid_area,
@@ -120,6 +121,48 @@ def _create_charges_row(
         Colname.to_date: to_date,
         Colname.charge_price: charge_price,
         Colname.metering_point_id: metering_point_id,
+    }
+    return row
+
+
+def _create_tariff_charges_row(
+    charge_key: str = f"{DEFAULT_CHARGE_ID}-{DEFAULT_CHARGE_OWNER}-{E.ChargeType.TARIFF.value}",
+    charge_id: str = DEFAULT_CHARGE_ID,
+    charge_type: E.ChargeType = E.ChargeType.TARIFF,
+    charge_owner: str = DEFAULT_CHARGE_OWNER,
+    charge_tax: bool = DEFAULT_CHARGE_TAX,
+    charge_resolution: E.ChargeResolution = E.ChargeResolution.HOUR,
+    charge_time: datetime = DEFAULT_CHARGE_TIME_HOUR_0,
+    charge_price: Decimal = DEFAULT_CHARGE_PRICE,
+    metering_point_id: str = DEFAULT_METERING_POINT_ID,
+    energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
+    metering_point_type: E.MeteringPointType = DEFAULT_METERING_POINT_TYPE,
+    settlement_method: E.SettlementMethod = DEFAULT_SETTLEMENT_METHOD,
+    grid_area: str = DEFAULT_GRID_AREA,
+    quantity: Decimal = DEFAULT_QUANTITY,
+    qualities=None,
+) -> dict:
+    if qualities is None:
+        qualities = [
+            E.ChargeQuality.ESTIMATED.value,
+            E.ChargeQuality.CALCULATED.value,
+        ]
+    row = {
+        Colname.charge_key: charge_key,
+        Colname.charge_id: charge_id,
+        Colname.charge_type: charge_type.value,
+        Colname.charge_owner: charge_owner,
+        Colname.charge_tax: charge_tax,
+        Colname.charge_resolution: charge_resolution.value,
+        Colname.charge_time: charge_time,
+        Colname.charge_price: charge_price,
+        Colname.metering_point_id: metering_point_id,
+        Colname.energy_supplier_id: energy_supplier_id,
+        Colname.metering_point_type: metering_point_type.value,
+        Colname.settlement_method: settlement_method.value,
+        Colname.grid_area: grid_area,
+        Colname.quantity: quantity,
+        Colname.qualities: qualities,
     }
     return row
 
@@ -436,3 +479,37 @@ def test__get_tariff_charges__when_two_tariff_overlap__returns_both_tariffs(
     )
 
     assert actual.count() == 2
+
+
+def test__get_tariff_charges__returns_df_with_expected_values(
+    spark: SparkSession,
+) -> None:
+    metering_point_rows = [_create_metering_point_row()]
+    time_series_rows = [
+        _create_time_series_row(quality=E.TimeSeriesQuality.CALCULATED),
+        _create_time_series_row(quality=E.TimeSeriesQuality.ESTIMATED),
+    ]
+    charges_rows = [_create_charges_row()]
+
+    tariff_charges_row = [_create_tariff_charges_row(quantity=2 * DEFAULT_QUANTITY)]
+
+    metering_point = _create_dataframe_from_rows(
+        spark, metering_point_rows, metering_point_period_schema
+    )
+    time_series = _create_dataframe_from_rows(
+        spark, time_series_rows, time_series_point_schema
+    )
+    charges = _create_dataframe_from_rows(spark, charges_rows, charges_schema)
+
+    expected_tariff_charges = _create_dataframe_from_rows(
+        spark, tariff_charges_row, tariff_schema
+    )
+
+    actual = get_tariff_charges(
+        metering_point,
+        time_series,
+        charges,
+        E.ChargeResolution.HOUR,
+    )
+
+    assert actual.collect() == expected_tariff_charges.collect()
