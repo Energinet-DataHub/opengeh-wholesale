@@ -13,3 +13,4 @@
 # limitations under the License.
 
 from .lock_storage import islocked
+from .data_lake_file_manager import DataLakeFileManager
