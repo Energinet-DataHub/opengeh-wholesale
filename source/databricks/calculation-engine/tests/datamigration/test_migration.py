@@ -15,10 +15,7 @@
 from unittest.mock import ANY, patch, call, Mock
 import pytest
 
-import package.infrastructure
-import package.datamigration.migration
-import package.datamigration.committed_migrations
-import package.datamigration.uncommitted_migrations
+from package.datamigration import migration
 from package.datamigration.migration import (
     _migrate_data_lake,
     DataLakeFileManager,
@@ -29,12 +26,10 @@ from package.datamigration.migration import (
 )
 from package.datamigration.uncommitted_migrations import _get_all_migrations
 
-from tests.helpers.type_utils import qualname
 
-
-@patch(qualname(initialize_spark))
-@patch(qualname(get_uncommitted_migrations))
-@patch(qualname(upload_committed_migration))
+@patch.object(migration, initialize_spark.__name__)
+@patch.object(migration, get_uncommitted_migrations.__name__)
+@patch.object(migration, upload_committed_migration.__name__)
 def test__migrate_datalake__when_script_not_found__raise_exception(
     mock_upload_committed_migration,
     mock_uncommitted_migrations,
@@ -49,11 +44,11 @@ def test__migrate_datalake__when_script_not_found__raise_exception(
         _migrate_data_lake("dummy_storage_name", mock_credential)
 
 
-@patch(qualname(initialize_spark))
-@patch(qualname(DataLakeFileManager, package.datamigration.migration))
-@patch(qualname(get_uncommitted_migrations))
-@patch(qualname(upload_committed_migration, package.datamigration.migration))
-@patch(qualname(_apply_migration))
+@patch.object(migration, initialize_spark.__name__)
+@patch.object(migration, DataLakeFileManager.__name__)
+@patch.object(migration, get_uncommitted_migrations.__name__)
+@patch.object(migration, upload_committed_migration.__name__)
+@patch.object(migration, _apply_migration.__name__)
 def test__migrate_datalake__upload_called_with_correct_name(
     mock_apply_migration: Mock,
     mock_upload_committed_migration: Mock,

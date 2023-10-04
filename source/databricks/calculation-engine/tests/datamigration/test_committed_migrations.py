@@ -14,7 +14,7 @@
 
 import pytest
 import csv
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 from io import StringIO
 
 from package.infrastructure import storage_account_access
@@ -28,8 +28,8 @@ from package.datamigration.committed_migrations import (
 
 @patch.object(storage_account_access, DataLakeFileManager.__name__)
 def test__download_committed_migrations__when_file_does_not_exist__returns_empty_list(
-    mock_file_manager,
-):
+    mock_file_manager: Mock,
+) -> None:
     # Arrange
     mock_file_manager.exists_file.return_value = False
 
@@ -43,8 +43,8 @@ def test__download_committed_migrations__when_file_does_not_exist__returns_empty
 
 @patch.object(storage_account_access, DataLakeFileManager.__name__)
 def test__download_committed_migrations__returns_correct_items(
-    mock_file_manager,
-):
+    mock_file_manager: Mock,
+) -> None:
     # Arrange
     migration_name_1 = "my_migration1"
     migration_name_2 = "my_migration2"
@@ -62,8 +62,8 @@ def test__download_committed_migrations__returns_correct_items(
 
 @patch.object(storage_account_access, DataLakeFileManager.__name__)
 def test__download_committed_migrations__when_empty_file__returns_empty_list(
-    mock_file_manager,
-):
+    mock_file_manager: Mock,
+) -> None:
     # Arrange
     mock_file_manager.download_csv.return_value = []
 
@@ -76,8 +76,8 @@ def test__download_committed_migrations__when_empty_file__returns_empty_list(
 
 @patch.object(storage_account_access, DataLakeFileManager.__name__)
 def test__upload_committed_migration__when_migration_state_file_do_not_exist__create_file(
-    mock_file_manager,
-):
+    mock_file_manager: Mock,
+) -> None:
     # Arrange
     mock_file_manager.exists_file.return_value = False
     mock_file_manager.download_csv.return_value = []
@@ -93,8 +93,8 @@ def test__upload_committed_migration__when_migration_state_file_do_not_exist__cr
 
 @patch.object(storage_account_access, DataLakeFileManager.__name__)
 def test__upload_committed_migrations__when_migration_state_file_exists__do_not_create_file(
-    mock_file_manager,
-):
+    mock_file_manager: Mock,
+) -> None:
     # Arrange
     mock_file_manager.exists_file.return_value = True
     string_data = "aaa"
@@ -111,8 +111,8 @@ def test__upload_committed_migrations__when_migration_state_file_exists__do_not_
 
 @patch.object(storage_account_access, DataLakeFileManager.__name__)
 def test__upload_committed_migration__when_unexpected_columns_in_csv__raise_exception(
-    mock_file_manager,
-):
+    mock_file_manager: Mock,
+) -> None:
     # Arrange
     mock_file_manager.exists_file.return_value = True
     string_data = "aaa,bbb\r\nccc,ddd"
@@ -128,8 +128,8 @@ def test__upload_committed_migration__when_unexpected_columns_in_csv__raise_exce
 
 @patch.object(storage_account_access, DataLakeFileManager.__name__)
 def test__upload_committed_migration__when_file_is_empty__dont_try_downloading_csv(
-    mock_file_manager,
-):
+    mock_file_manager: Mock,
+) -> None:
     # Arrange
     mock_file_manager.exists_file.return_value = True
     mock_file_manager.get_file_size.return_value = 0
@@ -143,8 +143,8 @@ def test__upload_committed_migration__when_file_is_empty__dont_try_downloading_c
 
 @patch.object(storage_account_access, DataLakeFileManager.__name__)
 def test__upload_committed_migration__append_data_is_called_with_correct_string(
-    mock_file_manager,
-):
+    mock_file_manager: Mock,
+) -> None:
     # Arrange
     string_data = "aaa\r\n"
     mock_file_manager.download_csv.return_value = create_csv_reader_with_data(
@@ -162,6 +162,6 @@ def test__upload_committed_migration__append_data_is_called_with_correct_string(
     )
 
 
-def create_csv_reader_with_data(string_data: str) -> None:
+def create_csv_reader_with_data(string_data: str):
     text_stream = StringIO(string_data)
     return csv.reader(text_stream, dialect="excel")

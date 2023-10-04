@@ -25,8 +25,6 @@ from package.calculation_input.table_reader import TableReader
 from package.codelists import ChargeType
 from package.constants import Colname
 
-from tests.helpers.type_utils import qualname
-
 DEFAULT_CHARGE_ID = "4000"
 DEFAULT_CHARGE_OWNER = "001"
 DEFAULT_CHARGE_TYPE = ChargeType.TARIFF.value
