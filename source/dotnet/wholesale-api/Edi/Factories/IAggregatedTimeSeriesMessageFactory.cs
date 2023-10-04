@@ -14,6 +14,7 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using FluentValidation.Results;
 
 namespace Energinet.DataHub.Wholesale.EDI.Factories;
 
@@ -23,4 +24,9 @@ public interface IAggregatedTimeSeriesMessageFactory
     /// Creates a service bus message based on aggregated time series
     /// </summary>
     public ServiceBusMessage Create(EnergyResult? calculationResult, string referenceId);
+
+    /// <summary>
+    /// Creates a service bus message based on validation errors
+    /// </summary>
+    public ServiceBusMessage CreateRejected(List<ValidationFailure> errors, string referenceId);
 }

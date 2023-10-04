@@ -16,6 +16,7 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.EDI.Mappers;
+using FluentValidation.Results;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using PeriodContract = Energinet.DataHub.Edi.Responses.Period;
@@ -41,11 +42,31 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
         return message;
     }
 
-    private static IMessage CreateRejectedResponseFromErrors(string dummy)
+    public ServiceBusMessage CreateRejected(List<ValidationFailure> errors, string referenceId)
+    {
+        var body = CreateRejected(errors);
+
+        var message = new ServiceBusMessage()
+        {
+            Body = new BinaryData(body.ToByteArray()),
+            Subject = body.GetType().Name,
+        };
+
+        message.ApplicationProperties.Add("ReferenceId", referenceId);
+        return message;
+    }
+
+    private static IMessage CreateRejected(List<ValidationFailure> errors)
     {
         var response = new AggregatedTimeSeriesRequestRejected();
-        response.RejectReasons.Add(CreateRejectReasonFromErrors(dummy));
+        response.RejectReasons.AddRange(errors.Select(CreateRejectReasonFromError));
         return response;
+    }
+
+    private static RejectReason CreateRejectReasonFromError(ValidationFailure error)
+    {
+        //TODO: Do we want such a mapper? Do we want to define every possible error code in our rejected contract?
+        return new RejectReason() { ErrorCode = ErrorCodeMapper.MapErrorCode(error.ErrorCode), ErrorMessage = error.ErrorMessage, };
     }
 
     private static IMessage CreateRejectedResponse()
@@ -56,14 +77,6 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
     }
 
     private static RejectReason CreateRejectReason()
-    {
-        return new RejectReason()
-        {
-            ErrorCode = ErrorCodes.InvalidBalanceResponsibleForPeriod, ErrorMessage = "something went wrong",
-        };
-    }
-
-    private static RejectReason CreateRejectReasonFromErrors(string dummy)
     {
         return new RejectReason()
         {

@@ -21,18 +21,23 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 
 public class AggregatedTimeSeriesRequestValidatorTests
 {
-    private readonly AggregatedTimeSeriesRequestValidator _validator = new();
+    private readonly AggregatedTimeSeriesRequestValidator _sut = new();
 
     [Fact]
     public void Validate_AggregatedTimeSeriesRequest_FailsOnPeriodCheck()
     {
+        // Arrange
         var request = new AggregatedTimeSeriesRequest(
             new Models.Period(
             Instant.FromUtc(2022, 1, 1, 0, 0, 0),
             Instant.FromUtc(2022, 1, 1, 0, 0, 0)),
             TimeSeriesType.Production,
             new AggregationPerRoleAndGridArea("543"));
-        var validationStatus = _validator.Validate(request);
+
+        // Act
+        var validationStatus = _sut.Validate(request);
+
+        // Assert
         Assert.False(validationStatus.IsValid);
         Assert.Equal("D66", validationStatus.Errors.First().ErrorCode);
     }

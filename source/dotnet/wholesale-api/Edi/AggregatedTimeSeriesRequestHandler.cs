@@ -56,17 +56,21 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
 
         var validation = await _validator.ValidateAsync(aggregatedTimeSeriesRequestMessage, cancellationToken).ConfigureAwait(false);
 
-        EnergyResult? result = null;
+        ServiceBusMessage message;
         if (validation.IsValid)
         {
-            result = await GetCalculationResultsAsync(
+            var result = await GetCalculationResultsAsync(
                 aggregatedTimeSeriesRequestMessage,
                 cancellationToken).ConfigureAwait(false);
-        }
 
-        var message = _aggregatedTimeSeriesMessageFactory.Create(
-            result,
-            referenceId);
+            message = _aggregatedTimeSeriesMessageFactory.Create(
+                result,
+                referenceId);
+        }
+        else
+        {
+            message = _aggregatedTimeSeriesMessageFactory.CreateRejected(validation.Errors, referenceId);
+        }
 
         await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
     }

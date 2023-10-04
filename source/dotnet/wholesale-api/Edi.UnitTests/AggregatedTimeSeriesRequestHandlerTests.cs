@@ -22,6 +22,7 @@ using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.EDI.Client;
 using Energinet.DataHub.Wholesale.EDI.Factories;
 using FluentValidation;
+using FluentValidation.Results;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.Logging;
@@ -54,7 +55,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
         var request = new AggregatedTimeSeriesRequest
         {
             AggregationPerGridarea = new AggregationPerGridArea(),
-            TimeSeriesType = Edi.Requests.TimeSeriesType.Production,
+            TimeSeriesType = Energinet.DataHub.Edi.Requests.TimeSeriesType.Production,
             Period = new Period()
             {
                 StartOfPeriod = new Timestamp(),
@@ -89,6 +90,68 @@ public class AggregatedTimeSeriesRequestHandlerTests
             bus => bus.SendAsync(
             It.Is<ServiceBusMessage>(message =>
                 message.Subject.Equals(expectedAcceptedSubject)
+                && message.ApplicationProperties.ContainsKey("ReferenceId")
+                && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
+            It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task ProcessAsync_WithTotalProductionPerGridAreaRequest_SendsRejectedEdiMessage(
+        [Frozen] Mock<IRequestCalculationResultQueries> requestCalculationResultQueriesMock,
+        [Frozen] Mock<IEdiClient> senderMock,
+        [Frozen] Mock<AggregatedTimeSeriesRequestFactory> aggregatedTimeSeriesRequestMessageParseMock,
+        [Frozen] Mock<AggregatedTimeSeriesMessageFactory> aggregatedTimeSeriesMessageFactoryMock,
+        [Frozen] Mock<IValidator<Energinet.DataHub.Wholesale.EDI.Models.AggregatedTimeSeriesRequest>> validator,
+        [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> loggerMock)
+    {
+        // Arrange
+        const string expectedRejectedSubject = nameof(AggregatedTimeSeriesRequestRejected);
+        var expectedReferenceId = Guid.NewGuid().ToString();
+        var request = new AggregatedTimeSeriesRequest
+        {
+            AggregationPerGridarea = new AggregationPerGridArea(),
+            TimeSeriesType = Energinet.DataHub.Edi.Requests.TimeSeriesType.Production,
+            Period = new Period()
+            {
+                StartOfPeriod = new Timestamp(),
+                EndOfPeriod = new Timestamp(),
+            },
+        };
+        var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
+            properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
+            body: new BinaryData(request.ToByteArray()));
+
+        validator.Setup(validator => validator.ValidateAsync(
+                It.IsAny<Energinet.DataHub.Wholesale.EDI.Models.AggregatedTimeSeriesRequest>(), CancellationToken.None))
+            .ReturnsAsync(() => new ValidationResult
+                {
+                    Errors =
+                    {
+                        new ValidationFailure("dummy", "dummy") { ErrorCode = "D66" },
+                    },
+                });
+
+        var sut = new AggregatedTimeSeriesRequestHandler(
+            requestCalculationResultQueriesMock.Object,
+            senderMock.Object,
+            aggregatedTimeSeriesRequestMessageParseMock.Object,
+            aggregatedTimeSeriesMessageFactoryMock.Object,
+            validator.Object,
+            loggerMock.Object);
+
+        // Act
+        await sut.ProcessAsync(
+            serviceBusReceivedMessage,
+            expectedReferenceId,
+            CancellationToken.None);
+
+        // Assert
+        senderMock.Verify(
+            bus => bus.SendAsync(
+            It.Is<ServiceBusMessage>(message =>
+                message.Subject.Equals(expectedRejectedSubject)
                 && message.ApplicationProperties.ContainsKey("ReferenceId")
                 && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
             It.IsAny<CancellationToken>()),
