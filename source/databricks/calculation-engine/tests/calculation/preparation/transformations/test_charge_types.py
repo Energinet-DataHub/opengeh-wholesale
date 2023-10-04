@@ -259,7 +259,9 @@ def test__get_subscription_charges__filters_on_subscription_charge_type(
 @pytest.mark.parametrize(
     "charge_time, from_date, to_date, expected_day_count",
     [
+        # leap year
         (datetime(2020, 2, 1, 0), datetime(2020, 2, 1, 0), datetime(2020, 3, 1, 0), 29),
+        # non-leap year
         (datetime(2021, 2, 1, 0), datetime(2021, 2, 1, 0), datetime(2021, 3, 1, 0), 28),
     ],
 )
