@@ -14,7 +14,7 @@
 
 from pyspark.sql.dataframe import DataFrame
 import pyspark.sql.functions as F
-from pyspark.sql.types import DecimalType, StringType, ArrayType, BooleanType
+from pyspark.sql.types import DecimalType, StringType, ArrayType
 
 from package.codelists import ChargeType, ChargeResolution
 from package.constants import Colname
