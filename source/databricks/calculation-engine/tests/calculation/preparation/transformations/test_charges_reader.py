@@ -136,7 +136,7 @@ def test__read_changes__returns_expected_joined_row_values(
 
 
 @patch.object(calculation_input, TableReader.__name__)
-def test__read_changes__when_charge_keys_are_different__returns_expected_row(
+def test__read_changes__when_multiple_charge_keys__returns_only_rows_with_matching_values_from_tables(
     table_reader_mock: TableReader, spark: SparkSession
 ) -> None:
     # Arrange
