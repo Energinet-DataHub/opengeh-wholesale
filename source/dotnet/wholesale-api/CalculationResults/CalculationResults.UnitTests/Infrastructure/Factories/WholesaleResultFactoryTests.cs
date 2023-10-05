@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.Fixtures;
@@ -52,8 +53,18 @@ public class WholesaleResultFactoryTests
     {
         var list = new List<KeyValuePair<string, string>>
         {
-            // new(EnergyResultColumnNames.BatchId, "batchId"),
-            // new(EnergyResultColumnNames.CalculationResultId, calculationResultIdA),
+            new(WholesaleResultColumnNames.BatchId, "bbbbbbbb-aaaa-bbbb-cccc-0123456789ab"),
+            new(WholesaleResultColumnNames.CalculationResultId, "aaaaaaaa-bbbb-cccc-dddd-0123456789ab"),
+            new(WholesaleResultColumnNames.EnergySupplierId, "energySupplierId"),
+            new(WholesaleResultColumnNames.GridArea, "504"),
+            new(WholesaleResultColumnNames.BatchProcessType, "WholesaleFixing"),
+            new(WholesaleResultColumnNames.ChargeCode, "chargeCode"),
+            new(WholesaleResultColumnNames.ChargeType, "tariff"),
+            new(WholesaleResultColumnNames.ChargeOwnerId, "chargeOwnerId"),
+            new(WholesaleResultColumnNames.QuantityUnit, "kWh"),
+            new(WholesaleResultColumnNames.MeteringPointType, "consumption"),
+            new(WholesaleResultColumnNames.SettlementMethod, "flex"),
+            new(WholesaleResultColumnNames.IsTax, "True"),
         };
         return new TestSqlResultRow(list);
     }

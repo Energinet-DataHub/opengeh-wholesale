@@ -12,13 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 
 public static class MeteringPointTypeMapper
 {
-    public static MeteringPointType FromDeltaTableValue(string timeSeriesType) =>
+    public static MeteringPointType FromDeltaTableValue(string meteringPointType) =>
+        meteringPointType switch
+        {
+            DeltaTableMeteringPointType.Production => MeteringPointType.Production,
+            DeltaTableMeteringPointType.Consumption => MeteringPointType.Consumption,
+            _ => throw new NotImplementedException($"Cannot map meteringPointType type '{meteringPointType}"),
+        };
+
+    public static MeteringPointType FromTimeSeriesTypeDeltaTableValue(string timeSeriesType) =>
         TimeSeriesTypeMapper.FromDeltaTableValue(timeSeriesType) switch
         {
             TimeSeriesType.Production => MeteringPointType.Production,

@@ -29,7 +29,7 @@ public static class SettlementReportDataFactory
             ProcessTypeMapper.FromDeltaTableValue(row[EnergyResultColumnNames.BatchProcessType]),
             SqlResultValueConverters.ToInstant(row[EnergyResultColumnNames.Time])!.Value,
             "PT15M", // TODO (JMG): store resolution in delta table?
-            MeteringPointTypeMapper.FromDeltaTableValue(row[EnergyResultColumnNames.TimeSeriesType]),
+            MeteringPointTypeMapper.FromTimeSeriesTypeDeltaTableValue(row[EnergyResultColumnNames.TimeSeriesType]),
             SettlementMethodMapper.FromDeltaTableValue(row[EnergyResultColumnNames.TimeSeriesType]),
             SqlResultValueConverters.ToDecimal(row[EnergyResultColumnNames.Quantity])!.Value));
     }
