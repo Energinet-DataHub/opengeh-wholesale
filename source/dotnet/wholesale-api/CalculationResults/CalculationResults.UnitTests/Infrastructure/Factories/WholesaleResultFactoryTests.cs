@@ -33,7 +33,7 @@ public class WholesaleResultFactoryTests
     private readonly IEnumerable<QuantityQuality> _quantityQualities = new List<QuantityQuality> { QuantityQuality.Measured,  QuantityQuality.Missing };
 
     [Fact]
-    public void ToInstant_WhenValueIsNull_ReturnsNull()
+    public void CreateWholesaleResult_()
     {
          // Arrange
          var wholesaleTimeSeriesPoints = new List<WholesaleTimeSeriesPoint>

@@ -22,8 +22,8 @@ public static class MeteringPointTypeMapper
     public static MeteringPointType FromDeltaTableValue(string meteringPointType) =>
         meteringPointType switch
         {
-            DeltaTableMeteringPointType.Production => MeteringPointType.Production,
-            DeltaTableMeteringPointType.Consumption => MeteringPointType.Consumption,
+            "production" => MeteringPointType.Production,
+            "consumption" => MeteringPointType.Consumption,
             _ => throw new NotImplementedException($"Cannot map meteringPointType type '{meteringPointType}"),
         };
 

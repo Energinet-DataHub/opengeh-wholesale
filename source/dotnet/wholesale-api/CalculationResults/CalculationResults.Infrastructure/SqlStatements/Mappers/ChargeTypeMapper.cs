@@ -22,9 +22,9 @@ public static class ChargeTypeMapper
     public static ChargeType FromDeltaTableValue(string chargeType) =>
         chargeType switch
         {
-            DeltaTableConstants.DeltaTableChargeType.Fee => ChargeType.Fee,
-            DeltaTableConstants.DeltaTableChargeType.Subscription => ChargeType.Subscription,
-            DeltaTableConstants.DeltaTableChargeType.Tariff => ChargeType.Tariff,
+            "fee" => ChargeType.Fee,
+            "subscription" => ChargeType.Subscription,
+            "tariff" => ChargeType.Tariff,
             _ => throw new NotImplementedException($"Cannot map process type '{chargeType}"),
         };
 }

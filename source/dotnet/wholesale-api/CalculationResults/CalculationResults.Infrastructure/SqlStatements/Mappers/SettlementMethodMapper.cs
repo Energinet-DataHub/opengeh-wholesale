@@ -18,7 +18,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlState
 
 public static class SettlementMethodMapper
 {
-    public static SettlementMethod? FromDeltaTableValue(string timeSeriesType) =>
+    public static SettlementMethod? FromTimeSeriesTypeDeltaTableValue(string timeSeriesType) =>
         TimeSeriesTypeMapper.FromDeltaTableValue(timeSeriesType) switch
         {
             TimeSeriesType.Production => null,
@@ -33,5 +33,14 @@ public static class SettlementMethodMapper
             TimeSeriesType.TempFlexConsumption => null,
             TimeSeriesType.TempProduction => null,
             _ => throw new NotImplementedException($"Cannot map timeSeriesType type '{timeSeriesType}"),
+        };
+
+    public static SettlementMethod? FromDeltaTableValue(string settlementMethod) =>
+        settlementMethod switch
+        {
+            "flex" => SettlementMethod.Flex,
+            "non_profiled" => SettlementMethod.NonProfiled,
+            "" => null,
+            _ => throw new NotImplementedException($"Cannot map settlementMethod type '{settlementMethod}"),
         };
 }
