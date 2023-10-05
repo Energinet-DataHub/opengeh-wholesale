@@ -12,22 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using ProcessType = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV1.Types.ProcessType;
+using CalculationType = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV1.Types.CalculationType;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.EnergyResultProducedV1;
 
-public static class ProcessTypeMapper
+public static class CalculationTypeMapper
 {
-    public static ProcessType MapProcessType(Wholesale.Common.Models.ProcessType processType)
+    public static CalculationType MapCalculationType(Wholesale.Common.Models.ProcessType processType)
     {
         return processType switch
         {
-            Common.Models.ProcessType.Aggregation => ProcessType.Aggregation,
-            Common.Models.ProcessType.BalanceFixing => ProcessType.BalanceFixing,
-            Common.Models.ProcessType.WholesaleFixing => ProcessType.WholesaleFixing,
-            Common.Models.ProcessType.FirstCorrectionSettlement => ProcessType.FirstCorrectionSettlement,
-            Common.Models.ProcessType.SecondCorrectionSettlement => ProcessType.SecondCorrectionSettlement,
-            Common.Models.ProcessType.ThirdCorrectionSettlement => ProcessType.ThirdCorrectionSettlement,
+            Common.Models.ProcessType.Aggregation => CalculationType.Aggregation,
+            Common.Models.ProcessType.BalanceFixing => CalculationType.BalanceFixing,
+            Common.Models.ProcessType.WholesaleFixing => CalculationType.WholesaleFixing,
+            Common.Models.ProcessType.FirstCorrectionSettlement => CalculationType.FirstCorrectionSettlement,
+            Common.Models.ProcessType.SecondCorrectionSettlement => CalculationType.SecondCorrectionSettlement,
+            Common.Models.ProcessType.ThirdCorrectionSettlement => CalculationType.ThirdCorrectionSettlement,
             _ => throw new ArgumentException($"No matching 'ProcessType' for: {processType.ToString()}"),
         };
     }

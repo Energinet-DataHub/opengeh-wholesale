@@ -136,7 +136,7 @@ public class EnergyResultProducedV1FactoryTests
         {
             CalculationId = energyResult.BatchId.ToString(),
             Resolution = EnergyResultProducedV1.Types.Resolution.Quarter,
-            ProcessType = EnergyResultProducedV1.Types.ProcessType.Aggregation,
+            CalculationType = EnergyResultProducedV1.Types.CalculationType.Aggregation,
             QuantityUnit = EnergyResultProducedV1.Types.QuantityUnit.Kwh,
             PeriodStartUtc = energyResult.PeriodStart.ToTimestamp(),
             PeriodEndUtc = energyResult.PeriodEnd.ToTimestamp(),

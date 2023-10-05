@@ -15,6 +15,7 @@
 using Energinet.DataHub.Core.Messaging.Communication.Internal;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Contracts.Events;
+using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Google.Protobuf;
 
@@ -23,23 +24,30 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Fa
     public class CalculationResultIntegrationEventFactory : ICalculationResultIntegrationEventFactory
     {
         private readonly ICalculationResultCompletedFactory _calculationResultCompletedFactory;
+        private readonly IEnergyResultProducedV1Factory _energyResultProducedV1Factory;
 
-        public CalculationResultIntegrationEventFactory(ICalculationResultCompletedFactory calculationResultCompletedFactory)
+        public CalculationResultIntegrationEventFactory(ICalculationResultCompletedFactory calculationResultCompletedFactory, IEnergyResultProducedV1Factory energyResultProducedV1Factory)
         {
             _calculationResultCompletedFactory = calculationResultCompletedFactory;
+            _energyResultProducedV1Factory = energyResultProducedV1Factory;
         }
 
-        public IntegrationEvent Create(EnergyResult energyResult)
+        public IntegrationEvent CreateCalculationResultCompleted(EnergyResult energyResult)
         {
-            var @event = _calculationResultCompletedFactory.Create(energyResult);
-            return CreateIntegrationEvent(@event, energyResult.Id);
+            var calculationResultCompleted = _calculationResultCompletedFactory.Create(energyResult);
+            var eventIdentification = Guid.NewGuid();
+            return CreateIntegrationEvent(calculationResultCompleted, eventIdentification, CalculationResultCompleted.EventName, CalculationResultCompleted.EventMinorVersion);
         }
 
-        private IntegrationEvent CreateIntegrationEvent(IMessage protobufMessage, Guid calculationResultId)
+        public IntegrationEvent CreateEnergyResultProducedV1(EnergyResult energyResult)
         {
-            var eventIdentification = calculationResultId;
-            var eventName = CalculationResultCompleted.EventName;
-            var eventMinorVersion = CalculationResultCompleted.EventMinorVersion;
+            var calculationResultCompleted = _energyResultProducedV1Factory.Create(energyResult);
+            var eventIdentification = Guid.NewGuid();
+            return CreateIntegrationEvent(calculationResultCompleted, eventIdentification, EnergyResultProducedV1.EventName, EnergyResultProducedV1.EventMinorVersion);
+        }
+
+        private IntegrationEvent CreateIntegrationEvent(IMessage protobufMessage, Guid eventIdentification, string eventName, int eventMinorVersion)
+        {
             return new IntegrationEvent(eventIdentification, eventName, eventMinorVersion, protobufMessage);
         }
     }
