@@ -57,7 +57,7 @@ public class CalculationResultQueries : ICalculationResultQueries
         SqlResultRow? currentRow = null;
         var resultCount = 0;
 
-        await foreach (var nextRow in _sqlStatementClient.ExecuteAsync(sql, null).ConfigureAwait(false))
+        await foreach (var nextRow in _sqlStatementClient.ExecuteAsync(sql, sqlStatementParameters: null).ConfigureAwait(false))
         {
             var timeSeriesPoint = TimeSeriesPointFactory.CreateTimeSeriesPoint(nextRow);
 

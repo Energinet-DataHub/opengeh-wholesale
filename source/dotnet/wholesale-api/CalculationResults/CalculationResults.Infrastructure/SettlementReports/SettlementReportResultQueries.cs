@@ -41,7 +41,7 @@ public class SettlementReportResultQueries : ISettlementReportResultQueries
         string? energySupplier)
     {
         var sql = SettlementReportSqlStatementFactory.Create(_deltaTableOptions.SCHEMA_NAME, _deltaTableOptions.ENERGY_RESULTS_TABLE_NAME, gridAreaCodes, processType, periodStart, periodEnd, energySupplier);
-        var rows = await _sqlStatementClient.ExecuteAsync(sql, null).ToListAsync().ConfigureAwait(false);
+        var rows = await _sqlStatementClient.ExecuteAsync(sql, sqlStatementParameters: null).ToListAsync().ConfigureAwait(false);
         return SettlementReportDataFactory.Create(rows);
     }
 }

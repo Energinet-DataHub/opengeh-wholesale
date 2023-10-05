@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
@@ -47,7 +48,7 @@ public class RequestCalculationResultQueries : IRequestCalculationResultQueries
         var timeSeriesPoints = new List<TimeSeriesPoint>();
         SqlResultRow? firstRow = null;
         var resultCount = 0;
-        await foreach (var currentRow in _sqlStatementClient.ExecuteAsync(sqlStatement, null).ConfigureAwait(false))
+        await foreach (var currentRow in _sqlStatementClient.ExecuteAsync(sqlStatement, sqlStatementParameters: null).ConfigureAwait(false))
         {
             if (firstRow is null)
                 firstRow = currentRow;
