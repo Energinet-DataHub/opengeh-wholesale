@@ -15,10 +15,11 @@
 using FluentValidation;
 using NodaTime;
 using NodaTime.Text;
+using Period = Energinet.DataHub.Edi.Requests.Period;
 
 namespace Energinet.DataHub.Wholesale.Edi.Validators;
 
-public class PeriodValidator : AbstractValidator<Energinet.DataHub.Edi.Requests.Period>
+public class PeriodValidator : AbstractValidator<Period>
 {
     private const string WrongTimeFormatErrorMessage =
         "Forkert dato format, skal være T22:00:00Z eller T23:00:00Z / Wrong date format, must be T22:00:00Z or T23:00:00Z";
@@ -35,7 +36,9 @@ public class PeriodValidator : AbstractValidator<Energinet.DataHub.Edi.Requests.
             .Must(CanConvertToInstant)
             .WithMessage(WrongTimeFormatErrorMessage).WithErrorCode(WrongTimeFormatErrorCode)
             .Must(ValidHourFormat)
-            .WithMessage(WrongTimeFormatErrorMessage).WithErrorCode(WrongTimeFormatErrorCode);
+            .WithMessage(WrongTimeFormatErrorMessage).WithErrorCode(WrongTimeFormatErrorCode)
+            .Must(TimeIsInThePast)
+            .WithMessage("Time has to be in the past").WithErrorCode("D66");
         When(x => string.IsNullOrWhiteSpace(x.End) == false, () =>
             RuleFor(x => x.End)
             .Must(CanConvertToInstant)
@@ -44,27 +47,27 @@ public class PeriodValidator : AbstractValidator<Energinet.DataHub.Edi.Requests.
             .WithMessage(WrongTimeFormatErrorMessage).WithErrorCode(WrongTimeFormatErrorCode));
 
         When(x => string.IsNullOrWhiteSpace(x.End) == false, () =>
-            RuleFor(x => new Period(x.Start, x.End))
+            RuleFor(x => x)
                 .Must(StartIsBeforeEnd)
                 .WithMessage("Start time has to be before end time").WithErrorCode("D66"));
     }
 
-    private bool CanConvertToInstant(string stringDate)
+    private static bool CanConvertToInstant(string stringDate)
     {
         return InstantPattern.General.Parse(stringDate).Success;
     }
 
-    private Instant ConvertToInstant(string stringDate)
+    private static Instant ConvertToInstant(string stringDate)
     {
         return InstantPattern.General.Parse(stringDate).Value;
     }
 
-    private bool ValidHourFormat(string stringData)
+    private static bool ValidHourFormat(string stringData)
     {
         return stringData.Contains(SummerTimeFormat) || stringData.Contains(WinterTimeFormat);
     }
 
-    private bool StartIsBeforeEnd(Period period)
+    private static bool StartIsBeforeEnd(Period period)
     {
         var (start, end) = (period.Start, period.End);
         return CanConvertToInstant(start)
@@ -72,5 +75,8 @@ public class PeriodValidator : AbstractValidator<Energinet.DataHub.Edi.Requests.
                && ConvertToInstant(start) < ConvertToInstant(end);
     }
 
-    private record Period(string Start, string End);
+    private static bool TimeIsInThePast(string stringDate)
+    {
+        return InstantPattern.General.Parse(stringDate).Value < Instant.FromDateTimeUtc(DateTime.UtcNow);
+    }
 }
