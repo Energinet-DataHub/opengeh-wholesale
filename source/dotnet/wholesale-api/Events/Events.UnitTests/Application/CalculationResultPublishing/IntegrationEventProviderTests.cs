@@ -78,7 +78,7 @@ public class IntegrationEventProviderTests
             .Setup(factory => factory.CreateCalculationResultCompleted(energyResult))
             .Returns(anyIntegrationEvent);
         calculationResultIntegrationEventFactoryMock
-            .Setup(factory => factory.CreateEnergyResultProduced(energyResult))
+            .Setup(factory => factory.CreateEnergyResultProducedV1(energyResult))
             .Returns(anyIntegrationEvent);
 
         // Act
@@ -144,7 +144,7 @@ public class IntegrationEventProviderTests
             .Returns(anyIntegrationEvent);
 
         calculationResultIntegrationEventFactoryMock
-            .Setup(factory => factory.CreateEnergyResultProduced(energyResult))
+            .Setup(factory => factory.CreateEnergyResultProducedV1(energyResult))
             .Returns(anyIntegrationEvent);
 
         // Act
@@ -194,28 +194,28 @@ public class IntegrationEventProviderTests
             .Setup(factory => factory.CreateCalculationResultCompleted(energyResult1))
             .Returns(calculationResultCompletedEvent1);
         calculationResultIntegrationEventFactoryMock
-            .Setup(factory => factory.CreateEnergyResultProduced(energyResult1))
+            .Setup(factory => factory.CreateEnergyResultProducedV1(energyResult1))
             .Returns(energyResultProducedEvent1);
 
         calculationResultIntegrationEventFactoryMock
             .SetupSequence(factory => factory.CreateCalculationResultCompleted(energyResult2))
             .Returns(calculationResultCompletedEvent2);
         calculationResultIntegrationEventFactoryMock
-            .Setup(factory => factory.CreateEnergyResultProduced(energyResult2))
+            .Setup(factory => factory.CreateEnergyResultProducedV1(energyResult2))
             .Returns(energyResultProducedEvent2);
 
         calculationResultIntegrationEventFactoryMock
             .Setup(factory => factory.CreateCalculationResultCompleted(energyResult3))
             .Returns(calculationResultCompletedEvent3);
         calculationResultIntegrationEventFactoryMock
-            .Setup(factory => factory.CreateEnergyResultProduced(energyResult3))
+            .Setup(factory => factory.CreateEnergyResultProducedV1(energyResult3))
             .Returns(energyResultProducedEvent3);
 
         calculationResultIntegrationEventFactoryMock
             .SetupSequence(factory => factory.CreateCalculationResultCompleted(energyResult4))
             .Returns(calculationResultCompletedEvent4);
         calculationResultIntegrationEventFactoryMock
-            .Setup(factory => factory.CreateEnergyResultProduced(energyResult4))
+            .Setup(factory => factory.CreateEnergyResultProducedV1(energyResult4))
             .Returns(energyResultProducedEvent4);
 
         // Act

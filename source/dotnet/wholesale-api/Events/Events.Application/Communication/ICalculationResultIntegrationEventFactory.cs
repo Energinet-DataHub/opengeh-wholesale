@@ -21,5 +21,5 @@ public interface ICalculationResultIntegrationEventFactory
 {
     IntegrationEvent CreateCalculationResultCompleted(EnergyResult energyResult);
 
-    IntegrationEvent CreateEnergyResultProduced(EnergyResult energyResult);
+    IntegrationEvent CreateEnergyResultProducedV1(EnergyResult energyResult);
 }

@@ -62,7 +62,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
             {
                 resultCount++;
                 yield return _calculationResultIntegrationEventFactory.CreateCalculationResultCompleted(energyResult); // Deprecated
-                yield return _calculationResultIntegrationEventFactory.CreateEnergyResultProduced(energyResult);
+                yield return _calculationResultIntegrationEventFactory.CreateEnergyResultProducedV1(energyResult);
             }
 
             batch.PublishedTime = _clock.GetCurrentInstant();

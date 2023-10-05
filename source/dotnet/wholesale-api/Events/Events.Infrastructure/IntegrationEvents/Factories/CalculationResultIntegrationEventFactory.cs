@@ -39,7 +39,7 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Fa
             return CreateIntegrationEvent(calculationResultCompleted, eventIdentification, CalculationResultCompleted.EventName, CalculationResultCompleted.EventMinorVersion);
         }
 
-        public IntegrationEvent CreateEnergyResultProduced(EnergyResult energyResult)
+        public IntegrationEvent CreateEnergyResultProducedV1(EnergyResult energyResult)
         {
             var calculationResultCompleted = _energyResultProducedV1Factory.Create(energyResult);
             var eventIdentification = Guid.NewGuid();
