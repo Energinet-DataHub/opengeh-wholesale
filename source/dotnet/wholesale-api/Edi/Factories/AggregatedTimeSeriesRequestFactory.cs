@@ -14,8 +14,9 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.EDI.Models;
-using NodaTime.Serialization.Protobuf;
+using NodaTime;
 using NodaTime.Text;
+using Period = Energinet.DataHub.Wholesale.EDI.Models.Period;
 
 namespace Energinet.DataHub.Wholesale.EDI.Factories;
 
@@ -81,8 +82,12 @@ public class AggregatedTimeSeriesRequestFactory : IAggregatedTimeSeriesRequestFa
 
     private Period MapPeriod(Energinet.DataHub.Edi.Requests.Period period)
     {
+        var end = string.IsNullOrWhiteSpace(period.End)
+            ? Instant.FromDateTimeUtc(DateTime.Now)
+            : InstantPattern.General.Parse(period.End).Value;
+
         return new Period(
         InstantPattern.General.Parse(period.Start).Value,
-        InstantPattern.General.Parse(period.End).Value);
+        end);
     }
 }
