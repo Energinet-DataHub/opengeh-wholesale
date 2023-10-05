@@ -34,7 +34,7 @@ from package.calculation.preparation.transformations.hour_to_quarter import (
 )
 
 
-enriched_time_series_schema = StructType(
+basis_data_time_series_points_schema = StructType(
     [
         StructField(Colname.grid_area, StringType(), True),
         StructField(Colname.to_grid_area, StringType(), True),
@@ -50,7 +50,7 @@ enriched_time_series_schema = StructType(
     ]
 )
 
-enriched_time_series_in_quarter_schema = StructType(
+time_series_quarter_points_schema = StructType(
     [
         StructField(Colname.grid_area, StringType(), True),
         StructField(Colname.to_grid_area, StringType(), True),
@@ -114,17 +114,16 @@ def test__transform_hour_to_quarter__split_hourly_enriched_time_series(
 ) -> None:
     # Arrange
     rows = [_create_enriched_time_series_row()]
-    enriched_time_series = spark.createDataFrame(rows, enriched_time_series_schema)
+    enriched_time_series = spark.createDataFrame(
+        rows, basis_data_time_series_points_schema
+    )
 
     # Act
     enriched_time_series_all_quarter = transform_hour_to_quarter(enriched_time_series)
 
     # Assert
     assert enriched_time_series_all_quarter.count() == 4
-    assert (
-        enriched_time_series_all_quarter.schema
-        == enriched_time_series_in_quarter_schema
-    )
+    assert enriched_time_series_all_quarter.schema == time_series_quarter_points_schema
     assert enriched_time_series_all_quarter.collect()[0]["quarter_quantity"] == Decimal(
         "1.111111"
     )
