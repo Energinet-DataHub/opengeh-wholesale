@@ -15,13 +15,13 @@
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 
 public static class WholesaleTimeSeriesPointFactory
 {
-    public static EnergyTimeSeriesPoint CreateTimeSeriesPoint(SqlResultRow row)
+    public static WholesaleTimeSeriesPoint CreateTimeSeriesPoint(SqlResultRow row)
     {
         var time = SqlResultValueConverters.ToDateTimeOffset(row[WholesaleResultColumnNames.Time])!.Value;
         var quantity = SqlResultValueConverters.ToDecimal(row[WholesaleResultColumnNames.Quantity])!.Value;
