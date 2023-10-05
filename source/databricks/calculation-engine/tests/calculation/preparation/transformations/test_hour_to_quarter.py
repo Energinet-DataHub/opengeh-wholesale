@@ -13,6 +13,7 @@
 # limitations under the License.
 
 
+import pytest
 from decimal import Decimal
 from datetime import datetime
 from pyspark.sql import SparkSession, Row
@@ -90,17 +91,11 @@ def test__transform_hour_to_quarter__error_on_invalid_basis_data_time_series_poi
     spark: SparkSession,
 ) -> None:
     # Arrange
-    rows = [basis_data_time_series_points_row()]
-    basis_data_time_series_points = spark.createDataFrame(
-        rows, basis_data_time_series_points_schema
-    )
-    basis_data_time_series_points = basis_data_time_series_points.drop(
-        Colname.grid_area
-    )
+    basis_data_time_series_points = spark.createDataFrame(data=[{"Hello": "World"}])
 
-    # Act / Assert
-    try:
+    # Act
+    with pytest.raises(ValueError) as excinfo:
         transform_hour_to_quarter(basis_data_time_series_points)
-        assert False
-    except ValueError:
-        assert True
+
+    # Assert
+    assert "Schema mismatch" in str(excinfo.value)
