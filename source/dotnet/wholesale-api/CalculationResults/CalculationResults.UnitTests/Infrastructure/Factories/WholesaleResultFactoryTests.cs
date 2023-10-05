@@ -31,21 +31,21 @@ public class WholesaleResultFactoryTests
     private const decimal DefaultAmount = 2.345678m;
     private readonly Instant _defaultPeriodStart = Instant.FromUtc(2022, 5, 1, 0, 0);
     private readonly Instant _defaultPeriodEnd = Instant.FromUtc(2022, 5, 2, 0, 0);
-    private readonly Instant _defaultTime = Instant.FromUtc(2022, 5, 1, 1, 0);
+    private static readonly Instant _defaultTime = Instant.FromUtc(2022, 5, 1, 1, 0);
     private readonly IEnumerable<QuantityQuality> _quantityQualities = new List<QuantityQuality> { QuantityQuality.Measured,  QuantityQuality.Missing };
+    private readonly List<WholesaleTimeSeriesPoint> _defaultWholesaleTimeSeriesPoints = new()
+    {
+        new WholesaleTimeSeriesPoint(_defaultTime.ToDateTimeOffset(), 1.0m, new List<QuantityQuality> { QuantityQuality.Measured,  QuantityQuality.Missing }, DefaultPrice, DefaultAmount),
+    };
 
     [Fact]
     public void CreateWholesaleResult_ReturnExpectedWholesaleResult()
     {
          // Arrange
-         var wholesaleTimeSeriesPoints = new List<WholesaleTimeSeriesPoint>
-         {
-             new(_defaultTime.ToDateTimeOffset(), 1.0m, _quantityQualities, DefaultPrice, DefaultAmount),
-         };
          var row = CreateDefaultSqlResultRow();
 
          // Act
-         var actual = WholesaleResultFactory.CreateWholesaleResult(row, wholesaleTimeSeriesPoints, _defaultPeriodStart, _defaultPeriodEnd);
+         var actual = WholesaleResultFactory.CreateWholesaleResult(row, _defaultWholesaleTimeSeriesPoints, _defaultPeriodStart, _defaultPeriodEnd);
 
          // Assert
          using var assertionScope = new AssertionScope();
