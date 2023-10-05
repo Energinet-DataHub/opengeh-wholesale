@@ -34,7 +34,7 @@ from package.calculation.energy.schemas import (
 )
 
 
-def _create_enriched_time_series_row(
+def basis_data_time_series_points_row(
     grid_area: int = "805",
     to_grid_area: str = "805",
     from_grid_area: str = "806",
@@ -68,7 +68,7 @@ def test__transform_hour_to_quarter__split_hourly_enriched_time_series(
     spark: SparkSession,
 ) -> None:
     # Arrange
-    rows = [_create_enriched_time_series_row()]
+    rows = [basis_data_time_series_points_row()]
     basis_data_time_series_points = spark.createDataFrame(
         rows, basis_data_time_series_points_schema
     )
@@ -86,11 +86,11 @@ def test__transform_hour_to_quarter__split_hourly_enriched_time_series(
     )
 
 
-def test__transform_hour_to_quarter__error_on_invalid_schemas(
+def test__transform_hour_to_quarter__error_on_invalid_basis_data_time_series_points_schema(
     spark: SparkSession,
 ) -> None:
     # Arrange
-    rows = [_create_enriched_time_series_row()]
+    rows = [basis_data_time_series_points_row()]
     basis_data_time_series_points = spark.createDataFrame(
         rows, basis_data_time_series_points_schema
     )

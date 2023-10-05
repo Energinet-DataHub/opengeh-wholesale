@@ -64,9 +64,4 @@ def transform_hour_to_quarter(basis_data_time_series_points_df: DataFrame) -> Da
         .cast(DecimalType(18, 6)),
     )
 
-    if result.schema != time_series_quarter_points_schema:
-        raise ValueError(
-            f"Schema mismatch. Expected {time_series_quarter_points_schema}, got {result.schema}"
-        )
-
     return result
