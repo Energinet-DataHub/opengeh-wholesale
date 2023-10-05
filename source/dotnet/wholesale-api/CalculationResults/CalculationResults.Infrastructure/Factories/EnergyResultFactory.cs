@@ -25,7 +25,7 @@ public class EnergyResultFactory
 {
     public static EnergyResult CreateEnergyResult(
         SqlResultRow sqlResultRow,
-        List<TimeSeriesPoint> timeSeriesPoints,
+        List<EnergyTimeSeriesPoint> timeSeriesPoints,
         Instant periodStart,
         Instant periodEnd)
     {

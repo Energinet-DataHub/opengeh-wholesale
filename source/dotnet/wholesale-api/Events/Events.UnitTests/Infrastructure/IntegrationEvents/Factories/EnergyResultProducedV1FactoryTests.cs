@@ -118,7 +118,7 @@ public class EnergyResultProducedV1FactoryTests
             TimeSeriesType.FlexConsumption,
             _energySupplierId,
             _balanceResponsibleId,
-            new TimeSeriesPoint[]
+            new EnergyTimeSeriesPoint[]
             {
                 new(new DateTime(2021, 1, 1), 1, QuantityQuality.Estimated),
                 new(new DateTime(2021, 1, 1), 2, QuantityQuality.Estimated),

@@ -19,13 +19,13 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 
-public static class TimeSeriesPointFactory
+public static class EnergyTimeSeriesPointFactory
 {
-    public static TimeSeriesPoint CreateTimeSeriesPoint(SqlResultRow row)
+    public static EnergyTimeSeriesPoint CreateTimeSeriesPoint(SqlResultRow row)
     {
         var time = SqlResultValueConverters.ToDateTimeOffset(row[EnergyResultColumnNames.Time])!.Value;
         var quantity = SqlResultValueConverters.ToDecimal(row[EnergyResultColumnNames.Quantity])!.Value;
         var quality = SqlResultValueConverters.ToQuantityQuality(row[EnergyResultColumnNames.QuantityQuality]);
-        return new TimeSeriesPoint(time, quantity, quality);
+        return new EnergyTimeSeriesPoint(time, quantity, quality);
     }
 }

@@ -26,7 +26,7 @@ public sealed class EnergyResult
         TimeSeriesType timeSeriesType,
         string? energySupplierId,
         string? balanceResponsibleId,
-        TimeSeriesPoint[] timeSeriesPoints,
+        EnergyTimeSeriesPoint[] timeSeriesPoints,
         ProcessType processType,
         Instant periodStart,
         Instant periodEnd,
@@ -68,5 +68,5 @@ public sealed class EnergyResult
 
     public Instant PeriodEnd { get; }
 
-    public TimeSeriesPoint[] TimeSeriesPoints { get; private set; }
+    public EnergyTimeSeriesPoint[] TimeSeriesPoints { get; private set; }
 }

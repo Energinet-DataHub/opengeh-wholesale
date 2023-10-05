@@ -35,7 +35,7 @@ public class CalculationResultTests
         Instant anyPeriodStart,
         Instant anyPeriodEnd)
     {
-        var emptyTimeSeriesPoints = new TimeSeriesPoint[] { };
+        var emptyTimeSeriesPoints = new EnergyTimeSeriesPoint[] { };
         var exception = Assert.Throws<ArgumentException>(() =>
             new EnergyResult(anyId, anyBatchId, anyGridArea, anyTimeSeriesType, null, null, emptyTimeSeriesPoints, anyProcessType, anyPeriodStart, anyPeriodEnd, anyFromGridArea));
         exception.Message.Should().Contain("empty");

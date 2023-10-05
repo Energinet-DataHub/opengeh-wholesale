@@ -53,19 +53,19 @@ public class CalculationResultQueries : ICalculationResultQueries
 
     private async IAsyncEnumerable<EnergyResult> GetInternalAsync(string sql, Instant periodStart, Instant periodEnd)
     {
-        var timeSeriesPoints = new List<TimeSeriesPoint>();
+        var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
         SqlResultRow? currentRow = null;
         var resultCount = 0;
 
         await foreach (var nextRow in _sqlStatementClient.ExecuteAsync(sql).ConfigureAwait(false))
         {
-            var timeSeriesPoint = TimeSeriesPointFactory.CreateTimeSeriesPoint(nextRow);
+            var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(nextRow);
 
             if (currentRow != null && BelongsToDifferentResults(currentRow, nextRow))
             {
                 yield return EnergyResultFactory.CreateEnergyResult(currentRow, timeSeriesPoints, periodStart, periodEnd);
                 resultCount++;
-                timeSeriesPoints = new List<TimeSeriesPoint>();
+                timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
             }
 
             timeSeriesPoints.Add(timeSeriesPoint);

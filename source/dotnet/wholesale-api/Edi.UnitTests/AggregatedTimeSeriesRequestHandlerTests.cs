@@ -29,7 +29,6 @@ using NodaTime;
 using Xunit;
 using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 using AggregationPerGridArea = Energinet.DataHub.Edi.Requests.AggregationPerGridArea;
-using CalculationTimeSeriesPoint = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesPoint;
 using Period = Energinet.DataHub.Edi.Requests.Period;
 using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
 
@@ -101,7 +100,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
             Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.Production,
             "1223456",
             "123456",
-            timeSeriesPoints: new CalculationTimeSeriesPoint[] { new(DateTime.Now, 0, QuantityQuality.Measured) },
+            timeSeriesPoints: new EnergyTimeSeriesPoint[] { new(DateTime.Now, 0, QuantityQuality.Measured) },
             ProcessType.Aggregation,
             Instant.FromUtc(2022, 12, 31, 23, 0),
             Instant.FromUtc(2023, 1, 31, 23, 0),

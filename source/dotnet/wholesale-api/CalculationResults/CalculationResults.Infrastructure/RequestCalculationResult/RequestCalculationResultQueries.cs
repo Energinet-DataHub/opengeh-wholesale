@@ -44,7 +44,7 @@ public class RequestCalculationResultQueries : IRequestCalculationResultQueries
     public async Task<EnergyResult?> GetAsync(CalculationResultQuery query)
     {
         var sqlStatement = CreateRequestSql(query);
-        var timeSeriesPoints = new List<TimeSeriesPoint>();
+        var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
         SqlResultRow? firstRow = null;
         var resultCount = 0;
         await foreach (var currentRow in _sqlStatementClient.ExecuteAsync(sqlStatement).ConfigureAwait(false))
@@ -52,7 +52,7 @@ public class RequestCalculationResultQueries : IRequestCalculationResultQueries
             if (firstRow is null)
                 firstRow = currentRow;
 
-            var timeSeriesPoint = TimeSeriesPointFactory.CreateTimeSeriesPoint(currentRow);
+            var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(currentRow);
 
             timeSeriesPoints.Add(timeSeriesPoint);
             resultCount++;

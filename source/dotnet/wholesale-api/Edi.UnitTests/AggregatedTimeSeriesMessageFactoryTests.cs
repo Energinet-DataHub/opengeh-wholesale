@@ -20,7 +20,6 @@ using FluentAssertions;
 using Google.Protobuf.WellKnownTypes;
 using NodaTime;
 using Xunit;
-using TimeSeriesPoint = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesPoint;
 using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests;
@@ -72,7 +71,7 @@ public class AggregatedTimeSeriesMessageFactoryTests
             _timeSeriesType,
             _energySupplierId,
             _balanceResponsibleId,
-            new TimeSeriesPoint[]
+            new EnergyTimeSeriesPoint[]
             {
                 new(new DateTime(2021, 1, 1), 1, CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Estimated),
                 new(new DateTime(2021, 1, 1), 2, CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Estimated),
