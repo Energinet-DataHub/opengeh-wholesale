@@ -43,7 +43,7 @@ class DataframeDefaults:
     )
     default_charge_owner: str = const_charge_owner
     default_charge_price: Decimal = Decimal("1.123456")
-    default_charge_tax: str = "true"
+    default_charge_tax: bool = True
     default_charge_type: str = const_charge_type.value
     default_charge_resolution: str = ChargeResolution.DAY.value
     default_charge_time: datetime = datetime(2020, 1, 1, 0, 0)
