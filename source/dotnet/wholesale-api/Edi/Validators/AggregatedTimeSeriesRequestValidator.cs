@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Edi.Validators;
 using FluentValidation;
 
 namespace Energinet.DataHub.Wholesale.EDI.Validators;
@@ -20,8 +21,7 @@ public class AggregatedTimeSeriesRequestValidator : AbstractValidator<Models.Agg
 {
     public AggregatedTimeSeriesRequestValidator()
     {
-        RuleFor(x => x.Period.Start)
-            .LessThan(x => x.Period.End)
-            .WithMessage("Start time has to be before end time").WithErrorCode("D66");
+        RuleFor(x => x.Period)
+            .SetValidator(new PeriodValidator());
     }
 }

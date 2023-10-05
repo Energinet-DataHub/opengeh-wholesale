@@ -12,23 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Edi.Responses;
-using Energinet.DataHub.Wholesale.EDI.Mappers;
-using FluentAssertions;
-using Xunit;
+using FluentValidation;
 
-namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Mappers;
+namespace Energinet.DataHub.Wholesale.Edi.Validators;
 
-public class ErrorCodeMapperTest
+public class PeriodValidator : AbstractValidator<EDI.Models.Period>
 {
-    [Theory]
-    [InlineData("D66", ErrorCodes.InvalidPeriod)]
-    public void MapErrorCode_StringToProtobufErrorCode_ReturnsExpectedErrorCode(string errorCode, ErrorCodes expected)
+    public PeriodValidator()
     {
-        // Act
-        var actual = ErrorCodeMapper.MapErrorCode(errorCode);
-
-        // Assert
-        actual.Should().Be(expected);
+        RuleFor(x => x.Start)
+            .LessThan(x => x.End)
+            .WithMessage("Start time has to be before end time").WithErrorCode("D66");
     }
 }

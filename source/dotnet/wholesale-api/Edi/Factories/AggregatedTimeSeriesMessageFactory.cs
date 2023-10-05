@@ -59,14 +59,13 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
     private static IMessage CreateRejected(List<ValidationFailure> errors)
     {
         var response = new AggregatedTimeSeriesRequestRejected();
-        response.RejectReasons.AddRange(errors.Select(CreateRejectReasonFromError));
+        response.RejectReasons.AddRange(errors.Select(CreateRejectReason));
         return response;
     }
 
-    private static RejectReason CreateRejectReasonFromError(ValidationFailure error)
+    private static RejectReason CreateRejectReason(ValidationFailure error)
     {
-        //TODO: Do we want such a mapper? Do we want to define every possible error code in our rejected contract?
-        return new RejectReason() { ErrorCode = ErrorCodeMapper.MapErrorCode(error.ErrorCode), ErrorMessage = error.ErrorMessage, };
+        return new RejectReason() { ErrorCode = error.ErrorCode, ErrorMessage = error.ErrorMessage, };
     }
 
     private static IMessage CreateRejectedResponse()
@@ -80,7 +79,7 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
     {
         return new RejectReason()
         {
-            ErrorCode = ErrorCodes.InvalidBalanceResponsibleForPeriod, ErrorMessage = "something went wrong",
+            ErrorCode = "EOR", ErrorMessage = "something went wrong",
         };
     }
 
