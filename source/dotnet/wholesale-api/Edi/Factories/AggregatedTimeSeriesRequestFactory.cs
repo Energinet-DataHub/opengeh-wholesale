@@ -28,6 +28,11 @@ public class AggregatedTimeSeriesRequestFactory : IAggregatedTimeSeriesRequestFa
         return MapAggregatedTimeSeriesRequest(aggregatedTimeSeriesRequest);
     }
 
+    public AggregatedTimeSeriesRequest Parse(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request)
+    {
+        return MapAggregatedTimeSeriesRequest(request);
+    }
+
     private AggregatedTimeSeriesRequest MapAggregatedTimeSeriesRequest(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest aggregatedTimeSeriesRequest)
     {
         return new AggregatedTimeSeriesRequest(

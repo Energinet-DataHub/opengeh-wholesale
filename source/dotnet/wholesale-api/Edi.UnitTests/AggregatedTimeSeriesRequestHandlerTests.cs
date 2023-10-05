@@ -28,6 +28,7 @@ using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NodaTime;
+using NodaTime.Serialization.Protobuf;
 using Xunit;
 using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 using AggregationPerGridArea = Energinet.DataHub.Edi.Requests.AggregationPerGridArea;
@@ -58,8 +59,8 @@ public class AggregatedTimeSeriesRequestHandlerTests
             TimeSeriesType = Energinet.DataHub.Edi.Requests.TimeSeriesType.Production,
             Period = new Period()
             {
-                Start = new Timestamp().ToString(),
-                End = new Timestamp().ToString(),
+                Start = new Timestamp().ToInstant().ToString(),
+                End = new Timestamp().ToInstant().ToString(),
             },
         };
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
@@ -70,6 +71,13 @@ public class AggregatedTimeSeriesRequestHandlerTests
         requestCalculationResultQueriesMock.Setup(calculationResultQueries =>
                 calculationResultQueries.GetAsync(It.IsAny<CalculationResultQuery>()))
             .ReturnsAsync(() => calculationResult);
+
+        validator.Setup(vali => vali.ValidateAsync(
+                It.IsAny<AggregatedTimeSeriesRequest>(), CancellationToken.None))
+            .ReturnsAsync(() => new ValidationResult()
+            {
+                Errors = new List<ValidationFailure>(),
+            });
 
         var sut = new AggregatedTimeSeriesRequestHandler(
             requestCalculationResultQueriesMock.Object,
@@ -123,7 +131,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(request.ToByteArray()));
 
-        validator.Setup(validator => validator.ValidateAsync(
+        validator.Setup(vali => vali.ValidateAsync(
                 It.IsAny<AggregatedTimeSeriesRequest>(), CancellationToken.None))
             .ReturnsAsync(() => new ValidationResult
                 {

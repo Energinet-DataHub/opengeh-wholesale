@@ -56,11 +56,10 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
 
         var validation = await _validator.ValidateAsync(aggregatedTimeSeriesRequest, cancellationToken).ConfigureAwait(false);
 
-        var aggregatedTimeSeriesRequestMessage = _aggregatedTimeSeriesRequestFactory.Parse(receivedMessage);
-
         ServiceBusMessage message;
         if (validation.IsValid)
         {
+            var aggregatedTimeSeriesRequestMessage = _aggregatedTimeSeriesRequestFactory.Parse(aggregatedTimeSeriesRequest);
             var result = await GetCalculationResultsAsync(
                 aggregatedTimeSeriesRequestMessage,
                 cancellationToken).ConfigureAwait(false);
