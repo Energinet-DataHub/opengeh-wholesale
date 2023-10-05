@@ -21,11 +21,13 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factorie
 
 public static class WholesaleTimeSeriesPointFactory
 {
-    public static WholesaleTimeSeriesPoint CreateTimeSeriesPoint(SqlResultRow row)
+    public static WholesaleTimeSeriesPoint Create(SqlResultRow row)
     {
         var time = SqlResultValueConverters.ToDateTimeOffset(row[WholesaleResultColumnNames.Time])!.Value;
-        var quantity = SqlResultValueConverters.ToDecimal(row[WholesaleResultColumnNames.Quantity])!.Value;
-        var quality = SqlResultValueConverters.ToQuantityQuality(row[WholesaleResultColumnNames.QuantityQuality]);
-        return new WholesaleTimeSeriesPoint(time, quantity, quality);
+        var quantity = SqlResultValueConverters.ToDecimal(row[WholesaleResultColumnNames.Quantity]);
+        var qualities = SqlResultValueConverters.ToQuantityQualities(row[WholesaleResultColumnNames.QuantityQualities]);
+        var price = SqlResultValueConverters.ToDecimal(row[WholesaleResultColumnNames.Price]);
+        var amount = SqlResultValueConverters.ToDecimal(row[WholesaleResultColumnNames.Amount]);
+        return new WholesaleTimeSeriesPoint(time, quantity, qualities, price, amount);
     }
 }
