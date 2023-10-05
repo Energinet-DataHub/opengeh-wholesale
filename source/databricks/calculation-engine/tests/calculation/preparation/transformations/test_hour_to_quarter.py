@@ -15,67 +15,22 @@
 
 from decimal import Decimal
 from datetime import datetime
-from package.constants import Colname
 from pyspark.sql import SparkSession, Row
+from pyspark.sql.types import (
+    TimestampType,
+)
 
+from package.constants import Colname
 from package.codelists import (
     MeteringPointResolution,
     TimeSeriesQuality,
 )
-from pyspark.sql.types import (
-    StructType,
-    StringType,
-    DecimalType,
-    TimestampType,
-    StructField,
-)
 from package.calculation.preparation.transformations.hour_to_quarter import (
     transform_hour_to_quarter,
 )
-
-
-basis_data_time_series_points_schema = StructType(
-    [
-        StructField(Colname.grid_area, StringType(), True),
-        StructField(Colname.to_grid_area, StringType(), True),
-        StructField(Colname.from_grid_area, StringType(), True),
-        StructField(Colname.metering_point_id, StringType(), True),
-        StructField(Colname.metering_point_type, StringType(), True),
-        StructField(Colname.resolution, StringType(), True),
-        StructField(Colname.observation_time, TimestampType(), True),
-        StructField(Colname.quantity, StringType(), True),
-        StructField(Colname.quality, StringType(), True),
-        StructField(Colname.energy_supplier_id, StringType(), True),
-        StructField(Colname.balance_responsible_id, StringType(), True),
-    ]
-)
-
-time_series_quarter_points_schema = StructType(
-    [
-        StructField(Colname.grid_area, StringType(), True),
-        StructField(Colname.to_grid_area, StringType(), True),
-        StructField(Colname.from_grid_area, StringType(), True),
-        StructField(Colname.metering_point_id, StringType(), True),
-        StructField(Colname.metering_point_type, StringType(), True),
-        StructField(Colname.resolution, StringType(), True),
-        StructField(Colname.observation_time, TimestampType(), True),
-        StructField(Colname.quantity, DecimalType(18, 6), True),
-        StructField(Colname.quality, StringType(), True),
-        StructField(Colname.energy_supplier_id, StringType(), True),
-        StructField(Colname.balance_responsible_id, StringType(), True),
-        StructField("quarter_time", TimestampType(), True),
-        StructField(
-            Colname.time_window,
-            StructType(
-                [
-                    StructField(Colname.start, TimestampType()),
-                    StructField(Colname.end, TimestampType()),
-                ]
-            ),
-            False,
-        ),
-        StructField("quarter_quantity", DecimalType(18, 6), True),
-    ]
+from package.calculation.energy.schemas import (
+    basis_data_time_series_points_schema,
+    time_series_quarter_points_schema,
 )
 
 
