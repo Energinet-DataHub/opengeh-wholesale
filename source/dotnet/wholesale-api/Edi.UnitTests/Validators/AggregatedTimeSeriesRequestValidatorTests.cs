@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.EDI.Models;
 using Energinet.DataHub.Wholesale.EDI.Validators;
 using NodaTime;
 using Xunit;
@@ -24,15 +23,126 @@ public class AggregatedTimeSeriesRequestValidatorTests
     private readonly AggregatedTimeSeriesRequestValidator _sut = new();
 
     [Fact]
-    public void Validate_AggregatedTimeSeriesRequest_FailsOnPeriodCheck()
+    public void Validate_AggregatedTimeSeriesRequest_SuccessValidation()
     {
         // Arrange
-        var request = new AggregatedTimeSeriesRequest(
-            new Models.Period(
-            Instant.FromUtc(2022, 1, 1, 0, 0, 0),
-            Instant.FromUtc(2022, 1, 1, 0, 0, 0)),
-            TimeSeriesType.Production,
-            new AggregationPerRoleAndGridArea("543"));
+        var request = new Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest()
+        {
+            Period = new Energinet.DataHub.Edi.Requests.Period()
+            {
+                Start = Instant.FromUtc(2022, 1, 1, 22, 0, 0).ToString(),
+                End = Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString(),
+            },
+            TimeSeriesType = Energinet.DataHub.Edi.Requests.TimeSeriesType.Production,
+        };
+
+        // Act
+        var validationStatus = _sut.Validate(request);
+
+        // Assert
+        Assert.True(validationStatus.IsValid);
+    }
+
+    [Fact]
+    public void Validate_AggregatedTimeSeriesRequestWithEndIsEmpty_SuccessValidation()
+    {
+        // Arrange
+        var request = new Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest()
+        {
+            Period = new Energinet.DataHub.Edi.Requests.Period()
+            {
+                Start = Instant.FromUtc(2022, 1, 1, 22, 0, 0).ToString(),
+                End = string.Empty,
+            },
+            TimeSeriesType = Energinet.DataHub.Edi.Requests.TimeSeriesType.Production,
+        };
+
+        // Act
+        var validationStatus = _sut.Validate(request);
+
+        // Assert
+        Assert.True(validationStatus.IsValid);
+    }
+
+    [Fact]
+    public void Validate_AggregatedTimeSeriesRequest_FailsDueToWrongHourFormat()
+    {
+        // Arrange
+        var request = new Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest()
+        {
+            Period = new Energinet.DataHub.Edi.Requests.Period()
+            {
+                Start = Instant.FromUtc(2022, 1, 1, 21, 0, 0).ToString(),
+                End = Instant.FromUtc(2022, 1, 2, 22, 0, 0).ToString(),
+            },
+            TimeSeriesType = Energinet.DataHub.Edi.Requests.TimeSeriesType.Production,
+        };
+
+        // Act
+        var validationStatus = _sut.Validate(request);
+
+        // Assert
+        Assert.False(validationStatus.IsValid);
+        Assert.Equal("D66", validationStatus.Errors.First().ErrorCode);
+    }
+
+    [Fact]
+    public void Validate_AggregatedTimeSeriesRequest_FailsOnStartBeforeEndCheck()
+    {
+        // Arrange
+        var request = new Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest()
+            {
+                Period = new Energinet.DataHub.Edi.Requests.Period()
+                {
+                    Start = Instant.FromUtc(2022, 1, 1, 22, 0, 0).ToString(),
+                    End = Instant.FromUtc(2022, 1, 1, 22, 0, 0).ToString(),
+                },
+                TimeSeriesType = Energinet.DataHub.Edi.Requests.TimeSeriesType.Production,
+            };
+
+        // Act
+        var validationStatus = _sut.Validate(request);
+
+        // Assert
+        Assert.False(validationStatus.IsValid);
+        Assert.Equal("D66", validationStatus.Errors.First().ErrorCode);
+    }
+
+    [Fact]
+    public void Validate_AggregatedTimeSeriesRequest_FailsOnStartTimeFormat()
+    {
+        // Arrange
+        var request = new Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest()
+            {
+                Period = new Energinet.DataHub.Edi.Requests.Period()
+                {
+                    Start = "a023-07-27T22:00:00Z",
+                    End = Instant.FromUtc(2022, 1, 1, 22, 0, 0).ToString(),
+                },
+                TimeSeriesType = Energinet.DataHub.Edi.Requests.TimeSeriesType.Production,
+            };
+
+        // Act
+        var validationStatus = _sut.Validate(request);
+
+        // Assert
+        Assert.False(validationStatus.IsValid);
+        Assert.Equal("D66", validationStatus.Errors.First().ErrorCode);
+    }
+
+    [Fact]
+    public void Validate_AggregatedTimeSeriesRequest_FailsOnEndTimeFormat()
+    {
+        // Arrange
+        var request = new Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest()
+            {
+                Period = new Energinet.DataHub.Edi.Requests.Period()
+                {
+                    Start = Instant.FromUtc(2022, 1, 1, 22, 0, 0).ToString(),
+                    End = "a023-07-27T22:00:00Z",
+                },
+                TimeSeriesType = Energinet.DataHub.Edi.Requests.TimeSeriesType.Production,
+            };
 
         // Act
         var validationStatus = _sut.Validate(request);

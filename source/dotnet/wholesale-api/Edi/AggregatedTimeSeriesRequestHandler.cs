@@ -30,7 +30,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
     private readonly IRequestCalculationResultQueries _requestCalculationResultQueries;
     private readonly IEdiClient _ediClient;
     private readonly IAggregatedTimeSeriesMessageFactory _aggregatedTimeSeriesMessageFactory;
-    private readonly IValidator<AggregatedTimeSeriesRequest> _validator;
+    private readonly IValidator<Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest> _validator;
     private readonly ILogger<AggregatedTimeSeriesRequestHandler> _logger;
     private readonly IAggregatedTimeSeriesRequestFactory _aggregatedTimeSeriesRequestFactory;
 
@@ -39,7 +39,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         IEdiClient ediClient,
         IAggregatedTimeSeriesRequestFactory aggregatedTimeSeriesRequestFactory,
         IAggregatedTimeSeriesMessageFactory aggregatedTimeSeriesMessageFactory,
-        IValidator<AggregatedTimeSeriesRequest> validator,
+        IValidator<Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest> validator,
         ILogger<AggregatedTimeSeriesRequestHandler> logger)
     {
         _requestCalculationResultQueries = requestCalculationResultQueries;
@@ -52,9 +52,11 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
 
     public async Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken)
     {
-        var aggregatedTimeSeriesRequestMessage = _aggregatedTimeSeriesRequestFactory.Parse(receivedMessage);
+        var aggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest.Parser.ParseFrom(receivedMessage.Body);
 
-        var validation = await _validator.ValidateAsync(aggregatedTimeSeriesRequestMessage, cancellationToken).ConfigureAwait(false);
+        var validation = await _validator.ValidateAsync(aggregatedTimeSeriesRequest, cancellationToken).ConfigureAwait(false);
+
+        var aggregatedTimeSeriesRequestMessage = _aggregatedTimeSeriesRequestFactory.Parse(receivedMessage);
 
         ServiceBusMessage message;
         if (validation.IsValid)

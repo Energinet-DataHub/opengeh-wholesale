@@ -17,7 +17,7 @@ using FluentValidation;
 
 namespace Energinet.DataHub.Wholesale.EDI.Validators;
 
-public class AggregatedTimeSeriesRequestValidator : AbstractValidator<Models.AggregatedTimeSeriesRequest>
+public class AggregatedTimeSeriesRequestValidator : AbstractValidator<Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest>
 {
     public AggregatedTimeSeriesRequestValidator()
     {

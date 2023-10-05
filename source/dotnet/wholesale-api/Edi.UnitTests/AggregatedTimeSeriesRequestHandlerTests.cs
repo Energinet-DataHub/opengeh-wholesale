@@ -46,7 +46,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<AggregatedTimeSeriesRequestFactory> aggregatedTimeSeriesRequestMessageParseMock,
         [Frozen] Mock<AggregatedTimeSeriesMessageFactory> aggregatedTimeSeriesMessageFactoryMock,
-        [Frozen] Mock<IValidator<Energinet.DataHub.Wholesale.EDI.Models.AggregatedTimeSeriesRequest>> validator,
+        [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
         [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> loggerMock)
     {
         // Arrange
@@ -58,8 +58,8 @@ public class AggregatedTimeSeriesRequestHandlerTests
             TimeSeriesType = Energinet.DataHub.Edi.Requests.TimeSeriesType.Production,
             Period = new Period()
             {
-                StartOfPeriod = new Timestamp(),
-                EndOfPeriod = new Timestamp(),
+                Start = new Timestamp().ToString(),
+                End = new Timestamp().ToString(),
             },
         };
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
@@ -103,7 +103,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<AggregatedTimeSeriesRequestFactory> aggregatedTimeSeriesRequestMessageParseMock,
         [Frozen] Mock<AggregatedTimeSeriesMessageFactory> aggregatedTimeSeriesMessageFactoryMock,
-        [Frozen] Mock<IValidator<Energinet.DataHub.Wholesale.EDI.Models.AggregatedTimeSeriesRequest>> validator,
+        [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
         [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> loggerMock)
     {
         // Arrange
@@ -115,8 +115,8 @@ public class AggregatedTimeSeriesRequestHandlerTests
             TimeSeriesType = Energinet.DataHub.Edi.Requests.TimeSeriesType.Production,
             Period = new Period()
             {
-                StartOfPeriod = new Timestamp(),
-                EndOfPeriod = new Timestamp(),
+                Start = new Timestamp().ToString(),
+                End = new Timestamp().ToString(),
             },
         };
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
@@ -124,7 +124,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
             body: new BinaryData(request.ToByteArray()));
 
         validator.Setup(validator => validator.ValidateAsync(
-                It.IsAny<Energinet.DataHub.Wholesale.EDI.Models.AggregatedTimeSeriesRequest>(), CancellationToken.None))
+                It.IsAny<AggregatedTimeSeriesRequest>(), CancellationToken.None))
             .ReturnsAsync(() => new ValidationResult
                 {
                     Errors =
