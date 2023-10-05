@@ -44,47 +44,47 @@ public class EnergyResultProducedV1Factory : IEnergyResultProducedV1Factory
 
     private EnergyResultProducedV1 CreateForGridArea(EnergyResult result)
     {
-        var energyResultProduced = CreateInternal(result);
-        energyResultProduced.AggregationPerGridarea = new AggregationPerGridArea
+        var energyResultProducedV1 = CreateInternal(result);
+        energyResultProducedV1.AggregationPerGridarea = new AggregationPerGridArea
         {
             GridAreaCode = result.GridArea,
         };
 
-        return energyResultProduced;
+        return energyResultProducedV1;
     }
 
     private EnergyResultProducedV1 CreateForEnergySupplier(
         EnergyResult result)
     {
-        var energyResultProduced = CreateInternal(result);
-        energyResultProduced.AggregationPerEnergysupplierPerGridarea = new AggregationPerEnergySupplierPerGridArea
+        var energyResultProducedV1 = CreateInternal(result);
+        energyResultProducedV1.AggregationPerEnergysupplierPerGridarea = new AggregationPerEnergySupplierPerGridArea
         {
             GridAreaCode = result.GridArea,
             EnergySupplierId = result.EnergySupplierId,
         };
 
-        return energyResultProduced;
+        return energyResultProducedV1;
     }
 
     private EnergyResultProducedV1 CreateForBalanceResponsibleParty(
         EnergyResult result)
     {
-        var energyResultProduced = CreateInternal(result);
-        energyResultProduced.AggregationPerBalanceresponsiblepartyPerGridarea =
+        var energyResultProducedV1 = CreateInternal(result);
+        energyResultProducedV1.AggregationPerBalanceresponsiblepartyPerGridarea =
             new AggregationPerBalanceResponsiblePartyPerGridArea
             {
                 GridAreaCode = result.GridArea,
                 BalanceResponsibleId = result.BalanceResponsibleId,
             };
 
-        return energyResultProduced;
+        return energyResultProducedV1;
     }
 
     private EnergyResultProducedV1 CreateForEnergySupplierByBalanceResponsibleParty(
         EnergyResult result)
     {
-        var energyResultProduced = CreateInternal(result);
-        energyResultProduced.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea =
+        var energyResultProducedV1 = CreateInternal(result);
+        energyResultProducedV1.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea =
             new AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea
             {
                 GridAreaCode = result.GridArea,
@@ -92,12 +92,12 @@ public class EnergyResultProducedV1Factory : IEnergyResultProducedV1Factory
                 BalanceResponsibleId = result.BalanceResponsibleId,
             };
 
-        return energyResultProduced;
+        return energyResultProducedV1;
     }
 
     private static EnergyResultProducedV1 CreateInternal(EnergyResult result)
     {
-        var energyResultProduced = new EnergyResultProducedV1
+        var energyResultProducedV1 = new EnergyResultProducedV1
         {
             CalculationId = result.BatchId.ToString(),
             Resolution = EnergyResultProducedV1.Types.Resolution.Quarter,
@@ -108,9 +108,9 @@ public class EnergyResultProducedV1Factory : IEnergyResultProducedV1Factory
             TimeSeriesType = TimeSeriesTypeMapper.MapTimeSeriesType(result.TimeSeriesType),
         };
         if (result.FromGridArea != null)
-            energyResultProduced.FromGridAreaCode = result.FromGridArea;
+            energyResultProducedV1.FromGridAreaCode = result.FromGridArea;
 
-        energyResultProduced.TimeSeriesPoints
+        energyResultProducedV1.TimeSeriesPoints
             .AddRange(result.TimeSeriesPoints
                 .Select(timeSeriesPoint => new TimeSeriesPoint()
                 {
@@ -118,6 +118,6 @@ public class EnergyResultProducedV1Factory : IEnergyResultProducedV1Factory
                     Time = timeSeriesPoint.Time.ToTimestamp(),
                     QuantityQuality = QuantityQualityMapper.MapQuantityQuality(timeSeriesPoint.Quality),
                 }));
-        return energyResultProduced;
+        return energyResultProducedV1;
     }
 }
