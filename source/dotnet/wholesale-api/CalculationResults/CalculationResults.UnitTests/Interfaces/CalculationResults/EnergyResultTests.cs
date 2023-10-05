@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Models;
 using FluentAssertions;
 using NodaTime;
@@ -21,7 +21,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Interfaces.CalculationResults;
 
-public class CalculationResultTests
+public class EnergyResultTests
 {
     [Theory]
     [InlineAutoMoqData]
@@ -35,7 +35,7 @@ public class CalculationResultTests
         Instant anyPeriodStart,
         Instant anyPeriodEnd)
     {
-        var emptyTimeSeriesPoints = new TimeSeriesPoint[] { };
+        var emptyTimeSeriesPoints = new EnergyTimeSeriesPoint[] { };
         var exception = Assert.Throws<ArgumentException>(() =>
             new EnergyResult(anyId, anyBatchId, anyGridArea, anyTimeSeriesType, null, null, emptyTimeSeriesPoints, anyProcessType, anyPeriodStart, anyPeriodEnd, anyFromGridArea));
         exception.Message.Should().Contain("empty");
