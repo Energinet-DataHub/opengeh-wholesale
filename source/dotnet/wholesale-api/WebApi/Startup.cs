@@ -20,6 +20,7 @@ using Energinet.DataHub.Core.App.WebApp.Authentication;
 using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.Databricks.Jobs.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.Logging.LoggingMiddleware;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Energinet.DataHub.Wholesale.Common.Security;
@@ -28,7 +29,6 @@ using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Energinet.DataHub.Wholesale.WebApi.HealthChecks;
-using Energinet.DataHub.Wholesale.WebApi.HealthChecks.Databricks;
 using Energinet.DataHub.Wholesale.WebApi.HealthChecks.DataLake;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
@@ -104,7 +104,6 @@ public class Startup
         // Options
         serviceCollection.AddOptions<JwtOptions>().Bind(Configuration);
         serviceCollection.AddOptions<ServiceBusOptions>().Bind(Configuration);
-        serviceCollection.AddOptions<DatabricksOptions>().Bind(Configuration);
         serviceCollection.AddOptions<DateTimeOptions>().Bind(Configuration);
         serviceCollection.AddOptions<DataLakeOptions>().Bind(Configuration);
         serviceCollection.AddOptions<DeltaTableOptions>();
@@ -194,8 +193,7 @@ public class Startup
                 name: HealthCheckNames.DataLake)
             .AddDatabricksJobsApiHealthCheck(
                 name: HealthCheckNames.DatabricksJobsApi)
-            .AddDatabricksSqlStatementsApiHealthCheck(
-                _ => Configuration.Get<DatabricksOptions>()!,
+            .AddDatabricksSqlStatementApiHealthCheck(
                 name: HealthCheckNames.DatabricksSqlStatementsApi)
             .AddAzureServiceBusQueue(
                 serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,

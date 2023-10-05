@@ -37,11 +37,7 @@ internal static class ServiceCollectionExtensions
             .Get<ConnectionStringsOptions>();
         serviceCollection.AddBatchesModule(() => connectionStringOptions!.DB_CONNECTION_STRING);
 
-        var sqlWarehouseOptions = configuration.Get<DatabricksOptions>()!;
-        serviceCollection.AddCalculationResultsModule(
-            sqlWarehouseOptions.DATABRICKS_WAREHOUSE_ID,
-            sqlWarehouseOptions.DATABRICKS_WORKSPACE_TOKEN,
-            sqlWarehouseOptions.DATABRICKS_WORKSPACE_URL);
+        serviceCollection.AddCalculationResultsModule(configuration);
 
         serviceCollection.AddEventsModule(configuration.Get<ServiceBusOptions>()!);
         serviceCollection.AddEdiModule();
