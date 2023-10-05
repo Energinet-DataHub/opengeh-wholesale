@@ -25,7 +25,7 @@ public class WholesaleResultFactory
 {
     public static WholesaleResult CreateWholesaleResult(
         SqlResultRow sqlResultRow,
-        List<WholesaleTimeSeriesPoint> timeSeriesPoints,
+        List<WholesaleTimeSeriesPoint> wholesaleTimeSeriesPoints,
         Instant periodStart,
         Instant periodEnd)
     {
@@ -57,6 +57,6 @@ public class WholesaleResultFactory
             QuantityUnitMapper.FromDeltaTableValue(quantityUnit),
             MeteringPointTypeMapper.FromDeltaTableValue(meteringPointType),
             SettlementMethodMapper.FromDeltaTableValue(settlementMethod),
-            timeSeriesPoints.ToArray());
+            wholesaleTimeSeriesPoints.ToArray());
     }
 }

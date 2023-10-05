@@ -13,24 +13,48 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
+using Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.Fixtures;
 using FluentAssertions;
+using NodaTime;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.Factories;
 
 public class WholesaleResultFactoryTests
 {
+    private const decimal DefaultPrice = 1.123456m;
+    private const decimal DefaultAmount = 2.345678m;
+    private readonly Instant _defaultPeriodStart = Instant.FromUtc(2022, 5, 1, 0, 0);
+    private readonly Instant _defaultPeriodEnd = Instant.FromUtc(2022, 5, 2, 0, 0);
+    private readonly Instant _defaultTime = Instant.FromUtc(2022, 5, 1, 1, 0);
+    private readonly IEnumerable<QuantityQuality> _quantityQualities = new List<QuantityQuality> { QuantityQuality.Measured,  QuantityQuality.Missing };
+
     [Fact]
     public void ToInstant_WhenValueIsNull_ReturnsNull()
     {
+         // Arrange
+         var wholesaleTimeSeriesPoints = new List<WholesaleTimeSeriesPoint>
+         {
+             new(_defaultTime.ToDateTimeOffset(), 1.0m, _quantityQualities, DefaultPrice, DefaultAmount),
+         };
+         var row = CreateDefaultSqlResultRow();
 
+         // Act
+         var actual = WholesaleResultFactory.CreateWholesaleResult(row, wholesaleTimeSeriesPoints, _defaultPeriodStart, _defaultPeriodEnd);
 
-        // Act
-        var actual = WholesaleResultFactory.CreateWholesaleResult();
+         // Assert
+         actual.Should().BeNull();
+    }
 
-
-        var actual = SqlResultValueConverters.ToInstant(null);
-        actual.Should().BeNull();
+    private static TestSqlResultRow CreateDefaultSqlResultRow()
+    {
+        var list = new List<KeyValuePair<string, string>>
+        {
+            // new(EnergyResultColumnNames.BatchId, "batchId"),
+            // new(EnergyResultColumnNames.CalculationResultId, calculationResultIdA),
+        };
+        return new TestSqlResultRow(list);
     }
 }
