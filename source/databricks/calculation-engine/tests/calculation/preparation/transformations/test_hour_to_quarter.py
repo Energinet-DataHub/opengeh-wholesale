@@ -69,16 +69,38 @@ def test__transform_hour_to_quarter__split_hourly_enriched_time_series(
 ) -> None:
     # Arrange
     rows = [_create_enriched_time_series_row()]
-    enriched_time_series = spark.createDataFrame(
+    basis_data_time_series_points = spark.createDataFrame(
         rows, basis_data_time_series_points_schema
     )
 
     # Act
-    enriched_time_series_all_quarter = transform_hour_to_quarter(enriched_time_series)
+    time_series_quarter_points = transform_hour_to_quarter(
+        basis_data_time_series_points
+    )
 
     # Assert
-    assert enriched_time_series_all_quarter.count() == 4
-    assert enriched_time_series_all_quarter.schema == time_series_quarter_points_schema
-    assert enriched_time_series_all_quarter.collect()[0]["quarter_quantity"] == Decimal(
+    assert time_series_quarter_points.count() == 4
+    assert time_series_quarter_points.schema == time_series_quarter_points_schema
+    assert time_series_quarter_points.collect()[0]["quarter_quantity"] == Decimal(
         "1.111111"
     )
+
+
+def test__transform_hour_to_quarter__error_on_invalid_schemas(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    rows = [_create_enriched_time_series_row()]
+    basis_data_time_series_points = spark.createDataFrame(
+        rows, basis_data_time_series_points_schema
+    )
+    basis_data_time_series_points = basis_data_time_series_points.drop(
+        Colname.grid_area
+    )
+
+    # Act / Assert
+    try:
+        transform_hour_to_quarter(basis_data_time_series_points)
+        assert False
+    except ValueError:
+        assert True

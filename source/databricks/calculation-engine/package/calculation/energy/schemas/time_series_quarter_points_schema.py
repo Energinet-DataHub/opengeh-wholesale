@@ -24,18 +24,18 @@ from pyspark.sql.types import (
 
 time_series_quarter_points_schema = StructType(
     [
-        StructField(Colname.grid_area, StringType(), True),
+        StructField(Colname.grid_area, StringType(), False),
         StructField(Colname.to_grid_area, StringType(), True),
         StructField(Colname.from_grid_area, StringType(), True),
-        StructField(Colname.metering_point_id, StringType(), True),
-        StructField(Colname.metering_point_type, StringType(), True),
-        StructField(Colname.resolution, StringType(), True),
-        StructField(Colname.observation_time, TimestampType(), True),
+        StructField(Colname.metering_point_id, StringType(), False),
+        StructField(Colname.metering_point_type, StringType(), False),
+        StructField(Colname.resolution, StringType(), False),
+        StructField(Colname.observation_time, TimestampType(), False),
         StructField(Colname.quantity, DecimalType(18, 6), True),
-        StructField(Colname.quality, StringType(), True),
+        StructField(Colname.quality, StringType(), False),
         StructField(Colname.energy_supplier_id, StringType(), True),
         StructField(Colname.balance_responsible_id, StringType(), True),
-        StructField("quarter_time", TimestampType(), True),
+        StructField("quarter_time", TimestampType(), False),
         StructField(
             Colname.time_window,
             StructType(
