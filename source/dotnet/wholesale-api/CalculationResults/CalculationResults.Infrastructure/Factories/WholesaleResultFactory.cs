@@ -56,7 +56,7 @@ public class WholesaleResultFactory
             SqlResultValueConverters.ToBool(isTax),
             QuantityUnitMapper.FromDeltaTableValue(quantityUnit),
             MeteringPointTypeMapper.FromDeltaTableValue(meteringPointType),
-            SettlementMethodMapper.FromTimeSeriesTypeDeltaTableValue(settlementMethod),
+            SettlementMethodMapper.FromDeltaTableValue(settlementMethod),
             wholesaleTimeSeriesPoints.ToArray());
     }
 }

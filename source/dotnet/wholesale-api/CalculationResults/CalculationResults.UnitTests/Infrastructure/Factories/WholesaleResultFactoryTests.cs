@@ -17,7 +17,9 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatement
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.Fixtures;
+using Energinet.DataHub.Wholesale.Common.Models;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using NodaTime;
 using Xunit;
 
@@ -33,7 +35,7 @@ public class WholesaleResultFactoryTests
     private readonly IEnumerable<QuantityQuality> _quantityQualities = new List<QuantityQuality> { QuantityQuality.Measured,  QuantityQuality.Missing };
 
     [Fact]
-    public void CreateWholesaleResult_()
+    public void CreateWholesaleResult_ReturnExpectedWholesaleResult()
     {
          // Arrange
          var wholesaleTimeSeriesPoints = new List<WholesaleTimeSeriesPoint>
@@ -46,7 +48,21 @@ public class WholesaleResultFactoryTests
          var actual = WholesaleResultFactory.CreateWholesaleResult(row, wholesaleTimeSeriesPoints, _defaultPeriodStart, _defaultPeriodEnd);
 
          // Assert
-         actual.Should().BeNull();
+         using var assertionScope = new AssertionScope();
+         actual.ChargeType.Should().Be(ChargeType.Tariff);
+         actual.ChargeCode.Should().Be("chargeCode");
+         actual.ChargeOwnerId.Should().Be("chargeOwnerId");
+         actual.EnergySupplierId.Should().Be("energySupplierId");
+         actual.GridArea.Should().Be("504");
+         actual.Id.Should().Be(Guid.Parse("aaaaaaaa-bbbb-cccc-dddd-0123456789ab"));
+         actual.IsTax.Should().BeTrue();
+         actual.MeteringPointType.Should().Be(MeteringPointType.Consumption);
+         actual.SettlementMethod.Should().Be(SettlementMethod.Flex);
+         actual.PeriodEnd.Should().Be(_defaultPeriodEnd);
+         actual.PeriodStart.Should().Be(_defaultPeriodStart);
+         actual.CalculationType.Should().Be(ProcessType.WholesaleFixing);
+         actual.QuantityUnit.Should().Be(QuantityUnit.Kwh);
+         actual.TimeSeriesPoints.Should().HaveCount(1);
     }
 
     private static TestSqlResultRow CreateDefaultSqlResultRow()

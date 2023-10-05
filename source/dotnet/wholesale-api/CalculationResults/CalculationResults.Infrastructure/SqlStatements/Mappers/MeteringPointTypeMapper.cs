@@ -19,11 +19,12 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlState
 
 public static class MeteringPointTypeMapper
 {
-    public static MeteringPointType FromDeltaTableValue(string meteringPointType) =>
+    public static MeteringPointType? FromDeltaTableValue(string meteringPointType) =>
         meteringPointType switch
         {
             "production" => MeteringPointType.Production,
             "consumption" => MeteringPointType.Consumption,
+            "" => null,
             _ => throw new NotImplementedException($"Cannot map meteringPointType type '{meteringPointType}"),
         };
 
