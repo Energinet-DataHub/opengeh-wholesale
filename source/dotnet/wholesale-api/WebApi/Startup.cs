@@ -19,6 +19,7 @@ using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
 using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
+using Energinet.DataHub.Core.Databricks.Jobs.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.Logging.LoggingMiddleware;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Energinet.DataHub.Wholesale.Common.Security;
@@ -192,7 +193,6 @@ public class Startup
                 _ => Configuration.Get<DataLakeOptions>()!,
                 name: HealthCheckNames.DataLake)
             .AddDatabricksJobsApiHealthCheck(
-                _ => Configuration.Get<DatabricksOptions>()!,
                 name: HealthCheckNames.DatabricksJobsApi)
             .AddDatabricksSqlStatementsApiHealthCheck(
                 _ => Configuration.Get<DatabricksOptions>()!,

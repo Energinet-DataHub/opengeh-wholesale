@@ -4,6 +4,7 @@
     <RootNamespace>Energinet.DataHub.Wholesale.Batches.Infrastructure</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Energinet.DataHub.Core.Databricks.Jobs" Version="7.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.8" />
     <PackageReference Include="NodaTime" Version="3.1.9" />
     <PackageReference Update="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.4">

@@ -27,6 +27,7 @@ limitations under the License.
     <PackageReference Include="AspNetCore.HealthChecks.AzureServiceBus" Version="7.0.0" />
     <PackageReference Include="Energinet.DataHub.Core.App.Common.Security" Version="8.1.0" />
     <PackageReference Include="Energinet.DataHub.Core.App.WebApp" Version="8.1.0" />
+    <PackageReference Include="Energinet.DataHub.Core.Databricks.Jobs" Version="7.0.0" />
     <PackageReference Include="Energinet.DataHub.Core.Logging.LoggingMiddleware " Version="3.0.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
