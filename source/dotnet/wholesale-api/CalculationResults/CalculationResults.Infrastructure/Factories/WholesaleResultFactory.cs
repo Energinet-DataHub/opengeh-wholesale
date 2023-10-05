@@ -16,7 +16,6 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using NodaTime;
 
@@ -24,7 +23,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factorie
 
 public class WholesaleResultFactory
 {
-    public static WholesaleResult Create(
+    public static WholesaleResult CreateWholesaleResult(
         SqlResultRow sqlResultRow,
         List<WholesaleTimeSeriesPoint> timeSeriesPoints,
         Instant periodStart,

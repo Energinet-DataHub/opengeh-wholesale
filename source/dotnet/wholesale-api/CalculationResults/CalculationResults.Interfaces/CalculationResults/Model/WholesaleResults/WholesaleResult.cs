@@ -50,6 +50,10 @@ public sealed class WholesaleResult
         ChargeCode = chargeCode;
         ChargeType = chargeType;
         ChargeOwnerId = chargeOwnerId;
+        QuantityUnit = quantityUnit;
+        MeteringPointType = meteringPointType;
+        SettlementMethod = settlementMethod;
+
         TimeSeriesPoints = timeSeriesPoints;
     }
 
@@ -69,11 +73,17 @@ public sealed class WholesaleResult
 
     public bool? IsTax { get; }
 
-    public string? ChargeCode { get; }
+    public string ChargeCode { get; }
 
-    public ChargeType? ChargeType { get; }
+    public ChargeType ChargeType { get; }
 
-    public string? ChargeOwnerId { get; }
+    public string ChargeOwnerId { get; }
+
+    public QuantityUnit QuantityUnit { get; }
+
+    public MeteringPointType? MeteringPointType { get; }
+
+    public SettlementMethod? SettlementMethod { get; }
 
     public WholesaleTimeSeriesPoint[] TimeSeriesPoints { get; }
 }
