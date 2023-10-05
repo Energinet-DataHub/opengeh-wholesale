@@ -24,12 +24,12 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Fa
     public class CalculationResultIntegrationEventFactory : ICalculationResultIntegrationEventFactory
     {
         private readonly ICalculationResultCompletedFactory _calculationResultCompletedFactory;
-        private readonly IEnergyResultProducedFactory _energyResultProducedFactory;
+        private readonly IEnergyResultProducedV1Factory _energyResultProducedV1Factory;
 
-        public CalculationResultIntegrationEventFactory(ICalculationResultCompletedFactory calculationResultCompletedFactory, IEnergyResultProducedFactory energyResultProducedFactory)
+        public CalculationResultIntegrationEventFactory(ICalculationResultCompletedFactory calculationResultCompletedFactory, IEnergyResultProducedV1Factory energyResultProducedV1Factory)
         {
             _calculationResultCompletedFactory = calculationResultCompletedFactory;
-            _energyResultProducedFactory = energyResultProducedFactory;
+            _energyResultProducedV1Factory = energyResultProducedV1Factory;
         }
 
         public IntegrationEvent CreateCalculationResultCompleted(EnergyResult energyResult)
@@ -41,7 +41,7 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Fa
 
         public IntegrationEvent CreateEnergyResultProduced(EnergyResult energyResult)
         {
-            var calculationResultCompleted = _energyResultProducedFactory.Create(energyResult);
+            var calculationResultCompleted = _energyResultProducedV1Factory.Create(energyResult);
             var eventIdentification = Guid.NewGuid();
             return CreateIntegrationEvent(calculationResultCompleted, eventIdentification, EnergyResultProducedV1.EventName, EnergyResultProducedV1.EventMinorVersion);
         }

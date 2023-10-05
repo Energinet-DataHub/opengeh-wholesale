@@ -54,11 +54,11 @@ public class CalculationResultIntegrationEventFactoryTests
     public void CreateEnergyResultProduced_ReturnsExpectedIntegrationEvent(
         EnergyResultProducedV1 energyResultProduced,
         EnergyResult energyResult,
-        [Frozen] Mock<IEnergyResultProducedFactory> energyResultProducedFactoryMock,
+        [Frozen] Mock<IEnergyResultProducedV1Factory> energyResultProducedV1FactoryMock,
         CalculationResultIntegrationEventFactory sut)
     {
         // Arrange
-        energyResultProducedFactoryMock
+        energyResultProducedV1FactoryMock
             .Setup(x => x.Create(energyResult))
             .Returns(energyResultProduced);
 
