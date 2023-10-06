@@ -16,8 +16,16 @@ using System.Reflection;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 
-public class EnergyResultColumnNames : ResultColumnNames
+public class EnergyResultColumnNames
 {
+    public const string BatchId = "calculation_id";
+    public const string BatchExecutionTimeStart = "calculation_execution_time_start";
+    public const string BatchProcessType = "calculation_type";
+    public const string CalculationResultId = "calculation_result_id";
+    public const string GridArea = "grid_area";
+    public const string EnergySupplierId = "energy_supplier_id";
+    public const string Time = "time";
+    public const string Quantity = "quantity";
     public const string BalanceResponsibleId = "balance_responsible_id";
     public const string QuantityQuality = "quantity_quality";
     public const string AggregationLevel = "aggregation_level";

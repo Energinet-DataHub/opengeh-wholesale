@@ -12,12 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Reflection;
-
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 
-public class WholesaleResultColumnNames : ResultColumnNames
+public class WholesaleResultColumnNames
 {
+    public const string BatchId = "calculation_id";
+    public const string BatchExecutionTimeStart = "calculation_execution_time_start";
+    public const string BatchProcessType = "calculation_type";
+    public const string CalculationResultId = "calculation_result_id";
+    public const string GridArea = "grid_area";
+    public const string EnergySupplierId = "energy_supplier_id";
+    public const string Time = "time";
+    public const string Quantity = "quantity";
+
     public const string QuantityUnit = "quantity_unit";
     public const string QuantityQualities = "quantity_qualities";
     public const string ChargeResolution = "resolution";
