@@ -38,7 +38,6 @@ public class OptionsTests
         "EDI_INBOX_MESSAGE_QUEUE_NAME")]
     [InlineAutoMoqData(typeof(DateTimeOptions), 1, "TIME_ZONE")]
     [InlineAutoMoqData(typeof(ConnectionStringsOptions), 1, "DB_CONNECTION_STRING")]
-    [InlineAutoMoqData(typeof(DatabricksOptions), 5, "DATABRICKS_WORKSPACE_URL", "DATABRICKS_WORKSPACE_TOKEN", "DATABRICKS_WAREHOUSE_ID", "DATABRICKS_HEALTH_CHECK_START_HOUR", "DATABRICKS_HEALTH_CHECK_END_HOUR")]
     [InlineAutoMoqData(typeof(DeltaTableOptions), 2, "SCHEMA_NAME", "ENERGY_RESULTS_TABLE_NAME")]
     public void Options_HaveTheCorrectSettingNamesAndNumberOfSettings(Type sut, int settingsCount, params string[] expectedNames)
     {
@@ -56,7 +55,7 @@ public class OptionsTests
 
     [Theory]
     [InlineAutoMoqData(typeof(ConnectionStringsOptions), 1, "CONNECTIONSTRINGS")]
-    public void Options_HaveTheCorrectSectionNames(Type sut, int numberOfSections,  params string[] expectedNames)
+    public void Options_HaveTheCorrectSectionNames(Type sut, int numberOfSections, params string[] expectedNames)
     {
         // Arrange & Act
         var members = sut.GetMembers(BindingFlags.GetField | BindingFlags.Public | BindingFlags.Static);

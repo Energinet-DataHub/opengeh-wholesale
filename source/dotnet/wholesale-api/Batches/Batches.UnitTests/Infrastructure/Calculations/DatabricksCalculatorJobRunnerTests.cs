@@ -13,13 +13,11 @@
 // limitations under the License.
 
 using AutoFixture.Xunit2;
+using Energinet.DataHub.Core.Databricks.Jobs.Abstractions;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Batches.Application;
 using Energinet.DataHub.Wholesale.Batches.Application.Model;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
-using Energinet.DataHub.Wholesale.Common.DatabricksClient;
-using Microsoft.Azure.Databricks.Client;
 using Microsoft.Azure.Databricks.Client.Models;
 using Moq;
 using Xunit;
