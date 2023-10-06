@@ -82,7 +82,7 @@ def get_count_of_charges_and_total_daily_charge_price(
         )
         .select(
             Colname.charge_key,
-            Colname.charge_id,
+            Colname.charge_code,
             Colname.charge_type,
             Colname.charge_owner,
             Colname.charge_price,

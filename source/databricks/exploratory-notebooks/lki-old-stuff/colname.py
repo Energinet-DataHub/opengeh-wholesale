@@ -19,7 +19,7 @@ class Colname:
     aggregated_quality = "aggregated_quality"
     balance_responsible_id = "balance_responsible_id"
     charge_count = "charge_count"
-    charge_id = "charge_id"
+    charge_code = "charge_code"
     charge_key = "charge_key"
     charge_owner = "charge_owner"
     charge_price = "charge_price"

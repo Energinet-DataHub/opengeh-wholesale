@@ -48,7 +48,7 @@ def calculate_daily_subscription_price_factory(
         charge_count: int,
         total_daily_charge_price: Decimal = DataframeDefaults.default_charge_price,
         charge_key: str = DataframeDefaults.default_charge_key,
-        charge_id: str = DataframeDefaults.default_charge_id,
+        charge_code: str = DataframeDefaults.default_charge_code,
         charge_type: str = DataframeDefaults.default_charge_type,
         charge_owner: str = DataframeDefaults.default_charge_owner,
         charge_price: Decimal = DataframeDefaults.default_charge_price,
@@ -60,7 +60,7 @@ def calculate_daily_subscription_price_factory(
         data = [
             {
                 Colname.charge_key: charge_key,
-                Colname.charge_id: charge_id,
+                Colname.charge_code: charge_code,
                 Colname.charge_type: charge_type,
                 Colname.charge_owner: charge_owner,
                 Colname.charge_price: charge_price,
@@ -89,7 +89,7 @@ def calculate_fee_charge_price_factory(spark: SparkSession) -> Callable[..., Dat
         charge_count: int,
         total_daily_charge_price: Decimal,
         charge_key: str = DataframeDefaults.default_charge_key,
-        charge_id: str = DataframeDefaults.default_charge_id,
+        charge_code: str = DataframeDefaults.default_charge_code,
         charge_type: str = ChargeType.FEE.value,
         charge_owner: str = DataframeDefaults.default_charge_owner,
         charge_price: Decimal = DataframeDefaults.default_charge_price,
@@ -101,7 +101,7 @@ def calculate_fee_charge_price_factory(spark: SparkSession) -> Callable[..., Dat
         data = [
             {
                 Colname.charge_key: charge_key,
-                Colname.charge_id: charge_id,
+                Colname.charge_code: charge_code,
                 Colname.charge_type: charge_type,
                 Colname.charge_owner: charge_owner,
                 Colname.charge_price: charge_price,
@@ -126,7 +126,7 @@ def charge_master_data_factory(spark: SparkSession) -> Callable[..., DataFrame]:
         from_date: datetime,
         to_date: datetime,
         charge_key: str = DataframeDefaults.default_charge_key,
-        charge_id: str = DataframeDefaults.default_charge_id,
+        charge_code: str = DataframeDefaults.default_charge_code,
         charge_type: str = DataframeDefaults.default_charge_type,
         charge_owner: str = DataframeDefaults.default_charge_owner,
         charge_resolution: str = DataframeDefaults.default_charge_resolution,
@@ -136,7 +136,7 @@ def charge_master_data_factory(spark: SparkSession) -> Callable[..., DataFrame]:
         data = [
             {
                 Colname.charge_key: charge_key,
-                Colname.charge_id: charge_id,
+                Colname.charge_code: charge_code,
                 Colname.charge_type: charge_type,
                 Colname.charge_owner: charge_owner,
                 Colname.charge_resolution: charge_resolution,
@@ -197,7 +197,7 @@ def charge_prices_factory(spark: SparkSession) -> Callable[..., DataFrame]:
 @pytest.fixture(scope="session")
 def charges_factory(spark: SparkSession) -> Callable[..., DataFrame]:
     def factory(
-        charge_id: str = DataframeDefaults.default_charge_id,
+        charge_code: str = DataframeDefaults.default_charge_code,
         charge_type: str = DataframeDefaults.default_charge_type,
         charge_owner: str = DataframeDefaults.default_charge_owner,
         charge_resolution: str = DataframeDefaults.default_charge_resolution,
@@ -208,7 +208,7 @@ def charges_factory(spark: SparkSession) -> Callable[..., DataFrame]:
         data = [
             {
                 Colname.charge_key: DataframeDefaults.default_charge_key,
-                Colname.charge_id: charge_id,
+                Colname.charge_code: charge_code,
                 Colname.charge_type: charge_type,
                 Colname.charge_owner: charge_owner,
                 Colname.charge_tax: charge_tax,

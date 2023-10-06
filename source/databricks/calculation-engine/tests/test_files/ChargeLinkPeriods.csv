@@ -1,4 +1,4 @@
-charge_id,charge_type,charge_owner_id,metering_point_id,quantity,from_date,to_date
+charge_code,charge_type,charge_owner_id,metering_point_id,quantity,from_date,to_date
 40000,tariff,5790001330552,578710000000000103,1,2018-01-01 23:00:00,2018-01-02 23:00:00
 40000,tariff,5790001330552,578710000000000104,1,2018-01-01 23:00:00,2018-01-02 23:00:00
 40000,tariff,5790001330552,578710000000000105,1,2018-01-01 23:00:00,2018-01-02 23:00:00
