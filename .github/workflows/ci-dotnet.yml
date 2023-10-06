@@ -36,7 +36,7 @@ jobs:
       run_integration_tests: true
       azure_integrationtest_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
       azure_integrationtest_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
-      azure_integrationtest_spn_id: dd76f216-fee1-4084-9588-cacd3f89024e
+      azure_integrationtest_spn_id: 4cf3cad1-806a-4635-b761-b34baaa92a6a
       azure_keyvault_url: https://kvintgratwe002.vault.azure.net/
       azure_b2csecrets_keyvault_url: https://kvb2cintgratwe002.vault.azure.net/
 
@@ -56,7 +56,7 @@ jobs:
       run_integration_tests: true
       azure_integrationtest_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
       azure_integrationtest_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
-      azure_integrationtest_spn_id: dd76f216-fee1-4084-9588-cacd3f89024e
+      azure_integrationtest_spn_id: 4cf3cad1-806a-4635-b761-b34baaa92a6a
       azure_keyvault_url: https://kvintgratwe002.vault.azure.net/
       azure_b2csecrets_keyvault_url: https://kvb2cintgratwe002.vault.azure.net/
 
@@ -89,7 +89,7 @@ jobs:
       run_integration_tests: true
       azure_integrationtest_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
       azure_integrationtest_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
-      azure_integrationtest_spn_id: dd76f216-fee1-4084-9588-cacd3f89024e
+      azure_integrationtest_spn_id: 4cf3cad1-806a-4635-b761-b34baaa92a6a
       azure_keyvault_url: https://kvintgratwe002.vault.azure.net/
 
   dotnet_ci_test_events:
