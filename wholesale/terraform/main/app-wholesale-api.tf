@@ -44,9 +44,9 @@ module "app_wholesale_api" {
     WHOLESALE_INBOX_MESSAGE_QUEUE_NAME   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbq-wholesale-inbox-messagequeue-name)"
 
     # Databricks
-    DATABRICKS_WORKSPACE_TOKEN = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=dbw-shared-workspace-token)"
-    DATABRICKS_WORKSPACE_URL   = "https://${data.azurerm_key_vault_secret.dbw_databricks_workspace_url.value}"
-    DATABRICKS_WAREHOUSE_ID    = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-databricks-sql-endpoint-id)"
+    WorkspaceToken = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=dbw-shared-workspace-token)"
+    WorkspaceUrl   = "https://${data.azurerm_key_vault_secret.dbw_databricks_workspace_url.value}"
+    WarehouseId    = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-databricks-sql-endpoint-id)"
 
     # Logging
     "Logging__ApplicationInsights__LogLevel__Default"                     = local.LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT
