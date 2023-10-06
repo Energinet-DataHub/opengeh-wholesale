@@ -102,7 +102,7 @@ class WholesaleCalculationResultWriter:
             col(Colname.charge_price).alias(WholesaleResultColumnNames.price),
             col(Colname.total_amount).alias(WholesaleResultColumnNames.amount),
             col(Colname.charge_tax).alias(WholesaleResultColumnNames.is_tax),
-            col(Colname.charge_id).alias(WholesaleResultColumnNames.charge_id),
+            col(Colname.charge_code).alias(WholesaleResultColumnNames.charge_code),
             col(Colname.charge_type).alias(WholesaleResultColumnNames.charge_type),
             col(Colname.charge_owner).alias(WholesaleResultColumnNames.charge_owner_id),
         )

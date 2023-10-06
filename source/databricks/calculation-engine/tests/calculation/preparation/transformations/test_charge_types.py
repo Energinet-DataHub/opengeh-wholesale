@@ -31,7 +31,7 @@ from package.calculation.wholesale.tariff_calculators import tariff_schema
 from package.constants import Colname
 
 DEFAULT_GRID_AREA = "543"
-DEFAULT_CHARGE_ID = "4000"
+DEFAULT_CHARGE_CODE = "4000"
 DEFAULT_CHARGE_OWNER = "001"
 DEFAULT_CHARGE_TAX = True
 DEFAULT_CHARGE_TIME_HOUR_0 = datetime(2020, 1, 1, 0)
@@ -94,8 +94,8 @@ def _create_time_series_row(
 
 
 def _create_charges_row(
-    charge_key: str = f"{DEFAULT_CHARGE_ID}-{DEFAULT_CHARGE_OWNER}-{E.ChargeType.TARIFF.value}",
-    charge_id: str = DEFAULT_CHARGE_ID,
+    charge_key: str = f"{DEFAULT_CHARGE_CODE}-{DEFAULT_CHARGE_OWNER}-{E.ChargeType.TARIFF.value}",
+    charge_code: str = DEFAULT_CHARGE_CODE,
     charge_type: E.ChargeType = E.ChargeType.TARIFF,
     charge_owner: str = DEFAULT_CHARGE_OWNER,
     charge_tax: bool = DEFAULT_CHARGE_TAX,
@@ -108,7 +108,7 @@ def _create_charges_row(
 ) -> Row:
     row = {
         Colname.charge_key: charge_key,
-        Colname.charge_id: charge_id,
+        Colname.charge_code: charge_code,
         Colname.charge_type: charge_type.value,
         Colname.charge_owner: charge_owner,
         Colname.charge_tax: charge_tax,
@@ -123,8 +123,8 @@ def _create_charges_row(
 
 
 def _create_expected_tariff_charges_row(
-    charge_key: str = f"{DEFAULT_CHARGE_ID}-{DEFAULT_CHARGE_OWNER}-{E.ChargeType.TARIFF.value}",
-    charge_id: str = DEFAULT_CHARGE_ID,
+    charge_key: str = f"{DEFAULT_CHARGE_CODE}-{DEFAULT_CHARGE_OWNER}-{E.ChargeType.TARIFF.value}",
+    charge_code: str = DEFAULT_CHARGE_CODE,
     charge_type: E.ChargeType = E.ChargeType.TARIFF,
     charge_owner: str = DEFAULT_CHARGE_OWNER,
     charge_tax: bool = DEFAULT_CHARGE_TAX,
@@ -146,7 +146,7 @@ def _create_expected_tariff_charges_row(
         ]
     row = {
         Colname.charge_key: charge_key,
-        Colname.charge_id: charge_id,
+        Colname.charge_code: charge_code,
         Colname.charge_type: charge_type.value,
         Colname.charge_owner: charge_owner,
         Colname.charge_tax: charge_tax,
@@ -460,8 +460,8 @@ def test__get_tariff_charges__when_two_tariff_overlap__returns_both_tariffs(
     metering_point_rows = [_create_metering_point_row()]
     time_series_rows = [_create_time_series_row()]
     charges_rows = [
-        _create_charges_row(charge_id="4000"),
-        _create_charges_row(charge_id="3000"),
+        _create_charges_row(charge_code="4000"),
+        _create_charges_row(charge_code="3000"),
     ]
 
     metering_point = spark.createDataFrame(

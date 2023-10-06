@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.EnergyResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -27,12 +28,12 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.RequestC
 
 public class RequestCalculationResultQueries : IRequestCalculationResultQueries
 {
-    private readonly ISqlStatementClient _sqlStatementClient;
+    private readonly IDatabricksSqlStatementClient _sqlStatementClient;
     private readonly DeltaTableOptions _deltaTableOptions;
     private readonly ILogger<RequestCalculationResultQueries> _logger;
 
     public RequestCalculationResultQueries(
-        ISqlStatementClient sqlStatementClient,
+        IDatabricksSqlStatementClient sqlStatementClient,
         IOptions<DeltaTableOptions> deltaTableOptions,
         ILogger<RequestCalculationResultQueries> logger)
     {
@@ -41,30 +42,31 @@ public class RequestCalculationResultQueries : IRequestCalculationResultQueries
         _logger = logger;
     }
 
-    public async Task<EnergyResult?> GetAsync(CalculationResultQuery query)
+    public async Task<EnergyResult?> GetAsync(EnergyResultQuery query)
     {
         var sqlStatement = CreateRequestSql(query);
-        var timeSeriesPoints = new List<TimeSeriesPoint>();
+        var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
         SqlResultRow? firstRow = null;
         var resultCount = 0;
-        await foreach (var currentRow in _sqlStatementClient.ExecuteAsync(sqlStatement).ConfigureAwait(false))
+        await foreach (var currentRow in _sqlStatementClient.ExecuteAsync(sqlStatement, sqlStatementParameters: null).ConfigureAwait(false))
         {
             if (firstRow is null)
                 firstRow = currentRow;
 
-            var timeSeriesPoint = TimeSeriesPointFactory.CreateTimeSeriesPoint(currentRow);
+            var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(currentRow);
 
             timeSeriesPoints.Add(timeSeriesPoint);
             resultCount++;
         }
 
         _logger.LogDebug("Fetched {ResultCount} calculation results", resultCount);
-        if (firstRow is null) return null;
+        if (firstRow is null)
+            return null;
 
-        return EnergyResultFactory.CreateEnergyResult(firstRow, timeSeriesPoints, query.StartOfPeriod,  query.EndOfPeriod);
+        return EnergyResultFactory.CreateEnergyResult(firstRow, timeSeriesPoints, query.StartOfPeriod, query.EndOfPeriod);
     }
 
-    private string CreateRequestSql(CalculationResultQuery query)
+    private string CreateRequestSql(EnergyResultQuery query)
     {
         var sql = $@"
             SELECT {string.Join(", ", SqlColumnNames.Select(columenName => $"t1.{columenName}"))}

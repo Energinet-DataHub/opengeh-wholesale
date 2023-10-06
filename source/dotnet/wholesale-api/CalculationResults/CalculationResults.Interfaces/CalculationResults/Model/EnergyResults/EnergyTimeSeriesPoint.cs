@@ -12,11 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Azure.Databricks.Client;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 
-namespace Energinet.DataHub.Wholesale.Common.DatabricksClient;
-
-public interface IJobsApiClient
-{
-    IJobsApi Jobs { get; }
-}
+/// <summary>
+/// Energy time series point.
+/// Immutable value object.
+/// </summary>
+/// <param name="Time"></param>
+/// <param name="Quantity">In kWh.</param>
+/// <param name="Quality"></param>
+public sealed record EnergyTimeSeriesPoint(DateTimeOffset Time, decimal Quantity, QuantityQuality Quality);

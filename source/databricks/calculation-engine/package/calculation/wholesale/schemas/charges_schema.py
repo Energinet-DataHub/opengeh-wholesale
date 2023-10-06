@@ -25,7 +25,7 @@ from pyspark.sql.types import (
 charges_schema = StructType(
     [
         StructField(Colname.charge_key, StringType(), False),
-        StructField(Colname.charge_id, StringType(), False),
+        StructField(Colname.charge_code, StringType(), False),
         StructField(Colname.charge_type, StringType(), False),
         StructField(Colname.charge_owner, StringType(), False),
         StructField(Colname.charge_tax, BooleanType(), False),
@@ -41,7 +41,7 @@ charges_schema = StructType(
 charges_master_data_schema = StructType(
     [
         StructField(Colname.charge_key, StringType(), False),
-        StructField(Colname.charge_id, StringType(), False),
+        StructField(Colname.charge_code, StringType(), False),
         StructField(Colname.charge_type, StringType(), False),
         StructField(Colname.charge_owner, StringType(), False),
         StructField(Colname.charge_resolution, StringType(), False),

@@ -15,10 +15,9 @@
 using Azure.Identity;
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
+using Energinet.DataHub.Core.Databricks.Jobs.Extensions.DependencyInjection;
 using Energinet.DataHub.Core.JsonSerialization;
-using Energinet.DataHub.Wholesale.Common.Databricks;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
-using Energinet.DataHub.Wholesale.Common.DatabricksClient;
 using Energinet.DataHub.Wholesale.EDI;
 using Energinet.DataHub.Wholesale.Events.Application.Options;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
@@ -38,11 +37,7 @@ internal static class ServiceCollectionExtensions
             .Get<ConnectionStringsOptions>();
         serviceCollection.AddBatchesModule(() => connectionStringOptions!.DB_CONNECTION_STRING);
 
-        var sqlWarehouseOptions = configuration.Get<DatabricksOptions>()!;
-        serviceCollection.AddCalculationResultsModule(
-            sqlWarehouseOptions.DATABRICKS_WAREHOUSE_ID,
-            sqlWarehouseOptions.DATABRICKS_WORKSPACE_TOKEN,
-            sqlWarehouseOptions.DATABRICKS_WORKSPACE_URL);
+        serviceCollection.AddCalculationResultsModule(configuration);
 
         serviceCollection.AddEventsModule(configuration.Get<ServiceBusOptions>()!);
         serviceCollection.AddEdiModule();
@@ -68,7 +63,7 @@ internal static class ServiceCollectionExtensions
         serviceCollection.AddScoped<ICorrelationContext, CorrelationContext>();
         serviceCollection.AddScoped<IJsonSerializer, JsonSerializer>();
 
-        serviceCollection.AddSingleton<IJobsApiClient, JobsApiClient>();
+        serviceCollection.AddDatabricksJobs(configuration);
 
         serviceCollection.AddDateTimeConfiguration(configuration);
         serviceCollection.AddDataLakeFileSystemClient(configuration);

@@ -13,14 +13,15 @@
 // limitations under the License.
 
 using AutoFixture.Xunit2;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using FluentAssertions;
 using Moq;
 using NodaTime.Extensions;
@@ -53,7 +54,7 @@ public class CalculationResultQueriesTests
     public async Task GetAsync_WhenNoRows_ReturnsNoResults(
         BatchDto batch,
         [Frozen] Mock<IBatchesClient> batchesClientMock,
-        [Frozen] Mock<ISqlStatementClient> sqlStatementClientMock,
+        [Frozen] Mock<IDatabricksSqlStatementClient> sqlStatementClientMock,
         CalculationResultQueries sut)
     {
         // Arrange
@@ -63,7 +64,7 @@ public class CalculationResultQueriesTests
             .Setup(client => client.GetAsync(batchId))
             .ReturnsAsync(batch);
         sqlStatementClientMock
-            .Setup(x => x.ExecuteAsync(It.IsAny<string>()))
+            .Setup(x => x.ExecuteAsync(It.IsAny<string>(), null))
             .Returns(GetRowsAsync(0));
 
         // Act
@@ -78,7 +79,7 @@ public class CalculationResultQueriesTests
     public async Task GetAsync_WhenOneRow_ReturnsSingleResultWithOneTimeSeriesPoint(
         BatchDto batch,
         [Frozen] Mock<IBatchesClient> batchesClientMock,
-        [Frozen] Mock<ISqlStatementClient> sqlStatementClientMock,
+        [Frozen] Mock<IDatabricksSqlStatementClient> sqlStatementClientMock,
         CalculationResultQueries sut)
     {
         // Arrange
@@ -88,7 +89,7 @@ public class CalculationResultQueriesTests
             .Setup(client => client.GetAsync(batchId))
             .ReturnsAsync(batch);
         sqlStatementClientMock
-            .Setup(x => x.ExecuteAsync(It.IsAny<string>()))
+            .Setup(x => x.ExecuteAsync(It.IsAny<string>(), null))
             .Returns(GetRowsAsync(1));
 
         // Act
@@ -103,7 +104,7 @@ public class CalculationResultQueriesTests
     public async Task GetAsync_ReturnsResultRowWithExpectedValues(
         BatchDto batch,
         [Frozen] Mock<IBatchesClient> batchesClientMock,
-        [Frozen] Mock<ISqlStatementClient> sqlStatementClientMock,
+        [Frozen] Mock<IDatabricksSqlStatementClient> sqlStatementClientMock,
         CalculationResultQueries sut)
     {
         // Arrange
@@ -113,7 +114,7 @@ public class CalculationResultQueriesTests
             .Setup(client => client.GetAsync(batchId))
             .ReturnsAsync(batch);
         sqlStatementClientMock
-            .Setup(x => x.ExecuteAsync(It.IsAny<string>()))
+            .Setup(x => x.ExecuteAsync(It.IsAny<string>(), null))
             .Returns(GetRowsAsync(1));
 
         // Act
@@ -141,7 +142,7 @@ public class CalculationResultQueriesTests
     public async Task GetAsync_WhenRowsBelongsToDifferentResults_ReturnsMultipleResults(
         BatchDto batch,
         [Frozen] Mock<IBatchesClient> batchesClientMock,
-        [Frozen] Mock<ISqlStatementClient> sqlStatementClientMock,
+        [Frozen] Mock<IDatabricksSqlStatementClient> sqlStatementClientMock,
         CalculationResultQueries sut)
     {
         // Arrange
@@ -151,7 +152,7 @@ public class CalculationResultQueriesTests
             .Setup(client => client.GetAsync(batchId))
             .ReturnsAsync(batch);
         sqlStatementClientMock
-            .Setup(x => x.ExecuteAsync(It.IsAny<string>()))
+            .Setup(x => x.ExecuteAsync(It.IsAny<string>(), null))
             .Returns(GetRowsAsync(2));
 
         // Act

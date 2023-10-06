@@ -23,7 +23,7 @@ from package.codelists import (
     SettlementMethod,
 )
 
-const_charge_id = "001"
+const_charge_code = "001"
 const_charge_type = ChargeType.SUBSCRIPTION
 const_charge_owner = "001"
 
@@ -37,9 +37,9 @@ class DataframeDefaults:
     default_negative_grid_loss: Decimal = Decimal("1.234")
     default_balance_responsible_id: str = "1"
     default_calculation_type: Optional[str] = None
-    default_charge_id: str = const_charge_id
+    default_charge_code: str = const_charge_code
     default_charge_key: str = (
-        f"{const_charge_id}-{const_charge_type}-{const_charge_owner}"
+        f"{const_charge_code}-{const_charge_type}-{const_charge_owner}"
     )
     default_charge_owner: str = const_charge_owner
     default_charge_price: Decimal = Decimal("1.123456")
