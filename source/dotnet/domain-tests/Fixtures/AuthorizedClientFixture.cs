@@ -41,8 +41,6 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             ServiceBusClient = new ServiceBusClient(Configuration.ServiceBusConnectionString);
         }
 
-        public WholesaleDomainConfiguration Configuration { get; }
-
         /// <summary>
         /// The actual client is not created until <see cref="IAsyncLifetime.InitializeAsync"/> has been called by xUnit.
         /// </summary>
@@ -54,6 +52,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         public ServiceBusReceiver Receiver { get; private set; } = null!;
 
         public AuthorizedClientFixtureOutput Output { get; private set; } = null!;
+
+        private WholesaleDomainConfiguration Configuration { get; }
 
         private B2CUserTokenAuthenticationClient UserAuthenticationClient { get; }
 

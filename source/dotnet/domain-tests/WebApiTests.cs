@@ -90,18 +90,9 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             private static readonly DateTimeOffset _existingBatchPeriodEnd = DateTimeOffset.Parse("2020-01-29T23:00:00Z");
             private static readonly string ExistingGridAreaCode = "543";
 
-            private static List<CalculationResultCompleted> _calculationResultCompletedFromBalanceFixing = null!;
-            private static List<CalculationResultCompleted> _calculationResultCompletedFromWholesaleFixing = null!;
-            private static List<EnergyResultProducedV1> _energyResultProducedCompletedFromBalanceFixing = null!;
-            private static List<EnergyResultProducedV1> _energyResultProducedFromWholesaleFixing = null!;
-
             public Given_Authorized(AuthorizedClientFixture fixture)
             {
                 Fixture = fixture;
-                _calculationResultCompletedFromBalanceFixing = Fixture.Output.CalculationResultCompletedFromBalanceFixing;
-                _calculationResultCompletedFromWholesaleFixing = Fixture.Output.CalculationResultCompletedFromWholesaleFixing;
-                _energyResultProducedCompletedFromBalanceFixing = Fixture.Output.EnergyResultProducedFromBalanceFixing;
-                _energyResultProducedFromWholesaleFixing = Fixture.Output.EnergyResultProducedFromWholesaleFixing;
             }
 
             private AuthorizedClientFixture Fixture { get; }
@@ -134,22 +125,22 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             [DomainFact]
             public void When_BalanceFixingHasCompleted_Then_HasReceivedExpectedNumberOfResults()
             {
-                _calculationResultCompletedFromBalanceFixing.Count.Should().Be(112);
-                _energyResultProducedCompletedFromBalanceFixing.Count.Should().Be(112);
+                Fixture.Output.CalculationResultCompletedFromBalanceFixing.Count.Should().Be(112);
+                Fixture.Output.EnergyResultProducedFromBalanceFixing.Count.Should().Be(112);
             }
 
             [DomainFact]
             public void When_WholesaleFixingHasCompleted_Then_HasReceivedExpectedNumberOfResults()
             {
-                _calculationResultCompletedFromWholesaleFixing.Count.Should().Be(137);
-                _energyResultProducedFromWholesaleFixing.Count.Should().Be(137);
+                Fixture.Output.CalculationResultCompletedFromWholesaleFixing.Count.Should().Be(137);
+                Fixture.Output.EnergyResultProducedFromWholesaleFixing.Count.Should().Be(137);
             }
 
             [DomainFact]
             public void When_EnergyCalculationBatchIsComplete_Then_MessagesReceivedContainAllTimeSeriesTypes()
             {
-                var actualForCalculationResultCompleted = GetTimeSeriesTypes(_calculationResultCompletedFromBalanceFixing);
-                var actualForEnergyResultProduced = GetTimeSeriesTypes(_energyResultProducedCompletedFromBalanceFixing);
+                var actualForCalculationResultCompleted = GetTimeSeriesTypes(Fixture.Output.CalculationResultCompletedFromBalanceFixing);
+                var actualForEnergyResultProduced = GetTimeSeriesTypes(Fixture.Output.EnergyResultProducedFromBalanceFixing);
                 foreach (var expectedTimeSeriesType in ExpectedTimeSeriesTypesForBalanceFixing)
                 {
                     actualForCalculationResultCompleted.Should().Contain(expectedTimeSeriesType);
@@ -160,8 +151,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             [DomainFact]
             public void When_WholesaleCalculationBatchIsComplete_Then_MessagesReceivedContainAllTimeSeriesTypes()
             {
-                var actualForCalculationResultCompleted = GetTimeSeriesTypes(_calculationResultCompletedFromWholesaleFixing);
-                var actualForEnergyResultProduced = GetTimeSeriesTypes(_energyResultProducedFromWholesaleFixing);
+                var actualForCalculationResultCompleted = GetTimeSeriesTypes(Fixture.Output.CalculationResultCompletedFromWholesaleFixing);
+                var actualForEnergyResultProduced = GetTimeSeriesTypes(Fixture.Output.EnergyResultProducedFromWholesaleFixing);
                 foreach (var expectedTimeSeriesType in ExpectedTimeSeriesTypesForWholesaleFixing)
                 {
                     actualForCalculationResultCompleted.Should().Contain(expectedTimeSeriesType);
@@ -178,11 +169,11 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                              ExpectedTimeSeriesTypeAndAggregationLevelForBalanceFixing())
                     {
                         CheckIfExistsInCalculationResults(
-                            _calculationResultCompletedFromBalanceFixing,
+                            Fixture.Output.CalculationResultCompletedFromBalanceFixing,
                             timeSeriesType,
                             aggregationLevel).Should().BeTrue();
                         CheckIfExistsInCalculationResults(
-                            _energyResultProducedCompletedFromBalanceFixing,
+                            Fixture.Output.EnergyResultProducedFromBalanceFixing,
                             timeSeriesType,
                             aggregationLevel).Should().BeTrue();
                     }
@@ -196,8 +187,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 {
                     foreach (var (timeSeriesType, aggregationLevel) in ExpectedTimeSeriesTypeAndAggregationLevelForWholesaleFixing())
                     {
-                        CheckIfExistsInCalculationResults(_calculationResultCompletedFromWholesaleFixing, timeSeriesType, aggregationLevel).Should().BeTrue();
-                        CheckIfExistsInCalculationResults(_energyResultProducedFromWholesaleFixing, timeSeriesType, aggregationLevel).Should().BeTrue();
+                        CheckIfExistsInCalculationResults(Fixture.Output.CalculationResultCompletedFromWholesaleFixing, timeSeriesType, aggregationLevel).Should().BeTrue();
+                        CheckIfExistsInCalculationResults(Fixture.Output.EnergyResultProducedFromWholesaleFixing, timeSeriesType, aggregationLevel).Should().BeTrue();
                     }
                 }
             }
