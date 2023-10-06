@@ -19,7 +19,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 
-public static class TimeSeriesPointFactory
+public static class EnergyTimeSeriesPointFactory
 {
     public static EnergyTimeSeriesPoint CreateTimeSeriesPoint(SqlResultRow row)
     {
