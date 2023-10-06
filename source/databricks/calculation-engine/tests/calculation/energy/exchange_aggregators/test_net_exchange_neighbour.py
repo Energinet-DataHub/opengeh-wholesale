@@ -20,10 +20,7 @@ from package.constants import Colname
 from package.calculation.energy.exchange_aggregators import (
     aggregate_net_exchange_per_neighbour_ga,
 )
-from package.codelists import (
-    MeteringPointType,
-    TimeSeriesQuality,
-)
+from package.codelists import MeteringPointType, QuantityQuality
 from package.calculation.energy.schemas import aggregation_result_schema
 from pyspark.sql.types import (
     StructType,
@@ -39,7 +36,7 @@ default_obs_time = datetime.strptime(
     "2020-01-01T00:00:00+0000", date_time_formatting_string
 )
 numberOfTestQuarters = 96
-estimated_quality = TimeSeriesQuality.ESTIMATED.value
+estimated_quality = QuantityQuality.ESTIMATED.value
 
 df_template = {
     Colname.grid_area: [],

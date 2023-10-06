@@ -21,7 +21,7 @@ from package.calculation.energy.aggregators import (
 from package.codelists import (
     MeteringPointType,
     MeteringPointResolution,
-    TimeSeriesQuality,
+    QuantityQuality,
 )
 from package.calculation.energy.schemas import aggregation_result_schema
 from pyspark.sql import DataFrame, SparkSession
@@ -41,7 +41,7 @@ default_grid_area = grid_area_code_805
 default_responsible = "R1"
 default_supplier = "S1"
 default_quantity = Decimal(1)
-default_quality = TimeSeriesQuality.MEASURED.value
+default_quality = QuantityQuality.MEASURED.value
 default_obs_time_string = "2020-01-01T00:00:00.000Z"
 
 
@@ -436,28 +436,28 @@ def test__each_grid_area_has_a_sum(
     "quality_1, quality_2, quality_3, expected_quality",
     [
         (
-            TimeSeriesQuality.MEASURED.value,
-            TimeSeriesQuality.ESTIMATED.value,
-            TimeSeriesQuality.MISSING.value,
-            TimeSeriesQuality.INCOMPLETE.value,
+            QuantityQuality.MEASURED.value,
+            QuantityQuality.ESTIMATED.value,
+            QuantityQuality.MISSING.value,
+            QuantityQuality.INCOMPLETE.value,
         ),
         (
-            TimeSeriesQuality.MEASURED.value,
-            TimeSeriesQuality.ESTIMATED.value,
-            TimeSeriesQuality.INCOMPLETE.value,
-            TimeSeriesQuality.INCOMPLETE.value,
+            QuantityQuality.MEASURED.value,
+            QuantityQuality.ESTIMATED.value,
+            QuantityQuality.INCOMPLETE.value,
+            QuantityQuality.INCOMPLETE.value,
         ),
         (
-            TimeSeriesQuality.MEASURED.value,
-            TimeSeriesQuality.ESTIMATED.value,
-            TimeSeriesQuality.MEASURED.value,
-            TimeSeriesQuality.ESTIMATED.value,
+            QuantityQuality.MEASURED.value,
+            QuantityQuality.ESTIMATED.value,
+            QuantityQuality.MEASURED.value,
+            QuantityQuality.ESTIMATED.value,
         ),
         (
-            TimeSeriesQuality.MEASURED.value,
-            TimeSeriesQuality.MEASURED.value,
-            TimeSeriesQuality.MEASURED.value,
-            TimeSeriesQuality.MEASURED.value,
+            QuantityQuality.MEASURED.value,
+            QuantityQuality.MEASURED.value,
+            QuantityQuality.MEASURED.value,
+            QuantityQuality.MEASURED.value,
         ),
     ],
 )
@@ -483,7 +483,7 @@ def test__when_time_series_point_is_missing__quality_has_value_incomplete(
     df = enriched_time_series_factory().withColumn("quality", F.lit(None))
 
     result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
-    assert result_df.first().quality == TimeSeriesQuality.MISSING.value
+    assert result_df.first().quality == QuantityQuality.MISSING.value
 
 
 def test__when_time_series_point_is_missing__quantity_is_0(

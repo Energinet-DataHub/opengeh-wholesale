@@ -24,5 +24,5 @@ from .metering_point_resolution import MeteringPointResolution
 from .metering_point_type import MeteringPointType
 from .process_type import ProcessType
 from .settlement_method import SettlementMethod
-from .time_series_quality import TimeSeriesQuality
+from .quantity_quality import QuantityQuality
 from .time_series_type import TimeSeriesType
