@@ -16,7 +16,7 @@ from datetime import datetime, timedelta
 from package.codelists import (
     MeteringPointType,
     MeteringPointResolution,
-    TimeSeriesQuality,
+    QuantityQuality,
 )
 from package.calculation.energy.aggregators import (
     aggregate_flex_consumption_ga_es,
@@ -90,7 +90,7 @@ def test_data_factory(
                                 Colname.end: default_obs_time + timedelta(hours=i + 1),
                             },
                             Colname.sum_quantity: Decimal(i + j + k),
-                            Colname.quality: [TimeSeriesQuality.ESTIMATED.value],
+                            Colname.quality: [QuantityQuality.ESTIMATED.value],
                             Colname.resolution: [MeteringPointResolution.HOUR.value],
                             Colname.metering_point_type: [
                                 MeteringPointType.CONSUMPTION.value

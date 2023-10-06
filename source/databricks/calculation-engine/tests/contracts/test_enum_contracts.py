@@ -32,7 +32,7 @@ from tests.contract_utils import assert_codelist_matches_contract
         ("metering-point-resolution.json", enums.MeteringPointResolution),
         ("metering-point-type.json", enums.MeteringPointType),
         ("process-type.json", enums.ProcessType),
-        ("quantity-quality.json", enums.TimeSeriesQuality),
+        ("quantity-quality.json", enums.QuantityQuality),
         ("settlement-method.json", enums.SettlementMethod),
         ("time-series-type.json", enums.TimeSeriesType),
     ],
