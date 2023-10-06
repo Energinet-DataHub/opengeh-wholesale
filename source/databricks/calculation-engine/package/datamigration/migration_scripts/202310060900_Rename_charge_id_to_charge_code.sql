@@ -11,4 +11,4 @@ GO
 --
 -- Rename batch_id to calculation_id
 --
-ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results RENAME COLUMN charge_code TO charge_code
+ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results RENAME COLUMN charge_id TO charge_code
