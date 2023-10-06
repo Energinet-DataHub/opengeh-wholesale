@@ -26,6 +26,7 @@ from package.codelists import (
     TimeSeriesQuality,
 )
 from pyspark.sql.functions import col
+from package.calculation_input.schemas import time_series_point_schema
 
 
 @pytest.fixture(scope="module")
@@ -41,7 +42,7 @@ def raw_time_series_points_factory(spark, timestamp_factory):
                 Colname.observation_time: time,
             }
         ]
-        return spark.createDataFrame(df)
+        return spark.createDataFrame(df, time_series_point_schema)
 
     return factory
 
