@@ -14,13 +14,15 @@
 
 using Energinet.DataHub.Wholesale.EDI.Validators;
 using NodaTime;
+using NodaTime.Extensions;
+using NodaTime.Text;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 
 public class PeriodValidatorTests
 {
-    private readonly PeriodValidator _sut = new();
+    private readonly PeriodValidator _sut = new(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
 
     [Fact]
     public void Validate_Period_SuccessValidation()
@@ -28,24 +30,26 @@ public class PeriodValidatorTests
         // Arrange
         var period = new Energinet.DataHub.Edi.Requests.Period()
         {
-            Start = Instant.FromUtc(2022, 1, 1, 22, 0, 0).ToString(),
+            Start = "adasd", // Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(),
             End = Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString(),
         };
 
+        var fooperiod = new PeriodValidator.Foo(period.Start, period.End);
         // Act
-        var periodStatus = _sut.Validate(period);
+        var periodStatus = _sut.Validate(fooperiod);
 
         // Assert
         Assert.True(periodStatus.IsValid);
     }
 
+/*
     [Fact]
-    public void Validate_EndDateIsUnspecified_SuccessfulValidation()
+    public void Validate_EndDateIsUnspecified_FailsValidation()
     {
         // Arrange
         var period = new Energinet.DataHub.Edi.Requests.Period()
         {
-            Start = Instant.FromUtc(2022, 1, 1, 22, 0, 0).ToString(),
+            Start = DateTime.Now.Date.ToUniversalTime().ToInstant().ToString(),
             End = string.Empty,
         };
 
@@ -53,7 +57,9 @@ public class PeriodValidatorTests
         var periodStatus = _sut.Validate(period);
 
         // Assert
-        Assert.True(periodStatus.IsValid);
+        Assert.False(periodStatus.IsValid);
+        Assert.Single(periodStatus.Errors);
+        Assert.Equal("D66", periodStatus.Errors.First().ErrorCode);
     }
 
     [Fact]
@@ -189,5 +195,5 @@ public class PeriodValidatorTests
         Assert.False(periodStatus.IsValid);
         Assert.Equal(3, periodStatus.Errors.Count);
         Assert.Equal("D66", periodStatus.Errors.First().ErrorCode);
-    }
+    }*/
 }

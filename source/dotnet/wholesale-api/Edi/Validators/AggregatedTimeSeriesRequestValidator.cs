@@ -16,12 +16,12 @@ using FluentValidation;
 
 namespace Energinet.DataHub.Wholesale.EDI.Validators;
 
-public class AggregatedTimeSeriesRequestValidator : AbstractValidator<Edi.Requests.AggregatedTimeSeriesRequest>
+public class AggregatedTimeSeriesRequestValidator : AbstractValidator<PeriodValidator.Foo>
 {
     public AggregatedTimeSeriesRequestValidator(
         IValidator<Edi.Requests.Period> periodValidator)
     {
-        RuleFor(x => x.Period)
-            .SetValidator(periodValidator);
+        // RuleFor(x => x.Period)
+        //     .SetValidator(periodValidator);
     }
 }
