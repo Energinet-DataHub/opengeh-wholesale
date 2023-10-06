@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Models;
 using FluentAssertions;
 using NodaTime;
@@ -21,7 +21,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Interfaces.CalculationResults;
 
-public class CalculationResultTests
+public class EnergyResultTests
 {
     [Theory]
     [InlineAutoMoqData]

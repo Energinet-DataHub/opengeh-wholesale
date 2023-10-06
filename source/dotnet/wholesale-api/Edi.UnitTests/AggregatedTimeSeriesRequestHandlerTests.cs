@@ -17,7 +17,7 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.EDI.Client;
 using Energinet.DataHub.Wholesale.EDI.Factories;
@@ -31,6 +31,7 @@ using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTim
 using AggregationPerGridArea = Energinet.DataHub.Edi.Requests.AggregationPerGridArea;
 using Period = Energinet.DataHub.Edi.Requests.Period;
 using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
+using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests;
 
@@ -64,7 +65,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
 
         var calculationResult = CreateEnergyResult();
         requestCalculationResultQueriesMock.Setup(calculationResultQueries =>
-                calculationResultQueries.GetAsync(It.IsAny<CalculationResultQuery>()))
+                calculationResultQueries.GetAsync(It.IsAny<EnergyResultQuery>()))
             .ReturnsAsync(() => calculationResult);
 
         var sut = new AggregatedTimeSeriesRequestHandler(
@@ -97,7 +98,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             "543",
-            Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.Production,
+            TimeSeriesType.Production,
             "1223456",
             "123456",
             timeSeriesPoints: new EnergyTimeSeriesPoint[] { new(DateTime.Now, 0, QuantityQuality.Measured) },

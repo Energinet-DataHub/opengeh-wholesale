@@ -17,8 +17,9 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.EnergyResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -41,7 +42,7 @@ public class RequestCalculationResultQueries : IRequestCalculationResultQueries
         _logger = logger;
     }
 
-    public async Task<EnergyResult?> GetAsync(CalculationResultQuery query)
+    public async Task<EnergyResult?> GetAsync(EnergyResultQuery query)
     {
         var sqlStatement = CreateRequestSql(query);
         var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
@@ -64,7 +65,7 @@ public class RequestCalculationResultQueries : IRequestCalculationResultQueries
         return EnergyResultFactory.CreateEnergyResult(firstRow, timeSeriesPoints, query.StartOfPeriod,  query.EndOfPeriod);
     }
 
-    private string CreateRequestSql(CalculationResultQuery query)
+    private string CreateRequestSql(EnergyResultQuery query)
     {
         var sql = $@"
             SELECT {string.Join(", ", SqlColumnNames.Select(columenName => $"t1.{columenName}"))}
