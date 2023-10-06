@@ -1,4 +1,4 @@
-charge_code;charge_type;charge_owner_id;charge_price;observation_time
+charge_code;charge_type;charge_owner_id;charge_price;charge_time
 40000;tariff;5790001330552;0.7569984;2023-01-31 23:00:00
 40000;tariff;5790001330552;0.7569984;2023-02-01 00:00:00
 40000;tariff;5790001330552;0.7569984;2023-02-01 01:00:00

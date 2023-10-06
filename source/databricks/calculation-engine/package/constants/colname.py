@@ -30,7 +30,7 @@ class Colname:
     charge_price = "charge_price"
     charge_resolution = "resolution"
     charge_tax = "is_tax"
-    charge_time = "observation_time"
+    charge_time = "charge_time"
     charge_type = "charge_type"
     currency = "currency"
     date = "date"

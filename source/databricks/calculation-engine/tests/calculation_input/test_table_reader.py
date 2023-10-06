@@ -64,7 +64,7 @@ def _create_change_price_point_row() -> dict:
         Colname.charge_type: "foo",
         Colname.charge_owner: "foo",
         Colname.charge_price: Decimal("1.123456"),
-        Colname.observation_time: datetime(2022, 6, 8, 22, 0, 0),
+        Colname.charge_time: datetime(2022, 6, 8, 22, 0, 0),
     }
 
 
