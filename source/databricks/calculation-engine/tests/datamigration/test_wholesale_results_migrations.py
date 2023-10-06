@@ -57,7 +57,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
         WholesaleResultColumnNames.price: Decimal("1.123"),
         WholesaleResultColumnNames.amount: Decimal("1.123"),
         WholesaleResultColumnNames.is_tax: True,
-        WholesaleResultColumnNames.charge_id: "charge_id",
+        WholesaleResultColumnNames.charge_code: "charge_code",
         WholesaleResultColumnNames.charge_type: "fee",
         WholesaleResultColumnNames.charge_owner_id: "1234567890123",
     }
@@ -169,7 +169,7 @@ actor_eic = "1234567890123456"
         (WholesaleResultColumnNames.amount, max_18_6_decimal),
         (WholesaleResultColumnNames.amount, min_18_6_decimal),
         (WholesaleResultColumnNames.is_tax, None),
-        (WholesaleResultColumnNames.charge_id, "any-string"),
+        (WholesaleResultColumnNames.charge_code, "any-string"),
         (WholesaleResultColumnNames.charge_type, "fee"),
         (WholesaleResultColumnNames.charge_owner_id, actor_gln),
         (WholesaleResultColumnNames.charge_owner_id, actor_eic),

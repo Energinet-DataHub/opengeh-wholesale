@@ -24,7 +24,7 @@ class Colname:
     batch_process_type = "batch_process_type"
     calculation_type = "calculation_type"
     charge_count = "charge_count"
-    charge_id = "charge_id"
+    charge_code = "charge_code"
     charge_key = "charge_key"
     charge_owner = "charge_owner_id"
     charge_price = "charge_price"

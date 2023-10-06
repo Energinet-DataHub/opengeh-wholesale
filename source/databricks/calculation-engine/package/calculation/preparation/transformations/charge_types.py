@@ -107,7 +107,7 @@ def _explode_subscription(charges_df: DataFrame) -> DataFrame:
         .withColumnRenamed(Colname.date, Colname.charge_time)
         .select(
             Colname.charge_key,
-            Colname.charge_id,
+            Colname.charge_code,
             Colname.charge_type,
             Colname.charge_owner,
             Colname.charge_tax,
@@ -131,7 +131,7 @@ def _join_with_metering_points(df: DataFrame, metering_points: DataFrame) -> Dat
         "inner",
     ).select(
         df[Colname.charge_key],
-        df[Colname.charge_id],
+        df[Colname.charge_code],
         df[Colname.charge_type],
         df[Colname.charge_owner],
         df[Colname.charge_tax],
@@ -197,7 +197,7 @@ def _join_with_grouped_time_series(
         "inner",
     ).select(
         df[Colname.charge_key],
-        df[Colname.charge_id],
+        df[Colname.charge_code],
         df[Colname.charge_type],
         df[Colname.charge_owner],
         df[Colname.charge_tax],
@@ -248,7 +248,7 @@ def _join_properties_on_charges_with_given_charge_type(
     if charge_type != ChargeType.TARIFF:
         df = df.select(
             Colname.charge_key,
-            Colname.charge_id,
+            Colname.charge_code,
             Colname.charge_type,
             Colname.charge_owner,
             Colname.charge_time,

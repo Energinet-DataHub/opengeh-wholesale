@@ -26,7 +26,7 @@ from pyspark.sql.types import (
 calculate_fee_charge_price_schema = StructType(
     [
         StructField(Colname.charge_key, StringType(), False),
-        StructField(Colname.charge_id, StringType(), False),
+        StructField(Colname.charge_code, StringType(), False),
         StructField(Colname.charge_type, StringType(), False),
         StructField(Colname.charge_owner, StringType(), False),
         StructField(Colname.charge_price, DecimalType(18, 8), False),
