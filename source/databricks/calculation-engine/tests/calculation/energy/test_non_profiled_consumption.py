@@ -16,7 +16,7 @@ from datetime import datetime
 from package.codelists import (
     MeteringPointType,
     MeteringPointResolution,
-    TimeSeriesQuality,
+    QuantityQuality,
 )
 from package.calculation.energy.aggregators import (
     aggregate_non_profiled_consumption_ga_es,
@@ -105,12 +105,12 @@ def agg_result_factory(
                     Decimal(1.0),
                 ],
                 Colname.quality: [
-                    TimeSeriesQuality.ESTIMATED.value,
-                    TimeSeriesQuality.ESTIMATED.value,
-                    TimeSeriesQuality.ESTIMATED.value,
-                    TimeSeriesQuality.ESTIMATED.value,
-                    TimeSeriesQuality.ESTIMATED.value,
-                    TimeSeriesQuality.ESTIMATED.value,
+                    QuantityQuality.ESTIMATED.value,
+                    QuantityQuality.ESTIMATED.value,
+                    QuantityQuality.ESTIMATED.value,
+                    QuantityQuality.ESTIMATED.value,
+                    QuantityQuality.ESTIMATED.value,
+                    QuantityQuality.ESTIMATED.value,
                 ],
                 Colname.resolution: [
                     MeteringPointResolution.HOUR.value,

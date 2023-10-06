@@ -14,7 +14,7 @@
 
 from package.codelists import (
     MeteringPointType,
-    TimeSeriesQuality,
+    QuantityQuality,
 )
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, when, lit
@@ -115,7 +115,7 @@ def __calculate_grid_loss_or_residual_ga(
         Colname.time_window,
         Colname.sum_quantity,  # grid loss
         lit(MeteringPointType.CONSUMPTION.value).alias(Colname.metering_point_type),
-        lit(TimeSeriesQuality.CALCULATED.value).alias(Colname.quality),
+        lit(QuantityQuality.CALCULATED.value).alias(Colname.quality),
     )
     return T.create_dataframe_from_aggregation_result_schema(result)
 

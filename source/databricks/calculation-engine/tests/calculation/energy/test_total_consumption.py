@@ -15,7 +15,7 @@ from decimal import Decimal
 from datetime import datetime
 
 from package.codelists import (
-    TimeSeriesQuality,
+    QuantityQuality,
     MeteringPointType,
     MeteringPointResolution,
 )
@@ -308,34 +308,34 @@ def test_grid_area_total_consumption(agg_net_exchange_factory, agg_production_fa
     "prod_quality, ex_quality, expected_quality",
     [
         (
-            TimeSeriesQuality.ESTIMATED.value,
-            TimeSeriesQuality.ESTIMATED.value,
-            TimeSeriesQuality.ESTIMATED.value,
+            QuantityQuality.ESTIMATED.value,
+            QuantityQuality.ESTIMATED.value,
+            QuantityQuality.ESTIMATED.value,
         ),
         (
-            TimeSeriesQuality.ESTIMATED.value,
-            TimeSeriesQuality.MISSING.value,
-            TimeSeriesQuality.ESTIMATED.value,
+            QuantityQuality.ESTIMATED.value,
+            QuantityQuality.MISSING.value,
+            QuantityQuality.ESTIMATED.value,
         ),
         (
-            TimeSeriesQuality.ESTIMATED.value,
-            TimeSeriesQuality.MEASURED.value,
-            TimeSeriesQuality.ESTIMATED.value,
+            QuantityQuality.ESTIMATED.value,
+            QuantityQuality.MEASURED.value,
+            QuantityQuality.ESTIMATED.value,
         ),
         (
-            TimeSeriesQuality.MISSING.value,
-            TimeSeriesQuality.MISSING.value,
-            TimeSeriesQuality.ESTIMATED.value,
+            QuantityQuality.MISSING.value,
+            QuantityQuality.MISSING.value,
+            QuantityQuality.ESTIMATED.value,
         ),
         (
-            TimeSeriesQuality.MISSING.value,
-            TimeSeriesQuality.MEASURED.value,
-            TimeSeriesQuality.ESTIMATED.value,
+            QuantityQuality.MISSING.value,
+            QuantityQuality.MEASURED.value,
+            QuantityQuality.ESTIMATED.value,
         ),
         (
-            TimeSeriesQuality.MEASURED.value,
-            TimeSeriesQuality.MEASURED.value,
-            TimeSeriesQuality.MEASURED.value,
+            QuantityQuality.MEASURED.value,
+            QuantityQuality.MEASURED.value,
+            QuantityQuality.MEASURED.value,
         ),
     ],
 )

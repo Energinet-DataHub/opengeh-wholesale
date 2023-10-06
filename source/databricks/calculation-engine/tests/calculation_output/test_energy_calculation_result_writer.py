@@ -25,7 +25,7 @@ from package.codelists import (
     AggregationLevel,
     MeteringPointResolution,
     ProcessType,
-    TimeSeriesQuality,
+    QuantityQuality,
     TimeSeriesType,
 )
 from package.constants import Colname, EnergyResultColumnNames
@@ -48,7 +48,7 @@ DEFAULT_BALANCE_RESPONSIBLE_ID = "1234567890123"
 DEFAULT_PROCESS_TYPE = ProcessType.BALANCE_FIXING
 DEFAULT_BATCH_EXECUTION_START = datetime(2022, 6, 10, 13, 15)
 DEFAULT_QUANTITY = "1.1"
-DEFAULT_QUALITY = TimeSeriesQuality.MEASURED
+DEFAULT_QUALITY = QuantityQuality.MEASURED
 DEFAULT_TIME_SERIES_TYPE = TimeSeriesType.PRODUCTION
 DEFAULT_AGGREGATION_LEVEL = AggregationLevel.TOTAL_GA
 DEFAULT_TIME_WINDOW_START = datetime(2020, 1, 1, 0, 0)
@@ -63,7 +63,7 @@ def _create_result_row(
     energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
     balance_responsible_id: str = DEFAULT_BALANCE_RESPONSIBLE_ID,
     quantity: str = DEFAULT_QUANTITY,
-    quality: TimeSeriesQuality = DEFAULT_QUALITY,
+    quality: QuantityQuality = DEFAULT_QUALITY,
     time_window_start: datetime = DEFAULT_TIME_WINDOW_START,
     time_window_end: datetime = DEFAULT_TIME_WINDOW_END,
 ) -> dict:

@@ -81,7 +81,7 @@ def _create_metering_point_row(
 def _create_time_series_row(
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
     quantity: Decimal = DEFAULT_QUANTITY,
-    quality: E.TimeSeriesQuality = E.TimeSeriesQuality.CALCULATED,
+    quality: E.QuantityQuality = E.QuantityQuality.CALCULATED,
     observation_time: datetime = datetime(2020, 1, 1, 0),
 ) -> Row:
     row = {
@@ -488,8 +488,8 @@ def test__get_tariff_charges__returns_df_with_expected_values(
     # Arrange
     metering_point_rows = [_create_metering_point_row()]
     time_series_rows = [
-        _create_time_series_row(quality=E.TimeSeriesQuality.CALCULATED),
-        _create_time_series_row(quality=E.TimeSeriesQuality.ESTIMATED),
+        _create_time_series_row(quality=E.QuantityQuality.CALCULATED),
+        _create_time_series_row(quality=E.QuantityQuality.ESTIMATED),
     ]
     charges_rows = [_create_charges_row()]
 
