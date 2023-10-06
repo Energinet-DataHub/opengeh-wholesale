@@ -12,12 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
-using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
-
-public interface IEnergyResultProducedFactory
+public enum TimeSeriesType
 {
-    EnergyResultProducedV1 Create(EnergyResult result);
+    NonProfiledConsumption = 1,
+    FlexConsumption = 2,
+    Production = 3,
+    NetExchangePerGa = 4,
+    NetExchangePerNeighboringGa = 5,
+    GridLoss = 6,
+    NegativeGridLoss = 7,
+    PositiveGridLoss = 8,
+    TotalConsumption = 9,
+    TempFlexConsumption = 10,
+    TempProduction = 11,
 }

@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 
 /// <summary>
-/// Time series point.
+/// Energy time series point.
 /// Immutable value object.
 /// </summary>
 /// <param name="Time"></param>
 /// <param name="Quantity">In kWh.</param>
 /// <param name="Quality"></param>
-public sealed record TimeSeriesPoint(DateTimeOffset Time, decimal Quantity, QuantityQuality Quality);
+public sealed record EnergyTimeSeriesPoint(DateTimeOffset Time, decimal Quantity, QuantityQuality Quality);

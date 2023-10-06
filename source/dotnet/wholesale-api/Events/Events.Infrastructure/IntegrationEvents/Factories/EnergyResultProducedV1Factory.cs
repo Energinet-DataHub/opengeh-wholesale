@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.EnergyResultProducedV1;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Types;
@@ -26,7 +26,7 @@ using TimeSeriesPoint = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 
-public class EnergyResultProducedV1Factory : IEnergyResultProducedFactory
+public class EnergyResultProducedV1Factory : IEnergyResultProducedV1Factory
 {
     public EnergyResultProducedV1 Create(EnergyResult energyResult)
     {
@@ -44,47 +44,47 @@ public class EnergyResultProducedV1Factory : IEnergyResultProducedFactory
 
     private EnergyResultProducedV1 CreateForGridArea(EnergyResult result)
     {
-        var calculationResultCompleted = CreateInternal(result);
-        calculationResultCompleted.AggregationPerGridarea = new AggregationPerGridArea
+        var energyResultProducedV1 = CreateInternal(result);
+        energyResultProducedV1.AggregationPerGridarea = new AggregationPerGridArea
         {
             GridAreaCode = result.GridArea,
         };
 
-        return calculationResultCompleted;
+        return energyResultProducedV1;
     }
 
     private EnergyResultProducedV1 CreateForEnergySupplier(
         EnergyResult result)
     {
-        var calculationResultCompleted = CreateInternal(result);
-        calculationResultCompleted.AggregationPerEnergysupplierPerGridarea = new AggregationPerEnergySupplierPerGridArea
+        var energyResultProducedV1 = CreateInternal(result);
+        energyResultProducedV1.AggregationPerEnergysupplierPerGridarea = new AggregationPerEnergySupplierPerGridArea
         {
             GridAreaCode = result.GridArea,
             EnergySupplierId = result.EnergySupplierId,
         };
 
-        return calculationResultCompleted;
+        return energyResultProducedV1;
     }
 
     private EnergyResultProducedV1 CreateForBalanceResponsibleParty(
         EnergyResult result)
     {
-        var calculationResultCompleted = CreateInternal(result);
-        calculationResultCompleted.AggregationPerBalanceresponsiblepartyPerGridarea =
+        var energyResultProducedV1 = CreateInternal(result);
+        energyResultProducedV1.AggregationPerBalanceresponsiblepartyPerGridarea =
             new AggregationPerBalanceResponsiblePartyPerGridArea
             {
                 GridAreaCode = result.GridArea,
                 BalanceResponsibleId = result.BalanceResponsibleId,
             };
 
-        return calculationResultCompleted;
+        return energyResultProducedV1;
     }
 
     private EnergyResultProducedV1 CreateForEnergySupplierByBalanceResponsibleParty(
         EnergyResult result)
     {
-        var calculationResultCompleted = CreateInternal(result);
-        calculationResultCompleted.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea =
+        var energyResultProducedV1 = CreateInternal(result);
+        energyResultProducedV1.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea =
             new AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea
             {
                 GridAreaCode = result.GridArea,
@@ -92,25 +92,25 @@ public class EnergyResultProducedV1Factory : IEnergyResultProducedFactory
                 BalanceResponsibleId = result.BalanceResponsibleId,
             };
 
-        return calculationResultCompleted;
+        return energyResultProducedV1;
     }
 
     private static EnergyResultProducedV1 CreateInternal(EnergyResult result)
     {
-        var calculationResultCompleted = new EnergyResultProducedV1
+        var energyResultProducedV1 = new EnergyResultProducedV1
         {
             CalculationId = result.BatchId.ToString(),
             Resolution = EnergyResultProducedV1.Types.Resolution.Quarter,
-            ProcessType = ProcessTypeMapper.MapProcessType(result.ProcessType),
+            CalculationType = CalculationTypeMapper.MapCalculationType(result.ProcessType),
             QuantityUnit = QuantityUnit.Kwh,
             PeriodStartUtc = result.PeriodStart.ToTimestamp(),
             PeriodEndUtc = result.PeriodEnd.ToTimestamp(),
             TimeSeriesType = TimeSeriesTypeMapper.MapTimeSeriesType(result.TimeSeriesType),
         };
         if (result.FromGridArea != null)
-            calculationResultCompleted.FromGridAreaCode = result.FromGridArea;
+            energyResultProducedV1.FromGridAreaCode = result.FromGridArea;
 
-        calculationResultCompleted.TimeSeriesPoints
+        energyResultProducedV1.TimeSeriesPoints
             .AddRange(result.TimeSeriesPoints
                 .Select(timeSeriesPoint => new TimeSeriesPoint()
                 {
@@ -118,6 +118,6 @@ public class EnergyResultProducedV1Factory : IEnergyResultProducedFactory
                     Time = timeSeriesPoint.Time.ToTimestamp(),
                     QuantityQuality = QuantityQualityMapper.MapQuantityQuality(timeSeriesPoint.Quality),
                 }));
-        return calculationResultCompleted;
+        return energyResultProducedV1;
     }
 }

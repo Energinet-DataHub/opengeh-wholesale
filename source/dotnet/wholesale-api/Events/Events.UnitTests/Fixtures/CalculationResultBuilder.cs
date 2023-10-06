@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Models;
 using NodaTime;
 
@@ -21,7 +22,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Fixtures;
 public sealed class CalculationResultBuilder
 {
     private TimeSeriesType _timeSeriesType = TimeSeriesType.Production;
-    private TimeSeriesPoint[] _points = { new(DateTime.Now, 0, QuantityQuality.Measured) };
+    private EnergyTimeSeriesPoint[] _points = { new(DateTime.Now, 0, QuantityQuality.Measured) };
     private Guid _batchId = Guid.NewGuid();
     private string? _energySupplierId;
     private string? _balanceResponsiblePartyId;
@@ -38,7 +39,7 @@ public sealed class CalculationResultBuilder
         return this;
     }
 
-    public CalculationResultBuilder WithTimeSeriesPoints(TimeSeriesPoint[] timeSeriesPoints)
+    public CalculationResultBuilder WithTimeSeriesPoints(EnergyTimeSeriesPoint[] timeSeriesPoints)
     {
         _points = timeSeriesPoints;
         return this;

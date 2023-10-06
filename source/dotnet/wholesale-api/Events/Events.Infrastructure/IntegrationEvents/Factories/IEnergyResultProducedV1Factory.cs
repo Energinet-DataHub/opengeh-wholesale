@@ -12,14 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using NodaTime;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
+using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 
-public record CalculationResultQuery(
-    TimeSeriesType TimeSeriesType,
-    Instant StartOfPeriod,
-    Instant EndOfPeriod,
-    string GridArea,
-    string? EnergySupplierId,
-    string? BalanceResponsibleId);
+public interface IEnergyResultProducedV1Factory
+{
+    EnergyResultProducedV1 Create(EnergyResult result);
+}
