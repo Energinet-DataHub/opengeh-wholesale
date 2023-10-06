@@ -26,6 +26,7 @@ public class EnergyResultColumnNames
     public const string EnergySupplierId = "energy_supplier_id";
     public const string Time = "time";
     public const string Quantity = "quantity";
+
     public const string BalanceResponsibleId = "balance_responsible_id";
     public const string QuantityQuality = "quantity_quality";
     public const string AggregationLevel = "aggregation_level";
