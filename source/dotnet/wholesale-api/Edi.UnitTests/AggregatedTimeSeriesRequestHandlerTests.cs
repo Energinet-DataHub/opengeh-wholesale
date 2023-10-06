@@ -56,7 +56,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
         var request = new AggregatedTimeSeriesRequest
         {
             AggregationPerGridarea = new AggregationPerGridArea(),
-            TimeSeriesType = Energinet.DataHub.Edi.Requests.TimeSeriesType.Production,
+            TimeSeriesType = Edi.Requests.TimeSeriesType.Production,
             Period = new Period()
             {
                 Start = new Timestamp().ToInstant().ToString(),
@@ -120,7 +120,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
         var request = new AggregatedTimeSeriesRequest
         {
             AggregationPerGridarea = new AggregationPerGridArea(),
-            TimeSeriesType = Energinet.DataHub.Edi.Requests.TimeSeriesType.Production,
+            TimeSeriesType = Edi.Requests.TimeSeriesType.Production,
             Period = new Period()
             {
                 Start = new Timestamp().ToString(),
@@ -137,7 +137,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
                 {
                     Errors =
                     {
-                        new ValidationFailure("dummy", "dummy"),
+                        new ValidationFailure("dummy", "dummy") { ErrorCode = "dummy" },
                     },
                 });
 
