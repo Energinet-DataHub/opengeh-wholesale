@@ -17,7 +17,6 @@ using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.CalculationResultCompleted;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Types;
 using Google.Protobuf.WellKnownTypes;
-using QuantityUnit = Energinet.DataHub.Wholesale.Contracts.Events.QuantityUnit;
 using TimeSeriesPoint = Energinet.DataHub.Wholesale.Contracts.Events.TimeSeriesPoint;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;

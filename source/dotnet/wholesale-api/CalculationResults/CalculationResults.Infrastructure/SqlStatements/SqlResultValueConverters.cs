@@ -17,7 +17,6 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatement
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.EnergyResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using NodaTime;
 using NodaTime.Text;
 
@@ -64,16 +63,6 @@ public static class SqlResultValueConverters
     public static Guid ToGuid(string value)
     {
         return Guid.Parse(value);
-    }
-
-    public static ChargeType ToChargeType(string value)
-    {
-        return ChargeTypeMapper.FromDeltaTableValue(value);
-    }
-
-    public static QuantityUnit ToQuantityUnit(string value)
-    {
-        return QuantityUnitMapper.FromDeltaTableValue(value);
     }
 
     public static bool ToBool(string value)

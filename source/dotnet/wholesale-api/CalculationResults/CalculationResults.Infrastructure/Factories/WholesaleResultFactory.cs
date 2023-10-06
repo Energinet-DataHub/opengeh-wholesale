@@ -51,7 +51,7 @@ public class WholesaleResultFactory
             gridArea,
             energySupplierId,
             chargeCode,
-            SqlResultValueConverters.ToChargeType(chargeType),
+            ChargeTypeMapper.FromDeltaTableValue(chargeType),
             chargeOwnerId,
             SqlResultValueConverters.ToBool(isTax),
             QuantityUnitMapper.FromDeltaTableValue(quantityUnit),
