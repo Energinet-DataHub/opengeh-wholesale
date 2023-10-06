@@ -54,7 +54,7 @@ public class PeriodValidator : AbstractValidator<Period>
             () =>
             RuleFor(x => x)
                 .Must(StartIsBeforeEnd)
-                .WithMessage("Start time has to be before end time").WithErrorCode("D66"));
+                .WithMessage("Start Date has to be before End Date").WithErrorCode("D66"));
     }
 
     private void RuleForConvertToInstantAndTimeIsInThePast(
@@ -66,7 +66,9 @@ public class PeriodValidator : AbstractValidator<Period>
             .Must(CanConvertToInstant)
             .WithMessage(WrongTimeFormatErrorMessage).WithErrorCode(WrongTimeFormatErrorCode)
             .Must(TimeIsInThePast)
-            .WithMessage("Time has to be in the past").WithErrorCode("D66");
+            .WithMessage("{PropertyName} Date kan ikke være i fremtiden " +
+                         "/ {PropertyName} Date can not be in the future")
+            .WithErrorCode("D66");
     }
 
     private static bool CanConvertToInstant(string stringDate)
