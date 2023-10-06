@@ -26,7 +26,10 @@ from package.codelists import (
     TimeSeriesQuality,
 )
 from pyspark.sql.functions import col
-from package.calculation_input.schemas import time_series_point_schema
+from package.calculation_input.schemas import (
+    time_series_point_schema,
+    metering_point_period_schema,
+)
 
 
 @pytest.fixture(scope="module")
@@ -69,7 +72,7 @@ def metering_point_period_df_factory(spark, timestamp_factory):
                 Colname.balance_responsible_id: "someId",
             }
         ]
-        return spark.createDataFrame(df)
+        return spark.createDataFrame(df, metering_point_period_schema)
 
     return factory
 
@@ -109,8 +112,8 @@ def test__given_different_from_date_and_to_date__return_dataframe_with_correct_n
         time=timestamp_factory("2022-06-08T12:15:00.000Z")
     )
     metering_point_period_df = metering_point_period_df_factory(
-        from_date=from_date,
-        to_date=to_date,
+        from_date=timestamp_factory(from_date),
+        to_date=timestamp_factory(to_date),
         resolution=resolution,
     )
 
@@ -138,8 +141,8 @@ def test__missing_point_has_quantity_null_for_quarterly_resolution(
 
     metering_point_period_df = metering_point_period_df_factory(
         resolution=MeteringPointResolution.QUARTER.value,
-        from_date=start_time,
-        to_date=end_time,
+        from_date=timestamp_factory(start_time),
+        to_date=timestamp_factory(end_time),
     )
     # Act
     actual = get_basis_data_time_series_points_df(
@@ -169,8 +172,8 @@ def test__missing_point_has_quantity_null_for_hourly_resolution(
 
     metering_point_period_df = metering_point_period_df_factory(
         resolution=MeteringPointResolution.HOUR.value,
-        from_date=start_time,
-        to_date=end_time,
+        from_date=timestamp_factory(start_time),
+        to_date=timestamp_factory(end_time),
     )
 
     # Act
@@ -416,14 +419,14 @@ def test__support_meteringpoint_period_switch_on_resolution_provides_correct_num
 
     metering_point_period_df = metering_point_period_df_factory(
         resolution=MeteringPointResolution.HOUR.value,
-        from_date=from_date_hour_mp,
-        to_date=to_date_hour_mp,
+        from_date=timestamp_factory(from_date_hour_mp),
+        to_date=timestamp_factory(to_date_hour_mp),
     )
 
     second_metering_point_period_df = metering_point_period_df_factory(
         resolution=MeteringPointResolution.QUARTER.value,
-        from_date=from_date_quarter_mp,
-        to_date=to_date_quarter_mp,
+        from_date=timestamp_factory(from_date_quarter_mp),
+        to_date=timestamp_factory(to_date_quarter_mp),
     )
 
     # Act

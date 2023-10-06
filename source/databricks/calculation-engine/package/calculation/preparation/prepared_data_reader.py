@@ -20,6 +20,11 @@ from package.codelists import ChargeResolution
 
 from . import transformations as T
 
+from package.calculation_input.schemas import time_series_point_schema
+from package.calculation.energy.schemas import (
+    basis_data_time_series_points_schema,
+)
+
 
 class PreparedDataReader:
     def __init__(self, delta_table_reader: TableReader) -> None:
@@ -70,7 +75,12 @@ class PreparedDataReader:
         )
 
     def get_raw_time_series_points(self) -> DataFrame:
-        return self._table_reader.read_time_series_points()
+        raw_time_series_points_df = self._table_reader.read_time_series_points()
+        if raw_time_series_points_df.schema != time_series_point_schema:
+            raise ValueError(
+                f"Schema mismatch. Expected {time_series_point_schema}, got {raw_time_series_points_df.schema}"
+            )
+        return raw_time_series_points_df
 
     def get_basis_data_time_series_points_df(
         self,
@@ -78,13 +88,21 @@ class PreparedDataReader:
         period_start_datetime: datetime,
         period_end_datetime: datetime,
     ) -> DataFrame:
-        raw_time_series_points_df = self._table_reader.read_time_series_points()
-        return T.get_basis_data_time_series_points_df(
+        raw_time_series_points_df = self.get_raw_time_series_points()
+        basis_data_time_series_points_df = T.get_basis_data_time_series_points_df(
             raw_time_series_points_df,
             metering_point_periods_df,
             period_start_datetime,
             period_end_datetime,
         )
+        if (
+            basis_data_time_series_points_df.schema
+            != basis_data_time_series_points_schema
+        ):
+            raise ValueError(
+                f"Schema mismatch. Expected {basis_data_time_series_points_schema}, got {basis_data_time_series_points_df.schema}"
+            )
+        return basis_data_time_series_points_df
 
     def transform_hour_to_quarter(self, df: DataFrame) -> DataFrame:
         return T.transform_hour_to_quarter(df)

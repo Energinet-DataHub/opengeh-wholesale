@@ -20,7 +20,6 @@ from pyspark.sql.types import DecimalType
 from package.constants import Colname
 from package.codelists import MeteringPointResolution
 from package.infrastructure.db_logging import debug
-from package.calculation_input.schemas import time_series_point_schema
 
 
 def get_basis_data_time_series_points_df(
@@ -30,10 +29,6 @@ def get_basis_data_time_series_points_df(
     period_end_datetime: datetime,
 ) -> DataFrame:
     """Get enriched time-series points in quarterly resolution"""
-    if raw_time_series_points_df.schema != time_series_point_schema:
-        raise ValueError(
-            f"Schema mismatch. Expected {time_series_point_schema}, got {raw_time_series_points_df.schema}"
-        )
 
     raw_time_series_points_df = raw_time_series_points_df.where(
         F.col(Colname.observation_time) >= period_start_datetime
@@ -94,13 +89,6 @@ def get_basis_data_time_series_points_df(
         ),
     )
 
-    raw_time_series_points_df = raw_time_series_points_df.select(
-        Colname.metering_point_id,
-        Colname.observation_time,
-        Colname.quantity,
-        Colname.quality,
-    )
-
     new_points_for_each_metering_point_df = (
         empty_points_for_each_metering_point_df.join(
             raw_time_series_points_df,
@@ -109,7 +97,7 @@ def get_basis_data_time_series_points_df(
         )
     )
 
-    # the master_basis_data_df is allready used once when creating the empty_points_for_each_metering_point_df
+    # the metering_point_periods_df is allready used once when creating the empty_points_for_each_metering_point_df
     # rejoining master_basis_data_df with empty_points_for_each_metering_point_df requires the GsrNumber and
     # Resolution column must be renamed for the select to be succesfull.
 
@@ -119,43 +107,41 @@ def get_basis_data_time_series_points_df(
         ).withColumnRenamed(Colname.resolution, "pfemp_Resolution")
     )
 
-    master_basis_data_renamed_df = metering_point_periods_df.withColumnRenamed(
+    metering_point_periods_renamed_df = metering_point_periods_df.withColumnRenamed(
         Colname.metering_point_id, "master_MeteringPointId"
     ).withColumnRenamed(Colname.resolution, "master_Resolution")
 
-    return (
-        new_points_for_each_metering_point_df.withColumn(
-            Colname.quantity, F.col(Colname.quantity).cast(DecimalType(18, 6))
+    df = metering_point_periods_renamed_df.join(
+        new_points_for_each_metering_point_df,
+        (
+            metering_point_periods_renamed_df["master_MeteringPointId"]
+            == new_points_for_each_metering_point_df["pfemp_MeteringPointId"]
         )
-        .join(
-            master_basis_data_renamed_df,
-            (
-                master_basis_data_renamed_df["master_MeteringPointId"]
-                == new_points_for_each_metering_point_df["pfemp_MeteringPointId"]
-            )
-            & (
-                new_points_for_each_metering_point_df[Colname.observation_time]
-                >= F.col(Colname.from_date)
-            )
-            & (
-                new_points_for_each_metering_point_df[Colname.observation_time]
-                < F.col(Colname.to_date)
-            ),
-            "left",
+        & (
+            new_points_for_each_metering_point_df[Colname.observation_time]
+            >= F.col(Colname.from_date)
         )
-        .select(
-            Colname.grid_area,
-            Colname.to_grid_area,
-            Colname.from_grid_area,
-            master_basis_data_renamed_df["master_MeteringPointId"].alias(
-                Colname.metering_point_id
-            ),
-            Colname.metering_point_type,
-            master_basis_data_renamed_df["master_Resolution"].alias(Colname.resolution),
-            Colname.observation_time,
-            Colname.quantity,
-            Colname.quality,
-            Colname.energy_supplier_id,
-            Colname.balance_responsible_id,
-        )
+        & (
+            new_points_for_each_metering_point_df[Colname.observation_time]
+            < F.col(Colname.to_date)
+        ),
+        "left",
+    ).select(
+        Colname.grid_area,
+        Colname.to_grid_area,
+        Colname.from_grid_area,
+        metering_point_periods_renamed_df["master_MeteringPointId"].alias(
+            Colname.metering_point_id
+        ),
+        Colname.metering_point_type,
+        metering_point_periods_renamed_df["master_Resolution"].alias(
+            Colname.resolution
+        ),
+        Colname.observation_time,
+        Colname.quantity,
+        Colname.quality,
+        Colname.energy_supplier_id,
+        Colname.balance_responsible_id,
     )
+
+    return df
