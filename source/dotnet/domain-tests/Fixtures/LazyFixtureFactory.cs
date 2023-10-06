@@ -1,0 +1,65 @@
+﻿// Copyright 2020 Energinet DataHub A/S
+//
+// Licensed under the Apache License, Version 2.0 (the "License2");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Nito.AsyncEx;
+using Xunit;
+
+namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
+{
+    /// <summary>
+    /// Factory that creates and initialize a xUnit fixture using lazy async initialization.
+    ///
+    /// The factory should be used as a xUnit collection or class fixture. This ensure the factory instance
+    /// are shared between tests.
+    ///
+    /// During the test setup phase the <see cref="LazyFixture"/> property should be accessed. Doing so will
+    /// create and initialize the "TFixture", but only once.
+    ///
+    /// During the test cleanup phase the factory will call Dispose of the "TFixture" only if it was ever created.
+    /// </summary>
+    /// <typeparam name="TFixture">An xUnit fixture that implements <see cref="IAsyncLifetime"/>.</typeparam>
+    public sealed class LazyFixtureFactory<TFixture> : IAsyncDisposable
+        where TFixture : IAsyncLifetime, new()
+    {
+        public LazyFixtureFactory()
+        {
+            LazyFixture = new AsyncLazy<TFixture>(CreateFixtureAsync);
+        }
+
+        /// <summary>
+        /// Accessing this property will create and initialize the "TFixture" using lazy async initialization.
+        /// </summary>
+        public AsyncLazy<TFixture> LazyFixture { get; }
+
+        /// <summary>
+        /// Responsible for disposing the "TFixture" if it was ever created.
+        /// </summary>
+        async ValueTask IAsyncDisposable.DisposeAsync()
+        {
+            if (LazyFixture.IsStarted)
+            {
+                var value = await LazyFixture;
+                await value.DisposeAsync();
+            }
+        }
+
+        private async Task<TFixture> CreateFixtureAsync()
+        {
+            var fixture = new TFixture();
+            await fixture.InitializeAsync();
+
+            return fixture;
+        }
+    }
+}
