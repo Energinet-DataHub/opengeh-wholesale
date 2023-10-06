@@ -24,7 +24,7 @@ from package.codelists import (
     MeteringPointResolution,
     MeteringPointType,
     SettlementMethod,
-    TimeSeriesQuality,
+    QuantityQuality,
 )
 from package.constants import Colname
 from package.calculation_output import BasisDataWriter
@@ -76,7 +76,7 @@ def _create_enriched_time_series_point(
         Colname.energy_supplier_id: DEFAULT_ENERGY_SUPPLIER,
         Colname.quantity: Decimal("1"),
         Colname.observation_time: PERIOD_START,
-        Colname.quality: TimeSeriesQuality.ESTIMATED.value,
+        Colname.quality: QuantityQuality.ESTIMATED.value,
         Colname.resolution: resolution.value,
     }
     return data

@@ -15,7 +15,7 @@
 from enum import Enum
 
 
-class TimeSeriesQuality(Enum):
+class QuantityQuality(Enum):
     MISSING = "missing"
     ESTIMATED = "estimated"
     MEASURED = "measured"

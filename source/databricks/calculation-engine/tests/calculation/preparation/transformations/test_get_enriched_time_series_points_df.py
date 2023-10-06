@@ -23,7 +23,7 @@ from package.constants import Colname
 
 from package.codelists import (
     MeteringPointResolution,
-    TimeSeriesQuality,
+    QuantityQuality,
 )
 from pyspark.sql.functions import col
 
@@ -37,7 +37,7 @@ def raw_time_series_points_factory(spark, timestamp_factory):
             {
                 "metering_point_id": "the-meteringpoint-id",
                 "quantity": Decimal("1.1"),
-                "quality": TimeSeriesQuality.CALCULATED.value,
+                "quality": QuantityQuality.CALCULATED.value,
                 Colname.observation_time: time,
             }
         ]

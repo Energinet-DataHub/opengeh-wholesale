@@ -17,7 +17,7 @@ from enum import Enum
 from package.codelists import (
     MeteringPointType,
     MeteringPointResolution,
-    TimeSeriesQuality,
+    QuantityQuality,
 )
 
 from package.calculation.energy.grid_loss_calculator import (
@@ -118,7 +118,7 @@ def agg_result_factory(
                             Colname.end: default_obs_time + timedelta(hours=i + 1),
                         },
                         Colname.sum_quantity: Decimal(20 + i),
-                        Colname.quality: TimeSeriesQuality.ESTIMATED.value,
+                        Colname.quality: QuantityQuality.ESTIMATED.value,
                         Colname.resolution: MeteringPointResolution.HOUR.value,
                         Colname.metering_point_type: MeteringPointType.EXCHANGE.value,
                     },
@@ -149,7 +149,7 @@ def agg_result_factory(
                             Colname.end: default_obs_time + timedelta(hours=i + 1),
                         },
                         Colname.sum_quantity: Decimal(13 + i),
-                        Colname.quality: TimeSeriesQuality.ESTIMATED.value,
+                        Colname.quality: QuantityQuality.ESTIMATED.value,
                         Colname.resolution: MeteringPointResolution.HOUR.value,
                         Colname.metering_point_type: MeteringPointType.CONSUMPTION.value,
                     },
@@ -182,7 +182,7 @@ def agg_result_factory(
                             Colname.end: default_obs_time + timedelta(hours=i + 1),
                         },
                         Colname.sum_quantity: Decimal(14 + i),
-                        Colname.quality: TimeSeriesQuality.ESTIMATED.value,
+                        Colname.quality: QuantityQuality.ESTIMATED.value,
                         Colname.resolution: MeteringPointResolution.HOUR.value,
                         Colname.metering_point_type: MeteringPointType.CONSUMPTION.value,
                     },
@@ -215,7 +215,7 @@ def agg_result_factory(
                             Colname.end: default_obs_time + timedelta(hours=i + 1),
                         },
                         Colname.sum_quantity: Decimal(50 + i),
-                        Colname.quality: TimeSeriesQuality.ESTIMATED.value,
+                        Colname.quality: QuantityQuality.ESTIMATED.value,
                         Colname.resolution: MeteringPointResolution.HOUR.value,
                         Colname.metering_point_type: MeteringPointType.PRODUCTION.value,
                     },
