@@ -38,7 +38,7 @@ from package.constants import Colname
 
 
 DEFAULT_GRID_AREA = "543"
-DEFAULT_CHARGE_ID = "4000"
+DEFAULT_CHARGE_CODE = "4000"
 DEFAULT_CHARGE_OWNER = "001"
 DEFAULT_CHARGE_TAX = True
 DEFAULT_CHARGE_TIME_HOUR_0 = datetime(2020, 1, 1, 0)
@@ -54,7 +54,7 @@ DEFAULT_PERIOD_START_DATETIME = datetime(2019, 12, 31, 23)
 
 def _create_tariff_hour_row(
     charge_key: Union[str, None] = None,
-    charge_id: str = DEFAULT_CHARGE_ID,
+    charge_code: str = DEFAULT_CHARGE_CODE,
     charge_owner: str = DEFAULT_CHARGE_OWNER,
     charge_time: datetime = DEFAULT_CHARGE_TIME_HOUR_0,
     charge_price: Decimal = DEFAULT_CHARGE_PRICE,
@@ -68,8 +68,8 @@ def _create_tariff_hour_row(
 ) -> dict:
     row = {
         Colname.charge_key: charge_key
-        or f"{charge_id}-{ChargeType.TARIFF.value}-{charge_owner}",
-        Colname.charge_id: charge_id,
+        or f"{charge_code}-{ChargeType.TARIFF.value}-{charge_owner}",
+        Colname.charge_code: charge_code,
         Colname.charge_type: ChargeType.TARIFF.value,
         Colname.charge_owner: charge_owner,
         Colname.charge_tax: DEFAULT_CHARGE_TAX,
@@ -133,7 +133,7 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_correct_columns(
     assert Colname.metering_point_type in actual.columns
     assert Colname.settlement_method in actual.columns
     assert Colname.charge_key in actual.columns
-    assert Colname.charge_id in actual.columns
+    assert Colname.charge_code in actual.columns
     assert Colname.charge_type in actual.columns
     assert Colname.charge_owner in actual.columns
     assert Colname.charge_tax in actual.columns
@@ -172,7 +172,7 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_expected_values(
     assert actual_row[Colname.metering_point_type] == DEFAULT_METERING_POINT_TYPE.value
     assert actual_row[Colname.settlement_method] == DEFAULT_SETTLEMENT_METHOD.value
     assert actual_row[Colname.charge_key] == CHARGE_KEY
-    assert actual_row[Colname.charge_id] == DEFAULT_CHARGE_ID
+    assert actual_row[Colname.charge_code] == DEFAULT_CHARGE_CODE
     assert actual_row[Colname.charge_type] == ChargeType.TARIFF.value
     assert actual_row[Colname.charge_owner] == DEFAULT_CHARGE_OWNER
     assert actual_row[Colname.charge_tax] == DEFAULT_CHARGE_TAX
@@ -225,7 +225,7 @@ def test__calculate_tariff_price_per_ga_co_es__returns_all_qualities(
         ),
         ("settlement_method", SettlementMethod.FLEX, SettlementMethod.NON_PROFILED),
         ("charge_key", "1", "2"),
-        ("charge_id", "1", "2"),
+        ("charge_code", "1", "2"),
         ("charge_owner", "1", "2"),
         (
             "charge_time",

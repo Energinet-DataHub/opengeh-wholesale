@@ -27,10 +27,12 @@ from package.calculation_input.table_reader import TableReader
 from package.codelists import ChargeType
 from package.constants import Colname
 
-DEFAULT_CHARGE_ID = "4000"
+DEFAULT_CHARGE_CODE = "4000"
 DEFAULT_CHARGE_OWNER = "001"
 DEFAULT_CHARGE_TYPE = ChargeType.TARIFF.value
-DEFAULT_CHARGE_KEY = f"{DEFAULT_CHARGE_ID}-{DEFAULT_CHARGE_TYPE}-{DEFAULT_CHARGE_OWNER}"
+DEFAULT_CHARGE_KEY = (
+    f"{DEFAULT_CHARGE_CODE}-{DEFAULT_CHARGE_TYPE}-{DEFAULT_CHARGE_OWNER}"
+)
 DEFAULT_CHARGE_TAX = True
 DEFAULT_CHARGE_PRICE = Decimal(1.0)
 DEFAULT_RESOLUTION = "P1D"
@@ -42,7 +44,7 @@ DEFAULT_METERING_POINT_ID = "123456789012345678901234567"
 
 def _create_charge_master_data_row(
     charge_key: str = DEFAULT_CHARGE_KEY,
-    charge_id: str = DEFAULT_CHARGE_ID,
+    charge_code: str = DEFAULT_CHARGE_CODE,
     charge_owner: str = DEFAULT_CHARGE_OWNER,
     charge_type: str = DEFAULT_CHARGE_TYPE,
     charge_tax: bool = DEFAULT_CHARGE_TAX,
@@ -52,7 +54,7 @@ def _create_charge_master_data_row(
 ) -> Row:
     row = {
         Colname.charge_key: charge_key,
-        Colname.charge_id: charge_id,
+        Colname.charge_code: charge_code,
         Colname.charge_owner: charge_owner,
         Colname.charge_type: charge_type,
         Colname.charge_tax: charge_tax,
@@ -65,7 +67,7 @@ def _create_charge_master_data_row(
 
 def _create_charge_link_periods_row(
     charge_key: str = DEFAULT_CHARGE_KEY,
-    charge_id: str = DEFAULT_CHARGE_ID,
+    charge_code: str = DEFAULT_CHARGE_CODE,
     charge_owner: str = DEFAULT_CHARGE_OWNER,
     charge_type: str = DEFAULT_CHARGE_TYPE,
     from_date: datetime = DEFAULT_FROM_DATE,
@@ -74,7 +76,7 @@ def _create_charge_link_periods_row(
 ) -> Row:
     row = {
         Colname.charge_key: charge_key,
-        Colname.charge_id: charge_id,
+        Colname.charge_code: charge_code,
         Colname.charge_owner: charge_owner,
         Colname.charge_type: charge_type,
         Colname.from_date: from_date,
@@ -86,7 +88,7 @@ def _create_charge_link_periods_row(
 
 def _create_charges_price_points_row(
     charge_key: str = DEFAULT_CHARGE_KEY,
-    charge_id: str = DEFAULT_CHARGE_ID,
+    charge_code: str = DEFAULT_CHARGE_CODE,
     charge_owner: str = DEFAULT_CHARGE_OWNER,
     charge_type: str = DEFAULT_CHARGE_TYPE,
     charge_price: Decimal = DEFAULT_CHARGE_PRICE,
@@ -94,7 +96,7 @@ def _create_charges_price_points_row(
 ) -> Row:
     row = {
         Colname.charge_key: charge_key,
-        Colname.charge_id: charge_id,
+        Colname.charge_code: charge_code,
         Colname.charge_owner: charge_owner,
         Colname.charge_type: charge_type,
         Colname.charge_price: charge_price,
@@ -125,7 +127,7 @@ def test__read_changes__returns_expected_joined_row_values(
     assert actual.count() == 1
     actual_row = actual.collect()[0]
     assert actual_row[Colname.charge_key] == DEFAULT_CHARGE_KEY
-    assert actual_row[Colname.charge_id] == DEFAULT_CHARGE_ID
+    assert actual_row[Colname.charge_code] == DEFAULT_CHARGE_CODE
     assert actual_row[Colname.charge_type] == DEFAULT_CHARGE_TYPE
     assert actual_row[Colname.charge_owner] == DEFAULT_CHARGE_OWNER
     assert actual_row[Colname.charge_tax] == DEFAULT_CHARGE_TAX

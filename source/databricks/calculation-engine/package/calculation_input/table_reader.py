@@ -110,7 +110,7 @@ class TableReader:
             Colname.charge_key,
             concat_ws(
                 "-",
-                col(Colname.charge_id),
+                col(Colname.charge_code),
                 col(Colname.charge_owner),
                 col(Colname.charge_type),
             ),

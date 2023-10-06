@@ -60,7 +60,7 @@ def _create_metering_point_period_row(
 
 def _create_change_price_point_row() -> dict:
     return {
-        Colname.charge_id: "foo",
+        Colname.charge_code: "foo",
         Colname.charge_type: "foo",
         Colname.charge_owner: "foo",
         Colname.charge_price: Decimal("1.123456"),
@@ -79,7 +79,7 @@ def _create_time_series_point_row() -> dict:
 
 def _create_charge_link_period_row() -> dict:
     return {
-        Colname.charge_id: "foo",
+        Colname.charge_code: "foo",
         Colname.charge_type: "foo",
         Colname.charge_owner: "foo",
         Colname.metering_point_id: "foo",
@@ -91,7 +91,7 @@ def _create_charge_link_period_row() -> dict:
 
 def _create_charge_master_period_row() -> dict:
     return {
-        Colname.charge_id: "foo",
+        Colname.charge_code: "foo",
         Colname.charge_type: "foo",
         Colname.charge_owner: "foo",
         Colname.resolution: "foo",

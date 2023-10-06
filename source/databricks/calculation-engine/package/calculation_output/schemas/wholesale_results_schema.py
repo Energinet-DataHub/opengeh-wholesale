@@ -53,7 +53,7 @@ wholesale_results_schema = StructType(
         StructField(WholesaleResultColumnNames.price, DecimalType(18, 6), False),
         StructField(WholesaleResultColumnNames.amount, DecimalType(18, 6), False),
         StructField(WholesaleResultColumnNames.is_tax, BooleanType(), False),
-        StructField(WholesaleResultColumnNames.charge_id, StringType(), False),
+        StructField(WholesaleResultColumnNames.charge_code, StringType(), False),
         StructField(WholesaleResultColumnNames.charge_type, StringType(), False),
         StructField(WholesaleResultColumnNames.charge_owner_id, StringType(), False),
     ]

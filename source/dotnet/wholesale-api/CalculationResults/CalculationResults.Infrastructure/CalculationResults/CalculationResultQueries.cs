@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -29,12 +29,12 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 
 public class CalculationResultQueries : ICalculationResultQueries
 {
-    private readonly ISqlStatementClient _sqlStatementClient;
+    private readonly IDatabricksSqlStatementClient _sqlStatementClient;
     private readonly IBatchesClient _batchesClient;
     private readonly DeltaTableOptions _deltaTableOptions;
     private readonly ILogger<CalculationResultQueries> _logger;
 
-    public CalculationResultQueries(ISqlStatementClient sqlStatementClient, IBatchesClient batchesClient, IOptions<DeltaTableOptions> deltaTableOptions, ILogger<CalculationResultQueries> logger)
+    public CalculationResultQueries(IDatabricksSqlStatementClient sqlStatementClient, IBatchesClient batchesClient, IOptions<DeltaTableOptions> deltaTableOptions, ILogger<CalculationResultQueries> logger)
     {
         _sqlStatementClient = sqlStatementClient;
         _batchesClient = batchesClient;
@@ -53,19 +53,19 @@ public class CalculationResultQueries : ICalculationResultQueries
 
     private async IAsyncEnumerable<EnergyResult> GetInternalAsync(string sql, Instant periodStart, Instant periodEnd)
     {
-        var timeSeriesPoints = new List<TimeSeriesPoint>();
+        var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
         SqlResultRow? currentRow = null;
         var resultCount = 0;
 
-        await foreach (var nextRow in _sqlStatementClient.ExecuteAsync(sql).ConfigureAwait(false))
+        await foreach (var nextRow in _sqlStatementClient.ExecuteAsync(sql, sqlStatementParameters: null).ConfigureAwait(false))
         {
-            var timeSeriesPoint = TimeSeriesPointFactory.CreateTimeSeriesPoint(nextRow);
+            var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(nextRow);
 
             if (currentRow != null && BelongsToDifferentResults(currentRow, nextRow))
             {
                 yield return EnergyResultFactory.CreateEnergyResult(currentRow, timeSeriesPoints, periodStart, periodEnd);
                 resultCount++;
-                timeSeriesPoints = new List<TimeSeriesPoint>();
+                timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
             }
 
             timeSeriesPoints.Add(timeSeriesPoint);

@@ -13,11 +13,13 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Messaging.Communication.Internal;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.Communication;
 
 public interface ICalculationResultIntegrationEventFactory
 {
-    IntegrationEvent Create(EnergyResult energyResult);
+    IntegrationEvent CreateCalculationResultCompleted(EnergyResult energyResult);
+
+    IntegrationEvent CreateEnergyResultProducedV1(EnergyResult energyResult);
 }

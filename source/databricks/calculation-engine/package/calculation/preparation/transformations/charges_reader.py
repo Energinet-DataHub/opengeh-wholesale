@@ -40,7 +40,7 @@ def _create_charges_df(
 def _join_with_charge_prices(df: DataFrame, charge_prices: DataFrame) -> DataFrame:
     df = df.join(charge_prices, [Colname.charge_key], "inner").select(
         df[Colname.charge_key],
-        df[Colname.charge_id],
+        df[Colname.charge_code],
         df[Colname.charge_type],
         df[Colname.charge_owner],
         df[Colname.charge_tax],
@@ -64,7 +64,7 @@ def _join_with_charge_links(df: DataFrame, charge_links: DataFrame) -> DataFrame
         "inner",
     ).select(
         df[Colname.charge_key],
-        df[Colname.charge_id],
+        df[Colname.charge_code],
         df[Colname.charge_type],
         df[Colname.charge_owner],
         df[Colname.charge_tax],

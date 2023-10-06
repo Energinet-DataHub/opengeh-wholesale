@@ -18,7 +18,7 @@ using TimeSeriesTypeContract = Energinet.DataHub.Edi.Responses.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.EDI.Mappers;
 
-using CalculationTimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType;
+using CalculationTimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType;
 
 public static class TimeSeriesTypeMapper
 {
@@ -34,26 +34,26 @@ public static class TimeSeriesTypeMapper
         };
     }
 
-    public static TimeSeriesTypeContract MapTimeSeriesTypeFromCalculationsResult(Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType timeSeriesType)
+    public static TimeSeriesTypeContract MapTimeSeriesTypeFromCalculationsResult(CalculationTimeSeriesType timeSeriesType)
     {
         return timeSeriesType switch
         {
-            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.Production => TimeSeriesTypeContract.Production,
-            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.NonProfiledConsumption => TimeSeriesTypeContract.NonProfiledConsumption,
-            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.TotalConsumption => TimeSeriesTypeContract.TotalConsumption,
-            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.FlexConsumption => TimeSeriesTypeContract.FlexConsumption,
-            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.NetExchangePerGa => TimeSeriesTypeContract.NetExchangePerGa,
-            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.GridLoss => throw new NotSupportedTimeSeriesTypeException(
+            CalculationTimeSeriesType.Production => TimeSeriesTypeContract.Production,
+            CalculationTimeSeriesType.NonProfiledConsumption => TimeSeriesTypeContract.NonProfiledConsumption,
+            CalculationTimeSeriesType.TotalConsumption => TimeSeriesTypeContract.TotalConsumption,
+            CalculationTimeSeriesType.FlexConsumption => TimeSeriesTypeContract.FlexConsumption,
+            CalculationTimeSeriesType.NetExchangePerGa => TimeSeriesTypeContract.NetExchangePerGa,
+            CalculationTimeSeriesType.GridLoss => throw new NotSupportedTimeSeriesTypeException(
                 $"{timeSeriesType} is not a supported TimeSeriesType For AggregatedTimeSeriesRequestAccepted response."),
-            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.TempProduction => throw new NotSupportedTimeSeriesTypeException(
+            CalculationTimeSeriesType.TempProduction => throw new NotSupportedTimeSeriesTypeException(
                 $"{timeSeriesType} is not a supported TimeSeriesType For AggregatedTimeSeriesRequestAccepted response."),
-            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.NegativeGridLoss => throw new NotSupportedTimeSeriesTypeException(
+            CalculationTimeSeriesType.NegativeGridLoss => throw new NotSupportedTimeSeriesTypeException(
                 $"{timeSeriesType} is not a supported TimeSeriesType For AggregatedTimeSeriesRequestAccepted response."),
-            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.PositiveGridLoss => throw new NotSupportedTimeSeriesTypeException(
+            CalculationTimeSeriesType.PositiveGridLoss => throw new NotSupportedTimeSeriesTypeException(
                 $"{timeSeriesType} is not a supported TimeSeriesType For AggregatedTimeSeriesRequestAccepted response."),
-            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.TempFlexConsumption => throw new NotSupportedTimeSeriesTypeException(
+            CalculationTimeSeriesType.TempFlexConsumption => throw new NotSupportedTimeSeriesTypeException(
                 $"{timeSeriesType} is not a supported TimeSeriesType For AggregatedTimeSeriesRequestAccepted response."),
-            CalculationResults.Interfaces.CalculationResults.Model.TimeSeriesType.NetExchangePerNeighboringGa => throw new NotSupportedTimeSeriesTypeException(
+            CalculationTimeSeriesType.NetExchangePerNeighboringGa => throw new NotSupportedTimeSeriesTypeException(
                 $"{timeSeriesType} is not a supported TimeSeriesType For AggregatedTimeSeriesRequestAccepted response."),
             _ => throw new ArgumentOutOfRangeException($"Unknown time series type {nameof(timeSeriesType)}"),
         };
