@@ -93,10 +93,10 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
         private async Task<bool> WaitForCalculationToComplete(Guid calculationId)
         {
-        var defaultTimeout = TimeSpan.FromMinutes(15);
-        var defaultDelay = TimeSpan.FromSeconds(30);
-        var stopwatch = Stopwatch.StartNew();
-        var isCompleted = await Awaiter.TryWaitUntilConditionAsync(
+            var defaultTimeout = TimeSpan.FromMinutes(15);
+            var defaultDelay = TimeSpan.FromSeconds(30);
+            var stopwatch = Stopwatch.StartNew();
+            var isCompleted = await Awaiter.TryWaitUntilConditionAsync(
                 async () =>
                 {
                     var batchResult = await _wholesaleClient.GetBatchAsync(calculationId);
@@ -104,9 +104,9 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                 },
                 defaultTimeout,
                 defaultDelay);
-        stopwatch.Stop();
-        Console.WriteLine($"LOOK AT ME: Calculation took {stopwatch.Elapsed} to complete");
-        return isCompleted;
+            stopwatch.Stop();
+            Console.WriteLine($"LOOK AT ME: Calculation took {stopwatch.Elapsed} to complete");
+            return isCompleted;
         }
 
         private async Task CollectResultsFromServiceBus()

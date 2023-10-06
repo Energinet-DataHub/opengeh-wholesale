@@ -26,15 +26,15 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
     /// During the test setup phase the <see cref="LazyFixture"/> property should be accessed. Doing so will
     /// create and initialize the "TFixture", but only once.
     ///
-    /// During the test cleanup phase the factory will call Dispose of the "TFixture" only if it was ever created.
+    /// During the test cleanup phase the factory will only call Dispose of the "TFixture" if it was actually created.
     /// </summary>
-    /// <typeparam name="TFixture">An xUnit fixture that implements <see cref="IAsyncLifetime"/>.</typeparam>
-    public sealed class LazyFixtureFactory<TFixture> : IAsyncDisposable
+    /// <typeparam name="TFixture">A xUnit fixture that implements <see cref="IAsyncLifetime"/>.</typeparam>
+    public sealed class LazyFixtureFactory<TFixture> : IAsyncLifetime
         where TFixture : IAsyncLifetime, new()
     {
         public LazyFixtureFactory()
         {
-            LazyFixture = new AsyncLazy<TFixture>(CreateFixtureAsync);
+            LazyFixture = new AsyncLazy<TFixture>(PrepareFixtureAsync);
         }
 
         /// <summary>
@@ -43,18 +43,26 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         public AsyncLazy<TFixture> LazyFixture { get; }
 
         /// <summary>
+        /// This method is only implemented to conform to <see cref="IAsyncLifetime"/>.
+        /// </summary>
+        Task IAsyncLifetime.InitializeAsync()
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
         /// Responsible for disposing the "TFixture" if it was ever created.
         /// </summary>
-        async ValueTask IAsyncDisposable.DisposeAsync()
+        async Task IAsyncLifetime.DisposeAsync()
         {
             if (LazyFixture.IsStarted)
             {
-                var value = await LazyFixture;
-                await value.DisposeAsync();
+                var fixture = await LazyFixture;
+                await fixture.DisposeAsync();
             }
         }
 
-        private async Task<TFixture> CreateFixtureAsync()
+        private async Task<TFixture> PrepareFixtureAsync()
         {
             var fixture = new TFixture();
             await fixture.InitializeAsync();
