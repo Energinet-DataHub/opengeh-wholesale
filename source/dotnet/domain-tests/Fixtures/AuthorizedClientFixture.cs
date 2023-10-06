@@ -63,8 +63,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             WholesaleClient = await CreateWholesaleClientAsync();
             await CreateTopicSubscriptionAsync();
             Receiver = CreateServiceBusReceiver();
-            ////Output = new AuthorizedClientFixtureOutput(WholesaleClient, Receiver);
-            ////await Output.InitializeAsync();
+            Output = new AuthorizedClientFixtureOutput(WholesaleClient, Receiver);
+            await Output.InitializeAsync();
         }
 
         async Task IAsyncLifetime.DisposeAsync()
