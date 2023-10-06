@@ -12,9 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from azure.storage.filedatalake import DataLakeServiceClient
 from unittest.mock import patch, Mock
 
-from package.infrastructure.storage_account_access.data_lake_file_manager import (
+from package.infrastructure.storage_account_access import (
+    data_lake_file_manager,
     DataLakeFileManager,
 )
 
@@ -22,12 +24,10 @@ DUMMY_STORAGE_ACCOUNT_NAME = "my_storage"
 DUMMY_CONTAINER_NAME = "my_container"
 
 
-@patch(
-    "package.infrastructure.storage_account_access.data_lake_file_manager.DataLakeServiceClient"
-)
+@patch.object(data_lake_file_manager, DataLakeServiceClient.__name__)
 def test__get_file_system_client__calls_service_client_with_container_name(
-    mock_data_lake_service_client,
-):
+    mock_data_lake_service_client: Mock,
+) -> None:
     # Arrange
     mock_credential = Mock()
 
@@ -42,15 +42,11 @@ def test__get_file_system_client__calls_service_client_with_container_name(
     )
 
 
-@patch(
-    "package.infrastructure.storage_account_access.data_lake_file_manager.DataLakeFileManager.download_file"
-)
-@patch(
-    "package.infrastructure.storage_account_access.data_lake_file_manager.DataLakeServiceClient"
-)
+@patch.object(DataLakeFileManager, DataLakeFileManager.download_file.__name__)
+@patch.object(data_lake_file_manager, DataLakeServiceClient.__name__)
 def test__download_csv__returned_reader_has_all_items(
-    mock_data_lake_service_client, mock_download_file
-):
+    mock_data_lake_service_client: Mock, mock_download_file: Mock
+) -> None:
     # Arrange
     mock_credential = Mock()
     row0 = ["c_00", "c_01", "c_02"]
@@ -70,15 +66,11 @@ def test__download_csv__returned_reader_has_all_items(
     assert row1 == next(csv_reader)
 
 
-@patch(
-    "package.infrastructure.storage_account_access.data_lake_file_manager.DataLakeFileManager.download_file"
-)
-@patch(
-    "package.infrastructure.storage_account_access.data_lake_file_manager.DataLakeServiceClient"
-)
+@patch.object(DataLakeFileManager, DataLakeFileManager.download_file.__name__)
+@patch.object(data_lake_file_manager, DataLakeServiceClient.__name__)
 def test__download_csv__when_empty_file__return_empty_content_in_reader(
-    mock_data_lake_service_client, mock_download_file
-):
+    mock_data_lake_service_client: Mock, mock_download_file: Mock
+) -> None:
     # Arrange
     mock_credential = Mock()
     mock_download_file.return_value = b""

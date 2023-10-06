@@ -145,7 +145,7 @@ def executed_balance_fixing(
 
     with patch.object(
         grid_loss_responsible,
-        "_get_all_grid_loss_responsible",
+        grid_loss_responsible._get_all_grid_loss_responsible.__name__,
         return_value=grid_loss_responsible_test_data,
     ):
         table_reader = TableReader(spark)
@@ -170,7 +170,7 @@ def executed_wholesale_fixing(
 
     with patch.object(
         grid_loss_responsible,
-        "_get_all_grid_loss_responsible",
+        grid_loss_responsible._get_all_grid_loss_responsible.__name__,
         return_value=grid_loss_responsible_test_data,
     ):
         table_reader = TableReader(spark)
