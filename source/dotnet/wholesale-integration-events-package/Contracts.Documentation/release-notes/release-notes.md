@@ -1,5 +1,13 @@
 # Wholesale Contracts Release notes
 
+## Version 4.4.1
+
+Update realease-notes
+
+## Version 4.4.0
+
+Changed ProcessType to CalculationType in EnergyResultProducedV1
+
 ## Version 4.3.0
 
 Use nested types in Added 'energy_result_produced_v1.proto'
