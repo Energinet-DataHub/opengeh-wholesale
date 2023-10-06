@@ -18,7 +18,7 @@ using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -53,7 +53,7 @@ public class CalculationResultQueries : ICalculationResultQueries
 
     private async IAsyncEnumerable<EnergyResult> GetInternalAsync(string sql, Instant periodStart, Instant periodEnd)
     {
-        var timeSeriesPoints = new List<TimeSeriesPoint>();
+        var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
         SqlResultRow? currentRow = null;
         var resultCount = 0;
 
@@ -65,7 +65,7 @@ public class CalculationResultQueries : ICalculationResultQueries
             {
                 yield return EnergyResultFactory.CreateEnergyResult(currentRow, timeSeriesPoints, periodStart, periodEnd);
                 resultCount++;
-                timeSeriesPoints = new List<TimeSeriesPoint>();
+                timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
             }
 
             timeSeriesPoints.Add(timeSeriesPoint);

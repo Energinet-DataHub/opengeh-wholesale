@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 
@@ -21,5 +21,5 @@ public interface IRequestCalculationResultQueries
     /// <summary>
     /// Gets all result for a given request.
     /// </summary>
-    Task<EnergyResult?> GetAsync(CalculationResultQuery query);
+    Task<EnergyResult?> GetAsync(EnergyResultQuery query);
 }
