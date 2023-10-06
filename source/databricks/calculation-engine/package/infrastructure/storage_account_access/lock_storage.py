@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from azure.identity import ClientSecretCredential
-from package.infrastructure.storage_account_access.data_lake_file_manager import (
+from package.infrastructure.storage_account_access import (
     DataLakeFileManager,
 )
 import package.infrastructure.environment_variables as env_vars
