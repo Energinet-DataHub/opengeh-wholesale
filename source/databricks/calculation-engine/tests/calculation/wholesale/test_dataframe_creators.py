@@ -41,7 +41,7 @@ def test_calculate_daily_subscription_price(calculate_daily_subscription_price_f
     result = df.collect()[0]
     assert len(df.columns) == len(calculate_daily_subscription_price_schema.fields)
     assert result[Colname.charge_key] == DataframeDefaults.default_charge_key
-    assert result[Colname.charge_id] == DataframeDefaults.default_charge_id
+    assert result[Colname.charge_code] == DataframeDefaults.default_charge_code
     assert result[Colname.charge_type] == DataframeDefaults.default_charge_type
     assert result[Colname.charge_owner] == DataframeDefaults.default_charge_owner
     assert result[Colname.charge_price] == DataframeDefaults.default_charge_price
@@ -68,7 +68,7 @@ def test_charges(charges_factory):
     result = df.collect()[0]
     assert len(df.columns) == len(charges_schema.fields)
     assert result[Colname.charge_key] == DataframeDefaults.default_charge_key
-    assert result[Colname.charge_id] == DataframeDefaults.default_charge_id
+    assert result[Colname.charge_code] == DataframeDefaults.default_charge_code
     assert result[Colname.charge_type] == DataframeDefaults.default_charge_type
     assert result[Colname.charge_owner] == DataframeDefaults.default_charge_owner
     assert result[Colname.charge_tax] == DataframeDefaults.default_charge_tax
@@ -91,7 +91,7 @@ def test_charge_master_data(charge_master_data_factory):
     result = df.collect()[0]
     assert len(df.columns) == len(charges_master_data_schema.fields)
     assert result[Colname.charge_key] == DataframeDefaults.default_charge_key
-    assert result[Colname.charge_id] == DataframeDefaults.default_charge_id
+    assert result[Colname.charge_code] == DataframeDefaults.default_charge_code
     assert result[Colname.charge_type] == DataframeDefaults.default_charge_type
     assert result[Colname.charge_owner] == DataframeDefaults.default_charge_owner
     assert (

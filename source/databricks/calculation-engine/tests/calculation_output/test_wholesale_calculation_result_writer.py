@@ -55,7 +55,7 @@ DEFAULT_METERING_POINT_TYPE = (
 )  # Must correspond with the input type above
 DEFAULT_SETTLEMENT_METHOD = SettlementMethod.FLEX
 DEFAULT_CHARGE_KEY = "40000-tariff-5790001330552"
-DEFAULT_CHARGE_ID = "4000"
+DEFAULT_CHARGE_CODE = "4000"
 DEFAULT_CHARGE_TYPE = ChargeType.TARIFF
 DEFAULT_CHARGE_OWNER_ID = "5790001330552"
 DEFAULT_CHARGE_TAX = True
@@ -75,7 +75,7 @@ def _create_result_row(
     metering_point_type: MeteringPointType = DEFAULT_INPUT_METERING_POINT_TYPE,
     settlement_method: SettlementMethod = DEFAULT_SETTLEMENT_METHOD,
     charge_key: str = DEFAULT_CHARGE_KEY,
-    charge_id: str = DEFAULT_CHARGE_ID,
+    charge_code: str = DEFAULT_CHARGE_CODE,
     charge_type: ChargeType = DEFAULT_CHARGE_TYPE,
     charge_owner: str = DEFAULT_CHARGE_OWNER_ID,
     charge_tax: bool = DEFAULT_CHARGE_TAX,
@@ -94,7 +94,7 @@ def _create_result_row(
         Colname.metering_point_type: metering_point_type.value,
         Colname.settlement_method: settlement_method.value,
         Colname.charge_key: charge_key,
-        Colname.charge_id: charge_id,
+        Colname.charge_code: charge_code,
         Colname.charge_type: charge_type.value,
         Colname.charge_owner: charge_owner,
         Colname.charge_tax: charge_tax,
@@ -160,7 +160,7 @@ def sut() -> WholesaleCalculationResultWriter:
         (WholesaleResultColumnNames.price, DEFAULT_CHARGE_PRICE),
         (WholesaleResultColumnNames.amount, DEFAULT_TOTAL_AMOUNT),
         (WholesaleResultColumnNames.is_tax, DEFAULT_CHARGE_TAX),
-        (WholesaleResultColumnNames.charge_id, DEFAULT_CHARGE_ID),
+        (WholesaleResultColumnNames.charge_code, DEFAULT_CHARGE_CODE),
         (WholesaleResultColumnNames.charge_type, DEFAULT_CHARGE_TYPE.value),
         (WholesaleResultColumnNames.charge_owner_id, DEFAULT_CHARGE_OWNER_ID),
     ],
@@ -252,7 +252,7 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
         WholesaleResultColumnNames.price,
         WholesaleResultColumnNames.amount,
         WholesaleResultColumnNames.is_tax,
-        WholesaleResultColumnNames.charge_id,
+        WholesaleResultColumnNames.charge_code,
     ]
     all_columns = [
         attr for attr in dir(WholesaleResultColumnNames) if not attr.startswith("__")
