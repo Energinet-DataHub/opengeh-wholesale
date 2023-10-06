@@ -13,27 +13,26 @@
 # limitations under the License.
 
 from unittest.mock import patch, Mock
-from package.infrastructure.storage_account_access.data_lake_file_manager import (
-    DataLakeFileManager,
-)
+from importlib.resources import contents
 
+from package.datamigration import uncommitted_migrations
 from package.datamigration.uncommitted_migrations import (
     _get_all_migrations,
+    download_committed_migrations,
     get_uncommitted_migrations,
 )
-
 
 DUMMY_STORAGE_ACCOUNT_NAME = "my_storage"
 DUMMY_STORAGE_KEY = "my_storage"
 DUMMY_CONTAINER_NAME = "my_container"
 
 
-@patch("package.datamigration.uncommitted_migrations._get_all_migrations")
-@patch("package.datamigration.uncommitted_migrations.download_committed_migrations")
+@patch.object(uncommitted_migrations, _get_all_migrations.__name__)
+@patch.object(uncommitted_migrations, download_committed_migrations.__name__)
 def test__get_uncommitted_migrations_count__when_no_migration_needed__returns_0(
-    mock_download_committed_migrations,
-    mock_get_all_migrations,
-):
+    mock_download_committed_migrations: Mock,
+    mock_get_all_migrations: Mock,
+) -> None:
     # Arrange
     migration_name_1 = "my_migration1"
     migration_name_2 = "my_migration2"
@@ -51,12 +50,12 @@ def test__get_uncommitted_migrations_count__when_no_migration_needed__returns_0(
     assert len(migrations) == 0
 
 
-@patch("package.datamigration.uncommitted_migrations._get_all_migrations")
-@patch("package.datamigration.uncommitted_migrations.download_committed_migrations")
+@patch.object(uncommitted_migrations, _get_all_migrations.__name__)
+@patch.object(uncommitted_migrations, download_committed_migrations.__name__)
 def test__get_uncommitted_migrations_count__when_one_migration_needed__returns_1(
-    mock_download_committed_migrations,
-    mock_get_all_migrations,
-):
+    mock_download_committed_migrations: Mock,
+    mock_get_all_migrations: Mock,
+) -> None:
     # Arrange
     migration_name_1 = "my_migration1"
     migration_name_2 = "my_migration2"
@@ -82,7 +81,7 @@ def test__get_all_migrations__returns_some() -> None:
     assert len(migrations) > 0
 
 
-def test__get_all_migrations__returns_correct_names():
+def test__get_all_migrations__returns_correct_names() -> None:
     # Act
     migrations = _get_all_migrations()
 
@@ -91,8 +90,8 @@ def test__get_all_migrations__returns_correct_names():
         assert not migration.endswith(".sql")
 
 
-@patch("importlib.resources.contents")
-def test__get_all_migrations__returns_expected_migrations(mock_importlib):
+@patch.object(uncommitted_migrations, contents.__name__)
+def test__get_all_migrations__returns_expected_migrations(mock_importlib: Mock) -> None:
     # Arrange
     mock_importlib.return_value = ["my_migration1.sql", "my_migration2.sql"]
     expected_migrations = ["my_migration1", "my_migration2"]

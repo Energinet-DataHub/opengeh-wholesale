@@ -13,8 +13,10 @@
 # limitations under the License.
 
 
-import pytest
 from unittest.mock import patch, Mock
+
+from package.infrastructure.storage_account_access import lock_storage
+from package.infrastructure.storage_account_access import DataLakeFileManager
 from package.infrastructure.storage_account_access.lock_storage import (
     _LOCK_FILE_NAME,
     lock,
@@ -22,9 +24,11 @@ from package.infrastructure.storage_account_access.lock_storage import (
 )
 
 
-@patch("package.infrastructure.storage_account_access.lock_storage.DataLakeFileManager")
+@patch.object(lock_storage, DataLakeFileManager.__name__)
 @patch("package.infrastructure.storage_account_access.lock_storage.env_vars")
-def test__lock__create_file_called_with_correct_name(mock_env_vars, mock_file_manager):
+def test__lock__create_file_called_with_correct_name(
+    mock_env_vars: Mock, mock_file_manager: Mock
+) -> None:
     # Arrange
     mock_create_file = Mock()
     mock_file_manager.return_value.create_file = mock_create_file
@@ -36,11 +40,11 @@ def test__lock__create_file_called_with_correct_name(mock_env_vars, mock_file_ma
     mock_create_file.assert_called_once_with(_LOCK_FILE_NAME)
 
 
-@patch("package.infrastructure.storage_account_access.lock_storage.DataLakeFileManager")
+@patch.object(lock_storage, DataLakeFileManager.__name__)
 @patch("package.infrastructure.storage_account_access.lock_storage.env_vars")
 def test__unlock__delete_file_called_with_correct_name(
-    mock_env_vars, mock_file_manager
-):
+    mock_env_vars: Mock, mock_file_manager: Mock
+) -> None:
     # Arrange
     mock_delete_file = Mock()
     mock_file_manager.return_value.delete_file = mock_delete_file
