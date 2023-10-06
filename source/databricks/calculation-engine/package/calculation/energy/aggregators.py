@@ -16,7 +16,7 @@ from decimal import Decimal
 from package.codelists import (
     MeteringPointType,
     SettlementMethod,
-    TimeSeriesQuality,
+    QuantityQuality,
 )
 from package.constants import Colname
 from . import transformations as T
@@ -100,7 +100,7 @@ def _aggregate_per_ga_and_brp_and_es(
         .withColumn(
             Colname.quality,
             when(
-                col(Colname.quality).isNull(), TimeSeriesQuality.MISSING.value
+                col(Colname.quality).isNull(), QuantityQuality.MISSING.value
             ).otherwise(col(Colname.quality)),
         )
         .select(

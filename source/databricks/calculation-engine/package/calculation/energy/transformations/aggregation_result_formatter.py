@@ -16,7 +16,7 @@ from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import lit
 from package.constants import Colname
 from package.calculation.energy.schemas import aggregation_result_schema
-from package.codelists import TimeSeriesQuality
+from package.codelists import QuantityQuality
 
 
 def __add_missing_nullable_columns(result: DataFrame) -> DataFrame:
@@ -41,9 +41,9 @@ def create_dataframe_from_aggregation_result_schema(result: DataFrame) -> DataFr
     result = __add_missing_nullable_columns(result)
     # Replaces None value with zero for sum_quantity
     result = result.na.fill(value=0, subset=[Colname.sum_quantity])
-    # Replaces None value with TimeSeriesQuality.MISSING for quality
+    # Replaces None value with QuantityQuality.MISSING for quality
     result = result.na.fill(
-        value=TimeSeriesQuality.MISSING.value, subset=[Colname.quality]
+        value=QuantityQuality.MISSING.value, subset=[Colname.quality]
     )
 
     # Create data frame from RDD in order to be able to apply the schema

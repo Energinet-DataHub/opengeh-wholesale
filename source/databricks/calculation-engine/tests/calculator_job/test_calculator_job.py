@@ -17,6 +17,11 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import StructType
 import pytest
 from unittest.mock import patch, Mock
+
+import package.calculator_job
+import package.infrastructure.storage_account_access
+from package.infrastructure.storage_account_access import islocked
+from package.calculator_job_args import get_calculator_args
 from package.calculator_job import start
 from package.calculation_input.schemas import (
     time_series_point_schema,
@@ -102,8 +107,8 @@ def _assert_is_equal(actual_schema: StructType, expected_schema: StructType) -> 
     )
 
 
-@patch("package.calculator_job.get_calculator_args")
-@patch("package.calculator_job.islocked")
+@patch.object(package.calculator_job, get_calculator_args.__name__)
+@patch.object(package.calculator_job, islocked.__name__)
 def test__when_data_lake_is_locked__return_exit_code_3(
     mock_islocked: Mock,
     mock_get_calculator_args: Mock,
@@ -114,5 +119,6 @@ def test__when_data_lake_is_locked__return_exit_code_3(
     # Act
     with pytest.raises(SystemExit) as excinfo:
         start()
+
     # Assert
     assert excinfo.value.code == 3

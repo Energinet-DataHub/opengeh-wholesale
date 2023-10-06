@@ -38,7 +38,7 @@ DEFAULT_CHARGE_PRICE = Decimal(1.0)
 DEFAULT_RESOLUTION = "P1D"
 DEFAULT_FROM_DATE = datetime(2020, 1, 1, 0, 0)
 DEFAULT_TO_DATE = datetime(2020, 2, 1, 0, 0)
-DEFAULT_OBSERVATION_TIME = datetime(2020, 1, 1, 0, 0)
+DEFAULT_CHARGE_TIME = datetime(2020, 1, 1, 0, 0)
 DEFAULT_METERING_POINT_ID = "123456789012345678901234567"
 
 
@@ -92,7 +92,7 @@ def _create_charges_price_points_row(
     charge_owner: str = DEFAULT_CHARGE_OWNER,
     charge_type: str = DEFAULT_CHARGE_TYPE,
     charge_price: Decimal = DEFAULT_CHARGE_PRICE,
-    observation_time: datetime = DEFAULT_OBSERVATION_TIME,
+    charge_time: datetime = DEFAULT_CHARGE_TIME,
 ) -> Row:
     row = {
         Colname.charge_key: charge_key,
@@ -100,7 +100,7 @@ def _create_charges_price_points_row(
         Colname.charge_owner: charge_owner,
         Colname.charge_type: charge_type,
         Colname.charge_price: charge_price,
-        Colname.observation_time: observation_time,
+        Colname.charge_time: charge_time,
     }
     return Row(**row)
 
@@ -135,7 +135,7 @@ def test__read_changes__returns_expected_joined_row_values(
     assert actual_row[Colname.charge_price] == DEFAULT_CHARGE_PRICE
     assert actual_row[Colname.from_date] == DEFAULT_FROM_DATE
     assert actual_row[Colname.to_date] == DEFAULT_TO_DATE
-    assert actual_row[Colname.observation_time] == DEFAULT_OBSERVATION_TIME
+    assert actual_row[Colname.charge_time] == DEFAULT_CHARGE_TIME
     assert actual_row[Colname.metering_point_id] == DEFAULT_METERING_POINT_ID
 
 
@@ -216,7 +216,7 @@ def test__read_changes__when_multiple_charge_keys__returns_only_rows_matching_jo
     )
 
     table_reader_mock.read_charge_price_points.return_value = spark.createDataFrame(
-        [_create_charges_price_points_row(observation_time=charge_time)]
+        [_create_charges_price_points_row(charge_time=charge_time)]
     )
 
     # Act
