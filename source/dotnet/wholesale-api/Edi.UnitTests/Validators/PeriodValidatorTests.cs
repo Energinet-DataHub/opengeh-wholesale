@@ -14,8 +14,6 @@
 
 using Energinet.DataHub.Wholesale.EDI.Validators;
 using NodaTime;
-using NodaTime.Extensions;
-using NodaTime.Text;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
@@ -100,5 +98,18 @@ public class PeriodValidatorTests
 
         // Assert
         Assert.True(periodStatus.Errors.Count == 1);
+    }
+
+    [Fact]
+    public void Validate_StartAndEndAreInvalid_TwoErrors()
+    {
+        // Arrange
+        var period = new PeriodCompound(string.Empty, string.Empty);
+
+        // Act
+        var periodStatus = _sut.Validate(period);
+
+        // Assert
+        Assert.True(periodStatus.Errors.Count == 2);
     }
 }
