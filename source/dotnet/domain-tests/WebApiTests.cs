@@ -38,14 +38,11 @@ namespace Energinet.DataHub.Wholesale.DomainTests
         {
             public Given_Unauthorized(WholesaleDomainConfiguration configuration)
             {
-                Configuration = configuration;
                 UnauthorizedHttpClient = new HttpClient
                 {
                     BaseAddress = configuration.WebApiBaseAddress,
                 };
             }
-
-            private WholesaleDomainConfiguration Configuration { get; }
 
             private HttpClient UnauthorizedHttpClient { get; }
 
