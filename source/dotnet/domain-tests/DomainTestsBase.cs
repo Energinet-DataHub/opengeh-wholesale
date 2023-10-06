@@ -19,8 +19,8 @@ using Xunit;
 namespace Energinet.DataHub.Wholesale.DomainTests
 {
     /// <summary>
-    /// Simplify the implementation of domain tests as we want to ensure we only perform test setup
-    /// for these if the should actually be executed. Otherwise we waste time on unnecessary setup.
+    /// Simplify the implementation of domain tests for which we only want to perform the
+    /// test setup phase if they should actually be executed.
     /// </summary>
     /// <typeparam name="TFixture">A xUnit fixture that implements <see cref="IAsyncLifetime"/>.</typeparam>
     public abstract class DomainTestsBase<TFixture> : IClassFixture<LazyFixtureFactory<TFixture>>, IAsyncLifetime
