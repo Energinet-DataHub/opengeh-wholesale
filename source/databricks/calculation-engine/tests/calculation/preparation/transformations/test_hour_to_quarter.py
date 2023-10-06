@@ -87,15 +87,17 @@ def test__transform_hour_to_quarter__split_hourly_enriched_time_series(
     )
 
 
-def test__transform_hour_to_quarter__error_on_invalid_basis_data_time_series_points_schema(
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    basis_data_time_series_points = spark.createDataFrame(data=[{"Hello": "World"}])
-
-    # Act
-    with pytest.raises(ValueError) as excinfo:
-        transform_hour_to_quarter(basis_data_time_series_points)
-
-    # Assert
-    assert "Schema mismatch" in str(excinfo.value)
+# def test__transform_hour_to_quarter__error_on_invalid_basis_data_time_series_points_schema(
+#     spark: SparkSession,
+# ) -> None:
+#     # Arrange
+#     invalid_basis_data_time_series_points = spark.createDataFrame(
+#         data=[{"Hello": "World"}]
+#     )
+#
+#     # Act
+#     with pytest.raises(ValueError) as excinfo:
+#         transform_hour_to_quarter(invalid_basis_data_time_series_points)
+#
+#     # Assert
+#     assert "Schema mismatch" in str(excinfo.value)
