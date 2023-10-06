@@ -48,12 +48,17 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetRowsAsync_ReturnsExpectedReportRows(Mock<ILogger<DatabricksSqlStatusResponseParser>> loggerMock)
+    public async Task GetRowsAsync_ReturnsExpectedReportRows(
+        Mock<IHttpClientFactory> httpClientFactoryMock,
+        Mock<ILogger<SqlStatusResponseParser>> loggerMock)
     {
         // Arrange
         var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
         var expectedSettlementReportRow = await InsertRowsFromMultipleBatches(deltaTableOptions);
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(loggerMock, new Mock<ILogger<SqlStatementClient>>());
+        var sqlStatementClient = _fixture.CreateSqlStatementClient(
+            httpClientFactoryMock,
+            loggerMock,
+            new Mock<ILogger<DatabricksSqlStatementClient>>());
         var sut = new SettlementReportResultQueries(sqlStatementClient, deltaTableOptions);
 
         // Act
