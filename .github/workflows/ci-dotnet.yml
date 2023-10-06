@@ -36,9 +36,9 @@ jobs:
       run_integration_tests: true
       azure_integrationtest_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
       azure_integrationtest_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
-      azure_integrationtest_spn_id: ${{ vars.integration_test_azure_spn_id_oidc }}
-      azure_keyvault_url: ${{ vars.integration_test_azure_keyvault_url }}
-      azure_b2csecrets_keyvault_url: ${{ vars.integration_test_azure_b2csecrets_keyvault_url }}
+      azure_integrationtest_spn_id: dd76f216-fee1-4084-9588-cacd3f89024e
+      azure_keyvault_url: https://kvintgratwe002.vault.azure.net/
+      azure_b2csecrets_keyvault_url: https://kvb2cintgratwe002.vault.azure.net/
 
   dotnet_ci_test_webapi:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v12
@@ -56,9 +56,9 @@ jobs:
       run_integration_tests: true
       azure_integrationtest_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
       azure_integrationtest_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
-      azure_integrationtest_spn_id: ${{ vars.integration_test_azure_spn_id_oidc }}
-      azure_keyvault_url: ${{ vars.integration_test_azure_keyvault_url }}
-      azure_b2csecrets_keyvault_url: ${{ vars.integration_test_azure_b2csecrets_keyvault_url }}
+      azure_integrationtest_spn_id: dd76f216-fee1-4084-9588-cacd3f89024e
+      azure_keyvault_url: https://kvintgratwe002.vault.azure.net/
+      azure_b2csecrets_keyvault_url: https://kvb2cintgratwe002.vault.azure.net/
 
   dotnet_ci_test_calculation_results:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v12
@@ -89,8 +89,8 @@ jobs:
       run_integration_tests: true
       azure_integrationtest_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
       azure_integrationtest_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
-      azure_integrationtest_spn_id: ${{ vars.integration_test_azure_spn_id_oidc }}
-      azure_keyvault_url: ${{ vars.integration_test_azure_keyvault_url }}
+      azure_integrationtest_spn_id: dd76f216-fee1-4084-9588-cacd3f89024e
+      azure_keyvault_url: https://kvintgratwe002.vault.azure.net/
 
   dotnet_ci_test_events:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v12
