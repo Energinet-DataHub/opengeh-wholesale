@@ -12,15 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Edi.Requests;
-using FluentValidation;
+using NodaTime;
+using NodaTime.Text;
 
 namespace Energinet.DataHub.Wholesale.EDI.Validators;
 
-public class AggregatedTimeSeriesRequestValidator : AbstractValidator<AggregatedTimeSeriesRequest>
+/// <summary>
+/// Is the wrapper for inspection of the period values
+/// </summary>
+public class PeriodCompound
 {
-    public AggregatedTimeSeriesRequestValidator(IValidator<PeriodCompound> periodValidator)
+    public PeriodCompound(string startValue, string endValue)
     {
-        RuleFor(x => new PeriodCompound(x.Period.Start, x.Period.End)).SetValidator(periodValidator);
+        StarValue = startValue;
+        EndValue = endValue;
     }
+
+    public Instant? StartValueAsInstant => InstantPattern.General.Parse(StarValue).Success ? InstantPattern.General.Parse(StarValue).Value : null;
+
+    public Instant? EndValueAsInstant => InstantPattern.General.Parse(EndValue).Success ? InstantPattern.General.Parse(EndValue).Value : null;
+
+    private string StarValue { get; }
+
+    private string EndValue { get; }
 }

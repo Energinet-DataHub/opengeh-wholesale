@@ -31,7 +31,7 @@ public static class EdiRegistration
         serviceCollection.AddSingleton<IEdiClient, EdiClient>();
         serviceCollection.AddScoped<IAggregatedTimeSeriesMessageFactory, AggregatedTimeSeriesMessageFactory>();
         serviceCollection.AddScoped<IAggregatedTimeSeriesRequestFactory, AggregatedTimeSeriesRequestFactory>();
-        //serviceCollection.AddScoped<IValidator<Edi.Requests.AggregatedTimeSeriesRequest>, AggregatedTimeSeriesRequestValidator>();
-        //serviceCollection.AddScoped<IValidator<Edi.Requests.Period>, PeriodValidator>();
+        serviceCollection.AddScoped<IValidator<Edi.Requests.AggregatedTimeSeriesRequest>, AggregatedTimeSeriesRequestValidator>();
+        serviceCollection.AddScoped<IValidator<PeriodCompound>, PeriodValidator>();
     }
 }

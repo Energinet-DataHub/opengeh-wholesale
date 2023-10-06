@@ -28,172 +28,77 @@ public class PeriodValidatorTests
     public void Validate_Period_SuccessValidation()
     {
         // Arrange
-        var period = new Energinet.DataHub.Edi.Requests.Period()
-        {
-            Start = "adasd", // Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(),
-            End = Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString(),
-        };
+        var period = new PeriodCompound(Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(), Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString());
 
-        var fooperiod = new PeriodValidator.Foo(period.Start, period.End);
         // Act
-        var periodStatus = _sut.Validate(fooperiod);
+        var periodStatus = _sut.Validate(period);
 
         // Assert
         Assert.True(periodStatus.IsValid);
     }
 
-/*
     [Fact]
     public void Validate_EndDateIsUnspecified_FailsValidation()
     {
         // Arrange
-        var period = new Energinet.DataHub.Edi.Requests.Period()
-        {
-            Start = DateTime.Now.Date.ToUniversalTime().ToInstant().ToString(),
-            End = string.Empty,
-        };
+        var period = new PeriodCompound(Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(), string.Empty);
 
         // Act
         var periodStatus = _sut.Validate(period);
 
         // Assert
         Assert.False(periodStatus.IsValid);
-        Assert.Single(periodStatus.Errors);
-        Assert.Equal("D66", periodStatus.Errors.First().ErrorCode);
-    }
-
-    [Fact]
-    public void Validate_PeriodIsInTheFuture_FailsValidation()
-    {
-        // Arrange
-        var tomorrowAt22 = DateTime.UtcNow.Date.AddDays(1).AddHours(22);
-
-        var period = new Energinet.DataHub.Edi.Requests.Period()
-        {
-            Start = Instant.FromDateTimeUtc(DateTime.UtcNow.Date.AddDays(-1).AddHours(22)).ToString(),
-            End = Instant.FromDateTimeUtc(tomorrowAt22).ToString(),
-        };
-
-        // Act
-        var periodStatus = _sut.Validate(period);
-
-        // Assert
-        Assert.False(periodStatus.IsValid);
-        Assert.Single(periodStatus.Errors);
-        Assert.Equal("D66", periodStatus.Errors.First().ErrorCode);
     }
 
     [Fact]
     public void Validate_WrongStartHour_FailsValidation()
     {
         // Arrange
-        var period = new Energinet.DataHub.Edi.Requests.Period()
-        {
-            Start = Instant.FromUtc(2022, 1, 1, 21, 0, 0).ToString(),
-            End = Instant.FromUtc(2022, 1, 2, 22, 0, 0).ToString(),
-        };
+        var period = new PeriodCompound(Instant.FromUtc(2022, 1, 1, 22, 0, 0).ToString(), Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString());
 
         // Act
         var periodStatus = _sut.Validate(period);
 
         // Assert
         Assert.False(periodStatus.IsValid);
-        Assert.Single(periodStatus.Errors);
+    }
+
+    [Fact]
+    public void Validate_StartIsUnspecified_FailsValidation()
+    {
+        // Arrange
+        var period = new PeriodCompound(string.Empty, Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString());
+
+        // Act
+        var periodStatus = _sut.Validate(period);
+
+        // Assert
+        Assert.False(periodStatus.IsValid);
+    }
+
+    [Fact]
+    public void Validate_Fails_CorrectErrorCode()
+    {
+        // Arrange
+        var period = new PeriodCompound(Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(), string.Empty);
+
+        // Act
+        var periodStatus = _sut.Validate(period);
+
+        // Assert
         Assert.Equal("D66", periodStatus.Errors.First().ErrorCode);
     }
 
     [Fact]
-    public void Validate_StartIsEqualToEnd_FailsValidation()
+    public void Validate_Fails_CorrectNumberOfMessages()
     {
         // Arrange
-        var period = new Energinet.DataHub.Edi.Requests.Period()
-        {
-            Start = Instant.FromUtc(2022, 1, 1, 22, 0, 0).ToString(),
-            End = Instant.FromUtc(2022, 1, 1, 22, 0, 0).ToString(),
-        };
+        var period = new PeriodCompound(Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(), string.Empty);
 
         // Act
         var periodStatus = _sut.Validate(period);
 
         // Assert
-        Assert.False(periodStatus.IsValid);
-        Assert.Single(periodStatus.Errors);
-        Assert.Equal("D66", periodStatus.Errors.First().ErrorCode);
+        Assert.True(periodStatus.Errors.Count == 1);
     }
-
-    [Fact]
-    public void Validate_StartIsBadFormat_FailsValidation()
-    {
-        // Arrange
-        var period = new Energinet.DataHub.Edi.Requests.Period()
-            {
-                Start = "a023-07-27T22:00:00Z",
-                End = Instant.FromUtc(2022, 1, 1, 22, 0, 0).ToString(),
-            };
-
-        // Act
-        var periodStatus = _sut.Validate(period);
-
-        // Assert
-        Assert.False(periodStatus.IsValid);
-        Assert.Single(periodStatus.Errors);
-        Assert.Equal("D66", periodStatus.Errors.First().ErrorCode);
-    }
-
-    [Fact]
-    public void Validate_EndIsBadFormat_FailsValidation()
-    {
-        // Arrange
-        var period = new Energinet.DataHub.Edi.Requests.Period()
-            {
-                Start = Instant.FromUtc(2022, 1, 1, 22, 0, 0).ToString(),
-                End = "a023-07-27T22:00:00Z",
-            };
-
-        // Act
-        var periodStatus = _sut.Validate(period);
-
-        // Assert
-        Assert.False(periodStatus.IsValid);
-        Assert.Single(periodStatus.Errors);
-        Assert.Equal("D66", periodStatus.Errors.First().ErrorCode);
-    }
-
-    [Fact]
-    public void Validate_EndIsBadFormatAndStartInWrongHour_FailsValidation()
-    {
-        // Arrange
-        var period = new Energinet.DataHub.Edi.Requests.Period()
-        {
-            Start = Instant.FromUtc(2022, 1, 1, 21, 0, 0).ToString(),
-            End = "a023-07-27T22:00:00Z",
-        };
-
-        // Act
-        var periodStatus = _sut.Validate(period);
-
-        // Assert
-        Assert.False(periodStatus.IsValid);
-        Assert.Equal(2, periodStatus.Errors.Count);
-        Assert.Equal("D66", periodStatus.Errors.First().ErrorCode);
-    }
-
-    [Fact]
-    public void Validate_StartAndEndHasHour22AndEndIsNotValidDate_FailsValidation()
-    {
-        // Arrange
-        var period = new Energinet.DataHub.Edi.Requests.Period()
-        {
-            Start = "2023-07-27T20:00:00Z",
-            End = "a023-07-27T20:00:00Z",
-        };
-
-        // Act
-        var periodStatus = _sut.Validate(period);
-
-        // Assert
-        Assert.False(periodStatus.IsValid);
-        Assert.Equal(3, periodStatus.Errors.Count);
-        Assert.Equal("D66", periodStatus.Errors.First().ErrorCode);
-    }*/
 }
