@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 4.4.1
+
+Update realease-notes
+
 ## Version 4.4.0
 
 Changed ProcessType to CalculationType in EnergyResultProducedV1
