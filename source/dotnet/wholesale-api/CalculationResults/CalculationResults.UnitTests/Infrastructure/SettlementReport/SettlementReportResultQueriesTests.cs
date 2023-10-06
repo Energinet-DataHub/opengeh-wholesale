@@ -13,7 +13,9 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
@@ -43,11 +45,11 @@ public class SettlementReportResultQueriesTests
 
     [Theory]
     [AutoMoqData]
-    public async Task GetRowsAsync_ReturnsExpectedNumberOfRows(Mock<ISqlStatementClient> mockSqlStatementClient)
+    public async Task GetRowsAsync_ReturnsExpectedNumberOfRows(Mock<IDatabricksSqlStatementClient> mockSqlStatementClient)
     {
         // Arrange
         var asyncResult = ToAsyncEnumerable(_someTableChunk);
-        mockSqlStatementClient.Setup(s => s.ExecuteAsync(It.IsAny<string>())).Returns(asyncResult);
+        mockSqlStatementClient.Setup(s => s.ExecuteAsync(It.IsAny<string>(), null)).Returns(asyncResult);
         var sut = new SettlementReportResultQueries(mockSqlStatementClient.Object, _someDeltaTableOptions);
 
         // Act
@@ -59,7 +61,7 @@ public class SettlementReportResultQueriesTests
 
     [Theory]
     [AutoMoqData]
-    public async Task GetRowsAsync_ReturnsExpectedData(Mock<ISqlStatementClient> mockSqlStatementClient)
+    public async Task GetRowsAsync_ReturnsExpectedData(Mock<IDatabricksSqlStatementClient> mockSqlStatementClient)
     {
         // Arrange
         var row = new[] { "123", "BalanceFixing", "2022-05-16T01:00:00.000Z", "non_profiled_consumption", "1.234" };
@@ -73,7 +75,7 @@ public class SettlementReportResultQueriesTests
             1.234m);
         var table = new TableChunk(_columnNames,  new List<string[]> { row });
         var asyncResult = ToAsyncEnumerable(table);
-        mockSqlStatementClient.Setup(s => s.ExecuteAsync(It.IsAny<string>())).Returns(asyncResult);
+        mockSqlStatementClient.Setup(s => s.ExecuteAsync(It.IsAny<string>(), null)).Returns(asyncResult);
         var sut = new SettlementReportResultQueries(mockSqlStatementClient.Object, _someDeltaTableOptions);
 
         // Act
