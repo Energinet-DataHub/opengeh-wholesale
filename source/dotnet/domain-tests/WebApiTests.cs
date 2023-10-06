@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 using System.Net;
 using Energinet.DataHub.Wholesale.Contracts.Events;
@@ -35,45 +34,11 @@ namespace Energinet.DataHub.Wholesale.DomainTests
         /// <summary>
         /// These tests uses an unauthorized http client to perform requests.
         /// </summary>
-        public class Given_Unauthorized : IClassFixture<LazyFixtureFactory<UnauthorizedClientFixture>>, IAsyncLifetime
+        public class Given_Unauthorized : DomainTestsBase<UnauthorizedClientFixture>
         {
-            /// <summary>
-            /// Any fixture given in the constructor is always created and initialized by xUnit,
-            /// even if no test is executed. For this reason we use a factory to handle lazy initialization
-            /// of the fixture, which means we only perform the initialization if we actually execute any test.
-            /// </summary>
             public Given_Unauthorized(LazyFixtureFactory<UnauthorizedClientFixture> lazyFixtureFactory)
+                : base(lazyFixtureFactory)
             {
-                LazyFixtureFactory = lazyFixtureFactory;
-            }
-
-            private LazyFixtureFactory<UnauthorizedClientFixture> LazyFixtureFactory { get; }
-
-            /// <summary>
-            /// This property only contains a value if any test is executed.
-            /// </summary>
-            [NotNull]
-            private UnauthorizedClientFixture? Fixture { get; set; }
-
-            /// <summary>
-            /// This method only gets called by xUnit if any test is executed.
-            /// It gets called before each test.
-            ///
-            /// It is responsible for initializing the <see cref="Fixture"/>.
-            /// </summary>
-            public async Task InitializeAsync()
-            {
-                Fixture = await LazyFixtureFactory.LazyFixture;
-            }
-
-            /// <summary>
-            /// This method only gets called by xUnit if any test is executed.
-            /// It gets called after each test.
-            /// </summary>
-            public Task DisposeAsync()
-            {
-                // We currently don't need to clean up anything between test executions.
-                return Task.CompletedTask;
             }
 
             /// <summary>
@@ -113,7 +78,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
         /// <summary>
         /// These tests uses an authorized Wholesale client to perform requests.
         /// </summary>'
-        public class Given_Authorized : IClassFixture<LazyFixtureFactory<AuthorizedClientFixture>>, IAsyncLifetime
+        public class Given_Authorized : DomainTestsBase<AuthorizedClientFixture>
         {
             private static readonly Guid _existingBatchId = new("ed39dbc5-bdc5-41b9-922a-08d3b12d4538");
             private static readonly DateTimeOffset _existingBatchPeriodStart = DateTimeOffset.Parse("2020-01-28T23:00:00Z");
@@ -126,37 +91,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             /// of the fixture, which means we only perform the initialization if we actually execute any test.
             /// </summary>
             public Given_Authorized(LazyFixtureFactory<AuthorizedClientFixture> lazyFixtureFactory)
+                : base(lazyFixtureFactory)
             {
-                LazyFixtureFactory = lazyFixtureFactory;
-            }
-
-            private LazyFixtureFactory<AuthorizedClientFixture> LazyFixtureFactory { get; }
-
-            /// <summary>
-            /// This property only contains a value if any test is executed.
-            /// </summary>
-            [NotNull]
-            private AuthorizedClientFixture? Fixture { get; set; }
-
-            /// <summary>
-            /// This method only gets called by xUnit if any test is executed.
-            /// It gets called before each test.
-            ///
-            /// It is responsible for initializing the <see cref="Fixture"/>.
-            /// </summary>
-            public async Task InitializeAsync()
-            {
-                Fixture = await LazyFixtureFactory.LazyFixture;
-            }
-
-            /// <summary>
-            /// This method only gets called by xUnit if any test is executed.
-            /// It gets called after each test.
-            /// </summary>
-            public Task DisposeAsync()
-            {
-                // We currently don't need to clean up anything between test executions.
-                return Task.CompletedTask;
             }
 
             [DomainFact]
