@@ -73,7 +73,7 @@ public sealed class WholesaleResult
 
     public string? EnergySupplierId { get; }
 
-    public bool? IsTax { get; }
+    public bool IsTax { get; }
 
     public string ChargeCode { get; }
 
