@@ -18,18 +18,16 @@ from pyspark.sql.types import DecimalType
 
 from package.constants import Colname
 from package.codelists import MeteringPointResolution
-
-# from package.calculation.energy.schemas import (
-#     basis_data_time_series_points_schema,
-#     time_series_quarter_points_schema,
-# )
+from package.calculation.energy.schemas import (
+    basis_data_time_series_points_schema,
+)
 
 
 def transform_hour_to_quarter(basis_data_time_series_points_df: DataFrame) -> DataFrame:
-    # if basis_data_time_series_points_df.schema != basis_data_time_series_points_schema:
-    #     raise ValueError(
-    #         f"Schema mismatch. Expected {basis_data_time_series_points_schema}, got {basis_data_time_series_points_df.schema}"
-    #     )
+    if basis_data_time_series_points_df.schema != basis_data_time_series_points_schema:
+        raise ValueError(
+            f"Schema mismatch. Expected {basis_data_time_series_points_schema}, got {basis_data_time_series_points_df.schema}"
+        )
 
     result = basis_data_time_series_points_df.withColumn(
         "quarter_times",

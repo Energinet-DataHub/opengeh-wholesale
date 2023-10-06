@@ -24,6 +24,7 @@ from package.codelists import TimeSeriesType, AggregationLevel, ProcessType
 from package.calculation_output.energy_calculation_result_writer import (
     EnergyCalculationResultWriter,
 )
+from package.calculation.energy.schemas import time_series_quarter_points_schema
 
 
 def execute(
@@ -33,6 +34,11 @@ def execute(
     time_series_quarter_points_df: DataFrame,
     grid_loss_responsible_df: DataFrame,
 ) -> None:
+    if time_series_quarter_points_df.schema != time_series_quarter_points_schema:
+        raise ValueError(
+            f"Schema mismatch. Expected {time_series_quarter_points_schema}, got {time_series_quarter_points_df.schema}"
+        )
+
     calculation_result_writer = EnergyCalculationResultWriter(
         batch_id,
         batch_process_type,
