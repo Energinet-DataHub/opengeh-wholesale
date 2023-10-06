@@ -44,6 +44,6 @@ charge_price_points_schema = StructType(
         # Example: 1234.534217
         StructField("charge_price", DecimalType(18, 6), False),
         # The time where the price applies
-        StructField("observation_time", TimestampType(), False),
+        StructField("charge_time", TimestampType(), False),
     ]
 )

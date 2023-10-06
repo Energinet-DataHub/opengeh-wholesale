@@ -167,7 +167,7 @@ def _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
             Colname.quantity,
             Colname.qualities,
             Colname.metering_point_id,
-            f"window.{Colname.start} as {Colname.charge_time}",
+            f"window.{Colname.start} as {Colname.observation_time}",
         )
     )
 
