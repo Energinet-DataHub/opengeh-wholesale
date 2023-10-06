@@ -21,7 +21,7 @@ from package.calculation.energy.aggregators import (
 from package.codelists import (
     MeteringPointType,
     SettlementMethod,
-    TimeSeriesQuality,
+    QuantityQuality,
 )
 from package.calculation.energy.schemas import aggregation_result_schema
 from pyspark.sql import DataFrame, SparkSession
@@ -72,7 +72,7 @@ def time_series_row_factory(spark: SparkSession) -> Callable[..., DataFrame]:
                 Colname.energy_supplier_id: [supplier],
                 "quarter_quantity": [quantity],
                 Colname.time_window: [obs_time],
-                Colname.quality: [TimeSeriesQuality.ESTIMATED.value],
+                Colname.quality: [QuantityQuality.ESTIMATED.value],
                 Colname.resolution: [resolution],
             }
         )

@@ -15,7 +15,7 @@
 from package.constants import Colname
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as F
-from package.codelists import TimeSeriesQuality
+from package.codelists import QuantityQuality
 
 
 def aggregate_sum_and_set_quality(
@@ -33,26 +33,26 @@ def aggregate_sum_and_set_quality(
             Colname.quality,
             F.when(
                 F.array_contains(
-                    F.col(qualities_col_name), F.lit(TimeSeriesQuality.MISSING.value)
+                    F.col(qualities_col_name), F.lit(QuantityQuality.MISSING.value)
                 )
                 | F.array_contains(
-                    F.col(qualities_col_name), F.lit(TimeSeriesQuality.INCOMPLETE.value)
+                    F.col(qualities_col_name), F.lit(QuantityQuality.INCOMPLETE.value)
                 ),
-                F.lit(TimeSeriesQuality.INCOMPLETE.value),
+                F.lit(QuantityQuality.INCOMPLETE.value),
             )
             .when(
                 F.array_contains(
                     F.col(qualities_col_name),
-                    F.lit(TimeSeriesQuality.ESTIMATED.value),
+                    F.lit(QuantityQuality.ESTIMATED.value),
                 ),
-                F.lit(TimeSeriesQuality.ESTIMATED.value),
+                F.lit(QuantityQuality.ESTIMATED.value),
             )
             .when(
                 F.array_contains(
                     F.col(qualities_col_name),
-                    F.lit(TimeSeriesQuality.MEASURED.value),
+                    F.lit(QuantityQuality.MEASURED.value),
                 ),
-                F.lit(TimeSeriesQuality.MEASURED.value),
+                F.lit(QuantityQuality.MEASURED.value),
             ),
         )
     )

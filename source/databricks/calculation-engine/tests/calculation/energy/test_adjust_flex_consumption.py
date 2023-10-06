@@ -16,7 +16,7 @@ from datetime import datetime
 from package.codelists import (
     MeteringPointType,
     MeteringPointResolution,
-    TimeSeriesQuality,
+    QuantityQuality,
 )
 from package.calculation.energy.transformations import adjust_flex_consumption
 from package.calculation.energy.transformations import (
@@ -42,7 +42,7 @@ default_responsible = "R1"
 default_supplier = "S1"
 default_sum_quantity = Decimal(1)
 default_positive_grid_loss = Decimal(3)
-default_aggregated_quality = TimeSeriesQuality.ESTIMATED.value
+default_aggregated_quality = QuantityQuality.ESTIMATED.value
 default_resolution = MeteringPointResolution.HOUR.value
 default_metering_point_type = MeteringPointType.CONSUMPTION.value
 
