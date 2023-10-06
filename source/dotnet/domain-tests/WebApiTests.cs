@@ -85,11 +85,6 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             private static readonly DateTimeOffset _existingBatchPeriodEnd = DateTimeOffset.Parse("2020-01-29T23:00:00Z");
             private static readonly string ExistingGridAreaCode = "543";
 
-            /// <summary>
-            /// Any fixture given in the constructor is always created and initialized by xUnit,
-            /// even if no test is executed. For this reason we use a factory to handle lazy initialization
-            /// of the fixture, which means we only perform the initialization if we actually execute any test.
-            /// </summary>
             public Given_Authorized(LazyFixtureFactory<AuthorizedClientFixture> lazyFixtureFactory)
                 : base(lazyFixtureFactory)
             {
