@@ -20,7 +20,7 @@ public class WholesaleResultColumnNames : ResultColumnNames
 {
     public const string QuantityUnit = "quantity_unit";
     public const string QuantityQualities = "quantity_qualities";
-    public const string Resolution = "resolution";
+    public const string ChargeResolution = "resolution";
     public const string MeteringPointType = "metering_point_type";
     public const string SettlementMethod = "settlement_method";
     public const string Price = "price";
@@ -29,29 +29,4 @@ public class WholesaleResultColumnNames : ResultColumnNames
     public const string ChargeCode = "charge_id";
     public const string ChargeType = "charge_type";
     public const string ChargeOwnerId = "charge_owner_id";
-
-    // public static IEnumerable<string> GetAllNames()
-    // {
-    //     var fieldInfos = typeof(EnergyResultColumnNames).GetFields(BindingFlags.Public | BindingFlags.Static);
-    //     return fieldInfos.Select(x => x.GetValue(null)).Cast<string>().ToList();
-    // }
-    //
-    // public static string GetType(string columnName) =>
-    //      columnName switch
-    //      {
-    //          GridArea => "string",
-    //          BalanceResponsibleId => "string",
-    //          CalculationResultId => "string",
-    //          EnergySupplierId => "string",
-    //          Time => "timestamp",
-    //          QuantityQuality => "string",
-    //          AggregationLevel => "string",
-    //          TimeSeriesType => "string",
-    //          BatchId => "string",
-    //          BatchProcessType => "string",
-    //          BatchExecutionTimeStart => "timestamp",
-    //          FromGridArea => "string",
-    //          Quantity => "decimal(18,3)",
-    //          _ => throw new ArgumentException($"Unexpected column name '{columnName}'."),
-    //      };
 }

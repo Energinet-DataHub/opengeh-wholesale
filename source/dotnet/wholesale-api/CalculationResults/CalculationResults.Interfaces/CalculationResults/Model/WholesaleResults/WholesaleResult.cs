@@ -32,6 +32,7 @@ public sealed class WholesaleResult
         string chargeOwnerId,
         bool isTax,
         QuantityUnit quantityUnit,
+        ChargeResolution chargeResolution,
         MeteringPointType? meteringPointType,
         SettlementMethod? settlementMethod,
         WholesaleTimeSeriesPoint[] timeSeriesPoints)
@@ -51,6 +52,7 @@ public sealed class WholesaleResult
         ChargeType = chargeType;
         ChargeOwnerId = chargeOwnerId;
         QuantityUnit = quantityUnit;
+        ChargeResolution = chargeResolution;
         MeteringPointType = meteringPointType;
         SettlementMethod = settlementMethod;
 
@@ -80,6 +82,8 @@ public sealed class WholesaleResult
     public string ChargeOwnerId { get; }
 
     public QuantityUnit QuantityUnit { get; }
+
+    public ChargeResolution ChargeResolution { get; }
 
     public MeteringPointType? MeteringPointType { get; }
 

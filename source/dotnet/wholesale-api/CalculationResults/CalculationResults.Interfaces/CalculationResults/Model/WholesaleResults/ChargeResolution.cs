@@ -12,19 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.Fixtures;
-
-public record TestSqlResultRow : SqlResultRow
+/// <summary>
+/// Defines metering point type
+/// </summary>
+public enum ChargeResolution
 {
-    private readonly List<KeyValuePair<string, string>> _list;
-
-    public TestSqlResultRow(List<KeyValuePair<string, string>> list)
-        : base(null!, 0)
-    {
-        _list = list;
-    }
-
-    public override string this[string column] => _list.Single(pair => pair.Key == column).Value;
+    Month,
+    Hour,
+    Day,
 }

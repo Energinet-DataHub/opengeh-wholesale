@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using NodaTime;
 
@@ -38,6 +39,7 @@ public class WholesaleResultFactory
         var chargeType = sqlResultRow[WholesaleResultColumnNames.ChargeType];
         var chargeOwnerId = sqlResultRow[WholesaleResultColumnNames.ChargeOwnerId];
         var quantityUnit = sqlResultRow[WholesaleResultColumnNames.QuantityUnit];
+        var chargeResolution = sqlResultRow[WholesaleResultColumnNames.ChargeResolution];
         var meteringPointType = sqlResultRow[WholesaleResultColumnNames.MeteringPointType];
         var settlementMethod = sqlResultRow[WholesaleResultColumnNames.SettlementMethod];
         var isTax = sqlResultRow[WholesaleResultColumnNames.IsTax];
@@ -55,6 +57,7 @@ public class WholesaleResultFactory
             chargeOwnerId,
             SqlResultValueConverters.ToBool(isTax),
             QuantityUnitMapper.FromDeltaTableValue(quantityUnit),
+            ChargeResolutionMapper.FromDeltaTableValue(chargeResolution),
             MeteringPointTypeMapper.FromDeltaTableValue(meteringPointType),
             SettlementMethodMapper.FromDeltaTableValue(settlementMethod),
             wholesaleTimeSeriesPoints.ToArray());
