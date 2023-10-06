@@ -20,20 +20,21 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 
 public class AggregatedTimeSeriesRequestValidatorTests
 {
-    private readonly AggregatedTimeSeriesRequestValidator _sut = new();
+    private static readonly PeriodValidator _periodValidator = new();
+    private readonly AggregatedTimeSeriesRequestValidator _sut = new(_periodValidator);
 
     [Fact]
     public void Validate_AggregatedTimeSeriesRequest_SuccessValidation()
     {
         // Arrange
-        var request = new Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest()
+        var request = new Edi.Requests.AggregatedTimeSeriesRequest()
         {
             Period = new Energinet.DataHub.Edi.Requests.Period()
             {
                 Start = Instant.FromUtc(2022, 1, 1, 22, 0, 0).ToString(),
                 End = Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString(),
             },
-            TimeSeriesType = Energinet.DataHub.Edi.Requests.TimeSeriesType.Production,
+            TimeSeriesType = Edi.Requests.TimeSeriesType.Production,
         };
 
         // Act

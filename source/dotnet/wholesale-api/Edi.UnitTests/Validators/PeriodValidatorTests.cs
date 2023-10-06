@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Edi.Validators;
+using Energinet.DataHub.Wholesale.EDI.Validators;
 using NodaTime;
 using Xunit;
 
@@ -60,13 +60,12 @@ public class PeriodValidatorTests
     public void Validate_PeriodIsInTheFuture_FailsValidation()
     {
         // Arrange
-        var tomorrow = DateTime.UtcNow.AddDays(1);
-        var tomorrowAt22 = LocalDate.FromDateTime(tomorrow) + new LocalTime(22, 0, 0);
+        var tomorrowAt22 = DateTime.UtcNow.Date.AddDays(1).AddHours(22);
 
         var period = new Energinet.DataHub.Edi.Requests.Period()
         {
-            Start = tomorrowAt22.InUtc().ToInstant().ToString(),
-            End = tomorrowAt22.PlusDays(1).InUtc().ToInstant().ToString(),
+            Start = Instant.FromDateTimeUtc(DateTime.UtcNow.Date.AddDays(-1).AddHours(22)).ToString(),
+            End = Instant.FromDateTimeUtc(tomorrowAt22).ToString(),
         };
 
         // Act
@@ -151,6 +150,44 @@ public class PeriodValidatorTests
         // Assert
         Assert.False(periodStatus.IsValid);
         Assert.Single(periodStatus.Errors);
+        Assert.Equal("D66", periodStatus.Errors.First().ErrorCode);
+    }
+
+    [Fact]
+    public void Validate_EndIsBadFormatAndStartInWrongHour_FailsValidation()
+    {
+        // Arrange
+        var period = new Energinet.DataHub.Edi.Requests.Period()
+        {
+            Start = Instant.FromUtc(2022, 1, 1, 21, 0, 0).ToString(),
+            End = "a023-07-27T22:00:00Z",
+        };
+
+        // Act
+        var periodStatus = _sut.Validate(period);
+
+        // Assert
+        Assert.False(periodStatus.IsValid);
+        Assert.Equal(2, periodStatus.Errors.Count);
+        Assert.Equal("D66", periodStatus.Errors.First().ErrorCode);
+    }
+
+    [Fact]
+    public void Validate_StartAndEndHasHour22AndEndIsNotValidDate_FailsValidation()
+    {
+        // Arrange
+        var period = new Energinet.DataHub.Edi.Requests.Period()
+        {
+            Start = "2023-07-27T20:00:00Z",
+            End = "a023-07-27T20:00:00Z",
+        };
+
+        // Act
+        var periodStatus = _sut.Validate(period);
+
+        // Assert
+        Assert.False(periodStatus.IsValid);
+        Assert.Equal(3, periodStatus.Errors.Count);
         Assert.Equal("D66", periodStatus.Errors.First().ErrorCode);
     }
 }

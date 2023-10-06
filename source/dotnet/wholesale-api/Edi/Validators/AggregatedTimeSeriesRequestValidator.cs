@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Edi.Validators;
 using FluentValidation;
 
 namespace Energinet.DataHub.Wholesale.EDI.Validators;
 
-public class AggregatedTimeSeriesRequestValidator : AbstractValidator<Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest>
+public class AggregatedTimeSeriesRequestValidator : AbstractValidator<Edi.Requests.AggregatedTimeSeriesRequest>
 {
-    public AggregatedTimeSeriesRequestValidator()
+    public AggregatedTimeSeriesRequestValidator(
+        IValidator<Edi.Requests.Period> periodValidator)
     {
         RuleFor(x => x.Period)
-            .SetValidator(new PeriodValidator());
+            .SetValidator(periodValidator);
     }
 }

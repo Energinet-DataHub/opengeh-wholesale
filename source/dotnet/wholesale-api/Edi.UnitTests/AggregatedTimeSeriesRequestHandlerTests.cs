@@ -137,7 +137,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
                 {
                     Errors =
                     {
-                        new ValidationFailure("dummy", "dummy") { ErrorCode = "D66" },
+                        new ValidationFailure("dummy", "dummy"),
                     },
                 });
 
