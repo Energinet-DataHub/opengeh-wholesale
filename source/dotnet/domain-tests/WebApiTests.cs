@@ -35,17 +35,46 @@ namespace Energinet.DataHub.Wholesale.DomainTests
         /// <summary>
         /// These tests uses an unauthorized http client to perform requests.
         /// </summary>
-        public class Given_Unauthorized : IClassFixture<WholesaleDomainConfiguration>
+        public class Given_Unauthorized : IClassFixture<LazyFixtureFactory<UnauthorizedClientFixture>>, IAsyncLifetime
         {
-            public Given_Unauthorized(WholesaleDomainConfiguration configuration)
+            /// <summary>
+            /// Any fixture given in the constructor is always created and initialized by xUnit,
+            /// even if no test is executed. For this reason we use a factory to handle lazy initialization
+            /// of the fixture, which means we only perform the initialization if we actually execute any test.
+            /// </summary>
+            public Given_Unauthorized(LazyFixtureFactory<UnauthorizedClientFixture> lazyFixtureFactory)
             {
-                UnauthorizedHttpClient = new HttpClient
-                {
-                    BaseAddress = configuration.WebApiBaseAddress,
-                };
+                LazyFixtureFactory = lazyFixtureFactory;
             }
 
-            private HttpClient UnauthorizedHttpClient { get; }
+            private LazyFixtureFactory<UnauthorizedClientFixture> LazyFixtureFactory { get; }
+
+            /// <summary>
+            /// This property only contains a value if any test is executed.
+            /// </summary>
+            [NotNull]
+            private UnauthorizedClientFixture? Fixture { get; set; }
+
+            /// <summary>
+            /// This method only gets called by xUnit if any test is executed.
+            /// It gets called before each test.
+            ///
+            /// It is responsible for initializing the <see cref="Fixture"/>.
+            /// </summary>
+            public async Task InitializeAsync()
+            {
+                Fixture = await LazyFixtureFactory.LazyFixture;
+            }
+
+            /// <summary>
+            /// This method only gets called by xUnit if any test is executed.
+            /// It gets called after each test.
+            /// </summary>
+            public Task DisposeAsync()
+            {
+                // We currently don't need to clean up anything between test executions.
+                return Task.CompletedTask;
+            }
 
             /// <summary>
             /// This is just to be able to verify everything works with regards to settings and executing the tests after deployment.
@@ -55,7 +84,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             public async Task When_RequestReadinessStatus_Then_ResponseIsOkAndHealthy()
             {
                 // Act
-                using var actualResponse = await UnauthorizedHttpClient.GetAsync("monitor/ready");
+                using var actualResponse = await Fixture.UnauthorizedHttpClient.GetAsync("monitor/ready");
 
                 // Assert
                 actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -74,7 +103,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 var request = new HttpRequestMessage(HttpMethod.Get, "v3/batches?batchId=1");
 
                 // Act
-                using var actualResponse = await UnauthorizedHttpClient.SendAsync(request);
+                using var actualResponse = await Fixture.UnauthorizedHttpClient.SendAsync(request);
 
                 // Assert
                 actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
