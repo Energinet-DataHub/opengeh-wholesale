@@ -59,7 +59,7 @@ public class CalculationResultQueries : ICalculationResultQueries
 
         await foreach (var nextRow in _sqlStatementClient.ExecuteAsync(sql, sqlStatementParameters: null).ConfigureAwait(false))
         {
-            var timeSeriesPoint = TimeSeriesPointFactory.CreateTimeSeriesPoint(nextRow);
+            var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(nextRow);
 
             if (currentRow != null && BelongsToDifferentResults(currentRow, nextRow))
             {
