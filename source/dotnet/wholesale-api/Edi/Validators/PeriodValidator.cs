@@ -46,7 +46,12 @@ public class PeriodValidator : AbstractValidator<Period>
             .Must(ValidHourFormat)
             .WithMessage(WrongTimeFormatErrorMessage).WithErrorCode(WrongTimeFormatErrorCode));
 
-        When(x => string.IsNullOrWhiteSpace(x.End) == false, () =>
+        When(
+            x =>
+            string.IsNullOrWhiteSpace(x.End) == false
+            && CanConvertToInstant(x.Start)
+            && CanConvertToInstant(x.End),
+            () =>
             RuleFor(x => x)
                 .Must(StartIsBeforeEnd)
                 .WithMessage("Start time has to be before end time").WithErrorCode("D66"));
@@ -70,9 +75,7 @@ public class PeriodValidator : AbstractValidator<Period>
     private static bool StartIsBeforeEnd(Period period)
     {
         var (start, end) = (period.Start, period.End);
-        return CanConvertToInstant(start)
-               && CanConvertToInstant(end)
-               && ConvertToInstant(start) < ConvertToInstant(end);
+        return CanConvertToInstant(start) && CanConvertToInstant(end) && ConvertToInstant(start) < ConvertToInstant(end);
     }
 
     private static bool TimeIsInThePast(string stringDate)

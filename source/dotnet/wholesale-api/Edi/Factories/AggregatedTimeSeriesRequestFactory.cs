@@ -83,7 +83,7 @@ public class AggregatedTimeSeriesRequestFactory : IAggregatedTimeSeriesRequestFa
     private Period MapPeriod(Energinet.DataHub.Edi.Requests.Period period)
     {
         var end = string.IsNullOrWhiteSpace(period.End)
-            ? Instant.FromDateTimeUtc(DateTime.Now)
+            ? Instant.FromDateTimeUtc(DateTime.UtcNow)
             : InstantPattern.General.Parse(period.End).Value;
 
         return new Period(
