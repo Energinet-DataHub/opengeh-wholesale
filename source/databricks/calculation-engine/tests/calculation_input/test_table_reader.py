@@ -73,7 +73,7 @@ def _create_time_series_point_row() -> dict:
         Colname.metering_point_id: "foo",
         Colname.quantity: Decimal("1.123456"),
         Colname.quality: "foo",
-        Colname.charge_time: datetime(2022, 6, 8, 22, 0, 0),
+        Colname.observation_time: datetime(2022, 6, 8, 22, 0, 0),
     }
 
 
