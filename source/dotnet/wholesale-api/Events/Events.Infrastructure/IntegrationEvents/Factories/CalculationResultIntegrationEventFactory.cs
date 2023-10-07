@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Core.Messaging.Communication.Internal;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
@@ -25,11 +26,13 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Fa
     {
         private readonly ICalculationResultCompletedFactory _calculationResultCompletedFactory;
         private readonly IEnergyResultProducedV1Factory _energyResultProducedV1Factory;
+        private readonly IWholesaleResultProducedV1Factory _wholesaleResultProducedV1Factory;
 
-        public CalculationResultIntegrationEventFactory(ICalculationResultCompletedFactory calculationResultCompletedFactory, IEnergyResultProducedV1Factory energyResultProducedV1Factory)
+        public CalculationResultIntegrationEventFactory(ICalculationResultCompletedFactory calculationResultCompletedFactory, IEnergyResultProducedV1Factory energyResultProducedV1Factory, IWholesaleResultProducedV1Factory wholesaleResultProducedV1Factory)
         {
             _calculationResultCompletedFactory = calculationResultCompletedFactory;
             _energyResultProducedV1Factory = energyResultProducedV1Factory;
+            _wholesaleResultProducedV1Factory = wholesaleResultProducedV1Factory;
         }
 
         public IntegrationEvent CreateCalculationResultCompleted(EnergyResult energyResult)
@@ -44,6 +47,14 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Fa
             var calculationResultCompleted = _energyResultProducedV1Factory.Create(energyResult);
             var eventIdentification = Guid.NewGuid();
             return CreateIntegrationEvent(calculationResultCompleted, eventIdentification, EnergyResultProducedV1.EventName, EnergyResultProducedV1.EventMinorVersion);
+        }
+
+        public IntegrationEvent CreateFromWholesaleResult(WholesaleResult wholesaleResult)
+        {
+            var wholesaleResultEvent = _wholesaleResultProducedV1Factory.Create(wholesaleResult);
+            wholesaleResultEvent.Ev.Eve
+            var eventIdentification = Guid.NewGuid();
+            return CreateIntegrationEvent(wholesaleResultEvent., eventIdentification, EnergyResultProducedV1.EventName, EnergyResultProducedV1.EventMinorVersion);
         }
 
         private IntegrationEvent CreateIntegrationEvent(IMessage protobufMessage, Guid eventIdentification, string eventName, int eventMinorVersion)
