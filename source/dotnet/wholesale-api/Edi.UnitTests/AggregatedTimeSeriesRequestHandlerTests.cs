@@ -21,11 +21,14 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.EDI.Client;
 using Energinet.DataHub.Wholesale.EDI.Factories;
+using FluentValidation;
+using FluentValidation.Results;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NodaTime;
+using NodaTime.Serialization.Protobuf;
 using Xunit;
 using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 using AggregationPerGridArea = Energinet.DataHub.Edi.Requests.AggregationPerGridArea;
@@ -44,6 +47,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<AggregatedTimeSeriesRequestFactory> aggregatedTimeSeriesRequestMessageParseMock,
         [Frozen] Mock<AggregatedTimeSeriesMessageFactory> aggregatedTimeSeriesMessageFactoryMock,
+        [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
         [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> loggerMock)
     {
         // Arrange
@@ -52,11 +56,11 @@ public class AggregatedTimeSeriesRequestHandlerTests
         var request = new AggregatedTimeSeriesRequest
         {
             AggregationPerGridarea = new AggregationPerGridArea(),
-            TimeSeriesType = Energinet.DataHub.Edi.Requests.TimeSeriesType.Production,
+            TimeSeriesType = Edi.Requests.TimeSeriesType.Production,
             Period = new Period()
             {
-                StartOfPeriod = new Timestamp(),
-                EndOfPeriod = new Timestamp(),
+                Start = new Timestamp().ToInstant().ToString(),
+                End = new Timestamp().ToInstant().ToString(),
             },
         };
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
@@ -68,11 +72,19 @@ public class AggregatedTimeSeriesRequestHandlerTests
                 calculationResultQueries.GetAsync(It.IsAny<EnergyResultQuery>()))
             .ReturnsAsync(() => calculationResult);
 
+        validator.Setup(vali => vali.ValidateAsync(
+                It.IsAny<AggregatedTimeSeriesRequest>(), CancellationToken.None))
+            .ReturnsAsync(() => new ValidationResult()
+            {
+                Errors = new List<ValidationFailure>(),
+            });
+
         var sut = new AggregatedTimeSeriesRequestHandler(
             requestCalculationResultQueriesMock.Object,
             senderMock.Object,
             aggregatedTimeSeriesRequestMessageParseMock.Object,
             aggregatedTimeSeriesMessageFactoryMock.Object,
+            validator.Object,
             loggerMock.Object);
 
         // Act
@@ -86,6 +98,68 @@ public class AggregatedTimeSeriesRequestHandlerTests
             bus => bus.SendAsync(
             It.Is<ServiceBusMessage>(message =>
                 message.Subject.Equals(expectedAcceptedSubject)
+                && message.ApplicationProperties.ContainsKey("ReferenceId")
+                && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
+            It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task ProcessAsync_WithTotalProductionPerGridAreaRequest_SendsRejectedEdiMessage(
+        [Frozen] Mock<IRequestCalculationResultQueries> requestCalculationResultQueriesMock,
+        [Frozen] Mock<IEdiClient> senderMock,
+        [Frozen] Mock<AggregatedTimeSeriesRequestFactory> aggregatedTimeSeriesRequestMessageParseMock,
+        [Frozen] Mock<AggregatedTimeSeriesMessageFactory> aggregatedTimeSeriesMessageFactoryMock,
+        [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
+        [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> loggerMock)
+    {
+        // Arrange
+        const string expectedRejectedSubject = nameof(AggregatedTimeSeriesRequestRejected);
+        var expectedReferenceId = Guid.NewGuid().ToString();
+        var request = new AggregatedTimeSeriesRequest
+        {
+            AggregationPerGridarea = new AggregationPerGridArea(),
+            TimeSeriesType = Edi.Requests.TimeSeriesType.Production,
+            Period = new Period()
+            {
+                Start = new Timestamp().ToString(),
+                End = new Timestamp().ToString(),
+            },
+        };
+        var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
+            properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
+            body: new BinaryData(request.ToByteArray()));
+
+        validator.Setup(vali => vali.ValidateAsync(
+                It.IsAny<AggregatedTimeSeriesRequest>(), CancellationToken.None))
+            .ReturnsAsync(() => new ValidationResult
+                {
+                    Errors =
+                    {
+                        new ValidationFailure("dummy", "dummy") { ErrorCode = "dummy" },
+                    },
+                });
+
+        var sut = new AggregatedTimeSeriesRequestHandler(
+            requestCalculationResultQueriesMock.Object,
+            senderMock.Object,
+            aggregatedTimeSeriesRequestMessageParseMock.Object,
+            aggregatedTimeSeriesMessageFactoryMock.Object,
+            validator.Object,
+            loggerMock.Object);
+
+        // Act
+        await sut.ProcessAsync(
+            serviceBusReceivedMessage,
+            expectedReferenceId,
+            CancellationToken.None);
+
+        // Assert
+        senderMock.Verify(
+            bus => bus.SendAsync(
+            It.Is<ServiceBusMessage>(message =>
+                message.Subject.Equals(expectedRejectedSubject)
                 && message.ApplicationProperties.ContainsKey("ReferenceId")
                 && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
             It.IsAny<CancellationToken>()),
