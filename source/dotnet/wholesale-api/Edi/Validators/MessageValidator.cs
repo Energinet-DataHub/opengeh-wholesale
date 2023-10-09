@@ -12,15 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Edi.Requests;
-using FluentValidation;
+using Google.Protobuf;
 
 namespace Energinet.DataHub.Wholesale.EDI.Validators;
 
-public class AggregatedTimeSeriesRequestValidator : AbstractValidator<AggregatedTimeSeriesRequest>
+public class MessageValidator : IValidator<IMessage>
 {
-    public AggregatedTimeSeriesRequestValidator(FluentValidation.IValidator<PeriodCompound> periodValidator)
+    public MessageValidator(IReadOnlyList<IValidationRule<IMessage>> validationRules)
     {
-        RuleFor(x => new PeriodCompound(x.Period.Start, x.Period.End)).SetValidator(periodValidator);
+        // In order to be more explicit, we could new the rules here and remove the Support error.
+        Rules = validationRules;
     }
+
+    public IReadOnlyList<IValidationRule<IMessage>> Rules { get; set; }
 }
