@@ -16,7 +16,7 @@ from datetime import datetime
 from package.codelists import (
     MeteringPointType,
     MeteringPointResolution,
-    TimeSeriesQuality,
+    QuantityQuality,
 )
 from package.calculation.energy.transformations import (
     create_dataframe_from_aggregation_result_schema,
@@ -81,7 +81,7 @@ def agg_result_factory(spark: SparkSession) -> Callable[..., DataFrame]:
         end: datetime = datetime(2020, 1, 1, 1, 0),
         resolution: str = MeteringPointResolution.HOUR.value,
         sum_quantity: Decimal = Decimal("1.234"),
-        quality: str = TimeSeriesQuality.ESTIMATED.value,
+        quality: str = QuantityQuality.ESTIMATED.value,
         metering_point_type: str = MeteringPointType.CONSUMPTION.value,
     ) -> DataFrame:
         return spark.createDataFrame(
@@ -125,7 +125,7 @@ def test__create_dataframe_from_aggregation_result_schema__match_expected_datafr
         time_window_start=datetime(2020, 1, 1, 0, 0),
         time_window_end=datetime(2020, 1, 1, 1, 0),
         sum_quantity=Decimal("1.234"),
-        quality=TimeSeriesQuality.ESTIMATED.value,
+        quality=QuantityQuality.ESTIMATED.value,
         metering_point_type=MeteringPointType.CONSUMPTION.value,
     )
     # Act

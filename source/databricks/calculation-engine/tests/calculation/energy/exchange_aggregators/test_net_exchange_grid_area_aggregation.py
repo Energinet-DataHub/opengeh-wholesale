@@ -20,7 +20,7 @@ from package.constants import Colname
 from package.calculation.energy.exchange_aggregators import (
     aggregate_net_exchange_per_ga,
 )
-from package.codelists import MeteringPointType, TimeSeriesQuality
+from package.codelists import MeteringPointType, QuantityQuality
 from package.calculation.energy.schemas import aggregation_result_schema
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import window, col
@@ -185,7 +185,7 @@ def add_row_of_data(
         Colname.from_grid_area: from_grid_area,
         Colname.quantity: quantity,
         Colname.observation_time: timestamp,
-        Colname.quality: TimeSeriesQuality.ESTIMATED.value,
+        Colname.quality: QuantityQuality.ESTIMATED.value,
     }
     return pandas_df.append(new_row, ignore_index=True)
 

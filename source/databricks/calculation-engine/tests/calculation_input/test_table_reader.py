@@ -60,11 +60,11 @@ def _create_metering_point_period_row(
 
 def _create_change_price_point_row() -> dict:
     return {
-        Colname.charge_id: "foo",
+        Colname.charge_code: "foo",
         Colname.charge_type: "foo",
         Colname.charge_owner: "foo",
         Colname.charge_price: Decimal("1.123456"),
-        Colname.observation_time: datetime(2022, 6, 8, 22, 0, 0),
+        Colname.charge_time: datetime(2022, 6, 8, 22, 0, 0),
     }
 
 
@@ -79,7 +79,7 @@ def _create_time_series_point_row() -> dict:
 
 def _create_charge_link_period_row() -> dict:
     return {
-        Colname.charge_id: "foo",
+        Colname.charge_code: "foo",
         Colname.charge_type: "foo",
         Colname.charge_owner: "foo",
         Colname.metering_point_id: "foo",
@@ -91,7 +91,7 @@ def _create_charge_link_period_row() -> dict:
 
 def _create_charge_master_period_row() -> dict:
     return {
-        Colname.charge_id: "foo",
+        Colname.charge_code: "foo",
         Colname.charge_type: "foo",
         Colname.charge_owner: "foo",
         Colname.resolution: "foo",
@@ -141,7 +141,7 @@ def test___read_metering_point_periods__returns_df_with_correct_metering_point_t
     sut = TableReader(spark)
 
     # Act
-    with mock.patch.object(sut, "_read_table", return_value=df):
+    with mock.patch.object(sut, TableReader._read_table.__name__, return_value=df):
         actual = sut.read_metering_point_periods()
 
     # Assert
@@ -165,7 +165,7 @@ def test___read_metering_point_periods__returns_df_with_correct_settlemet_method
     sut = TableReader(spark)
 
     # Act
-    with mock.patch.object(sut, "_read_table", return_value=df):
+    with mock.patch.object(sut, TableReader._read_table.__name__, return_value=df):
         actual = sut.read_metering_point_periods()
 
     # Assert
@@ -189,7 +189,7 @@ def test___read_metering_point_periods__returns_df_with_correct_settlement_metho
     sut = TableReader(spark)
 
     # Act
-    with mock.patch.object(sut, "_read_table", return_value=df):
+    with mock.patch.object(sut, TableReader._read_table.__name__, return_value=df):
         actual = sut.read_metering_point_periods()
 
     # Assert
@@ -236,7 +236,7 @@ def test__read_data__returns_df(
     sut = getattr(reader, method_name.__name__)
 
     # Act
-    with mock.patch.object(reader, "_read_table", return_value=df):
+    with mock.patch.object(reader, TableReader._read_table.__name__, return_value=df):
         actual = sut()
 
     # Assert
@@ -285,7 +285,7 @@ def test__read_data__raises_value_error_when_schema_mismatch(
     is_exception_thrown = False
 
     # Act
-    with mock.patch.object(sut, "_read_table", return_value=df):
+    with mock.patch.object(sut, TableReader._read_table.__name__, return_value=df):
         try:
             method()
             print("This test fails because the schemas are identical!")
@@ -343,6 +343,6 @@ def test__read_data__throws_exception_when_schema_mismatch2(
     sut = getattr(reader, str(method_name.__name__))
 
     # Act & Assert
-    with mock.patch.object(reader, "_read_table", return_value=df):
+    with mock.patch.object(reader, TableReader._read_table.__name__, return_value=df):
         with pytest.raises(Exception):
             sut()

@@ -16,7 +16,7 @@ from datetime import datetime
 from package.codelists import (
     MeteringPointType,
     MeteringPointResolution,
-    TimeSeriesQuality,
+    QuantityQuality,
 )
 from package.calculation.energy.grid_loss_calculator import calculate_positive_grid_loss
 from package.calculation.energy.schemas import aggregation_result_schema
@@ -79,7 +79,7 @@ def agg_result_factory(
                         Colname.end: datetime(2020, 1, 1, 1, 0),
                     },
                     Colname.sum_quantity: Decimal(-12.567),
-                    Colname.quality: TimeSeriesQuality.ESTIMATED.value,
+                    Colname.quality: QuantityQuality.ESTIMATED.value,
                     Colname.resolution: MeteringPointResolution.HOUR.value,
                     Colname.metering_point_type: MeteringPointType.EXCHANGE.value,
                 },
@@ -90,7 +90,7 @@ def agg_result_factory(
                         Colname.end: datetime(2020, 1, 1, 1, 0),
                     },
                     Colname.sum_quantity: Decimal(34.32),
-                    Colname.quality: TimeSeriesQuality.ESTIMATED.value,
+                    Colname.quality: QuantityQuality.ESTIMATED.value,
                     Colname.resolution: MeteringPointResolution.HOUR.value,
                     Colname.metering_point_type: MeteringPointType.EXCHANGE.value,
                 },
@@ -101,7 +101,7 @@ def agg_result_factory(
                         Colname.end: datetime(2020, 1, 1, 1, 0),
                     },
                     Colname.sum_quantity: Decimal(0.0),
-                    Colname.quality: TimeSeriesQuality.ESTIMATED.value,
+                    Colname.quality: QuantityQuality.ESTIMATED.value,
                     Colname.resolution: MeteringPointResolution.HOUR.value,
                     Colname.metering_point_type: MeteringPointType.EXCHANGE.value,
                 },

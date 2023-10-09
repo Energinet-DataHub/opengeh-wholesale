@@ -15,13 +15,13 @@ from decimal import Decimal
 from datetime import datetime
 from package.constants import Colname
 from package.calculation.energy.aggregators import (
-    aggregate_non_profiled_consumption_ga_brp_es,
+    aggregate_flex_consumption_ga_brp_es,
     _aggregate_per_ga_and_brp_and_es,
 )
 from package.codelists import (
     MeteringPointType,
     SettlementMethod,
-    TimeSeriesQuality,
+    QuantityQuality,
 )
 from package.calculation.energy.schemas import aggregation_result_schema
 from pyspark.sql import DataFrame, SparkSession
@@ -31,9 +31,10 @@ import pytest
 import pandas as pd
 from pandas.core.frame import DataFrame as PandasDataFrame
 
+
 # Default time series data point values
 default_point_type = MeteringPointType.CONSUMPTION.value
-default_settlement_method = SettlementMethod.NON_PROFILED.value
+default_settlement_method = SettlementMethod.FLEX.value
 default_domain = "D1"
 default_responsible = "R1"
 default_supplier = "S1"
@@ -70,11 +71,10 @@ def time_series_row_factory(spark: SparkSession) -> Callable[..., DataFrame]:
                 Colname.balance_responsible_id: [responsible],
                 Colname.energy_supplier_id: [supplier],
                 "quarter_quantity": [quantity],
-                Colname.quality: TimeSeriesQuality.MEASURED.value,
                 Colname.time_window: [obs_time],
-                Colname.aggregated_quality: [TimeSeriesQuality.ESTIMATED.value],
+                Colname.quality: [QuantityQuality.ESTIMATED.value],
                 Colname.resolution: [resolution],
-            },
+            }
         )
         return spark.createDataFrame(pandas_df).withColumn(
             Colname.time_window, window(col(Colname.time_window), "15 minutes")
@@ -101,6 +101,7 @@ def check_aggregation_row(
         "TimestampType in pyspark is not tz aware like in Pandas rather it passes long ints
         and displays them according to your machine's local time zone (by default)"
     """
+
     pandas_df: PandasDataFrame = df.toPandas()
     assert pandas_df[Colname.grid_area][row] == grid
     assert pandas_df[Colname.balance_responsible_id][row] == responsible
@@ -110,18 +111,42 @@ def check_aggregation_row(
     assert pandas_df[Colname.time_window][row].end == end
 
 
-def test_consumption_supplier_aggregator_filters_out_incorrect_point_type(
-    time_series_row_factory: Callable[..., DataFrame],
+@pytest.mark.parametrize(
+    "point_type",
+    [
+        pytest.param(MeteringPointType.PRODUCTION.value, id="should filter out E18"),
+        pytest.param(MeteringPointType.EXCHANGE.value, id="should filter out E20"),
+    ],
+)
+def test_filters_out_incorrect_point_type(
+    point_type: str, time_series_row_factory: Callable[..., DataFrame]
 ) -> None:
     """
     Aggregator should filter out all non-consumption MarketEvaluationPointType rows
     """
-    time_series = time_series_row_factory(point_type=MeteringPointType.PRODUCTION.value)
-    aggregated_df = aggregate_non_profiled_consumption_ga_brp_es(time_series)
+    df = time_series_row_factory(point_type=point_type)
+    aggregated_df = aggregate_flex_consumption_ga_brp_es(df)
     assert aggregated_df.count() == 0
 
 
-def test_consumption_supplier_aggregator_aggregates_observations_in_same_hour(
+@pytest.mark.parametrize(
+    "settlement_method",
+    [
+        pytest.param(SettlementMethod.NON_PROFILED.value),
+    ],
+)
+def test_filters_out_incorrect_settlement_method(
+    settlement_method: str, time_series_row_factory: Callable[..., DataFrame]
+) -> None:
+    """
+    Aggregator should filter out all non flex SettlementMethod rows
+    """
+    df = time_series_row_factory(settlement_method=settlement_method)
+    aggregated_df = aggregate_flex_consumption_ga_brp_es(df)
+    assert aggregated_df.count() == 0
+
+
+def test_aggregates_observations_in_same_hour(
     time_series_row_factory: Callable[..., DataFrame],
 ) -> None:
     """
@@ -130,8 +155,8 @@ def test_consumption_supplier_aggregator_aggregates_observations_in_same_hour(
     """
     row1_df = time_series_row_factory(quantity=Decimal(1))
     row2_df = time_series_row_factory(quantity=Decimal(2))
-    time_series = row1_df.union(row2_df)
-    aggregated_df = aggregate_non_profiled_consumption_ga_brp_es(time_series)
+    df = row1_df.union(row2_df)
+    aggregated_df = aggregate_flex_consumption_ga_brp_es(df)
 
     # Create the start/end datetimes representing the start and end of the 1 hr time period
     # These should be datetime naive in order to compare to the Spark Dataframe
@@ -151,11 +176,11 @@ def test_consumption_supplier_aggregator_aggregates_observations_in_same_hour(
     )
 
 
-def test_consumption_supplier_aggregator_returns_distinct_rows_for_observations_in_different_hours(
+def test_returns_distinct_rows_for_observations_in_different_hours(
     time_series_row_factory: Callable[..., DataFrame],
 ) -> None:
     """
-    Aggregator should calculate the correct sum of a "domain"-"responsible"-"supplier" grouping within the
+    Aggregator should can calculate the correct sum of a "domain"-"responsible"-"supplier" grouping within the
     2 different quarter hour time windows
     """
     diff_obs_time = datetime.strptime(
@@ -163,10 +188,8 @@ def test_consumption_supplier_aggregator_returns_distinct_rows_for_observations_
     )
     row1_df = time_series_row_factory()
     row2_df = time_series_row_factory(obs_time=diff_obs_time)
-    time_series = row1_df.union(row2_df)
-    aggregated_df = aggregate_non_profiled_consumption_ga_brp_es(time_series).sort(
-        Colname.time_window
-    )
+    df = row1_df.union(row2_df)
+    aggregated_df = aggregate_flex_consumption_ga_brp_es(df).sort(Colname.time_window)
 
     assert aggregated_df.count() == 2
 
@@ -199,31 +222,19 @@ def test_consumption_supplier_aggregator_returns_distinct_rows_for_observations_
     )
 
 
-def test_consumption_supplier_aggregator_returns_correct_schema(
-    time_series_row_factory: Callable[..., DataFrame],
+def test_returns_correct_schema(
+    time_series_row_factory: Callable[..., DataFrame]
 ) -> None:
     """
     Aggregator should return the correct schema, including the proper fields for the aggregated quantity values
     and time window (from the quarter-hour resolution specified in the aggregator).
     """
-    time_series = time_series_row_factory()
-    aggregated_df = aggregate_non_profiled_consumption_ga_brp_es(time_series)
+    df = time_series_row_factory()
+    aggregated_df = aggregate_flex_consumption_ga_brp_es(df)
     assert aggregated_df.schema == aggregation_result_schema
 
 
-def test_consumption_test_filter_by_domain_is_pressent(
-    time_series_row_factory: Callable[..., DataFrame],
-) -> None:
-    df = time_series_row_factory()
-    aggregated_df = _aggregate_per_ga_and_brp_and_es(
-        df,
-        MeteringPointType.CONSUMPTION,
-        SettlementMethod.NON_PROFILED,
-    )
-    assert aggregated_df.count() == 1
-
-
-def test_consumption_test_filter_by_domain_is_not_pressent(
+def test_flex_consumption_test_filter_by_domain_is_present(
     time_series_row_factory: Callable[..., DataFrame],
 ) -> None:
     df = time_series_row_factory()
@@ -232,10 +243,16 @@ def test_consumption_test_filter_by_domain_is_not_pressent(
         MeteringPointType.CONSUMPTION,
         SettlementMethod.FLEX,
     )
+    assert aggregated_df.count() == 1
+
+
+def test_flex_consumption_test_filter_by_domain_is_not_present(
+    time_series_row_factory: Callable[..., DataFrame]
+) -> None:
+    df = time_series_row_factory()
+    aggregated_df = _aggregate_per_ga_and_brp_and_es(
+        df,
+        MeteringPointType.CONSUMPTION,
+        SettlementMethod.NON_PROFILED,
+    )
     assert aggregated_df.count() == 0
-
-
-def test_expected_schema(time_series_row_factory: Callable[..., DataFrame]) -> None:
-    time_series = time_series_row_factory()
-    aggregated_df = aggregate_non_profiled_consumption_ga_brp_es(time_series)
-    assert aggregated_df.schema == aggregation_result_schema

@@ -31,7 +31,7 @@ from package.constants import Colname
 tariff_schema = StructType(
     [
         StructField(Colname.charge_key, StringType(), False),
-        StructField(Colname.charge_id, StringType(), False),
+        StructField(Colname.charge_code, StringType(), False),
         StructField(Colname.charge_type, StringType(), False),
         StructField(Colname.charge_owner, StringType(), False),
         StructField(Colname.charge_tax, BooleanType(), False),
@@ -79,7 +79,7 @@ def calculate_tariff_price_per_ga_co_es(tariffs: DataFrame) -> DataFrame:
         Colname.metering_point_type,
         Colname.settlement_method,
         Colname.charge_key,
-        Colname.charge_id,
+        Colname.charge_code,
         Colname.charge_type,
         Colname.charge_owner,
         Colname.charge_tax,
@@ -105,7 +105,7 @@ def _sum_quantity_and_count_charges(tariffs: DataFrame) -> DataFrame:
         Colname.metering_point_type,
         Colname.settlement_method,
         Colname.charge_key,
-        Colname.charge_id,
+        Colname.charge_code,
         Colname.charge_type,
         Colname.charge_owner,
         Colname.charge_tax,
@@ -125,7 +125,7 @@ def sum_within_month(df: DataFrame, period_start_datetime: datetime) -> DataFram
             Colname.energy_supplier_id,
             Colname.grid_area,
             Colname.charge_key,
-            Colname.charge_id,
+            Colname.charge_code,
             Colname.charge_type,
             Colname.charge_owner,
         )
@@ -152,7 +152,7 @@ def sum_within_month(df: DataFrame, period_start_datetime: datetime) -> DataFram
             F.col(Colname.charge_price),
             F.col(Colname.total_amount),
             F.col(Colname.charge_tax),
-            F.col(Colname.charge_id),
+            F.col(Colname.charge_code),
             F.col(Colname.charge_type),
             F.col(Colname.charge_owner),
         )

@@ -27,6 +27,6 @@ class WholesaleResultColumnNames(ResultColumnNames):
     amount = "amount"
     is_tax = "is_tax"
 
-    charge_id = "charge_id"
+    charge_code = "charge_code"
     charge_type = "charge_type"
     charge_owner_id = "charge_owner_id"

@@ -14,10 +14,10 @@
 
 using Azure.Identity;
 using Azure.Storage.Files.DataLake;
+using Energinet.DataHub.Core.Databricks.Jobs.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Azurite;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
-using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Energinet.DataHub.Wholesale.Events.Application.Options;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.Components;
@@ -75,8 +75,11 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommo
             Environment.SetEnvironmentVariable(nameof(JwtOptions.BACKEND_BFF_APP_ID), "disabled");
             Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
 
-            Environment.SetEnvironmentVariable(nameof(DatabricksOptions.DATABRICKS_WORKSPACE_URL), DatabricksTestManager.DatabricksUrl);
-            Environment.SetEnvironmentVariable(nameof(DatabricksOptions.DATABRICKS_WORKSPACE_TOKEN), DatabricksTestManager.DatabricksToken);
+            // New options property names
+            Environment.SetEnvironmentVariable(nameof(DatabricksJobsOptions.WorkspaceUrl), IntegrationTestConfiguration.DatabricksSettings.WorkspaceUrl);
+            Environment.SetEnvironmentVariable(nameof(DatabricksJobsOptions.WorkspaceToken), IntegrationTestConfiguration.DatabricksSettings.WorkspaceAccessToken);
+            Environment.SetEnvironmentVariable(nameof(DatabricksJobsOptions.WarehouseId), IntegrationTestConfiguration.DatabricksSettings.WarehouseId);
+
             Environment.SetEnvironmentVariable(nameof(DataLakeOptions.STORAGE_ACCOUNT_URI), AzuriteManager.BlobStorageServiceUri.ToString());
             Environment.SetEnvironmentVariable(nameof(DataLakeOptions.STORAGE_CONTAINER_NAME), "wholesale");
 

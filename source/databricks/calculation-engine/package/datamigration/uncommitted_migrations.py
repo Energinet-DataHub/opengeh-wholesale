@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from azure.identity import ClientSecretCredential
-import importlib.resources
+from importlib.resources import contents
 
 import package.infrastructure.environment_variables as env_vars
 from package.infrastructure.paths import WHOLESALE_CONTAINER_NAME
@@ -26,9 +26,7 @@ import package.datamigration.constants as c
 
 def _get_all_migrations() -> list[str]:
     migration_files = list(
-        importlib.resources.contents(
-            f"{c.WHEEL_NAME}.{c.MIGRATION_SCRIPTS_FOLDER_PATH}"
-        )
+        contents(f"{c.WHEEL_NAME}.{c.MIGRATION_SCRIPTS_FOLDER_PATH}")
     )
     migration_files.sort()
     return [
