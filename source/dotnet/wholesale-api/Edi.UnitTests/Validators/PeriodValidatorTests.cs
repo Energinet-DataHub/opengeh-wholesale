@@ -26,7 +26,11 @@ public class PeriodValidatorTests
     public void Validate_Period_SuccessValidation()
     {
         // Arrange
-        var period = new PeriodCompound(Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(), Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString());
+        var winterTimeMidnight = Instant.FromUtc(2022, 1, 1, 23, 0, 0);
+        var period = new PeriodCompound(
+            winterTimeMidnight.ToString(),
+            winterTimeMidnight.Plus(Duration.FromDays(1))
+                .ToString());
 
         // Act
         var periodStatus = _sut.Validate(period);
@@ -39,7 +43,11 @@ public class PeriodValidatorTests
     public void Validate_EndDateIsUnspecified_FailsValidation()
     {
         // Arrange
-        var period = new PeriodCompound(Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(), string.Empty);
+        var winterTimeMidnight = Instant.FromUtc(2022, 1, 1, 23, 0, 0);
+        var endDataIsUnspecified = string.Empty;
+        var period = new PeriodCompound(
+            winterTimeMidnight.ToString(),
+            endDataIsUnspecified);
 
         // Act
         var periodStatus = _sut.Validate(period);
@@ -52,7 +60,11 @@ public class PeriodValidatorTests
     public void Validate_WrongStartHour_FailsValidation()
     {
         // Arrange
-        var period = new PeriodCompound(Instant.FromUtc(2022, 1, 1, 22, 0, 0).ToString(), Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString());
+        var winterTimeMidnight = Instant.FromUtc(2022, 1, 1, 23, 0, 0);
+        var winterTimeNotMidnight = Instant.FromUtc(2022, 1, 1, 22, 0, 0);
+        var period = new PeriodCompound(
+            winterTimeNotMidnight.ToString(),
+            winterTimeMidnight.ToString());
 
         // Act
         var periodStatus = _sut.Validate(period);
@@ -65,7 +77,11 @@ public class PeriodValidatorTests
     public void Validate_StartIsUnspecified_FailsValidation()
     {
         // Arrange
-        var period = new PeriodCompound(string.Empty, Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString());
+        var startDataIsUnspecified = string.Empty;
+        var winterTimeMidnight = Instant.FromUtc(2022, 1, 1, 23, 0, 0);
+        var period = new PeriodCompound(
+            startDataIsUnspecified,
+            winterTimeMidnight.ToString());
 
         // Act
         var periodStatus = _sut.Validate(period);
@@ -78,7 +94,11 @@ public class PeriodValidatorTests
     public void Validate_Fails_CorrectErrorCode()
     {
         // Arrange
-        var period = new PeriodCompound(Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(), string.Empty);
+        var endDataIsUnspecified = string.Empty;
+        var winterTimeMidnight = Instant.FromUtc(2022, 1, 1, 23, 0, 0);
+        var period = new PeriodCompound(
+            winterTimeMidnight.ToString(),
+            endDataIsUnspecified);
 
         // Act
         var periodStatus = _sut.Validate(period);
@@ -91,7 +111,11 @@ public class PeriodValidatorTests
     public void Validate_Fails_CorrectNumberOfMessages()
     {
         // Arrange
-        var period = new PeriodCompound(Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(), string.Empty);
+        var endDataIsUnspecified = string.Empty;
+        var winterTimeMidnight = Instant.FromUtc(2022, 1, 1, 23, 0, 0);
+        var period = new PeriodCompound(
+            winterTimeMidnight.ToString(),
+            endDataIsUnspecified);
 
         // Act
         var periodStatus = _sut.Validate(period);
@@ -104,7 +128,8 @@ public class PeriodValidatorTests
     public void Validate_StartAndEndAreInvalid_TwoErrorsWithMessages()
     {
         // Arrange
-        var period = new PeriodCompound(string.Empty, string.Empty);
+        var invalidDate = string.Empty;
+        var period = new PeriodCompound(invalidDate, invalidDate);
 
         // Act
         var periodStatus = _sut.Validate(period);
