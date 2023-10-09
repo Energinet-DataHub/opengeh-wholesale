@@ -39,7 +39,7 @@ public class AggregatedTimeSeriesRequestFactory : IAggregatedTimeSeriesRequestFa
     {
         return new AggregatedTimeSeriesRequest(
             MapPeriod(aggregatedTimeSeriesRequest.Period),
-            TimeSeriesTypeMapper.MapTimeSeriesType(aggregatedTimeSeriesRequest.TimeSeriesType, aggregatedTimeSeriesRequest.MeteringPointType, aggregatedTimeSeriesRequest.SettlementMethod),
+            MapTimeSeriesType(aggregatedTimeSeriesRequest.TimeSeriesType, aggregatedTimeSeriesRequest.MeteringPointType, aggregatedTimeSeriesRequest.SettlementMethod),
             MapAggregationPerRoleAndGridArea(aggregatedTimeSeriesRequest));
     }
 
