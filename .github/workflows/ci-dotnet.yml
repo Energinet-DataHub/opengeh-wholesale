@@ -23,6 +23,7 @@ jobs:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-build-prerelease.yml@v12
     with:
       solution_file_path: source/dotnet/Wholesale.sln
+      
 
   dotnet_ci_test_integrationtests_webapi:
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v12
