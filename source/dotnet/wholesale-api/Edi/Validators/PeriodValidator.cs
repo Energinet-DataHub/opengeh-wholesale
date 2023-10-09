@@ -19,6 +19,7 @@ namespace Energinet.DataHub.Wholesale.EDI.Validators;
 
 public class PeriodValidator : AbstractValidator<PeriodCompound>
 {
+    // {PropertyName} will be filled out with what even one defines in .WithName("xxxxx")
     private const string DanishErrorMessage =
         "Forkert dato format for {PropertyName}, skal være YYYY-MM-DDT22:00:00Z eller YYYY-MM-DDT23:00:00Z";
 
