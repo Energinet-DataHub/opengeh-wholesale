@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Energinet DataHub A/S
+﻿﻿// Copyright 2020 Energinet DataHub A/S
 //
 // Licensed under the Apache License, Version 2.0 (the "License2");
 // you may not use this file except in compliance with the License.
@@ -26,11 +26,7 @@ public class PeriodValidatorTests
     public void Validate_Period_SuccessValidation()
     {
         // Arrange
-        var winterTimeMidnight = Instant.FromUtc(2022, 1, 1, 23, 0, 0);
-        var period = new PeriodCompound(
-            winterTimeMidnight.ToString(),
-            winterTimeMidnight.Plus(Duration.FromDays(1))
-                .ToString());
+        var period = new PeriodCompound(Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(), Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString());
 
         // Act
         var periodStatus = _sut.Validate(period);
@@ -43,11 +39,7 @@ public class PeriodValidatorTests
     public void Validate_EndDateIsUnspecified_FailsValidation()
     {
         // Arrange
-        var winterTimeMidnight = Instant.FromUtc(2022, 1, 1, 23, 0, 0);
-        var endDataIsUnspecified = string.Empty;
-        var period = new PeriodCompound(
-            winterTimeMidnight.ToString(),
-            endDataIsUnspecified);
+        var period = new PeriodCompound(Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(), string.Empty);
 
         // Act
         var periodStatus = _sut.Validate(period);
@@ -60,11 +52,7 @@ public class PeriodValidatorTests
     public void Validate_WrongStartHour_FailsValidation()
     {
         // Arrange
-        var winterTimeMidnight = Instant.FromUtc(2022, 1, 1, 23, 0, 0);
-        var winterTimeNotMidnight = Instant.FromUtc(2022, 1, 1, 22, 0, 0);
-        var period = new PeriodCompound(
-            winterTimeNotMidnight.ToString(),
-            winterTimeMidnight.ToString());
+        var period = new PeriodCompound(Instant.FromUtc(2022, 1, 1, 22, 0, 0).ToString(), Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString());
 
         // Act
         var periodStatus = _sut.Validate(period);
@@ -77,11 +65,7 @@ public class PeriodValidatorTests
     public void Validate_StartIsUnspecified_FailsValidation()
     {
         // Arrange
-        var startDataIsUnspecified = string.Empty;
-        var winterTimeMidnight = Instant.FromUtc(2022, 1, 1, 23, 0, 0);
-        var period = new PeriodCompound(
-            startDataIsUnspecified,
-            winterTimeMidnight.ToString());
+        var period = new PeriodCompound(string.Empty, Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString());
 
         // Act
         var periodStatus = _sut.Validate(period);
@@ -94,11 +78,7 @@ public class PeriodValidatorTests
     public void Validate_Fails_CorrectErrorCode()
     {
         // Arrange
-        var endDataIsUnspecified = string.Empty;
-        var winterTimeMidnight = Instant.FromUtc(2022, 1, 1, 23, 0, 0);
-        var period = new PeriodCompound(
-            winterTimeMidnight.ToString(),
-            endDataIsUnspecified);
+        var period = new PeriodCompound(Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(), string.Empty);
 
         // Act
         var periodStatus = _sut.Validate(period);
@@ -111,11 +91,7 @@ public class PeriodValidatorTests
     public void Validate_Fails_CorrectNumberOfMessages()
     {
         // Arrange
-        var endDataIsUnspecified = string.Empty;
-        var winterTimeMidnight = Instant.FromUtc(2022, 1, 1, 23, 0, 0);
-        var period = new PeriodCompound(
-            winterTimeMidnight.ToString(),
-            endDataIsUnspecified);
+        var period = new PeriodCompound(Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(), string.Empty);
 
         // Act
         var periodStatus = _sut.Validate(period);
@@ -128,8 +104,7 @@ public class PeriodValidatorTests
     public void Validate_StartAndEndAreInvalid_TwoErrorsWithMessages()
     {
         // Arrange
-        var invalidDate = string.Empty;
-        var period = new PeriodCompound(invalidDate, invalidDate);
+        var period = new PeriodCompound(string.Empty, string.Empty);
 
         // Act
         var periodStatus = _sut.Validate(period);
