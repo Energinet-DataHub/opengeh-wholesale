@@ -19,7 +19,13 @@ namespace Energinet.DataHub.Wholesale.EDI.Validators;
 
 public class PeriodValidator : AbstractValidator<PeriodCompound>
 {
-    private const string ErrorMessage = "forkert dato format, skal være YYYY-MM-DDT22:00:00Z eller YYYY-MM-DDT23:00:00Z / Wrong date format, must be YYYY-MM-DDT22:00:00Z or YYYY-MM-DDT23:00:00Z";
+    private const string DanishErrorMessage =
+        "Forkert dato format for {PropertyName}, skal være YYYY-MM-DDT22:00:00Z eller YYYY-MM-DDT23:00:00Z";
+
+    private const string EnglishErrorMessage =
+        "Wrong date format for {PropertyName}, must be YYYY-MM-DDT22:00:00Z or YYYY-MM-DDT23:00:00Z";
+
+    private const string ErrorMessage = $"{DanishErrorMessage} / {EnglishErrorMessage}";
     private const string ErrorCode = "D66";
     private readonly DateTimeZone _dateTimeZone;
 
@@ -29,15 +35,17 @@ public class PeriodValidator : AbstractValidator<PeriodCompound>
 
         RuleFor(x => x.StartValueAsInstant).Cascade(CascadeMode.Stop)
             .NotNull()
-            .WithMessage(ErrorMessage).WithErrorCode(ErrorCode)
+            .WithName("Start date")
+            .WithMessage($"{ErrorMessage}").WithErrorCode(ErrorCode)
             .Must(BeMidnight)
-            .WithMessage(ErrorMessage).WithErrorCode(ErrorCode);
+            .WithMessage($"{ErrorMessage}").WithErrorCode(ErrorCode);
 
         RuleFor(x => x.EndValueAsInstant).Cascade(CascadeMode.Stop)
             .NotNull()
-            .WithMessage(ErrorMessage).WithErrorCode(ErrorCode)
+            .WithName("End date")
+            .WithMessage($"{ErrorMessage}").WithErrorCode(ErrorCode)
             .Must(BeMidnight)
-            .WithMessage(ErrorMessage).WithErrorCode(ErrorCode);
+            .WithMessage($"{ErrorMessage}").WithErrorCode(ErrorCode);
     }
 
     private bool BeMidnight(Instant? instant)

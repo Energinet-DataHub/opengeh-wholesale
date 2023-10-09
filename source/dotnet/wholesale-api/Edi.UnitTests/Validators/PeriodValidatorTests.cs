@@ -101,7 +101,7 @@ public class PeriodValidatorTests
     }
 
     [Fact]
-    public void Validate_StartAndEndAreInvalid_TwoErrors()
+    public void Validate_StartAndEndAreInvalid_TwoErrorsWithMessages()
     {
         // Arrange
         var period = new PeriodCompound(string.Empty, string.Empty);
@@ -111,5 +111,11 @@ public class PeriodValidatorTests
 
         // Assert
         Assert.True(periodStatus.Errors.Count == 2);
+        Assert.Contains(
+            periodStatus.Errors.Where(error => error.ErrorMessage.Contains("Start date")),
+            error => error.ErrorCode.Equals("D66"));
+        Assert.Contains(
+            periodStatus.Errors.Where(error => error.ErrorMessage.Contains("End date")),
+            error => error.ErrorCode.Equals("D66"));
     }
 }
