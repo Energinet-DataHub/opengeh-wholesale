@@ -20,28 +20,27 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 
 public class AggregatedTimeSeriesRequestValidatorTests
 {
-// {
-//     private static readonly PeriodValidator _periodValidator = new(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
-//     private readonly AggregatedTimeSeriesRequestValidator _sut = new(_periodValidator);
-//
-//     // [Fact]
-//     // public void Validate_AggregatedTimeSeriesRequest_SuccessValidation()
-//     // {
-//     //     // Arrange
-//     //     var request = new Edi.Requests.AggregatedTimeSeriesRequest()
-//     //     {
-//     //         Period = new Energinet.DataHub.Edi.Requests.Period()
-//     //         {
-//     //             Start = Instant.FromUtc(2022, 1, 1, 22, 0, 0).ToString(),
-//     //             End = Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString(),
-//     //         },
-//     //         TimeSeriesType = Edi.Requests.TimeSeriesType.Production,
-//     //     };
-//     //
-//     //     // Act
-//     //     var validationStatus = _sut.Validate(request);
-//     //
-//     //     // Assert
-//     //     Assert.True(validationStatus.IsValid);
-//     // }
+    private static readonly PeriodValidator _periodValidator = new(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
+    private readonly AggregatedTimeSeriesRequestValidator _sut = new(_periodValidator);
+
+    [Fact]
+    public void Validate_AggregatedTimeSeriesRequest_SuccessValidation()
+    {
+        // Arrange
+        var request = new Edi.Requests.AggregatedTimeSeriesRequest()
+        {
+            Period = new Energinet.DataHub.Edi.Requests.Period()
+            {
+                Start = Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(),
+                End = Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString(),
+            },
+            TimeSeriesType = Edi.Requests.TimeSeriesType.Production,
+        };
+
+        // Act
+        var validationStatus = _sut.Validate(request);
+
+        // Assert
+        Assert.True(validationStatus.IsValid);
+    }
 }

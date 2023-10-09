@@ -30,18 +30,14 @@ public class PeriodValidator : AbstractValidator<PeriodCompound>
         RuleFor(x => x.StartValueAsInstant).Cascade(CascadeMode.Stop)
             .NotNull()
             .WithMessage(ErrorMessage).WithErrorCode(ErrorCode)
-            .WithErrorCode(ErrorCode)
             .Must(BeMidnight)
-            .WithMessage(ErrorMessage).WithErrorCode(ErrorCode)
-            .WithErrorCode(ErrorCode);
+            .WithMessage(ErrorMessage).WithErrorCode(ErrorCode);
 
         RuleFor(x => x.EndValueAsInstant).Cascade(CascadeMode.Stop)
             .NotNull()
             .WithMessage(ErrorMessage).WithErrorCode(ErrorCode)
-            .WithErrorCode(ErrorCode)
             .Must(BeMidnight)
-            .WithMessage(ErrorMessage).WithErrorCode(ErrorCode)
-            .WithErrorCode(ErrorCode);
+            .WithMessage(ErrorMessage).WithErrorCode(ErrorCode);
     }
 
     private bool BeMidnight(Instant? instant)
