@@ -12,16 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Edi.Requests;
-
 namespace Energinet.DataHub.Wholesale.EDI.Validators;
 
-public class AggregatedTimeSeriesRequestValidator : IValidator<AggregatedTimeSeriesRequest>
-{
-    public AggregatedTimeSeriesRequestValidator(IEnumerable<IValidationRule<AggregatedTimeSeriesRequest>> validationRules)
-    {
-        Rules = validationRules.ToList();
-    }
-
-    public IReadOnlyList<IValidationRule<AggregatedTimeSeriesRequest>> Rules { get; set; }
-}
+public record ValidationError(string Message, string ErrorCode);

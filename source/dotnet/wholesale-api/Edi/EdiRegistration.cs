@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Edi.Requests;
 using Energinet.DataHub.Wholesale.EDI.Client;
 using Energinet.DataHub.Wholesale.EDI.Factories;
 using Energinet.DataHub.Wholesale.EDI.Validators;
-using FluentValidation;
+using Energinet.DataHub.Wholesale.EDI.Validators.ValidationRules.AggregatedTimeSerie;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Wholesale.EDI;
@@ -31,7 +32,12 @@ public static class EdiRegistration
         serviceCollection.AddSingleton<IEdiClient, EdiClient>();
         serviceCollection.AddScoped<IAggregatedTimeSeriesMessageFactory, AggregatedTimeSeriesMessageFactory>();
         serviceCollection.AddScoped<IAggregatedTimeSeriesRequestFactory, AggregatedTimeSeriesRequestFactory>();
-        serviceCollection.AddScoped<IValidator<Edi.Requests.AggregatedTimeSeriesRequest>, AggregatedTimeSeriesRequestValidator>();
-        serviceCollection.AddScoped<IValidator<PeriodCompound>, PeriodValidator>();
+        AddAggregatedTimeSeriesRequestValidation(serviceCollection);
+    }
+
+    private static void AddAggregatedTimeSeriesRequestValidation(IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddSingleton<IValidator<AggregatedTimeSeriesRequest>, AggregatedTimeSeriesRequestValidator>();
+        serviceCollection.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, PeriodValidationRule>();
     }
 }

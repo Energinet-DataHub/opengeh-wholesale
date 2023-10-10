@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.EDI.Validators;
+using Energinet.DataHub.Edi.Requests;
+using Energinet.DataHub.Wholesale.EDI.Validators.ValidationRules.AggregatedTimeSerie;
 using NodaTime;
 using Xunit;
 
@@ -20,102 +21,110 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 
 public class PeriodValidatorTests
 {
-    private readonly PeriodValidator _sut = new(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
+    private readonly PeriodValidationRule _sut = new(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
+    private readonly Instant _winterTimeMidnight = Instant.FromUtc(2022, 1, 1, 23, 0, 0);
 
     [Fact]
     public void Validate_Period_SuccessValidation()
     {
         // Arrange
-        var period = new PeriodCompound(Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(), Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString());
+        var message = new AggregatedTimeSeriesRequest();
+        message.Period = new Edi.Requests.Period();
+        message.Period.Start = _winterTimeMidnight.ToString();
+        message.Period.End = _winterTimeMidnight.ToString();
 
         // Act
-        var periodStatus = _sut.Validate(period);
+        var errors = _sut.Validate(message);
 
         // Assert
-        Assert.True(periodStatus.IsValid);
+        Assert.False(errors.Any());
     }
 
     [Fact]
     public void Validate_EndDateIsUnspecified_FailsValidation()
     {
         // Arrange
-        var period = new PeriodCompound(Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(), string.Empty);
+        var message = new AggregatedTimeSeriesRequest();
+        message.Period = new Edi.Requests.Period();
+        message.Period.Start = _winterTimeMidnight.ToString();
+        message.Period.End = string.Empty;
 
         // Act
-        var periodStatus = _sut.Validate(period);
+        var errors = _sut.Validate(message);
 
         // Assert
-        Assert.False(periodStatus.IsValid);
+        Assert.True(errors.Any());
     }
 
     [Fact]
     public void Validate_WrongStartHour_FailsValidation()
     {
         // Arrange
-        var period = new PeriodCompound(Instant.FromUtc(2022, 1, 1, 22, 0, 0).ToString(), Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString());
+        var notWinterTimeMidnight = Instant.FromUtc(2022, 1, 1, 22, 0, 0).ToString();
+        var message = new AggregatedTimeSeriesRequest();
+        message.Period = new Edi.Requests.Period();
+        message.Period.Start = notWinterTimeMidnight;
+        message.Period.End = _winterTimeMidnight.ToString();
 
         // Act
-        var periodStatus = _sut.Validate(period);
+        var errors = _sut.Validate(message);
 
         // Assert
-        Assert.False(periodStatus.IsValid);
+        Assert.True(errors.Any());
     }
 
     [Fact]
     public void Validate_StartIsUnspecified_FailsValidation()
     {
         // Arrange
-        var period = new PeriodCompound(string.Empty, Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString());
+        var message = new AggregatedTimeSeriesRequest();
+        message.Period = new Edi.Requests.Period();
+        message.Period.Start = string.Empty;
+        message.Period.End = _winterTimeMidnight.ToString();
 
         // Act
-        var periodStatus = _sut.Validate(period);
+        var errors = _sut.Validate(message);
 
         // Assert
-        Assert.False(periodStatus.IsValid);
+        Assert.True(errors.Any());
     }
 
     [Fact]
-    public void Validate_Fails_CorrectErrorCode()
+    public void Validate_Fails_CorrectNumberOfMessagesAndErrorCode()
     {
         // Arrange
-        var period = new PeriodCompound(Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(), string.Empty);
+        var message = new AggregatedTimeSeriesRequest();
+        message.Period = new Edi.Requests.Period();
+        message.Period.Start = _winterTimeMidnight.ToString();
+        message.Period.End = string.Empty;
 
         // Act
-        var periodStatus = _sut.Validate(period);
+        var errors = _sut.Validate(message);
 
         // Assert
-        Assert.Equal("D66", periodStatus.Errors.First().ErrorCode);
-    }
-
-    [Fact]
-    public void Validate_Fails_CorrectNumberOfMessages()
-    {
-        // Arrange
-        var period = new PeriodCompound(Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(), string.Empty);
-
-        // Act
-        var periodStatus = _sut.Validate(period);
-
-        // Assert
-        Assert.True(periodStatus.Errors.Count == 1);
+        Assert.Equal("D66", errors.First().ErrorCode);
+        Assert.True(errors.Count == 1);
     }
 
     [Fact]
     public void Validate_StartAndEndAreInvalid_TwoErrorsWithMessages()
     {
         // Arrange
-        var period = new PeriodCompound(string.Empty, string.Empty);
+        var message = new AggregatedTimeSeriesRequest();
+        message.Period = new Edi.Requests.Period();
+        message.Period.Start = string.Empty;
+        message.Period.End = string.Empty;
 
         // Act
-        var periodStatus = _sut.Validate(period);
+        var errors = _sut.Validate(message);
 
         // Assert
-        Assert.True(periodStatus.Errors.Count == 2);
+        Assert.True(errors.Count == 2);
         Assert.Contains(
-            periodStatus.Errors.Where(error => error.ErrorMessage.Contains("Start date")),
+            errors.Where(error => error.Message.Contains("Start date")),
             error => error.ErrorCode.Equals("D66"));
         Assert.Contains(
-            periodStatus.Errors.Where(error => error.ErrorMessage.Contains("End date")),
+            errors.Where(error => error.Message.Contains("End date")),
             error => error.ErrorCode.Equals("D66"));
     }
 }

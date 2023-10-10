@@ -16,7 +16,7 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.EDI.Mappers;
-using FluentValidation.Results;
+using Energinet.DataHub.Wholesale.EDI.Validators;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using PeriodContract = Energinet.DataHub.Edi.Responses.Period;
@@ -42,7 +42,7 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
         return message;
     }
 
-    public ServiceBusMessage CreateRejected(List<ValidationFailure> errors, string referenceId)
+    public ServiceBusMessage CreateRejected(IReadOnlyList<ValidationError> errors, string referenceId)
     {
         var body = CreateRejected(errors);
 
@@ -56,16 +56,16 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
         return message;
     }
 
-    private static IMessage CreateRejected(List<ValidationFailure> errors)
+    private static IMessage CreateRejected(IReadOnlyList<ValidationError> errors)
     {
         var response = new AggregatedTimeSeriesRequestRejected();
         response.RejectReasons.AddRange(errors.Select(CreateRejectReason));
         return response;
     }
 
-    private static RejectReason CreateRejectReason(ValidationFailure error)
+    private static RejectReason CreateRejectReason(ValidationError error)
     {
-        return new RejectReason() { ErrorCode = error.ErrorCode, ErrorMessage = error.ErrorMessage, };
+        return new RejectReason() { ErrorCode = error.ErrorCode, ErrorMessage = error.Message, };
     }
 
     private static IMessage CreateRejectedResponse()

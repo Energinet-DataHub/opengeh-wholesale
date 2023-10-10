@@ -12,27 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using NodaTime;
-using NodaTime.Text;
-
 namespace Energinet.DataHub.Wholesale.EDI.Validators;
 
-/// <summary>
-/// Is the wrapper for inspection of the period values
-/// </summary>
-public class PeriodCompound
+public interface IValidator<T>
 {
-    public PeriodCompound(string startValue, string endValue)
+    public IReadOnlyList<IValidationRule<T>> Rules { get; }
+
+    public IList<ValidationError> Validate(T subject)
     {
-        StarValue = startValue;
-        EndValue = endValue;
+        if (subject == null) throw new ArgumentNullException(nameof(subject));
+
+        var errors = new List<ValidationError>();
+        foreach (var rule in Rules)
+        {
+            errors.AddRange(rule.Validate(subject));
+        }
+
+        return errors;
     }
-
-    public Instant? StartValueAsInstant => InstantPattern.General.Parse(StarValue).Success ? InstantPattern.General.Parse(StarValue).Value : null;
-
-    public Instant? EndValueAsInstant => InstantPattern.General.Parse(EndValue).Success ? InstantPattern.General.Parse(EndValue).Value : null;
-
-    private string StarValue { get; }
-
-    private string EndValue { get; }
 }
