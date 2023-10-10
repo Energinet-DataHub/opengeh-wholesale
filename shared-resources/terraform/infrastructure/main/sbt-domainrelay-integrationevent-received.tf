@@ -1,5 +1,5 @@
 resource "azurerm_servicebus_topic" "domainrelay_integrationevent_received" {
-  name                         = "sbt-integrationevent-received-${lower(var.domain_name_short)}"
+  name                         = "sbt-${lower(var.domain_name_short)}-integrationevent-received"
   namespace_id                 = module.sb_domain_relay.id
 }
 
