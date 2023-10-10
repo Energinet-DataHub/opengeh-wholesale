@@ -26,7 +26,7 @@ public static class MeteringPointTypeMapper
             "production" => MeteringPointType.Production,
             "consumption" => MeteringPointType.Consumption,
             "" => null,
-            _ => throw new NotImplementedException($"Cannot map meteringPointType type '{meteringPointType}"),
+            _ => throw new NotImplementedException($"Cannot map meteringPointType type '{meteringPointType}'"),
         };
 
     public static MeteringPointType FromTimeSeriesTypeDeltaTableValue(string timeSeriesType) =>
