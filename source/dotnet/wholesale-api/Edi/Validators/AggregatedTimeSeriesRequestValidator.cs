@@ -18,9 +18,9 @@ namespace Energinet.DataHub.Wholesale.EDI.Validators;
 
 public class AggregatedTimeSeriesRequestValidator : IValidator<AggregatedTimeSeriesRequest>
 {
-    public AggregatedTimeSeriesRequestValidator(IReadOnlyList<IValidationRule<AggregatedTimeSeriesRequest>> validationRules)
+    public AggregatedTimeSeriesRequestValidator(IEnumerable<IValidationRule<AggregatedTimeSeriesRequest>> validationRules)
     {
-        Rules = validationRules;
+        Rules = validationRules.ToList();
     }
 
     public IReadOnlyList<IValidationRule<AggregatedTimeSeriesRequest>> Rules { get; set; }
