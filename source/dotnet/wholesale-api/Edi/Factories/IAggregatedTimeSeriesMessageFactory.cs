@@ -14,7 +14,7 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.EDI.Validators;
+using Energinet.DataHub.Wholesale.EDI.Validation;
 
 namespace Energinet.DataHub.Wholesale.EDI.Factories;
 

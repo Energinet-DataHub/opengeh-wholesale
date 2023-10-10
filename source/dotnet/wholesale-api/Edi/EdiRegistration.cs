@@ -15,8 +15,9 @@
 using Energinet.DataHub.Edi.Requests;
 using Energinet.DataHub.Wholesale.EDI.Client;
 using Energinet.DataHub.Wholesale.EDI.Factories;
-using Energinet.DataHub.Wholesale.EDI.Validators;
-using Energinet.DataHub.Wholesale.EDI.Validators.ValidationRules.AggregatedTimeSerie;
+using Energinet.DataHub.Wholesale.EDI.Validation;
+using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie;
+using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Wholesale.EDI;

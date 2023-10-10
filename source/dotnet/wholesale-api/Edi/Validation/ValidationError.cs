@@ -12,22 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.EDI.Validators;
+namespace Energinet.DataHub.Wholesale.EDI.Validation;
 
-public interface IValidator<T>
-{
-    public IReadOnlyList<IValidationRule<T>> Rules { get; }
-
-    public IList<ValidationError> Validate(T subject)
-    {
-        if (subject == null) throw new ArgumentNullException(nameof(subject));
-
-        var errors = new List<ValidationError>();
-        foreach (var rule in Rules)
-        {
-            errors.AddRange(rule.Validate(subject));
-        }
-
-        return errors;
-    }
-}
+public record ValidationError(string Message, string ErrorCode);

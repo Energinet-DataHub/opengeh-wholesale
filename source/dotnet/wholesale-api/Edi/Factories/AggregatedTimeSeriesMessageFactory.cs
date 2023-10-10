@@ -16,7 +16,7 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.EDI.Mappers;
-using Energinet.DataHub.Wholesale.EDI.Validators;
+using Energinet.DataHub.Wholesale.EDI.Validation;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using PeriodContract = Energinet.DataHub.Edi.Responses.Period;
