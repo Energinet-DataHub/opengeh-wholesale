@@ -41,7 +41,7 @@ public class CalculationResultIntegrationEventFactoryTests
             .Returns(calculationResultCompleted);
 
         // Act
-        var actual = sut.CreateCalculationResultCompleted(energyResult);
+        var actual = sut.CreateEventForEnergyResultDeprecated(energyResult);
 
         // Assert
         actual.EventName.Should().Be(CalculationResultCompleted.EventName);
@@ -63,7 +63,7 @@ public class CalculationResultIntegrationEventFactoryTests
             .Returns(energyResultProduced);
 
         // Act
-        var actual = sut.CreateEnergyResultProducedV1(energyResult);
+        var actual = sut.CreateEventForEnergyResult(energyResult);
 
         // Assert
         actual.EventName.Should().Be(EnergyResultProducedV1.EventName);

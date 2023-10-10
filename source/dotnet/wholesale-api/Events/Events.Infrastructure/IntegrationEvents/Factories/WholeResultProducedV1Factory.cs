@@ -12,18 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.Messaging.Communication.Internal;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
+using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Types;
-using Google.Protobuf;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 
 public class WholesaleResultProducedV1Factory : IWholesaleResultProducedV1Factory
 {
-    public IMessage Create(WholesaleResult wholesaleResult)
+    public IntegrationEvent Create(WholesaleResult wholesaleResult)
     {
-        return CreateInternal(wholesaleResult);
+        var @event = CreateInternal(wholesaleResult);
+        return new IntegrationEvent(Guid.NewGuid(), CalculationResultCompleted.EventName, CalculationResultCompleted.EventMinorVersion,  @event);
     }
 
     private static AmountPerChargeResultProducedV1 CreateInternal(WholesaleResult result)

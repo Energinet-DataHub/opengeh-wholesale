@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.Messaging.Communication.Internal;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
+using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.EnergyResultProducedV1;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Types;
@@ -21,6 +23,7 @@ using AggregationPerBalanceResponsiblePartyPerGridArea = Energinet.DataHub.Whole
 using AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV1.Types.AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea;
 using AggregationPerEnergySupplierPerGridArea = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV1.Types.AggregationPerEnergySupplierPerGridArea;
 using AggregationPerGridArea = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV1.Types.AggregationPerGridArea;
+using DecimalValue = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.DecimalValue;
 using QuantityUnit = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV1.Types.QuantityUnit;
 using TimeSeriesPoint = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV1.Types.TimeSeriesPoint;
 
@@ -28,7 +31,13 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Fa
 
 public class EnergyResultProducedV1Factory : IEnergyResultProducedV1Factory
 {
-    public EnergyResultProducedV1 Create(EnergyResult energyResult)
+    public IntegrationEvent Create(EnergyResult energyResult)
+    {
+        var @event = CreateBasedOnEnergySupplierAndBalanceResponsible(energyResult);
+        return new IntegrationEvent(Guid.NewGuid(), EnergyResultProducedV1.EventName, EnergyResultProducedV1.EventMinorVersion,  @event);
+    }
+
+    private EnergyResultProducedV1 CreateBasedOnEnergySupplierAndBalanceResponsible(EnergyResult energyResult)
     {
         if (energyResult.EnergySupplierId == null && energyResult.BalanceResponsibleId == null)
             return CreateForGridArea(energyResult);
