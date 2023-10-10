@@ -78,7 +78,24 @@ def test__transform_hour_to_quarter__split_basis_data_time_series(
 
     # Assert
     assert time_series_quarter_points.count() == 4
-    assert time_series_quarter_points.schema == time_series_quarter_points_schema
     assert time_series_quarter_points.collect()[0]["quarter_quantity"] == Decimal(
         "1.111111"
     )
+
+
+def test__transform_hour_to_quarter__schema_match(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    rows = [basis_data_time_series_points_row()]
+    basis_data_time_series_points = spark.createDataFrame(
+        rows, basis_data_time_series_points_schema
+    )
+
+    # Act
+    time_series_quarter_points = transform_hour_to_quarter(
+        basis_data_time_series_points
+    )
+
+    # Assert
+    assert time_series_quarter_points.schema == time_series_quarter_points_schema
