@@ -70,11 +70,11 @@ public class WholesaleResultFactoryTests
     {
         var list = new List<KeyValuePair<string, string>>
         {
-            new(WholesaleResultColumnNames.BatchId, "bbbbbbbb-aaaa-bbbb-cccc-0123456789ab"),
+            new(WholesaleResultColumnNames.CalculationId, "bbbbbbbb-aaaa-bbbb-cccc-0123456789ab"),
             new(WholesaleResultColumnNames.CalculationResultId, "aaaaaaaa-bbbb-cccc-dddd-0123456789ab"),
             new(WholesaleResultColumnNames.EnergySupplierId, "energySupplierId"),
             new(WholesaleResultColumnNames.GridArea, "504"),
-            new(WholesaleResultColumnNames.BatchProcessType, "WholesaleFixing"),
+            new(WholesaleResultColumnNames.CalculationType, "WholesaleFixing"),
             new(WholesaleResultColumnNames.ChargeCode, "chargeCode"),
             new(WholesaleResultColumnNames.ChargeType, "tariff"),
             new(WholesaleResultColumnNames.ChargeOwnerId, "chargeOwnerId"),
