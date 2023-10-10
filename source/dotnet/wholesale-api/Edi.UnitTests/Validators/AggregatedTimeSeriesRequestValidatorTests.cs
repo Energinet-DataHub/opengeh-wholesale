@@ -13,8 +13,9 @@
 // limitations under the License.
 
 using Energinet.DataHub.Edi.Requests;
-using Energinet.DataHub.Wholesale.EDI.Validators;
-using Energinet.DataHub.Wholesale.EDI.Validators.ValidationRules.AggregatedTimeSerie;
+using Energinet.DataHub.Wholesale.EDI.Validation;
+using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie;
+using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
 using NodaTime;
 using Xunit;
 

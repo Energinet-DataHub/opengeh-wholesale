@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Edi.Requests;
-using Energinet.DataHub.Wholesale.EDI.Validators.ValidationRules.AggregatedTimeSerie;
+using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
 using NodaTime;
 using Xunit;
 
@@ -25,7 +25,7 @@ public class PeriodValidatorTests
     private readonly Instant _winterTimeMidnight = Instant.FromUtc(2022, 1, 1, 23, 0, 0);
 
     [Fact]
-    public void Validate_Period_SuccessValidation()
+    public void Validate_WhenValidRequest_ReturnsExceptedNoValidationErrors()
     {
         // Arrange
         var message = new AggregatedTimeSeriesRequest();
@@ -41,7 +41,7 @@ public class PeriodValidatorTests
     }
 
     [Fact]
-    public void Validate_EndDateIsUnspecified_FailsValidation()
+    public void Validate_WhenEndDateIsUnspecified_ReturnsExceptedValidationError()
     {
         // Arrange
         var message = new AggregatedTimeSeriesRequest();
@@ -53,11 +53,12 @@ public class PeriodValidatorTests
         var errors = _sut.Validate(message);
 
         // Assert
-        Assert.True(errors.Any());
+        Assert.Single(errors);
+        Assert.Equal("D66", errors.First().ErrorCode);
     }
 
     [Fact]
-    public void Validate_WrongStartHour_FailsValidation()
+    public void Validate_WhenWrongStartHour_ReturnsExceptedValidationError()
     {
         // Arrange
         var notWinterTimeMidnight = Instant.FromUtc(2022, 1, 1, 22, 0, 0).ToString();
@@ -70,11 +71,12 @@ public class PeriodValidatorTests
         var errors = _sut.Validate(message);
 
         // Assert
-        Assert.True(errors.Any());
+        Assert.Single(errors);
+        Assert.Equal("D66", errors.First().ErrorCode);
     }
 
     [Fact]
-    public void Validate_StartIsUnspecified_FailsValidation()
+    public void Validate_WhenStartIsUnspecified_ReturnsExceptedValidationError()
     {
         // Arrange
         var message = new AggregatedTimeSeriesRequest();
@@ -86,28 +88,12 @@ public class PeriodValidatorTests
         var errors = _sut.Validate(message);
 
         // Assert
-        Assert.True(errors.Any());
-    }
-
-    [Fact]
-    public void Validate_Fails_CorrectNumberOfMessagesAndErrorCode()
-    {
-        // Arrange
-        var message = new AggregatedTimeSeriesRequest();
-        message.Period = new Edi.Requests.Period();
-        message.Period.Start = _winterTimeMidnight.ToString();
-        message.Period.End = string.Empty;
-
-        // Act
-        var errors = _sut.Validate(message);
-
-        // Assert
+        Assert.Single(errors);
         Assert.Equal("D66", errors.First().ErrorCode);
-        Assert.True(errors.Count == 1);
     }
 
     [Fact]
-    public void Validate_StartAndEndAreInvalid_TwoErrorsWithMessages()
+    public void Validate_WhenStartAndEndAreInvalid_ReturnsExceptedValidationErrors()
     {
         // Arrange
         var message = new AggregatedTimeSeriesRequest();

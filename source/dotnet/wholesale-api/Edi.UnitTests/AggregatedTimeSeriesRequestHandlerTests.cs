@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.ComponentModel.DataAnnotations;
 using AutoFixture.Xunit2;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
@@ -22,7 +21,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.EDI.Client;
 using Energinet.DataHub.Wholesale.EDI.Factories;
-using Energinet.DataHub.Wholesale.EDI.Validators;
+using Energinet.DataHub.Wholesale.EDI.Validation;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.Logging;

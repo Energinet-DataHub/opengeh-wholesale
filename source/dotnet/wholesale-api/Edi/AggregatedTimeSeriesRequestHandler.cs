@@ -20,7 +20,7 @@ using Energinet.DataHub.Wholesale.EDI.Client;
 using Energinet.DataHub.Wholesale.EDI.Factories;
 using Energinet.DataHub.Wholesale.EDI.Mappers;
 using Energinet.DataHub.Wholesale.EDI.Models;
-using Energinet.DataHub.Wholesale.EDI.Validators;
+using Energinet.DataHub.Wholesale.EDI.Validation;
 using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.EDI;
