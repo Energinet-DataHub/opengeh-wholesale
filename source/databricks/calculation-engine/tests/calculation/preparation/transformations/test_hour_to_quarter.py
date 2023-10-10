@@ -22,10 +22,7 @@ from pyspark.sql.types import (
 )
 
 from package.constants import Colname
-from package.codelists import (
-    MeteringPointResolution,
-    TimeSeriesQuality,
-)
+from package.codelists import MeteringPointResolution, QuantityQuality
 from package.calculation.preparation.transformations.hour_to_quarter import (
     transform_hour_to_quarter,
 )
@@ -44,7 +41,7 @@ def basis_data_time_series_points_row(
     resolution: str = MeteringPointResolution.HOUR.value,
     observation_time: TimestampType() = datetime(2020, 1, 1, 0, 0),
     quantity: str = Decimal("4.444444"),
-    quality: str = TimeSeriesQuality.ESTIMATED.value,
+    quality: str = QuantityQuality.ESTIMATED.value,
     energy_supplier_id: str = "the_energy_supplier_id",
     balance_responsible_id: str = "the_balance_responsible_id",
 ) -> Row:
