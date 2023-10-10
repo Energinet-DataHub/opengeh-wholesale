@@ -63,7 +63,7 @@ public static class SqlResultValueConverters
         {
             "True" => true,
             "False" => false,
-            _ =>throw new ArgumentException($"quality of unknown type:{value}"),
+            _ => throw new ArgumentException($"Quality of unknown type: '{value}'"),
         };
     }
 }
