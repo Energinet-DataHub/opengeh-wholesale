@@ -14,6 +14,8 @@
 
 using Energinet.DataHub.Wholesale.EDI.Client;
 using Energinet.DataHub.Wholesale.EDI.Factories;
+using Energinet.DataHub.Wholesale.EDI.Validators;
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Wholesale.EDI;
@@ -29,5 +31,7 @@ public static class EdiRegistration
         serviceCollection.AddSingleton<IEdiClient, EdiClient>();
         serviceCollection.AddScoped<IAggregatedTimeSeriesMessageFactory, AggregatedTimeSeriesMessageFactory>();
         serviceCollection.AddScoped<IAggregatedTimeSeriesRequestFactory, AggregatedTimeSeriesRequestFactory>();
+        serviceCollection.AddScoped<IValidator<Edi.Requests.AggregatedTimeSeriesRequest>, AggregatedTimeSeriesRequestValidator>();
+        serviceCollection.AddScoped<IValidator<PeriodCompound>, PeriodValidator>();
     }
 }
