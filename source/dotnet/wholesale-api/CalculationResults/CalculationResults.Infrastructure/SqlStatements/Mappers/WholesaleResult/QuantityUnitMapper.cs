@@ -23,7 +23,7 @@ public static class QuantityUnitMapper
             return quantityUnit switch
             {
                 "kWh" => QuantityUnit.Kwh,
-                _ =>throw new ArgumentException($"quality of unknown type:{quantityUnit}"),
+                _ => throw new ArgumentException($"Quality of unknown type: '{quantityUnit}'"),
             };
         }
 }
