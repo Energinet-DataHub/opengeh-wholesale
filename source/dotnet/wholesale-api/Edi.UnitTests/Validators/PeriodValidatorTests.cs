@@ -25,7 +25,7 @@ public class PeriodValidatorTests
     private readonly Instant _winterTimeMidnight = Instant.FromUtc(2022, 1, 1, 23, 0, 0);
 
     [Fact]
-    public void Validate_WhenValidRequest_ReturnNoValidationErrors()
+    public void Validate_WhenValidRequest_ReturnsExceptedNoValidationErrors()
     {
         // Arrange
         var message = new AggregatedTimeSeriesRequest();
@@ -41,7 +41,7 @@ public class PeriodValidatorTests
     }
 
     [Fact]
-    public void Validate_WhenEndDateIsUnspecified_ReturnExceptedValidationError()
+    public void Validate_WhenEndDateIsUnspecified_ReturnsExceptedValidationError()
     {
         // Arrange
         var message = new AggregatedTimeSeriesRequest();
@@ -58,7 +58,7 @@ public class PeriodValidatorTests
     }
 
     [Fact]
-    public void Validate_WhenWrongStartHour_ReturnExceptedValidationError()
+    public void Validate_WhenWrongStartHour_ReturnsExceptedValidationError()
     {
         // Arrange
         var notWinterTimeMidnight = Instant.FromUtc(2022, 1, 1, 22, 0, 0).ToString();
@@ -76,7 +76,7 @@ public class PeriodValidatorTests
     }
 
     [Fact]
-    public void Validate_WhenStartIsUnspecified_ReturnExceptedValidationError()
+    public void Validate_WhenStartIsUnspecified_ReturnsExceptedValidationError()
     {
         // Arrange
         var message = new AggregatedTimeSeriesRequest();
@@ -93,7 +93,7 @@ public class PeriodValidatorTests
     }
 
     [Fact]
-    public void Validate_WhenStartAndEndAreInvalid_ReturnExceptedValidationErrors()
+    public void Validate_WhenStartAndEndAreInvalid_ReturnsExceptedValidationErrors()
     {
         // Arrange
         var message = new AggregatedTimeSeriesRequest();
