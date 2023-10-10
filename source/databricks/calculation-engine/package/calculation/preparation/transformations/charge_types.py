@@ -45,13 +45,6 @@ def get_tariff_charges(
     # join with grouped time series
     df = _join_with_grouped_time_series(df, grouped_time_series)
 
-    # When constructing the tariff dataframe some column types need to be not nullable
-    # (or nullable).
-    # The construct should make it impossible for them to be null (or not null).
-    # df.schema[Colname.qualities].nullable = True
-    df.schema[Colname.quantity].nullable = False
-    df.schema[Colname.metering_point_type].nullable = False
-    df.schema[Colname.energy_supplier_id].nullable = False
     return df
 
 

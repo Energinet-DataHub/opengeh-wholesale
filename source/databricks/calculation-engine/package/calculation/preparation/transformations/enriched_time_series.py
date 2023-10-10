@@ -23,24 +23,24 @@ from package.infrastructure.db_logging import debug
 
 
 def get_basis_data_time_series_points_df(
-    new_timeseries_df: DataFrame,
-    master_basis_data_df: DataFrame,
+    raw_time_series_points_df: DataFrame,
+    metering_point_periods_df: DataFrame,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
 ) -> DataFrame:
     """Get enriched time-series points in quarterly resolution"""
 
-    new_timeseries_df = new_timeseries_df.where(
+    raw_time_series_points_df = raw_time_series_points_df.where(
         F.col(Colname.observation_time) >= period_start_datetime
     ).where(F.col(Colname.observation_time) < period_end_datetime)
 
-    quarterly_mp_df = master_basis_data_df.where(
+    quarterly_mp_df = metering_point_periods_df.where(
         F.col(Colname.resolution) == MeteringPointResolution.QUARTER.value
     ).withColumn(
         Colname.to_date, (F.col(Colname.to_date) - F.expr("INTERVAL 1 seconds"))
     )
 
-    hourly_mp_df = master_basis_data_df.where(
+    hourly_mp_df = metering_point_periods_df.where(
         F.col(Colname.resolution) == MeteringPointResolution.HOUR.value
     ).withColumn(
         Colname.to_date, (F.col(Colname.to_date) - F.expr("INTERVAL 1 seconds"))
@@ -84,27 +84,20 @@ def get_basis_data_time_series_points_df(
 
     debug(
         "Time series points where time is within period",
-        new_timeseries_df.orderBy(
+        raw_time_series_points_df.orderBy(
             Colname.metering_point_id, F.col(Colname.observation_time)
         ),
     )
 
-    new_timeseries_df = new_timeseries_df.select(
-        Colname.metering_point_id,
-        Colname.observation_time,
-        Colname.quantity,
-        Colname.quality,
-    )
-
     new_points_for_each_metering_point_df = (
         empty_points_for_each_metering_point_df.join(
-            new_timeseries_df,
+            raw_time_series_points_df,
             [Colname.metering_point_id, Colname.observation_time],
             "left",
         )
     )
 
-    # the master_basis_data_df is allready used once when creating the empty_points_for_each_metering_point_df
+    # the metering_point_periods_df is allready used once when creating the empty_points_for_each_metering_point_df
     # rejoining master_basis_data_df with empty_points_for_each_metering_point_df requires the GsrNumber and
     # Resolution column must be renamed for the select to be succesfull.
 
@@ -114,43 +107,41 @@ def get_basis_data_time_series_points_df(
         ).withColumnRenamed(Colname.resolution, "pfemp_Resolution")
     )
 
-    master_basis_data_renamed_df = master_basis_data_df.withColumnRenamed(
+    metering_point_periods_renamed_df = metering_point_periods_df.withColumnRenamed(
         Colname.metering_point_id, "master_MeteringPointId"
     ).withColumnRenamed(Colname.resolution, "master_Resolution")
 
-    return (
-        new_points_for_each_metering_point_df.withColumn(
-            Colname.quantity, F.col(Colname.quantity).cast(DecimalType(18, 6))
+    df = metering_point_periods_renamed_df.join(
+        new_points_for_each_metering_point_df,
+        (
+            metering_point_periods_renamed_df["master_MeteringPointId"]
+            == new_points_for_each_metering_point_df["pfemp_MeteringPointId"]
         )
-        .join(
-            master_basis_data_renamed_df,
-            (
-                master_basis_data_renamed_df["master_MeteringPointId"]
-                == new_points_for_each_metering_point_df["pfemp_MeteringPointId"]
-            )
-            & (
-                new_points_for_each_metering_point_df[Colname.observation_time]
-                >= F.col(Colname.from_date)
-            )
-            & (
-                new_points_for_each_metering_point_df[Colname.observation_time]
-                < F.col(Colname.to_date)
-            ),
-            "left",
+        & (
+            new_points_for_each_metering_point_df[Colname.observation_time]
+            >= F.col(Colname.from_date)
         )
-        .select(
-            Colname.grid_area,
-            Colname.to_grid_area,
-            Colname.from_grid_area,
-            master_basis_data_renamed_df["master_MeteringPointId"].alias(
-                Colname.metering_point_id
-            ),
-            Colname.metering_point_type,
-            master_basis_data_renamed_df["master_Resolution"].alias(Colname.resolution),
-            Colname.observation_time,
-            Colname.quantity,
-            Colname.quality,
-            Colname.energy_supplier_id,
-            Colname.balance_responsible_id,
-        )
+        & (
+            new_points_for_each_metering_point_df[Colname.observation_time]
+            < F.col(Colname.to_date)
+        ),
+        "left",
+    ).select(
+        Colname.grid_area,
+        Colname.to_grid_area,
+        Colname.from_grid_area,
+        metering_point_periods_renamed_df["master_MeteringPointId"].alias(
+            Colname.metering_point_id
+        ),
+        Colname.metering_point_type,
+        metering_point_periods_renamed_df["master_Resolution"].alias(
+            Colname.resolution
+        ),
+        Colname.observation_time,
+        Colname.quantity,
+        Colname.quality,
+        Colname.energy_supplier_id,
+        Colname.balance_responsible_id,
     )
+
+    return df

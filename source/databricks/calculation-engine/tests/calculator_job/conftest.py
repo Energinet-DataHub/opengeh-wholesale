@@ -234,6 +234,8 @@ def _write_input_test_data_to_table(
     )
 
     df = spark.read.csv(file_name, header=True, schema=schema)
+    df = spark.createDataFrame(df.rdd, schema)
+
     df.write.format("delta").mode("overwrite").saveAsTable(
         f"{paths.INPUT_DATABASE_NAME}.{table_name}"
     )

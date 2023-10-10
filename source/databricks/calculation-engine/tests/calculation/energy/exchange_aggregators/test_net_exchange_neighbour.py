@@ -22,7 +22,12 @@ from package.calculation.energy.exchange_aggregators import (
 )
 from package.codelists import MeteringPointType, QuantityQuality
 from package.calculation.energy.schemas import aggregation_result_schema
-from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
+from pyspark.sql.types import (
+    StructType,
+    StringType,
+    DecimalType,
+    TimestampType,
+)
 from pyspark.sql.functions import col, window
 
 
