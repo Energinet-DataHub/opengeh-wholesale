@@ -24,4 +24,10 @@ public interface IAggregatedTimeSeriesRequestFactory
     /// </summary>
     /// <param name="request"></param>
     AggregatedTimeSeriesRequest Parse(ServiceBusReceivedMessage request);
+
+    /// <summary>
+    /// Responsible for parsing the received message.
+    /// </summary>
+    /// <param name="request"></param>
+    public AggregatedTimeSeriesRequest Parse(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request);
 }

@@ -14,9 +14,9 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Edi.Responses;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.EDI.Mappers;
+using FluentValidation.Results;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using PeriodContract = Energinet.DataHub.Edi.Responses.Period;
@@ -42,6 +42,32 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
         return message;
     }
 
+    public ServiceBusMessage CreateRejected(List<ValidationFailure> errors, string referenceId)
+    {
+        var body = CreateRejected(errors);
+
+        var message = new ServiceBusMessage()
+        {
+            Body = new BinaryData(body.ToByteArray()),
+            Subject = body.GetType().Name,
+        };
+
+        message.ApplicationProperties.Add("ReferenceId", referenceId);
+        return message;
+    }
+
+    private static IMessage CreateRejected(List<ValidationFailure> errors)
+    {
+        var response = new AggregatedTimeSeriesRequestRejected();
+        response.RejectReasons.AddRange(errors.Select(CreateRejectReason));
+        return response;
+    }
+
+    private static RejectReason CreateRejectReason(ValidationFailure error)
+    {
+        return new RejectReason() { ErrorCode = error.ErrorCode, ErrorMessage = error.ErrorMessage, };
+    }
+
     private static IMessage CreateRejectedResponse()
     {
         var response = new AggregatedTimeSeriesRequestRejected();
@@ -53,7 +79,7 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
     {
         return new RejectReason()
         {
-            ErrorCode = ErrorCodes.InvalidBalanceResponsibleForPeriod, ErrorMessage = "something went wrong",
+            ErrorCode = "EOR", ErrorMessage = "something went wrong",
         };
     }
 

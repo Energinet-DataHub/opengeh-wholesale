@@ -30,8 +30,8 @@ message AggregatedTimeSeriesRequest {
 }
 
 message Period {
-  google.protobuf.Timestamp start_of_period = 1;
-  google.protobuf.Timestamp end_of_period = 2;
+  string start = 1;
+  optional string end = 2;
 }
 
 message AggregationPerGridArea {
