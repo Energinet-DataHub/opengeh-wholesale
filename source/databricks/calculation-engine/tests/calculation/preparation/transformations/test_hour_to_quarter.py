@@ -83,7 +83,7 @@ def test__transform_hour_to_quarter__split_basis_data_time_series(
     )
 
 
-def test__transform_hour_to_quarter__schema_match(
+def test__transform_hour_to_quarter__returns_expected_schema(
     spark: SparkSession,
 ) -> None:
     # Arrange
