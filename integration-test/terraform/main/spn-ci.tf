@@ -46,7 +46,7 @@ resource "azurerm_key_vault_secret" "kvs_shared_spn_id" {
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_main_selfpermission
+    azurerm_key_vault_access_policy.kv_selfpermission
   ]
 }
 
@@ -62,6 +62,6 @@ resource "azurerm_key_vault_secret" "kvs_shared_spn_secret" {
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_main_selfpermission
+    azurerm_key_vault_access_policy.kv_selfpermission
   ]
 }

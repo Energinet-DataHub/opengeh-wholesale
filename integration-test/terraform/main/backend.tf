@@ -2,7 +2,7 @@ terraform {
   backend "azurerm" {
     resource_group_name  = "@resource_group_name"
     storage_account_name = "@storage_account_name"
-    container_name       = "tfstate"
+    container_name       = "tfs"
     key                  = "integration_test.tfstate"
     use_oidc             = true
     use_azuread_auth     = true

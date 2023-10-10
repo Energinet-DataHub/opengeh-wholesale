@@ -1,5 +1,5 @@
 resource "azurerm_servicebus_namespace" "this" {
-  name                = "sb-main-${local.resource_suffix_with_dash}"
+  name                = "sb-${local.resource_suffix_with_dash}"
   location            = azurerm_resource_group.this.location
   resource_group_name = azurerm_resource_group.this.name
   sku                 = "Premium"
@@ -24,7 +24,7 @@ resource "azurerm_key_vault_secret" "kvs_sbns_connection_string" {
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_main_selfpermission
+    azurerm_key_vault_access_policy.kv_selfpermission
   ]
 }
 
@@ -40,6 +40,6 @@ resource "azurerm_key_vault_secret" "kvs_sbns_namespace" {
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_main_selfpermission
+    azurerm_key_vault_access_policy.kv_selfpermission
   ]
 }

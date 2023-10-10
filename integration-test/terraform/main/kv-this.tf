@@ -1,5 +1,5 @@
 resource "azurerm_key_vault" "this" {
-  name                = "kvmain${local.resource_suffix_without_dash}"
+  name                = "kv${local.resource_suffix_without_dash}"
   location            = azurerm_resource_group.this.location
   resource_group_name = azurerm_resource_group.this.name
   tenant_id           = data.azurerm_client_config.this.tenant_id
@@ -12,7 +12,7 @@ resource "azurerm_key_vault" "this" {
   }
 }
 
-resource "azurerm_key_vault_access_policy" "kv_main_selfpermission" {
+resource "azurerm_key_vault_access_policy" "kv_selfpermission" {
   key_vault_id = azurerm_key_vault.this.id
   tenant_id    = data.azurerm_client_config.this.tenant_id
   object_id    = data.azurerm_client_config.this.object_id
@@ -26,7 +26,7 @@ resource "azurerm_key_vault_access_policy" "kv_main_selfpermission" {
   ]
 }
 
-resource "azurerm_key_vault_access_policy" "kv_main_spn_ci" {
+resource "azurerm_key_vault_access_policy" "kv_spn_ci" {
   key_vault_id = azurerm_key_vault.this.id
   tenant_id    = data.azurerm_client_config.this.tenant_id
   object_id    = azuread_service_principal.spn_ci.object_id
@@ -46,7 +46,7 @@ resource "azurerm_key_vault_access_policy" "kv_main_spn_ci" {
   ]
 }
 
-resource "azurerm_key_vault_access_policy" "kv_main_developer_ad_group" {
+resource "azurerm_key_vault_access_policy" "kv_developer_ad_group" {
   key_vault_id = azurerm_key_vault.this.id
   tenant_id    = data.azurerm_client_config.this.tenant_id
   object_id    = var.developers_security_group_object_id
@@ -86,7 +86,6 @@ resource "azurerm_key_vault_secret" "kv_secrets" {
 
   # Ensure the access policy was created before trying to access the Key Vault
   depends_on = [
-    azurerm_key_vault_access_policy.kv_main_selfpermission
+    azurerm_key_vault_access_policy.kv_selfpermission
   ]
 }
-

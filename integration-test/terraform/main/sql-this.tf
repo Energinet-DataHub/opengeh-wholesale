@@ -1,5 +1,5 @@
 resource "azurerm_mssql_server" "this" {
-  name                         = "mssql-main-${local.resource_suffix_with_dash}"
+  name                         = "mssql-${local.resource_suffix_with_dash}"
   location                     = azurerm_resource_group.this.location
   resource_group_name          = azurerm_resource_group.this.name
   version                      = "12.0"
@@ -31,7 +31,7 @@ resource "azurerm_key_vault_secret" "kvs_mssql_admin_name" {
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_main_selfpermission
+    azurerm_key_vault_access_policy.kv_selfpermission
   ]
 }
 
@@ -47,7 +47,7 @@ resource "azurerm_key_vault_secret" "kvs_mssql_admin_password" {
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_main_selfpermission
+    azurerm_key_vault_access_policy.kv_selfpermission
   ]
 }
 
@@ -63,6 +63,6 @@ resource "azurerm_key_vault_secret" "kvs_mssql_server_id" {
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_main_selfpermission
+    azurerm_key_vault_access_policy.kv_selfpermission
   ]
 }

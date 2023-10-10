@@ -1,5 +1,5 @@
 resource "azurerm_storage_account" "this" {
-  name                     = "stmain${lower(var.domain_name_short)}${lower(var.environment_short)}we${lower(var.environment_instance)}"
+  name                     = "st${lower(var.domain_name_short)}${lower(var.environment_short)}we${lower(var.environment_instance)}"
   resource_group_name      = azurerm_resource_group.this.name
   location                 = azurerm_resource_group.this.location
   account_tier             = "Standard"

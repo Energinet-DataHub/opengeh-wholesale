@@ -1,5 +1,5 @@
 resource "azurerm_databricks_workspace" "this" {
-  name                = "dbw-main-${local.resource_suffix_with_dash}"
+  name                = "dbw-${local.resource_suffix_with_dash}"
   resource_group_name = azurerm_resource_group.this.name
   location            = azurerm_resource_group.this.location
   sku                 = "premium"
@@ -195,7 +195,7 @@ resource "azurerm_key_vault_secret" "kvs_dbw_sql_endpoint_id" {
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_main_selfpermission
+    azurerm_key_vault_access_policy.kv_selfpermission
   ]
 }
 
@@ -211,7 +211,7 @@ resource "azurerm_key_vault_secret" "kvs_databricks_dbw_playground_workspace_tok
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_main_selfpermission
+    azurerm_key_vault_access_policy.kv_selfpermission
   ]
 }
 
@@ -227,7 +227,7 @@ resource "azurerm_key_vault_secret" "kvs_databricks_dbw_playground_workspace_url
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_main_selfpermission
+    azurerm_key_vault_access_policy.kv_selfpermission
   ]
 }
 
@@ -243,7 +243,7 @@ resource "azurerm_key_vault_secret" "kvs_databricks_dbw_playground_workspace_id"
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_main_selfpermission
+    azurerm_key_vault_access_policy.kv_selfpermission
   ]
 }
 
@@ -259,6 +259,6 @@ resource "azurerm_key_vault_secret" "kvs_databricks_dbw_playground_storage_accou
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_main_selfpermission
+    azurerm_key_vault_access_policy.kv_selfpermission
   ]
 }

@@ -1,5 +1,5 @@
 resource "azurerm_log_analytics_workspace" "this" {
-  name                = "log-main-${local.resource_suffix_with_dash}"
+  name                = "log-${local.resource_suffix_with_dash}"
   location            = azurerm_resource_group.this.location
   resource_group_name = azurerm_resource_group.this.name
   sku                 = "PerGB2018"
@@ -13,7 +13,7 @@ resource "azurerm_log_analytics_workspace" "this" {
 }
 
 resource "azurerm_application_insights" "this" {
-  name                = "appi-main-${local.resource_suffix_with_dash}"
+  name                = "appi-${local.resource_suffix_with_dash}"
   location            = azurerm_resource_group.this.location
   resource_group_name = azurerm_resource_group.this.name
   application_type    = "web"
@@ -38,7 +38,7 @@ resource "azurerm_key_vault_secret" "kvs_log_workspace_id" {
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_main_selfpermission
+    azurerm_key_vault_access_policy.kv_selfpermission
   ]
 }
 
@@ -54,6 +54,6 @@ resource "azurerm_key_vault_secret" "kvs_appi_instrumentation_key" {
   }
 
   depends_on = [
-    azurerm_key_vault_access_policy.kv_main_selfpermission
+    azurerm_key_vault_access_policy.kv_selfpermission
   ]
 }
