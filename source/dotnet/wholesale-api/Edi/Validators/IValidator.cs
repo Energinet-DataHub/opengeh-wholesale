@@ -16,19 +16,18 @@ namespace Energinet.DataHub.Wholesale.EDI.Validators;
 
 public interface IValidator<T>
 {
-    public IReadOnlyList<IValidationRule<T>> Rules { get; set; }
+    public IReadOnlyList<IValidationRule<T>> Rules { get; }
 
-    public bool Validate(T subject, out List<ValidationError> errors)
+    public IList<ValidationError> Validate(T subject)
     {
         if (subject == null) throw new ArgumentNullException(nameof(subject));
 
-        errors = new List<ValidationError>();
-        foreach (var rule in Rules.Where(rule => rule.Support(subject.GetType())))
+        var errors = new List<ValidationError>();
+        foreach (var rule in Rules)
         {
-            rule.Validate(subject, out var ruleErrors);
-            errors.AddRange(ruleErrors);
+            errors.AddRange(rule.Validate(subject));
         }
 
-        return !errors.Any();
+        return errors;
     }
 }

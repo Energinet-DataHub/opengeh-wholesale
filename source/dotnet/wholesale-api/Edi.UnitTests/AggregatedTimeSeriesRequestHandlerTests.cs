@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.ComponentModel.DataAnnotations;
 using AutoFixture.Xunit2;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
@@ -21,8 +22,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.EDI.Client;
 using Energinet.DataHub.Wholesale.EDI.Factories;
-using FluentValidation;
-using FluentValidation.Results;
+using Energinet.DataHub.Wholesale.EDI.Validators;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.Logging;
@@ -72,12 +72,9 @@ public class AggregatedTimeSeriesRequestHandlerTests
                 calculationResultQueries.GetAsync(It.IsAny<EnergyResultQuery>()))
             .ReturnsAsync(() => calculationResult);
 
-        validator.Setup(vali => vali.ValidateAsync(
-                It.IsAny<AggregatedTimeSeriesRequest>(), CancellationToken.None))
-            .ReturnsAsync(() => new ValidationResult()
-            {
-                Errors = new List<ValidationFailure>(),
-            });
+        validator.Setup(vali => vali.Validate(
+                It.IsAny<AggregatedTimeSeriesRequest>()))
+            .Returns(() => new List<ValidationError>());
 
         var sut = new AggregatedTimeSeriesRequestHandler(
             requestCalculationResultQueriesMock.Object,
@@ -123,23 +120,17 @@ public class AggregatedTimeSeriesRequestHandlerTests
             TimeSeriesType = Edi.Requests.TimeSeriesType.Production,
             Period = new Period()
             {
-                Start = new Timestamp().ToString(),
-                End = new Timestamp().ToString(),
+                Start = Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(),
+                End = Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString(),
             },
         };
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(request.ToByteArray()));
 
-        validator.Setup(vali => vali.ValidateAsync(
-                It.IsAny<AggregatedTimeSeriesRequest>(), CancellationToken.None))
-            .ReturnsAsync(() => new ValidationResult
-                {
-                    Errors =
-                    {
-                        new ValidationFailure("dummy", "dummy") { ErrorCode = "dummy" },
-                    },
-                });
+        validator.Setup(vali => vali.Validate(
+                It.IsAny<AggregatedTimeSeriesRequest>()))
+            .Returns(() => new List<ValidationError>());
 
         var sut = new AggregatedTimeSeriesRequestHandler(
             requestCalculationResultQueriesMock.Object,

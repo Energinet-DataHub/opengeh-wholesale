@@ -13,13 +13,12 @@
 // limitations under the License.
 
 using Energinet.DataHub.Edi.Requests;
-using Google.Protobuf;
 using NodaTime;
 using NodaTime.Text;
 
 namespace Energinet.DataHub.Wholesale.EDI.Validators.ValidationRules.AggregatedTimeSerie;
 
-public class PeriodValidationRule : IValidationRule<IMessage>
+public class PeriodValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
 {
     private const string DanishErrorMessage =
         "Forkert dato format for {PropertyName}, skal være YYYY-MM-DDT22:00:00Z eller YYYY-MM-DDT23:00:00Z";
@@ -31,29 +30,28 @@ public class PeriodValidationRule : IValidationRule<IMessage>
     private const string ErrorCode = "D66";
 
     private readonly DateTimeZone _dateTimeZone;
-    private IList<ValidationError> _errors = new List<ValidationError>();
 
     public PeriodValidationRule(DateTimeZone dateTimeZone)
     {
         _dateTimeZone = dateTimeZone;
     }
 
-    public void Validate(IMessage entity, out IList<ValidationError> errors)
+    public IList<ValidationError> Validate(AggregatedTimeSeriesRequest subject)
     {
-        if (entity == null) throw new ArgumentNullException(nameof(entity));
-        var period = (entity as AggregatedTimeSeriesRequest)?.Period;
+        if (subject == null) throw new ArgumentNullException(nameof(subject));
+        var period = subject.Period;
         if (period == null) throw new ArgumentNullException(nameof(period));
+        var errors = new List<ValidationError>();
+        var startInstant = ParseToInstant(period.Start, "Start date", errors);
+        var endInstant = ParseToInstant(period.End, "End date", errors);
 
-        ValidateDateFormat(period.Start, "Start date", out var startInstant);
-        ValidateDateFormat(period.End, "End date", out var endInstant);
-
-        if (!_errors.Any())
+        if (startInstant != null && endInstant != null)
         {
-            MustBeMidnight(startInstant);
-            MustBeMidnight(endInstant);
+            MustBeMidnight(startInstant.Value, errors);
+            MustBeMidnight(endInstant.Value, errors);
         }
 
-        errors = _errors;
+        return errors;
     }
 
     public bool Support(Type type)
@@ -61,25 +59,20 @@ public class PeriodValidationRule : IValidationRule<IMessage>
         return type == typeof(AggregatedTimeSeriesRequest);
     }
 
-    private void ValidateDateFormat(string dateTimeString, string propertyName, out Instant instant)
+    private Instant? ParseToInstant(string dateTimeString, string propertyName, List<ValidationError> errors)
     {
-        instant = default;
-
         var parseResult = InstantPattern.General.Parse(dateTimeString);
-        if (!parseResult.Success)
-        {
-            _errors.Add(new ValidationError(ErrorMessage.Replace("{PropertyName}", propertyName), ErrorCode));
-        }
-        else
-        {
-            instant = parseResult.Value;
-        }
+        if (parseResult.Success)
+            return parseResult.Value;
+
+        errors.Add(new ValidationError(ErrorMessage.Replace("{PropertyName}", propertyName), ErrorCode));
+        return null;
     }
 
-    private void MustBeMidnight(Instant instant)
+    private void MustBeMidnight(Instant instant, List<ValidationError> errors)
     {
         var zonedDateTime = new ZonedDateTime(instant, _dateTimeZone);
         if (zonedDateTime.TimeOfDay != LocalTime.Midnight)
-            _errors.Add(new ValidationError(ErrorMessage, ErrorCode));
+            errors.Add(new ValidationError(ErrorMessage, ErrorCode));
     }
 }

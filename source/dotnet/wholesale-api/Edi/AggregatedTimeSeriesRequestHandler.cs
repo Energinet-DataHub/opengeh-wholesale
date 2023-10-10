@@ -20,7 +20,7 @@ using Energinet.DataHub.Wholesale.EDI.Client;
 using Energinet.DataHub.Wholesale.EDI.Factories;
 using Energinet.DataHub.Wholesale.EDI.Mappers;
 using Energinet.DataHub.Wholesale.EDI.Models;
-using FluentValidation;
+using Energinet.DataHub.Wholesale.EDI.Validators;
 using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.EDI;
@@ -54,10 +54,10 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
     {
         var aggregatedTimeSeriesRequest = Edi.Requests.AggregatedTimeSeriesRequest.Parser.ParseFrom(receivedMessage.Body);
 
-        var validation = await _validator.ValidateAsync(aggregatedTimeSeriesRequest, cancellationToken).ConfigureAwait(false);
+        var validationErrors = _validator.Validate(aggregatedTimeSeriesRequest);
 
         ServiceBusMessage message;
-        if (validation.IsValid)
+        if (!validationErrors.Any())
         {
             var aggregatedTimeSeriesRequestMessage = _aggregatedTimeSeriesRequestFactory.Parse(aggregatedTimeSeriesRequest);
             var result = await GetCalculationResultsAsync(
@@ -70,7 +70,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         }
         else
         {
-            message = _aggregatedTimeSeriesMessageFactory.CreateRejected(validation.Errors, referenceId);
+            message = _aggregatedTimeSeriesMessageFactory.CreateRejected(validationErrors.ToList(), referenceId);
         }
 
         await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);

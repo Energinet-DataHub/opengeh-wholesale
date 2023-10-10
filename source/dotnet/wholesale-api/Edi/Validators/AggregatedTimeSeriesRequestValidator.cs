@@ -13,14 +13,15 @@
 // limitations under the License.
 
 using Energinet.DataHub.Edi.Requests;
-using FluentValidation;
 
 namespace Energinet.DataHub.Wholesale.EDI.Validators;
 
-public class AggregatedTimeSeriesRequestValidator : AbstractValidator<AggregatedTimeSeriesRequest>
+public class AggregatedTimeSeriesRequestValidator : IValidator<AggregatedTimeSeriesRequest>
 {
-    public AggregatedTimeSeriesRequestValidator(FluentValidation.IValidator<PeriodCompound> periodValidator)
+    public AggregatedTimeSeriesRequestValidator(IReadOnlyList<IValidationRule<AggregatedTimeSeriesRequest>> validationRules)
     {
-        RuleFor(x => new PeriodCompound(x.Period.Start, x.Period.End)).SetValidator(periodValidator);
+        Rules = validationRules;
     }
+
+    public IReadOnlyList<IValidationRule<AggregatedTimeSeriesRequest>> Rules { get; set; }
 }

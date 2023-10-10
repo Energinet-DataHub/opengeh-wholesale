@@ -19,7 +19,5 @@ namespace Energinet.DataHub.Wholesale.EDI.Validators;
 /// </summary>
 public interface IValidationRule<in T>
 {
-    void Validate(T entity, out IList<ValidationError> errors);
-
-    bool Support(Type type);
+    IList<ValidationError> Validate(T subject);
 }
