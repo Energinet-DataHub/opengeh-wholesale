@@ -15,12 +15,9 @@
 using Azure.Identity;
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
-using Energinet.DataHub.Core.TestCommon;
-using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
 using Moq;
 using Xunit;
-using ProcessType = Energinet.DataHub.Wholesale.DomainTests.Clients.v3.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 {
@@ -29,7 +26,6 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
     /// </summary>
     public sealed class AuthorizedClientFixture : IAsyncLifetime
     {
-        private readonly string _topicName = "sbt-sharedres-integrationevent-received";
         private readonly string _subscriptionName = Guid.NewGuid().ToString();
         private readonly TimeSpan _httpTimeout = TimeSpan.FromMinutes(10); // IDatabricksSqlStatementClient can take up to 8 minutes to get ready.
 
@@ -40,8 +36,6 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             ServiceBusAdministrationClient = new ServiceBusAdministrationClient(Configuration.ServiceBusFullyQualifiedNamespace, new DefaultAzureCredential());
             ServiceBusClient = new ServiceBusClient(Configuration.ServiceBusConnectionString);
         }
-
-        public WholesaleDomainConfiguration Configuration { get; }
 
         /// <summary>
         /// The actual client is not created until <see cref="IAsyncLifetime.InitializeAsync"/> has been called by xUnit.
@@ -54,6 +48,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         public ServiceBusReceiver Receiver { get; private set; } = null!;
 
         public AuthorizedClientFixtureOutput Output { get; private set; } = null!;
+
+        private WholesaleDomainConfiguration Configuration { get; }
 
         private B2CUserTokenAuthenticationClient UserAuthenticationClient { get; }
 
@@ -73,7 +69,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         async Task IAsyncLifetime.DisposeAsync()
         {
             UserAuthenticationClient.Dispose();
-            await ServiceBusAdministrationClient.DeleteSubscriptionAsync(_topicName, _subscriptionName);
+            await ServiceBusAdministrationClient.DeleteSubscriptionAsync(Configuration.DomainRelayTopicName, _subscriptionName);
             await ServiceBusClient.DisposeAsync();
         }
 
@@ -101,12 +97,12 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
         private async Task CreateTopicSubscriptionAsync()
         {
-            if (await ServiceBusAdministrationClient.SubscriptionExistsAsync(_topicName, _subscriptionName))
+            if (await ServiceBusAdministrationClient.SubscriptionExistsAsync(Configuration.DomainRelayTopicName, _subscriptionName))
             {
-                await ServiceBusAdministrationClient.DeleteSubscriptionAsync(_topicName, _subscriptionName);
+                await ServiceBusAdministrationClient.DeleteSubscriptionAsync(Configuration.DomainRelayTopicName, _subscriptionName);
             }
 
-            var options = new CreateSubscriptionOptions(_topicName, _subscriptionName)
+            var options = new CreateSubscriptionOptions(Configuration.DomainRelayTopicName, _subscriptionName)
             {
                 AutoDeleteOnIdle = TimeSpan.FromHours(1),
             };
@@ -121,7 +117,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                 ReceiveMode = ServiceBusReceiveMode.ReceiveAndDelete,
             };
 
-            return ServiceBusClient.CreateReceiver(_topicName, _subscriptionName, serviceBusReceiverOptions);
+            return ServiceBusClient.CreateReceiver(Configuration.DomainRelayTopicName, _subscriptionName, serviceBusReceiverOptions);
         }
     }
 }

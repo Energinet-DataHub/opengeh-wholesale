@@ -18,7 +18,7 @@ using FluentAssertions;
 using Xunit;
 using CalculationTimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType;
 
-namespace Energinet.DataHub.Wholesale.EDI.UnitTests;
+namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Mappers;
 
 public class TimeSeriesTypeMapperTests
 {

@@ -23,28 +23,6 @@ message AggregatedTimeSeriesRequestRejected {
 
 // Contains all errors for the request
 message RejectReason {
-  ErrorCodes error_code = 1;
-  optional string error_message = 2;
-}
-
-enum ErrorCodes {
-  ERROR_CODES_UNSPECIFIED = 0;
-  
-  // E16: Energy supplier is not valid for the period
-  ERROR_CODES_INVALID_ENERGY_SUPPLIER_FOR_PERIOD = 1;
-  
-  // E18: Balance responsible is not valid for the period
-  ERROR_CODES_INVALID_BALANCE_RESPONSIBLE_FOR_PERIOD = 2;
-  
-  // E0I: Grid operator is not valid
-  ERROR_CODES_INVALID_GRID_OPERATOR = 3;
-  
-  // E0H: No data for the period
-  ERROR_CODES_NO_DATA_FOR_PERIOD = 4;
-  
-  // E50: Invalid period
-  ERROR_CODES_INVALID_PERIOD = 5;
-  
-  // D11: Impossible search criteria combination
-  ERROR_CODES_IMPOSSIBLE_SEARCH_CRITERIA_COMBINATION = 6;
+  string error_code = 1;
+  string error_message = 2;
 }

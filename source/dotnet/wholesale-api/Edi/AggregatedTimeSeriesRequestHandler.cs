@@ -20,6 +20,7 @@ using Energinet.DataHub.Wholesale.EDI.Client;
 using Energinet.DataHub.Wholesale.EDI.Factories;
 using Energinet.DataHub.Wholesale.EDI.Mappers;
 using Energinet.DataHub.Wholesale.EDI.Models;
+using Energinet.DataHub.Wholesale.EDI.Validation;
 using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.EDI;
@@ -29,6 +30,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
     private readonly IRequestCalculationResultQueries _requestCalculationResultQueries;
     private readonly IEdiClient _ediClient;
     private readonly IAggregatedTimeSeriesMessageFactory _aggregatedTimeSeriesMessageFactory;
+    private readonly IValidator<Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest> _validator;
     private readonly ILogger<AggregatedTimeSeriesRequestHandler> _logger;
     private readonly IAggregatedTimeSeriesRequestFactory _aggregatedTimeSeriesRequestFactory;
 
@@ -37,26 +39,39 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         IEdiClient ediClient,
         IAggregatedTimeSeriesRequestFactory aggregatedTimeSeriesRequestFactory,
         IAggregatedTimeSeriesMessageFactory aggregatedTimeSeriesMessageFactory,
+        IValidator<Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest> validator,
         ILogger<AggregatedTimeSeriesRequestHandler> logger)
     {
         _requestCalculationResultQueries = requestCalculationResultQueries;
         _ediClient = ediClient;
         _aggregatedTimeSeriesRequestFactory = aggregatedTimeSeriesRequestFactory;
         _aggregatedTimeSeriesMessageFactory = aggregatedTimeSeriesMessageFactory;
+        _validator = validator;
         _logger = logger;
     }
 
     public async Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken)
     {
-        var aggregatedTimeSeriesRequestMessage = _aggregatedTimeSeriesRequestFactory.Parse(receivedMessage);
+        var aggregatedTimeSeriesRequest = Edi.Requests.AggregatedTimeSeriesRequest.Parser.ParseFrom(receivedMessage.Body);
 
-        var result = await GetCalculationResultsAsync(
-            aggregatedTimeSeriesRequestMessage,
-            cancellationToken).ConfigureAwait(false);
+        var validationErrors = _validator.Validate(aggregatedTimeSeriesRequest);
 
-        var message = _aggregatedTimeSeriesMessageFactory.Create(
-            result,
-            referenceId);
+        ServiceBusMessage message;
+        if (!validationErrors.Any())
+        {
+            var aggregatedTimeSeriesRequestMessage = _aggregatedTimeSeriesRequestFactory.Parse(aggregatedTimeSeriesRequest);
+            var result = await GetCalculationResultsAsync(
+                aggregatedTimeSeriesRequestMessage,
+                cancellationToken).ConfigureAwait(false);
+
+            message = _aggregatedTimeSeriesMessageFactory.Create(
+                result,
+                referenceId);
+        }
+        else
+        {
+            message = _aggregatedTimeSeriesMessageFactory.CreateRejected(validationErrors.ToList(), referenceId);
+        }
 
         await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
     }
