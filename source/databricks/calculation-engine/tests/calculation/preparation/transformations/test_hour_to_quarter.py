@@ -62,7 +62,7 @@ def basis_data_time_series_points_row(
     return Row(**row)
 
 
-def test__transform_hour_to_quarter__split_hourly_enriched_time_series(
+def test__transform_hour_to_quarter__split_basis_data_time_series(
     spark: SparkSession,
 ) -> None:
     # Arrange
