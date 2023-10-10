@@ -25,6 +25,9 @@ from .batch_grid_areas import (
     get_batch_grid_areas_df,
     check_all_grid_areas_have_metering_points,
 )
+from package.calculation_input.schemas import (
+    metering_point_period_schema,
+)
 
 
 def get_metering_point_periods_df(
@@ -33,31 +36,33 @@ def get_metering_point_periods_df(
     period_end_datetime: datetime,
     batch_grid_areas: list[str],
 ) -> DataFrame:
-    metering_points_periods_df = calculation_input_reader.read_metering_point_periods()
+    metering_point_periods_df = calculation_input_reader.read_metering_point_periods()
 
-    metering_points_periods_df = _filter_by_grid_area(
-        metering_points_periods_df, batch_grid_areas
+    metering_point_periods_df = _filter_by_grid_area(
+        metering_point_periods_df, batch_grid_areas
     )
 
-    metering_points_periods_df = _filter_by_period(
-        metering_points_periods_df, period_start_datetime, period_end_datetime
+    metering_point_periods_df = _filter_by_period(
+        metering_point_periods_df, period_start_datetime, period_end_datetime
     )
 
-    metering_points_periods_df = metering_points_periods_df.select(
+    metering_point_periods_df = metering_point_periods_df.select(
         Colname.metering_point_id,
-        Colname.grid_area,
-        Colname.from_date,
-        Colname.to_date,
         Colname.metering_point_type,
+        Colname.calculation_type,
         Colname.settlement_method,
+        Colname.grid_area,
+        Colname.resolution,
         Colname.from_grid_area,
         Colname.to_grid_area,
-        Colname.resolution,
+        Colname.parent_metering_point_id,
         Colname.energy_supplier_id,
         Colname.balance_responsible_id,
+        Colname.from_date,
+        Colname.to_date,
     )
 
-    return metering_points_periods_df
+    return metering_point_periods_df
 
 
 def _filter_by_grid_area(

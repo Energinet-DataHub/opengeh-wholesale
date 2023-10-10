@@ -43,14 +43,15 @@ class TableReader:
             f"{paths.INPUT_DATABASE_NAME}.{paths.METERING_POINT_PERIODS_TABLE_NAME}"
         )
 
+        df = self._fix_settlement_method(df)
+        df = self._fix_metering_point_type(df)
+
         _assert_schema(
             df.schema,
             metering_point_period_schema,
             paths.METERING_POINT_PERIODS_TABLE_NAME,
         )
 
-        df = self._fix_settlement_method(df)
-        df = self._fix_metering_point_type(df)
         return df
 
     def read_time_series_points(self) -> DataFrame:
@@ -193,7 +194,8 @@ class TableReader:
                 col(Colname.metering_point_type)
                 == InputMeteringPointType.EFFECT_SETTLEMENT.value,
                 lit(MeteringPointType.EFFECT_SETTLEMENT.value),
-            ),
+            )
+            .otherwise(lit("Unknown type")),
         )
 
     def _fix_settlement_method(self, df: DataFrame) -> DataFrame:
