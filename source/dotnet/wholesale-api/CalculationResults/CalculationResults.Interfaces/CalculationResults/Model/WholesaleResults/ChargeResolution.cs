@@ -15,7 +15,7 @@
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 
 /// <summary>
-/// Defines metering point type
+/// Defines time resolution of the charge
 /// </summary>
 public enum ChargeResolution
 {
