@@ -15,6 +15,7 @@
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Internal;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Microsoft.Extensions.Logging;
@@ -57,20 +58,41 @@ public class IntegrationEventProvider : IIntegrationEventProvider
                 break;
             }
 
-            var resultCount = 0;
+            // Publish energy results
+            var energyResultCount = 0;
             await foreach (var energyResult in _calculationResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
             {
-                resultCount++;
-                yield return _calculationResultIntegrationEventFactory.CreateEventForEnergyResultDeprecated(energyResult); // Deprecated
+                energyResultCount++;
+                yield return _calculationResultIntegrationEventFactory.CreateEventForEnergyResultDeprecated(
+                    energyResult); // Deprecated
                 yield return _calculationResultIntegrationEventFactory.CreateEventForEnergyResult(energyResult);
-                yield return _calculationResultIntegrationEventFactory.CreateEventForWholesaleResult(wholesaleResult);
+            }
+
+            // Publish wholesale results
+            var wholesaleResultCount = 0;
+            if (IsWholesaleCalculationType(batch.ProcessType)
+            {
+                await foreach (var wholesaleResult in _calculationResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
+                {
+                    wholesaleResultCount++;
+                    yield return _calculationResultIntegrationEventFactory.CreateEventForWholesaleResult(wholesaleResult);
+                }
             }
 
             batch.PublishedTime = _clock.GetCurrentInstant();
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
-            _logger.LogInformation("Published {ResultCount} results for completed batch {BatchId}", resultCount, batch.Id);
+            _logger.LogInformation("Published {EnergyResultCount} energy results for completed batch {BatchId}", energyResultCount, batch.Id);
+            if (IsWholesaleCalculationType(batch.ProcessType))
+            {
+                _logger.LogInformation("Published {WholesaleResultCount} results for completed batch {BatchId}", wholesaleResultCount, batch.Id);
+            }
         }
         while (true);
+    }
+
+    private bool IsWholesaleCalculationType(ProcessType calculationType)
+    {
+        return calculationType is ProcessType.WholesaleFixing or ProcessType.FirstCorrectionSettlement or ProcessType.SecondCorrectionSettlement or ProcessType.ThirdCorrectionSettlement;
     }
 }
