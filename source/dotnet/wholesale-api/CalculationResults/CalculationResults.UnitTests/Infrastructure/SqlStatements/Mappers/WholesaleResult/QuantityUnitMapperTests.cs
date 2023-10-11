@@ -23,26 +23,26 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
     {
         [Theory]
         [InlineData("kWh", QuantityUnit.Kwh)]
-        public void FromDeltaTableValue_ValidQuantityUnitString_ReturnsExpectedType(string quantityUnit, QuantityUnit expectedType)
+        public void FromDeltaTableValue_ValidDeltaTableValue_ReturnsExpectedType(string deltaTableValue, QuantityUnit expectedType)
         {
             // Act
-            var actualType = QuantityUnitMapper.FromDeltaTableValue(quantityUnit);
+            var actualType = QuantityUnitMapper.FromDeltaTableValue(deltaTableValue);
 
             // Assert
             actualType.Should().Be(expectedType);
         }
 
         [Fact]
-        public void FromDeltaTableValue_InvalidString_ThrowsException()
+        public void FromDeltaTableValue_InvalidDeltaTableValue_ThrowsException()
         {
             // Arrange
-            var invalidString = Guid.NewGuid().ToString();
+            var invalidDeltaTableValue = Guid.NewGuid().ToString();
 
             // Act
-            var act = () => QuantityUnitMapper.FromDeltaTableValue(invalidString);
+            var act = () => QuantityUnitMapper.FromDeltaTableValue(invalidDeltaTableValue);
 
             // Assert
-            act.Should().Throw<FormatException>().WithMessage($"*'{invalidString}'*");
+            act.Should().Throw<FormatException>().WithMessage($"*'{invalidDeltaTableValue}'*");
         }
     }
 }
