@@ -30,7 +30,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.CalculationResults;
 
-public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatementApiFixture>
+public class EnergyResultQueriesTests : IClassFixture<DatabricksSqlStatementApiFixture>
 {
     private const string BatchId = "019703e7-98ee-45c1-b343-0cbf185a47d9";
     private const string FirstQuantity = "1.111";
@@ -41,7 +41,7 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
     private const string SixthQuantity = "6.666";
     private readonly DatabricksSqlStatementApiFixture _fixture;
 
-    public CalculationResultQueriesTests(DatabricksSqlStatementApiFixture fixture)
+    public EnergyResultQueriesTests(DatabricksSqlStatementApiFixture fixture)
     {
         _fixture = fixture;
     }
@@ -53,7 +53,7 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<IBatchesClient> batchesClientMock,
         BatchDto batch,
-        Mock<ILogger<CalculationResultQueries>> calculationResultQueriesLoggerMock)
+        Mock<ILogger<EnergyResultQueries>> calculationResultQueriesLoggerMock)
     {
         // Arrange
         const int expectedResultCount = 3;
@@ -65,7 +65,7 @@ public class CalculationResultQueriesTests : IClassFixture<DatabricksSqlStatemen
             loggerMock,
             new Mock<ILogger<DatabricksSqlStatementClient>>());
         batchesClientMock.Setup(b => b.GetAsync(It.IsAny<Guid>())).ReturnsAsync(batch);
-        var sut = new CalculationResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions, calculationResultQueriesLoggerMock.Object);
+        var sut = new EnergyResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions, calculationResultQueriesLoggerMock.Object);
 
         // Act
         var actual = await sut.GetAsync(batch.BatchId).ToListAsync();

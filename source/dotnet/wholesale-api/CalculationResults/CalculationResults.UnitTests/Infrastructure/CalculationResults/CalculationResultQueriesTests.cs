@@ -46,7 +46,7 @@ public class CalculationResultQueriesTests
         var rows = new List<string[]> { row0, row1, };
 
         // Using the columns from the CalculationResultQueries class to ensure that the test is not broken if the columns are changed
-        _tableChunk = new TableChunk(CalculationResultQueries.SqlColumnNames, rows);
+        _tableChunk = new TableChunk(EnergyResultQueries.SqlColumnNames, rows);
     }
 
     [Theory]
@@ -55,7 +55,7 @@ public class CalculationResultQueriesTests
         BatchDto batch,
         [Frozen] Mock<IBatchesClient> batchesClientMock,
         [Frozen] Mock<IDatabricksSqlStatementClient> sqlStatementClientMock,
-        CalculationResultQueries sut)
+        EnergyResultQueries sut)
     {
         // Arrange
         var batchId = Guid.Parse(_row0BatchId);
@@ -80,7 +80,7 @@ public class CalculationResultQueriesTests
         BatchDto batch,
         [Frozen] Mock<IBatchesClient> batchesClientMock,
         [Frozen] Mock<IDatabricksSqlStatementClient> sqlStatementClientMock,
-        CalculationResultQueries sut)
+        EnergyResultQueries sut)
     {
         // Arrange
         var batchId = Guid.Parse(_row0BatchId);
@@ -105,7 +105,7 @@ public class CalculationResultQueriesTests
         BatchDto batch,
         [Frozen] Mock<IBatchesClient> batchesClientMock,
         [Frozen] Mock<IDatabricksSqlStatementClient> sqlStatementClientMock,
-        CalculationResultQueries sut)
+        EnergyResultQueries sut)
     {
         // Arrange
         var batchId = Guid.Parse(_row0BatchId);
@@ -143,7 +143,7 @@ public class CalculationResultQueriesTests
         BatchDto batch,
         [Frozen] Mock<IBatchesClient> batchesClientMock,
         [Frozen] Mock<IDatabricksSqlStatementClient> sqlStatementClientMock,
-        CalculationResultQueries sut)
+        EnergyResultQueries sut)
     {
         // Arrange
         var batchId = Guid.Parse(_row0BatchId);
@@ -185,7 +185,7 @@ public class CalculationResultQueriesTests
         var sqlResultRowB = new TestRow(listB);
 
         // Act
-        var actual = CalculationResultQueries.BelongsToDifferentResults(sqlResultRowA, sqlResultRowB);
+        var actual = EnergyResultQueries.BelongsToDifferentResults(sqlResultRowA, sqlResultRowB);
 
         // Assert
         actual.Should().Be(expected);

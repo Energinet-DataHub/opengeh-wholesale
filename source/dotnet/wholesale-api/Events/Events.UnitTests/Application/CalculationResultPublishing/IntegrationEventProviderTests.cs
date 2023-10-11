@@ -58,7 +58,7 @@ public class IntegrationEventProviderTests
         EnergyResult energyResult,
         IntegrationEvent anyIntegrationEvent,
         [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
-        [Frozen] Mock<ICalculationResultQueries> calculationResultQueriesMock,
+        [Frozen] Mock<IEnergyResultQueries> calculationResultQueriesMock,
         [Frozen] Mock<ICalculationResultIntegrationEventFactory> calculationResultIntegrationEventFactoryMock,
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         IntegrationEventProvider sut)
@@ -94,7 +94,7 @@ public class IntegrationEventProviderTests
         Instant instant,
         CompletedBatch completedBatch,
         [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
-        [Frozen] Mock<ICalculationResultQueries> calculationResultQueriesMock,
+        [Frozen] Mock<IEnergyResultQueries> calculationResultQueriesMock,
         [Frozen] Mock<IClock> clockMock,
         IntegrationEventProvider sut)
     {
@@ -124,7 +124,7 @@ public class IntegrationEventProviderTests
         IntegrationEvent anyIntegrationEvent,
         EnergyResult energyResult,
         [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
-        [Frozen] Mock<ICalculationResultQueries> calculationResultQueriesMock,
+        [Frozen] Mock<IEnergyResultQueries> calculationResultQueriesMock,
         [Frozen] Mock<ICalculationResultIntegrationEventFactory> calculationResultIntegrationEventFactoryMock,
         IntegrationEventProvider sut)
     {
@@ -173,7 +173,7 @@ public class IntegrationEventProviderTests
         IntegrationEvent energyResultProducedEvent4,
         [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
         [Frozen] Mock<ICalculationResultIntegrationEventFactory> calculationResultIntegrationEventFactoryMock,
-        [Frozen] Mock<ICalculationResultQueries> calculationResultQueriesMock,
+        [Frozen] Mock<IEnergyResultQueries> calculationResultQueriesMock,
         IntegrationEventProvider sut)
     {
         // Arrange
