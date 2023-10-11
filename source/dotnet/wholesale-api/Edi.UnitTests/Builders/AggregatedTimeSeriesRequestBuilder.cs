@@ -17,23 +17,48 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 
-public static class AggregatedTimeSeriesRequestBuilder
+public class AggregatedTimeSeriesRequestBuilder
 {
-    private static AggregationPerGridArea _aggregationPerGridArea = new();
-    private static string _startInstant = Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString();
-    private static string _endInstant = Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString();
+    private AggregationPerGridArea _aggregationPerGridArea = new();
+    private string _start;
+    private string _end;
+    private string _meteringPointType = "E18";
 
-    public static AggregatedTimeSeriesRequest Build()
+    private AggregatedTimeSeriesRequestBuilder()
+    {
+        var now = SystemClock.Instance.GetCurrentInstant();
+        _start = Instant.FromUtc(now.InUtc().Year, 1, 1, 23, 0, 0).ToString();
+        _end = Instant.FromUtc(now.InUtc().Year, 1, 2, 23, 0, 0).ToString();
+    }
+
+    public static AggregatedTimeSeriesRequestBuilder AggregatedTimeSeriesRequest()
+    {
+        return new AggregatedTimeSeriesRequestBuilder();
+    }
+
+    public AggregatedTimeSeriesRequest Build()
     {
         return new AggregatedTimeSeriesRequest
         {
             AggregationPerGridarea = _aggregationPerGridArea,
             Period = new Edi.Requests.Period()
             {
-                Start = _startInstant,
-                End = _endInstant,
+                Start = _start,
+                End = _end,
             },
-            MeteringPointType = "E18",
+            MeteringPointType = _meteringPointType,
         };
+    }
+
+    public AggregatedTimeSeriesRequestBuilder WithStartDate(string start)
+    {
+        _start = start;
+        return this;
+    }
+
+    public AggregatedTimeSeriesRequestBuilder WithEndDate(string end)
+    {
+        _end = end;
+        return this;
     }
 }
