@@ -34,7 +34,7 @@ def test__execute__asserts_tariff_schema__is_valid(
     )
     period_start_datetime: datetime = datetime(2020, 1, 1, 0, 0)
 
-    # Act
+    # Act & Assert
     try:
         execute(
             wholesale_calculation_result_writer_mock,
