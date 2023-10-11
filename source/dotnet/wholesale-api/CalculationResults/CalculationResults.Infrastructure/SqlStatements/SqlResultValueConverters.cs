@@ -56,4 +56,14 @@ public static class SqlResultValueConverters
     {
         return Guid.Parse(value);
     }
+
+    public static bool ToBool(string value)
+    {
+        return value switch
+        {
+            "True" => true,
+            "False" => false,
+            _ => throw new ArgumentException($"Quality of unknown type: '{value}'"),
+        };
+    }
 }
