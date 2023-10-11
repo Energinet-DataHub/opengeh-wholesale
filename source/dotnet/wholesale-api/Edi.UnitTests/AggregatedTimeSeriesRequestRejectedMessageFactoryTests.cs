@@ -35,7 +35,7 @@ public class AggregatedTimeSeriesRequestRejectedMessageFactoryTests
         var expectedReferenceId = "123456789";
 
         // Act
-        var response = AggregatedTimeSeriesRequestRejectedMessageFactory.Create(new[] { ValidationError.NoDataFound }, expectedReferenceId);
+        var response = AggregatedTimeSeriesRequestRejectedMessageFactory.Create(new[] { ValidationError.NoDataAvailable }, expectedReferenceId);
 
         // Assert
         response.Should().NotBeNull();
@@ -45,6 +45,6 @@ public class AggregatedTimeSeriesRequestRejectedMessageFactoryTests
 
         var responseBody = AggregatedTimeSeriesRequestRejected.Parser.ParseFrom(response.Body);
         responseBody.RejectReasons.Should().ContainSingle();
-        responseBody.RejectReasons[0].ErrorCode.Should().Be(ValidationError.NoDataFound.ErrorCode);
+        responseBody.RejectReasons[0].ErrorCode.Should().Be(ValidationError.NoDataAvailable.ErrorCode);
     }
 }
