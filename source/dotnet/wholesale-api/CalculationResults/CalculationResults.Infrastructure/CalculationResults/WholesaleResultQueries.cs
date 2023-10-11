@@ -42,13 +42,13 @@ public class WholesaleResultQueries : IWholesaleResultQueries
         _logger = logger;
     }
 
-    public async IAsyncEnumerable<WholesaleResult> GetAsync(Guid batchId)
+    public async IAsyncEnumerable<WholesaleResult> GetAsync(Guid calculationId)
     {
-        var batch = await _batchesClient.GetAsync(batchId).ConfigureAwait(false);
-        var sql = CreateBatchResultsSql(batchId);
-        await foreach (var calculationResult in GetInternalAsync(sql, batch.PeriodStart.ToInstant(), batch.PeriodEnd.ToInstant()))
+        var calculation = await _batchesClient.GetAsync(calculationId).ConfigureAwait(false);
+        var sql = CreateCalculationResultsSql(calculationId);
+        await foreach (var calculationResult in GetInternalAsync(sql, calculation.PeriodStart.ToInstant(), calculation.PeriodEnd.ToInstant()))
             yield return calculationResult;
-        _logger.LogDebug("Fetched all wholesale calculation results for batch {BatchId}", batchId);
+        _logger.LogDebug("Fetched all wholesale calculation results for calculation {CalculationId}", calculationId);
     }
 
     private async IAsyncEnumerable<WholesaleResult> GetInternalAsync(string sql, Instant periodStart, Instant periodEnd)
@@ -81,12 +81,12 @@ public class WholesaleResultQueries : IWholesaleResultQueries
         _logger.LogDebug("Fetched {ResultCount} calculation results", resultCount);
     }
 
-    private string CreateBatchResultsSql(Guid batchId)
+    private string CreateCalculationResultsSql(Guid calculationId)
     {
         return $@"
 SELECT {string.Join(", ", SqlColumnNames)}
 FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.WHOLESALE_RESULTS_TABLE_NAME}
-WHERE {WholesaleResultColumnNames.CalculationId} = '{batchId}'
+WHERE {WholesaleResultColumnNames.CalculationId} = '{calculationId}'
 ORDER BY {WholesaleResultColumnNames.CalculationResultId}, {WholesaleResultColumnNames.Time}
 ";
     }

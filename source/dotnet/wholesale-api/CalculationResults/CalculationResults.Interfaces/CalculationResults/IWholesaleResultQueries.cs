@@ -21,5 +21,5 @@ public interface IWholesaleResultQueries
     /// <summary>
     /// Get all wholesale results for a given batch.
     /// </summary>
-    IAsyncEnumerable<WholesaleResult> GetAsync(Guid batchId);
+    IAsyncEnumerable<WholesaleResult> GetAsync(Guid calculationId);
 }
