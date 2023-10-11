@@ -28,7 +28,7 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests;
 public class AggregatedTimeSeriesRequestRejectedMessageFactoryTests
 {
     [Fact]
-    public void Create_WithNoCalculationResult_CreatesRejectMessage()
+    public void Create_WithNoCalculationResult_SendsRejectMessage()
     {
         // Arrange
         var expectedAcceptedSubject = nameof(AggregatedTimeSeriesRequestRejected);
