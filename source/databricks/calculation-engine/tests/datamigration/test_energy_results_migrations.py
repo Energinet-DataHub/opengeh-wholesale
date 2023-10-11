@@ -36,7 +36,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
         EnergyResultColumnNames.energy_supplier_id: "1234567890123",
         EnergyResultColumnNames.balance_responsible_id: "9876543210987",
         EnergyResultColumnNames.quantity: Decimal("1.123"),
-        EnergyResultColumnNames.quantity_quality: "missing",
+        EnergyResultColumnNames.quantity_qualities: ["missing"],
         EnergyResultColumnNames.time: datetime(2020, 1, 1, 0, 0),
         EnergyResultColumnNames.aggregation_level: "total_ga",
         EnergyResultColumnNames.time_series_type: "production",
@@ -66,8 +66,10 @@ def _create_df(spark: SparkSession) -> DataFrame:
         (EnergyResultColumnNames.from_grid_area, "12"),
         (EnergyResultColumnNames.from_grid_area, "1234"),
         (EnergyResultColumnNames.time, None),
-        (EnergyResultColumnNames.quantity_quality, None),
-        (EnergyResultColumnNames.quantity_quality, "foo"),
+        (EnergyResultColumnNames.quantity_qualities, []),
+        (EnergyResultColumnNames.quantity_qualities, None),
+        (EnergyResultColumnNames.quantity_qualities, [None]),
+        (EnergyResultColumnNames.quantity_qualities, "foo"),
         (EnergyResultColumnNames.aggregation_level, None),
         (EnergyResultColumnNames.aggregation_level, "foo"),
     ],
@@ -144,7 +146,10 @@ def test__migrated_table_accepts_valid_data(
     [
         *[(EnergyResultColumnNames.calculation_type, x.value) for x in ProcessType],
         *[(EnergyResultColumnNames.time_series_type, x.value) for x in TimeSeriesType],
-        *[(EnergyResultColumnNames.quantity_quality, x.value) for x in QuantityQuality],
+        *[
+            (EnergyResultColumnNames.quantity_qualities, [x.value])
+            for x in QuantityQuality
+        ],
         *[
             (EnergyResultColumnNames.aggregation_level, x.value)
             for x in AggregationLevel

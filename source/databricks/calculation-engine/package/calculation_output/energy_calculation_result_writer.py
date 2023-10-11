@@ -61,7 +61,7 @@ class EnergyCalculationResultWriter:
                 EnergyResultColumnNames.balance_responsible_id
             ),
             col(Colname.sum_quantity).alias(EnergyResultColumnNames.quantity),
-            col(Colname.quality).alias(EnergyResultColumnNames.quantity_quality),
+            col(Colname.qualities).alias(EnergyResultColumnNames.quantity_qualities),
             col(Colname.time_window_start).alias(EnergyResultColumnNames.time),
             lit(aggregation_level.value).alias(
                 EnergyResultColumnNames.aggregation_level
