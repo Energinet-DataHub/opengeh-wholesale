@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 
-public interface ICalculationResultQueries
+public interface IEnergyResultQueries
 {
     /// <summary>
     /// Get all results for a given batch.

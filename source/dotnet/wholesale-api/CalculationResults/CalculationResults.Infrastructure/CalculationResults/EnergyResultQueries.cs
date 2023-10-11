@@ -27,14 +27,14 @@ using NodaTime.Extensions;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 
-public class CalculationResultQueries : ICalculationResultQueries
+public class EnergyResultQueries : IEnergyResultQueries
 {
     private readonly IDatabricksSqlStatementClient _sqlStatementClient;
     private readonly IBatchesClient _batchesClient;
     private readonly DeltaTableOptions _deltaTableOptions;
-    private readonly ILogger<CalculationResultQueries> _logger;
+    private readonly ILogger<EnergyResultQueries> _logger;
 
-    public CalculationResultQueries(IDatabricksSqlStatementClient sqlStatementClient, IBatchesClient batchesClient, IOptions<DeltaTableOptions> deltaTableOptions, ILogger<CalculationResultQueries> logger)
+    public EnergyResultQueries(IDatabricksSqlStatementClient sqlStatementClient, IBatchesClient batchesClient, IOptions<DeltaTableOptions> deltaTableOptions, ILogger<EnergyResultQueries> logger)
     {
         _sqlStatementClient = sqlStatementClient;
         _batchesClient = batchesClient;
