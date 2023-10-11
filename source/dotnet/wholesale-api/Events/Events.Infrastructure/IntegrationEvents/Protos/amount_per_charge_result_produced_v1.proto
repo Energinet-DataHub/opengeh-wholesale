@@ -68,7 +68,7 @@ message AmountPerChargeResultProducedV1 {
    */
   optional SettlementMethod settlement_method = 16;
 
-  optional bool is_tax = 17;
+  bool is_tax = 17;
 
   repeated TimeSeriesPoint time_series_points = 20;
 
