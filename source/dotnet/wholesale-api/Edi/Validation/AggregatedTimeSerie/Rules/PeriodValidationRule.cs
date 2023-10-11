@@ -21,10 +21,14 @@ namespace Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
 public class PeriodValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
 {
     private readonly DateTimeZone _dateTimeZone;
+    private readonly IClock _clock;
+    private readonly int _maxAllowedPeriodSizeInMonths = 1;
+    private readonly int _allowedTimeFrameInYearsFromNow = 3;
 
-    public PeriodValidationRule(DateTimeZone dateTimeZone)
+    public PeriodValidationRule(DateTimeZone dateTimeZone, IClock clock)
     {
         _dateTimeZone = dateTimeZone;
+        _clock = clock;
     }
 
     public IList<ValidationError> Validate(AggregatedTimeSeriesRequest subject)
@@ -33,16 +37,51 @@ public class PeriodValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
         var period = subject.Period;
         if (period == null) throw new ArgumentNullException(nameof(period));
         var errors = new List<ValidationError>();
+
+        if (MissingDates(period.Start, period.End, errors)) return errors;
+
         var startInstant = ParseToInstant(period.Start, "Start date", errors);
         var endInstant = ParseToInstant(period.End, "End date", errors);
 
-        if (startInstant != null && endInstant != null)
-        {
-            MustBeMidnight(startInstant.Value, "Start date", errors);
-            MustBeMidnight(endInstant.Value, "End date", errors);
-        }
+        if (startInstant == null || endInstant == null) return errors;
+
+        MustBeMidnight(startInstant.Value, "Start date", errors);
+        MustBeMidnight(endInstant.Value, "End date", errors);
+
+        StartDateMustBeGreaterThenAllowedYears(startInstant.Value, errors);
+        IntervalMustBeWithinAllowedPeriodSize(startInstant.Value, endInstant.Value, errors);
 
         return errors;
+    }
+
+    private bool MissingDates(string start, string end, List<ValidationError> errors)
+    {
+        if (string.IsNullOrWhiteSpace(start) || string.IsNullOrWhiteSpace(end))
+        {
+            errors.Add(ValidationError.MissingStartOrAndEndDate);
+            return true;
+        }
+
+        return false;
+    }
+
+    private void IntervalMustBeWithinAllowedPeriodSize(Instant start, Instant end, List<ValidationError> errors)
+    {
+        var zonedStartDateTime = new ZonedDateTime(start, _dateTimeZone);
+        var zonedEndDateTime = new ZonedDateTime(end, _dateTimeZone);
+        var monthsFromStart = zonedStartDateTime.LocalDateTime.PlusMonths(_maxAllowedPeriodSizeInMonths);
+        if (zonedEndDateTime.LocalDateTime > monthsFromStart)
+            errors.Add(ValidationError.PeriodIsGreaterThenAllowedPeriodSize);
+    }
+
+    private void StartDateMustBeGreaterThenAllowedYears(Instant start, List<ValidationError> errors)
+    {
+        var zonedStartDateTime = new ZonedDateTime(start, _dateTimeZone);
+        var zonedCurrentDateTime = new ZonedDateTime(_clock.GetCurrentInstant(), _dateTimeZone);
+        var latestStartDate = zonedCurrentDateTime.LocalDateTime.PlusYears(-_allowedTimeFrameInYearsFromNow);
+
+        if (zonedStartDateTime.LocalDateTime < latestStartDate)
+            errors.Add(ValidationError.StartDateMustBeLessThen3Years);
     }
 
     private Instant? ParseToInstant(string dateTimeString, string propertyName, List<ValidationError> errors)
