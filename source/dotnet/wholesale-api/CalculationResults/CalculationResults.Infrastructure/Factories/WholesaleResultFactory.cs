@@ -26,11 +26,10 @@ public class WholesaleResultFactory
 {
     public static WholesaleResult CreateWholesaleResult(
         SqlResultRow sqlResultRow,
-        IList<WholesaleTimeSeriesPoint> wholesaleTimeSeriesPoints,
+        IReadOnlyCollection<WholesaleTimeSeriesPoint> wholesaleTimeSeriesPoints,
         Instant periodStart,
         Instant periodEnd)
     {
-        // Extract values from the row
         var id = sqlResultRow[WholesaleResultColumnNames.CalculationResultId];
         var energySupplierId = sqlResultRow[WholesaleResultColumnNames.EnergySupplierId];
         var gridArea = sqlResultRow[WholesaleResultColumnNames.GridArea];
