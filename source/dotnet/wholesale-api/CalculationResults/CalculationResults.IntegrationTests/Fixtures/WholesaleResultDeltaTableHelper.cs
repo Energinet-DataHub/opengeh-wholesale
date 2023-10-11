@@ -36,7 +36,8 @@ public class WholesaleResultDeltaTableHelper
         string? quantity = "1.123",
         string quantityQualities = "[\"missing\", \"measured\"]",
         string? price = "9.876543",
-        string? amount = "2.345678")
+        string? amount = "2.345678",
+        string isTax = "False")
     {
         return GetColumnDefinitions().Keys.Select(columnName => columnName switch
         {
@@ -53,6 +54,7 @@ public class WholesaleResultDeltaTableHelper
             WholesaleResultColumnNames.ChargeCode => $@"'{chargeCode}'",
             WholesaleResultColumnNames.ChargeType => $@"'{chargeType}'",
             WholesaleResultColumnNames.ChargeOwnerId => $@"'{chargeOwnerId}'",
+            WholesaleResultColumnNames.IsTax => $@"'{isTax}'",
             WholesaleResultColumnNames.Time => $@"'{time}'",
             WholesaleResultColumnNames.Quantity => $@"{quantity}",
             WholesaleResultColumnNames.QuantityQualities => $@"'{quantityQualities}'",
