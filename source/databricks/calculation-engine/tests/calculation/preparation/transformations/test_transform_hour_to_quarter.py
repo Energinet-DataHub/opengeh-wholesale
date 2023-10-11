@@ -33,15 +33,15 @@ from package.calculation.energy.schemas import (
 
 
 def basis_data_time_series_points_row(
-    grid_area: int = "805",
+    grid_area: str = "805",
     to_grid_area: str = "805",
     from_grid_area: str = "806",
     metering_point_id: str = "the_metering_point_id",
     metering_point_type: str = "the_metering_point_type",
-    resolution: str = MeteringPointResolution.HOUR.value,
+    resolution: MeteringPointResolution = MeteringPointResolution.HOUR,
     observation_time: TimestampType() = datetime(2020, 1, 1, 0, 0),
-    quantity: str = Decimal("4.444444"),
-    quality: str = QuantityQuality.ESTIMATED.value,
+    quantity: Decimal = Decimal("4.444444"),
+    quality: QuantityQuality = QuantityQuality.ESTIMATED,
     energy_supplier_id: str = "the_energy_supplier_id",
     balance_responsible_id: str = "the_balance_responsible_id",
 ) -> Row:
@@ -51,10 +51,10 @@ def basis_data_time_series_points_row(
         Colname.from_grid_area: from_grid_area,
         Colname.metering_point_id: metering_point_id,
         Colname.metering_point_type: metering_point_type,
-        Colname.resolution: resolution,
+        Colname.resolution: resolution.value,
         Colname.observation_time: observation_time,
         Colname.quantity: quantity,
-        Colname.quality: quality,
+        Colname.quality: quality.value,
         Colname.energy_supplier_id: energy_supplier_id,
         Colname.balance_responsible_id: balance_responsible_id,
     }
