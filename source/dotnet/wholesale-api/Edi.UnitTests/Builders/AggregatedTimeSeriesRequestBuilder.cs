@@ -21,8 +21,8 @@ public static class AggregatedTimeSeriesRequestBuilder
 {
     private static AggregationPerGridArea _aggregationPerGridArea = new();
     private static TimeSeriesType _timeSeriesType = Edi.Requests.TimeSeriesType.Production;
-    private static string _startInstant = Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString();
-    private static string _endInstant = Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString();
+    private static string _start = Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString();
+    private static string _end = Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString();
 
     public static AggregatedTimeSeriesRequest Build()
     {
@@ -32,8 +32,8 @@ public static class AggregatedTimeSeriesRequestBuilder
             TimeSeriesType = _timeSeriesType,
             Period = new Edi.Requests.Period()
             {
-                Start = _startInstant,
-                End = _endInstant,
+                Start = _start,
+                End = _end,
             },
         };
     }

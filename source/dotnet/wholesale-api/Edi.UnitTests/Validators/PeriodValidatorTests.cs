@@ -15,6 +15,7 @@
 using Energinet.DataHub.Edi.Requests;
 using Energinet.DataHub.Wholesale.EDI.Validation;
 using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
+using FluentAssertions;
 using NodaTime;
 using Xunit;
 
@@ -22,7 +23,7 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 
 public class PeriodValidatorTests
 {
-    private readonly PeriodValidationRule _sut = new(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
+    private readonly PeriodValidationRule _sut = new(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!, SystemClock.Instance);
     private readonly Instant _winterTimeMidnight = Instant.FromUtc(2022, 1, 1, 23, 0, 0);
 
     [Fact]
@@ -55,7 +56,7 @@ public class PeriodValidatorTests
 
         // Assert
         Assert.Single(errors);
-        Assert.Equal(ValidationError.InvalidDateFormat.ErrorCode, errors.First().ErrorCode);
+        Assert.Equal(ValidationError.MissingStartOrAndEndDate.ErrorCode, errors.First().ErrorCode);
     }
 
     [Fact]
@@ -90,7 +91,7 @@ public class PeriodValidatorTests
 
         // Assert
         Assert.Single(errors);
-        Assert.Equal(ValidationError.InvalidDateFormat.ErrorCode, errors.First().ErrorCode);
+        Assert.Equal(ValidationError.MissingStartOrAndEndDate.ErrorCode, errors.First().ErrorCode);
     }
 
     [Fact]
@@ -99,14 +100,14 @@ public class PeriodValidatorTests
         // Arrange
         var message = new AggregatedTimeSeriesRequest();
         message.Period = new Edi.Requests.Period();
-        message.Period.Start = string.Empty;
-        message.Period.End = string.Empty;
+        message.Period.Start = "string.Empty";
+        message.Period.End = "string.Empty";
 
         // Act
         var errors = _sut.Validate(message);
 
         // Assert
-        Assert.True(errors.Count == 2);
+        errors.Count.Should().Be(2);
         Assert.Contains(
             errors.Where(error => error.Message.Contains("Start date")),
             error => error.ErrorCode.Equals(ValidationError.InvalidDateFormat.ErrorCode));
