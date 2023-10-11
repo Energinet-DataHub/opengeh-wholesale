@@ -63,7 +63,7 @@ public static class SqlResultValueConverters
         {
             "True" => true,
             "False" => false,
-            _ => throw new FormatException($"Input does not contain a valid string representation of a boolean. Value: '{value}'."),
+            _ => throw new FormatException($"Value does not contain a valid string representation of a boolean. Value: '{value}'."),
         };
     }
 }

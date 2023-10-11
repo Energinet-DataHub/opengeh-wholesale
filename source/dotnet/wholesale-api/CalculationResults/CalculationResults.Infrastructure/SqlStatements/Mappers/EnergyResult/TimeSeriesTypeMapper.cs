@@ -33,7 +33,7 @@ public static class TimeSeriesTypeMapper
             DeltaTableTimeSeriesType.TotalConsumption => TimeSeriesType.TotalConsumption,
             DeltaTableTimeSeriesType.TempFlexConsumption => TimeSeriesType.TempFlexConsumption,
             DeltaTableTimeSeriesType.TempProduction => TimeSeriesType.TempProduction,
-            _ => throw new NotImplementedException($"Cannot map timeSeriesType type '{timeSeriesType}"),
+            _ => throw new FormatException($"Value does not contain a valid string representation of a time series type. Value: '{timeSeriesType}'."),
         };
 
     public static string ToDeltaTableValue(TimeSeriesType timeSeriesType) =>
@@ -50,6 +50,6 @@ public static class TimeSeriesTypeMapper
             TimeSeriesType.TotalConsumption => DeltaTableTimeSeriesType.TotalConsumption,
             TimeSeriesType.TempFlexConsumption => DeltaTableTimeSeriesType.TempFlexConsumption,
             TimeSeriesType.TempProduction => DeltaTableTimeSeriesType.TempProduction,
-            _ => throw new NotImplementedException($"Mapping of '{timeSeriesType}' not implemented."),
+            _ => throw new ArgumentException($"Value cannot be converted to a string representation of a time series type. Value: '{timeSeriesType}'."),
         };
 }
