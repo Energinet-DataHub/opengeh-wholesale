@@ -23,7 +23,7 @@ public static class QuantityUnitMapper
             return quantityUnit switch
             {
                 "kWh" => QuantityUnit.Kwh,
-                _ => throw new ArgumentException($"Quality of unknown type: '{quantityUnit}'"),
+                _ => throw new FormatException($"Value does not contain a valid string representation of a quantity unit. Value: '{quantityUnit}'."),
             };
         }
 }
