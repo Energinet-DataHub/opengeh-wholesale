@@ -59,7 +59,7 @@ public static class WholesaleResultDeltaTableHelper
             WholesaleResultColumnNames.IsTax => $@"{isTax}",
             WholesaleResultColumnNames.Time => $@"'{time}'",
             WholesaleResultColumnNames.Quantity => $@"{quantity}",
-            WholesaleResultColumnNames.QuantityQualities => "array(" + string.Join(",", quantityQualities) + ")",
+            WholesaleResultColumnNames.QuantityQualities => @"array(" + string.Join(",", quantityQualities) + ")",
             WholesaleResultColumnNames.Price => $@"{price}",
             WholesaleResultColumnNames.Amount => $@"{amount}",
             _ => throw new ArgumentException($"Unexpected column name: {columnName}."),
