@@ -69,7 +69,7 @@ public class DatabricksSchemaManager
         await ExecuteSqlAsync(sqlStatement);
     }
 
-    public async Task InsertAsync<T>(string tableName, IEnumerable<string> row)
+    public async Task InsertAsync<T>(string tableName, IReadOnlyCollection<string> row)
     {
         await InsertAsync<T>(tableName, new[] { row });
     }
@@ -81,7 +81,7 @@ public class DatabricksSchemaManager
     /// <param name="tableName">Name of table</param>
     /// <param name="rows">Rows to be inserted in table. Note: that strings should have single quotes around them.
     /// </param>
-    public async Task InsertAsync<T>(string tableName, IEnumerable<IEnumerable<string>> rows)
+    public async Task InsertAsync<T>(string tableName, IReadOnlyCollection<IReadOnlyCollection<string>> rows)
     {
         var fieldInfos = typeof(T).GetFields(BindingFlags.Public | BindingFlags.Static);
         var columnsNames = string.Join(", ", fieldInfos.Select(x => x.GetValue(null)).Cast<string>());

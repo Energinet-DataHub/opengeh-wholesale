@@ -18,7 +18,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtur
 
 public class EnergyResultDeltaTableHelper
 {
-    public static IEnumerable<string> CreateRowValues(
+    public static IReadOnlyCollection<string> CreateRowValues(
         string batchId = "ed39dbc5-bdc5-41b9-922a-08d3b12d4538",
         string batchExecutionTimeStart = "2022-03-11T03:00:00.000Z",
         string batchProcessType = DeltaTableProcessType.BalanceFixing,
@@ -49,7 +49,7 @@ public class EnergyResultDeltaTableHelper
             EnergyResultColumnNames.QuantityQuality => $@"'{quantityQuality}'",
             EnergyResultColumnNames.AggregationLevel => $@"'{aggregationLevel}'",
             _ => throw new ArgumentOutOfRangeException($"Unexpected column name: {columnName}."),
-        });
+        }).ToArray();
     }
 
     private static Dictionary<string, string> GetColumnDefinitions()
