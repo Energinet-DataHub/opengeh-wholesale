@@ -43,6 +43,6 @@ public static class SettlementMethodMapper
             TimeSeriesType.TotalConsumption => null,
             TimeSeriesType.TempFlexConsumption => null,
             TimeSeriesType.TempProduction => null,
-            _ => throw new ArgumentException($"Value cannot be mapped to a settlement method. Value: '{timeSeriesType}'."),
+            _ => throw new ArgumentOutOfRangeException(nameof(timeSeriesType), actualValue: timeSeriesType, "Value cannot be mapped to a settlement method."),
         };
 }

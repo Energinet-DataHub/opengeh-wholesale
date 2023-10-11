@@ -39,6 +39,6 @@ public static class ProcessTypeMapper
             ProcessType.FirstCorrectionSettlement => DeltaTableConstants.DeltaTableProcessType.FirstCorrectionSettlement,
             ProcessType.SecondCorrectionSettlement => DeltaTableConstants.DeltaTableProcessType.SecondCorrectionSettlement,
             ProcessType.ThirdCorrectionSettlement => DeltaTableConstants.DeltaTableProcessType.ThirdCorrectionSettlement,
-            _ => throw new ArgumentException($"Value cannot be mapped to a string representation of a process type. Value: '{processType}'."),
+            _ => throw new ArgumentOutOfRangeException(nameof(processType), processType, "Value cannot be mapped to a string representation of a process type."),
         };
 }

@@ -43,6 +43,6 @@ public static class MeteringPointTypeMapper
             TimeSeriesType.TotalConsumption => MeteringPointType.Consumption,
             TimeSeriesType.TempFlexConsumption => MeteringPointType.Consumption,
             TimeSeriesType.TempProduction => MeteringPointType.Production,
-            _ => throw new ArgumentException($"Value cannot be mapped to a metering point type. Value: '{timeSeriesType}'."),
+            _ => throw new ArgumentOutOfRangeException(nameof(timeSeriesType), actualValue: timeSeriesType, "Value cannot be mapped to a metering point type."),
         };
 }

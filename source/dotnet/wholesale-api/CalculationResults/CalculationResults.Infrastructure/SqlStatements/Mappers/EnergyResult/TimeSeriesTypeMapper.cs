@@ -50,6 +50,6 @@ public static class TimeSeriesTypeMapper
             TimeSeriesType.TotalConsumption => DeltaTableTimeSeriesType.TotalConsumption,
             TimeSeriesType.TempFlexConsumption => DeltaTableTimeSeriesType.TempFlexConsumption,
             TimeSeriesType.TempProduction => DeltaTableTimeSeriesType.TempProduction,
-            _ => throw new ArgumentException($"Value cannot be mapped to a string representation of a time series type. Value: '{timeSeriesType}'."),
+            _ => throw new ArgumentOutOfRangeException(nameof(timeSeriesType), actualValue: timeSeriesType, "Value cannot be mapped to a string representation of a time series type."),
         };
 }
