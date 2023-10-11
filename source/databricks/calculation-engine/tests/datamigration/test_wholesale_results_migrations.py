@@ -77,6 +77,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
         (WholesaleResultColumnNames.grid_area, None),
         (WholesaleResultColumnNames.grid_area, "12"),
         (WholesaleResultColumnNames.grid_area, "1234"),
+        (WholesaleResultColumnNames.energy_supplier_id, None),
         (
             WholesaleResultColumnNames.energy_supplier_id,
             "neither-16-nor-13-digits-long",
