@@ -13,13 +13,15 @@
 # limitations under the License.
 
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import concat_ws, col, when, lit, StructType
+from pyspark.sql.functions import concat_ws, col, when, lit
+
 from package.codelists import (
     InputMeteringPointType,
     InputSettlementMethod,
     MeteringPointType,
     SettlementMethod,
 )
+from package.common import assert_schema
 from package.constants import Colname
 from package.infrastructure import paths
 from .schemas import (
@@ -43,7 +45,7 @@ class TableReader:
             f"{paths.INPUT_DATABASE_NAME}.{paths.METERING_POINT_PERIODS_TABLE_NAME}"
         )
 
-        _assert_schema(
+        assert_schema(
             df.schema,
             metering_point_period_schema,
             paths.METERING_POINT_PERIODS_TABLE_NAME,
@@ -58,7 +60,7 @@ class TableReader:
             f"{paths.INPUT_DATABASE_NAME}.{paths.TIME_SERIES_POINTS_TABLE_NAME}"
         )
 
-        _assert_schema(
+        assert_schema(
             df.schema, time_series_point_schema, paths.TIME_SERIES_POINTS_TABLE_NAME
         )
 
@@ -69,7 +71,7 @@ class TableReader:
             f"{paths.INPUT_DATABASE_NAME}.{paths.CHARGE_LINK_PERIODS_TABLE_NAME}"
         )
 
-        _assert_schema(
+        assert_schema(
             df.schema, charge_link_periods_schema, paths.CHARGE_LINK_PERIODS_TABLE_NAME
         )
 
@@ -81,7 +83,7 @@ class TableReader:
             f"{paths.INPUT_DATABASE_NAME}.{paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}"
         )
 
-        _assert_schema(
+        assert_schema(
             df.schema,
             charge_master_data_periods_schema,
             paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME,
@@ -95,7 +97,7 @@ class TableReader:
             f"{paths.INPUT_DATABASE_NAME}.{paths.CHARGE_PRICE_POINTS_TABLE_NAME}"
         )
 
-        _assert_schema(
+        assert_schema(
             df.schema, charge_price_points_schema, paths.CHARGE_PRICE_POINTS_TABLE_NAME
         )
 
@@ -207,13 +209,4 @@ class TableReader:
                 == InputSettlementMethod.NON_PROFILED.value,
                 lit(SettlementMethod.NON_PROFILED.value),
             ),
-        )
-
-
-def _assert_schema(
-    actual_schema: StructType, expected_schema: StructType, table_name: str
-) -> None:
-    if actual_schema != expected_schema:
-        raise ValueError(
-            f"Schema mismatch. Expected table {table_name} to have schema {expected_schema}, but got {actual_schema}."
         )
