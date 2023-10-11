@@ -26,15 +26,15 @@ public class WholesaleResultFactory
 {
     public static WholesaleResult CreateWholesaleResult(
         SqlResultRow sqlResultRow,
-        List<WholesaleTimeSeriesPoint> wholesaleTimeSeriesPoints,
+        IReadOnlyCollection<WholesaleTimeSeriesPoint> wholesaleTimeSeriesPoints,
         Instant periodStart,
         Instant periodEnd)
     {
-        var id = SqlResultValueConverters.ToGuid(sqlResultRow[WholesaleResultColumnNames.CalculationResultId]);
+        var id = sqlResultRow[WholesaleResultColumnNames.CalculationResultId];
         var energySupplierId = sqlResultRow[WholesaleResultColumnNames.EnergySupplierId];
         var gridArea = sqlResultRow[WholesaleResultColumnNames.GridArea];
-        var batchId = sqlResultRow[WholesaleResultColumnNames.BatchId];
-        var calculationType = sqlResultRow[WholesaleResultColumnNames.BatchProcessType];
+        var calculationId = sqlResultRow[WholesaleResultColumnNames.CalculationId];
+        var calculationType = sqlResultRow[WholesaleResultColumnNames.CalculationType];
         var chargeCode = sqlResultRow[WholesaleResultColumnNames.ChargeCode];
         var chargeType = sqlResultRow[WholesaleResultColumnNames.ChargeType];
         var chargeOwnerId = sqlResultRow[WholesaleResultColumnNames.ChargeOwnerId];
@@ -45,8 +45,8 @@ public class WholesaleResultFactory
         var isTax = sqlResultRow[WholesaleResultColumnNames.IsTax];
 
         return new WholesaleResult(
-            id,
-            Guid.Parse(batchId),
+            SqlResultValueConverters.ToGuid(id),
+            SqlResultValueConverters.ToGuid(calculationId),
             ProcessTypeMapper.FromDeltaTableValue(calculationType),
             periodStart,
             periodEnd,
@@ -60,6 +60,6 @@ public class WholesaleResultFactory
             ChargeResolutionMapper.FromDeltaTableValue(chargeResolution),
             MeteringPointTypeMapper.FromDeltaTableValue(meteringPointType),
             SettlementMethodMapper.FromDeltaTableValue(settlementMethod),
-            wholesaleTimeSeriesPoints.ToArray());
+            wholesaleTimeSeriesPoints);
     }
 }

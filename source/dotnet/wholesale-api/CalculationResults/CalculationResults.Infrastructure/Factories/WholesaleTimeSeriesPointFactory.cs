@@ -15,6 +15,7 @@
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
@@ -23,11 +24,16 @@ public static class WholesaleTimeSeriesPointFactory
 {
     public static WholesaleTimeSeriesPoint Create(SqlResultRow row)
     {
-        var time = SqlResultValueConverters.ToDateTimeOffset(row[WholesaleResultColumnNames.Time])!.Value;
-        var quantity = SqlResultValueConverters.ToDecimal(row[WholesaleResultColumnNames.Quantity]);
-        var qualities = SqlResultValueConverters.ToQuantityQualities(row[WholesaleResultColumnNames.QuantityQualities]);
-        var price = SqlResultValueConverters.ToDecimal(row[WholesaleResultColumnNames.Price]);
-        var amount = SqlResultValueConverters.ToDecimal(row[WholesaleResultColumnNames.Amount]);
-        return new WholesaleTimeSeriesPoint(time, quantity, qualities, price, amount);
+        var time = row[WholesaleResultColumnNames.Time];
+        var quantity = row[WholesaleResultColumnNames.Quantity];
+        var qualities = row[WholesaleResultColumnNames.QuantityQualities];
+        var price = row[WholesaleResultColumnNames.Price];
+        var amount = row[WholesaleResultColumnNames.Amount];
+        return new WholesaleTimeSeriesPoint(
+            SqlResultValueConverters.ToDateTimeOffset(time)!.Value,
+            SqlResultValueConverters.ToDecimal(quantity),
+            QuantityQualitiesMapper.FromDeltaTableValue(qualities),
+            SqlResultValueConverters.ToDecimal(price),
+            SqlResultValueConverters.ToDecimal(amount));
     }
 }

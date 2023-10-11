@@ -33,7 +33,7 @@ public class EnergyResultColumnNames
     public const string TimeSeriesType = "time_series_type";
     public const string FromGridArea = "out_grid_area";
 
-    public static IEnumerable<string> GetAllNames()
+    public static IReadOnlyCollection<string> GetAllNames()
     {
         var fieldInfos = typeof(EnergyResultColumnNames).GetFields(BindingFlags.Public | BindingFlags.Static);
         return fieldInfos.Select(x => x.GetValue(null)).Cast<string>().ToList();

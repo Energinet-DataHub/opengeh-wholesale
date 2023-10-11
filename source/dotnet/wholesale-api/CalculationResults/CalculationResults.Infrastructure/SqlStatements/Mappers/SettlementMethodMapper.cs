@@ -43,6 +43,6 @@ public static class SettlementMethodMapper
             "flex" => SettlementMethod.Flex,
             "non_profiled" => SettlementMethod.NonProfiled,
             "" => null,
-            _ => throw new NotImplementedException($"Cannot map settlementMethod type '{settlementMethod}"),
+            _ => throw new NotImplementedException($"Cannot map settlementMethod type '{settlementMethod}'"),
         };
 }

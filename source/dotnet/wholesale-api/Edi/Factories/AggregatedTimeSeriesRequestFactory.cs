@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Wholesale.EDI.Mappers;
 using Energinet.DataHub.Wholesale.EDI.Models;
 using NodaTime;
 using NodaTime.Text;
@@ -24,7 +25,7 @@ public class AggregatedTimeSeriesRequestFactory : IAggregatedTimeSeriesRequestFa
 {
     public AggregatedTimeSeriesRequest Parse(ServiceBusReceivedMessage request)
     {
-        var aggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest.Parser.ParseFrom(request.Body);
+        var aggregatedTimeSeriesRequest = Edi.Requests.AggregatedTimeSeriesRequest.Parser.ParseFrom(request.Body);
 
         return MapAggregatedTimeSeriesRequest(aggregatedTimeSeriesRequest);
     }
@@ -38,7 +39,7 @@ public class AggregatedTimeSeriesRequestFactory : IAggregatedTimeSeriesRequestFa
     {
         return new AggregatedTimeSeriesRequest(
             MapPeriod(aggregatedTimeSeriesRequest.Period),
-            MapTimeSeriesType(aggregatedTimeSeriesRequest.TimeSeriesType),
+            TimeSeriesTypeMapper.MapTimeSeriesType(aggregatedTimeSeriesRequest.MeteringPointType, aggregatedTimeSeriesRequest.SettlementMethod),
             MapAggregationPerRoleAndGridArea(aggregatedTimeSeriesRequest));
     }
 
@@ -46,37 +47,22 @@ public class AggregatedTimeSeriesRequestFactory : IAggregatedTimeSeriesRequestFa
     {
         return aggregatedTimeSeriesRequest.AggregationLevelCase switch
         {
-            Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerGridarea =>
+            Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerGridarea =>
                 new AggregationPerRoleAndGridArea(GridAreaCode: aggregatedTimeSeriesRequest.AggregationPerGridarea.GridAreaCode),
-            Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerEnergysupplierPerGridarea =>
+            Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerEnergysupplierPerGridarea =>
                 new AggregationPerRoleAndGridArea(
                     GridAreaCode: aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerGridarea.GridAreaCode,
                     EnergySupplierId: aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerGridarea.EnergySupplierId),
-            Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerBalanceresponsiblepartyPerGridarea =>
+            Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerBalanceresponsiblepartyPerGridarea =>
                 new AggregationPerRoleAndGridArea(
                     GridAreaCode: aggregatedTimeSeriesRequest.AggregationPerBalanceresponsiblepartyPerGridarea.GridAreaCode,
                     BalanceResponsibleId: aggregatedTimeSeriesRequest.AggregationPerBalanceresponsiblepartyPerGridarea.BalanceResponsiblePartyId),
-            Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea =>
+            Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea =>
                 new AggregationPerRoleAndGridArea(
                     GridAreaCode: aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.GridAreaCode,
                     EnergySupplierId: aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.EnergySupplierId,
                     BalanceResponsibleId: aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.BalanceResponsiblePartyId),
             _ => throw new InvalidOperationException("Unknown aggregation level"),
-        };
-    }
-
-    private TimeSeriesType MapTimeSeriesType(Energinet.DataHub.Edi.Requests.TimeSeriesType timeSeriesType)
-    {
-        return timeSeriesType switch
-        {
-            Energinet.DataHub.Edi.Requests.TimeSeriesType.Production => TimeSeriesType.Production,
-            Energinet.DataHub.Edi.Requests.TimeSeriesType.FlexConsumption => TimeSeriesType.FlexConsumption,
-            Energinet.DataHub.Edi.Requests.TimeSeriesType.NonProfiledConsumption => TimeSeriesType.NonProfiledConsumption,
-            Energinet.DataHub.Edi.Requests.TimeSeriesType.NetExchangePerGa => TimeSeriesType.NetExchangePerGa,
-            Energinet.DataHub.Edi.Requests.TimeSeriesType.NetExchangePerNeighboringGa => TimeSeriesType.NetExchangePerNeighboringGa,
-            Energinet.DataHub.Edi.Requests.TimeSeriesType.TotalConsumption => TimeSeriesType.TotalConsumption,
-            Energinet.DataHub.Edi.Requests.TimeSeriesType.Unspecified => throw new InvalidOperationException("Unknown time series type"),
-            _ => throw new InvalidOperationException("Unknown time series type"),
         };
     }
 

@@ -18,11 +18,11 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlState
 
 public static class QuantityQualitiesMapper
 {
-    public static IEnumerable<QuantityQuality> FromDeltaTableValue(string value)
+    public static IReadOnlyCollection<QuantityQuality> FromDeltaTableValue(string value)
     {
         var qualities = value.Trim('[', ']')
             .Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-        return qualities.Select(QuantityQualityMapper.FromDeltaTableValue);
+        return qualities.Select(QuantityQualityMapper.FromDeltaTableValue).ToArray();
     }
 }

@@ -16,9 +16,9 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlState
 
 public class WholesaleResultColumnNames
 {
-    public const string BatchId = "calculation_id";
+    public const string CalculationId = "calculation_id";
     public const string BatchExecutionTimeStart = "calculation_execution_time_start";
-    public const string BatchProcessType = "calculation_type";
+    public const string CalculationType = "calculation_type";
     public const string CalculationResultId = "calculation_result_id";
     public const string GridArea = "grid_area";
     public const string EnergySupplierId = "energy_supplier_id";

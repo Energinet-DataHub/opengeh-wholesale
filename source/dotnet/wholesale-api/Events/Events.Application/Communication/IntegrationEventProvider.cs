@@ -26,7 +26,7 @@ namespace Energinet.DataHub.Wholesale.Events.Application.Communication;
 public class IntegrationEventProvider : IIntegrationEventProvider
 {
     private readonly ICalculationResultIntegrationEventFactory _calculationResultIntegrationEventFactory;
-    private readonly ICalculationResultQueries _calculationResultQueries;
+    private readonly IEnergyResultQueries _energyResultQueries;
     private readonly IWholesaleResultQueries _wholesaleResultQueries;
     private readonly ICompletedBatchRepository _completedBatchRepository;
     private readonly IClock _clock;
@@ -35,7 +35,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
 
     public IntegrationEventProvider(
         ICalculationResultIntegrationEventFactory integrationEventFactory,
-        ICalculationResultQueries calculationResultQueries,
+        IEnergyResultQueries energyResultQueries,
         IWholesaleResultQueries wholesaleResultQueries,
         ICompletedBatchRepository completedBatchRepository,
         IClock clock,
@@ -43,7 +43,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
         ILogger<IntegrationEventProvider> logger)
     {
         _calculationResultIntegrationEventFactory = integrationEventFactory;
-        _calculationResultQueries = calculationResultQueries;
+        _energyResultQueries = energyResultQueries;
         _wholesaleResultQueries = wholesaleResultQueries;
         _completedBatchRepository = completedBatchRepository;
         _clock = clock;
@@ -63,7 +63,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
 
             // Publish energy results
             var energyResultCount = 0;
-            await foreach (var energyResult in _calculationResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
+            await foreach (var energyResult in _energyResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
             {
                 energyResultCount++;
                 yield return _calculationResultIntegrationEventFactory.CreateEventForEnergyResultDeprecated(

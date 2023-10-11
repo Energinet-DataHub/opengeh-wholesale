@@ -18,9 +18,9 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 
 public record TestSqlResultRow : SqlResultRow
 {
-    private readonly List<KeyValuePair<string, string>> _list;
+    private readonly IList<KeyValuePair<string, string>> _list;
 
-    public TestSqlResultRow(List<KeyValuePair<string, string>> list)
+    public TestSqlResultRow(IList<KeyValuePair<string, string>> list)
         : base(null!, 0)
     {
         _list = list;

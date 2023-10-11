@@ -18,4 +18,4 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationR
 /// Time series point from wholesale results.
 /// Immutable value object.
 /// </summary>
-public sealed record WholesaleTimeSeriesPoint(DateTimeOffset Time, decimal? Quantity, IEnumerable<QuantityQuality> Qualities, decimal? Price, decimal? Amount);
+public sealed record WholesaleTimeSeriesPoint(DateTimeOffset Time, decimal? Quantity, IReadOnlyCollection<QuantityQuality> Qualities, decimal? Price, decimal? Amount);

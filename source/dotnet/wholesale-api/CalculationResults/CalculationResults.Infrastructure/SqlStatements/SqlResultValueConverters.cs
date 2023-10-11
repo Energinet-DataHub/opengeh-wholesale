@@ -47,14 +47,6 @@ public static class SqlResultValueConverters
         return QuantityQualityMapper.FromDeltaTableValue(value);
     }
 
-    public static IEnumerable<QuantityQuality> ToQuantityQualities(string value)
-    {
-        var qualities = value.Trim('[', ']')
-            .Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-        return qualities.Select(QuantityQualityMapper.FromDeltaTableValue);
-    }
-
     public static TimeSeriesType ToTimeSeriesType(string value)
     {
         return TimeSeriesTypeMapper.FromDeltaTableValue(value);
@@ -71,7 +63,7 @@ public static class SqlResultValueConverters
         {
             "True" => true,
             "False" => false,
-            _ =>throw new ArgumentException($"quality of unknown type:{value}"),
+            _ => throw new ArgumentException($"Quality of unknown type: '{value}'"),
         };
     }
 }

@@ -12,14 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
+using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Edi.Responses;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Extensions;
 
-public interface ICalculationResultQueries
+public static class AggregatedTimeSeriesRequestRejectedMessageExtensions
 {
-    /// <summary>
-    /// Get all results for a given batch.
-    /// </summary>
-    IAsyncEnumerable<EnergyResult> GetAsync(Guid batchId);
+    public static bool WithErrorCode(this ServiceBusMessage message, string expectedErrorCode)
+    {
+        var rejectMessage = AggregatedTimeSeriesRequestRejected.Parser.ParseFrom(message.Body);
+        return rejectMessage.RejectReasons.Any(r => r.ErrorCode == expectedErrorCode);
+    }
 }

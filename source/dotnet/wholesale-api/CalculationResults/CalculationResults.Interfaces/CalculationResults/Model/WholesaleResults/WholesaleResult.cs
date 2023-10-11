@@ -35,9 +35,9 @@ public sealed class WholesaleResult
         ChargeResolution chargeResolution,
         MeteringPointType? meteringPointType,
         SettlementMethod? settlementMethod,
-        WholesaleTimeSeriesPoint[] timeSeriesPoints)
+        IReadOnlyCollection<WholesaleTimeSeriesPoint> timeSeriesPoints)
     {
-        if (timeSeriesPoints.Length == 0)
+        if (timeSeriesPoints.Count == 0)
             throw new ArgumentException("Time series points empty");
 
         Id = id;
@@ -73,7 +73,7 @@ public sealed class WholesaleResult
 
     public string? EnergySupplierId { get; }
 
-    public bool? IsTax { get; }
+    public bool IsTax { get; }
 
     public string ChargeCode { get; }
 
@@ -89,5 +89,5 @@ public sealed class WholesaleResult
 
     public SettlementMethod? SettlementMethod { get; }
 
-    public WholesaleTimeSeriesPoint[] TimeSeriesPoints { get; }
+    public IReadOnlyCollection<WholesaleTimeSeriesPoint> TimeSeriesPoints { get; }
 }
