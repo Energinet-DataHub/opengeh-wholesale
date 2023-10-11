@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatement
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 
-public class WholesaleResultDeltaTableHelper
+public static class WholesaleResultDeltaTableHelper
 {
     public static IReadOnlyCollection<string> CreateRowValues(
         string calculationId = "ed39dbc5-bdc5-41b9-922a-08d3b12d4538",
@@ -40,7 +40,6 @@ public class WholesaleResultDeltaTableHelper
         string isTax = "False")
     {
         quantityQualities ??= new List<string> { "'missing'", "'measured'" };
-        var quantityQualitiesArray = "array(" + string.Join(",", quantityQualities) + ")";
 
         return WholesaleResultColumnNames.GetAllNames().Select(columnName => columnName switch
         {
@@ -57,12 +56,12 @@ public class WholesaleResultDeltaTableHelper
             WholesaleResultColumnNames.ChargeCode => $@"'{chargeCode}'",
             WholesaleResultColumnNames.ChargeType => $@"'{chargeType}'",
             WholesaleResultColumnNames.ChargeOwnerId => $@"'{chargeOwnerId}'",
-            WholesaleResultColumnNames.IsTax => $@"'{isTax}'",
+            WholesaleResultColumnNames.IsTax => $@"{isTax}",
             WholesaleResultColumnNames.Time => $@"'{time}'",
             WholesaleResultColumnNames.Quantity => $@"{quantity}",
-            WholesaleResultColumnNames.QuantityQualities => $@"'{quantityQualitiesArray}'",
-            WholesaleResultColumnNames.Price => $@"'{price}'",
-            WholesaleResultColumnNames.Amount => $@"'{amount}'",
+            WholesaleResultColumnNames.QuantityQualities => "array(" + string.Join(",", quantityQualities) + ")",
+            WholesaleResultColumnNames.Price => $@"{price}",
+            WholesaleResultColumnNames.Amount => $@"{amount}",
             _ => throw new ArgumentException($"Unexpected column name: {columnName}."),
         }).ToArray();
     }
