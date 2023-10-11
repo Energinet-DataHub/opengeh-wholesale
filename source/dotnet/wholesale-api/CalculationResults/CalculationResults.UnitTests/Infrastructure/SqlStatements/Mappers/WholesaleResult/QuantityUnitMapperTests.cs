@@ -23,7 +23,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
     {
         [Theory]
         [InlineData("kWh", QuantityUnit.Kwh)]
-        public void FromDeltaTableValue_ValidString_ReturnsExpectedType(string quantityUnit, QuantityUnit expectedType)
+        public void FromDeltaTableValue_ValidQuantityUnitString_ReturnsExpectedType(string quantityUnit, QuantityUnit expectedType)
         {
             // Act
             var actualType = QuantityUnitMapper.FromDeltaTableValue(quantityUnit);
