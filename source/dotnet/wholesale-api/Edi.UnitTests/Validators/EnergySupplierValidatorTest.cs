@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Edi.Requests;
+using Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.EDI.Validation;
 using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
 using Xunit;
@@ -137,12 +138,11 @@ public class EnergySupplierValidatorTest
 
     private static AggregatedTimeSeriesRequest CreateAggregatedTimeSeriesRequest(bool isRequestedByEnergySupplier, string requestedById, string? energySupplierId)
     {
-        var message = new AggregatedTimeSeriesRequest
-        {
-            RequestedByActorRole = isRequestedByEnergySupplier ? EnergySupplierActorRole : "unknown-role",
-            RequestedByActorId = requestedById,
-            EnergySupplierId = energySupplierId ?? string.Empty,
-        };
+        var message = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithRequestedByActor(isRequestedByEnergySupplier ? EnergySupplierActorRole : "unknown-role-id", requestedById)
+            .WithEnergySupplierId(energySupplierId)
+            .Build();
 
         return message;
     }
