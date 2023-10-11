@@ -50,6 +50,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
         const string expectedAcceptedSubject = nameof(AggregatedTimeSeriesRequestAccepted);
         var expectedReferenceId = Guid.NewGuid().ToString();
         var request = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
             .Build();
 
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
@@ -102,6 +103,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
         const string expectedRejectedSubject = nameof(AggregatedTimeSeriesRequestRejected);
         var expectedReferenceId = Guid.NewGuid().ToString();
         var request = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
             .Build();
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
@@ -148,6 +150,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
         const string expectedRejectedSubject = nameof(AggregatedTimeSeriesRequestRejected);
         var expectedReferenceId = Guid.NewGuid().ToString();
         var request = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
             .Build();
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
@@ -179,7 +182,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
             bus => bus.SendAsync(
             It.Is<ServiceBusMessage>(message =>
                 message.Subject.Equals(expectedRejectedSubject)
-                && message.WithErrorCode(ValidationError.NoDataFound.ErrorCode)
+                && message.WithErrorCode(ValidationError.NoDataAvailable.ErrorCode)
                 && message.ApplicationProperties.ContainsKey("ReferenceId")
                 && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
             It.IsAny<CancellationToken>()),
