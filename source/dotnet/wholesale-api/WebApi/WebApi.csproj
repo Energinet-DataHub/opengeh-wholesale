@@ -58,4 +58,10 @@ limitations under the License.
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Energinet.DataHub.Wholesale.CalculationResults.Interfaces">
+      <HintPath>..\Events\Events.Infrastructure\bin\Debug\net7.0\Energinet.DataHub.Wholesale.CalculationResults.Interfaces.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

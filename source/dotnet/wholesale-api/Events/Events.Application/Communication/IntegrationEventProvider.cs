@@ -27,6 +27,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
 {
     private readonly ICalculationResultIntegrationEventFactory _calculationResultIntegrationEventFactory;
     private readonly ICalculationResultQueries _calculationResultQueries;
+    private readonly IWholesaleResultQueries _wholesaleResultQueries;
     private readonly ICompletedBatchRepository _completedBatchRepository;
     private readonly IClock _clock;
     private readonly IUnitOfWork _unitOfWork;
@@ -35,6 +36,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
     public IntegrationEventProvider(
         ICalculationResultIntegrationEventFactory integrationEventFactory,
         ICalculationResultQueries calculationResultQueries,
+        IWholesaleResultQueries wholesaleResultQueries,
         ICompletedBatchRepository completedBatchRepository,
         IClock clock,
         IUnitOfWork unitOfWork,
@@ -42,6 +44,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
     {
         _calculationResultIntegrationEventFactory = integrationEventFactory;
         _calculationResultQueries = calculationResultQueries;
+        _wholesaleResultQueries = wholesaleResultQueries;
         _completedBatchRepository = completedBatchRepository;
         _clock = clock;
         _unitOfWork = unitOfWork;
@@ -72,7 +75,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
             var wholesaleResultCount = 0;
             if (IsWholesaleCalculationType(batch.ProcessType))
             {
-                await foreach (var wholesaleResult in _calculationResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
+                await foreach (var wholesaleResult in _wholesaleResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
                 {
                     wholesaleResultCount++;
                     yield return _calculationResultIntegrationEventFactory.CreateEventForWholesaleResult(wholesaleResult);

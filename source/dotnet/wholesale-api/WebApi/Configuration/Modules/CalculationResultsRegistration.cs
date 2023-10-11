@@ -41,6 +41,7 @@ public static class CalculationResultsRegistration
         serviceCollection.AddScoped<IDataLakeClient, DataLakeClient>();
         serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
         serviceCollection.AddScoped<ICalculationResultQueries, CalculationResultQueries>();
+        serviceCollection.AddScoped<IWholesaleResultQueries, WholesaleResultQueries>();
         serviceCollection.AddScoped<IRequestCalculationResultQueries, RequestCalculationResultQueries>();
         serviceCollection.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
         serviceCollection.AddScoped<ISettlementReportRepository>(
