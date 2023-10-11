@@ -23,7 +23,7 @@ public class PeriodValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
     private readonly DateTimeZone _dateTimeZone;
     private readonly IClock _clock;
     private readonly int _maxAllowedPeriodSizeInMonths = 1;
-    private readonly int _periodMustBeNewerThenYears = 3;
+    private readonly int _allowedTimeFrameInYearsFromNow = 3;
 
     public PeriodValidationRule(DateTimeZone dateTimeZone, IClock clock)
     {
@@ -78,7 +78,7 @@ public class PeriodValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
     {
         var zonedStartDateTime = new ZonedDateTime(start, _dateTimeZone);
         var zonedCurrentDateTime = new ZonedDateTime(_clock.GetCurrentInstant(), _dateTimeZone);
-        var latestStartDate = zonedCurrentDateTime.LocalDateTime.PlusYears(-_periodMustBeNewerThenYears);
+        var latestStartDate = zonedCurrentDateTime.LocalDateTime.PlusYears(-_allowedTimeFrameInYearsFromNow);
 
         if (zonedStartDateTime.LocalDateTime < latestStartDate)
             errors.Add(ValidationError.StartDateMustBeLessThen3Years);
