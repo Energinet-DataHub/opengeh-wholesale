@@ -18,15 +18,17 @@ from pyspark.sql.types import StructType
 def assert_schema(
     actual: StructType,
     expected: StructType,
-    ignore_nullability=False,
-    ignore_column_order=False,
+    ignore_nullability: bool = False,
+    ignore_column_order: bool = False,
 ) -> None:
     if actual == expected:
         return
 
     if not ignore_nullability and not ignore_column_order:
         if actual != expected:
-            raise ValueError(f"Schema mismatch. Expected {expected}, but got {actual}.")
+            raise AssertionError(
+                f"Schema mismatch. Expected {expected}, but got {actual}."
+            )
 
     # TODO BJM: The following is a workaround while transitioning code base to support exact schema match
 
@@ -39,9 +41,11 @@ def assert_schema(
 
     for a, e in zip(actual_fields, expected_fields):
         if a.name != e.name:
-            raise ValueError(f"Expected column name '{e.name}', but found '{a.name}'")
+            raise AssertionError(
+                f"Expected column name '{e.name}', but found '{a.name}'"
+            )
 
         if not ignore_nullability and a.dataType != e.dataType:
-            raise ValueError(
+            raise AssertionError(
                 f"Expected column name '{e.name}' to have type {e.dataType}, but got type {a.dataType}"
             )

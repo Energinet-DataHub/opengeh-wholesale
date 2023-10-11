@@ -91,5 +91,5 @@ def test__assert_schema__when_schema_does_not_match__raises(
     ignore_column_order: bool,
     ignore_nullability: bool,
 ) -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         assert_schema(actual, expected)

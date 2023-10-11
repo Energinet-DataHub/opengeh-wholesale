@@ -45,11 +45,7 @@ class TableReader:
             f"{paths.INPUT_DATABASE_NAME}.{paths.METERING_POINT_PERIODS_TABLE_NAME}"
         )
 
-        assert_schema(
-            df.schema,
-            metering_point_period_schema,
-            paths.METERING_POINT_PERIODS_TABLE_NAME,
-        )
+        assert_schema(df.schema, metering_point_period_schema)
 
         df = self._fix_settlement_method(df)
         df = self._fix_metering_point_type(df)
@@ -60,9 +56,7 @@ class TableReader:
             f"{paths.INPUT_DATABASE_NAME}.{paths.TIME_SERIES_POINTS_TABLE_NAME}"
         )
 
-        assert_schema(
-            df.schema, time_series_point_schema, paths.TIME_SERIES_POINTS_TABLE_NAME
-        )
+        assert_schema(df.schema, time_series_point_schema)
 
         return df
 
@@ -71,9 +65,7 @@ class TableReader:
             f"{paths.INPUT_DATABASE_NAME}.{paths.CHARGE_LINK_PERIODS_TABLE_NAME}"
         )
 
-        assert_schema(
-            df.schema, charge_link_periods_schema, paths.CHARGE_LINK_PERIODS_TABLE_NAME
-        )
+        assert_schema(df.schema, charge_link_periods_schema)
 
         df = self._add_charge_key_column(df)
         return df
@@ -83,11 +75,7 @@ class TableReader:
             f"{paths.INPUT_DATABASE_NAME}.{paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}"
         )
 
-        assert_schema(
-            df.schema,
-            charge_master_data_periods_schema,
-            paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME,
-        )
+        assert_schema(df.schema, charge_master_data_periods_schema)
 
         df = self._add_charge_key_column(df)
         return df
@@ -97,9 +85,7 @@ class TableReader:
             f"{paths.INPUT_DATABASE_NAME}.{paths.CHARGE_PRICE_POINTS_TABLE_NAME}"
         )
 
-        assert_schema(
-            df.schema, charge_price_points_schema, paths.CHARGE_PRICE_POINTS_TABLE_NAME
-        )
+        assert_schema(df.schema, charge_price_points_schema)
 
         df = self._add_charge_key_column(df)
         return df
