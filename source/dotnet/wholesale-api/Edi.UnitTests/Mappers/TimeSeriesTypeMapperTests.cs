@@ -14,26 +14,50 @@
 
 using Energinet.DataHub.Wholesale.EDI.Mappers;
 using Energinet.DataHub.Wholesale.EDI.Models;
-using FluentAssertions;
 using Xunit;
-using CalculationTimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Mappers;
 
 public class TimeSeriesTypeMapperTests
 {
     [Theory]
-    [InlineData(TimeSeriesType.Production, CalculationTimeSeriesType.Production)]
-    [InlineData(TimeSeriesType.FlexConsumption, CalculationTimeSeriesType.FlexConsumption)]
-    [InlineData(TimeSeriesType.TotalConsumption, CalculationTimeSeriesType.TotalConsumption)]
-    [InlineData(TimeSeriesType.NetExchangePerGa, CalculationTimeSeriesType.NetExchangePerGa)]
-    [InlineData(TimeSeriesType.NonProfiledConsumption, CalculationTimeSeriesType.NonProfiledConsumption)]
-    public void ToCalculationTimeSerieType_ReturnsExpectedType(TimeSeriesType type, CalculationTimeSeriesType expected)
+    [InlineData("E17", "", TimeSeriesType.TotalConsumption)]
+    [InlineData("E17", null, TimeSeriesType.TotalConsumption)]
+    [InlineData("E17", "E02", TimeSeriesType.NonProfiledConsumption)]
+    [InlineData("E17", "D01", TimeSeriesType.FlexConsumption)]
+    [InlineData("E18", null, TimeSeriesType.Production)]
+    [InlineData("E20", null, TimeSeriesType.NetExchangePerGa)]
+    public void MapTimeSeriesType_WithSettlementMethodAndMeteringPointType_returnsExpectedType(
+        string meteringPointType,
+        string? settlementMethod,
+        TimeSeriesType expectedType)
     {
-        // Act
-        var actual = TimeSeriesTypeMapper.MapTimeSeriesTypeFromEdi(type);
+        // Edi.Requests.TimeSeriesType.Production is unused, kept for backwards compatibility
+        var timeSeriesType = TimeSeriesTypeMapper.MapTimeSeriesType(
+            Edi.Requests.TimeSeriesType.Production,
+            meteringPointType,
+            settlementMethod);
 
         // Assert
-        actual.Should().Be(expected);
+        Assert.Equal(expectedType, timeSeriesType);
+    }
+
+    [Theory]
+    [InlineData(Edi.Requests.TimeSeriesType.TotalConsumption, TimeSeriesType.TotalConsumption)]
+    [InlineData(Edi.Requests.TimeSeriesType.NonProfiledConsumption, TimeSeriesType.NonProfiledConsumption)]
+    [InlineData(Edi.Requests.TimeSeriesType.FlexConsumption, TimeSeriesType.FlexConsumption)]
+    [InlineData(Edi.Requests.TimeSeriesType.Production, TimeSeriesType.Production)]
+    [InlineData(Edi.Requests.TimeSeriesType.NetExchangePerGa, TimeSeriesType.NetExchangePerGa)]
+    public void MapTimeSeriesType_FromTimeSeriesType_returnsExpectedType(
+        Edi.Requests.TimeSeriesType actualTimeSeriesType,
+        TimeSeriesType expectedType)
+    {
+        var mappedTimeSeriesType = TimeSeriesTypeMapper.MapTimeSeriesType(
+            actualTimeSeriesType,
+            string.Empty,
+            string.Empty);
+
+        // Assert
+        Assert.Equal(expectedType, mappedTimeSeriesType);
     }
 }

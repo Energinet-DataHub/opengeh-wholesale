@@ -39,7 +39,7 @@ public class AggregatedTimeSeriesRequestFactory : IAggregatedTimeSeriesRequestFa
     {
         return new AggregatedTimeSeriesRequest(
             MapPeriod(aggregatedTimeSeriesRequest.Period),
-            MapTimeSeriesType(aggregatedTimeSeriesRequest.TimeSeriesType, aggregatedTimeSeriesRequest.MeteringPointType, aggregatedTimeSeriesRequest.SettlementMethod),
+            TimeSeriesTypeMapper.MapTimeSeriesType(aggregatedTimeSeriesRequest.TimeSeriesType, aggregatedTimeSeriesRequest.MeteringPointType, aggregatedTimeSeriesRequest.SettlementMethod),
             MapAggregationPerRoleAndGridArea(aggregatedTimeSeriesRequest));
     }
 
@@ -63,43 +63,6 @@ public class AggregatedTimeSeriesRequestFactory : IAggregatedTimeSeriesRequestFa
                     EnergySupplierId: aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.EnergySupplierId,
                     BalanceResponsibleId: aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.BalanceResponsiblePartyId),
             _ => throw new InvalidOperationException("Unknown aggregation level"),
-        };
-    }
-
-    private TimeSeriesType MapTimeSeriesType(Energinet.DataHub.Edi.Requests.TimeSeriesType timeSeriesType, string meteringPointType, string settlementMethod)
-    {
-        // TODO: Delete this, when EDI has updated their model
-        if (string.IsNullOrWhiteSpace(meteringPointType))
-        {
-            return timeSeriesType switch
-            {
-                Edi.Requests.TimeSeriesType.Production => TimeSeriesType.Production,
-                Edi.Requests.TimeSeriesType.FlexConsumption => TimeSeriesType.FlexConsumption,
-                Edi.Requests.TimeSeriesType.NonProfiledConsumption => TimeSeriesType
-                    .NonProfiledConsumption,
-                Edi.Requests.TimeSeriesType.NetExchangePerGa => TimeSeriesType.NetExchangePerGa,
-                Edi.Requests.TimeSeriesType.NetExchangePerNeighboringGa => TimeSeriesType
-                    .NetExchangePerNeighboringGa,
-                Edi.Requests.TimeSeriesType.TotalConsumption => TimeSeriesType.TotalConsumption,
-                Edi.Requests.TimeSeriesType.Unspecified => throw new InvalidOperationException(
-                    "Unknown time series type"),
-                _ => throw new InvalidOperationException("Unknown time series type"),
-            };
-        }
-
-        return meteringPointType switch
-        {
-            "E18" => TimeSeriesType.Production,
-            "E20" => TimeSeriesType.NetExchangePerGa,
-            "E17" => settlementMethod switch
-            {
-                "E02" => TimeSeriesType.NonProfiledConsumption,
-                "D01" => TimeSeriesType.FlexConsumption,
-                var method when
-                    string.IsNullOrWhiteSpace(method) => TimeSeriesType.TotalConsumption,
-                _ => throw new InvalidOperationException("Unknown time series type"),
-            },
-            _ => throw new InvalidOperationException("Unknown time series type"),
         };
     }
 
