@@ -53,7 +53,7 @@ public class EnergyResultQueriesTests : IClassFixture<DatabricksSqlStatementApiF
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<IBatchesClient> batchesClientMock,
         BatchDto batch,
-        Mock<ILogger<EnergyResultQueries>> calculationResultQueriesLoggerMock)
+        Mock<ILogger<EnergyResultQueries>> energyResultQueriesLoggerMock)
     {
         // Arrange
         const int expectedResultCount = 3;
@@ -65,7 +65,7 @@ public class EnergyResultQueriesTests : IClassFixture<DatabricksSqlStatementApiF
             loggerMock,
             new Mock<ILogger<DatabricksSqlStatementClient>>());
         batchesClientMock.Setup(b => b.GetAsync(It.IsAny<Guid>())).ReturnsAsync(batch);
-        var sut = new EnergyResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions, calculationResultQueriesLoggerMock.Object);
+        var sut = new EnergyResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions, energyResultQueriesLoggerMock.Object);
 
         // Act
         var actual = await sut.GetAsync(batch.BatchId).ToListAsync();

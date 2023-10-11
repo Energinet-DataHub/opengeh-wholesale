@@ -58,7 +58,7 @@ public class IntegrationEventProviderTests
         EnergyResult energyResult,
         IntegrationEvent anyIntegrationEvent,
         [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
-        [Frozen] Mock<IEnergyResultQueries> calculationResultQueriesMock,
+        [Frozen] Mock<IEnergyResultQueries> energyResultQueriesMock,
         [Frozen] Mock<ICalculationResultIntegrationEventFactory> calculationResultIntegrationEventFactoryMock,
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         IntegrationEventProvider sut)
@@ -70,7 +70,7 @@ public class IntegrationEventProviderTests
             .ReturnsAsync(completedBatch)
             .ReturnsAsync((CompletedBatch)null!);
 
-        calculationResultQueriesMock
+        energyResultQueriesMock
             .Setup(queries => queries.GetAsync(completedBatch.Id))
             .Returns(AsAsyncEnumerable(energyResult));
 
@@ -94,7 +94,7 @@ public class IntegrationEventProviderTests
         Instant instant,
         CompletedBatch completedBatch,
         [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
-        [Frozen] Mock<IEnergyResultQueries> calculationResultQueriesMock,
+        [Frozen] Mock<IEnergyResultQueries> energyResultQueriesMock,
         [Frozen] Mock<IClock> clockMock,
         IntegrationEventProvider sut)
     {
@@ -104,7 +104,7 @@ public class IntegrationEventProviderTests
             .ReturnsAsync(completedBatch)
             .ReturnsAsync((CompletedBatch)null!);
 
-        calculationResultQueriesMock
+        energyResultQueriesMock
             .Setup(queries => queries.GetAsync(completedBatch.Id))
             .Returns(AsAsyncEnumerable<EnergyResult>());
 
@@ -124,7 +124,7 @@ public class IntegrationEventProviderTests
         IntegrationEvent anyIntegrationEvent,
         EnergyResult energyResult,
         [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
-        [Frozen] Mock<IEnergyResultQueries> calculationResultQueriesMock,
+        [Frozen] Mock<IEnergyResultQueries> energyResultQueriesMock,
         [Frozen] Mock<ICalculationResultIntegrationEventFactory> calculationResultIntegrationEventFactoryMock,
         IntegrationEventProvider sut)
     {
@@ -135,7 +135,7 @@ public class IntegrationEventProviderTests
             .ReturnsAsync(completedBatch)
             .ReturnsAsync((CompletedBatch)null!);
 
-        calculationResultQueriesMock
+        energyResultQueriesMock
             .Setup(queries => queries.GetAsync(completedBatch.Id))
             .Returns(AsAsyncEnumerable(energyResult));
 
@@ -151,7 +151,7 @@ public class IntegrationEventProviderTests
         var unused = sut.GetAsync().ToListAsync();
 
         // Assert: Fetches results once per unpublished batch
-        calculationResultQueriesMock.Verify(x => x.GetAsync(It.IsAny<Guid>()), Times.Exactly(2));
+        energyResultQueriesMock.Verify(x => x.GetAsync(It.IsAny<Guid>()), Times.Exactly(2));
     }
 
     [Theory]
@@ -173,7 +173,7 @@ public class IntegrationEventProviderTests
         IntegrationEvent energyResultProducedEvent4,
         [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
         [Frozen] Mock<ICalculationResultIntegrationEventFactory> calculationResultIntegrationEventFactoryMock,
-        [Frozen] Mock<IEnergyResultQueries> calculationResultQueriesMock,
+        [Frozen] Mock<IEnergyResultQueries> energyResultQueriesMock,
         IntegrationEventProvider sut)
     {
         // Arrange
@@ -183,10 +183,10 @@ public class IntegrationEventProviderTests
             .ReturnsAsync(completedBatch2)
             .ReturnsAsync((CompletedBatch)null!);
 
-        calculationResultQueriesMock
+        energyResultQueriesMock
             .Setup(queries => queries.GetAsync(completedBatch1.Id))
             .Returns(AsAsyncEnumerable(energyResult1, energyResult2));
-        calculationResultQueriesMock
+        energyResultQueriesMock
             .Setup(queries => queries.GetAsync(completedBatch2.Id))
             .Returns(AsAsyncEnumerable(energyResult3, energyResult4));
 

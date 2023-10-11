@@ -29,13 +29,13 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.CalculationResults;
 
-public class CalculationResultQueriesTests
+public class EnergyResultQueriesTests
 {
     private readonly TableChunk _tableChunk;
     private readonly string _row0BatchId;
     private readonly string _calculationResultId0;
 
-    public CalculationResultQueriesTests()
+    public EnergyResultQueriesTests()
     {
         // The two rows belongs to different calculation results as they have different calculation result ids
         _row0BatchId = "b78787d5-b544-44ac-87c2-7720aab86ed1";
@@ -45,7 +45,7 @@ public class CalculationResultQueriesTests
         var row1 = new[] { "b78787d5-b544-44ac-87c2-7720aab86ed2", "200", "100", "non_profiled_consumption", string.Empty, string.Empty, "2022-05-16T22:00:00.000Z", "2.222", "measured", calculationResultId1, DeltaTableProcessType.BalanceFixing };
         var rows = new List<string[]> { row0, row1, };
 
-        // Using the columns from the CalculationResultQueries class to ensure that the test is not broken if the columns are changed
+        // Using the columns from the EnergyResultQueries class to ensure that the test is not broken if the columns are changed
         _tableChunk = new TableChunk(EnergyResultQueries.SqlColumnNames, rows);
     }
 
