@@ -69,7 +69,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
             }
             else
             {
-                message = AggregatedTimeSeriesRequestRejectedMessageFactory.Create(new[] { ValidationError.NoDataFound }, referenceId);
+                message = AggregatedTimeSeriesRequestRejectedMessageFactory.Create(new[] { ValidationError.NoDataAvailable }, referenceId);
             }
         }
         else

@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Edi.Requests;
+using Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.EDI.Validation;
 using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
+using FluentAssertions;
 using NodaTime;
 using Xunit;
 
@@ -22,96 +23,172 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 
 public class PeriodValidatorTests
 {
-    private readonly PeriodValidationRule _sut = new(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
-    private readonly Instant _winterTimeMidnight = Instant.FromUtc(2022, 1, 1, 23, 0, 0);
+    private readonly PeriodValidationRule _sut = new(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!, SystemClock.Instance);
 
     [Fact]
     public void Validate_WhenValidRequest_ReturnsExceptedNoValidationErrors()
     {
         // Arrange
-        var message = new AggregatedTimeSeriesRequest();
-        message.Period = new Edi.Requests.Period();
-        message.Period.Start = _winterTimeMidnight.ToString();
-        message.Period.End = _winterTimeMidnight.ToString();
+        var message = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .Build();
 
         // Act
         var errors = _sut.Validate(message);
 
         // Assert
-        Assert.False(errors.Any());
+        errors.Should().BeEmpty();
     }
 
     [Fact]
     public void Validate_WhenEndDateIsUnspecified_ReturnsExceptedValidationError()
     {
         // Arrange
-        var message = new AggregatedTimeSeriesRequest();
-        message.Period = new Edi.Requests.Period();
-        message.Period.Start = _winterTimeMidnight.ToString();
-        message.Period.End = string.Empty;
+        var message = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithEndDate(string.Empty)
+            .Build();
 
         // Act
         var errors = _sut.Validate(message);
 
         // Assert
-        Assert.Single(errors);
-        Assert.Equal(ValidationError.InvalidDateFormat.ErrorCode, errors.First().ErrorCode);
+        errors.Should().ContainSingle();
+        errors.First().ErrorCode.Should().Be(ValidationError.MissingStartOrAndEndDate.ErrorCode);
     }
 
     [Fact]
     public void Validate_WhenWrongStartHour_ReturnsExceptedValidationError()
     {
         // Arrange
-        var notWinterTimeMidnight = Instant.FromUtc(2022, 1, 1, 22, 0, 0).ToString();
-        var message = new AggregatedTimeSeriesRequest();
-        message.Period = new Edi.Requests.Period();
-        message.Period.Start = notWinterTimeMidnight;
-        message.Period.End = _winterTimeMidnight.ToString();
+        var now = SystemClock.Instance.GetCurrentInstant();
+        var notWinterTimeMidnight = Instant.FromUtc(now.InUtc().Year, 1, 1, 22, 0, 0).ToString();
+        var message = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithStartDate(notWinterTimeMidnight)
+            .Build();
 
         // Act
         var errors = _sut.Validate(message);
 
         // Assert
-        Assert.Single(errors);
-        Assert.Equal(ValidationError.InvalidDateFormat.ErrorCode, errors.First().ErrorCode);
+        errors.Should().ContainSingle();
+        errors.First().ErrorCode.Should().Be(ValidationError.InvalidDateFormat.ErrorCode);
     }
 
     [Fact]
     public void Validate_WhenStartIsUnspecified_ReturnsExceptedValidationError()
     {
         // Arrange
-        var message = new AggregatedTimeSeriesRequest();
-        message.Period = new Edi.Requests.Period();
-        message.Period.Start = string.Empty;
-        message.Period.End = _winterTimeMidnight.ToString();
+        var message = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithStartDate(string.Empty)
+            .Build();
 
         // Act
         var errors = _sut.Validate(message);
 
         // Assert
-        Assert.Single(errors);
-        Assert.Equal(ValidationError.InvalidDateFormat.ErrorCode, errors.First().ErrorCode);
+        errors.Should().ContainSingle();
+        errors.First().ErrorCode.Should().Be(ValidationError.MissingStartOrAndEndDate.ErrorCode);
     }
 
     [Fact]
     public void Validate_WhenStartAndEndAreInvalid_ReturnsExceptedValidationErrors()
     {
         // Arrange
-        var message = new AggregatedTimeSeriesRequest();
-        message.Period = new Edi.Requests.Period();
-        message.Period.Start = string.Empty;
-        message.Period.End = string.Empty;
+        var message = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithStartDate("string.Empty")
+            .WithEndDate("string.Empty")
+            .Build();
 
         // Act
         var errors = _sut.Validate(message);
 
         // Assert
-        Assert.True(errors.Count == 2);
-        Assert.Contains(
-            errors.Where(error => error.Message.Contains("Start date")),
-            error => error.ErrorCode.Equals(ValidationError.InvalidDateFormat.ErrorCode));
-        Assert.Contains(
-            errors.Where(error => error.Message.Contains("End date")),
-            error => error.ErrorCode.Equals(ValidationError.InvalidDateFormat.ErrorCode));
+        errors.Count.Should().Be(2);
+        errors.Should().Contain(error => error.Message.Contains("Start date")
+                                         && error.ErrorCode.Equals(ValidationError.InvalidDateFormat.ErrorCode));
+        errors.Should().Contain(error => error.Message.Contains("End date")
+                                         && error.ErrorCode.Equals(ValidationError.InvalidDateFormat.ErrorCode));
+    }
+
+    [Fact]
+    public void Validate_WhenPeriodSizeIsGreaterThenAllowed_ReturnsExceptedValidationError()
+    {
+        // Arrange
+        var now = SystemClock.Instance.GetCurrentInstant();
+        var winterTimeMidnight = Instant.FromUtc(now.InUtc().Year, 1, 1, 23, 0, 0);
+        var message = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithStartDate(winterTimeMidnight.ToString())
+            .WithEndDate(winterTimeMidnight.Plus(Duration.FromDays(32)).ToString())
+            .Build();
+
+        // Act
+        var errors = _sut.Validate(message);
+
+        // Assert
+        errors.Should().ContainSingle();
+        errors.First().ErrorCode.Should().Be(ValidationError.PeriodIsGreaterThenAllowedPeriodSize.ErrorCode);
+    }
+
+    [Fact]
+    public void Validate_WhenPeriodIsOlderThenAllowed_ReturnsExceptedValidationError()
+    {
+        // Arrange
+        var message = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithStartDate(Instant.FromUtc(2018, 1, 1, 23, 0, 0).ToString())
+            .WithEndDate(Instant.FromUtc(2018, 1, 1, 23, 0, 0).ToString())
+            .Build();
+
+        // Act
+        var errors = _sut.Validate(message);
+
+        // Assert
+        errors.Should().ContainSingle();
+        errors.First().ErrorCode.Should().Be(ValidationError.StartDateMustBeLessThen3Years.ErrorCode);
+    }
+
+    [Fact]
+    public void Validate_WhenPeriodOverlapSummerDaylightSavingTime_ReturnsExceptedNoValidationErrors()
+    {
+        // Arrange
+        var now = SystemClock.Instance.GetCurrentInstant();
+        var winterTime = Instant.FromUtc(now.InUtc().Year, 2, 26, 23, 0, 0).ToString();
+        var summerTime = Instant.FromUtc(now.InUtc().Year, 3, 26, 22, 0, 0).ToString();
+        var message = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithStartDate(winterTime)
+            .WithEndDate(summerTime)
+            .Build();
+
+        // Act
+        var errors = _sut.Validate(message);
+
+        // Assert
+        errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Validate_WhenPeriodOverlapWinterDaylightSavingTime_ReturnsExceptedNoValidationErrors()
+    {
+        // Arrange
+        var now = SystemClock.Instance.GetCurrentInstant();
+        var summerTime = Instant.FromUtc(now.InUtc().Year, 9, 29, 22, 0, 0).ToString();
+        var winterTime = Instant.FromUtc(now.InUtc().Year, 10, 29, 23, 0, 0).ToString();
+        var message = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithStartDate(summerTime)
+            .WithEndDate(winterTime)
+            .Build();
+
+        // Act
+        var errors = _sut.Validate(message);
+
+        // Assert
+        errors.Should().BeEmpty();
     }
 }
