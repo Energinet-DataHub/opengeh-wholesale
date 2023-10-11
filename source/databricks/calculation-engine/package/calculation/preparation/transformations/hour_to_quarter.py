@@ -12,15 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame
 import pyspark.sql.functions as F
+from pyspark.sql import DataFrame
+from pyspark.sql.types import DecimalType
 
 from package.constants import Colname
 from package.codelists import MeteringPointResolution
 
 
-def transform_hour_to_quarter(df: DataFrame) -> DataFrame:
-    result = df.withColumn(
+def transform_hour_to_quarter(basis_data_time_series_points_df: DataFrame) -> DataFrame:
+    result = basis_data_time_series_points_df.withColumn(
         "quarter_times",
         F.when(
             F.col(Colname.resolution) == MeteringPointResolution.HOUR.value,
@@ -35,7 +36,7 @@ def transform_hour_to_quarter(df: DataFrame) -> DataFrame:
             F.array(F.col(Colname.observation_time)),
         ),
     ).select(
-        df["*"],
+        basis_data_time_series_points_df["*"],
         F.explode("quarter_times").alias("quarter_time"),
     )
     result = result.withColumn(
@@ -46,9 +47,12 @@ def transform_hour_to_quarter(df: DataFrame) -> DataFrame:
         F.when(
             F.col(Colname.resolution) == MeteringPointResolution.HOUR.value,
             F.col(Colname.quantity) / 4,
-        ).when(
+        )
+        .when(
             F.col(Colname.resolution) == MeteringPointResolution.QUARTER.value,
             F.col(Colname.quantity),
-        ),
+        )
+        .cast(DecimalType(18, 6)),
     )
+
     return result

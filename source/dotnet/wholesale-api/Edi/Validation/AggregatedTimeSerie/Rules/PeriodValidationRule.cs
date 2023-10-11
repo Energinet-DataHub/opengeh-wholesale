@@ -20,15 +20,6 @@ namespace Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
 
 public class PeriodValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
 {
-    private const string DanishErrorMessage =
-        "Forkert dato format for {PropertyName}, skal være YYYY-MM-DDT22:00:00Z eller YYYY-MM-DDT23:00:00Z";
-
-    private const string EnglishErrorMessage =
-        "Wrong date format for {PropertyName}, must be YYYY-MM-DDT22:00:00Z or YYYY-MM-DDT23:00:00Z";
-
-    private const string ErrorMessage = $"{DanishErrorMessage} / {EnglishErrorMessage}";
-    private const string ErrorCode = "D66";
-
     private readonly DateTimeZone _dateTimeZone;
 
     public PeriodValidationRule(DateTimeZone dateTimeZone)
@@ -47,16 +38,11 @@ public class PeriodValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
 
         if (startInstant != null && endInstant != null)
         {
-            MustBeMidnight(startInstant.Value, errors);
-            MustBeMidnight(endInstant.Value, errors);
+            MustBeMidnight(startInstant.Value, "Start date", errors);
+            MustBeMidnight(endInstant.Value, "End date", errors);
         }
 
         return errors;
-    }
-
-    public bool Support(Type type)
-    {
-        return type == typeof(AggregatedTimeSeriesRequest);
     }
 
     private Instant? ParseToInstant(string dateTimeString, string propertyName, List<ValidationError> errors)
@@ -65,14 +51,14 @@ public class PeriodValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
         if (parseResult.Success)
             return parseResult.Value;
 
-        errors.Add(new ValidationError(ErrorMessage.Replace("{PropertyName}", propertyName), ErrorCode));
+        errors.Add(ValidationError.InvalidDateFormat.WithPropertyName(propertyName));
         return null;
     }
 
-    private void MustBeMidnight(Instant instant, List<ValidationError> errors)
+    private void MustBeMidnight(Instant instant, string propertyName, List<ValidationError> errors)
     {
         var zonedDateTime = new ZonedDateTime(instant, _dateTimeZone);
         if (zonedDateTime.TimeOfDay != LocalTime.Midnight)
-            errors.Add(new ValidationError(ErrorMessage, ErrorCode));
+            errors.Add(ValidationError.InvalidDateFormat.WithPropertyName(propertyName));
     }
 }
