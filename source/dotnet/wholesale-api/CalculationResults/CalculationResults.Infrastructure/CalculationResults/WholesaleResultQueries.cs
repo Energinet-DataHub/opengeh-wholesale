@@ -18,7 +18,6 @@ using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Microsoft.Extensions.Logging;
@@ -86,29 +85,37 @@ public class WholesaleResultQueries : IWholesaleResultQueries
     {
         return $@"
 SELECT {string.Join(", ", SqlColumnNames)}
-FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME}
-WHERE {EnergyResultColumnNames.BatchId} = '{batchId}'
-ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames.Time}
+FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.WHOLESALE_RESULTS_TABLE_NAME}
+WHERE {WholesaleResultColumnNames.CalculationId} = '{batchId}'
+ORDER BY {WholesaleResultColumnNames.CalculationResultId}, {WholesaleResultColumnNames.Time}
 ";
     }
 
-    public static string[] SqlColumnNames { get; } =
+    private static string[] SqlColumnNames { get; } =
     {
-        EnergyResultColumnNames.BatchId,
-        EnergyResultColumnNames.GridArea,
-        EnergyResultColumnNames.FromGridArea,
-        EnergyResultColumnNames.TimeSeriesType,
-        EnergyResultColumnNames.EnergySupplierId,
-        EnergyResultColumnNames.BalanceResponsibleId,
-        EnergyResultColumnNames.Time,
-        EnergyResultColumnNames.Quantity,
-        EnergyResultColumnNames.QuantityQuality,
-        EnergyResultColumnNames.CalculationResultId,
-        EnergyResultColumnNames.BatchProcessType,
+        WholesaleResultColumnNames.CalculationId,
+        WholesaleResultColumnNames.ChargeType,
+        WholesaleResultColumnNames.ChargeCode,
+        WholesaleResultColumnNames.ChargeOwnerId,
+        WholesaleResultColumnNames.ChargeResolution,
+        WholesaleResultColumnNames.ChargeType,
+        WholesaleResultColumnNames.CalculationType,
+        WholesaleResultColumnNames.MeteringPointType,
+        WholesaleResultColumnNames.SettlementMethod,
+        WholesaleResultColumnNames.IsTax,
+        WholesaleResultColumnNames.QuantityUnit,
+        WholesaleResultColumnNames.CalculationResultId,
+        WholesaleResultColumnNames.GridArea,
+        WholesaleResultColumnNames.EnergySupplierId,
+        WholesaleResultColumnNames.Time,
+        WholesaleResultColumnNames.Quantity,
+        WholesaleResultColumnNames.Amount,
+        WholesaleResultColumnNames.Price,
+        WholesaleResultColumnNames.QuantityQualities,
     };
 
-    public static bool BelongsToDifferentResults(SqlResultRow row, SqlResultRow otherRow)
+    private static bool BelongsToDifferentResults(SqlResultRow row, SqlResultRow otherRow)
     {
-        return row[EnergyResultColumnNames.CalculationResultId] != otherRow[EnergyResultColumnNames.CalculationResultId];
+        return row[WholesaleResultColumnNames.CalculationResultId] != otherRow[WholesaleResultColumnNames.CalculationResultId];
     }
 }

@@ -88,7 +88,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
             _logger.LogInformation("Published {EnergyResultCount} energy results for completed batch {BatchId}", energyResultCount, batch.Id);
             if (IsWholesaleCalculationType(batch.ProcessType))
             {
-                _logger.LogInformation("Published {WholesaleResultCount} results for completed batch {BatchId}", wholesaleResultCount, batch.Id);
+                _logger.LogInformation("Published {WholesaleResultCount} wholesale results for completed batch {BatchId}", wholesaleResultCount, batch.Id);
             }
         }
         while (true);

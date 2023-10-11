@@ -22,7 +22,12 @@ public class DeltaTableOptions
     public string SCHEMA_NAME { get; set; } = "wholesale_output";
 
     /// <summary>
-    /// Name of the results delta table.
+    /// Name of the energy results delta table.
     /// </summary>
     public string ENERGY_RESULTS_TABLE_NAME { get; set; } = "energy_results";
+
+    /// <summary>
+    /// Name of the wholesale results delta table.
+    /// </summary>
+    public string WHOLESALE_RESULTS_TABLE_NAME { get; set; } = "wholesale_results";
 }
