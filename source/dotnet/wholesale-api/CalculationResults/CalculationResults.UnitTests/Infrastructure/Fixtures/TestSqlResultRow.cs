@@ -12,13 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.EDI.Models;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 
-public enum TimeSeriesType
+namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.Fixtures;
+
+public record TestSqlResultRow : SqlResultRow
 {
-    NonProfiledConsumption,
-    FlexConsumption,
-    Production,
-    NetExchangePerGa,
-    TotalConsumption,
+    private readonly IList<KeyValuePair<string, string>> _list;
+
+    public TestSqlResultRow(IList<KeyValuePair<string, string>> list)
+        : base(null!, 0)
+    {
+        _list = list;
+    }
+
+    public override string this[string column] => _list.Single(pair => pair.Key == column).Value;
 }

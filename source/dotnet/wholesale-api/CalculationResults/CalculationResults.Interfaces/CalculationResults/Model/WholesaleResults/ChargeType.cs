@@ -12,13 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.EDI.Models;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 
-public enum TimeSeriesType
+public enum ChargeType
 {
-    NonProfiledConsumption,
-    FlexConsumption,
-    Production,
-    NetExchangePerGa,
-    TotalConsumption,
+    Tariff,
+    Fee,
+    Subscription,
 }

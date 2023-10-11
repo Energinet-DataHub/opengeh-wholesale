@@ -12,13 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.EDI.Models;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 
-public enum TimeSeriesType
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
+
+public static class QuantityUnitMapper
 {
-    NonProfiledConsumption,
-    FlexConsumption,
-    Production,
-    NetExchangePerGa,
-    TotalConsumption,
+        public static QuantityUnit FromDeltaTableValue(string quantityUnit)
+        {
+            return quantityUnit switch
+            {
+                "kWh" => QuantityUnit.Kwh,
+                _ => throw new ArgumentException($"Quality of unknown type: '{quantityUnit}'"),
+            };
+        }
 }

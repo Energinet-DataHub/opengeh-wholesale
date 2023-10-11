@@ -12,13 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.EDI.Models;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 
-public enum TimeSeriesType
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
+
+public static class ChargeTypeMapper
 {
-    NonProfiledConsumption,
-    FlexConsumption,
-    Production,
-    NetExchangePerGa,
-    TotalConsumption,
+    public static ChargeType FromDeltaTableValue(string chargeType) =>
+        chargeType switch
+        {
+            "fee" => ChargeType.Fee,
+            "subscription" => ChargeType.Subscription,
+            "tariff" => ChargeType.Tariff,
+            _ => throw new NotImplementedException($"Cannot map process type '{chargeType}'"),
+        };
 }

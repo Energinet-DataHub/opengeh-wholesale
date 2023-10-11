@@ -12,21 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.EDI.Validation;
 
-namespace Energinet.DataHub.Wholesale.EDI.Factories;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 
-public interface IAggregatedTimeSeriesMessageFactory
+public interface IEnergyResultQueries
 {
     /// <summary>
-    /// Creates a service bus message based on aggregated time series
+    /// Get all results for a given batch.
     /// </summary>
-    public ServiceBusMessage Create(EnergyResult? calculationResult, string referenceId);
-
-    /// <summary>
-    /// Creates a service bus message based on validation errors
-    /// </summary>
-    public ServiceBusMessage CreateRejected(IReadOnlyList<ValidationError> errors, string referenceId);
+    IAsyncEnumerable<EnergyResult> GetAsync(Guid batchId);
 }

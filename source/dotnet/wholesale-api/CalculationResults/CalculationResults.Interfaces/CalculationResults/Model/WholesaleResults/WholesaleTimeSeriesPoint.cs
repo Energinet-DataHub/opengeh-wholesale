@@ -12,14 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
-
-public interface ICalculationResultQueries
-{
-    /// <summary>
-    /// Get all results for a given batch.
-    /// </summary>
-    IAsyncEnumerable<EnergyResult> GetAsync(Guid batchId);
-}
+/// <summary>
+/// Time series point from wholesale results.
+/// Immutable value object.
+/// </summary>
+public sealed record WholesaleTimeSeriesPoint(DateTimeOffset Time, decimal? Quantity, IReadOnlyCollection<QuantityQuality> Qualities, decimal? Price, decimal? Amount);

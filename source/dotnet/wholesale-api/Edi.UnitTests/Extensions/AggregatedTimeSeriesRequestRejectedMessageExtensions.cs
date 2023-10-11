@@ -12,13 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.EDI.Models;
+using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Edi.Responses;
 
-public enum TimeSeriesType
+namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Extensions;
+
+public static class AggregatedTimeSeriesRequestRejectedMessageExtensions
 {
-    NonProfiledConsumption,
-    FlexConsumption,
-    Production,
-    NetExchangePerGa,
-    TotalConsumption,
+    public static bool WithErrorCode(this ServiceBusMessage message, string expectedErrorCode)
+    {
+        var rejectMessage = AggregatedTimeSeriesRequestRejected.Parser.ParseFrom(message.Body);
+        return rejectMessage.RejectReasons.Any(r => r.ErrorCode == expectedErrorCode);
+    }
 }

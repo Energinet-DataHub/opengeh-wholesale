@@ -12,13 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.EDI.Models;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
-public enum TimeSeriesType
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
+
+public static class QuantityQualitiesMapper
 {
-    NonProfiledConsumption,
-    FlexConsumption,
-    Production,
-    NetExchangePerGa,
-    TotalConsumption,
+    public static IReadOnlyCollection<QuantityQuality> FromDeltaTableValue(string value)
+    {
+        var qualities = value.Trim('[', ']')
+            .Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+        return qualities.Select(QuantityQualityMapper.FromDeltaTableValue).ToArray();
+    }
 }
