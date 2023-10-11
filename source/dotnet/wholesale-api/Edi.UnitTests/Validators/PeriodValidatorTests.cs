@@ -25,7 +25,6 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 public class PeriodValidatorTests
 {
     private readonly PeriodValidationRule _sut = new(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!, SystemClock.Instance);
-    private readonly Instant _winterTimeMidnight = Instant.FromUtc(2022, 1, 1, 23, 0, 0);
 
     [Fact]
     public void Validate_WhenValidRequest_ReturnsExceptedNoValidationErrors()
@@ -63,7 +62,8 @@ public class PeriodValidatorTests
     public void Validate_WhenWrongStartHour_ReturnsExceptedValidationError()
     {
         // Arrange
-        var notWinterTimeMidnight = Instant.FromUtc(2022, 1, 1, 22, 0, 0).ToString();
+        var now = SystemClock.Instance.GetCurrentInstant();
+        var notWinterTimeMidnight = Instant.FromUtc(now.InUtc().Year, 1, 1, 22, 0, 0).ToString();
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
             .WithStartDate(notWinterTimeMidnight)
@@ -119,10 +119,12 @@ public class PeriodValidatorTests
     public void Validate_WhenPeriodSizeIsGreaterThenAllowed_ReturnsExceptedValidationError()
     {
         // Arrange
+        var now = SystemClock.Instance.GetCurrentInstant();
+        var winterTimeMidnight = Instant.FromUtc(now.InUtc().Year, 1, 1, 23, 0, 0);
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithStartDate(_winterTimeMidnight.ToString())
-            .WithEndDate(_winterTimeMidnight.Plus(Duration.FromDays(32)).ToString())
+            .WithStartDate(winterTimeMidnight.ToString())
+            .WithEndDate(winterTimeMidnight.Plus(Duration.FromDays(32)).ToString())
             .Build();
 
         // Act
