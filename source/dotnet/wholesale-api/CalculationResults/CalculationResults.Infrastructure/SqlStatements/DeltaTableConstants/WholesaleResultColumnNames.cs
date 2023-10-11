@@ -41,7 +41,7 @@ public class WholesaleResultColumnNames
 
     public static IReadOnlyCollection<string> GetAllNames()
     {
-        var fieldInfos = typeof(EnergyResultColumnNames).GetFields(BindingFlags.Public | BindingFlags.Static);
+        var fieldInfos = typeof(WholesaleResultColumnNames).GetFields(BindingFlags.Public | BindingFlags.Static);
         return fieldInfos.Select(x => x.GetValue(null)).Cast<string>().ToList();
     }
 
