@@ -20,6 +20,5 @@ public enum TimeSeriesType
     FlexConsumption,
     Production,
     NetExchangePerGa,
-    NetExchangePerNeighboringGa,
     TotalConsumption,
 }
