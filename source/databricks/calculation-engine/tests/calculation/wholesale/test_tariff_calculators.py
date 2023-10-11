@@ -97,7 +97,7 @@ def test__calculate_tariff_price_per_ga_co_es__raises_value_error_when_input_df_
     tariffs = spark.createDataFrame(data=[{"Hello": "World"}])
 
     # Act
-    with pytest.raises(ValueError) as excinfo:
+    with pytest.raises(AssertionError) as excinfo:
         calculate_tariff_price_per_ga_co_es(tariffs)
 
     # Assert

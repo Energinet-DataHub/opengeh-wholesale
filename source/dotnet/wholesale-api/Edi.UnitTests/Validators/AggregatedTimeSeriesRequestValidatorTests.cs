@@ -16,6 +16,7 @@ using Energinet.DataHub.Edi.Requests;
 using Energinet.DataHub.Wholesale.EDI.Validation;
 using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie;
 using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
+using FluentAssertions;
 using NodaTime;
 using Xunit;
 
@@ -23,7 +24,7 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 
 public class AggregatedTimeSeriesRequestValidatorTests
 {
-    private static readonly PeriodValidationRule _periodValidator = new(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
+    private static readonly PeriodValidationRule _periodValidator = new(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!, SystemClock.Instance);
     private readonly IValidator<AggregatedTimeSeriesRequest> _sut = new AggregatedTimeSeriesRequestValidator(new[] { _periodValidator });
 
     [Fact]
@@ -37,13 +38,33 @@ public class AggregatedTimeSeriesRequestValidatorTests
                 Start = Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(),
                 End = Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString(),
             },
-            TimeSeriesType = TimeSeriesType.Production,
         };
 
         // Act
         var validationErrors = _sut.Validate(request);
 
         // Assert
-        Assert.False(validationErrors.Any());
+        validationErrors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Validate_AggregatedTimeSeriesRequest_WhenPeriodSizeIsInvalid_UnsuccessfulValidation()
+    {
+        // Arrange
+        var request = new AggregatedTimeSeriesRequest()
+        {
+            Period = new Edi.Requests.Period()
+            {
+                Start = Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(),
+                End = Instant.FromUtc(2022, 3, 2, 23, 0, 0).ToString(),
+            },
+        };
+
+        // Act
+        var validationErrors = _sut.Validate(request);
+
+        // Assert
+        validationErrors.Should().ContainSingle();
+        validationErrors.First().ErrorCode.Should().Be(ValidationError.PeriodIsGreaterThenAllowedPeriodSize.ErrorCode);
     }
 }
