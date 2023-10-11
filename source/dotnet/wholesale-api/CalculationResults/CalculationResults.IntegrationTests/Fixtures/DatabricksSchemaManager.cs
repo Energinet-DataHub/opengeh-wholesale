@@ -51,8 +51,6 @@ public class DatabricksSchemaManager
 
     public string SchemaName => DeltaTableOptions.Value.SCHEMA_NAME;
 
-    public string EnergyResultTableName => DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME;
-
     /// <summary>
     /// Executes all the SQL scripts in the respective folder migration_scripts.
     /// This creates a schema (formerly known as database), tables and constraints.
