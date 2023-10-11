@@ -34,20 +34,12 @@ namespace Energinet.DataHub.Wholesale.DomainTests
         /// <summary>
         /// These tests uses an unauthorized http client to perform requests.
         /// </summary>
-        public class Given_Unauthorized : IClassFixture<WholesaleDomainConfiguration>
+        public class Given_Unauthorized : DomainTestsBase<UnauthorizedClientFixture>
         {
-            public Given_Unauthorized(WholesaleDomainConfiguration configuration)
+            public Given_Unauthorized(LazyFixtureFactory<UnauthorizedClientFixture> lazyFixtureFactory)
+                : base(lazyFixtureFactory)
             {
-                Configuration = configuration;
-                UnauthorizedHttpClient = new HttpClient
-                {
-                    BaseAddress = configuration.WebApiBaseAddress,
-                };
             }
-
-            private WholesaleDomainConfiguration Configuration { get; }
-
-            private HttpClient UnauthorizedHttpClient { get; }
 
             /// <summary>
             /// This is just to be able to verify everything works with regards to settings and executing the tests after deployment.
@@ -57,7 +49,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             public async Task When_RequestReadinessStatus_Then_ResponseIsOkAndHealthy()
             {
                 // Act
-                using var actualResponse = await UnauthorizedHttpClient.GetAsync("monitor/ready");
+                using var actualResponse = await Fixture.UnauthorizedHttpClient.GetAsync("monitor/ready");
 
                 // Assert
                 actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -76,7 +68,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 var request = new HttpRequestMessage(HttpMethod.Get, "v3/batches?batchId=1");
 
                 // Act
-                using var actualResponse = await UnauthorizedHttpClient.SendAsync(request);
+                using var actualResponse = await Fixture.UnauthorizedHttpClient.SendAsync(request);
 
                 // Assert
                 actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -86,28 +78,17 @@ namespace Energinet.DataHub.Wholesale.DomainTests
         /// <summary>
         /// These tests uses an authorized Wholesale client to perform requests.
         /// </summary>'
-        public class Given_Authorized : IClassFixture<AuthorizedClientFixture>
+        public class Given_Authorized : DomainTestsBase<AuthorizedClientFixture>
         {
             private static readonly Guid _existingBatchId = new("ed39dbc5-bdc5-41b9-922a-08d3b12d4538");
             private static readonly DateTimeOffset _existingBatchPeriodStart = DateTimeOffset.Parse("2020-01-28T23:00:00Z");
             private static readonly DateTimeOffset _existingBatchPeriodEnd = DateTimeOffset.Parse("2020-01-29T23:00:00Z");
             private static readonly string ExistingGridAreaCode = "543";
 
-            private static List<CalculationResultCompleted> _calculationResultCompletedFromBalanceFixing = null!;
-            private static List<CalculationResultCompleted> _calculationResultCompletedFromWholesaleFixing = null!;
-            private static List<EnergyResultProducedV1> _energyResultProducedCompletedFromBalanceFixing = null!;
-            private static List<EnergyResultProducedV1> _energyResultProducedFromWholesaleFixing = null!;
-
-            public Given_Authorized(AuthorizedClientFixture fixture)
+            public Given_Authorized(LazyFixtureFactory<AuthorizedClientFixture> lazyFixtureFactory)
+                : base(lazyFixtureFactory)
             {
-                Fixture = fixture;
-                _calculationResultCompletedFromBalanceFixing = Fixture.Output.CalculationResultCompletedFromBalanceFixing;
-                _calculationResultCompletedFromWholesaleFixing = Fixture.Output.CalculationResultCompletedFromWholesaleFixing;
-                _energyResultProducedCompletedFromBalanceFixing = Fixture.Output.EnergyResultProducedFromBalanceFixing;
-                _energyResultProducedFromWholesaleFixing = Fixture.Output.EnergyResultProducedFromWholesaleFixing;
             }
-
-            private AuthorizedClientFixture Fixture { get; }
 
             [DomainFact]
             public async Task When_RequestingExistingBatchId_Then_ResponseIsOk()
@@ -137,22 +118,22 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             [DomainFact]
             public void When_BalanceFixingHasCompleted_Then_HasReceivedExpectedNumberOfResults()
             {
-                _calculationResultCompletedFromBalanceFixing.Count.Should().Be(112);
-                _energyResultProducedCompletedFromBalanceFixing.Count.Should().Be(112);
+                Fixture.Output.CalculationResultCompletedFromBalanceFixing.Count.Should().Be(112);
+                Fixture.Output.EnergyResultProducedFromBalanceFixing.Count.Should().Be(112);
             }
 
             [DomainFact]
             public void When_WholesaleFixingHasCompleted_Then_HasReceivedExpectedNumberOfResults()
             {
-                _calculationResultCompletedFromWholesaleFixing.Count.Should().Be(137);
-                _energyResultProducedFromWholesaleFixing.Count.Should().Be(137);
+                Fixture.Output.CalculationResultCompletedFromWholesaleFixing.Count.Should().Be(137);
+                Fixture.Output.EnergyResultProducedFromWholesaleFixing.Count.Should().Be(137);
             }
 
             [DomainFact]
             public void When_EnergyCalculationBatchIsComplete_Then_MessagesReceivedContainAllTimeSeriesTypes()
             {
-                var actualForCalculationResultCompleted = GetTimeSeriesTypes(_calculationResultCompletedFromBalanceFixing);
-                var actualForEnergyResultProduced = GetTimeSeriesTypes(_energyResultProducedCompletedFromBalanceFixing);
+                var actualForCalculationResultCompleted = GetTimeSeriesTypes(Fixture.Output.CalculationResultCompletedFromBalanceFixing);
+                var actualForEnergyResultProduced = GetTimeSeriesTypes(Fixture.Output.EnergyResultProducedFromBalanceFixing);
                 foreach (var expectedTimeSeriesType in ExpectedTimeSeriesTypesForBalanceFixing)
                 {
                     actualForCalculationResultCompleted.Should().Contain(expectedTimeSeriesType);
@@ -163,8 +144,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             [DomainFact]
             public void When_WholesaleCalculationBatchIsComplete_Then_MessagesReceivedContainAllTimeSeriesTypes()
             {
-                var actualForCalculationResultCompleted = GetTimeSeriesTypes(_calculationResultCompletedFromWholesaleFixing);
-                var actualForEnergyResultProduced = GetTimeSeriesTypes(_energyResultProducedFromWholesaleFixing);
+                var actualForCalculationResultCompleted = GetTimeSeriesTypes(Fixture.Output.CalculationResultCompletedFromWholesaleFixing);
+                var actualForEnergyResultProduced = GetTimeSeriesTypes(Fixture.Output.EnergyResultProducedFromWholesaleFixing);
                 foreach (var expectedTimeSeriesType in ExpectedTimeSeriesTypesForWholesaleFixing)
                 {
                     actualForCalculationResultCompleted.Should().Contain(expectedTimeSeriesType);
@@ -181,11 +162,11 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                              ExpectedTimeSeriesTypeAndAggregationLevelForBalanceFixing())
                     {
                         CheckIfExistsInCalculationResults(
-                            _calculationResultCompletedFromBalanceFixing,
+                            Fixture.Output.CalculationResultCompletedFromBalanceFixing,
                             timeSeriesType,
                             aggregationLevel).Should().BeTrue();
                         CheckIfExistsInCalculationResults(
-                            _energyResultProducedCompletedFromBalanceFixing,
+                            Fixture.Output.EnergyResultProducedFromBalanceFixing,
                             timeSeriesType,
                             aggregationLevel).Should().BeTrue();
                     }
@@ -199,8 +180,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 {
                     foreach (var (timeSeriesType, aggregationLevel) in ExpectedTimeSeriesTypeAndAggregationLevelForWholesaleFixing())
                     {
-                        CheckIfExistsInCalculationResults(_calculationResultCompletedFromWholesaleFixing, timeSeriesType, aggregationLevel).Should().BeTrue();
-                        CheckIfExistsInCalculationResults(_energyResultProducedFromWholesaleFixing, timeSeriesType, aggregationLevel).Should().BeTrue();
+                        CheckIfExistsInCalculationResults(Fixture.Output.CalculationResultCompletedFromWholesaleFixing, timeSeriesType, aggregationLevel).Should().BeTrue();
+                        CheckIfExistsInCalculationResults(Fixture.Output.EnergyResultProducedFromWholesaleFixing, timeSeriesType, aggregationLevel).Should().BeTrue();
                     }
                 }
             }

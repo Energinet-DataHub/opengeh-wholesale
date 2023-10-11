@@ -12,7 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.EDI.Validators;
+using Energinet.DataHub.Edi.Requests;
+using Energinet.DataHub.Wholesale.EDI.Validation;
+using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie;
+using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
 using NodaTime;
 using Xunit;
 
@@ -20,16 +23,16 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 
 public class AggregatedTimeSeriesRequestValidatorTests
 {
-    private static readonly PeriodValidator _periodValidator = new(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
-    private readonly AggregatedTimeSeriesRequestValidator _sut = new(_periodValidator);
+    private static readonly PeriodValidationRule _periodValidator = new(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
+    private readonly IValidator<AggregatedTimeSeriesRequest> _sut = new AggregatedTimeSeriesRequestValidator(new[] { _periodValidator });
 
     [Fact]
     public void Validate_AggregatedTimeSeriesRequest_SuccessValidation()
     {
         // Arrange
-        var request = new Edi.Requests.AggregatedTimeSeriesRequest()
+        var request = new AggregatedTimeSeriesRequest()
         {
-            Period = new Energinet.DataHub.Edi.Requests.Period()
+            Period = new Edi.Requests.Period()
             {
                 Start = Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(),
                 End = Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString(),
@@ -37,9 +40,9 @@ public class AggregatedTimeSeriesRequestValidatorTests
         };
 
         // Act
-        var validationStatus = _sut.Validate(request);
+        var validationErrors = _sut.Validate(request);
 
         // Assert
-        Assert.True(validationStatus.IsValid);
+        Assert.False(validationErrors.Any());
     }
 }
