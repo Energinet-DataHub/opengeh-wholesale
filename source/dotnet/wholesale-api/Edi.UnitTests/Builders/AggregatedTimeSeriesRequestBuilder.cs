@@ -20,7 +20,6 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 public static class AggregatedTimeSeriesRequestBuilder
 {
     private static AggregationPerGridArea _aggregationPerGridArea = new();
-    private static TimeSeriesType _timeSeriesType = Edi.Requests.TimeSeriesType.Production;
     private static string _startInstant = Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString();
     private static string _endInstant = Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString();
 
@@ -29,12 +28,12 @@ public static class AggregatedTimeSeriesRequestBuilder
         return new AggregatedTimeSeriesRequest
         {
             AggregationPerGridarea = _aggregationPerGridArea,
-            TimeSeriesType = _timeSeriesType,
             Period = new Edi.Requests.Period()
             {
                 Start = _startInstant,
                 End = _endInstant,
             },
+            MeteringPointType = "E18",
         };
     }
 }
