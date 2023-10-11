@@ -40,7 +40,7 @@ public static class CalculationResultsRegistration
         serviceCollection.AddScoped<ISettlementReportResultsCsvWriter, SettlementReportResultsCsvWriter>();
         serviceCollection.AddScoped<IDataLakeClient, DataLakeClient>();
         serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
-        serviceCollection.AddScoped<ICalculationResultQueries, CalculationResultQueries>();
+        serviceCollection.AddScoped<IEnergyResultQueries, EnergyResultQueries>();
         serviceCollection.AddScoped<IRequestCalculationResultQueries, RequestCalculationResultQueries>();
         serviceCollection.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
         serviceCollection.AddScoped<ISettlementReportRepository>(

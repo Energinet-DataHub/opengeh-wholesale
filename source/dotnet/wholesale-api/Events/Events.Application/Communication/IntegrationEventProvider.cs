@@ -25,7 +25,7 @@ namespace Energinet.DataHub.Wholesale.Events.Application.Communication;
 public class IntegrationEventProvider : IIntegrationEventProvider
 {
     private readonly ICalculationResultIntegrationEventFactory _calculationResultIntegrationEventFactory;
-    private readonly ICalculationResultQueries _calculationResultQueries;
+    private readonly IEnergyResultQueries _energyResultQueries;
     private readonly ICompletedBatchRepository _completedBatchRepository;
     private readonly IClock _clock;
     private readonly IUnitOfWork _unitOfWork;
@@ -33,14 +33,14 @@ public class IntegrationEventProvider : IIntegrationEventProvider
 
     public IntegrationEventProvider(
         ICalculationResultIntegrationEventFactory integrationEventFactory,
-        ICalculationResultQueries calculationResultQueries,
+        IEnergyResultQueries energyResultQueries,
         ICompletedBatchRepository completedBatchRepository,
         IClock clock,
         IUnitOfWork unitOfWork,
         ILogger<IntegrationEventProvider> logger)
     {
         _calculationResultIntegrationEventFactory = integrationEventFactory;
-        _calculationResultQueries = calculationResultQueries;
+        _energyResultQueries = energyResultQueries;
         _completedBatchRepository = completedBatchRepository;
         _clock = clock;
         _unitOfWork = unitOfWork;
@@ -58,7 +58,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
             }
 
             var resultCount = 0;
-            await foreach (var energyResult in _calculationResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
+            await foreach (var energyResult in _energyResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
             {
                 resultCount++;
                 yield return _calculationResultIntegrationEventFactory.CreateCalculationResultCompleted(energyResult); // Deprecated
