@@ -14,19 +14,19 @@
  */
 
 syntax = "proto3";
-import "google/protobuf/timestamp.proto";
 
 option csharp_namespace = "Energinet.DataHub.Edi.Requests";
 
 message AggregatedTimeSeriesRequest {
-  TimeSeriesType time_series_type = 1;
-  Period period = 2;
+  Period period = 1;
   oneof aggregation_level {
-    AggregationPerGridArea aggregation_per_gridarea = 3;
-    AggregationPerEnergySupplierPerGridArea aggregation_per_energysupplier_per_gridarea = 4;
-    AggregationPerBalanceResponsiblePartyPerGridArea aggregation_per_balanceresponsibleparty_per_gridarea = 5;
-    AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea aggregation_per_energysupplier_per_balanceresponsibleparty_per_gridarea = 6;
+    AggregationPerGridArea aggregation_per_gridarea = 2;
+    AggregationPerEnergySupplierPerGridArea aggregation_per_energysupplier_per_gridarea = 3;
+    AggregationPerBalanceResponsiblePartyPerGridArea aggregation_per_balanceresponsibleparty_per_gridarea = 4;
+    AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea aggregation_per_energysupplier_per_balanceresponsibleparty_per_gridarea = 5;
   }
+  string metering_point_type = 6;
+  optional string settlement_method = 7;
 }
 
 message Period {
@@ -87,18 +87,4 @@ message AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea {
   string balance_responsible_party_id = 2;
 
   string energy_supplier_id = 3;
-}
-
-enum TimeSeriesType {
-  /*
-   * Unspecified is unused but according to best practice.
-   * Read more at https://protobuf.dev/programming-guides/style/#enums.
-   */
-  TIME_SERIES_TYPE_UNSPECIFIED = 0;
-  TIME_SERIES_TYPE_PRODUCTION = 1;
-  TIME_SERIES_TYPE_NON_PROFILED_CONSUMPTION = 2;
-  TIME_SERIES_TYPE_FLEX_CONSUMPTION = 3;
-  TIME_SERIES_TYPE_NET_EXCHANGE_PER_GA = 4;
-  TIME_SERIES_TYPE_NET_EXCHANGE_PER_NEIGHBORING_GA = 5;
-  TIME_SERIES_TYPE_TOTAL_CONSUMPTION = 6;
 }
