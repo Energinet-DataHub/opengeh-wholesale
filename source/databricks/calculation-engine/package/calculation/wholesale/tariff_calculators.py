@@ -16,10 +16,10 @@ from datetime import datetime
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as F
 
-from .schemas import tariffs_schema
 from package.codelists import ChargeResolution, ChargeUnit
 from package.common import assert_schema
 from package.constants import Colname
+from .schemas.tariffs_schema import tariff_schema
 
 
 def calculate_tariff_price_per_ga_co_es(tariffs: DataFrame) -> DataFrame:
@@ -37,7 +37,7 @@ def calculate_tariff_price_per_ga_co_es(tariffs: DataFrame) -> DataFrame:
     resolution is managed outside this module.
     """
 
-    assert_schema(tariffs.schema, tariffs_schema.tariff_schema)
+    assert_schema(tariffs.schema, tariff_schema)
 
     df = _sum_quantity_and_count_charges(tariffs)
 
