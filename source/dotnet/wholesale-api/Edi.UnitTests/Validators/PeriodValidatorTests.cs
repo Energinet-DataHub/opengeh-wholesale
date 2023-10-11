@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Edi.Requests;
+using Energinet.DataHub.Wholesale.EDI.Validation;
 using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
 using NodaTime;
 using Xunit;
@@ -54,7 +55,7 @@ public class PeriodValidatorTests
 
         // Assert
         Assert.Single(errors);
-        Assert.Equal("D66", errors.First().ErrorCode);
+        Assert.Equal(ValidationError.InvalidDateFormat.ErrorCode, errors.First().ErrorCode);
     }
 
     [Fact]
@@ -72,7 +73,7 @@ public class PeriodValidatorTests
 
         // Assert
         Assert.Single(errors);
-        Assert.Equal("D66", errors.First().ErrorCode);
+        Assert.Equal(ValidationError.InvalidDateFormat.ErrorCode, errors.First().ErrorCode);
     }
 
     [Fact]
@@ -89,7 +90,7 @@ public class PeriodValidatorTests
 
         // Assert
         Assert.Single(errors);
-        Assert.Equal("D66", errors.First().ErrorCode);
+        Assert.Equal(ValidationError.InvalidDateFormat.ErrorCode, errors.First().ErrorCode);
     }
 
     [Fact]
@@ -108,9 +109,9 @@ public class PeriodValidatorTests
         Assert.True(errors.Count == 2);
         Assert.Contains(
             errors.Where(error => error.Message.Contains("Start date")),
-            error => error.ErrorCode.Equals("D66"));
+            error => error.ErrorCode.Equals(ValidationError.InvalidDateFormat.ErrorCode));
         Assert.Contains(
             errors.Where(error => error.Message.Contains("End date")),
-            error => error.ErrorCode.Equals("D66"));
+            error => error.ErrorCode.Equals(ValidationError.InvalidDateFormat.ErrorCode));
     }
 }

@@ -22,6 +22,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationR
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
+using Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.Fixtures;
 using FluentAssertions;
 using Moq;
 using NodaTime.Extensions;
@@ -176,13 +177,13 @@ public class EnergyResultQueriesTests
             new(EnergyResultColumnNames.BatchId, "batchId"),
             new(EnergyResultColumnNames.CalculationResultId, calculationResultIdA),
         };
-        var sqlResultRowA = new TestRow(listA);
+        var sqlResultRowA = new TestSqlResultRow(listA);
         var listB = new List<KeyValuePair<string, string>>
         {
             new(EnergyResultColumnNames.BatchId, "batchId"),
             new(EnergyResultColumnNames.CalculationResultId, calculationResultIdB),
         };
-        var sqlResultRowB = new TestRow(listB);
+        var sqlResultRowB = new TestSqlResultRow(listB);
 
         // Act
         var actual = EnergyResultQueries.BelongsToDifferentResults(sqlResultRowA, sqlResultRowB);
@@ -198,18 +199,5 @@ public class EnergyResultQueriesTests
         {
             yield return new SqlResultRow(_tableChunk, i);
         }
-    }
-
-    private record TestRow : SqlResultRow
-    {
-        private readonly List<KeyValuePair<string, string>> _list;
-
-        public TestRow(List<KeyValuePair<string, string>> list)
-            : base(null!, 0)
-        {
-            _list = list;
-        }
-
-        public override string this[string column] => _list.Single(pair => pair.Key == column).Value;
     }
 }
