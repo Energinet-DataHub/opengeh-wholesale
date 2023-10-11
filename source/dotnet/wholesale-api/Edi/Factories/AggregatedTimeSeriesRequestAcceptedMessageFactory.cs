@@ -56,7 +56,7 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
             QuantityUnit = QuantityUnit.Kwh,
             Period = period,
             TimeSeriesPoints = { points },
-            TimeSeriesType = TimeSeriesTypeMapper.MapTimeSeriesTypeFromCalculationsResult(energyResult.TimeSeriesType),
+            TimeSeriesType = CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromCalculationsResult(energyResult.TimeSeriesType),
         };
     }
 
