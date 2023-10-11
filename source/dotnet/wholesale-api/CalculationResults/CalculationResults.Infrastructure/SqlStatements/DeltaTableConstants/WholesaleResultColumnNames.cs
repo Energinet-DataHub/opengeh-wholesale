@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Reflection;
+
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 
 public class WholesaleResultColumnNames
@@ -36,4 +38,35 @@ public class WholesaleResultColumnNames
     public const string ChargeCode = "charge_id";
     public const string ChargeType = "charge_type";
     public const string ChargeOwnerId = "charge_owner_id";
+
+    public static IReadOnlyCollection<string> GetAllNames()
+    {
+        var fieldInfos = typeof(EnergyResultColumnNames).GetFields(BindingFlags.Public | BindingFlags.Static);
+        return fieldInfos.Select(x => x.GetValue(null)).Cast<string>().ToList();
+    }
+
+    public static string GetType(string columnName) =>
+        columnName switch
+        {
+            CalculationId => "string",
+            CalculationExecutionTimeStart => "timestamp",
+            CalculationType => "string",
+            CalculationResultId => "string",
+            GridArea => "string",
+            EnergySupplierId => "string",
+            ChargeResolution => "string",
+            MeteringPointType => "string",
+            SettlementMethod => "string",
+            ChargeCode => "string",
+            ChargeType => "string",
+            ChargeOwnerId => "string",
+            IsTax => "boolean",
+            Time => "timestamp",
+            Quantity => "decimal(18,3)",
+            QuantityUnit => "string",
+            QuantityQualities => "array<string>",
+            Price => "decimal(18,6)",
+            Amount => "decimal(18,6)",
+            _ => throw new ArgumentException($"Unexpected column name '{columnName}'."),
+        };
 }

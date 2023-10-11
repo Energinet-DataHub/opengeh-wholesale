@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 
@@ -65,8 +64,8 @@ public class WholesaleResultDeltaTableHelper
 
     private static Dictionary<string, string> GetColumnDefinitions()
     {
-        var columnNames = EnergyResultColumnNames.GetAllNames().ToList();
-        var columnTypes = columnNames.Select(EnergyResultColumnNames.GetType);
+        var columnNames = WholesaleResultColumnNames.GetAllNames().ToList();
+        var columnTypes = columnNames.Select(WholesaleResultColumnNames.GetType);
         return columnNames.Zip(columnTypes, (name, type) => new { Name = name, Type = type }).ToDictionary(item => item.Name, item => item.Type);
     }
 }
