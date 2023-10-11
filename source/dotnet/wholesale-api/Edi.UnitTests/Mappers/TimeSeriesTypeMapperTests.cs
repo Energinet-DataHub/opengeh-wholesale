@@ -32,9 +32,7 @@ public class TimeSeriesTypeMapperTests
         string? settlementMethod,
         TimeSeriesType expectedType)
     {
-        // Edi.Requests.TimeSeriesType.Production is unused, kept for backwards compatibility
         var timeSeriesType = TimeSeriesTypeMapper.MapTimeSeriesType(
-            Edi.Requests.TimeSeriesType.Production,
             meteringPointType,
             settlementMethod);
 
@@ -42,22 +40,9 @@ public class TimeSeriesTypeMapperTests
         Assert.Equal(expectedType, timeSeriesType);
     }
 
-    [Theory]
-    [InlineData(Edi.Requests.TimeSeriesType.TotalConsumption, TimeSeriesType.TotalConsumption)]
-    [InlineData(Edi.Requests.TimeSeriesType.NonProfiledConsumption, TimeSeriesType.NonProfiledConsumption)]
-    [InlineData(Edi.Requests.TimeSeriesType.FlexConsumption, TimeSeriesType.FlexConsumption)]
-    [InlineData(Edi.Requests.TimeSeriesType.Production, TimeSeriesType.Production)]
-    [InlineData(Edi.Requests.TimeSeriesType.NetExchangePerGa, TimeSeriesType.NetExchangePerGa)]
-    public void MapTimeSeriesType_FromTimeSeriesType_returnsExpectedType(
-        Edi.Requests.TimeSeriesType actualTimeSeriesType,
-        TimeSeriesType expectedType)
+    [Fact]
+    public void MapTimeSeriesType_InvalidCombination_ThrowsException()
     {
-        var mappedTimeSeriesType = TimeSeriesTypeMapper.MapTimeSeriesType(
-            actualTimeSeriesType,
-            string.Empty,
-            string.Empty);
-
-        // Assert
-        Assert.Equal(expectedType, mappedTimeSeriesType);
+        Assert.Throws<InvalidOperationException>(() => TimeSeriesTypeMapper.MapTimeSeriesType("Invalid", "Invalid"));
     }
 }

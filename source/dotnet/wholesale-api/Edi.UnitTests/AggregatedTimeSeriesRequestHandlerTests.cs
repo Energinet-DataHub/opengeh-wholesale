@@ -56,7 +56,6 @@ public class AggregatedTimeSeriesRequestHandlerTests
         var request = new AggregatedTimeSeriesRequest
         {
             AggregationPerGridarea = new AggregationPerGridArea(),
-            TimeSeriesType = Edi.Requests.TimeSeriesType.Production,
             Period = new Period()
             {
                 Start = new Timestamp().ToInstant().ToString(),
@@ -120,7 +119,6 @@ public class AggregatedTimeSeriesRequestHandlerTests
         var request = new AggregatedTimeSeriesRequest
         {
             AggregationPerGridarea = new AggregationPerGridArea(),
-            TimeSeriesType = Edi.Requests.TimeSeriesType.Production,
             Period = new Period()
             {
                 Start = new Timestamp().ToString(),

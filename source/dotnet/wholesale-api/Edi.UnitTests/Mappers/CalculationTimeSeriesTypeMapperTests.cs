@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.EDI.Exceptions;
 using Energinet.DataHub.Wholesale.EDI.Mappers;
 using Energinet.DataHub.Wholesale.EDI.Models;
-using FluentAssertions;
 using Xunit;
 using CalculationTimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType;
 
@@ -22,18 +22,53 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Mappers;
 
 public class CalculationTimeSeriesTypeMapperTests
 {
+    private readonly List<CalculationTimeSeriesType> _notSupportedCalculationTypes = new()
+    {
+        CalculationTimeSeriesType.GridLoss,
+        CalculationTimeSeriesType.TempProduction,
+        CalculationTimeSeriesType.NegativeGridLoss,
+        CalculationTimeSeriesType.PositiveGridLoss,
+        CalculationTimeSeriesType.TempFlexConsumption,
+        CalculationTimeSeriesType.NetExchangePerNeighboringGa,
+    };
+
     [Theory]
-    [InlineData(TimeSeriesType.Production, CalculationTimeSeriesType.Production)]
-    [InlineData(TimeSeriesType.FlexConsumption, CalculationTimeSeriesType.FlexConsumption)]
-    [InlineData(TimeSeriesType.TotalConsumption, CalculationTimeSeriesType.TotalConsumption)]
-    [InlineData(TimeSeriesType.NetExchangePerGa, CalculationTimeSeriesType.NetExchangePerGa)]
-    [InlineData(TimeSeriesType.NonProfiledConsumption, CalculationTimeSeriesType.NonProfiledConsumption)]
-    public void ToCalculationTimeSerieType_ReturnsExpectedType(TimeSeriesType type, CalculationTimeSeriesType expected)
+    [MemberData(nameof(TimeSeriesTypesEdiModel))]
+    public void ToCalculationTimeSerieType_ReturnsExpectedType(TimeSeriesType type)
     {
         // Act
-        var actual = EDI.Mappers.CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromEdi(type);
+        CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromEdi(type);
+    }
 
-        // Assert
-        actual.Should().Be(expected);
+    [Theory]
+    [MemberData(nameof(TimeSeriesTypesCalculationModel))]
+    public void ToTimeSeriesType_ReturnsExpectedType(CalculationTimeSeriesType type)
+    {
+        // Act
+        if (_notSupportedCalculationTypes.Contains(type))
+        {
+            Assert.Throws<NotSupportedTimeSeriesTypeException>(() =>
+                CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromCalculationsResult(type));
+        }
+        else
+        {
+            CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromCalculationsResult(type);
+        }
+    }
+
+    public static IEnumerable<object[]> TimeSeriesTypesEdiModel()
+    {
+        foreach (var number in Enum.GetValues(typeof(TimeSeriesType)))
+        {
+            yield return new[] { number };
+        }
+    }
+
+    public static IEnumerable<object[]> TimeSeriesTypesCalculationModel()
+    {
+        foreach (var number in Enum.GetValues(typeof(CalculationTimeSeriesType)))
+        {
+            yield return new[] { number };
+        }
     }
 }
