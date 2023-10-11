@@ -25,6 +25,7 @@ from pyspark.sql.types import (
     TimestampType,
 )
 from package.codelists import ChargeResolution, ChargeUnit
+from package.common import assert_schema
 from package.constants import Colname
 
 
@@ -65,10 +66,7 @@ def calculate_tariff_price_per_ga_co_es(tariffs: DataFrame) -> DataFrame:
     resolution is managed outside this module.
     """
 
-    if tariffs.schema != tariff_schema:
-        raise ValueError(
-            f"Schema mismatch. Expected {tariff_schema}, but got {tariffs.schema}."
-        )
+    assert_schema(tariffs.schema, tariff_schema)
 
     df = _sum_quantity_and_count_charges(tariffs)
 
