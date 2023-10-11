@@ -61,4 +61,10 @@ public class AggregatedTimeSeriesRequestBuilder
         _end = end;
         return this;
     }
+
+    public AggregatedTimeSeriesRequestBuilder WithMeteringPointType(string meteringPointType)
+    {
+        _meteringPointType = meteringPointType;
+        return this;
+    }
 }

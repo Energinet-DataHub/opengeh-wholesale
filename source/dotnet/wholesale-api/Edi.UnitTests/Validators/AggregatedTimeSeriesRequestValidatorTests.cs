@@ -25,7 +25,13 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 public class AggregatedTimeSeriesRequestValidatorTests
 {
     private static readonly PeriodValidationRule _periodValidator = new(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!, SystemClock.Instance);
-    private readonly IValidator<AggregatedTimeSeriesRequest> _sut = new AggregatedTimeSeriesRequestValidator(new[] { _periodValidator });
+    private static readonly MeteringPointTypeValidationRule _meteringPointTypeValidationRule = new();
+    private readonly IValidator<AggregatedTimeSeriesRequest> _sut = new AggregatedTimeSeriesRequestValidator(
+        new IValidationRule<AggregatedTimeSeriesRequest>[]
+        {
+            _periodValidator,
+            _meteringPointTypeValidationRule,
+        });
 
     [Fact]
     public void Validate_AggregatedTimeSeriesRequest_SuccessValidation()
@@ -38,6 +44,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
                 Start = Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(),
                 End = Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString(),
             },
+            MeteringPointType = "E18",
         };
 
         // Act
@@ -58,6 +65,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
                 Start = Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(),
                 End = Instant.FromUtc(2022, 3, 2, 23, 0, 0).ToString(),
             },
+            MeteringPointType = "E18",
         };
 
         // Act
