@@ -25,7 +25,7 @@ using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests;
 
-public class AggregatedTimeSeriesMessageFactoryTests
+public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
 {
     private readonly Guid _batchId = Guid.NewGuid();
     private readonly Guid _id = Guid.NewGuid();
@@ -44,10 +44,9 @@ public class AggregatedTimeSeriesMessageFactoryTests
         var expectedAcceptedSubject = nameof(AggregatedTimeSeriesRequestAccepted);
         var expectedReferenceId = "123456789";
         var energyResult = CreateEnergyResult();
-        var sut = new AggregatedTimeSeriesMessageFactory();
 
         // Act
-        var response = sut.Create(energyResult, expectedReferenceId);
+        var response = AggregatedTimeSeriesRequestAcceptedMessageFactory.Create(energyResult, expectedReferenceId);
 
         // Assert
         response.Should().NotBeNull();
@@ -61,28 +60,6 @@ public class AggregatedTimeSeriesMessageFactoryTests
         responseBody.Period.StartOfPeriod.Should().Be(new Timestamp() { Seconds = _periodStart.ToUnixTimeSeconds() });
         responseBody.Period.EndOfPeriod.Should().Be(new Timestamp() { Seconds = _periodEnd.ToUnixTimeSeconds() });
         responseBody.TimeSeriesPoints.Count.Should().Be(energyResult.TimeSeriesPoints.Length);
-    }
-
-    [Fact]
-    public void Create_WithNoCalculationResult_CreatesRejectMessage()
-    {
-        // Arrange
-        var expectedAcceptedSubject = nameof(AggregatedTimeSeriesRequestRejected);
-        var expectedReferenceId = "123456789";
-        var sut = new AggregatedTimeSeriesMessageFactory();
-
-        // Act
-        var response = sut.Create(null, expectedReferenceId);
-
-        // Assert
-        response.Should().NotBeNull();
-        response.ApplicationProperties.ContainsKey("ReferenceId").Should().BeTrue();
-        response.ApplicationProperties["ReferenceId"].ToString().Should().Be(expectedReferenceId);
-        response.Subject.Should().Be(expectedAcceptedSubject);
-
-        var responseBody = AggregatedTimeSeriesRequestRejected.Parser.ParseFrom(response.Body);
-        responseBody.RejectReasons.Should().ContainSingle();
-        responseBody.RejectReasons[0].ErrorCode.Should().Be("E0H");
     }
 
     private EnergyResult CreateEnergyResult()

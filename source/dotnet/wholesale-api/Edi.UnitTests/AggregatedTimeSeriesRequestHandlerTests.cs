@@ -43,7 +43,6 @@ public class AggregatedTimeSeriesRequestHandlerTests
         [Frozen] Mock<IRequestCalculationResultQueries> requestCalculationResultQueriesMock,
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<AggregatedTimeSeriesRequestFactory> aggregatedTimeSeriesRequestMessageParseMock,
-        [Frozen] Mock<AggregatedTimeSeriesMessageFactory> aggregatedTimeSeriesMessageFactoryMock,
         [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
         [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> loggerMock)
     {
@@ -70,7 +69,6 @@ public class AggregatedTimeSeriesRequestHandlerTests
             requestCalculationResultQueriesMock.Object,
             senderMock.Object,
             aggregatedTimeSeriesRequestMessageParseMock.Object,
-            aggregatedTimeSeriesMessageFactoryMock.Object,
             validator.Object,
             loggerMock.Object);
 
@@ -97,7 +95,6 @@ public class AggregatedTimeSeriesRequestHandlerTests
         [Frozen] Mock<IRequestCalculationResultQueries> requestCalculationResultQueriesMock,
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<AggregatedTimeSeriesRequestFactory> aggregatedTimeSeriesRequestMessageParseMock,
-        [Frozen] Mock<AggregatedTimeSeriesMessageFactory> aggregatedTimeSeriesMessageFactoryMock,
         [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
         [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> loggerMock)
     {
@@ -118,7 +115,6 @@ public class AggregatedTimeSeriesRequestHandlerTests
             requestCalculationResultQueriesMock.Object,
             senderMock.Object,
             aggregatedTimeSeriesRequestMessageParseMock.Object,
-            aggregatedTimeSeriesMessageFactoryMock.Object,
             validator.Object,
             loggerMock.Object);
 
@@ -145,7 +141,6 @@ public class AggregatedTimeSeriesRequestHandlerTests
         [Frozen] Mock<IRequestCalculationResultQueries> requestCalculationResultQueriesMock,
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<AggregatedTimeSeriesRequestFactory> aggregatedTimeSeriesRequestMessageParseMock,
-        [Frozen] Mock<AggregatedTimeSeriesMessageFactory> aggregatedTimeSeriesMessageFactoryMock,
         [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
         [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> loggerMock)
     {
@@ -170,7 +165,6 @@ public class AggregatedTimeSeriesRequestHandlerTests
             requestCalculationResultQueriesMock.Object,
             senderMock.Object,
             aggregatedTimeSeriesRequestMessageParseMock.Object,
-            aggregatedTimeSeriesMessageFactoryMock.Object,
             validator.Object,
             loggerMock.Object);
 

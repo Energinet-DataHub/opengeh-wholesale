@@ -16,6 +16,7 @@ namespace Energinet.DataHub.Wholesale.EDI.Validation;
 
 public sealed class ValidationError
 {
+    public static readonly ValidationError NoDataFound = new("ingen data tilgængelig / no data available", "E0H");
     public static readonly ValidationError InvalidDateFormat = new("Forkert dato format for {PropertyName}, skal være YYYY-MM-DDT22:00:00Z eller YYYY-MM-DDT23:00:00Z/Wrong date format for {PropertyName}, must be YYYY-MM-DDT22:00:00Z or YYYY-MM-DDT23:00:00Z", "D66");
 
     private ValidationError(string message, string errorCode)
@@ -24,13 +25,12 @@ public sealed class ValidationError
         ErrorCode = errorCode;
     }
 
-    public string Message { get; private set; }
+    public string Message { get; }
 
     public string ErrorCode { get; }
 
     public ValidationError WithPropertyName(string propertyName)
     {
-        Message = Message.Replace("{PropertyName}", propertyName);
-        return this;
+        return new ValidationError(Message.Replace("{PropertyName}", propertyName), ErrorCode);
     }
 }
