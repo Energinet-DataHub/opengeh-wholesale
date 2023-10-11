@@ -34,12 +34,15 @@ public class WholesaleResultDeltaTableHelper
         string chargeOwnerId = "987654321",
         string time = "2022-05-16T03:00:00.000Z",
         string? quantity = "1.123",
-        string quantityQualities = "[\"missing\", \"measured\"]",
+        IReadOnlyCollection<string>? quantityQualities = null,
         string? price = "9.876543",
         string? amount = "2.345678",
         string isTax = "False")
     {
-        return GetColumnDefinitions().Keys.Select(columnName => columnName switch
+        quantityQualities ??= new List<string> { "'missing'", "'measured'" };
+        var quantityQualitiesArray = "array(" + string.Join(",", quantityQualities) + ")";
+
+        return WholesaleResultColumnNames.GetAllNames().Select(columnName => columnName switch
         {
             WholesaleResultColumnNames.CalculationId => $@"'{calculationId}'",
             WholesaleResultColumnNames.CalculationExecutionTimeStart => $@"'{calculationExecutionTimeStart}'",
@@ -57,17 +60,10 @@ public class WholesaleResultDeltaTableHelper
             WholesaleResultColumnNames.IsTax => $@"'{isTax}'",
             WholesaleResultColumnNames.Time => $@"'{time}'",
             WholesaleResultColumnNames.Quantity => $@"{quantity}",
-            WholesaleResultColumnNames.QuantityQualities => $@"'{quantityQualities}'",
+            WholesaleResultColumnNames.QuantityQualities => $@"'{quantityQualitiesArray}'",
             WholesaleResultColumnNames.Price => $@"'{price}'",
             WholesaleResultColumnNames.Amount => $@"'{amount}'",
             _ => throw new ArgumentException($"Unexpected column name: {columnName}."),
         }).ToArray();
-    }
-
-    private static Dictionary<string, string> GetColumnDefinitions()
-    {
-        var columnNames = WholesaleResultColumnNames.GetAllNames().ToList();
-        var columnTypes = columnNames.Select(WholesaleResultColumnNames.GetType);
-        return columnNames.Zip(columnTypes, (name, type) => new { Name = name, Type = type }).ToDictionary(item => item.Name, item => item.Type);
     }
 }
