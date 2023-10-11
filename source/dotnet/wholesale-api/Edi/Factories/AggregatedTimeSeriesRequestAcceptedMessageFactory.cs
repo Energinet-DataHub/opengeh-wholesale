@@ -16,7 +16,6 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.EDI.Mappers;
-using Energinet.DataHub.Wholesale.EDI.Validation;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using PeriodContract = Energinet.DataHub.Edi.Responses.Period;
@@ -24,13 +23,11 @@ using TimeSeriesPoint = Energinet.DataHub.Edi.Responses.TimeSeriesPoint;
 
 namespace Energinet.DataHub.Wholesale.EDI.Factories;
 
-public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFactory
+public class AggregatedTimeSeriesRequestAcceptedMessageFactory
 {
-    public ServiceBusMessage Create(EnergyResult? calculationResult, string referenceId)
+    public static ServiceBusMessage Create(EnergyResult calculationResult, string referenceId)
     {
-        var body = calculationResult is null
-            ? CreateRejectedResponse()
-            : CreateAcceptedResponse(calculationResult);
+        var body = CreateAcceptedResponse(calculationResult);
 
         var message = new ServiceBusMessage()
         {
@@ -40,47 +37,6 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
 
         message.ApplicationProperties.Add("ReferenceId", referenceId);
         return message;
-    }
-
-    public ServiceBusMessage CreateRejected(IReadOnlyList<ValidationError> errors, string referenceId)
-    {
-        var body = CreateRejected(errors);
-
-        var message = new ServiceBusMessage()
-        {
-            Body = new BinaryData(body.ToByteArray()),
-            Subject = body.GetType().Name,
-        };
-
-        message.ApplicationProperties.Add("ReferenceId", referenceId);
-        return message;
-    }
-
-    private static IMessage CreateRejected(IReadOnlyList<ValidationError> errors)
-    {
-        var response = new AggregatedTimeSeriesRequestRejected();
-        response.RejectReasons.AddRange(errors.Select(CreateRejectReason));
-        return response;
-    }
-
-    private static RejectReason CreateRejectReason(ValidationError error)
-    {
-        return new RejectReason() { ErrorCode = error.ErrorCode, ErrorMessage = error.Message, };
-    }
-
-    private static IMessage CreateRejectedResponse()
-    {
-        var response = new AggregatedTimeSeriesRequestRejected();
-        response.RejectReasons.Add(CreateRejectReason());
-        return response;
-    }
-
-    private static RejectReason CreateRejectReason()
-    {
-        return new RejectReason()
-        {
-            ErrorCode = "EOR", ErrorMessage = "something went wrong",
-        };
     }
 
     private static AggregatedTimeSeriesRequestAccepted CreateAcceptedResponse(EnergyResult energyResult)

@@ -29,7 +29,6 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
 {
     private readonly IRequestCalculationResultQueries _requestCalculationResultQueries;
     private readonly IEdiClient _ediClient;
-    private readonly IAggregatedTimeSeriesMessageFactory _aggregatedTimeSeriesMessageFactory;
     private readonly IValidator<Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest> _validator;
     private readonly ILogger<AggregatedTimeSeriesRequestHandler> _logger;
     private readonly IAggregatedTimeSeriesRequestFactory _aggregatedTimeSeriesRequestFactory;
@@ -38,14 +37,12 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         IRequestCalculationResultQueries requestCalculationResultQueries,
         IEdiClient ediClient,
         IAggregatedTimeSeriesRequestFactory aggregatedTimeSeriesRequestFactory,
-        IAggregatedTimeSeriesMessageFactory aggregatedTimeSeriesMessageFactory,
         IValidator<Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest> validator,
         ILogger<AggregatedTimeSeriesRequestHandler> logger)
     {
         _requestCalculationResultQueries = requestCalculationResultQueries;
         _ediClient = ediClient;
         _aggregatedTimeSeriesRequestFactory = aggregatedTimeSeriesRequestFactory;
-        _aggregatedTimeSeriesMessageFactory = aggregatedTimeSeriesMessageFactory;
         _validator = validator;
         _logger = logger;
     }
@@ -64,13 +61,20 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
                 aggregatedTimeSeriesRequestMessage,
                 cancellationToken).ConfigureAwait(false);
 
-            message = _aggregatedTimeSeriesMessageFactory.Create(
+            if (result is not null)
+            {
+                message = AggregatedTimeSeriesRequestAcceptedMessageFactory.Create(
                 result,
                 referenceId);
+            }
+            else
+            {
+                message = AggregatedTimeSeriesRequestRejectedMessageFactory.Create(new[] { ValidationError.NoDataFound }, referenceId);
+            }
         }
         else
         {
-            message = _aggregatedTimeSeriesMessageFactory.CreateRejected(validationErrors.ToList(), referenceId);
+            message = AggregatedTimeSeriesRequestRejectedMessageFactory.Create(validationErrors.ToList(), referenceId);
         }
 
         await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
