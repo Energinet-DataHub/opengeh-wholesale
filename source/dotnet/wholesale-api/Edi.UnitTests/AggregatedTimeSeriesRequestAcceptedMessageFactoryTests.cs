@@ -16,6 +16,7 @@ using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.EDI.Factories;
+using Energinet.DataHub.Wholesale.EDI.Validation;
 using FluentAssertions;
 using Google.Protobuf.WellKnownTypes;
 using NodaTime;
@@ -24,7 +25,7 @@ using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests;
 
-public class AggregatedTimeSeriesMessageFactoryTests
+public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
 {
     private readonly Guid _batchId = Guid.NewGuid();
     private readonly Guid _id = Guid.NewGuid();
@@ -43,10 +44,9 @@ public class AggregatedTimeSeriesMessageFactoryTests
         var expectedAcceptedSubject = nameof(AggregatedTimeSeriesRequestAccepted);
         var expectedReferenceId = "123456789";
         var energyResult = CreateEnergyResult();
-        var sut = new AggregatedTimeSeriesMessageFactory();
 
         // Act
-        var response = sut.Create(energyResult, expectedReferenceId);
+        var response = AggregatedTimeSeriesRequestAcceptedMessageFactory.Create(energyResult, expectedReferenceId);
 
         // Assert
         response.Should().NotBeNull();
