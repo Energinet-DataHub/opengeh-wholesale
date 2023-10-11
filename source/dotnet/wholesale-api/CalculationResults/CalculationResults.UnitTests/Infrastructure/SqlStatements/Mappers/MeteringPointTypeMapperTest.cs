@@ -36,26 +36,26 @@ public class MeteringPointTypeMapperTests
     [InlineData("production", MeteringPointType.Production)]
     [InlineData("consumption", MeteringPointType.Consumption)]
     [InlineData("", null)]
-    public void FromDeltaTableValue_ValidMeteringPointTypeString_ReturnsExpectedType(string meteringPointType, MeteringPointType? expectedType)
+    public void FromDeltaTableValue_ValidDeltaTableValue_ReturnsExpectedType(string deltaTableValue, MeteringPointType? expectedType)
     {
         // Act
-        var actualType = MeteringPointTypeMapper.FromDeltaTableValue(meteringPointType);
+        var actualType = MeteringPointTypeMapper.FromDeltaTableValue(deltaTableValue);
 
         // Assert
         actualType.Should().Be(expectedType);
     }
 
     [Fact]
-    public void FromDeltaTableValue_InvalidString_ThrowsException()
+    public void FromDeltaTableValue_InvalidDeltaTableValue_ThrowsException()
     {
         // Arrange
-        var invalidString = Guid.NewGuid().ToString();
+        var invalidDeltaTableValue = Guid.NewGuid().ToString();
 
         // Act
-        var act = () => MeteringPointTypeMapper.FromDeltaTableValue(invalidString);
+        var act = () => MeteringPointTypeMapper.FromDeltaTableValue(invalidDeltaTableValue);
 
         // Assert
-        act.Should().Throw<FormatException>().WithMessage($"*'{invalidString}'*");
+        act.Should().Throw<FormatException>().WithMessage($"*'{invalidDeltaTableValue}'*");
     }
 
     [Theory]
