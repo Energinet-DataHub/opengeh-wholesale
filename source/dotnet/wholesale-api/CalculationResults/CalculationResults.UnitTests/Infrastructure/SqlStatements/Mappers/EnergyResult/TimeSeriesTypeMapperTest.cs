@@ -21,7 +21,7 @@ using Test.Core;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SqlStatements.Mappers;
+namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SqlStatements.Mappers.EnergyResult;
 
 [UnitTest]
 public class TimeSeriesTypeMapperTests

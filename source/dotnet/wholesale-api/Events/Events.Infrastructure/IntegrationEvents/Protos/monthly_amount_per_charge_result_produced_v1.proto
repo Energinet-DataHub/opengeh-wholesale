@@ -59,7 +59,7 @@ message MonthlyAmountPerChargeResultProducedV1 {
 
   QuantityUnit quantity_unit = 14;
 
-  optional bool is_tax = 15;
+  bool is_tax = 15;
 
   /*
    * 6 digit scale decimal value of the amount.

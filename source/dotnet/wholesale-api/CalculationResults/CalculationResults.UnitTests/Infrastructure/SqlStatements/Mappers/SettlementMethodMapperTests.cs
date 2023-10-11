@@ -34,7 +34,7 @@ public class SettlementMethodMapperTests
         foreach (var validDeltaValue in validDeltaValues)
         {
             // Act & Assert: Does not throw
-            SettlementMethodMapper.FromDeltaTableValue(validDeltaValue);
+            SettlementMethodMapper.FromTimeSeriesTypeDeltaTableValue(validDeltaValue);
         }
     }
 
@@ -50,7 +50,7 @@ public class SettlementMethodMapperTests
     public void FromDeltaTableValue_ReturnsValidSettlementMethod(string deltaValue, SettlementMethod? expected)
     {
         // Act
-        var actual = SettlementMethodMapper.FromDeltaTableValue(deltaValue);
+        var actual = SettlementMethodMapper.FromTimeSeriesTypeDeltaTableValue(deltaValue);
 
         // Assert
         actual.Should().Be(expected);
