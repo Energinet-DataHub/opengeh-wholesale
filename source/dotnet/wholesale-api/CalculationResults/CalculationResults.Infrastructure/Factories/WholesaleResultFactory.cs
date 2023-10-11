@@ -60,6 +60,6 @@ public class WholesaleResultFactory
             ChargeResolutionMapper.FromDeltaTableValue(chargeResolution),
             MeteringPointTypeMapper.FromDeltaTableValue(meteringPointType),
             SettlementMethodMapper.FromDeltaTableValue(settlementMethod),
-            wholesaleTimeSeriesPoints.ToArray());
+            wholesaleTimeSeriesPoints);
     }
 }
