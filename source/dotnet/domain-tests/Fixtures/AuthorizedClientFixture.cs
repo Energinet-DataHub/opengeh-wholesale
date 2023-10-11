@@ -26,7 +26,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
     /// </summary>
     public sealed class AuthorizedClientFixture : IAsyncLifetime
     {
-        private readonly string _subscriptionName = Guid.NewGuid().ToString();
+                private readonly string _subscriptionName = Guid.NewGuid().ToString();
         private readonly TimeSpan _httpTimeout = TimeSpan.FromMinutes(10); // IDatabricksSqlStatementClient can take up to 8 minutes to get ready.
 
         public AuthorizedClientFixture()

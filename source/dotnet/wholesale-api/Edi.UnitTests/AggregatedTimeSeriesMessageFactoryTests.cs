@@ -16,6 +16,7 @@ using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.EDI.Factories;
+using Energinet.DataHub.Wholesale.EDI.Validation;
 using FluentAssertions;
 using Google.Protobuf.WellKnownTypes;
 using NodaTime;
@@ -60,6 +61,28 @@ public class AggregatedTimeSeriesMessageFactoryTests
         responseBody.Period.StartOfPeriod.Should().Be(new Timestamp() { Seconds = _periodStart.ToUnixTimeSeconds() });
         responseBody.Period.EndOfPeriod.Should().Be(new Timestamp() { Seconds = _periodEnd.ToUnixTimeSeconds() });
         responseBody.TimeSeriesPoints.Count.Should().Be(energyResult.TimeSeriesPoints.Length);
+    }
+
+    [Fact]
+    public void Create_WithNoCalculationResult_CreatesRejectMessage()
+    {
+        // Arrange
+        var expectedAcceptedSubject = nameof(AggregatedTimeSeriesRequestRejected);
+        var expectedReferenceId = "123456789";
+        var sut = new AggregatedTimeSeriesMessageFactory();
+
+        // Act
+        var response = sut.Create(null, expectedReferenceId);
+
+        // Assert
+        response.Should().NotBeNull();
+        response.ApplicationProperties.ContainsKey("ReferenceId").Should().BeTrue();
+        response.ApplicationProperties["ReferenceId"].ToString().Should().Be(expectedReferenceId);
+        response.Subject.Should().Be(expectedAcceptedSubject);
+
+        var responseBody = AggregatedTimeSeriesRequestRejected.Parser.ParseFrom(response.Body);
+        responseBody.RejectReasons.Should().ContainSingle();
+        responseBody.RejectReasons[0].ErrorCode.Should().Be("E0H");
     }
 
     private EnergyResult CreateEnergyResult()

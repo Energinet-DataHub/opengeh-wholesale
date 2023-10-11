@@ -44,7 +44,7 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
 
     public ServiceBusMessage CreateRejected(IReadOnlyList<ValidationError> errors, string referenceId)
     {
-        var body = CreateRejected(errors);
+        var body = CreateRejectedMessage(errors);
 
         var message = new ServiceBusMessage()
         {
@@ -56,7 +56,7 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
         return message;
     }
 
-    private static IMessage CreateRejected(IReadOnlyList<ValidationError> errors)
+    private static IMessage CreateRejectedMessage(IReadOnlyList<ValidationError> errors)
     {
         var response = new AggregatedTimeSeriesRequestRejected();
         response.RejectReasons.AddRange(errors.Select(CreateRejectReason));
@@ -71,15 +71,15 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
     private static IMessage CreateRejectedResponse()
     {
         var response = new AggregatedTimeSeriesRequestRejected();
-        response.RejectReasons.Add(CreateRejectReason());
+        response.RejectReasons.Add(CreateNoDataRejectReason());
         return response;
     }
 
-    private static RejectReason CreateRejectReason()
+    private static RejectReason CreateNoDataRejectReason()
     {
         return new RejectReason()
         {
-            ErrorCode = "EOR", ErrorMessage = "something went wrong",
+            ErrorCode = "E0H", ErrorMessage = "ingen data tilgængelig / no data available",
         };
     }
 
