@@ -35,20 +35,6 @@ public static class AggregatedTimeSeriesRequestRejectedMessageFactory
         return message;
     }
 
-    public static ServiceBusMessage Create(string referenceId)
-    {
-        var body = CreateRejectedMessage(new[] { ValidationError.NoDataFound });
-
-        var message = new ServiceBusMessage()
-        {
-            Body = new BinaryData(body.ToByteArray()),
-            Subject = body.GetType().Name,
-        };
-
-        message.ApplicationProperties.Add("ReferenceId", referenceId);
-        return message;
-    }
-
     private static IMessage CreateRejectedMessage(IReadOnlyList<ValidationError> errors)
     {
         var response = new AggregatedTimeSeriesRequestRejected();
