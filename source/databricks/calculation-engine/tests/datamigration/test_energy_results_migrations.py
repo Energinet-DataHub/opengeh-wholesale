@@ -23,7 +23,7 @@ from package.codelists import (
     AggregationLevel,
     ProcessType,
     TimeSeriesType,
-    TimeSeriesQuality,
+    QuantityQuality,
 )
 from package.constants import EnergyResultColumnNames
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
@@ -144,10 +144,7 @@ def test__migrated_table_accepts_valid_data(
     [
         *[(EnergyResultColumnNames.calculation_type, x.value) for x in ProcessType],
         *[(EnergyResultColumnNames.time_series_type, x.value) for x in TimeSeriesType],
-        *[
-            (EnergyResultColumnNames.quantity_quality, x.value)
-            for x in TimeSeriesQuality
-        ],
+        *[(EnergyResultColumnNames.quantity_quality, x.value) for x in QuantityQuality],
         *[
             (EnergyResultColumnNames.aggregation_level, x.value)
             for x in AggregationLevel
