@@ -31,7 +31,7 @@ public static class WholesaleResultDeltaTableHelper
         string chargeResolution = "PT1H",
         string chargeCode = "4000",
         string chargeType = "Tariff",
-        string chargeOwnerId = "987654321",
+        string chargeOwnerId = "9876543210000",
         string time = "2022-05-16T03:00:00.000Z",
         string? quantity = "1.123",
         IReadOnlyCollection<string>? quantityQualities = null,
