@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Edi.Requests;
 using Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.EDI.Validation;
 using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
@@ -151,5 +150,45 @@ public class PeriodValidatorTests
         // Assert
         errors.Should().ContainSingle();
         errors.First().ErrorCode.Should().Be(ValidationError.StartDateMustBeLessThen3Years.ErrorCode);
+    }
+
+    [Fact]
+    public void Validate_WhenPeriodOverlapSummerDaylightSavingTime_ReturnsExceptedNoValidationErrors()
+    {
+        // Arrange
+        var now = SystemClock.Instance.GetCurrentInstant();
+        var winterTime = Instant.FromUtc(now.InUtc().Year, 2, 26, 23, 0, 0).ToString();
+        var summerTime = Instant.FromUtc(now.InUtc().Year, 3, 26, 22, 0, 0).ToString();
+        var message = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithStartDate(winterTime)
+            .WithEndDate(summerTime)
+            .Build();
+
+        // Act
+        var errors = _sut.Validate(message);
+
+        // Assert
+        errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Validate_WhenPeriodOverlapWinterDaylightSavingTime_ReturnsExceptedNoValidationErrors()
+    {
+        // Arrange
+        var now = SystemClock.Instance.GetCurrentInstant();
+        var summerTime = Instant.FromUtc(now.InUtc().Year, 9, 29, 22, 0, 0).ToString();
+        var winterTime = Instant.FromUtc(now.InUtc().Year, 10, 29, 23, 0, 0).ToString();
+        var message = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithStartDate(summerTime)
+            .WithEndDate(winterTime)
+            .Build();
+
+        // Act
+        var errors = _sut.Validate(message);
+
+        // Assert
+        errors.Should().BeEmpty();
     }
 }
