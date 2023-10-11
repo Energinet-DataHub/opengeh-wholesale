@@ -50,6 +50,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
         const string expectedAcceptedSubject = nameof(AggregatedTimeSeriesRequestAccepted);
         var expectedReferenceId = Guid.NewGuid().ToString();
         var request = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
             .Build();
 
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
@@ -102,6 +103,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
         const string expectedRejectedSubject = nameof(AggregatedTimeSeriesRequestRejected);
         var expectedReferenceId = Guid.NewGuid().ToString();
         var request = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
             .Build();
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
@@ -148,6 +150,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
         const string expectedRejectedSubject = nameof(AggregatedTimeSeriesRequestRejected);
         var expectedReferenceId = Guid.NewGuid().ToString();
         var request = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
             .Build();
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },

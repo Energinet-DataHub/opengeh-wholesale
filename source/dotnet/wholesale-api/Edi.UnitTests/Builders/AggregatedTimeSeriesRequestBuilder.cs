@@ -17,14 +17,19 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 
-public static class AggregatedTimeSeriesRequestBuilder
+public class AggregatedTimeSeriesRequestBuilder
 {
-    private static AggregationPerGridArea _aggregationPerGridArea = new();
-    private static TimeSeriesType _timeSeriesType = Edi.Requests.TimeSeriesType.Production;
-    private static string _start = Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString();
-    private static string _end = Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString();
+    private AggregationPerGridArea _aggregationPerGridArea = new();
+    private TimeSeriesType _timeSeriesType = Edi.Requests.TimeSeriesType.Production;
+    private string _start = Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString();
+    private string _end = Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString();
 
-    public static AggregatedTimeSeriesRequest Build()
+    public static AggregatedTimeSeriesRequestBuilder AggregatedTimeSeriesRequest()
+    {
+        return new AggregatedTimeSeriesRequestBuilder();
+    }
+
+    public AggregatedTimeSeriesRequest Build()
     {
         return new AggregatedTimeSeriesRequest
         {
@@ -36,5 +41,17 @@ public static class AggregatedTimeSeriesRequestBuilder
                 End = _end,
             },
         };
+    }
+
+    public AggregatedTimeSeriesRequestBuilder WithStartDate(string start)
+    {
+        _start = start;
+        return this;
+    }
+
+    public AggregatedTimeSeriesRequestBuilder WithEndDate(string end)
+    {
+        _end = end;
+        return this;
     }
 }

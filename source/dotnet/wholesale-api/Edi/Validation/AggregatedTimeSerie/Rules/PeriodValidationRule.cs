@@ -15,7 +15,6 @@
 using Energinet.DataHub.Edi.Requests;
 using NodaTime;
 using NodaTime.Text;
-using Period = NodaTime.Period;
 
 namespace Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
 
@@ -23,6 +22,8 @@ public class PeriodValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
 {
     private readonly DateTimeZone _dateTimeZone;
     private readonly IClock _clock;
+    private readonly int _maxAllowedPeriodSizeInMonths = 1;
+    private readonly int _periodMustBeNewerThenYears = 3;
 
     public PeriodValidationRule(DateTimeZone dateTimeZone, IClock clock)
     {
@@ -47,7 +48,7 @@ public class PeriodValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
         MustBeMidnight(startInstant.Value, "Start date", errors);
         MustBeMidnight(endInstant.Value, "End date", errors);
 
-        StartDateMustBeGreaterThenYears(3, startInstant.Value, errors);
+        StartDateMustBeGreaterThenAllowedYears(startInstant.Value, errors);
         IntervalMustBeWithinAllowedPeriodSize(startInstant.Value, endInstant.Value, errors);
 
         return errors;
@@ -68,19 +69,19 @@ public class PeriodValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
     {
         var zonedStartDateTime = new ZonedDateTime(start, _dateTimeZone);
         var zonedEndDateTime = new ZonedDateTime(end, _dateTimeZone);
-        var monthsFromStart = zonedStartDateTime.LocalDateTime.PlusMonths(1);
+        var monthsFromStart = zonedStartDateTime.LocalDateTime.PlusMonths(_maxAllowedPeriodSizeInMonths);
         if (zonedEndDateTime.LocalDateTime > monthsFromStart)
             errors.Add(ValidationError.PeriodIsGreaterThenAllowedPeriodSize);
     }
 
-    private void StartDateMustBeGreaterThenYears(int years, Instant start, List<ValidationError> errors)
+    private void StartDateMustBeGreaterThenAllowedYears(Instant start, List<ValidationError> errors)
     {
-        var zonedCurrentDateTime = new ZonedDateTime(_clock.GetCurrentInstant(), _dateTimeZone);
-        var startOfPeriod = zonedCurrentDateTime.LocalDateTime.PlusYears(years);
         var zonedStartDateTime = new ZonedDateTime(start, _dateTimeZone);
+        var zonedCurrentDateTime = new ZonedDateTime(_clock.GetCurrentInstant(), _dateTimeZone);
+        var latestStartDate = zonedCurrentDateTime.LocalDateTime.PlusYears(-_periodMustBeNewerThenYears);
 
-        if (zonedStartDateTime.LocalDateTime >= startOfPeriod)
-            errors.Add(ValidationError.StartDateMustBeGreaterThenMaxYearsToSearchIn);
+        if (zonedStartDateTime.LocalDateTime < latestStartDate)
+            errors.Add(ValidationError.StartDateMustBeLessThen3Years);
     }
 
     private Instant? ParseToInstant(string dateTimeString, string propertyName, List<ValidationError> errors)
