@@ -18,18 +18,6 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlState
 
 public static class ProcessTypeMapper
 {
-    public static string ToDeltaTableValue(ProcessType processType) =>
-        processType switch
-        {
-            ProcessType.BalanceFixing => DeltaTableConstants.DeltaTableProcessType.BalanceFixing,
-            ProcessType.Aggregation => DeltaTableConstants.DeltaTableProcessType.Aggregation,
-            ProcessType.WholesaleFixing => DeltaTableConstants.DeltaTableProcessType.WholesaleFixing,
-            ProcessType.FirstCorrectionSettlement => DeltaTableConstants.DeltaTableProcessType.FirstCorrectionSettlement,
-            ProcessType.SecondCorrectionSettlement => DeltaTableConstants.DeltaTableProcessType.SecondCorrectionSettlement,
-            ProcessType.ThirdCorrectionSettlement => DeltaTableConstants.DeltaTableProcessType.ThirdCorrectionSettlement,
-            _ => throw new NotImplementedException($"Cannot map process type '{processType}"),
-        };
-
     public static ProcessType FromDeltaTableValue(string processType) =>
         processType switch
         {
@@ -39,6 +27,18 @@ public static class ProcessTypeMapper
             DeltaTableConstants.DeltaTableProcessType.FirstCorrectionSettlement => ProcessType.FirstCorrectionSettlement,
             DeltaTableConstants.DeltaTableProcessType.SecondCorrectionSettlement => ProcessType.SecondCorrectionSettlement,
             DeltaTableConstants.DeltaTableProcessType.ThirdCorrectionSettlement => ProcessType.ThirdCorrectionSettlement,
-            _ => throw new NotImplementedException($"Cannot map process type '{processType}"),
+            _ => throw new FormatException($"Value does not contain a valid string representation of a process type. Value: '{processType}'."),
+        };
+
+    public static string ToDeltaTableValue(ProcessType processType) =>
+        processType switch
+        {
+            ProcessType.BalanceFixing => DeltaTableConstants.DeltaTableProcessType.BalanceFixing,
+            ProcessType.Aggregation => DeltaTableConstants.DeltaTableProcessType.Aggregation,
+            ProcessType.WholesaleFixing => DeltaTableConstants.DeltaTableProcessType.WholesaleFixing,
+            ProcessType.FirstCorrectionSettlement => DeltaTableConstants.DeltaTableProcessType.FirstCorrectionSettlement,
+            ProcessType.SecondCorrectionSettlement => DeltaTableConstants.DeltaTableProcessType.SecondCorrectionSettlement,
+            ProcessType.ThirdCorrectionSettlement => DeltaTableConstants.DeltaTableProcessType.ThirdCorrectionSettlement,
+            _ => throw new ArgumentException($"Value cannot be mapped to a string representation of a process type. Value: '{processType}'."),
         };
 }
