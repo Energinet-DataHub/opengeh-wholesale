@@ -35,7 +35,7 @@ public class WholesaleResultColumnNames
     public const string Price = "price";
     public const string Amount = "amount";
     public const string IsTax = "is_tax";
-    public const string ChargeCode = "charge_id";
+    public const string ChargeCode = "charge_code";
     public const string ChargeType = "charge_type";
     public const string ChargeOwnerId = "charge_owner_id";
 
