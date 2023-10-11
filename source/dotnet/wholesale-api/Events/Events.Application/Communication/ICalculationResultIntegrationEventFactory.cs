@@ -14,15 +14,12 @@
 
 using Energinet.DataHub.Core.Messaging.Communication.Internal;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.Communication;
 
 public interface ICalculationResultIntegrationEventFactory
 {
-    IntegrationEvent CreateEventForEnergyResultDeprecated(EnergyResult energyResult);
+    IntegrationEvent CreateCalculationResultCompleted(EnergyResult energyResult);
 
-    IntegrationEvent CreateEventForEnergyResult(EnergyResult energyResult);
-
-    IntegrationEvent CreateEventForWholesaleResult(WholesaleResult wholesaleResult);
+    IntegrationEvent CreateEnergyResultProducedV1(EnergyResult energyResult);
 }

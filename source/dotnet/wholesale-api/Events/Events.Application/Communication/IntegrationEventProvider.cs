@@ -15,7 +15,6 @@
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Internal;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
-using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Microsoft.Extensions.Logging;
@@ -27,7 +26,6 @@ public class IntegrationEventProvider : IIntegrationEventProvider
 {
     private readonly ICalculationResultIntegrationEventFactory _calculationResultIntegrationEventFactory;
     private readonly IEnergyResultQueries _energyResultQueries;
-    private readonly IWholesaleResultQueries _wholesaleResultQueries;
     private readonly ICompletedBatchRepository _completedBatchRepository;
     private readonly IClock _clock;
     private readonly IUnitOfWork _unitOfWork;
@@ -36,7 +34,6 @@ public class IntegrationEventProvider : IIntegrationEventProvider
     public IntegrationEventProvider(
         ICalculationResultIntegrationEventFactory integrationEventFactory,
         IEnergyResultQueries energyResultQueries,
-        IWholesaleResultQueries wholesaleResultQueries,
         ICompletedBatchRepository completedBatchRepository,
         IClock clock,
         IUnitOfWork unitOfWork,
@@ -44,7 +41,6 @@ public class IntegrationEventProvider : IIntegrationEventProvider
     {
         _calculationResultIntegrationEventFactory = integrationEventFactory;
         _energyResultQueries = energyResultQueries;
-        _wholesaleResultQueries = wholesaleResultQueries;
         _completedBatchRepository = completedBatchRepository;
         _clock = clock;
         _unitOfWork = unitOfWork;
@@ -61,41 +57,19 @@ public class IntegrationEventProvider : IIntegrationEventProvider
                 break;
             }
 
-            // Publish energy results
-            var energyResultCount = 0;
+            var resultCount = 0;
             await foreach (var energyResult in _energyResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
             {
-                energyResultCount++;
-                yield return _calculationResultIntegrationEventFactory.CreateEventForEnergyResultDeprecated(
-                    energyResult); // Deprecated
-                yield return _calculationResultIntegrationEventFactory.CreateEventForEnergyResult(energyResult);
-            }
-
-            // Publish wholesale results
-            var wholesaleResultCount = 0;
-            if (IsWholesaleCalculationType(batch.ProcessType))
-            {
-                await foreach (var wholesaleResult in _wholesaleResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
-                {
-                    wholesaleResultCount++;
-                    yield return _calculationResultIntegrationEventFactory.CreateEventForWholesaleResult(wholesaleResult);
-                }
+                resultCount++;
+                yield return _calculationResultIntegrationEventFactory.CreateCalculationResultCompleted(energyResult); // Deprecated
+                yield return _calculationResultIntegrationEventFactory.CreateEnergyResultProducedV1(energyResult);
             }
 
             batch.PublishedTime = _clock.GetCurrentInstant();
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
-            _logger.LogInformation("Published {EnergyResultCount} energy results for completed batch {BatchId}", energyResultCount, batch.Id);
-            if (IsWholesaleCalculationType(batch.ProcessType))
-            {
-                _logger.LogInformation("Published {WholesaleResultCount} wholesale results for completed batch {BatchId}", wholesaleResultCount, batch.Id);
-            }
+            _logger.LogInformation("Published {ResultCount} results for completed batch {BatchId}", resultCount, batch.Id);
         }
         while (true);
-    }
-
-    private static bool IsWholesaleCalculationType(ProcessType calculationType)
-    {
-        return calculationType is ProcessType.WholesaleFixing or ProcessType.FirstCorrectionSettlement or ProcessType.SecondCorrectionSettlement or ProcessType.ThirdCorrectionSettlement;
     }
 }
