@@ -33,15 +33,38 @@ public class MeteringPointTypeMapperTests
     }
 
     [Theory]
+    [InlineData("production", MeteringPointType.Production)]
+    [InlineData("consumption", MeteringPointType.Consumption)]
+    [InlineData("", null)]
+    public void FromDeltaTableValue_ValidString_ReturnsExpectedType(string meteringPointType, MeteringPointType? expectedType)
+    {
+        // Act
+        var actualType = MeteringPointTypeMapper.FromDeltaTableValue(meteringPointType);
+
+        // Assert
+        actualType.Should().Be(expectedType);
+    }
+
+    [Fact]
+    public void FromDeltaTableValue_InvalidString_ThrowsException()
+    {
+        // Act
+        var act = () => MeteringPointTypeMapper.FromDeltaTableValue("invalid");
+
+        // Assert
+        act.Should().Throw<FormatException>();
+    }
+
+    [Theory]
     [InlineData(DeltaTableTimeSeriesType.FlexConsumption, MeteringPointType.Consumption)]
     [InlineData(DeltaTableTimeSeriesType.Production, MeteringPointType.Production)]
     [InlineData(DeltaTableTimeSeriesType.NonProfiledConsumption, MeteringPointType.Consumption)]
-    public void FromTimeSeriesTypeDeltaTableValue_ReturnsExpectedString(string timeSeriesType, MeteringPointType expected)
+    public void FromTimeSeriesTypeDeltaTableValue_ReturnsExpectedType(string timeSeriesType, MeteringPointType expectedType)
     {
         // Act
-        var actual = MeteringPointTypeMapper.FromTimeSeriesTypeDeltaTableValue(timeSeriesType);
+        var actualType = MeteringPointTypeMapper.FromTimeSeriesTypeDeltaTableValue(timeSeriesType);
 
         // Assert
-        actual.Should().Be(expected);
+        actualType.Should().Be(expectedType);
     }
 }
