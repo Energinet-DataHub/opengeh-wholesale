@@ -79,7 +79,7 @@ public class AggregatedTimeSeriesMessageFactory : IAggregatedTimeSeriesMessageFa
     {
         return new RejectReason()
         {
-            ErrorCode = ValidationError.NoDataFound.ErrorCode, ErrorMessage = ValidationError.NoDataFound.Message,
+            ErrorCode = "E0H", ErrorMessage = "ingen data tilgængelig / no data available",
         };
     }
 

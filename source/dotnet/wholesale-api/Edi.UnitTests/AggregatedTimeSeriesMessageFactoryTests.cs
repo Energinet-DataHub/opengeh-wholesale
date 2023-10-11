@@ -82,7 +82,7 @@ public class AggregatedTimeSeriesMessageFactoryTests
 
         var responseBody = AggregatedTimeSeriesRequestRejected.Parser.ParseFrom(response.Body);
         responseBody.RejectReasons.Should().ContainSingle();
-        responseBody.RejectReasons[0].ErrorCode.Should().Be(ValidationError.NoDataFound.ErrorCode);
+        responseBody.RejectReasons[0].ErrorCode.Should().Be("E0H");
     }
 
     private EnergyResult CreateEnergyResult()
