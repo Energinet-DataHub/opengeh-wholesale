@@ -25,9 +25,6 @@ from .batch_grid_areas import (
     get_batch_grid_areas_df,
     check_all_grid_areas_have_metering_points,
 )
-from package.calculation_input.schemas import (
-    metering_point_period_schema,
-)
 
 
 def get_metering_point_periods_df(
