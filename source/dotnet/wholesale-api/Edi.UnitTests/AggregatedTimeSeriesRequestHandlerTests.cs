@@ -60,6 +60,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
                 Start = new Timestamp().ToInstant().ToString(),
                 End = new Timestamp().ToInstant().ToString(),
             },
+            MeteringPointType = "E18",
         };
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
@@ -120,6 +121,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
                 Start = Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(),
                 End = Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString(),
             },
+            MeteringPointType = "E18",
         };
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
