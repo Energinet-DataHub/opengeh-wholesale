@@ -122,8 +122,6 @@ def _explode_subscription(charges_df: DataFrame) -> DataFrame:
 
 
 def _join_with_metering_points(df: DataFrame, metering_points: DataFrame) -> DataFrame:
-    df.printSchema()
-    metering_points.printSchema()
     df = df.join(
         metering_points,
         [
@@ -147,7 +145,6 @@ def _join_with_metering_points(df: DataFrame, metering_points: DataFrame) -> Dat
         metering_points[Colname.grid_area],
         metering_points[Colname.energy_supplier_id],
     )
-    df.printSchema()
     return df
 
 
