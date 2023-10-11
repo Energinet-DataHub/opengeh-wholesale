@@ -91,7 +91,7 @@ ORDER BY {WholesaleResultColumnNames.CalculationResultId}, {WholesaleResultColum
 ";
     }
 
-    private static string[] SqlColumnNames { get; } =
+    public static string[] SqlColumnNames { get; } =
     {
         WholesaleResultColumnNames.CalculationId,
         WholesaleResultColumnNames.ChargeType,
@@ -114,7 +114,7 @@ ORDER BY {WholesaleResultColumnNames.CalculationResultId}, {WholesaleResultColum
         WholesaleResultColumnNames.QuantityQualities,
     };
 
-    private static bool BelongsToDifferentResults(SqlResultRow row, SqlResultRow otherRow)
+    public static bool BelongsToDifferentResults(SqlResultRow row, SqlResultRow otherRow)
     {
         return row[WholesaleResultColumnNames.CalculationResultId] != otherRow[WholesaleResultColumnNames.CalculationResultId];
     }
