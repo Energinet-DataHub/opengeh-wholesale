@@ -46,7 +46,7 @@ def get_tariff_charges(
     df = _join_with_grouped_time_series(df, grouped_time_series)
 
     # energy_supplier_id is nullable when metering point is a child metering point
-    # TODO - find a solution to this
+    # TODO JVM - find a solution to this
     df.schema[Colname.energy_supplier_id].nullable = False
 
     return df
