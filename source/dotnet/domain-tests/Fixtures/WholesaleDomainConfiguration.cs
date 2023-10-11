@@ -34,6 +34,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             var serviceBusNamespace = secretsConfiguration.GetValue<string>("sb-domain-relay-namespace-name")!;
             ServiceBusFullyQualifiedNamespace = $"{serviceBusNamespace}.servicebus.windows.net";
             ServiceBusConnectionString = secretsConfiguration.GetValue<string>("sb-domain-relay-listen-connection-string")!;
+            DomainRelayTopicName = secretsConfiguration.GetValue<string>("sbt-shres-integrationevent-received-name")!;
         }
 
         /// <summary>
@@ -55,6 +56,11 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         /// Connection string for the service bus used for domain relay.
         /// </summary>
         public string ServiceBusConnectionString { get; }
+
+        /// <summary>
+        /// Service bus topic name for the domain relay messages.
+        /// </summary>
+        public string DomainRelayTopicName { get; internal set; }
 
         /// <summary>
         /// Load settings from key vault secrets.
