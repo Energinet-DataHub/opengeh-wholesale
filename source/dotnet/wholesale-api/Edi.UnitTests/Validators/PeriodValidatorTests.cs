@@ -73,7 +73,8 @@ public class PeriodValidatorTests
 
         // Assert
         errors.Should().ContainSingle();
-        errors.First().ErrorCode.Should().Be(ValidationError.InvalidDateFormat.ErrorCode);
+        errors.First().ErrorCode.Should().Be(ValidationError.InvalidWinterMidnightFormat.ErrorCode);
+        errors.Should().Contain(error => error.Message.Contains("23:00:00Z"));
     }
 
     [Fact]
