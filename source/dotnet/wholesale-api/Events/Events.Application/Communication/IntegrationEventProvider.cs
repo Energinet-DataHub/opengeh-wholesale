@@ -70,7 +70,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
 
             // Publish wholesale results
             var wholesaleResultCount = 0;
-            if (IsWholesaleCalculationType(batch.ProcessType)
+            if (IsWholesaleCalculationType(batch.ProcessType))
             {
                 await foreach (var wholesaleResult in _calculationResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
                 {
@@ -91,7 +91,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
         while (true);
     }
 
-    private bool IsWholesaleCalculationType(ProcessType calculationType)
+    private static bool IsWholesaleCalculationType(ProcessType calculationType)
     {
         return calculationType is ProcessType.WholesaleFixing or ProcessType.FirstCorrectionSettlement or ProcessType.SecondCorrectionSettlement or ProcessType.ThirdCorrectionSettlement;
     }
