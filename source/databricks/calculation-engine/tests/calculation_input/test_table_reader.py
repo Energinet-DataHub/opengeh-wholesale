@@ -148,6 +148,25 @@ def test___read_metering_point_periods__returns_df_with_correct_metering_point_t
     assert actual.collect()[0][Colname.metering_point_type] == expected.value
 
 
+def test___read_metering_point_periods__raise_value_exception_when_unknown_metering_point_type(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    row = _create_metering_point_period_row(
+        metering_point_type=MeteringPointType.CONSUMPTION  # unknown metering point type
+    )
+    df = spark.createDataFrame(data=[row], schema=metering_point_period_schema)
+    sut = TableReader(spark)
+
+    # Act
+    with mock.patch.object(sut, TableReader._read_table.__name__, return_value=df):
+        with pytest.raises(ValueError) as excinfo:
+            sut.read_metering_point_periods()
+
+    # Assert
+    assert "Unknown metering point type" in str(excinfo.value)
+
+
 @pytest.mark.parametrize(
     "settlement_method,expected",
     [
