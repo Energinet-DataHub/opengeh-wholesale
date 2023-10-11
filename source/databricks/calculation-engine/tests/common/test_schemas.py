@@ -15,7 +15,7 @@
 import pyspark.sql.types as t
 import pytest
 
-from package.common import verify_schema
+from package.common import assert_schema
 
 
 any_schema = t.StructType(
@@ -58,14 +58,14 @@ schema_with_other_column_order_and_nullability = t.StructType(
         (any_schema, schema_with_other_column_order_and_nullability, True, True),
     ],
 )
-def test__verify_schema__accepts_matching_schema(
+def test__assert_schema__accepts_matching_schema(
     actual: t.StructType,
     expected: t.StructType,
     ignore_column_order: bool,
     ignore_nullability: bool,
 ) -> None:
     # Assert no error is raised
-    verify_schema(
+    assert_schema(
         actual,
         expected,
         ignore_column_order=ignore_column_order,
@@ -85,11 +85,11 @@ def test__verify_schema__accepts_matching_schema(
         (any_schema, schema_with_other_column_order_and_nullability, True, False),
     ],
 )
-def test__verify_schema__when_schema_does_not_match__raises(
+def test__assert_schema__when_schema_does_not_match__raises(
     actual: t.StringType,
     expected: t.StructType,
     ignore_column_order: bool,
     ignore_nullability: bool,
 ) -> None:
     with pytest.raises(ValueError):
-        verify_schema(actual, expected)
+        assert_schema(actual, expected)

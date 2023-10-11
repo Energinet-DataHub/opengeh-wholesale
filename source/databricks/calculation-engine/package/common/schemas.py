@@ -15,7 +15,7 @@
 from pyspark.sql.types import StructType
 
 
-def verify_schema(
+def assert_schema(
     actual: StructType,
     expected: StructType,
     ignore_nullability=False,
@@ -33,15 +33,15 @@ def verify_schema(
     actual_fields = actual.fields
     expected_fields = expected.fields
 
-    if not ignore_column_order:
-        actual_fields.sort(key=lambda f: f.name)
-        expected_fields.sort(key=lambda f: f.name)
+    if ignore_column_order:
+        actual_fields = sorted(actual_fields, key=lambda f: f.name)
+        expected_fields = sorted(expected_fields, key=lambda f: f.name)
 
     for a, e in zip(actual_fields, expected_fields):
         if a.name != e.name:
-            raise ValueError(f"Expected column name {e.name}, but found {a.name}")
+            raise ValueError(f"Expected column name '{e.name}', but found '{a.name}'")
 
-        if not ignore_nullability and a.type != e.type:
+        if not ignore_nullability and a.dataType != e.dataType:
             raise ValueError(
-                f"Expected column name {e.name} to have type {e.type}, but got type {a.type}"
+                f"Expected column name '{e.name}' to have type {e.dataType}, but got type {a.dataType}"
             )
