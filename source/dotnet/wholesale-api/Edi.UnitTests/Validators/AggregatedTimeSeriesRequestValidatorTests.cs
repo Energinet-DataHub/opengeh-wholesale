@@ -37,7 +37,6 @@ public class AggregatedTimeSeriesRequestValidatorTests
                 Start = Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(),
                 End = Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString(),
             },
-            TimeSeriesType = TimeSeriesType.Production,
         };
 
         // Act
