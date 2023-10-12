@@ -166,7 +166,7 @@ public class SettlementReportRepositoryTests
             streamZipperMock.Object);
 
         // Act
-        var report = await sut.GetSettlementReportAsync(batchInfo).ConfigureAwait(false);
+        var report = await sut.GetSettlementReportAsync(batchInfo);
         var actual = await new StreamReader(report.Stream).ReadLineAsync();
 
         // Assert
@@ -211,7 +211,7 @@ public class SettlementReportRepositoryTests
             streamZipperMock.Object);
 
         // Act
-        await sut.GetSettlementReportAsync(batchInfo, gridAreaCode, outputStream).ConfigureAwait(false);
+        await sut.GetSettlementReportAsync(batchInfo, gridAreaCode, outputStream);
 
         using var streamReader = new StreamReader(outputStream);
         var actual = await streamReader.ReadLineAsync();
