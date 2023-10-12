@@ -25,8 +25,11 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 
 public class AggregatedTimeSeriesRequestValidatorTests
 {
+    private const string ValidMeteringPointType = "E18";
+
     private static readonly PeriodValidationRule _periodValidator = new(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!, SystemClock.Instance);
     private static readonly MeteringPointTypeValidationRule _meteringPointTypeValidationRule = new();
+    private static readonly EnergySupplierFieldValidationRule _energySupplierFieldValidationRule = new();
     private readonly IValidator<AggregatedTimeSeriesRequest> _sut = new AggregatedTimeSeriesRequestValidator(
         new IValidationRule<AggregatedTimeSeriesRequest>[]
         {
@@ -45,7 +48,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
             RequestedByActorRole = EnergySupplierValidatorTest.EnergySupplierActorRole,
             RequestedByActorId = EnergySupplierValidatorTest.ValidGlnNumber,
             EnergySupplierId = EnergySupplierValidatorTest.ValidGlnNumber,
-            MeteringPointType = "E18",
+            MeteringPointType = ValidMeteringPointType,
         };
 
         // Act
@@ -61,12 +64,15 @@ public class AggregatedTimeSeriesRequestValidatorTests
         // Arrange
         var request = new AggregatedTimeSeriesRequest()
         {
-            Period = new Edi.Requests.Period()
+            Period = new Period()
             {
                 Start = Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(),
                 End = Instant.FromUtc(2022, 3, 2, 23, 0, 0).ToString(),
             },
-            MeteringPointType = "E18",
+            RequestedByActorRole = EnergySupplierValidatorTest.EnergySupplierActorRole,
+            RequestedByActorId = EnergySupplierValidatorTest.ValidGlnNumber,
+            EnergySupplierId = EnergySupplierValidatorTest.ValidGlnNumber,
+            MeteringPointType = ValidMeteringPointType,
         };
 
         // Act
@@ -83,11 +89,10 @@ public class AggregatedTimeSeriesRequestValidatorTests
         // Arrange
         var request = new AggregatedTimeSeriesRequest()
         {
-            Period = new Edi.Requests.Period()
-            {
-                Start = Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(),
-                End = Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString(),
-            },
+            Period = CreateValidPeriod(),
+            RequestedByActorRole = EnergySupplierValidatorTest.EnergySupplierActorRole,
+            RequestedByActorId = EnergySupplierValidatorTest.ValidGlnNumber,
+            EnergySupplierId = EnergySupplierValidatorTest.ValidGlnNumber,
             MeteringPointType = "Invalid",
         };
 
@@ -99,7 +104,6 @@ public class AggregatedTimeSeriesRequestValidatorTests
         validationErrors.First().ErrorCode.Should().Be(ValidationError.InvalidMeteringPointType.ErrorCode);
     }
 
-
     [Fact]
     public void Validate_AggregatedTimeSeriesRequest_WhenEnergySupplierIdIsInvalid_UnsuccessfulValidation()
     {
@@ -110,6 +114,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
             RequestedByActorRole = EnergySupplierValidatorTest.EnergySupplierActorRole,
             RequestedByActorId = EnergySupplierValidatorTest.ValidGlnNumber,
             EnergySupplierId = "invalid-id",
+            MeteringPointType = ValidMeteringPointType,
         };
 
         // Act
@@ -125,7 +130,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
 
     private Period CreateValidPeriod()
     {
-        return new Edi.Requests.Period()
+        return new Period()
         {
             Start = Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(),
             End = Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString(),
