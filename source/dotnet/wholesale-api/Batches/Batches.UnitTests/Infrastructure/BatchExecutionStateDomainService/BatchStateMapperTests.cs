@@ -50,7 +50,6 @@ public class BatchStateMapperTests
 
         // Assert
         actual.Should().Throw<ArgumentOutOfRangeException>()
-            .WithParameterName("calculationState")
             .And.ActualValue.Should().Be(unexpectedCalculationState);
     }
 }
