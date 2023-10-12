@@ -21,11 +21,9 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
 using FluentAssertions;
 using Moq;
 using Xunit;
-using Xunit.Categories;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.Integration.CalculationOutput;
 
-[UnitTest]
 public class DataLakeClientTests
 {
     [Theory]

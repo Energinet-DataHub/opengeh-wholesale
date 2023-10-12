@@ -21,11 +21,9 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementRe
 using FluentAssertions;
 using Moq;
 using Xunit;
-using Xunit.Categories;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SettlementReport;
 
-[UnitTest]
 public class SettlementReportRepositoryTests
 {
     private const string AnyActorId = "1234567890123";
