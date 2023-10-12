@@ -44,7 +44,7 @@ tariff_schema = StructType(
         StructField(Colname.metering_point_type, StringType(), False),
         StructField(Colname.settlement_method, StringType(), True),
         StructField(Colname.grid_area, StringType(), False),
-        StructField(Colname.quantity, DecimalType(18, 3), False),
+        StructField(Colname.quantity, DecimalType(18, 3), True),
         StructField(Colname.qualities, ArrayType(StringType()), False),
     ]
 )
