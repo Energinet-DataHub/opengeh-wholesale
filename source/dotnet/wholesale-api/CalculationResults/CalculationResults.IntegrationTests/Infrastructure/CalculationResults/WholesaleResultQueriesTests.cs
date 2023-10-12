@@ -100,7 +100,7 @@ public class WholesaleResultQueriesTests : IClassFixture<DatabricksSqlStatementA
             settlementMethod: null,
             amount: DefaultMonthlyAmount);
 
-        var rows = new List<IReadOnlyCollection<string>> { hourlyTariffRow, monthlyAmountTariffRow };
+        var rows = new List<IReadOnlyCollection<string?>> { hourlyTariffRow, monthlyAmountTariffRow };
         await _fixture.DatabricksSchemaManager.InsertAsync<WholesaleResultColumnNames>(options.Value.WHOLESALE_RESULTS_TABLE_NAME, rows);
     }
 }
