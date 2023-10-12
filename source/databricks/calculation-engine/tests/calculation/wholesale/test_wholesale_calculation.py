@@ -34,15 +34,15 @@ def test__execute__asserts_tariff_schema__is_valid(
         data=[_create_tariff_hour_row()], schema=tariff_schema
     )
 
-    # Act & Assert
-    try:
-        execute(
-            wholesale_calculation_result_writer_mock,
-            tariffs_hourly_df,
-            period_start_datetime,
-        )
-    except ValueError:
-        raise Exception("Test failed. Exception raised!")
+    # Act
+    execute(
+        wholesale_calculation_result_writer_mock,
+        tariffs_hourly_df,
+        period_start_datetime,
+    )
+
+    # Assert
+    # If execute raises an exception, the test fails automatically
 
 
 @patch.object(calculation_output, WholesaleCalculationResultWriter.__name__)
