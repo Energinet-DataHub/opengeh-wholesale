@@ -27,7 +27,7 @@ public static class QuantityQualityMapper
                 "estimated" => QuantityQuality.Estimated,
                 "incomplete" => QuantityQuality.Incomplete,
                 "missing" => QuantityQuality.Missing,
-                _ =>throw new ArgumentException($"quality of unknown type:{pointQuality}"),
+                _ =>throw new ArgumentException($"Quality of unknown type '{pointQuality}'"),
             };
         }
 }

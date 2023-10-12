@@ -101,7 +101,7 @@ ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames
         EnergyResultColumnNames.BalanceResponsibleId,
         EnergyResultColumnNames.Time,
         EnergyResultColumnNames.Quantity,
-        EnergyResultColumnNames.QuantityQuality,
+        EnergyResultColumnNames.QuantityQualities,
         EnergyResultColumnNames.CalculationResultId,
         EnergyResultColumnNames.BatchProcessType,
     };

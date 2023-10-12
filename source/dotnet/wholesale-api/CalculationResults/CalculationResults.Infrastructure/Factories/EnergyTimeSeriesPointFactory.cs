@@ -25,7 +25,7 @@ public static class EnergyTimeSeriesPointFactory
     {
         var time = SqlResultValueConverters.ToDateTimeOffset(row[EnergyResultColumnNames.Time])!.Value;
         var quantity = SqlResultValueConverters.ToDecimal(row[EnergyResultColumnNames.Quantity])!.Value;
-        var quality = SqlResultValueConverters.ToQuantityQuality(row[EnergyResultColumnNames.QuantityQuality]);
+        var quality = SqlResultValueConverters.ToQuantityQuality(row[EnergyResultColumnNames.QuantityQualities]);
         return new EnergyTimeSeriesPoint(time, quantity, quality);
     }
 }

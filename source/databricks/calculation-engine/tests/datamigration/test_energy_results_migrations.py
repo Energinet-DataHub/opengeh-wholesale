@@ -154,6 +154,7 @@ def test__migrated_table_accepts_valid_data(
         *[
             (EnergyResultColumnNames.quantity_qualities, [x.value])
             for x in QuantityQuality
+            if x != QuantityQuality.INCOMPLETE
         ],
         *[
             (EnergyResultColumnNames.aggregation_level, x.value)
@@ -164,14 +165,19 @@ def test__migrated_table_accepts_valid_data(
 def test__migrated_table_accepts_enum_value(
     spark: SparkSession,
     column_name: str,
-    column_value: str,
+    column_value: Union[str, list],
     migrations_executed: None,
 ) -> None:
     """Test that all enum values are accepted by the delta table"""
 
     # Arrange
     result_df = _create_df(spark)
-    result_df = result_df.withColumn(column_name, lit(column_value))
+
+    # TODO BJM: Refactor and reuse
+    if isinstance(column_value, list):
+        result_df = result_df.withColumn(column_name, array(*map(lit, column_value)))
+    else:
+        result_df = result_df.withColumn(column_name, lit(column_value))
 
     # Act and assert: Expectation is that no exception is raised
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(

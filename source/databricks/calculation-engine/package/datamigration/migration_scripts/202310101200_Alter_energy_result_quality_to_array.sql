@@ -30,7 +30,7 @@ ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
     ADD CONSTRAINT quantity_qualities_chk
     CHECK (array_size(array_except(quantity_qualities, array('missing', 'calculated', 'measured', 'estimated'))) = 0
            AND array_size(quantity_qualities) > 0)
-    GO
+GO
 
 -- Put the new column in the same position as the old one to avoid breaking schemas and reading/writing
 ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results

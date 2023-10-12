@@ -46,7 +46,7 @@ public class EnergyResultDeltaTableHelper
             EnergyResultColumnNames.EnergySupplierId => $@"'{energySupplierId}'",
             EnergyResultColumnNames.Time => $@"'{time}'",
             EnergyResultColumnNames.Quantity => $@"{quantity}",
-            EnergyResultColumnNames.QuantityQuality => $@"'{quantityQuality}'",
+            EnergyResultColumnNames.QuantityQualities => $@"ARRAY({quantityQuality})",
             EnergyResultColumnNames.AggregationLevel => $@"'{aggregationLevel}'",
             _ => throw new ArgumentOutOfRangeException($"Unexpected column name: {columnName}."),
         });
