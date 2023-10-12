@@ -105,7 +105,7 @@ class TableReader:
         )
 
     def _fix_metering_point_type(self, df: DataFrame) -> DataFrame:
-        df = df.withColumn(
+        return df.withColumn(
             Colname.metering_point_type,
             when(
                 col(Colname.metering_point_type)
@@ -183,12 +183,8 @@ class TableReader:
                 lit(MeteringPointType.EFFECT_SETTLEMENT.value),
             )
             .otherwise(lit("Unknown type")),
+            # The otherwise is to avoid changing the nullability of the column.
         )
-        # The otherwise is to avoid changing the nullability of the column.
-        # Raise error if metering point type is unknown.
-        if df.where(col(Colname.metering_point_type) == "Unknown type").count() > 0:
-            raise ValueError("Unknown metering point type")
-        return df
 
     def _fix_settlement_method(self, df: DataFrame) -> DataFrame:
         return df.withColumn(
