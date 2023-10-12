@@ -29,8 +29,8 @@ def test__execute__asserts_tariff_schema__is_valid(
     wholesale_calculation_result_writer_mock: WholesaleCalculationResultWriter, spark
 ):
     # Arrange
-    period_start_datetime: datetime = datetime(2020, 1, 1, 0, 0)
-    tariffs_hourly_df: DataFrame = spark.createDataFrame(
+    period_start_datetime = datetime(2020, 1, 1, 0, 0)
+    tariffs_hourly_df = spark.createDataFrame(
         data=[_create_tariff_hour_row()], schema=tariff_schema
     )
 
