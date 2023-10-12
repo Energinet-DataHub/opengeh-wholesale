@@ -71,7 +71,7 @@ def _create_result_row(
         Colname.grid_area: grid_area,
         Colname.from_grid_area: from_grid_area,
         Colname.sum_quantity: Decimal(quantity),
-        Colname.qualitities: [quality.value],
+        Colname.qualities: [quality.value],
         Colname.resolution: MeteringPointResolution.QUARTER.value,
         Colname.time_window: {
             Colname.start: time_window_start,
