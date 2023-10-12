@@ -28,7 +28,6 @@ public class EnergySupplierFieldValidationRule : IValidationRule<AggregatedTimeS
 
     public IList<ValidationError> Validate(AggregatedTimeSeriesRequest subject)
     {
-        // TODO: Skal vi ikke have en validering af at at requested by actor & requested by actor role skal være udfyldt
         if (subject.RequestedByActorRole != EnergySupplierActorRole)
              return _noError;
 
