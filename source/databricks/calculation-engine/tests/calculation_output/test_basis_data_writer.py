@@ -27,7 +27,7 @@ from package.codelists import (
     QuantityQuality,
 )
 from package.constants import Colname
-from package.calculation_output import BasisDataWriter
+from package.calculation_output.basis_data_writer import BasisDataWriter
 from pyspark.sql import DataFrame, SparkSession
 from tests.helpers.assert_calculation_file_path import (
     CalculationFileType,

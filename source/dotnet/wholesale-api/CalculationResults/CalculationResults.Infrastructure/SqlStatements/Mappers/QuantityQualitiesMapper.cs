@@ -21,7 +21,9 @@ public static class QuantityQualitiesMapper
     public static IReadOnlyCollection<QuantityQuality> FromDeltaTableValue(string value)
     {
         var qualities = value.Trim('[', ']')
-            .Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            .Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries)
+            .Select(q => q.Trim('"'))
+            .ToArray();
 
         return qualities.Select(QuantityQualityMapper.FromDeltaTableValue).ToArray();
     }
