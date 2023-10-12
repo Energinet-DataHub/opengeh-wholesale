@@ -20,11 +20,9 @@ using Energinet.DataHub.Wholesale.Batches.Application.UseCases;
 using Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchAggregate;
 using Moq;
 using Xunit;
-using Xunit.Categories;
 
 namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Application.Batches;
 
-[UnitTest]
 public class StartCalculationHandlerTests
 {
     [Theory]

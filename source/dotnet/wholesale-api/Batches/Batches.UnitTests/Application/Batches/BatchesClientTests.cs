@@ -21,11 +21,9 @@ using Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchAggregat
 using FluentAssertions;
 using Moq;
 using Xunit;
-using Xunit.Categories;
 
 namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Application.Batches;
 
-[UnitTest]
 public class BatchesClientTests
 {
     [Theory]

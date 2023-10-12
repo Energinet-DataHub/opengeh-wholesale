@@ -22,11 +22,9 @@ using Energinet.DataHub.Wholesale.Common.Models;
 using FluentAssertions;
 using NodaTime;
 using Xunit;
-using Xunit.Categories;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SettlementReport;
 
-[UnitTest]
 public class SettlementReportDataFactoryTests
 {
     private readonly SettlementReportResultRow _firstRow;

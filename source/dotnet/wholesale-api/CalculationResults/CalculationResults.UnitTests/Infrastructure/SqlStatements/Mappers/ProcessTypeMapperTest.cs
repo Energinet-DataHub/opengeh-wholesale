@@ -18,11 +18,9 @@ using Energinet.DataHub.Wholesale.Common.Models;
 using FluentAssertions;
 using Test.Core;
 using Xunit;
-using Xunit.Categories;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SqlStatements.Mappers;
 
-[UnitTest]
 public class ProcessTypeMapperTests
 {
     [Fact]
