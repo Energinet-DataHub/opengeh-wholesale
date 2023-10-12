@@ -55,7 +55,7 @@ def test__execute__when_tariff_schema_is_invalid__raises_assertion_error(
     tariffs_hourly_df: DataFrame = spark.createDataFrame(data)
 
     # Act & Assert
-    with pytest.raises(Exception):
+    with pytest.raises(AssertionError):
         execute(
             wholesale_calculation_result_writer_mock,
             tariffs_hourly_df,
