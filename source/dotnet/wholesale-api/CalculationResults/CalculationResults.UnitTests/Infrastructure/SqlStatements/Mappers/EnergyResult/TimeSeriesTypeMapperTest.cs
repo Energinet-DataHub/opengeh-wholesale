@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.EnergyResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using FluentAssertions;
@@ -86,5 +87,33 @@ public class TimeSeriesTypeMapperTests
 
         // Assert
         actual.Should().Be(expected);
+    }
+
+    [Fact]
+    public void FromDeltaTableValue_WhenInvalidDeltaTableValue_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        var invalidDeltaTableValue = Guid.NewGuid().ToString();
+
+        // Act
+        var act = () => TimeSeriesTypeMapper.FromDeltaTableValue(invalidDeltaTableValue);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .And.ActualValue.Should().Be(invalidDeltaTableValue);
+    }
+
+    [Fact]
+    public void ToDeltaTableValue_WhenInvalidEnumNumberForTimeSeriesType_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        var invalidValue = (TimeSeriesType)99;
+
+        // Act
+        var act = () => TimeSeriesTypeMapper.ToDeltaTableValue(invalidValue);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .And.ActualValue.Should().Be(invalidValue);
     }
 }
