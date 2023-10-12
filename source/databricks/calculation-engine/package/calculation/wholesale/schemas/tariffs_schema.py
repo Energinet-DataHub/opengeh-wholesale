@@ -19,21 +19,27 @@ from pyspark.sql.types import (
     StructField,
     StringType,
     TimestampType,
+    BooleanType,
+    ArrayType,
 )
 
 
-basis_data_time_series_points_schema = StructType(
+tariff_schema = StructType(
     [
-        StructField(Colname.grid_area, StringType(), False),
-        StructField(Colname.to_grid_area, StringType(), True),
-        StructField(Colname.from_grid_area, StringType(), True),
+        StructField(Colname.charge_key, StringType(), False),
+        StructField(Colname.charge_code, StringType(), False),
+        StructField(Colname.charge_type, StringType(), False),
+        StructField(Colname.charge_owner, StringType(), False),
+        StructField(Colname.charge_tax, BooleanType(), False),
+        StructField(Colname.charge_resolution, StringType(), False),
+        StructField(Colname.charge_time, TimestampType(), False),
+        StructField(Colname.charge_price, DecimalType(18, 6), False),
         StructField(Colname.metering_point_id, StringType(), False),
+        StructField(Colname.energy_supplier_id, StringType(), False),
         StructField(Colname.metering_point_type, StringType(), False),
-        StructField(Colname.resolution, StringType(), False),
-        StructField(Colname.observation_time, TimestampType(), False),
+        StructField(Colname.settlement_method, StringType(), True),
+        StructField(Colname.grid_area, StringType(), False),
         StructField(Colname.quantity, DecimalType(18, 3), True),
-        StructField(Colname.quality, StringType(), False),
-        StructField(Colname.energy_supplier_id, StringType(), True),
-        StructField(Colname.balance_responsible_id, StringType(), True),
+        StructField(Colname.qualities, ArrayType(StringType()), False),
     ]
 )

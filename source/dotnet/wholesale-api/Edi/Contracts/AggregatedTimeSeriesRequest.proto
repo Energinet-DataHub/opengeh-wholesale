@@ -27,6 +27,9 @@ message AggregatedTimeSeriesRequest {
   }
   string metering_point_type = 6;
   optional string settlement_method = 7;
+  optional string energy_supplier_id = 8;
+  string requested_by_actor_id = 9;
+  string requested_by_actor_role = 10;
 }
 
 message Period {
