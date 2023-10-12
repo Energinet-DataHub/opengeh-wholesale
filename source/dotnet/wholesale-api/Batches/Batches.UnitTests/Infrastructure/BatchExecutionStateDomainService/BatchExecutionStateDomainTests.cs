@@ -23,11 +23,9 @@ using FluentAssertions;
 using Moq;
 using NodaTime;
 using Xunit;
-using Xunit.Categories;
 
 namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchExecutionStateDomainService;
 
-[UnitTest]
 public class BatchExecutionStateDomainServiceTests
 {
     [Theory]

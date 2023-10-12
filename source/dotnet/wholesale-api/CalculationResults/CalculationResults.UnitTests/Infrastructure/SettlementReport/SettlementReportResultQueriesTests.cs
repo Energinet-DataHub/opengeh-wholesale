@@ -29,11 +29,9 @@ using Microsoft.Extensions.Options;
 using Moq;
 using NodaTime;
 using Xunit;
-using Xunit.Categories;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SettlementReport;
 
-[UnitTest]
 public class SettlementReportResultQueriesTests
 {
     private readonly Instant _somePeriodStart = Instant.FromUtc(2021, 3, 1, 10, 15);
