@@ -97,7 +97,16 @@ public class PeriodValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
     private void MustBeMidnight(Instant instant, string propertyName, List<ValidationError> errors)
     {
         var zonedDateTime = new ZonedDateTime(instant, _dateTimeZone);
-        if (zonedDateTime.TimeOfDay != LocalTime.Midnight)
-            errors.Add(ValidationError.InvalidDateFormat.WithPropertyName(propertyName));
+
+        if (zonedDateTime.TimeOfDay == LocalTime.Midnight) return;
+
+        if (zonedDateTime.IsDaylightSavingTime())
+        {
+            errors.Add(ValidationError.InvalidSummerMidnightFormat.WithPropertyName(propertyName));
+        }
+        else
+        {
+            errors.Add(ValidationError.InvalidWinterMidnightFormat.WithPropertyName(propertyName));
+        }
     }
 }
