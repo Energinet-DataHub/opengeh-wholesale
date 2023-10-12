@@ -24,6 +24,7 @@ public sealed class ValidationError
     public static readonly ValidationError PeriodIsGreaterThenAllowedPeriodSize = new("Forkert datointerval. Dato må max være 3 år tilbage i tid, og kun for 30 dage af gangen / Invalid date interval. Can maximum be 3 years back in time, and only for a 30 day period", "E17");
     public static readonly ValidationError MissingStartOrAndEndDate = new("Start og slut dato skal udfyldes / Start and end date must be present in request", "E50");
     public static readonly ValidationError InvalidMeteringPointType = new("Metering point type skal være en af følgende: {PropertyName} / Metering point type has to be one of the following: {PropertyName}", "D18");
+    public static readonly ValidationError InvalidEnergySupplierField = new("Feltet EnergySupplier skal være udfyldt med et valid GLN/EIC nummer når en elleverandør anmoder om data / EnergySupplier must be submitted with a valid GLN/EIC number when an energy supplier requests data", "E16");
 
     private ValidationError(string message, string errorCode)
     {
