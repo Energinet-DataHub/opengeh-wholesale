@@ -36,7 +36,7 @@ public class MeteringPointTypeMapperTests
     [InlineData("production", MeteringPointType.Production)]
     [InlineData("consumption", MeteringPointType.Consumption)]
     [InlineData("", null)]
-    public void FromDeltaTableValue_ValidDeltaTableValue_ReturnsExpectedType(string deltaTableValue, MeteringPointType? expectedType)
+    public void FromDeltaTableValue_WhenValidDeltaTableValue_ReturnsExpectedType(string deltaTableValue, MeteringPointType? expectedType)
     {
         // Act
         var actualType = MeteringPointTypeMapper.FromDeltaTableValue(deltaTableValue);
@@ -46,7 +46,7 @@ public class MeteringPointTypeMapperTests
     }
 
     [Fact]
-    public void FromDeltaTableValue_InvalidDeltaTableValue_ThrowsException()
+    public void FromDeltaTableValue_WhenInvalidDeltaTableValue_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
         var invalidDeltaTableValue = Guid.NewGuid().ToString();
@@ -55,14 +55,15 @@ public class MeteringPointTypeMapperTests
         var act = () => MeteringPointTypeMapper.FromDeltaTableValue(invalidDeltaTableValue);
 
         // Assert
-        act.Should().Throw<FormatException>().WithMessage($"*'{invalidDeltaTableValue}'*");
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .And.ActualValue.Should().Be(invalidDeltaTableValue);
     }
 
     [Theory]
     [InlineData(DeltaTableTimeSeriesType.FlexConsumption, MeteringPointType.Consumption)]
     [InlineData(DeltaTableTimeSeriesType.Production, MeteringPointType.Production)]
     [InlineData(DeltaTableTimeSeriesType.NonProfiledConsumption, MeteringPointType.Consumption)]
-    public void FromTimeSeriesTypeDeltaTableValue_ReturnsExpectedType(string timeSeriesType, MeteringPointType expectedType)
+    public void FromTimeSeriesTypeDeltaTableValue_WhenValidTimeSeriesTypeAsString_ReturnsExpectedType(string timeSeriesType, MeteringPointType expectedType)
     {
         // Act
         var actualType = MeteringPointTypeMapper.FromTimeSeriesTypeDeltaTableValue(timeSeriesType);
