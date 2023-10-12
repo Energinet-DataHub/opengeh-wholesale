@@ -18,7 +18,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtur
 
 public static class WholesaleResultDeltaTableHelper
 {
-    public static IReadOnlyCollection<string> CreateRowValues(
+    public static string?[] CreateRowValues(
         string calculationId = "ed39dbc5-bdc5-41b9-922a-08d3b12d4538",
         string calculationExecutionTimeStart = "2022-03-11T03:00:00.000Z",
         string calculationType = DeltaTableProcessType.WholesaleFixing,
@@ -49,8 +49,8 @@ public static class WholesaleResultDeltaTableHelper
             WholesaleResultColumnNames.CalculationResultId => $@"'{calculationResultId}'",
             WholesaleResultColumnNames.GridArea => $@"'{gridArea}'",
             WholesaleResultColumnNames.EnergySupplierId => $@"'{energySupplierId}'",
-            WholesaleResultColumnNames.MeteringPointType => $@"'{meteringPointType}'",
-            WholesaleResultColumnNames.SettlementMethod => $@"'{settlementMethod}'",
+            WholesaleResultColumnNames.MeteringPointType => meteringPointType != null ? $@"'{meteringPointType}'" : null,
+            WholesaleResultColumnNames.SettlementMethod => settlementMethod != null ? $@"'{settlementMethod}'" : null,
             WholesaleResultColumnNames.QuantityUnit => $@"'{quantityUnit}'",
             WholesaleResultColumnNames.ChargeResolution => $@"'{chargeResolution}'",
             WholesaleResultColumnNames.ChargeCode => $@"'{chargeCode}'",
