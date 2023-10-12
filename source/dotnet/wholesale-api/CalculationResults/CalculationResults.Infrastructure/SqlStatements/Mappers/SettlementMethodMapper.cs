@@ -26,7 +26,11 @@ public static class SettlementMethodMapper
             "flex" => SettlementMethod.Flex,
             "non_profiled" => SettlementMethod.NonProfiled,
             "" => null,
-            _ => throw new FormatException($"Value does not contain a valid string representation of a settlement method. Value: '{settlementMethod}'."),
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(settlementMethod),
+                actualValue: settlementMethod,
+                "Value does not contain a valid string representation of a settlement method."),
         };
 
     public static SettlementMethod? FromTimeSeriesTypeDeltaTableValue(string timeSeriesType) =>
@@ -43,6 +47,10 @@ public static class SettlementMethodMapper
             TimeSeriesType.TotalConsumption => null,
             TimeSeriesType.TempFlexConsumption => null,
             TimeSeriesType.TempProduction => null,
-            _ => throw new ArgumentOutOfRangeException(nameof(timeSeriesType), actualValue: timeSeriesType, "Value cannot be mapped to a settlement method."),
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(timeSeriesType),
+                actualValue: timeSeriesType,
+                "Value cannot be mapped to a settlement method."),
         };
 }

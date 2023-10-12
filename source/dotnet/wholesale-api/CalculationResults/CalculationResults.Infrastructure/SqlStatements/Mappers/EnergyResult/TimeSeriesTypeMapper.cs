@@ -33,7 +33,11 @@ public static class TimeSeriesTypeMapper
             DeltaTableTimeSeriesType.TotalConsumption => TimeSeriesType.TotalConsumption,
             DeltaTableTimeSeriesType.TempFlexConsumption => TimeSeriesType.TempFlexConsumption,
             DeltaTableTimeSeriesType.TempProduction => TimeSeriesType.TempProduction,
-            _ => throw new FormatException($"Value does not contain a valid string representation of a time series type. Value: '{timeSeriesType}'."),
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(timeSeriesType),
+                actualValue: timeSeriesType,
+                "Value does not contain a valid string representation of a time series type."),
         };
 
     public static string ToDeltaTableValue(TimeSeriesType timeSeriesType) =>
@@ -50,6 +54,10 @@ public static class TimeSeriesTypeMapper
             TimeSeriesType.TotalConsumption => DeltaTableTimeSeriesType.TotalConsumption,
             TimeSeriesType.TempFlexConsumption => DeltaTableTimeSeriesType.TempFlexConsumption,
             TimeSeriesType.TempProduction => DeltaTableTimeSeriesType.TempProduction,
-            _ => throw new ArgumentOutOfRangeException(nameof(timeSeriesType), actualValue: timeSeriesType, "Value cannot be mapped to a string representation of a time series type."),
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(timeSeriesType),
+                actualValue: timeSeriesType,
+                "Value cannot be mapped to a string representation of a time series type."),
         };
 }

@@ -27,7 +27,11 @@ public static class ProcessTypeMapper
             DeltaTableConstants.DeltaTableProcessType.FirstCorrectionSettlement => ProcessType.FirstCorrectionSettlement,
             DeltaTableConstants.DeltaTableProcessType.SecondCorrectionSettlement => ProcessType.SecondCorrectionSettlement,
             DeltaTableConstants.DeltaTableProcessType.ThirdCorrectionSettlement => ProcessType.ThirdCorrectionSettlement,
-            _ => throw new FormatException($"Value does not contain a valid string representation of a process type. Value: '{processType}'."),
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(processType),
+                actualValue: processType,
+                "Value does not contain a valid string representation of a process type."),
         };
 
     public static string ToDeltaTableValue(ProcessType processType) =>
@@ -39,6 +43,10 @@ public static class ProcessTypeMapper
             ProcessType.FirstCorrectionSettlement => DeltaTableConstants.DeltaTableProcessType.FirstCorrectionSettlement,
             ProcessType.SecondCorrectionSettlement => DeltaTableConstants.DeltaTableProcessType.SecondCorrectionSettlement,
             ProcessType.ThirdCorrectionSettlement => DeltaTableConstants.DeltaTableProcessType.ThirdCorrectionSettlement,
-            _ => throw new ArgumentOutOfRangeException(nameof(processType), actualValue: processType, "Value cannot be mapped to a string representation of a process type."),
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(processType),
+                actualValue: processType,
+                "Value cannot be mapped to a string representation of a process type."),
         };
 }

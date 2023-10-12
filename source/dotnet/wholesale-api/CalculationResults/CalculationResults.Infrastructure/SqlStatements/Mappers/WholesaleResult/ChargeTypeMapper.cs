@@ -24,6 +24,10 @@ public static class ChargeTypeMapper
             "fee" => ChargeType.Fee,
             "subscription" => ChargeType.Subscription,
             "tariff" => ChargeType.Tariff,
-            _ => throw new FormatException($"Value does not contain a valid string representation of a charge type. Value: '{chargeType}'."),
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(chargeType),
+                actualValue: chargeType,
+                "Value does not contain a valid string representation of a charge type."),
         };
 }

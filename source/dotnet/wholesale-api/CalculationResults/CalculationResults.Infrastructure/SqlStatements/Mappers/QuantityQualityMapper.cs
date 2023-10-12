@@ -27,7 +27,11 @@ public static class QuantityQualityMapper
             "estimated" => QuantityQuality.Estimated,
             "incomplete" => QuantityQuality.Incomplete,
             "missing" => QuantityQuality.Missing,
-            _ => throw new FormatException($"Value does not contain a valid string representation of a quantity quality. Value: '{pointQuality}'."),
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(pointQuality),
+                actualValue: pointQuality,
+                "Value does not contain a valid string representation of a quantity quality."),
         };
     }
 }
