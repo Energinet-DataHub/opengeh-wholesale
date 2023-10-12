@@ -20,8 +20,8 @@ public sealed class ValidationError
     public static readonly ValidationError InvalidDateFormat = new("Forkert dato format for {PropertyName}, skal være YYYY-MM-DDT22:00:00Z eller YYYY-MM-DDT23:00:00Z / Wrong date format for {PropertyName}, must be YYYY-MM-DDT22:00:00Z or YYYY-MM-DDT23:00:00Z", "D66");
     public static readonly ValidationError InvalidWinterMidnightFormat = new("Forkert dato format for {PropertyName}, skal være YYYY-MM-DDT23:00:00Z / Wrong date format for {PropertyName}, must be YYYY-MM-DDT23:00:00Z", "D66");
     public static readonly ValidationError InvalidSummerMidnightFormat = new("Forkert dato format for {PropertyName}, skal være YYYY-MM-DDT22:00:00Z / Wrong date format for {PropertyName}, must be YYYY-MM-DDT22:00:00Z", "D66");
-    public static readonly ValidationError StartDateMustBeLessThen3Years = new("Forkert datointerval. Dato må max være 3 år tilbage i tid / Invalid date interval. Can maximum be 3 years back in time", "E17");
-    public static readonly ValidationError PeriodIsGreaterThenAllowedPeriodSize = new("Forkert datointerval. Dato må kun være for 1 måned af gangen / Invalid date interval. Can maximum be for a 1 month period", "E17");
+    public static readonly ValidationError StartDateMustBeLessThen3Years = new("Dato må max være 3 år tilbage i tid / Can maximum be 3 years back in time", "E17");
+    public static readonly ValidationError PeriodIsGreaterThenAllowedPeriodSize = new("Dato må kun være for 1 måned af gangen / Can maximum be for a 1 month period", "E17");
     public static readonly ValidationError MissingStartOrAndEndDate = new("Start og slut dato skal udfyldes / Start and end date must be present in request", "E50");
 
     private ValidationError(string message, string errorCode)
