@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Globalization;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
@@ -73,11 +74,11 @@ public class WholesaleResultQueriesTests : IClassFixture<DatabricksSqlStatementA
         using var assertionScope = new AssertionScope();
         var actualHourlyAmount = actual.Single(row => row.Id.ToString() == HourlyTariffCalculationResultId);
         actualHourlyAmount.ChargeResolution.Should().Be(ChargeResolution.Hour);
-        actualHourlyAmount.TimeSeriesPoints.First().Amount.Should().Be(decimal.Parse(DefaultHourlyAmount));
+        actualHourlyAmount.TimeSeriesPoints.First().Amount.Should().Be(decimal.Parse(DefaultHourlyAmount, CultureInfo.InvariantCulture));
 
         var actualMonthlyAmount = actual.Single(row => row.Id.ToString() == MonthlyAmountTariffCalculationResultId);
         actualMonthlyAmount.ChargeResolution.Should().Be(ChargeResolution.Month);
-        actualMonthlyAmount.TimeSeriesPoints.First().Amount.Should().Be(decimal.Parse(DefaultMonthlyAmount));
+        actualMonthlyAmount.TimeSeriesPoints.First().Amount.Should().Be(decimal.Parse(DefaultMonthlyAmount, CultureInfo.InvariantCulture));
     }
 
     private async Task InsertHourlyTariffAndMonthlyAmountTariffRows(IOptions<DeltaTableOptions> options)
