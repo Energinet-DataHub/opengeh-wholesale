@@ -24,7 +24,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 public class WholesaleTimeSeriesPointFactoryTests
 {
     private const string DefaultTime = "2022-05-16T01:00:00.000Z";
-    private const string DefaultQuantityQualities = "[measured, missing]";
+    private const string DefaultQuantityQualities = "[\"measured\", \"missing\"]";
 
     [Fact]
     public void Create_WhenNullableFieldsNull_ReturnsNullForThoseFields()
