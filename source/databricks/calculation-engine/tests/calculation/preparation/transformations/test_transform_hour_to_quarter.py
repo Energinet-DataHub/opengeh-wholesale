@@ -40,7 +40,7 @@ def basis_data_time_series_points_row(
     metering_point_type: str = "the_metering_point_type",
     resolution: MeteringPointResolution = MeteringPointResolution.HOUR,
     observation_time: TimestampType() = datetime(2020, 1, 1, 0, 0),
-    quantity: Decimal = Decimal("4.444444"),
+    quantity: Decimal = Decimal("4.445"),
     quality: QuantityQuality = QuantityQuality.ESTIMATED,
     energy_supplier_id: str = "the_energy_supplier_id",
     balance_responsible_id: str = "the_balance_responsible_id",
@@ -76,7 +76,7 @@ def test__transform_hour_to_quarter__split_basis_data_time_series(
 
     # Assert
     assert actual.count() == 4
-    assert actual.collect()[0]["quarter_quantity"] == Decimal("1.111111")
+    assert actual.collect()[0]["quarter_quantity"] == Decimal("1.111250")
 
 
 def test__transform_hour_to_quarter__returns_expected_schema(

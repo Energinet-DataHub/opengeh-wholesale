@@ -32,6 +32,9 @@ from package.codelists import (
     MeteringPointResolution,
 )
 from package.constants import Colname
+from package.calculation_input.schemas import (
+    metering_point_period_schema,
+)
 
 # Factory defaults
 grid_area_code = "805"
@@ -61,17 +64,18 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
     def factory(
         MeteringPointId=metering_point_id,
         MeteringPointType=metering_point_type,
+        CalculationType="some-calculation-type",
         SettlementMethod=settlement_method,
         GridAreaCode=grid_area_code,
         Resolution=resolution,
         FromGridArea="some-to-grid-area",
         ToGridArea="some-from-grid-area",
         ParentMeteringPointId="some-parent-metering-point-id",
+        EnergySupplierId=energy_supplier_id,
+        BalanceResponsibleId=balance_responsible_id,
         FromDate=june_1th,
         ToDate=june_3th,
         periods=None,
-        EnergySupplierId=energy_supplier_id,
-        BalanceResponsibleId=balance_responsible_id,
     ) -> DataFrame:
         df_array = []
         if periods:
@@ -120,39 +124,23 @@ def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
         else:
             df_array.append(
                 {
-                    Colname.balance_responsible_id: BalanceResponsibleId,
                     Colname.metering_point_id: MeteringPointId,
                     Colname.metering_point_type: MeteringPointType,
+                    Colname.calculation_type: CalculationType,
                     Colname.settlement_method: SettlementMethod,
                     Colname.grid_area: GridAreaCode,
                     Colname.resolution: Resolution,
-                    Colname.to_grid_area: FromGridArea,
                     Colname.from_grid_area: ToGridArea,
+                    Colname.to_grid_area: FromGridArea,
                     Colname.parent_metering_point_id: ParentMeteringPointId,
+                    Colname.energy_supplier_id: EnergySupplierId,
+                    Colname.balance_responsible_id: BalanceResponsibleId,
                     Colname.from_date: FromDate,
                     Colname.to_date: ToDate,
-                    Colname.energy_supplier_id: EnergySupplierId,
                 }
             )
 
-        schema = StructType(
-            [
-                StructField(Colname.balance_responsible_id, StringType(), False),
-                StructField(Colname.metering_point_id, StringType(), False),
-                StructField(Colname.metering_point_type, StringType(), False),
-                StructField(Colname.settlement_method, StringType(), False),
-                StructField(Colname.grid_area, StringType(), False),
-                StructField(Colname.resolution, StringType(), False),
-                StructField(Colname.to_grid_area, StringType(), False),
-                StructField(Colname.from_grid_area, StringType(), False),
-                StructField(Colname.parent_metering_point_id, StringType(), False),
-                StructField(Colname.from_date, TimestampType(), False),
-                StructField(Colname.to_date, TimestampType(), True),
-                StructField(Colname.energy_supplier_id, StringType(), False),
-            ]
-        )
-
-        return spark.createDataFrame(df_array, schema=schema)
+        return spark.createDataFrame(df_array, schema=metering_point_period_schema)
 
     return factory
 

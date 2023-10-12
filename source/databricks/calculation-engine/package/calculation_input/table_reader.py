@@ -181,7 +181,9 @@ class TableReader:
                 col(Colname.metering_point_type)
                 == InputMeteringPointType.EFFECT_SETTLEMENT.value,
                 lit(MeteringPointType.EFFECT_SETTLEMENT.value),
-            ),
+            )
+            .otherwise(lit("Unknown type")),
+            # The otherwise is to avoid changing the nullability of the column.
         )
 
     def _fix_settlement_method(self, df: DataFrame) -> DataFrame:
