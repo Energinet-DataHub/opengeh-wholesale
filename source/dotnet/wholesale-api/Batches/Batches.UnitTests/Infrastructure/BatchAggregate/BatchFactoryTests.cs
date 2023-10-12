@@ -20,11 +20,9 @@ using FluentAssertions;
 using Moq;
 using NodaTime;
 using Xunit;
-using Xunit.Categories;
 
 namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchAggregate;
 
-[UnitTest]
 public class BatchFactoryTests
 {
     private readonly DateTimeOffset _startDate = DateTimeOffset.Parse("2021-12-31T23:00Z");
