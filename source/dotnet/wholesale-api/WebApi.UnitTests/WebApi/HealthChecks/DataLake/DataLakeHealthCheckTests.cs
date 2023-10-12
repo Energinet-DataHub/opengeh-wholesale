@@ -53,8 +53,7 @@ public class DataLakeHealthCheckTests
         var sut = new DataLakeHealthRegistration(dataLakeFileSystemClientMock.Object, clock.Object, options);
 
         // Act
-        var actualHealthStatus = await sut.CheckHealthAsync(new HealthCheckContext(), CancellationToken.None)
-            .ConfigureAwait(false);
+        var actualHealthStatus = await sut.CheckHealthAsync(new HealthCheckContext(), CancellationToken.None);
 
         // Assert
         actualHealthStatus.Status.Should().Be(expectedHealthStatus);

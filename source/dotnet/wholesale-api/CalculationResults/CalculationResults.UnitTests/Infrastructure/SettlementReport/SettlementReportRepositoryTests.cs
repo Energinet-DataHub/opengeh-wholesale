@@ -21,11 +21,9 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementRe
 using FluentAssertions;
 using Moq;
 using Xunit;
-using Xunit.Categories;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SettlementReport;
 
-[UnitTest]
 public class SettlementReportRepositoryTests
 {
     private const string AnyActorId = "1234567890123";
@@ -168,7 +166,7 @@ public class SettlementReportRepositoryTests
             streamZipperMock.Object);
 
         // Act
-        var report = await sut.GetSettlementReportAsync(batchInfo).ConfigureAwait(false);
+        var report = await sut.GetSettlementReportAsync(batchInfo);
         var actual = await new StreamReader(report.Stream).ReadLineAsync();
 
         // Assert
@@ -213,7 +211,7 @@ public class SettlementReportRepositoryTests
             streamZipperMock.Object);
 
         // Act
-        await sut.GetSettlementReportAsync(batchInfo, gridAreaCode, outputStream).ConfigureAwait(false);
+        await sut.GetSettlementReportAsync(batchInfo, gridAreaCode, outputStream);
 
         using var streamReader = new StreamReader(outputStream);
         var actual = await streamReader.ReadLineAsync();

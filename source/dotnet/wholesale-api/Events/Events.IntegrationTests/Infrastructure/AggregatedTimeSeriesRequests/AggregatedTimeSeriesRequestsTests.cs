@@ -57,7 +57,7 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
             _sender.ServiceBusClient);
 
         // Act
-        await sut.StartAsync(CancellationToken.None).ConfigureAwait(false);
+        await sut.StartAsync(CancellationToken.None);
         await _sender.PublishAsync("Hello World", expectedReferenceId);
 
         // Assert

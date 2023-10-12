@@ -23,11 +23,9 @@ using NodaTime;
 using NodaTime.Extensions;
 using Test.Core.Attributes;
 using Xunit;
-using Xunit.Categories;
 
 namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchAggregate;
 
-[UnitTest]
 public class BatchTests
 {
     [Fact]
