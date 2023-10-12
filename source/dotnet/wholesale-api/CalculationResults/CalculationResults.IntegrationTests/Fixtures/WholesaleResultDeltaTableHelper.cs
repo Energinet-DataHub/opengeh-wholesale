@@ -30,14 +30,14 @@ public static class WholesaleResultDeltaTableHelper
         string quantityUnit = "kWh",
         string chargeResolution = "PT1H",
         string chargeCode = "4000",
-        string chargeType = "Tariff",
+        string chargeType = "tariff",
         string chargeOwnerId = "9876543210000",
         string time = "2022-05-16T03:00:00.000Z",
         string? quantity = "1.123",
         IReadOnlyCollection<string>? quantityQualities = null,
         string? price = "9.876543",
         string? amount = "2.345678",
-        string isTax = "False")
+        string isTax = "false")
     {
         quantityQualities ??= new List<string> { "'missing'", "'measured'" };
 

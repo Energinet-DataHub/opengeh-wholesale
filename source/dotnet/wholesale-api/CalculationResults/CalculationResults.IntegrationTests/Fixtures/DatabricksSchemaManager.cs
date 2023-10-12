@@ -83,7 +83,7 @@ public class DatabricksSchemaManager
     {
         var fieldInfos = typeof(T).GetFields(BindingFlags.Public | BindingFlags.Static);
         var columnsNames = string.Join(", ", fieldInfos.Select(x => x.GetValue(null)).Cast<string>());
-        var values = string.Join(", ", rows.Select(row => $"({string.Join(", ", row.Select(val => $"{val}"))})"));
+        var values = string.Join(", ", rows.Select(row => $"({string.Join(", ", row.Select(val => val == null ? "NULL" : $"{val}"))})"));
         var sqlStatement = $@"INSERT INTO {SchemaName}.{tableName} ({columnsNames}) VALUES {values}";
         await ExecuteSqlAsync(sqlStatement);
     }

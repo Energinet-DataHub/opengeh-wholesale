@@ -94,24 +94,23 @@ ORDER BY {WholesaleResultColumnNames.CalculationResultId}, {WholesaleResultColum
     public static string[] SqlColumnNames { get; } =
     {
         WholesaleResultColumnNames.CalculationId,
+        WholesaleResultColumnNames.CalculationResultId,
+        WholesaleResultColumnNames.CalculationType,
+        WholesaleResultColumnNames.GridArea,
+        WholesaleResultColumnNames.EnergySupplierId,
+        WholesaleResultColumnNames.MeteringPointType,
+        WholesaleResultColumnNames.SettlementMethod,
         WholesaleResultColumnNames.ChargeType,
         WholesaleResultColumnNames.ChargeCode,
         WholesaleResultColumnNames.ChargeOwnerId,
         WholesaleResultColumnNames.ChargeResolution,
-        WholesaleResultColumnNames.ChargeType,
-        WholesaleResultColumnNames.CalculationType,
-        WholesaleResultColumnNames.MeteringPointType,
-        WholesaleResultColumnNames.SettlementMethod,
         WholesaleResultColumnNames.IsTax,
         WholesaleResultColumnNames.QuantityUnit,
-        WholesaleResultColumnNames.CalculationResultId,
-        WholesaleResultColumnNames.GridArea,
-        WholesaleResultColumnNames.EnergySupplierId,
         WholesaleResultColumnNames.Time,
         WholesaleResultColumnNames.Quantity,
+        WholesaleResultColumnNames.QuantityQualities,
         WholesaleResultColumnNames.Amount,
         WholesaleResultColumnNames.Price,
-        WholesaleResultColumnNames.QuantityQualities,
     };
 
     public static bool BelongsToDifferentResults(SqlResultRow row, SqlResultRow otherRow)
