@@ -14,15 +14,14 @@
 
 
 from pyspark.sql import DataFrame
-import pyspark.sql.functions as F
-from package.calculation.preparation import PreparedDataReader
 import package.calculation.wholesale.tariff_calculators as tariffs
-from package.codelists import ChargeResolution, MeteringPointType
-from package.constants import Colname
+from .schemas.tariffs_schema import tariff_schema
 from package.calculation_output.wholesale_calculation_result_writer import (
     WholesaleCalculationResultWriter,
 )
 from datetime import datetime
+
+from package.common import assert_schema
 
 
 def execute(
@@ -30,6 +29,8 @@ def execute(
     tariffs_hourly_df: DataFrame,
     period_start_datetime: datetime,
 ) -> None:
+    assert_schema(tariffs_hourly_df.schema, tariff_schema)
+
     # Calculate and write to storage
     _calculate_tariff_charges(
         wholesale_calculation_result_writer,

@@ -26,11 +26,9 @@ using NodaTime;
 using NodaTime.Extensions;
 using Test.Core;
 using Xunit;
-using Xunit.Categories;
 
 namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Application.Batches;
 
-[UnitTest]
 public class CreateBatchHandlerTests
 {
     [Theory]

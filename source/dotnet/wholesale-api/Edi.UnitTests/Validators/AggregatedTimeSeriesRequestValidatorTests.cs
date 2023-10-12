@@ -19,13 +19,15 @@ using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
 using FluentAssertions;
 using NodaTime;
 using Xunit;
+using Period = Energinet.DataHub.Edi.Requests.Period;
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 
 public class AggregatedTimeSeriesRequestValidatorTests
 {
     private static readonly PeriodValidationRule _periodValidator = new(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!, SystemClock.Instance);
-    private readonly IValidator<AggregatedTimeSeriesRequest> _sut = new AggregatedTimeSeriesRequestValidator(new[] { _periodValidator });
+    private static readonly EnergySupplierFieldValidationRule _energySupplierFieldValidationRule = new();
+    private readonly IValidator<AggregatedTimeSeriesRequest> _sut = new AggregatedTimeSeriesRequestValidator(new IValidationRule<AggregatedTimeSeriesRequest>[] { _periodValidator, _energySupplierFieldValidationRule });
 
     [Fact]
     public void Validate_AggregatedTimeSeriesRequest_SuccessValidation()
@@ -33,11 +35,10 @@ public class AggregatedTimeSeriesRequestValidatorTests
         // Arrange
         var request = new AggregatedTimeSeriesRequest()
         {
-            Period = new Edi.Requests.Period()
-            {
-                Start = Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(),
-                End = Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString(),
-            },
+            Period = CreateValidPeriod(),
+            RequestedByActorRole = EnergySupplierValidatorTest.EnergySupplierActorRole,
+            RequestedByActorId = EnergySupplierValidatorTest.ValidGlnNumber,
+            EnergySupplierId = EnergySupplierValidatorTest.ValidGlnNumber,
         };
 
         // Act
@@ -66,5 +67,37 @@ public class AggregatedTimeSeriesRequestValidatorTests
         // Assert
         validationErrors.Should().ContainSingle();
         validationErrors.First().ErrorCode.Should().Be(ValidationError.PeriodIsGreaterThenAllowedPeriodSize.ErrorCode);
+    }
+
+    [Fact]
+    public void Validate_AggregatedTimeSeriesRequest_WhenEnergySupplierIdIsInvalid_UnsuccessfulValidation()
+    {
+        // Arrange
+        var request = new AggregatedTimeSeriesRequest()
+        {
+            Period = CreateValidPeriod(),
+            RequestedByActorRole = EnergySupplierValidatorTest.EnergySupplierActorRole,
+            RequestedByActorId = EnergySupplierValidatorTest.ValidGlnNumber,
+            EnergySupplierId = "invalid-id",
+        };
+
+        // Act
+        var validationErrors = _sut.Validate(request);
+
+        // Assert
+        validationErrors.Should().ContainSingle();
+
+        var validationError = validationErrors.First();
+        validationError.Message.Should().Be(ValidationError.InvalidEnergySupplierField.Message);
+        validationError.ErrorCode.Should().Be(ValidationError.InvalidEnergySupplierField.ErrorCode);
+    }
+
+    private Period CreateValidPeriod()
+    {
+        return new Edi.Requests.Period()
+        {
+            Start = Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(),
+            End = Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString(),
+        };
     }
 }
