@@ -22,12 +22,12 @@ from package.calculation.preparation.transformations import (
     get_subscription_charges,
 )
 import package.codelists as E
+from package.calculation.wholesale.schemas.tariffs_schema import tariff_schema
 from package.calculation_input.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
 )
 from package.calculation.wholesale.schemas.charges_schema import charges_schema
-from package.calculation.wholesale.tariff_calculators import tariff_schema
 from package.constants import Colname
 
 DEFAULT_GRID_AREA = "543"
