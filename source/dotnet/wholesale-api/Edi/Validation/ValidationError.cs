@@ -23,6 +23,7 @@ public sealed class ValidationError
     public static readonly ValidationError StartDateMustBeLessThen3Years = new("Dato må max være 3 år tilbage i tid / Can maximum be 3 years back in time", "E17");
     public static readonly ValidationError PeriodIsGreaterThenAllowedPeriodSize = new("Dato må kun være for 1 måned af gangen / Can maximum be for a 1 month period", "E17");
     public static readonly ValidationError MissingStartOrAndEndDate = new("Start og slut dato skal udfyldes / Start and end date must be present in request", "E50");
+    public static readonly ValidationError InvalidEnergySupplierField = new("Feltet EnergySupplier skal være udfyldt med et valid GLN/EIC nummer når en elleverandør anmoder om data / EnergySupplier must be submitted with a valid GLN/EIC number when an energy supplier requests data", "E16");
 
     private ValidationError(string message, string errorCode)
     {
