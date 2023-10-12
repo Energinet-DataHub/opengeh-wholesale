@@ -33,7 +33,7 @@ public static class EmbeddedResources
 
         var stream = Assembly.GetAssembly(typeof(TRoot))!.GetManifestResourceStream(resourceName);
 
-        if (stream == null) throw new ArgumentException($"Resource '{resourceName}' not found.");
-        return stream;
+        return stream
+            ?? throw new ArgumentException($"Resource '{resourceName}' not found.");
     }
 }

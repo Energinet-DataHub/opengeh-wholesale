@@ -19,11 +19,9 @@ using Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchAggregat
 using FluentAssertions;
 using NodaTime;
 using Xunit;
-using Xunit.Categories;
 
 namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Application.Batches.Model;
 
-[UnitTest]
 public class BatchDtoMapperTests
 {
     [Theory]
