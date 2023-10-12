@@ -25,10 +25,7 @@ def assert_schema(
         return
 
     if not ignore_nullability and not ignore_column_order:
-        if actual != expected:
-            raise AssertionError(
-                f"Schema mismatch. Expected {expected}, but got {actual}."
-            )
+        raise AssertionError(f"Schema mismatch. Expected {expected}, but got {actual}.")
 
     # TODO BJM: The following is a workaround while transitioning code base to support exact schema match
 

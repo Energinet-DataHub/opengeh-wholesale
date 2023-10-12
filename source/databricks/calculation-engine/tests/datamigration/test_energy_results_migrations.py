@@ -15,8 +15,9 @@
 from datetime import datetime
 from decimal import Decimal
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import lit, col
+from pyspark.sql.functions import array, lit, col
 import pytest
+from typing import Union
 import uuid
 
 from package.codelists import (
@@ -77,12 +78,18 @@ def _create_df(spark: SparkSession) -> DataFrame:
 def test__migrated_table_rejects_invalid_data(
     spark: SparkSession,
     column_name: str,
-    invalid_column_value: str,
+    invalid_column_value: Union[str, list],
     migrations_executed: None,
 ) -> None:
     # Arrange
     results_df = _create_df(spark)
-    invalid_df = results_df.withColumn(column_name, lit(invalid_column_value))
+
+    if isinstance(invalid_column_value, list):
+        invalid_df = results_df.withColumn(
+            column_name, array(*map(lit, invalid_column_value))
+        )
+    else:
+        invalid_df = results_df.withColumn(column_name, lit(invalid_column_value))
 
     # Act
     with pytest.raises(Exception) as ex:
@@ -162,7 +169,7 @@ def test__migrated_table_accepts_enum_value(
     column_value: str,
     migrations_executed: None,
 ) -> None:
-    "Test that all enum values are accepted by the delta table"
+    """Test that all enum values are accepted by the delta table"""
 
     # Arrange
     result_df = _create_df(spark)

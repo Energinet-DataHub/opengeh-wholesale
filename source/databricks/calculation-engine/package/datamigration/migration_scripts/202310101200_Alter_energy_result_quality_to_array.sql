@@ -34,5 +34,5 @@ ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
 
 -- Put the new column in the same position as the old one to avoid breaking schemas and reading/writing
 ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
-    ALTER COLUMN quantity_qualities AFTER quantity_unit
+    ALTER COLUMN quantity_qualities AFTER quantity
 GO
