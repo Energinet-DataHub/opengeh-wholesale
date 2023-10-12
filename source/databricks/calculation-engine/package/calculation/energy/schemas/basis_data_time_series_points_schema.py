@@ -31,7 +31,7 @@ basis_data_time_series_points_schema = StructType(
         StructField(Colname.metering_point_type, StringType(), False),
         StructField(Colname.resolution, StringType(), False),
         StructField(Colname.observation_time, TimestampType(), False),
-        StructField(Colname.quantity, DecimalType(18, 3), True),
+        StructField(Colname.quantity, DecimalType(18, 6), True),
         StructField(Colname.quality, StringType(), False),
         StructField(Colname.energy_supplier_id, StringType(), True),
         StructField(Colname.balance_responsible_id, StringType(), True),
