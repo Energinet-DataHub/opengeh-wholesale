@@ -23,12 +23,17 @@ public class AggregatedTimeSeriesRequestBuilder
     private string _start;
     private string _end;
     private string _meteringPointType = "E18";
+    private string? _energySupplierId;
+    private string _requestedByActorRoleId;
+    private string _requestedByActorId;
 
     private AggregatedTimeSeriesRequestBuilder()
     {
         var now = SystemClock.Instance.GetCurrentInstant();
         _start = Instant.FromUtc(now.InUtc().Year, 1, 1, 23, 0, 0).ToString();
         _end = Instant.FromUtc(now.InUtc().Year, 1, 2, 23, 0, 0).ToString();
+        _requestedByActorRoleId = "unknown-actor-role-id";
+        _requestedByActorId = "unknown-actor-id";
     }
 
     public static AggregatedTimeSeriesRequestBuilder AggregatedTimeSeriesRequest()
@@ -38,7 +43,7 @@ public class AggregatedTimeSeriesRequestBuilder
 
     public AggregatedTimeSeriesRequest Build()
     {
-        return new AggregatedTimeSeriesRequest
+        var request = new AggregatedTimeSeriesRequest
         {
             AggregationPerGridarea = _aggregationPerGridArea,
             Period = new Edi.Requests.Period()
@@ -47,7 +52,14 @@ public class AggregatedTimeSeriesRequestBuilder
                 End = _end,
             },
             MeteringPointType = _meteringPointType,
+            RequestedByActorRole = _requestedByActorRoleId,
+            RequestedByActorId = _requestedByActorId,
         };
+
+        if (_energySupplierId != null)
+            request.EnergySupplierId = _energySupplierId;
+
+        return request;
     }
 
     public AggregatedTimeSeriesRequestBuilder WithStartDate(string start)
@@ -59,6 +71,20 @@ public class AggregatedTimeSeriesRequestBuilder
     public AggregatedTimeSeriesRequestBuilder WithEndDate(string end)
     {
         _end = end;
+        return this;
+    }
+
+    public AggregatedTimeSeriesRequestBuilder WithEnergySupplierId(string? energySupplierId)
+    {
+        _energySupplierId = energySupplierId;
+        return this;
+    }
+
+    public AggregatedTimeSeriesRequestBuilder WithRequestedByActor(string actorRoleId, string actorId)
+    {
+        _requestedByActorRoleId = actorRoleId;
+        _requestedByActorId = actorId;
+
         return this;
     }
 }
