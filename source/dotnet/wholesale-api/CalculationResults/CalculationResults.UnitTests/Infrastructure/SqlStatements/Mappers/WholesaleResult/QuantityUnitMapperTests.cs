@@ -23,7 +23,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
     {
         [Theory]
         [InlineData("kWh", QuantityUnit.Kwh)]
-        public void FromDeltaTableValue_ValidDeltaTableValue_ReturnsExpectedType(string deltaTableValue, QuantityUnit expectedType)
+        public void FromDeltaTableValue_WhenValidDeltaTableValue_ReturnsExpectedType(string deltaTableValue, QuantityUnit expectedType)
         {
             // Act
             var actualType = QuantityUnitMapper.FromDeltaTableValue(deltaTableValue);
@@ -33,7 +33,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
         }
 
         [Fact]
-        public void FromDeltaTableValue_InvalidDeltaTableValue_ThrowsException()
+        public void FromDeltaTableValue_WhenInvalidDeltaTableValue_ThrowsException()
         {
             // Arrange
             var invalidDeltaTableValue = Guid.NewGuid().ToString();
@@ -42,7 +42,8 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
             var act = () => QuantityUnitMapper.FromDeltaTableValue(invalidDeltaTableValue);
 
             // Assert
-            act.Should().Throw<FormatException>().WithMessage($"*'{invalidDeltaTableValue}'*");
+            act.Should().Throw<ArgumentOutOfRangeException>()
+                .And.ActualValue.Should().Be(invalidDeltaTableValue);
         }
     }
 }
