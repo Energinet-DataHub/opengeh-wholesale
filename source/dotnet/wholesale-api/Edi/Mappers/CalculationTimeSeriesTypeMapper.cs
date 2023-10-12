@@ -24,13 +24,18 @@ public static class CalculationTimeSeriesTypeMapper
 {
     public static CalculationTimeSeriesType MapTimeSeriesTypeFromEdi(TimeSeriesType timeSeriesType)
     {
-        return timeSeriesType switch {
+        return timeSeriesType switch
+        {
             TimeSeriesType.Production => CalculationTimeSeriesType.Production,
             TimeSeriesType.FlexConsumption => CalculationTimeSeriesType.FlexConsumption,
             TimeSeriesType.TotalConsumption => CalculationTimeSeriesType.TotalConsumption,
             TimeSeriesType.NetExchangePerGa => CalculationTimeSeriesType.NetExchangePerGa,
             TimeSeriesType.NonProfiledConsumption => CalculationTimeSeriesType.NonProfiledConsumption,
-            _ => throw new InvalidOperationException($"Unknown time series type: {timeSeriesType}"),
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(timeSeriesType),
+                actualValue: timeSeriesType,
+                "Value cannot be mapped to calculation time series type."),
         };
     }
 
@@ -55,7 +60,11 @@ public static class CalculationTimeSeriesTypeMapper
                 $"{timeSeriesType} is not a supported TimeSeriesType For AggregatedTimeSeriesRequestAccepted response."),
             CalculationTimeSeriesType.NetExchangePerNeighboringGa => throw new NotSupportedTimeSeriesTypeException(
                 $"{timeSeriesType} is not a supported TimeSeriesType For AggregatedTimeSeriesRequestAccepted response."),
-            _ => throw new ArgumentOutOfRangeException($"Unknown time series type {nameof(timeSeriesType)}"),
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(timeSeriesType),
+                actualValue: timeSeriesType,
+                "Value cannot be mapped to time service type contract."),
         };
     }
 }
