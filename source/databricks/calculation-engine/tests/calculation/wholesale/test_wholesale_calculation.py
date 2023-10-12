@@ -25,7 +25,7 @@ from package.calculation_output import WholesaleCalculationResultWriter
 
 
 @patch.object(calculation_output, WholesaleCalculationResultWriter.__name__)
-def test__execute__asserts_tariff_schema__is_valid(
+def test__execute__when_tariff_schema_is_valid__does_not_raise(
     wholesale_calculation_result_writer_mock: WholesaleCalculationResultWriter, spark
 ):
     # Arrange
