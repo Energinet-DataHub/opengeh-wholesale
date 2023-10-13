@@ -77,5 +77,5 @@ def _add_missing_nullable_columns(result: DataFrame) -> DataFrame:
             Colname.settlement_method, f.lit(None).cast(StringType())
         )
     if Colname.position not in result.columns:
-        result = result.withColumn(Colname.position, f.lit(None).cast("integer"))
+        result = result.withColumn(Colname.position, f.lit(None).cast(IntegerType()))
     return result
