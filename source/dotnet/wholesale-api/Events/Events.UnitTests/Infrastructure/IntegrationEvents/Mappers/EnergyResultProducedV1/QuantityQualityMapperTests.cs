@@ -47,4 +47,18 @@ public class QuantityQualityMapperTests
             Enum.IsDefined(typeof(Contracts.IntegrationEvents.EnergyResultProducedV1.Types.QuantityQuality), actual).Should().BeTrue();
         }
     }
+
+    [Fact]
+    public void MapProcessType_WhenInvalidEnumNumberForQuantityQuality_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        var invalidValue = (QuantityQuality)99;
+
+        // Act
+        var act = () => QuantityQualityMapper.MapQuantityQuality(invalidValue);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .And.ActualValue.Should().Be(invalidValue);
+    }
 }
