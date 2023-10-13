@@ -14,11 +14,10 @@
 
 using Energinet.DataHub.Wholesale.EDI.Exceptions;
 using Energinet.DataHub.Wholesale.EDI.Models;
+using CalculationTimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType;
 using TimeSeriesTypeContract = Energinet.DataHub.Edi.Responses.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.EDI.Mappers;
-
-using CalculationTimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType;
 
 public static class CalculationTimeSeriesTypeMapper
 {
