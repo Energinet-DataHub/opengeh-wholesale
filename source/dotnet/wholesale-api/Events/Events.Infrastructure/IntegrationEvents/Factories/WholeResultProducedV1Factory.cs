@@ -14,8 +14,8 @@
 
 using Energinet.DataHub.Core.Messaging.Communication.Internal;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
-using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.AmountPerChargeResultProducedV1;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Types;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
@@ -24,20 +24,49 @@ public class WholesaleResultProducedV1Factory : IWholesaleResultProducedV1Factor
 {
     public IntegrationEvent Create(WholesaleResult wholesaleResult)
     {
-        var @event = CreateInternal(wholesaleResult);
-        return new IntegrationEvent(Guid.NewGuid(), CalculationResultCompleted.EventName, CalculationResultCompleted.EventMinorVersion,  @event);
+        switch (wholesaleResult.ChargeResolution)
+        {
+            case ChargeResolution.Day or ChargeResolution.Hour:
+                {
+                    var @event = CreateAmountPerChargeResultProducedV1(wholesaleResult);
+                    return new IntegrationEvent(Guid.NewGuid(), AmountPerChargeResultProducedV1.EventName, AmountPerChargeResultProducedV1.EventMinorVersion,  @event);
+                }
+
+            case ChargeResolution.Month:
+                {
+                    var @event = CreateMonthlyAmountPerChargeResultProducedV1(wholesaleResult);
+                    return new IntegrationEvent(Guid.NewGuid(), MonthlyAmountPerChargeResultProducedV1.EventName, MonthlyAmountPerChargeResultProducedV1.EventMinorVersion,  @event);
+                }
+
+            default:
+                throw new ArgumentOutOfRangeException(nameof(wholesaleResult.ChargeResolution), actualValue: wholesaleResult.ChargeResolution, "Unexpected resolution.");
+        }
     }
 
-    private static AmountPerChargeResultProducedV1 CreateInternal(WholesaleResult result)
+    private static AmountPerChargeResultProducedV1 CreateAmountPerChargeResultProducedV1(WholesaleResult result)
     {
-        var @event = new AmountPerChargeResultProducedV1()
+        var @event = new AmountPerChargeResultProducedV1
         {
             CalculationId = result.CalculationId.ToString(),
-            Resolution = AmountPerChargeResultProducedV1.Types.Resolution.Hour,
-            // CalculationType = CalculationTypeMapper.MapCalculationType(result.CalculationType),
-            QuantityUnit = AmountPerChargeResultProducedV1.Types.QuantityUnit.Kwh,
+            CalculationType = CalculationTypeMapper.MapCalculationType(result.CalculationType),
             PeriodStartUtc = result.PeriodStart.ToTimestamp(),
             PeriodEndUtc = result.PeriodEnd.ToTimestamp(),
+            Resolution = AmountPerChargeResultProducedV1.Types.Resolution.Hour,
+            QuantityUnit = AmountPerChargeResultProducedV1.Types.QuantityUnit.Kwh,
+        };
+        return @event;
+    }
+
+    private static MonthlyAmountPerChargeResultProducedV1 CreateMonthlyAmountPerChargeResultProducedV1(WholesaleResult result)
+    {
+        var @event = new MonthlyAmountPerChargeResultProducedV1
+        {
+            CalculationId = result.CalculationId.ToString(),
+            CalculationType = CalculationTypeMapper.MapCalculationType(result.CalculationType),
+            PeriodStartUtc = result.PeriodStart.ToTimestamp(),
+            PeriodEndUtc = result.PeriodEnd.ToTimestamp(),
+            QuantityUnit = MonthlyAmountPerChargeResultProducedV1.Types.QuantityUnit.Kwh,
+
         };
         return @event;
     }
