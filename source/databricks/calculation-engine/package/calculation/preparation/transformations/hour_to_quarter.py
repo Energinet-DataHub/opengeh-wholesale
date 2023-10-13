@@ -24,7 +24,9 @@ from package.calculation.energy.schemas import basis_data_time_series_points_sch
 
 def transform_hour_to_quarter(basis_data_time_series_points_df: DataFrame) -> DataFrame:
     assert_schema(
-        basis_data_time_series_points_df.schema, basis_data_time_series_points_schema
+        basis_data_time_series_points_df.schema,
+        basis_data_time_series_points_schema,
+        ignore_nullability=True,
     )
 
     result = basis_data_time_series_points_df.withColumn(

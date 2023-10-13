@@ -42,9 +42,9 @@ def create_dataframe_from_aggregation_result_schema(result: DataFrame) -> DataFr
     # Replaces None value with zero for sum_quantity
     result = result.na.fill(value=0, subset=[Colname.sum_quantity])
     # Replaces None value with QuantityQuality.MISSING for quality
-    result = result.na.fill(
-        value=QuantityQuality.MISSING.value, subset=[Colname.quality]
-    )
+    # result = result.na.fill(
+    #     value=QuantityQuality.MISSING.value, subset=[Colname.quality]
+    # )
 
     # Create data frame from RDD in order to be able to apply the schema
     return SparkSession.builder.getOrCreate().createDataFrame(
