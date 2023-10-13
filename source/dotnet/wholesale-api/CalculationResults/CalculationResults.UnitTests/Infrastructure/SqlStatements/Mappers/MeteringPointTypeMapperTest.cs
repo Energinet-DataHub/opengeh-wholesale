@@ -33,7 +33,7 @@ public class MeteringPointTypeMapperTests
     [Theory]
     [InlineData("production", MeteringPointType.Production)]
     [InlineData("consumption", MeteringPointType.Consumption)]
-    [InlineData("", null)]
+    [InlineData(null, null)]
     public void FromDeltaTableValue_WhenValidDeltaTableValue_ReturnsExpectedType(string deltaTableValue, MeteringPointType? expectedType)
     {
         // Act
