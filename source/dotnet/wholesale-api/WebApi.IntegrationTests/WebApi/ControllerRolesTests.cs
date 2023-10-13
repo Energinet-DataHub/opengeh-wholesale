@@ -46,7 +46,7 @@ public class ControllerRolesTests
         var attributes = GetAuthorizeAttributesFromControllerEndpoint(controllerType, endpointRoute);
         if (attributes == null)
         {
-            Assert.True(false, $"The route {endpointRoute} does not exist in controller {controllerType}.");
+            Assert.Fail($"The route {endpointRoute} does not exist in controller {controllerType}.");
         }
 
         var actualPermissions = attributes.Select(x => x.Roles);
@@ -86,7 +86,7 @@ public class ControllerRolesTests
         var attributes = GetAuthorizeAttributesFromControllerEndpoint(controllerType, endpoint);
         if (attributes == null)
         {
-            Assert.True(false, $"The route {endpoint} does not exist in controller {controllerType}.");
+            Assert.Fail($"The route {endpoint} does not exist in controller {controllerType}.");
         }
 
         var actualPermissions = attributes.Select(x => x.Roles);
