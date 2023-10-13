@@ -15,11 +15,6 @@ module "app_importer" {
   use_dotnet_isolated_runtime              = true
   dotnet_framework_version    = "v7.0"
   app_settings = {
-    # Region: Default Values
-    WEBSITE_LOAD_USER_PROFILE           = 1,
-    WEBSITE_ENABLE_SYNC_UPDATE_SITE     = true,
-    WEBSITE_RUN_FROM_PACKAGE            = 1,
-    WEBSITES_ENABLE_APP_SERVICE_STORAGE = true,
     # EndRegion
     WEBSITE_LOAD_CERTIFICATES       = resource.azurerm_key_vault_certificate.dh2_certificate.thumbprint
     BLOB_FILES_ERROR_CONTAINER_NAME = local.blob_files_error_container.name
