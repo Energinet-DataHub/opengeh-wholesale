@@ -66,7 +66,11 @@ public class WholesaleResultQueriesTests : IClassFixture<DatabricksSqlStatementA
         batchesClientMock
             .Setup(b => b.GetAsync(It.IsAny<Guid>()))
             .ReturnsAsync(batch);
-        var sut = new WholesaleResultQueries(sqlStatementClient, batchesClientMock.Object, _fixture.DatabricksSchemaManager.DeltaTableOptions, wholesaleResultQueriesLoggerMock.Object);
+        var sut = new WholesaleResultQueries(
+            sqlStatementClient,
+            batchesClientMock.Object,
+            _fixture.DatabricksSchemaManager.DeltaTableOptions,
+            wholesaleResultQueriesLoggerMock.Object);
 
         // Act
         var actual = await sut.GetAsync(batch.BatchId).ToListAsync();
