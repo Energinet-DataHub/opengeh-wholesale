@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql.types import StructType
+from pyspark.sql.types import DecimalType, StructField, StructType
 
 
 def assert_schema(
@@ -20,17 +20,23 @@ def assert_schema(
     expected: StructType,
     ignore_nullability: bool = False,
     ignore_column_order: bool = False,
+    ignore_decimal_scale: bool = False,
+    ignore_decimal_precision: bool = False,
 ) -> None:
     if actual == expected:
         return
 
-    if not ignore_nullability and not ignore_column_order:
+    strict = not (
+        ignore_nullability
+        or ignore_column_order
+        or ignore_decimal_precision
+        or ignore_decimal_scale
+    )
+    if strict:
         if actual != expected:
             raise AssertionError(
                 f"Schema mismatch. Expected {expected}, but got {actual}."
             )
-
-    # TODO BJM: The following is a workaround while transitioning code base to support exact schema match
 
     actual_fields = actual.fields
     expected_fields = expected.fields
@@ -39,13 +45,55 @@ def assert_schema(
         actual_fields = sorted(actual_fields, key=lambda f: f.name)
         expected_fields = sorted(expected_fields, key=lambda f: f.name)
 
-    for a, e in zip(actual_fields, expected_fields):
-        if a.name != e.name:
-            raise AssertionError(
-                f"Expected column name '{e.name}', but found '{a.name}'"
-            )
+    for actual, expected in zip(actual_fields, expected_fields):
+        _assert_column_name(actual, expected)
+        _assert_column_nullability(actual, expected, ignore_nullability)
+        _assert_column_datatype(
+            actual, expected, ignore_decimal_precision, ignore_decimal_scale
+        )
 
-        if not ignore_nullability and a.dataType != e.dataType:
-            raise AssertionError(
-                f"Expected column name '{e.name}' to have type {e.dataType}, but got type {a.dataType}"
-            )
+
+def _assert_column_nullability(
+    actual: StructField, expected: StructField, ignore_nullability: bool
+):
+    if not ignore_nullability and actual.nullable != expected.nullable:
+        raise AssertionError(
+            f"Expected column name '{expected.name}' to have nullable={expected.dataType}, but got nullable={actual.dataType}"
+        )
+
+
+def _assert_column_name(actual, expected):
+    if actual.name != expected.name:
+        raise AssertionError(
+            f"Expected column name '{expected.name}', but found '{actual.name}'"
+        )
+
+
+def _assert_column_datatype(
+    actual: StructField,
+    expected: StructField,
+    ignore_decimal_precision: bool,
+    ignore_decimal_scale: bool,
+):
+    if actual.dataType == expected.dataType:
+        return
+
+    if not isinstance(actual.dataType, DecimalType) or not isinstance(
+        expected.dataType, DecimalType
+    ):
+        raise AssertionError(
+            f"Expected column name '{expected.name}' to have type {expected.dataType}, but got type {actual.dataType}"
+        )
+
+    if (
+        not ignore_decimal_precision
+        and actual.dataType.precision != expected.dataType.precision
+    ):
+        raise AssertionError(
+            f"Decimal precision error: Expected column name '{expected.name}' to have type {expected.dataType}, but got type {actual.dataType}"
+        )
+
+    if not ignore_decimal_scale and actual.dataType.scale != expected.dataType.scale:
+        raise AssertionError(
+            f"Decimal scale error: Expected column name '{expected.name}' to have type {expected.dataType}, but got type {actual.dataType}"
+        )

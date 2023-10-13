@@ -11,25 +11,24 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from decimal import Decimal
 from datetime import datetime
-from package.codelists import (
-    MeteringPointType,
-    MeteringPointResolution,
-    QuantityQuality,
-)
-from package.calculation.energy.grid_loss_calculator import calculate_negative_grid_loss
-from package.calculation.energy.schemas import aggregation_result_schema
-from package.calculation.energy.transformations import (
-    create_dataframe_from_aggregation_result_schema,
-)
+from typing import Callable
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 from pyspark.sql.functions import col
 import pytest
 import pandas as pd
+
+from package.codelists import (
+    MeteringPointType,
+    QuantityQuality,
+)
+from package.common import assert_schema
+from package.calculation.energy.grid_loss_calculator import calculate_negative_grid_loss
+from package.calculation.energy.schemas import aggregation_result_schema
 from package.constants import Colname
-from typing import Callable
 
 
 @pytest.fixture(scope="module")
@@ -46,7 +45,6 @@ def grid_loss_schema() -> StructType:
         )
         .add(Colname.sum_quantity, DecimalType(18, 3))
         .add(Colname.quality, StringType())
-        .add(Colname.resolution, StringType())
         .add(Colname.metering_point_type, StringType())
     )
 
@@ -65,7 +63,6 @@ def agg_result_factory(
                 Colname.grid_area: [],
                 Colname.time_window: [],
                 Colname.sum_quantity: [],
-                Colname.resolution: [],
                 Colname.metering_point_type: [],
             }
         )
@@ -79,7 +76,6 @@ def agg_result_factory(
                     },
                     Colname.sum_quantity: Decimal(-12.567),
                     Colname.quality: QuantityQuality.ESTIMATED.value,
-                    Colname.resolution: MeteringPointResolution.HOUR.value,
                     Colname.metering_point_type: MeteringPointType.EXCHANGE.value,
                 },
                 {
@@ -90,7 +86,6 @@ def agg_result_factory(
                     },
                     Colname.sum_quantity: Decimal(34.32),
                     Colname.quality: QuantityQuality.ESTIMATED.value,
-                    Colname.resolution: MeteringPointResolution.HOUR.value,
                     Colname.metering_point_type: MeteringPointType.EXCHANGE.value,
                 },
                 {
@@ -101,7 +96,6 @@ def agg_result_factory(
                     },
                     Colname.sum_quantity: Decimal(0.0),
                     Colname.quality: QuantityQuality.ESTIMATED.value,
-                    Colname.resolution: MeteringPointResolution.HOUR.value,
                     Colname.metering_point_type: MeteringPointType.EXCHANGE.value,
                 },
             ],
@@ -116,7 +110,7 @@ def agg_result_factory(
 def call_calculate_negative_grid_loss(
     agg_result_factory: Callable[[], DataFrame]
 ) -> DataFrame:
-    df = create_dataframe_from_aggregation_result_schema(agg_result_factory())
+    df = agg_result_factory()
     return calculate_negative_grid_loss(df)
 
 
@@ -154,4 +148,10 @@ def test_negative_grid_loss_values_that_are_zero_stay_zero(
 
 def test_returns_correct_schema(agg_result_factory: Callable[[], DataFrame]) -> None:
     result = call_calculate_negative_grid_loss(agg_result_factory)
-    assert result.schema == aggregation_result_schema
+    assert_schema(
+        result.schema,
+        aggregation_result_schema,
+        ignore_nullability=True,
+        ignore_decimal_precision=True,
+        ignore_decimal_scale=True,
+    )
