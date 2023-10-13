@@ -127,14 +127,6 @@ def get_basis_data_time_series_points_df(
     print("new_points_for_each_metering_point_df schema")
     new_points_for_each_metering_point_df.printSchema()
 
-    # Replaces None value with QuantityQuality.MISSING for quality
-    new_points_for_each_metering_point_df = (
-        new_points_for_each_metering_point_df.na.fill(
-            value=QuantityQuality.MISSING.value, subset=[Colname.quality]
-        )
-    )
-    print("new_points_for_each_metering_point_df schema")
-    new_points_for_each_metering_point_df.printSchema()
     # the master_basis_data_df is allready used once when creating the empty_points_for_each_metering_point_df
     # rejoining master_basis_data_df with empty_points_for_each_metering_point_df requires the GsrNumber and
     # Resolution column must be renamed for the select to be succesfull.
