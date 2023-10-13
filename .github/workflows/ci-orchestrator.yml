@@ -106,6 +106,15 @@ jobs:
       infrastructure_path: ./health-checks-ui/terraform
     secrets: inherit
 
+  esett_deprecated_ci:
+    needs: changes
+    if: ${{ needs.changes.outputs.esett_deprecated_ci == 'true' }}
+    uses: ./.github/workflows/infrastructure-build-prerelease.yml
+    with:
+      release_name_prefix: esett_deprecated_infrastructure
+      infrastructure_path: ./esett-deprecated/terraform
+    secrets: inherit
+
   # If we have multiple Structurizr DSL files in the same repository, we can support rendering them by:
   #  1. Adding a job per file
   #  2. Ensure these jobs are executed in serial (by using 'needs')
@@ -151,6 +160,7 @@ jobs:
         health_checks_ui_ci,
         render_c4model_deployment,
         render_c4model_ownership_views,
+        esett_deprecated_ci
       ]
     if: |
       always()

@@ -1,0 +1,625 @@
+﻿{
+  "lenses": {
+    "0": {
+      "order": 0,
+      "parts": {
+        "0": {
+          "position": {
+            "x": 0,
+            "y": 0,
+            "colSpan": 5,
+            "rowSpan": 4
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "ComponentId",
+                "value": {
+                  "Name": "${application_insight_name}",
+                  "ResourceGroup": "${resource_group_name}",
+                  "ResourceId": "/subscriptions/${subscription_id}/resourceGroups/${resource_group_name}/providers/microsoft.insights/components/${application_insight_name}",
+                  "SubscriptionId": "${subscription_id}"
+                },
+                "isOptional": true
+              },
+              {
+                "name": "Dimensions",
+                "value": {
+                  "aggregation": "Sum",
+                  "splitBy": [],
+                  "xAxis": {
+                    "name": "timestamp",
+                    "type": "datetime"
+                  },
+                  "yAxis": [
+                    {
+                      "name": "count_",
+                      "type": "real"
+                    }
+                  ]
+                },
+                "isOptional": true
+              },
+              {
+                "name": "Query",
+                "value": "traces\r\n| where severityLevel == 3\r\n| where timestamp > ago(24h)\r\n| make-series count() default=0 on timestamp in range(ago(24h), now(), 5m)\r\n| render areachart kind=unstacked\n",
+                "isOptional": true
+              },
+              {
+                "name": "SpecificChart",
+                "value": "UnstackedArea",
+                "isOptional": true
+              },
+              {
+                "name": "PartTitle",
+                "value": "Analytics",
+                "isOptional": true
+              },
+              {
+                "name": "PartSubTitle",
+                "value": "${application_insight_name}",
+                "isOptional": true
+              },
+              {
+                "name": "PartId",
+                "value": "7fd1d827-4efc-4f48-9052-6818eeec9e36",
+                "isOptional": true
+              },
+              {
+                "name": "Version",
+                "value": "1.0",
+                "isOptional": true
+              },
+              {
+                "name": "resourceTypeMode",
+                "value": "components",
+                "isOptional": true
+              },
+              {
+                "name": "TimeRange",
+                "value": "P1D",
+                "isOptional": true
+              },
+              {
+                "name": "DashboardId",
+                "isOptional": true
+              },
+              {
+                "name": "ControlType",
+                "value": "FrameControlChart",
+                "isOptional": true
+              },
+              {
+                "name": "Scope",
+                "isOptional": true
+              },
+              {
+                "name": "DraftRequestParameters",
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+            "settings": {
+              "content": {
+                "PartSubTitle": "${application_insight_name}",
+                "PartTitle": "Error traces last 24 hours"
+              }
+            }
+          }
+        },
+        "1": {
+          "position": {
+            "x": 5,
+            "y": 0,
+            "colSpan": 4,
+            "rowSpan": 4
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "ComponentId",
+                "value": {
+                  "Name": "${application_insight_name}",
+                  "ResourceGroup": "${resource_group_name}",
+                  "ResourceId": "/subscriptions/${subscription_id}/resourceGroups/${resource_group_name}/providers/microsoft.insights/components/${application_insight_name}",
+                  "SubscriptionId": "${subscription_id}"
+                },
+                "isOptional": true
+              },
+              {
+                "name": "Dimensions",
+                "value": {
+                  "aggregation": "Sum",
+                  "splitBy": [],
+                  "xAxis": {
+                    "name": "timestamp",
+                    "type": "datetime"
+                  },
+                  "yAxis": [
+                    {
+                      "name": "count_",
+                      "type": "real"
+                    }
+                  ]
+                },
+                "isOptional": true
+              },
+              {
+                "name": "Query",
+                "value": "traces\r\n| where timestamp > ago(24h)\r\n| make-series count() default=0 on timestamp in range(ago(24h), now(), 5m)\r\n| render areachart kind=unstacked\n",
+                "isOptional": true
+              },
+              {
+                "name": "PartTitle",
+                "value": "Analytics",
+                "isOptional": true
+              },
+              {
+                "name": "PartSubTitle",
+                "value": "${application_insight_name}",
+                "isOptional": true
+              },
+              {
+                "name": "PartId",
+                "value": "52070513-9f80-413f-91b8-7cf3a4b26b8b",
+                "isOptional": true
+              },
+              {
+                "name": "Version",
+                "value": "1.0",
+                "isOptional": true
+              },
+              {
+                "name": "resourceTypeMode",
+                "value": "components",
+                "isOptional": true
+              },
+              {
+                "name": "TimeRange",
+                "value": "P1D",
+                "isOptional": true
+              },
+              {
+                "name": "DashboardId",
+                "isOptional": true
+              },
+              {
+                "name": "ControlType",
+                "value": "FrameControlChart",
+                "isOptional": true
+              },
+              {
+                "name": "SpecificChart",
+                "value": "UnstackedArea",
+                "isOptional": true
+              },
+              {
+                "name": "Scope",
+                "isOptional": true
+              },
+              {
+                "name": "DraftRequestParameters",
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+            "settings": {
+              "content": {
+                "PartSubTitle": "${application_insight_name}",
+                "PartTitle": "Traces last 24 hours"
+              }
+            }
+          }
+        },
+        "2": {
+          "position": {
+            "x": 9,
+            "y": 0,
+            "colSpan": 6,
+            "rowSpan": 2
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "ComponentId",
+                "value": {
+                  "Name": "${application_insight_name}",
+                  "ResourceGroup": "${resource_group_name}",
+                  "ResourceId": "/subscriptions/${subscription_id}/resourceGroups/${resource_group_name}/providers/microsoft.insights/components/${application_insight_name}",
+                  "SubscriptionId": "${subscription_id}"
+                },
+                "isOptional": true
+              },
+              {
+                "name": "Dimensions",
+                "isOptional": true
+              },
+              {
+                "name": "Query",
+                "value": "let dataSet = requests\r\n| where timestamp > ago(1d);\r\nlet totalCount = toscalar(dataSet | count);\r\ndataSet\r\n| extend requestPeformanceBucket = iff(duration < 200, \"< 200ms\",\r\n    iff(duration < 200, \"200ms-4secs\", \"> 200 ms\"))\r\n| summarize count() by requestPeformanceBucket\r\n| project [\"Bucket\"]=requestPeformanceBucket, \r\n          [\"Count\"]=count_, \r\n          [\"Percentage\"]=strcat(round(todouble(count_) / totalCount * 100, 2), \"%\")\n",
+                "isOptional": true
+              },
+              {
+                "name": "PartTitle",
+                "value": "Analytics",
+                "isOptional": true
+              },
+              {
+                "name": "PartSubTitle",
+                "value": "${application_insight_name}",
+                "isOptional": true
+              },
+              {
+                "name": "PartId",
+                "value": "77dea705-fb97-4c29-9904-11366e754068",
+                "isOptional": true
+              },
+              {
+                "name": "Version",
+                "value": "1.0",
+                "isOptional": true
+              },
+              {
+                "name": "resourceTypeMode",
+                "value": "components",
+                "isOptional": true
+              },
+              {
+                "name": "TimeRange",
+                "value": "P1D",
+                "isOptional": true
+              },
+              {
+                "name": "DashboardId",
+                "isOptional": true
+              },
+              {
+                "name": "ControlType",
+                "value": "AnalyticsGrid",
+                "isOptional": true
+              },
+              {
+                "name": "SpecificChart",
+                "isOptional": true
+              },
+              {
+                "name": "Scope",
+                "isOptional": true
+              },
+              {
+                "name": "DraftRequestParameters",
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+            "settings": {
+              "content": {
+                "PartSubTitle": "${application_insight_name}",
+                "PartTitle": "Request performance last 24 hours"
+              }
+            }
+          }
+        },
+        "3": {
+          "position": {
+            "x": 9,
+            "y": 2,
+            "colSpan": 6,
+            "rowSpan": 4
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "ComponentId",
+                "value": {
+                  "Name": "${application_insight_name}",
+                  "ResourceGroup": "${resource_group_name}",
+                  "ResourceId": "/subscriptions/${subscription_id}/resourceGroups/${resource_group_name}/providers/microsoft.insights/components/${application_insight_name}",
+                  "SubscriptionId": "${subscription_id}"
+                },
+                "isOptional": true
+              },
+              {
+                "name": "Dimensions",
+                "isOptional": true
+              },
+              {
+                "name": "Query",
+                "value": "requests\r\n| summarize RequestsCount=sum(itemCount), Avg50Percentile_ms=percentile(duration, 50), Avg95Percentile_ms=percentile(duration, 95), DurationAvg_ms=avg(duration) by operation_Name\r\n| order by operation_Name\n",
+                "isOptional": true
+              },
+              {
+                "name": "PartTitle",
+                "value": "Analytics",
+                "isOptional": true
+              },
+              {
+                "name": "PartSubTitle",
+                "value": "${application_insight_name}",
+                "isOptional": true
+              },
+              {
+                "name": "PartId",
+                "value": "20c9a9c8-310b-4075-9156-85a0ce4707a4",
+                "isOptional": true
+              },
+              {
+                "name": "Version",
+                "value": "1.0",
+                "isOptional": true
+              },
+              {
+                "name": "resourceTypeMode",
+                "value": "components",
+                "isOptional": true
+              },
+              {
+                "name": "TimeRange",
+                "value": "P1D",
+                "isOptional": true
+              },
+              {
+                "name": "DashboardId",
+                "isOptional": true
+              },
+              {
+                "name": "ControlType",
+                "value": "AnalyticsGrid",
+                "isOptional": true
+              },
+              {
+                "name": "SpecificChart",
+                "isOptional": true
+              },
+              {
+                "name": "Scope",
+                "isOptional": true
+              },
+              {
+                "name": "DraftRequestParameters",
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+            "settings": {
+              "content": {
+                "PartSubTitle": "${application_insight_name}",
+                "PartTitle": "Function performance"
+              }
+            }
+          }
+        },
+        "4": {
+          "position": {
+            "x": 0,
+            "y": 4,
+            "colSpan": 5,
+            "rowSpan": 3
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "options",
+                "value": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "resourceMetadata": {
+                          "id": "/subscriptions/${subscription_id}/resourceGroups/${resource_group_name}/providers/Microsoft.Relay/namespaces/hc-relaynamespace-P"
+                        },
+                        "name": "BytesTransferred",
+                        "aggregationType": 1,
+                        "namespace": "microsoft.relay/namespaces",
+                        "metricVisualization": {
+                          "displayName": "BytesTransferred"
+                        }
+                      }
+                    ],
+                    "title": "Sum BytesTransferred for hc-relaynamespace-P",
+                    "titleKind": 1,
+                    "visualization": {
+                      "chartType": 3,
+                      "legendVisualization": {
+                        "isVisible": true,
+                        "position": 2,
+                        "hideSubtitle": false
+                      },
+                      "axisVisualization": {
+                        "x": {
+                          "isVisible": true,
+                          "axisType": 2
+                        },
+                        "y": {
+                          "isVisible": true,
+                          "axisType": 1
+                        }
+                      }
+                    },
+                    "timespan": {
+                      "relative": {
+                        "duration": 86400000
+                      },
+                      "showUTCTime": false,
+                      "grain": 1
+                    }
+                  }
+                },
+                "isOptional": true
+              },
+              {
+                "name": "sharedTimeRange",
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+            "settings": {
+              "content": {
+                "options": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "resourceMetadata": {
+                          "id": "/subscriptions/${subscription_id}/resourceGroups/${resource_group_name}/providers/Microsoft.Relay/namespaces/hc-relaynamespace-P"
+                        },
+                        "name": "BytesTransferred",
+                        "aggregationType": 1,
+                        "namespace": "microsoft.relay/namespaces",
+                        "metricVisualization": {
+                          "displayName": "BytesTransferred"
+                        }
+                      }
+                    ],
+                    "title": "Sum BytesTransferred for hc-relaynamespace-P",
+                    "titleKind": 1,
+                    "visualization": {
+                      "chartType": 3,
+                      "legendVisualization": {
+                        "isVisible": true,
+                        "position": 2,
+                        "hideSubtitle": false
+                      },
+                      "axisVisualization": {
+                        "x": {
+                          "isVisible": true,
+                          "axisType": 2
+                        },
+                        "y": {
+                          "isVisible": true,
+                          "axisType": 1
+                        }
+                      },
+                      "disablePinning": true
+                    }
+                  }
+                }
+              }
+            },
+            "filters": {
+              "MsPortalFx_TimeRange": {
+                "model": {
+                  "format": "local",
+                  "granularity": "auto",
+                  "relative": "1440m"
+                }
+              }
+            }
+          }
+        },
+        "5": {
+          "position": {
+            "x": 5,
+            "y": 4,
+            "colSpan": 4,
+            "rowSpan": 3
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "ComponentId",
+                "value": {
+                  "Name": "${application_insight_name}",
+                  "ResourceGroup": "${resource_group_name}",
+                  "ResourceId": "/subscriptions/${subscription_id}/resourceGroups/${resource_group_name}/providers/microsoft.insights/components/${application_insight_name}",
+                  "SubscriptionId": "${subscription_id}"
+                },
+                "isOptional": true
+              },
+              {
+                "name": "TimeContext",
+                "value": null,
+                "isOptional": true
+              },
+              {
+                "name": "ResourceIds",
+                "value": [
+                  "/subscriptions/${subscription_id}/resourceGroups/${resource_group_name}/providers/microsoft.insights/components/${application_insight_name}"
+                ],
+                "isOptional": true
+              },
+              {
+                "name": "ConfigurationId",
+                "value": "485f4340-e584-48f2-9fc1-487b81c80039",
+                "isOptional": true
+              },
+              {
+                "name": "Type",
+                "value": "workbook",
+                "isOptional": true
+              },
+              {
+                "name": "GalleryResourceType",
+                "value": "microsoft.insights/components",
+                "isOptional": true
+              },
+              {
+                "name": "PinName",
+                "value": "Esett workbook",
+                "isOptional": true
+              },
+              {
+                "name": "StepSettings",
+                "value": "{\"version\":\"KqlItem/1.0\",\"query\":\"let range=3d;\\r\\ntraces\\r\\n| where timestamp > ago(range)\\r\\n| where message contains \\\"with \\\\\\\"Error\\\\\\\"\\\"\\r\\n| make-series files_moved_into_error=count() default=0 on timestamp in range(ago(range), now(), 5m)\\r\\n| render areachart kind=unstacked\",\"size\":0,\"title\":\"Number of files moved into error\",\"color\":\"redBright\",\"noDataMessage\":\"All Ok\",\"noDataMessageStyle\":3,\"queryType\":0,\"resourceType\":\"microsoft.insights/components\"}",
+                "isOptional": true
+              },
+              {
+                "name": "ParameterValues",
+                "value": {},
+                "isOptional": true
+              },
+              {
+                "name": "Location",
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/AppInsightsExtension/PartType/PinnedNotebookQueryPart"
+          }
+        },
+        "6": {
+          "position": {
+            "x": 9,
+            "y": 6,
+            "colSpan": 6,
+            "rowSpan": 4
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "resourceGroup",
+                "isOptional": true
+              },
+              {
+                "name": "id",
+                "value": "/subscriptions/${subscription_id}/resourceGroups/${resource_group_name}",
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/HubsExtension/PartType/ResourceGroupMapPinnedPart",
+            "deepLink": "#@energinet.onmicrosoft.com/resource/subscriptions/${subscription_id}/resourceGroups/${resource_group_name}/overview"
+          }
+        },
+        "7": {
+          "position": {
+            "x": 0,
+            "y": 7,
+            "colSpan": 9,
+            "rowSpan": 6
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "ComponentId",
+                "value": "/subscriptions/${subscription_id}/resourceGroups/${resource_group_name}/providers/Microsoft.Insights/components/${application_insight_name}"
+              }
+            ],
+            "type": "Extension/AppInsightsExtension/PartType/AppMapGalPt",
+            "settings": {},
+            "asset": {
+              "idInputName": "ComponentId",
+              "type": "ApplicationInsights"
+            }
+          }
+        }
+      }
+    }
+  }
+}

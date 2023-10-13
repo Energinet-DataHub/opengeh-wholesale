@@ -30,6 +30,8 @@ on:
         value: ${{ jobs.changes.outputs.integration_test_ci }}
       health_checks_ui_ci:
         value: ${{ jobs.changes.outputs.health_checks_ui_ci }}
+      esett_deprecated_ci:
+        value: ${{ jobs.changes.outputs.esett_deprecated_ci }}
 
 jobs:
   changes:
@@ -47,6 +49,7 @@ jobs:
       render_c4model_ownership_views: ${{ steps.filter.outputs.render_c4model_ownership_views }}
       integration_test_ci: ${{ steps.filter.outputs.integration_test_ci }}
       health_checks_ui_ci: ${{ steps.filter.outputs.health_checks_ui_ci }}
+      esett_deprecated_ci: ${{ steps.filter.outputs.esett_deprecated_ci }}
     steps:
       - name: Checkout repository
         if: ${{ github.event_name != 'pull_request' }}
@@ -115,6 +118,12 @@ jobs:
             health_checks_ui_ci:
               - health-checks-ui/**
               - .github/workflows/health-checks-ui-*.yml
+              - .github/workflows/infrastructure-build-prerelease.yml
+              - .github/workflows/infrastructure-validate.yml
+              - .github/actions/terraform-validate/*
+            esett_deprecated_ci:
+              - esett-deprecated/**
+              - .github/workflows/esett-deprecated-*.yml
               - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*
