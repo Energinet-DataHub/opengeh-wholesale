@@ -12,17 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text.Json;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 
-public static class QuantityQualitiesMapper
+public interface IWholesaleResultQueries
 {
-    public static IReadOnlyCollection<QuantityQuality> FromDeltaTableValue(string value)
-    {
-        var qualities = JsonSerializer.Deserialize<string[]>(value)!;
-
-        return qualities.Select(QuantityQualityMapper.FromDeltaTableValue).ToArray();
-    }
+    /// <summary>
+    /// Get all wholesale results for a given calculation.
+    /// </summary>
+    IAsyncEnumerable<WholesaleResult> GetAsync(Guid calculationId);
 }

@@ -38,11 +38,7 @@ wholesale_results_schema = StructType(
             WholesaleResultColumnNames.calculation_result_id, StringType(), False
         ),
         StructField(WholesaleResultColumnNames.grid_area, StringType(), False),
-        # There are two cases were the input table metering_point_period can have an energy_supplier_id of null:
-        # 1. When the metering point is a child metering point
-        # 2. When the metering point is an exchange metering point (not relevant for wholesale calculations)
-        # During calculations the child metering point is stamped with the parent's energy_supplier_id
-        # since both parent and child are owned by the same energy supplier.
+        # Wholesale results are per energy supplier therefore energy_supplier_id cannot be null.
         StructField(WholesaleResultColumnNames.energy_supplier_id, StringType(), False),
         StructField(WholesaleResultColumnNames.quantity, DecimalType(18, 3), True),
         StructField(WholesaleResultColumnNames.quantity_unit, StringType(), True),
