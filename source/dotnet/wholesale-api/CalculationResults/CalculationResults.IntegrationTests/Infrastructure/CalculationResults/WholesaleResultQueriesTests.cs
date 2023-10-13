@@ -57,15 +57,16 @@ public class WholesaleResultQueriesTests : IClassFixture<DatabricksSqlStatementA
         Mock<ILogger<WholesaleResultQueries>> wholesaleResultQueriesLoggerMock)
     {
         // Arrange
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await InsertHourlyTariffAndMonthlyAmountTariffRows(deltaTableOptions);
+        await InsertHourlyTariffAndMonthlyAmountTariffRowsAsync();
         batch = batch with { BatchId = Guid.Parse(CalculationId) };
         var sqlStatementClient = _fixture.CreateSqlStatementClient(
             httpClientFactoryMock,
             sqlStatusResponseParserLoggerMock,
             databricksSqlStatementClientLoggerMock);
-        batchesClientMock.Setup(b => b.GetAsync(It.IsAny<Guid>())).ReturnsAsync(batch);
-        var sut = new WholesaleResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions, wholesaleResultQueriesLoggerMock.Object);
+        batchesClientMock
+            .Setup(b => b.GetAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(batch);
+        var sut = new WholesaleResultQueries(sqlStatementClient, batchesClientMock.Object, _fixture.DatabricksSchemaManager.DeltaTableOptions, wholesaleResultQueriesLoggerMock.Object);
 
         // Act
         var actual = await sut.GetAsync(batch.BatchId).ToListAsync();
@@ -81,7 +82,7 @@ public class WholesaleResultQueriesTests : IClassFixture<DatabricksSqlStatementA
         actualMonthlyAmount.TimeSeriesPoints.First().Amount.Should().Be(decimal.Parse(DefaultMonthlyAmount, CultureInfo.InvariantCulture));
     }
 
-    private async Task InsertHourlyTariffAndMonthlyAmountTariffRows(IOptions<DeltaTableOptions> options)
+    private async Task InsertHourlyTariffAndMonthlyAmountTariffRowsAsync()
     {
         var hourlyTariffRow = WholesaleResultDeltaTableHelper.CreateRowValues(
             calculationId: CalculationId,
@@ -102,6 +103,8 @@ public class WholesaleResultQueriesTests : IClassFixture<DatabricksSqlStatementA
             amount: DefaultMonthlyAmount);
 
         var rows = new List<IReadOnlyCollection<string?>> { hourlyTariffRow, monthlyAmountTariffRow };
-        await _fixture.DatabricksSchemaManager.InsertAsync<WholesaleResultColumnNames>(options.Value.WHOLESALE_RESULTS_TABLE_NAME, rows);
+        var wholesaleResultTableName =
+            _fixture.DatabricksSchemaManager.DeltaTableOptions.Value.WHOLESALE_RESULTS_TABLE_NAME;
+        await _fixture.DatabricksSchemaManager.InsertAsync<WholesaleResultColumnNames>(wholesaleResultTableName, rows);
     }
 }
