@@ -14,7 +14,7 @@
 
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
-from pyspark.sql.types import StringType
+from pyspark.sql.types import StringType, IntegerType
 
 from package.common import assert_schema
 from package.constants import Colname
