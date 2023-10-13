@@ -344,4 +344,4 @@ def test_aggregated_quality(
 
     result_df = calculate_total_consumption(net_exchange_per_ga, production_ga)
 
-    assert result_df.collect()[0][Colname.quality] == expected_quality
+    assert result_df.collect()[0][Colname.qualities][0] == expected_quality

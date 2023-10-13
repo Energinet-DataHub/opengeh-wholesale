@@ -17,7 +17,6 @@ import pyspark.sql.functions as f
 from pyspark.sql.types import StringType, IntegerType
 
 from package.common import assert_schema
-from package.constants import Colname
 from package.calculation.energy.schemas import aggregation_result_schema
 from package.constants import Colname
 from package.codelists import QuantityQuality
@@ -35,6 +34,21 @@ def create_dataframe_from_aggregation_result_schema(result: DataFrame) -> DataFr
     )
     result = result.drop(Colname.resolution)
 
+    result = result.withColumn(Colname.qualities, f.array(Colname.quality))
+    result = result.select(
+        Colname.grid_area,
+        Colname.to_grid_area,
+        Colname.from_grid_area,
+        Colname.balance_responsible_id,
+        Colname.energy_supplier_id,
+        Colname.time_window,
+        Colname.sum_quantity,
+        Colname.qualities,
+        Colname.metering_point_type,
+        Colname.settlement_method,
+        Colname.position,
+    )
+
     assert_schema(
         result.schema,
         aggregation_result_schema,
@@ -44,19 +58,7 @@ def create_dataframe_from_aggregation_result_schema(result: DataFrame) -> DataFr
         ignore_decimal_precision=True,
     )
 
-    return result.select(
-        Colname.grid_area,
-        Colname.to_grid_area,
-        Colname.from_grid_area,
-        Colname.balance_responsible_id,
-        Colname.energy_supplier_id,
-        Colname.time_window,
-        Colname.sum_quantity,
-        f.col(Colname.quality).alias(Colname.qualities),
-        Colname.metering_point_type,
-        Colname.settlement_method,
-        Colname.position,
-    )
+    return result
 
 
 def _add_missing_nullable_columns(result: DataFrame) -> DataFrame:

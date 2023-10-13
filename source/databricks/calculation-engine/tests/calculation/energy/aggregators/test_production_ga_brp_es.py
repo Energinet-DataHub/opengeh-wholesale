@@ -483,7 +483,7 @@ def test__quality_is_lowest_common_denominator_among_measured_estimated_and_miss
         .union(enriched_time_series_factory(quality=quality_3))
     )
     result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
-    assert result_df.first().quality == expected_quality
+    assert result_df.first().qualities[0] == expected_quality
 
 
 def test__when_time_series_point_is_missing__quality_has_value_incomplete(
@@ -492,7 +492,7 @@ def test__when_time_series_point_is_missing__quality_has_value_incomplete(
     df = enriched_time_series_factory().withColumn("quality", F.lit(None))
 
     result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
-    assert result_df.first().quality == QuantityQuality.MISSING.value
+    assert result_df.first().qualities[0] == QuantityQuality.MISSING.value
 
 
 def test__when_time_series_point_is_missing__quantity_is_0(
