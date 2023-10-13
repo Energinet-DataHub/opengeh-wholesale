@@ -48,7 +48,7 @@ public class EnergyResultQueries : IEnergyResultQueries
         var sql = CreateBatchResultsSql(batchId);
         await foreach (var calculationResult in GetInternalAsync(sql, batch.PeriodStart.ToInstant(), batch.PeriodEnd.ToInstant()))
             yield return calculationResult;
-        _logger.LogDebug("Fetched all calculation results for batch {BatchId}", batchId);
+        _logger.LogDebug("Fetched all energy results for batch {BatchId}", batchId);
     }
 
     private async IAsyncEnumerable<EnergyResult> GetInternalAsync(string sql, Instant periodStart, Instant periodEnd)

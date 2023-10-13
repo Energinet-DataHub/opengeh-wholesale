@@ -101,7 +101,7 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
         var batch4Row1 = EnergyResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: june1st, time: january1st, batchProcessType: DeltaTableProcessType.Aggregation, gridArea: GridAreaA, quantity: quantity41);
         var batch4Row2 = EnergyResultDeltaTableHelper.CreateRowValues(batchExecutionTimeStart: june1st, time: january2nd, batchProcessType: DeltaTableProcessType.Aggregation, gridArea: GridAreaA, quantity: quantity42);
 
-        var rows = new List<IEnumerable<string>> { batch1Row1, batch1Row2, batch2Row1, batch2Row2, batch3Row1, batch3Row2, batch4Row1, batch4Row2, };
+        var rows = new List<IReadOnlyCollection<string>> { batch1Row1, batch1Row2, batch2Row1, batch2Row2, batch3Row1, batch3Row2, batch4Row1, batch4Row2, };
         await _fixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(options.Value.ENERGY_RESULTS_TABLE_NAME, rows);
 
         var expectedSettlementReportRows = new List<SettlementReportResultRow>
