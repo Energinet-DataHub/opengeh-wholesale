@@ -55,14 +55,14 @@ def assert_schema(
 
 def _assert_column_nullability(
     actual: StructField, expected: StructField, ignore_nullability: bool
-):
+) -> None:
     if not ignore_nullability and actual.nullable != expected.nullable:
         raise AssertionError(
             f"Expected column name '{expected.name}' to have nullable={expected.dataType}, but got nullable={actual.dataType}"
         )
 
 
-def _assert_column_name(actual, expected):
+def _assert_column_name(actual: StructField, expected: StructField) -> None:
     if actual.name != expected.name:
         raise AssertionError(
             f"Expected column name '{expected.name}', but found '{actual.name}'"
@@ -74,7 +74,7 @@ def _assert_column_datatype(
     expected: StructField,
     ignore_decimal_precision: bool,
     ignore_decimal_scale: bool,
-):
+) -> None:
     if actual.dataType == expected.dataType:
         return
 
