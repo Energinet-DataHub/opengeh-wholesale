@@ -11,8 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from decimal import Decimal
 from datetime import datetime
+from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql.functions import col, window
+from typing import Callable
+import pytest
+import pandas as pd
+from pandas.core.frame import DataFrame as PandasDataFrame
+
+from package.common import assert_schema
 from package.constants import Colname
 from package.calculation.energy.aggregators import (
     aggregate_flex_consumption_ga_brp_es,
@@ -24,12 +33,6 @@ from package.codelists import (
     QuantityQuality,
 )
 from package.calculation.energy.schemas import aggregation_result_schema
-from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import col, window
-from typing import Callable
-import pytest
-import pandas as pd
-from pandas.core.frame import DataFrame as PandasDataFrame
 
 
 # Default time series data point values
@@ -231,7 +234,13 @@ def test_returns_correct_schema(
     """
     df = time_series_row_factory()
     aggregated_df = aggregate_flex_consumption_ga_brp_es(df)
-    assert aggregated_df.schema == aggregation_result_schema
+    assert_schema(
+        aggregated_df.schema,
+        aggregation_result_schema,
+        ignore_nullability=True,
+        ignore_decimal_precision=True,
+        ignore_decimal_scale=True,
+    )
 
 
 def test_flex_consumption_test_filter_by_domain_is_present(

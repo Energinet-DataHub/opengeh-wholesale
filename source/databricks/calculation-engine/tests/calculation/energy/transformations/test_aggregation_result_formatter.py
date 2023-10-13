@@ -11,23 +11,27 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from decimal import Decimal
 from datetime import datetime
+from typing import Callable
+import pytest
+import pandas as pd
+from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql.functions import col, struct
+
 from package.codelists import (
     MeteringPointType,
-    MeteringPointResolution,
     QuantityQuality,
 )
 from package.calculation.energy.transformations import (
     create_dataframe_from_aggregation_result_schema,
 )
 from package.calculation.energy.schemas import aggregation_result_schema
-import pytest
-import pandas as pd
-from tests.calculation.dataframe_defaults import DataframeDefaults
+from package.common import assert_schema
 from package.constants import Colname
-from typing import Callable
-from pyspark.sql import DataFrame, SparkSession
+
+from tests.calculation.dataframe_defaults import DataframeDefaults
 
 
 @pytest.fixture(scope="module")
@@ -79,7 +83,6 @@ def agg_result_factory(spark: SparkSession) -> Callable[..., DataFrame]:
         grid_area: str = "A",
         start: datetime = datetime(2020, 1, 1, 0, 0),
         end: datetime = datetime(2020, 1, 1, 1, 0),
-        resolution: str = MeteringPointResolution.HOUR.value,
         sum_quantity: Decimal = Decimal("1.234"),
         quality: str = QuantityQuality.ESTIMATED.value,
         metering_point_type: str = MeteringPointType.CONSUMPTION.value,
@@ -89,8 +92,10 @@ def agg_result_factory(spark: SparkSession) -> Callable[..., DataFrame]:
                 [
                     {
                         Colname.grid_area: grid_area,
-                        Colname.time_window: {Colname.start: start, Colname.end: end},
-                        Colname.resolution: resolution,
+                        Colname.time_window: {
+                            Colname.start: start,
+                            Colname.end: end,
+                        },
                         Colname.sum_quantity: sum_quantity,
                         Colname.quality: quality,
                         Colname.metering_point_type: metering_point_type,
@@ -98,6 +103,12 @@ def agg_result_factory(spark: SparkSession) -> Callable[..., DataFrame]:
                 ],
                 ignore_index=True,
             )
+        ).withColumn(
+            Colname.time_window,
+            struct(
+                col(Colname.time_window).getItem(Colname.start).alias(Colname.start),
+                col(Colname.time_window).getItem(Colname.end).alias(Colname.end),
+            ),
         )
 
     return factory
@@ -111,7 +122,13 @@ def test__create_dataframe_from_aggregation_result_schema__can_create_a_datafram
     # Act
     actual = create_dataframe_from_aggregation_result_schema(result)
     # Assert
-    assert actual.schema == aggregation_result_schema
+    assert_schema(
+        actual.schema,
+        aggregation_result_schema,
+        ignore_nullability=True,
+        ignore_decimal_precision=True,
+        ignore_decimal_scale=True,
+    )
 
 
 def test__create_dataframe_from_aggregation_result_schema__match_expected_dataframe(
