@@ -12,12 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Reflection;
+
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 
 public class WholesaleResultColumnNames
 {
     public const string CalculationId = "calculation_id";
-    public const string BatchExecutionTimeStart = "calculation_execution_time_start";
+    public const string CalculationExecutionTimeStart = "calculation_execution_time_start";
     public const string CalculationType = "calculation_type";
     public const string CalculationResultId = "calculation_result_id";
     public const string GridArea = "grid_area";
@@ -33,7 +35,38 @@ public class WholesaleResultColumnNames
     public const string Price = "price";
     public const string Amount = "amount";
     public const string IsTax = "is_tax";
-    public const string ChargeCode = "charge_id";
+    public const string ChargeCode = "charge_code";
     public const string ChargeType = "charge_type";
     public const string ChargeOwnerId = "charge_owner_id";
+
+    public static IReadOnlyCollection<string> GetAllNames()
+    {
+        var fieldInfos = typeof(WholesaleResultColumnNames).GetFields(BindingFlags.Public | BindingFlags.Static);
+        return fieldInfos.Select(x => x.GetValue(null)).Cast<string>().ToList();
+    }
+
+    public static string GetType(string columnName) =>
+        columnName switch
+        {
+            CalculationId => "string",
+            CalculationExecutionTimeStart => "timestamp",
+            CalculationType => "string",
+            CalculationResultId => "string",
+            GridArea => "string",
+            EnergySupplierId => "string",
+            ChargeResolution => "string",
+            MeteringPointType => "string",
+            SettlementMethod => "string",
+            ChargeCode => "string",
+            ChargeType => "string",
+            ChargeOwnerId => "string",
+            IsTax => "boolean",
+            Time => "timestamp",
+            Quantity => "decimal(18,3)",
+            QuantityUnit => "string",
+            QuantityQualities => "array<string>",
+            Price => "decimal(18,6)",
+            Amount => "decimal(18,6)",
+            _ => throw new ArgumentOutOfRangeException(nameof(columnName), actualValue: columnName, "Unexpected column name."),
+        };
 }

@@ -51,8 +51,6 @@ public class DatabricksSchemaManager
 
     public string SchemaName => DeltaTableOptions.Value.SCHEMA_NAME;
 
-    public string EnergyResultTableName => DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME;
-
     /// <summary>
     /// Executes all the SQL scripts in the respective folder migration_scripts.
     /// This creates a schema (formerly known as database), tables and constraints.
@@ -69,9 +67,9 @@ public class DatabricksSchemaManager
         await ExecuteSqlAsync(sqlStatement);
     }
 
-    public async Task InsertAsync<T>(string tableName, IEnumerable<string> row)
+    public Task InsertAsync<T>(string tableName, IReadOnlyCollection<string> row)
     {
-        await InsertAsync<T>(tableName, new[] { row });
+        return InsertAsync<T>(tableName, new[] { row });
     }
 
     /// <summary>
@@ -81,19 +79,19 @@ public class DatabricksSchemaManager
     /// <param name="tableName">Name of table</param>
     /// <param name="rows">Rows to be inserted in table. Note: that strings should have single quotes around them.
     /// </param>
-    public async Task InsertAsync<T>(string tableName, IEnumerable<IEnumerable<string>> rows)
+    public Task InsertAsync<T>(string tableName, IReadOnlyCollection<IReadOnlyCollection<string?>> rows)
     {
         var fieldInfos = typeof(T).GetFields(BindingFlags.Public | BindingFlags.Static);
         var columnsNames = string.Join(", ", fieldInfos.Select(x => x.GetValue(null)).Cast<string>());
-        var values = string.Join(", ", rows.Select(row => $"({string.Join(", ", row.Select(val => $"{val}"))})"));
+        var values = string.Join(", ", rows.Select(row => $"({string.Join(", ", row.Select(val => val == null ? "NULL" : $"{val}"))})"));
         var sqlStatement = $@"INSERT INTO {SchemaName}.{tableName} ({columnsNames}) VALUES {values}";
-        await ExecuteSqlAsync(sqlStatement);
+        return ExecuteSqlAsync(sqlStatement);
     }
 
-    public async Task EmptyAsync(string tableName)
+    public Task EmptyAsync(string tableName)
     {
         var sqlStatement = $@"DELETE FROM {SchemaName}.{tableName}";
-        await ExecuteSqlAsync(sqlStatement);
+        return ExecuteSqlAsync(sqlStatement);
     }
 
     private async Task ExecuteSqlScriptsAsync()
