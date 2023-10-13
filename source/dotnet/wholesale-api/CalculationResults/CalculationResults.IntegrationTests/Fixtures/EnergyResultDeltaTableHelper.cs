@@ -16,9 +16,9 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatement
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 
-public class EnergyResultDeltaTableHelper
+public static class EnergyResultDeltaTableHelper
 {
-    public static IEnumerable<string> CreateRowValues(
+    public static IReadOnlyCollection<string> CreateRowValues(
         string batchId = "ed39dbc5-bdc5-41b9-922a-08d3b12d4538",
         string batchExecutionTimeStart = "2022-03-11T03:00:00.000Z",
         string batchProcessType = DeltaTableProcessType.BalanceFixing,
@@ -33,7 +33,7 @@ public class EnergyResultDeltaTableHelper
         string quantityQuality = "missing",
         string aggregationLevel = "total_ga")
     {
-        return GetColumnDefinitions().Keys.Select(columnName => columnName switch
+        return EnergyResultColumnNames.GetAllNames().Select(columnName => columnName switch
         {
             EnergyResultColumnNames.BatchId => $@"'{batchId}'",
             EnergyResultColumnNames.BatchExecutionTimeStart => $@"'{batchExecutionTimeStart}'",
@@ -49,13 +49,6 @@ public class EnergyResultDeltaTableHelper
             EnergyResultColumnNames.QuantityQualities => $@"ARRAY('{quantityQuality}')",
             EnergyResultColumnNames.AggregationLevel => $@"'{aggregationLevel}'",
             _ => throw new ArgumentOutOfRangeException($"Unexpected column name: {columnName}."),
-        });
-    }
-
-    private static Dictionary<string, string> GetColumnDefinitions()
-    {
-        var columnNames = EnergyResultColumnNames.GetAllNames().ToList();
-        var columnTypes = columnNames.Select(EnergyResultColumnNames.GetType);
-        return columnNames.Zip(columnTypes, (name, type) => new { Name = name, Type = type }).ToDictionary(item => item.Name, item => item.Type);
+        }).ToArray();
     }
 }

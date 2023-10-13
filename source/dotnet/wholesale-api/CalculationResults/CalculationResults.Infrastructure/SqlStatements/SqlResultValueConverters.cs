@@ -62,8 +62,8 @@ public static class SqlResultValueConverters
     {
         return value switch
         {
-            "True" => true,
-            "False" => false,
+            "true" => true,
+            "false" => false,
             _ => throw new ArgumentException($"Quality of unknown type: '{value}'"),
         };
     }

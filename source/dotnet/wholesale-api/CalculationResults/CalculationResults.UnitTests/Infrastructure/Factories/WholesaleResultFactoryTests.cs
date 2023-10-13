@@ -82,7 +82,7 @@ public class WholesaleResultFactoryTests
             new(WholesaleResultColumnNames.ChargeResolution, "PT1H"),
             new(WholesaleResultColumnNames.MeteringPointType, "consumption"),
             new(WholesaleResultColumnNames.SettlementMethod, "flex"),
-            new(WholesaleResultColumnNames.IsTax, "True"),
+            new(WholesaleResultColumnNames.IsTax, "true"),
         };
         return new TestSqlResultRow(list);
     }

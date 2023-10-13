@@ -23,9 +23,6 @@ from package.calculation.energy.aggregators import (
     aggregate_flex_consumption_ga_brp,
     aggregate_flex_consumption_ga,
 )
-from package.calculation.energy.transformations import (
-    create_dataframe_from_aggregation_result_schema,
-)
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 from pyspark.sql import SparkSession, DataFrame
 from typing import Callable
@@ -53,7 +50,7 @@ def agg_flex_consumption_schema() -> StructType:
             .add(Colname.end, TimestampType()),
             False,
         )
-        .add(Colname.sum_quantity, DecimalType(20))
+        .add(Colname.sum_quantity, DecimalType(18, 3))
         .add(Colname.quality, StringType())
         .add(Colname.resolution, StringType())
         .add(Colname.metering_point_type, StringType())
@@ -106,7 +103,7 @@ def test_data_factory(
 def test_flex_consumption_calculation_per_ga_and_es(
     test_data_factory: Callable[..., DataFrame]
 ) -> None:
-    df = create_dataframe_from_aggregation_result_schema(test_data_factory())
+    df = test_data_factory()
     result = aggregate_flex_consumption_ga_es(df).sort(
         Colname.grid_area, Colname.energy_supplier_id, Colname.time_window
     )
@@ -123,7 +120,7 @@ def test_flex_consumption_calculation_per_ga_and_es(
 def test_flex_consumption_calculation_per_ga_and_brp(
     test_data_factory: Callable[..., DataFrame]
 ) -> None:
-    df = create_dataframe_from_aggregation_result_schema(test_data_factory())
+    df = test_data_factory()
     result = aggregate_flex_consumption_ga_brp(df).sort(
         Colname.grid_area, Colname.balance_responsible_id, Colname.time_window
     )
@@ -140,7 +137,7 @@ def test_flex_consumption_calculation_per_ga_and_brp(
 def test_flex_consumption_calculation_per_ga(
     test_data_factory: Callable[..., DataFrame]
 ) -> None:
-    df = create_dataframe_from_aggregation_result_schema(test_data_factory())
+    df = test_data_factory()
     result = aggregate_flex_consumption_ga(df).sort(
         Colname.grid_area, Colname.time_window
     )
