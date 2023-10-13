@@ -37,12 +37,12 @@ public static class SettlementMethodMapper
             _ => throw new NotImplementedException($"Cannot map timeSeriesType type '{timeSeriesType}"),
         };
 
-    public static SettlementMethod? FromDeltaTableValue(string settlementMethod) =>
+    public static SettlementMethod? FromDeltaTableValue(string? settlementMethod) =>
         settlementMethod switch
         {
             "flex" => SettlementMethod.Flex,
             "non_profiled" => SettlementMethod.NonProfiled,
-            "" => null,
+            null => null,
             _ => throw new NotImplementedException($"Cannot map settlementMethod type '{settlementMethod}'"),
         };
 }

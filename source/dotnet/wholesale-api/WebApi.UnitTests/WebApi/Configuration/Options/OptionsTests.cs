@@ -38,7 +38,7 @@ public class OptionsTests
         "EDI_INBOX_MESSAGE_QUEUE_NAME")]
     [InlineAutoMoqData(typeof(DateTimeOptions), 1, "TIME_ZONE")]
     [InlineAutoMoqData(typeof(ConnectionStringsOptions), 1, "DB_CONNECTION_STRING")]
-    [InlineAutoMoqData(typeof(DeltaTableOptions), 2, "SCHEMA_NAME", "ENERGY_RESULTS_TABLE_NAME")]
+    [InlineAutoMoqData(typeof(DeltaTableOptions), 3, "SCHEMA_NAME", "ENERGY_RESULTS_TABLE_NAME", "WHOLESALE_RESULTS_TABLE_NAME")]
     public void Options_HaveTheCorrectSettingNamesAndNumberOfSettings(Type sut, int settingsCount, params string[] expectedNames)
     {
         // Arrange & Act
