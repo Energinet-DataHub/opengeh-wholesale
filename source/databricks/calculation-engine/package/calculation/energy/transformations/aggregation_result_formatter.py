@@ -14,6 +14,7 @@
 
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
+from pyspark.sql.types import StringType
 
 from package.common import assert_schema
 from package.constants import Colname
@@ -58,20 +59,20 @@ def create_dataframe_from_aggregation_result_schema(result: DataFrame) -> DataFr
 
 def _add_missing_nullable_columns(result: DataFrame) -> DataFrame:
     if Colname.to_grid_area not in result.columns:
-        result = result.withColumn(Colname.to_grid_area, f.lit(None).cast("string"))
+        result = result.withColumn(Colname.to_grid_area, f.lit(None).cast(StringType))
     if Colname.from_grid_area not in result.columns:
-        result = result.withColumn(Colname.from_grid_area, f.lit(None).cast("string"))
+        result = result.withColumn(Colname.from_grid_area, f.lit(None).cast(StringType))
     if Colname.balance_responsible_id not in result.columns:
         result = result.withColumn(
-            Colname.balance_responsible_id, f.lit(None).cast("string")
+            Colname.balance_responsible_id, f.lit(None).cast(StringType)
         )
     if Colname.energy_supplier_id not in result.columns:
         result = result.withColumn(
-            Colname.energy_supplier_id, f.lit(None).cast("string")
+            Colname.energy_supplier_id, f.lit(None).cast(StringType)
         )
     if Colname.settlement_method not in result.columns:
         result = result.withColumn(
-            Colname.settlement_method, f.lit(None).cast("string")
+            Colname.settlement_method, f.lit(None).cast(StringType)
         )
     if Colname.position not in result.columns:
         result = result.withColumn(Colname.position, f.lit(None).cast("integer"))
