@@ -46,7 +46,7 @@ public class WholesaleResultQueries : IWholesaleResultQueries
     {
         var calculation = await _batchesClient.GetAsync(calculationId).ConfigureAwait(false);
         var sql = CreateCalculationResultsSql(calculationId);
-        await foreach (var calculationResult in GetInternalAsync(sql, calculation.PeriodStart.ToInstant(), calculation.PeriodEnd.ToInstant()))
+        await foreach (var calculationResult in GetInternalAsync(sql, calculation.PeriodStart.ToInstant(), calculation.PeriodEnd.ToInstant()).ConfigureAwait(false))
             yield return calculationResult;
         _logger.LogDebug("Fetched all wholesale calculation results for calculation {CalculationId}", calculationId);
     }

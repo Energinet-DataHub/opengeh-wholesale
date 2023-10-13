@@ -19,7 +19,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationR
 public interface IWholesaleResultQueries
 {
     /// <summary>
-    /// Get all wholesale results for a given batch.
+    /// Get all wholesale results for a given calculation.
     /// </summary>
     IAsyncEnumerable<WholesaleResult> GetAsync(Guid calculationId);
 }
