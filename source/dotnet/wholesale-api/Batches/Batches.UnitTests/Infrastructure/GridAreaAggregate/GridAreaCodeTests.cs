@@ -16,11 +16,9 @@ using Energinet.DataHub.Wholesale.Batches.Application.Model;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using FluentAssertions;
 using Xunit;
-using Xunit.Categories;
 
 namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.GridAreaAggregate;
 
-[UnitTest]
 public class GridAreaCodeTests
 {
     [Fact]
