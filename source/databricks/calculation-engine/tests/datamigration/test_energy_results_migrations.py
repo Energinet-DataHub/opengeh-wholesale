@@ -69,6 +69,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
         (EnergyResultColumnNames.time, None),
         (EnergyResultColumnNames.quantity_qualities, []),
         (EnergyResultColumnNames.quantity_qualities, [None]),
+        (EnergyResultColumnNames.quantity_qualities, ["foo"]),
         (EnergyResultColumnNames.aggregation_level, None),
         (EnergyResultColumnNames.aggregation_level, "foo"),
     ],
