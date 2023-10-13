@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from decimal import Decimal
 
 from package.codelists import (
@@ -27,6 +28,7 @@ from pyspark.sql.functions import (
     row_number,
     when,
 )
+from pyspark.sql.types import StringType
 from pyspark.sql.window import Window
 from typing import Union
 
@@ -111,9 +113,9 @@ def _aggregate_per_ga_and_brp_and_es(
             Colname.quality,
             Colname.sum_quantity,
             lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
-            lit(None if settlement_method is None else settlement_method.value).alias(
-                Colname.settlement_method
-            ),
+            lit(None if settlement_method is None else settlement_method.value)
+            .cast(StringType())
+            .alias(Colname.settlement_method),
             Colname.position,
         )
     )

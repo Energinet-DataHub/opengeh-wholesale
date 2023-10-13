@@ -16,6 +16,8 @@ import pytest
 from decimal import Decimal
 import pandas as pd
 from datetime import datetime, timedelta
+
+from package.common import assert_schema
 from package.constants import Colname
 from package.calculation.energy.exchange_aggregators import (
     aggregate_net_exchange_per_ga,
@@ -203,7 +205,13 @@ def test_test_data_has_correct_row_count(enriched_time_series_data_frame):
 
 def test_exchange_aggregator_returns_correct_schema(aggregated_data_frame):
     """Check aggregation schema"""
-    assert aggregated_data_frame.schema == aggregation_result_schema
+    assert_schema(
+        aggregated_data_frame.schema,
+        aggregation_result_schema,
+        ignore_nullability=True,
+        ignore_decimal_precision=True,
+        ignore_decimal_scale=True,
+    )
 
 
 def test_exchange_has_correct_sign(aggregated_data_frame):

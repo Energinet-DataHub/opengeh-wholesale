@@ -61,9 +61,12 @@ public static class SqlResultValueConverters
     {
         return value switch
         {
-            "True" => true,
-            "False" => false,
-            _ => throw new FormatException($"Value does not contain a valid string representation of a boolean. Value: '{value}'."),
+            "true" => true,
+            "false" => false,
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(value),
+                actualValue: value,
+                "Value does not contain a valid string representation of a boolean."),
         };
     }
 }

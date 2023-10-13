@@ -23,9 +23,6 @@ from package.calculation.energy.aggregators import (
     aggregate_non_profiled_consumption_ga_brp,
     aggregate_non_profiled_consumption_ga,
 )
-from package.calculation.energy.transformations import (
-    create_dataframe_from_aggregation_result_schema,
-)
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 import pytest
 import pandas as pd
@@ -139,7 +136,7 @@ def agg_result_factory(
 def test_non_profiled_consumption_summarizes_correctly_on_grid_area_within_same_time_window(
     agg_result_factory: Callable[..., DataFrame],
 ) -> None:
-    consumption = create_dataframe_from_aggregation_result_schema(agg_result_factory())
+    consumption = agg_result_factory()
 
     aggregated_df = aggregate_non_profiled_consumption_ga(consumption).sort(
         Colname.grid_area, Colname.time_window
@@ -159,7 +156,7 @@ def test_non_profiled_consumption_summarizes_correctly_on_grid_area_within_same_
 def test_non_profiled_consumption_summarizes_correctly_on_grid_area_with_different_time_window(
     agg_result_factory: Callable[..., DataFrame],
 ) -> None:
-    consumption = create_dataframe_from_aggregation_result_schema(agg_result_factory())
+    consumption = agg_result_factory()
 
     aggregated_df = aggregate_non_profiled_consumption_ga(consumption).sort(
         Colname.grid_area, Colname.time_window
@@ -179,7 +176,7 @@ def test_non_profiled_consumption_summarizes_correctly_on_grid_area_with_differe
 def test_non_profiled_consumption_summarizes_correctly_on_grid_area_with_same_time_window_as_other_grid_area(
     agg_result_factory: Callable[..., DataFrame],
 ) -> None:
-    consumption = create_dataframe_from_aggregation_result_schema(agg_result_factory())
+    consumption = agg_result_factory()
 
     aggregated_df = aggregate_non_profiled_consumption_ga(consumption).sort(
         Colname.grid_area, Colname.time_window
@@ -199,7 +196,7 @@ def test_non_profiled_consumption_summarizes_correctly_on_grid_area_with_same_ti
 def test_non_profiled_consumption_calculation_per_ga_and_es(
     agg_result_factory: Callable[..., DataFrame]
 ) -> None:
-    consumption = create_dataframe_from_aggregation_result_schema(agg_result_factory())
+    consumption = agg_result_factory()
     aggregated_df = aggregate_non_profiled_consumption_ga_es(consumption).sort(
         Colname.grid_area, Colname.energy_supplier_id, Colname.time_window
     )
@@ -218,9 +215,7 @@ def test_non_profiled_consumption_calculation_per_ga_and_es(
 def test_non_profiled_consumption_calculation_per_ga_and_brp(
     agg_result_factory: Callable[..., DataFrame],
 ) -> None:
-    non_profiled_consumption = create_dataframe_from_aggregation_result_schema(
-        agg_result_factory()
-    )
+    non_profiled_consumption = agg_result_factory()
     aggregated_df = aggregate_non_profiled_consumption_ga_brp(
         non_profiled_consumption
     ).sort(Colname.grid_area, Colname.balance_responsible_id, Colname.time_window)
@@ -237,7 +232,7 @@ def test_non_profiled_consumption_calculation_per_ga_and_brp(
 def test_non_profiled_consumption_calculation_per_ga(
     agg_result_factory: Callable[..., DataFrame]
 ) -> None:
-    consumption = create_dataframe_from_aggregation_result_schema(agg_result_factory())
+    consumption = agg_result_factory()
     aggregated_df = aggregate_non_profiled_consumption_ga(consumption).sort(
         Colname.grid_area, Colname.time_window
     )

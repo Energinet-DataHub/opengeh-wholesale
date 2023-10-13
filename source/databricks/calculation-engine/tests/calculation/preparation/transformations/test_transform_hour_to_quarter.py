@@ -62,7 +62,18 @@ def basis_data_time_series_points_row(
     return Row(**row)
 
 
-def test__transform_hour_to_quarter__split_basis_data_time_series(
+def test__transform_hour_to_quarter__when_invalid_input_schema__raise_assertion_error(
+    spark: SparkSession,
+):
+    # Arrange
+    basis_data_time_series_points = spark.createDataFrame(data=[{"Hello": "World"}])
+
+    # Act & Assert
+    with pytest.raises(AssertionError):
+        transform_hour_to_quarter(basis_data_time_series_points)
+
+
+def test__transform_hour_to_quarter__when_valid_input__split_basis_data_time_series(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -79,7 +90,7 @@ def test__transform_hour_to_quarter__split_basis_data_time_series(
     assert actual.collect()[0]["quarter_quantity"] == Decimal("1.111111")
 
 
-def test__transform_hour_to_quarter__returns_expected_schema(
+def test__transform_hour_to_quarter__when_valid_input__returns_expected_schema(
     spark: SparkSession,
 ) -> None:
     # Arrange

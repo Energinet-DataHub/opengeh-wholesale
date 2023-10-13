@@ -319,7 +319,7 @@ public class RequestCalculationResultQueriesTests : IClassFixture<DatabricksSqlS
         var row7 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: secondHour, gridArea: GridAreaCode, quantity: ThirdQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea, balanceResponsibleId: balanceResponsibleId, energySupplierId: energySupplier);
 
         // mix up the order of the rows
-        var rows = new List<IEnumerable<string>> { row1, row2, row3, row4, row5, row6, row7 };
+        var rows = new List<IReadOnlyCollection<string>> { row1, row2, row3, row4, row5, row6, row7 };
         await _fixture.DatabricksSchemaManager.EmptyAsync(options.Value.ENERGY_RESULTS_TABLE_NAME);
         await _fixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(options.Value.ENERGY_RESULTS_TABLE_NAME, rows);
     }

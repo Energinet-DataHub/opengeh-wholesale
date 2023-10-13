@@ -25,7 +25,7 @@ public static class SettlementMethodMapper
         {
             "flex" => SettlementMethod.Flex,
             "non_profiled" => SettlementMethod.NonProfiled,
-            "" => null,
+            null => null,
 
             _ => throw new ArgumentOutOfRangeException(
                 nameof(settlementMethod),
