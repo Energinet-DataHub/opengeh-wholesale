@@ -59,20 +59,22 @@ def create_dataframe_from_aggregation_result_schema(result: DataFrame) -> DataFr
 
 def _add_missing_nullable_columns(result: DataFrame) -> DataFrame:
     if Colname.to_grid_area not in result.columns:
-        result = result.withColumn(Colname.to_grid_area, f.lit(None).cast(StringType))
+        result = result.withColumn(Colname.to_grid_area, f.lit(None).cast(StringType()))
     if Colname.from_grid_area not in result.columns:
-        result = result.withColumn(Colname.from_grid_area, f.lit(None).cast(StringType))
+        result = result.withColumn(
+            Colname.from_grid_area, f.lit(None).cast(StringType())
+        )
     if Colname.balance_responsible_id not in result.columns:
         result = result.withColumn(
-            Colname.balance_responsible_id, f.lit(None).cast(StringType)
+            Colname.balance_responsible_id, f.lit(None).cast(StringType())
         )
     if Colname.energy_supplier_id not in result.columns:
         result = result.withColumn(
-            Colname.energy_supplier_id, f.lit(None).cast(StringType)
+            Colname.energy_supplier_id, f.lit(None).cast(StringType())
         )
     if Colname.settlement_method not in result.columns:
         result = result.withColumn(
-            Colname.settlement_method, f.lit(None).cast(StringType)
+            Colname.settlement_method, f.lit(None).cast(StringType())
         )
     if Colname.position not in result.columns:
         result = result.withColumn(Colname.position, f.lit(None).cast("integer"))
