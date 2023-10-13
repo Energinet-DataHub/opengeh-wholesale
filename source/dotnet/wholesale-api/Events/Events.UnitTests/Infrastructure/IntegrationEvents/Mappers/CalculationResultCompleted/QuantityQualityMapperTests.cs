@@ -46,4 +46,18 @@ public class QuantityQualityMapperTests
             Enum.IsDefined(typeof(Contracts.Events.QuantityQuality), actual).Should().BeTrue();
         }
     }
+
+    [Fact]
+    public void MapQuantityQuality_WhenInvalidEnumNumberForQuantityQuality_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        var invalidValue = (QuantityQuality)99;
+
+        // Act
+        var act = () => QuantityQualityMapper.MapQuantityQuality(invalidValue);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .And.ActualValue.Should().Be(invalidValue);
+    }
 }
