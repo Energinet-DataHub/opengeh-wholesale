@@ -63,5 +63,5 @@ public class TimeSeriesTypeMapperTests
         // Assert
         act.Should().Throw<ArgumentOutOfRangeException>()
             .And.ActualValue.Should().Be(invalidValue);
-
+    }
 }
