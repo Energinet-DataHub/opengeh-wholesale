@@ -24,6 +24,10 @@ public static class ChargeResolutionMapper
             "P1M" => ChargeResolution.Month,
             "P1D" => ChargeResolution.Day,
             "PT1H" => ChargeResolution.Hour,
-            _ => throw new ArgumentOutOfRangeException($"Cannot map charge resolution type '{chargeResolution}'"),
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(chargeResolution),
+                actualValue: chargeResolution,
+                "Value does not contain a valid string representation of a charge resolution."),
         };
 }

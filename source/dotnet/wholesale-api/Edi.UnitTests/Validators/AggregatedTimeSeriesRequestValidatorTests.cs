@@ -54,7 +54,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
         // Arrange
         var request = new AggregatedTimeSeriesRequest()
         {
-            Period = new Edi.Requests.Period()
+            Period = new Period()
             {
                 Start = Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(),
                 End = Instant.FromUtc(2022, 3, 2, 23, 0, 0).ToString(),
@@ -94,7 +94,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
 
     private Period CreateValidPeriod()
     {
-        return new Edi.Requests.Period()
+        return new Period()
         {
             Start = Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(),
             End = Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString(),

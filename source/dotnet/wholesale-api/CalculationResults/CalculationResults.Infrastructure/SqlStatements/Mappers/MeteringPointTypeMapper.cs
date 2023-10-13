@@ -26,7 +26,11 @@ public static class MeteringPointTypeMapper
             "production" => MeteringPointType.Production,
             "consumption" => MeteringPointType.Consumption,
             null => null,
-            _ => throw new NotImplementedException($"Cannot map meteringPointType type '{meteringPointType}'"),
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(meteringPointType),
+                actualValue: meteringPointType,
+                "Value does not contain a valid string representation of a metering point type."),
         };
 
     public static MeteringPointType FromTimeSeriesTypeDeltaTableValue(string timeSeriesType) =>
@@ -43,6 +47,10 @@ public static class MeteringPointTypeMapper
             TimeSeriesType.TotalConsumption => MeteringPointType.Consumption,
             TimeSeriesType.TempFlexConsumption => MeteringPointType.Consumption,
             TimeSeriesType.TempProduction => MeteringPointType.Production,
-            _ => throw new NotImplementedException($"Cannot map timeSeriesType type '{timeSeriesType}"),
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(timeSeriesType),
+                actualValue: timeSeriesType,
+                "Value cannot be mapped to a metering point type."),
         };
 }

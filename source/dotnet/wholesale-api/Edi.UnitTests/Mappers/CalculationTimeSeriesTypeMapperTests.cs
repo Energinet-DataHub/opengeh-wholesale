@@ -15,6 +15,7 @@
 using Energinet.DataHub.Wholesale.EDI.Exceptions;
 using Energinet.DataHub.Wholesale.EDI.Mappers;
 using Energinet.DataHub.Wholesale.EDI.Models;
+using FluentAssertions;
 using Xunit;
 using CalculationTimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType;
 
@@ -54,6 +55,34 @@ public class CalculationTimeSeriesTypeMapperTests
         {
             CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromCalculationsResult(type);
         }
+    }
+
+    [Fact]
+    public void MapTimeSeriesTypeFromEdi_WhenInvalidEnumNumberForTimeSeriesType_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        var invalidValue = (TimeSeriesType)99;
+
+        // Act
+        var act = () => CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromEdi(invalidValue);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .And.ActualValue.Should().Be(invalidValue);
+    }
+
+    [Fact]
+    public void MapTimeSeriesTypeFromCalculationsResult_WhenInvalidEnumNumberForCalculationTimeSeriesType_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        var invalidValue = (CalculationTimeSeriesType)99;
+
+        // Act
+        var act = () => CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromCalculationsResult(invalidValue);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .And.ActualValue.Should().Be(invalidValue);
     }
 
     public static IEnumerable<object[]> TimeSeriesTypesEdiModel()

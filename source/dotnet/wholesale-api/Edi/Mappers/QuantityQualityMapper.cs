@@ -12,22 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Edi.Responses;
+using EdiModel = Energinet.DataHub.Edi.Responses;
+using WholesaleModel = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
 namespace Energinet.DataHub.Wholesale.EDI.Mappers;
 
 public static class QuantityQualityMapper
 {
-    public static QuantityQuality MapQuantityQuality(Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality quality)
+    public static EdiModel.QuantityQuality MapQuantityQuality(WholesaleModel.QuantityQuality quality)
     {
         return quality switch
         {
-            CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Incomplete => QuantityQuality.Incomplete,
-            CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Estimated => QuantityQuality.Estimated,
-            CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Measured => QuantityQuality.Measured,
-            CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Calculated => QuantityQuality.Calculated,
-            CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Missing => QuantityQuality.Missing,
-            _ => throw new ArgumentOutOfRangeException($"Unknown quality {nameof(quality)}"),
+            WholesaleModel.QuantityQuality.Incomplete => EdiModel.QuantityQuality.Incomplete,
+            WholesaleModel.QuantityQuality.Estimated => EdiModel.QuantityQuality.Estimated,
+            WholesaleModel.QuantityQuality.Measured => EdiModel.QuantityQuality.Measured,
+            WholesaleModel.QuantityQuality.Calculated => EdiModel.QuantityQuality.Calculated,
+            WholesaleModel.QuantityQuality.Missing => EdiModel.QuantityQuality.Missing,
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(quality),
+                actualValue: quality,
+                "Value cannot be mapped to quantity quality."),
         };
     }
 }

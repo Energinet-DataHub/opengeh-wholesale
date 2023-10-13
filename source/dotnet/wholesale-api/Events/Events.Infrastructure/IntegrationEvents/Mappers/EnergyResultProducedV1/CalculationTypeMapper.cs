@@ -28,7 +28,11 @@ public static class CalculationTypeMapper
             Common.Models.ProcessType.FirstCorrectionSettlement => CalculationType.FirstCorrectionSettlement,
             Common.Models.ProcessType.SecondCorrectionSettlement => CalculationType.SecondCorrectionSettlement,
             Common.Models.ProcessType.ThirdCorrectionSettlement => CalculationType.ThirdCorrectionSettlement,
-            _ => throw new ArgumentException($"No matching 'ProcessType' for: {processType.ToString()}"),
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(processType),
+                actualValue: processType,
+                "Value cannot be mapped to a calculation type."),
         };
     }
 }

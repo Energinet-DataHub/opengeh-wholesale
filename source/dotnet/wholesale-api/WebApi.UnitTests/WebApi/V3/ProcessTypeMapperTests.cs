@@ -19,12 +19,12 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.WebApi.V3;
 
-public static class ProcessTypeMapperTests
+public class ProcessTypeMapperTests
 {
     [Theory]
     [InlineAutoMoqData(Energinet.DataHub.Wholesale.Common.Models.ProcessType.BalanceFixing, ProcessType.BalanceFixing)]
     [InlineAutoMoqData(Energinet.DataHub.Wholesale.Common.Models.ProcessType.Aggregation, ProcessType.Aggregation)]
-    public static void Map_ReturnsExpectedType(Energinet.DataHub.Wholesale.Common.Models.ProcessType source, ProcessType expected)
+    public void Map_ReturnsExpectedType(Energinet.DataHub.Wholesale.Common.Models.ProcessType source, ProcessType expected)
     {
         var actual = ProcessTypeMapper.Map(source);
         actual.Should().Be(expected);
@@ -33,9 +33,37 @@ public static class ProcessTypeMapperTests
     [Theory]
     [InlineAutoMoqData(ProcessType.BalanceFixing, Energinet.DataHub.Wholesale.Common.Models.ProcessType.BalanceFixing)]
     [InlineAutoMoqData(ProcessType.Aggregation, Energinet.DataHub.Wholesale.Common.Models.ProcessType.Aggregation)]
-    public static void MapProcessType_ReturnsExpectedType(ProcessType source, Energinet.DataHub.Wholesale.Common.Models.ProcessType expected)
+    public void MapProcessType_ReturnsExpectedType(ProcessType source, Energinet.DataHub.Wholesale.Common.Models.ProcessType expected)
     {
         var actual = ProcessTypeMapper.Map(source);
         actual.Should().Be(expected);
+    }
+
+    [Fact]
+    public void Map_WhenInvalidEnumNumberForProcessType_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        var invalidValue = (Energinet.DataHub.Wholesale.Common.Models.ProcessType)99;
+
+        // Act
+        var act = () => ProcessTypeMapper.Map(invalidValue);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .And.ActualValue.Should().Be(invalidValue);
+    }
+
+    [Fact]
+    public void Map_WhenInvalidEnumNumberForV3ProcessType_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        var invalidValue = (Energinet.DataHub.Wholesale.WebApi.V3.Batch.ProcessType)99;
+
+        // Act
+        var act = () => ProcessTypeMapper.Map(invalidValue);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .And.ActualValue.Should().Be(invalidValue);
     }
 }

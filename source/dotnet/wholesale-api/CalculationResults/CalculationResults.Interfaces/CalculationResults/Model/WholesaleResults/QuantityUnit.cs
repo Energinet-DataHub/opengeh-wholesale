@@ -17,5 +17,4 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationR
 public enum QuantityUnit
 {
     Kwh,
-    Pieces,
 }
