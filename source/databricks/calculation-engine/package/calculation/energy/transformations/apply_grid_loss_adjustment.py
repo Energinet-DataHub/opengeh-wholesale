@@ -77,15 +77,11 @@ def _apply_grid_loss_adjustment(
         "inner",
     ).select(
         result_df[Colname.grid_area],
-        result_df[Colname.to_grid_area],
-        result_df[Colname.from_grid_area],
         result_df[Colname.balance_responsible_id],
         result_df[Colname.energy_supplier_id],
         result_df[Colname.time_window],
         result_df[Colname.sum_quantity],
         result_df[Colname.quality],
-        result_df[Colname.metering_point_type],
-        result_df[Colname.settlement_method],
         grid_loss_result_df[Colname.sum_quantity].alias("grid_loss_sum_quantity"),
     )
 

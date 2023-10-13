@@ -24,9 +24,6 @@ from package.calculation.energy.aggregators import (
     aggregate_production_ga_brp,
     aggregate_production_ga,
 )
-from package.calculation.energy.transformations import (
-    create_dataframe_from_aggregation_result_schema,
-)
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 import pytest
 import pandas as pd
@@ -107,7 +104,7 @@ def test_data_factory(
 def test_production_calculation_per_ga_and_es(
     test_data_factory: Callable[..., DataFrame]
 ) -> None:
-    df = create_dataframe_from_aggregation_result_schema(test_data_factory())
+    df = test_data_factory()
     result = aggregate_production_ga_es(df).sort(
         Colname.grid_area, Colname.energy_supplier_id
     )
@@ -124,7 +121,7 @@ def test_production_calculation_per_ga_and_es(
 def test_production_calculation_per_ga_and_brp(
     test_data_factory: Callable[..., DataFrame]
 ) -> None:
-    df = create_dataframe_from_aggregation_result_schema(test_data_factory())
+    df = test_data_factory()
     result = aggregate_production_ga_brp(df).sort(
         Colname.grid_area, Colname.balance_responsible_id
     )
@@ -141,9 +138,7 @@ def test_production_calculation_per_ga_and_brp(
 def test_production_calculation_per_ga(
     test_data_factory: Callable[..., DataFrame]
 ) -> None:
-    production_with_system_correction_and_grid_loss = (
-        create_dataframe_from_aggregation_result_schema(test_data_factory())
-    )
+    production_with_system_correction_and_grid_loss = test_data_factory()
     result = aggregate_production_ga(
         production_with_system_correction_and_grid_loss
     ).sort(Colname.grid_area)

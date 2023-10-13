@@ -19,9 +19,6 @@ from package.codelists import (
     QuantityQuality,
 )
 from package.calculation.energy.transformations import adjust_production
-from package.calculation.energy.transformations import (
-    create_dataframe_from_aggregation_result_schema,
-)
 from pyspark.sql.functions import col
 from pyspark.sql.types import (
     StructType,
@@ -252,14 +249,8 @@ def test_grid_area_negative_grid_loss_is_added_to_grid_loss_responsible_energy_s
     negative_grid_loss_result_row_factory: Callable[..., DataFrame],
     sys_cor_row_factory: Callable[..., DataFrame],
 ) -> None:
-    production = create_dataframe_from_aggregation_result_schema(
-        hourly_production_result_row_factory(supplier="A")
-    )
-
-    negative_grid_loss = create_dataframe_from_aggregation_result_schema(
-        negative_grid_loss_result_row_factory()
-    )
-
+    production = hourly_production_result_row_factory(supplier="A")
+    negative_grid_loss = negative_grid_loss_result_row_factory()
     grid_loss_sys_cor_master_data = sys_cor_row_factory(supplier="A")
 
     result_df = adjust_production(
@@ -279,14 +270,8 @@ def test_grid_area_grid_loss_is_not_added_to_non_grid_loss_energy_responsible(
     negative_grid_loss_result_row_factory: Callable[..., DataFrame],
     sys_cor_row_factory: Callable[..., DataFrame],
 ) -> None:
-    production = create_dataframe_from_aggregation_result_schema(
-        hourly_production_result_row_factory(supplier="A")
-    )
-
-    negative_grid_loss = create_dataframe_from_aggregation_result_schema(
-        negative_grid_loss_result_row_factory()
-    )
-
+    production = hourly_production_result_row_factory(supplier="A")
+    negative_grid_loss = negative_grid_loss_result_row_factory()
     grid_loss_sys_cor_master_data = sys_cor_row_factory(supplier="B")
 
     result_df = adjust_production(
@@ -310,14 +295,8 @@ def test_result_dataframe_contains_same_number_of_results_with_same_energy_suppl
     hp_row_2 = hourly_production_result_row_factory(supplier="B")
     hp_row_3 = hourly_production_result_row_factory(supplier="C")
 
-    production = create_dataframe_from_aggregation_result_schema(
-        hp_row_1.union(hp_row_2).union(hp_row_3)
-    )
-
-    negative_grid_loss = create_dataframe_from_aggregation_result_schema(
-        negative_grid_loss_result_row_factory()
-    )
-
+    production = hp_row_1.union(hp_row_2).union(hp_row_3)
+    negative_grid_loss = negative_grid_loss_result_row_factory()
     grid_loss_sys_cor_master_data = sys_cor_row_factory(supplier="C")
 
     result_df = adjust_production(
@@ -359,9 +338,7 @@ def test_correct_negative_grid_loss_entry_is_used_to_determine_energy_responsibl
         supplier="B", time_window=time_window_3
     )
 
-    production = create_dataframe_from_aggregation_result_schema(
-        hp_row_1.union(hp_row_2).union(hp_row_3)
-    )
+    production = hp_row_1.union(hp_row_2).union(hp_row_3)
 
     gasc_result_1 = Decimal(1)
     gasc_result_2 = Decimal(2)
@@ -377,9 +354,7 @@ def test_correct_negative_grid_loss_entry_is_used_to_determine_energy_responsibl
         time_window=time_window_3, negative_grid_loss=gasc_result_3
     )
 
-    negative_grid_loss = create_dataframe_from_aggregation_result_schema(
-        gasc_row_1.union(gasc_row_2).union(gasc_row_3)
-    )
+    negative_grid_loss = gasc_row_1.union(gasc_row_2).union(gasc_row_3)
 
     sc_row_1 = sys_cor_row_factory(
         supplier="A", valid_from=time_window_1["start"], valid_to=time_window_1["end"]
@@ -423,14 +398,8 @@ def test_that_the_correct_metering_point_type_is_put_on_the_result(
     negative_grid_loss_result_row_factory: Callable[..., DataFrame],
     sys_cor_row_factory: Callable[..., DataFrame],
 ) -> None:
-    production = create_dataframe_from_aggregation_result_schema(
-        hourly_production_result_row_factory(supplier="A")
-    )
-
-    negative_grid_loss = create_dataframe_from_aggregation_result_schema(
-        negative_grid_loss_result_row_factory()
-    )
-
+    production = hourly_production_result_row_factory(supplier="A")
+    negative_grid_loss = negative_grid_loss_result_row_factory()
     grid_loss_sys_cor_master_data = sys_cor_row_factory(supplier="A")
 
     result_df = adjust_production(
