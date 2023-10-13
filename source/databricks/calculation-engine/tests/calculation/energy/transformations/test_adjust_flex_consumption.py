@@ -19,9 +19,6 @@ from package.codelists import (
     QuantityQuality,
 )
 from package.calculation.energy.transformations import adjust_flex_consumption
-from package.calculation.energy.transformations import (
-    create_dataframe_from_aggregation_result_schema,
-)
 from pyspark.sql.functions import col
 from pyspark.sql.types import (
     StructType,
@@ -252,14 +249,8 @@ def test_grid_area_grid_loss_is_added_to_grid_loss_energy_responsible(
     positive_grid_loss_result_row_factory: Callable[..., DataFrame],
     grid_loss_sys_cor_row_factory: Callable[..., DataFrame],
 ) -> None:
-    flex_consumption = create_dataframe_from_aggregation_result_schema(
-        flex_consumption_result_row_factory(supplier="A")
-    )
-
-    positive_grid_loss = create_dataframe_from_aggregation_result_schema(
-        positive_grid_loss_result_row_factory()
-    )
-
+    flex_consumption = flex_consumption_result_row_factory(supplier="A")
+    positive_grid_loss = positive_grid_loss_result_row_factory()
     grid_loss_sys_cor_master_data = grid_loss_sys_cor_row_factory(supplier="A")
 
     result_df = adjust_flex_consumption(
@@ -279,14 +270,8 @@ def test_grid_area_grid_loss_is_not_added_to_non_grid_loss_energy_responsible(
     positive_grid_loss_result_row_factory: Callable[..., DataFrame],
     grid_loss_sys_cor_row_factory: Callable[..., DataFrame],
 ) -> None:
-    flex_consumption = create_dataframe_from_aggregation_result_schema(
-        flex_consumption_result_row_factory(supplier="A")
-    )
-
-    positive_grid_loss = create_dataframe_from_aggregation_result_schema(
-        positive_grid_loss_result_row_factory()
-    )
-
+    flex_consumption = flex_consumption_result_row_factory(supplier="A")
+    positive_grid_loss = positive_grid_loss_result_row_factory()
     grid_loss_sys_cor_master_data = grid_loss_sys_cor_row_factory(supplier="B")
 
     result_df = adjust_flex_consumption(
@@ -310,14 +295,8 @@ def test_result_dataframe_contains_same_number_of_results_with_same_energy_suppl
     fc_row_2 = flex_consumption_result_row_factory(supplier="B")
     fc_row_3 = flex_consumption_result_row_factory(supplier="C")
 
-    flex_consumption = create_dataframe_from_aggregation_result_schema(
-        fc_row_1.union(fc_row_2).union(fc_row_3)
-    )
-
-    positive_grid_loss = create_dataframe_from_aggregation_result_schema(
-        positive_grid_loss_result_row_factory()
-    )
-
+    flex_consumption = fc_row_1.union(fc_row_2).union(fc_row_3)
+    positive_grid_loss = positive_grid_loss_result_row_factory()
     grid_loss_sys_cor_master_data = grid_loss_sys_cor_row_factory(supplier="C")
 
     result_df = adjust_flex_consumption(
@@ -359,9 +338,7 @@ def test_correct_grid_loss_entry_is_used_to_determine_energy_responsible_for_the
         supplier="B", time_window=time_window_3
     )
 
-    flex_consumption = create_dataframe_from_aggregation_result_schema(
-        fc_row_1.union(fc_row_2).union(fc_row_3)
-    )
+    flex_consumption = fc_row_1.union(fc_row_2).union(fc_row_3)
 
     gagl_result_1 = Decimal(1)
     gagl_result_2 = Decimal(2)
@@ -377,9 +354,7 @@ def test_correct_grid_loss_entry_is_used_to_determine_energy_responsible_for_the
         time_window=time_window_3, positive_grid_loss=gagl_result_3
     )
 
-    positive_grid_loss = create_dataframe_from_aggregation_result_schema(
-        gagl_row_1.union(gagl_row_2).union(gagl_row_3)
-    )
+    positive_grid_loss = gagl_row_1.union(gagl_row_2).union(gagl_row_3)
 
     glsc_row_1 = grid_loss_sys_cor_row_factory(
         supplier="A", valid_from=time_window_1["start"], valid_to=time_window_1["end"]
@@ -423,13 +398,8 @@ def test_that_the_correct_metering_point_type_is_put_on_the_result(
     positive_grid_loss_result_row_factory: Callable[..., DataFrame],
     grid_loss_sys_cor_row_factory: Callable[..., DataFrame],
 ) -> None:
-    flex_consumption = create_dataframe_from_aggregation_result_schema(
-        flex_consumption_result_row_factory(supplier="A")
-    )
-
-    positive_grid_loss = create_dataframe_from_aggregation_result_schema(
-        positive_grid_loss_result_row_factory()
-    )
+    flex_consumption = flex_consumption_result_row_factory(supplier="A")
+    positive_grid_loss = positive_grid_loss_result_row_factory()
 
     grid_loss_sys_cor_master_data = grid_loss_sys_cor_row_factory(supplier="A")
 

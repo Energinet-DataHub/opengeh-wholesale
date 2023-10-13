@@ -23,9 +23,6 @@ from package.codelists import (
 from package.calculation.energy.grid_loss_calculator import (
     calculate_grid_loss,
 )
-from package.calculation.energy.transformations import (
-    create_dataframe_from_aggregation_result_schema,
-)
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 from pyspark.sql.functions import col
 from pyspark.sql import DataFrame, SparkSession
@@ -511,18 +508,10 @@ def agg_hourly_production_factory(
 def test_grid_loss_calculation(
     agg_result_factory: Callable[[AggregationMethod], DataFrame]
 ) -> None:
-    net_exchange_per_ga = create_dataframe_from_aggregation_result_schema(
-        agg_result_factory(AggregationMethod.NET_EXCHANGE)
-    )
-    non_profiled_consumption = create_dataframe_from_aggregation_result_schema(
-        agg_result_factory(AggregationMethod.HOURLY_CONSUMPTION)
-    )
-    flex_consumption = create_dataframe_from_aggregation_result_schema(
-        agg_result_factory(AggregationMethod.FLEX_CONSUMPTION)
-    )
-    production = create_dataframe_from_aggregation_result_schema(
-        agg_result_factory(AggregationMethod.PRODUCTION)
-    )
+    net_exchange_per_ga = agg_result_factory(AggregationMethod.NET_EXCHANGE)
+    non_profiled_consumption = agg_result_factory(AggregationMethod.HOURLY_CONSUMPTION)
+    flex_consumption = agg_result_factory(AggregationMethod.FLEX_CONSUMPTION)
+    production = agg_result_factory(AggregationMethod.PRODUCTION)
 
     result = calculate_grid_loss(
         net_exchange_per_ga, non_profiled_consumption, flex_consumption, production

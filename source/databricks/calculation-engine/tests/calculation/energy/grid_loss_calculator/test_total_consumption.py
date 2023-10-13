@@ -21,9 +21,6 @@ from package.codelists import (
 )
 
 from package.calculation.energy.grid_loss_calculator import calculate_total_consumption
-from package.calculation.energy.transformations import (
-    create_dataframe_from_aggregation_result_schema,
-)
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 import pytest
 import pandas as pd
@@ -289,12 +286,8 @@ def agg_total_net_exchange_factory(spark, net_exchange_schema):
 
 
 def test_grid_area_total_consumption(agg_net_exchange_factory, agg_production_factory):
-    net_exchange_per_ga = create_dataframe_from_aggregation_result_schema(
-        agg_net_exchange_factory()
-    )
-    production_ga = create_dataframe_from_aggregation_result_schema(
-        agg_production_factory()
-    )
+    net_exchange_per_ga = agg_net_exchange_factory()
+    production_ga = agg_production_factory()
     aggregated_df = calculate_total_consumption(net_exchange_per_ga, production_ga)
     aggregated_df_collect = aggregated_df.collect()
     assert (
@@ -346,12 +339,8 @@ def test_aggregated_quality(
     ex_quality,
     expected_quality,
 ):
-    net_exchange_per_ga = create_dataframe_from_aggregation_result_schema(
-        agg_total_net_exchange_factory(ex_quality)
-    )
-    production_ga = create_dataframe_from_aggregation_result_schema(
-        agg_total_production_factory(prod_quality)
-    )
+    net_exchange_per_ga = agg_total_net_exchange_factory(ex_quality)
+    production_ga = agg_total_production_factory(prod_quality)
 
     result_df = calculate_total_consumption(net_exchange_per_ga, production_ga)
 
