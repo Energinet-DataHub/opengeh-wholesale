@@ -40,24 +40,18 @@ def get_basis_data_time_series_points_df(
     raw_time_series_points_df = raw_time_series_points_df.where(
         F.col(Colname.observation_time) >= period_start_datetime
     ).where(F.col(Colname.observation_time) < period_end_datetime)
-    print("raw_time_series_points_df schema")
-    raw_time_series_points_df.printSchema()
 
     quarterly_mp_df = metering_point_periods_df.where(
         F.col(Colname.resolution) == MeteringPointResolution.QUARTER.value
     ).withColumn(
         Colname.to_date, (F.col(Colname.to_date) - F.expr("INTERVAL 1 seconds"))
     )
-    print("quarterly_mp_df schema")
-    quarterly_mp_df.printSchema()
 
     hourly_mp_df = metering_point_periods_df.where(
         F.col(Colname.resolution) == MeteringPointResolution.HOUR.value
     ).withColumn(
         Colname.to_date, (F.col(Colname.to_date) - F.expr("INTERVAL 1 seconds"))
     )
-    print("hourly_mp_df schema")
-    hourly_mp_df.printSchema()
 
     quarterly_times_df = (
         quarterly_mp_df.select(
@@ -75,8 +69,6 @@ def get_basis_data_time_series_points_df(
             F.explode("quarter_times").alias(Colname.observation_time),
         )
     )
-    print("quarterly_times_df schema")
-    quarterly_times_df.printSchema()
 
     hourly_times_df = (
         hourly_mp_df.select(
@@ -94,12 +86,8 @@ def get_basis_data_time_series_points_df(
             F.explode("times").alias(Colname.observation_time),
         )
     )
-    print("hourly_times_df schema")
-    hourly_times_df.printSchema()
 
     empty_points_for_each_metering_point_df = quarterly_times_df.union(hourly_times_df)
-    print("empty_points_for_each_metering_point_df schema")
-    empty_points_for_each_metering_point_df.printSchema()
 
     debug(
         "Time series points where time is within period",
@@ -114,8 +102,6 @@ def get_basis_data_time_series_points_df(
         Colname.quantity,
         Colname.quality,
     )
-    print("raw_time_series_points_df schema")
-    raw_time_series_points_df.printSchema()
 
     new_points_for_each_metering_point_df = (
         empty_points_for_each_metering_point_df.join(
@@ -124,8 +110,6 @@ def get_basis_data_time_series_points_df(
             "left",
         )
     )
-    print("new_points_for_each_metering_point_df schema")
-    new_points_for_each_metering_point_df.printSchema()
 
     # the master_basis_data_df is allready used once when creating the empty_points_for_each_metering_point_df
     # rejoining master_basis_data_df with empty_points_for_each_metering_point_df requires the GsrNumber and
@@ -136,13 +120,11 @@ def get_basis_data_time_series_points_df(
             Colname.metering_point_id, "pfemp_MeteringPointId"
         ).withColumnRenamed(Colname.resolution, "pfemp_Resolution")
     )
-    print("new_points_for_each_metering_point_df schema")
-    new_points_for_each_metering_point_df.printSchema()
+
     metering_point_periods_renamed_df = metering_point_periods_df.withColumnRenamed(
         Colname.metering_point_id, "master_MeteringPointId"
     ).withColumnRenamed(Colname.resolution, "master_Resolution")
-    print("metering_point_periods_renamed_df schema")
-    metering_point_periods_renamed_df.printSchema()
+
     result = (
         new_points_for_each_metering_point_df.withColumn(
             Colname.quantity, F.col(Colname.quantity).cast(DecimalType(18, 6))
@@ -181,6 +163,5 @@ def get_basis_data_time_series_points_df(
             Colname.balance_responsible_id,
         )
     )
-    print("result schema")
-    result.printSchema()
+
     return result
