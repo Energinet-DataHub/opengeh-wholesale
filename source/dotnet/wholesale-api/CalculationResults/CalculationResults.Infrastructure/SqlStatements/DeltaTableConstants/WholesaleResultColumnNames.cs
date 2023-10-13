@@ -67,6 +67,6 @@ public class WholesaleResultColumnNames
             QuantityQualities => "array<string>",
             Price => "decimal(18,6)",
             Amount => "decimal(18,6)",
-            _ => throw new ArgumentException($"Unexpected column name '{columnName}'."),
+            _ => throw new ArgumentOutOfRangeException(nameof(columnName), actualValue: columnName, "Unexpected column name."),
         };
 }

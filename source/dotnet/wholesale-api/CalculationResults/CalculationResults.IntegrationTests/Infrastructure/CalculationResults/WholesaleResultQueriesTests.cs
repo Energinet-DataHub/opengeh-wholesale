@@ -48,7 +48,7 @@ public class WholesaleResultQueriesTests : IClassFixture<DatabricksSqlStatementA
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_ReturnsExpectedWholesaleResult(
+    public async Task GetAsync_WhenCalculationHasHourlyAndMonthlyTariff_ReturnsExpectedWholesaleResult(
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> sqlStatusResponseParserLoggerMock,
         Mock<ILogger<DatabricksSqlStatementClient>> databricksSqlStatementClientLoggerMock,
