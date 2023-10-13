@@ -12,21 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using FluentAssertions;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SqlStatements.Mappers.WholesaleResult
 {
-    public class QuantityUnitMapperTests
+    public class ChargeResolutionMapperTests
     {
         [Theory]
-        [InlineData("kWh", QuantityUnit.Kwh)]
-        public void FromDeltaTableValue_WhenValidDeltaTableValue_ReturnsExpectedType(string deltaTableValue, QuantityUnit expectedType)
+        [InlineData("P1M", ChargeResolution.Month)]
+        [InlineData("P1D", ChargeResolution.Day)]
+        [InlineData("PT1H", ChargeResolution.Hour)]
+        public void FromDeltaTableValue_WhenValidDeltaTableValue_ReturnsExpectedType(string deltaTableValue, ChargeResolution expectedType)
         {
             // Act
-            var actualType = QuantityUnitMapper.FromDeltaTableValue(deltaTableValue);
+            var actualType = ChargeResolutionMapper.FromDeltaTableValue(deltaTableValue);
 
             // Assert
             actualType.Should().Be(expectedType);
@@ -39,7 +41,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
             var invalidDeltaTableValue = Guid.NewGuid().ToString();
 
             // Act
-            var act = () => QuantityUnitMapper.FromDeltaTableValue(invalidDeltaTableValue);
+            var act = () => ChargeResolutionMapper.FromDeltaTableValue(invalidDeltaTableValue);
 
             // Assert
             act.Should().Throw<ArgumentOutOfRangeException>()
