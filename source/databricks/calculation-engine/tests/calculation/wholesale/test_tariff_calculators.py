@@ -15,10 +15,13 @@
 from decimal import Decimal
 from datetime import datetime, timedelta
 import uuid
+
+from pyspark import Row
 from pyspark.sql import SparkSession
 import pytest
-from typing import Any, List, Union
+from typing import Any, Union
 
+from package.calculation.wholesale.schemas.tariffs_schema import tariff_schema
 from package.codelists import (
     ChargeQuality,
     ChargeResolution,
@@ -28,7 +31,6 @@ from package.codelists import (
     SettlementMethod,
 )
 from package.calculation.wholesale.tariff_calculators import (
-    tariff_schema,
     calculate_tariff_price_per_ga_co_es,
 )
 from package.calculation.wholesale.tariff_calculators import (
@@ -65,7 +67,7 @@ def _create_tariff_hour_row(
     grid_area: str = DEFAULT_GRID_AREA,
     quantity: Decimal = DEFAULT_QUANTITY,
     quality: ChargeQuality = DEFAULT_QUALITY,
-) -> dict:
+) -> Row:
     row = {
         Colname.charge_key: charge_key
         or f"{charge_code}-{ChargeType.TARIFF.value}-{charge_owner}",
@@ -87,7 +89,7 @@ def _create_tariff_hour_row(
         Colname.qualities: [quality.value],
     }
 
-    return row
+    return Row(**row)
 
 
 def test__calculate_tariff_price_per_ga_co_es__raises_value_error_when_input_df_has_wrong_schema(
@@ -97,7 +99,7 @@ def test__calculate_tariff_price_per_ga_co_es__raises_value_error_when_input_df_
     tariffs = spark.createDataFrame(data=[{"Hello": "World"}])
 
     # Act
-    with pytest.raises(ValueError) as excinfo:
+    with pytest.raises(AssertionError) as excinfo:
         calculate_tariff_price_per_ga_co_es(tariffs)
 
     # Assert

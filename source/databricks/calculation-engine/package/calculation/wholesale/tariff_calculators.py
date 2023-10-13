@@ -15,39 +15,11 @@
 from datetime import datetime
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as F
-from pyspark.sql.types import (
-    ArrayType,
-    BooleanType,
-    DecimalType,
-    StructType,
-    StructField,
-    StringType,
-    TimestampType,
-)
+
 from package.codelists import ChargeResolution, ChargeUnit
+from package.common import assert_schema
 from package.constants import Colname
-
-
-tariff_schema = StructType(
-    [
-        StructField(Colname.charge_key, StringType(), False),
-        StructField(Colname.charge_code, StringType(), False),
-        StructField(Colname.charge_type, StringType(), False),
-        StructField(Colname.charge_owner, StringType(), False),
-        StructField(Colname.charge_tax, BooleanType(), False),
-        StructField(Colname.charge_resolution, StringType(), False),
-        StructField(Colname.charge_time, TimestampType(), False),
-        StructField(Colname.charge_price, DecimalType(18, 6), False),
-        StructField(Colname.metering_point_id, StringType(), False),
-        StructField(Colname.energy_supplier_id, StringType(), False),
-        StructField(Colname.metering_point_type, StringType(), False),
-        StructField(Colname.settlement_method, StringType(), True),
-        StructField(Colname.grid_area, StringType(), False),
-        StructField(Colname.quantity, DecimalType(18, 3), False),
-        StructField(Colname.qualities, ArrayType(StringType()), False),
-    ]
-)
-"""Schema contract for tariffs"""
+from .schemas.tariffs_schema import tariff_schema
 
 
 def calculate_tariff_price_per_ga_co_es(tariffs: DataFrame) -> DataFrame:
@@ -65,10 +37,7 @@ def calculate_tariff_price_per_ga_co_es(tariffs: DataFrame) -> DataFrame:
     resolution is managed outside this module.
     """
 
-    if tariffs.schema != tariff_schema:
-        raise ValueError(
-            f"Schema mismatch. Expected {tariff_schema}, but got {tariffs.schema}."
-        )
+    assert_schema(tariffs.schema, tariff_schema)
 
     df = _sum_quantity_and_count_charges(tariffs)
 

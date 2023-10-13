@@ -19,11 +19,9 @@ using Energinet.DataHub.Wholesale.Common.Models;
 using FluentAssertions;
 using NodaTime;
 using Xunit;
-using Xunit.Categories;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SettlementReport;
 
-[UnitTest]
 public class SettlementReportSqlStatementFactoryTests
 {
     private readonly string[] _defaultGridAreasCodes = { "123", "234", "345" };

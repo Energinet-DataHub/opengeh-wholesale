@@ -77,12 +77,16 @@ metering_point_period_schema = StructType(
         # Example: 578710000000000112
         StructField("parent_metering_point_id", StringType(), True),
         # The unique GLN/EIC number of the energy supplier
-        # Not all metering points have an energy supplier registered, e.g. exchange (E20)
+        # There are two cases were the input table metering_point_period can have an energy_supplier_id of null:
+        # 1. When the metering point is a child metering point
+        # 2. When the metering point is an exchange (E20) metering point (not relevant for wholesale calculations)
         # Used in balance fixing and settlement.
         # Example: 8100000000108
         StructField("energy_supplier_id", StringType(), True),
         # The unique GLN/EIC number of the balance responsible
-        # Not all metering points have a balance responsible registered, e.g. exchange (E20)
+        # There are two cases were the input table metering_point_period can have an energy_supplier_id of null:
+        # 1. When the metering point is a child metering point
+        # 2. When the metering point is an exchange (E20) metering point (not relevant for wholesale calculations)
         # Used in balance fixing and settlement.
         # Example: 8100000000109
         StructField("balance_responsible_id", StringType(), True),

@@ -17,23 +17,74 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 
-public static class AggregatedTimeSeriesRequestBuilder
+public class AggregatedTimeSeriesRequestBuilder
 {
-    private static AggregationPerGridArea _aggregationPerGridArea = new();
-    private static string _startInstant = Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString();
-    private static string _endInstant = Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString();
+    private AggregationPerGridArea _aggregationPerGridArea = new();
+    private string _start;
+    private string _end;
+    private string _meteringPointType = "E18";
+    private string? _energySupplierId;
+    private string _requestedByActorRoleId;
+    private string _requestedByActorId;
 
-    public static AggregatedTimeSeriesRequest Build()
+    private AggregatedTimeSeriesRequestBuilder()
     {
-        return new AggregatedTimeSeriesRequest
+        var now = SystemClock.Instance.GetCurrentInstant();
+        _start = Instant.FromUtc(now.InUtc().Year, 1, 1, 23, 0, 0).ToString();
+        _end = Instant.FromUtc(now.InUtc().Year, 1, 2, 23, 0, 0).ToString();
+        _requestedByActorRoleId = "unknown-actor-role-id";
+        _requestedByActorId = "unknown-actor-id";
+    }
+
+    public static AggregatedTimeSeriesRequestBuilder AggregatedTimeSeriesRequest()
+    {
+        return new AggregatedTimeSeriesRequestBuilder();
+    }
+
+    public AggregatedTimeSeriesRequest Build()
+    {
+        var request = new AggregatedTimeSeriesRequest
         {
             AggregationPerGridarea = _aggregationPerGridArea,
             Period = new Edi.Requests.Period()
             {
-                Start = _startInstant,
-                End = _endInstant,
+                Start = _start,
+                End = _end,
             },
-            MeteringPointType = "E18",
+            MeteringPointType = _meteringPointType,
+            RequestedByActorRole = _requestedByActorRoleId,
+            RequestedByActorId = _requestedByActorId,
         };
+
+        if (_energySupplierId != null)
+            request.EnergySupplierId = _energySupplierId;
+
+        return request;
+    }
+
+    public AggregatedTimeSeriesRequestBuilder WithStartDate(string start)
+    {
+        _start = start;
+        return this;
+    }
+
+    public AggregatedTimeSeriesRequestBuilder WithEndDate(string end)
+    {
+        _end = end;
+        return this;
+    }
+
+    public AggregatedTimeSeriesRequestBuilder WithEnergySupplierId(string? energySupplierId)
+    {
+        _energySupplierId = energySupplierId;
+        return this;
+    }
+
+    public AggregatedTimeSeriesRequestBuilder WithRequestedByActor(string actorRoleId, string actorId)
+    {
+        _requestedByActorRoleId = actorRoleId;
+        _requestedByActorId = actorId;
+
+        return this;
     }
 }

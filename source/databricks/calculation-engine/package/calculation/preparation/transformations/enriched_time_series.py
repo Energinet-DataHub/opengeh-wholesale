@@ -18,29 +18,36 @@ import pyspark.sql.functions as F
 from pyspark.sql.types import DecimalType
 
 from package.constants import Colname
-from package.codelists import MeteringPointResolution
+from package.codelists import MeteringPointResolution, QuantityQuality
 from package.infrastructure.db_logging import debug
+from package.common import assert_schema
+from package.calculation_input.schemas import (
+    time_series_point_schema,
+    metering_point_period_schema,
+)
 
 
 def get_basis_data_time_series_points_df(
-    new_timeseries_df: DataFrame,
-    master_basis_data_df: DataFrame,
+    raw_time_series_points_df: DataFrame,
+    metering_point_periods_df: DataFrame,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
 ) -> DataFrame:
     """Get enriched time-series points in quarterly resolution"""
+    assert_schema(raw_time_series_points_df.schema, time_series_point_schema)
+    assert_schema(metering_point_periods_df.schema, metering_point_period_schema)
 
-    new_timeseries_df = new_timeseries_df.where(
+    raw_time_series_points_df = raw_time_series_points_df.where(
         F.col(Colname.observation_time) >= period_start_datetime
     ).where(F.col(Colname.observation_time) < period_end_datetime)
 
-    quarterly_mp_df = master_basis_data_df.where(
+    quarterly_mp_df = metering_point_periods_df.where(
         F.col(Colname.resolution) == MeteringPointResolution.QUARTER.value
     ).withColumn(
         Colname.to_date, (F.col(Colname.to_date) - F.expr("INTERVAL 1 seconds"))
     )
 
-    hourly_mp_df = master_basis_data_df.where(
+    hourly_mp_df = metering_point_periods_df.where(
         F.col(Colname.resolution) == MeteringPointResolution.HOUR.value
     ).withColumn(
         Colname.to_date, (F.col(Colname.to_date) - F.expr("INTERVAL 1 seconds"))
@@ -84,12 +91,12 @@ def get_basis_data_time_series_points_df(
 
     debug(
         "Time series points where time is within period",
-        new_timeseries_df.orderBy(
+        raw_time_series_points_df.orderBy(
             Colname.metering_point_id, F.col(Colname.observation_time)
         ),
     )
 
-    new_timeseries_df = new_timeseries_df.select(
+    raw_time_series_points_df = raw_time_series_points_df.select(
         Colname.metering_point_id,
         Colname.observation_time,
         Colname.quantity,
@@ -98,7 +105,7 @@ def get_basis_data_time_series_points_df(
 
     new_points_for_each_metering_point_df = (
         empty_points_for_each_metering_point_df.join(
-            new_timeseries_df,
+            raw_time_series_points_df,
             [Colname.metering_point_id, Colname.observation_time],
             "left",
         )
@@ -114,18 +121,18 @@ def get_basis_data_time_series_points_df(
         ).withColumnRenamed(Colname.resolution, "pfemp_Resolution")
     )
 
-    master_basis_data_renamed_df = master_basis_data_df.withColumnRenamed(
+    metering_point_periods_renamed_df = metering_point_periods_df.withColumnRenamed(
         Colname.metering_point_id, "master_MeteringPointId"
     ).withColumnRenamed(Colname.resolution, "master_Resolution")
 
-    return (
+    result = (
         new_points_for_each_metering_point_df.withColumn(
             Colname.quantity, F.col(Colname.quantity).cast(DecimalType(18, 6))
         )
         .join(
-            master_basis_data_renamed_df,
+            metering_point_periods_renamed_df,
             (
-                master_basis_data_renamed_df["master_MeteringPointId"]
+                metering_point_periods_renamed_df["master_MeteringPointId"]
                 == new_points_for_each_metering_point_df["pfemp_MeteringPointId"]
             )
             & (
@@ -142,11 +149,13 @@ def get_basis_data_time_series_points_df(
             Colname.grid_area,
             Colname.to_grid_area,
             Colname.from_grid_area,
-            master_basis_data_renamed_df["master_MeteringPointId"].alias(
+            metering_point_periods_renamed_df["master_MeteringPointId"].alias(
                 Colname.metering_point_id
             ),
             Colname.metering_point_type,
-            master_basis_data_renamed_df["master_Resolution"].alias(Colname.resolution),
+            metering_point_periods_renamed_df["master_Resolution"].alias(
+                Colname.resolution
+            ),
             Colname.observation_time,
             Colname.quantity,
             Colname.quality,
@@ -154,3 +163,5 @@ def get_basis_data_time_series_points_df(
             Colname.balance_responsible_id,
         )
     )
+
+    return result

@@ -18,11 +18,9 @@ using Energinet.DataHub.Wholesale.Batches.Application;
 using Energinet.DataHub.Wholesale.Batches.Application.UseCases;
 using Moq;
 using Xunit;
-using Xunit.Categories;
 
 namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Application.Batches;
 
-[UnitTest]
 public class UpdateExecutionStateHandlerTests
 {
     [Theory]

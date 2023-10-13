@@ -12,5 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .wholesale_calculation import execute
-from .schemas import tariffs_schema
+from .schemas import assert_schema
