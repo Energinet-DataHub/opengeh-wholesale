@@ -109,8 +109,8 @@ ORDER BY {WholesaleResultColumnNames.CalculationResultId}, {WholesaleResultColum
         WholesaleResultColumnNames.Time,
         WholesaleResultColumnNames.Quantity,
         WholesaleResultColumnNames.QuantityQualities,
-        WholesaleResultColumnNames.Amount,
         WholesaleResultColumnNames.Price,
+        WholesaleResultColumnNames.Amount,
     };
 
     public static bool BelongsToDifferentResults(SqlResultRow row, SqlResultRow otherRow)

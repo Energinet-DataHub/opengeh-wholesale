@@ -24,6 +24,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.Fixtures;
 using Energinet.DataHub.Wholesale.Common.Models;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Moq;
 using NodaTime.Extensions;
 using Xunit;
@@ -59,17 +60,16 @@ public class WholesaleResultQueriesTests
         WholesaleResultQueries sut)
     {
         // Arrange
-        var batchId = Guid.Parse(_row0CalculationId);
-        batch = batch with { BatchId = batchId };
+        batch = batch with { BatchId = Guid.Parse(_row0CalculationId) };
         batchesClientMock
-            .Setup(client => client.GetAsync(batchId))
+            .Setup(client => client.GetAsync(batch.BatchId))
             .ReturnsAsync(batch);
         sqlStatementClientMock
             .Setup(x => x.ExecuteAsync(It.IsAny<string>(), null))
             .Returns(GetRowsAsync(0));
 
         // Act
-        var actual = await sut.GetAsync(batchId).ToListAsync();
+        var actual = await sut.GetAsync(batch.BatchId).ToListAsync();
 
         // Assert
         actual.Should().BeEmpty();
@@ -84,17 +84,16 @@ public class WholesaleResultQueriesTests
         WholesaleResultQueries sut)
     {
         // Arrange
-        var batchId = Guid.Parse(_row0CalculationId);
-        batch = batch with { BatchId = batchId };
+        batch = batch with { BatchId = Guid.Parse(_row0CalculationId) };
         batchesClientMock
-            .Setup(client => client.GetAsync(batchId))
+            .Setup(client => client.GetAsync(batch.BatchId))
             .ReturnsAsync(batch);
         sqlStatementClientMock
             .Setup(x => x.ExecuteAsync(It.IsAny<string>(), null))
             .Returns(GetRowsAsync(1));
 
         // Act
-        var actual = await sut.GetAsync(batchId).ToListAsync();
+        var actual = await sut.GetAsync(batch.BatchId).ToListAsync();
 
         // Assert
         actual.Single().TimeSeriesPoints.Count.Should().Be(1);
@@ -102,39 +101,41 @@ public class WholesaleResultQueriesTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_ReturnsResultRowWithExpectedValues(
+    public async Task GetAsync_WhenCalculationHasOneResult_ReturnsResultRowWithExpectedValues(
         BatchDto batch,
         [Frozen] Mock<IBatchesClient> batchesClientMock,
         [Frozen] Mock<IDatabricksSqlStatementClient> sqlStatementClientMock,
         WholesaleResultQueries sut)
     {
         // Arrange
-        var batchId = Guid.Parse(_row0CalculationId);
-        batch = batch with { BatchId = batchId, ProcessType = ProcessType.WholesaleFixing };
+        batch = batch with { BatchId = Guid.Parse(_row0CalculationId), ProcessType = ProcessType.WholesaleFixing };
         batchesClientMock
-            .Setup(client => client.GetAsync(batchId))
+            .Setup(client => client.GetAsync(batch.BatchId))
             .ReturnsAsync(batch);
         sqlStatementClientMock
             .Setup(x => x.ExecuteAsync(It.IsAny<string>(), null))
             .Returns(GetRowsAsync(1));
 
         // Act
-        var actual = await sut.GetAsync(batchId).SingleAsync();
+        var actual = await sut.GetAsync(batch.BatchId).ToListAsync();
 
         // Assert
-        actual.Id.Should().Be(_calculationResultId0);
-        actual.CalculationId.Should().Be(Guid.Parse(_row0CalculationId));
-        actual.GridArea.Should().Be(_tableChunk[0, WholesaleResultColumnNames.GridArea]);
-        actual.EnergySupplierId.Should().Be(_tableChunk[0, WholesaleResultColumnNames.EnergySupplierId]);
-        actual.CalculationId.Should().Be(_tableChunk[0, WholesaleResultColumnNames.CalculationId]);
-        actual.CalculationType.Should().Be(batch.ProcessType);
-        actual.PeriodStart.Should().Be(batch.PeriodStart.ToInstant());
-        actual.PeriodEnd.Should().Be(batch.PeriodEnd.ToInstant());
-        var actualPoint = actual.TimeSeriesPoints.Single();
+        using var assertionScope = new AssertionScope();
+        actual.Single().Id.Should().Be(_calculationResultId0);
+        actual.Single().CalculationId.Should().Be(Guid.Parse(_row0CalculationId));
+        actual.Single().GridArea.Should().Be(_tableChunk[0, WholesaleResultColumnNames.GridArea]);
+        actual.Single().EnergySupplierId.Should().Be(_tableChunk[0, WholesaleResultColumnNames.EnergySupplierId]);
+        actual.Single().CalculationId.Should().Be(_tableChunk[0, WholesaleResultColumnNames.CalculationId]);
+        actual.Single().CalculationType.Should().Be(batch.ProcessType);
+        actual.Single().PeriodStart.Should().Be(batch.PeriodStart.ToInstant());
+        actual.Single().PeriodEnd.Should().Be(batch.PeriodEnd.ToInstant());
+        var actualPoint = actual.Single().TimeSeriesPoints.Single();
         actualPoint.Time.Should().Be(new DateTimeOffset(2022, 5, 16, 22, 0, 0, TimeSpan.Zero));
         actualPoint.Quantity.Should().Be(1.111m);
         actualPoint.Qualities.Should().Contain(QuantityQuality.Measured);
         actualPoint.Qualities.Count.Should().Be(1);
+        actualPoint.Price.Should().Be(2.123456m);
+        actualPoint.Amount.Should().Be(3.123456m);
     }
 
     [Theory]
@@ -146,17 +147,16 @@ public class WholesaleResultQueriesTests
         WholesaleResultQueries sut)
     {
         // Arrange
-        var batchId = Guid.Parse(_row0CalculationId);
-        batch = batch with { BatchId = batchId };
+        batch = batch with { BatchId = Guid.Parse(_row0CalculationId) };
         batchesClientMock
-            .Setup(client => client.GetAsync(batchId))
+            .Setup(client => client.GetAsync(batch.BatchId))
             .ReturnsAsync(batch);
         sqlStatementClientMock
             .Setup(x => x.ExecuteAsync(It.IsAny<string>(), null))
             .Returns(GetRowsAsync(2));
 
         // Act
-        var actual = await sut.GetAsync(batchId).ToListAsync();
+        var actual = await sut.GetAsync(batch.BatchId).ToListAsync();
 
         // Assert
         actual.Count.Should().Be(2);
@@ -165,7 +165,7 @@ public class WholesaleResultQueriesTests
     [Theory]
     [InlineAutoMoqData("someId", "otherId", true)]
     [InlineAutoMoqData("someId", "someId", false)]
-    public void BelongsToDifferentResults_ReturnsExpectedValue(
+    public void BelongsToDifferentResults_WhenHavingTwoResultRows_ReturnsExpectedValue(
         string calculationResultIdA,
         string calculationResultIdB,
         bool expected)
