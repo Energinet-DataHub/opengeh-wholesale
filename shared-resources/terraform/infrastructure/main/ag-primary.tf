@@ -20,3 +20,11 @@ module "kvs_ag_primary_id" {
   value        = module.ag_primary.id
   key_vault_id = module.kv_shared.id
 }
+
+module "kvs_ag_primary_name" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
+
+  name         = "ag-primary-name"
+  value        = module.ag_primary.name
+  key_vault_id = module.kv_shared.id
+}
