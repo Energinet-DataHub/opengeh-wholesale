@@ -33,16 +33,6 @@ variable "shared_resources_resource_group_name" {
   description = "Name of the Resource Group, that contains the shared resources."
 }
 
-variable "virtual_network_resource_group_name" {
-  type        = string
-  description = "Name of the resource group where the virtual network is deployed"
-}
-
-variable "virtual_network_name" {
-  type        = string
-  description = "Name of the virtual network"
-}
-
 variable "hosted_deployagent_public_ip_range" {
   type        = string
   description = "(Optional) Comma-delimited string with IPs / CIDR block with deployagent's public IPs, so it can access network-protected resources (Keyvaults, Function apps etc)"

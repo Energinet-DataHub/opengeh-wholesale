@@ -1,5 +1,5 @@
 module "kv_esett" {
-  source                          = "./modules/key-vault"
+  source                          = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault?ref=v13-without-vnet"
 
   name                            = "int"
   project_name                    = var.domain_name_short

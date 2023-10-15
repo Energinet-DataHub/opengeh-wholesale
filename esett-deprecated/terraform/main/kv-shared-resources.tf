@@ -22,3 +22,18 @@ data "azurerm_key_vault_secret" "ag_primary_id" {
   name         = "ag-primary-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+data "azurerm_key_vault_secret" "ag_primary_name" {
+  name         = "ag-primary-name"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "snet_private_endpoints_id" {
+  name         = "snet-private-endpoints-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "snet_vnet_integration_id" {
+  name         = "snet-vnet-integration-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}

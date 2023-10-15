@@ -42,4 +42,5 @@ locals {
   }
   name_suffix="${lower(var.domain_name_short)}-${lower(var.environment_short)}-we-${lower(var.environment_instance)}"
   name_suffix_no_dash="${lower(var.domain_name_short)}${lower(var.environment_short)}we${lower(var.environment_instance)}"
+  connection_string_database="Server=${module.mssql_esett.fully_qualified_domain_name};Database=${module.mssqldb_esett.name};User Id=${local.sqlServerAdminName};Password=${random_password.sqlsrv_admin_password.result};"
 }
