@@ -39,8 +39,8 @@ def net_exchange_schema():
             .add(Colname.end, TimestampType()),
             False,
         )
-        .add("in_sum", DecimalType(20, 1))
-        .add("out_sum", DecimalType(20, 1))
+        .add(Colname.from_grid_area, DecimalType(20, 1))
+        .add(Colname.to_grid_area, DecimalType(20, 1))
         .add(Colname.sum_quantity, DecimalType(20, 1))
         .add(Colname.quality, StringType())
         .add(Colname.resolution, StringType())
@@ -80,7 +80,7 @@ def agg_net_exchange_factory(spark, net_exchange_schema):
                         Colname.end: datetime(2020, 1, 1, 1, 0),
                     },
                 ],
-                "in_sum": [
+                Colname.to_grid_area: [
                     Decimal(2.0),
                     Decimal(2.0),
                     Decimal(2.0),
@@ -88,7 +88,7 @@ def agg_net_exchange_factory(spark, net_exchange_schema):
                     Decimal(2.0),
                     Decimal(2.0),
                 ],
-                "out_sum": [
+                Colname.from_grid_area: [
                     Decimal(1.0),
                     Decimal(1.0),
                     Decimal(1.0),
@@ -254,8 +254,8 @@ def agg_total_net_exchange_factory(spark, net_exchange_schema):
             {
                 Colname.grid_area: [],
                 Colname.time_window: [],
-                "in_sum": [],
-                "out_sum": [],
+                Colname.to_grid_area: [],
+                Colname.from_grid_area: [],
                 Colname.sum_quantity: [],
                 Colname.quality: [],
                 Colname.resolution: [],
@@ -270,8 +270,8 @@ def agg_total_net_exchange_factory(spark, net_exchange_schema):
                     Colname.start: datetime(2020, 1, 1, 0, 0),
                     Colname.end: datetime(2020, 1, 1, 1, 0),
                 },
-                "in_sum": Decimal(1.0),
-                "out_sum": Decimal(1.0),
+                Colname.to_grid_area: Decimal(1.0),
+                Colname.from_grid_area: Decimal(1.0),
                 Colname.sum_quantity: Decimal(1.0),
                 Colname.quality: quality,
                 Colname.resolution: [MeteringPointResolution.HOUR.value],
