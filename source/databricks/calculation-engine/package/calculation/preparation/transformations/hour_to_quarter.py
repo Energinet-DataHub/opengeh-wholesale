@@ -26,7 +26,6 @@ def transform_hour_to_quarter(basis_data_time_series_points_df: DataFrame) -> Da
     assert_schema(
         basis_data_time_series_points_df.schema,
         basis_data_time_series_points_schema,
-        ignore_nullability=True,
     )
 
     result = basis_data_time_series_points_df.withColumn(
