@@ -28,7 +28,11 @@ public static class ProcessTypeMapper
             Wholesale.Common.Models.ProcessType.FirstCorrectionSettlement => ProcessType.FirstCorrectionSettlement,
             Wholesale.Common.Models.ProcessType.SecondCorrectionSettlement => ProcessType.SecondCorrectionSettlement,
             Wholesale.Common.Models.ProcessType.ThirdCorrectionSettlement => ProcessType.ThirdCorrectionSettlement,
-            _ => throw new ArgumentException($"No matching 'ProcessType' for: {processType.ToString()}"),
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(processType),
+                actualValue: processType,
+                "Value cannot be mapped to a process type."),
         };
     }
 }

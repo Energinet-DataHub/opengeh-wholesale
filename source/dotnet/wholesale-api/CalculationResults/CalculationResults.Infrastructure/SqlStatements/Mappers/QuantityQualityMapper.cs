@@ -18,16 +18,20 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlState
 
 public static class QuantityQualityMapper
 {
-        public static QuantityQuality FromDeltaTableValue(string pointQuality)
+    public static QuantityQuality FromDeltaTableValue(string pointQuality)
+    {
+        return pointQuality switch
         {
-            return pointQuality switch
-            {
-                "measured" => QuantityQuality.Measured,
-                "calculated" => QuantityQuality.Calculated,
-                "estimated" => QuantityQuality.Estimated,
-                "incomplete" => QuantityQuality.Incomplete,
-                "missing" => QuantityQuality.Missing,
-                _ =>throw new ArgumentException($"quality of unknown type:{pointQuality}"),
-            };
-        }
+            "measured" => QuantityQuality.Measured,
+            "calculated" => QuantityQuality.Calculated,
+            "estimated" => QuantityQuality.Estimated,
+            "incomplete" => QuantityQuality.Incomplete,
+            "missing" => QuantityQuality.Missing,
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(pointQuality),
+                actualValue: pointQuality,
+                "Value does not contain a valid string representation of a quantity quality."),
+        };
+    }
 }

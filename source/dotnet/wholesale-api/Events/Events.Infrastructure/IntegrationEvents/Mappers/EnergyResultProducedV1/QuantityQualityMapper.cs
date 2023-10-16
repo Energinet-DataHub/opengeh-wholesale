@@ -27,7 +27,11 @@ public static class QuantityQualityMapper
             CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Measured => QuantityQuality.Measured,
             CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Missing => QuantityQuality.Missing,
             CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Calculated => QuantityQuality.Calculated,
-            _ => throw new ArgumentException($"No matching 'QuantityQuality' for: {quantityQuality.ToString()}"),
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(quantityQuality),
+                actualValue: quantityQuality,
+                "Value cannot be mapped to a quantity quality."),
         };
     }
 }

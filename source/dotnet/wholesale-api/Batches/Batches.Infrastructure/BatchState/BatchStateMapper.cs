@@ -29,7 +29,11 @@ public class BatchStateMapper
             CalculationState.Completed => BatchExecutionState.Completed,
             CalculationState.Canceled => BatchExecutionState.Canceled,
             CalculationState.Failed => BatchExecutionState.Failed,
-            _ => throw new ArgumentOutOfRangeException(nameof(calculationState), calculationState, "Unexpected JobState."),
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(calculationState),
+                actualValue: calculationState,
+                "Value cannot be mapped to a batch execution state."),
         };
     }
 }
