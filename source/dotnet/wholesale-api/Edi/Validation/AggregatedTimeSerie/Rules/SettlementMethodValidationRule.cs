@@ -19,7 +19,7 @@ namespace Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
 
 public class SettlementMethodValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
 {
-    private static readonly IReadOnlyList<string> _validSettlementMethods = new List<string> { SettlementMethodType.Flex, SettlementMethodType.NonProfiled };
+    private static readonly IReadOnlyList<string> _validSettlementMethods = new List<string> { SettlementMethod.Flex, SettlementMethod.NonProfiled };
 
     private static readonly IList<ValidationError> _noError = new List<ValidationError>();
     private static readonly IList<ValidationError> _validationError = new List<ValidationError>

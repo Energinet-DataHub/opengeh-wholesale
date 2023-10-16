@@ -30,8 +30,8 @@ public class SettlementMethodValidatorTest
     private readonly SettlementMethodValidationRule _sut = new();
 
     [Theory]
-    [InlineData(SettlementMethodType.Flex)]
-    [InlineData(SettlementMethodType.NonProfiled)]
+    [InlineData(SettlementMethod.Flex)]
+    [InlineData(SettlementMethod.NonProfiled)]
     public void Validate_IsConsumptionAndSettlementMethodIsValid_NoValidationErrors(string settlementMethod)
     {
         // Arrange
@@ -74,17 +74,17 @@ public class SettlementMethodValidatorTest
     }
 
     [Theory]
-    [InlineData(MeteringPointType.Production, SettlementMethodType.Flex)]
-    [InlineData(MeteringPointType.Production, SettlementMethodType.NonProfiled)]
+    [InlineData(MeteringPointType.Production, SettlementMethod.Flex)]
+    [InlineData(MeteringPointType.Production, SettlementMethod.NonProfiled)]
     [InlineData(MeteringPointType.Production, "invalid-settlement-method")]
-    [InlineData(MeteringPointType.Exchange, SettlementMethodType.Flex)]
-    [InlineData(MeteringPointType.Exchange, SettlementMethodType.NonProfiled)]
+    [InlineData(MeteringPointType.Exchange, SettlementMethod.Flex)]
+    [InlineData(MeteringPointType.Exchange, SettlementMethod.NonProfiled)]
     [InlineData(MeteringPointType.Exchange, "invalid-settlement-method")]
-    [InlineData("not-consumption-metering-point", SettlementMethodType.Flex)]
-    [InlineData("not-consumption-metering-point", SettlementMethodType.NonProfiled)]
+    [InlineData("not-consumption-metering-point", SettlementMethod.Flex)]
+    [InlineData("not-consumption-metering-point", SettlementMethod.NonProfiled)]
     [InlineData("not-consumption-metering-point", "invalid-settlement-method")]
-    [InlineData("", SettlementMethodType.Flex)]
-    [InlineData("", SettlementMethodType.NonProfiled)]
+    [InlineData("", SettlementMethod.Flex)]
+    [InlineData("", SettlementMethod.NonProfiled)]
     [InlineData("", "invalid-settlement-method")]
     public void Validate_IsNotConsumptionAndSettlementMethodIsGiven_ValidationError(string meteringPointType, string settlementMethod)
     {

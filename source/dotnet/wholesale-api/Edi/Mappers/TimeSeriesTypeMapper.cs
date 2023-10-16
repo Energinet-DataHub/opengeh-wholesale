@@ -27,8 +27,8 @@ public static class TimeSeriesTypeMapper
             MeteringPointType.Exchange => TimeSeriesType.NetExchangePerGa,
             MeteringPointType.Consumption => settlementMethod switch
             {
-                SettlementMethodType.NonProfiled => TimeSeriesType.NonProfiledConsumption,
-                SettlementMethodType.Flex => TimeSeriesType.FlexConsumption,
+                SettlementMethod.NonProfiled => TimeSeriesType.NonProfiledConsumption,
+                SettlementMethod.Flex => TimeSeriesType.FlexConsumption,
                 var method when
                     string.IsNullOrWhiteSpace(method) => TimeSeriesType.TotalConsumption,
 

@@ -25,8 +25,8 @@ public class TimeSeriesTypeMapperTests
     [Theory]
     [InlineData("E17", "", TimeSeriesType.TotalConsumption)]
     [InlineData("E17", null, TimeSeriesType.TotalConsumption)]
-    [InlineData("E17", SettlementMethodType.NonProfiled, TimeSeriesType.NonProfiledConsumption)]
-    [InlineData("E17", SettlementMethodType.Flex, TimeSeriesType.FlexConsumption)]
+    [InlineData("E17", SettlementMethod.NonProfiled, TimeSeriesType.NonProfiledConsumption)]
+    [InlineData("E17", SettlementMethod.Flex, TimeSeriesType.FlexConsumption)]
     [InlineData("E18", null, TimeSeriesType.Production)]
     [InlineData("E20", null, TimeSeriesType.NetExchangePerGa)]
     public void MapTimeSeriesType_WhenValidMeteringPointTypeAndSettlementMethod_ReturnsExpectedType(

@@ -52,7 +52,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
             RequestedByActorId = EnergySupplierValidatorTest.ValidGlnNumber,
             EnergySupplierId = EnergySupplierValidatorTest.ValidGlnNumber,
             MeteringPointType = MeteringPointType.Consumption,
-            SettlementMethod = SettlementMethodType.Flex,
+            SettlementMethod = SettlementMethod.Flex,
         };
 
         // Act
