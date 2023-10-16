@@ -22,9 +22,8 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 
 public class MeteringPointTypeValidatorTests
 {
-    private const string ExceptedErrorCodes = "D18";
-    private const string ExceptedErrorMessage = "Metering point type skal være en af følgende: E17, E18, E20 / Metering point type has to be one of the following: E17, E18, E20";
-
+    private const string ExpectedErrorCode = "D18";
+    private const string ExpectedErrorMessage = "Metering point type skal være en af følgende: E17, E18, E20 / Metering point type has to be one of the following: E17, E18, E20";
     private readonly MeteringPointTypeValidationRule _sut = new();
 
     [Theory]
@@ -62,7 +61,7 @@ public class MeteringPointTypeValidatorTests
         // Assert
         errors.Should().ContainSingle();
         var error = errors.First();
-        Assert.Equal(ExceptedErrorCodes, error.ErrorCode);
-        Assert.Equal(ExceptedErrorMessage, error.Message);
+        Assert.Equal(ExpectedErrorCode, error.ErrorCode);
+        Assert.Equal(ExpectedErrorMessage, error.Message);
     }
 }
