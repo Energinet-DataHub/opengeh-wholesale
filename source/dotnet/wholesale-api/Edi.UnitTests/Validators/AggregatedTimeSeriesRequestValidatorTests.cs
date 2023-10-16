@@ -12,26 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Edi.Requests;
-using Energinet.DataHub.Wholesale.Edi.Models;
+using Energinet.DataHub.Wholesale.EDI.Models;
 using Energinet.DataHub.Wholesale.EDI.Validation;
 using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie;
 using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
 using FluentAssertions;
 using NodaTime;
 using Xunit;
+using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 using Period = Energinet.DataHub.Edi.Requests.Period;
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 
 public class AggregatedTimeSeriesRequestValidatorTests
 {
-    private const string ValidMeteringPointType = MeteringPointType.Consumption;
+    private const string ValidMeteringPointType = MeteringPointType.Production;
 
     private static readonly PeriodValidationRule _periodValidator = new(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!, SystemClock.Instance);
     private static readonly MeteringPointTypeValidationRule _meteringPointTypeValidationRule = new();
     private static readonly EnergySupplierFieldValidationRule _energySupplierFieldValidationRule = new();
     private static readonly SettlementMethodValidationRule _settlementMethodValidationRule = new();
+    private static readonly TimeSeriesTypeValidationRule _timeSeriesTypeValidationRule = new();
     private readonly IValidator<AggregatedTimeSeriesRequest> _sut = new AggregatedTimeSeriesRequestValidator(
         new IValidationRule<AggregatedTimeSeriesRequest>[]
         {
@@ -39,6 +40,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
             _energySupplierFieldValidationRule,
             _meteringPointTypeValidationRule,
             _settlementMethodValidationRule,
+            _timeSeriesTypeValidationRule,
         });
 
     [Fact]
@@ -155,6 +157,29 @@ public class AggregatedTimeSeriesRequestValidatorTests
         var validationError = validationErrors.First();
         validationError.Message.Should().Be(ValidationError.InvalidSettlementMethod.Message);
         validationError.ErrorCode.Should().Be(ValidationError.InvalidSettlementMethod.ErrorCode);
+    }
+
+    [Fact]
+    public void Validate_AggregatedTimeSeriesRequest_TotalConsumptionAsAnEnergySupplier_UnsuccessfulValidation()
+    {
+        // Arrange
+        var request = new AggregatedTimeSeriesRequest()
+        {
+            Period = CreateValidPeriod(),
+            RequestedByActorRole = EnergySupplierValidatorTest.EnergySupplierActorRole,
+            RequestedByActorId = EnergySupplierValidatorTest.ValidGlnNumber,
+            EnergySupplierId = EnergySupplierValidatorTest.ValidGlnNumber,
+            MeteringPointType = MeteringPointType.Consumption,
+        };
+
+        // Act
+        var validationErrors = _sut.Validate(request);
+
+        // Assert
+        validationErrors.Should().ContainSingle();
+
+        var validationError = validationErrors.First();
+        validationError.ErrorCode.Should().Be(ValidationError.InvalidTimeSeriesTypeForActor.ErrorCode);
     }
 
     private Period CreateValidPeriod()
