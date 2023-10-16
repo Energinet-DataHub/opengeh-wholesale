@@ -41,7 +41,7 @@ aggregation_result_schema = StructType(
             False,
         ),
         StructField(Colname.sum_quantity, DecimalType(18, 3), False),
-        StructField(Colname.qualities, StringType(), False),
+        StructField(Colname.quality, StringType(), False),
         StructField(Colname.metering_point_type, StringType(), False),
         StructField(Colname.settlement_method, StringType(), True),
         StructField(Colname.position, IntegerType(), True),
