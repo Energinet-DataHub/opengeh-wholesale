@@ -26,7 +26,7 @@ public class PeriodValidatorTests
     private readonly PeriodValidationRule _sut = new(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!, SystemClock.Instance);
 
     [Fact]
-    public void Validate_WhenValidRequest_ReturnsExceptedNoValidationErrors()
+    public void Validate_WhenValidRequest_ReturnsExpectedNoValidationErrors()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -41,7 +41,7 @@ public class PeriodValidatorTests
     }
 
     [Fact]
-    public void Validate_WhenEndDateIsUnspecified_ReturnsExceptedValidationError()
+    public void Validate_WhenEndDateIsUnspecified_ReturnsExpectedValidationError()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -58,7 +58,7 @@ public class PeriodValidatorTests
     }
 
     [Fact]
-    public void Validate_WhenWrongStartHour_ReturnsExceptedValidationError()
+    public void Validate_WhenWrongStartHour_ReturnsExpectedValidationError()
     {
         // Arrange
         var now = SystemClock.Instance.GetCurrentInstant();
@@ -78,7 +78,7 @@ public class PeriodValidatorTests
     }
 
     [Fact]
-    public void Validate_WhenStartIsUnspecified_ReturnsExceptedValidationError()
+    public void Validate_WhenStartIsUnspecified_ReturnsExpectedValidationError()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -95,7 +95,7 @@ public class PeriodValidatorTests
     }
 
     [Fact]
-    public void Validate_WhenStartAndEndAreInvalid_ReturnsExceptedValidationErrors()
+    public void Validate_WhenStartAndEndAreInvalid_ReturnsExpectedValidationErrors()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -116,7 +116,7 @@ public class PeriodValidatorTests
     }
 
     [Fact]
-    public void Validate_WhenPeriodSizeIsGreaterThenAllowed_ReturnsExceptedValidationError()
+    public void Validate_WhenPeriodSizeIsGreaterThenAllowed_ReturnsExpectedValidationError()
     {
         // Arrange
         var now = SystemClock.Instance.GetCurrentInstant();
@@ -136,7 +136,7 @@ public class PeriodValidatorTests
     }
 
     [Fact]
-    public void Validate_WhenPeriodIsOlderThenAllowed_ReturnsExceptedValidationError()
+    public void Validate_WhenPeriodIsOlderThenAllowed_ReturnsExpectedValidationError()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -154,7 +154,7 @@ public class PeriodValidatorTests
     }
 
     [Fact]
-    public void Validate_WhenPeriodOverlapSummerDaylightSavingTime_ReturnsExceptedNoValidationErrors()
+    public void Validate_WhenPeriodOverlapSummerDaylightSavingTime_ReturnsExpectedNoValidationErrors()
     {
         // Arrange
         var now = SystemClock.Instance.GetCurrentInstant();
@@ -174,7 +174,7 @@ public class PeriodValidatorTests
     }
 
     [Fact]
-    public void Validate_WhenPeriodOverlapWinterDaylightSavingTime_ReturnsExceptedNoValidationErrors()
+    public void Validate_WhenPeriodOverlapWinterDaylightSavingTime_ReturnsExpectedNoValidationErrors()
     {
         // Arrange
         var now = SystemClock.Instance.GetCurrentInstant();

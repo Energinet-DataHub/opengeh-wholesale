@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Edi.Requests;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
 
