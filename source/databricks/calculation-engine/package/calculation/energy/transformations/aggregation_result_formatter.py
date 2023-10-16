@@ -17,13 +17,13 @@ import pyspark.sql.functions as f
 from pyspark.sql.types import StringType, IntegerType
 
 from package.common import assert_schema
-from package.constants import Colname
 from package.calculation.energy.schemas import aggregation_result_schema
+from package.constants import Colname
 from package.codelists import QuantityQuality
 
 
 def create_dataframe_from_aggregation_result_schema(result: DataFrame) -> DataFrame:
-    "Fit result in a general DataFrame. This is used for all results and missing columns will be null."
+    """Fit result in a general DataFrame. This is used for all results and missing columns will be null."""
 
     result = _add_missing_nullable_columns(result)
     # Replaces None value with zero for sum_quantity
@@ -33,16 +33,7 @@ def create_dataframe_from_aggregation_result_schema(result: DataFrame) -> DataFr
         value=QuantityQuality.MISSING.value, subset=[Colname.quality]
     )
 
-    assert_schema(
-        result.schema,
-        aggregation_result_schema,
-        ignore_nullability=True,
-        ignore_column_order=True,
-        ignore_decimal_scale=True,
-        ignore_decimal_precision=True,
-    )
-
-    return result.select(
+    result = result.select(
         Colname.grid_area,
         Colname.to_grid_area,
         Colname.from_grid_area,
@@ -55,6 +46,17 @@ def create_dataframe_from_aggregation_result_schema(result: DataFrame) -> DataFr
         Colname.settlement_method,
         Colname.position,
     )
+
+    assert_schema(
+        result.schema,
+        aggregation_result_schema,
+        ignore_nullability=True,
+        ignore_column_order=True,
+        ignore_decimal_scale=True,
+        ignore_decimal_precision=True,
+    )
+
+    return result
 
 
 def _add_missing_nullable_columns(result: DataFrame) -> DataFrame:
