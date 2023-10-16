@@ -33,7 +33,6 @@ def create_dataframe_from_aggregation_result_schema(result: DataFrame) -> DataFr
         value=QuantityQuality.MISSING.value, subset=[Colname.quality]
     )
 
-    result = result.withColumn(Colname.qualities, f.array(Colname.quality))
     result = result.select(
         Colname.grid_area,
         Colname.to_grid_area,
