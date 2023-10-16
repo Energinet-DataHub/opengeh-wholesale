@@ -35,6 +35,7 @@ from package.calculation_output.energy_calculation_result_writer import (
     _get_column_group_for_calculation_result_id,
 )
 from tests.contract_utils import (
+    assert_contract_matches_schema,
     get_column_names_from_contract,
 )
 from typing import Any
@@ -70,7 +71,7 @@ def _create_result_row(
         Colname.grid_area: grid_area,
         Colname.from_grid_area: from_grid_area,
         Colname.sum_quantity: Decimal(quantity),
-        Colname.qualities: [quality.value],
+        Colname.quality: quality.value,
         Colname.resolution: MeteringPointResolution.QUARTER.value,
         Colname.time_window: {
             Colname.start: time_window_start,
@@ -215,6 +216,36 @@ def test__write__writes_column(
         col(EnergyResultColumnNames.calculation_id) == batch_id
     )
     assert actual_df.collect()[0][column_name] == column_value
+
+
+def test__write__writes_columns_matching_contract(
+    spark: SparkSession,
+    contracts_path: str,
+    migrations_executed: None,
+) -> None:
+    # Arrange
+    contract_path = f"{contracts_path}/energy-result-table-column-names.json"
+    row = [_create_result_row()]
+    result_df = _create_result_df(spark, row)
+    sut = EnergyCalculationResultWriter(
+        batch_id,
+        DEFAULT_PROCESS_TYPE,
+        DEFAULT_BATCH_EXECUTION_START,
+    )
+
+    # Act
+    sut.write(
+        result_df,
+        DEFAULT_TIME_SERIES_TYPE,
+        DEFAULT_AGGREGATION_LEVEL,
+    )
+
+    # Assert
+    actual_df = spark.read.table(TABLE_NAME).where(
+        col(EnergyResultColumnNames.calculation_id) == batch_id
+    )
+
+    assert_contract_matches_schema(contract_path, actual_df.schema)
 
 
 def test__write__writes_calculation_result_id(

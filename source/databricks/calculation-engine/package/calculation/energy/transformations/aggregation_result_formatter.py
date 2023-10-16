@@ -43,7 +43,7 @@ def create_dataframe_from_aggregation_result_schema(result: DataFrame) -> DataFr
         Colname.energy_supplier_id,
         Colname.time_window,
         Colname.sum_quantity,
-        Colname.qualities,
+        Colname.quality,
         Colname.metering_point_type,
         Colname.settlement_method,
         Colname.position,
