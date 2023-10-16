@@ -32,7 +32,6 @@ def create_dataframe_from_aggregation_result_schema(result: DataFrame) -> DataFr
     result = result.na.fill(
         value=QuantityQuality.MISSING.value, subset=[Colname.quality]
     )
-    result = result.drop(Colname.resolution)
 
     result = result.withColumn(Colname.qualities, f.array(Colname.quality))
     result = result.select(
