@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.EDI.Validation;
 using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
@@ -25,10 +26,10 @@ public class MeteringPointTypeValidatorTests
     private readonly MeteringPointTypeValidationRule _sut = new();
 
     [Theory]
-    [InlineData("E17")]
-    [InlineData("E18")]
-    [InlineData("E20")]
-    public void Validate_WhenValidMeteringPoint_ReturnsExceptedNoValidationErrors(string meteringPointType)
+    [InlineData(MeteringPointType.Consumption)]
+    [InlineData(MeteringPointType.Production)]
+    [InlineData(MeteringPointType.Exchange)]
+    public void Validate_WhenValidMeteringPoint_ReturnsExpectedNoValidationErrors(string meteringPointType)
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -45,7 +46,7 @@ public class MeteringPointTypeValidatorTests
 
     [Theory]
     [InlineData("Invalid")]
-    public void Validate_InvalidMeteringPointType_ReturnsExceptedValidationError(string meteringPointType)
+    public void Validate_InvalidMeteringPointType_ReturnsExpectedValidationError(string meteringPointType)
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder

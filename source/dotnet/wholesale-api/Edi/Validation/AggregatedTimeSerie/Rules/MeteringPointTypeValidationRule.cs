@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Edi.Requests;
+using Energinet.DataHub.Wholesale.Edi.Models;
 
 namespace Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
 
@@ -20,9 +21,9 @@ public class MeteringPointTypeValidationRule : IValidationRule<AggregatedTimeSer
 {
     private static readonly IReadOnlyList<string> _validMeteringPointTypes = new List<string>
     {
-        "E17", // Consumption
-        "E18", // Production
-        "E20", // Exchange
+        MeteringPointType.Consumption,
+        MeteringPointType.Production,
+        MeteringPointType.Exchange,
     };
 
     public IList<ValidationError> Validate(AggregatedTimeSeriesRequest subject)
@@ -40,7 +41,7 @@ public class MeteringPointTypeValidationRule : IValidationRule<AggregatedTimeSer
         return new List<ValidationError>();
     }
 
-    private bool InvalidMeteringPointType(string meteringPointType)
+    private static bool InvalidMeteringPointType(string meteringPointType)
     {
         return !_validMeteringPointTypes.Contains(meteringPointType);
     }
