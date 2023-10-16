@@ -31,15 +31,42 @@ public class MeteringPointTypeMapperTests
     }
 
     [Theory]
+    [InlineData("production", MeteringPointType.Production)]
+    [InlineData("consumption", MeteringPointType.Consumption)]
+    [InlineData(null, null)]
+    public void FromDeltaTableValue_WhenValidDeltaTableValue_ReturnsExpectedType(string deltaTableValue, MeteringPointType? expectedType)
+    {
+        // Act
+        var actualType = MeteringPointTypeMapper.FromDeltaTableValue(deltaTableValue);
+
+        // Assert
+        actualType.Should().Be(expectedType);
+    }
+
+    [Fact]
+    public void FromDeltaTableValue_WhenInvalidDeltaTableValue_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        var invalidDeltaTableValue = Guid.NewGuid().ToString();
+
+        // Act
+        var act = () => MeteringPointTypeMapper.FromDeltaTableValue(invalidDeltaTableValue);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .And.ActualValue.Should().Be(invalidDeltaTableValue);
+    }
+
+    [Theory]
     [InlineData(DeltaTableTimeSeriesType.FlexConsumption, MeteringPointType.Consumption)]
     [InlineData(DeltaTableTimeSeriesType.Production, MeteringPointType.Production)]
     [InlineData(DeltaTableTimeSeriesType.NonProfiledConsumption, MeteringPointType.Consumption)]
-    public void FromTimeSeriesTypeDeltaTableValue_ReturnsExpectedString(string timeSeriesType, MeteringPointType expected)
+    public void FromTimeSeriesTypeDeltaTableValue_WhenValidTimeSeriesTypeAsString_ReturnsExpectedType(string timeSeriesType, MeteringPointType expectedType)
     {
         // Act
-        var actual = MeteringPointTypeMapper.FromTimeSeriesTypeDeltaTableValue(timeSeriesType);
+        var actualType = MeteringPointTypeMapper.FromTimeSeriesTypeDeltaTableValue(timeSeriesType);
 
         // Assert
-        actual.Should().Be(expected);
+        actualType.Should().Be(expectedType);
     }
 }

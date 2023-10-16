@@ -64,7 +64,10 @@ public static class SqlResultValueConverters
         {
             "true" => true,
             "false" => false,
-            _ => throw new ArgumentException($"Quality of unknown type: '{value}'"),
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(value),
+                actualValue: value,
+                "Value does not contain a valid string representation of a boolean."),
         };
     }
 }

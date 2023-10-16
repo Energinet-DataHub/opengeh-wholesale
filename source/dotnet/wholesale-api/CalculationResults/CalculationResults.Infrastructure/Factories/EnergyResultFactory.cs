@@ -29,21 +29,20 @@ public class EnergyResultFactory
         Instant periodStart,
         Instant periodEnd)
     {
-        var id = SqlResultValueConverters.ToGuid(sqlResultRow[EnergyResultColumnNames.CalculationResultId]);
-        var timeSeriesType =
-            SqlResultValueConverters.ToTimeSeriesType(sqlResultRow[EnergyResultColumnNames.TimeSeriesType]);
+        var id = sqlResultRow[EnergyResultColumnNames.CalculationResultId];
+        var batchId = sqlResultRow[EnergyResultColumnNames.BatchId];
+        var gridArea = sqlResultRow[EnergyResultColumnNames.GridArea];
+        var timeSeriesType = sqlResultRow[EnergyResultColumnNames.TimeSeriesType];
         var energySupplierId = sqlResultRow[EnergyResultColumnNames.EnergySupplierId];
         var balanceResponsibleId = sqlResultRow[EnergyResultColumnNames.BalanceResponsibleId];
-        var gridArea = sqlResultRow[EnergyResultColumnNames.GridArea];
-        var fromGridArea = sqlResultRow[EnergyResultColumnNames.FromGridArea];
-        var batchId = sqlResultRow[EnergyResultColumnNames.BatchId];
         var processType = sqlResultRow[EnergyResultColumnNames.BatchProcessType];
+        var fromGridArea = sqlResultRow[EnergyResultColumnNames.FromGridArea];
 
         return new EnergyResult(
-            id,
+            SqlResultValueConverters.ToGuid(id),
             Guid.Parse(batchId),
             gridArea,
-            timeSeriesType,
+            SqlResultValueConverters.ToTimeSeriesType(timeSeriesType),
             energySupplierId,
             balanceResponsibleId,
             timeSeriesPoints.ToArray(),

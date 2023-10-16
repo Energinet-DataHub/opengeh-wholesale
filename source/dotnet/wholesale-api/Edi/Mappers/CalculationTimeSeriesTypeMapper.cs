@@ -14,23 +14,27 @@
 
 using Energinet.DataHub.Wholesale.EDI.Exceptions;
 using Energinet.DataHub.Wholesale.EDI.Models;
+using CalculationTimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType;
 using TimeSeriesTypeContract = Energinet.DataHub.Edi.Responses.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.EDI.Mappers;
-
-using CalculationTimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType;
 
 public static class CalculationTimeSeriesTypeMapper
 {
     public static CalculationTimeSeriesType MapTimeSeriesTypeFromEdi(TimeSeriesType timeSeriesType)
     {
-        return timeSeriesType switch {
+        return timeSeriesType switch
+        {
             TimeSeriesType.Production => CalculationTimeSeriesType.Production,
             TimeSeriesType.FlexConsumption => CalculationTimeSeriesType.FlexConsumption,
             TimeSeriesType.TotalConsumption => CalculationTimeSeriesType.TotalConsumption,
             TimeSeriesType.NetExchangePerGa => CalculationTimeSeriesType.NetExchangePerGa,
             TimeSeriesType.NonProfiledConsumption => CalculationTimeSeriesType.NonProfiledConsumption,
-            _ => throw new InvalidOperationException($"Unknown time series type: {timeSeriesType}"),
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(timeSeriesType),
+                actualValue: timeSeriesType,
+                "Value cannot be mapped to calculation time series type."),
         };
     }
 
@@ -55,7 +59,11 @@ public static class CalculationTimeSeriesTypeMapper
                 $"{timeSeriesType} is not a supported TimeSeriesType For AggregatedTimeSeriesRequestAccepted response."),
             CalculationTimeSeriesType.NetExchangePerNeighboringGa => throw new NotSupportedTimeSeriesTypeException(
                 $"{timeSeriesType} is not a supported TimeSeriesType For AggregatedTimeSeriesRequestAccepted response."),
-            _ => throw new ArgumentOutOfRangeException($"Unknown time series type {nameof(timeSeriesType)}"),
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(timeSeriesType),
+                actualValue: timeSeriesType,
+                "Value cannot be mapped to time service type contract."),
         };
     }
 }

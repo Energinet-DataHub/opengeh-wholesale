@@ -55,6 +55,6 @@ public class EnergyResultColumnNames
              BatchExecutionTimeStart => "timestamp",
              FromGridArea => "string",
              Quantity => "decimal(18,3)",
-             _ => throw new ArgumentException($"Unexpected column name '{columnName}'."),
+             _ => throw new ArgumentOutOfRangeException(nameof(columnName), actualValue: columnName, "Unexpected column name."),
          };
 }
