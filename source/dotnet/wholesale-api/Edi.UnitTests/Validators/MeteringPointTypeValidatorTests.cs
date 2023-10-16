@@ -14,7 +14,6 @@
 
 using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
-using Energinet.DataHub.Wholesale.EDI.Validation;
 using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
 using FluentAssertions;
 using Xunit;
@@ -23,6 +22,9 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 
 public class MeteringPointTypeValidatorTests
 {
+    private const string ExceptedErrorCodes = "D18";
+    private const string ExceptedErrorMessage = "Metering point type skal være en af følgende: E17, E18, E20 / Metering point type has to be one of the following: E17, E18, E20";
+
     private readonly MeteringPointTypeValidationRule _sut = new();
 
     [Theory]
@@ -59,6 +61,8 @@ public class MeteringPointTypeValidatorTests
 
         // Assert
         errors.Should().ContainSingle();
-        errors.First().ErrorCode.Should().Be(ValidationError.InvalidMeteringPointType.ErrorCode);
+        var error = errors.First();
+        Assert.Equal(ExceptedErrorCodes, error.ErrorCode);
+        Assert.Equal(ExceptedErrorMessage, error.Message);
     }
 }
