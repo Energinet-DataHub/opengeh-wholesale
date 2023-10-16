@@ -20,13 +20,14 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 public class AggregatedTimeSeriesRequestBuilder
 {
     private readonly AggregationPerGridArea _aggregationPerGridArea = new();
-    private readonly string _meteringPointType = "E18";
+    private string _meteringPointType = "E18";
 
     private string _start;
     private string _end;
     private string? _energySupplierId;
     private string _requestedByActorRoleId;
     private string _requestedByActorId;
+    private string? _settlementMethod;
 
     private AggregatedTimeSeriesRequestBuilder()
     {
@@ -60,6 +61,9 @@ public class AggregatedTimeSeriesRequestBuilder
         if (_energySupplierId != null)
             request.EnergySupplierId = _energySupplierId;
 
+        if (_settlementMethod != null)
+            request.SettlementMethod = _settlementMethod;
+
         return request;
     }
 
@@ -85,6 +89,20 @@ public class AggregatedTimeSeriesRequestBuilder
     {
         _requestedByActorRoleId = actorRoleId;
         _requestedByActorId = actorId;
+
+        return this;
+    }
+
+    public AggregatedTimeSeriesRequestBuilder WithSettlementMethod(string? settlementMethod)
+    {
+        _settlementMethod = settlementMethod;
+
+        return this;
+    }
+
+    public AggregatedTimeSeriesRequestBuilder WithMeteringPointType(string meteringPointType)
+    {
+        _meteringPointType = meteringPointType;
 
         return this;
     }
