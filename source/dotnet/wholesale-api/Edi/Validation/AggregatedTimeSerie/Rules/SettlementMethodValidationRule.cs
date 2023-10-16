@@ -13,13 +13,13 @@
 // limitations under the License.
 
 using Energinet.DataHub.Edi.Requests;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Energinet.DataHub.Wholesale.Edi.Models;
 
 namespace Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
 
 public class SettlementMethodValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
 {
-    private static readonly IReadOnlyList<string> _validSettlementMethods = new List<string> { "D01", "E02", };
+    private static readonly IReadOnlyList<string> _validSettlementMethods = new List<string> { SettlementMethodType.Flex, SettlementMethodType.NonProfiled };
 
     private static readonly IList<ValidationError> _noError = new List<ValidationError>();
     private static readonly IList<ValidationError> _validationError = new List<ValidationError>
@@ -43,26 +43,13 @@ public class SettlementMethodValidationRule : IValidationRule<AggregatedTimeSeri
         return _noError;
     }
 
-    private bool IsMeteringPointTypeConsumption(string meteringPointType)
-    {
-        return meteringPointType.Equals("E17");
-    }
-
     private bool IsValidSettlementMethod(string settlementMethod)
     {
         return _validSettlementMethods.Contains(settlementMethod);
     }
 
-    private static bool IsValidEnergySupplierIdFormat(string energySupplierId)
+    private bool IsMeteringPointTypeConsumption(string meteringPointType)
     {
-        var isValidGlnNumber = energySupplierId.Length == 13;
-        var isValidEicNumber = energySupplierId.Length == 16;
-
-        return isValidGlnNumber || isValidEicNumber;
-    }
-
-    private static bool RequestedByIdEqualsEnergySupplier(string requestedByActorId, string energySupplierId)
-    {
-        return requestedByActorId.Equals(energySupplierId, StringComparison.OrdinalIgnoreCase);
+        return meteringPointType.Equals(MeteringPointType.Consumption);
     }
 }

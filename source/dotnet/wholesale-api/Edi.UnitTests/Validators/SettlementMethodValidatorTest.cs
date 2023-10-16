@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Edi.Requests;
+using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.EDI.Validation;
 using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
@@ -23,22 +24,18 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 
 public class SettlementMethodValidatorTest
 {
-    private const string MeteringPointTypeConsumption = "E17";
-    private const string SettlementMethodFlex = "D01";
-    private const string SettlementMethodHour = "E02";
-
     private const string ExpectedErrorMessage = "SettlementMethod kan kun benyttes i kombination med E17 og skal være enten D01 og E02 / SettlementMethod can only be used in combination with E17 and must be either D01 or E02";
     private const string ExpectedErrorCode = "D15";
 
     private readonly SettlementMethodValidationRule _sut = new();
 
     [Theory]
-    [InlineData(SettlementMethodFlex)]
-    [InlineData(SettlementMethodHour)]
+    [InlineData(SettlementMethodType.Flex)]
+    [InlineData(SettlementMethodType.NonProfiled)]
     public void Validate_IsConsumptionAndSettlementMethodIsValid_NoValidationErrors(string settlementMethod)
     {
         // Arrange
-        var message = CreateAggregatedTimeSeriesRequest(MeteringPointTypeConsumption, settlementMethod);
+        var message = CreateAggregatedTimeSeriesRequest(MeteringPointType.Consumption, settlementMethod);
 
         // Act
         var errors = _sut.Validate(message);
@@ -47,11 +44,14 @@ public class SettlementMethodValidatorTest
         errors.Should().BeEmpty();
     }
 
-    [Fact]
-    public void Validate_IsNotConsumptionAndSettlementMethodIsNull_NoValidationErrors()
+    [Theory]
+    [InlineData(MeteringPointType.Production)]
+    [InlineData(MeteringPointType.Exchange)]
+    [InlineData("not-consumption")]
+    public void Validate_IsNotConsumptionAndSettlementMethodIsNull_NoValidationErrors(string meteringPointType)
     {
         // Arrange
-        var message = CreateAggregatedTimeSeriesRequest(MeteringPointTypeConsumption, null);
+        var message = CreateAggregatedTimeSeriesRequest(meteringPointType, null);
 
         // Act
         var errors = _sut.Validate(message);
@@ -64,7 +64,7 @@ public class SettlementMethodValidatorTest
     public void Validate_IsConsumptionAndSettlementMethodIsInvalid_ValidationError()
     {
         // Arrange
-        var message = CreateAggregatedTimeSeriesRequest(MeteringPointTypeConsumption, "invalid");
+        var message = CreateAggregatedTimeSeriesRequest(MeteringPointType.Consumption, "invalid-settlement-method");
 
         // Act
         var errors = _sut.Validate(message);
@@ -74,12 +74,22 @@ public class SettlementMethodValidatorTest
     }
 
     [Theory]
-    [InlineData(SettlementMethodFlex)]
-    [InlineData(SettlementMethodHour)]
-    public void Validate_IsNotConsumptionAndSettlementMethodIsGiven_ValidationError(string settlementMethod)
+    [InlineData(MeteringPointType.Production, SettlementMethodType.Flex)]
+    [InlineData(MeteringPointType.Production, SettlementMethodType.NonProfiled)]
+    [InlineData(MeteringPointType.Production, "invalid-settlement-method")]
+    [InlineData(MeteringPointType.Exchange, SettlementMethodType.Flex)]
+    [InlineData(MeteringPointType.Exchange, SettlementMethodType.NonProfiled)]
+    [InlineData(MeteringPointType.Exchange, "invalid-settlement-method")]
+    [InlineData("not-consumption-metering-point", SettlementMethodType.Flex)]
+    [InlineData("not-consumption-metering-point", SettlementMethodType.NonProfiled)]
+    [InlineData("not-consumption-metering-point", "invalid-settlement-method")]
+    [InlineData("", SettlementMethodType.Flex)]
+    [InlineData("", SettlementMethodType.NonProfiled)]
+    [InlineData("", "invalid-settlement-method")]
+    public void Validate_IsNotConsumptionAndSettlementMethodIsGiven_ValidationError(string meteringPointType, string settlementMethod)
     {
         // Arrange
-        var message = CreateAggregatedTimeSeriesRequest("not-consumption", settlementMethod);
+        var message = CreateAggregatedTimeSeriesRequest(meteringPointType, settlementMethod);
 
         // Act
         var errors = _sut.Validate(message);

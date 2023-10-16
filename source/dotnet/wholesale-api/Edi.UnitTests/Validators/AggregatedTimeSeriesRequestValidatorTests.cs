@@ -26,17 +26,19 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 
 public class AggregatedTimeSeriesRequestValidatorTests
 {
-    private const string ValidMeteringPointType = MeteringPointType.Production;
+    private const string ValidMeteringPointType = MeteringPointType.Consumption;
 
     private static readonly PeriodValidationRule _periodValidator = new(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!, SystemClock.Instance);
     private static readonly MeteringPointTypeValidationRule _meteringPointTypeValidationRule = new();
     private static readonly EnergySupplierFieldValidationRule _energySupplierFieldValidationRule = new();
+    private static readonly SettlementMethodValidationRule _settlementMethodValidationRule = new();
     private readonly IValidator<AggregatedTimeSeriesRequest> _sut = new AggregatedTimeSeriesRequestValidator(
         new IValidationRule<AggregatedTimeSeriesRequest>[]
         {
             _periodValidator,
             _energySupplierFieldValidationRule,
             _meteringPointTypeValidationRule,
+            _settlementMethodValidationRule,
         });
 
     [Fact]
@@ -49,7 +51,8 @@ public class AggregatedTimeSeriesRequestValidatorTests
             RequestedByActorRole = EnergySupplierValidatorTest.EnergySupplierActorRole,
             RequestedByActorId = EnergySupplierValidatorTest.ValidGlnNumber,
             EnergySupplierId = EnergySupplierValidatorTest.ValidGlnNumber,
-            MeteringPointType = ValidMeteringPointType,
+            MeteringPointType = MeteringPointType.Consumption,
+            SettlementMethod = SettlementMethodType.Flex,
         };
 
         // Act
@@ -127,6 +130,31 @@ public class AggregatedTimeSeriesRequestValidatorTests
         var validationError = validationErrors.First();
         validationError.Message.Should().Be(ValidationError.InvalidEnergySupplierField.Message);
         validationError.ErrorCode.Should().Be(ValidationError.InvalidEnergySupplierField.ErrorCode);
+    }
+
+    [Fact]
+    public void Validate_AggregatedTimeSeriesRequest_WhenSettlementMethodIsInvalid_UnsuccessfulValidation()
+    {
+        // Arrange
+        var request = new AggregatedTimeSeriesRequest()
+        {
+            Period = CreateValidPeriod(),
+            RequestedByActorRole = EnergySupplierValidatorTest.EnergySupplierActorRole,
+            RequestedByActorId = EnergySupplierValidatorTest.ValidGlnNumber,
+            EnergySupplierId = EnergySupplierValidatorTest.ValidGlnNumber,
+            MeteringPointType = MeteringPointType.Consumption,
+            SettlementMethod = "invalid-settlement-method",
+        };
+
+        // Act
+        var validationErrors = _sut.Validate(request);
+
+        // Assert
+        validationErrors.Should().ContainSingle();
+
+        var validationError = validationErrors.First();
+        validationError.Message.Should().Be(ValidationError.InvalidSettlementMethod.Message);
+        validationError.ErrorCode.Should().Be(ValidationError.InvalidSettlementMethod.ErrorCode);
     }
 
     private Period CreateValidPeriod()
