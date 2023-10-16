@@ -30,9 +30,17 @@ public static class TimeSeriesTypeMapper
                 "D01" => TimeSeriesType.FlexConsumption,
                 var method when
                     string.IsNullOrWhiteSpace(method) => TimeSeriesType.TotalConsumption,
-                _ => throw new InvalidOperationException("Unknown time series type"),
+
+                _ => throw new ArgumentOutOfRangeException(
+                    nameof(settlementMethod),
+                    actualValue: settlementMethod,
+                    "Value does not contain a valid string representation of a settlement method."),
             },
-            _ => throw new InvalidOperationException("Unknown time series type"),
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(meteringPointType),
+                actualValue: meteringPointType,
+                "Value does not contain a valid string representation of a metering point type."),
         };
     }
 }

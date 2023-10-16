@@ -26,7 +26,11 @@ public static class ProcessTypeMapper
             ProcessType.FirstCorrectionSettlement => Common.Models.ProcessType.FirstCorrectionSettlement,
             ProcessType.SecondCorrectionSettlement => Common.Models.ProcessType.SecondCorrectionSettlement,
             ProcessType.ThirdCorrectionSettlement => Common.Models.ProcessType.ThirdCorrectionSettlement,
-            _ => throw new ArgumentOutOfRangeException(nameof(batchDtoProcessType), batchDtoProcessType, null),
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(batchDtoProcessType),
+                actualValue: batchDtoProcessType,
+                "Value cannot be mapped to a process type."),
         };
     }
 
@@ -40,7 +44,11 @@ public static class ProcessTypeMapper
             Common.Models.ProcessType.FirstCorrectionSettlement => ProcessType.FirstCorrectionSettlement,
             Common.Models.ProcessType.SecondCorrectionSettlement => ProcessType.SecondCorrectionSettlement,
             Common.Models.ProcessType.ThirdCorrectionSettlement => ProcessType.ThirdCorrectionSettlement,
-            _ => throw new ArgumentOutOfRangeException(nameof(batchDtoProcessType), batchDtoProcessType, null),
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(batchDtoProcessType),
+                actualValue: batchDtoProcessType,
+                "Value cannot be mapped to a process type."),
         };
     }
 }

@@ -19,14 +19,14 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.WebApi.V3;
 
-public static class BatchStateMapperTests
+public class BatchStateMapperTests
 {
     [Theory]
     [InlineAutoMoqData(Batches.Interfaces.Models.BatchState.Failed, BatchState.Failed)]
     [InlineAutoMoqData(Batches.Interfaces.Models.BatchState.Completed, BatchState.Completed)]
     [InlineAutoMoqData(Batches.Interfaces.Models.BatchState.Executing, BatchState.Executing)]
     [InlineAutoMoqData(Batches.Interfaces.Models.BatchState.Pending, BatchState.Pending)]
-    public static void Map_ReturnsExpectedTypeForWebApi(Batches.Interfaces.Models.BatchState source, BatchState expected)
+    public void Map_ReturnsExpectedTypeForWebApi(Batches.Interfaces.Models.BatchState source, BatchState expected)
     {
         var actual = BatchStateMapper.MapState(source);
         actual.Should().Be(expected);
@@ -37,9 +37,37 @@ public static class BatchStateMapperTests
     [InlineAutoMoqData(BatchState.Completed, Batches.Interfaces.Models.BatchState.Completed)]
     [InlineAutoMoqData(BatchState.Executing, Batches.Interfaces.Models.BatchState.Executing)]
     [InlineAutoMoqData(BatchState.Pending, Batches.Interfaces.Models.BatchState.Pending)]
-    public static void Map_ReturnsExpectedTypeForBatchModule(BatchState source, Batches.Interfaces.Models.BatchState expected)
+    public void Map_ReturnsExpectedTypeForBatchModule(BatchState source, Batches.Interfaces.Models.BatchState expected)
     {
         var actual = BatchStateMapper.MapState(source);
         actual.Should().Be(expected);
+    }
+
+    [Fact]
+    public void MapState_WhenInvalidEnumNumberForBatchState_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        var invalidValue = (Batches.Interfaces.Models.BatchState)99;
+
+        // Act
+        var act = () => BatchStateMapper.MapState(invalidValue);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .And.ActualValue.Should().Be(invalidValue);
+    }
+
+    [Fact]
+    public void MapState_WhenInvalidEnumNumberForV3BatchState_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        var invalidValue = (BatchState)99;
+
+        // Act
+        var act = () => BatchStateMapper.MapState(invalidValue);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .And.ActualValue.Should().Be(invalidValue);
     }
 }

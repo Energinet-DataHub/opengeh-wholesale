@@ -81,4 +81,32 @@ public class ProcessTypeMapperTests
         // Assert
         actual.Should().Be(expected);
     }
+
+    [Fact]
+    public void FromDeltaTableValue_WhenInvalidDeltaTableValue_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        var invalidDeltaTableValue = Guid.NewGuid().ToString();
+
+        // Act
+        var act = () => ProcessTypeMapper.FromDeltaTableValue(invalidDeltaTableValue);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .And.ActualValue.Should().Be(invalidDeltaTableValue);
+    }
+
+    [Fact]
+    public void ToDeltaTableValue_WhenInvalidEnumNumberForProcessType_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        var invalidValue = (ProcessType)99;
+
+        // Act
+        var act = () => ProcessTypeMapper.ToDeltaTableValue(invalidValue);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .And.ActualValue.Should().Be(invalidValue);
+    }
 }

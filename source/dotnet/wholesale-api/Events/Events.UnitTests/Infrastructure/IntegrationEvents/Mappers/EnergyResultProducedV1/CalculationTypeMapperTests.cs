@@ -23,12 +23,12 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
 public class CalculationTypeMapperTests
 {
     [Theory]
-    [InlineAutoMoqData(ProcessType.Aggregation,  Contracts.IntegrationEvents.EnergyResultProducedV1.Types.CalculationType.Aggregation)]
-    [InlineAutoMoqData(ProcessType.BalanceFixing,  Contracts.IntegrationEvents.EnergyResultProducedV1.Types.CalculationType.BalanceFixing)]
-    [InlineAutoMoqData(ProcessType.WholesaleFixing,  Contracts.IntegrationEvents.EnergyResultProducedV1.Types.CalculationType.WholesaleFixing)]
-    [InlineAutoMoqData(ProcessType.FirstCorrectionSettlement,  Contracts.IntegrationEvents.EnergyResultProducedV1.Types.CalculationType.FirstCorrectionSettlement)]
-    [InlineAutoMoqData(ProcessType.SecondCorrectionSettlement,  Contracts.IntegrationEvents.EnergyResultProducedV1.Types.CalculationType.SecondCorrectionSettlement)]
-    [InlineAutoMoqData(ProcessType.ThirdCorrectionSettlement,  Contracts.IntegrationEvents.EnergyResultProducedV1.Types.CalculationType.ThirdCorrectionSettlement)]
+    [InlineAutoMoqData(ProcessType.Aggregation, Contracts.IntegrationEvents.EnergyResultProducedV1.Types.CalculationType.Aggregation)]
+    [InlineAutoMoqData(ProcessType.BalanceFixing, Contracts.IntegrationEvents.EnergyResultProducedV1.Types.CalculationType.BalanceFixing)]
+    [InlineAutoMoqData(ProcessType.WholesaleFixing, Contracts.IntegrationEvents.EnergyResultProducedV1.Types.CalculationType.WholesaleFixing)]
+    [InlineAutoMoqData(ProcessType.FirstCorrectionSettlement, Contracts.IntegrationEvents.EnergyResultProducedV1.Types.CalculationType.FirstCorrectionSettlement)]
+    [InlineAutoMoqData(ProcessType.SecondCorrectionSettlement, Contracts.IntegrationEvents.EnergyResultProducedV1.Types.CalculationType.SecondCorrectionSettlement)]
+    [InlineAutoMoqData(ProcessType.ThirdCorrectionSettlement, Contracts.IntegrationEvents.EnergyResultProducedV1.Types.CalculationType.ThirdCorrectionSettlement)]
     public void MapCalculationType_WhenCalled_MapsCorrectly(ProcessType processType, Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV1.Types.CalculationType expected)
     {
         // Act & Assert
@@ -46,5 +46,19 @@ public class CalculationTypeMapperTests
             // Assert: Is defined (and implicitly that it didn't throw exception)
             Enum.IsDefined(typeof(Contracts.IntegrationEvents.EnergyResultProducedV1.Types.CalculationType), actual).Should().BeTrue();
         }
+    }
+
+    [Fact]
+    public void MapCalculationType_WhenInvalidEnumNumberForCalculationType_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        var invalidValue = (Wholesale.Common.Models.ProcessType)99;
+
+        // Act
+        var act = () => CalculationTypeMapper.MapCalculationType(invalidValue);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .And.ActualValue.Should().Be(invalidValue);
     }
 }

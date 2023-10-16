@@ -31,18 +31,18 @@ public class WholesaleResultFactory
         Instant periodEnd)
     {
         var id = sqlResultRow[WholesaleResultColumnNames.CalculationResultId];
-        var energySupplierId = sqlResultRow[WholesaleResultColumnNames.EnergySupplierId];
-        var gridArea = sqlResultRow[WholesaleResultColumnNames.GridArea];
         var calculationId = sqlResultRow[WholesaleResultColumnNames.CalculationId];
         var calculationType = sqlResultRow[WholesaleResultColumnNames.CalculationType];
+        var gridArea = sqlResultRow[WholesaleResultColumnNames.GridArea];
+        var energySupplierId = sqlResultRow[WholesaleResultColumnNames.EnergySupplierId];
         var chargeCode = sqlResultRow[WholesaleResultColumnNames.ChargeCode];
         var chargeType = sqlResultRow[WholesaleResultColumnNames.ChargeType];
         var chargeOwnerId = sqlResultRow[WholesaleResultColumnNames.ChargeOwnerId];
+        var isTax = sqlResultRow[WholesaleResultColumnNames.IsTax];
         var quantityUnit = sqlResultRow[WholesaleResultColumnNames.QuantityUnit];
         var chargeResolution = sqlResultRow[WholesaleResultColumnNames.ChargeResolution];
         var meteringPointType = sqlResultRow[WholesaleResultColumnNames.MeteringPointType];
         var settlementMethod = sqlResultRow[WholesaleResultColumnNames.SettlementMethod];
-        var isTax = sqlResultRow[WholesaleResultColumnNames.IsTax];
 
         return new WholesaleResult(
             SqlResultValueConverters.ToGuid(id),

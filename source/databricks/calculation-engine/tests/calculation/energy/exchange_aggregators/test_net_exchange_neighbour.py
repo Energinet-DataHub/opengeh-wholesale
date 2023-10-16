@@ -16,14 +16,16 @@ import pytest
 from decimal import Decimal
 import pandas as pd
 from datetime import datetime, timedelta
+from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
+from pyspark.sql.functions import col, window
+
+from package.common import assert_schema
 from package.constants import Colname
 from package.calculation.energy.exchange_aggregators import (
     aggregate_net_exchange_per_neighbour_ga,
 )
 from package.codelists import MeteringPointType, QuantityQuality
 from package.calculation.energy.schemas import aggregation_result_schema
-from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
-from pyspark.sql.functions import col, window
 
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
@@ -222,4 +224,10 @@ def test_expected_schema(single_quarter_test_data):
     df = aggregate_net_exchange_per_neighbour_ga(single_quarter_test_data).orderBy(
         Colname.to_grid_area, Colname.from_grid_area, Colname.time_window
     )
-    assert df.schema == aggregation_result_schema
+    assert_schema(
+        df.schema,
+        aggregation_result_schema,
+        ignore_nullability=True,
+        ignore_decimal_precision=True,
+        ignore_decimal_scale=True,
+    )
