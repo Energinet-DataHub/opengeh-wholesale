@@ -104,7 +104,7 @@ public class RequestCalculationResultQueries : IRequestCalculationResultQueries
         EnergyResultColumnNames.BatchId, EnergyResultColumnNames.GridArea, EnergyResultColumnNames.FromGridArea,
         EnergyResultColumnNames.TimeSeriesType, EnergyResultColumnNames.EnergySupplierId,
         EnergyResultColumnNames.BalanceResponsibleId, EnergyResultColumnNames.Time,
-        EnergyResultColumnNames.Quantity, EnergyResultColumnNames.QuantityQuality,
+        EnergyResultColumnNames.Quantity, EnergyResultColumnNames.QuantityQualities,
         EnergyResultColumnNames.CalculationResultId, EnergyResultColumnNames.BatchProcessType,
     };
 }

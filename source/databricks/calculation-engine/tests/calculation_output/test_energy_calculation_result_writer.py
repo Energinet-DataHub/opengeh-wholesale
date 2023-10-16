@@ -185,7 +185,7 @@ batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"  # Needed in both test param a
         (EnergyResultColumnNames.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
         (EnergyResultColumnNames.time, datetime(2020, 1, 1, 0, 0)),
         (EnergyResultColumnNames.quantity, Decimal("1.100")),
-        (EnergyResultColumnNames.quantity_quality, DEFAULT_QUALITY.value),
+        (EnergyResultColumnNames.quantity_qualities, [DEFAULT_QUALITY.value]),
         (EnergyResultColumnNames.aggregation_level, DEFAULT_AGGREGATION_LEVEL.value),
     ],
 )
@@ -306,7 +306,7 @@ def test__get_column_group_for_calculation_result_id__excludes_exepected_other_c
     # Arrange
     expected_other_columns = [
         EnergyResultColumnNames.time,
-        EnergyResultColumnNames.quantity_quality,
+        EnergyResultColumnNames.quantity_qualities,
         EnergyResultColumnNames.quantity,
         EnergyResultColumnNames.calculation_result_id,
     ]

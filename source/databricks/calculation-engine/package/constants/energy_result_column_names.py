@@ -24,4 +24,3 @@ class EnergyResultColumnNames(ResultColumnNames):
     which comes with its own set of problems/limitations."""
     balance_responsible_id = "balance_responsible_id"
     aggregation_level = "aggregation_level"
-    quantity_quality = "quantity_quality"
