@@ -35,7 +35,7 @@ public static class EdiRegistration
         AddAggregatedTimeSeriesRequestValidation(serviceCollection);
     }
 
-    private static void AddAggregatedTimeSeriesRequestValidation(IServiceCollection serviceCollection)
+    public static void AddAggregatedTimeSeriesRequestValidation(IServiceCollection serviceCollection)
     {
         serviceCollection.AddSingleton<IValidator<AggregatedTimeSeriesRequest>, AggregatedTimeSeriesRequestValidator>();
         serviceCollection.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, PeriodValidationRule>();
