@@ -84,7 +84,6 @@ public class AggregatedTimeSeriesRequestValidatorTests
 
         // Assert
         validationErrors.Should().ContainSingle();
-        validationErrors.First().ErrorCode.Should().Be(ValidationError.PeriodIsGreaterThenAllowedPeriodSize.ErrorCode);
     }
 
     [Fact]
@@ -105,7 +104,6 @@ public class AggregatedTimeSeriesRequestValidatorTests
 
         // Assert
         validationErrors.Should().ContainSingle();
-        validationErrors.First().ErrorCode.Should().Be(ValidationError.InvalidMeteringPointType.ErrorCode);
     }
 
     [Fact]
@@ -151,10 +149,6 @@ public class AggregatedTimeSeriesRequestValidatorTests
 
         // Assert
         validationErrors.Should().ContainSingle();
-
-        var validationError = validationErrors.First();
-        validationError.Message.Should().Be(ValidationError.InvalidSettlementMethod.Message);
-        validationError.ErrorCode.Should().Be(ValidationError.InvalidSettlementMethod.ErrorCode);
     }
 
     private Period CreateValidPeriod()

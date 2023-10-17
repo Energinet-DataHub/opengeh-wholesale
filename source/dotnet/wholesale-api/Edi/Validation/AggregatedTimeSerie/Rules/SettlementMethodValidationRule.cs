@@ -20,11 +20,14 @@ namespace Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
 public class SettlementMethodValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
 {
     private static readonly IReadOnlyList<string> _validSettlementMethods = new List<string> { SettlementMethod.Flex, SettlementMethod.NonProfiled };
+    private static readonly string _validMeteringPointType = MeteringPointType.Consumption;
+
+    private static readonly ValidationError _invalidSettlementMethod = new("SettlementMethod kan kun benyttes i kombination med E17 og skal være enten D01 og E02 / SettlementMethod can only be used in combination with E17 and must be either D01 or E02", "D15");
 
     private static readonly IList<ValidationError> _noError = new List<ValidationError>();
     private static readonly IList<ValidationError> _validationError = new List<ValidationError>
     {
-        ValidationError.InvalidSettlementMethod,
+        _invalidSettlementMethod,
     };
 
     public IList<ValidationError> Validate(AggregatedTimeSeriesRequest subject)
@@ -50,6 +53,6 @@ public class SettlementMethodValidationRule : IValidationRule<AggregatedTimeSeri
 
     private bool IsMeteringPointTypeConsumption(string meteringPointType)
     {
-        return meteringPointType.Equals(MeteringPointType.Consumption);
+        return meteringPointType.Equals(_validMeteringPointType, StringComparison.OrdinalIgnoreCase);
     }
 }
