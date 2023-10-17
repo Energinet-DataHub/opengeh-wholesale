@@ -31,19 +31,17 @@ public class MeteringPointTypeValidationRule : IValidationRule<AggregatedTimeSer
 
     public IList<ValidationError> Validate(AggregatedTimeSeriesRequest subject)
     {
-        if (InvalidMeteringPointType(subject.MeteringPointType))
-        {
-            return new List<ValidationError>
-            {
-                _invalidMeteringPointType.WithPropertyName(string.Join(", ", _validMeteringPointTypes)),
-            };
-        }
+        if (IsValidMeteringPointType(subject.MeteringPointType)) return NoError;
 
-        return new List<ValidationError>();
+        return InvalidMeteringPointType;
     }
 
-    private static bool InvalidMeteringPointType(string meteringPointType)
+    private static bool IsValidMeteringPointType(string meteringPointType)
     {
-        return !_validMeteringPointTypes.Contains(meteringPointType, StringComparer.OrdinalIgnoreCase);
+        return _validMeteringPointTypes.Contains(meteringPointType, StringComparer.OrdinalIgnoreCase);
     }
+
+    private static IList<ValidationError> NoError => new List<ValidationError>();
+
+    private static IList<ValidationError> InvalidMeteringPointType => new List<ValidationError> { _invalidMeteringPointType.WithPropertyName(string.Join(", ", _validMeteringPointTypes)) };
 }

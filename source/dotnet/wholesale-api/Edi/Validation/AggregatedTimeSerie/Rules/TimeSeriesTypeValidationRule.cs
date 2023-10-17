@@ -23,28 +23,22 @@ public class TimeSeriesTypeValidationRule : IValidationRule<AggregatedTimeSeries
 
     public IList<ValidationError> Validate(AggregatedTimeSeriesRequest subject)
     {
-        var actorRole = subject.RequestedByActorRole;
-        if (actorRole == ActorRoleCode.MeteredDataResponsible)
-        {
-            return new List<ValidationError>();
-        }
+        if (subject.RequestedByActorRole == ActorRoleCode.MeteredDataResponsible)
+            return NoError;
 
         if (subject.MeteringPointType == MeteringPointType.Exchange)
-        {
-            return new List<ValidationError>
-            {
-                _invalidTimeSeriesTypeForActor.WithPropertyName(actorRole),
-            };
-        }
+            return InvalidTimeSeriesTypeForActor(subject.RequestedByActorRole);
 
         if (subject.MeteringPointType == MeteringPointType.Consumption && !subject.HasSettlementMethod)
-        {
-            return new List<ValidationError>
-            {
-                _invalidTimeSeriesTypeForActor.WithPropertyName(actorRole),
-            };
-        }
+            return InvalidTimeSeriesTypeForActor(subject.RequestedByActorRole);
 
-        return new List<ValidationError>();
+        return NoError;
     }
+
+    private IList<ValidationError> InvalidTimeSeriesTypeForActor(string actorRole)
+    {
+        return new List<ValidationError> { _invalidTimeSeriesTypeForActor.WithPropertyName(actorRole) };
+    }
+
+    private static IList<ValidationError> NoError => new List<ValidationError>();
 }
