@@ -26,7 +26,7 @@ public sealed class ValidationError
     public static readonly ValidationError InvalidMeteringPointType = new("Metering point type skal være en af følgende: {PropertyName} / Metering point type has to be one of the following: {PropertyName}", "D18");
     public static readonly ValidationError InvalidEnergySupplierField = new("Feltet EnergySupplier skal være udfyldt med et valid GLN/EIC nummer når en elleverandør anmoder om data / EnergySupplier must be submitted with a valid GLN/EIC number when an energy supplier requests data", "E16");
     public static readonly ValidationError InvalidSettlementMethod = new("SettlementMethod kan kun benyttes i kombination med E17 og skal være enten D01 og E02 / SettlementMethod can only be used in combination with E17 and must be either D01 or E02", "D15");
-    public static readonly ValidationError InvalidTimeSeriesTypeForActor = new("Den forespurgte tidsserie type kan ikke forespørges som en {PropertyName} / The requested times series type can not be requested as a {PropertyName}", "EOR");
+    public static readonly ValidationError InvalidTimeSeriesTypeForActor = new("Den forespurgte tidsserie type kan ikke forespørges som en {PropertyName} / The requested times series type can not be requested as a {PropertyName}", "D11");
 
     private ValidationError(string message, string errorCode)
     {
