@@ -22,11 +22,13 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 
 public class QuantityUnitMapperTests
 {
+    private const string DocumentPath = "DeltaTableContracts.enums.charge-unit.json";
+
     [Fact]
     public async Task QuantityUnit_Matches_ContractPropertyCount()
     {
         // Arrange
-        await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.enums.charge-unit.json");
+        await using var stream = EmbeddedResources.GetStream<Root>(DocumentPath);
         var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
 
         // Act
@@ -42,7 +44,7 @@ public class QuantityUnitMapperTests
     public async Task QuantityUnit_Matches_Contract(string quantityUnit)
     {
         // Arrange
-        await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.enums.charge-unit.json");
+        await using var stream = EmbeddedResources.GetStream<Root>(DocumentPath);
         var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
 
         // Assert
@@ -53,7 +55,7 @@ public class QuantityUnitMapperTests
     public async Task FromDeltaTableValue_MapsAllValidDeltaTableValues()
     {
         // Arrange
-        await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.enums.charge-unit.json");
+        await using var stream = EmbeddedResources.GetStream<Root>(DocumentPath);
         var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
 
         foreach (var validDeltaValue in validDeltaValues)
