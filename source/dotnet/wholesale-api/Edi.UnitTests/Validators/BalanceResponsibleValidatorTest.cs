@@ -103,8 +103,8 @@ public class BalanceResponsibleValidatorTest
         errors.Should().ContainSingle();
 
         var error = errors.First();
-        error.Message.Should().Be(ValidationError.InvalidBalanceResponsible.Message);
-        error.ErrorCode.Should().Be(ValidationError.InvalidBalanceResponsible.ErrorCode);
+        error.Message.Should().Be(ValidationError.MismatchedBalanceResponsibleInHeaderAndMessage.Message);
+        error.ErrorCode.Should().Be(ValidationError.MismatchedBalanceResponsibleInHeaderAndMessage.ErrorCode);
     }
 
     [Fact]

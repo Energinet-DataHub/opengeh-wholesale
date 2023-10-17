@@ -19,23 +19,19 @@ namespace Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
 public class BalanceResponsibleValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
 {
     private const string BalanceResponsibleRole = "DDK";
-    private static readonly IList<ValidationError> _validationError = new List<ValidationError>
-    {
-        ValidationError.InvalidBalanceResponsible,
-    };
 
     public IList<ValidationError> Validate(AggregatedTimeSeriesRequest subject)
     {
         if (subject.RequestedByActorRole == BalanceResponsibleRole)
         {
             if (string.IsNullOrWhiteSpace(subject.BalanceResponsibleId))
-                return _validationError;
+                return new List<ValidationError>() { ValidationError.InvalidBalanceResponsible };
 
             if (!IsValidActorRoleFormat(subject.BalanceResponsibleId))
-                return _validationError;
+                return new List<ValidationError>() { ValidationError.InvalidBalanceResponsible };
 
             if (!subject.RequestedByActorId.Equals(subject.BalanceResponsibleId, StringComparison.OrdinalIgnoreCase))
-                return _validationError;
+                return new List<ValidationError>() { ValidationError.MismatchedBalanceResponsibleInHeaderAndMessage };
         }
 
         return new List<ValidationError>();
