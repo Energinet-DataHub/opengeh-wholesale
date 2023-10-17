@@ -36,8 +36,8 @@ public class AggregatedTimeSeriesRequestBuilder
         var now = SystemClock.Instance.GetCurrentInstant();
         _start = Instant.FromUtc(now.InUtc().Year, 1, 1, 23, 0, 0).ToString();
         _end = Instant.FromUtc(now.InUtc().Year, 1, 2, 23, 0, 0).ToString();
-        _requestedByActorRoleId = "unknown-actor-role-id";
-        _requestedByActorId = "unknown-actor-id";
+        _requestedByActorRoleId = ActorRoleCode.EnergySupplier;
+        _requestedByActorId = "qwertyuiopasd";
     }
 
     public static AggregatedTimeSeriesRequestBuilder AggregatedTimeSeriesRequest()
