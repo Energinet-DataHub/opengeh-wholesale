@@ -24,7 +24,7 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 
 public class TimeSeriesTypeValidatorTests
 {
-    private const string ExpectedErrorMessage = "Den forespurgte tidsserie type kan ikke forespørges som en {PropertyName} / The requested times series type can not be requested as a {PropertyName}";
+    private const string ExpectedErrorMessage = "Den forespurgte tidsserie type kan ikke forespørges som en {PropertyName} / The requested time series type can not be requested as a {PropertyName}";
     private const string ExpectedErrorCode = "D11";
 
     private readonly TimeSeriesTypeValidationRule _sut = new();
