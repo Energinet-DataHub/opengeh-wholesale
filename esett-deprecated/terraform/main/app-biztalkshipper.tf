@@ -9,6 +9,10 @@ module "app_biztalkshipper" {
   location                                  = azurerm_resource_group.this.location
   app_service_plan_id                       = module.plan_services.id
   application_insights_instrumentation_key  = data.azurerm_key_vault_secret.appi_shared_instrumentation_key.value
+  app_settings                              = merge({
+    "biztalk:senderCode"    = "45V0000000000601"
+    "biztalk:receiverCode"  = "44V000000000028C"
+  }, local.default_biztalkshipper_app_settings)
   connection_strings = [
     {
       name = "CONNECTION_STRING_SHARED_BLOB"
