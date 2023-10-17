@@ -41,5 +41,6 @@ public static class EdiRegistration
         serviceCollection.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, PeriodValidationRule>();
         serviceCollection.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, MeteringPointTypeValidationRule>();
         serviceCollection.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, EnergySupplierFieldValidationRule>();
+        serviceCollection.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, BalanceResponsibleValidationRule>();
     }
 }

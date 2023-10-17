@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Edi.Requests;
 using Energinet.DataHub.Wholesale.Edi.Models;
+using Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.EDI.Validation;
 using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie;
 using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
@@ -31,6 +32,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
     private static readonly PeriodValidationRule _periodValidator = new(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!, SystemClock.Instance);
     private static readonly MeteringPointTypeValidationRule _meteringPointTypeValidationRule = new();
     private static readonly EnergySupplierFieldValidationRule _energySupplierFieldValidationRule = new();
+    private static readonly BalanceResponsibleValidationRule _balanceResponsibleValidationRule = new();
     private static readonly SettlementMethodValidationRule _settlementMethodValidationRule = new();
     private readonly IValidator<AggregatedTimeSeriesRequest> _sut = new AggregatedTimeSeriesRequestValidator(
         new IValidationRule<AggregatedTimeSeriesRequest>[]
@@ -39,6 +41,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
             _energySupplierFieldValidationRule,
             _meteringPointTypeValidationRule,
             _settlementMethodValidationRule,
+            _balanceResponsibleValidationRule,
         });
 
     [Fact]
