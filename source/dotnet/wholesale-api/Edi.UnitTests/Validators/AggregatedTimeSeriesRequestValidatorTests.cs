@@ -35,12 +35,10 @@ public class AggregatedTimeSeriesRequestValidatorTests
 
         serviceCollection.AddTransient<DateTimeZone>(s => DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
         serviceCollection.AddTransient<IClock>(s => SystemClock.Instance);
-
         serviceCollection.AddEdiModule();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
 
-        var serviceProver = serviceCollection.BuildServiceProvider();
-
-        _sut = serviceProver.GetRequiredService<IValidator<AggregatedTimeSeriesRequest>>();
+        _sut = serviceProvider.GetRequiredService<IValidator<AggregatedTimeSeriesRequest>>();
     }
 
     [Fact]
