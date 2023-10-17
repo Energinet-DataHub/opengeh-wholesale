@@ -26,13 +26,13 @@ public class EnergySupplierValidatorTest
     public const string ValidGlnNumber = "qwertyuiopasd"; // Must be 13 characters to be a valid GLN
     private const string ValidEicNumber = "qwertyuiopasdfgh"; // Must be 16 characters to be a valid GLN
 
-    private static readonly ValidationError _invalidEnergySupplierField = new("Feltet EnergySupplier skal være udfyldt med et valid GLN/EIC nummer når en elleverandør anmoder om data / EnergySupplier must be submitted with a valid GLN/EIC number when an energy supplier requests data", "E16");
+    private static readonly ValidationError _invalidEnergySupplier = new("Feltet EnergySupplier skal være udfyldt med et valid GLN/EIC nummer når en elleverandør anmoder om data / EnergySupplier must be submitted with a valid GLN/EIC number when an energy supplier requests data", "E16");
     private static readonly ValidationError _notEqualToRequestedBy = new("Elleverandør i besked stemmer ikke overenes med elleverandør i header / Energy supplier in message does not correspond with energy supplier in header", "E16");
 
     private readonly EnergySupplierValidationRule _sut = new();
 
     [Fact]
-    public void Validate_WhenEnergySupplierAndEnergySupplierFieldIsValidGlnNumber_ReturnsNoValidationErrors()
+    public void Validate_WhenEnergySupplierAndEnergySupplierIsValidGlnNumber_ReturnsNoValidationErrors()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -50,7 +50,7 @@ public class EnergySupplierValidatorTest
     }
 
     [Fact]
-    public void Validate_WhenEnergySupplierAndEnergySupplierFieldIsValidEicNumber_ReturnsNoValidationErrors()
+    public void Validate_WhenEnergySupplierAndEnergySupplierIsValidEicNumber_ReturnsNoValidationErrors()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -68,7 +68,7 @@ public class EnergySupplierValidatorTest
     }
 
     [Fact]
-    public void Validate_WhenEnergySupplierAndMissingEnergySupplierField_ReturnsExpectedValidationError()
+    public void Validate_WhenEnergySupplierAndMissingEnergySupplier_ReturnsExpectedValidationError()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -85,12 +85,12 @@ public class EnergySupplierValidatorTest
         Assert.Single(errors);
 
         var error = errors.First();
-        error.Message.Should().Be(_invalidEnergySupplierField.Message);
-        error.ErrorCode.Should().Be(_invalidEnergySupplierField.ErrorCode);
+        error.Message.Should().Be(_invalidEnergySupplier.Message);
+        error.ErrorCode.Should().Be(_invalidEnergySupplier.ErrorCode);
     }
 
     [Fact]
-    public void Validate_WhenEnergySupplierAndEnergySupplierFieldNotEqualRequestedById_ReturnsExpectedValidationError()
+    public void Validate_WhenEnergySupplierAndEnergySupplierNotEqualRequestedById_ReturnsExpectedValidationError()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -112,7 +112,7 @@ public class EnergySupplierValidatorTest
     }
 
     [Fact]
-    public void Validate_WhenEnergySupplierAndInvalidFormatEnergySupplierField_ReturnsExpectedValidationError()
+    public void Validate_WhenEnergySupplierAndInvalidFormatEnergySupplier_ReturnsExpectedValidationError()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -129,12 +129,12 @@ public class EnergySupplierValidatorTest
         Assert.Single(errors);
 
         var error = errors.First();
-        error.Message.Should().Be(_invalidEnergySupplierField.Message);
-        error.ErrorCode.Should().Be(_invalidEnergySupplierField.ErrorCode);
+        error.Message.Should().Be(_invalidEnergySupplier.Message);
+        error.ErrorCode.Should().Be(_invalidEnergySupplier.ErrorCode);
     }
 
     [Fact]
-    public void Validate_WhenNotEnergySupplierAndMissingEnergySupplierField_ReturnsNoValidationError()
+    public void Validate_WhenNotEnergySupplierAndMissingEnergySupplier_ReturnsNoValidationError()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -152,7 +152,7 @@ public class EnergySupplierValidatorTest
     }
 
     [Fact]
-    public void Validate_WhenNotEnergySupplierAndInvalidEnergySupplierFieldFormat_ReturnsNoValidationError()
+    public void Validate_WhenNotEnergySupplierAndInvalidEnergySupplierFormat_ReturnsNoValidationError()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -170,7 +170,7 @@ public class EnergySupplierValidatorTest
     }
 
     [Fact]
-    public void Validate_IsNotEnergySupplierAndEnergySupplierFieldNotEqualRequestedById_ReturnsNoValidationError()
+    public void Validate_IsNotEnergySupplierAndEnergySupplierNotEqualRequestedById_ReturnsNoValidationError()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
