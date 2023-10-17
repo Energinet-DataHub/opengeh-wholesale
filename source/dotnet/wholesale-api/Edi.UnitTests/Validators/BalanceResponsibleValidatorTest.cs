@@ -25,6 +25,8 @@ public class BalanceResponsibleValidatorTest
     private const string BalanceResponsibleRole = "DDK";
     private const string ValidGlnNumber = "qwertyuiopasd"; // Must be 13 characters to be a valid GLN
     private const string ValidEicNumber = "qwertyuiopasdfgh"; // Must be 16 characters to be a valid GLN
+    private static readonly ValidationError _invalidBalanceResponsible = new("Feltet BalanceResponsibleParty skal være udfyldt med et valid GLN/EIC når en balanceansvarlig anmoder om data / BalanceResponsibleParty must be submitted with a valid GLN/EIC when a balance responsible requests data", "E18");
+    private static readonly ValidationError _mismatchedBalanceResponsibleInHeaderAndMessage = new("BalanceResponsibleParty i besked stemmer ikke overenes med balanceansvarlig anmoder i header / BalanceResponsibleParty in message does not correspond with balance responsible in header", "E18");
 
     private readonly BalanceResponsibleValidationRule _sut = new();
 
@@ -81,8 +83,8 @@ public class BalanceResponsibleValidatorTest
         errors.Should().ContainSingle();
 
         var error = errors.First();
-        error.Message.Should().Be(ValidationError.InvalidBalanceResponsible.Message);
-        error.ErrorCode.Should().Be(ValidationError.InvalidBalanceResponsible.ErrorCode);
+        error.Message.Should().Be(_invalidBalanceResponsible.Message);
+        error.ErrorCode.Should().Be(_invalidBalanceResponsible.ErrorCode);
     }
 
     [Fact]
@@ -103,8 +105,8 @@ public class BalanceResponsibleValidatorTest
         errors.Should().ContainSingle();
 
         var error = errors.First();
-        error.Message.Should().Be(ValidationError.MismatchedBalanceResponsibleInHeaderAndMessage.Message);
-        error.ErrorCode.Should().Be(ValidationError.MismatchedBalanceResponsibleInHeaderAndMessage.ErrorCode);
+        error.Message.Should().Be(_mismatchedBalanceResponsibleInHeaderAndMessage.Message);
+        error.ErrorCode.Should().Be(_mismatchedBalanceResponsibleInHeaderAndMessage.ErrorCode);
     }
 
     [Fact]
@@ -125,12 +127,12 @@ public class BalanceResponsibleValidatorTest
         errors.Should().ContainSingle();
 
         var error = errors.First();
-        error.Message.Should().Be(ValidationError.InvalidBalanceResponsible.Message);
-        error.ErrorCode.Should().Be(ValidationError.InvalidBalanceResponsible.ErrorCode);
+        error.Message.Should().Be(_invalidBalanceResponsible.Message);
+        error.ErrorCode.Should().Be(_invalidBalanceResponsible.ErrorCode);
     }
 
     [Fact]
-    public void Validate_WhenRequesterIsNotBalanceResponsibleAndMissingBalanceResponsibleField_NoValidationError()
+    public void Validate_WhenRequesterIsNotBalanceResponsibleAndMissingBalanceResponsibleField_ReturnsNoValidationError()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder

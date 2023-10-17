@@ -26,10 +26,8 @@ public sealed class ValidationError
     public static readonly ValidationError InvalidMeteringPointType = new("Metering point type skal være en af følgende: {PropertyName} / Metering point type has to be one of the following: {PropertyName}", "D18");
     public static readonly ValidationError InvalidEnergySupplierField = new("Feltet EnergySupplier skal være udfyldt med et valid GLN/EIC nummer når en elleverandør anmoder om data / EnergySupplier must be submitted with a valid GLN/EIC number when an energy supplier requests data", "E16");
     public static readonly ValidationError InvalidSettlementMethod = new("SettlementMethod kan kun benyttes i kombination med E17 og skal være enten D01 og E02 / SettlementMethod can only be used in combination with E17 and must be either D01 or E02", "D15");
-    public static readonly ValidationError InvalidBalanceResponsible = new("Feltet BalanceResponsibleParty skal være udfyldt med et valid GLN/EIC når en balanceansvarlig anmoder om data / BalanceResponsibleParty must be submitted with a valid GLN/EIC when a balance responsible requests data", "E18");
-    public static readonly ValidationError MismatchedBalanceResponsibleInHeaderAndMessage = new("BalanceResponsibleParty i besked stemmer ikke overenes med balanceansvarlig anmoder i header / BalanceResponsibleParty in message does not correspond with balance responsible in header", "E18");
 
-    private ValidationError(string message, string errorCode)
+    public ValidationError(string message, string errorCode)
     {
         Message = message;
         ErrorCode = errorCode;
