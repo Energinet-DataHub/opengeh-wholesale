@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Edi.Requests;
+using Energinet.DataHub.Wholesale.EDI.Models;
+using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 
 namespace Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
 
 public class EnergySupplierFieldValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
 {
-    public const string EnergySupplierActorRole = "DDQ";
     private static readonly IList<ValidationError> _noError = new List<ValidationError>();
     private static readonly IList<ValidationError> _validationError = new List<ValidationError>
     {
@@ -27,7 +27,7 @@ public class EnergySupplierFieldValidationRule : IValidationRule<AggregatedTimeS
 
     public IList<ValidationError> Validate(AggregatedTimeSeriesRequest subject)
     {
-        if (subject.RequestedByActorRole != EnergySupplierActorRole)
+        if (subject.RequestedByActorRole != ActorRoleCode.EnergySupplier)
              return _noError;
 
         if (string.IsNullOrEmpty(subject.EnergySupplierId))

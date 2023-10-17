@@ -12,38 +12,37 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Edi.Requests;
 using Energinet.DataHub.Wholesale.EDI.Models;
 using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 
 namespace Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
 
-public class MeteringPointTypeValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
+public class TimeSeriesTypeValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
 {
-    private static readonly IReadOnlyList<string> _validMeteringPointTypes = new List<string>
-    {
-        MeteringPointType.Consumption,
-        MeteringPointType.Production,
-        MeteringPointType.Exchange,
-    };
-
     public IList<ValidationError> Validate(AggregatedTimeSeriesRequest subject)
     {
-        if (subject.MeteringPointType == null) throw new ArgumentNullException(nameof(subject.MeteringPointType));
-        if (InvalidMeteringPointType(subject.MeteringPointType))
+        var actorRole = subject.RequestedByActorRole;
+        if (actorRole == ActorRoleCode.MeteredDataResponsible)
+        {
+            return new List<ValidationError>();
+        }
+
+        if (subject.MeteringPointType == MeteringPointType.Exchange)
         {
             return new List<ValidationError>
             {
-                ValidationError.InvalidMeteringPointType.WithPropertyName(
-                    string.Join(", ", _validMeteringPointTypes)),
+                ValidationError.InvalidTimeSeriesTypeForActor.WithPropertyName(actorRole),
+            };
+        }
+
+        if (subject.MeteringPointType == MeteringPointType.Consumption && !subject.HasSettlementMethod)
+        {
+            return new List<ValidationError>
+            {
+                ValidationError.InvalidTimeSeriesTypeForActor.WithPropertyName(actorRole),
             };
         }
 
         return new List<ValidationError>();
-    }
-
-    private static bool InvalidMeteringPointType(string meteringPointType)
-    {
-        return !_validMeteringPointTypes.Contains(meteringPointType);
     }
 }

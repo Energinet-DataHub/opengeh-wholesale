@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Edi.Requests;
+using Energinet.DataHub.Wholesale.EDI.Models;
 using Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.EDI.Validation;
 using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
 using Xunit;
+using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 
 public class EnergySupplierValidatorTest
 {
-    public const string EnergySupplierActorRole = "DDQ";
     public const string ValidGlnNumber = "qwertyuiopasd"; // Must be 13 characters to be a valid GLN
     private const string ValidEicNumber = "qwertyuiopasdfgh"; // Must be 16 characters to be a valid GLN
 
@@ -140,7 +140,7 @@ public class EnergySupplierValidatorTest
     {
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithRequestedByActor(isRequestedByEnergySupplier ? EnergySupplierActorRole : "unknown-role-id", requestedById)
+            .WithRequestedByActor(isRequestedByEnergySupplier ? ActorRoleCode.EnergySupplier : "unknown-role-id", requestedById)
             .WithEnergySupplierId(energySupplierId)
             .Build();
 

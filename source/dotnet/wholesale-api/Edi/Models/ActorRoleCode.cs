@@ -14,8 +14,9 @@
 
 namespace Energinet.DataHub.Wholesale.EDI.Models;
 
-public static class SettlementMethod
+public class ActorRoleCode
 {
-    public const string Flex = "D01";
-    public const string NonProfiled = "E02";
+    public const string BalanceResponsibleParty = "DDK";
+    public const string EnergySupplier = "DDQ";
+    public const string MeteredDataResponsible = "MDR";
 }
