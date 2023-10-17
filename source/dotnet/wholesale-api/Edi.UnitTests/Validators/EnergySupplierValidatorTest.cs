@@ -16,6 +16,7 @@ using Energinet.DataHub.Wholesale.EDI.Models;
 using Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.EDI.Validation;
 using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
+using FluentAssertions;
 using Xunit;
 using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 
@@ -26,134 +27,164 @@ public class EnergySupplierValidatorTest
     public const string ValidGlnNumber = "qwertyuiopasd"; // Must be 13 characters to be a valid GLN
     private const string ValidEicNumber = "qwertyuiopasdfgh"; // Must be 16 characters to be a valid GLN
 
-    private const string ExpectedInvalidEnergySupplierErrorMessage = "Feltet EnergySupplier skal være udfyldt med et valid GLN/EIC nummer når en elleverandør anmoder om data / EnergySupplier must be submitted with a valid GLN/EIC number when an energy supplier requests data";
-    private const string ExpectedNotEqualEnergySupplierErrorMessage = "Elleverandør i besked stemmer ikke overenes med elleverandør i header / Energy supplier in message does not correspond with energy supplier in header";
-    private const string ExpectedErrorCode = "E16";
+    private static readonly ValidationError _invalidEnergySupplierField = new("Feltet EnergySupplier skal være udfyldt med et valid GLN/EIC nummer når en elleverandør anmoder om data / EnergySupplier must be submitted with a valid GLN/EIC number when an energy supplier requests data", "E16");
+    private static readonly ValidationError _notEqualToRequestedBy = new("Elleverandør i besked stemmer ikke overenes med elleverandør i header / Energy supplier in message does not correspond with energy supplier in header", "E16");
 
-    private readonly EnergySupplierFieldValidationRule _sut = new();
-
-    [Fact]
-    public void Validate_IsEnergySupplierAndEnergySupplierFieldIsValidGlnNumber_NoValidationErrors()
-    {
-        // Arrange
-        var message = CreateAggregatedTimeSeriesRequest(true, ValidGlnNumber, ValidGlnNumber);
-
-        // Act
-        var errors = _sut.Validate(message);
-
-        // Assert
-        Assert.Empty(errors);
-    }
+    private readonly EnergySupplierValidationRule _sut = new();
 
     [Fact]
-    public void Validate_IsEnergySupplierAndEnergySupplierFieldIsValidEicNumber_NoValidationErrors()
+    public void Validate_WhenEnergySupplierAndEnergySupplierFieldIsValidGlnNumber_ReturnsNoValidationErrors()
     {
         // Arrange
-        var message = CreateAggregatedTimeSeriesRequest(true, ValidEicNumber, ValidEicNumber);
-
-        // Act
-        var errors = _sut.Validate(message);
-
-        // Assert
-        Assert.Empty(errors);
-    }
-
-    [Fact]
-    public void Validate_IsEnergySupplierAndMissingEnergySupplierField_ValidationError()
-    {
-        // Arrange
-        var message = CreateAggregatedTimeSeriesRequest(true, ValidGlnNumber, null);
-
-        // Act
-        var errors = _sut.Validate(message);
-
-        // Assert
-        AssertSingleAndCorrectError(errors, ExpectedInvalidEnergySupplierErrorMessage);
-    }
-
-    [Fact]
-    public void Validate_IsEnergySupplierAndEnergySupplierFieldNotEqualRequestedById_ValidationError()
-    {
-        // Arrange
-        var message = CreateAggregatedTimeSeriesRequest(true, ValidGlnNumber, ValidEicNumber);
-
-        // Act
-        var errors = _sut.Validate(message);
-
-        // Assert
-        AssertSingleAndCorrectError(errors, ExpectedNotEqualEnergySupplierErrorMessage);
-    }
-
-    [Fact]
-    public void Validate_IsEnergySupplierAndInvalidFormatEnergySupplierField_ValidationError()
-    {
-        // Arrange
-        // Valid numbers are 13 or 16 characters
-        var message = CreateAggregatedTimeSeriesRequest(true, ValidGlnNumber, "invalid-format");
-
-        // Act
-        var errors = _sut.Validate(message);
-
-        // Assert
-        AssertSingleAndCorrectError(errors, ExpectedInvalidEnergySupplierErrorMessage);
-    }
-
-    [Fact]
-    public void Validate_IsNotEnergySupplierAndMissingEnergySupplierField_NoValidationError()
-    {
-        // Arrange
-        var message = CreateAggregatedTimeSeriesRequest(false, ValidGlnNumber, null);
-
-        // Act
-        var errors = _sut.Validate(message);
-
-        // Assert
-        Assert.Empty(errors);
-    }
-
-    [Fact]
-    public void Validate_IsNotEnergySupplierAndInvalidEnergySupplierFieldFormat_NoValidationError()
-    {
-        // Arrange
-        var message = CreateAggregatedTimeSeriesRequest(false, ValidGlnNumber, "invalid-format");
-
-        // Act
-        var errors = _sut.Validate(message);
-
-        // Assert
-        Assert.Empty(errors);
-    }
-
-    [Fact]
-    public void Validate_IsNotEnergySupplierAndEnergySupplierFieldNotEqualRequestedById_NoValidationError()
-    {
-        // Arrange
-        var message = CreateAggregatedTimeSeriesRequest(false, ValidGlnNumber, ValidEicNumber);
-
-        // Act
-        var errors = _sut.Validate(message);
-
-        // Assert
-        Assert.Empty(errors);
-    }
-
-    private static AggregatedTimeSeriesRequest CreateAggregatedTimeSeriesRequest(bool isRequestedByEnergySupplier, string requestedById, string? energySupplierId)
-    {
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithRequestedByActor(isRequestedByEnergySupplier ? ActorRoleCode.EnergySupplier : "unknown-role-id", requestedById)
-            .WithEnergySupplierId(energySupplierId)
+            .WithRequestedByActorId(ValidGlnNumber)
+            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
+            .WithEnergySupplierId(ValidGlnNumber)
             .Build();
 
-        return message;
+        // Act
+        var errors = _sut.Validate(message);
+
+        // Assert
+        errors.Should().BeEmpty();
     }
 
-    private void AssertSingleAndCorrectError(IList<ValidationError> errors, string expectedErrorMessage)
+    [Fact]
+    public void Validate_WhenEnergySupplierAndEnergySupplierFieldIsValidEicNumber_ReturnsNoValidationErrors()
     {
+        // Arrange
+        var message = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithRequestedByActorId(ValidEicNumber)
+            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
+            .WithEnergySupplierId(ValidEicNumber)
+            .Build();
+
+        // Act
+        var errors = _sut.Validate(message);
+
+        // Assert
+        errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Validate_WhenEnergySupplierAndMissingEnergySupplierField_ReturnsExpectedValidationError()
+    {
+        // Arrange
+        var message = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithRequestedByActorId(ValidGlnNumber)
+            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
+            .WithEnergySupplierId(null)
+            .Build();
+
+        // Act
+        var errors = _sut.Validate(message);
+
+        // Assert
         Assert.Single(errors);
 
-        var error = errors.Single();
-        Assert.Contains(expectedErrorMessage, error.Message);
-        Assert.Contains(ExpectedErrorCode, error.ErrorCode);
+        var error = errors.First();
+        error.Message.Should().Be(_invalidEnergySupplierField.Message);
+        error.ErrorCode.Should().Be(_invalidEnergySupplierField.ErrorCode);
+    }
+
+    [Fact]
+    public void Validate_WhenEnergySupplierAndEnergySupplierFieldNotEqualRequestedById_ReturnsExpectedValidationError()
+    {
+        // Arrange
+        var message = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithRequestedByActorId(ValidGlnNumber)
+            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
+            .WithEnergySupplierId(ValidEicNumber)
+            .Build();
+
+        // Act
+        var errors = _sut.Validate(message);
+
+        // Assert
+        Assert.Single(errors);
+
+        var error = errors.First();
+        error.Message.Should().Be(_notEqualToRequestedBy.Message);
+        error.ErrorCode.Should().Be(_notEqualToRequestedBy.ErrorCode);
+    }
+
+    [Fact]
+    public void Validate_WhenEnergySupplierAndInvalidFormatEnergySupplierField_ReturnsExpectedValidationError()
+    {
+        // Arrange
+        var message = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithRequestedByActorId(ValidGlnNumber)
+            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
+            .WithEnergySupplierId("invalid-format")
+            .Build();
+
+        // Act
+        var errors = _sut.Validate(message);
+
+        // Assert
+        Assert.Single(errors);
+
+        var error = errors.First();
+        error.Message.Should().Be(_invalidEnergySupplierField.Message);
+        error.ErrorCode.Should().Be(_invalidEnergySupplierField.ErrorCode);
+    }
+
+    [Fact]
+    public void Validate_WhenNotEnergySupplierAndMissingEnergySupplierField_ReturnsNoValidationError()
+    {
+        // Arrange
+        var message = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithRequestedByActorId(ValidGlnNumber)
+            .WithRequestedByActorRole("not-energy-supplier")
+            .WithEnergySupplierId(null)
+            .Build();
+
+        // Act
+        var errors = _sut.Validate(message);
+
+        // Assert
+        errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Validate_WhenNotEnergySupplierAndInvalidEnergySupplierFieldFormat_ReturnsNoValidationError()
+    {
+        // Arrange
+        var message = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithRequestedByActorId(ValidGlnNumber)
+            .WithRequestedByActorRole("not-energy-supplier")
+            .WithEnergySupplierId("invalid-format")
+            .Build();
+
+        // Act
+        var errors = _sut.Validate(message);
+
+        // Assert
+        errors.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Validate_IsNotEnergySupplierAndEnergySupplierFieldNotEqualRequestedById_ReturnsNoValidationError()
+    {
+        // Arrange
+        var message = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithRequestedByActorId(ValidGlnNumber)
+            .WithRequestedByActorRole("not-energy-supplier")
+            .WithEnergySupplierId(ValidEicNumber)
+            .Build();
+
+        // Act
+        var errors = _sut.Validate(message);
+
+        // Assert
+        errors.Should().BeEmpty();
     }
 }

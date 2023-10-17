@@ -19,6 +19,8 @@ namespace Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
 
 public class TimeSeriesTypeValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
 {
+    private static readonly ValidationError _invalidTimeSeriesTypeForActor = new("Den forespurgte tidsserie type kan ikke forespørges som en {PropertyName} / The requested time series type can not be requested as a {PropertyName}", "D11");
+
     public IList<ValidationError> Validate(AggregatedTimeSeriesRequest subject)
     {
         var actorRole = subject.RequestedByActorRole;
@@ -31,7 +33,7 @@ public class TimeSeriesTypeValidationRule : IValidationRule<AggregatedTimeSeries
         {
             return new List<ValidationError>
             {
-                ValidationError.InvalidTimeSeriesTypeForActor.WithPropertyName(actorRole),
+                _invalidTimeSeriesTypeForActor.WithPropertyName(actorRole),
             };
         }
 
@@ -39,7 +41,7 @@ public class TimeSeriesTypeValidationRule : IValidationRule<AggregatedTimeSeries
         {
             return new List<ValidationError>
             {
-                ValidationError.InvalidTimeSeriesTypeForActor.WithPropertyName(actorRole),
+                _invalidTimeSeriesTypeForActor.WithPropertyName(actorRole),
             };
         }
 

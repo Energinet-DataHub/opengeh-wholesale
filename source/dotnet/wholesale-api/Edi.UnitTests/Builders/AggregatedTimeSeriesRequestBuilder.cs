@@ -87,11 +87,15 @@ public class AggregatedTimeSeriesRequestBuilder
         return this;
     }
 
-    public AggregatedTimeSeriesRequestBuilder WithRequestedByActor(string actorRoleId, string actorId)
+    public AggregatedTimeSeriesRequestBuilder WithRequestedByActorId(string actorId)
+    {
+        _requestedByActorId = actorId;
+        return this;
+    }
+
+    public AggregatedTimeSeriesRequestBuilder WithRequestedByActorRole(string actorRoleId)
     {
         _requestedByActorRoleId = actorRoleId;
-        _requestedByActorId = actorId;
-
         return this;
     }
 

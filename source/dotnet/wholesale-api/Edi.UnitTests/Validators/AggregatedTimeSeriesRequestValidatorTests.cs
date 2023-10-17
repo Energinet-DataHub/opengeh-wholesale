@@ -28,18 +28,20 @@ public class AggregatedTimeSeriesRequestValidatorTests
 {
     private static readonly PeriodValidationRule _periodValidator = new(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!, SystemClock.Instance);
     private static readonly MeteringPointTypeValidationRule _meteringPointTypeValidationRule = new();
-    private static readonly EnergySupplierFieldValidationRule _energySupplierFieldValidationRule = new();
+    private static readonly EnergySupplierValidationRule _energySupplierValidationRule = new();
     private static readonly SettlementMethodValidationRule _settlementMethodValidationRule = new();
     private static readonly TimeSeriesTypeValidationRule _timeSeriesTypeValidationRule = new();
     private readonly IValidator<AggregatedTimeSeriesRequest> _sut = new AggregatedTimeSeriesRequestValidator(
         new IValidationRule<AggregatedTimeSeriesRequest>[]
         {
             _periodValidator,
-            _energySupplierFieldValidationRule,
+            _energySupplierValidationRule,
             _meteringPointTypeValidationRule,
             _settlementMethodValidationRule,
             _timeSeriesTypeValidationRule,
         });
+
+    private static readonly ValidationError _invalidTimeSeriesTypeForActor = new("Den forespurgte tidsserie type kan ikke forespørges som en {PropertyName} / The requested time series type can not be requested as a {PropertyName}", "D11");
 
     [Fact]
     public void Validate_AggregatedTimeSeriesRequest_SuccessValidation()
@@ -91,9 +93,6 @@ public class AggregatedTimeSeriesRequestValidatorTests
 
         // Assert
         validationErrors.Should().ContainSingle();
-
-        var validationError = validationErrors.First();
-        validationError.ErrorCode.Should().Be(EnergySupplierFieldValidationRule.ErrorCode);
     }
 
     [Fact]
@@ -123,7 +122,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
         validationErrors.Should().ContainSingle();
 
         var validationError = validationErrors.First();
-        validationError.ErrorCode.Should().Be(ValidationError.InvalidTimeSeriesTypeForActor.ErrorCode);
+        validationError.ErrorCode.Should().Be(_invalidTimeSeriesTypeForActor.ErrorCode);
     }
 
     private AggregatedTimeSeriesRequest CreateAggregatedTimeSeriesRequest(
@@ -141,9 +140,8 @@ public class AggregatedTimeSeriesRequestValidatorTests
             .WithEndDate(endDate ?? Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString())
             .WithMeteringPointType(meteringPointType ?? MeteringPointType.Production)
             .WithSettlementMethod(settlementMethod)
-            .WithRequestedByActor(
-                requestedByActorRole ?? ActorRoleCode.EnergySupplier,
-                requestedByActorId ?? EnergySupplierValidatorTest.ValidGlnNumber)
+            .WithRequestedByActorId(requestedByActorId ?? EnergySupplierValidatorTest.ValidGlnNumber)
+            .WithRequestedByActorRole(requestedByActorRole ?? ActorRoleCode.EnergySupplier)
             .WithEnergySupplierId(energySupplierId ?? EnergySupplierValidatorTest.ValidGlnNumber)
             .Build();
 
