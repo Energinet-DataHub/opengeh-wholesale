@@ -18,6 +18,7 @@ using Energinet.DataHub.Wholesale.EDI.Validation;
 using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie;
 using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 using Xunit;
 using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
@@ -26,20 +27,21 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 
 public class AggregatedTimeSeriesRequestValidatorTests
 {
-    private static readonly PeriodValidationRule _periodValidator = new(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!, SystemClock.Instance);
-    private static readonly MeteringPointTypeValidationRule _meteringPointTypeValidationRule = new();
-    private static readonly EnergySupplierFieldValidationRule _energySupplierFieldValidationRule = new();
-    private static readonly SettlementMethodValidationRule _settlementMethodValidationRule = new();
-    private static readonly TimeSeriesTypeValidationRule _timeSeriesTypeValidationRule = new();
-    private readonly IValidator<AggregatedTimeSeriesRequest> _sut = new AggregatedTimeSeriesRequestValidator(
-        new IValidationRule<AggregatedTimeSeriesRequest>[]
-        {
-            _periodValidator,
-            _energySupplierFieldValidationRule,
-            _meteringPointTypeValidationRule,
-            _settlementMethodValidationRule,
-            _timeSeriesTypeValidationRule,
-        });
+    private readonly IValidator<AggregatedTimeSeriesRequest> _sut;
+
+    public AggregatedTimeSeriesRequestValidatorTests()
+    {
+        IServiceCollection serviceCollection = new ServiceCollection();
+
+        serviceCollection.AddTransient<DateTimeZone>(s => DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!);
+        serviceCollection.AddTransient<IClock>(s => SystemClock.Instance);
+
+        serviceCollection.AddEdiModule();
+
+        var serviceProver = serviceCollection.BuildServiceProvider();
+
+        _sut = serviceProver.GetRequiredService<IValidator<AggregatedTimeSeriesRequest>>();
+    }
 
     [Fact]
     public void Validate_AggregatedTimeSeriesRequest_SuccessValidation()
@@ -86,7 +88,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
     public void Validate_AggregatedTimeSeriesRequest_WhenEnergySupplierIdIsInvalid_UnsuccessfulValidation()
     {
         // Arrange
-        var request = CreateAggregatedTimeSeriesRequest(energySupplierId: "invadlid-id");
+        var request = CreateAggregatedTimeSeriesRequest(energySupplierId: "invalid-id");
 
         // Act
         var validationErrors = _sut.Validate(request);
