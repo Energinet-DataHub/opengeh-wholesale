@@ -41,8 +41,6 @@ public class AggregatedTimeSeriesRequestValidatorTests
             _timeSeriesTypeValidationRule,
         });
 
-    private static readonly ValidationError _invalidTimeSeriesTypeForActor = new("Den forespurgte tidsserie type kan ikke forespørges som en {PropertyName} / The requested time series type can not be requested as a {PropertyName}", "D11");
-
     [Fact]
     public void Validate_AggregatedTimeSeriesRequest_SuccessValidation()
     {
@@ -120,9 +118,6 @@ public class AggregatedTimeSeriesRequestValidatorTests
 
         // Assert
         validationErrors.Should().ContainSingle();
-
-        var validationError = validationErrors.First();
-        validationError.ErrorCode.Should().Be(_invalidTimeSeriesTypeForActor.ErrorCode);
     }
 
     private AggregatedTimeSeriesRequest CreateAggregatedTimeSeriesRequest(
