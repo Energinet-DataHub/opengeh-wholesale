@@ -21,14 +21,11 @@ using FluentAssertions;
 using NodaTime;
 using Xunit;
 using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
-using Period = Energinet.DataHub.Edi.Requests.Period;
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 
 public class AggregatedTimeSeriesRequestValidatorTests
 {
-    private const string ValidMeteringPointType = MeteringPointType.Production;
-
     private static readonly PeriodValidationRule _periodValidator = new(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!, SystemClock.Instance);
     private static readonly MeteringPointTypeValidationRule _meteringPointTypeValidationRule = new();
     private static readonly EnergySupplierFieldValidationRule _energySupplierFieldValidationRule = new();
@@ -120,7 +117,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
     }
 
     [Fact]
-    public void Validate_AggregatedTimeSeriesRequest_TotalConsumptionAsAnEnergySupplier_UnsuccessfulValidation()
+    public void Validate_AsEnergySupplierTotalConsumption_ReturnsUnsuccessfulValidation()
     {
         // Arrange
         var request =
@@ -152,7 +149,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
             .WithMeteringPointType(meteringPointType ?? MeteringPointType.Production)
             .WithSettlementMethod(settlementMethod)
             .WithRequestedByActor(
-                requestedByActorRole ?? EnergySupplierValidatorTest.EnergySupplierActorRole,
+                requestedByActorRole ?? ActorRoleCode.EnergySupplier,
                 requestedByActorId ?? EnergySupplierValidatorTest.ValidGlnNumber)
             .WithEnergySupplierId(energySupplierId ?? EnergySupplierValidatorTest.ValidGlnNumber)
             .Build();
