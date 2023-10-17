@@ -95,8 +95,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
         validationErrors.Should().ContainSingle();
 
         var validationError = validationErrors.First();
-        validationError.Message.Should().Be(ValidationError.InvalidEnergySupplierField.Message);
-        validationError.ErrorCode.Should().Be(ValidationError.InvalidEnergySupplierField.ErrorCode);
+        validationError.ErrorCode.Should().Be(EnergySupplierFieldValidationRule.ErrorCode);
     }
 
     [Fact]
