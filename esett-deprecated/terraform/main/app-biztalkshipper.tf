@@ -17,3 +17,17 @@ module "app_biztalkshipper" {
     }
   ]
 }
+
+locals {
+  default_biztalkshipper_app_settings = {
+    WEBSITE_LOAD_CERTIFICATES           = resource.azurerm_key_vault_certificate.biztalk_certificate.thumbprint
+    BLOB_FILES_ERROR_CONTAINER_NAME     = local.blob_files_error_container.name
+    BLOB_FILES_SENT_CONTAINER_NAME      = local.blob_files_sent_container.name
+    BLOB_FILES_CONVERTED_CONTAINER_NAME = local.blob_files_converted_container.name
+    BLOB_FILES_ACK_CONTAINER_NAME       = local.blob_files_ack_container.name
+    "biztalk:Endpoint"                  = "/EL_DataHubService/IntegrationService.svc"
+    "biztalk:businessTypeConsumption"   = "NBS-RECI"
+    "biztalk:businessTypeProduction"    = "NBS-MEPI"
+    "biztalk:businessTypeExchange"      = "NBS-MGXI"
+  }
+}

@@ -14,18 +14,6 @@ module "app_importer" {
   ip_restriction_allow_ip_range             = var.hosted_deployagent_public_ip_range
   use_dotnet_isolated_runtime               = true
   dotnet_framework_version                  = "v7.0"
-  app_settings = {
-    # EndRegion
-    WEBSITE_LOAD_CERTIFICATES       = resource.azurerm_key_vault_certificate.dh2_certificate.thumbprint
-    BLOB_FILES_ERROR_CONTAINER_NAME = local.blob_files_error_container.name
-    BLOB_FILES_RAW_CONTAINER_NAME   = local.blob_files_raw_container.name
-    RunIntervalSeconds              = "20"
-    Endpoint                        = "https://b2b.te7.datahub.dk"
-    NamespacePrefix                 = "ns0"
-    NamespaceUri                    = "un:unece:260:data:EEM-DK_AggregatedMeteredDataTimeSeriesForNBS:v3"
-    ResponseNamespaceUri            = "urn:www:datahub:dk:b2b:v01"
-    CONNECTION_STRING_DATABASE      = "Server=${module.mssql_esett.fully_qualified_domain_name};Database=${module.mssqldb_esett.name};User Id=${local.sqlServerAdminName};Password=${random_password.sqlsrv_admin_password.result};"
-  }
   connection_strings = [
     {
       name = "CONNECTION_STRING_SHARED_BLOB"
@@ -42,4 +30,18 @@ resource "azurerm_role_assignment" "importer_developer_access" {
   role_definition_name = "Contributor"
   principal_id         = each.value
 }
+
+locals {
+  default_importer_app_settings = {
+    WEBSITE_LOAD_CERTIFICATES       = resource.azurerm_key_vault_certificate.dh2_certificate.thumbprint
+    BLOB_FILES_ERROR_CONTAINER_NAME = local.blob_files_error_container.name
+    BLOB_FILES_RAW_CONTAINER_NAME   = local.blob_files_raw_container.name
+    RunIntervalSeconds              = "20"
+    NamespacePrefix                 = "ns0"
+    NamespaceUri                    = "un:unece:260:data:EEM-DK_AggregatedMeteredDataTimeSeriesForNBS:v3"
+    ResponseNamespaceUri            = "urn:www:datahub:dk:b2b:v01"
+    CONNECTION_STRING_DATABASE      = local.connection_string_database
+  }
+}
+
 

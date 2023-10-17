@@ -20,7 +20,12 @@ variable "domain_name_short" {
 
 variable "cert_pwd_esett_dh2_authentication_key1" {
   type        = string
-  description = "Password for the certificate"
+  description = "Password for the DH2certificate"
+}
+
+variable "cert_pwd_esett_biztalk_authentication_key1" {
+  type        = string
+  description = "Password for the Biztalk certificate"
 }
 
 variable "shared_resources_keyvault_name" {
