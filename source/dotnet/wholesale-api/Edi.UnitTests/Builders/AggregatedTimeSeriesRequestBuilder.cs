@@ -28,6 +28,7 @@ public class AggregatedTimeSeriesRequestBuilder
     private string? _energySupplierId;
     private string _requestedByActorRoleId;
     private string _requestedByActorId;
+    private string? _settlementMethod;
 
     private AggregatedTimeSeriesRequestBuilder()
     {
@@ -61,6 +62,9 @@ public class AggregatedTimeSeriesRequestBuilder
         if (_energySupplierId != null)
             request.EnergySupplierId = _energySupplierId;
 
+        if (_settlementMethod != null)
+            request.SettlementMethod = _settlementMethod;
+
         return request;
     }
 
@@ -93,6 +97,13 @@ public class AggregatedTimeSeriesRequestBuilder
     public AggregatedTimeSeriesRequestBuilder WithMeteringPointType(string meteringPointType)
     {
         _meteringPointType = meteringPointType;
+        return this;
+    }
+
+    public AggregatedTimeSeriesRequestBuilder WithSettlementMethod(string? settlementMethod)
+    {
+        _settlementMethod = settlementMethod;
+
         return this;
     }
 }
