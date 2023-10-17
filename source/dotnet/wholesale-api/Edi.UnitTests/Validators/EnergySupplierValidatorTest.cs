@@ -140,7 +140,8 @@ public class EnergySupplierValidatorTest
     {
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithRequestedByActor(isRequestedByEnergySupplier ? EnergySupplierActorRole : "unknown-role-id", requestedById)
+            .WithRequestedByActor(requestedById)
+            .WithRequestedByActorRole(isRequestedByEnergySupplier ? EnergySupplierActorRole : "unknown-role-id")
             .WithEnergySupplierId(energySupplierId)
             .Build();
 
