@@ -37,6 +37,8 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests;
 
 public class AggregatedTimeSeriesRequestHandlerTests
 {
+    private static readonly ValidationError _noDataAvailable = new("Ingen data tilgængelig / No data available", "E0H");
+
     [Theory]
     [InlineAutoMoqData]
     public async Task ProcessAsync_WithTotalProductionPerGridAreaRequest_SendsAcceptedEdiMessage(
@@ -182,7 +184,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
             bus => bus.SendAsync(
             It.Is<ServiceBusMessage>(message =>
                 message.Subject.Equals(expectedRejectedSubject)
-                && message.WithErrorCode(ValidationError.NoDataAvailable.ErrorCode)
+                && message.WithErrorCode(_noDataAvailable.ErrorCode)
                 && message.ApplicationProperties.ContainsKey("ReferenceId")
                 && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
             It.IsAny<CancellationToken>()),

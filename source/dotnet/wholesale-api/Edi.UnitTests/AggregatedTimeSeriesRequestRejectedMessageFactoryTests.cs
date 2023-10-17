@@ -27,6 +27,8 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests;
 
 public class AggregatedTimeSeriesRequestRejectedMessageFactoryTests
 {
+    private static readonly ValidationError _noDataAvailable = new("Ingen data tilgængelig / No data available", "E0H");
+
     [Fact]
     public void Create_WithNoCalculationResult_SendsRejectMessage()
     {
@@ -35,7 +37,7 @@ public class AggregatedTimeSeriesRequestRejectedMessageFactoryTests
         var expectedReferenceId = "123456789";
 
         // Act
-        var response = AggregatedTimeSeriesRequestRejectedMessageFactory.Create(new[] { ValidationError.NoDataAvailable }, expectedReferenceId);
+        var response = AggregatedTimeSeriesRequestRejectedMessageFactory.Create(new[] { _noDataAvailable }, expectedReferenceId);
 
         // Assert
         response.Should().NotBeNull();
@@ -45,6 +47,6 @@ public class AggregatedTimeSeriesRequestRejectedMessageFactoryTests
 
         var responseBody = AggregatedTimeSeriesRequestRejected.Parser.ParseFrom(response.Body);
         responseBody.RejectReasons.Should().ContainSingle();
-        responseBody.RejectReasons[0].ErrorCode.Should().Be(ValidationError.NoDataAvailable.ErrorCode);
+        responseBody.RejectReasons[0].ErrorCode.Should().Be(_noDataAvailable.ErrorCode);
     }
 }

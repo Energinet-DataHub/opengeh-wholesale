@@ -19,30 +19,26 @@ namespace Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
 
 public class TimeSeriesTypeValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
 {
+    private static readonly ValidationError _invalidTimeSeriesTypeForActor = new("Den forespurgte tidsserie type kan ikke forespørges som en {PropertyName} / The requested time series type can not be requested as a {PropertyName}", "D11");
+
     public IList<ValidationError> Validate(AggregatedTimeSeriesRequest subject)
     {
-        var actorRole = subject.RequestedByActorRole;
-        if (actorRole == ActorRoleCode.MeteredDataResponsible)
-        {
-            return new List<ValidationError>();
-        }
+        if (subject.RequestedByActorRole == ActorRoleCode.MeteredDataResponsible)
+            return NoError;
 
         if (subject.MeteringPointType == MeteringPointType.Exchange)
-        {
-            return new List<ValidationError>
-            {
-                ValidationError.InvalidTimeSeriesTypeForActor.WithPropertyName(actorRole),
-            };
-        }
+            return InvalidTimeSeriesTypeForActor(subject.RequestedByActorRole);
 
         if (subject.MeteringPointType == MeteringPointType.Consumption && !subject.HasSettlementMethod)
-        {
-            return new List<ValidationError>
-            {
-                ValidationError.InvalidTimeSeriesTypeForActor.WithPropertyName(actorRole),
-            };
-        }
+            return InvalidTimeSeriesTypeForActor(subject.RequestedByActorRole);
 
-        return new List<ValidationError>();
+        return NoError;
     }
+
+    private IList<ValidationError> InvalidTimeSeriesTypeForActor(string actorRole)
+    {
+        return new List<ValidationError> { _invalidTimeSeriesTypeForActor.WithPropertyName(actorRole) };
+    }
+
+    private static IList<ValidationError> NoError => new List<ValidationError>();
 }
