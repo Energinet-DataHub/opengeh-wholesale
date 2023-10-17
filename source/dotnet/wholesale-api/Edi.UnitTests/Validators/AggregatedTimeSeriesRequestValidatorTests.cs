@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.EDI.Models;
+using Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.EDI.Validation;
 using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie;
 using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
@@ -47,15 +48,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
     public void Validate_AggregatedTimeSeriesRequest_SuccessValidation()
     {
         // Arrange
-        var request = new AggregatedTimeSeriesRequest()
-        {
-            Period = CreateValidPeriod(),
-            RequestedByActorRole = EnergySupplierValidatorTest.EnergySupplierActorRole,
-            RequestedByActorId = EnergySupplierValidatorTest.ValidGlnNumber,
-            EnergySupplierId = EnergySupplierValidatorTest.ValidGlnNumber,
-            MeteringPointType = MeteringPointType.Consumption,
-            SettlementMethod = SettlementMethod.Flex,
-        };
+        var request = CreateAggregatedTimeSeriesRequest();
 
         // Act
         var validationErrors = _sut.Validate(request);
@@ -68,18 +61,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
     public void Validate_AggregatedTimeSeriesRequest_WhenPeriodSizeIsInvalid_UnsuccessfulValidation()
     {
         // Arrange
-        var request = new AggregatedTimeSeriesRequest()
-        {
-            Period = new Period()
-            {
-                Start = Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(),
-                End = Instant.FromUtc(2022, 3, 2, 23, 0, 0).ToString(),
-            },
-            RequestedByActorRole = EnergySupplierValidatorTest.EnergySupplierActorRole,
-            RequestedByActorId = EnergySupplierValidatorTest.ValidGlnNumber,
-            EnergySupplierId = EnergySupplierValidatorTest.ValidGlnNumber,
-            MeteringPointType = ValidMeteringPointType,
-        };
+        var request = CreateAggregatedTimeSeriesRequest(endDate: Instant.FromUtc(2022, 3, 2, 23, 0, 0).ToString());
 
         // Act
         var validationErrors = _sut.Validate(request);
@@ -93,14 +75,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
     public void Validate_AggregatedTimeSeriesRequest_WhenMeteringPointTypeIsInvalid_UnsuccessfulValidation()
     {
         // Arrange
-        var request = new AggregatedTimeSeriesRequest()
-        {
-            Period = CreateValidPeriod(),
-            RequestedByActorRole = EnergySupplierValidatorTest.EnergySupplierActorRole,
-            RequestedByActorId = EnergySupplierValidatorTest.ValidGlnNumber,
-            EnergySupplierId = EnergySupplierValidatorTest.ValidGlnNumber,
-            MeteringPointType = "Invalid",
-        };
+        var request = CreateAggregatedTimeSeriesRequest(meteringPointType: "invalid");
 
         // Act
         var validationErrors = _sut.Validate(request);
@@ -114,14 +89,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
     public void Validate_AggregatedTimeSeriesRequest_WhenEnergySupplierIdIsInvalid_UnsuccessfulValidation()
     {
         // Arrange
-        var request = new AggregatedTimeSeriesRequest()
-        {
-            Period = CreateValidPeriod(),
-            RequestedByActorRole = EnergySupplierValidatorTest.EnergySupplierActorRole,
-            RequestedByActorId = EnergySupplierValidatorTest.ValidGlnNumber,
-            EnergySupplierId = "invalid-id",
-            MeteringPointType = ValidMeteringPointType,
-        };
+        var request = CreateAggregatedTimeSeriesRequest(energySupplierId: "invadlid-id");
 
         // Act
         var validationErrors = _sut.Validate(request);
@@ -138,15 +106,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
     public void Validate_AggregatedTimeSeriesRequest_WhenSettlementMethodIsInvalid_UnsuccessfulValidation()
     {
         // Arrange
-        var request = new AggregatedTimeSeriesRequest()
-        {
-            Period = CreateValidPeriod(),
-            RequestedByActorRole = EnergySupplierValidatorTest.EnergySupplierActorRole,
-            RequestedByActorId = EnergySupplierValidatorTest.ValidGlnNumber,
-            EnergySupplierId = EnergySupplierValidatorTest.ValidGlnNumber,
-            MeteringPointType = MeteringPointType.Consumption,
-            SettlementMethod = "invalid-settlement-method",
-        };
+        var request = CreateAggregatedTimeSeriesRequest(settlementMethod: "invalid-settlement-method");
 
         // Act
         var validationErrors = _sut.Validate(request);
@@ -163,14 +123,8 @@ public class AggregatedTimeSeriesRequestValidatorTests
     public void Validate_AggregatedTimeSeriesRequest_TotalConsumptionAsAnEnergySupplier_UnsuccessfulValidation()
     {
         // Arrange
-        var request = new AggregatedTimeSeriesRequest()
-        {
-            Period = CreateValidPeriod(),
-            RequestedByActorRole = EnergySupplierValidatorTest.EnergySupplierActorRole,
-            RequestedByActorId = EnergySupplierValidatorTest.ValidGlnNumber,
-            EnergySupplierId = EnergySupplierValidatorTest.ValidGlnNumber,
-            MeteringPointType = MeteringPointType.Consumption,
-        };
+        var request =
+            CreateAggregatedTimeSeriesRequest(meteringPointType: MeteringPointType.Consumption, settlementMethod: null);
 
         // Act
         var validationErrors = _sut.Validate(request);
@@ -182,12 +136,27 @@ public class AggregatedTimeSeriesRequestValidatorTests
         validationError.ErrorCode.Should().Be(ValidationError.InvalidTimeSeriesTypeForActor.ErrorCode);
     }
 
-    private Period CreateValidPeriod()
+    private AggregatedTimeSeriesRequest CreateAggregatedTimeSeriesRequest(
+        string? startDate = null,
+        string? endDate = null,
+        string? meteringPointType = null,
+        string? settlementMethod = null,
+        string? requestedByActorRole = null,
+        string? requestedByActorId = null,
+        string? energySupplierId = null)
     {
-        return new Period()
-        {
-            Start = Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString(),
-            End = Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString(),
-        };
+        var message = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithStartDate(startDate ?? Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString())
+            .WithEndDate(endDate ?? Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString())
+            .WithMeteringPointType(meteringPointType ?? MeteringPointType.Production)
+            .WithSettlementMethod(settlementMethod)
+            .WithRequestedByActor(
+                requestedByActorRole ?? EnergySupplierValidatorTest.EnergySupplierActorRole,
+                requestedByActorId ?? EnergySupplierValidatorTest.ValidGlnNumber)
+            .WithEnergySupplierId(energySupplierId ?? EnergySupplierValidatorTest.ValidGlnNumber)
+            .Build();
+
+        return message;
     }
 }

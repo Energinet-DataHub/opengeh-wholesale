@@ -51,7 +51,7 @@ public class TimeSeriesTypeValidatorTests
     [InlineData(MeteringPointType.Production, null)]
     [InlineData(MeteringPointType.Consumption, SettlementMethod.NonProfiled)]
     [InlineData(MeteringPointType.Consumption, SettlementMethod.Flex)]
-    public void Validate_ValidMeteringPointAndSettlementCombinationForEnergySupplier_NoValidationErrors(string meteringPointType, string? settlementMethod)
+    public void Validate_ActorIsEnergySupplier_NoValidationErrors(string meteringPointType, string? settlementMethod)
     {
         // Arrange
         var message = CreateAggregatedTimeSeriesRequest(meteringPointType, settlementMethod, ActorRoleCode.EnergySupplier);
@@ -67,7 +67,7 @@ public class TimeSeriesTypeValidatorTests
     [InlineData(MeteringPointType.Production, null)]
     [InlineData(MeteringPointType.Consumption, SettlementMethod.NonProfiled)]
     [InlineData(MeteringPointType.Consumption, SettlementMethod.Flex)]
-    public void Validate_ValidMeteringPointAndSettlementCombinationForBalanceResponsible_NoValidationErrors(string meteringPointType, string? settlementMethod)
+    public void Validate_ActorIsBalanceResponsible_NoValidationErrors(string meteringPointType, string? settlementMethod)
     {
         // Arrange
         var message = CreateAggregatedTimeSeriesRequest(meteringPointType, settlementMethod, ActorRoleCode.BalanceResponsibleParty);
@@ -82,7 +82,7 @@ public class TimeSeriesTypeValidatorTests
     [Theory]
     [InlineData(MeteringPointType.Exchange)]
     [InlineData(MeteringPointType.Consumption)]
-    public void Validate_InvalidMeteringPointAndSettlementCombinationForEnergySupplier_ValidationErrors(string meteringPointType)
+    public void Validate_ActorIsEnergySupplier_ValidationErrors(string meteringPointType)
     {
         // Arrange
         var message = CreateAggregatedTimeSeriesRequest(meteringPointType, null, ActorRoleCode.EnergySupplier);
@@ -97,7 +97,7 @@ public class TimeSeriesTypeValidatorTests
     [Theory]
     [InlineData(MeteringPointType.Exchange)]
     [InlineData(MeteringPointType.Consumption)]
-    public void Validate_InvalidMeteringPointAndSettlementCombinationForBalanceResponsible_ValidationErrors(string meteringPointType)
+    public void Validate_ActorIsBalanceResponsible_ValidationErrors(string meteringPointType)
     {
         // Arrange
         var message = CreateAggregatedTimeSeriesRequest(meteringPointType, null, ActorRoleCode.BalanceResponsibleParty);
