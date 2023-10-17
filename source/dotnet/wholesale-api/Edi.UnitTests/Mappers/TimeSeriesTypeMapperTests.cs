@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.EDI.Mappers;
+using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.EDI.Models;
 using FluentAssertions;
 using Xunit;
@@ -24,8 +25,8 @@ public class TimeSeriesTypeMapperTests
     [Theory]
     [InlineData("E17", "", TimeSeriesType.TotalConsumption)]
     [InlineData("E17", null, TimeSeriesType.TotalConsumption)]
-    [InlineData("E17", "E02", TimeSeriesType.NonProfiledConsumption)]
-    [InlineData("E17", "D01", TimeSeriesType.FlexConsumption)]
+    [InlineData("E17", SettlementMethod.NonProfiled, TimeSeriesType.NonProfiledConsumption)]
+    [InlineData("E17", SettlementMethod.Flex, TimeSeriesType.FlexConsumption)]
     [InlineData("E18", null, TimeSeriesType.Production)]
     [InlineData("E20", null, TimeSeriesType.NetExchangePerGa)]
     public void MapTimeSeriesType_WhenValidMeteringPointTypeAndSettlementMethod_ReturnsExpectedType(
