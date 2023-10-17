@@ -12,34 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Edi.Requests;
+using System.ComponentModel;
+using Energinet.DataHub.Wholesale.EDI.Models;
+using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 
 namespace Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
 
 public class EnergySupplierFieldValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
 {
-    public const string EnergySupplierActorRole = "DDQ";
-    private static readonly IList<ValidationError> _noError = new List<ValidationError>();
-    private static readonly IList<ValidationError> _validationError = new List<ValidationError>
-    {
-        ValidationError.InvalidEnergySupplierField,
-    };
+    public const string ErrorCode = "E16";
+    private static readonly ValidationError _invalidEnergySupplierField = new("Feltet EnergySupplier skal være udfyldt med et valid GLN/EIC nummer når en elleverandør anmoder om data / EnergySupplier must be submitted with a valid GLN/EIC number when an energy supplier requests data", ErrorCode);
+    private static readonly ValidationError _notEqualToRequestedBy = new("Elleverandør i besked stemmer ikke overenes med elleverandør i header / Energy supplier in message does not correspond with energy supplier in header", ErrorCode);
 
     public IList<ValidationError> Validate(AggregatedTimeSeriesRequest subject)
     {
-        if (subject.RequestedByActorRole != EnergySupplierActorRole)
-             return _noError;
+        if (subject.RequestedByActorRole != ActorRoleCode.EnergySupplier)
+             return NoError;
 
         if (string.IsNullOrEmpty(subject.EnergySupplierId))
-            return _validationError;
+            return InvalidEnergySupplierError;
 
         if (!IsValidEnergySupplierIdFormat(subject.EnergySupplierId))
-            return _validationError;
+            return InvalidEnergySupplierError;
 
         if (!RequestedByIdEqualsEnergySupplier(subject.RequestedByActorId, subject.EnergySupplierId))
-            return _validationError;
+            return NotEqualToRequestedByError;
 
-        return _noError;
+        return NoError;
     }
 
     private static bool IsValidEnergySupplierIdFormat(string energySupplierId)
@@ -54,4 +53,10 @@ public class EnergySupplierFieldValidationRule : IValidationRule<AggregatedTimeS
     {
         return requestedByActorId.Equals(energySupplierId, StringComparison.OrdinalIgnoreCase);
     }
+
+    private static IList<ValidationError> NoError => new List<ValidationError>();
+
+    private static IList<ValidationError> InvalidEnergySupplierError => new List<ValidationError> { _invalidEnergySupplierField };
+
+    private static IList<ValidationError> NotEqualToRequestedByError => new List<ValidationError> { _notEqualToRequestedBy };
 }

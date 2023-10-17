@@ -17,6 +17,7 @@ namespace Energinet.DataHub.Wholesale.EDI.Validation;
 public sealed class ValidationError
 {
     public static readonly ValidationError NoDataAvailable = new("Ingen data tilgængelig / No data available", "E0H");
+    public static readonly ValidationError InvalidTimeSeriesTypeForActor = new("Den forespurgte tidsserie type kan ikke forespørges som en {PropertyName} / The requested time series type can not be requested as a {PropertyName}", "D11");
     public static readonly ValidationError InvalidEnergySupplierField = new("Feltet EnergySupplier skal være udfyldt med et valid GLN/EIC nummer når en elleverandør anmoder om data / EnergySupplier must be submitted with a valid GLN/EIC number when an energy supplier requests data", "E16");
 
     public ValidationError(string message, string errorCode)
