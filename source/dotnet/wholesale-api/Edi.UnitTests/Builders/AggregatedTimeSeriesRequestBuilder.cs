@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Edi.Requests;
+using Energinet.DataHub.Wholesale.Edi.Models;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
@@ -20,7 +21,7 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 public class AggregatedTimeSeriesRequestBuilder
 {
     private readonly AggregationPerGridArea _aggregationPerGridArea = new();
-    private readonly string _meteringPointType = "E18";
+    private string _meteringPointType = MeteringPointType.Production;
 
     private string _start;
     private string _end;
@@ -86,6 +87,12 @@ public class AggregatedTimeSeriesRequestBuilder
         _requestedByActorRoleId = actorRoleId;
         _requestedByActorId = actorId;
 
+        return this;
+    }
+
+    public AggregatedTimeSeriesRequestBuilder WithMeteringPointType(string meteringPointType)
+    {
+        _meteringPointType = meteringPointType;
         return this;
     }
 }

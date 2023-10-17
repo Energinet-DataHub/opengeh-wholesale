@@ -15,8 +15,9 @@
 from datetime import datetime
 from decimal import Decimal
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import lit, col
+from pyspark.sql.functions import array, lit, col
 import pytest
+from typing import Union
 import uuid
 
 from package.codelists import (
@@ -36,7 +37,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
         EnergyResultColumnNames.energy_supplier_id: "1234567890123",
         EnergyResultColumnNames.balance_responsible_id: "9876543210987",
         EnergyResultColumnNames.quantity: Decimal("1.123"),
-        EnergyResultColumnNames.quantity_quality: "missing",
+        EnergyResultColumnNames.quantity_qualities: ["missing"],
         EnergyResultColumnNames.time: datetime(2020, 1, 1, 0, 0),
         EnergyResultColumnNames.aggregation_level: "total_ga",
         EnergyResultColumnNames.time_series_type: "production",
@@ -66,8 +67,9 @@ def _create_df(spark: SparkSession) -> DataFrame:
         (EnergyResultColumnNames.from_grid_area, "12"),
         (EnergyResultColumnNames.from_grid_area, "1234"),
         (EnergyResultColumnNames.time, None),
-        (EnergyResultColumnNames.quantity_quality, None),
-        (EnergyResultColumnNames.quantity_quality, "foo"),
+        (EnergyResultColumnNames.quantity_qualities, []),
+        (EnergyResultColumnNames.quantity_qualities, [None]),
+        (EnergyResultColumnNames.quantity_qualities, ["foo"]),
         (EnergyResultColumnNames.aggregation_level, None),
         (EnergyResultColumnNames.aggregation_level, "foo"),
     ],
@@ -75,12 +77,18 @@ def _create_df(spark: SparkSession) -> DataFrame:
 def test__migrated_table_rejects_invalid_data(
     spark: SparkSession,
     column_name: str,
-    invalid_column_value: str,
+    invalid_column_value: Union[str, list],
     migrations_executed: None,
 ) -> None:
     # Arrange
     results_df = _create_df(spark)
-    invalid_df = results_df.withColumn(column_name, lit(invalid_column_value))
+
+    if isinstance(invalid_column_value, list):
+        invalid_df = results_df.withColumn(
+            column_name, array(*map(lit, invalid_column_value))
+        )
+    else:
+        invalid_df = results_df.withColumn(column_name, lit(invalid_column_value))
 
     # Act
     with pytest.raises(Exception) as ex:
@@ -144,7 +152,11 @@ def test__migrated_table_accepts_valid_data(
     [
         *[(EnergyResultColumnNames.calculation_type, x.value) for x in ProcessType],
         *[(EnergyResultColumnNames.time_series_type, x.value) for x in TimeSeriesType],
-        *[(EnergyResultColumnNames.quantity_quality, x.value) for x in QuantityQuality],
+        *[
+            (EnergyResultColumnNames.quantity_qualities, [x.value])
+            for x in QuantityQuality
+            if x != QuantityQuality.INCOMPLETE
+        ],
         *[
             (EnergyResultColumnNames.aggregation_level, x.value)
             for x in AggregationLevel
@@ -154,14 +166,19 @@ def test__migrated_table_accepts_valid_data(
 def test__migrated_table_accepts_enum_value(
     spark: SparkSession,
     column_name: str,
-    column_value: str,
+    column_value: Union[str, list],
     migrations_executed: None,
 ) -> None:
-    "Test that all enum values are accepted by the delta table"
+    """Test that all enum values are accepted by the delta table"""
 
     # Arrange
     result_df = _create_df(spark)
-    result_df = result_df.withColumn(column_name, lit(column_value))
+
+    # TODO BJM: Refactor and reuse
+    if isinstance(column_value, list):
+        result_df = result_df.withColumn(column_name, array(*map(lit, column_value)))
+    else:
+        result_df = result_df.withColumn(column_name, lit(column_value))
 
     # Act and assert: Expectation is that no exception is raised
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(

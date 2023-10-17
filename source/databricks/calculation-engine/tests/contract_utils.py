@@ -34,11 +34,17 @@ def assert_contract_matches_schema(contract_path: str, schema: StructType) -> No
         actual_field = next(
             (x for x in actual_schema if expected_field["name"] == x["name"]), None
         )
+
         assert (
             actual_field is not None
         ), f"""Actual schema is missing field '{expected_field["name"]}' from contract."""
+
+        actual_type = actual_field["type"]
+        # Primitive anticipation of the actual type supporting e.g. "array<string>"
+        if type(actual_type) is not str:
+            actual_type = f"{actual_type['type']}<{actual_type['elementType']}>"
         assert (
-            actual_field["type"] == expected_field["type"]
+            actual_type == expected_field["type"]
         ), f"""Actual type ({actual_field["type"]}) of field {expected_field["name"]}
         does not match the expected type ({expected_field["type"]})."""
 

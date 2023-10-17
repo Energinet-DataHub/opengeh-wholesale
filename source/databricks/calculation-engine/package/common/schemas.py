@@ -33,10 +33,7 @@ def assert_schema(
         or ignore_decimal_scale
     )
     if strict:
-        if actual != expected:
-            raise AssertionError(
-                f"Schema mismatch. Expected {expected}, but got {actual}."
-            )
+        raise AssertionError(f"Schema mismatch. Expected {expected}, but got {actual}.")
 
     actual_fields = actual.fields
     expected_fields = expected.fields

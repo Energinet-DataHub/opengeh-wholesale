@@ -44,7 +44,8 @@ public static class SqlResultValueConverters
 
     public static QuantityQuality ToQuantityQuality(string value)
     {
-        return QuantityQualityMapper.FromDeltaTableValue(value);
+        // TODO BJM: Anticipating a single quality will be changed as part of issue #35
+        return QuantityQualitiesMapper.FromDeltaTableValue(value).Single();
     }
 
     public static TimeSeriesType ToTimeSeriesType(string value)

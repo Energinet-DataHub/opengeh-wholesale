@@ -87,7 +87,7 @@ public class SqlResultValueConvertersTests
     public void ToQuantityQuality_WhenValueIsValid_ReturnsQuantityQuality()
     {
         // Arrange
-        var value = "measured";
+        var value = "[\"measured\"]";
 
         // Act
         var actual = SqlResultValueConverters.ToQuantityQuality(value);
