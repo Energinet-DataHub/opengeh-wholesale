@@ -26,7 +26,8 @@ public class EnergySupplierValidatorTest
     public const string ValidGlnNumber = "qwertyuiopasd"; // Must be 13 characters to be a valid GLN
     private const string ValidEicNumber = "qwertyuiopasdfgh"; // Must be 16 characters to be a valid GLN
 
-    private const string ExpectedErrorMessage = "Feltet EnergySupplier skal være udfyldt med et valid GLN/EIC nummer når en elleverandør anmoder om data / EnergySupplier must be submitted with a valid GLN/EIC number when an energy supplier requests data";
+    private const string ExpectedInvalidEnergySupplierErrorMessage = "Feltet EnergySupplier skal være udfyldt med et valid GLN/EIC nummer når en elleverandør anmoder om data / EnergySupplier must be submitted with a valid GLN/EIC number when an energy supplier requests data";
+    private const string ExpectedNotEqualEnergySupplierErrorMessage = "Elleverandør i besked stemmer ikke overenes med elleverandør i header / Energy supplier in message does not correspond with energy supplier in header";
     private const string ExpectedErrorCode = "E16";
 
     private readonly EnergySupplierFieldValidationRule _sut = new();
@@ -67,7 +68,7 @@ public class EnergySupplierValidatorTest
         var errors = _sut.Validate(message);
 
         // Assert
-        AssertSingleAndCorrectError(errors);
+        AssertSingleAndCorrectError(errors, ExpectedInvalidEnergySupplierErrorMessage);
     }
 
     [Fact]
@@ -80,7 +81,7 @@ public class EnergySupplierValidatorTest
         var errors = _sut.Validate(message);
 
         // Assert
-        AssertSingleAndCorrectError(errors);
+        AssertSingleAndCorrectError(errors, ExpectedNotEqualEnergySupplierErrorMessage);
     }
 
     [Fact]
@@ -94,7 +95,7 @@ public class EnergySupplierValidatorTest
         var errors = _sut.Validate(message);
 
         // Assert
-        AssertSingleAndCorrectError(errors);
+        AssertSingleAndCorrectError(errors, ExpectedInvalidEnergySupplierErrorMessage);
     }
 
     [Fact]
@@ -147,12 +148,12 @@ public class EnergySupplierValidatorTest
         return message;
     }
 
-    private void AssertSingleAndCorrectError(IList<ValidationError> errors)
+    private void AssertSingleAndCorrectError(IList<ValidationError> errors, string expectedErrorMessage)
     {
         Assert.Single(errors);
 
         var error = errors.Single();
-        Assert.Contains(ExpectedErrorMessage, error.Message);
+        Assert.Contains(expectedErrorMessage, error.Message);
         Assert.Contains(ExpectedErrorCode, error.ErrorCode);
     }
 }
