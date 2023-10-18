@@ -50,7 +50,7 @@ def _create_metering_point_period_row(
         Colname.metering_point_type: metering_point_type.value,
         Colname.calculation_type: "foo",
         Colname.settlement_method: settlement_method.value,
-        "grid_area_code": "foo",  # TODO BJM: This table column is named different from Colname.grid_area
+        Colname.grid_area: "foo",
         Colname.resolution: "foo",
         Colname.from_grid_area: "foo",
         Colname.to_grid_area: "foo",
