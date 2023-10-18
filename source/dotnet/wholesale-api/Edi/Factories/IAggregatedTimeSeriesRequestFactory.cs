@@ -12,19 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.EDI.Models;
 
 namespace Energinet.DataHub.Wholesale.EDI.Factories;
 
 public interface IAggregatedTimeSeriesRequestFactory
 {
-    /// <summary>
-    /// Responsible for parsing the received message.
-    /// </summary>
-    /// <param name="request"></param>
-    AggregatedTimeSeriesRequest Parse(ServiceBusReceivedMessage request);
-
     /// <summary>
     /// Responsible for parsing the received message.
     /// </summary>
