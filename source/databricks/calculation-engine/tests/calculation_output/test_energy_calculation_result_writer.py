@@ -14,12 +14,12 @@
 
 from datetime import datetime, timedelta
 from decimal import Decimal
-from typing import List
+from typing import Any, List
+import uuid
 
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col
 import pytest
-import uuid
 
 from package.codelists import (
     AggregationLevel,
@@ -31,11 +31,14 @@ from package.codelists import (
 from package.constants import Colname, EnergyResultColumnNames
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
 from package.calculation_output import EnergyCalculationResultWriter
+from package.calculation_output.energy_calculation_result_writer import (
+    _write_input_schema,
+)
+
 from tests.contract_utils import (
     assert_contract_matches_schema,
     get_column_names_from_contract,
 )
-from typing import Any
 
 # The batch id is used in parameterized test executed using xdist, which does not allow parameters to change
 DEFAULT_BATCH_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
@@ -85,9 +88,7 @@ def _create_result_row(
 
 
 def _create_result_df(spark: SparkSession, row: List[dict]) -> DataFrame:
-    return spark.createDataFrame(data=row).withColumn(
-        Colname.sum_quantity, col(Colname.sum_quantity).cast("decimal(18, 3)")
-    )
+    return spark.createDataFrame(data=row, schema=_write_input_schema)
 
 
 def _create_result_df_corresponding_to_four_calculation_results(

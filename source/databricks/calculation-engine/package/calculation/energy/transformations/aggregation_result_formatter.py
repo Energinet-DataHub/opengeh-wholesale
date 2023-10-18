@@ -78,6 +78,7 @@ def _add_missing_nullable_columns(result: DataFrame) -> DataFrame:
         result = result.withColumn(
             Colname.settlement_method, f.lit(None).cast(StringType())
         )
+    # TODO BJM: How can position be optional?
     if Colname.position not in result.columns:
         result = result.withColumn(Colname.position, f.lit(None).cast(IntegerType()))
     return result

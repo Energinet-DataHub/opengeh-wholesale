@@ -97,10 +97,13 @@ class EnergyCalculationResultWriter:
         )
 
     def _add_calculation_result_id(self, results):
+        results = results.withColumn(
+            EnergyResultColumnNames.calculation_result_id, f.expr("uuid()")
+        )
         window = Window.partitionBy(self._get_column_group_for_calculation_result_id())
         results = results.withColumn(
             EnergyResultColumnNames.calculation_result_id,
-            f.expr("uuid()").over(window),
+            f.first(f.col(EnergyResultColumnNames.calculation_result_id)).over(window),
         )
         return results
 
@@ -141,12 +144,12 @@ class EnergyCalculationResultWriter:
             EnergyResultColumnNames.calculation_id,
             EnergyResultColumnNames.calculation_execution_time_start,  # TODO BJM: Not needed?
             EnergyResultColumnNames.calculation_type,  # TODO BJM: Not needed?
-            EnergyResultColumnNames.grid_area,
-            EnergyResultColumnNames.time_series_type,
-            EnergyResultColumnNames.aggregation_level,
-            EnergyResultColumnNames.from_grid_area,  # TODO BJM: Missing to_grid_area?
-            EnergyResultColumnNames.balance_responsible_id,
-            EnergyResultColumnNames.energy_supplier_id,
+            Colname.grid_area,
+            Colname.time_series_type,
+            Colname.aggregation_level,
+            Colname.from_grid_area,  # TODO BJM: Missing to_grid_area?
+            Colname.balance_responsible_id,
+            Colname.energy_supplier_id,
         ]
 
     @staticmethod
@@ -165,7 +168,7 @@ _write_input_schema = t.StructType(
         # Energy quantity in kWh for the given observation time.
         # Null when quality is missing.
         # Example: 1234.534
-        t.StructField(Colname.quantity, t.DecimalType(18, 3), True),
+        t.StructField(Colname.sum_quantity, t.DecimalType(18, 3), True),
         t.StructField(Colname.quality, t.StringType(), False),
         t.StructField(
             Colname.time_window,
@@ -178,7 +181,13 @@ _write_input_schema = t.StructType(
         ),
         t.StructField(Colname.aggregation_level, t.StringType(), False),
         t.StructField(Colname.time_series_type, t.StringType(), False),
+        t.StructField(Colname.to_grid_area, t.StringType(), True),
         t.StructField(Colname.from_grid_area, t.StringType(), True),
+        t.StructField(Colname.metering_point_type, t.StringType(), True),
+        t.StructField(Colname.settlement_method, t.StringType(), True),
+        t.StructField(Colname.metering_point_type, t.StringType(), True),
+        # TODO BJM: How can position be optional?
+        t.StructField(Colname.position, t.IntegerType(), True),
     ]
 )
 """
