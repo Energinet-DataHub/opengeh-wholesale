@@ -12,10 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.EDI.Models;
+namespace Energinet.DataHub.Wholesale.EDI.Validation;
 
-public static class SettlementMethod
+public static class ActorNumberValidationHelper
 {
-    public const string Flex = "D01";
-    public const string NonProfiled = "E02";
+    public static bool IsValidGlnNumber(string actorNumber)
+    {
+        return actorNumber.Length == 13;
+    }
+
+    public static bool IsValidEicNumber(string actorNumber)
+    {
+        return actorNumber.Length == 16;
+    }
 }

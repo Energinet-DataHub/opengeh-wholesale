@@ -35,11 +35,14 @@ public static class EdiRegistration
         AddAggregatedTimeSeriesRequestValidation(serviceCollection);
     }
 
-    private static void AddAggregatedTimeSeriesRequestValidation(IServiceCollection serviceCollection)
+    public static void AddAggregatedTimeSeriesRequestValidation(IServiceCollection serviceCollection)
     {
         serviceCollection.AddSingleton<IValidator<AggregatedTimeSeriesRequest>, AggregatedTimeSeriesRequestValidator>();
         serviceCollection.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, PeriodValidationRule>();
         serviceCollection.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, MeteringPointTypeValidationRule>();
-        serviceCollection.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, EnergySupplierFieldValidationRule>();
+        serviceCollection.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, EnergySupplierValidationRule>();
+        serviceCollection.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, SettlementMethodValidationRule>();
+        serviceCollection.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, TimeSeriesTypeValidationRule>();
+        serviceCollection.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, BalanceResponsibleValidationRule>();
     }
 }
