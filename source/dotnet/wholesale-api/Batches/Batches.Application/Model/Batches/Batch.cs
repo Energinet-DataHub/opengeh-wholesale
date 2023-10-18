@@ -168,7 +168,7 @@ public class Batch
     /// <summary>
     /// Get the unit for result values (an energy unit for aggregations and a price unit/currency for settlements).
     /// </summary>
-    public string GetQuantityUnit()
+    public QuantityUnit GetQuantityUnit()
     {
         switch (ProcessType)
         {
@@ -178,7 +178,7 @@ public class Batch
             case ProcessType.FirstCorrectionSettlement:
             case ProcessType.SecondCorrectionSettlement:
             case ProcessType.ThirdCorrectionSettlement:
-                return "kWh";
+                return QuantityUnit.Kwh;
             default:
                 throw new NotImplementedException();
         }
