@@ -14,20 +14,15 @@
 
 namespace Energinet.DataHub.Wholesale.EDI.Validation;
 
-public sealed class ValidationError
+public static class ActorNumberValidationHelper
 {
-    public ValidationError(string message, string errorCode)
+    public static bool IsValidGlnNumber(string actorNumber)
     {
-        Message = message;
-        ErrorCode = errorCode;
+        return actorNumber.Length == 13;
     }
 
-    public string Message { get; }
-
-    public string ErrorCode { get; }
-
-    public ValidationError WithPropertyName(string propertyName)
+    public static bool IsValidEicNumber(string actorNumber)
     {
-        return new ValidationError(Message.Replace("{PropertyName}", propertyName), ErrorCode);
+        return actorNumber.Length == 16;
     }
 }

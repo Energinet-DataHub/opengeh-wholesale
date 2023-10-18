@@ -30,14 +30,15 @@ public class AggregatedTimeSeriesRequestBuilder
     private string _requestedByActorRoleId;
     private string _requestedByActorId;
     private string? _settlementMethod;
+    private string? _balanceResponsibleId;
 
     private AggregatedTimeSeriesRequestBuilder()
     {
         var now = SystemClock.Instance.GetCurrentInstant();
         _start = Instant.FromUtc(now.InUtc().Year, 1, 1, 23, 0, 0).ToString();
         _end = Instant.FromUtc(now.InUtc().Year, 1, 2, 23, 0, 0).ToString();
-        _requestedByActorRoleId = "unknown-actor-role-id";
-        _requestedByActorId = "unknown-actor-id";
+        _requestedByActorRoleId = ActorRoleCode.EnergySupplier;
+        _requestedByActorId = "qwertyuiopasd";
     }
 
     public static AggregatedTimeSeriesRequestBuilder AggregatedTimeSeriesRequest()
@@ -63,6 +64,9 @@ public class AggregatedTimeSeriesRequestBuilder
         if (_energySupplierId != null)
             request.EnergySupplierId = _energySupplierId;
 
+        if (_balanceResponsibleId != null)
+            request.BalanceResponsibleId = _balanceResponsibleId;
+
         if (_settlementMethod != null)
             request.SettlementMethod = _settlementMethod;
 
@@ -87,11 +91,15 @@ public class AggregatedTimeSeriesRequestBuilder
         return this;
     }
 
-    public AggregatedTimeSeriesRequestBuilder WithRequestedByActor(string actorRoleId, string actorId)
+    public AggregatedTimeSeriesRequestBuilder WithRequestedByActorId(string actorId)
+    {
+        _requestedByActorId = actorId;
+        return this;
+    }
+
+    public AggregatedTimeSeriesRequestBuilder WithRequestedByActorRole(string actorRoleId)
     {
         _requestedByActorRoleId = actorRoleId;
-        _requestedByActorId = actorId;
-
         return this;
     }
 
@@ -105,6 +113,12 @@ public class AggregatedTimeSeriesRequestBuilder
     {
         _settlementMethod = settlementMethod;
 
+        return this;
+    }
+
+    public AggregatedTimeSeriesRequestBuilder WithBalanceResponsibleId(string? balanceResponsibleId)
+    {
+        _balanceResponsibleId = balanceResponsibleId;
         return this;
     }
 }

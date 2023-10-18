@@ -24,8 +24,7 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 
 public class TimeSeriesTypeValidatorTests
 {
-    private const string ExpectedErrorMessage = "Den forespurgte tidsserie type kan ikke forespørges som en {PropertyName} / The requested time series type can not be requested as a {PropertyName}";
-    private const string ExpectedErrorCode = "D11";
+    private static readonly ValidationError _invalidTimeSeriesTypeForActor = new("Den forespurgte tidsserie type kan ikke forespørges som en {PropertyName} / The requested time series type can not be requested as a {PropertyName}", "D11");
 
     private readonly TimeSeriesTypeValidationRule _sut = new();
 
@@ -35,98 +34,115 @@ public class TimeSeriesTypeValidatorTests
     [InlineData(MeteringPointType.Consumption, null)]
     [InlineData(MeteringPointType.Consumption, SettlementMethod.NonProfiled)]
     [InlineData(MeteringPointType.Consumption, SettlementMethod.Flex)]
-    public void Validate_AsMeteredDataResponsible_NoValidationErrors(string meteringPointType, string? settlementMethod)
+    public void Validate_AsMeteredDataResponsible_ReturnsNoValidationErrors(string meteringPointType, string? settlementMethod)
     {
         // Arrange
-        var message = CreateAggregatedTimeSeriesRequest(meteringPointType, settlementMethod, ActorRoleCode.MeteredDataResponsible);
-
-        // Act
-        var errors = _sut.Validate(message);
-
-        // Assert
-        errors.Should().BeEmpty();
-    }
-
-    [Theory]
-    [InlineData(MeteringPointType.Production, null)]
-    [InlineData(MeteringPointType.Consumption, SettlementMethod.NonProfiled)]
-    [InlineData(MeteringPointType.Consumption, SettlementMethod.Flex)]
-    public void Validate_AsEnergySupplier_NoValidationErrors(string meteringPointType, string? settlementMethod)
-    {
-        // Arrange
-        var message = CreateAggregatedTimeSeriesRequest(meteringPointType, settlementMethod, ActorRoleCode.EnergySupplier);
-
-        // Act
-        var errors = _sut.Validate(message);
-
-        // Assert
-        errors.Should().BeEmpty();
-    }
-
-    [Theory]
-    [InlineData(MeteringPointType.Production, null)]
-    [InlineData(MeteringPointType.Consumption, SettlementMethod.NonProfiled)]
-    [InlineData(MeteringPointType.Consumption, SettlementMethod.Flex)]
-    public void Validate_AsBalanceResponsible_NoValidationErrors(string meteringPointType, string? settlementMethod)
-    {
-        // Arrange
-        var message = CreateAggregatedTimeSeriesRequest(meteringPointType, settlementMethod, ActorRoleCode.BalanceResponsibleParty);
-
-        // Act
-        var errors = _sut.Validate(message);
-
-        // Assert
-        errors.Should().BeEmpty();
-    }
-
-    [Theory]
-    [InlineData(MeteringPointType.Exchange)]
-    [InlineData(MeteringPointType.Consumption)]
-    public void Validate_AsEnergySupplier_ValidationErrors(string meteringPointType)
-    {
-        // Arrange
-        var message = CreateAggregatedTimeSeriesRequest(meteringPointType, null, ActorRoleCode.EnergySupplier);
-
-        // Act
-        var errors = _sut.Validate(message);
-
-        // Assert
-        AssertSingleErrorWithCorrectErrorCode(errors, ActorRoleCode.EnergySupplier);
-    }
-
-    [Theory]
-    [InlineData(MeteringPointType.Exchange)]
-    [InlineData(MeteringPointType.Consumption)]
-    public void Validate_AsBalanceResponsible_ValidationErrors(string meteringPointType)
-    {
-        // Arrange
-        var message = CreateAggregatedTimeSeriesRequest(meteringPointType, null, ActorRoleCode.BalanceResponsibleParty);
-
-        // Act
-        var errors = _sut.Validate(message);
-
-        // Assert
-        AssertSingleErrorWithCorrectErrorCode(errors, ActorRoleCode.BalanceResponsibleParty);
-    }
-
-    private static AggregatedTimeSeriesRequest CreateAggregatedTimeSeriesRequest(string meteringPointType, string? settlementMethod, string actorRoleCode)
-    {
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
             .WithMeteringPointType(meteringPointType)
             .WithSettlementMethod(settlementMethod)
-            .WithRequestedByActor(actorRoleCode, "1234567890123")
+            .WithRequestedByActorId("1234567890123")
+            .WithRequestedByActorRole(ActorRoleCode.MeteredDataResponsible)
             .Build();
 
-        return message;
+        // Act
+        var errors = _sut.Validate(message);
+
+        // Assert
+        errors.Should().BeEmpty();
     }
 
-    private void AssertSingleErrorWithCorrectErrorCode(IList<ValidationError> errors, string actorRoleCode)
+    [Theory]
+    [InlineData(MeteringPointType.Production, null)]
+    [InlineData(MeteringPointType.Consumption, SettlementMethod.NonProfiled)]
+    [InlineData(MeteringPointType.Consumption, SettlementMethod.Flex)]
+    public void Validate_AsEnergySupplier_ReturnsNoValidationErrors(string meteringPointType, string? settlementMethod)
     {
-        Assert.Single(errors);
+        // Arrange
+        var message = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithMeteringPointType(meteringPointType)
+            .WithSettlementMethod(settlementMethod)
+            .WithRequestedByActorId("1234567890123")
+            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
+            .Build();
 
-        var error = errors.Single();
-        Assert.Contains(ExpectedErrorMessage.Replace("{PropertyName}", actorRoleCode), error.Message);
-        Assert.Contains(ExpectedErrorCode, error.ErrorCode);
+        // Act
+        var errors = _sut.Validate(message);
+
+        // Assert
+        errors.Should().BeEmpty();
+    }
+
+    [Theory]
+    [InlineData(MeteringPointType.Production, null)]
+    [InlineData(MeteringPointType.Consumption, SettlementMethod.NonProfiled)]
+    [InlineData(MeteringPointType.Consumption, SettlementMethod.Flex)]
+    public void Validate_AsBalanceResponsible_ReturnsNoValidationErrors(string meteringPointType, string? settlementMethod)
+    {
+        // Arrange
+        var message = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithMeteringPointType(meteringPointType)
+            .WithSettlementMethod(settlementMethod)
+            .WithRequestedByActorId("1234567890123")
+            .WithRequestedByActorRole(ActorRoleCode.BalanceResponsibleParty)
+            .Build();
+
+        // Act
+        var errors = _sut.Validate(message);
+
+        // Assert
+        errors.Should().BeEmpty();
+    }
+
+    [Theory]
+    [InlineData(MeteringPointType.Exchange)]
+    [InlineData(MeteringPointType.Consumption)]
+    public void Validate_AsEnergySupplierAndNoSettlementMethod_ReturnsExceptedValidationErrors(string meteringPointType)
+    {
+        // Arrange
+        var message = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithMeteringPointType(meteringPointType)
+            .WithSettlementMethod(null)
+            .WithRequestedByActorId("1234567890123")
+            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
+            .Build();
+
+        // Act
+        var errors = _sut.Validate(message);
+
+        // Assert
+        errors.Should().ContainSingle();
+
+        var error = errors.First();
+        error.Message.Should().Be(_invalidTimeSeriesTypeForActor.WithPropertyName(ActorRoleCode.EnergySupplier).Message);
+        error.ErrorCode.Should().Be(_invalidTimeSeriesTypeForActor.ErrorCode);
+    }
+
+    [Theory]
+    [InlineData(MeteringPointType.Exchange)]
+    [InlineData(MeteringPointType.Consumption)]
+    public void Validate_AsBalanceResponsibleAndNoSettlementMethod_ValidationErrors(string meteringPointType)
+    {
+        // Arrange
+        var message = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithMeteringPointType(meteringPointType)
+            .WithSettlementMethod(null)
+            .WithRequestedByActorId("1234567890123")
+            .WithRequestedByActorRole(ActorRoleCode.BalanceResponsibleParty)
+            .Build();
+
+        // Act
+        var errors = _sut.Validate(message);
+
+        // Assert
+        errors.Should().ContainSingle();
+
+        var error = errors.First();
+        error.Message.Should().Be(_invalidTimeSeriesTypeForActor.WithPropertyName(ActorRoleCode.BalanceResponsibleParty).Message);
+        error.ErrorCode.Should().Be(_invalidTimeSeriesTypeForActor.ErrorCode);
     }
 }
