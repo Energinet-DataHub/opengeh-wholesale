@@ -31,15 +31,13 @@ from package.codelists import (
 from package.constants import Colname, EnergyResultColumnNames
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
 from package.calculation_output import EnergyCalculationResultWriter
-from package.calculation_output.energy_calculation_result_writer import (
-    _get_column_group_for_calculation_result_id,
-)
 from tests.contract_utils import (
     assert_contract_matches_schema,
     get_column_names_from_contract,
 )
 from typing import Any
 
+# The batch id is used in parameterized test executed using xdist, which does not allow parameters to change
 DEFAULT_BATCH_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
 DEFAULT_GRID_AREA = "105"
 DEFAULT_FROM_GRID_AREA = "106"
@@ -79,6 +77,8 @@ def _create_result_row(
         },
         Colname.energy_supplier_id: energy_supplier_id,
         Colname.balance_responsible_id: balance_responsible_id,
+        Colname.aggregation_level: AggregationLevel.TOTAL_GA.value,
+        Colname.time_series_type: TimeSeriesType.PRODUCTION.value,
     }
 
     return row
@@ -129,6 +129,49 @@ def _create_result_df_corresponding_to_four_calculation_results(
     )
 
 
+def test__write__when_invalid_results_schema__raises_assertion_error(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    invalid_df = spark.createDataFrame([{"foo": 42}])
+    sut = EnergyCalculationResultWriter(
+        DEFAULT_BATCH_ID,
+        DEFAULT_PROCESS_TYPE,
+        DEFAULT_BATCH_EXECUTION_START,
+    )
+
+    # Act and assert
+    with pytest.raises(AssertionError) as excinfo:
+        sut.write(
+            invalid_df,
+            DEFAULT_TIME_SERIES_TYPE,
+            DEFAULT_AGGREGATION_LEVEL,
+        )
+    assert "Schema mismatch" in str(excinfo)
+
+
+def test__write__when_results_schema_missing_optional_column__does_not_raise(
+    spark: SparkSession,
+    migrations_executed: None,
+) -> None:
+    # Arrange
+    row = [_create_result_row()]
+    result = _create_result_df(spark, row)
+    df_missing_optional_column = result.drop(col(Colname.balance_responsible_id))
+    sut = EnergyCalculationResultWriter(
+        DEFAULT_BATCH_ID,
+        DEFAULT_PROCESS_TYPE,
+        DEFAULT_BATCH_EXECUTION_START,
+    )
+
+    # Act and assert (implicitly that no error is raised)
+    sut.write(
+        df_missing_optional_column,
+        DEFAULT_TIME_SERIES_TYPE,
+        DEFAULT_AGGREGATION_LEVEL,
+    )
+
+
 @pytest.mark.parametrize(
     "aggregation_level",
     AggregationLevel,
@@ -162,14 +205,10 @@ def test__write__writes_aggregation_level(
     assert actual_df.collect()[0][Colname.aggregation_level] == aggregation_level.value
 
 
-# The batch id is used in parameterized test executed using xdist, which does not allow parameters to change
-batch_id = "0b15a420-9fc8-409a-a169-fbd49479d718"  # Needed in both test param and test implementation
-
-
 @pytest.mark.parametrize(
     "column_name, column_value",
     [
-        (EnergyResultColumnNames.calculation_id, batch_id),
+        (EnergyResultColumnNames.calculation_id, DEFAULT_BATCH_ID),
         (
             EnergyResultColumnNames.calculation_execution_time_start,
             DEFAULT_BATCH_EXECUTION_START,
@@ -199,7 +238,7 @@ def test__write__writes_column(
     row = [_create_result_row()]
     result_df = _create_result_df(spark, row)
     sut = EnergyCalculationResultWriter(
-        batch_id,
+        DEFAULT_BATCH_ID,
         DEFAULT_PROCESS_TYPE,
         DEFAULT_BATCH_EXECUTION_START,
     )
@@ -213,7 +252,7 @@ def test__write__writes_column(
 
     # Assert
     actual_df = spark.read.table(TABLE_NAME).where(
-        col(EnergyResultColumnNames.calculation_id) == batch_id
+        col(EnergyResultColumnNames.calculation_id) == DEFAULT_BATCH_ID
     )
     assert actual_df.collect()[0][column_name] == column_value
 
@@ -228,7 +267,7 @@ def test__write__writes_columns_matching_contract(
     row = [_create_result_row()]
     result_df = _create_result_df(spark, row)
     sut = EnergyCalculationResultWriter(
-        batch_id,
+        DEFAULT_BATCH_ID,
         DEFAULT_PROCESS_TYPE,
         DEFAULT_BATCH_EXECUTION_START,
     )
@@ -242,7 +281,7 @@ def test__write__writes_columns_matching_contract(
 
     # Assert
     actual_df = spark.read.table(TABLE_NAME).where(
-        col(EnergyResultColumnNames.calculation_id) == batch_id
+        col(EnergyResultColumnNames.calculation_id) == DEFAULT_BATCH_ID
     )
 
     assert_contract_matches_schema(contract_path, actual_df.schema)
@@ -255,7 +294,7 @@ def test__write__writes_calculation_result_id(
     result_df = _create_result_df_corresponding_to_four_calculation_results(spark)
     EXPECTED_NUMBER_OF_CALCULATION_RESULT_IDS = 4
     sut = EnergyCalculationResultWriter(
-        batch_id,
+        DEFAULT_BATCH_ID,
         DEFAULT_PROCESS_TYPE,
         DEFAULT_BATCH_EXECUTION_START,
     )
@@ -292,7 +331,7 @@ def test__get_column_group_for_calculation_result_id__returns_expected_column_na
     ]
 
     # Act
-    actual = _get_column_group_for_calculation_result_id()
+    actual = EnergyCalculationResultWriter._get_column_group_for_calculation_result_id()
 
     # Assert
     assert actual == expected_column_names
@@ -314,7 +353,9 @@ def test__get_column_group_for_calculation_result_id__excludes_exepected_other_c
     all_columns = get_column_names_from_contract(contract_path)
 
     # Act
-    included_columns = _get_column_group_for_calculation_result_id()
+    included_columns = (
+        EnergyCalculationResultWriter._get_column_group_for_calculation_result_id()
+    )
     actual_other_columns = set(all_columns) - set(included_columns)
 
     # Assert
