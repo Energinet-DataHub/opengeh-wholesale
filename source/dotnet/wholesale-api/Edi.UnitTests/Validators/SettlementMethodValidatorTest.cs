@@ -18,7 +18,6 @@ using Energinet.DataHub.Wholesale.EDI.Validation;
 using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
 using FluentAssertions;
 using Xunit;
-using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 
@@ -81,7 +80,7 @@ public class SettlementMethodValidatorTest
         var errors = _sut.Validate(message);
 
         // Assert
-        Assert.Single(errors);
+        errors.Should().ContainSingle();
 
         var error = errors.First();
         error.ErrorCode.Should().Be(_invalidSettlementMethod.ErrorCode);
@@ -114,7 +113,7 @@ public class SettlementMethodValidatorTest
         var errors = _sut.Validate(message);
 
         // Assert
-        Assert.Single(errors);
+        errors.Should().ContainSingle();
 
         var error = errors.First();
         error.ErrorCode.Should().Be(_invalidSettlementMethod.ErrorCode);
