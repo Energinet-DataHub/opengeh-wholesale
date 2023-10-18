@@ -12,19 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Edi.Requests;
+using Energinet.DataHub.Wholesale.EDI.Models;
+using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 
 namespace Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
 
 public class BalanceResponsibleValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
 {
-    private const string BalanceResponsibleRole = "DDK";
     private static readonly ValidationError _invalidBalanceResponsible = new("Feltet BalanceResponsibleParty skal være udfyldt med et valid GLN/EIC når en balanceansvarlig anmoder om data / BalanceResponsibleParty must be submitted with a valid GLN/EIC when a balance responsible requests data", "E18");
     private static readonly ValidationError _mismatchedBalanceResponsibleInHeaderAndMessage = new("BalanceResponsibleParty i besked stemmer ikke overenes med balanceansvarlig anmoder i header / BalanceResponsibleParty in message does not correspond with balance responsible in header", "E18");
 
     public IList<ValidationError> Validate(AggregatedTimeSeriesRequest subject)
     {
-        if (subject.RequestedByActorRole == BalanceResponsibleRole)
+        if (subject.RequestedByActorRole == ActorRoleCode.BalanceResponsibleParty)
         {
             if (string.IsNullOrWhiteSpace(subject.BalanceResponsibleId))
                 return new List<ValidationError>() { _invalidBalanceResponsible };
