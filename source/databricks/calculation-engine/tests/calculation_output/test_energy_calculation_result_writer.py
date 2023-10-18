@@ -334,7 +334,7 @@ def test__write__writes_calculation_result_id(
 #     assert actual == expected_column_names
 
 
-def test__get_column_group_for_calculation_result_id__excludes_exepected_other_column_names(
+def test__get_column_group_for_calculation_result_id__excludes_expected_other_column_names(
     contracts_path: str,
 ) -> None:
     # This class is a guard against adding new columns without considering how the column affects the generation of calculation result IDs
@@ -353,7 +353,22 @@ def test__get_column_group_for_calculation_result_id__excludes_exepected_other_c
     included_columns = (
         EnergyCalculationResultWriter._get_column_group_for_calculation_result_id()
     )
-    actual_other_columns = set(all_columns) - set(included_columns)
 
     # Assert
+    included_columns = list(
+        map(_map_colname_to_energy_result_column_name, included_columns)
+    )
+    actual_other_columns = set(all_columns) - set(included_columns)
     assert set(actual_other_columns) == set(expected_other_columns)
+
+
+def _map_colname_to_energy_result_column_name(field_name: str) -> str:
+    """
+    Test workaround as the contract specifies the Delta table column names
+    while some of the data frame column names are using `Colname` names.
+    """
+    if field_name == Colname.grid_area:
+        return EnergyResultColumnNames.grid_area
+    if field_name == Colname.from_grid_area:
+        return EnergyResultColumnNames.from_grid_area
+    return field_name

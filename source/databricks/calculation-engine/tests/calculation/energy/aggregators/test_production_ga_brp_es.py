@@ -371,10 +371,11 @@ def test__quarterly_sums_correctly(
 def test__that_grid_area_code_in_input_is_in_output(
     enriched_time_series_quarterly_same_time_factory: Callable[..., DataFrame],
 ) -> None:
-    "Test that the grid area codes in input are in result"
+    """Test that the grid area codes in input are in result"""
     df = enriched_time_series_quarterly_same_time_factory()
     result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
-    assert result_df.first().grid_area == str(grid_area_code_805)
+    actual_row = result_df.first()
+    assert getattr(actual_row, Colname.grid_area) == str(grid_area_code_805)
 
 
 def test__each_grid_area_has_a_sum(
