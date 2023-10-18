@@ -67,7 +67,7 @@ public class BalanceResponsibleValidatorTest
     }
 
     [Fact]
-    public void Validate_WhenRequesterIsBalanceResponsibleAndMissingBalanceResponsibleField_ReturnsExceptedValidationError()
+    public void Validate_WhenRequesterIsBalanceResponsibleAndMissingBalanceResponsibleField_ReturnsExpectedValidationError()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -88,7 +88,7 @@ public class BalanceResponsibleValidatorTest
     }
 
     [Fact]
-    public void Validate_WhenRequesterIsBalanceResponsibleAndBalanceResponsibleFieldNotEqualRequestedById_ReturnsExceptedValidationError()
+    public void Validate_WhenRequesterIsBalanceResponsibleAndBalanceResponsibleFieldNotEqualRequestedById_ReturnsExpectedValidationError()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -110,7 +110,7 @@ public class BalanceResponsibleValidatorTest
     }
 
     [Fact]
-    public void Validate_WhenRequesterIsBalanceResponsibleAndInvalidBalanceResponsibleField_ReturnsExceptedValidationError()
+    public void Validate_WhenRequesterIsBalanceResponsibleAndInvalidBalanceResponsibleField_ReturnsExpectedValidationError()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
