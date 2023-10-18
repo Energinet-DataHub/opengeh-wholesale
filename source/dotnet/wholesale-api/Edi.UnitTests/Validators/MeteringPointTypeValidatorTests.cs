@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Edi.Models;
+using Energinet.DataHub.Wholesale.EDI.Models;
 using Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
+using Energinet.DataHub.Wholesale.EDI.Validation;
 using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
 using FluentAssertions;
 using Xunit;
@@ -22,15 +23,15 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 
 public class MeteringPointTypeValidatorTests
 {
-    private const string ExpectedErrorCode = "D18";
-    private const string ExpectedErrorMessage = "Metering point type skal være en af følgende: E17, E18, E20 / Metering point type has to be one of the following: E17, E18, E20";
+    private static readonly ValidationError _invalidMeteringPointType = new("Metering point type skal være en af følgende: {PropertyName} / Metering point type has to be one of the following: {PropertyName}", "D18");
+
     private readonly MeteringPointTypeValidationRule _sut = new();
 
     [Theory]
     [InlineData(MeteringPointType.Consumption)]
     [InlineData(MeteringPointType.Production)]
     [InlineData(MeteringPointType.Exchange)]
-    public void Validate_WhenValidMeteringPoint_ReturnsExpectedNoValidationErrors(string meteringPointType)
+    public void Validate_WhenMeteringPointIsValid_ReturnsExpectedNoValidationErrors(string meteringPointType)
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -45,14 +46,13 @@ public class MeteringPointTypeValidatorTests
         errors.Should().BeEmpty();
     }
 
-    [Theory]
-    [InlineData("Invalid")]
-    public void Validate_InvalidMeteringPointType_ReturnsExpectedValidationError(string meteringPointType)
+    [Fact]
+    public void Validate_WhenMeteringPointTypeIsInvalid_ReturnsExpectedValidationError()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithMeteringPointType(meteringPointType)
+            .WithMeteringPointType("Invalid")
             .Build();
 
         // Act
@@ -61,7 +61,7 @@ public class MeteringPointTypeValidatorTests
         // Assert
         errors.Should().ContainSingle();
         var error = errors.First();
-        Assert.Equal(ExpectedErrorCode, error.ErrorCode);
-        Assert.Equal(ExpectedErrorMessage, error.Message);
+        error.ErrorCode.Should().Be(_invalidMeteringPointType.ErrorCode);
+        error.Message.Should().Be(_invalidMeteringPointType.WithPropertyName("E17, E18, E20").Message);
     }
 }
