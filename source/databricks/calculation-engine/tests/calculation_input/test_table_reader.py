@@ -177,30 +177,6 @@ def test___read_metering_point_periods__returns_df_with_correct_settlement_metho
 
 
 @pytest.mark.parametrize(
-    "settlement_method,expected",
-    [
-        [InputSettlementMethod.FLEX, SettlementMethod.FLEX],
-        [InputSettlementMethod.NON_PROFILED, SettlementMethod.NON_PROFILED],
-    ],
-)
-def test___read_metering_point_periods__returns_df_with_correct_settlement_methods(
-    spark: SparkSession,
-    settlement_method: InputSettlementMethod,
-    expected: SettlementMethod,
-) -> None:
-    row = _create_metering_point_period_row(settlement_method=settlement_method)
-    df = spark.createDataFrame(data=[row], schema=metering_point_period_schema)
-    sut = TableReader(spark)
-
-    # Act
-    with mock.patch.object(sut, TableReader._read_table.__name__, return_value=df):
-        actual = sut.read_metering_point_periods()
-
-    # Assert
-    assert actual.collect()[0][Colname.settlement_method] == expected.value
-
-
-@pytest.mark.parametrize(
     "expected_schema, method_name, create_row",
     [
         (
