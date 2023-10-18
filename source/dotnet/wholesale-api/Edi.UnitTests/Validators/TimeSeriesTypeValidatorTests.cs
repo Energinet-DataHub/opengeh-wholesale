@@ -114,7 +114,7 @@ public class TimeSeriesTypeValidatorTests
         var errors = _sut.Validate(message);
 
         // Assert
-        Assert.Single(errors);
+        errors.Should().ContainSingle();
 
         var error = errors.First();
         error.Message.Should().Be(_invalidTimeSeriesTypeForActor.WithPropertyName(ActorRoleCode.EnergySupplier).Message);
@@ -139,7 +139,7 @@ public class TimeSeriesTypeValidatorTests
         var errors = _sut.Validate(message);
 
         // Assert
-        Assert.Single(errors);
+        errors.Should().ContainSingle();
 
         var error = errors.First();
         error.Message.Should().Be(_invalidTimeSeriesTypeForActor.WithPropertyName(ActorRoleCode.BalanceResponsibleParty).Message);
