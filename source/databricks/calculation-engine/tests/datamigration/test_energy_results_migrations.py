@@ -28,6 +28,7 @@ from package.codelists import (
 )
 from package.constants import EnergyResultColumnNames
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
+from package.calculation_output.schemas import energy_results_schema
 
 
 def _create_df(spark: SparkSession) -> DataFrame:
@@ -48,7 +49,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
         EnergyResultColumnNames.from_grid_area: "843",
         EnergyResultColumnNames.calculation_result_id: "6033ab5c-436b-44e9-8a79-90489d324e53",
     }
-    return spark.createDataFrame(data=[row])
+    return spark.createDataFrame(data=[row], schema=energy_results_schema)
 
 
 @pytest.mark.parametrize(
