@@ -20,30 +20,32 @@ namespace Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
 public class BalanceResponsibleValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
 {
     private static readonly ValidationError _invalidBalanceResponsible = new("Feltet BalanceResponsibleParty skal være udfyldt med et valid GLN/EIC når en balanceansvarlig anmoder om data / BalanceResponsibleParty must be submitted with a valid GLN/EIC when a balance responsible requests data", "E18");
-    private static readonly ValidationError _mismatchedBalanceResponsibleInHeaderAndMessage = new("BalanceResponsibleParty i besked stemmer ikke overenes med balanceansvarlig anmoder i header / BalanceResponsibleParty in message does not correspond with balance responsible in header", "E18");
+    private static readonly ValidationError _notEqualToRequestedBy = new("BalanceResponsibleParty i besked stemmer ikke overenes med balanceansvarlig anmoder i header / BalanceResponsibleParty in message does not correspond with balance responsible in header", "E18");
 
     public IList<ValidationError> Validate(AggregatedTimeSeriesRequest subject)
     {
-        if (subject.RequestedByActorRole == ActorRoleCode.BalanceResponsibleParty)
-        {
-            if (string.IsNullOrWhiteSpace(subject.BalanceResponsibleId))
-                return new List<ValidationError>() { _invalidBalanceResponsible };
+        if (subject.RequestedByActorRole != ActorRoleCode.BalanceResponsibleParty) return NoError;
 
-            if (!IsValidActorRoleFormat(subject.BalanceResponsibleId))
-                return new List<ValidationError>() { _invalidBalanceResponsible };
+        if (string.IsNullOrWhiteSpace(subject.BalanceResponsibleId))
+            return InvalidBalanceResponsibleError;
 
-            if (!subject.RequestedByActorId.Equals(subject.BalanceResponsibleId, StringComparison.OrdinalIgnoreCase))
-                return new List<ValidationError>() { _mismatchedBalanceResponsibleInHeaderAndMessage };
-        }
+        if (!IsValidBalanceResponsibleIdFormat(subject.BalanceResponsibleId))
+            return InvalidBalanceResponsibleError;
 
-        return new List<ValidationError>();
+        if (!subject.RequestedByActorId.Equals(subject.BalanceResponsibleId, StringComparison.OrdinalIgnoreCase))
+            return NotEqualToRequestedByError;
+
+        return NoError;
     }
 
-    private static bool IsValidActorRoleFormat(string energySupplierId)
+    private static bool IsValidBalanceResponsibleIdFormat(string balanceResponsibleId)
     {
-        var isValidGlnNumber = energySupplierId.Length == 13;
-        var isValidEicNumber = energySupplierId.Length == 16;
-
-        return isValidGlnNumber || isValidEicNumber;
+        return ActorNumberValidationHelper.IsValidGlnNumber(balanceResponsibleId) || ActorNumberValidationHelper.IsValidEicNumber(balanceResponsibleId);
     }
+
+    private static IList<ValidationError> NoError => new List<ValidationError>();
+
+    private static IList<ValidationError> InvalidBalanceResponsibleError => new List<ValidationError> { _invalidBalanceResponsible };
+
+    private static IList<ValidationError> NotEqualToRequestedByError => new List<ValidationError> { _notEqualToRequestedBy };
 }
