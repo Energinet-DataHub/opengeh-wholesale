@@ -37,6 +37,10 @@ from package.constants import Colname
 from pyspark.sql.types import StructType
 
 
+# TODO BJM: These tests seems incomplete.
+#           No tests seems to test the part of the table reader, which actually reads from the table
+
+
 def _create_metering_point_period_row(
     metering_point_type: InputMeteringPointType = InputMeteringPointType.CONSUMPTION,
     settlement_method: InputSettlementMethod = InputSettlementMethod.FLEX,
@@ -46,7 +50,7 @@ def _create_metering_point_period_row(
         Colname.metering_point_type: metering_point_type.value,
         Colname.calculation_type: "foo",
         Colname.settlement_method: settlement_method.value,
-        Colname.grid_area: "foo",
+        "grid_area_code": "foo",  # TODO BJM: This table column is named different from Colname.grid_area
         Colname.resolution: "foo",
         Colname.from_grid_area: "foo",
         Colname.to_grid_area: "foo",
@@ -155,7 +159,7 @@ def test___read_metering_point_periods__returns_df_with_correct_metering_point_t
         [InputSettlementMethod.NON_PROFILED, SettlementMethod.NON_PROFILED],
     ],
 )
-def test___read_metering_point_periods__returns_df_with_correct_settlemet_methods(
+def test___read_metering_point_periods__returns_df_with_correct_settlement_methods(
     spark: SparkSession,
     settlement_method: InputSettlementMethod,
     expected: SettlementMethod,
