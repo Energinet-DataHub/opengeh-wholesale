@@ -32,6 +32,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
     private readonly IValidator<Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest> _validator;
     private readonly ILogger<AggregatedTimeSeriesRequestHandler> _logger;
     private readonly IAggregatedTimeSeriesRequestFactory _aggregatedTimeSeriesRequestFactory;
+    private static readonly ValidationError _noDataAvailable = new("Ingen data tilgængelig / No data available", "E0H");
 
     public AggregatedTimeSeriesRequestHandler(
         IRequestCalculationResultQueries requestCalculationResultQueries,
@@ -69,7 +70,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
             }
             else
             {
-                message = AggregatedTimeSeriesRequestRejectedMessageFactory.Create(new[] { ValidationError.NoDataAvailable }, referenceId);
+                message = AggregatedTimeSeriesRequestRejectedMessageFactory.Create(new[] { _noDataAvailable }, referenceId);
             }
         }
         else

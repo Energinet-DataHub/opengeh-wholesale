@@ -18,7 +18,7 @@ using Xunit;
 using EdiModel = Energinet.DataHub.Edi.Responses;
 using WholesaleModel = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 
-namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Mappers
+namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Mappers
 {
     public class QuantityQualityMapperTests
     {
