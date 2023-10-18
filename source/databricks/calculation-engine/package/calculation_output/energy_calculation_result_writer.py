@@ -59,13 +59,27 @@ class EnergyCalculationResultWriter:
             ignore_decimal_precision=True,
         )
 
-        results = self._add_batch_columns(results)
-        results = self._add_calculation_result_id(results)
-        results = self._map_to_storage_dataframe(
+        results = self._add_aggregation_level_and_time_series_type(
             results, aggregation_level, time_series_type
         )
+        results = self._add_batch_columns(results)
+        results = self._add_calculation_result_id(results)
+        results = self._map_to_storage_dataframe(results)
 
         self._write_to_storage(results)
+
+    @staticmethod
+    def _add_aggregation_level_and_time_series_type(
+        results: DataFrame,
+        aggregation_level: AggregationLevel,
+        time_series_type: TimeSeriesType,
+    ) -> DataFrame:
+        return results.withColumn(
+            EnergyResultColumnNames.aggregation_level,
+            f.lit(aggregation_level.value),
+        ).withColumn(
+            EnergyResultColumnNames.time_series_type, f.lit(time_series_type.value)
+        )
 
     @staticmethod
     def _add_nullable_columns_if_missing(results: DataFrame) -> DataFrame:
@@ -80,7 +94,7 @@ class EnergyCalculationResultWriter:
                 )
         return results
 
-    def _add_batch_columns(self, results):
+    def _add_batch_columns(self, results: DataFrame) -> DataFrame:
         """Add columns that are the same for all calculation results in batch."""
         return (
             results.withColumn(
@@ -96,7 +110,7 @@ class EnergyCalculationResultWriter:
             )
         )
 
-    def _add_calculation_result_id(self, results):
+    def _add_calculation_result_id(self, results: DataFrame) -> DataFrame:
         results = results.withColumn(
             EnergyResultColumnNames.calculation_result_id, f.expr("uuid()")
         )
@@ -108,7 +122,7 @@ class EnergyCalculationResultWriter:
         return results
 
     @staticmethod
-    def _map_to_storage_dataframe(results, aggregation_level, time_series_type):
+    def _map_to_storage_dataframe(results: DataFrame) -> DataFrame:
         """
         Map column names to the Delta table field names
         Note: The order of the columns must match the order of the columns in the Delta table
@@ -124,12 +138,8 @@ class EnergyCalculationResultWriter:
             f.col(Colname.sum_quantity).alias(EnergyResultColumnNames.quantity),
             f.array(Colname.quality).alias(EnergyResultColumnNames.quantity_qualities),
             f.col(Colname.time_window_start).alias(EnergyResultColumnNames.time),
-            f.lit(aggregation_level.value).alias(
-                EnergyResultColumnNames.aggregation_level
-            ),
-            f.lit(time_series_type.value).alias(
-                EnergyResultColumnNames.time_series_type
-            ),
+            f.col(EnergyResultColumnNames.aggregation_level),
+            f.col(EnergyResultColumnNames.time_series_type),
             f.col(EnergyResultColumnNames.calculation_id),
             f.col(EnergyResultColumnNames.calculation_type),
             f.col(EnergyResultColumnNames.calculation_execution_time_start),
@@ -145,31 +155,30 @@ class EnergyCalculationResultWriter:
             EnergyResultColumnNames.calculation_execution_time_start,  # TODO BJM: Not needed?
             EnergyResultColumnNames.calculation_type,  # TODO BJM: Not needed?
             Colname.grid_area,
-            Colname.time_series_type,
-            Colname.aggregation_level,
+            EnergyResultColumnNames.time_series_type,
+            EnergyResultColumnNames.aggregation_level,
             Colname.from_grid_area,  # TODO BJM: Missing to_grid_area?
             Colname.balance_responsible_id,
             Colname.energy_supplier_id,
         ]
 
     @staticmethod
-    def _write_to_storage(df):
-        df.write.format("delta").mode("append").option(
+    def _write_to_storage(results: DataFrame) -> None:
+        results.write.format("delta").mode("append").option(
             "mergeSchema", "false"
         ).insertInto(f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}")
 
 
 _write_input_schema = t.StructType(
     [
-        # The grid area in question. In case of exchange it's the to-grid area.
         t.StructField(Colname.grid_area, t.StringType(), False),
         t.StructField(Colname.energy_supplier_id, t.StringType(), True),
         t.StructField(Colname.balance_responsible_id, t.StringType(), True),
         # Energy quantity in kWh for the given observation time.
         # Null when quality is missing.
-        # Example: 1234.534
         t.StructField(Colname.sum_quantity, t.DecimalType(18, 3), True),
         t.StructField(Colname.quality, t.StringType(), False),
+        # TODO BJM: Why not just observation time? This complexity isn't needed or desired in the writer
         t.StructField(
             Colname.time_window,
             (
@@ -179,15 +188,11 @@ _write_input_schema = t.StructType(
             ),
             False,
         ),
-        t.StructField(Colname.aggregation_level, t.StringType(), False),
-        t.StructField(Colname.time_series_type, t.StringType(), False),
         t.StructField(Colname.to_grid_area, t.StringType(), True),
         t.StructField(Colname.from_grid_area, t.StringType(), True),
         t.StructField(Colname.metering_point_type, t.StringType(), True),
         t.StructField(Colname.settlement_method, t.StringType(), True),
         t.StructField(Colname.metering_point_type, t.StringType(), True),
-        # TODO BJM: How can position be optional?
-        t.StructField(Colname.position, t.IntegerType(), True),
     ]
 )
 """

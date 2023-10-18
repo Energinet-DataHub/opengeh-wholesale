@@ -44,7 +44,6 @@ def create_dataframe_from_aggregation_result_schema(result: DataFrame) -> DataFr
         Colname.quality,
         Colname.metering_point_type,
         Colname.settlement_method,
-        Colname.position,
     )
 
     assert_schema(
@@ -78,7 +77,4 @@ def _add_missing_nullable_columns(result: DataFrame) -> DataFrame:
         result = result.withColumn(
             Colname.settlement_method, f.lit(None).cast(StringType())
         )
-    # TODO BJM: How can position be optional?
-    if Colname.position not in result.columns:
-        result = result.withColumn(Colname.position, f.lit(None).cast(IntegerType()))
     return result
