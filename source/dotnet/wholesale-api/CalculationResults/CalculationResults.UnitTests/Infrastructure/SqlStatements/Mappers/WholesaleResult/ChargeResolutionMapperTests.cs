@@ -15,12 +15,60 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using FluentAssertions;
+using Test.Core;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SqlStatements.Mappers.WholesaleResult
 {
     public class ChargeResolutionMapperTests
     {
+        private const string DocumentPath = "DeltaTableContracts.enums.charge-resolution.json";
+
+        [Fact]
+        public async Task ContractPropertyCount_Matches_ModelValuesCount()
+        {
+            // Arrange
+            await using var stream = EmbeddedResources.GetStream<Root>(DocumentPath);
+            var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
+
+            // Act
+            var expectedLength = Enum.GetNames(typeof(ChargeResolution)).Length;
+
+            // Assert
+            expectedLength.Should().Be(validDeltaValues.Count);
+        }
+
+        [Theory]
+        [InlineData("P1M")]
+        [InlineData("P1D")]
+        [InlineData("PT1H")]
+        public async Task ModelValues_Matches_DeltaTableValues(string deltaTableValue)
+        {
+            // Arrange
+            await using var stream = EmbeddedResources.GetStream<Root>(DocumentPath);
+            var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
+
+            // Assert
+            deltaTableValue.Should().BeOneOf(validDeltaValues);
+        }
+
+        [Fact]
+        public async Task FromDeltaTableValue_MapsAllValidDeltaTableValues()
+        {
+            // Arrange
+            await using var stream = EmbeddedResources.GetStream<Root>(DocumentPath);
+            var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
+
+            foreach (var validDeltaValue in validDeltaValues)
+            {
+                // Act
+                var actual = ChargeResolutionMapper.FromDeltaTableValue(validDeltaValue);
+
+                // Assert it's a defined enum value (and not null)
+                actual.Should().BeDefined();
+            }
+        }
+
         [Theory]
         [InlineData("P1M", ChargeResolution.Month)]
         [InlineData("P1D", ChargeResolution.Day)]
