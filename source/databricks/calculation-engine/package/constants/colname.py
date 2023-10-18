@@ -37,7 +37,7 @@ class Colname:
     end = "end"
     energy_supplier_id = "energy_supplier_id"
     from_date = "from_date"
-    from_grid_area = "out_grid_area"
+    from_grid_area = "from_grid_area"
     "The grid area sending current"
     grid_area = "grid_area"
     is_positive_grid_loss_responsible = "is_positive_grid_loss_responsible"
