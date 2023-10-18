@@ -122,7 +122,7 @@ def _create_result_df_corresponding_to_four_calculation_results(
         _create_result_row(energy_supplier_id=OTHER_ENERGY_SUPPLIER_ID),
     ]
 
-    return _create_result_df(rows)
+    return _create_result_df(spark, rows)
 
 
 def test__write__when_invalid_results_schema__raises_assertion_error(
