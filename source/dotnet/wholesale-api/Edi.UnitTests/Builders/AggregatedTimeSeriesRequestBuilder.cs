@@ -13,8 +13,9 @@
 // limitations under the License.
 
 using Energinet.DataHub.Edi.Requests;
-using Energinet.DataHub.Wholesale.Edi.Models;
+using Energinet.DataHub.Wholesale.EDI.Models;
 using NodaTime;
+using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 
@@ -36,8 +37,8 @@ public class AggregatedTimeSeriesRequestBuilder
         var now = SystemClock.Instance.GetCurrentInstant();
         _start = Instant.FromUtc(now.InUtc().Year, 1, 1, 23, 0, 0).ToString();
         _end = Instant.FromUtc(now.InUtc().Year, 1, 2, 23, 0, 0).ToString();
-        _requestedByActorRoleId = "unknown-actor-role-id";
-        _requestedByActorId = "unknown-actor-id";
+        _requestedByActorRoleId = ActorRoleCode.EnergySupplier;
+        _requestedByActorId = "qwertyuiopasd";
     }
 
     public static AggregatedTimeSeriesRequestBuilder AggregatedTimeSeriesRequest()
@@ -90,15 +91,15 @@ public class AggregatedTimeSeriesRequestBuilder
         return this;
     }
 
-    public AggregatedTimeSeriesRequestBuilder WithRequestedByActor(string actorId)
+    public AggregatedTimeSeriesRequestBuilder WithRequestedByActorId(string actorId)
     {
         _requestedByActorId = actorId;
         return this;
     }
 
-    public AggregatedTimeSeriesRequestBuilder WithRequestedByActorRole(string actorRoleCode)
+    public AggregatedTimeSeriesRequestBuilder WithRequestedByActorRole(string actorRoleId)
     {
-        _requestedByActorRoleId = actorRoleCode;
+        _requestedByActorRoleId = actorRoleId;
         return this;
     }
 

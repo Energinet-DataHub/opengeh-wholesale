@@ -36,7 +36,7 @@ public class BalanceResponsibleValidatorTest
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithRequestedByActor(ValidGlnNumber)
+            .WithRequestedByActorId(ValidGlnNumber)
             .WithRequestedByActorRole(BalanceResponsibleRole)
             .WithBalanceResponsibleId(ValidGlnNumber)
             .Build();
@@ -54,7 +54,7 @@ public class BalanceResponsibleValidatorTest
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithRequestedByActor(ValidEicNumber)
+            .WithRequestedByActorId(ValidEicNumber)
             .WithRequestedByActorRole(BalanceResponsibleRole)
             .WithBalanceResponsibleId(ValidEicNumber)
             .Build();
@@ -72,7 +72,7 @@ public class BalanceResponsibleValidatorTest
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithRequestedByActor(ValidGlnNumber)
+            .WithRequestedByActorId(ValidGlnNumber)
             .WithRequestedByActorRole(BalanceResponsibleRole)
             .Build();
 
@@ -93,7 +93,7 @@ public class BalanceResponsibleValidatorTest
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithRequestedByActor(ValidGlnNumber)
+            .WithRequestedByActorId(ValidGlnNumber)
             .WithRequestedByActorRole(BalanceResponsibleRole)
             .WithBalanceResponsibleId(ValidEicNumber)
             .Build();
@@ -115,7 +115,7 @@ public class BalanceResponsibleValidatorTest
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithRequestedByActor(ValidGlnNumber)
+            .WithRequestedByActorId(ValidGlnNumber)
             .WithRequestedByActorRole(BalanceResponsibleRole)
             .WithBalanceResponsibleId("invalid-format")
             .Build();
@@ -137,7 +137,7 @@ public class BalanceResponsibleValidatorTest
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithRequestedByActor(ValidGlnNumber)
+            .WithRequestedByActorId(ValidGlnNumber)
             .Build();
 
         // Act

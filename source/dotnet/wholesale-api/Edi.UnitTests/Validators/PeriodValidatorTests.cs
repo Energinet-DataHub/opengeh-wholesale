@@ -23,10 +23,17 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 
 public class PeriodValidatorTests
 {
+    private static readonly ValidationError _invalidDateFormat = new("Forkert dato format for {PropertyName}, skal være YYYY-MM-DDT22:00:00Z eller YYYY-MM-DDT23:00:00Z / Wrong date format for {PropertyName}, must be YYYY-MM-DDT22:00:00Z or YYYY-MM-DDT23:00:00Z", "D66");
+    private static readonly ValidationError _invalidWinterMidnightFormat = new("Forkert dato format for {PropertyName}, skal være YYYY-MM-DDT23:00:00Z / Wrong date format for {PropertyName}, must be YYYY-MM-DDT23:00:00Z", "D66");
+    private static readonly ValidationError _invalidSummerMidnightFormat = new("Forkert dato format for {PropertyName}, skal være YYYY-MM-DDT22:00:00Z / Wrong date format for {PropertyName}, must be YYYY-MM-DDT22:00:00Z", "D66");
+    private static readonly ValidationError _startDateMustBeLessThen3Years = new("Dato må max være 3 år tilbage i tid / Can maximum be 3 years back in time", "E17");
+    private static readonly ValidationError _periodIsGreaterThenAllowedPeriodSize = new("Dato må kun være for 1 måned af gangen / Can maximum be for a 1 month period", "E17");
+    private static readonly ValidationError _missingStartOrAndEndDate = new("Start og slut dato skal udfyldes / Start and end date must be present in request", "E50");
+
     private readonly PeriodValidationRule _sut = new(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!, SystemClock.Instance);
 
     [Fact]
-    public void Validate_WhenValidRequest_ReturnsExpectedNoValidationErrors()
+    public void Validate_WhenRequestIsValid_ReturnsNoValidationErrors()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -54,11 +61,13 @@ public class PeriodValidatorTests
 
         // Assert
         errors.Should().ContainSingle();
-        errors.First().ErrorCode.Should().Be(ValidationError.MissingStartOrAndEndDate.ErrorCode);
+        var error = errors.First();
+        error.Message.Should().Be(_missingStartOrAndEndDate.Message);
+        error.ErrorCode.Should().Be(_missingStartOrAndEndDate.ErrorCode);
     }
 
     [Fact]
-    public void Validate_WhenWrongStartHour_ReturnsExpectedValidationError()
+    public void Validate_WhenStartHourIsWrong_ReturnsExpectedValidationError()
     {
         // Arrange
         var now = SystemClock.Instance.GetCurrentInstant();
@@ -73,8 +82,31 @@ public class PeriodValidatorTests
 
         // Assert
         errors.Should().ContainSingle();
-        errors.First().ErrorCode.Should().Be(ValidationError.InvalidWinterMidnightFormat.ErrorCode);
-        errors.Should().Contain(error => error.Message.Contains("23:00:00Z"));
+        var error = errors.First();
+        error.ErrorCode.Should().Be(_invalidWinterMidnightFormat.ErrorCode);
+        error.Message.Should().Be(_invalidWinterMidnightFormat.WithPropertyName("Start date").Message);
+    }
+
+    [Fact]
+    public void Validate_WhenEndHourIsWrong_ReturnsExpectedValidationError()
+    {
+        // Arrange
+        var now = SystemClock.Instance.GetCurrentInstant();
+        var notSummerTimeMidnight = Instant.FromUtc(now.InUtc().Year, 7, 1, 23, 0, 0).ToString();
+        var message = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithEndDate(notSummerTimeMidnight)
+            .WithStartDate(Instant.FromUtc(now.InUtc().Year, 7, 2, 22, 0, 0).ToString())
+            .Build();
+
+        // Act
+        var errors = _sut.Validate(message);
+
+        // Assert
+        errors.Should().ContainSingle();
+        var error = errors.First();
+        error.ErrorCode.Should().Be(_invalidSummerMidnightFormat.ErrorCode);
+        error.Message.Should().Be(_invalidSummerMidnightFormat.WithPropertyName("End date").Message);
     }
 
     [Fact]
@@ -91,11 +123,13 @@ public class PeriodValidatorTests
 
         // Assert
         errors.Should().ContainSingle();
-        errors.First().ErrorCode.Should().Be(ValidationError.MissingStartOrAndEndDate.ErrorCode);
+        var error = errors.First();
+        error.ErrorCode.Should().Be(_missingStartOrAndEndDate.ErrorCode);
+        error.Message.Should().Be(_missingStartOrAndEndDate.Message);
     }
 
     [Fact]
-    public void Validate_WhenStartAndEndAreInvalid_ReturnsExpectedValidationErrors()
+    public void Validate_WhenStartAndEndDateAreInvalid_ReturnsExpectedValidationErrors()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -109,10 +143,10 @@ public class PeriodValidatorTests
 
         // Assert
         errors.Count.Should().Be(2);
-        errors.Should().Contain(error => error.Message.Contains("Start date")
-                                         && error.ErrorCode.Equals(ValidationError.InvalidDateFormat.ErrorCode));
-        errors.Should().Contain(error => error.Message.Contains("End date")
-                                         && error.ErrorCode.Equals(ValidationError.InvalidDateFormat.ErrorCode));
+        errors.Should().Contain(error => error.Message.Contains(_invalidDateFormat.WithPropertyName("Start date").Message)
+                                         && error.ErrorCode.Equals(_invalidDateFormat.ErrorCode));
+        errors.Should().Contain(error => error.Message.Contains(_invalidDateFormat.WithPropertyName("End date").Message)
+                                         && error.ErrorCode.Equals(_invalidDateFormat.ErrorCode));
     }
 
     [Fact]
@@ -132,7 +166,9 @@ public class PeriodValidatorTests
 
         // Assert
         errors.Should().ContainSingle();
-        errors.First().ErrorCode.Should().Be(ValidationError.PeriodIsGreaterThenAllowedPeriodSize.ErrorCode);
+        var error = errors.First();
+        error.ErrorCode.Should().Be(_periodIsGreaterThenAllowedPeriodSize.ErrorCode);
+        error.Message.Should().Be(_periodIsGreaterThenAllowedPeriodSize.Message);
     }
 
     [Fact]
@@ -150,11 +186,13 @@ public class PeriodValidatorTests
 
         // Assert
         errors.Should().ContainSingle();
-        errors.First().ErrorCode.Should().Be(ValidationError.StartDateMustBeLessThen3Years.ErrorCode);
+        var error = errors.First();
+        error.ErrorCode.Should().Be(_startDateMustBeLessThen3Years.ErrorCode);
+        error.Message.Should().Be(_startDateMustBeLessThen3Years.Message);
     }
 
     [Fact]
-    public void Validate_WhenPeriodOverlapSummerDaylightSavingTime_ReturnsExpectedNoValidationErrors()
+    public void Validate_WhenPeriodOverlapSummerDaylightSavingTime_ReturnsNoValidationErrors()
     {
         // Arrange
         var now = SystemClock.Instance.GetCurrentInstant();
@@ -174,7 +212,7 @@ public class PeriodValidatorTests
     }
 
     [Fact]
-    public void Validate_WhenPeriodOverlapWinterDaylightSavingTime_ReturnsExpectedNoValidationErrors()
+    public void Validate_WhenPeriodOverlapWinterDaylightSavingTime_ReturnsNoValidationErrors()
     {
         // Arrange
         var now = SystemClock.Instance.GetCurrentInstant();
