@@ -30,6 +30,7 @@ public class AggregatedTimeSeriesRequestBuilder
     private string _requestedByActorRoleId;
     private string _requestedByActorId;
     private string? _settlementMethod;
+    private string? _balanceResponsibleId;
 
     private AggregatedTimeSeriesRequestBuilder()
     {
@@ -62,6 +63,9 @@ public class AggregatedTimeSeriesRequestBuilder
 
         if (_energySupplierId != null)
             request.EnergySupplierId = _energySupplierId;
+
+        if (_balanceResponsibleId != null)
+            request.BalanceResponsibleId = _balanceResponsibleId;
 
         if (_settlementMethod != null)
             request.SettlementMethod = _settlementMethod;
@@ -109,6 +113,12 @@ public class AggregatedTimeSeriesRequestBuilder
     {
         _settlementMethod = settlementMethod;
 
+        return this;
+    }
+
+    public AggregatedTimeSeriesRequestBuilder WithBalanceResponsibleId(string? balanceResponsibleId)
+    {
+        _balanceResponsibleId = balanceResponsibleId;
         return this;
     }
 }

@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.ComponentModel;
 using Energinet.DataHub.Wholesale.EDI.Models;
 using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 
@@ -42,10 +41,7 @@ public class EnergySupplierValidationRule : IValidationRule<AggregatedTimeSeries
 
     private static bool IsValidEnergySupplierIdFormat(string energySupplierId)
     {
-        var isValidGlnNumber = energySupplierId.Length == 13;
-        var isValidEicNumber = energySupplierId.Length == 16;
-
-        return isValidGlnNumber || isValidEicNumber;
+        return ActorNumberValidationHelper.IsValidGlnNumber(energySupplierId) || ActorNumberValidationHelper.IsValidEicNumber(energySupplierId);
     }
 
     private static bool RequestedByIdEqualsEnergySupplier(string requestedByActorId, string energySupplierId)
