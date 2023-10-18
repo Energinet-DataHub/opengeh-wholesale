@@ -57,8 +57,8 @@ resource "time_sleep" "wait_300_seconds" {
 }
 
 data "azuread_service_principal" "bastion_sp" {
-  object_id = azurerm_linux_virtual_machine.vm_bastion.identity[0].principal_id
-  depends_on = [ time_sleep.wait_300_seconds ]
+  object_id  = azurerm_linux_virtual_machine.vm_bastion.identity[0].principal_id
+  depends_on = [time_sleep.wait_300_seconds]
 }
 
 # Replace tenant and app id and ensure it always authenticates against azure Entra - needs to be on its own as it uses vars
@@ -70,11 +70,10 @@ resource "azurerm_virtual_machine_extension" "bastion_init" {
   type                 = "CustomScript"
   type_handler_version = "2.0"
 
-  settings = <<SETTINGS
+  settings   = <<SETTINGS
  {
   "commandToExecute": "sudo sed -i '6 a tenant_id = ${var.arm_tenant_id}' /etc/aad.conf && sudo sed -i '6 a app_id = ${data.azuread_service_principal.bastion_sp.application_id}' /etc/aad.conf && sudo sed -i '6 a offline_credentials_expiration = -1' /etc/aad.conf"
  }
 SETTINGS
-depends_on = [ data.azuread_service_principal.bastion_sp ]
+  depends_on = [data.azuread_service_principal.bastion_sp]
 }
-

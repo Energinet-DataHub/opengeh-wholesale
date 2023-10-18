@@ -95,5 +95,8 @@ module "app_health_checks_ui" {
     # Logging
     "Logging__LogLevel__Default"              = "Information"
     "Logging__LogLevel__Microsoft.AspNetCore" = "Warning"
+
+    # Tab Title
+    "TAB_TITLE" = "Health Checks UI - ${var.environment_short}-${var.environment_instance}"
   }
 }
