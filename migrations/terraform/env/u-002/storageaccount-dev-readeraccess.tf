@@ -1,5 +1,5 @@
 #
-# Add developer read access to storage account
+# Add developer read access to storage account on u-002
 #
 locals {
   deploy_readeraccess_count = var.datalake_readeraccess_group_name == "" ? 0 : 1

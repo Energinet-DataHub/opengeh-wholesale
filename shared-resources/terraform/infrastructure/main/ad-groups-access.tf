@@ -1,3 +1,5 @@
+# Give all developers access Controlplane Reader access to all environments
+
 data "azurerm_subscription" "current" {
 }
 

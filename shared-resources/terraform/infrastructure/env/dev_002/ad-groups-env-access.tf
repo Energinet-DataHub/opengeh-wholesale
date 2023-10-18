@@ -1,0 +1,13 @@
+# Give all developers Contributor Control + Dataplane access to dev_002
+
+resource "azurerm_role_assignment" "developers_subscription_contributor" {
+  scope                = data.azurerm_subscription.current.id
+  role_definition_name = "Contributor"
+  principal_id         = var.developers_security_group_object_id
+}
+
+resource "azurerm_role_assignment" "developers_storageblob_contributor" {
+  scope                = data.azurerm_subscription.current.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = var.developers_security_group_object_id
+}
