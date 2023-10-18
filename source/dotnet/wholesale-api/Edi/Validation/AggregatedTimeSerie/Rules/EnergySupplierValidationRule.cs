@@ -18,11 +18,10 @@ using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTim
 
 namespace Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
 
-public class EnergySupplierFieldValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
+public class EnergySupplierValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
 {
-    public const string ErrorCode = "E16";
-    private static readonly ValidationError _invalidEnergySupplierField = new("Feltet EnergySupplier skal være udfyldt med et valid GLN/EIC nummer når en elleverandør anmoder om data / EnergySupplier must be submitted with a valid GLN/EIC number when an energy supplier requests data", ErrorCode);
-    private static readonly ValidationError _notEqualToRequestedBy = new("Elleverandør i besked stemmer ikke overenes med elleverandør i header / Energy supplier in message does not correspond with energy supplier in header", ErrorCode);
+    private static readonly ValidationError _invalidEnergySupplierField = new("Feltet EnergySupplier skal være udfyldt med et valid GLN/EIC nummer når en elleverandør anmoder om data / EnergySupplier must be submitted with a valid GLN/EIC number when an energy supplier requests data", "E16");
+    private static readonly ValidationError _notEqualToRequestedBy = new("Elleverandør i besked stemmer ikke overenes med elleverandør i header / Energy supplier in message does not correspond with energy supplier in header", "E16");
 
     public IList<ValidationError> Validate(AggregatedTimeSeriesRequest subject)
     {

@@ -27,23 +27,21 @@ public class MeteringPointTypeValidationRule : IValidationRule<AggregatedTimeSer
         MeteringPointType.Exchange,
     };
 
+    private static readonly ValidationError _invalidMeteringPointType = new("Metering point type skal være en af følgende: {PropertyName} / Metering point type has to be one of the following: {PropertyName}", "D18");
+
     public IList<ValidationError> Validate(AggregatedTimeSeriesRequest subject)
     {
-        if (subject.MeteringPointType == null) throw new ArgumentNullException(nameof(subject.MeteringPointType));
-        if (InvalidMeteringPointType(subject.MeteringPointType))
-        {
-            return new List<ValidationError>
-            {
-                ValidationError.InvalidMeteringPointType.WithPropertyName(
-                    string.Join(", ", _validMeteringPointTypes)),
-            };
-        }
+        if (IsValidMeteringPointType(subject.MeteringPointType)) return NoError;
 
-        return new List<ValidationError>();
+        return InvalidMeteringPointType;
     }
 
-    private static bool InvalidMeteringPointType(string meteringPointType)
+    private static bool IsValidMeteringPointType(string meteringPointType)
     {
-        return !_validMeteringPointTypes.Contains(meteringPointType);
+        return _validMeteringPointTypes.Contains(meteringPointType, StringComparer.OrdinalIgnoreCase);
     }
+
+    private static IList<ValidationError> NoError => new List<ValidationError>();
+
+    private static IList<ValidationError> InvalidMeteringPointType => new List<ValidationError> { _invalidMeteringPointType.WithPropertyName(string.Join(", ", _validMeteringPointTypes)) };
 }
