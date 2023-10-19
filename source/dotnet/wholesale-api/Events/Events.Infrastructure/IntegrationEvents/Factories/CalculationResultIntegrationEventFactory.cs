@@ -66,7 +66,7 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Fa
         {
             var calculationResultCompleted = _monthlyAmountPerChargeResultProducedV1Factory.Create(wholesaleResult);
             var eventIdentification = Guid.NewGuid();
-            return CreateIntegrationEvent(calculationResultCompleted, eventIdentification, AmountPerChargeResultProducedV1.EventName, AmountPerChargeResultProducedV1.EventMinorVersion);
+            return CreateIntegrationEvent(calculationResultCompleted, eventIdentification, MonthlyAmountPerChargeResultProducedV1.EventName, MonthlyAmountPerChargeResultProducedV1.EventMinorVersion);
         }
 
         private IntegrationEvent CreateIntegrationEvent(IMessage protobufMessage, Guid eventIdentification, string eventName, int eventMinorVersion)

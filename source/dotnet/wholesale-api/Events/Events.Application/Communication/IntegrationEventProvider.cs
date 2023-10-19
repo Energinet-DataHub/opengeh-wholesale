@@ -96,21 +96,14 @@ public class IntegrationEventProvider : IIntegrationEventProvider
 
     private IntegrationEvent CreateEventFromWholesaleResult(WholesaleResult wholesaleResult)
     {
-        switch (wholesaleResult.ChargeResolution)
+        return wholesaleResult.ChargeResolution switch
         {
-            case ChargeResolution.Day or ChargeResolution.Hour:
-                {
-                    return _calculationResultIntegrationEventFactory.CreateAmountPerChargeResultProducedV1(wholesaleResult);
-                }
-
-            case ChargeResolution.Month:
-                {
-                    return _calculationResultIntegrationEventFactory.CreateMonthlyAmountPerChargeResultProducedV1(wholesaleResult);
-                }
-
-            default:
-                throw new ArgumentOutOfRangeException(nameof(wholesaleResult.ChargeResolution), actualValue: wholesaleResult.ChargeResolution, "Unexpected resolution.");
-        }
+            ChargeResolution.Day or ChargeResolution.Hour => _calculationResultIntegrationEventFactory
+                .CreateAmountPerChargeResultProducedV1(wholesaleResult),
+            ChargeResolution.Month => _calculationResultIntegrationEventFactory
+                .CreateMonthlyAmountPerChargeResultProducedV1(wholesaleResult),
+            _ => throw new ArgumentOutOfRangeException(nameof(wholesaleResult.ChargeResolution), actualValue: wholesaleResult.ChargeResolution, "Unexpected resolution."),
+        };
     }
 
     private static bool IsWholesaleCalculationType(ProcessType calculationType)
