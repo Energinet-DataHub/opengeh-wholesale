@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Messaging.Communication.Internal;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
+using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 
-public interface IWholesaleResultProducedV1Factory
+public interface IMonthlyAmountPerChargeResultProducedV1Factory
 {
-    IntegrationEvent Create(WholesaleResult result);
+    MonthlyAmountPerChargeResultProducedV1 Create(WholesaleResult result);
 }

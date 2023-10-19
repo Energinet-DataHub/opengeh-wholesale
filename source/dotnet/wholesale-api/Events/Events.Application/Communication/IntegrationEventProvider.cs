@@ -15,6 +15,7 @@
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Internal;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
@@ -66,9 +67,8 @@ public class IntegrationEventProvider : IIntegrationEventProvider
             await foreach (var energyResult in _energyResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
             {
                 energyResultCount++;
-                yield return _calculationResultIntegrationEventFactory.CreateEventForEnergyResultDeprecated(
-                    energyResult); // Deprecated
-                yield return _calculationResultIntegrationEventFactory.CreateEventForEnergyResult(energyResult);
+                yield return _calculationResultIntegrationEventFactory.CreateCalculationResultCompleted(energyResult); // Deprecated
+                yield return _calculationResultIntegrationEventFactory.CreateEnergyResultProducedV1(energyResult);
             }
 
             // Publish wholesale results
@@ -78,7 +78,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
                 await foreach (var wholesaleResult in _wholesaleResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
                 {
                     wholesaleResultCount++;
-                    yield return _calculationResultIntegrationEventFactory.CreateEventForWholesaleResult(wholesaleResult);
+                    yield return CreateEventFromWholesaleResult(wholesaleResult);
                 }
             }
 
@@ -92,6 +92,25 @@ public class IntegrationEventProvider : IIntegrationEventProvider
             }
         }
         while (true);
+    }
+
+    private IntegrationEvent CreateEventFromWholesaleResult(WholesaleResult wholesaleResult)
+    {
+        switch (wholesaleResult.ChargeResolution)
+        {
+            case ChargeResolution.Day or ChargeResolution.Hour:
+                {
+                    return _calculationResultIntegrationEventFactory.CreateAmountPerChargeResultProducedV1(wholesaleResult);
+                }
+
+            case ChargeResolution.Month:
+                {
+                    return _calculationResultIntegrationEventFactory.CreateMonthlyAmountPerChargeResultProducedV1(wholesaleResult);
+                }
+
+            default:
+                throw new ArgumentOutOfRangeException(nameof(wholesaleResult.ChargeResolution), actualValue: wholesaleResult.ChargeResolution, "Unexpected resolution.");
+        }
     }
 
     private static bool IsWholesaleCalculationType(ProcessType calculationType)

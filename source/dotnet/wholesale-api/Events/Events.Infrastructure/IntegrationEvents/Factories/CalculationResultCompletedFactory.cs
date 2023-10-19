@@ -24,13 +24,7 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Fa
 
 public class CalculationResultCompletedFactory : ICalculationResultCompletedFactory
 {
-    public IntegrationEvent Create(EnergyResult energyResult)
-    {
-        var @event = CreateBasedOnEnergySupplierAndBalanceRepsonsible(energyResult);
-        return new IntegrationEvent(Guid.NewGuid(), CalculationResultCompleted.EventName, CalculationResultCompleted.EventMinorVersion,  @event);
-    }
-
-    private CalculationResultCompleted CreateBasedOnEnergySupplierAndBalanceRepsonsible(EnergyResult energyResult)
+    public CalculationResultCompleted Create(EnergyResult energyResult)
     {
         if (energyResult.EnergySupplierId == null && energyResult.BalanceResponsibleId == null)
             return CreateForGridArea(energyResult);
