@@ -15,7 +15,6 @@ from decimal import Decimal
 from datetime import datetime, timedelta
 from package.codelists import (
     MeteringPointType,
-    MeteringPointResolution,
     QuantityQuality,
 )
 
@@ -53,7 +52,6 @@ def agg_production_schema() -> StructType:
         )
         .add(Colname.sum_quantity, DecimalType(20))
         .add(Colname.quality, StringType())
-        .add(Colname.resolution, StringType())
         .add(Colname.metering_point_type, StringType())
     )
 
@@ -71,7 +69,6 @@ def test_data_factory(
                 Colname.time_window: [],
                 Colname.sum_quantity: [],
                 Colname.quality: [],
-                Colname.resolution: [],
                 Colname.metering_point_type: [],
             }
         )
@@ -89,7 +86,6 @@ def test_data_factory(
                             },
                             Colname.sum_quantity: Decimal(i + j + k),
                             Colname.quality: [QuantityQuality.ESTIMATED.value],
-                            Colname.resolution: [MeteringPointResolution.HOUR.value],
                             Colname.metering_point_type: [
                                 MeteringPointType.PRODUCTION.value
                             ],
