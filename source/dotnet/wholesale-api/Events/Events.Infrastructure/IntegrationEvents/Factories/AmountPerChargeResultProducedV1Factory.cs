@@ -33,12 +33,12 @@ public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProd
             GridAreaCode = result.GridArea,
             EnergySupplierId = result.EnergySupplierId,
             ChargeCode = result.ChargeCode,
-            ChargeType = result.ChargeType,
+            ChargeType = ChargeTypeMapper.MapChargeType(result.ChargeType),
             ChargeOwnerId = result.ChargeOwnerId,
             Resolution = AmountPerChargeResultProducedV1.Types.Resolution.Hour,
             QuantityUnit = AmountPerChargeResultProducedV1.Types.QuantityUnit.Kwh,
-            MeteringPointType = result.MeteringPointType,
-            SettlementMethod = result.SettlementMethod,
+            MeteringPointType = MeteringPointTypeMapper.MapMeteringPointType(result.MeteringPointType),
+            SettlementMethod = SettlementMethodMapper.MapSettlementMethod(result.SettlementMethod),
             IsTax = result.IsTax,
         };
 
