@@ -11,6 +11,7 @@ module "azfun_converter" {
   private_endpoint_subnet_id                = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   app_service_plan_id                       = data.azurerm_key_vault_secret.plan_shared_id.value
   application_insights_instrumentation_key  = data.azurerm_key_vault_secret.appi_shared_instrumentation_key.value
+  ip_restriction_allow_ip_range             = var.hosted_deployagent_public_ip_range
   dotnet_framework_version                  = "v6.0"
   app_settings = {
     # EndRegion
