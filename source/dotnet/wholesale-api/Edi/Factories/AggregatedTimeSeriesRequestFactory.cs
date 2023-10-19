@@ -45,25 +45,10 @@ public class AggregatedTimeSeriesRequestFactory : IAggregatedTimeSeriesRequestFa
 
     private AggregationPerRoleAndGridArea MapAggregationPerRoleAndGridArea(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest aggregatedTimeSeriesRequest)
     {
-        return aggregatedTimeSeriesRequest.AggregationLevelCase switch
-        {
-            Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerGridarea =>
-                new AggregationPerRoleAndGridArea(GridAreaCode: aggregatedTimeSeriesRequest.AggregationPerGridarea.GridAreaCode),
-            Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerEnergysupplierPerGridarea =>
-                new AggregationPerRoleAndGridArea(
-                    GridAreaCode: aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerGridarea.GridAreaCode,
-                    EnergySupplierId: aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerGridarea.EnergySupplierId),
-            Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerBalanceresponsiblepartyPerGridarea =>
-                new AggregationPerRoleAndGridArea(
-                    GridAreaCode: aggregatedTimeSeriesRequest.AggregationPerBalanceresponsiblepartyPerGridarea.GridAreaCode,
-                    BalanceResponsibleId: aggregatedTimeSeriesRequest.AggregationPerBalanceresponsiblepartyPerGridarea.BalanceResponsiblePartyId),
-            Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea =>
-                new AggregationPerRoleAndGridArea(
-                    GridAreaCode: aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.GridAreaCode,
-                    EnergySupplierId: aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.EnergySupplierId,
-                    BalanceResponsibleId: aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.BalanceResponsiblePartyId),
-            _ => throw new InvalidOperationException("Unknown aggregation level"),
-        };
+        return new AggregationPerRoleAndGridArea(
+            aggregatedTimeSeriesRequest.HasGridAreaCode ? aggregatedTimeSeriesRequest.GridAreaCode : null,
+            aggregatedTimeSeriesRequest.HasEnergySupplierId ? aggregatedTimeSeriesRequest.EnergySupplierId : null,
+            aggregatedTimeSeriesRequest.HasBalanceResponsibleId ? aggregatedTimeSeriesRequest.BalanceResponsibleId : null);
     }
 
     private Period MapPeriod(Energinet.DataHub.Edi.Requests.Period period)

@@ -93,6 +93,7 @@ public class RequestCalculationResultQueriesTests : IClassFixture<DatabricksSqlS
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock)
     {
         // Arrange
+        var gridAreaFilter = GridAreaCode;
         var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
         await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
         var sqlStatementClient = _fixture.CreateSqlStatementClient(
@@ -101,6 +102,7 @@ public class RequestCalculationResultQueriesTests : IClassFixture<DatabricksSqlS
             new Mock<ILogger<DatabricksSqlStatementClient>>());
 
         var request = CreateRequest(
+            gridArea: gridAreaFilter,
             startOfPeriod: Instant.FromUtc(2020, 1, 1, 1, 1),
             endOfPeriod: Instant.FromUtc(2021, 1, 2, 1, 1));
         var sut = new RequestCalculationResultQueries(sqlStatementClient, deltaTableOptions, requestCalculationResultQueriesLoggerMock.Object);

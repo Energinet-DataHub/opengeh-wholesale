@@ -21,7 +21,6 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 
 public class AggregatedTimeSeriesRequestBuilder
 {
-    private readonly AggregationPerGridArea _aggregationPerGridArea = new();
     private string _meteringPointType = MeteringPointType.Production;
 
     private string _start;
@@ -31,6 +30,7 @@ public class AggregatedTimeSeriesRequestBuilder
     private string _requestedByActorId;
     private string? _settlementMethod;
     private string? _balanceResponsibleId;
+    private string? _gridAreaCode;
 
     private AggregatedTimeSeriesRequestBuilder()
     {
@@ -50,7 +50,6 @@ public class AggregatedTimeSeriesRequestBuilder
     {
         var request = new AggregatedTimeSeriesRequest
         {
-            AggregationPerGridarea = _aggregationPerGridArea,
             Period = new DataHub.Edi.Requests.Period()
             {
                 Start = _start,
@@ -69,6 +68,9 @@ public class AggregatedTimeSeriesRequestBuilder
 
         if (_settlementMethod != null)
             request.SettlementMethod = _settlementMethod;
+
+        if (_gridAreaCode != null)
+            request.GridAreaCode = _gridAreaCode;
 
         return request;
     }
@@ -119,6 +121,12 @@ public class AggregatedTimeSeriesRequestBuilder
     public AggregatedTimeSeriesRequestBuilder WithBalanceResponsibleId(string? balanceResponsibleId)
     {
         _balanceResponsibleId = balanceResponsibleId;
+        return this;
+    }
+
+    public AggregatedTimeSeriesRequestBuilder WithGridAreaCode(string? gridAreaCode)
+    {
+        _gridAreaCode = gridAreaCode;
         return this;
     }
 }
