@@ -37,5 +37,6 @@ locals {
     "biztalk:businessTypeConsumption"   = "NBS-RECI"
     "biztalk:businessTypeProduction"    = "NBS-MEPI"
     "biztalk:businessTypeExchange"      = "NBS-MGXI"
+    CONNECTION_STRING_DATABASE          = local.connection_string_database
   }
 }
