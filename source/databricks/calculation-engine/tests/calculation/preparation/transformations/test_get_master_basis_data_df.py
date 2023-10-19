@@ -19,15 +19,17 @@ from package.calculation.preparation.transformations.basis_data import (
 )
 from datetime import datetime
 
+from package.constants import Colname
+
 
 @pytest.fixture(scope="module")
 def metering_point_period_df_factory(spark, timestamp_factory):
     def factory(
-        meteringpoint_id="the-metering-point",
+        metering_point_id="the-metering-point",
         grid_area_code="some-grid-area",
         from_date: datetime = timestamp_factory("2022-06-08T22:00:00.000Z"),
         to_date: datetime = timestamp_factory("2022-06-10T22:00:00.000Z"),
-        meteringpoint_type=MeteringPointType.PRODUCTION.value,
+        metering_point_type=MeteringPointType.PRODUCTION.value,
         from_grid_area="some-from-grid-area",
         to_grid_area="some-to-grid-area",
         settlement_method="some-settlement-method",
@@ -35,16 +37,16 @@ def metering_point_period_df_factory(spark, timestamp_factory):
         energy_supplier_id="some-energy-supplier-id",
     ):
         row = {
-            "metering_point_id": meteringpoint_id,
-            "grid_area_code": grid_area_code,
-            "type": meteringpoint_type,
-            "from_date": from_date,
-            "to_date": to_date,
-            "from_grid_area_code": from_grid_area,
-            "to_grid_area_code": to_grid_area,
-            "settlement_method": settlement_method,
-            "resolution": resolution,
-            "energy_supplier_id": energy_supplier_id,
+            Colname.metering_point_id: metering_point_id,
+            Colname.grid_area: grid_area_code,
+            Colname.metering_point_type: metering_point_type,
+            Colname.from_date: from_date,
+            Colname.to_date: to_date,
+            Colname.from_grid_area: from_grid_area,
+            Colname.to_grid_area: to_grid_area,
+            Colname.settlement_method: settlement_method,
+            Colname.resolution: resolution,
+            Colname.energy_supplier_id: energy_supplier_id,
         }
         return spark.createDataFrame([row])
 
@@ -83,9 +85,9 @@ def test__each_meteringpoint_has_a_row(metering_point_period_df_factory):
     # Arrange
     expected_number_of_metering_points = 3
     metering_point_period_df = (
-        metering_point_period_df_factory(meteringpoint_id="1")
-        .union(metering_point_period_df_factory(meteringpoint_id="2"))
-        .union(metering_point_period_df_factory(meteringpoint_id="3"))
+        metering_point_period_df_factory(metering_point_id="1")
+        .union(metering_point_period_df_factory(metering_point_id="2"))
+        .union(metering_point_period_df_factory(metering_point_id="3"))
     )
 
     # Act
@@ -110,11 +112,11 @@ def test__columns_have_expected_values(
     expected_energy_supplier_id = "the-energy-supplier-id"
 
     metering_point_period_df = metering_point_period_df_factory(
-        meteringpoint_id=expected_meteringpoint_id,
+        metering_point_id=expected_meteringpoint_id,
         grid_area_code=expected_grid_area_code,
         from_date=expected_from_date,
         to_date=expected_to_date,
-        meteringpoint_type=MeteringPointType.PRODUCTION.value,
+        metering_point_type=MeteringPointType.PRODUCTION.value,
         from_grid_area=expected_from_grid_area,
         to_grid_area=expected_to_grid_area,
         settlement_method=expected_settlement_method,
@@ -145,10 +147,10 @@ def test__both_hour_and_quarterly_resolution_data_are_in_basis_data(
     # Arrange
     expected_number_of_metering_points = 2
     metering_point_period_df = metering_point_period_df_factory(
-        meteringpoint_id="1", resolution=MeteringPointResolution.QUARTER.value
+        metering_point_id="1", resolution=MeteringPointResolution.QUARTER.value
     ).union(
         metering_point_period_df_factory(
-            meteringpoint_id="2", resolution=MeteringPointResolution.HOUR.value
+            metering_point_id="2", resolution=MeteringPointResolution.HOUR.value
         )
     )
 

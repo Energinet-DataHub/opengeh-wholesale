@@ -15,7 +15,6 @@ from decimal import Decimal
 from datetime import datetime
 from package.codelists import (
     MeteringPointType,
-    MeteringPointResolution,
     QuantityQuality,
 )
 from package.calculation.energy.aggregators import (
@@ -52,7 +51,6 @@ def settled_schema() -> StructType:
         )
         .add(Colname.sum_quantity, DecimalType(20, 1))
         .add(Colname.quality, StringType())
-        .add(Colname.resolution, StringType())
         .add(Colname.metering_point_type, StringType())
     )
 
@@ -108,14 +106,6 @@ def agg_result_factory(
                     QuantityQuality.ESTIMATED.value,
                     QuantityQuality.ESTIMATED.value,
                     QuantityQuality.ESTIMATED.value,
-                ],
-                Colname.resolution: [
-                    MeteringPointResolution.HOUR.value,
-                    MeteringPointResolution.HOUR.value,
-                    MeteringPointResolution.HOUR.value,
-                    MeteringPointResolution.HOUR.value,
-                    MeteringPointResolution.HOUR.value,
-                    MeteringPointResolution.HOUR.value,
                 ],
                 Colname.metering_point_type: [
                     MeteringPointType.CONSUMPTION.value,
