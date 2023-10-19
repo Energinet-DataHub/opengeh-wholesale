@@ -149,15 +149,18 @@ class EnergyCalculationResultWriter:
 
     @staticmethod
     def _get_column_group_for_calculation_result_id() -> list[str]:
-        """Get the columns that are required in order to define a single calculation result."""
+        """
+        Get the columns that are required in order to define a single calculation result.
+
+        Calculation metadata is not included as it is the same for all rows in the data frame being written.
+        Metadata is: calculation_id, calculation_execution_time_start, calculation_type
+
+        Time series type and aggregation level is the same for all rows (applied in the writer itself)
+        and are thus neither part of this list.
+        """
         return [
-            EnergyResultColumnNames.calculation_id,
-            EnergyResultColumnNames.calculation_execution_time_start,  # TODO BJM: Not needed?
-            EnergyResultColumnNames.calculation_type,  # TODO BJM: Not needed?
             Colname.grid_area,
-            EnergyResultColumnNames.time_series_type,
-            EnergyResultColumnNames.aggregation_level,
-            Colname.from_grid_area,  # TODO BJM: Missing to_grid_area?
+            Colname.from_grid_area,
             Colname.balance_responsible_id,
             Colname.energy_supplier_id,
         ]
@@ -192,7 +195,6 @@ _write_input_schema = t.StructType(
         t.StructField(Colname.from_grid_area, t.StringType(), True),
         t.StructField(Colname.metering_point_type, t.StringType(), True),
         t.StructField(Colname.settlement_method, t.StringType(), True),
-        t.StructField(Colname.metering_point_type, t.StringType(), True),
     ]
 )
 """

@@ -21,12 +21,7 @@ from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col
 import pytest
 
-from package.codelists import (
-    AggregationLevel,
-    ProcessType,
-    QuantityQuality,
-    TimeSeriesType,
-)
+import package.codelists as e
 from package.constants import Colname, EnergyResultColumnNames
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
 from package.calculation_output import EnergyCalculationResultWriter
@@ -45,14 +40,33 @@ DEFAULT_GRID_AREA = "105"
 DEFAULT_FROM_GRID_AREA = "106"
 DEFAULT_ENERGY_SUPPLIER_ID = "9876543210123"
 DEFAULT_BALANCE_RESPONSIBLE_ID = "1234567890123"
-DEFAULT_PROCESS_TYPE = ProcessType.BALANCE_FIXING
+DEFAULT_PROCESS_TYPE = e.ProcessType.BALANCE_FIXING
 DEFAULT_BATCH_EXECUTION_START = datetime(2022, 6, 10, 13, 15)
 DEFAULT_QUANTITY = "1.1"
-DEFAULT_QUALITY = QuantityQuality.MEASURED
-DEFAULT_TIME_SERIES_TYPE = TimeSeriesType.PRODUCTION
-DEFAULT_AGGREGATION_LEVEL = AggregationLevel.TOTAL_GA
+DEFAULT_QUALITY = e.QuantityQuality.MEASURED
+DEFAULT_TIME_SERIES_TYPE = e.TimeSeriesType.PRODUCTION
+DEFAULT_AGGREGATION_LEVEL = e.AggregationLevel.TOTAL_GA
 DEFAULT_TIME_WINDOW_START = datetime(2020, 1, 1, 0, 0)
 DEFAULT_TIME_WINDOW_END = datetime(2020, 1, 1, 1, 0)
+DEFAULT_METERING_POINT_TYPE = e.MeteringPointType.PRODUCTION
+DEFAULT_SETTLEMENT_METHOD = e.SettlementMethod.FLEX
+
+OTHER_BATCH_ID = "0b15a420-9fc8-409a-a169-fbd49479d719"
+OTHER_GRID_AREA = "205"
+OTHER_FROM_GRID_AREA = "206"
+OTHER_ENERGY_SUPPLIER_ID = "9876543210124"
+OTHER_BALANCE_RESPONSIBLE_ID = "1234567890124"
+OTHER_PROCESS_TYPE = e.ProcessType.AGGREGATION
+OTHER_BATCH_EXECUTION_START = datetime(2023, 6, 10, 13, 15)
+OTHER_QUANTITY = "1.2"
+OTHER_QUALITY = e.QuantityQuality.CALCULATED
+OTHER_TIME_SERIES_TYPE = e.TimeSeriesType.NON_PROFILED_CONSUMPTION
+OTHER_AGGREGATION_LEVEL = e.AggregationLevel.ES_PER_GA
+OTHER_TIME_WINDOW_START = datetime(2021, 1, 1, 0, 0)
+OTHER_TIME_WINDOW_END = datetime(2021, 1, 1, 1, 0)
+OTHER_METERING_POINT_TYPE = e.MeteringPointType.CONSUMPTION
+OTHER_SETTLEMENT_METHOD = e.SettlementMethod.NON_PROFILED
+
 
 TABLE_NAME = f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}"
 
@@ -63,7 +77,7 @@ def _create_result_row(
     energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
     balance_responsible_id: str = DEFAULT_BALANCE_RESPONSIBLE_ID,
     quantity: str = DEFAULT_QUANTITY,
-    quality: QuantityQuality = DEFAULT_QUALITY,
+    quality: e.QuantityQuality = DEFAULT_QUALITY,
     time_window_start: datetime = DEFAULT_TIME_WINDOW_START,
     time_window_end: datetime = DEFAULT_TIME_WINDOW_END,
 ) -> dict:
@@ -78,7 +92,7 @@ def _create_result_row(
         },
         Colname.energy_supplier_id: energy_supplier_id,
         Colname.balance_responsible_id: balance_responsible_id,
-        Colname.time_series_type: TimeSeriesType.PRODUCTION.value,
+        Colname.time_series_type: e.TimeSeriesType.PRODUCTION.value,
     }
 
     return row
@@ -170,11 +184,11 @@ def test__write__when_results_schema_missing_optional_column__does_not_raise(
 
 @pytest.mark.parametrize(
     "aggregation_level",
-    AggregationLevel,
+    e.AggregationLevel,
 )
 def test__write__writes_aggregation_level(
     spark: SparkSession,
-    aggregation_level: AggregationLevel,
+    aggregation_level: e.AggregationLevel,
     migrations_executed: None,
 ) -> None:
     # Arrange
@@ -190,7 +204,7 @@ def test__write__writes_aggregation_level(
     # Act
     sut.write(
         result_df,
-        TimeSeriesType.PRODUCTION,
+        e.TimeSeriesType.PRODUCTION,
         aggregation_level,
     )
 
@@ -283,13 +297,14 @@ def test__write__writes_columns_matching_contract(
 
 
 def test__write__writes_calculation_result_id(
-    spark: SparkSession, contracts_path: str, migrations_executed_per_test: None
+    spark: SparkSession, contracts_path: str, migrations_executed: None
 ) -> None:
     # Arrange
     result_df = _create_result_df_corresponding_to_four_calculation_results(spark)
     EXPECTED_NUMBER_OF_CALCULATION_RESULT_IDS = 4
+    calculation_id = str(uuid.uuid4())
     sut = EnergyCalculationResultWriter(
-        DEFAULT_BATCH_ID,
+        calculation_id,
         DEFAULT_PROCESS_TYPE,
         DEFAULT_BATCH_EXECUTION_START,
     )
@@ -302,36 +317,134 @@ def test__write__writes_calculation_result_id(
     )
 
     # Assert
-    actual_df = spark.read.table(TABLE_NAME).select(
-        col(EnergyResultColumnNames.calculation_result_id)
+    actual_df = (
+        spark.read.table(TABLE_NAME)
+        .where(col(EnergyResultColumnNames.calculation_id) == calculation_id)
+        .select(col(EnergyResultColumnNames.calculation_result_id))
     )
 
     assert actual_df.distinct().count() == EXPECTED_NUMBER_OF_CALCULATION_RESULT_IDS
 
 
-# TODO BJM: This test should be rewritten to assert the behaviour as these column names
-#           may or may not ensure correct behaviour
-# def test__get_column_group_for_calculation_result_id__returns_expected_column_names() -> (
-#     None
-# ):
-#     # Arrange
-#     expected_column_names = [
-#         EnergyResultColumnNames.calculation_id,
-#         EnergyResultColumnNames.calculation_execution_time_start,
-#         EnergyResultColumnNames.calculation_type,
-#         EnergyResultColumnNames.grid_area,
-#         EnergyResultColumnNames.time_series_type,
-#         EnergyResultColumnNames.aggregation_level,
-#         EnergyResultColumnNames.from_grid_area,
-#         EnergyResultColumnNames.balance_responsible_id,
-#         EnergyResultColumnNames.energy_supplier_id,
-#     ]
-#
-#     # Act
-#     actual = EnergyCalculationResultWriter._get_column_group_for_calculation_result_id()
-#
-#     # Assert
-#     assert actual == expected_column_names
+@pytest.mark.parametrize(
+    "column_name, value, other_value",
+    [
+        (Colname.grid_area, DEFAULT_GRID_AREA, OTHER_GRID_AREA),
+        (Colname.from_grid_area, DEFAULT_FROM_GRID_AREA, OTHER_FROM_GRID_AREA),
+        # TODO BJM: (Colname.to_grid_area, DEFAULT_TO_GRID_AREA, OTHER_TO_GRID_AREA),
+        (
+            Colname.balance_responsible_id,
+            DEFAULT_BALANCE_RESPONSIBLE_ID,
+            OTHER_BALANCE_RESPONSIBLE_ID,
+        ),
+        (
+            Colname.energy_supplier_id,
+            DEFAULT_ENERGY_SUPPLIER_ID,
+            OTHER_ENERGY_SUPPLIER_ID,
+        ),
+    ],
+)
+def test__write__when_rows_belong_to_different_results__adds_different_calculation_result_id(
+    spark: SparkSession,
+    column_name: str,
+    value: Any,
+    other_value: Any,
+    migrations_executed: None,
+) -> None:
+    # Arrange
+    row1 = _create_result_row()
+    row1[column_name] = value
+    row2 = _create_result_row()
+    row2[column_name] = other_value
+    result_df = _create_result_df(spark, [row1, row2])
+
+    calculation_id = str(uuid.uuid4())
+    sut = EnergyCalculationResultWriter(
+        calculation_id,
+        DEFAULT_PROCESS_TYPE,
+        DEFAULT_BATCH_EXECUTION_START,
+    )
+
+    # Act
+    sut.write(
+        result_df,
+        DEFAULT_TIME_SERIES_TYPE,
+        DEFAULT_AGGREGATION_LEVEL,
+    )
+
+    # Assert
+    actual = (
+        spark.read.table(TABLE_NAME)
+        .where(col(EnergyResultColumnNames.calculation_id) == calculation_id)
+        .collect()
+    )
+    assert (
+        actual[0][EnergyResultColumnNames.calculation_result_id]
+        != actual[1][EnergyResultColumnNames.calculation_result_id]
+    )
+
+
+@pytest.mark.parametrize(
+    "column_name, value, other_value",
+    [
+        (Colname.sum_quantity, Decimal(DEFAULT_QUANTITY), Decimal(OTHER_QUANTITY)),
+        (
+            Colname.quality,
+            DEFAULT_QUALITY.value,
+            OTHER_QUALITY.value,
+        ),
+        (
+            Colname.metering_point_type,
+            DEFAULT_METERING_POINT_TYPE.value,
+            OTHER_METERING_POINT_TYPE.value,
+        ),
+        (
+            Colname.settlement_method,
+            DEFAULT_SETTLEMENT_METHOD.value,
+            OTHER_SETTLEMENT_METHOD.value,
+        ),
+        (Colname.time_window_start, DEFAULT_TIME_WINDOW_START, OTHER_TIME_WINDOW_START),
+        (Colname.time_window_end, DEFAULT_TIME_WINDOW_END, OTHER_TIME_WINDOW_END),
+    ],
+)
+def test__write__when_rows_belong_to_same_result__adds_same_calculation_result_id(
+    spark: SparkSession,
+    column_name: str,
+    value: Any,
+    other_value: Any,
+    migrations_executed: None,
+) -> None:
+    # Arrange
+    row1 = _create_result_row()
+    row1[column_name] = value
+    row2 = _create_result_row()
+    row2[column_name] = other_value
+    result_df = _create_result_df(spark, [row1, row2])
+
+    calculation_id = str(uuid.uuid4())
+    sut = EnergyCalculationResultWriter(
+        calculation_id,
+        DEFAULT_PROCESS_TYPE,
+        DEFAULT_BATCH_EXECUTION_START,
+    )
+
+    # Act
+    sut.write(
+        result_df,
+        DEFAULT_TIME_SERIES_TYPE,
+        DEFAULT_AGGREGATION_LEVEL,
+    )
+
+    # Assert
+    actual = (
+        spark.read.table(TABLE_NAME)
+        .where(col(EnergyResultColumnNames.calculation_id) == calculation_id)
+        .collect()
+    )
+    assert (
+        actual[0][EnergyResultColumnNames.calculation_result_id]
+        == actual[1][EnergyResultColumnNames.calculation_result_id]
+    )
 
 
 def test__get_column_group_for_calculation_result_id__excludes_expected_other_column_names(
@@ -341,6 +454,9 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
 
     # Arrange
     expected_other_columns = [
+        EnergyResultColumnNames.calculation_id,
+        EnergyResultColumnNames.calculation_type,
+        EnergyResultColumnNames.calculation_execution_time_start,
         EnergyResultColumnNames.time,
         EnergyResultColumnNames.quantity_qualities,
         EnergyResultColumnNames.quantity,
@@ -367,6 +483,12 @@ def _map_colname_to_energy_result_column_name(field_name: str) -> str:
     Test workaround as the contract specifies the Delta table column names
     while some of the data frame column names are using `Colname` names.
     """
+    if field_name == Colname.batch_id:
+        return EnergyResultColumnNames.calculation_id
+    if field_name == Colname.calculation_type:
+        return EnergyResultColumnNames.calculation_type
+    if field_name == Colname.batch_execution_time_start:
+        return EnergyResultColumnNames.calculation_execution_time_start
     if field_name == Colname.grid_area:
         return EnergyResultColumnNames.grid_area
     if field_name == Colname.from_grid_area:
