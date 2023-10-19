@@ -19,17 +19,17 @@ option csharp_namespace = "Energinet.DataHub.Edi.Requests";
 
 message AggregatedTimeSeriesRequest {
   Period period = 1;
-  string metering_point_type = 6;
-  optional string settlement_method = 7;
-  optional string energy_supplier_id = 8;
-  string requested_by_actor_id = 9;
+  string metering_point_type = 2;
+  optional string settlement_method = 3;
+  optional string energy_supplier_id = 4;
+  string requested_by_actor_id = 5;
   // The requested by actor role is a 3 character string
-  string requested_by_actor_role = 10;
-  optional string balance_responsible_id = 11;
+  string requested_by_actor_role = 6;
+  optional string balance_responsible_id = 7;
   // The settlement series version is a 3 character string consisting of "Dxx" where xx is on of 01,02,...,09.
-  optional string settlement_series_version = 12;
+  optional string settlement_series_version = 8;
   // The grid area code is a 3 character string consisting solely of digits.
-  optional string grid_area_code = 13;
+  optional string grid_area_code = 9;
 }
 
 message Period {
