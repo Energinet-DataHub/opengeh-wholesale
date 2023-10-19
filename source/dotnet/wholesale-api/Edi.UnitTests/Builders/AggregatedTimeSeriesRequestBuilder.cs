@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Edi.Requests;
 using Energinet.DataHub.Wholesale.EDI.Models;
 using NodaTime;
 using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
@@ -21,7 +20,6 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 
 public class AggregatedTimeSeriesRequestBuilder
 {
-    private readonly AggregationPerGridArea _aggregationPerGridArea = new();
     private string _meteringPointType = MeteringPointType.Production;
 
     private string _start;
@@ -50,8 +48,7 @@ public class AggregatedTimeSeriesRequestBuilder
     {
         var request = new AggregatedTimeSeriesRequest
         {
-            AggregationPerGridarea = _aggregationPerGridArea,
-            Period = new DataHub.Edi.Requests.Period()
+            Period = new Edi.Requests.Period()
             {
                 Start = _start,
                 End = _end,
