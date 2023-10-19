@@ -18,5 +18,5 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.En
 
 public interface IEnergyResultProducedFactory
 {
-    Contracts.IntegrationEvents.V2.EnergyResultProduced Create(EnergyResult result);
+    Contracts.IntegrationEvents.EnergyResultProduced.V2.EnergyResultProduced Create(EnergyResult result);
 }

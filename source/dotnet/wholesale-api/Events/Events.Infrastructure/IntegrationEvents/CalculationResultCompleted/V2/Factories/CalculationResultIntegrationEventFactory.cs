@@ -42,7 +42,7 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Ca
         {
             var energyResultProduced = _energyResultProducedFactory.Create(energyResult);
             var eventIdentification = Guid.NewGuid();
-            return CreateIntegrationEvent(energyResultProduced, eventIdentification, Contracts.IntegrationEvents.V2.EnergyResultProduced.EventName, Contracts.IntegrationEvents.V2.EnergyResultProduced.EventMinorVersion);
+            return CreateIntegrationEvent(energyResultProduced, eventIdentification, Contracts.IntegrationEvents.EnergyResultProduced.V2.EnergyResultProduced.EventName, Contracts.IntegrationEvents.EnergyResultProduced.V2.EnergyResultProduced.EventMinorVersion);
         }
 
         private IntegrationEvent CreateIntegrationEvent(IMessage protobufMessage, Guid eventIdentification, string eventName, int eventMinorVersion)

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using QuantityQuality = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.V2.EnergyResultProduced.Types.QuantityQuality;
+using QuantityQuality = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProduced.V2.EnergyResultProduced.Types.QuantityQuality;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProduced.V2.Mappers;
 

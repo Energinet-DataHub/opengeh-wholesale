@@ -18,7 +18,7 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 import "Common/Protos/decimal_value.proto";
 
-option csharp_namespace = "Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.V2";
+option csharp_namespace = "Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProduced.V2";
 
 
 /*

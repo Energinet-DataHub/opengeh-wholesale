@@ -13,7 +13,7 @@
 // limitations under the License.
 
 // ReSharper disable once CheckNamespace - the namespace is exposed publicly in the Contracts package
-namespace Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.V2;
+namespace Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProduced.V2;
 
 public partial class EnergyResultProduced
 {
