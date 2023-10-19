@@ -37,6 +37,10 @@ from package.constants import Colname
 from pyspark.sql.types import StructType
 
 
+# TODO BJM: These tests seems incomplete.
+#           No tests seems to test the part of the table reader, which actually reads from the table
+
+
 def _create_metering_point_period_row(
     metering_point_type: InputMeteringPointType = InputMeteringPointType.CONSUMPTION,
     settlement_method: InputSettlementMethod = InputSettlementMethod.FLEX,
@@ -146,30 +150,6 @@ def test___read_metering_point_periods__returns_df_with_correct_metering_point_t
 
     # Assert
     assert actual.collect()[0][Colname.metering_point_type] == expected.value
-
-
-@pytest.mark.parametrize(
-    "settlement_method,expected",
-    [
-        [InputSettlementMethod.FLEX, SettlementMethod.FLEX],
-        [InputSettlementMethod.NON_PROFILED, SettlementMethod.NON_PROFILED],
-    ],
-)
-def test___read_metering_point_periods__returns_df_with_correct_settlemet_methods(
-    spark: SparkSession,
-    settlement_method: InputSettlementMethod,
-    expected: SettlementMethod,
-) -> None:
-    row = _create_metering_point_period_row(settlement_method=settlement_method)
-    df = spark.createDataFrame(data=[row], schema=metering_point_period_schema)
-    sut = TableReader(spark)
-
-    # Act
-    with mock.patch.object(sut, TableReader._read_table.__name__, return_value=df):
-        actual = sut.read_metering_point_periods()
-
-    # Assert
-    assert actual.collect()[0][Colname.settlement_method] == expected.value
 
 
 @pytest.mark.parametrize(

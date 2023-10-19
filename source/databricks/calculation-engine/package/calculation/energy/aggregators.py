@@ -89,11 +89,8 @@ def _aggregate_per_ga_and_brp_and_es(
     ]
     result = T.aggregate_sum_and_set_quality(result, "quarter_quantity", sum_group_by)
 
-    win = Window.partitionBy(Colname.grid_area).orderBy(col(Colname.time_window))
-
     result = (
-        result.withColumn("position", row_number().over(win))
-        .withColumn(
+        result.withColumn(
             Colname.sum_quantity,
             when(col(Colname.sum_quantity).isNull(), Decimal("0.000")).otherwise(
                 col(Colname.sum_quantity)
@@ -116,7 +113,6 @@ def _aggregate_per_ga_and_brp_and_es(
             lit(None if settlement_method is None else settlement_method.value)
             .cast(StringType())
             .alias(Colname.settlement_method),
-            Colname.position,
         )
     )
 
