@@ -26,7 +26,7 @@ public class BatchDtoMapper : IBatchDtoMapper
             batch.PeriodStart.ToDateTimeOffset(),
             batch.PeriodEnd.ToDateTimeOffset(),
             batch.GetResolution(),
-            batch.GetQuantityUnit(),
+            batch.GetQuantityUnit().ToString(),
             batch.ExecutionTimeStart?.ToDateTimeOffset(),
             batch.ExecutionTimeEnd?.ToDateTimeOffset() ?? null,
             MapState(batch.ExecutionState),
@@ -46,7 +46,11 @@ public class BatchDtoMapper : IBatchDtoMapper
             BatchExecutionState.Executing => BatchState.Executing,
             BatchExecutionState.Completed => BatchState.Completed,
             BatchExecutionState.Failed => BatchState.Failed,
-            _ => throw new ArgumentOutOfRangeException(nameof(state)),
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(state),
+                actualValue: state,
+                "Value cannot be mapped to a batch state."),
         };
     }
 

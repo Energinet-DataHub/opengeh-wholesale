@@ -50,4 +50,18 @@ public class TimeSeriesTypeMapperTests
             Enum.IsDefined(typeof(Contracts.IntegrationEvents.EnergyResultProducedV1.Types.TimeSeriesType), actual).Should().BeTrue();
         }
     }
+
+    [Fact]
+    public void MapTimeSeriesType_WhenInvalidEnumNumberForTimeSeriesType_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        var invalidValue = (TimeSeriesType)99;
+
+        // Act
+        var act = () => TimeSeriesTypeMapper.MapTimeSeriesType(invalidValue);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .And.ActualValue.Should().Be(invalidValue);
+    }
 }

@@ -22,17 +22,25 @@ public static class TimeSeriesTypeMapper
     {
         return meteringPointType switch
         {
-            "E18" => TimeSeriesType.Production,
-            "E20" => TimeSeriesType.NetExchangePerGa,
-            "E17" => settlementMethod switch
+            MeteringPointType.Production => TimeSeriesType.Production,
+            MeteringPointType.Exchange => TimeSeriesType.NetExchangePerGa,
+            MeteringPointType.Consumption => settlementMethod switch
             {
-                "E02" => TimeSeriesType.NonProfiledConsumption,
-                "D01" => TimeSeriesType.FlexConsumption,
+                SettlementMethod.NonProfiled => TimeSeriesType.NonProfiledConsumption,
+                SettlementMethod.Flex => TimeSeriesType.FlexConsumption,
                 var method when
                     string.IsNullOrWhiteSpace(method) => TimeSeriesType.TotalConsumption,
-                _ => throw new InvalidOperationException("Unknown time series type"),
+
+                _ => throw new ArgumentOutOfRangeException(
+                    nameof(settlementMethod),
+                    actualValue: settlementMethod,
+                    "Value does not contain a valid string representation of a settlement method."),
             },
-            _ => throw new InvalidOperationException("Unknown time series type"),
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(meteringPointType),
+                actualValue: meteringPointType,
+                "Value does not contain a valid string representation of a metering point type."),
         };
     }
 }

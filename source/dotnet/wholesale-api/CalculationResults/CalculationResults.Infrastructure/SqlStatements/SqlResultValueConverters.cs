@@ -44,7 +44,8 @@ public static class SqlResultValueConverters
 
     public static QuantityQuality ToQuantityQuality(string value)
     {
-        return QuantityQualityMapper.FromDeltaTableValue(value);
+        // TODO BJM: Anticipating a single quality will be changed as part of issue #35
+        return QuantityQualitiesMapper.FromDeltaTableValue(value).Single();
     }
 
     public static TimeSeriesType ToTimeSeriesType(string value)
@@ -63,7 +64,10 @@ public static class SqlResultValueConverters
         {
             "true" => true,
             "false" => false,
-            _ => throw new ArgumentException($"Quality of unknown type: '{value}'"),
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(value),
+                actualValue: value,
+                "Value does not contain a valid string representation of a boolean."),
         };
     }
 }

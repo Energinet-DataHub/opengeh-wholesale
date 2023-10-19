@@ -47,4 +47,18 @@ public class ProcessTypeMapperTests
             Enum.IsDefined(typeof(Contracts.Events.ProcessType), actual).Should().BeTrue();
         }
     }
+
+    [Fact]
+    public void MapProcessType_WhenInvalidEnumNumberForProcessType_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        var invalidValue = (ProcessType)99;
+
+        // Act
+        var act = () => ProcessTypeMapper.MapProcessType(invalidValue);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .And.ActualValue.Should().Be(invalidValue);
+    }
 }

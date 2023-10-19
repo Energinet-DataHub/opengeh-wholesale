@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from pyspark.sql.types import (
+    ArrayType,
     DecimalType,
     StringType,
     StructField,
@@ -33,7 +34,11 @@ energy_results_schema = StructType(
         # Null when quality is missing.
         # Example: 1234.534
         StructField(EnergyResultColumnNames.quantity, DecimalType(18, 3), True),
-        StructField(EnergyResultColumnNames.quantity_quality, StringType(), False),
+        StructField(
+            EnergyResultColumnNames.quantity_qualities,
+            ArrayType(StringType(), False),
+            False,
+        ),
         StructField(EnergyResultColumnNames.time, TimestampType(), False),
         StructField(EnergyResultColumnNames.aggregation_level, StringType(), False),
         StructField(EnergyResultColumnNames.time_series_type, StringType(), False),

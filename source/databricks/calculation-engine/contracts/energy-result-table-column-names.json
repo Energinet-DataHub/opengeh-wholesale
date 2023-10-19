@@ -41,8 +41,8 @@
         "type": "decimal(18,3)"
       },
       {
-        "name": "quantity_quality",
-        "type": "string"
+        "name": "quantity_qualities",
+        "type": "array<string>"
       },
       {
         "name": "aggregation_level",
@@ -54,3 +54,4 @@
       }
     ]
   }
+  

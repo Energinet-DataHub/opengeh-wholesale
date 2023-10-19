@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.EDI.Mappers;
 using Energinet.DataHub.Wholesale.EDI.Models;
+using FluentAssertions;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Mappers;
@@ -23,26 +24,47 @@ public class TimeSeriesTypeMapperTests
     [Theory]
     [InlineData("E17", "", TimeSeriesType.TotalConsumption)]
     [InlineData("E17", null, TimeSeriesType.TotalConsumption)]
-    [InlineData("E17", "E02", TimeSeriesType.NonProfiledConsumption)]
-    [InlineData("E17", "D01", TimeSeriesType.FlexConsumption)]
+    [InlineData("E17", SettlementMethod.NonProfiled, TimeSeriesType.NonProfiledConsumption)]
+    [InlineData("E17", SettlementMethod.Flex, TimeSeriesType.FlexConsumption)]
     [InlineData("E18", null, TimeSeriesType.Production)]
     [InlineData("E20", null, TimeSeriesType.NetExchangePerGa)]
-    public void MapTimeSeriesType_WithSettlementMethodAndMeteringPointType_returnsExpectedType(
+    public void MapTimeSeriesType_WhenValidMeteringPointTypeAndSettlementMethod_ReturnsExpectedType(
         string meteringPointType,
         string? settlementMethod,
         TimeSeriesType expectedType)
     {
-        var timeSeriesType = TimeSeriesTypeMapper.MapTimeSeriesType(
-            meteringPointType,
-            settlementMethod);
+        // Act
+        var actualType = TimeSeriesTypeMapper.MapTimeSeriesType(meteringPointType, settlementMethod);
 
         // Assert
-        Assert.Equal(expectedType, timeSeriesType);
+        actualType.Should().Be(expectedType);
     }
 
     [Fact]
-    public void MapTimeSeriesType_InvalidCombination_ThrowsException()
+    public void MapTimeSeriesType_WhenInvalidMeteringPointType_ThrowsArgumentOutOfRangeException()
     {
-        Assert.Throws<InvalidOperationException>(() => TimeSeriesTypeMapper.MapTimeSeriesType("Invalid", "Invalid"));
+        // Arrange
+        var invalidMeteringPointType = Guid.NewGuid().ToString();
+
+        // Act
+        var act = () => TimeSeriesTypeMapper.MapTimeSeriesType(invalidMeteringPointType, null);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .And.ActualValue.Should().Be(invalidMeteringPointType);
+    }
+
+    [Fact]
+    public void MapTimeSeriesType_WhenValidMeteringPointTypeAndInvalidSettlementMethod_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        var invalidSettlementMethod = Guid.NewGuid().ToString();
+
+        // Act
+        var act = () => TimeSeriesTypeMapper.MapTimeSeriesType("E17", invalidSettlementMethod);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .And.ActualValue.Should().Be(invalidSettlementMethod);
     }
 }

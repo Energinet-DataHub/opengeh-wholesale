@@ -23,6 +23,13 @@ def assert_schema(
     ignore_decimal_scale: bool = False,
     ignore_decimal_precision: bool = False,
 ) -> None:
+    """
+    When actual schema does not match the expected schema,
+    raises an AssertionError with an error message starting with 'Schema mismatch'.
+
+    The function provides options to provide a more lenient comparison for either
+    special cases or to allow a stepwise implementation of more strict checks.
+    """
     if actual == expected:
         return
 
@@ -33,10 +40,7 @@ def assert_schema(
         or ignore_decimal_scale
     )
     if strict:
-        if actual != expected:
-            raise AssertionError(
-                f"Schema mismatch. Expected {expected}, but got {actual}."
-            )
+        _raise(f"Expected {expected}, but got {actual}.")
 
     actual_fields = actual.fields
     expected_fields = expected.fields
@@ -57,16 +61,14 @@ def _assert_column_nullability(
     actual: StructField, expected: StructField, ignore_nullability: bool
 ) -> None:
     if not ignore_nullability and actual.nullable != expected.nullable:
-        raise AssertionError(
+        _raise(
             f"Expected column name '{expected.name}' to have nullable={expected.dataType}, but got nullable={actual.dataType}"
         )
 
 
 def _assert_column_name(actual: StructField, expected: StructField) -> None:
     if actual.name != expected.name:
-        raise AssertionError(
-            f"Expected column name '{expected.name}', but found '{actual.name}'"
-        )
+        _raise(f"Expected column name '{expected.name}', but found '{actual.name}'")
 
 
 def _assert_column_datatype(
@@ -81,7 +83,7 @@ def _assert_column_datatype(
     if not isinstance(actual.dataType, DecimalType) or not isinstance(
         expected.dataType, DecimalType
     ):
-        raise AssertionError(
+        _raise(
             f"Expected column name '{expected.name}' to have type {expected.dataType}, but got type {actual.dataType}"
         )
 
@@ -89,11 +91,15 @@ def _assert_column_datatype(
         not ignore_decimal_precision
         and actual.dataType.precision != expected.dataType.precision
     ):
-        raise AssertionError(
+        _raise(
             f"Decimal precision error: Expected column name '{expected.name}' to have type {expected.dataType}, but got type {actual.dataType}"
         )
 
     if not ignore_decimal_scale and actual.dataType.scale != expected.dataType.scale:
-        raise AssertionError(
+        _raise(
             f"Decimal scale error: Expected column name '{expected.name}' to have type {expected.dataType}, but got type {actual.dataType}"
         )
+
+
+def _raise(error_message: str) -> None:
+    raise AssertionError(f"Schema mismatch. {error_message}")

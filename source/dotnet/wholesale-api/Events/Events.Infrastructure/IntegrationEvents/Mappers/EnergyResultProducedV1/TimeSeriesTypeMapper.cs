@@ -33,7 +33,11 @@ public static class TimeSeriesTypeMapper
             CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType.TotalConsumption => TimeSeriesType.TotalConsumption,
             CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType.TempFlexConsumption => TimeSeriesType.TempFlexConsumption,
             CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType.TempProduction => TimeSeriesType.TempProduction,
-            _ => throw new ArgumentException($"No matching 'TimeSeriesType' for: {timeSeriesType.ToString()}"),
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(timeSeriesType),
+                actualValue: timeSeriesType,
+                "Value cannot be mapped to a time series type."),
         };
     }
 }

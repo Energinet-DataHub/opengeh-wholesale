@@ -42,8 +42,8 @@ public class EnergyResultQueriesTests
         _row0BatchId = "b78787d5-b544-44ac-87c2-7720aab86ed1";
         _calculationResultId0 = "9913f3bb-1208-400b-9cbe-50300e386d26";
         const string calculationResultId1 = "8c2bb7c6-d8e5-462c-9bce-8537f93ef8e7";
-        var row0 = new[] { _row0BatchId, "100", "200", "non_profiled_consumption", string.Empty, string.Empty, "2022-05-16T22:00:00.000Z", "1.111", "measured", _calculationResultId0, DeltaTableProcessType.Aggregation };
-        var row1 = new[] { "b78787d5-b544-44ac-87c2-7720aab86ed2", "200", "100", "non_profiled_consumption", string.Empty, string.Empty, "2022-05-16T22:00:00.000Z", "2.222", "measured", calculationResultId1, DeltaTableProcessType.BalanceFixing };
+        var row0 = new[] { _row0BatchId, "100", "200", "non_profiled_consumption", string.Empty, string.Empty, "2022-05-16T22:00:00.000Z", "1.111", "[\"measured\"]", _calculationResultId0, DeltaTableProcessType.Aggregation };
+        var row1 = new[] { "b78787d5-b544-44ac-87c2-7720aab86ed2", "200", "100", "non_profiled_consumption", string.Empty, string.Empty, "2022-05-16T22:00:00.000Z", "2.222", "[\"measured\"]", calculationResultId1, DeltaTableProcessType.BalanceFixing };
         var rows = new List<string[]> { row0, row1, };
 
         // Using the columns from the EnergyResultQueries class to ensure that the test is not broken if the columns are changed

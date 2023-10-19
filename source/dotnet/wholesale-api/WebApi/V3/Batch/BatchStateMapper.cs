@@ -24,7 +24,11 @@ public static class BatchStateMapper
             Batches.Interfaces.Models.BatchState.Executing => BatchState.Executing,
             Batches.Interfaces.Models.BatchState.Completed => BatchState.Completed,
             Batches.Interfaces.Models.BatchState.Failed => BatchState.Failed,
-            _ => throw new ArgumentOutOfRangeException(nameof(batchDtoExecutionState), batchDtoExecutionState, null),
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(batchDtoExecutionState),
+                actualValue: batchDtoExecutionState,
+                "Value cannot be mapped to a batch state."),
         };
     }
 
@@ -41,7 +45,11 @@ public static class BatchStateMapper
             BatchState.Executing => Batches.Interfaces.Models.BatchState.Executing,
             BatchState.Completed => Batches.Interfaces.Models.BatchState.Completed,
             BatchState.Failed => Batches.Interfaces.Models.BatchState.Failed,
-            _ => throw new ArgumentOutOfRangeException(nameof(batchDtoExecutionState), batchDtoExecutionState, null),
+
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(batchDtoExecutionState),
+                actualValue: batchDtoExecutionState,
+                "Value cannot be mapped to a nullable batch state."),
         };
     }
 }

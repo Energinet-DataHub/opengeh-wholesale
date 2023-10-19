@@ -14,34 +14,36 @@
 
 from pyspark.sql import DataFrame, SparkSession, Row
 
+from package.constants import Colname
+
 
 def get_batch_grid_areas_df(
     batch_grid_areas: list[str], spark: SparkSession
 ) -> DataFrame:
     return spark.createDataFrame(
-        map(lambda x: Row(str(x)), batch_grid_areas), ["grid_area_code"]
+        map(lambda x: Row(str(x)), batch_grid_areas), [Colname.grid_area]
     )
 
 
 def check_all_grid_areas_have_metering_points(
     batch_grid_areas_df: DataFrame, master_basis_data_df: DataFrame
 ) -> None:
-    "Raises exception if any grid area has no metering points"
+    """Raises exception if any grid area has no metering points"""
 
     distinct_grid_areas_rows_df = master_basis_data_df.select(
-        "grid_area_code"
+        Colname.grid_area
     ).distinct()
     grid_area_with_no_metering_point_df = batch_grid_areas_df.join(
-        distinct_grid_areas_rows_df, "grid_area_code", "leftanti"
+        distinct_grid_areas_rows_df, Colname.grid_area, "leftanti"
     )
 
     if grid_area_with_no_metering_point_df.count() > 0:
         grid_areas_to_inform_about = grid_area_with_no_metering_point_df.select(
-            "grid_area_code"
+            Colname.grid_area
         ).collect()
 
         grid_area_codes_to_inform_about = map(
-            lambda x: x.__getitem__("grid_area_code"), grid_areas_to_inform_about
+            lambda x: x.__getitem__(Colname.grid_area), grid_areas_to_inform_about
         )
         raise Exception(
             f"There are no metering points for the grid areas {list(grid_area_codes_to_inform_about)} in the requested period"

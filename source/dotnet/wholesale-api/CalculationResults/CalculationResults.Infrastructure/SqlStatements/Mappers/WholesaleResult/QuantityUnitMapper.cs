@@ -13,8 +13,9 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
+using Energinet.DataHub.Wholesale.Common.Models;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
 
 public static class QuantityUnitMapper
 {
@@ -23,7 +24,11 @@ public static class QuantityUnitMapper
             return quantityUnit switch
             {
                 "kWh" => QuantityUnit.Kwh,
-                _ => throw new ArgumentException($"Quality of unknown type: '{quantityUnit}'"),
+                "pcs" => QuantityUnit.Pieces,
+                _ => throw new ArgumentOutOfRangeException(
+                    nameof(quantityUnit),
+                    actualValue: quantityUnit,
+                    "Value does not contain a valid string representation of a quantity unit."),
             };
         }
 }

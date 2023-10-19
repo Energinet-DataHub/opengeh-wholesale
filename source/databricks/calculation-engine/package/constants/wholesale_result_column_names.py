@@ -18,7 +18,6 @@ from .result_column_names import ResultColumnNames
 
 class WholesaleResultColumnNames(ResultColumnNames):
     quantity_unit = "quantity_unit"
-    quantity_qualities = "quantity_qualities"
     resolution = "resolution"
 
     metering_point_type = "metering_point_type"

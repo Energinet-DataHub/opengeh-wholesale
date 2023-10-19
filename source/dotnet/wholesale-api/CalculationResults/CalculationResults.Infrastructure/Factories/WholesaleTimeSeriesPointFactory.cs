@@ -29,6 +29,7 @@ public static class WholesaleTimeSeriesPointFactory
         var qualities = row[WholesaleResultColumnNames.QuantityQualities];
         var price = row[WholesaleResultColumnNames.Price];
         var amount = row[WholesaleResultColumnNames.Amount];
+
         return new WholesaleTimeSeriesPoint(
             SqlResultValueConverters.ToDateTimeOffset(time)!.Value,
             SqlResultValueConverters.ToDecimal(quantity),

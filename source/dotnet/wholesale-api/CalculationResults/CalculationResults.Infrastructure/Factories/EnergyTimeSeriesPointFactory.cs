@@ -23,9 +23,13 @@ public static class EnergyTimeSeriesPointFactory
 {
     public static EnergyTimeSeriesPoint CreateTimeSeriesPoint(SqlResultRow row)
     {
-        var time = SqlResultValueConverters.ToDateTimeOffset(row[EnergyResultColumnNames.Time])!.Value;
-        var quantity = SqlResultValueConverters.ToDecimal(row[EnergyResultColumnNames.Quantity])!.Value;
-        var quality = SqlResultValueConverters.ToQuantityQuality(row[EnergyResultColumnNames.QuantityQuality]);
-        return new EnergyTimeSeriesPoint(time, quantity, quality);
+        var time = row[EnergyResultColumnNames.Time];
+        var quantity = row[EnergyResultColumnNames.Quantity];
+        var quality = row[EnergyResultColumnNames.QuantityQualities];
+
+        return new EnergyTimeSeriesPoint(
+            SqlResultValueConverters.ToDateTimeOffset(time)!.Value,
+            SqlResultValueConverters.ToDecimal(quantity)!.Value,
+            SqlResultValueConverters.ToQuantityQuality(quality));
     }
 }

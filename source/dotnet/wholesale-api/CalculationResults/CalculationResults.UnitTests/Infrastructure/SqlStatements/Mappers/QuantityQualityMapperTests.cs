@@ -23,10 +23,12 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 
 public class QuantityQualityMapperTests
 {
+    private const string DocumentPath = "DeltaTableContracts.enums.quantity-quality.json";
+
     [Fact]
     public async Task QuantityQuality_Matches_Contract()
     {
-        await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.enums.quantity-quality.json");
+        await using var stream = EmbeddedResources.GetStream<Root>(DocumentPath);
         await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<QuantityQuality>(stream);
     }
 
@@ -48,7 +50,7 @@ public class QuantityQualityMapperTests
     public async Task FromDeltaTableValue_MapsAllValidDeltaTableValues()
     {
         // Arrange
-        await using var stream = EmbeddedResources.GetStream<Root>("DeltaTableContracts.enums.quantity-quality.json");
+        await using var stream = EmbeddedResources.GetStream<Root>(DocumentPath);
         var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
 
         foreach (var validDeltaValue in validDeltaValues)
@@ -74,5 +76,19 @@ public class QuantityQualityMapperTests
 
         // Assert
         actual.Should().Be(expected);
+    }
+
+    [Fact]
+    public void FromDeltaTableValue_WhenInvalidDeltaTableValue_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        var invalidDeltaTableValue = Guid.NewGuid().ToString();
+
+        // Act
+        var act = () => QuantityQualityMapper.FromDeltaTableValue(invalidDeltaTableValue);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .And.ActualValue.Should().Be(invalidDeltaTableValue);
     }
 }

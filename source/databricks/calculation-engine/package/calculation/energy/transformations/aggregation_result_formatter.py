@@ -17,13 +17,13 @@ import pyspark.sql.functions as f
 from pyspark.sql.types import StringType, IntegerType
 
 from package.common import assert_schema
-from package.constants import Colname
 from package.calculation.energy.schemas import aggregation_result_schema
+from package.constants import Colname
 from package.codelists import QuantityQuality
 
 
 def create_dataframe_from_aggregation_result_schema(result: DataFrame) -> DataFrame:
-    "Fit result in a general DataFrame. This is used for all results and missing columns will be null."
+    """Fit result in a general DataFrame. This is used for all results and missing columns will be null."""
 
     result = _add_missing_nullable_columns(result)
     # Replaces None value with zero for sum_quantity
@@ -31,6 +31,19 @@ def create_dataframe_from_aggregation_result_schema(result: DataFrame) -> DataFr
     # Replaces None value with QuantityQuality.MISSING for quality
     result = result.na.fill(
         value=QuantityQuality.MISSING.value, subset=[Colname.quality]
+    )
+
+    result = result.select(
+        Colname.grid_area,
+        Colname.to_grid_area,
+        Colname.from_grid_area,
+        Colname.balance_responsible_id,
+        Colname.energy_supplier_id,
+        Colname.time_window,
+        Colname.sum_quantity,
+        Colname.quality,
+        Colname.metering_point_type,
+        Colname.settlement_method,
     )
 
     assert_schema(
@@ -42,19 +55,7 @@ def create_dataframe_from_aggregation_result_schema(result: DataFrame) -> DataFr
         ignore_decimal_precision=True,
     )
 
-    return result.select(
-        Colname.grid_area,
-        Colname.to_grid_area,
-        Colname.from_grid_area,
-        Colname.balance_responsible_id,
-        Colname.energy_supplier_id,
-        Colname.time_window,
-        Colname.sum_quantity,
-        Colname.quality,
-        Colname.metering_point_type,
-        Colname.settlement_method,
-        Colname.position,
-    )
+    return result
 
 
 def _add_missing_nullable_columns(result: DataFrame) -> DataFrame:
@@ -76,6 +77,4 @@ def _add_missing_nullable_columns(result: DataFrame) -> DataFrame:
         result = result.withColumn(
             Colname.settlement_method, f.lit(None).cast(StringType())
         )
-    if Colname.position not in result.columns:
-        result = result.withColumn(Colname.position, f.lit(None).cast(IntegerType()))
     return result

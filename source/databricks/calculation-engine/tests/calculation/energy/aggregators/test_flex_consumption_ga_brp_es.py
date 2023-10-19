@@ -42,7 +42,6 @@ default_domain = "D1"
 default_responsible = "R1"
 default_supplier = "S1"
 default_quantity = Decimal(1)
-default_resolution = "PT15M"
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_obs_time = datetime.strptime(
@@ -64,7 +63,6 @@ def time_series_row_factory(spark: SparkSession) -> Callable[..., DataFrame]:
         supplier: str = default_supplier,
         quantity: Decimal = default_quantity,
         obs_time: datetime = default_obs_time,
-        resolution: str = default_resolution,
     ) -> DataFrame:
         pandas_df = pd.DataFrame(
             {
@@ -76,7 +74,6 @@ def time_series_row_factory(spark: SparkSession) -> Callable[..., DataFrame]:
                 "quarter_quantity": [quantity],
                 Colname.time_window: [obs_time],
                 Colname.quality: [QuantityQuality.ESTIMATED.value],
-                Colname.resolution: [resolution],
             }
         )
         return spark.createDataFrame(pandas_df).withColumn(

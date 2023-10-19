@@ -28,7 +28,7 @@ public class EnergyResultColumnNames
     public const string Quantity = "quantity";
 
     public const string BalanceResponsibleId = "balance_responsible_id";
-    public const string QuantityQuality = "quantity_quality";
+    public const string QuantityQualities = "quantity_qualities";
     public const string AggregationLevel = "aggregation_level";
     public const string TimeSeriesType = "time_series_type";
     public const string FromGridArea = "out_grid_area";
@@ -47,7 +47,7 @@ public class EnergyResultColumnNames
              CalculationResultId => "string",
              EnergySupplierId => "string",
              Time => "timestamp",
-             QuantityQuality => "string",
+             QuantityQualities => "array<string>",
              AggregationLevel => "string",
              TimeSeriesType => "string",
              BatchId => "string",
@@ -55,6 +55,6 @@ public class EnergyResultColumnNames
              BatchExecutionTimeStart => "timestamp",
              FromGridArea => "string",
              Quantity => "decimal(18,3)",
-             _ => throw new ArgumentException($"Unexpected column name '{columnName}'."),
+             _ => throw new ArgumentOutOfRangeException(nameof(columnName), actualValue: columnName, "Unexpected column name."),
          };
 }
