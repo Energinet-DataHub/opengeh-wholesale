@@ -1,5 +1,5 @@
 module "azfun_converter" {
-  source                                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=v13-without-vnet"
+  source                                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=v13"
 
   name                                      = "converter"
   project_name                              = var.domain_name_short
@@ -7,13 +7,12 @@ module "azfun_converter" {
   environment_instance                      = var.environment_instance
   resource_group_name                       = azurerm_resource_group.this.name
   location                                  = azurerm_resource_group.this.location
-  app_service_plan_id                       = module.plan_services.id
+  vnet_integration_subnet_id                = data.azurerm_key_vault_secret.snet_vnet_integration_id.value
+  private_endpoint_subnet_id                = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
+  app_service_plan_id                       = data.azurerm_key_vault_secret.plan_shared_id.value
   application_insights_instrumentation_key  = data.azurerm_key_vault_secret.appi_shared_instrumentation_key.value
+  dotnet_framework_version                  = "v6.0"
   app_settings = {
-    # Region: Default Values
-    WEBSITE_ENABLE_SYNC_UPDATE_SITE     = true,
-    WEBSITE_RUN_FROM_PACKAGE            = 1,
-    WEBSITES_ENABLE_APP_SERVICE_STORAGE = true,
     # EndRegion
     BLOB_FILES_ERROR_CONTAINER_NAME       = local.blob_files_error_container.name
     BLOB_FILES_RAW_CONTAINER_NAME         = local.blob_files_raw_container.name
@@ -22,7 +21,7 @@ module "azfun_converter" {
     BLOB_FILES_ACK_CONTAINER_NAME         = local.blob_files_ack_container.name
     "biztalk:acknowledgementMgaImbalance" = "NBS-ACK-MGA-IMBALANCE-RESULTS"
     "biztalk:acknowledgementBrpChange"    = "NBS-ACK-RETAILER-BALANCE-RESPONSIBILITY"
-    CONNECTION_STRING_DATABASE            = "Server=${module.mssql_esett.fully_qualified_domain_name};Database=${module.mssqldb_esett.name};User Id=${local.sqlServerAdminName};Password=${random_password.sqlsrv_admin_password.result};"
+    CONNECTION_STRING_DATABASE            = local.connection_string_database
   }
   connection_strings = [
     {

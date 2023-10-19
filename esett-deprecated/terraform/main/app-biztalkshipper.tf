@@ -1,5 +1,5 @@
 module "app_biztalkshipper" {
-  source                                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=v13-without-vnet"
+  source                                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=v13"
 
   name                                      = "biztalkshipper"
   project_name                              = var.domain_name_short
@@ -7,8 +7,12 @@ module "app_biztalkshipper" {
   environment_instance                      = var.environment_instance
   resource_group_name                       = azurerm_resource_group.this.name
   location                                  = azurerm_resource_group.this.location
-  app_service_plan_id                       = module.plan_services.id
+  vnet_integration_subnet_id                = data.azurerm_key_vault_secret.snet_vnet_integration_id.value
+  private_endpoint_subnet_id                = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
+  app_service_plan_id                       = data.azurerm_key_vault_secret.plan_shared_id.value
   application_insights_instrumentation_key  = data.azurerm_key_vault_secret.appi_shared_instrumentation_key.value
+  ip_restriction_allow_ip_range             = var.hosted_deployagent_public_ip_range
+  dotnet_framework_version                  = "v7.0"
   app_settings                              = merge({
     "biztalk:senderCode"    = "45V0000000000601"
     "biztalk:receiverCode"  = "44V000000000028C"

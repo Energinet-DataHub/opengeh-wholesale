@@ -12,7 +12,6 @@ module "app_importer" {
   app_service_plan_id                       = data.azurerm_key_vault_secret.plan_shared_id.value
   application_insights_instrumentation_key  = data.azurerm_key_vault_secret.appi_shared_instrumentation_key.value
   ip_restriction_allow_ip_range             = var.hosted_deployagent_public_ip_range
-  use_dotnet_isolated_runtime               = true
   dotnet_framework_version                  = "v7.0"
   connection_strings = [
     {
@@ -21,14 +20,6 @@ module "app_importer" {
       value = module.stor_esett.primary_connection_string
     }
   ]
-}
-
-resource "azurerm_role_assignment" "importer_developer_access" {
-  for_each = toset(var.developer_object_ids)
-
-  scope                = module.app_importer.id
-  role_definition_name = "Contributor"
-  principal_id         = each.value
 }
 
 locals {
@@ -43,5 +34,3 @@ locals {
     CONNECTION_STRING_DATABASE      = local.connection_string_database
   }
 }
-
-
