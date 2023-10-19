@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.EnergyResultProducedV1;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Types;
@@ -114,7 +113,7 @@ public class EnergyResultProducedV1Factory : IEnergyResultProducedV1Factory
             .AddRange(result.TimeSeriesPoints
                 .Select(timeSeriesPoint => new Contracts.IntegrationEvents.EnergyResultProducedV1.Types.TimeSeriesPoint
                 {
-                    Quantity = new Energinet.DataHub.Wholesale.Contracts.Events.DecimalValue(timeSeriesPoint.Quantity),
+                    Quantity = new DecimalValue(timeSeriesPoint.Quantity),
                     Time = timeSeriesPoint.Time.ToTimestamp(),
                     QuantityQuality = QuantityQualityMapper.MapQuantityQuality(timeSeriesPoint.Quality),
                 }));

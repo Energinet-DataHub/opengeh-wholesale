@@ -67,10 +67,6 @@
       <OutputDir>obj\contracts\v2</OutputDir>
       <Generator>MSBuild:Compile</Generator>
     </Protobuf>
-    <Protobuf Update="IntegrationEvents\Protos\decimal_value.proto">
-      <ProtoRoot>IntegrationEvents/Common/Protos/</ProtoRoot>
-      <OutputDir>obj\contracts\v2</OutputDir>
-    </Protobuf>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
