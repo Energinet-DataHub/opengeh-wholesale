@@ -20,6 +20,7 @@ from package.calculation.preparation.transformations.batch_grid_areas import (
 from package.codelists import (
     MeteringPointResolution,
 )
+from package.constants import Colname
 
 
 @pytest.fixture(scope="module")
@@ -29,12 +30,12 @@ def metering_point_period_df_factory(spark, timestamp_factory):
     ):
         df = [
             {
-                "metering_point_id": "a-metering-point-id",
-                "grid_area_code": grid_area_code,
-                "metering_point_type": "the_metering_point_type",
-                "from_date": timestamp_factory("2022-01-01T22:00:00.000Z"),
-                "to_date": timestamp_factory("2022-01-11T22:00:00.000Z"),
-                "resolution": MeteringPointResolution.HOUR.value,
+                Colname.metering_point_id: "a-metering-point-id",
+                Colname.grid_area: grid_area_code,
+                Colname.metering_point_type: "the_metering_point_type",
+                Colname.from_date: timestamp_factory("2022-01-01T22:00:00.000Z"),
+                Colname.to_date: timestamp_factory("2022-01-11T22:00:00.000Z"),
+                Colname.resolution: MeteringPointResolution.HOUR.value,
             }
         ]
         return spark.createDataFrame(df)
@@ -46,7 +47,7 @@ def metering_point_period_df_factory(spark, timestamp_factory):
 def grid_area_df_factory(spark):
     def factory(grid_area_code="805"):
         row = {
-            "grid_area_code": grid_area_code,
+            Colname.grid_area: grid_area_code,
             "GridAreaLinkId": "grid_area_link_id",
         }
         return spark.createDataFrame([row])

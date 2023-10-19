@@ -160,11 +160,6 @@ def migrations_executed(spark: SparkSession, data_lake_path: str) -> None:
     execute_migrations(spark, data_lake_path)
 
 
-@pytest.fixture(scope="function")
-def migrations_executed_per_test(spark: SparkSession, data_lake_path: str) -> None:
-    execute_migrations(spark, data_lake_path)
-
-
 def execute_migrations(spark: SparkSession, data_lake_path: str) -> None:
     # Clean up to prevent problems from previous test runs
     shutil.rmtree(data_lake_path, ignore_errors=True)

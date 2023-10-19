@@ -52,7 +52,6 @@ def agg_flex_consumption_schema() -> StructType:
         )
         .add(Colname.sum_quantity, DecimalType(18, 3))
         .add(Colname.quality, StringType())
-        .add(Colname.resolution, StringType())
         .add(Colname.metering_point_type, StringType())
     )
 
@@ -70,7 +69,6 @@ def test_data_factory(
                 Colname.time_window: [],
                 Colname.sum_quantity: [],
                 Colname.quality: [],
-                Colname.resolution: [],
                 Colname.metering_point_type: [],
             }
         )
@@ -88,7 +86,6 @@ def test_data_factory(
                             },
                             Colname.sum_quantity: Decimal(i + j + k),
                             Colname.quality: [QuantityQuality.ESTIMATED.value],
-                            Colname.resolution: [MeteringPointResolution.HOUR.value],
                             Colname.metering_point_type: [
                                 MeteringPointType.CONSUMPTION.value
                             ],
