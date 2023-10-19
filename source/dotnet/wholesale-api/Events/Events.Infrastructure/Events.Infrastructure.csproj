@@ -40,6 +40,37 @@
       <OutputDir>obj\contracts</OutputDir>
       <Generator>MSBuild:Compile</Generator>
     </Protobuf>
+    <Protobuf Include="IntegrationEvents/Common/Protos/*.proto">
+      <GrpcServices>None</GrpcServices>
+      <Access>Public</Access>
+      <ProtoCompile>True</ProtoCompile>
+      <ProtoRoot>IntegrationEvents/Common/Protos/</ProtoRoot>
+      <CompileOutputs>True</CompileOutputs>
+      <OutputDir>obj\contracts\v2</OutputDir>
+      <Generator>MSBuild:Compile</Generator>
+    </Protobuf>
+    <Protobuf Include="IntegrationEvents/EnergyResultProduced/V2/Protos/*.proto">
+      <GrpcServices>None</GrpcServices>
+      <Access>Public</Access>
+      <ProtoCompile>True</ProtoCompile>
+      <ProtoRoot>IntegrationEvents</ProtoRoot>
+      <CompileOutputs>True</CompileOutputs>
+      <OutputDir>obj\contracts\v2</OutputDir>
+      <Generator>MSBuild:Compile</Generator>
+    </Protobuf>
+    <Protobuf Include="IntegrationEvents/CalculationResultCompleted/V2/Protos/*.proto">
+      <GrpcServices>None</GrpcServices>
+      <Access>Public</Access>
+      <ProtoCompile>True</ProtoCompile>
+      <ProtoRoot>IntegrationEvents</ProtoRoot>
+      <CompileOutputs>True</CompileOutputs>
+      <OutputDir>obj\contracts\v2</OutputDir>
+      <Generator>MSBuild:Compile</Generator>
+    </Protobuf>
+    <Protobuf Update="IntegrationEvents\Protos\decimal_value.proto">
+      <ProtoRoot>IntegrationEvents/Common/Protos/</ProtoRoot>
+      <OutputDir>obj\contracts\v2</OutputDir>
+    </Protobuf>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />

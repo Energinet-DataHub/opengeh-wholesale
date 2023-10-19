@@ -14,9 +14,9 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProduced.V2.Factories;
 
-public interface ICalculationResultCompletedFactory
+public interface IEnergyResultProducedFactory
 {
-    Contracts.Events.CalculationResultCompleted Create(EnergyResult result);
+    Contracts.IntegrationEvents.V2.EnergyResultProduced Create(EnergyResult result);
 }

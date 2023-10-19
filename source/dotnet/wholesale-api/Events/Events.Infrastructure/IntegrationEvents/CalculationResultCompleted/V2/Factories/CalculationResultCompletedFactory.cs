@@ -13,17 +13,19 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.Contracts.Events;
+using Energinet.DataHub.Wholesale.Contracts.Events.V2;
+using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.Common;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.CalculationResultCompleted.V2.Mappers;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Common;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.CalculationResultCompleted;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Common.Mappers;
 using Google.Protobuf.WellKnownTypes;
-using TimeSeriesPoint = Energinet.DataHub.Wholesale.Contracts.Events.TimeSeriesPoint;
+using DecimalValue = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.Common.DecimalValue;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.CalculationResultCompleted.V2.Factories;
 
 public class CalculationResultCompletedFactory : ICalculationResultCompletedFactory
 {
-    public Contracts.Events.CalculationResultCompleted Create(EnergyResult energyResult)
+    public Contracts.Events.V2.CalculationResultCompleted Create(EnergyResult energyResult)
     {
         if (energyResult.EnergySupplierId == null && energyResult.BalanceResponsibleId == null)
             return CreateForGridArea(energyResult);
@@ -37,7 +39,7 @@ public class CalculationResultCompletedFactory : ICalculationResultCompletedFact
         return CreateForEnergySupplierByBalanceResponsibleParty(energyResult);
     }
 
-    private Contracts.Events.CalculationResultCompleted CreateForGridArea(EnergyResult result)
+    private Contracts.Events.V2.CalculationResultCompleted CreateForGridArea(EnergyResult result)
     {
         var calculationResultCompleted = CreateInternal(result);
         calculationResultCompleted.AggregationPerGridarea = new AggregationPerGridArea
@@ -48,7 +50,7 @@ public class CalculationResultCompletedFactory : ICalculationResultCompletedFact
         return calculationResultCompleted;
     }
 
-    private Contracts.Events.CalculationResultCompleted CreateForEnergySupplier(
+    private Contracts.Events.V2.CalculationResultCompleted CreateForEnergySupplier(
         EnergyResult result)
     {
         var calculationResultCompleted = CreateInternal(result);
@@ -61,7 +63,7 @@ public class CalculationResultCompletedFactory : ICalculationResultCompletedFact
         return calculationResultCompleted;
     }
 
-    private Contracts.Events.CalculationResultCompleted CreateForBalanceResponsibleParty(
+    private Contracts.Events.V2.CalculationResultCompleted CreateForBalanceResponsibleParty(
         EnergyResult result)
     {
         var calculationResultCompleted = CreateInternal(result);
@@ -75,7 +77,7 @@ public class CalculationResultCompletedFactory : ICalculationResultCompletedFact
         return calculationResultCompleted;
     }
 
-    private Contracts.Events.CalculationResultCompleted CreateForEnergySupplierByBalanceResponsibleParty(
+    private Contracts.Events.V2.CalculationResultCompleted CreateForEnergySupplierByBalanceResponsibleParty(
         EnergyResult result)
     {
         var calculationResultCompleted = CreateInternal(result);
@@ -90,9 +92,9 @@ public class CalculationResultCompletedFactory : ICalculationResultCompletedFact
         return calculationResultCompleted;
     }
 
-    private static Contracts.Events.CalculationResultCompleted CreateInternal(EnergyResult result)
+    private static Contracts.Events.V2.CalculationResultCompleted CreateInternal(EnergyResult result)
     {
-        var calculationResultCompleted = new Contracts.Events.CalculationResultCompleted
+        var calculationResultCompleted = new Contracts.Events.V2.CalculationResultCompleted
         {
             BatchId = result.BatchId.ToString(),
             Resolution = Resolution.Quarter,
@@ -107,11 +109,15 @@ public class CalculationResultCompletedFactory : ICalculationResultCompletedFact
 
         calculationResultCompleted.TimeSeriesPoints
             .AddRange(result.TimeSeriesPoints
-                .Select(timeSeriesPoint => new TimeSeriesPoint
+                .Select(timeSeriesPoint =>
                 {
-                    Quantity = new DecimalValue(timeSeriesPoint.Quantity),
-                    Time = timeSeriesPoint.Time.ToTimestamp(),
-                    QuantityQuality = QuantityQualityMapper.MapQuantityQuality(timeSeriesPoint.Quality),
+                    var mappedTimeSeriesPoint = new TimeSeriesPoint
+                    {
+                        Quantity = new DecimalValue(timeSeriesPoint.Quantity),
+                        Time = timeSeriesPoint.Time.ToTimestamp(),
+                        QuantityQuality = QuantityQualityMapper.MapQuantityQuality(timeSeriesPoint.Quality),
+                    };
+                    return mappedTimeSeriesPoint;
                 }));
         return calculationResultCompleted;
     }
