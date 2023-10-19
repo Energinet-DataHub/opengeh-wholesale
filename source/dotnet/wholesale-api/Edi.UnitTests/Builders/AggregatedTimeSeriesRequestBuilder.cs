@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Edi.Requests;
 using Energinet.DataHub.Wholesale.EDI.Models;
 using NodaTime;
 using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
@@ -30,7 +29,6 @@ public class AggregatedTimeSeriesRequestBuilder
     private string _requestedByActorId;
     private string? _settlementMethod;
     private string? _balanceResponsibleId;
-    private string? _gridAreaCode;
 
     private AggregatedTimeSeriesRequestBuilder()
     {
@@ -50,7 +48,7 @@ public class AggregatedTimeSeriesRequestBuilder
     {
         var request = new AggregatedTimeSeriesRequest
         {
-            Period = new DataHub.Edi.Requests.Period()
+            Period = new Edi.Requests.Period()
             {
                 Start = _start,
                 End = _end,
@@ -68,9 +66,6 @@ public class AggregatedTimeSeriesRequestBuilder
 
         if (_settlementMethod != null)
             request.SettlementMethod = _settlementMethod;
-
-        if (_gridAreaCode != null)
-            request.GridAreaCode = _gridAreaCode;
 
         return request;
     }
@@ -121,12 +116,6 @@ public class AggregatedTimeSeriesRequestBuilder
     public AggregatedTimeSeriesRequestBuilder WithBalanceResponsibleId(string? balanceResponsibleId)
     {
         _balanceResponsibleId = balanceResponsibleId;
-        return this;
-    }
-
-    public AggregatedTimeSeriesRequestBuilder WithGridAreaCode(string? gridAreaCode)
-    {
-        _gridAreaCode = gridAreaCode;
         return this;
     }
 }
