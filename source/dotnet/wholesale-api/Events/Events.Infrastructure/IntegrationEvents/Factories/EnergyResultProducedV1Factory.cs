@@ -21,7 +21,6 @@ using AggregationPerBalanceResponsiblePartyPerGridArea = Energinet.DataHub.Whole
 using AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV1.Types.AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea;
 using AggregationPerEnergySupplierPerGridArea = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV1.Types.AggregationPerEnergySupplierPerGridArea;
 using AggregationPerGridArea = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV1.Types.AggregationPerGridArea;
-using DecimalValue = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.DecimalValue;
 using QuantityUnit = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV1.Types.QuantityUnit;
 using TimeSeriesPoint = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV1.Types.TimeSeriesPoint;
 
