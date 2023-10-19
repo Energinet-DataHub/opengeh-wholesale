@@ -16,6 +16,7 @@ module "app_biztalkshipper" {
   app_settings                              = merge({
     "biztalk:senderCode"    = "45V0000000000601"
     "biztalk:receiverCode"  = "44V000000000028C"
+    "biztalk:RootUrl"       = "https://datahub.dev01.biztalk.test.endk.local"
   }, local.default_biztalkshipper_app_settings)
   connection_strings = [
     {
@@ -33,6 +34,7 @@ locals {
     BLOB_FILES_SENT_CONTAINER_NAME      = local.blob_files_sent_container.name
     BLOB_FILES_CONVERTED_CONTAINER_NAME = local.blob_files_converted_container.name
     BLOB_FILES_ACK_CONTAINER_NAME       = local.blob_files_ack_container.name
+    "RunIntervalSeconds"                = "20"
     "biztalk:Endpoint"                  = "/EL_DataHubService/IntegrationService.svc"
     "biztalk:businessTypeConsumption"   = "NBS-RECI"
     "biztalk:businessTypeProduction"    = "NBS-MEPI"
