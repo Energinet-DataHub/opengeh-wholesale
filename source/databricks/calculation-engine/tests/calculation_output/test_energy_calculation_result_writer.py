@@ -38,6 +38,7 @@ from tests.contract_utils import (
 DEFAULT_BATCH_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
 DEFAULT_GRID_AREA = "105"
 DEFAULT_FROM_GRID_AREA = "106"
+DEFAULT_TO_GRID_AREA = "107"
 DEFAULT_ENERGY_SUPPLIER_ID = "9876543210123"
 DEFAULT_BALANCE_RESPONSIBLE_ID = "1234567890123"
 DEFAULT_PROCESS_TYPE = e.ProcessType.BALANCE_FIXING
@@ -54,6 +55,7 @@ DEFAULT_SETTLEMENT_METHOD = e.SettlementMethod.FLEX
 OTHER_BATCH_ID = "0b15a420-9fc8-409a-a169-fbd49479d719"
 OTHER_GRID_AREA = "205"
 OTHER_FROM_GRID_AREA = "206"
+OTHER_TO_GRID_AREA = "207"
 OTHER_ENERGY_SUPPLIER_ID = "9876543210124"
 OTHER_BALANCE_RESPONSIBLE_ID = "1234567890124"
 OTHER_PROCESS_TYPE = e.ProcessType.AGGREGATION
@@ -331,7 +333,6 @@ def test__write__writes_calculation_result_id(
     [
         (Colname.grid_area, DEFAULT_GRID_AREA, OTHER_GRID_AREA),
         (Colname.from_grid_area, DEFAULT_FROM_GRID_AREA, OTHER_FROM_GRID_AREA),
-        # TODO BJM: (Colname.to_grid_area, DEFAULT_TO_GRID_AREA, OTHER_TO_GRID_AREA),
         (
             Colname.balance_responsible_id,
             DEFAULT_BALANCE_RESPONSIBLE_ID,
@@ -393,6 +394,7 @@ def test__write__when_rows_belong_to_different_results__adds_different_calculati
             DEFAULT_QUALITY.value,
             OTHER_QUALITY.value,
         ),
+        (Colname.to_grid_area, DEFAULT_TO_GRID_AREA, OTHER_TO_GRID_AREA),
         (
             Colname.metering_point_type,
             DEFAULT_METERING_POINT_TYPE.value,
@@ -454,12 +456,17 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
 
     # Arrange
     expected_other_columns = [
+        # Data that doesn't vary for rows in a data frame
         EnergyResultColumnNames.calculation_id,
         EnergyResultColumnNames.calculation_type,
         EnergyResultColumnNames.calculation_execution_time_start,
+        EnergyResultColumnNames.time_series_type,
+        EnergyResultColumnNames.aggregation_level,
+        # Data that does vary but does not define distinct results
         EnergyResultColumnNames.time,
         EnergyResultColumnNames.quantity_qualities,
         EnergyResultColumnNames.quantity,
+        # The field that defines results
         EnergyResultColumnNames.calculation_result_id,
     ]
     contract_path = f"{contracts_path}/energy-result-table-column-names.json"
@@ -483,14 +490,12 @@ def _map_colname_to_energy_result_column_name(field_name: str) -> str:
     Test workaround as the contract specifies the Delta table column names
     while some of the data frame column names are using `Colname` names.
     """
-    if field_name == Colname.batch_id:
-        return EnergyResultColumnNames.calculation_id
-    if field_name == Colname.calculation_type:
-        return EnergyResultColumnNames.calculation_type
-    if field_name == Colname.batch_execution_time_start:
-        return EnergyResultColumnNames.calculation_execution_time_start
     if field_name == Colname.grid_area:
         return EnergyResultColumnNames.grid_area
     if field_name == Colname.from_grid_area:
         return EnergyResultColumnNames.from_grid_area
+    if field_name == Colname.balance_responsible_id:
+        return EnergyResultColumnNames.balance_responsible_id
+    if field_name == Colname.energy_supplier_id:
+        return EnergyResultColumnNames.energy_supplier_id
     return field_name
