@@ -212,13 +212,13 @@ public class BatchTests
     }
 
     [Theory]
-    [InlineAutoMoqData(ProcessType.BalanceFixing, "kWh")]
-    [InlineAutoMoqData(ProcessType.Aggregation, "kWh")]
-    [InlineAutoMoqData(ProcessType.WholesaleFixing, "kWh")]
-    [InlineAutoMoqData(ProcessType.FirstCorrectionSettlement, "kWh")]
-    [InlineAutoMoqData(ProcessType.SecondCorrectionSettlement, "kWh")]
-    [InlineAutoMoqData(ProcessType.ThirdCorrectionSettlement, "kWh")]
-    public void GetQuantityUnit_ReturnsExpectedIso8601Duration(ProcessType processType, string expectedQuantityUnit)
+    [InlineAutoMoqData(ProcessType.BalanceFixing, QuantityUnit.Kwh)]
+    [InlineAutoMoqData(ProcessType.Aggregation, QuantityUnit.Kwh)]
+    [InlineAutoMoqData(ProcessType.WholesaleFixing, QuantityUnit.Kwh)]
+    [InlineAutoMoqData(ProcessType.FirstCorrectionSettlement, QuantityUnit.Kwh)]
+    [InlineAutoMoqData(ProcessType.SecondCorrectionSettlement, QuantityUnit.Kwh)]
+    [InlineAutoMoqData(ProcessType.ThirdCorrectionSettlement, QuantityUnit.Kwh)]
+    public void GetQuantityUnit_ReturnsExpectedIso8601Duration(ProcessType processType, QuantityUnit expectedQuantityUnit)
     {
         // Arrange
         var sut = new BatchBuilder().WithProcessType(processType).Build();

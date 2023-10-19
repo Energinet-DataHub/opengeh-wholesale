@@ -33,7 +33,7 @@ public static class BatchDtoMapperTests
         actual.ExecutionState.Should().Be(BatchStateMapper.MapState(source.ExecutionState));
         actual.Resolution.Should().Be(source.Resolution);
         actual.RunId.Should().Be(source.RunId);
-        actual.Unit.Should().Be(source.Unit);
+        actual.Unit.Should().Be(source.Unit.ToString());
         actual.PeriodStart.Should().Be(source.PeriodStart);
         actual.PeriodEnd.Should().Be(source.PeriodEnd);
         actual.ExecutionTimeStart.Should().Be(source.ExecutionTimeStart);
