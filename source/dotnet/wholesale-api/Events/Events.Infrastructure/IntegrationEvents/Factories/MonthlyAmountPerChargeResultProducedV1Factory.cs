@@ -25,7 +25,6 @@ public class MonthlyAmountPerChargeResultProducedV1Factory : IMonthlyAmountPerCh
         var @event = new MonthlyAmountPerChargeResultProducedV1
         {
             CalculationId = result.CalculationId.ToString(),
-            // CalculationType = CalculationTypeMapper.MapCalculationType(result.CalculationType),
             PeriodStartUtc = result.PeriodStart.ToTimestamp(),
             PeriodEndUtc = result.PeriodEnd.ToTimestamp(),
             QuantityUnit = MonthlyAmountPerChargeResultProducedV1.Types.QuantityUnit.Kwh,

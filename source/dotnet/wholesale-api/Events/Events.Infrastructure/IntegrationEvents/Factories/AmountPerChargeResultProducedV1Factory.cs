@@ -16,6 +16,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.AmountPerChargeResultProducedV1;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Types;
+using Google.Protobuf.WellKnownTypes;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 
@@ -23,15 +24,38 @@ public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProd
 {
     public AmountPerChargeResultProducedV1 Create(WholesaleResult result)
     {
-        var @event = new AmountPerChargeResultProducedV1
+        var amountPerChargeResultProducedV1 = new AmountPerChargeResultProducedV1
         {
             CalculationId = result.CalculationId.ToString(),
             CalculationType = CalculationTypeMapper.MapCalculationType(result.CalculationType),
             PeriodStartUtc = result.PeriodStart.ToTimestamp(),
             PeriodEndUtc = result.PeriodEnd.ToTimestamp(),
+            GridAreaCode = result.GridArea,
+            EnergySupplierId = result.EnergySupplierId,
+            ChargeCode = result.ChargeCode,
+            ChargeType = result.ChargeType,
+            ChargeOwnerId = result.ChargeOwnerId,
             Resolution = AmountPerChargeResultProducedV1.Types.Resolution.Hour,
             QuantityUnit = AmountPerChargeResultProducedV1.Types.QuantityUnit.Kwh,
+            MeteringPointType = result.MeteringPointType,
+            SettlementMethod = result.SettlementMethod,
+            IsTax = result.IsTax,
         };
-        return @event;
+
+        amountPerChargeResultProducedV1.TimeSeriesPoints
+            .AddRange(result.TimeSeriesPoints
+                .Select(timeSeriesPoint =>
+                {
+                    var p = new AmountPerChargeResultProducedV1.Types.TimeSeriesPoint
+                    {
+                        Quantity = new DecimalValue(timeSeriesPoint.Quantity),
+                        Time = timeSeriesPoint.Time.ToTimestamp(),
+                        Price = new DecimalValue(timeSeriesPoint.Price),
+                        Amount = new DecimalValue(timeSeriesPoint.Amount),
+                    };
+                    p.QuantityQualities.AddRange(timeSeriesPoint.Qualities.Select(QuantityQualityMapper.MapQuantityQuality).ToList());
+                    return p;
+                }));
+        return amountPerChargeResultProducedV1;
     }
 }
