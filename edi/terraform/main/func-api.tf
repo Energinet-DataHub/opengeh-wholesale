@@ -33,7 +33,8 @@ module "func_receiver" {
     FEATUREFLAG_ACTORMESSAGEQUEUE                           = true
     ALLOW_TEST_TOKENS                                       = var.allow_test_tokens
     INTEGRATION_EVENTS_TOPIC_NAME                           = local.INTEGRATION_EVENTS_TOPIC_NAME
-    BALANCE_FIXING_RESULT_AVAILABLE_EVENT_SUBSCRIPTION_NAME = module.sbtsub_wholesale_process_completed_event_listener.name
+    INTEGRATION_EVENTS_SUBSCRIPTION_NAME = module.sbtsub_edi_integration_event_listener.name
+    
   }
 }
 
