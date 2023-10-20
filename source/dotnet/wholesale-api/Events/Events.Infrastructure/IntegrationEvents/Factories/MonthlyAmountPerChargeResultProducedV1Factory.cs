@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.MonthlyAmountPerChargeResultProducedV1;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Types;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
@@ -22,13 +23,25 @@ public class MonthlyAmountPerChargeResultProducedV1Factory : IMonthlyAmountPerCh
 {
     public MonthlyAmountPerChargeResultProducedV1 Create(WholesaleResult result)
     {
-        var @event = new MonthlyAmountPerChargeResultProducedV1
+        if (result.TimeSeriesPoints.Count != 1)
+            throw new ArgumentException("MonthlyAmountPerChargeResultProducedV1 expects exactly one time series point.");
+
+        var amountPerChargeResultProducedV1 = new MonthlyAmountPerChargeResultProducedV1
         {
             CalculationId = result.CalculationId.ToString(),
+            CalculationType = CalculationTypeMapper.MapCalculationType(result.CalculationType),
             PeriodStartUtc = result.PeriodStart.ToTimestamp(),
             PeriodEndUtc = result.PeriodEnd.ToTimestamp(),
+            GridAreaCode = result.GridArea,
+            EnergySupplierId = result.EnergySupplierId,
+            ChargeCode = result.ChargeCode,
+            ChargeType = ChargeTypeMapper.MapChargeType(result.ChargeType),
+            ChargeOwnerId = result.ChargeOwnerId,
             QuantityUnit = MonthlyAmountPerChargeResultProducedV1.Types.QuantityUnit.Kwh,
+            IsTax = result.IsTax,
+            Amount = result.TimeSeriesPoints.Single().Amount,
         };
-        return @event;
+
+        return amountPerChargeResultProducedV1;
     }
 }
