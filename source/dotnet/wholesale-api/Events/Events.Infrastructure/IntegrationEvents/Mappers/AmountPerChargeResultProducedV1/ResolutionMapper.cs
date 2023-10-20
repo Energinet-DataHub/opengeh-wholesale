@@ -28,7 +28,7 @@ public static class ResolutionMapper
             ModelResolution.Month => throw new ArgumentOutOfRangeException(
                 nameof(resolution),
                 actualValue: resolution,
-                "Value is not valid for AmountPerChargeResultProducedV1."),
+                $"Value is not valid for {nameof(AmountPerChargeResultProducedV1)}."),
             _ => throw new ArgumentOutOfRangeException(
                 nameof(resolution),
                 actualValue: resolution,

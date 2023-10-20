@@ -27,7 +27,7 @@ public static class CalculationTypeMapper
             ModelCalculationType.FirstCorrectionSettlement => EventCalculationType.FirstCorrectionSettlement,
             ModelCalculationType.SecondCorrectionSettlement => EventCalculationType.SecondCorrectionSettlement,
             ModelCalculationType.ThirdCorrectionSettlement => EventCalculationType.ThirdCorrectionSettlement,
-            _ => throw new ArgumentOutOfRangeException(nameof(calculationType), actualValue: calculationType, "Value cannot be mapped to a calculationType."),
+            _ => throw new ArgumentOutOfRangeException(nameof(calculationType), actualValue: calculationType, "Value cannot be mapped to a calculation type."),
         };
     }
 }

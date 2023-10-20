@@ -12,20 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using EventQuantityQuality = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1.Types.ChargeType;
+using EventChargeType = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1.Types.ChargeType;
 using ModelChargeType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.ChargeType;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.MonthlyAmountPerChargeResultProducedV1;
 
 public static class ChargeTypeMapper
 {
-    public static EventQuantityQuality MapChargeType(ModelChargeType chargeType)
+    public static EventChargeType MapChargeType(ModelChargeType chargeType)
     {
         return chargeType switch
         {
-            ModelChargeType.Fee => EventQuantityQuality.Fee,
-            ModelChargeType.Subscription => EventQuantityQuality.Subscription,
-            ModelChargeType.Tariff => EventQuantityQuality.Tariff,
+            ModelChargeType.Fee => EventChargeType.Fee,
+            ModelChargeType.Subscription => EventChargeType.Subscription,
+            ModelChargeType.Tariff => EventChargeType.Tariff,
             _ => throw new ArgumentOutOfRangeException(
                 nameof(chargeType),
                 actualValue: chargeType,
