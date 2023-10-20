@@ -48,8 +48,8 @@ public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProd
                 {
                     var p = new AmountPerChargeResultProducedV1.Types.TimeSeriesPoint
                     {
-                        Quantity = new DecimalValue(timeSeriesPoint.Quantity),
                         Time = timeSeriesPoint.Time.ToTimestamp(),
+                        Quantity = new DecimalValue(timeSeriesPoint.Quantity),
                         Price = new DecimalValue(timeSeriesPoint.Price),
                         Amount = new DecimalValue(timeSeriesPoint.Amount),
                     };
