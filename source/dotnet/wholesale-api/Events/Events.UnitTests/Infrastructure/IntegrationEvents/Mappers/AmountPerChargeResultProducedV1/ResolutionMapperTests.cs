@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.AmountPerChargeResultProducedV1;
 using FluentAssertions;
 using Xunit;
@@ -24,8 +23,8 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
 public class ResolutionMapperTests
 {
     [Theory]
-    [InlineAutoMoqData(ModelResolution.Day, EventResolution.Day)]
-    [InlineAutoMoqData(ModelResolution.Hour, EventResolution.Hour)]
+    [InlineData(ModelResolution.Day, EventResolution.Day)]
+    [InlineData(ModelResolution.Hour, EventResolution.Hour)]
     public void MapResolution_WhenCalled_MapsCorrectly(ModelResolution resolution, EventResolution expected)
     {
         // Act & Assert

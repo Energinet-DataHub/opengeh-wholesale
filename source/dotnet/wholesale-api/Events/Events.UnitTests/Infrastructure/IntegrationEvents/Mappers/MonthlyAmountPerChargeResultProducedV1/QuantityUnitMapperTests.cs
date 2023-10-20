@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.MonthlyAmountPerChargeResultProducedV1;
 using FluentAssertions;
 using Xunit;
@@ -24,8 +23,8 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
 public class QuantityUnitMapperTests
 {
     [Theory]
-    [InlineAutoMoqData(ModelQuantityUnit.Kwh, EventQuantityUnit.Kwh)]
-    [InlineAutoMoqData(ModelQuantityUnit.Pieces, EventQuantityUnit.Pieces)]
+    [InlineData(ModelQuantityUnit.Kwh, EventQuantityUnit.Kwh)]
+    [InlineData(ModelQuantityUnit.Pieces, EventQuantityUnit.Pieces)]
     public void MapQuantityUnit_WhenCalled_MapsCorrectly(ModelQuantityUnit quantityUnit, EventQuantityUnit expected)
     {
         // Act & Assert

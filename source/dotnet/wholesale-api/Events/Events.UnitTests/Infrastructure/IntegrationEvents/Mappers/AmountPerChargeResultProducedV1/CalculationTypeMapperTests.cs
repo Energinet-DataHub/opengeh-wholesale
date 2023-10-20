@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.AmountPerChargeResultProducedV1;
 using FluentAssertions;
 using Xunit;
@@ -24,10 +23,10 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
 public class CalculationTypeMapperTests
 {
     [Theory]
-    [InlineAutoMoqData(ModelCalculationType.WholesaleFixing, EventCalculationType.WholesaleFixing)]
-    [InlineAutoMoqData(ModelCalculationType.FirstCorrectionSettlement, EventCalculationType.FirstCorrectionSettlement)]
-    [InlineAutoMoqData(ModelCalculationType.SecondCorrectionSettlement, EventCalculationType.SecondCorrectionSettlement)]
-    [InlineAutoMoqData(ModelCalculationType.ThirdCorrectionSettlement, EventCalculationType.ThirdCorrectionSettlement)]
+    [InlineData(ModelCalculationType.WholesaleFixing, EventCalculationType.WholesaleFixing)]
+    [InlineData(ModelCalculationType.FirstCorrectionSettlement, EventCalculationType.FirstCorrectionSettlement)]
+    [InlineData(ModelCalculationType.SecondCorrectionSettlement, EventCalculationType.SecondCorrectionSettlement)]
+    [InlineData(ModelCalculationType.ThirdCorrectionSettlement, EventCalculationType.ThirdCorrectionSettlement)]
     public void MapCalculationType_WhenCalled_MapsCorrectly(ModelCalculationType calculationType, EventCalculationType expected)
     {
         // Act & Assert
@@ -35,8 +34,8 @@ public class CalculationTypeMapperTests
     }
 
     [Theory]
-    [InlineAutoMoqData(ModelCalculationType.Aggregation)]
-    [InlineAutoMoqData(ModelCalculationType.BalanceFixing)]
+    [InlineData(ModelCalculationType.Aggregation)]
+    [InlineData(ModelCalculationType.BalanceFixing)]
     public void MapCalculationType_WhenCalledWithUnexpectedCalculationType_ThrowsArgumentOutOfRangeException(ModelCalculationType calculationType)
     {
         // Act

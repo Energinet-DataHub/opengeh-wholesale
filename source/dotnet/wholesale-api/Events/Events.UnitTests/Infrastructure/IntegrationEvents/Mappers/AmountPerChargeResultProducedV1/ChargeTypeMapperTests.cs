@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.AmountPerChargeResultProducedV1;
 using FluentAssertions;
 using Xunit;
@@ -24,9 +23,9 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
 public class ChargeTypeMapperTests
 {
     [Theory]
-    [InlineAutoMoqData(ModelChargeType.Tariff, EventChargeType.Tariff)]
-    [InlineAutoMoqData(ModelChargeType.Fee, EventChargeType.Fee)]
-    [InlineAutoMoqData(ModelChargeType.Subscription, EventChargeType.Subscription)]
+    [InlineData(ModelChargeType.Tariff, EventChargeType.Tariff)]
+    [InlineData(ModelChargeType.Fee, EventChargeType.Fee)]
+    [InlineData(ModelChargeType.Subscription, EventChargeType.Subscription)]
     public void MapChargeType_WhenCalled_MapsCorrectly(ModelChargeType chargeType, EventChargeType expected)
     {
         // Act & Assert

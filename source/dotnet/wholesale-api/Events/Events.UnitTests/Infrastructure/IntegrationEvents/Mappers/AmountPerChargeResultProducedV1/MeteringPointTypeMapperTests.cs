@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.AmountPerChargeResultProducedV1;
 using FluentAssertions;
 using Xunit;
@@ -24,9 +23,9 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
 public class MeteringPointTypeMapperTests
 {
     [Theory]
-    [InlineAutoMoqData(ModelMeteringPointType.Consumption, EventMeteringPointType.Consumption)]
-    [InlineAutoMoqData(ModelMeteringPointType.Production, EventMeteringPointType.Production)]
-    [InlineAutoMoqData(null!, EventMeteringPointType.Unspecified)]
+    [InlineData(ModelMeteringPointType.Consumption, EventMeteringPointType.Consumption)]
+    [InlineData(ModelMeteringPointType.Production, EventMeteringPointType.Production)]
+    [InlineData(null, EventMeteringPointType.Unspecified)]
     public void MapMeteringPointType_WhenCalledWithValidMeteringTypes_MapsCorrectly(ModelMeteringPointType? meteringPointType, EventMeteringPointType expected)
     {
         // Act & Assert
