@@ -42,7 +42,7 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
     [Theory]
     [InlineAutoMoqData]
     public void Create_ReturnsExpectedObject(
-        AmountPerChargeResultProducedV1Factory sut)
+        MonthlyAmountPerChargeResultProducedV1Factory sut)
     {
         // Arrange
         var wholesaleResult = CreateWholesaleResult();
@@ -61,7 +61,7 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
     public void Create_WhenUnexpectedCalculationType_ThrowsException(ProcessType calculationType)
     {
         // Arrange
-        var sut = new AmountPerChargeResultProducedV1Factory();
+        var sut = new MonthlyAmountPerChargeResultProducedV1Factory();
         var wholesaleResult = CreateWholesaleResult();
         wholesaleResult.SetPrivateProperty(r => r.CalculationType, calculationType);
 
@@ -70,6 +70,26 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
 
         // Act and Assert
         act.Should().Throw<ArgumentOutOfRangeException>();
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public void Create_WhenWholesaleResultHsMoreThanOneTimeSeriesPoints_ThrowsException(MonthlyAmountPerChargeResultProducedV1Factory sut)
+    {
+        // Arrange
+        var wholesaleResult = CreateWholesaleResult();
+        var timeSeriesPoints = new WholesaleTimeSeriesPoint[]
+        {
+            new(new DateTime(2021, 1, 1), 1, new List<QuantityQuality> { QuantityQuality.Measured }, 2, 3),
+            new(new DateTime(2021, 1, 2), 1, new List<QuantityQuality> { QuantityQuality.Measured }, 2, 3),
+        };
+        wholesaleResult.SetPrivateProperty(r => r.TimeSeriesPoints, timeSeriesPoints);
+
+        // Act
+        var act = () => sut.Create(wholesaleResult);
+
+        // Act and Assert
+        act.Should().Throw<ArgumentException>();
     }
 
     private WholesaleResult CreateWholesaleResult()
@@ -99,14 +119,12 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
             new WholesaleTimeSeriesPoint[]
             {
                 new(new DateTime(2021, 1, 1), 1, qualities, 2, 3),
-                new(new DateTime(2021, 1, 1), 2, qualities, 4, 5),
-                new(new DateTime(2021, 1, 1), 3, qualities, 6, 7),
             });
     }
 
     private static MonthlyAmountPerChargeResultProducedV1 CreateExpected(WholesaleResult wholesaleResult)
     {
-        var amountPerChargeResultProducedV1 = new MonthlyAmountPerChargeResultProducedV1
+        var monthlyAmountPerChargeResultProducedV1 = new MonthlyAmountPerChargeResultProducedV1
         {
             CalculationId = wholesaleResult.CalculationId.ToString(),
             CalculationType = MonthlyAmountPerChargeResultProducedV1.Types.CalculationType.FirstCorrectionSettlement,
@@ -119,8 +137,9 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
             ChargeType = MonthlyAmountPerChargeResultProducedV1.Types.ChargeType.Tariff,
             ChargeOwnerId = wholesaleResult.ChargeOwnerId,
             IsTax = wholesaleResult.IsTax,
+            Amount = wholesaleResult.TimeSeriesPoints.Single().Amount,
         };
 
-        return amountPerChargeResultProducedV1;
+        return monthlyAmountPerChargeResultProducedV1;
     }
 }

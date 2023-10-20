@@ -89,5 +89,5 @@ public sealed class WholesaleResult
 
     public SettlementMethod? SettlementMethod { get; }
 
-    public IReadOnlyCollection<WholesaleTimeSeriesPoint> TimeSeriesPoints { get; }
+    public IReadOnlyCollection<WholesaleTimeSeriesPoint> TimeSeriesPoints { get; private set; }
 }
