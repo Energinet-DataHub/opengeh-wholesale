@@ -63,7 +63,7 @@ public sealed class WholesaleResult
 
     public Guid CalculationId { get; }
 
-    public ProcessType CalculationType { get; }
+    public ProcessType CalculationType { get; private set; }
 
     public string GridArea { get; }
 
