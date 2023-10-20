@@ -16,44 +16,47 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.AmountPerChargeResultProducedV1;
 using FluentAssertions;
 using Xunit;
-using EventChargeType = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.AmountPerChargeResultProducedV1.Types.ChargeType;
-using ModelChargeType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.ChargeType;
+using EventResolution = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.AmountPerChargeResultProducedV1.Types.Resolution;
+using ModelResolution = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.ChargeResolution;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.Mappers.AmountPerChargeResultProducedV1;
 
-public class ChargeTypeMapperTests
+public class ResolutionMapperTests
 {
     [Theory]
-    [InlineAutoMoqData(ModelChargeType.Tariff, EventChargeType.Tariff)]
-    [InlineAutoMoqData(ModelChargeType.Fee, EventChargeType.Fee)]
-    [InlineAutoMoqData(ModelChargeType.Subscription, EventChargeType.Subscription)]
-    public void MapChargeType_WhenCalled_MapsCorrectly(ModelChargeType chargeType, EventChargeType expected)
+    [InlineAutoMoqData(ModelResolution.Day, EventResolution.Day)]
+    [InlineAutoMoqData(ModelResolution.Hour, EventResolution.Hour)]
+    public void MapResolution_WhenCalled_MapsCorrectly(ModelResolution resolution, EventResolution expected)
     {
         // Act & Assert
-        ChargeTypeMapper.MapChargeType(chargeType).Should().Be(expected);
+        ResolutionMapper.MapResolution(resolution).Should().Be(expected);
     }
 
     [Fact]
-    public void MapChargeType_MapsAnyValidValue()
+    public void MapResolution_WhenResolutionIsNotMonth_MapsAnyValidValue()
     {
-        foreach (var chargeType in Enum.GetValues(typeof(ModelChargeType)).Cast<ModelChargeType>())
+        foreach (var resolution in Enum.GetValues(typeof(ModelResolution)).Cast<ModelResolution>())
         {
+            // Arrange
+            if (resolution == ModelResolution.Month)
+                continue;
+
             // Act
-            var actual = ChargeTypeMapper.MapChargeType(chargeType);
+            var actual = ResolutionMapper.MapResolution(resolution);
 
             // Assert: Is defined (and implicitly that it didn't throw exception)
-            Enum.IsDefined(typeof(EventChargeType), actual).Should().BeTrue();
+            Enum.IsDefined(typeof(EventResolution), actual).Should().BeTrue();
         }
     }
 
     [Fact]
-    public void MapChargeType_WhenInvalidEnumNumber_ThrowsArgumentOutOfRangeException()
+    public void MapResolution_WhenInvalidEnum_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
-        var invalidValue = (ModelChargeType)99;
+        var invalidValue = (ModelResolution)99;
 
         // Act
-        var act = () => ChargeTypeMapper.MapChargeType(invalidValue);
+        var act = () => ResolutionMapper.MapResolution(invalidValue);
 
         // Assert
         act.Should().Throw<ArgumentOutOfRangeException>()

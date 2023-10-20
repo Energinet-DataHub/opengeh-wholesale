@@ -35,7 +35,7 @@ public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProd
             ChargeCode = result.ChargeCode,
             ChargeType = ChargeTypeMapper.MapChargeType(result.ChargeType),
             ChargeOwnerId = result.ChargeOwnerId,
-            Resolution = AmountPerChargeResultProducedV1.Types.Resolution.Hour,
+            Resolution = ResolutionMapper.MapResolution(result.ChargeResolution),
             QuantityUnit = AmountPerChargeResultProducedV1.Types.QuantityUnit.Kwh,
             MeteringPointType = MeteringPointTypeMapper.MapMeteringPointType(result.MeteringPointType),
             SettlementMethod = SettlementMethodMapper.MapSettlementMethod(result.SettlementMethod),

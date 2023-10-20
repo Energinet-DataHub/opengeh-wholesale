@@ -34,7 +34,7 @@ public class MeteringPointTypeMapperTests
     }
 
     [Fact]
-    public void MapProcessType_WhenInvalidEnumNumberFor_ThrowsArgumentOutOfRangeException()
+    public void MapProcessType_WhenInvalidEnumNumber_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
         var invalidValue = (ModelMeteringPointType)99;
