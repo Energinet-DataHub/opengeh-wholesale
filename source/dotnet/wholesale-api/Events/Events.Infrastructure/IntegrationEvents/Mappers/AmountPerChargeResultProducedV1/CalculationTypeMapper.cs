@@ -12,20 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using CalculationType = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.AmountPerChargeResultProducedV1.Types.CalculationType;
+using EventCalculationType = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.AmountPerChargeResultProducedV1.Types.CalculationType;
+using ModelCalculationType = Energinet.DataHub.Wholesale.Common.Models.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.AmountPerChargeResultProducedV1;
 
 public static class CalculationTypeMapper
 {
-    public static CalculationType MapCalculationType(Common.Models.ProcessType calculationType)
+    public static EventCalculationType MapCalculationType(ModelCalculationType calculationType)
     {
         return calculationType switch
         {
-            Common.Models.ProcessType.WholesaleFixing => CalculationType.WholesaleFixing,
-            Common.Models.ProcessType.FirstCorrectionSettlement => CalculationType.FirstCorrectionSettlement,
-            Common.Models.ProcessType.SecondCorrectionSettlement => CalculationType.SecondCorrectionSettlement,
-            Common.Models.ProcessType.ThirdCorrectionSettlement => CalculationType.ThirdCorrectionSettlement,
+            ModelCalculationType.WholesaleFixing => EventCalculationType.WholesaleFixing,
+            ModelCalculationType.FirstCorrectionSettlement => EventCalculationType.FirstCorrectionSettlement,
+            ModelCalculationType.SecondCorrectionSettlement => EventCalculationType.SecondCorrectionSettlement,
+            ModelCalculationType.ThirdCorrectionSettlement => EventCalculationType.ThirdCorrectionSettlement,
             _ => throw new ArgumentOutOfRangeException(nameof(calculationType), actualValue: calculationType, "Unexpected calculationType."),
         };
     }

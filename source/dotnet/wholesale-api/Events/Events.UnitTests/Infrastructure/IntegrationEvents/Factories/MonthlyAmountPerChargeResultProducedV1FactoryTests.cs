@@ -19,7 +19,6 @@ using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Types;
 using FluentAssertions;
-using Google.Protobuf.WellKnownTypes;
 using NodaTime;
 using Test.Core;
 using Xunit;
