@@ -21,5 +21,5 @@ public interface IRequestCalculationResultQueries
     /// <summary>
     /// Gets all result for a given request.
     /// </summary>
-    Task<EnergyResult?> GetAsync(EnergyResultQuery query);
+    IAsyncEnumerable<EnergyResult> GetAsync(EnergyResultQuery query);
 }

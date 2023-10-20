@@ -48,17 +48,17 @@ public static class CalculationTimeSeriesTypeMapper
             CalculationTimeSeriesType.FlexConsumption => TimeSeriesTypeContract.FlexConsumption,
             CalculationTimeSeriesType.NetExchangePerGa => TimeSeriesTypeContract.NetExchangePerGa,
             CalculationTimeSeriesType.GridLoss => throw new NotSupportedTimeSeriesTypeException(
-                $"{timeSeriesType} is not a supported TimeSeriesType For AggregatedTimeSeriesRequestAccepted response."),
+                $"{timeSeriesType} is not a supported TimeSeriesType For AggregatedTimeSeriesRequestResponseMessage response."),
             CalculationTimeSeriesType.TempProduction => throw new NotSupportedTimeSeriesTypeException(
-                $"{timeSeriesType} is not a supported TimeSeriesType For AggregatedTimeSeriesRequestAccepted response."),
+                $"{timeSeriesType} is not a supported TimeSeriesType For AggregatedTimeSeriesRequestResponseMessage response."),
             CalculationTimeSeriesType.NegativeGridLoss => throw new NotSupportedTimeSeriesTypeException(
-                $"{timeSeriesType} is not a supported TimeSeriesType For AggregatedTimeSeriesRequestAccepted response."),
+                $"{timeSeriesType} is not a supported TimeSeriesType For AggregatedTimeSeriesRequestResponseMessage response."),
             CalculationTimeSeriesType.PositiveGridLoss => throw new NotSupportedTimeSeriesTypeException(
-                $"{timeSeriesType} is not a supported TimeSeriesType For AggregatedTimeSeriesRequestAccepted response."),
+                $"{timeSeriesType} is not a supported TimeSeriesType For AggregatedTimeSeriesRequestResponseMessage response."),
             CalculationTimeSeriesType.TempFlexConsumption => throw new NotSupportedTimeSeriesTypeException(
-                $"{timeSeriesType} is not a supported TimeSeriesType For AggregatedTimeSeriesRequestAccepted response."),
+                $"{timeSeriesType} is not a supported TimeSeriesType For AggregatedTimeSeriesRequestResponseMessage response."),
             CalculationTimeSeriesType.NetExchangePerNeighboringGa => throw new NotSupportedTimeSeriesTypeException(
-                $"{timeSeriesType} is not a supported TimeSeriesType For AggregatedTimeSeriesRequestAccepted response."),
+                $"{timeSeriesType} is not a supported TimeSeriesType For AggregatedTimeSeriesRequestResponseMessage response."),
 
             _ => throw new ArgumentOutOfRangeException(
                 nameof(timeSeriesType),

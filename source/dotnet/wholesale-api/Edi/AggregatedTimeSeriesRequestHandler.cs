@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Logging;
@@ -50,38 +51,49 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
 
     public async Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken)
     {
-        var aggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest.Parser.ParseFrom(receivedMessage.Body);
+        var aggregatedTimeSeriesRequest = Edi.Requests.AggregatedTimeSeriesRequest.Parser.ParseFrom(receivedMessage.Body);
 
         var validationErrors = _validator.Validate(aggregatedTimeSeriesRequest);
 
-        ServiceBusMessage message;
-        if (!validationErrors.Any())
+        if (validationErrors.Any())
         {
-            var aggregatedTimeSeriesRequestMessage = _aggregatedTimeSeriesRequestFactory.Parse(aggregatedTimeSeriesRequest);
-            var result = await GetCalculationResultsAsync(
-                aggregatedTimeSeriesRequestMessage,
-                cancellationToken).ConfigureAwait(false);
+            await SendRejectedMessageAsync(validationErrors.ToList(), referenceId, cancellationToken).ConfigureAwait(false);
+            return;
+        }
 
-            if (result is not null)
-            {
-                message = AggregatedTimeSeriesRequestAcceptedMessageFactory.Create(
+        var aggregatedTimeSeriesRequestMessage = _aggregatedTimeSeriesRequestFactory.Parse(aggregatedTimeSeriesRequest);
+        var results = await GetCalculationResultsAsync(
+            aggregatedTimeSeriesRequestMessage,
+            cancellationToken).ConfigureAwait(false);
+
+        if (!results.Any())
+        {
+            await SendRejectedMessageAsync(new List<ValidationError> { _noDataAvailable }, referenceId, cancellationToken).ConfigureAwait(false);
+            return;
+        }
+
+        var tasks = new List<Task>();
+        results.ForEach(result =>
+        {
+            var message = AggregatedTimeSeriesRequestResponseMessageFactory.Create(
                 result,
                 referenceId);
-            }
-            else
-            {
-                message = AggregatedTimeSeriesRequestRejectedMessageFactory.Create(new[] { _noDataAvailable }, referenceId);
-            }
-        }
-        else
-        {
-            message = AggregatedTimeSeriesRequestRejectedMessageFactory.Create(validationErrors.ToList(), referenceId);
-        }
+            tasks.Add(_ediClient.SendAsync(message, cancellationToken));
+        });
 
+        await Task.WhenAll(tasks).ConfigureAwait(false);
+
+        var receipt = AggregatedTimeSeriesRequestReceiptMessageFactory.Create(results, referenceId);
+        await _ediClient.SendAsync(receipt, cancellationToken).ConfigureAwait(false);
+    }
+
+    private async Task SendRejectedMessageAsync(List<ValidationError> validationErrors, string referenceId, CancellationToken cancellationToken)
+    {
+        var message = AggregatedTimeSeriesRequestRejectedMessageFactory.Create(validationErrors, referenceId);
         await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
     }
 
-    private async Task<EnergyResult?> GetCalculationResultsAsync(
+    private ValueTask<List<EnergyResult>> GetCalculationResultsAsync(
         AggregatedTimeSeriesRequest aggregatedTimeSeriesRequestMessage,
         CancellationToken cancellationToken)
     {
@@ -93,10 +105,10 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
             aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea.EnergySupplierId,
             aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea.BalanceResponsibleId);
 
-        var calculationResult = await _requestCalculationResultQueries.GetAsync(query)
-            .ConfigureAwait(false);
+        var calculationResults = _requestCalculationResultQueries.GetAsync(query);
 
-        _logger.LogDebug("Found {CalculationResult} calculation results based on {Query} query.", calculationResult?.ToJsonString(), query.ToJsonString());
-        return calculationResult;
+        var calculationsResultsList = calculationResults.ToListAsync(cancellationToken);
+        _logger.LogDebug("Found {CalculationResults} calculation results based on {Query} query.", calculationsResultsList.ToJsonString(), query.ToJsonString());
+        return calculationsResultsList;
     }
 }

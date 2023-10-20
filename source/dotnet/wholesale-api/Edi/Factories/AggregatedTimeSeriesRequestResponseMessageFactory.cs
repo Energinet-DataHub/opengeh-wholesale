@@ -23,7 +23,7 @@ using TimeSeriesPoint = Energinet.DataHub.Edi.Responses.TimeSeriesPoint;
 
 namespace Energinet.DataHub.Wholesale.EDI.Factories;
 
-public class AggregatedTimeSeriesRequestAcceptedMessageFactory
+public static class AggregatedTimeSeriesRequestResponseMessageFactory
 {
     public static ServiceBusMessage Create(EnergyResult calculationResult, string referenceId)
     {
@@ -39,7 +39,7 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
         return message;
     }
 
-    private static AggregatedTimeSeriesRequestAccepted CreateAcceptedResponse(EnergyResult energyResult)
+    private static AggregatedTimeSeriesRequestResponseMessage CreateAcceptedResponse(EnergyResult energyResult)
     {
         var points = CreateTimeSeriesPoints(energyResult);
 
@@ -50,7 +50,7 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
             Resolution = Resolution.Pt15M,
         };
 
-        return new AggregatedTimeSeriesRequestAccepted()
+        return new AggregatedTimeSeriesRequestResponseMessage()
         {
             GridArea = energyResult.GridArea,
             QuantityUnit = QuantityUnit.Kwh,

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
@@ -23,6 +22,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.RequestCalculationResult;
 
@@ -42,34 +42,45 @@ public class RequestCalculationResultQueries : IRequestCalculationResultQueries
         _logger = logger;
     }
 
-    public async Task<EnergyResult?> GetAsync(EnergyResultQuery query)
+    public async IAsyncEnumerable<EnergyResult> GetAsync(EnergyResultQuery query)
     {
         var sqlStatement = CreateRequestSql(query);
-        var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
-        SqlResultRow? firstRow = null;
-        var resultCount = 0;
-        await foreach (var currentRow in _sqlStatementClient.ExecuteAsync(sqlStatement, sqlStatementParameters: null).ConfigureAwait(false))
-        {
-            if (firstRow is null)
-                firstRow = currentRow;
+        await foreach (var calculationResult in GetInternalAsync(sqlStatement, query.StartOfPeriod, query.EndOfPeriod))
+            yield return calculationResult;
+    }
 
-            var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(currentRow);
+    private async IAsyncEnumerable<EnergyResult> GetInternalAsync(string sql, Instant periodStart, Instant periodEnd)
+    {
+        var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
+        SqlResultRow? currentRow = null;
+        var resultCount = 0;
+        await foreach (var nextRow in _sqlStatementClient.ExecuteAsync(sql, sqlStatementParameters: null).ConfigureAwait(false))
+        {
+            var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(nextRow);
+            if (currentRow != null && BelongsToDifferentGridArea(currentRow, nextRow))
+            {
+                yield return EnergyResultFactory.CreateEnergyResult(currentRow, timeSeriesPoints, periodStart, periodEnd);
+                resultCount++;
+                timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
+            }
 
             timeSeriesPoints.Add(timeSeriesPoint);
+            currentRow = nextRow;
+        }
+
+        if (currentRow != null)
+        {
+            yield return EnergyResultFactory.CreateEnergyResult(currentRow, timeSeriesPoints, periodStart, periodEnd);
             resultCount++;
         }
 
         _logger.LogDebug("Fetched {ResultCount} calculation results", resultCount);
-        if (firstRow is null)
-            return null;
-
-        return EnergyResultFactory.CreateEnergyResult(firstRow, timeSeriesPoints, query.StartOfPeriod, query.EndOfPeriod);
     }
 
     private string CreateRequestSql(EnergyResultQuery query)
     {
         var sql = $@"
-            SELECT {string.Join(", ", SqlColumnNames.Select(columenName => $"t1.{columenName}"))}
+            SELECT {string.Join(", ", SqlColumnNames.Select(columnName => $"t1.{columnName}"))}
             FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} t1
             LEFT JOIN {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} t2
                 ON t1.{EnergyResultColumnNames.Time} = t2.{EnergyResultColumnNames.Time}
@@ -80,11 +91,15 @@ public class RequestCalculationResultQueries : IRequestCalculationResultQueries
                     AND t1.{EnergyResultColumnNames.BatchProcessType} = t2.{EnergyResultColumnNames.BatchProcessType}
                     AND t1.{EnergyResultColumnNames.AggregationLevel} = t2.{EnergyResultColumnNames.AggregationLevel}
             WHERE t2.time IS NULL
-                AND t1.{EnergyResultColumnNames.GridArea} IN ({query.GridArea})
                 AND t1.{EnergyResultColumnNames.TimeSeriesType} IN ('{TimeSeriesTypeMapper.ToDeltaTableValue(query.TimeSeriesType)}')
                 AND t1.{EnergyResultColumnNames.Time} BETWEEN '{query.StartOfPeriod.ToString()}' AND '{query.EndOfPeriod.ToString()}'
                 AND t1.{EnergyResultColumnNames.AggregationLevel} = '{AggregationLevelMapper.ToDeltaTableValue(query.TimeSeriesType, query.EnergySupplierId, query.BalanceResponsibleId)}'
             ";
+        if (query.GridArea != null)
+        {
+            sql += $@"AND t1.{EnergyResultColumnNames.GridArea} IN ('{query.GridArea}')";
+        }
+
         if (query.EnergySupplierId != null)
         {
             sql += $@"AND t1.{EnergyResultColumnNames.EnergySupplierId} = '{query.EnergySupplierId}'";
@@ -95,8 +110,13 @@ public class RequestCalculationResultQueries : IRequestCalculationResultQueries
             sql += $@"AND t1.{EnergyResultColumnNames.BalanceResponsibleId} = '{query.BalanceResponsibleId}'";
         }
 
-        sql += $@"ORDER BY t1.time";
+        sql += $@"ORDER BY t1.{EnergyResultColumnNames.GridArea}, t1.time";
         return sql;
+    }
+
+    private static bool BelongsToDifferentGridArea(SqlResultRow row, SqlResultRow otherRow)
+    {
+        return row[EnergyResultColumnNames.GridArea] != otherRow[EnergyResultColumnNames.GridArea];
     }
 
     private static string[] SqlColumnNames { get; } =

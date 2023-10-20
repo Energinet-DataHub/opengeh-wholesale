@@ -18,7 +18,7 @@ import "google/protobuf/timestamp.proto";
 
 option csharp_namespace = "Energinet.DataHub.Edi.Responses";
 
-message AggregatedTimeSeriesRequestAccepted {
+message AggregatedTimeSeriesRequestResponseMessage {
   string settlement_version = 1;
   string grid_area = 2;
   QuantityUnit quantity_unit = 3;

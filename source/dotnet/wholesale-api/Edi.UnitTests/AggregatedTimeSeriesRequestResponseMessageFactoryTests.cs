@@ -24,7 +24,7 @@ using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests;
 
-public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
+public class AggregatedTimeSeriesRequestResponseMessageFactoryTests
 {
     private readonly Guid _batchId = Guid.NewGuid();
     private readonly Guid _id = Guid.NewGuid();
@@ -40,12 +40,12 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
     public void Create_WithCalculationResultFromTotalProductionPerGridArea_CreatesAcceptedEdiMessage()
     {
         // Arrange
-        var expectedAcceptedSubject = nameof(AggregatedTimeSeriesRequestAccepted);
+        var expectedAcceptedSubject = nameof(AggregatedTimeSeriesRequestResponseMessage);
         var expectedReferenceId = "123456789";
         var energyResult = CreateEnergyResult();
 
         // Act
-        var response = AggregatedTimeSeriesRequestAcceptedMessageFactory.Create(energyResult, expectedReferenceId);
+        var response = AggregatedTimeSeriesRequestResponseMessageFactory.Create(energyResult, expectedReferenceId);
 
         // Assert
         response.Should().NotBeNull();
@@ -53,7 +53,7 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
         response.ApplicationProperties["ReferenceId"].ToString().Should().Be(expectedReferenceId);
         response.Subject.Should().Be(expectedAcceptedSubject);
 
-        var responseBody = AggregatedTimeSeriesRequestAccepted.Parser.ParseFrom(response.Body);
+        var responseBody = AggregatedTimeSeriesRequestResponseMessage.Parser.ParseFrom(response.Body);
         responseBody.GridArea.Should().Be(_gridArea);
         responseBody.TimeSeriesType.Should().Be(Energinet.DataHub.Edi.Responses.TimeSeriesType.Production);
         responseBody.Period.StartOfPeriod.Should().Be(new Timestamp() { Seconds = _periodStart.ToUnixTimeSeconds() });
