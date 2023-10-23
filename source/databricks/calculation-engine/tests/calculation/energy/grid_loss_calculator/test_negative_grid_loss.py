@@ -16,7 +16,13 @@ from decimal import Decimal
 from datetime import datetime
 from typing import Callable
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
+from pyspark.sql.types import (
+    StructType,
+    StringType,
+    DecimalType,
+    TimestampType,
+    ArrayType,
+)
 from pyspark.sql.functions import col
 import pytest
 import pandas as pd
@@ -44,7 +50,7 @@ def grid_loss_schema() -> StructType:
             False,
         )
         .add(Colname.sum_quantity, DecimalType(18, 3))
-        .add(Colname.quality, StringType())
+        .add(Colname.qualities, ArrayType(StringType(), False), False)
         .add(Colname.metering_point_type, StringType())
     )
 
@@ -63,6 +69,7 @@ def agg_result_factory(
                 Colname.grid_area: [],
                 Colname.time_window: [],
                 Colname.sum_quantity: [],
+                Colname.qualities: [],
                 Colname.metering_point_type: [],
             }
         )
@@ -75,7 +82,7 @@ def agg_result_factory(
                         Colname.end: datetime(2020, 1, 1, 1, 0),
                     },
                     Colname.sum_quantity: Decimal(-12.567),
-                    Colname.quality: QuantityQuality.ESTIMATED.value,
+                    Colname.qualities: [QuantityQuality.ESTIMATED.value],
                     Colname.metering_point_type: MeteringPointType.EXCHANGE.value,
                 },
                 {
@@ -85,7 +92,7 @@ def agg_result_factory(
                         Colname.end: datetime(2020, 1, 1, 1, 0),
                     },
                     Colname.sum_quantity: Decimal(34.32),
-                    Colname.quality: QuantityQuality.ESTIMATED.value,
+                    Colname.qualities: [QuantityQuality.ESTIMATED.value],
                     Colname.metering_point_type: MeteringPointType.EXCHANGE.value,
                 },
                 {
@@ -95,7 +102,7 @@ def agg_result_factory(
                         Colname.end: datetime(2020, 1, 1, 1, 0),
                     },
                     Colname.sum_quantity: Decimal(0.0),
-                    Colname.quality: QuantityQuality.ESTIMATED.value,
+                    Colname.qualities: [QuantityQuality.ESTIMATED.value],
                     Colname.metering_point_type: MeteringPointType.EXCHANGE.value,
                 },
             ],

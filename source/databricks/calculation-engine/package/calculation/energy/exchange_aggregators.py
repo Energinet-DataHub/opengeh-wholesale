@@ -43,13 +43,13 @@ def aggregate_net_exchange_per_neighbour_ga(
     ]
 
     exchange_to = (
-        T.aggregate_sum_and_set_quality(df, Colname.quantity, group_by)
+        T.aggregate_sum_and_quality(df, Colname.quantity, group_by)
         .withColumnRenamed(Colname.sum_quantity, to_sum)
         .withColumnRenamed(Colname.to_grid_area, exchange_in_to_grid_area)
         .withColumnRenamed(Colname.from_grid_area, exchange_in_from_grid_area)
     )
     exchange_from = (
-        T.aggregate_sum_and_set_quality(df, Colname.quantity, group_by)
+        T.aggregate_sum_and_quality(df, Colname.quantity, group_by)
         .withColumnRenamed(Colname.sum_quantity, from_sum)
         .withColumnRenamed(Colname.to_grid_area, exchange_out_to_grid_area)
         .withColumnRenamed(Colname.from_grid_area, exchange_out_from_grid_area)
@@ -73,7 +73,8 @@ def aggregate_net_exchange_per_neighbour_ga(
             Colname.to_grid_area,
             Colname.from_grid_area,
             Colname.time_window,
-            Colname.quality,
+            # TODO BJM: Should the other side of qualities be included as well?
+            Colname.qualities,
             Colname.sum_quantity,
             F.col(Colname.to_grid_area).alias(Colname.grid_area),
             F.lit(MeteringPointType.EXCHANGE.value).alias(Colname.metering_point_type),
@@ -92,9 +93,7 @@ def aggregate_net_exchange_per_ga(df: DataFrame) -> DataFrame:
         Colname.time_window,
     ]
     exchange_to = (
-        T.aggregate_sum_and_set_quality(
-            exchange_to, Colname.quantity, exchange_to_group_by
-        )
+        T.aggregate_sum_and_quality(exchange_to, Colname.quantity, exchange_to_group_by)
         .withColumnRenamed(Colname.sum_quantity, to_sum)
         .withColumnRenamed(Colname.to_grid_area, Colname.grid_area)
     )
@@ -107,7 +106,7 @@ def aggregate_net_exchange_per_ga(df: DataFrame) -> DataFrame:
         Colname.time_window,
     ]
     exchange_from = (
-        T.aggregate_sum_and_set_quality(
+        T.aggregate_sum_and_quality(
             exchange_from, Colname.quantity, exchange_from_group_by
         )
         .withColumnRenamed(Colname.sum_quantity, from_sum)
@@ -154,7 +153,7 @@ def aggregate_net_exchange_per_ga(df: DataFrame) -> DataFrame:
             Colname.grid_area,
             Colname.time_window,
             Colname.sum_quantity,
-            Colname.quality,
+            Colname.qualities,
             F.lit(MeteringPointType.EXCHANGE.value).alias(Colname.metering_point_type),
         )
     )

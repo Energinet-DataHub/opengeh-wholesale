@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql.types import DecimalType, StructField, StructType
+from pyspark.sql.types import DecimalType, StructField, StructType, ArrayType, DataType
 
 
 def assert_schema(
@@ -49,21 +49,57 @@ def assert_schema(
         actual_fields = sorted(actual_fields, key=lambda f: f.name)
         expected_fields = sorted(expected_fields, key=lambda f: f.name)
 
-    for actual, expected in zip(actual_fields, expected_fields):
-        _assert_column_name(actual, expected)
-        _assert_column_nullability(actual, expected, ignore_nullability)
-        _assert_column_datatype(
-            actual, expected, ignore_decimal_precision, ignore_decimal_scale
+    for actual_field, expected_field in zip(actual_fields, expected_fields):
+        _assert_column_name(actual_field, expected_field)
+        _assert_field(
+            actual_field,
+            expected_field,
+            ignore_decimal_precision,
+            ignore_decimal_scale,
+            ignore_nullability,
         )
 
 
-def _assert_column_nullability(
-    actual: StructField, expected: StructField, ignore_nullability: bool
+def _assert_field(
+    actual: StructField,
+    expected: StructField,
+    ignore_decimal_precision: bool,
+    ignore_decimal_scale: bool,
+    ignore_nullability: bool,
+):
+    if not ignore_nullability:
+        _assert_struct_field_nullability(actual, expected)
+    _assert_data_type(
+        actual.dataType,
+        expected.dataType,
+        expected.name,
+        ignore_decimal_precision,
+        ignore_decimal_scale,
+    )
+
+
+def _assert_struct_field_nullability(
+    actual: StructField, expected: StructField
 ) -> None:
-    if not ignore_nullability and actual.nullable != expected.nullable:
+    if actual.nullable != expected.nullable:
         _raise(
             f"Expected column name '{expected.name}' to have nullable={expected.dataType}, but got nullable={actual.dataType}"
         )
+
+    _assert_data_type_nullability(actual.dataType, expected.dataType)
+
+
+def _assert_data_type_nullability(actual: DataType, expected: DataType) -> None:
+    """Recursively asserts that nullability of array type elements matches."""
+    if not isinstance(actual, ArrayType) or not isinstance(expected, ArrayType):
+        return
+
+    if actual.containsNull != expected.containsNull:
+        _raise(
+            f"Expected array with element type '{expected.elementType}' to have nullable={expected.containsNull}, but got nullable={actual.containsNull}"
+        )
+
+    _assert_data_type_nullability(actual.elementType, expected.elementType)
 
 
 def _assert_column_name(actual: StructField, expected: StructField) -> None:
@@ -71,33 +107,39 @@ def _assert_column_name(actual: StructField, expected: StructField) -> None:
         _raise(f"Expected column name '{expected.name}', but found '{actual.name}'")
 
 
-def _assert_column_datatype(
-    actual: StructField,
-    expected: StructField,
+def _assert_data_type(
+    actual: DataType,
+    expected: DataType,
+    column_name: str,
     ignore_decimal_precision: bool,
     ignore_decimal_scale: bool,
-) -> None:
-    if actual.dataType == expected.dataType:
+):
+    if actual == expected:
         return
 
-    if not isinstance(actual.dataType, DecimalType) or not isinstance(
-        expected.dataType, DecimalType
-    ):
+    if isinstance(actual, ArrayType) and isinstance(expected, ArrayType):
+        _assert_data_type(
+            actual.elementType,
+            expected.elementType,
+            column_name,
+            ignore_decimal_precision,
+            ignore_decimal_scale,
+        )
+        return
+
+    if not isinstance(actual, DecimalType) or not isinstance(expected, DecimalType):
         _raise(
-            f"Expected column name '{expected.name}' to have type {expected.dataType}, but got type {actual.dataType}"
+            f"Expected column name '{column_name}' to have type {expected}, but got type {actual}"
         )
 
-    if (
-        not ignore_decimal_precision
-        and actual.dataType.precision != expected.dataType.precision
-    ):
+    if not ignore_decimal_precision and actual.precision != expected.precision:
         _raise(
-            f"Decimal precision error: Expected column name '{expected.name}' to have type {expected.dataType}, but got type {actual.dataType}"
+            f"Decimal precision error: Expected column name '{column_name}' to have type {expected}, but got type {actual}"
         )
 
-    if not ignore_decimal_scale and actual.dataType.scale != expected.dataType.scale:
+    if not ignore_decimal_scale and actual.scale != expected.scale:
         _raise(
-            f"Decimal scale error: Expected column name '{expected.name}' to have type {expected.dataType}, but got type {actual.dataType}"
+            f"Decimal scale error: Expected column name '{column_name}' to have type {expected}, but got type {actual}"
         )
 
 

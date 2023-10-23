@@ -136,7 +136,7 @@ class EnergyCalculationResultWriter:
                 EnergyResultColumnNames.balance_responsible_id
             ),
             f.col(Colname.sum_quantity).alias(EnergyResultColumnNames.quantity),
-            f.array(Colname.quality).alias(EnergyResultColumnNames.quantity_qualities),
+            f.col(Colname.qualities).alias(EnergyResultColumnNames.quantity_qualities),
             f.col(Colname.time_window_start).alias(EnergyResultColumnNames.time),
             f.col(EnergyResultColumnNames.aggregation_level),
             f.col(EnergyResultColumnNames.time_series_type),
@@ -177,10 +177,8 @@ _write_input_schema = t.StructType(
         t.StructField(Colname.grid_area, t.StringType(), False),
         t.StructField(Colname.energy_supplier_id, t.StringType(), True),
         t.StructField(Colname.balance_responsible_id, t.StringType(), True),
-        # Energy quantity in kWh for the given observation time.
-        # Null when quality is missing.
         t.StructField(Colname.sum_quantity, t.DecimalType(18, 3), True),
-        t.StructField(Colname.quality, t.StringType(), False),
+        t.StructField(Colname.qualities, t.StringType(), False),
         # TODO BJM: Why not just observation time? This complexity isn't needed or desired in the writer
         t.StructField(
             Colname.time_window,

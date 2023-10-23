@@ -20,7 +20,13 @@ from package.codelists import (
 )
 
 from package.calculation.energy.grid_loss_calculator import calculate_total_consumption
-from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
+from pyspark.sql.types import (
+    StructType,
+    StringType,
+    DecimalType,
+    TimestampType,
+    ArrayType,
+)
 import pytest
 import pandas as pd
 from package.constants import Colname
@@ -41,7 +47,7 @@ def net_exchange_schema():
         .add(Colname.from_grid_area, DecimalType(20, 1))
         .add(Colname.to_grid_area, DecimalType(20, 1))
         .add(Colname.sum_quantity, DecimalType(20, 1))
-        .add(Colname.quality, StringType())
+        .add(Colname.qualities, ArrayType(StringType(), False), False)
         .add(Colname.metering_point_type, StringType())
     )
 
@@ -102,7 +108,7 @@ def agg_net_exchange_factory(spark, net_exchange_schema):
                     Decimal(1.0),
                     Decimal(1.0),
                 ],
-                Colname.quality: ["56", "56", "56", "56", "QM", "56"],
+                Colname.qualities: [["56"], ["56"], ["56"], ["56"], ["QM"], ["56"]],
                 Colname.metering_point_type: [
                     MeteringPointType.CONSUMPTION.value,
                     MeteringPointType.CONSUMPTION.value,
@@ -132,7 +138,7 @@ def production_schema():
             False,
         )
         .add(Colname.sum_quantity, DecimalType(20, 1))
-        .add(Colname.quality, StringType())
+        .add(Colname.qualities, ArrayType(StringType(), False), False)
         .add(Colname.metering_point_type, StringType())
     )
 
@@ -177,7 +183,7 @@ def agg_production_factory(spark, production_schema):
                     Decimal(5.0),
                     Decimal(6.0),
                 ],
-                Colname.quality: ["56", "56", "56", "56", "E01", "56"],
+                Colname.qualities: [["56"], ["56"], ["56"], ["56"], ["E01"], ["56"]],
                 Colname.metering_point_type: [
                     MeteringPointType.PRODUCTION.value,
                     MeteringPointType.PRODUCTION.value,
@@ -202,7 +208,7 @@ def agg_total_production_factory(spark, production_schema):
                 Colname.grid_area: [],
                 Colname.time_window: [],
                 Colname.sum_quantity: [],
-                Colname.quality: [],
+                Colname.qualities: [],
                 Colname.metering_point_type: [],
             }
         )
@@ -215,7 +221,7 @@ def agg_total_production_factory(spark, production_schema):
                     Colname.end: datetime(2020, 1, 1, 1, 0),
                 },
                 Colname.sum_quantity: Decimal(1.0),
-                Colname.quality: quality,
+                Colname.qualities: [quality],
                 Colname.metering_point_type: [MeteringPointType.PRODUCTION.value],
             },
             ignore_index=True,
@@ -236,7 +242,7 @@ def agg_total_net_exchange_factory(spark, net_exchange_schema):
                 Colname.to_grid_area: [],
                 Colname.from_grid_area: [],
                 Colname.sum_quantity: [],
-                Colname.quality: [],
+                Colname.qualities: [],
                 Colname.metering_point_type: [],
             }
         )
@@ -251,7 +257,7 @@ def agg_total_net_exchange_factory(spark, net_exchange_schema):
                 Colname.to_grid_area: Decimal(1.0),
                 Colname.from_grid_area: Decimal(1.0),
                 Colname.sum_quantity: Decimal(1.0),
-                Colname.quality: quality,
+                Colname.qualities: [quality],
                 Colname.metering_point_type: [MeteringPointType.EXCHANGE.value],
             },
             ignore_index=True,
