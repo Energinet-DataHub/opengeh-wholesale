@@ -63,16 +63,16 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="..\..\..\databricks\calculation-engine\contracts\calculation-job-parameters-reference.txt">
+    <EmbeddedResource Include="..\..\..\databricks\calculation_engine\contracts\calculation-job-parameters-reference.txt">
       <Link>Infrastructure\JobRunner\calculation-job-parameters-reference.txt</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\..\databricks\calculation-engine\contracts\enums\quantity-quality.json">
+    <EmbeddedResource Include="..\..\..\databricks\calculation_engine\contracts\enums\quantity-quality.json">
       <Link>Infrastructure\Integration\CalculationOutput\time-series-point-quality.json</Link>
     </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="..\..\..\databricks\calculation-engine\contracts\calculation-file-paths.yml">
+    <EmbeddedResource Include="..\..\..\databricks\calculation_engine\contracts\calculation-file-paths.yml">
       <Link>Infrastructure\BasisData\calculation-file-paths.yml</Link>
     </EmbeddedResource>
   </ItemGroup>
