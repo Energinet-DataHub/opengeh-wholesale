@@ -16,5 +16,5 @@ from .aggregation_result_formatter import (
     create_dataframe_from_aggregation_result_schema,
 )
 from .aggregate_sum_and_quality import aggregate_sum_and_quality
-from .aggregate_sum_and_quality import aggregate_sum
+from .aggregate_sum_and_quality import aggregate_sum_and_qualities
 from .apply_grid_loss_adjustment import adjust_production, adjust_flex_consumption

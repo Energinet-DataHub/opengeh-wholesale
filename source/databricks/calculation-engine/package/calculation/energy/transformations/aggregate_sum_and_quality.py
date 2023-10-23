@@ -36,7 +36,7 @@ def aggregate_sum_and_quality(
     return result
 
 
-def aggregate_sum(
+def aggregate_sum_and_qualities(
     result: DataFrame, quantity_col_name: str, group_by: list[str]
 ) -> DataFrame:
     """

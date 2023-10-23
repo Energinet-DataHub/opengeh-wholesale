@@ -139,7 +139,7 @@ def calculate_total_consumption(
     # TODO BJM: Before this change all aggregations were grouped by quality as well.
     #           How does that make sense? Did I break something with this change?
     result_production = (
-        t.aggregate_sum(
+        t.aggregate_sum_and_qualities(
             agg_production,
             Colname.sum_quantity,
             [Colname.grid_area, Colname.time_window],
@@ -149,7 +149,7 @@ def calculate_total_consumption(
     )
 
     result_net_exchange = (
-        t.aggregate_sum(
+        t.aggregate_sum_and_qualities(
             agg_net_exchange,
             Colname.sum_quantity,
             [Colname.grid_area, Colname.time_window],

@@ -12,24 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from decimal import Decimal
-
 from package.codelists import (
     MeteringPointType,
     SettlementMethod,
-    QuantityQuality,
 )
 from package.constants import Colname
-from . import transformations as T
+from . import transformations as t
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import (
     col,
     lit,
-    row_number,
-    when,
 )
 from pyspark.sql.types import StringType
-from pyspark.sql.window import Window
 from typing import Union
 
 
@@ -87,7 +81,7 @@ def _aggregate_per_ga_and_brp_and_es(
         Colname.energy_supplier_id,
         Colname.time_window,
     ]
-    result = T.aggregate_sum_and_quality(result, "quarter_quantity", sum_group_by)
+    result = t.aggregate_sum_and_quality(result, "quarter_quantity", sum_group_by)
 
     result = result.select(
         Colname.grid_area,
@@ -102,7 +96,7 @@ def _aggregate_per_ga_and_brp_and_es(
         .alias(Colname.settlement_method),
     )
 
-    return T.create_dataframe_from_aggregation_result_schema(result)
+    return t.create_dataframe_from_aggregation_result_schema(result)
 
 
 def aggregate_production_ga_es(production: DataFrame) -> DataFrame:
@@ -132,7 +126,7 @@ def _aggregate_per_ga_and_es(
     df: DataFrame, market_evaluation_point_type: MeteringPointType
 ) -> DataFrame:
     group_by = [Colname.grid_area, Colname.energy_supplier_id, Colname.time_window]
-    result = T.aggregate_sum_and_quality(df, Colname.sum_quantity, group_by)
+    result = t.aggregate_sum_and_quality(df, Colname.sum_quantity, group_by)
 
     result = result.select(
         Colname.grid_area,
@@ -142,7 +136,7 @@ def _aggregate_per_ga_and_es(
         Colname.sum_quantity,
         lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
     )
-    return T.create_dataframe_from_aggregation_result_schema(result)
+    return t.create_dataframe_from_aggregation_result_schema(result)
 
 
 def aggregate_production_ga_brp(production: DataFrame) -> DataFrame:
@@ -171,7 +165,7 @@ def _aggregate_per_ga_and_brp(
     market_evaluation_point_type: MeteringPointType,
 ) -> DataFrame:
     group_by = [Colname.grid_area, Colname.balance_responsible_id, Colname.time_window]
-    result = T.aggregate_sum_and_quality(df, Colname.sum_quantity, group_by)
+    result = t.aggregate_sum_and_quality(df, Colname.sum_quantity, group_by)
 
     result = result.select(
         Colname.grid_area,
@@ -181,7 +175,7 @@ def _aggregate_per_ga_and_brp(
         Colname.sum_quantity,
         lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
     )
-    return T.create_dataframe_from_aggregation_result_schema(result)
+    return t.create_dataframe_from_aggregation_result_schema(result)
 
 
 def aggregate_production_ga(production: DataFrame) -> DataFrame:
@@ -207,13 +201,12 @@ def aggregate_flex_consumption_ga(
     )
 
 
-# Function to aggregate sum per grid area
 def _aggregate_per_ga(
     df: DataFrame,
     market_evaluation_point_type: MeteringPointType,
 ) -> DataFrame:
     group_by = [Colname.grid_area, Colname.time_window]
-    result = T.aggregate_sum_and_quality(df, Colname.sum_quantity, group_by)
+    result = t.aggregate_sum_and_qualities(df, Colname.sum_quantity, group_by)
 
     result = result.select(
         Colname.grid_area,
@@ -223,4 +216,4 @@ def _aggregate_per_ga(
         lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
     )
 
-    return T.create_dataframe_from_aggregation_result_schema(result)
+    return t.create_dataframe_from_aggregation_result_schema(result)
