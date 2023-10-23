@@ -136,7 +136,6 @@ def calculate_positive_grid_loss(grid_loss: DataFrame) -> DataFrame:
 def calculate_total_consumption(
     agg_net_exchange: DataFrame, agg_production: DataFrame
 ) -> DataFrame:
-    agg_production.printSchema()
     # TODO BJM: Before this change all aggregations were grouped by quality as well.
     #           How does that make sense? Did I break something with this change?
     result_production = (
@@ -148,9 +147,7 @@ def calculate_total_consumption(
         .withColumnRenamed(Colname.sum_quantity, production_sum_quantity)
         .withColumnRenamed(Colname.qualities, aggregated_production_qualities)
     )
-    result_production.printSchema()
 
-    agg_net_exchange.printSchema()
     result_net_exchange = (
         t.aggregate_sum(
             agg_net_exchange,
@@ -160,7 +157,6 @@ def calculate_total_consumption(
         .withColumnRenamed(Colname.sum_quantity, exchange_sum_quantity)
         .withColumnRenamed(Colname.qualities, aggregated_net_exchange_qualities)
     )
-    result_net_exchange.printSchema()
 
     result = (
         result_production.join(
@@ -179,8 +175,6 @@ def calculate_total_consumption(
             ),
         )
     )
-    print("####################################################")
-    result.printSchema()
 
     result = result.select(
         Colname.grid_area,
