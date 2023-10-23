@@ -39,7 +39,7 @@ def get_tariff_charges(
     # group by time series on metering point id and resolution and sum quantity
     grouped_time_series = (
         _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
-            time_series, resolution_duration
+            time_series
         )
     )
 
@@ -146,7 +146,7 @@ def _join_with_metering_points(df: DataFrame, metering_points: DataFrame) -> Dat
 
 
 def _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
-    time_series: DataFrame, resolution_duration: ChargeResolution
+    time_series: DataFrame,
 ) -> DataFrame:
     grouped_time_series = t.aggregate_sum_and_quality(
         time_series,
