@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
+namespace Energinet.DataHub.Wholesale.EDI.Models;
 
-public enum QuantityUnit
+public static class SettlementMethod
 {
-    Kwh,
+    public const string Flex = "D01";
+    public const string NonProfiled = "E02";
 }

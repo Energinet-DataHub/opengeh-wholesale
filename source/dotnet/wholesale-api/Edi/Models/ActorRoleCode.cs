@@ -12,15 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.EDI.Models;
+namespace Energinet.DataHub.Wholesale.EDI.Models;
 
-namespace Energinet.DataHub.Wholesale.EDI.Factories;
-
-public interface IAggregatedTimeSeriesRequestFactory
+public class ActorRoleCode
 {
-    /// <summary>
-    /// Responsible for parsing the received message.
-    /// </summary>
-    /// <param name="request"></param>
-    public AggregatedTimeSeriesRequest Parse(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request);
+    public const string BalanceResponsibleParty = "DDK";
+    public const string EnergySupplier = "DDQ";
+    public const string MeteredDataResponsible = "MDR";
 }

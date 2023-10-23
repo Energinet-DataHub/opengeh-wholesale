@@ -12,15 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.EDI.Models;
+namespace Energinet.DataHub.Wholesale.Common.Models;
 
-namespace Energinet.DataHub.Wholesale.EDI.Factories;
-
-public interface IAggregatedTimeSeriesRequestFactory
+/// <summary>
+/// The unit of measurement for the quantity.
+/// </summary>
+public enum QuantityUnit
 {
     /// <summary>
-    /// Responsible for parsing the received message.
+    /// The quantity unit is Kilo Watt Hour.
+    /// Code: H87
     /// </summary>
-    /// <param name="request"></param>
-    public AggregatedTimeSeriesRequest Parse(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request);
+    Kwh,
+
+    /// <summary>
+    /// The quantity unit is pieces.
+    /// The unit is used for subscriptions and fees that are associated with the metering point.
+    /// </summary>
+    Pieces,
 }

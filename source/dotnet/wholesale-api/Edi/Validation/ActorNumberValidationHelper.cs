@@ -12,15 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.EDI.Models;
+namespace Energinet.DataHub.Wholesale.EDI.Validation;
 
-namespace Energinet.DataHub.Wholesale.EDI.Factories;
-
-public interface IAggregatedTimeSeriesRequestFactory
+public static class ActorNumberValidationHelper
 {
-    /// <summary>
-    /// Responsible for parsing the received message.
-    /// </summary>
-    /// <param name="request"></param>
-    public AggregatedTimeSeriesRequest Parse(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request);
+    public static bool IsValidGlnNumber(string actorNumber)
+    {
+        return actorNumber.Length == 13;
+    }
+
+    public static bool IsValidEicNumber(string actorNumber)
+    {
+        return actorNumber.Length == 16;
+    }
 }

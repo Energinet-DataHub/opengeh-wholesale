@@ -30,6 +30,8 @@ message AggregatedTimeSeriesRequest {
   optional string energy_supplier_id = 8;
   string requested_by_actor_id = 9;
   string requested_by_actor_role = 10;
+  optional string balance_responsible_id = 11;
+  optional string settlement_series_version = 12;
 }
 
 message Period {

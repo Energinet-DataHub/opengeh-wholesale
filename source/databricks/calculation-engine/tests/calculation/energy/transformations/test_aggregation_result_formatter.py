@@ -48,7 +48,6 @@ def aggregation_result_factory(spark: SparkSession) -> Callable[..., DataFrame]:
         quality: str = DataframeDefaults.default_quality,
         metering_point_type: str = DataframeDefaults.default_metering_point_type,
         settlement_method: str | None = None,
-        position: int | None = None,
     ) -> DataFrame:
         pandas_df = pd.DataFrame().append(
             [
@@ -66,7 +65,6 @@ def aggregation_result_factory(spark: SparkSession) -> Callable[..., DataFrame]:
                     Colname.quality: quality,
                     Colname.metering_point_type: metering_point_type,
                     Colname.settlement_method: settlement_method,
-                    Colname.position: position,
                 }
             ],
             ignore_index=True,
