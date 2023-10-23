@@ -23,7 +23,13 @@ from package.calculation.energy.aggregators import (
     aggregate_production_ga_brp,
     aggregate_production_ga,
 )
-from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
+from pyspark.sql.types import (
+    StructType,
+    StringType,
+    DecimalType,
+    TimestampType,
+    ArrayType,
+)
 import pytest
 import pandas as pd
 from package.constants import Colname
@@ -51,7 +57,7 @@ def agg_production_schema() -> StructType:
             False,
         )
         .add(Colname.sum_quantity, DecimalType(20))
-        .add(Colname.quality, StringType())
+        .add(Colname.qualities, ArrayType(StringType(), False), False)
         .add(Colname.metering_point_type, StringType())
     )
 
@@ -68,7 +74,7 @@ def test_data_factory(
                 Colname.energy_supplier_id: [],
                 Colname.time_window: [],
                 Colname.sum_quantity: [],
-                Colname.quality: [],
+                Colname.qualities: [],
                 Colname.metering_point_type: [],
             }
         )
@@ -85,7 +91,7 @@ def test_data_factory(
                                 Colname.end: default_obs_time + timedelta(hours=i + 1),
                             },
                             Colname.sum_quantity: Decimal(i + j + k),
-                            Colname.quality: [QuantityQuality.ESTIMATED.value],
+                            Colname.qualities: [QuantityQuality.ESTIMATED.value],
                             Colname.metering_point_type: [
                                 MeteringPointType.PRODUCTION.value
                             ],

@@ -55,19 +55,19 @@ def __calculate_grid_loss_or_residual_ga(
         Colname.sum_quantity, net_exchange_result
     )
 
-    agg_non_profiled_consumption_result = t.aggregate_sum_and_quality(
+    agg_non_profiled_consumption_result = t.aggregate_sum_and_qualities(
         agg_non_profiled_consumption,
         Colname.sum_quantity,
         [Colname.grid_area, Colname.time_window],
     ).withColumnRenamed(Colname.sum_quantity, hourly_result)
 
-    agg_flex_consumption_result = t.aggregate_sum_and_quality(
+    agg_flex_consumption_result = t.aggregate_sum_and_qualities(
         agg_flex_consumption,
         Colname.sum_quantity,
         [Colname.grid_area, Colname.time_window],
     ).withColumnRenamed(Colname.sum_quantity, flex_result)
 
-    agg_production_result = t.aggregate_sum_and_quality(
+    agg_production_result = t.aggregate_sum_and_qualities(
         agg_production, Colname.sum_quantity, [Colname.grid_area, Colname.time_window]
     ).withColumnRenamed(Colname.sum_quantity, prod_result)
 

@@ -22,7 +22,13 @@ from package.codelists import (
 from package.calculation.energy.grid_loss_calculator import (
     calculate_grid_loss,
 )
-from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
+from pyspark.sql.types import (
+    StructType,
+    StringType,
+    DecimalType,
+    TimestampType,
+    ArrayType,
+)
 from pyspark.sql.functions import col
 from pyspark.sql import DataFrame, SparkSession
 import pytest
@@ -56,7 +62,7 @@ def agg_net_exchange_schema() -> StructType:
             False,
         )
         .add(Colname.sum_quantity, DecimalType(38))
-        .add(Colname.quality, StringType())
+        .add(Colname.qualities, ArrayType(StringType(), False), False)
         .add(Colname.metering_point_type, StringType())
     )
 
@@ -76,7 +82,7 @@ def agg_consumption_and_production_schema() -> StructType:
             False,
         )
         .add(Colname.sum_quantity, DecimalType(20))
-        .add(Colname.quality, StringType())
+        .add(Colname.qualities, ArrayType(StringType(), False), False)
         .add(Colname.metering_point_type, StringType())
     )
 
@@ -98,7 +104,7 @@ def agg_result_factory(
                     Colname.grid_area: [],
                     Colname.time_window: [],
                     Colname.sum_quantity: [],
-                    Colname.quality: [],
+                    Colname.qualities: [],
                     Colname.metering_point_type: [],
                 }
             )
@@ -111,7 +117,7 @@ def agg_result_factory(
                             Colname.end: default_obs_time + timedelta(hours=i + 1),
                         },
                         Colname.sum_quantity: Decimal(20 + i),
-                        Colname.quality: QuantityQuality.ESTIMATED.value,
+                        Colname.qualities: [QuantityQuality.ESTIMATED.value],
                         Colname.metering_point_type: MeteringPointType.EXCHANGE.value,
                     },
                     ignore_index=True,
@@ -125,7 +131,7 @@ def agg_result_factory(
                     Colname.energy_supplier_id: [],
                     Colname.time_window: [],
                     Colname.sum_quantity: [],
-                    Colname.quality: [],
+                    Colname.qualities: [],
                     Colname.metering_point_type: [],
                 }
             )
@@ -140,7 +146,7 @@ def agg_result_factory(
                             Colname.end: default_obs_time + timedelta(hours=i + 1),
                         },
                         Colname.sum_quantity: Decimal(13 + i),
-                        Colname.quality: QuantityQuality.ESTIMATED.value,
+                        Colname.qualities: [QuantityQuality.ESTIMATED.value],
                         Colname.metering_point_type: MeteringPointType.CONSUMPTION.value,
                     },
                     ignore_index=True,
@@ -156,7 +162,7 @@ def agg_result_factory(
                     Colname.energy_supplier_id: [],
                     Colname.time_window: [],
                     Colname.sum_quantity: [],
-                    Colname.quality: [],
+                    Colname.qualities: [],
                     Colname.metering_point_type: [],
                 }
             )
@@ -171,7 +177,7 @@ def agg_result_factory(
                             Colname.end: default_obs_time + timedelta(hours=i + 1),
                         },
                         Colname.sum_quantity: Decimal(14 + i),
-                        Colname.quality: QuantityQuality.ESTIMATED.value,
+                        Colname.qualities: [QuantityQuality.ESTIMATED.value],
                         Colname.metering_point_type: MeteringPointType.CONSUMPTION.value,
                     },
                     ignore_index=True,
@@ -187,7 +193,7 @@ def agg_result_factory(
                     Colname.energy_supplier_id: [],
                     Colname.time_window: [],
                     Colname.sum_quantity: [],
-                    Colname.quality: [],
+                    Colname.qualities: [],
                     Colname.metering_point_type: [],
                 }
             )
@@ -202,7 +208,7 @@ def agg_result_factory(
                             Colname.end: default_obs_time + timedelta(hours=i + 1),
                         },
                         Colname.sum_quantity: Decimal(50 + i),
-                        Colname.quality: QuantityQuality.ESTIMATED.value,
+                        Colname.qualities: [QuantityQuality.ESTIMATED.value],
                         Colname.metering_point_type: MeteringPointType.PRODUCTION.value,
                     },
                     ignore_index=True,
@@ -256,7 +262,7 @@ def agg_net_exchange_factory(
                     Decimal(1.0),
                     Decimal(1.0),
                 ],
-                Colname.quality: ["56", "56", "56", "56", "56", "56"],
+                Colname.qualities: [["56"], ["56"], ["56"], ["56"], ["56"], ["56"]],
                 Colname.metering_point_type: [
                     MeteringPointType.EXCHANGE.value,
                     MeteringPointType.EXCHANGE.value,
@@ -317,7 +323,7 @@ def agg_flex_consumption_factory(
                     Decimal(1.0),
                     Decimal(2.0),
                 ],
-                Colname.quality: ["56", "56", "56", "56", "56", "56"],
+                Colname.qualities: [["56"], ["56"], ["56"], ["56"], ["56"], ["56"]],
                 Colname.metering_point_type: [
                     MeteringPointType.CONSUMPTION.value,
                     MeteringPointType.CONSUMPTION.value,
@@ -380,7 +386,7 @@ def agg_hourly_consumption_factory(
                     Decimal(3.0),
                     Decimal(1.0),
                 ],
-                Colname.quality: ["56", "56", "56", "56", "56", "56"],
+                Colname.qualities: [["56"], ["56"], ["56"], ["56"], ["56"], ["56"]],
                 Colname.metering_point_type: [
                     MeteringPointType.CONSUMPTION.value,
                     MeteringPointType.CONSUMPTION.value,
@@ -443,7 +449,7 @@ def agg_hourly_production_factory(
                     Decimal(1.0),
                     Decimal(2.0),
                 ],
-                Colname.quality: ["56", "56", "56", "56", "56", "56"],
+                Colname.qualities: [["56"], ["56"], ["56"], ["56"], ["56"], ["56"]],
                 Colname.metering_point_type: [
                     MeteringPointType.PRODUCTION.value,
                     MeteringPointType.PRODUCTION.value,
