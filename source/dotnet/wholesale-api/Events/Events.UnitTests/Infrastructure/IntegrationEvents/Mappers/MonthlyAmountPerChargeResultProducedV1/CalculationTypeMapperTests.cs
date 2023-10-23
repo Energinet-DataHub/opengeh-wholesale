@@ -62,4 +62,18 @@ public class CalculationTypeMapperTests
             Enum.IsDefined(typeof(EventCalculationType), actual).Should().BeTrue();
         }
     }
+
+    [Fact]
+    public void MapCalculationType_WhenInvalidEnumNumber_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        var invalidValue = (ModelCalculationType)99;
+
+        // Act
+        var act = () => CalculationTypeMapper.MapCalculationType(invalidValue);
+
+        // Assert
+        act.Should().Throw<ArgumentOutOfRangeException>()
+            .And.ActualValue.Should().Be(invalidValue);
+    }
 }
