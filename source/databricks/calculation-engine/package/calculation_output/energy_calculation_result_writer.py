@@ -178,7 +178,7 @@ _write_input_schema = t.StructType(
         t.StructField(Colname.energy_supplier_id, t.StringType(), True),
         t.StructField(Colname.balance_responsible_id, t.StringType(), True),
         t.StructField(Colname.sum_quantity, t.DecimalType(18, 3), True),
-        t.StructField(Colname.qualities, t.StringType(), False),
+        t.StructField(Colname.qualities, t.ArrayType(t.StringType(), False), False),
         # TODO BJM: Why not just observation time? This complexity isn't needed or desired in the writer
         t.StructField(
             Colname.time_window,

@@ -148,29 +148,27 @@ def _join_with_metering_points(df: DataFrame, metering_points: DataFrame) -> Dat
 def _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
     time_series: DataFrame, resolution_duration: ChargeResolution
 ) -> DataFrame:
-    grouped_time_series = time_series.withColumn(
-        Colname.observation_time,
-        f.window(
-            Colname.observation_time,
-            _get_window_duration_string_based_on_resolution(resolution_duration),
-        ),
-    )
-
     grouped_time_series = t.aggregate_sum_and_quality(
-        grouped_time_series,
+        time_series,
         Colname.quantity,
-        [Colname.metering_point_id, Colname.observation_time],
+        [
+            Colname.metering_point_id,
+            f.window(
+                Colname.observation_time,
+                _get_window_duration_string_based_on_resolution(resolution_duration),
+            ).alias("time-window"),
+        ],
     ).select(
         Colname.sum_quantity,
         Colname.qualities,
         Colname.metering_point_id,
-        Colname.observation_time,
+        f.col("time-window").alias(Colname.observation_time),
     )
 
     # The sum operator creates by default a column as a double type (28,6).
     # It must be cast to a decimal type (18,3) to conform to the tariff schema.
     grouped_time_series = grouped_time_series.withColumn(
-        Colname.sum_quantity, f.col(Colname.quantity).cast(DecimalType(18, 3))
+        Colname.sum_quantity, f.col(Colname.sum_quantity).cast(DecimalType(18, 3))
     )
 
     grouped_time_series = grouped_time_series.withColumn(
