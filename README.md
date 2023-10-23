@@ -37,3 +37,8 @@ Please note that we have provided a [Dictionary](https://github.com/Energinet-Da
 <a href="https://github.com/Energinet-DataHub/opengeh-wholesale/graphs/contributors">
   <img src="https://contributors-img.web.app/image?repo=Energinet-DataHub/opengeh-wholesale" />
 </a>
+
+## Testing integration to Azure DevOps
+
+1. Created and pushed branch.
+2. Commit change with a code in the commit message.
