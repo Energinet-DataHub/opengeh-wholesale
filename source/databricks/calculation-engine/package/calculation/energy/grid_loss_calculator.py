@@ -174,13 +174,13 @@ def calculate_total_consumption(
             Colname.qualities,
             # TODO BJM: The old way of getting a single quality was very different and
             #           also relied on grouping by sum_quantity. Looked wrong. But is this new algorithm correct?
-            f.collect_set(
-                f.concat(
-                    aggregated_production_qualities, aggregated_net_exchange_qualities
-                )
+            f.array_union(
+                aggregated_production_qualities, aggregated_net_exchange_qualities
             ),
         )
     )
+    print("####################################################")
+    result.printSchema()
 
     result = result.select(
         Colname.grid_area,

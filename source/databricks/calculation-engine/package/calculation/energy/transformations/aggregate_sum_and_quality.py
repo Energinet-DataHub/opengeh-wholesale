@@ -47,7 +47,9 @@ def aggregate_sum(
 
     result = result.groupBy(group_by).agg(
         f.sum(quantity_col_name).alias(Colname.sum_quantity),
-        f.collect_set(Colname.qualities).alias(Colname.qualities),
+        f.array_distinct(f.flatten(f.collect_set(Colname.qualities))).alias(
+            Colname.qualities
+        ),
     )
 
     return result

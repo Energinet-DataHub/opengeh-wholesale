@@ -66,7 +66,7 @@ def _assert_field(
     ignore_decimal_precision: bool,
     ignore_decimal_scale: bool,
     ignore_nullability: bool,
-):
+) -> None:
     if not ignore_nullability:
         _assert_struct_field_nullability(actual, expected)
     _assert_data_type(
@@ -113,7 +113,7 @@ def _assert_data_type(
     column_name: str,
     ignore_decimal_precision: bool,
     ignore_decimal_scale: bool,
-):
+) -> None:
     if actual == expected:
         return
 

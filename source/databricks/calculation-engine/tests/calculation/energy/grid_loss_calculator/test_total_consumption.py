@@ -286,32 +286,32 @@ def test_grid_area_total_consumption(agg_net_exchange_factory, agg_production_fa
         (
             QuantityQuality.ESTIMATED.value,
             QuantityQuality.ESTIMATED.value,
-            QuantityQuality.ESTIMATED.value,
+            [QuantityQuality.ESTIMATED.value],
         ),
         (
             QuantityQuality.ESTIMATED.value,
             QuantityQuality.MISSING.value,
-            QuantityQuality.ESTIMATED.value,
+            [QuantityQuality.ESTIMATED.value, QuantityQuality.MISSING.value],
         ),
         (
             QuantityQuality.ESTIMATED.value,
             QuantityQuality.MEASURED.value,
-            QuantityQuality.ESTIMATED.value,
-        ),
-        (
-            QuantityQuality.MISSING.value,
-            QuantityQuality.MISSING.value,
-            QuantityQuality.ESTIMATED.value,
+            [QuantityQuality.ESTIMATED.value, QuantityQuality.MEASURED.value],
         ),
         (
             QuantityQuality.MISSING.value,
+            QuantityQuality.MISSING.value,
+            [QuantityQuality.MISSING.value],
+        ),
+        (
+            QuantityQuality.MISSING.value,
             QuantityQuality.MEASURED.value,
-            QuantityQuality.ESTIMATED.value,
+            [QuantityQuality.MISSING.value, QuantityQuality.MEASURED.value],
         ),
         (
             QuantityQuality.MEASURED.value,
             QuantityQuality.MEASURED.value,
-            QuantityQuality.MEASURED.value,
+            [QuantityQuality.MEASURED.value],
         ),
     ],
 )
@@ -327,4 +327,4 @@ def test_aggregated_quality(
 
     result_df = calculate_total_consumption(net_exchange_per_ga, production_ga)
 
-    assert result_df.collect()[0][Colname.quality] == expected_quality
+    assert result_df.collect()[0][Colname.qualities] == expected_quality
