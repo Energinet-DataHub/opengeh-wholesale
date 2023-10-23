@@ -124,8 +124,7 @@ def test_grid_area_grid_loss_has_no_values_below_zero(
 ) -> None:
     result = call_calculate_grid_loss(agg_result_factory)
 
-    # TODO BJM: Are all these tests with warning in PyCharm about wrong parameter type for .filter() correct? (Do they work as expected)
-    assert result.filter(col(Colname.sum_quantity) < 0).count() == 0
+    assert result.where(col(Colname.sum_quantity) < 0).count() == 0
 
 
 def test_grid_area_grid_loss_changes_negative_values_to_zero(
