@@ -42,3 +42,4 @@ Please note that we have provided a [Dictionary](https://github.com/Energinet-Da
 
 1. Created and pushed branch.
 2. Commit change with a code in the commit message.
+3. Another commit.
