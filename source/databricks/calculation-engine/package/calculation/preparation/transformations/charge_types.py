@@ -153,16 +153,13 @@ def _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
         Colname.quantity,
         [
             Colname.metering_point_id,
-            f.window(
-                Colname.observation_time,
-                _get_window_duration_string_based_on_resolution(resolution_duration),
-            ).alias("time-window"),
+            Colname.observation_time,
         ],
     ).select(
         Colname.sum_quantity,
         Colname.qualities,
         Colname.metering_point_id,
-        f.col("time-window").alias(Colname.observation_time),
+        Colname.observation_time,
     )
 
     # The sum operator creates by default a column as a double type (28,6).
