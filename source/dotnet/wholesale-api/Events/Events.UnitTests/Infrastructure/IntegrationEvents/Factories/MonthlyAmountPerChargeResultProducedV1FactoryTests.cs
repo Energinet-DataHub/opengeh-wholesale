@@ -62,8 +62,7 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
     {
         // Arrange
         var sut = new MonthlyAmountPerChargeResultProducedV1Factory();
-        var wholesaleResult = CreateWholesaleResult();
-        wholesaleResult.SetPrivateProperty(r => r.CalculationType, calculationType);
+        var wholesaleResult = CreateWholesaleResult(calculationType);
 
         // Act
         var act = () => sut.Create(wholesaleResult);
@@ -77,13 +76,12 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
     public void Create_WhenWholesaleResultHsMoreThanOneTimeSeriesPoints_ThrowsException(MonthlyAmountPerChargeResultProducedV1Factory sut)
     {
         // Arrange
-        var wholesaleResult = CreateWholesaleResult();
         var timeSeriesPoints = new WholesaleTimeSeriesPoint[]
         {
             new(new DateTime(2021, 1, 1), 1, new List<QuantityQuality> { QuantityQuality.Measured }, 2, 3),
             new(new DateTime(2021, 1, 2), 1, new List<QuantityQuality> { QuantityQuality.Measured }, 2, 3),
         };
-        wholesaleResult.SetPrivateProperty(r => r.TimeSeriesPoints, timeSeriesPoints);
+        var wholesaleResult = CreateWholesaleResult(timeSeriesPoints: timeSeriesPoints);
 
         // Act
         var act = () => sut.Create(wholesaleResult);
@@ -92,7 +90,9 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
         act.Should().Throw<ArgumentException>();
     }
 
-    private WholesaleResult CreateWholesaleResult()
+    private WholesaleResult CreateWholesaleResult(
+        Common.Models.ProcessType calculationType = Common.Models.ProcessType.FirstCorrectionSettlement,
+        IReadOnlyCollection<WholesaleTimeSeriesPoint>? timeSeriesPoints = default)
     {
         var qualities = new List<QuantityQuality>
         {
@@ -100,10 +100,15 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
             QuantityQuality.Measured,
         };
 
+        timeSeriesPoints ??= new WholesaleTimeSeriesPoint[]
+        {
+            new(new DateTime(2021, 1, 1), 1, qualities, 2, 3),
+        };
+
         return new WholesaleResult(
             _resultId,
             _calculationId,
-            Common.Models.ProcessType.FirstCorrectionSettlement,
+            calculationType,
             _periodStart,
             _periodEnd,
             _gridArea,
@@ -116,10 +121,7 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
             ChargeResolution.Hour,
             CalculationResults.Interfaces.CalculationResults.Model.MeteringPointType.Production,
             null,
-            new WholesaleTimeSeriesPoint[]
-            {
-                new(new DateTime(2021, 1, 1), 1, qualities, 2, 3),
-            });
+            timeSeriesPoints);
     }
 
     private static MonthlyAmountPerChargeResultProducedV1 CreateExpected(WholesaleResult wholesaleResult)

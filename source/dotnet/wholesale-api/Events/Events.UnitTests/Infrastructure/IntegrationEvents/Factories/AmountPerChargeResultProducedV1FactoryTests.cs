@@ -63,8 +63,7 @@ public class AmountPerChargeResultProducedV1FactoryTests
     {
         // Arrange
         var sut = new AmountPerChargeResultProducedV1Factory();
-        var wholesaleResult = CreateWholesaleResult();
-        wholesaleResult.SetPrivateProperty(r => r.CalculationType, calculationType);
+        var wholesaleResult = CreateWholesaleResult(calculationType);
 
         // Act
         var act = () => sut.Create(wholesaleResult);
@@ -73,7 +72,7 @@ public class AmountPerChargeResultProducedV1FactoryTests
         act.Should().Throw<ArgumentOutOfRangeException>();
     }
 
-    private WholesaleResult CreateWholesaleResult()
+    private WholesaleResult CreateWholesaleResult(Common.Models.ProcessType calculationType = Common.Models.ProcessType.FirstCorrectionSettlement)
     {
         var qualities = new List<QuantityQuality>
         {
@@ -84,7 +83,7 @@ public class AmountPerChargeResultProducedV1FactoryTests
         return new WholesaleResult(
             _resultId,
             _calculationId,
-            Common.Models.ProcessType.FirstCorrectionSettlement,
+            calculationType,
             _periodStart,
             _periodEnd,
             _gridArea,

@@ -63,7 +63,7 @@ public sealed class WholesaleResult
 
     public Guid CalculationId { get; }
 
-    public ProcessType CalculationType { get; private set; }
+    public ProcessType CalculationType { get; }
 
     public string GridArea { get; }
 
@@ -89,5 +89,5 @@ public sealed class WholesaleResult
 
     public SettlementMethod? SettlementMethod { get; }
 
-    public IReadOnlyCollection<WholesaleTimeSeriesPoint> TimeSeriesPoints { get; private set; }
+    public IReadOnlyCollection<WholesaleTimeSeriesPoint> TimeSeriesPoints { get; }
 }
