@@ -102,7 +102,10 @@ public class IntegrationEventProvider : IIntegrationEventProvider
                 .CreateAmountPerChargeResultProducedV1(wholesaleResult),
             ChargeResolution.Month => _calculationResultIntegrationEventFactory
                 .CreateMonthlyAmountPerChargeResultProducedV1(wholesaleResult),
-            _ => throw new ArgumentOutOfRangeException(nameof(wholesaleResult.ChargeResolution), actualValue: wholesaleResult.ChargeResolution, "Unexpected resolution."),
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(wholesaleResult.ChargeResolution),
+                actualValue: wholesaleResult.ChargeResolution,
+                "Unexpected resolution."),
         };
     }
 
