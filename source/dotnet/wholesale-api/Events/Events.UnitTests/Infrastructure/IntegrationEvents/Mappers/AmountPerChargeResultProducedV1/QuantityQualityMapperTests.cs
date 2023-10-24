@@ -38,10 +38,6 @@ public class QuantityQualityMapperTests
     {
         foreach (var quality in Enum.GetValues(typeof(ModelQuantityQuality)).Cast<ModelQuantityQuality>())
         {
-            // Arrange
-            if (quality == ModelQuantityQuality.Incomplete) // Todo JMG: Remove when Incomplete is from ModelQuantityQuality
-                continue;
-
             // Act
             var actual = QuantityQualityMapper.MapQuantityQuality(quality);
 

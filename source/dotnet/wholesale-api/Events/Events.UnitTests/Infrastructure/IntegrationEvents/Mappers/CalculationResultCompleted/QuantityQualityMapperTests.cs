@@ -24,7 +24,6 @@ public class QuantityQualityMapperTests
 {
     [Theory]
     [InlineAutoMoqData(QuantityQuality.Estimated, Contracts.Events.QuantityQuality.Estimated)]
-    [InlineAutoMoqData(QuantityQuality.Incomplete, Contracts.Events.QuantityQuality.Incomplete)]
     [InlineAutoMoqData(QuantityQuality.Measured, Contracts.Events.QuantityQuality.Measured)]
     [InlineAutoMoqData(QuantityQuality.Missing, Contracts.Events.QuantityQuality.Missing)]
     [InlineAutoMoqData(QuantityQuality.Calculated, Contracts.Events.QuantityQuality.Calculated)]
