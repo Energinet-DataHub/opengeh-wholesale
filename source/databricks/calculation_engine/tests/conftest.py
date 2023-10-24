@@ -107,7 +107,7 @@ def calculation_engine_path(databricks_path: str) -> str:
     The correctness also relies on the prerequisite that this function is actually located in a
     file located directly in the tests folder.
     """
-    return f"{databricks_path}/calculation-engine"
+    return f"{databricks_path}/calculation_engine"
 
 
 @pytest.fixture(scope="session")
