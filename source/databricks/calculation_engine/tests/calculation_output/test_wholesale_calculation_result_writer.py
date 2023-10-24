@@ -219,6 +219,27 @@ def test__write__writes_calculation_result_id(
     assert actual_df.distinct().count() == expected_number_of_calculation_result_ids
 
 
+def test__write__writes_result_type(
+    sut: WholesaleCalculationResultWriter,
+    spark: SparkSession,
+   migrations_executed: None,
+) -> None:
+    # Arrange
+    row = [_create_result_row()]
+    result_df = _create_result_df(spark, row)
+
+    # Act
+    sut.write(result_df, DEFAULT_WHOLESALE_RESULT_TYPE)
+
+    # Assert
+    actual_df = spark.read.table(TABLE_NAME).where(
+        col(WholesaleResultColumnNames.calculation_id) == DEFAULT_BATCH_ID
+    )
+    actual_row = actual_df.collect()[0]
+
+    assert actual_row[WholesaleResultColumnNames.result_type] == DEFAULT_WHOLESALE_RESULT_TYPE.value
+
+
 def test__get_column_group_for_calculation_result_id__returns_expected_column_names(
     sut: WholesaleCalculationResultWriter,
 ) -> None:

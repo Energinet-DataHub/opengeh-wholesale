@@ -45,6 +45,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
             2020, 1, 1, 0, 0
         ),
         WholesaleResultColumnNames.calculation_result_id: "6033ab5c-436b-44e9-8a79-90489d324e53",
+        WholesaleResultColumnNames.result_type: "amount_per_charge",
         WholesaleResultColumnNames.grid_area: "543",
         WholesaleResultColumnNames.energy_supplier_id: "1234567890123",
         WholesaleResultColumnNames.quantity: Decimal("1.123"),
