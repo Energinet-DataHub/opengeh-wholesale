@@ -15,6 +15,8 @@
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Internal;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
+using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Microsoft.Extensions.Logging;
@@ -26,6 +28,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
 {
     private readonly ICalculationResultIntegrationEventFactory _calculationResultIntegrationEventFactory;
     private readonly IEnergyResultQueries _energyResultQueries;
+    private readonly IWholesaleResultQueries _wholesaleResultQueries;
     private readonly ICompletedBatchRepository _completedBatchRepository;
     private readonly IClock _clock;
     private readonly IUnitOfWork _unitOfWork;
@@ -34,6 +37,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
     public IntegrationEventProvider(
         ICalculationResultIntegrationEventFactory integrationEventFactory,
         IEnergyResultQueries energyResultQueries,
+        IWholesaleResultQueries wholesaleResultQueries,
         ICompletedBatchRepository completedBatchRepository,
         IClock clock,
         IUnitOfWork unitOfWork,
@@ -41,6 +45,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
     {
         _calculationResultIntegrationEventFactory = integrationEventFactory;
         _energyResultQueries = energyResultQueries;
+        _wholesaleResultQueries = wholesaleResultQueries;
         _completedBatchRepository = completedBatchRepository;
         _clock = clock;
         _unitOfWork = unitOfWork;
@@ -57,19 +62,52 @@ public class IntegrationEventProvider : IIntegrationEventProvider
                 break;
             }
 
-            var resultCount = 0;
+            // Publish energy results
+            var energyResultCount = 0;
             await foreach (var energyResult in _energyResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
             {
-                resultCount++;
+                energyResultCount++;
                 yield return _calculationResultIntegrationEventFactory.CreateCalculationResultCompleted(energyResult); // Deprecated
                 yield return _calculationResultIntegrationEventFactory.CreateEnergyResultProducedV1(energyResult);
+            }
+
+            // Publish wholesale results
+            var wholesaleResultCount = 0;
+            if (IsWholesaleCalculationType(batch.ProcessType))
+            {
+                await foreach (var wholesaleResult in _wholesaleResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
+                {
+                    wholesaleResultCount++;
+                    yield return CreateEventFromWholesaleResult(wholesaleResult);
+                }
             }
 
             batch.PublishedTime = _clock.GetCurrentInstant();
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
-            _logger.LogInformation("Published {ResultCount} results for completed batch {BatchId}", resultCount, batch.Id);
+            _logger.LogInformation("Published {EnergyResultCount} energy results for completed batch {BatchId}", energyResultCount, batch.Id);
+            if (IsWholesaleCalculationType(batch.ProcessType))
+            {
+                _logger.LogInformation("Published {WholesaleResultCount} wholesale results for completed batch {BatchId}", wholesaleResultCount, batch.Id);
+            }
         }
         while (true);
+    }
+
+    private IntegrationEvent CreateEventFromWholesaleResult(WholesaleResult wholesaleResult)
+    {
+        return wholesaleResult.ChargeResolution switch
+        {
+            ChargeResolution.Day or ChargeResolution.Hour => _calculationResultIntegrationEventFactory
+                .CreateAmountPerChargeResultProducedV1(wholesaleResult),
+            ChargeResolution.Month => _calculationResultIntegrationEventFactory
+                .CreateMonthlyAmountPerChargeResultProducedV1(wholesaleResult),
+            _ => throw new ArgumentOutOfRangeException(nameof(wholesaleResult.ChargeResolution), actualValue: wholesaleResult.ChargeResolution, "Unexpected resolution."),
+        };
+    }
+
+    private static bool IsWholesaleCalculationType(ProcessType calculationType)
+    {
+        return calculationType is ProcessType.WholesaleFixing or ProcessType.FirstCorrectionSettlement or ProcessType.SecondCorrectionSettlement or ProcessType.ThirdCorrectionSettlement;
     }
 }
