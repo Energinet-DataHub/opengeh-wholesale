@@ -19,5 +19,4 @@ class QuantityQuality(Enum):
     MISSING = "missing"
     ESTIMATED = "estimated"
     MEASURED = "measured"
-    INCOMPLETE = "incomplete"
     CALCULATED = "calculated"

@@ -26,7 +26,6 @@ public static class QuantityQualityMapper
             ModelQuantityQuality.Estimated => EventQuantityQuality.Estimated,
             ModelQuantityQuality.Measured => EventQuantityQuality.Measured,
             ModelQuantityQuality.Missing => EventQuantityQuality.Missing,
-            ModelQuantityQuality.Incomplete => EventQuantityQuality.Missing, // Todo JMG: Remove this mapping when the Incomplete enum value is removed
             ModelQuantityQuality.Calculated => EventQuantityQuality.Calculated,
             _ => throw new ArgumentOutOfRangeException(
                 nameof(quantityQuality),
