@@ -20,7 +20,7 @@ from pyspark.sql.window import Window
 
 from package.codelists import (
     ProcessType,
-    WholesaleResultType,
+    AmountType,
 )
 from package.constants import Colname, WholesaleResultColumnNames
 from package.infrastructure.paths import (
@@ -43,11 +43,11 @@ class WholesaleCalculationResultWriter:
     def write(
         self,
         df: DataFrame,
-        result_type: WholesaleResultType
+        amount_type: AmountType
     ) -> None:
         df = self._add_metadata(df)
         df = self._add_calculation_result_id(df)
-        df = self._add_result_type(df, result_type)
+        df = self._add_amount_type(df, amount_type)
         df = self._select_output_columns(df)
 
         df.write.format("delta").mode("append").option(
@@ -75,8 +75,8 @@ class WholesaleCalculationResultWriter:
         )
 
     @staticmethod
-    def _add_result_type(df: DataFrame, wholesale_result_type: WholesaleResultType) -> DataFrame:
-        return df.withColumn(WholesaleResultColumnNames.wholesale_result_type, lit(wholesale_result_type.value))
+    def _add_amount_type(df: DataFrame, amount_type: AmountType) -> DataFrame:
+        return df.withColumn(WholesaleResultColumnNames.amount_type, lit(amount_type.value))
 
     @staticmethod
     def _select_output_columns(df: DataFrame) -> DataFrame:
@@ -91,7 +91,7 @@ class WholesaleCalculationResultWriter:
                 WholesaleResultColumnNames.calculation_execution_time_start
             ),
             col(WholesaleResultColumnNames.calculation_result_id),
-            col(WholesaleResultColumnNames.result_type),
+            col(WholesaleResultColumnNames.amount_type),
             col(Colname.grid_area).alias(WholesaleResultColumnNames.grid_area),
             col(Colname.energy_supplier_id).alias(
                 WholesaleResultColumnNames.energy_supplier_id
