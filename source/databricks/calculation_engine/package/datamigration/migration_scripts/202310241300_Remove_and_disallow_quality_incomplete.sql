@@ -6,13 +6,12 @@ GO
 -- Replace ['incomplete'] with ['missing']
 -- Note that as of this migration all qualities arrays contain exactly one element
 --
-UPDATE TABLE {OUTPUT_DATABASE_NAME}.energy_results
-SET qualities =
+UPDATE {OUTPUT_DATABASE_NAME}.energy_results
+SET quantity_qualities =
   CASE
-    WHEN array_contains('incomplete') THEN array('missing')
-    ELSE qualities
+    WHEN array_contains(quantity_qualities, 'incomplete') THEN array('missing')
+    ELSE quantity_qualities
   END
-)
 GO
 
 --
