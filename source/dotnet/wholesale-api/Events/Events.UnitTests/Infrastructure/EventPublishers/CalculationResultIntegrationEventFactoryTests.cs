@@ -44,9 +44,10 @@ public class CalculationResultIntegrationEventFactoryTests
         var actual = sut.CreateCalculationResultCompleted(energyResult);
 
         // Assert
-        actual.EventName.Should().Be(CalculationResultCompleted.EventName);
+        var expectedEventMetaData = new CalculationResultCompleted();
+        actual.EventName.Should().Be(expectedEventMetaData.EventName);
+        actual.EventMinorVersion.Should().Be(expectedEventMetaData.EventMinorVersion);
         actual.Message.ToByteArray().Should().BeEquivalentTo(calculationResultCompleted.ToByteArray());
-        actual.EventMinorVersion.Should().Be(CalculationResultCompleted.EventMinorVersion);
     }
 
     [Theory]
@@ -66,8 +67,9 @@ public class CalculationResultIntegrationEventFactoryTests
         var actual = sut.CreateEnergyResultProducedV1(energyResult);
 
         // Assert
-        actual.EventName.Should().Be(EnergyResultProducedV1.EventName);
+        var expectedEventMetaData = new EnergyResultProducedV1();
+        actual.EventName.Should().Be(expectedEventMetaData.EventName);
+        actual.EventMinorVersion.Should().Be(expectedEventMetaData.EventMinorVersion);
         actual.Message.ToByteArray().Should().BeEquivalentTo(energyResultProduced.ToByteArray());
-        actual.EventMinorVersion.Should().Be(EnergyResultProducedV1.EventMinorVersion);
     }
 }
