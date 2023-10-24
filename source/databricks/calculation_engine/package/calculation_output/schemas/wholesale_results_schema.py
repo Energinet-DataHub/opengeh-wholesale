@@ -38,7 +38,7 @@ wholesale_results_schema = StructType(
             WholesaleResultColumnNames.calculation_result_id, StringType(), False
         ),
         StructField(
-            WholesaleResultColumnNames.result_type, StringType(), False
+            WholesaleResultColumnNames.amount_type, StringType(), False
         ),
         StructField(WholesaleResultColumnNames.grid_area, StringType(), False),
         # Wholesale results are per energy supplier therefore energy_supplier_id cannot be null.
