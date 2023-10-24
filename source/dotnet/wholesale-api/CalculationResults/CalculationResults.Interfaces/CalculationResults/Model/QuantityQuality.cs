@@ -19,6 +19,5 @@ public enum QuantityQuality
     Missing,
     Estimated,
     Measured,
-    Incomplete,
     Calculated,
 }

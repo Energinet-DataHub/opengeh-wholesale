@@ -66,7 +66,6 @@ public class QuantityQualityMapperTests
     [Theory]
     [InlineAutoMoqData("calculated", QuantityQuality.Calculated)]
     [InlineAutoMoqData("estimated", QuantityQuality.Estimated)]
-    [InlineAutoMoqData("incomplete", QuantityQuality.Incomplete)]
     [InlineAutoMoqData("measured", QuantityQuality.Measured)]
     [InlineAutoMoqData("missing", QuantityQuality.Missing)]
     public void FromDeltaTableValue_ReturnsValidQuantityQuality(string deltaValue, QuantityQuality? expected)
