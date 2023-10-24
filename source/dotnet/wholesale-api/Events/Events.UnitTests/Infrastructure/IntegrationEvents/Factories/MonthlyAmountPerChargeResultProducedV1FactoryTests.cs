@@ -73,7 +73,7 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
 
     [Theory]
     [InlineAutoMoqData]
-    public void Create_WhenWholesaleResultHsMoreThanOneTimeSeriesPoints_ThrowsException(MonthlyAmountPerChargeResultProducedV1Factory sut)
+    public void Create_WhenWholesaleResultHasMoreThanOneTimeSeriesPoints_ThrowsException(MonthlyAmountPerChargeResultProducedV1Factory sut)
     {
         // Arrange
         var timeSeriesPoints = new WholesaleTimeSeriesPoint[]
