@@ -82,7 +82,7 @@ public class EnergySupplierValidatorTest
         var errors = _sut.Validate(message);
 
         // Assert
-        Assert.Single(errors);
+        errors.Should().ContainSingle();
 
         var error = errors.First();
         error.Message.Should().Be(_invalidEnergySupplier.Message);
@@ -104,7 +104,7 @@ public class EnergySupplierValidatorTest
         var errors = _sut.Validate(message);
 
         // Assert
-        Assert.Single(errors);
+        errors.Should().ContainSingle();
 
         var error = errors.First();
         error.Message.Should().Be(_notEqualToRequestedBy.Message);
@@ -126,7 +126,7 @@ public class EnergySupplierValidatorTest
         var errors = _sut.Validate(message);
 
         // Assert
-        Assert.Single(errors);
+        errors.Should().ContainSingle();
 
         var error = errors.First();
         error.Message.Should().Be(_invalidEnergySupplier.Message);

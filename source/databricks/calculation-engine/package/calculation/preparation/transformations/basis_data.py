@@ -74,7 +74,7 @@ def _get_time_series_basis_data_by_resolution(
             F.to_date(F.from_utc_timestamp(F.col(Colname.observation_time), time_zone)),
         )
         .withColumn(
-            Colname.position,
+            "position",
             F.concat(F.lit(BasisDataColname.quantity_prefix), F.row_number().over(w)),
         )
         .withColumn(Colname.start_datetime, F.first(Colname.observation_time).over(w))
@@ -87,7 +87,7 @@ def _get_time_series_basis_data_by_resolution(
             Colname.resolution,
             Colname.energy_supplier_id,
         )
-        .pivot(Colname.position)
+        .pivot("position")
         .agg(F.first(Colname.quantity))
     )
 

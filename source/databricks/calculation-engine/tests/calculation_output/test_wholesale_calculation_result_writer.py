@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import uuid
 from datetime import datetime
 from decimal import Decimal
 from typing import List
@@ -191,20 +191,27 @@ def test__write__writes_column(
 
 
 def test__write__writes_calculation_result_id(
-    sut: WholesaleCalculationResultWriter,
     spark: SparkSession,
-    migrations_executed_per_test: None,
+    migrations_executed: None,
 ) -> None:
     # Arrange
     result_df = _create_result_df_corresponding_to_multiple_calculation_results(spark)
     expected_number_of_calculation_result_ids = 3
+    calculation_id = str(uuid.uuid4())
+    sut = WholesaleCalculationResultWriter(
+        calculation_id,
+        DEFAULT_PROCESS_TYPE,
+        DEFAULT_BATCH_EXECUTION_START,
+    )
 
     # Act
     sut.write(result_df)
 
     # Assert
-    actual_df = spark.read.table(TABLE_NAME).select(
-        col(WholesaleResultColumnNames.calculation_result_id)
+    actual_df = (
+        spark.read.table(TABLE_NAME)
+        .where(col(WholesaleResultColumnNames.calculation_id) == calculation_id)
+        .select(col(WholesaleResultColumnNames.calculation_result_id))
     )
 
     assert actual_df.distinct().count() == expected_number_of_calculation_result_ids

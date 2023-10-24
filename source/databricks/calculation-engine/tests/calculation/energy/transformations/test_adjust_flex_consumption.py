@@ -15,7 +15,6 @@ from decimal import Decimal
 from datetime import datetime
 from package.codelists import (
     MeteringPointType,
-    MeteringPointResolution,
     QuantityQuality,
 )
 from package.calculation.energy.transformations import adjust_flex_consumption
@@ -40,7 +39,6 @@ default_supplier = "S1"
 default_sum_quantity = Decimal(1)
 default_positive_grid_loss = Decimal(3)
 default_aggregated_quality = QuantityQuality.ESTIMATED.value
-default_resolution = MeteringPointResolution.HOUR.value
 default_metering_point_type = MeteringPointType.CONSUMPTION.value
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
@@ -75,7 +73,6 @@ def flex_consumption_result_schema() -> StructType:
             False,
         )
         .add(Colname.quality, StringType())
-        .add(Colname.resolution, StringType())
         .add(Colname.metering_point_type, StringType())
     )
 
@@ -97,7 +94,6 @@ def positive_grid_loss_result_schema() -> StructType:
         )
         .add(Colname.sum_quantity, DecimalType())
         .add(Colname.quality, StringType())
-        .add(Colname.resolution, StringType())
         .add(Colname.metering_point_type, StringType())
     )
 
@@ -160,7 +156,6 @@ def flex_consumption_result_row_factory(
         sum_quantity: Decimal = default_sum_quantity,
         time_window: dict[str, datetime] = default_time_window,
         aggregated_quality: str = default_aggregated_quality,
-        resolution: str = default_resolution,
         metering_point_type: str = default_metering_point_type,
     ) -> DataFrame:
         pandas_df = pd.DataFrame(
@@ -171,7 +166,6 @@ def flex_consumption_result_row_factory(
                 Colname.sum_quantity: [sum_quantity],
                 Colname.time_window: [time_window],
                 Colname.quality: [aggregated_quality],
-                Colname.resolution: [resolution],
                 Colname.metering_point_type: [metering_point_type],
             }
         )
@@ -193,7 +187,6 @@ def positive_grid_loss_result_row_factory(
         time_window: dict[str, datetime] = default_time_window,
         positive_grid_loss: Decimal = default_positive_grid_loss,
         aggregated_quality: str = default_aggregated_quality,
-        resolution: str = default_resolution,
         metering_point_type: str = default_metering_point_type,
     ) -> DataFrame:
         pandas_df = pd.DataFrame(
@@ -202,7 +195,6 @@ def positive_grid_loss_result_row_factory(
                 Colname.time_window: [time_window],
                 Colname.sum_quantity: [positive_grid_loss],
                 Colname.quality: [aggregated_quality],
-                Colname.resolution: [resolution],
                 Colname.metering_point_type: [metering_point_type],
             }
         )

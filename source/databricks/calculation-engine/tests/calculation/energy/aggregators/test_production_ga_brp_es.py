@@ -29,7 +29,6 @@ from package.calculation.energy.aggregators import (
 )
 from package.codelists import (
     MeteringPointType,
-    MeteringPointResolution,
     QuantityQuality,
 )
 from package.calculation.energy.schemas import aggregation_result_schema
@@ -69,7 +68,6 @@ def enriched_time_series_factory(
                 "quarter_quantity": quantity,
                 Colname.time_window: obs_time_datetime,
                 Colname.quality: quality,
-                Colname.resolution: MeteringPointResolution.QUARTER.value,
             }
         ]
         return spark.createDataFrame(df).withColumn(
@@ -350,28 +348,6 @@ def test__quarterly_sums_correctly(
 #     # first point with quarter resolution 'quantity' is 2, second is 2 but is hourly so 0.5 should be added to first position
 
 
-def test__position_is_based_on_time_correctly(
-    enriched_time_series_quarterly_same_time_factory: Callable[..., DataFrame],
-) -> None:
-    """'position' is correctly placed based on 'time'"""
-    df = enriched_time_series_quarterly_same_time_factory(
-        first_quantity=Decimal("1"),
-        second_quantity=Decimal("2"),
-        first_obs_time_string="2022-06-08T12:00:00.000Z",
-        second_obs_time_string="2022-06-08T12:15:00.000Z",
-        first_grid_area_code=grid_area_code_805,
-        second_grid_area_code=grid_area_code_805,
-    )
-    result_df = _aggregate_per_ga_and_brp_and_es(
-        df, MeteringPointType.PRODUCTION, None
-    ).collect()
-
-    assert result_df[0]["position"] == 1
-    assert result_df[0][Colname.sum_quantity] == Decimal("1")
-    assert result_df[1]["position"] == 2
-    assert result_df[1][Colname.sum_quantity] == Decimal("2")
-
-
 # TODO: Turn into test of get_enriched_time_series function
 # def test__that_hourly_quantity_is_summed_as_quarterly(
 #     enriched_time_series_quarterly_same_time_factory: Callable[..., DataFrame],
@@ -395,10 +371,11 @@ def test__position_is_based_on_time_correctly(
 def test__that_grid_area_code_in_input_is_in_output(
     enriched_time_series_quarterly_same_time_factory: Callable[..., DataFrame],
 ) -> None:
-    "Test that the grid area codes in input are in result"
+    """Test that the grid area codes in input are in result"""
     df = enriched_time_series_quarterly_same_time_factory()
     result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
-    assert result_df.first().grid_area_code == str(grid_area_code_805)
+    actual_row = result_df.first()
+    assert getattr(actual_row, Colname.grid_area) == str(grid_area_code_805)
 
 
 def test__each_grid_area_has_a_sum(
@@ -407,8 +384,8 @@ def test__each_grid_area_has_a_sum(
     """Test that multiple GridAreas receive each their calculation for a period"""
     df = enriched_time_series_quarterly_same_time_factory(second_grid_area_code="806")
     result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
-    assert result_df.where("grid_area_code == 805").count() == 1
-    assert result_df.where("grid_area_code == 806").count() == 1
+    assert result_df.where(F.col(Colname.grid_area) == "805").count() == 1
+    assert result_df.where(F.col(Colname.grid_area) == "806").count() == 1
 
 
 # TODO: Turn into test of get_enriched_time_series function

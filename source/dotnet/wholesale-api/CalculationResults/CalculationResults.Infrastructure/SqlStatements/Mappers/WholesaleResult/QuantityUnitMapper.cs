@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
+using Energinet.DataHub.Wholesale.Common.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
 
@@ -23,7 +24,7 @@ public static class QuantityUnitMapper
             return quantityUnit switch
             {
                 "kWh" => QuantityUnit.Kwh,
-
+                "pcs" => QuantityUnit.Pieces,
                 _ => throw new ArgumentOutOfRangeException(
                     nameof(quantityUnit),
                     actualValue: quantityUnit,
