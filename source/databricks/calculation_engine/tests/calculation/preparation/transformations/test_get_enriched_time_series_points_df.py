@@ -16,7 +16,7 @@ import pytest
 from decimal import Decimal
 from datetime import datetime
 
-from pyspark.sql import Row
+from pyspark.sql.types import Row
 
 from package.calculation.preparation.transformations import (
     get_basis_data_time_series_points_df,
@@ -39,15 +39,14 @@ def raw_time_series_points_factory(spark, timestamp_factory):
     def factory(
         time: datetime = timestamp_factory("2022-06-08T12:15:00.000Z"),
     ):
-        df = Row[
-            {
+        row = {
                 "metering_point_id": "the-meteringpoint-id",
                 "quantity": Decimal("1.1"),
                 "quality": QuantityQuality.CALCULATED.value,
                 Colname.observation_time: time,
-            }
-        ]
-        return spark.createDataFrame(df, time_series_point_schema)
+        }
+        rows = [Row(**row)]
+        return spark.createDataFrame(rows, time_series_point_schema)
 
     return factory
 
@@ -59,22 +58,23 @@ def metering_point_period_df_factory(spark, timestamp_factory):
         from_date: datetime = timestamp_factory("2022-01-01T22:00:00.000Z"),
         to_date: datetime = timestamp_factory("2022-12-22T22:00:00.000Z"),
     ):
-        df = Row[
-            {
-                Colname.metering_point_id: "the-meteringpoint-id",
-                Colname.grid_area: "805",
-                Colname.from_date: from_date,
-                Colname.to_date: to_date,
-                Colname.metering_point_type: "the_metering_point_type",
-                Colname.settlement_method: "D01",
-                Colname.from_grid_area: "",
-                Colname.to_grid_area: "",
-                Colname.resolution: resolution,
-                Colname.energy_supplier_id: "someId",
-                Colname.balance_responsible_id: "someId",
-            }
-        ]
-        return spark.createDataFrame(df, metering_point_period_schema)
+        row = {
+            Colname.metering_point_id: "the-meteringpoint-id",
+            Colname.metering_point_type: "the_metering_point_type",
+            Colname.calculation_type: "calculation-type",
+            Colname.settlement_method: "D01",
+            Colname.grid_area: "805",
+            Colname.resolution: resolution,
+            Colname.from_grid_area: "",
+            Colname.to_grid_area: "",
+            Colname.parent_metering_point_id: "parent-metering-point-id",
+            Colname.energy_supplier_id: "someId",
+            Colname.balance_responsible_id: "someId",
+            Colname.from_date: from_date,
+            Colname.to_date: to_date,
+        }
+        rows = [Row(**row)]
+        return spark.createDataFrame(rows, metering_point_period_schema)
 
     return factory
 
