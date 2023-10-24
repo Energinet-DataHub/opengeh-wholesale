@@ -25,6 +25,7 @@ from pyspark.sql.types import (
     DecimalType,
     TimestampType,
     BooleanType,
+    ArrayType,
 )
 import pytest
 import pandas as pd
@@ -72,7 +73,7 @@ def flex_consumption_result_schema() -> StructType:
             .add(Colname.end, TimestampType()),
             False,
         )
-        .add(Colname.quality, StringType())
+        .add(Colname.qualities, ArrayType(StringType(), False), False)
         .add(Colname.metering_point_type, StringType())
     )
 
@@ -93,7 +94,7 @@ def positive_grid_loss_result_schema() -> StructType:
             False,
         )
         .add(Colname.sum_quantity, DecimalType())
-        .add(Colname.quality, StringType())
+        .add(Colname.qualities, ArrayType(StringType(), False), False)
         .add(Colname.metering_point_type, StringType())
     )
 
@@ -137,7 +138,7 @@ def expected_schema() -> StructType:
             False,
         )
         .add(Colname.sum_quantity, DecimalType())
-        .add(Colname.quality, StringType())
+        .add(Colname.qualities, ArrayType(StringType(), False), False)
     )
 
 
@@ -165,7 +166,7 @@ def flex_consumption_result_row_factory(
                 Colname.energy_supplier_id: [supplier],
                 Colname.sum_quantity: [sum_quantity],
                 Colname.time_window: [time_window],
-                Colname.quality: [aggregated_quality],
+                Colname.qualities: [[aggregated_quality]],
                 Colname.metering_point_type: [metering_point_type],
             }
         )
@@ -194,7 +195,7 @@ def positive_grid_loss_result_row_factory(
                 Colname.grid_area: [domain],
                 Colname.time_window: [time_window],
                 Colname.sum_quantity: [positive_grid_loss],
-                Colname.quality: [aggregated_quality],
+                Colname.qualities: [[aggregated_quality]],
                 Colname.metering_point_type: [metering_point_type],
             }
         )

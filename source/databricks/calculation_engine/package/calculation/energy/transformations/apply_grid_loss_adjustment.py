@@ -62,11 +62,11 @@ def _apply_grid_loss_adjustment(
     metering_point_type: str,
 ) -> DataFrame:
     # select columns from dataframe that contains information about metering points registered as negative or positive grid loss to use in join.
-    glr_df = grid_loss_responsible_df.selectExpr(
+    glr_df = grid_loss_responsible_df.select(
         Colname.from_date,
         Colname.to_date,
-        f"{Colname.energy_supplier_id} as {grid_loss_responsible_energy_supplier}",
-        f"{Colname.grid_area} as {grid_loss_responsible_grid_area}",
+        col(Colname.energy_supplier_id).alias(grid_loss_responsible_energy_supplier),
+        col(Colname.grid_area).alias(grid_loss_responsible_grid_area),
         grid_loss_responsible_type_col,
     )
 
@@ -81,7 +81,7 @@ def _apply_grid_loss_adjustment(
         result_df[Colname.energy_supplier_id],
         result_df[Colname.time_window],
         result_df[Colname.sum_quantity],
-        result_df[Colname.quality],
+        result_df[Colname.qualities],
         grid_loss_result_df[Colname.sum_quantity].alias("grid_loss_sum_quantity"),
     )
 
@@ -113,7 +113,6 @@ def _apply_grid_loss_adjustment(
         df.withColumn(adjusted_sum_quantity, update_func)
         .drop(Colname.sum_quantity)
         .withColumnRenamed(adjusted_sum_quantity, Colname.sum_quantity)
-        .withColumnRenamed(Colname.aggregated_quality, Colname.quality)
     )
 
     result = result_df.select(
@@ -122,7 +121,7 @@ def _apply_grid_loss_adjustment(
         Colname.energy_supplier_id,
         Colname.time_window,
         Colname.sum_quantity,
-        Colname.quality,
+        Colname.qualities,
         lit(metering_point_type).alias(Colname.metering_point_type),
     ).orderBy(
         Colname.grid_area,
