@@ -25,7 +25,7 @@ using QuantityUnit = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.Ene
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProducedV2.Factories;
 
-public class EnergyResultProducedFactory : IEnergyResultProducedFactory
+public class EnergyResultProducedFactory : IEnergyResultProducedV2Factory
 {
     public Contracts.IntegrationEvents.EnergyResultProducedV2 Create(EnergyResult energyResult)
     {
