@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cd source/databricks/calculation-engine/tests/
+cd source/databricks/calculation_engine/tests/
 
 # There env vars are important to ensure that the driver and worker nodes in spark are alligned
 export PYSPARK_PYTHON=/opt/conda/bin/python
