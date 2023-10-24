@@ -48,7 +48,7 @@ jobs:
         id: get_script_files_in_main
         run: |
           # Gets all files in migration_scripts folder on the main branch excluding the __init__ file and put them into at comma seperated string
-          SCRIPT_FILES_IN_MAIN=$(find ./source/databricks/calculation-engine/package/datamigration/migration_scripts -type f -name '*.sql' -printf "%f,")
+          SCRIPT_FILES_IN_MAIN=$(find ./source/databricks/calculation_engine/package/datamigration/migration_scripts -type f -name '*.sql' -printf "%f,")
           echo "::set-output name=script_files_in_main::$SCRIPT_FILES_IN_MAIN"
 
       - name: Verify migration script names
