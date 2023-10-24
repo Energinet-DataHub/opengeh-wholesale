@@ -80,3 +80,14 @@ resource "azuread_application_federated_identity_credential" "greenforce_fronten
   audiences = [local.federated_identity_credential.audience_azuread]
   issuer    = local.federated_identity_credential.issuer_github
 }
+
+resource "azuread_application_federated_identity_credential" "esett_deprecated" {
+  application_object_id = azuread_application.app_ci.object_id
+
+  display_name = "esett-deprecated-azureauth"
+  subject      = "repo:Energinet-DataHub/esett-deprecated:environment:AzureAuth"
+
+  audiences = [local.federated_identity_credential.audience_azuread]
+  issuer    = local.federated_identity_credential.issuer_github
+}
+
