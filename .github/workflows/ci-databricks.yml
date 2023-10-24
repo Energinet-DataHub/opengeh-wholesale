@@ -23,7 +23,7 @@ jobs:
     with:
       python_version: 3.9.7
       architecture: x64
-      wheel_working_directory: ./source/databricks/calculation-engine
+      wheel_working_directory: ./source/databricks/calculation_engine
       should_include_assets: false  # Functionality is deprecated
 
   migration_scripts_verification:
@@ -36,7 +36,7 @@ jobs:
         id: get_script_files_in_pr
         run: |
           # Gets all files in migration_scripts folder on the branch being merged excluding the __init__ file and put them into at comma seperated string
-          SCRIPT_FILES_IN_PR=$(find ./source/databricks/calculation-engine/package/datamigration/migration_scripts -type f -not -name '__init__*' -printf "%f,")
+          SCRIPT_FILES_IN_PR=$(find ./source/databricks/calculation_engine/package/datamigration/migration_scripts -type f -not -name '__init__*' -printf "%f,")
           echo "::set-output name=script_files_in_pr::$SCRIPT_FILES_IN_PR"
 
       - name: Checkout main branch
@@ -48,7 +48,7 @@ jobs:
         id: get_script_files_in_main
         run: |
           # Gets all files in migration_scripts folder on the main branch excluding the __init__ file and put them into at comma seperated string
-          SCRIPT_FILES_IN_MAIN=$(find ./source/databricks/calculation-engine/package/datamigration/migration_scripts -type f -name '*.sql' -printf "%f,")
+          SCRIPT_FILES_IN_MAIN=$(find ./source/databricks/calculation_engine/package/datamigration/migration_scripts -type f -name '*.sql' -printf "%f,")
           echo "::set-output name=script_files_in_main::$SCRIPT_FILES_IN_MAIN"
 
       - name: Verify migration script names
@@ -109,10 +109,10 @@ jobs:
     uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v12
     with:
       operating_system: dh3-ubuntu-20.04-4core
-      path_static_checks: ./source/databricks/calculation-engine
+      path_static_checks: ./source/databricks/calculation_engine
       # documented here: https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
       ignore_errors_and_warning_flake8: E501,F401,E402,E203,W503
-      test_report_path: ./source/databricks/calculation-engine/tests
+      test_report_path: ./source/databricks/calculation_engine/tests
 
   mypy_check:
     runs-on: ubuntu-latest
@@ -127,7 +127,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install mypy types-python-dateutil
-          mypy ./source/databricks/calculation-engine/package --disallow-untyped-defs --ignore-missing-imports
+          mypy ./source/databricks/calculation_engine/package --disallow-untyped-defs --ignore-missing-imports
 
   black_check:
     runs-on: ubuntu-latest
@@ -137,4 +137,4 @@ jobs:
       - uses: psf/black@stable
         with:
           options: --check --diff
-          src: ./source/databricks/calculation-engine
+          src: ./source/databricks/calculation_engine
