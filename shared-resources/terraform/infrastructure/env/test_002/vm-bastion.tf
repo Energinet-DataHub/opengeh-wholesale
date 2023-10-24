@@ -77,3 +77,69 @@ resource "azurerm_virtual_machine_extension" "bastion_init" {
 SETTINGS
   depends_on = [data.azuread_service_principal.bastion_sp]
 }
+
+resource "azurerm_monitor_metric_alert" "metric_alert_cpu" {
+  name                = "ma-${azurerm_linux_virtual_machine.vm_bastion.name}-cpu"
+  resource_group_name = azurerm_resource_group.this.name
+
+  enabled     = true
+  severity    = 2
+  scopes      = [azurerm_linux_virtual_machine.vm_bastion.id]
+  description = "Action will be triggered when average CPU usage is too high on the Bastion VM."
+
+  frequency   = "PT1M"
+  window_size = "PT5M"
+
+  criteria {
+    metric_namespace = "Microsoft.Compute/virtualMachines"
+    metric_name      = "Percentage CPU"
+    operator         = "GreaterThan"
+    aggregation      = "Average"
+    threshold        = 80
+  }
+
+  action {
+    action_group_id = module.ag_primary.id
+  }
+
+  lifecycle {
+    ignore_changes = [
+      # Ignore changes to tags, e.g. because a management agent
+      # updates these based on some ruleset managed elsewhere.
+      tags,
+    ]
+  }
+}
+
+resource "azurerm_monitor_metric_alert" "metric_alert_memory" {
+  name                = "ma-${azurerm_linux_virtual_machine.vm_bastion.name}-memory"
+  resource_group_name = azurerm_resource_group.this.name
+
+  enabled     = true
+  severity    = 2
+  scopes      = [azurerm_linux_virtual_machine.vm_bastion.id]
+  description = "Action will be triggered when average memory usage is too high on the Bastion VM."
+
+  frequency   = "PT1M"
+  window_size = "PT5M"
+
+  criteria {
+    metric_namespace = "Microsoft.Compute/virtualMachines"
+    metric_name      = "Available Memory Bytes"
+    operator         = "LessThan"
+    aggregation      = "Average"
+    threshold        = 5000000000 # 5 GB
+  }
+
+  action {
+    action_group_id = module.ag_primary.id
+  }
+
+  lifecycle {
+    ignore_changes = [
+      # Ignore changes to tags, e.g. because a management agent
+      # updates these based on some ruleset managed elsewhere.
+      tags,
+    ]
+  }
+}
