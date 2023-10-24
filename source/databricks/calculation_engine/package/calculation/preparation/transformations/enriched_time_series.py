@@ -167,6 +167,6 @@ def get_basis_data_time_series_points_df(
     # Quality of metering point time series are mandatory. This result has, however, been padded with
     # time series points that haven't been provided by the market actors. These added points must have
     # the quality "missing".
-    result.na.fill(value=QuantityQuality.MISSING.value, subset=Colname.quality)
+    result = result.na.fill(value=QuantityQuality.MISSING.value, subset=Colname.quality)
 
     return result
