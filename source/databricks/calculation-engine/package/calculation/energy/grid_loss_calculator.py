@@ -37,7 +37,7 @@ def calculate_grid_loss(
     flex_consumption: DataFrame,
     production: DataFrame,
 ) -> DataFrame:
-    return __calculate_grid_loss_or_residual_ga(
+    return _calculate_grid_loss_or_residual_ga(
         net_exchange_per_ga,
         non_profiled_consumption,
         flex_consumption,
@@ -45,16 +45,12 @@ def calculate_grid_loss(
     )
 
 
-def __calculate_grid_loss_or_residual_ga(
+def _calculate_grid_loss_or_residual_ga(
     agg_net_exchange: DataFrame,
     agg_non_profiled_consumption: DataFrame,
     agg_flex_consumption: DataFrame,
     agg_production: DataFrame,
 ) -> DataFrame:
-    agg_net_exchange_result = agg_net_exchange.withColumnRenamed(
-        Colname.sum_quantity, net_exchange_result
-    )
-
     agg_non_profiled_consumption_result = t.aggregate_sum_and_qualities(
         agg_non_profiled_consumption,
         Colname.sum_quantity,
@@ -72,9 +68,8 @@ def __calculate_grid_loss_or_residual_ga(
     ).withColumnRenamed(Colname.sum_quantity, prod_result)
 
     result = (
-        agg_net_exchange_result.join(
-            agg_production_result, [Colname.grid_area, Colname.time_window], "left"
-        )
+        agg_net_exchange.withColumnRenamed(Colname.sum_quantity, net_exchange_result)
+        .join(agg_production_result, [Colname.grid_area, Colname.time_window], "left")
         .join(
             agg_flex_consumption_result.join(
                 agg_non_profiled_consumption_result,
@@ -99,7 +94,8 @@ def __calculate_grid_loss_or_residual_ga(
         Colname.time_window,
         Colname.sum_quantity,  # grid loss
         f.lit(MeteringPointType.CONSUMPTION.value).alias(Colname.metering_point_type),
-        # TODO BJM: What qualities should be included? (from old comment: this should always be "calculated")
+        # Quality of positive and negative grid loss must always be "calculated" as they become time series
+        # that'll be sent to the metering points
         f.array(f.lit(QuantityQuality.CALCULATED.value)).alias(Colname.qualities),
     )
 
@@ -136,8 +132,6 @@ def calculate_positive_grid_loss(grid_loss: DataFrame) -> DataFrame:
 def calculate_total_consumption(
     agg_net_exchange: DataFrame, agg_production: DataFrame
 ) -> DataFrame:
-    # TODO BJM: Before this change all aggregations were grouped by quality as well.
-    #           How does that make sense? Did I break something with this change?
     result_production = (
         t.aggregate_sum_and_qualities(
             agg_production,
@@ -168,8 +162,6 @@ def calculate_total_consumption(
         )
         .withColumn(
             Colname.qualities,
-            # TODO BJM: The old way of getting a single quality was very different and
-            #           also relied on grouping by sum_quantity. Looked wrong. But is this new algorithm correct?
             f.array_union(
                 aggregated_production_qualities, aggregated_net_exchange_qualities
             ),

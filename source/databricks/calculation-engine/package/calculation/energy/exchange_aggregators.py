@@ -55,6 +55,7 @@ def aggregate_net_exchange_per_neighbour_ga(
         .withColumnRenamed(Colname.from_grid_area, exchange_out_from_grid_area)
     )
 
+    from_qualities = "from_qualities"
     exchange = (
         exchange_to.join(exchange_from, [Colname.time_window], "inner")
         .filter(
@@ -65,7 +66,11 @@ def aggregate_net_exchange_per_neighbour_ga(
             exchange_to[exchange_in_from_grid_area]
             == exchange_from[exchange_out_to_grid_area]
         )
-        .select(exchange_to["*"], exchange_from[from_sum])
+        .select(
+            exchange_to["*"],
+            exchange_from[from_sum],
+            exchange_from[Colname.qualities].alias(from_qualities),
+        )
         .withColumn(Colname.sum_quantity, F.col(to_sum) - F.col(from_sum))
         .withColumnRenamed(exchange_in_to_grid_area, Colname.to_grid_area)
         .withColumnRenamed(exchange_in_from_grid_area, Colname.from_grid_area)
@@ -73,8 +78,8 @@ def aggregate_net_exchange_per_neighbour_ga(
             Colname.to_grid_area,
             Colname.from_grid_area,
             Colname.time_window,
-            # TODO BJM: Should the other side of qualities be included as well?
-            Colname.qualities,
+            # Include qualities from all to- and from- metering point time series
+            F.array_union(Colname.qualities, from_qualities).alias(Colname.qualities),
             Colname.sum_quantity,
             F.col(Colname.to_grid_area).alias(Colname.grid_area),
             F.lit(MeteringPointType.EXCHANGE.value).alias(Colname.metering_point_type),
