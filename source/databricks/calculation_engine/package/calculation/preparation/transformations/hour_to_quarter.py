@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pyspark.sql.functions as F
+import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
 from pyspark.sql.types import DecimalType
 
@@ -26,41 +26,52 @@ def transform_hour_to_quarter(basis_data_time_series_points_df: DataFrame) -> Da
     assert_schema(
         basis_data_time_series_points_df.schema,
         basis_data_time_series_points_schema,
-        ignore_nullability=True,
     )
 
     result = basis_data_time_series_points_df.withColumn(
         "quarter_times",
-        F.when(
-            F.col(Colname.resolution) == MeteringPointResolution.HOUR.value,
-            F.array(
-                F.col(Colname.observation_time),
-                F.col(Colname.observation_time) + F.expr("INTERVAL 15 minutes"),
-                F.col(Colname.observation_time) + F.expr("INTERVAL 30 minutes"),
-                F.col(Colname.observation_time) + F.expr("INTERVAL 45 minutes"),
+        f.when(
+            f.col(Colname.resolution) == MeteringPointResolution.HOUR.value,
+            f.array(
+                f.col(Colname.observation_time),
+                f.col(Colname.observation_time) + f.expr("INTERVAL 15 minutes"),
+                f.col(Colname.observation_time) + f.expr("INTERVAL 30 minutes"),
+                f.col(Colname.observation_time) + f.expr("INTERVAL 45 minutes"),
             ),
         ).when(
-            F.col(Colname.resolution) == MeteringPointResolution.QUARTER.value,
-            F.array(F.col(Colname.observation_time)),
+            f.col(Colname.resolution) == MeteringPointResolution.QUARTER.value,
+            f.array(f.col(Colname.observation_time)),
         ),
     ).select(
         basis_data_time_series_points_df["*"],
-        F.explode("quarter_times").alias("quarter_time"),
+        f.explode("quarter_times").alias("quarter_time"),
     )
     result = result.withColumn(
-        Colname.time_window, F.window(F.col("quarter_time"), "15 minutes")
+        Colname.time_window, f.window(f.col("quarter_time"), "15 minutes")
     )
     result = result.withColumn(
-        "quarter_quantity",
-        F.when(
-            F.col(Colname.resolution) == MeteringPointResolution.HOUR.value,
-            F.col(Colname.quantity) / 4,
+        Colname.quantity,
+        f.when(
+            f.col(Colname.resolution) == MeteringPointResolution.HOUR.value,
+            f.col(Colname.quantity) / 4,
         )
         .when(
-            F.col(Colname.resolution) == MeteringPointResolution.QUARTER.value,
-            F.col(Colname.quantity),
+            f.col(Colname.resolution) == MeteringPointResolution.QUARTER.value,
+            f.col(Colname.quantity),
         )
         .cast(DecimalType(18, 6)),
     )
 
-    return result
+    return result.select(
+        Colname.grid_area,
+        Colname.to_grid_area,
+        Colname.from_grid_area,
+        Colname.metering_point_id,
+        Colname.metering_point_type,
+        Colname.resolution,
+        Colname.observation_time,
+        Colname.quantity,
+        Colname.quality,
+        Colname.energy_supplier_id,
+        Colname.balance_responsible_id,
+    )
