@@ -15,7 +15,13 @@
 from decimal import Decimal
 from datetime import datetime
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
+from pyspark.sql.types import (
+    StructType,
+    StringType,
+    DecimalType,
+    TimestampType,
+    ArrayType,
+)
 from pyspark.sql.functions import col
 import pytest
 import pandas as pd
@@ -44,7 +50,7 @@ def grid_loss_schema() -> StructType:
             False,
         )
         .add(Colname.sum_quantity, DecimalType(18, 3))
-        .add(Colname.quality, StringType())
+        .add(Colname.qualities, ArrayType(StringType(), False), False)
         .add(Colname.metering_point_type, StringType())
     )
 
@@ -63,7 +69,7 @@ def agg_result_factory(
                 Colname.grid_area: [],
                 Colname.time_window: [],
                 Colname.sum_quantity: [],
-                Colname.quality: [],
+                Colname.qualities: [],
                 Colname.metering_point_type: [],
             }
         )
@@ -76,7 +82,7 @@ def agg_result_factory(
                         Colname.end: datetime(2020, 1, 1, 1, 0),
                     },
                     Colname.sum_quantity: Decimal(-12.567),
-                    Colname.quality: QuantityQuality.ESTIMATED.value,
+                    Colname.qualities: [QuantityQuality.ESTIMATED.value],
                     Colname.metering_point_type: MeteringPointType.EXCHANGE.value,
                 },
                 {
@@ -86,7 +92,7 @@ def agg_result_factory(
                         Colname.end: datetime(2020, 1, 1, 1, 0),
                     },
                     Colname.sum_quantity: Decimal(34.32),
-                    Colname.quality: QuantityQuality.ESTIMATED.value,
+                    Colname.qualities: [QuantityQuality.ESTIMATED.value],
                     Colname.metering_point_type: MeteringPointType.EXCHANGE.value,
                 },
                 {
@@ -96,7 +102,7 @@ def agg_result_factory(
                         Colname.end: datetime(2020, 1, 1, 1, 0),
                     },
                     Colname.sum_quantity: Decimal(0.0),
-                    Colname.quality: QuantityQuality.ESTIMATED.value,
+                    Colname.qualities: [QuantityQuality.ESTIMATED.value],
                     Colname.metering_point_type: MeteringPointType.EXCHANGE.value,
                 },
             ],
@@ -118,8 +124,7 @@ def test_grid_area_grid_loss_has_no_values_below_zero(
 ) -> None:
     result = call_calculate_grid_loss(agg_result_factory)
 
-    # TODO BJM: Are all these tests with warning in PyCharm about wrong parameter type for .filter() correct? (Do they work as expected)
-    assert result.filter(col(Colname.sum_quantity) < 0).count() == 0
+    assert result.where(col(Colname.sum_quantity) < 0).count() == 0
 
 
 def test_grid_area_grid_loss_changes_negative_values_to_zero(

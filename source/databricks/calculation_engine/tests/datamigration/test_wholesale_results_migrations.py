@@ -20,6 +20,7 @@ from pyspark.sql.functions import array, col, lit
 import pytest
 import uuid
 
+from helpers.data_frame_utils import set_column
 from package.codelists import (
     ChargeQuality,
     ChargeResolution,
@@ -187,11 +188,7 @@ def test__migrated_table_accepts_valid_data(
 ) -> None:
     # Arrange
     result_df = _create_df(spark)
-
-    if isinstance(column_value, list):
-        result_df = result_df.withColumn(column_name, array(*map(lit, column_value)))
-    else:
-        result_df = result_df.withColumn(column_name, lit(column_value))
+    result_df = set_column(result_df, column_name, column_value)
 
     # Act and assert: Expectation is that no exception is raised
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
@@ -238,11 +235,7 @@ def test__migrated_table_accepts_enum_value(
 
     # Arrange
     result_df = _create_df(spark)
-
-    if isinstance(column_value, list):
-        result_df = result_df.withColumn(column_name, array(*map(lit, column_value)))
-    else:
-        result_df = result_df.withColumn(column_name, lit(column_value))
+    result_df = set_column(result_df, column_name, column_value)
 
     # Act and assert: Expectation is that no exception is raised
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(

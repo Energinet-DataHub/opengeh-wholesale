@@ -13,9 +13,10 @@
 # limitations under the License.
 
 from pyspark.sql.dataframe import DataFrame
-import pyspark.sql.functions as F
+import pyspark.sql.functions as f
 from pyspark.sql.types import DecimalType, StringType, ArrayType
 
+import package.calculation.energy.transformations as t
 from package.codelists import ChargeType, ChargeResolution
 from package.constants import Colname
 
@@ -38,7 +39,7 @@ def get_tariff_charges(
     # group by time series on metering point id and resolution and sum quantity
     grouped_time_series = (
         _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
-            time_series, resolution_duration
+            time_series
         )
     )
 
@@ -78,28 +79,28 @@ def _get_charges_based_on_resolution(
     charges_df: DataFrame, resolution_duration: ChargeResolution
 ) -> DataFrame:
     return charges_df.filter(
-        F.col(Colname.charge_resolution) == resolution_duration.value
+        f.col(Colname.charge_resolution) == resolution_duration.value
     )
 
 
 def _get_charges_based_on_charge_type(
     charges_df: DataFrame, charge_type: ChargeType
 ) -> DataFrame:
-    return charges_df.filter(F.col(Colname.charge_type) == charge_type.value)
+    return charges_df.filter(f.col(Colname.charge_type) == charge_type.value)
 
 
 def _explode_subscription(charges_df: DataFrame) -> DataFrame:
     charges_df = (
         charges_df.withColumn(
             Colname.date,
-            F.explode(
-                F.expr(
+            f.explode(
+                f.expr(
                     f"sequence({Colname.from_date}, {Colname.to_date}, interval 1 day)"
                 )
             ),
         )
-        .filter((F.year(Colname.date) == F.year(Colname.charge_time)))
-        .filter((F.month(Colname.date) == F.month(Colname.charge_time)))
+        .filter((f.year(Colname.date) == f.year(Colname.charge_time)))
+        .filter((f.month(Colname.date) == f.month(Colname.charge_time)))
         .drop(Colname.charge_time)
         .withColumnRenamed(Colname.date, Colname.charge_time)
         .select(
@@ -145,37 +146,30 @@ def _join_with_metering_points(df: DataFrame, metering_points: DataFrame) -> Dat
 
 
 def _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
-    time_series: DataFrame, resolution_duration: ChargeResolution
+    time_series: DataFrame,
 ) -> DataFrame:
-    grouped_time_series = (
-        time_series.groupBy(
+    grouped_time_series = t.aggregate_sum_and_quality(
+        time_series,
+        Colname.quantity,
+        [
             Colname.metering_point_id,
-            F.window(
-                Colname.observation_time,
-                _get_window_duration_string_based_on_resolution(resolution_duration),
-            ),
-        )
-        .agg(
-            F.sum(Colname.quantity).alias(Colname.quantity),
-            F.collect_set(Colname.quality).alias(Colname.qualities),
-        )
-        .withColumnRenamed(f"sum({Colname.quantity})", Colname.quantity)
-        .selectExpr(
-            Colname.quantity,
-            Colname.qualities,
-            Colname.metering_point_id,
-            f"window.{Colname.start} as {Colname.observation_time}",
-        )
+            Colname.observation_time,
+        ],
+    ).select(
+        Colname.sum_quantity,
+        Colname.qualities,
+        Colname.metering_point_id,
+        Colname.observation_time,
     )
 
     # The sum operator creates by default a column as a double type (28,6).
     # It must be cast to a decimal type (18,3) to conform to the tariff schema.
     grouped_time_series = grouped_time_series.withColumn(
-        Colname.quantity, F.col(Colname.quantity).cast(DecimalType(18, 3))
+        Colname.sum_quantity, f.col(Colname.sum_quantity).cast(DecimalType(18, 3))
     )
 
     grouped_time_series = grouped_time_series.withColumn(
-        Colname.qualities, F.col(Colname.qualities).cast(ArrayType(StringType(), True))
+        Colname.qualities, f.col(Colname.qualities).cast(ArrayType(StringType(), True))
     )
 
     return grouped_time_series
@@ -206,7 +200,7 @@ def _join_with_grouped_time_series(
         df[Colname.metering_point_type],
         df[Colname.settlement_method],
         df[Colname.grid_area],
-        grouped_time_series[Colname.quantity],
+        grouped_time_series[Colname.sum_quantity],
         grouped_time_series[Colname.qualities],
     )
     return df

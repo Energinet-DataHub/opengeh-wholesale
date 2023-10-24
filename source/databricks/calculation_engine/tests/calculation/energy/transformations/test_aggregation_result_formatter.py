@@ -19,6 +19,7 @@ import pytest
 import pandas as pd
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col, struct
+import pyspark.sql.types as t
 
 from package.codelists import (
     MeteringPointType,
@@ -62,7 +63,7 @@ def aggregation_result_factory(spark: SparkSession) -> Callable[..., DataFrame]:
                         Colname.end: time_window_end,
                     },
                     Colname.sum_quantity: sum_quantity,
-                    Colname.quality: quality,
+                    Colname.qualities: [quality],
                     Colname.metering_point_type: metering_point_type,
                     Colname.settlement_method: settlement_method,
                 }
@@ -95,7 +96,7 @@ def agg_result_factory(spark: SparkSession) -> Callable[..., DataFrame]:
                             Colname.end: end,
                         },
                         Colname.sum_quantity: sum_quantity,
-                        Colname.quality: quality,
+                        Colname.qualities: [quality],
                         Colname.metering_point_type: metering_point_type,
                     }
                 ],

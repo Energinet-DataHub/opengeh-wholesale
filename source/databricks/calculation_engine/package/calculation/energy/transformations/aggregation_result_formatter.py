@@ -14,24 +14,18 @@
 
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
-from pyspark.sql.types import StringType, IntegerType
+from pyspark.sql.types import StringType
 
 from package.common import assert_schema
 from package.calculation.energy.schemas import aggregation_result_schema
 from package.constants import Colname
-from package.codelists import QuantityQuality
 
 
 def create_dataframe_from_aggregation_result_schema(result: DataFrame) -> DataFrame:
     """Fit result in a general DataFrame. This is used for all results and missing columns will be null."""
 
     result = _add_missing_nullable_columns(result)
-    # Replaces None value with zero for sum_quantity
     result = result.na.fill(value=0, subset=[Colname.sum_quantity])
-    # Replaces None value with QuantityQuality.MISSING for quality
-    result = result.na.fill(
-        value=QuantityQuality.MISSING.value, subset=[Colname.quality]
-    )
 
     result = result.select(
         Colname.grid_area,
@@ -41,7 +35,7 @@ def create_dataframe_from_aggregation_result_schema(result: DataFrame) -> DataFr
         Colname.energy_supplier_id,
         Colname.time_window,
         Colname.sum_quantity,
-        Colname.quality,
+        Colname.qualities,
         Colname.metering_point_type,
         Colname.settlement_method,
     )

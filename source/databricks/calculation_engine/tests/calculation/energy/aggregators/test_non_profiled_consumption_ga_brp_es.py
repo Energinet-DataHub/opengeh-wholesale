@@ -73,7 +73,6 @@ def time_series_row_factory(spark: SparkSession) -> Callable[..., DataFrame]:
                 "quarter_quantity": [quantity],
                 Colname.quality: QuantityQuality.MEASURED.value,
                 Colname.time_window: [obs_time],
-                Colname.aggregated_quality: [QuantityQuality.ESTIMATED.value],
             },
         )
         return spark.createDataFrame(pandas_df).withColumn(

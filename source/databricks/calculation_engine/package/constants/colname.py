@@ -17,7 +17,6 @@ class Colname:
     positive_grid_loss = "positive_grid_loss"
     negative_grid_loss = "negative_grid_loss"
     aggregation_level = "aggregation_level"
-    aggregated_quality = "aggregated_quality"
     balance_responsible_id = "balance_responsible_id"
     batch_execution_time_start = "batch_execution_time_start"
     batch_id = "batch_id"
