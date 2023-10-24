@@ -23,7 +23,6 @@ public static class QuantityQualityMapper
     {
         return quality switch
         {
-            WholesaleModel.QuantityQuality.Incomplete => EdiModel.QuantityQuality.Incomplete,
             WholesaleModel.QuantityQuality.Estimated => EdiModel.QuantityQuality.Estimated,
             WholesaleModel.QuantityQuality.Measured => EdiModel.QuantityQuality.Measured,
             WholesaleModel.QuantityQuality.Calculated => EdiModel.QuantityQuality.Calculated,

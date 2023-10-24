@@ -9,10 +9,6 @@
       "value": "estimated"
     },
     {
-      "name": "INCOMPLETE",
-      "value": "incomplete"
-    },
-    {
       "name": "MISSING",
       "value": "missing"
     },

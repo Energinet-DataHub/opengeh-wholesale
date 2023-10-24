@@ -71,6 +71,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
         (EnergyResultColumnNames.quantity_qualities, []),
         (EnergyResultColumnNames.quantity_qualities, [None]),
         (EnergyResultColumnNames.quantity_qualities, ["foo"]),
+        (EnergyResultColumnNames.quantity_qualities, ["incomplete"]),
         (EnergyResultColumnNames.aggregation_level, None),
         (EnergyResultColumnNames.aggregation_level, "foo"),
     ],
@@ -131,7 +132,6 @@ max_decimal = Decimal(f"{'9'*15}.999")  # Precision=18 and scale=3
         (EnergyResultColumnNames.quantity, max_decimal),
         (EnergyResultColumnNames.quantity, -max_decimal),
         (EnergyResultColumnNames.quantity_qualities, ["estimated"]),
-        (EnergyResultColumnNames.quantity_qualities, ["incomplete"]),
         (EnergyResultColumnNames.quantity_qualities, ["estimated", "measured"]),
     ],
 )
@@ -159,7 +159,6 @@ def test__migrated_table_accepts_valid_data(
         *[
             (EnergyResultColumnNames.quantity_qualities, [x.value])
             for x in QuantityQuality
-            if x != QuantityQuality.INCOMPLETE
         ],
         *[
             (EnergyResultColumnNames.aggregation_level, x.value)
