@@ -54,4 +54,3 @@ def _calculate_tariff_charges(
         hourly_tariff_per_ga_co_es, period_start_datetime
     )
     wholesale_calculation_result_writer.write(monthly_tariff_per_ga_co_es, WholesaleResultType.MONTHLY_AMOUNT_PER_CHARGE)
-

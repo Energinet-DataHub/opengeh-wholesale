@@ -20,4 +20,3 @@ class WholesaleResultType(Enum):
     AMOUNT_PER_CHARGE = "amount_per_charge"
     MONTHLY_AMOUNT_PER_CHARGE = "monthly_amount_per_charge"
     TOTAL_MONTHLY_AMOUNT = "total_monthly_amount"
-

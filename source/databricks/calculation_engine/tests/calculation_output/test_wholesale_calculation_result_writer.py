@@ -222,7 +222,7 @@ def test__write__writes_calculation_result_id(
 def test__write__writes_result_type(
     sut: WholesaleCalculationResultWriter,
     spark: SparkSession,
-   migrations_executed: None,
+    migrations_executed: None,
 ) -> None:
     # Arrange
     row = [_create_result_row()]
