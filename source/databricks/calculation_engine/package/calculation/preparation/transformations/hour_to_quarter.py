@@ -62,7 +62,7 @@ def transform_hour_to_quarter(basis_data_time_series_points_df: DataFrame) -> Da
         .cast(DecimalType(18, 6)),
     )
 
-    return result.select(
+    result = result.select(
         Colname.grid_area,
         Colname.to_grid_area,
         Colname.from_grid_area,
@@ -76,3 +76,8 @@ def transform_hour_to_quarter(basis_data_time_series_points_df: DataFrame) -> Da
         Colname.balance_responsible_id,
         Colname.time_window,
     )
+
+    # Workaround to enforce quantity nullable=False. This should be safe as quantity in input is nullable=False
+    result.schema[Colname.quantity].nullable = False
+
+    return result
