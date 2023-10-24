@@ -15,11 +15,11 @@
 from package.constants import Colname
 from pyspark.sql.types import (
     DecimalType,
-    IntegerType,
     StructType,
     StructField,
     StringType,
     TimestampType,
+    ArrayType,
 )
 
 
@@ -41,7 +41,7 @@ aggregation_result_schema = StructType(
             False,
         ),
         StructField(Colname.sum_quantity, DecimalType(18, 3), False),
-        StructField(Colname.quality, StringType(), False),
+        StructField(Colname.qualities, ArrayType(StringType(), False), False),
         StructField(Colname.metering_point_type, StringType(), False),
         StructField(Colname.settlement_method, StringType(), True),
     ]

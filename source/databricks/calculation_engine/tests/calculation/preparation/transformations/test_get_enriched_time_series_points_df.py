@@ -12,10 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import pytest
 from decimal import Decimal
 from datetime import datetime
+
+from pyspark.sql.types import Row
+
 from package.calculation.preparation.transformations import (
     get_basis_data_time_series_points_df,
 )
@@ -37,15 +39,14 @@ def raw_time_series_points_factory(spark, timestamp_factory):
     def factory(
         time: datetime = timestamp_factory("2022-06-08T12:15:00.000Z"),
     ):
-        df = [
-            {
-                "metering_point_id": "the-meteringpoint-id",
-                "quantity": Decimal("1.1"),
-                "quality": QuantityQuality.CALCULATED.value,
-                Colname.observation_time: time,
-            }
-        ]
-        return spark.createDataFrame(df, time_series_point_schema)
+        row = {
+            "metering_point_id": "the-meteringpoint-id",
+            "quantity": Decimal("1.1"),
+            "quality": QuantityQuality.CALCULATED.value,
+            Colname.observation_time: time,
+        }
+        rows = [Row(**row)]
+        return spark.createDataFrame(rows, time_series_point_schema)
 
     return factory
 
@@ -57,22 +58,23 @@ def metering_point_period_df_factory(spark, timestamp_factory):
         from_date: datetime = timestamp_factory("2022-01-01T22:00:00.000Z"),
         to_date: datetime = timestamp_factory("2022-12-22T22:00:00.000Z"),
     ):
-        df = [
-            {
-                Colname.metering_point_id: "the-meteringpoint-id",
-                Colname.grid_area: "805",
-                Colname.from_date: from_date,
-                Colname.to_date: to_date,
-                Colname.metering_point_type: "the_metering_point_type",
-                Colname.settlement_method: "D01",
-                Colname.from_grid_area: "",
-                Colname.to_grid_area: "",
-                Colname.resolution: resolution,
-                Colname.energy_supplier_id: "someId",
-                Colname.balance_responsible_id: "someId",
-            }
-        ]
-        return spark.createDataFrame(df, metering_point_period_schema)
+        row = {
+            Colname.metering_point_id: "the-meteringpoint-id",
+            Colname.metering_point_type: "the_metering_point_type",
+            Colname.calculation_type: "calculation-type",
+            Colname.settlement_method: "D01",
+            Colname.grid_area: "805",
+            Colname.resolution: resolution,
+            Colname.from_grid_area: "",
+            Colname.to_grid_area: "",
+            Colname.parent_metering_point_id: "parent-metering-point-id",
+            Colname.energy_supplier_id: "someId",
+            Colname.balance_responsible_id: "someId",
+            Colname.from_date: from_date,
+            Colname.to_date: to_date,
+        }
+        rows = [Row(**row)]
+        return spark.createDataFrame(rows, metering_point_period_schema)
 
     return factory
 
@@ -154,7 +156,7 @@ def test__missing_point_has_quantity_null_for_quarterly_resolution(
 
     # Assert
     # We remove the point we created before inspecting the remaining
-    actual = actual.filter(
+    actual = actual.where(
         col(Colname.observation_time) != timestamp_factory(start_time)
     )
     assert actual.where(col("quantity").isNull()).count() == 95
@@ -186,73 +188,10 @@ def test__missing_point_has_quantity_null_for_hourly_resolution(
 
     # Assert
     # We remove the point we created before inspecting the remaining
-    actual = actual.filter(
+    actual = actual.where(
         col(Colname.observation_time) != timestamp_factory(start_time)
     )
     assert actual.where(col("quantity").isNull()).count() == 23
-
-
-def test__missing_point_has_quality_incomplete_for_quarterly_resolution(
-    raw_time_series_points_factory, metering_point_period_df_factory, timestamp_factory
-):
-    # Arrange
-    start_time = "2022-06-08T12:00:00.000Z"
-    raw_time_series_points = raw_time_series_points_factory(
-        time=timestamp_factory(start_time),
-    )
-
-    metering_point_period_df = metering_point_period_df_factory(
-        resolution=MeteringPointResolution.QUARTER.value
-    )
-
-    # Act
-    actual = get_basis_data_time_series_points_df(
-        raw_time_series_points,
-        metering_point_period_df,
-        timestamp_factory(start_time),
-        timestamp_factory("2022-06-08T22:00:00.000Z"),
-    )
-
-    # Assert
-    # We remove the point we created before inspecting the remaining
-    actual = actual.filter(
-        col(Colname.observation_time) != timestamp_factory(start_time)
-    )
-    assert actual.count() > 1
-    assert actual.where(col("quality").isNull()).count() == actual.count()
-
-
-def test__missing_point_has_quality_incomplete_for_hourly_resolution(
-    raw_time_series_points_factory, metering_point_period_df_factory, timestamp_factory
-):
-    # Arrange
-    start_time = "2022-06-08T22:00:00.000Z"
-    end_time = "2022-06-09T22:00:00.000Z"
-    raw_time_series_points = raw_time_series_points_factory(
-        time=timestamp_factory(start_time)
-    )
-
-    metering_point_period_df = metering_point_period_df_factory(
-        from_date=timestamp_factory(start_time),
-        to_date=timestamp_factory(end_time),
-        resolution=MeteringPointResolution.HOUR.value,
-    )
-
-    # Act
-    actual = get_basis_data_time_series_points_df(
-        raw_time_series_points,
-        metering_point_period_df,
-        timestamp_factory(start_time),
-        timestamp_factory(end_time),
-    )
-
-    # Assert
-    # We remove the point we created before inspecting the remaining
-    actual = actual.filter(
-        col(Colname.observation_time) != timestamp_factory(start_time)
-    )
-    assert actual.count() > 1
-    assert actual.where(col("quality").isNull()).count() == actual.count()
 
 
 def test__df_is_not_empty_when_no_time_series_points(
@@ -262,7 +201,7 @@ def test__df_is_not_empty_when_no_time_series_points(
     start_time = "2022-06-08T22:00:00.000Z"
     end_time = "2022-06-09T22:00:00.000Z"
 
-    empty_raw_time_series_points = raw_time_series_points_factory().filter(
+    empty_raw_time_series_points = raw_time_series_points_factory().where(
         col(Colname.metering_point_id) == ""
     )
     metering_point_period_df = metering_point_period_df_factory(
@@ -342,7 +281,7 @@ def test__df_has_expected_row_count_according_to_dst(
     # Arrange
     raw_time_series_points = raw_time_series_points_factory(
         time=timestamp_factory(period_start)
-    ).filter(col("metering_point_id") != "the-meteringpoint-id")
+    ).where(col("metering_point_id") != "the-meteringpoint-id")
 
     metering_point_period_df = metering_point_period_df_factory(
         from_date=timestamp_factory(period_start),

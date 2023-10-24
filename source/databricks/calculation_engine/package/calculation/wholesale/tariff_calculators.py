@@ -14,7 +14,7 @@
 
 from datetime import datetime
 from pyspark.sql import DataFrame
-import pyspark.sql.functions as F
+import pyspark.sql.functions as f
 
 from package.codelists import ChargeResolution, ChargeUnit
 from package.common import assert_schema
@@ -56,10 +56,10 @@ def calculate_tariff_price_per_ga_co_es(tariffs: DataFrame) -> DataFrame:
         Colname.charge_price,
         Colname.total_quantity,
         Colname.charge_count,
-        (F.col(Colname.charge_price) * F.col(Colname.total_quantity)).alias(
+        (f.col(Colname.charge_price) * f.col(Colname.total_quantity)).alias(
             Colname.total_amount
         ),
-        F.lit(ChargeUnit.KWH.value).alias(Colname.unit),
+        f.lit(ChargeUnit.KWH.value).alias(Colname.unit),
         Colname.qualities,
     )
 
@@ -81,9 +81,9 @@ def _sum_quantity_and_count_charges(tariffs: DataFrame) -> DataFrame:
         Colname.charge_resolution,
         Colname.charge_price,
     ).agg(
-        F.sum(Colname.quantity).alias(Colname.total_quantity),
-        F.count(Colname.metering_point_id).alias(Colname.charge_count),
-        F.flatten(F.collect_set(Colname.qualities)).alias(Colname.qualities),
+        f.sum(Colname.sum_quantity).alias(Colname.total_quantity),
+        f.count(Colname.metering_point_id).alias(Colname.charge_count),
+        f.flatten(f.collect_set(Colname.qualities)).alias(Colname.qualities),
     )
     return agg_df
 
@@ -99,31 +99,31 @@ def sum_within_month(df: DataFrame, period_start_datetime: datetime) -> DataFram
             Colname.charge_owner,
         )
         .agg(
-            F.sum(Colname.total_amount).alias(Colname.total_amount),
-            F.sum(Colname.total_quantity).alias(Colname.total_quantity),
-            F.sum(Colname.charge_price).alias(Colname.charge_price),
+            f.sum(Colname.total_amount).alias(Colname.total_amount),
+            f.sum(Colname.total_quantity).alias(Colname.total_quantity),
+            f.sum(Colname.charge_price).alias(Colname.charge_price),
             # charge_tax is the same for all tariffs in a given month
-            F.first(Colname.charge_tax).alias(Colname.charge_tax),
+            f.first(Colname.charge_tax).alias(Colname.charge_tax),
             # tariff unit is the same for all tariffs in a given month (kWh)
-            F.first(Colname.unit).alias(Colname.unit),
-            F.flatten(F.collect_set(Colname.qualities)).alias(Colname.qualities),
+            f.first(Colname.unit).alias(Colname.unit),
+            f.flatten(f.collect_set(Colname.qualities)).alias(Colname.qualities),
         )
         .select(
-            F.col(Colname.grid_area),
-            F.col(Colname.energy_supplier_id),
-            F.col(Colname.total_quantity),
-            F.col(Colname.unit),
-            F.col(Colname.qualities),
-            F.lit(period_start_datetime).alias(Colname.charge_time),
-            F.lit(ChargeResolution.MONTH.value).alias(Colname.charge_resolution),
-            F.lit(None).alias(Colname.metering_point_type),
-            F.lit(None).alias(Colname.settlement_method),
-            F.col(Colname.charge_price),
-            F.col(Colname.total_amount),
-            F.col(Colname.charge_tax),
-            F.col(Colname.charge_code),
-            F.col(Colname.charge_type),
-            F.col(Colname.charge_owner),
+            f.col(Colname.grid_area),
+            f.col(Colname.energy_supplier_id),
+            f.col(Colname.total_quantity),
+            f.col(Colname.unit),
+            f.col(Colname.qualities),
+            f.lit(period_start_datetime).alias(Colname.charge_time),
+            f.lit(ChargeResolution.MONTH.value).alias(Colname.charge_resolution),
+            f.lit(None).alias(Colname.metering_point_type),
+            f.lit(None).alias(Colname.settlement_method),
+            f.col(Colname.charge_price),
+            f.col(Colname.total_amount),
+            f.col(Colname.charge_tax),
+            f.col(Colname.charge_code),
+            f.col(Colname.charge_type),
+            f.col(Colname.charge_owner),
         )
     )
 

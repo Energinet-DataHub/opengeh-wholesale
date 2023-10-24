@@ -15,7 +15,6 @@ from decimal import Decimal
 from datetime import datetime, timedelta
 from package.codelists import (
     MeteringPointType,
-    MeteringPointResolution,
     QuantityQuality,
 )
 from package.calculation.energy.aggregators import (
@@ -23,7 +22,13 @@ from package.calculation.energy.aggregators import (
     aggregate_flex_consumption_ga_brp,
     aggregate_flex_consumption_ga,
 )
-from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
+from pyspark.sql.types import (
+    StructType,
+    StringType,
+    DecimalType,
+    TimestampType,
+    ArrayType,
+)
 from pyspark.sql import SparkSession, DataFrame
 from typing import Callable
 import pytest
@@ -51,7 +56,7 @@ def agg_flex_consumption_schema() -> StructType:
             False,
         )
         .add(Colname.sum_quantity, DecimalType(18, 3))
-        .add(Colname.quality, StringType())
+        .add(Colname.qualities, ArrayType(StringType(), False), False)
         .add(Colname.metering_point_type, StringType())
     )
 
@@ -68,7 +73,7 @@ def test_data_factory(
                 Colname.energy_supplier_id: [],
                 Colname.time_window: [],
                 Colname.sum_quantity: [],
-                Colname.quality: [],
+                Colname.qualities: [],
                 Colname.metering_point_type: [],
             }
         )
@@ -85,7 +90,7 @@ def test_data_factory(
                                 Colname.end: default_obs_time + timedelta(hours=i + 1),
                             },
                             Colname.sum_quantity: Decimal(i + j + k),
-                            Colname.quality: [QuantityQuality.ESTIMATED.value],
+                            Colname.qualities: [QuantityQuality.ESTIMATED.value],
                             Colname.metering_point_type: [
                                 MeteringPointType.CONSUMPTION.value
                             ],

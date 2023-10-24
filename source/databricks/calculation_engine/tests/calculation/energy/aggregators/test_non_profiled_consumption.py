@@ -22,7 +22,13 @@ from package.calculation.energy.aggregators import (
     aggregate_non_profiled_consumption_ga_brp,
     aggregate_non_profiled_consumption_ga,
 )
-from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
+from pyspark.sql.types import (
+    StructType,
+    StringType,
+    DecimalType,
+    TimestampType,
+    ArrayType,
+)
 import pytest
 import pandas as pd
 from package.constants import Colname
@@ -50,7 +56,7 @@ def settled_schema() -> StructType:
             False,
         )
         .add(Colname.sum_quantity, DecimalType(20, 1))
-        .add(Colname.quality, StringType())
+        .add(Colname.qualities, ArrayType(StringType(), False), False)
         .add(Colname.metering_point_type, StringType())
     )
 
@@ -99,13 +105,13 @@ def agg_result_factory(
                     Decimal(1.0),
                     Decimal(1.0),
                 ],
-                Colname.quality: [
-                    QuantityQuality.ESTIMATED.value,
-                    QuantityQuality.ESTIMATED.value,
-                    QuantityQuality.ESTIMATED.value,
-                    QuantityQuality.ESTIMATED.value,
-                    QuantityQuality.ESTIMATED.value,
-                    QuantityQuality.ESTIMATED.value,
+                Colname.qualities: [
+                    [QuantityQuality.ESTIMATED.value],
+                    [QuantityQuality.ESTIMATED.value],
+                    [QuantityQuality.ESTIMATED.value],
+                    [QuantityQuality.ESTIMATED.value],
+                    [QuantityQuality.ESTIMATED.value],
+                    [QuantityQuality.ESTIMATED.value],
                 ],
                 Colname.metering_point_type: [
                     MeteringPointType.CONSUMPTION.value,
