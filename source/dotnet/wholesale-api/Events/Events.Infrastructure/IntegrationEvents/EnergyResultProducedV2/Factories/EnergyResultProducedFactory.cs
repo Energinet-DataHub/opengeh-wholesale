@@ -13,23 +13,21 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.Contracts.Events.V2;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.Common;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Common;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Common.Mappers;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProduced.V2.Mappers;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProducedV2.Mappers;
 using Google.Protobuf.WellKnownTypes;
-using AggregationPerBalanceResponsiblePartyPerGridArea = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProduced.V2.EnergyResultProduced.Types.AggregationPerBalanceResponsiblePartyPerGridArea;
-using AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProduced.V2.EnergyResultProduced.Types.AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea;
-using AggregationPerEnergySupplierPerGridArea = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProduced.V2.EnergyResultProduced.Types.AggregationPerEnergySupplierPerGridArea;
-using AggregationPerGridArea = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProduced.V2.EnergyResultProduced.Types.AggregationPerGridArea;
-using QuantityUnit = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProduced.V2.EnergyResultProduced.Types.QuantityUnit;
+using AggregationPerBalanceResponsiblePartyPerGridArea = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV2.Types.AggregationPerBalanceResponsiblePartyPerGridArea;
+using AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV2.Types.AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea;
+using AggregationPerEnergySupplierPerGridArea = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV2.Types.AggregationPerEnergySupplierPerGridArea;
+using AggregationPerGridArea = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV2.Types.AggregationPerGridArea;
+using QuantityUnit = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV2.Types.QuantityUnit;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProduced.V2.Factories;
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProducedV2.Factories;
 
 public class EnergyResultProducedFactory : IEnergyResultProducedFactory
 {
-    public Contracts.IntegrationEvents.EnergyResultProduced.V2.EnergyResultProduced Create(EnergyResult energyResult)
+    public Contracts.IntegrationEvents.EnergyResultProducedV2 Create(EnergyResult energyResult)
     {
         if (energyResult.EnergySupplierId == null && energyResult.BalanceResponsibleId == null)
             return CreateForGridArea(energyResult);
@@ -43,7 +41,7 @@ public class EnergyResultProducedFactory : IEnergyResultProducedFactory
         return CreateForEnergySupplierByBalanceResponsibleParty(energyResult);
     }
 
-    private Contracts.IntegrationEvents.EnergyResultProduced.V2.EnergyResultProduced CreateForGridArea(EnergyResult result)
+    private Contracts.IntegrationEvents.EnergyResultProducedV2 CreateForGridArea(EnergyResult result)
     {
         var energyResultProducedV2 = CreateInternal(result);
         energyResultProducedV2.AggregationPerGridarea = new AggregationPerGridArea
@@ -54,7 +52,7 @@ public class EnergyResultProducedFactory : IEnergyResultProducedFactory
         return energyResultProducedV2;
     }
 
-    private Contracts.IntegrationEvents.EnergyResultProduced.V2.EnergyResultProduced CreateForEnergySupplier(
+    private Contracts.IntegrationEvents.EnergyResultProducedV2 CreateForEnergySupplier(
         EnergyResult result)
     {
         var energyResultProduced = CreateInternal(result);
@@ -67,7 +65,7 @@ public class EnergyResultProducedFactory : IEnergyResultProducedFactory
         return energyResultProduced;
     }
 
-    private Contracts.IntegrationEvents.EnergyResultProduced.V2.EnergyResultProduced CreateForBalanceResponsibleParty(
+    private Contracts.IntegrationEvents.EnergyResultProducedV2 CreateForBalanceResponsibleParty(
         EnergyResult result)
     {
         var energyResultProducedV2 = CreateInternal(result);
@@ -81,7 +79,7 @@ public class EnergyResultProducedFactory : IEnergyResultProducedFactory
         return energyResultProducedV2;
     }
 
-    private Contracts.IntegrationEvents.EnergyResultProduced.V2.EnergyResultProduced CreateForEnergySupplierByBalanceResponsibleParty(
+    private Contracts.IntegrationEvents.EnergyResultProducedV2 CreateForEnergySupplierByBalanceResponsibleParty(
         EnergyResult result)
     {
         var energyResultProducedV2 = CreateInternal(result);
@@ -96,12 +94,12 @@ public class EnergyResultProducedFactory : IEnergyResultProducedFactory
         return energyResultProducedV2;
     }
 
-    private static Contracts.IntegrationEvents.EnergyResultProduced.V2.EnergyResultProduced CreateInternal(EnergyResult result)
+    private static Contracts.IntegrationEvents.EnergyResultProducedV2 CreateInternal(EnergyResult result)
     {
-        var energyResultProduced = new Contracts.IntegrationEvents.EnergyResultProduced.V2.EnergyResultProduced
+        var energyResultProduced = new Contracts.IntegrationEvents.EnergyResultProducedV2
         {
             CalculationId = result.BatchId.ToString(),
-            Resolution = Contracts.IntegrationEvents.EnergyResultProduced.V2.EnergyResultProduced.Types.Resolution.Quarter,
+            Resolution = Contracts.IntegrationEvents.EnergyResultProducedV2.Types.Resolution.Quarter,
             CalculationType = CalculationTypeMapper.MapCalculationType(result.ProcessType),
             QuantityUnit = QuantityUnit.Kwh,
             PeriodStartUtc = result.PeriodStart.ToTimestamp(),
@@ -116,7 +114,7 @@ public class EnergyResultProducedFactory : IEnergyResultProducedFactory
                 .Select(timeSeriesPoint =>
                 {
                     var mappedQuantityQualities = timeSeriesPoint.Qualities.Select(QuantityQualityMapper.MapQuantityQuality);
-                    var mappedTimeSeriesPoint = new Contracts.IntegrationEvents.EnergyResultProduced.V2.EnergyResultProduced.Types.TimeSeriesPoint
+                    var mappedTimeSeriesPoint = new Contracts.IntegrationEvents.EnergyResultProducedV2.Types.TimeSeriesPoint
                     {
                         Quantity = new DecimalValue(timeSeriesPoint.Quantity),
                         Time = timeSeriesPoint.Time.ToTimestamp(),

@@ -19,7 +19,7 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Ma
 
 public static class CalculationTypeMapper
 {
-    public static EventCalculationType MapCalculationType(Common.Models.ProcessType calculationType)
+    public static EventCalculationType MapCalculationType(ModelCalculationType calculationType)
     {
         return calculationType switch
         {

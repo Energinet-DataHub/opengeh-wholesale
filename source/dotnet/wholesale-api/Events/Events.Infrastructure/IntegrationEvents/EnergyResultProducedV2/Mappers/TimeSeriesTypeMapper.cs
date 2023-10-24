@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using TimeSeriesType = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProduced.V2.EnergyResultProduced.Types.TimeSeriesType;
+using TimeSeriesType = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV2.Types.TimeSeriesType;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProduced.V2.Mappers;
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProducedV2.Mappers;
 
 public static class TimeSeriesTypeMapper
 {

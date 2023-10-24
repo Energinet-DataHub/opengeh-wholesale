@@ -49,16 +49,7 @@
       <OutputDir>obj\contracts\v2</OutputDir>
       <Generator>MSBuild:Compile</Generator>
     </Protobuf>
-    <Protobuf Include="IntegrationEvents/EnergyResultProduced/V2/Protos/*.proto">
-      <GrpcServices>None</GrpcServices>
-      <Access>Public</Access>
-      <ProtoCompile>True</ProtoCompile>
-      <ProtoRoot>IntegrationEvents</ProtoRoot>
-      <CompileOutputs>True</CompileOutputs>
-      <OutputDir>obj\contracts\v2</OutputDir>
-      <Generator>MSBuild:Compile</Generator>
-    </Protobuf>
-    <Protobuf Include="IntegrationEvents/CalculationResultCompleted/V2/Protos/*.proto">
+    <Protobuf Include="IntegrationEvents/EnergyResultProducedV2/Protos/*.proto">
       <GrpcServices>None</GrpcServices>
       <Access>Public</Access>
       <ProtoCompile>True</ProtoCompile>

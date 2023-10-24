@@ -18,14 +18,14 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 import "Common/Protos/decimal_value.proto";
 
-option csharp_namespace = "Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProduced.V2";
+option csharp_namespace = "Energinet.DataHub.Wholesale.Contracts.IntegrationEvents";
 
 
 /*
  * A calculation will result in one or more energy results. Each result is
  * published as an instance of this type.
  */
-message EnergyResultProduced {
+message EnergyResultProducedV2 {
     /*
      * The ID of the calculation creating the result.
      * The ID is a UUID consisting of hexadecimal digits in the form XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX.
