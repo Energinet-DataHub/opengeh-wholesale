@@ -21,6 +21,7 @@ using Energinet.DataHub.Wholesale.Events.Application.Options;
 using Energinet.DataHub.Wholesale.Events.Application.Triggers;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Energinet.DataHub.Wholesale.Events.Application.Workers;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProducedV2.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedBatches;
@@ -63,6 +64,8 @@ public static class EventsRegistration
                 CalculationResultCompletedFactory>();
         services.AddScoped<IEnergyResultProducedV1Factory,
             EnergyResultProducedV1Factory>();
+        services.AddScoped<IEnergyResultProducedV2Factory,
+            EnergyResultProducedV2Factory>();
     }
 
     private static void AddInfrastructure(
