@@ -40,10 +40,10 @@ def raw_time_series_points_factory(spark, timestamp_factory):
         time: datetime = timestamp_factory("2022-06-08T12:15:00.000Z"),
     ):
         row = {
-                "metering_point_id": "the-meteringpoint-id",
-                "quantity": Decimal("1.1"),
-                "quality": QuantityQuality.CALCULATED.value,
-                Colname.observation_time: time,
+            "metering_point_id": "the-meteringpoint-id",
+            "quantity": Decimal("1.1"),
+            "quality": QuantityQuality.CALCULATED.value,
+            Colname.observation_time: time,
         }
         rows = [Row(**row)]
         return spark.createDataFrame(rows, time_series_point_schema)
