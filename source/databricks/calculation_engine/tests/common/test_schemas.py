@@ -22,30 +22,37 @@ any_schema = t.StructType(
     [
         t.StructField("foo", t.StringType(), False),
         t.StructField("bar", t.IntegerType(), False),
+        t.StructField("array", t.ArrayType(t.StringType(), True), True),
     ]
 )
 schema_with_other_column_order = t.StructType(
     [
         t.StructField("bar", t.IntegerType(), False),
         t.StructField("foo", t.StringType(), False),
+        t.StructField("array", t.ArrayType(t.StringType(), True), True),
     ]
 )
 schema_with_other_nullability = t.StructType(
     [
         t.StructField("foo", t.StringType(), False),
+        # Other nullability
         t.StructField("bar", t.IntegerType(), True),
+        # Other nullability in deeper levels
+        t.StructField("array", t.ArrayType(t.StringType(), False), False),
     ]
 )
 schema_with_other_column_order_and_nullability = t.StructType(
     [
         t.StructField("bar", t.IntegerType(), False),
         t.StructField("foo", t.StringType(), True),
+        t.StructField("array", t.ArrayType(t.StringType(), True), True),
     ]
 )
 schema_with_other_datatype = t.StructType(
     [
         t.StructField("foo", t.StringType(), False),
         t.StructField("bar", t.DecimalType(), False),
+        t.StructField("array", t.ArrayType(t.StringType(), True), True),
     ]
 )
 

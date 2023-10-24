@@ -20,6 +20,7 @@ import pytest
 from typing import Union
 import uuid
 
+from helpers.data_frame_utils import set_column
 from package.codelists import (
     AggregationLevel,
     ProcessType,
@@ -129,17 +130,20 @@ max_decimal = Decimal(f"{'9'*15}.999")  # Precision=18 and scale=3
         (EnergyResultColumnNames.quantity, Decimal("1.123")),
         (EnergyResultColumnNames.quantity, max_decimal),
         (EnergyResultColumnNames.quantity, -max_decimal),
+        (EnergyResultColumnNames.quantity_qualities, ["estimated"]),
+        (EnergyResultColumnNames.quantity_qualities, ["incomplete"]),
+        (EnergyResultColumnNames.quantity_qualities, ["estimated", "measured"]),
     ],
 )
 def test__migrated_table_accepts_valid_data(
     spark: SparkSession,
     column_name: str,
-    column_value: str,
+    column_value: Union[str, list],
     migrations_executed: None,
 ) -> None:
     # Arrange
     result_df = _create_df(spark)
-    result_df = result_df.withColumn(column_name, lit(column_value))
+    result_df = set_column(result_df, column_name, column_value)
 
     # Act and assert: Expectation is that no exception is raised
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(
@@ -173,12 +177,7 @@ def test__migrated_table_accepts_enum_value(
 
     # Arrange
     result_df = _create_df(spark)
-
-    # TODO BJM: Refactor and reuse
-    if isinstance(column_value, list):
-        result_df = result_df.withColumn(column_name, array(*map(lit, column_value)))
-    else:
-        result_df = result_df.withColumn(column_name, lit(column_value))
+    result_df = set_column(result_df, column_name, column_value)
 
     # Act and assert: Expectation is that no exception is raised
     result_df.write.format("delta").option("mergeSchema", "false").insertInto(

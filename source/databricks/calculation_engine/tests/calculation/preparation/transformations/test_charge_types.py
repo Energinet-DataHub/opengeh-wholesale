@@ -424,7 +424,7 @@ def test__get_tariff_charges__when_same_metering_point_and_resolution__sums_quan
     )
 
     # Assert
-    assert actual.collect()[0][Colname.quantity] == 2 * DEFAULT_QUANTITY
+    assert actual.collect()[0][Colname.sum_quantity] == 2 * DEFAULT_QUANTITY
 
 
 def test__get_tariff_charges__when_no_matching_charge_resolution__returns_empty_tariffs(

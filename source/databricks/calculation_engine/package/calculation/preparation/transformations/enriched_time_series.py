@@ -111,9 +111,9 @@ def get_basis_data_time_series_points_df(
         )
     )
 
-    # the master_basis_data_df is allready used once when creating the empty_points_for_each_metering_point_df
-    # rejoining master_basis_data_df with empty_points_for_each_metering_point_df requires the GsrNumber and
-    # Resolution column must be renamed for the select to be succesfull.
+    # The master_basis_data_df is already used once when creating the empty_points_for_each_metering_point_df
+    # rejoining master_basis_data_df with empty_points_for_each_metering_point_df requires the GSRN number and
+    # Resolution column must be renamed for the select to be successful.
 
     new_points_for_each_metering_point_df = (
         new_points_for_each_metering_point_df.withColumnRenamed(
@@ -163,5 +163,10 @@ def get_basis_data_time_series_points_df(
             Colname.balance_responsible_id,
         )
     )
+
+    # Quality of metering point time series are mandatory. This result has, however, been padded with
+    # time series points that haven't been provided by the market actors. These added points must have
+    # the quality "missing".
+    result = result.na.fill(value=QuantityQuality.MISSING.value, subset=Colname.quality)
 
     return result

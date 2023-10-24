@@ -25,6 +25,7 @@ from pyspark.sql.types import (
     DecimalType,
     TimestampType,
     BooleanType,
+    ArrayType,
 )
 import pytest
 import pandas as pd
@@ -72,7 +73,7 @@ def hourly_production_result_schema() -> StructType:
             .add(Colname.end, TimestampType()),
             False,
         )
-        .add(Colname.quality, StringType())
+        .add(Colname.qualities, ArrayType(StringType(), False), False)
         .add(Colname.metering_point_type, StringType())
     )
 
@@ -93,7 +94,7 @@ def negative_grid_loss_result_schema() -> StructType:
             False,
         )
         .add(Colname.sum_quantity, DecimalType())
-        .add(Colname.quality, StringType())
+        .add(Colname.qualities, ArrayType(StringType(), False), False)
         .add(Colname.metering_point_type, StringType())
     )
 
@@ -111,33 +112,6 @@ def sys_cor_schema() -> StructType:
         .add(Colname.from_date, TimestampType())
         .add(Colname.to_date, TimestampType())
         .add(Colname.is_negative_grid_loss_responsible, BooleanType())
-    )
-
-
-@pytest.fixture(scope="module")
-def expected_schema() -> StructType:
-    """
-    Expected aggregation schema
-    NOTE: Spark seems to add 10 to the precision of the decimal type on summations.
-    Thus, the expected schema should be precision of 20, 10 more than the default of 10.
-    If this is an issue we can always cast back to the original decimal precision in the aggregate
-    function.
-    https://stackoverflow.com/questions/57203383/spark-sum-and-decimaltype-precision
-    """
-    return (
-        StructType()
-        .add(Colname.grid_area, StringType(), False)
-        .add(Colname.balance_responsible_id, StringType())
-        .add(Colname.energy_supplier_id, StringType())
-        .add(
-            Colname.time_window,
-            StructType()
-            .add(Colname.start, TimestampType())
-            .add(Colname.end, TimestampType()),
-            False,
-        )
-        .add(Colname.sum_quantity, DecimalType())
-        .add(Colname.quality, StringType())
     )
 
 
@@ -165,7 +139,7 @@ def hourly_production_result_row_factory(
                 Colname.energy_supplier_id: [supplier],
                 Colname.sum_quantity: [sum_quantity],
                 Colname.time_window: [time_window],
-                Colname.quality: [aggregated_quality],
+                Colname.qualities: [[aggregated_quality]],
                 Colname.metering_point_type: [metering_point_type],
             }
         )
@@ -194,7 +168,7 @@ def negative_grid_loss_result_row_factory(
                 Colname.grid_area: [domain],
                 Colname.time_window: [time_window],
                 Colname.sum_quantity: [negative_grid_loss],
-                Colname.quality: [aggregated_quality],
+                Colname.qualities: [[aggregated_quality]],
                 Colname.metering_point_type: [metering_point_type],
             }
         )
