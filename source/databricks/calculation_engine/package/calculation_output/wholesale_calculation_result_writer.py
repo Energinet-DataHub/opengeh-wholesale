@@ -40,11 +40,7 @@ class WholesaleCalculationResultWriter:
         self.__process_type = process_type.value
         self.__execution_time_start = execution_time_start
 
-    def write(
-        self,
-        df: DataFrame,
-        amount_type: AmountType
-    ) -> None:
+    def write(self, df: DataFrame, amount_type: AmountType) -> None:
         df = self._add_metadata(df)
         df = self._add_calculation_result_id(df)
         df = self._add_amount_type(df, amount_type)
@@ -76,7 +72,9 @@ class WholesaleCalculationResultWriter:
 
     @staticmethod
     def _add_amount_type(df: DataFrame, amount_type: AmountType) -> DataFrame:
-        return df.withColumn(WholesaleResultColumnNames.amount_type, lit(amount_type.value))
+        return df.withColumn(
+            WholesaleResultColumnNames.amount_type, lit(amount_type.value)
+        )
 
     @staticmethod
     def _select_output_columns(df: DataFrame) -> DataFrame:

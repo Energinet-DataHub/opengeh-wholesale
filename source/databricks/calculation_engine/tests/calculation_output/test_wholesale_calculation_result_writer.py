@@ -237,7 +237,9 @@ def test__write__writes_amount_type(
     )
     actual_row = actual_df.collect()[0]
 
-    assert actual_row[WholesaleResultColumnNames.result_type] == DEFAULT_AMOUNT_TYPE.value
+    assert (
+        actual_row[WholesaleResultColumnNames.result_type] == DEFAULT_AMOUNT_TYPE.value
+    )
 
 
 def test__get_column_group_for_calculation_result_id__returns_expected_column_names(
