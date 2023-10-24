@@ -28,6 +28,7 @@ from package.codelists import (
     MeteringPointType,
     ProcessType,
     SettlementMethod,
+    WholesaleResultType,
 )
 from package.constants import Colname, WholesaleResultColumnNames
 from package.infrastructure.paths import (
@@ -46,6 +47,7 @@ DEFAULT_PROCESS_TYPE = ProcessType.FIRST_CORRECTION_SETTLEMENT
 DEFAULT_BATCH_EXECUTION_START = datetime(2022, 6, 10, 13, 15)
 
 # Input dataframe parameters
+DEFAULT_WHOLESALE_RESULT_TYPE = WholesaleResultType.AMOUNT_PER_CHARGE
 DEFAULT_ENERGY_SUPPLIER_ID = "9876543210123"
 DEFAULT_GRID_AREA = "543"
 DEFAULT_CHARGE_TIME = datetime(2022, 6, 10, 13, 30)
@@ -179,7 +181,7 @@ def test__write__writes_column(
     result_df = _create_result_df(spark, row)
 
     # Act
-    sut.write(result_df)
+    sut.write(result_df, DEFAULT_WHOLESALE_RESULT_TYPE)
 
     # Assert
     actual_df = spark.read.table(TABLE_NAME).where(
@@ -205,7 +207,7 @@ def test__write__writes_calculation_result_id(
     )
 
     # Act
-    sut.write(result_df)
+    sut.write(result_df, DEFAULT_WHOLESALE_RESULT_TYPE)
 
     # Assert
     actual_df = (

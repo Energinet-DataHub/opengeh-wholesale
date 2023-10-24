@@ -70,3 +70,4 @@ class Colname:
     total_amount = "total_amount"
     total_quantity = "total_quantity"
     unit = "unit"
+    wholesale_result_type = "result_type"

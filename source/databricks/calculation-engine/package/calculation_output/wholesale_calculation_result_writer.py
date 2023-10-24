@@ -20,6 +20,7 @@ from pyspark.sql.window import Window
 
 from package.codelists import (
     ProcessType,
+    WholesaleResultType,
 )
 from package.constants import Colname, WholesaleResultColumnNames
 from package.infrastructure.paths import (
@@ -42,9 +43,11 @@ class WholesaleCalculationResultWriter:
     def write(
         self,
         df: DataFrame,
+        result_type: WholesaleResultType
     ) -> None:
         df = self._add_metadata(df)
         df = self._add_calculation_result_id(df)
+        df = self._add_result_type(df, result_type)
         df = self._select_output_columns(df)
 
         df.write.format("delta").mode("append").option(
@@ -70,6 +73,10 @@ class WholesaleCalculationResultWriter:
             WholesaleResultColumnNames.calculation_result_id,
             first(col(WholesaleResultColumnNames.calculation_result_id)).over(window),
         )
+
+    @staticmethod
+    def _add_result_type(df: DataFrame, wholesale_result_type: WholesaleResultType) -> DataFrame:
+        return df.withColumn(Colname.wholesale_result_type, lit(wholesale_result_type.value))
 
     @staticmethod
     def _select_output_columns(df: DataFrame) -> DataFrame:
