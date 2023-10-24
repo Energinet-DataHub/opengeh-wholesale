@@ -14,7 +14,7 @@
 
 from datetime import datetime
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, lit, first, when
+from pyspark.sql.functions import col, lit, first
 import pyspark.sql.functions as f
 from pyspark.sql.window import Window
 
@@ -76,7 +76,7 @@ class WholesaleCalculationResultWriter:
 
     @staticmethod
     def _add_result_type(df: DataFrame, wholesale_result_type: WholesaleResultType) -> DataFrame:
-        return df.withColumn(Colname.wholesale_result_type, lit(wholesale_result_type.value))
+        return df.withColumn(WholesaleResultColumnNames.wholesale_result_type, lit(wholesale_result_type.value))
 
     @staticmethod
     def _select_output_columns(df: DataFrame) -> DataFrame:
@@ -91,6 +91,7 @@ class WholesaleCalculationResultWriter:
                 WholesaleResultColumnNames.calculation_execution_time_start
             ),
             col(WholesaleResultColumnNames.calculation_result_id),
+            col(WholesaleResultColumnNames.result_type),
             col(Colname.grid_area).alias(WholesaleResultColumnNames.grid_area),
             col(Colname.energy_supplier_id).alias(
                 WholesaleResultColumnNames.energy_supplier_id

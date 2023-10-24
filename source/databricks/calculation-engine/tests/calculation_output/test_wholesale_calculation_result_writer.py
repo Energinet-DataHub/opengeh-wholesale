@@ -251,6 +251,7 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
         WholesaleResultColumnNames.calculation_type,
         WholesaleResultColumnNames.calculation_execution_time_start,
         WholesaleResultColumnNames.calculation_result_id,
+        WholesaleResultColumnNames.result_type,
         WholesaleResultColumnNames.grid_area,
         WholesaleResultColumnNames.quantity,
         WholesaleResultColumnNames.quantity_unit,
