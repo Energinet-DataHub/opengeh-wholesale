@@ -34,15 +34,15 @@ public class SettlementSeriesVersionValidationRule : IValidationRule<AggregatedT
             return NoError;
 
         if (subject.BusinessReason != BusinessReason.Correction)
-            return InvalidSettlementMethod;
+            return InvalidSettlementMethodError;
 
         if (!_validSettlementSeriesVersions.Contains(subject.SettlementSeriesVersion))
-            return InvalidSettlementMethod;
+            return InvalidSettlementMethodError;
 
         return NoError;
     }
 
     private static IList<ValidationError> NoError => new List<ValidationError>();
 
-    private static IList<ValidationError> InvalidSettlementMethod => new List<ValidationError> { _invalidSettlementSeriesVersion };
+    private static IList<ValidationError> InvalidSettlementMethodError => new List<ValidationError> { _invalidSettlementSeriesVersion };
 }
