@@ -17,7 +17,7 @@ using Energinet.DataHub.Wholesale.EDI.Models;
 
 namespace Energinet.DataHub.Wholesale.EDI.Mappers;
 
-public class ProcessTypeMapper
+public static class ProcessTypeMapper
 {
     public static ProcessType FromBusinessReason(string businessReason, string? settlementSeriesVersion)
     {
@@ -37,6 +37,21 @@ public class ProcessTypeMapper
                 _ => throw new ArgumentOutOfRangeException(nameof(settlementSeriesVersion), settlementSeriesVersion, "Settlement series version cannot be mapped to a process type"),
             },
             _ => throw new ArgumentOutOfRangeException(nameof(businessReason), actualValue: businessReason, "Business reason cannot be mapped to process type."),
+        };
+    }
+
+    public static (string BusinessReason, string? SettlementSeriesVersion) ToBusinessReason(ProcessType processType)
+    {
+        return processType switch
+        {
+            ProcessType.Aggregation => (BusinessReason.PreliminaryAggregation, null),
+            ProcessType.BalanceFixing => (BusinessReason.BalanceFixing, null),
+            ProcessType.WholesaleFixing => (BusinessReason.WholesaleFixing, null),
+            ProcessType.FirstCorrectionSettlement => (BusinessReason.Correction, SettlementSeriesVersion.FirstCorrection),
+            ProcessType.SecondCorrectionSettlement => (BusinessReason.Correction, SettlementSeriesVersion.SecondCorrection),
+            ProcessType.ThirdCorrectionSettlement => (BusinessReason.Correction, SettlementSeriesVersion.ThirdCorrection),
+
+            _ => throw new ArgumentOutOfRangeException(nameof(processType), actualValue: processType, "Process type cannot be mapped to business reason."),
         };
     }
 }

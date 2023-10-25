@@ -50,7 +50,7 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
             Resolution = Resolution.Pt15M,
         };
 
-        return new AggregatedTimeSeriesRequestAccepted()
+        var acceptedResponse = new AggregatedTimeSeriesRequestAccepted()
         {
             GridArea = energyResult.GridArea,
             QuantityUnit = QuantityUnit.Kwh,
@@ -58,6 +58,13 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
             TimeSeriesPoints = { points },
             TimeSeriesType = CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromCalculationsResult(energyResult.TimeSeriesType),
         };
+
+        var businessReasonResult = ProcessTypeMapper.ToBusinessReason(energyResult.ProcessType);
+
+        if (businessReasonResult.SettlementSeriesVersion != null)
+            acceptedResponse.SettlementVersion = businessReasonResult.SettlementSeriesVersion;
+
+        return acceptedResponse;
     }
 
     private static IList<TimeSeriesPoint> CreateTimeSeriesPoints(EnergyResult energyResult)
