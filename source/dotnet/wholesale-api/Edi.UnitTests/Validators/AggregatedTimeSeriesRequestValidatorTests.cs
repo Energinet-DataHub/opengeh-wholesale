@@ -126,7 +126,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
     }
 
     [Fact]
-    public void Validate_WhenSettlementMethodSeriesIsInvalid_ReturnsUnsuccessfulValidation()
+    public void Validate_WhenSettlementSeriesVersionIsInvalid_ReturnsUnsuccessfulValidation()
     {
         // Arrange
         var request = AggregatedTimeSeriesRequestBuilder
