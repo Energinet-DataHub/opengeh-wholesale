@@ -115,14 +115,8 @@ public class EnergyResultProducedV1Factory : IEnergyResultProducedV1Factory
                 {
                     Quantity = new DecimalValue(timeSeriesPoint.Quantity),
                     Time = timeSeriesPoint.Time.ToTimestamp(),
-                    QuantityQuality = SelectBestSuitedQuality(timeSeriesPoint.Qualities),
+                    QuantityQuality = QuantityQualityMapper.SelectBestSuitedQuality(timeSeriesPoint.Qualities),
                 }));
         return energyResultProducedV1;
-    }
-
-    private static EnergyResultProducedV1.Types.QuantityQuality SelectBestSuitedQuality(IEnumerable<CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality> qualities)
-    {
-        // TODO AJW Return best suited quality
-        return QuantityQualityMapper.MapQuantityQuality(qualities.First());
     }
 }

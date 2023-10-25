@@ -34,4 +34,30 @@ public static class QuantityQualityMapper
                 "Value cannot be mapped to quantity quality."),
         };
     }
+
+    /// <summary>
+    /// NOTE. This a temporary solution.
+    /// When V1 is no longer in use this method can be deleted.
+    /// </summary>
+    public static EdiModel.QuantityQuality SelectBestSuitedQuality(IEnumerable<CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality> qualities)
+    {
+        if (qualities == null)
+            throw new ArgumentNullException(nameof(qualities));
+
+        var quantityQualities = qualities.ToList();
+
+        if (!quantityQualities.Any())
+            return EdiModel.QuantityQuality.Incomplete;
+
+        if (quantityQualities.Contains(CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Missing))
+            return EdiModel.QuantityQuality.Missing;
+
+        if (quantityQualities.Contains(CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Estimated))
+            return EdiModel.QuantityQuality.Estimated;
+
+        if (quantityQualities.Contains(CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Measured))
+            return EdiModel.QuantityQuality.Measured;
+
+        return EdiModel.QuantityQuality.Calculated;
+    }
 }

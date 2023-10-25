@@ -60,7 +60,7 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
         };
     }
 
-    private static IList<TimeSeriesPoint> CreateTimeSeriesPoints(EnergyResult energyResult)
+    private static IEnumerable<TimeSeriesPoint> CreateTimeSeriesPoints(EnergyResult energyResult)
     {
         const decimal nanoFactor = 1_000_000_000;
         var points = new List<TimeSeriesPoint>();
@@ -68,21 +68,15 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
         {
             var units = decimal.ToInt64(timeSeriesPoint.Quantity);
             var nanos = decimal.ToInt32((timeSeriesPoint.Quantity - units) * nanoFactor);
-            var point = new TimeSeriesPoint()
+            var point = new TimeSeriesPoint
             {
-                Quantity = new DecimalValue() { Units = units, Nanos = nanos },
-                QuantityQuality = SelectBestSuitedQuality(timeSeriesPoint.Qualities),
+                Quantity = new DecimalValue { Units = units, Nanos = nanos },
+                QuantityQuality = QuantityQualityMapper.SelectBestSuitedQuality(timeSeriesPoint.Qualities),
                 Time = new Timestamp() { Seconds = timeSeriesPoint.Time.ToUnixTimeSeconds(), },
             };
             points.Add(point);
         }
 
         return points;
-    }
-
-    private static QuantityQuality SelectBestSuitedQuality(IEnumerable<CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality> qualities)
-    {
-        // TODO AJW Return best suited quality
-        return QuantityQualityMapper.MapQuantityQuality(qualities.First());
     }
 }
