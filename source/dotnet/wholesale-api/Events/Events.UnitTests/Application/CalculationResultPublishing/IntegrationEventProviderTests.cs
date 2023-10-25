@@ -13,12 +13,13 @@
 // limitations under the License.
 
 using System.Reflection;
+using AutoFixture;
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Internal;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
+using Energinet.DataHub.Core.TestCommon.AutoFixture.Extensions;
+using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
@@ -101,12 +102,12 @@ public class IntegrationEventProviderTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_WhenOneUnpublishedBatchWithTwoEnergyResultEvents_ReturnsTwoEvents(
-    CompletedBatch completedBatch,
-    IntegrationEvent anyIntegrationEvent,
-    [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
-    [Frozen] Mock<IEnergyResultEventProvider> energyResultEventProviderMock,
-    IntegrationEventProvider sut)
+    public async Task GetAsync_WhenUnpublishedBatchWithTwoEnergyResultEvents_ReturnsTwoEvents(
+        CompletedBatch completedBatch,
+        IntegrationEvent anyIntegrationEvent,
+        [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
+        [Frozen] Mock<IEnergyResultEventProvider> energyResultEventProviderMock,
+        IntegrationEventProvider sut)
     {
         // Arrange
         completedBatchRepositoryMock
@@ -127,116 +128,81 @@ public class IntegrationEventProviderTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_WhenTwoUnpublishedBatchesWithThreeEventsCombined_ReturnsThreeEvents(
-        CompletedBatch completedBatch1,
-        CompletedBatch completedBatch2,
+    public async Task GetAsync_WhenBatchCanContainWholesaleResultsAndBatchWithTwoWholesaleResultEvents_ReturnsTwoEvents(
         IntegrationEvent anyIntegrationEvent,
         [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
-        [Frozen] Mock<IEnergyResultEventProvider> energyResultEventProviderMock,
+        [Frozen] Mock<IWholesaleResultEventProvider> wholesaleResultEventProviderMock,
         IntegrationEventProvider sut)
     {
         // Arrange
+        var fixture = new Fixture();
+        var completedBatch = fixture.ForConstructorOn<CompletedBatch>()
+            .SetParameter("processType").To(ProcessType.WholesaleFixing)
+            .Create();
+
         completedBatchRepositoryMock
-            .SetupSequence(p => p.GetNextUnpublishedOrNullAsync())
-            .ReturnsAsync(completedBatch1)
-            .ReturnsAsync(completedBatch2)
+            .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
+            .ReturnsAsync(completedBatch)
             .ReturnsAsync((CompletedBatch)null!);
 
-        energyResultEventProviderMock
-            .Setup(mock => mock.GetAsync(completedBatch1, It.IsAny<EventProviderState>()))
+        wholesaleResultEventProviderMock
+            .Setup(mock => mock.CanContainWholesaleResults(completedBatch))
+            .Returns(true);
+        wholesaleResultEventProviderMock
+            .Setup(mock => mock.GetAsync(completedBatch, It.IsAny<EventProviderState>()))
             .Returns(AsAsyncEnumerable(anyIntegrationEvent, anyIntegrationEvent));
-
-        energyResultEventProviderMock
-            .Setup(mock => mock.GetAsync(completedBatch2, It.IsAny<EventProviderState>()))
-            .Returns(AsAsyncEnumerable(anyIntegrationEvent));
 
         // Act
         var actualEvents = await sut.GetAsync().ToListAsync();
 
         // Assert
-        actualEvents.Should().HaveCount(3);
+        actualEvents.Should().HaveCount(2);
     }
 
-    ////[Theory]
-    ////[InlineAutoMoqData]
-    ////public async Task GetAsync_WhenMultipleUnpublishedBatches_ReturnsEachResult(
-    ////    CompletedBatch completedBatch1,
-    ////    CompletedBatch completedBatch2,
-    ////    EnergyResult energyResult1,
-    ////    EnergyResult energyResult2,
-    ////    EnergyResult energyResult3,
-    ////    EnergyResult energyResult4,
-    ////    IntegrationEvent calculationResultCompletedEvent1,
-    ////    IntegrationEvent calculationResultCompletedEvent2,
-    ////    IntegrationEvent calculationResultCompletedEvent3,
-    ////    IntegrationEvent calculationResultCompletedEvent4,
-    ////    IntegrationEvent energyResultProducedEvent1,
-    ////    IntegrationEvent energyResultProducedEvent2,
-    ////    IntegrationEvent energyResultProducedEvent3,
-    ////    IntegrationEvent energyResultProducedEvent4,
-    ////    [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
-    ////    [Frozen] Mock<IIntegrationEventFactory> integrationEventFactoryMock,
-    ////    [Frozen] Mock<IEnergyResultQueries> energyResultQueriesMock,
-    ////    IntegrationEventProvider sut)
-    ////{
-    ////    // Arrange
-    ////    completedBatchRepositoryMock
-    ////        .SetupSequence(p => p.GetNextUnpublishedOrNullAsync())
-    ////        .ReturnsAsync(completedBatch1)
-    ////        .ReturnsAsync(completedBatch2)
-    ////        .ReturnsAsync((CompletedBatch)null!);
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetAsync_WhenTwoBatchesWithFiveEventsCombined_ReturnsFiveEvents(
+        IntegrationEvent anyIntegrationEvent,
+        [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
+        [Frozen] Mock<IEnergyResultEventProvider> energyResultEventProviderMock,
+        [Frozen] Mock<IWholesaleResultEventProvider> wholesaleResultEventProviderMock,
+        IntegrationEventProvider sut)
+    {
+        // Arrange
+        var fixture = new Fixture();
+        var aggregationBatch = fixture.ForConstructorOn<CompletedBatch>()
+            .SetParameter("processType").To(ProcessType.Aggregation)
+            .Create();
+        var wholesaleFixingBatch = fixture.ForConstructorOn<CompletedBatch>()
+            .SetParameter("processType").To(ProcessType.WholesaleFixing)
+            .Create();
 
-    ////    energyResultQueriesMock
-    ////        .Setup(queries => queries.GetAsync(completedBatch1.Id))
-    ////        .Returns(AsAsyncEnumerable(energyResult1, energyResult2));
-    ////    energyResultQueriesMock
-    ////        .Setup(queries => queries.GetAsync(completedBatch2.Id))
-    ////        .Returns(AsAsyncEnumerable(energyResult3, energyResult4));
+        completedBatchRepositoryMock
+            .SetupSequence(p => p.GetNextUnpublishedOrNullAsync())
+            .ReturnsAsync(aggregationBatch)
+            .ReturnsAsync(wholesaleFixingBatch)
+            .ReturnsAsync((CompletedBatch)null!);
 
-    ////    integrationEventFactoryMock
-    ////        .Setup(factory => factory.CreateCalculationResultCompleted(energyResult1))
-    ////        .Returns(calculationResultCompletedEvent1);
-    ////    integrationEventFactoryMock
-    ////        .Setup(factory => factory.CreateEnergyResultProducedV1(energyResult1))
-    ////        .Returns(energyResultProducedEvent1);
+        energyResultEventProviderMock
+            .Setup(mock => mock.GetAsync(aggregationBatch, It.IsAny<EventProviderState>()))
+            .Returns(AsAsyncEnumerable(anyIntegrationEvent, anyIntegrationEvent));
 
-    ////    integrationEventFactoryMock
-    ////        .SetupSequence(factory => factory.CreateCalculationResultCompleted(energyResult2))
-    ////        .Returns(calculationResultCompletedEvent2);
-    ////    integrationEventFactoryMock
-    ////        .Setup(factory => factory.CreateEnergyResultProducedV1(energyResult2))
-    ////        .Returns(energyResultProducedEvent2);
+        energyResultEventProviderMock
+            .Setup(mock => mock.GetAsync(wholesaleFixingBatch, It.IsAny<EventProviderState>()))
+            .Returns(AsAsyncEnumerable(anyIntegrationEvent));
+        wholesaleResultEventProviderMock
+            .Setup(mock => mock.CanContainWholesaleResults(wholesaleFixingBatch))
+            .Returns(true);
+        wholesaleResultEventProviderMock
+            .Setup(mock => mock.GetAsync(wholesaleFixingBatch, It.IsAny<EventProviderState>()))
+            .Returns(AsAsyncEnumerable(anyIntegrationEvent, anyIntegrationEvent));
 
-    ////    integrationEventFactoryMock
-    ////        .Setup(factory => factory.CreateCalculationResultCompleted(energyResult3))
-    ////        .Returns(calculationResultCompletedEvent3);
-    ////    integrationEventFactoryMock
-    ////        .Setup(factory => factory.CreateEnergyResultProducedV1(energyResult3))
-    ////        .Returns(energyResultProducedEvent3);
+        // Act
+        var actualEvents = await sut.GetAsync().ToListAsync();
 
-    ////    integrationEventFactoryMock
-    ////        .SetupSequence(factory => factory.CreateCalculationResultCompleted(energyResult4))
-    ////        .Returns(calculationResultCompletedEvent4);
-    ////    integrationEventFactoryMock
-    ////        .Setup(factory => factory.CreateEnergyResultProducedV1(energyResult4))
-    ////        .Returns(energyResultProducedEvent4);
-
-    ////    // Act
-    ////    var actual = await sut.GetAsync().ToListAsync();
-
-    ////    // Assert
-    ////    actual.Should().BeEquivalentTo(new[]
-    ////    {
-    ////        calculationResultCompletedEvent1,
-    ////        energyResultProducedEvent1,
-    ////        calculationResultCompletedEvent2,
-    ////        energyResultProducedEvent2,
-    ////        calculationResultCompletedEvent3,
-    ////        energyResultProducedEvent3,
-    ////        calculationResultCompletedEvent4,
-    ////        energyResultProducedEvent4,
-    ////    });
-    ////}
+        // Assert
+        actualEvents.Should().HaveCount(5);
+    }
 
     [Fact]
     [AcceptanceTest]
