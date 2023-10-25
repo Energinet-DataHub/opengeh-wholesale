@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 5.0.0
+
+Updated produced events to use an interface `IEventMessage` for exposing `EventName` and `EventMinorVersion`.
+
 ## Version 4.4.1
 
 Update realease-notes
