@@ -66,7 +66,9 @@ def test__transform_hour_to_quarter__when_invalid_input_schema__raise_assertion_
     spark: SparkSession,
 ):
     # Arrange
-    basis_data_time_series_points = spark.createDataFrame(data=[{"Hello": "World"}])
+    basis_data_time_series_points = spark.createDataFrame(
+        data=[Row(**({"Hello": "World"}))]
+    )
 
     # Act & Assert
     with pytest.raises(AssertionError):
@@ -87,7 +89,7 @@ def test__transform_hour_to_quarter__when_valid_input__split_basis_data_time_ser
 
     # Assert
     assert actual.count() == 4
-    assert actual.collect()[0]["quarter_quantity"] == Decimal("1.111111")
+    assert actual.collect()[0][Colname.quantity] == Decimal("1.111111")
 
 
 def test__transform_hour_to_quarter__when_valid_input__returns_expected_schema(

@@ -13,39 +13,31 @@
 # limitations under the License.
 
 from package.constants import Colname
-from pyspark.sql.types import (
-    DecimalType,
-    StructType,
-    StructField,
-    StringType,
-    TimestampType,
-)
+import pyspark.sql.types as t
 
 
-time_series_quarter_points_schema = StructType(
+time_series_quarter_points_schema = t.StructType(
     [
-        StructField(Colname.grid_area, StringType(), False),
-        StructField(Colname.to_grid_area, StringType(), True),
-        StructField(Colname.from_grid_area, StringType(), True),
-        StructField(Colname.metering_point_id, StringType(), False),
-        StructField(Colname.metering_point_type, StringType(), False),
-        StructField(Colname.resolution, StringType(), False),
-        StructField(Colname.observation_time, TimestampType(), False),
-        StructField(Colname.quantity, DecimalType(18, 6), True),
-        StructField(Colname.quality, StringType(), False),
-        StructField(Colname.energy_supplier_id, StringType(), True),
-        StructField(Colname.balance_responsible_id, StringType(), True),
-        StructField("quarter_time", TimestampType(), False),
-        StructField(
+        t.StructField(Colname.grid_area, t.StringType(), False),
+        t.StructField(Colname.to_grid_area, t.StringType(), True),
+        t.StructField(Colname.from_grid_area, t.StringType(), True),
+        t.StructField(Colname.metering_point_id, t.StringType(), False),
+        t.StructField(Colname.metering_point_type, t.StringType(), False),
+        t.StructField(Colname.resolution, t.StringType(), False),
+        t.StructField(Colname.observation_time, t.TimestampType(), False),
+        t.StructField(Colname.quantity, t.DecimalType(18, 6), False),
+        t.StructField(Colname.quality, t.StringType(), False),
+        t.StructField(Colname.energy_supplier_id, t.StringType(), True),
+        t.StructField(Colname.balance_responsible_id, t.StringType(), True),
+        t.StructField(
             Colname.time_window,
-            StructType(
+            t.StructType(
                 [
-                    StructField(Colname.start, TimestampType()),
-                    StructField(Colname.end, TimestampType()),
+                    t.StructField(Colname.start, t.TimestampType()),
+                    t.StructField(Colname.end, t.TimestampType()),
                 ]
             ),
             False,
         ),
-        StructField("quarter_quantity", DecimalType(18, 6), True),
     ]
 )
