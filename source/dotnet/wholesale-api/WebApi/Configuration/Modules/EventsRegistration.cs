@@ -40,7 +40,7 @@ public static class EventsRegistration
         serviceCollection.AddScoped<ICompletedBatchFactory, CompletedBatchFactory>();
         serviceCollection.AddScoped<IRegisterCompletedBatchesHandler, RegisterCompletedBatchesHandler>();
 
-        serviceCollection.AddScoped<ICalculationResultIntegrationEventFactory, CalculationResultIntegrationEventFactory>();
+        serviceCollection.AddScoped<IIntegrationEventFactory, IntegrationEventFactory>();
 
         serviceCollection.AddApplications();
         serviceCollection.AddInfrastructure();

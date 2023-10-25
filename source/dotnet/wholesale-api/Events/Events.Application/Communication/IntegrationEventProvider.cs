@@ -26,7 +26,7 @@ namespace Energinet.DataHub.Wholesale.Events.Application.Communication;
 
 public class IntegrationEventProvider : IIntegrationEventProvider
 {
-    private readonly ICalculationResultIntegrationEventFactory _calculationResultIntegrationEventFactory;
+    private readonly IIntegrationEventFactory _integrationEventFactory;
     private readonly IEnergyResultQueries _energyResultQueries;
     private readonly IWholesaleResultQueries _wholesaleResultQueries;
     private readonly ICompletedBatchRepository _completedBatchRepository;
@@ -35,7 +35,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
     private readonly ILogger<IntegrationEventProvider> _logger;
 
     public IntegrationEventProvider(
-        ICalculationResultIntegrationEventFactory integrationEventFactory,
+        IIntegrationEventFactory integrationEventFactory,
         IEnergyResultQueries energyResultQueries,
         IWholesaleResultQueries wholesaleResultQueries,
         ICompletedBatchRepository completedBatchRepository,
@@ -43,7 +43,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
         IUnitOfWork unitOfWork,
         ILogger<IntegrationEventProvider> logger)
     {
-        _calculationResultIntegrationEventFactory = integrationEventFactory;
+        _integrationEventFactory = integrationEventFactory;
         _energyResultQueries = energyResultQueries;
         _wholesaleResultQueries = wholesaleResultQueries;
         _completedBatchRepository = completedBatchRepository;
@@ -67,8 +67,8 @@ public class IntegrationEventProvider : IIntegrationEventProvider
             await foreach (var energyResult in _energyResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
             {
                 energyResultCount++;
-                yield return _calculationResultIntegrationEventFactory.CreateCalculationResultCompleted(energyResult); // Deprecated
-                yield return _calculationResultIntegrationEventFactory.CreateEnergyResultProducedV1(energyResult);
+                yield return _integrationEventFactory.CreateCalculationResultCompleted(energyResult); // Deprecated
+                yield return _integrationEventFactory.CreateEnergyResultProducedV1(energyResult);
             }
 
             // Publish wholesale results
@@ -98,9 +98,9 @@ public class IntegrationEventProvider : IIntegrationEventProvider
     {
         return wholesaleResult.ChargeResolution switch
         {
-            ChargeResolution.Day or ChargeResolution.Hour => _calculationResultIntegrationEventFactory
+            ChargeResolution.Day or ChargeResolution.Hour => _integrationEventFactory
                 .CreateAmountPerChargeResultProducedV1(wholesaleResult),
-            ChargeResolution.Month => _calculationResultIntegrationEventFactory
+            ChargeResolution.Month => _integrationEventFactory
                 .CreateMonthlyAmountPerChargeResultProducedV1(wholesaleResult),
             _ => throw new ArgumentOutOfRangeException(
                 nameof(wholesaleResult.ChargeResolution),

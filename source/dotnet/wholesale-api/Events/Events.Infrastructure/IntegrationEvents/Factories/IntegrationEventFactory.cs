@@ -19,14 +19,14 @@ using Energinet.DataHub.Wholesale.Events.Application.Communication;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories
 {
-    public class CalculationResultIntegrationEventFactory : ICalculationResultIntegrationEventFactory
+    public class IntegrationEventFactory : IIntegrationEventFactory
     {
         private readonly ICalculationResultCompletedFactory _calculationResultCompletedFactory;
         private readonly IEnergyResultProducedV1Factory _energyResultProducedV1Factory;
         private readonly IAmountPerChargeResultProducedV1Factory _amountPerChargeResultProducedV1Factory;
         private readonly IMonthlyAmountPerChargeResultProducedV1Factory _monthlyAmountPerChargeResultProducedV1Factory;
 
-        public CalculationResultIntegrationEventFactory(
+        public IntegrationEventFactory(
             ICalculationResultCompletedFactory calculationResultCompletedFactory,
             IEnergyResultProducedV1Factory energyResultProducedV1Factory,
             IAmountPerChargeResultProducedV1Factory amountPerChargeResultProducedV1Factory,

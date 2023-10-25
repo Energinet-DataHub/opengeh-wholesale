@@ -25,7 +25,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.EventPublishers;
 
-public class CalculationResultIntegrationEventFactoryTests
+public class IntegrationEventFactoryTests
 {
     [Theory]
     [AutoMoqData]
@@ -33,7 +33,7 @@ public class CalculationResultIntegrationEventFactoryTests
         CalculationResultCompleted calculationResultCompleted,
         EnergyResult energyResult,
         [Frozen] Mock<ICalculationResultCompletedFactory> calculationResultCompletedFactoryMock,
-        CalculationResultIntegrationEventFactory sut)
+        IntegrationEventFactory sut)
     {
         // Arrange
         calculationResultCompletedFactoryMock
@@ -56,7 +56,7 @@ public class CalculationResultIntegrationEventFactoryTests
         EnergyResultProducedV1 energyResultProduced,
         EnergyResult energyResult,
         [Frozen] Mock<IEnergyResultProducedV1Factory> energyResultProducedV1FactoryMock,
-        CalculationResultIntegrationEventFactory sut)
+        IntegrationEventFactory sut)
     {
         // Arrange
         energyResultProducedV1FactoryMock

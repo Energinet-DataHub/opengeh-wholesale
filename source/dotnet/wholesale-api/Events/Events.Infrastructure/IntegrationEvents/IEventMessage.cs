@@ -18,7 +18,7 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents
 {
     /// <summary>
     /// Extends the generated protobuf message types with additional properties
-    /// to support generic creation of <see cref="Energinet.DataHub.Core.Messaging.Communication.Internal.IntegrationEvent"/>.
+    /// to support generic creation of the type "IntegrationEvent".
     /// </summary>
     internal interface IEventMessage : IMessage
     {
@@ -27,6 +27,9 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents
         /// </summary>
         string EventName { get; }
 
+        /// <summary>
+        /// For new events we start this version at zero (0).
+        /// </summary>
         int EventMinorVersion { get; }
     }
 }

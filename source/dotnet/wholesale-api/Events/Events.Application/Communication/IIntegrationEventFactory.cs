@@ -18,7 +18,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 
 namespace Energinet.DataHub.Wholesale.Events.Application.Communication;
 
-public interface ICalculationResultIntegrationEventFactory
+public interface IIntegrationEventFactory
 {
     IntegrationEvent CreateCalculationResultCompleted(EnergyResult energyResult);
 
