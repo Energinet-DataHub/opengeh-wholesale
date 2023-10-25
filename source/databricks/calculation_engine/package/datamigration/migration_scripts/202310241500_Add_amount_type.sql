@@ -1,5 +1,5 @@
 ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
-    ADD COLUMN amount_type STRING NOT NULL
+    ADD COLUMN amount_type STRING
 GO
 
 ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
