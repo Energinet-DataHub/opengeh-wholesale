@@ -21,6 +21,7 @@ using Energinet.DataHub.Wholesale.Events.Application.Options;
 using Energinet.DataHub.Wholesale.Events.Application.Triggers;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Energinet.DataHub.Wholesale.Events.Application.Workers;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedBatches;
@@ -40,7 +41,8 @@ public static class EventsRegistration
         serviceCollection.AddScoped<ICompletedBatchFactory, CompletedBatchFactory>();
         serviceCollection.AddScoped<IRegisterCompletedBatchesHandler, RegisterCompletedBatchesHandler>();
 
-        serviceCollection.AddScoped<IIntegrationEventFactory, IntegrationEventFactory>();
+        serviceCollection.AddScoped<IEnergyResultEventProvider, EnergyResultEventProvider>();
+        serviceCollection.AddScoped<IWholesaleResultEventProvider, WholesaleResultEventProvider>();
 
         serviceCollection.AddApplications();
         serviceCollection.AddInfrastructure();
