@@ -34,21 +34,21 @@ public class IntegrationEventProviderTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public void GetAsync_WhenNoUnpublishedBatches_DoesNotCommit(
+    public async Task GetAsync_WhenNoUnpublishedBatches_DoesNotCommit(
         [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         IntegrationEventProvider sut)
     {
         // Arrange
         completedBatchRepositoryMock
-            .Setup(p => p.GetNextUnpublishedOrNullAsync())
+            .Setup(mock => mock.GetNextUnpublishedOrNullAsync())
             .ReturnsAsync((CompletedBatch)null!);
 
         // Act
-        var unused = sut.GetAsync().ToListAsync();
+        _ = await sut.GetAsync().ToListAsync();
 
         // Assert
-        unitOfWorkMock.Verify(x => x.CommitAsync(), Times.Never);
+        unitOfWorkMock.Verify(mock => mock.CommitAsync(), Times.Never);
     }
 
     [Theory]
@@ -63,7 +63,7 @@ public class IntegrationEventProviderTests
     {
         // Arrange
         completedBatchRepositoryMock
-            .SetupSequence(p => p.GetNextUnpublishedOrNullAsync())
+            .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
             .ReturnsAsync(completedBatch)
             .ReturnsAsync(completedBatch)
             .ReturnsAsync((CompletedBatch)null!);
@@ -75,8 +75,8 @@ public class IntegrationEventProviderTests
         // Act
         _ = await sut.GetAsync().ToListAsync();
 
-        // Assert: Commits once per unpublished batch
-        unitOfWorkMock.Verify(x => x.CommitAsync(), Times.Exactly(2));
+        // Assert
+        unitOfWorkMock.Verify(mock => mock.CommitAsync(), Times.Exactly(2));
     }
 
     ////[Theory]
@@ -240,7 +240,7 @@ public class IntegrationEventProviderTests
             .ToList();
 
         // Assert
-        Assert.True(actualImplementations.Count == 1, $"The interface {nameof(IIntegrationEventProvider)} must be implemented.");
+        actualImplementations.Should().HaveCount(1, $"The interface {nameof(IIntegrationEventProvider)} must be implemented.");
     }
 
     private async IAsyncEnumerable<T> AsAsyncEnumerable<T>(params T[] items)
