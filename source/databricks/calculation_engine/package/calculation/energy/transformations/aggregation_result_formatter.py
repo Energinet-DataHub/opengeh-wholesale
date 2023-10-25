@@ -16,6 +16,7 @@ from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
 from pyspark.sql.types import StringType
 
+from package.codelists import QuantityQuality
 from package.common import assert_schema
 from package.calculation.energy.schemas import aggregation_result_schema
 from package.constants import Colname
@@ -26,6 +27,15 @@ def create_dataframe_from_aggregation_result_schema(result: DataFrame) -> DataFr
 
     result = _add_missing_nullable_columns(result)
     result = result.na.fill(value=0, subset=[Colname.sum_quantity])
+
+    # TODO BJM: Workaround for current problem in domain tests where qualities=null seems to appear
+    result = result.withColumn(
+        Colname.qualities,
+        f.when(
+            f.col(Colname.qualities).isNull(),
+            f.array(f.lit(QuantityQuality.MISSING.value)),
+        ).otherwise(f.col(Colname.qualities)),
+    )
 
     result = result.select(
         Colname.grid_area,
