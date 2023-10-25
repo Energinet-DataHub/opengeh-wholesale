@@ -176,6 +176,7 @@ def get_basis_data_time_series_points_df(
     result = result.fillna(0, subset=[Colname.quantity])
 
     # Workaround to enforce quantity nullable=False. This should be safe according to `fillna(..)` above
+    # note that this only change the schema for an instance of the dataframe, not the dataframe itself
     result.schema[Colname.quantity].nullable = False
 
     return result
