@@ -17,3 +17,18 @@ module "mssqldb_esett" {
   monitor_alerts_action_group_id     = data.azurerm_key_vault_secret.ag_primary_id.value
   monitor_alerts_resource_group_name = azurerm_resource_group.this.name
 }
+
+module "mssql_database_application_access" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database-application-access?ref=v13"
+
+  sql_server_name = data.azurerm_mssql_server.mssqlsrv.name
+  database_name   = module.mssqldb_esett.name
+
+  application_hosts_names = [
+    module.app_biztalkshipper.name,
+    module.app_importer.name,
+    module.func_biztalkreceiver.name,
+    module.func_changeobserver.name,
+    module.func_converter.name,
+  ]
+}

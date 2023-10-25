@@ -1,4 +1,4 @@
-module "azfun_converter" {
+module "func_converter" {
   source                                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=v13"
 
   name                                      = "converter"
