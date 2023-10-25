@@ -49,6 +49,7 @@ class Colname:
     parent_metering_point_id = "parent_metering_point_id"
     price_per_day = "price_per_day"
     qualities = "qualities"
+    """Aggregated qualities: An array of unique quality values aggregated from metering point time series."""
     quality = "quality"
     quantity = "quantity"
     resolution = "resolution"

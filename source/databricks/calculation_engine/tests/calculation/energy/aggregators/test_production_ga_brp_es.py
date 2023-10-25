@@ -65,7 +65,7 @@ def enriched_time_series_factory(
                 Colname.grid_area: grid_area,
                 Colname.balance_responsible_id: default_responsible,
                 Colname.energy_supplier_id: default_supplier,
-                "quarter_quantity": quantity,
+                Colname.quantity: quantity,
                 Colname.time_window: obs_time_datetime,
                 Colname.quality: quality,
             }
@@ -478,7 +478,7 @@ def test__when_time_series_point_is_missing__quantity_is_0(
     enriched_time_series_factory: Callable[..., DataFrame],
 ) -> None:
     df = enriched_time_series_factory().withColumn(
-        "quarter_quantity", F.lit(None).cast(DecimalType())
+        Colname.quantity, F.lit(None).cast(DecimalType())
     )
     result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
     assert result_df.first().sum_quantity == Decimal("0.000")
