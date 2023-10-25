@@ -65,8 +65,8 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
             if (result is not null)
             {
                 message = AggregatedTimeSeriesRequestAcceptedMessageFactory.Create(
-                result,
-                referenceId);
+                    result,
+                    referenceId);
             }
             else
             {
