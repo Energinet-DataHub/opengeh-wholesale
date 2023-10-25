@@ -22,5 +22,5 @@ public partial class EnergyResultProducedV2
     /// </summary>
     public const string EventName = "EnergyResultProducedV2";
 
-    public const int EventMinorVersion = 1;
+    public const int EventMinorVersion = 0;
 }

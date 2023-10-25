@@ -64,7 +64,8 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
 
     private EnergyResult CreateEnergyResult()
     {
-        var quantityQualities = new List<QuantityQuality>();
+        var quantityQualities = new List<QuantityQuality> { QuantityQuality.Estimated };
+
         return new EnergyResult(
             _id,
             _batchId,
@@ -74,9 +75,9 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
             _balanceResponsibleId,
             new EnergyTimeSeriesPoint[]
             {
-                new(new DateTime(2021, 1, 1), 1, QuantityQuality.Estimated, quantityQualities),
-                new(new DateTime(2021, 1, 1), 2, QuantityQuality.Estimated, quantityQualities),
-                new(new DateTime(2021, 1, 1), 3, QuantityQuality.Estimated, quantityQualities),
+                new(new DateTime(2021, 1, 1), 1, quantityQualities),
+                new(new DateTime(2021, 1, 1), 2, quantityQualities),
+                new(new DateTime(2021, 1, 1), 3, quantityQualities),
             },
             ProcessType.Aggregation,
             _periodStart,

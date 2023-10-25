@@ -63,7 +63,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
                 resultCount++;
                 yield return _calculationResultIntegrationEventFactory.CreateCalculationResultCompleted(energyResult); // Deprecated
                 yield return _calculationResultIntegrationEventFactory.CreateEnergyResultProducedV1(energyResult);
-                // TODO AJW Do not get the next version of EnergyResultProduced (V2) yet. Needs more work.
+                // TODO AJW Do not Uncomment the next version of EnergyResultProduced (V2) yet. Needs more work.
                 // yield return _calculationResultIntegrationEventFactory.CreateEnergyResultProducedV2(energyResult);
             }
 

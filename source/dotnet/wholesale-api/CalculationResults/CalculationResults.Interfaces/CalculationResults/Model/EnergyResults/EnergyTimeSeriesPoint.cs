@@ -20,10 +20,8 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationR
 /// </summary>
 /// <param name="Time"></param>
 /// <param name="Quantity"></param>
-/// <param name="Quality"></param>
 /// <param name="Qualities"></param>
 public sealed record EnergyTimeSeriesPoint(
     DateTimeOffset Time,
     decimal Quantity,
-    QuantityQuality Quality,
     IReadOnlyCollection<QuantityQuality> Qualities);

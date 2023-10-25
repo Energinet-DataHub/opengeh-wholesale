@@ -71,12 +71,18 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
             var point = new TimeSeriesPoint()
             {
                 Quantity = new DecimalValue() { Units = units, Nanos = nanos },
-                QuantityQuality = QuantityQualityMapper.MapQuantityQuality(timeSeriesPoint.Quality),
+                QuantityQuality = SelectBestSuitedQuality(timeSeriesPoint.Qualities),
                 Time = new Timestamp() { Seconds = timeSeriesPoint.Time.ToUnixTimeSeconds(), },
             };
             points.Add(point);
         }
 
         return points;
+    }
+
+    private static QuantityQuality SelectBestSuitedQuality(IEnumerable<CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality> qualities)
+    {
+        // TODO AJW Return best suited quality
+        return QuantityQualityMapper.MapQuantityQuality(qualities.First());
     }
 }

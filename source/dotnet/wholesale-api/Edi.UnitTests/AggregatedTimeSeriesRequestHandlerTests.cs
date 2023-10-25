@@ -200,7 +200,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
             TimeSeriesType.Production,
             "1223456",
             "123456",
-            timeSeriesPoints: new EnergyTimeSeriesPoint[] { new(DateTime.Now, 0, QuantityQuality.Measured, new List<QuantityQuality>()) },
+            timeSeriesPoints: new EnergyTimeSeriesPoint[] { new(DateTime.Now, 0, new List<QuantityQuality> { QuantityQuality.Measured }) },
             ProcessType.Aggregation,
             Instant.FromUtc(2022, 12, 31, 23, 0),
             Instant.FromUtc(2023, 1, 31, 23, 0),

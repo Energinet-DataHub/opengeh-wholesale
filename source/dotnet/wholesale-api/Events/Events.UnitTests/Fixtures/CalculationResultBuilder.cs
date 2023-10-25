@@ -22,7 +22,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Fixtures;
 public sealed class CalculationResultBuilder
 {
     private TimeSeriesType _timeSeriesType = TimeSeriesType.Production;
-    private EnergyTimeSeriesPoint[] _points = { new(DateTime.Now, 0, QuantityQuality.Measured, new List<QuantityQuality>()) };
+    private EnergyTimeSeriesPoint[] _points = { new(DateTime.Now, 0, new List<QuantityQuality> { QuantityQuality.Measured }) };
     private Guid _batchId = Guid.NewGuid();
     private string? _energySupplierId;
     private string? _balanceResponsiblePartyId;
