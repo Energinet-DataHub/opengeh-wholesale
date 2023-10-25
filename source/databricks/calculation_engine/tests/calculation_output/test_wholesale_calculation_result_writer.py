@@ -242,6 +242,9 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
 ) -> None:
     # This class is a guard against adding new columns without considering how the column affects the generation of
     # calculation result IDs
+    # NOTE: This test take columns names from WholesaleResultColumnNames and compares with column names taken from
+    # _get_column_group_for_calculation_result_id, which uses 'Colname'. We are, however, saved by the fact that the
+    # names are the same in both places
 
     # Arrange
     expected_excluded_columns = [
