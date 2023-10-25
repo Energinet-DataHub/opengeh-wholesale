@@ -105,7 +105,7 @@ def agg_net_exchange_factory(spark):
 
 
 @pytest.fixture(scope="module")
-def agg_production_factory(spark, production_schema):
+def agg_production_factory(spark):
     def factory():
         pandas_df = pd.DataFrame(
             {
@@ -156,7 +156,7 @@ def agg_production_factory(spark, production_schema):
             }
         )
 
-        df = spark.createDataFrame(pandas_df, schema=production_schema)
+        df = spark.createDataFrame(pandas_df, schema=energy_results_schema)
         return EnergyResults(df)
 
     return factory
@@ -196,7 +196,7 @@ def agg_total_production_factory(spark):
 
 
 @pytest.fixture(scope="module")
-def agg_total_net_exchange_factory(spark, net_exchange_schema):
+def agg_total_net_exchange_factory(spark):
     def factory(quality):
         pandas_df = pd.DataFrame(
             {
@@ -226,7 +226,7 @@ def agg_total_net_exchange_factory(spark, net_exchange_schema):
             ignore_index=True,
         )
 
-        df = spark.createDataFrame(pandas_df, schema=net_exchange_schema)
+        df = spark.createDataFrame(pandas_df, schema=energy_results_schema)
         return EnergyResults(df)
 
     return factory

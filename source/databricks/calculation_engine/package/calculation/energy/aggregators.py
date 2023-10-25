@@ -74,6 +74,7 @@ def _aggregate_per_ga_and_brp_and_es(
     Each row in the output dataframe corresponds to a unique combination of: ga, brp, es, and quarter_time
 
     """
+    # TODO BJM: Doc about converting hour data to quarter doesn't seem correct
 
     result = df.df.filter(
         col(Colname.metering_point_type) == market_evaluation_point_type.value

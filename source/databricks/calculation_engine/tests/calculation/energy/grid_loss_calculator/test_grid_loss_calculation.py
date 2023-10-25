@@ -21,9 +21,6 @@ import pandas as pd
 import pytest
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col
-from pyspark.sql.types import (
-    StructType,
-)
 
 from package.calculation.energy.energy_results import (
     EnergyResults,
@@ -54,8 +51,6 @@ class AggregationMethod(Enum):
 @pytest.fixture(scope="module")
 def agg_result_factory(
     spark: SparkSession,
-    agg_net_exchange_schema: StructType,
-    agg_consumption_and_production_schema: StructType,
 ) -> Callable[[AggregationMethod], EnergyResults]:
     """
     Factory to generate a single row of time series data, with default parameters as specified above.
@@ -86,7 +81,7 @@ def agg_result_factory(
                     },
                     ignore_index=True,
                 )
-            df = spark.createDataFrame(pandas_df, schema=agg_net_exchange_schema)
+            df = spark.createDataFrame(pandas_df, schema=energy_results_schema)
             return EnergyResults(df)
         elif agg_method == AggregationMethod.HOURLY_CONSUMPTION:
             pandas_df = pd.DataFrame(
@@ -176,18 +171,14 @@ def agg_result_factory(
                     },
                     ignore_index=True,
                 )
-            df = spark.createDataFrame(
-                pandas_df, schema=agg_consumption_and_production_schema
-            )
+            df = spark.createDataFrame(pandas_df, schema=energy_results_schema)
             return EnergyResults(df)
 
     return factory
 
 
 @pytest.fixture(scope="module")
-def agg_net_exchange_factory(
-    spark: SparkSession, agg_net_exchange_schema: StructType
-) -> Callable[[], DataFrame]:
+def agg_net_exchange_factory(spark: SparkSession) -> Callable[[], DataFrame]:
     def factory() -> DataFrame:
         pandas_df = pd.DataFrame(
             {
@@ -238,15 +229,13 @@ def agg_net_exchange_factory(
             }
         )
 
-        return spark.createDataFrame(pandas_df, schema=agg_net_exchange_schema)
+        return spark.createDataFrame(pandas_df, schema=energy_results_schema)
 
     return factory
 
 
 @pytest.fixture(scope="module")
-def agg_flex_consumption_factory(
-    spark: SparkSession, agg_consumption_and_production_schema: StructType
-) -> Callable[[], DataFrame]:
+def agg_flex_consumption_factory(spark: SparkSession) -> Callable[[], DataFrame]:
     def factory() -> DataFrame:
         pandas_df = pd.DataFrame(
             {
@@ -299,17 +288,13 @@ def agg_flex_consumption_factory(
             }
         )
 
-        return spark.createDataFrame(
-            pandas_df, schema=agg_consumption_and_production_schema
-        )
+        return spark.createDataFrame(pandas_df, schema=energy_results_schema)
 
     return factory
 
 
 @pytest.fixture(scope="module")
-def agg_hourly_consumption_factory(
-    spark: SparkSession, agg_consumption_and_production_schema: StructType
-) -> Callable[[], DataFrame]:
+def agg_hourly_consumption_factory(spark: SparkSession) -> Callable[[], DataFrame]:
     def factory() -> DataFrame:
         pandas_df = pd.DataFrame(
             {
@@ -362,17 +347,13 @@ def agg_hourly_consumption_factory(
             }
         )
 
-        return spark.createDataFrame(
-            pandas_df, schema=agg_consumption_and_production_schema
-        )
+        return spark.createDataFrame(pandas_df, schema=energy_results_schema)
 
     return factory
 
 
 @pytest.fixture(scope="module")
-def agg_hourly_production_factory(
-    spark: SparkSession, agg_consumption_and_production_schema: StructType
-) -> Callable[[], DataFrame]:
+def agg_hourly_production_factory(spark: SparkSession) -> Callable[[], DataFrame]:
     def factory() -> DataFrame:
         pandas_df = pd.DataFrame(
             {
@@ -425,9 +406,7 @@ def agg_hourly_production_factory(
             }
         )
 
-        return spark.createDataFrame(
-            pandas_df, schema=agg_consumption_and_production_schema
-        )
+        return spark.createDataFrame(pandas_df, schema=energy_results_schema)
 
     return factory
 

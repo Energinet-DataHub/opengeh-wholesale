@@ -12,56 +12,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from decimal import Decimal
 from datetime import datetime
-from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.types import (
-    StructType,
-    StringType,
-    DecimalType,
-    TimestampType,
-    ArrayType,
-)
-from pyspark.sql.functions import col
-import pytest
-import pandas as pd
+from decimal import Decimal
 from typing import Callable
+
+import pandas as pd
+import pytest
+from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql.functions import col
 
 from package.calculation.energy.energy_results import (
     energy_results_schema,
     EnergyResults,
 )
+from package.calculation.energy.grid_loss_calculator import calculate_positive_grid_loss
 from package.codelists import (
     MeteringPointType,
     QuantityQuality,
 )
 from package.common import assert_schema
 from package.constants import Colname
-from package.calculation.energy.grid_loss_calculator import calculate_positive_grid_loss
 
 
 @pytest.fixture(scope="module")
-def grid_loss_schema() -> StructType:
-    return (
-        StructType()
-        .add(Colname.grid_area, StringType(), False)
-        .add(
-            Colname.time_window,
-            StructType()
-            .add(Colname.start, TimestampType())
-            .add(Colname.end, TimestampType()),
-            False,
-        )
-        .add(Colname.sum_quantity, DecimalType(18, 3))
-        .add(Colname.qualities, ArrayType(StringType(), False), False)
-        .add(Colname.metering_point_type, StringType())
-    )
-
-
-@pytest.fixture(scope="module")
-def agg_result_factory(
-    spark: SparkSession, grid_loss_schema: StructType
-) -> Callable[[], DataFrame]:
+def agg_result_factory(spark: SparkSession) -> Callable[[], DataFrame]:
     """
     Factory to generate a single row of time series data, with default parameters as specified above.
     """
@@ -112,7 +86,7 @@ def agg_result_factory(
             ignore_index=True,
         )
 
-        return spark.createDataFrame(pandas_df, schema=grid_loss_schema)
+        return spark.createDataFrame(pandas_df, schema=energy_results_schema)
 
     return factory
 

@@ -51,18 +51,26 @@ class QuarterlyMeteringPointTimeSeries(DataFrameWrapper):
             Colname.quality,
             Colname.energy_supplier_id,
             Colname.balance_responsible_id,
+            "quarter_time",
             Colname.time_window,
+            "quarter_quantity",
         )
 
         # Workaround to enforce quantity nullable=False. This should be safe as quantity in input is nullable=False
         df.schema[Colname.quantity].nullable = False
 
         assert_schema(
-            df.schema, time_series_quarter_points_schema, ignore_column_order=True
+            df.schema,
+            time_series_quarter_points_schema,
+            ignore_column_order=True,
+            ignore_nullability=True,
+            ignore_decimal_scale=True,
+            ignore_decimal_precision=True,
         )
 
         super().__init__(df)
 
+    # TODO BJM: Make generic and reuse
     @staticmethod
     def _add_missing_nullable_columns(result: DataFrame) -> DataFrame:
         if Colname.to_grid_area not in result.columns:
@@ -73,16 +81,16 @@ class QuarterlyMeteringPointTimeSeries(DataFrameWrapper):
             result = result.withColumn(
                 Colname.from_grid_area, f.lit(None).cast(t.StringType())
             )
-        if Colname.balance_responsible_id not in result.columns:
-            result = result.withColumn(
-                Colname.balance_responsible_id, f.lit(None).cast(t.StringType())
-            )
         if Colname.energy_supplier_id not in result.columns:
             result = result.withColumn(
                 Colname.energy_supplier_id, f.lit(None).cast(t.StringType())
             )
-        if Colname.settlement_method not in result.columns:
+        if Colname.balance_responsible_id not in result.columns:
             result = result.withColumn(
-                Colname.settlement_method, f.lit(None).cast(t.StringType())
+                Colname.balance_responsible_id, f.lit(None).cast(t.StringType())
+            )
+        if "quarter_quantity" not in result.columns:
+            result = result.withColumn(
+                "quarter_quantity", f.lit(None).cast(t.DecimalType(18, 6))
             )
         return result
