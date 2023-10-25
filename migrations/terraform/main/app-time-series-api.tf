@@ -22,10 +22,10 @@ module "app_time_series_api" {
     "TimeZone" = "Europe/Copenhagen"
 
     # Azure AD
-    "AzureAd__Instance"     = "https://login.microsoftonline.com/"
-    "AzureAd__TenantId"     = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=b2c-tenant-id)"
-    "AzureAd__ClientId"     = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=eloverblik-timeseriesapi-client-app-id)"
-    "AzureAd__ResourceId"   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-timeseriesapi-app-id)"
+    "AzureAd__Instance"   = "https://login.microsoftonline.com/"
+    "AzureAd__TenantId"   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=b2c-tenant-id)"
+    "AzureAd__ClientId"   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=eloverblik-timeseriesapi-client-app-id)"
+    "AzureAd__ResourceId" = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-timeseriesapi-app-id)"
 
     # Databricks
     "DatabricksOptions__WorkspaceToken"       = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=dbw-shared-workspace-token)"
@@ -35,9 +35,9 @@ module "app_time_series_api" {
     "DatabricksOptions__HealthCheckEndHour"   = 16
 
     # Logging
-    "Logging__ApplicationInsights__LogLevel__Default"                       = "Warning"
-    "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Migrations"  = "Information"
-    "Logging__ApplicationInsights__LogLevel__Energinet.Datahub.Core"        = "Information"
+    "Logging__ApplicationInsights__LogLevel__Default"                      = "Warning"
+    "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Migrations" = "Information"
+    "Logging__ApplicationInsights__LogLevel__Energinet.Datahub.Core"       = "Information"
   }
 
   role_assignments = [

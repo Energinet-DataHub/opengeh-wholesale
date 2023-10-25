@@ -5,4 +5,3 @@ locals {
   resources_suffix                = "${lower(var.domain_name_short)}-${lower(var.environment_short)}-${lower(var.environment_instance)}"
   datahub2_certificate_thumbprint = ""
 }
-

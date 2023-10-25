@@ -2,7 +2,7 @@ module "apimao_ping_for_connectivity_test" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api-operation?ref=v12"
 
   operation_id            = "connectivity-test-ping"
-  api_management_api_name = module.apima_timeseriesapi.name
+  api_management_api_name = module.apim_timeseriesapi.name
   resource_group_name     = data.azurerm_key_vault_secret.apim_instance_resource_group_name.value
   api_management_name     = data.azurerm_key_vault_secret.apim_instance_name.value
   display_name            = "Connectivity test: ping 200"

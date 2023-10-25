@@ -1,4 +1,4 @@
-module "apima_timeseriesapi" {
+module "apim_timeseriesapi" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api?ref=v12"
 
   name                       = "timeseriesapi"
