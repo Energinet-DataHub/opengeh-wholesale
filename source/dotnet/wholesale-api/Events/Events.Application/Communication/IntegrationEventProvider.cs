@@ -111,10 +111,10 @@ public class IntegrationEventProvider : IIntegrationEventProvider
 
     private static bool IsWholesaleCalculationType(ProcessType calculationType)
     {
-        return calculationType 
-            is ProcessType.WholesaleFixing 
-            or ProcessType.FirstCorrectionSettlement 
-            or ProcessType.SecondCorrectionSettlement 
+        return calculationType
+            is ProcessType.WholesaleFixing
+            or ProcessType.FirstCorrectionSettlement
+            or ProcessType.SecondCorrectionSettlement
             or ProcessType.ThirdCorrectionSettlement;
     }
 }
