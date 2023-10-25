@@ -253,6 +253,8 @@ def test__get_column_group_for_calculation_result_id__returns_expected_column_na
         Colname.grid_area,
         Colname.charge_owner,
         Colname.energy_supplier_id,
+        Colname.metering_point_type,
+        Colname.settlement_method,
     ]
 
     # Act
@@ -280,8 +282,6 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
         WholesaleResultColumnNames.quantity_unit,
         WholesaleResultColumnNames.quantity_qualities,
         WholesaleResultColumnNames.time,
-        WholesaleResultColumnNames.metering_point_type,
-        WholesaleResultColumnNames.settlement_method,
         WholesaleResultColumnNames.price,
         WholesaleResultColumnNames.amount,
         WholesaleResultColumnNames.is_tax,
@@ -291,9 +291,25 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
         attr for attr in dir(WholesaleResultColumnNames) if not attr.startswith("__")
     ]
 
+    all_columns = _map_metering_point_type_column_name(all_columns)
+
     # Act
     included_columns = sut._get_column_group_for_calculation_result_id()
 
     # Assert
     excluded_columns = set(all_columns) - set(included_columns)
     assert set(excluded_columns) == set(expected_excluded_columns)
+
+
+def _map_metering_point_type_column_name(column_names: list[str]) -> list[str]:
+    # this is a simple pragmatic workaround to deal with the fact that the column name for metering point type is not
+    # the same in 'Colname' as it is in 'WholesaleResultColumnNames'
+    return list(
+        map(
+            lambda x: x.replace(
+                WholesaleResultColumnNames.metering_point_type,
+                Colname.metering_point_type,
+            ),
+            column_names,
+        )
+    )
