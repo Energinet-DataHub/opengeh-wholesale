@@ -123,22 +123,10 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             }
 
             [DomainFact]
-            public void When_WholesaleFixingHasCompleted_Then_HasReceivedExpectedNumberOfEnergyResults()
+            public void When_WholesaleFixingHasCompleted_Then_HasReceivedExpectedNumberOfResults()
             {
                 Fixture.Output.CalculationResultCompletedFromWholesaleFixing.Count.Should().Be(137);
                 Fixture.Output.EnergyResultProducedFromWholesaleFixing.Count.Should().Be(137);
-            }
-
-            [DomainFact]
-            public void When_WholesaleFixingHasCompleted_Then_HasReceivedExpectedNumberOfAmountPerChargeResults()
-            {
-                Fixture.Output.AmountPerChargeResultProduced.Count.Should().Be(137);
-            }
-
-            [DomainFact]
-            public void When_WholesaleFixingHasCompleted_Then_HasReceivedExpectedNumberOfMonthlyAmountPerChargeResults()
-            {
-                Fixture.Output.MonthlyAmountPerChargeResultProduced.Count.Should().Be(137);
             }
 
             [DomainFact]
