@@ -89,7 +89,6 @@ class WholesaleCalculationResultWriter:
                 WholesaleResultColumnNames.calculation_execution_time_start
             ),
             col(WholesaleResultColumnNames.calculation_result_id),
-            col(WholesaleResultColumnNames.amount_type),
             col(Colname.grid_area).alias(WholesaleResultColumnNames.grid_area),
             col(Colname.energy_supplier_id).alias(
                 WholesaleResultColumnNames.energy_supplier_id
@@ -111,6 +110,7 @@ class WholesaleCalculationResultWriter:
             col(Colname.charge_code).alias(WholesaleResultColumnNames.charge_code),
             col(Colname.charge_type).alias(WholesaleResultColumnNames.charge_type),
             col(Colname.charge_owner).alias(WholesaleResultColumnNames.charge_owner_id),
+            col(WholesaleResultColumnNames.amount_type),
         )
 
     @staticmethod
