@@ -238,7 +238,7 @@ def test__write__writes_amount_type(
     actual_row = actual_df.collect()[0]
 
     assert (
-        actual_row[WholesaleResultColumnNames.result_type] == DEFAULT_AMOUNT_TYPE.value
+        actual_row[WholesaleResultColumnNames.amount_type] == DEFAULT_AMOUNT_TYPE.value
     )
 
 
@@ -274,7 +274,7 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
         WholesaleResultColumnNames.calculation_type,
         WholesaleResultColumnNames.calculation_execution_time_start,
         WholesaleResultColumnNames.calculation_result_id,
-        WholesaleResultColumnNames.result_type,
+        WholesaleResultColumnNames.amount_type,
         WholesaleResultColumnNames.grid_area,
         WholesaleResultColumnNames.quantity,
         WholesaleResultColumnNames.quantity_unit,
