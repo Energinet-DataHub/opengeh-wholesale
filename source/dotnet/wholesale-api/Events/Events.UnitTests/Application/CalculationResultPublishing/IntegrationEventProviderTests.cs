@@ -45,7 +45,7 @@ public class IntegrationEventProviderTests
             .ReturnsAsync((CompletedBatch)null!);
 
         // Act
-        _ = await sut.GetAsync().ToListAsync();
+        await sut.GetAsync().ToListAsync();
 
         // Assert
         unitOfWorkMock.Verify(mock => mock.CommitAsync(), Times.Never);
@@ -55,9 +55,7 @@ public class IntegrationEventProviderTests
     [InlineAutoMoqData]
     public async Task GetAsync_WhenMultipleUnpublishedBatches_CommitsOncePerBatch(
         CompletedBatch completedBatch,
-        IntegrationEvent anyIntegrationEvent,
         [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
-        [Frozen] Mock<IEnergyResultEventProvider> energyResultEventProviderMock,
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         IntegrationEventProvider sut)
     {
@@ -68,82 +66,96 @@ public class IntegrationEventProviderTests
             .ReturnsAsync(completedBatch)
             .ReturnsAsync((CompletedBatch)null!);
 
-        energyResultEventProviderMock
-            .Setup(mock => mock.GetAsync(completedBatch, It.IsAny<EventProviderState>()))
-            .Returns(AsAsyncEnumerable(anyIntegrationEvent));
-
         // Act
-        _ = await sut.GetAsync().ToListAsync();
+        await sut.GetAsync().ToListAsync();
 
         // Assert
         unitOfWorkMock.Verify(mock => mock.CommitAsync(), Times.Exactly(2));
     }
 
-    ////[Theory]
-    ////[InlineAutoMoqData]
-    ////public void GetAsync_SetsPublishedTimeOfBatch(
-    ////    Instant instant,
-    ////    CompletedBatch completedBatch,
-    ////    [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
-    ////    [Frozen] Mock<IEnergyResultQueries> energyResultQueriesMock,
-    ////    [Frozen] Mock<IClock> clockMock,
-    ////    IntegrationEventProvider sut)
-    ////{
-    ////    // Arrange
-    ////    completedBatchRepositoryMock
-    ////        .SetupSequence(p => p.GetNextUnpublishedOrNullAsync())
-    ////        .ReturnsAsync(completedBatch)
-    ////        .ReturnsAsync((CompletedBatch)null!);
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetAsync_WhenUnpublishedBatch_SetsPublishedTimeOfBatch(
+        Instant instant,
+        CompletedBatch completedBatch,
+        [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
+        [Frozen] Mock<IClock> clockMock,
+        IntegrationEventProvider sut)
+    {
+        // Arrange
+        completedBatchRepositoryMock
+            .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
+            .ReturnsAsync(completedBatch)
+            .ReturnsAsync((CompletedBatch)null!);
 
-    ////    energyResultQueriesMock
-    ////        .Setup(queries => queries.GetAsync(completedBatch.Id))
-    ////        .Returns(AsAsyncEnumerable<EnergyResult>());
+        clockMock
+            .Setup(mock => mock.GetCurrentInstant())
+            .Returns(instant);
 
-    ////    clockMock.Setup(c => c.GetCurrentInstant()).Returns(instant);
+        // Act
+        await sut.GetAsync().ToListAsync();
 
-    ////    // Act
-    ////    var unused = sut.GetAsync().ToListAsync();
+        // Assert
+        completedBatch.PublishedTime.Should().Be(instant);
+    }
 
-    ////    // Assert
-    ////    completedBatch.PublishedTime.Should().Be(instant);
-    ////}
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetAsync_WhenOneUnpublishedBatchWithTwoEnergyResultEvents_ReturnsTwoEvents(
+    CompletedBatch completedBatch,
+    IntegrationEvent anyIntegrationEvent,
+    [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
+    [Frozen] Mock<IEnergyResultEventProvider> energyResultEventProviderMock,
+    IntegrationEventProvider sut)
+    {
+        // Arrange
+        completedBatchRepositoryMock
+            .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
+            .ReturnsAsync(completedBatch)
+            .ReturnsAsync((CompletedBatch)null!);
 
-    ////[Theory]
-    ////[InlineAutoMoqData]
-    ////public void GetAsync_WhenMultipleUnpublishedBatches_FetchesResultsForEach(
-    ////    CompletedBatch completedBatch,
-    ////    IntegrationEvent anyIntegrationEvent,
-    ////    EnergyResult energyResult,
-    ////    [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
-    ////    [Frozen] Mock<IEnergyResultQueries> energyResultQueriesMock,
-    ////    [Frozen] Mock<IIntegrationEventFactory> integrationEventFactoryMock,
-    ////    IntegrationEventProvider sut)
-    ////{
-    ////    // Arrange
-    ////    completedBatchRepositoryMock
-    ////        .SetupSequence(p => p.GetNextUnpublishedOrNullAsync())
-    ////        .ReturnsAsync(completedBatch)
-    ////        .ReturnsAsync(completedBatch)
-    ////        .ReturnsAsync((CompletedBatch)null!);
+        energyResultEventProviderMock
+            .Setup(mock => mock.GetAsync(completedBatch, It.IsAny<EventProviderState>()))
+            .Returns(AsAsyncEnumerable(anyIntegrationEvent, anyIntegrationEvent));
 
-    ////    energyResultQueriesMock
-    ////        .Setup(queries => queries.GetAsync(completedBatch.Id))
-    ////        .Returns(AsAsyncEnumerable(energyResult));
+        // Act
+        var actualEvents = await sut.GetAsync().ToListAsync();
 
-    ////    integrationEventFactoryMock
-    ////        .Setup(factory => factory.CreateCalculationResultCompleted(energyResult))
-    ////        .Returns(anyIntegrationEvent);
+        // Assert
+        actualEvents.Should().HaveCount(2);
+    }
 
-    ////    integrationEventFactoryMock
-    ////        .Setup(factory => factory.CreateEnergyResultProducedV1(energyResult))
-    ////        .Returns(anyIntegrationEvent);
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetAsync_WhenTwoUnpublishedBatchesWithThreeEventsCombined_ReturnsThreeEvents(
+        CompletedBatch completedBatch1,
+        CompletedBatch completedBatch2,
+        IntegrationEvent anyIntegrationEvent,
+        [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
+        [Frozen] Mock<IEnergyResultEventProvider> energyResultEventProviderMock,
+        IntegrationEventProvider sut)
+    {
+        // Arrange
+        completedBatchRepositoryMock
+            .SetupSequence(p => p.GetNextUnpublishedOrNullAsync())
+            .ReturnsAsync(completedBatch1)
+            .ReturnsAsync(completedBatch2)
+            .ReturnsAsync((CompletedBatch)null!);
 
-    ////    // Act
-    ////    var unused = sut.GetAsync().ToListAsync();
+        energyResultEventProviderMock
+            .Setup(mock => mock.GetAsync(completedBatch1, It.IsAny<EventProviderState>()))
+            .Returns(AsAsyncEnumerable(anyIntegrationEvent, anyIntegrationEvent));
 
-    ////    // Assert: Fetches results once per unpublished batch
-    ////    energyResultQueriesMock.Verify(x => x.GetAsync(It.IsAny<Guid>()), Times.Exactly(2));
-    ////}
+        energyResultEventProviderMock
+            .Setup(mock => mock.GetAsync(completedBatch2, It.IsAny<EventProviderState>()))
+            .Returns(AsAsyncEnumerable(anyIntegrationEvent));
+
+        // Act
+        var actualEvents = await sut.GetAsync().ToListAsync();
+
+        // Assert
+        actualEvents.Should().HaveCount(3);
+    }
 
     ////[Theory]
     ////[InlineAutoMoqData]
