@@ -132,7 +132,7 @@ class WholesaleCalculationResultWriter:
 
     @staticmethod
     def _get_column_group_for_calculation_result_id() -> list[str]:
-        f"""
+        """
         This column group defines the a calculation result. Metadata columns, e.g., those that are set inside this class,
         are not included a part of this group, since they are not expected to influence the result id
         """
