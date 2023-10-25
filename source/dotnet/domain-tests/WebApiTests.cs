@@ -138,7 +138,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             [DomainFact]
             public void When_WholesaleFixingHasCompleted_Then_HasReceivedExpectedNumberOfMonthlyAmountPerChargeResults()
             {
-                Fixture.Output.MonthlyAmountPerChargeResultProduced.Count.Should().Be(137);
+                Fixture.Output.MonthlyAmountPerChargeResultProduced.Count.Should().Be(28);
             }
 
             [DomainFact]
