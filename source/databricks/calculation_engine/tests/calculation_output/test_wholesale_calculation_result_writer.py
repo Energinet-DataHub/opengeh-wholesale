@@ -242,9 +242,6 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
 ) -> None:
     # This class is a guard against adding new columns without considering how the column affects the generation of
     # calculation result IDs
-    # NOTE: This test take columns names from WholesaleResultColumnNames and compares with column names taken from
-    # _get_column_group_for_calculation_result_id, which uses 'Colname'. We are, however, saved by the fact that the
-    # names are the same in both places
 
     # Arrange
     expected_excluded_columns = [
@@ -266,9 +263,25 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
         attr for attr in dir(WholesaleResultColumnNames) if not attr.startswith("__")
     ]
 
+    all_columns = _map_metering_point_type_column_name(all_columns)
+
     # Act
     included_columns = sut._get_column_group_for_calculation_result_id()
 
     # Assert
     excluded_columns = set(all_columns) - set(included_columns)
     assert set(excluded_columns) == set(expected_excluded_columns)
+
+
+def _map_metering_point_type_column_name(column_names: list[str]) -> list[str]:
+    # this is a simple pragmatic workaround to deal with the fact that the column name for metering point type is not
+    # the same in 'Colname' as it is in 'WholesaleResultColumnNames'
+    return list(
+        map(
+            lambda x: x.replace(
+                WholesaleResultColumnNames.metering_point_type,
+                Colname.metering_point_type,
+            ),
+            column_names,
+        )
+    )

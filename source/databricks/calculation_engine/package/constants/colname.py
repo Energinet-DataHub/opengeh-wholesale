@@ -43,7 +43,7 @@ class Colname:
     is_negative_grid_loss_responsible = "is_negative_grid_loss_responsible"
     local_date = "localDate"
     metering_point_id = "metering_point_id"
-    metering_point_type = "metering_point_type"
+    metering_point_type = "type"
     observation_time = "observation_time"
     """When the production/consumption/exchange actually happened."""
     parent_metering_point_id = "parent_metering_point_id"
