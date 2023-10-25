@@ -25,7 +25,6 @@ public static class QuantityQualityMapper
             "measured" => QuantityQuality.Measured,
             "calculated" => QuantityQuality.Calculated,
             "estimated" => QuantityQuality.Estimated,
-            "incomplete" => QuantityQuality.Incomplete,
             "missing" => QuantityQuality.Missing,
 
             _ => throw new ArgumentOutOfRangeException(

@@ -23,7 +23,6 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Mappers
     public class QuantityQualityMapperTests
     {
         [Theory]
-        [InlineData(WholesaleModel.QuantityQuality.Incomplete, EdiModel.QuantityQuality.Incomplete)]
         [InlineData(WholesaleModel.QuantityQuality.Estimated, EdiModel.QuantityQuality.Estimated)]
         [InlineData(WholesaleModel.QuantityQuality.Measured, EdiModel.QuantityQuality.Measured)]
         [InlineData(WholesaleModel.QuantityQuality.Calculated, EdiModel.QuantityQuality.Calculated)]
