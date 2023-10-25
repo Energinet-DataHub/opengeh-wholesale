@@ -228,6 +228,8 @@ def test__get_column_group_for_calculation_result_id__returns_expected_column_na
         Colname.grid_area,
         Colname.charge_owner,
         Colname.energy_supplier_id,
+        Colname.metering_point_type,
+        Colname.settlement_method,
     ]
 
     # Act
