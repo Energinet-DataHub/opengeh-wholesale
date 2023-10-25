@@ -13,7 +13,4 @@
 # limitations under the License.
 
 from .energy_calculation_result_writer import EnergyCalculationResultWriter
-from .wholesale_calculation_result_writer import (
-    WholesaleCalculationResultWriter,
-    _write_input_schema,
-)
+from .wholesale_calculation_result_writer import WholesaleCalculationResultWriter

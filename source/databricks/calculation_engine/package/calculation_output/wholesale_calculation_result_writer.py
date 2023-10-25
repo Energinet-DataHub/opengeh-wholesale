@@ -16,20 +16,11 @@ from datetime import datetime
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, lit, first
 import pyspark.sql.functions as f
-from pyspark.sql.types import (
-    ArrayType,
-    BooleanType,
-    DecimalType,
-    StringType,
-    StructField,
-    StructType,
-    TimestampType,
-)
 from pyspark.sql.window import Window
+
 from package.codelists import (
     ProcessType,
 )
-from package.common import assert_schema
 from package.constants import Colname, WholesaleResultColumnNames
 from package.infrastructure.paths import (
     OUTPUT_DATABASE_NAME,
@@ -52,20 +43,6 @@ class WholesaleCalculationResultWriter:
         self,
         df: DataFrame,
     ) -> None:
-        f"""
-        Write one or more results to storage.
-        The schema of the input data frame must match the schema {_write_input_schema}.
-        """
-
-        assert_schema(
-            df.schema,
-            _write_input_schema,
-            ignore_nullability=True,
-            ignore_column_order=True,
-            ignore_decimal_scale=True,
-            ignore_decimal_precision=True,
-        )
-
         df = self._add_metadata(df)
         df = self._add_calculation_result_id(df)
         df = self._select_output_columns(df)
@@ -137,40 +114,12 @@ class WholesaleCalculationResultWriter:
         are not included a part of this group, since they are not expected to influence the result id
         """
         return [
-            Colname.grid_area,
+            Colname.batch_id,
             Colname.charge_resolution,
-            Colname.charge_code,
             Colname.charge_type,
-            Colname.charge_owner,
             Colname.grid_area,
+            Colname.charge_owner,
             Colname.energy_supplier_id,
             Colname.metering_point_type,
             Colname.settlement_method,
         ]
-
-
-_write_input_schema = StructType(
-    [
-        StructField(Colname.grid_area, StringType(), False),
-        StructField(Colname.energy_supplier_id, StringType(), False),
-        StructField(Colname.quantity, DecimalType(18, 3), True),
-        StructField(
-            Colname.qualities,
-            ArrayType(StringType()),
-            False,
-        ),
-        StructField(Colname.charge_time, TimestampType(), False),
-        StructField(Colname.resolution, StringType(), False),
-        StructField(Colname.metering_point_type, StringType(), True),
-        StructField(Colname.settlement_method, StringType(), True),
-        StructField(Colname.charge_price, DecimalType(18, 6), False),
-        StructField(Colname.total_amount, DecimalType(18, 6), False),
-        StructField(Colname.charge_tax, BooleanType(), False),
-        StructField(Colname.charge_code, StringType(), False),
-        StructField(Colname.charge_type, StringType(), False),
-        StructField(Colname.charge_owner, StringType(), False),
-    ]
-)
-"""
-Results data frame that is to be written must match this schema. This schema does not contain columsn
-"""
