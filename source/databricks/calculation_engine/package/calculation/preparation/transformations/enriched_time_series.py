@@ -60,14 +60,14 @@ def get_basis_data_time_series_points_df(
             Colname.resolution,
             Colname.grid_area,
             Colname.from_date,
-            Colname.to_date
+            Colname.to_date,
         )
         .distinct()
         .withColumn(
             "quarter_times",
             F.expr(
                 f"sequence(to_timestamp({Colname.from_date}), to_timestamp({Colname.to_date}), interval 15 minutes)"
-            )
+            ),
         )
         .select(
             Colname.metering_point_id,
@@ -85,14 +85,14 @@ def get_basis_data_time_series_points_df(
             Colname.resolution,
             Colname.grid_area,
             Colname.from_date,
-            Colname.to_date
+            Colname.to_date,
         )
         .distinct()
         .withColumn(
             "times",
             F.expr(
                 f"sequence(to_timestamp({Colname.from_date}), to_timestamp({Colname.to_date}), interval 1 hour)"
-            )
+            ),
         )
         .select(
             Colname.metering_point_id,
@@ -170,7 +170,9 @@ def get_basis_data_time_series_points_df(
     # time series points that haven't been provided by the market actors. These added points must have
     # the quality "missing".
     # Quantity is set to 0 as well in case of missing values.
-    result = result.na.fill(value=QuantityQuality.MISSING.value, subset=[Colname.quality])
+    result = result.na.fill(
+        value=QuantityQuality.MISSING.value, subset=[Colname.quality]
+    )
     result = result.fillna(0, subset=[Colname.quantity])
 
     # Workaround to enforce quantity nullable=False. This should be safe according to `fillna(..)` above

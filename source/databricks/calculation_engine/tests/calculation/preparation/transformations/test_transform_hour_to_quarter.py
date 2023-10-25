@@ -66,7 +66,9 @@ def test__transform_hour_to_quarter__when_invalid_input_schema__raise_assertion_
     spark: SparkSession,
 ):
     # Arrange
-    basis_data_time_series_points = spark.createDataFrame(data=[Row(**({"Hello": "World"}))])
+    basis_data_time_series_points = spark.createDataFrame(
+        data=[Row(**({"Hello": "World"}))]
+    )
 
     # Act & Assert
     with pytest.raises(AssertionError):
