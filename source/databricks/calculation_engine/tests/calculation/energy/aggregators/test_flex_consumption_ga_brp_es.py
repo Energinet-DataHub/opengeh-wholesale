@@ -71,7 +71,7 @@ def time_series_row_factory(spark: SparkSession) -> Callable[..., DataFrame]:
                 Colname.grid_area: [domain],
                 Colname.balance_responsible_id: [responsible],
                 Colname.energy_supplier_id: [supplier],
-                "quarter_quantity": [quantity],
+                Colname.quantity: [quantity],
                 Colname.time_window: [obs_time],
                 Colname.quality: [QuantityQuality.ESTIMATED.value],
             }
@@ -89,7 +89,7 @@ def check_aggregation_row(
     grid: str,
     responsible: str,
     supplier: str,
-    sum: Decimal,
+    sum_quantity: Decimal,
     start: datetime,
     end: datetime,
 ) -> None:
@@ -106,7 +106,7 @@ def check_aggregation_row(
     assert pandas_df[Colname.grid_area][row] == grid
     assert pandas_df[Colname.balance_responsible_id][row] == responsible
     assert pandas_df[Colname.energy_supplier_id][row] == supplier
-    assert pandas_df[Colname.sum_quantity][row] == sum
+    assert pandas_df[Colname.sum_quantity][row] == sum_quantity
     assert pandas_df[Colname.time_window][row].start == start
     assert pandas_df[Colname.time_window][row].end == end
 
