@@ -25,15 +25,10 @@ def aggregate_sum_and_quality(
 
     Sums quantity and collects distinct quality from the metering point time-series.
     """
-
-    result = result.na.fill(value=0, subset=[quantity_col_name])
-
-    result = result.groupBy(group_by).agg(
+    return result.groupBy(group_by).agg(
         f.sum(quantity_col_name).alias(Colname.sum_quantity),
         f.collect_set(Colname.quality).alias(Colname.qualities),
     )
-
-    return result
 
 
 def aggregate_sum_and_qualities(
@@ -44,12 +39,9 @@ def aggregate_sum_and_qualities(
 
     Sums quantity and collects distinct quality from the aggregated time-series.
     """
-
-    result = result.groupBy(group_by).agg(
+    return result.groupBy(group_by).agg(
         f.sum(quantity_col_name).alias(Colname.sum_quantity),
         f.array_distinct(f.flatten(f.collect_set(Colname.qualities))).alias(
             Colname.qualities
         ),
     )
-
-    return result
