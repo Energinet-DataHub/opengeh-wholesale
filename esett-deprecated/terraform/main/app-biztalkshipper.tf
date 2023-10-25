@@ -14,9 +14,7 @@ module "app_biztalkshipper" {
   ip_restriction_allow_ip_range             = var.hosted_deployagent_public_ip_range
   dotnet_framework_version                  = "v7.0"
   app_settings                              = merge({
-    "biztalk:senderCode"    = "45V0000000000601"
-    "biztalk:receiverCode"  = "44V000000000028C"
-    "biztalk:RootUrl"       = "https://datahub.dev01.biztalk.test.endk.local"
+    "biztalk:RootUrl"                       = "https://datahub.dev01.biztalk.test.endk.local"
   }, local.default_biztalkshipper_app_settings)
   connection_strings = [
     {
@@ -39,6 +37,8 @@ locals {
     "biztalk:businessTypeConsumption"   = "NBS-RECI"
     "biztalk:businessTypeProduction"    = "NBS-MEPI"
     "biztalk:businessTypeExchange"      = "NBS-MGXI"
+    "biztalk:senderCode"                = "45V0000000000601"
+    "biztalk:receiverCode"              = "44V000000000028C"
     CONNECTION_STRING_DATABASE          = local.connection_string_database
   }
 }
