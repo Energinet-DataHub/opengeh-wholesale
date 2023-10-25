@@ -51,42 +51,33 @@ public class IntegrationEventProviderTests
         unitOfWorkMock.Verify(x => x.CommitAsync(), Times.Never);
     }
 
-    ////[Theory]
-    ////[InlineAutoMoqData]
-    ////public void GetAsync_WhenMultipleUnpublishedBatches_CommitsOncePerBatch(
-    ////    CompletedBatch completedBatch,
-    ////    EnergyResult energyResult,
-    ////    IntegrationEvent anyIntegrationEvent,
-    ////    [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
-    ////    [Frozen] Mock<IEnergyResultQueries> energyResultQueriesMock,
-    ////    [Frozen] Mock<IEnergyResultEventProvider> energyResultEventProviderMock,
-    ////    [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
-    ////    IntegrationEventProvider sut)
-    ////{
-    ////    // Arrange
-    ////    completedBatchRepositoryMock
-    ////        .SetupSequence(p => p.GetNextUnpublishedOrNullAsync())
-    ////        .ReturnsAsync(completedBatch)
-    ////        .ReturnsAsync(completedBatch)
-    ////        .ReturnsAsync((CompletedBatch)null!);
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetAsync_WhenMultipleUnpublishedBatches_CommitsOncePerBatch(
+        CompletedBatch completedBatch,
+        IntegrationEvent anyIntegrationEvent,
+        [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
+        [Frozen] Mock<IEnergyResultEventProvider> energyResultEventProviderMock,
+        [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
+        IntegrationEventProvider sut)
+    {
+        // Arrange
+        completedBatchRepositoryMock
+            .SetupSequence(p => p.GetNextUnpublishedOrNullAsync())
+            .ReturnsAsync(completedBatch)
+            .ReturnsAsync(completedBatch)
+            .ReturnsAsync((CompletedBatch)null!);
 
-    ////    energyResultQueriesMock
-    ////        .Setup(queries => queries.GetAsync(completedBatch.Id))
-    ////        .Returns(AsAsyncEnumerable(energyResult));
+        energyResultEventProviderMock
+            .Setup(mock => mock.GetAsync(completedBatch, It.IsAny<EventProviderState>()))
+            .Returns(AsAsyncEnumerable(anyIntegrationEvent));
 
-    ////    energyResultEventProviderMock
-    ////        .Setup(factory => factory.GetAsync(completedBatch, It.IsAny<EventProviderState>()))
-    ////        .Returns(anyIntegrationEvent);
-    ////    energyResultEventProviderMock
-    ////        .Setup(factory => factory.CreateEnergyResultProducedV1(energyResult))
-    ////        .Returns(anyIntegrationEvent);
+        // Act
+        _ = await sut.GetAsync().ToListAsync();
 
-    ////    // Act
-    ////    var unused = sut.GetAsync().ToListAsync();
-
-    ////    // Assert: Commits once per unpublished batch
-    ////    unitOfWorkMock.Verify(x => x.CommitAsync(), Times.Exactly(2));
-    ////}
+        // Assert: Commits once per unpublished batch
+        unitOfWorkMock.Verify(x => x.CommitAsync(), Times.Exactly(2));
+    }
 
     ////[Theory]
     ////[InlineAutoMoqData]
