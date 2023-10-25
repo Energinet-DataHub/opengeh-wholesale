@@ -34,7 +34,10 @@ from package.infrastructure.paths import (
     OUTPUT_DATABASE_NAME,
     WHOLESALE_RESULT_TABLE_NAME,
 )
-from package.calculation_output import WholesaleCalculationResultWriter
+from package.calculation_output import (
+    WholesaleCalculationResultWriter,
+    _write_input_schema,
+)
 from typing import Any
 
 
@@ -223,11 +226,15 @@ def test__get_column_group_for_calculation_result_id__returns_expected_column_na
     # Arrange
     expected_column_names = [
         Colname.batch_id,
-        Colname.charge_resolution,
-        Colname.charge_type,
         Colname.grid_area,
+        Colname.charge_resolution,
+        Colname.charge_code,
+        Colname.charge_type,
         Colname.charge_owner,
+        Colname.grid_area,
         Colname.energy_supplier_id,
+        Colname.metering_point_type,
+        Colname.settlement_method,
     ]
 
     # Act
@@ -240,30 +247,19 @@ def test__get_column_group_for_calculation_result_id__returns_expected_column_na
 def test__get_column_group_for_calculation_result_id__excludes_expected_other_column_names(
     sut: WholesaleCalculationResultWriter,
 ) -> None:
-    # This class is a guard against adding new columns without considering how the column affects the generation of
-    # calculation result IDs
+    # This class is a guard against adding new input columns without considering how the column affects the generation
+    # of calculation result IDs
 
     # Arrange
     expected_excluded_columns = [
-        WholesaleResultColumnNames.calculation_id,
-        WholesaleResultColumnNames.calculation_type,
-        WholesaleResultColumnNames.calculation_execution_time_start,
-        WholesaleResultColumnNames.calculation_result_id,
-        WholesaleResultColumnNames.grid_area,
-        WholesaleResultColumnNames.quantity,
-        WholesaleResultColumnNames.quantity_unit,
-        WholesaleResultColumnNames.quantity_qualities,
-        WholesaleResultColumnNames.time,
-        WholesaleResultColumnNames.metering_point_type,
-        WholesaleResultColumnNames.settlement_method,
-        WholesaleResultColumnNames.price,
-        WholesaleResultColumnNames.amount,
-        WholesaleResultColumnNames.is_tax,
-        WholesaleResultColumnNames.charge_code,
+        Colname.quantity,
+        Colname.qualities,
+        Colname.charge_time,
+        Colname.charge_price,
+        Colname.total_amount,
+        Colname.charge_tax,
     ]
-    all_columns = [
-        attr for attr in dir(WholesaleResultColumnNames) if not attr.startswith("__")
-    ]
+    all_columns = [field.name for field in _write_input_schema]
 
     # Act
     included_columns = sut._get_column_group_for_calculation_result_id()
