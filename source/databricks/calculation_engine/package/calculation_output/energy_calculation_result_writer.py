@@ -174,6 +174,7 @@ class EnergyCalculationResultWriter:
         ).insertInto(f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}")
 
 
+# TODO BJM: Remove? Kinda duplicate considering the schema of EnergyResults
 _write_input_schema = t.StructType(
     [
         t.StructField(Colname.grid_area, t.StringType(), False),

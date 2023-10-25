@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# TODO BJM: Refactor to match what it now tests
+
 from decimal import Decimal
 from datetime import datetime
 from typing import Callable
@@ -20,12 +22,14 @@ import pandas as pd
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col, struct
 
-from package.calculation.energy.energy_results import EnergyResults
+from package.calculation.energy.energy_results import (
+    EnergyResults,
+    energy_results_schema,
+)
 from package.codelists import (
     MeteringPointType,
     QuantityQuality,
 )
-from package.calculation.energy.schemas import aggregation_result_schema
 from package.common import assert_schema
 from package.constants import Colname
 
@@ -68,13 +72,13 @@ def aggregation_result_factory(spark: SparkSession) -> Callable[..., DataFrame]:
             ignore_index=True,
         )
 
-        return spark.createDataFrame(pandas_df, schema=aggregation_result_schema)
+        return spark.createDataFrame(pandas_df, schema=energy_results_schema)
 
     return factory
 
 
 @pytest.fixture(scope="module")
-def agg_result_factory(spark: SparkSession) -> Callable[..., DataFrame]:
+def input_agg_result_factory(spark: SparkSession) -> Callable[..., DataFrame]:
     def factory(
         grid_area: str = "A",
         start: datetime = datetime(2020, 1, 1, 0, 0),
@@ -111,16 +115,18 @@ def agg_result_factory(spark: SparkSession) -> Callable[..., DataFrame]:
 
 
 def test__create_dataframe_from_aggregation_result_schema__can_create_a_dataframe_that_match_aggregation_result_schema(
-    agg_result_factory: Callable[..., DataFrame],
+    input_agg_result_factory,
 ) -> None:
     # Arrange
-    result = agg_result_factory()
+    result = input_agg_result_factory()
+
     # Act
     actual = EnergyResults(result)
+
     # Assert
     assert_schema(
         actual.df.schema,
-        aggregation_result_schema,
+        energy_results_schema,
         ignore_nullability=True,
         ignore_decimal_precision=True,
         ignore_decimal_scale=True,
@@ -128,11 +134,11 @@ def test__create_dataframe_from_aggregation_result_schema__can_create_a_datafram
 
 
 def test__create_dataframe_from_aggregation_result_schema__match_expected_dataframe(
-    agg_result_factory: Callable[..., DataFrame],
+    input_agg_result_factory,
     aggregation_result_factory: Callable[..., DataFrame],
 ) -> None:
     # Arrange
-    result = agg_result_factory()
+    result = input_agg_result_factory()
     expected = aggregation_result_factory(
         grid_area="A",
         time_window_start=datetime(2020, 1, 1, 0, 0),

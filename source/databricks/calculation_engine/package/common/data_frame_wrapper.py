@@ -24,10 +24,5 @@ class DataFrameWrapper:
     The raw pyspark DataFrame is accessible as `data.df`.
     """
 
-    def __init__(self, df: DataFrame, schema: StructType):
-        """
-        The schema of the data frame `df` is schema validated according to the provided schema.
-        The order or columns is ignored.
-        """
-        assert_schema(df.schema, schema, ignore_column_order=True)
+    def __init__(self, df: DataFrame):
         self.df: DataFrame = df

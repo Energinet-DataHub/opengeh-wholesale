@@ -16,9 +16,6 @@ from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
 import pyspark.sql.types as t
 
-from package.calculation.energy.schemas import (
-    aggregation_result_schema,
-)
 from package.common import DataFrameWrapper, assert_schema
 from package.constants import Colname
 
@@ -32,7 +29,7 @@ class EnergyResults(DataFrameWrapper):
         """Fit data frame in a general DataFrame. This is used for all results and missing columns will be null."""
 
         df = self._add_missing_nullable_columns(df)
-        df = df.na.fill(value=0, subset=[Colname.sum_quantity])
+        # df = df.na.fill(value=0, subset=[Colname.sum_quantity])
 
         df = df.select(
             Colname.grid_area,
@@ -49,14 +46,14 @@ class EnergyResults(DataFrameWrapper):
 
         assert_schema(
             df.schema,
-            aggregation_result_schema,
+            energy_results_schema,
             ignore_nullability=True,
             ignore_column_order=True,
             ignore_decimal_scale=True,
             ignore_decimal_precision=True,
         )
 
-        super().__init__(df, aggregation_result_schema)
+        super().__init__(df)
 
     @staticmethod
     def _add_missing_nullable_columns(result: DataFrame) -> DataFrame:
@@ -81,3 +78,28 @@ class EnergyResults(DataFrameWrapper):
                 Colname.settlement_method, f.lit(None).cast(t.StringType())
             )
         return result
+
+
+energy_results_schema = t.StructType(
+    [
+        t.StructField(Colname.grid_area, t.StringType(), False),
+        t.StructField(Colname.to_grid_area, t.StringType(), True),
+        t.StructField(Colname.from_grid_area, t.StringType(), True),
+        t.StructField(Colname.balance_responsible_id, t.StringType(), True),
+        t.StructField(Colname.energy_supplier_id, t.StringType(), True),
+        t.StructField(
+            Colname.time_window,
+            t.StructType(
+                [
+                    t.StructField(Colname.start, t.TimestampType()),
+                    t.StructField(Colname.end, t.TimestampType()),
+                ]
+            ),
+            False,
+        ),
+        t.StructField(Colname.sum_quantity, t.DecimalType(18, 3), False),
+        t.StructField(Colname.qualities, t.ArrayType(t.StringType(), False), False),
+        t.StructField(Colname.metering_point_type, t.StringType(), False),
+        t.StructField(Colname.settlement_method, t.StringType(), True),
+    ]
+)

@@ -13,6 +13,8 @@
 # limitations under the License.
 from decimal import Decimal
 from datetime import datetime
+
+from package.calculation.energy.energy_results import EnergyResults
 from package.codelists import (
     MeteringPointType,
     QuantityQuality,
@@ -32,7 +34,7 @@ from pyspark.sql.types import (
 import pytest
 import pandas as pd
 from package.constants import Colname
-from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql import SparkSession
 from typing import Callable
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
@@ -64,8 +66,8 @@ def settled_schema() -> StructType:
 @pytest.fixture(scope="module")
 def agg_result_factory(
     spark: SparkSession, settled_schema: StructType
-) -> Callable[..., DataFrame]:
-    def factory() -> DataFrame:
+) -> Callable[..., EnergyResults]:
+    def factory() -> EnergyResults:
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: ["1", "1", "1", "1", "1", "2"],
@@ -124,21 +126,25 @@ def agg_result_factory(
             }
         )
 
-        return spark.createDataFrame(pandas_df, schema=settled_schema)
+        df = spark.createDataFrame(pandas_df, schema=settled_schema)
+        return EnergyResults(df)
 
     return factory
 
 
 def test_non_profiled_consumption_summarizes_correctly_on_grid_area_within_same_time_window(
-    agg_result_factory: Callable[..., DataFrame],
+    agg_result_factory: Callable[..., EnergyResults],
 ) -> None:
+    # Arrange
     consumption = agg_result_factory()
 
-    aggregated_df = aggregate_non_profiled_consumption_ga(consumption).sort(
-        Colname.grid_area, Colname.time_window
-    )
+    # Act
+    aggregated_df = aggregate_non_profiled_consumption_ga(consumption)
 
-    aggregated_df_collect = aggregated_df.collect()
+    # Assert
+    aggregated_df_collect = aggregated_df.df.sort(
+        Colname.grid_area, Colname.time_window
+    ).collect()
     assert (
         aggregated_df_collect[0][Colname.sum_quantity] == Decimal("4.0")
         and aggregated_df_collect[0][Colname.grid_area] == "1"
@@ -150,15 +156,18 @@ def test_non_profiled_consumption_summarizes_correctly_on_grid_area_within_same_
 
 
 def test_non_profiled_consumption_summarizes_correctly_on_grid_area_with_different_time_window(
-    agg_result_factory: Callable[..., DataFrame],
+    agg_result_factory: Callable[..., EnergyResults],
 ) -> None:
+    # Arrange
     consumption = agg_result_factory()
 
-    aggregated_df = aggregate_non_profiled_consumption_ga(consumption).sort(
-        Colname.grid_area, Colname.time_window
-    )
+    # Act
+    aggregated_df = aggregate_non_profiled_consumption_ga(consumption)
 
-    aggregated_df_collect = aggregated_df.collect()
+    # Assert
+    aggregated_df_collect = aggregated_df.df.sort(
+        Colname.grid_area, Colname.time_window
+    ).collect()
     assert (
         aggregated_df_collect[1][Colname.sum_quantity] == Decimal("1.0")
         and aggregated_df_collect[1][Colname.grid_area] == "1"
@@ -170,15 +179,18 @@ def test_non_profiled_consumption_summarizes_correctly_on_grid_area_with_differe
 
 
 def test_non_profiled_consumption_summarizes_correctly_on_grid_area_with_same_time_window_as_other_grid_area(
-    agg_result_factory: Callable[..., DataFrame],
+    agg_result_factory: Callable[..., EnergyResults],
 ) -> None:
+    # Arrange
     consumption = agg_result_factory()
 
-    aggregated_df = aggregate_non_profiled_consumption_ga(consumption).sort(
-        Colname.grid_area, Colname.time_window
-    )
+    # Act
+    aggregated_df = aggregate_non_profiled_consumption_ga(consumption)
 
-    aggregated_df_collect = aggregated_df.collect()
+    # Assert
+    aggregated_df_collect = aggregated_df.df.sort(
+        Colname.grid_area, Colname.time_window
+    ).collect()
     assert (
         aggregated_df_collect[2][Colname.sum_quantity] == Decimal("1.0")
         and aggregated_df_collect[2][Colname.grid_area] == "2"
@@ -190,13 +202,18 @@ def test_non_profiled_consumption_summarizes_correctly_on_grid_area_with_same_ti
 
 
 def test_non_profiled_consumption_calculation_per_ga_and_es(
-    agg_result_factory: Callable[..., DataFrame]
+    agg_result_factory: Callable[..., EnergyResults]
 ) -> None:
+    # Arrange
     consumption = agg_result_factory()
-    aggregated_df = aggregate_non_profiled_consumption_ga_es(consumption).sort(
+
+    # Act
+    aggregated_df = aggregate_non_profiled_consumption_ga_es(consumption)
+
+    # Assert
+    aggregated_df_collect = aggregated_df.df.sort(
         Colname.grid_area, Colname.energy_supplier_id, Colname.time_window
-    )
-    aggregated_df_collect = aggregated_df.collect()
+    ).collect()
     assert aggregated_df_collect[0][Colname.balance_responsible_id] is None
     assert aggregated_df_collect[0][Colname.grid_area] == "1"
     assert aggregated_df_collect[0][Colname.energy_supplier_id] == "1"
@@ -209,13 +226,18 @@ def test_non_profiled_consumption_calculation_per_ga_and_es(
 
 
 def test_non_profiled_consumption_calculation_per_ga_and_brp(
-    agg_result_factory: Callable[..., DataFrame],
+    agg_result_factory: Callable[..., EnergyResults],
 ) -> None:
+    # Arrange
     non_profiled_consumption = agg_result_factory()
-    aggregated_df = aggregate_non_profiled_consumption_ga_brp(
-        non_profiled_consumption
-    ).sort(Colname.grid_area, Colname.balance_responsible_id, Colname.time_window)
-    aggregated_df_collect = aggregated_df.collect()
+
+    # Act
+    aggregated_df = aggregate_non_profiled_consumption_ga_brp(non_profiled_consumption)
+
+    # Assert
+    aggregated_df_collect = aggregated_df.df.sort(
+        Colname.grid_area, Colname.balance_responsible_id, Colname.time_window
+    ).collect()
     assert aggregated_df_collect[0][Colname.energy_supplier_id] is None
     assert aggregated_df_collect[0][Colname.grid_area] == "1"
     assert aggregated_df_collect[0][Colname.balance_responsible_id] == "1"
@@ -226,13 +248,18 @@ def test_non_profiled_consumption_calculation_per_ga_and_brp(
 
 
 def test_non_profiled_consumption_calculation_per_ga(
-    agg_result_factory: Callable[..., DataFrame]
+    agg_result_factory: Callable[..., EnergyResults]
 ) -> None:
+    # Arrange
     consumption = agg_result_factory()
-    aggregated_df = aggregate_non_profiled_consumption_ga(consumption).sort(
+
+    # Act
+    aggregated_df = aggregate_non_profiled_consumption_ga(consumption)
+
+    # Assert
+    aggregated_df_collect = aggregated_df.df.sort(
         Colname.grid_area, Colname.time_window
-    )
-    aggregated_df_collect = aggregated_df.collect()
+    ).collect()
     assert aggregated_df_collect[0][Colname.balance_responsible_id] is None
     assert aggregated_df_collect[0][Colname.energy_supplier_id] is None
     assert aggregated_df_collect[0][Colname.grid_area] == "1"

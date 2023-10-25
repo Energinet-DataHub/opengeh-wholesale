@@ -27,6 +27,10 @@ import pytest
 import pandas as pd
 from typing import Callable
 
+from package.calculation.energy.energy_results import (
+    energy_results_schema,
+    EnergyResults,
+)
 from package.codelists import (
     MeteringPointType,
     QuantityQuality,
@@ -34,7 +38,6 @@ from package.codelists import (
 from package.common import assert_schema
 from package.constants import Colname
 from package.calculation.energy.grid_loss_calculator import calculate_positive_grid_loss
-from package.calculation.energy.schemas import aggregation_result_schema
 
 
 @pytest.fixture(scope="module")
@@ -114,47 +117,51 @@ def agg_result_factory(
     return factory
 
 
-def call_calculate_grid_loss(agg_result_factory: Callable[[], DataFrame]) -> DataFrame:
+def call_calculate_grid_loss(
+    agg_result_factory: Callable[[], EnergyResults]
+) -> EnergyResults:
     df = agg_result_factory()
     return calculate_positive_grid_loss(df)
 
 
 def test_grid_area_grid_loss_has_no_values_below_zero(
-    agg_result_factory: Callable[[], DataFrame]
+    agg_result_factory: Callable[[], EnergyResults]
 ) -> None:
     result = call_calculate_grid_loss(agg_result_factory)
 
-    assert result.where(col(Colname.sum_quantity) < 0).count() == 0
+    assert result.df.where(col(Colname.sum_quantity) < 0).count() == 0
 
 
 def test_grid_area_grid_loss_changes_negative_values_to_zero(
-    agg_result_factory: Callable[[], DataFrame]
+    agg_result_factory: Callable[[], EnergyResults]
 ) -> None:
     result = call_calculate_grid_loss(agg_result_factory)
 
-    assert result.collect()[0][Colname.sum_quantity] == Decimal("0.00000")
+    assert result.df.collect()[0][Colname.sum_quantity] == Decimal("0.00000")
 
 
 def test_grid_area_grid_loss_positive_values_will_not_change(
-    agg_result_factory: Callable[[], DataFrame]
+    agg_result_factory: Callable[[], EnergyResults]
 ) -> None:
     result = call_calculate_grid_loss(agg_result_factory)
 
-    assert result.collect()[1][Colname.sum_quantity] == Decimal("34.32000")
+    assert result.df.collect()[1][Colname.sum_quantity] == Decimal("34.32000")
 
 
 def test_grid_area_grid_loss_values_that_are_zero_stay_zero(
-    agg_result_factory: Callable[[], DataFrame]
+    agg_result_factory: Callable[[], EnergyResults]
 ) -> None:
     result = call_calculate_grid_loss(agg_result_factory)
 
-    assert result.collect()[2][Colname.sum_quantity] == Decimal("0.00000")
+    assert result.df.collect()[2][Colname.sum_quantity] == Decimal("0.00000")
 
 
-def test_returns_correct_schema(agg_result_factory: Callable[[], DataFrame]) -> None:
+def test_returns_correct_schema(
+    agg_result_factory: Callable[[], EnergyResults]
+) -> None:
     """
     Aggregator should return the correct schema, including the proper fields for the aggregated quantity values
     and time window (from the single-hour resolution specified in the aggregator).
     """
     result = call_calculate_grid_loss(agg_result_factory)
-    assert_schema(result.schema, aggregation_result_schema, ignore_nullability=True)
+    assert_schema(result.df.schema, energy_results_schema, ignore_nullability=True)

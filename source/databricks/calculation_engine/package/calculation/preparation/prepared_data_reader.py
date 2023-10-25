@@ -87,6 +87,7 @@ class PreparedDataReader:
             period_end_datetime,
         )
 
+    # TODO BJM: Does not belong in preparation. Move to calculations.
     def transform_hour_to_quarter(
         self, df: DataFrame
     ) -> QuarterlyMeteringPointTimeSeries:

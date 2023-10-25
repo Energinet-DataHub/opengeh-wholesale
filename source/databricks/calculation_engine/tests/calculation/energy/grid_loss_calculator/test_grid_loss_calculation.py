@@ -11,30 +11,32 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from decimal import Decimal
+
 from datetime import datetime, timedelta
+from decimal import Decimal
 from enum import Enum
+from typing import Callable
+
+import pandas as pd
+import pytest
+from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql.functions import col
+from pyspark.sql.types import (
+    StructType,
+)
+
+from package.calculation.energy.energy_results import (
+    EnergyResults,
+    energy_results_schema,
+)
+from package.calculation.energy.grid_loss_calculator import (
+    calculate_grid_loss,
+)
 from package.codelists import (
     MeteringPointType,
     QuantityQuality,
 )
-
-from package.calculation.energy.grid_loss_calculator import (
-    calculate_grid_loss,
-)
-from pyspark.sql.types import (
-    StructType,
-    StringType,
-    DecimalType,
-    TimestampType,
-    ArrayType,
-)
-from pyspark.sql.functions import col
-from pyspark.sql import DataFrame, SparkSession
-import pytest
-import pandas as pd
 from package.constants import Colname
-from typing import Callable
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_obs_time = datetime.strptime(
@@ -50,54 +52,16 @@ class AggregationMethod(Enum):
 
 
 @pytest.fixture(scope="module")
-def agg_net_exchange_schema() -> StructType:
-    return (
-        StructType()
-        .add(Colname.grid_area, StringType(), False)
-        .add(
-            Colname.time_window,
-            StructType()
-            .add(Colname.start, TimestampType())
-            .add(Colname.end, TimestampType()),
-            False,
-        )
-        .add(Colname.sum_quantity, DecimalType(38))
-        .add(Colname.qualities, ArrayType(StringType(), False), False)
-        .add(Colname.metering_point_type, StringType())
-    )
-
-
-@pytest.fixture(scope="module")
-def agg_consumption_and_production_schema() -> StructType:
-    return (
-        StructType()
-        .add(Colname.grid_area, StringType(), False)
-        .add(Colname.balance_responsible_id, StringType())
-        .add(Colname.energy_supplier_id, StringType())
-        .add(
-            Colname.time_window,
-            StructType()
-            .add(Colname.start, TimestampType())
-            .add(Colname.end, TimestampType()),
-            False,
-        )
-        .add(Colname.sum_quantity, DecimalType(20))
-        .add(Colname.qualities, ArrayType(StringType(), False), False)
-        .add(Colname.metering_point_type, StringType())
-    )
-
-
-@pytest.fixture(scope="module")
 def agg_result_factory(
     spark: SparkSession,
     agg_net_exchange_schema: StructType,
     agg_consumption_and_production_schema: StructType,
-) -> Callable[[AggregationMethod], DataFrame]:
+) -> Callable[[AggregationMethod], EnergyResults]:
     """
     Factory to generate a single row of time series data, with default parameters as specified above.
     """
 
-    def factory(agg_method: AggregationMethod) -> DataFrame:
+    def factory(agg_method: AggregationMethod) -> EnergyResults:
         if agg_method == AggregationMethod.NET_EXCHANGE:
             pandas_df = pd.DataFrame(
                 {
@@ -122,7 +86,8 @@ def agg_result_factory(
                     },
                     ignore_index=True,
                 )
-            return spark.createDataFrame(pandas_df, schema=agg_net_exchange_schema)
+            df = spark.createDataFrame(pandas_df, schema=agg_net_exchange_schema)
+            return EnergyResults(df)
         elif agg_method == AggregationMethod.HOURLY_CONSUMPTION:
             pandas_df = pd.DataFrame(
                 {
@@ -151,9 +116,8 @@ def agg_result_factory(
                     },
                     ignore_index=True,
                 )
-            return spark.createDataFrame(
-                pandas_df, schema=agg_consumption_and_production_schema
-            )
+            df = spark.createDataFrame(pandas_df, schema=energy_results_schema)
+            return EnergyResults(df)
         elif agg_method == AggregationMethod.FLEX_CONSUMPTION:
             pandas_df = pd.DataFrame(
                 {
@@ -182,9 +146,8 @@ def agg_result_factory(
                     },
                     ignore_index=True,
                 )
-            return spark.createDataFrame(
-                pandas_df, schema=agg_consumption_and_production_schema
-            )
+            df = spark.createDataFrame(pandas_df, schema=energy_results_schema)
+            return EnergyResults(df)
         elif agg_method == AggregationMethod.PRODUCTION:
             pandas_df = pd.DataFrame(
                 {
@@ -213,9 +176,10 @@ def agg_result_factory(
                     },
                     ignore_index=True,
                 )
-            return spark.createDataFrame(
+            df = spark.createDataFrame(
                 pandas_df, schema=agg_consumption_and_production_schema
             )
+            return EnergyResults(df)
 
     return factory
 
@@ -469,7 +433,7 @@ def agg_hourly_production_factory(
 
 
 def test_grid_loss_calculation(
-    agg_result_factory: Callable[[AggregationMethod], DataFrame]
+    agg_result_factory: Callable[[AggregationMethod], EnergyResults]
 ) -> None:
     net_exchange_per_ga = agg_result_factory(AggregationMethod.NET_EXCHANGE)
     non_profiled_consumption = agg_result_factory(AggregationMethod.HOURLY_CONSUMPTION)
@@ -481,4 +445,4 @@ def test_grid_loss_calculation(
     )
 
     # Verify the calculation result is correct by checking 50+i + 20+i - (13+i + 14+i) equals 43 for all i in range 0 to 9
-    assert result.filter(col(Colname.sum_quantity) != 43).count() == 0
+    assert result.df.where(col(Colname.sum_quantity) != 43).count() == 0

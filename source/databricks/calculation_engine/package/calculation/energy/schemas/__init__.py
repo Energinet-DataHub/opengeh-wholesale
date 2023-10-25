@@ -12,6 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .aggregation_result_schema import aggregation_result_schema
 from .basis_data_time_series_points_schema import basis_data_time_series_points_schema
 from .time_series_quarter_points_schema import time_series_quarter_points_schema

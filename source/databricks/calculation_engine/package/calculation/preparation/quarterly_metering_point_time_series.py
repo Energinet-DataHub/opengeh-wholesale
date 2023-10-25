@@ -13,11 +13,13 @@
 # limitations under the License.
 
 from pyspark.sql import DataFrame
+import pyspark.sql.functions as f
+import pyspark.sql.types as t
 
 from package.calculation.energy.schemas import (
     time_series_quarter_points_schema,
 )
-from package.common import DataFrameWrapper
+from package.common import DataFrameWrapper, assert_schema
 from package.constants import Colname
 
 
@@ -34,6 +36,9 @@ class QuarterlyMeteringPointTimeSeries(DataFrameWrapper):
     """
 
     def __init__(self, df: DataFrame):
+        # TODO BJM: Remove this temp workaround?
+        df = self._add_missing_nullable_columns(df)
+
         df = df.select(
             Colname.grid_area,
             Colname.to_grid_area,
@@ -52,4 +57,32 @@ class QuarterlyMeteringPointTimeSeries(DataFrameWrapper):
         # Workaround to enforce quantity nullable=False. This should be safe as quantity in input is nullable=False
         df.schema[Colname.quantity].nullable = False
 
-        super().__init__(df, time_series_quarter_points_schema)
+        assert_schema(
+            df.schema, time_series_quarter_points_schema, ignore_column_order=True
+        )
+
+        super().__init__(df)
+
+    @staticmethod
+    def _add_missing_nullable_columns(result: DataFrame) -> DataFrame:
+        if Colname.to_grid_area not in result.columns:
+            result = result.withColumn(
+                Colname.to_grid_area, f.lit(None).cast(t.StringType())
+            )
+        if Colname.from_grid_area not in result.columns:
+            result = result.withColumn(
+                Colname.from_grid_area, f.lit(None).cast(t.StringType())
+            )
+        if Colname.balance_responsible_id not in result.columns:
+            result = result.withColumn(
+                Colname.balance_responsible_id, f.lit(None).cast(t.StringType())
+            )
+        if Colname.energy_supplier_id not in result.columns:
+            result = result.withColumn(
+                Colname.energy_supplier_id, f.lit(None).cast(t.StringType())
+            )
+        if Colname.settlement_method not in result.columns:
+            result = result.withColumn(
+                Colname.settlement_method, f.lit(None).cast(t.StringType())
+            )
+        return result

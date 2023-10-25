@@ -11,8 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from decimal import Decimal
 from datetime import datetime, timedelta
+
+from package.calculation.energy.energy_results import EnergyResults
 from package.codelists import (
     MeteringPointType,
     QuantityQuality,
@@ -33,7 +36,7 @@ from pyspark.sql.types import (
 import pytest
 import pandas as pd
 from package.constants import Colname
-from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql import SparkSession
 from typing import Callable
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
@@ -65,8 +68,8 @@ def agg_production_schema() -> StructType:
 @pytest.fixture(scope="module")
 def test_data_factory(
     spark: SparkSession, agg_production_schema: StructType
-) -> Callable[..., DataFrame]:
-    def factory() -> DataFrame:
+) -> Callable[..., EnergyResults]:
+    def factory() -> EnergyResults:
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: [],
@@ -98,19 +101,20 @@ def test_data_factory(
                         },
                         ignore_index=True,
                     )
-        return spark.createDataFrame(pandas_df, schema=agg_production_schema)
+        df = spark.createDataFrame(pandas_df, schema=agg_production_schema)
+        return EnergyResults(df)
 
     return factory
 
 
 def test_production_calculation_per_ga_and_es(
-    test_data_factory: Callable[..., DataFrame]
+    test_data_factory: Callable[..., EnergyResults]
 ) -> None:
     df = test_data_factory()
-    result = aggregate_production_ga_es(df).sort(
+    result = aggregate_production_ga_es(df)
+    result_collect = result.df.sort(
         Colname.grid_area, Colname.energy_supplier_id
-    )
-    result_collect = result.collect()
+    ).collect()
     assert result_collect[0][Colname.balance_responsible_id] is None
     assert result_collect[0][Colname.grid_area] == "0"
     assert result_collect[9][Colname.energy_supplier_id] == "9"
@@ -121,10 +125,10 @@ def test_production_calculation_per_ga_and_es(
 
 
 def test_production_calculation_per_ga_and_brp(
-    test_data_factory: Callable[..., DataFrame]
+    test_data_factory: Callable[..., EnergyResults]
 ) -> None:
     df = test_data_factory()
-    result = aggregate_production_ga_brp(df).sort(
+    result = aggregate_production_ga_brp(df).df.sort(
         Colname.grid_area, Colname.balance_responsible_id
     )
     result_collect = result.collect()
@@ -138,12 +142,12 @@ def test_production_calculation_per_ga_and_brp(
 
 
 def test_production_calculation_per_ga(
-    test_data_factory: Callable[..., DataFrame]
+    test_data_factory: Callable[..., EnergyResults]
 ) -> None:
     production_with_system_correction_and_grid_loss = test_data_factory()
     result = aggregate_production_ga(
         production_with_system_correction_and_grid_loss
-    ).sort(Colname.grid_area)
+    ).df.sort(Colname.grid_area)
     result_collect = result.collect()
     assert result_collect[0][Colname.balance_responsible_id] is None
     assert result_collect[0][Colname.energy_supplier_id] is None
