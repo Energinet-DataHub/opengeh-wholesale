@@ -18,6 +18,7 @@ from datetime import datetime
 
 from pyspark.sql.types import Row
 
+from package.calculation.energy.schemas import basis_data_time_series_points_schema
 from package.calculation.preparation.transformations import (
     get_basis_data_time_series_points_df,
 )
@@ -87,6 +88,35 @@ time_1 = "2022-06-10T12:15:00.000Z"
 time_2 = "2022-06-10T13:15:00.000Z"
 
 
+def test__when_success__returns_dataframe_with_expected_schema(
+    raw_time_series_points_factory, metering_point_period_df_factory, timestamp_factory
+):
+    # Arrange
+    start_time = "2022-06-08T22:00:00.000Z"
+    end_time = "2022-06-09T22:00:00.000Z"
+
+    raw_time_series_points = raw_time_series_points_factory(
+        time=timestamp_factory(start_time),
+    )
+
+    metering_point_period_df = metering_point_period_df_factory(
+        resolution=MeteringPointResolution.QUARTER.value,
+        from_date=timestamp_factory(start_time),
+        to_date=timestamp_factory(end_time),
+    )
+
+    # Act
+    actual = get_basis_data_time_series_points_df(
+        raw_time_series_points,
+        metering_point_period_df,
+        timestamp_factory(start_time),
+        timestamp_factory(end_time),
+    )
+
+    # Assert
+    assert actual.schema == basis_data_time_series_points_schema
+
+
 @pytest.mark.parametrize(
     "from_date, to_date, expected_rows, resolution",
     [
@@ -131,7 +161,7 @@ def test__given_different_from_date_and_to_date__return_dataframe_with_correct_n
     assert actual.count() == expected_rows
 
 
-def test__missing_point_has_quantity_null_for_quarterly_resolution(
+def test__missing_point_has_quantity_0_for_quarterly_resolution(
     raw_time_series_points_factory, metering_point_period_df_factory, timestamp_factory
 ):
     # Arrange
@@ -159,10 +189,10 @@ def test__missing_point_has_quantity_null_for_quarterly_resolution(
     actual = actual.where(
         col(Colname.observation_time) != timestamp_factory(start_time)
     )
-    assert actual.where(col("quantity").isNull()).count() == 95
+    assert actual.where(col("quantity") == 0).count() == 95
 
 
-def test__missing_point_has_quantity_null_for_hourly_resolution(
+def test__missing_point_has_quantity_0_for_hourly_resolution(
     raw_time_series_points_factory, metering_point_period_df_factory, timestamp_factory
 ):
     # Arrange
@@ -191,7 +221,7 @@ def test__missing_point_has_quantity_null_for_hourly_resolution(
     actual = actual.where(
         col(Colname.observation_time) != timestamp_factory(start_time)
     )
-    assert actual.where(col("quantity").isNull()).count() == 23
+    assert actual.where(col(Colname.quantity) == 0).count() == 23
 
 
 def test__df_is_not_empty_when_no_time_series_points(
