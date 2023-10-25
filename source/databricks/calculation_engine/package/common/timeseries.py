@@ -12,6 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .aggregate_sum_and_quality import aggregate_sum_and_quality
-from .aggregate_sum_and_quality import aggregate_sum_and_qualities
-from .apply_grid_loss_adjustment import adjust_production, adjust_flex_consumption
+from pyspark.sql.types import StructType
+from pyspark.sql import DataFrame
+
+from package.common import assert_schema
+
+
+class TimeSeries:
+    """
+    Base class of "typed" data frames.
+    The raw pyspark DataFrame is accessible as `data.df`.
+    """
+
+    def __init__(self, df: DataFrame, schema: StructType):
+        """
+        The schema of the data frame `df` is schema validated according to the provided schema.
+        The order or columns is ignored.
+        """
+        assert_schema(df.schema, schema, ignore_column_order=True)
+        self.df: DataFrame = df

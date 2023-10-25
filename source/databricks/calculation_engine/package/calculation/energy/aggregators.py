@@ -18,7 +18,6 @@ from package.codelists import (
 )
 from package.constants import Colname
 from . import transformations as t
-from pyspark.sql import DataFrame
 from pyspark.sql.functions import (
     col,
     lit,
@@ -26,10 +25,15 @@ from pyspark.sql.functions import (
 from pyspark.sql.types import StringType
 from typing import Union
 
+from package.calculation.energy.energy_results import EnergyResults
+from ..preparation.quarterly_metering_point_time_series import (
+    QuarterlyMeteringPointTimeSeries,
+)
+
 
 def aggregate_non_profiled_consumption_ga_brp_es(
-    enriched_time_series: DataFrame,
-) -> DataFrame:
+    enriched_time_series: QuarterlyMeteringPointTimeSeries,
+) -> EnergyResults:
     return _aggregate_per_ga_and_brp_and_es(
         enriched_time_series,
         MeteringPointType.CONSUMPTION,
@@ -37,7 +41,9 @@ def aggregate_non_profiled_consumption_ga_brp_es(
     )
 
 
-def aggregate_flex_consumption_ga_brp_es(enriched_time_series: DataFrame) -> DataFrame:
+def aggregate_flex_consumption_ga_brp_es(
+    enriched_time_series: QuarterlyMeteringPointTimeSeries,
+) -> EnergyResults:
     return _aggregate_per_ga_and_brp_and_es(
         enriched_time_series,
         MeteringPointType.CONSUMPTION,
@@ -45,18 +51,20 @@ def aggregate_flex_consumption_ga_brp_es(enriched_time_series: DataFrame) -> Dat
     )
 
 
-def aggregate_production_ga_brp_es(enriched_time_series: DataFrame) -> DataFrame:
+def aggregate_production_ga_brp_es(
+    enriched_time_series: QuarterlyMeteringPointTimeSeries,
+) -> EnergyResults:
     return _aggregate_per_ga_and_brp_and_es(
         enriched_time_series, MeteringPointType.PRODUCTION, None
     )
 
 
 def _aggregate_per_ga_and_brp_and_es(
-    df: DataFrame,
+    df: QuarterlyMeteringPointTimeSeries,
     market_evaluation_point_type: MeteringPointType,
     settlement_method: Union[SettlementMethod, None],
-) -> DataFrame:
-    """This function creates a intermediate result, which is subsequently used as input to achieve result for different process steps.
+) -> EnergyResults:
+    """This function creates an intermediate result, which is subsequently used as input to achieve result for different process steps.
 
     The function is responsible for
     - Converting hour data to quarter data.
@@ -67,7 +75,7 @@ def _aggregate_per_ga_and_brp_and_es(
 
     """
 
-    result = df.filter(
+    result = df.df.filter(
         col(Colname.metering_point_type) == market_evaluation_point_type.value
     )
     if settlement_method is not None:
@@ -96,10 +104,10 @@ def _aggregate_per_ga_and_brp_and_es(
         .alias(Colname.settlement_method),
     )
 
-    return t.create_dataframe_from_aggregation_result_schema(result)
+    return EnergyResults(result)
 
 
-def aggregate_production_ga_es(production: DataFrame) -> DataFrame:
+def aggregate_production_ga_es(production: EnergyResults) -> EnergyResults:
     return _aggregate_per_ga_and_es(
         production,
         MeteringPointType.PRODUCTION,
@@ -107,15 +115,15 @@ def aggregate_production_ga_es(production: DataFrame) -> DataFrame:
 
 
 def aggregate_non_profiled_consumption_ga_es(
-    non_profiled_consumption: DataFrame,
-) -> DataFrame:
+    non_profiled_consumption: EnergyResults,
+) -> EnergyResults:
     return _aggregate_per_ga_and_es(
         non_profiled_consumption,
         MeteringPointType.CONSUMPTION,
     )
 
 
-def aggregate_flex_consumption_ga_es(flex_consumption: DataFrame) -> DataFrame:
+def aggregate_flex_consumption_ga_es(flex_consumption: EnergyResults) -> EnergyResults:
     return _aggregate_per_ga_and_es(
         flex_consumption,
         MeteringPointType.CONSUMPTION,
@@ -123,36 +131,32 @@ def aggregate_flex_consumption_ga_es(flex_consumption: DataFrame) -> DataFrame:
 
 
 def _aggregate_per_ga_and_es(
-    df: DataFrame, market_evaluation_point_type: MeteringPointType
-) -> DataFrame:
+    df: EnergyResults, market_evaluation_point_type: MeteringPointType
+) -> EnergyResults:
     group_by = [Colname.grid_area, Colname.energy_supplier_id, Colname.time_window]
-    result = t.aggregate_sum_and_qualities(df, Colname.sum_quantity, group_by)
+    result = t.aggregate_sum_and_qualities(df.df, Colname.sum_quantity, group_by)
 
-    result = result.select(
-        Colname.grid_area,
-        Colname.energy_supplier_id,
-        Colname.time_window,
-        Colname.qualities,
-        Colname.sum_quantity,
-        lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
+    result = result.withColumn(
+        Colname.metering_point_type, lit(market_evaluation_point_type.value)
     )
-    return t.create_dataframe_from_aggregation_result_schema(result)
+
+    return EnergyResults(result)
 
 
-def aggregate_production_ga_brp(production: DataFrame) -> DataFrame:
+def aggregate_production_ga_brp(production: EnergyResults) -> EnergyResults:
     return _aggregate_per_ga_and_brp(production, MeteringPointType.PRODUCTION)
 
 
 def aggregate_non_profiled_consumption_ga_brp(
-    non_profiled_consumption: DataFrame,
-) -> DataFrame:
+    non_profiled_consumption: EnergyResults,
+) -> EnergyResults:
     return _aggregate_per_ga_and_brp(
         non_profiled_consumption,
         MeteringPointType.CONSUMPTION,
     )
 
 
-def aggregate_flex_consumption_ga_brp(flex_consumption: DataFrame) -> DataFrame:
+def aggregate_flex_consumption_ga_brp(flex_consumption: EnergyResults) -> EnergyResults:
     return _aggregate_per_ga_and_brp(
         flex_consumption,
         MeteringPointType.CONSUMPTION,
@@ -161,11 +165,11 @@ def aggregate_flex_consumption_ga_brp(flex_consumption: DataFrame) -> DataFrame:
 
 # Function to aggregate sum per grid area and balance responsible party
 def _aggregate_per_ga_and_brp(
-    df: DataFrame,
+    df: EnergyResults,
     market_evaluation_point_type: MeteringPointType,
-) -> DataFrame:
+) -> EnergyResults:
     group_by = [Colname.grid_area, Colname.balance_responsible_id, Colname.time_window]
-    result = t.aggregate_sum_and_qualities(df, Colname.sum_quantity, group_by)
+    result = t.aggregate_sum_and_qualities(df.df, Colname.sum_quantity, group_by)
 
     result = result.select(
         Colname.grid_area,
@@ -175,17 +179,17 @@ def _aggregate_per_ga_and_brp(
         Colname.sum_quantity,
         lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
     )
-    return t.create_dataframe_from_aggregation_result_schema(result)
+    return EnergyResults(result)
 
 
-def aggregate_production_ga(production: DataFrame) -> DataFrame:
+def aggregate_production_ga(production: EnergyResults) -> EnergyResults:
     return _aggregate_per_ga(
         production,
         MeteringPointType.PRODUCTION,
     )
 
 
-def aggregate_non_profiled_consumption_ga(consumption: DataFrame) -> DataFrame:
+def aggregate_non_profiled_consumption_ga(consumption: EnergyResults) -> EnergyResults:
     return _aggregate_per_ga(
         consumption,
         MeteringPointType.CONSUMPTION,
@@ -193,8 +197,8 @@ def aggregate_non_profiled_consumption_ga(consumption: DataFrame) -> DataFrame:
 
 
 def aggregate_flex_consumption_ga(
-    flex_consumption: DataFrame,
-) -> DataFrame:
+    flex_consumption: EnergyResults,
+) -> EnergyResults:
     return _aggregate_per_ga(
         flex_consumption,
         MeteringPointType.CONSUMPTION,
@@ -202,11 +206,11 @@ def aggregate_flex_consumption_ga(
 
 
 def _aggregate_per_ga(
-    df: DataFrame,
+    df: EnergyResults,
     market_evaluation_point_type: MeteringPointType,
-) -> DataFrame:
+) -> EnergyResults:
     group_by = [Colname.grid_area, Colname.time_window]
-    result = t.aggregate_sum_and_qualities(df, Colname.sum_quantity, group_by)
+    result = t.aggregate_sum_and_qualities(df.df, Colname.sum_quantity, group_by)
 
     result = result.select(
         Colname.grid_area,
@@ -216,4 +220,4 @@ def _aggregate_per_ga(
         lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
     )
 
-    return t.create_dataframe_from_aggregation_result_schema(result)
+    return EnergyResults(result)

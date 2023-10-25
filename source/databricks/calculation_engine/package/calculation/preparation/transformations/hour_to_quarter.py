@@ -16,13 +16,18 @@ import pyspark.sql.functions as F
 from pyspark.sql import DataFrame
 from pyspark.sql.types import DecimalType
 
+from package.calculation.preparation.quarterly_metering_point_time_series import (
+    QuarterlyMeteringPointTimeSeries,
+)
 from package.constants import Colname
 from package.codelists import MeteringPointResolution
 from package.common import assert_schema
 from package.calculation.energy.schemas import basis_data_time_series_points_schema
 
 
-def transform_hour_to_quarter(basis_data_time_series_points_df: DataFrame) -> DataFrame:
+def transform_hour_to_quarter(
+    basis_data_time_series_points_df: DataFrame,
+) -> QuarterlyMeteringPointTimeSeries:
     assert_schema(
         basis_data_time_series_points_df.schema,
         basis_data_time_series_points_schema,
@@ -63,4 +68,4 @@ def transform_hour_to_quarter(basis_data_time_series_points_df: DataFrame) -> Da
         .cast(DecimalType(18, 6)),
     )
 
-    return result
+    return QuarterlyMeteringPointTimeSeries(result)

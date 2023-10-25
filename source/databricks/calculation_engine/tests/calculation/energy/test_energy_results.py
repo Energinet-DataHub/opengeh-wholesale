@@ -19,14 +19,11 @@ import pytest
 import pandas as pd
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col, struct
-import pyspark.sql.types as t
 
+from package.calculation.energy.energy_results import EnergyResults
 from package.codelists import (
     MeteringPointType,
     QuantityQuality,
-)
-from package.calculation.energy.transformations import (
-    create_dataframe_from_aggregation_result_schema,
 )
 from package.calculation.energy.schemas import aggregation_result_schema
 from package.common import assert_schema
@@ -119,10 +116,10 @@ def test__create_dataframe_from_aggregation_result_schema__can_create_a_datafram
     # Arrange
     result = agg_result_factory()
     # Act
-    actual = create_dataframe_from_aggregation_result_schema(result)
+    actual = EnergyResults(result)
     # Assert
     assert_schema(
-        actual.schema,
+        actual.df.schema,
         aggregation_result_schema,
         ignore_nullability=True,
         ignore_decimal_precision=True,
@@ -145,6 +142,6 @@ def test__create_dataframe_from_aggregation_result_schema__match_expected_datafr
         metering_point_type=MeteringPointType.CONSUMPTION.value,
     )
     # Act
-    actual = create_dataframe_from_aggregation_result_schema(result)
+    actual = EnergyResults(result)
     # Assert
-    assert actual.collect() == expected.collect()
+    assert actual.df.collect() == expected.collect()

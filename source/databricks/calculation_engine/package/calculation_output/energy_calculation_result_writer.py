@@ -18,6 +18,7 @@ import pyspark.sql.functions as f
 import pyspark.sql.types as t
 from pyspark.sql.window import Window
 
+from package.calculation.energy.energy_results import EnergyResults
 from package.codelists import TimeSeriesType, AggregationLevel, ProcessType
 from package.common import assert_schema
 from package.constants import Colname, EnergyResultColumnNames
@@ -37,7 +38,7 @@ class EnergyCalculationResultWriter:
 
     def write(
         self,
-        results: DataFrame,
+        results: EnergyResults,
         time_series_type: TimeSeriesType,
         aggregation_level: AggregationLevel,
     ) -> None:
@@ -46,7 +47,8 @@ class EnergyCalculationResultWriter:
         The schema of the input data frame must match the schema {_write_input_schema}.
         Nullable columns are, however, optional.
         """
-        results = self._add_nullable_columns_if_missing(results)
+        # TODO BJM: Two schemas and duplicate adding nullable columns?
+        results = self._add_nullable_columns_if_missing(results.df)
 
         # Assert schema after adding optional columns but before internal data frame transformations.
         # The order of the columns in the input data frame doesn't matter.
