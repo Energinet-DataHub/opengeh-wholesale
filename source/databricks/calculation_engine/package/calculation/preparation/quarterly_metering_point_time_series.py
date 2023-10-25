@@ -17,11 +17,11 @@ from pyspark.sql import DataFrame
 from package.calculation.energy.schemas import (
     time_series_quarter_points_schema,
 )
-from package.common import TimeSeries
+from package.common import DataFrameWrapper
 from package.constants import Colname
 
 
-class QuarterlyMeteringPointTimeSeries(TimeSeries):
+class QuarterlyMeteringPointTimeSeries(DataFrameWrapper):
     """
     Time series points of metering points with resolution quarterly.
 

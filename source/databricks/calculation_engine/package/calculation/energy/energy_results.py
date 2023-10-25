@@ -19,11 +19,11 @@ import pyspark.sql.types as t
 from package.calculation.energy.schemas import (
     aggregation_result_schema,
 )
-from package.common import TimeSeries, assert_schema
+from package.common import DataFrameWrapper, assert_schema
 from package.constants import Colname
 
 
-class EnergyResults(TimeSeries):
+class EnergyResults(DataFrameWrapper):
     """
     Time series of energy results.
     """

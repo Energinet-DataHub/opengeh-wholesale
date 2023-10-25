@@ -13,4 +13,4 @@
 # limitations under the License.
 
 from .schemas import assert_schema
-from .timeseries import TimeSeries
+from .data_frame_wrapper import DataFrameWrapper

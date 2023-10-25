@@ -18,7 +18,7 @@ from pyspark.sql import DataFrame
 from package.common import assert_schema
 
 
-class TimeSeries:
+class DataFrameWrapper:
     """
     Base class of "typed" data frames.
     The raw pyspark DataFrame is accessible as `data.df`.
