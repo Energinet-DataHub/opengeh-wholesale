@@ -47,12 +47,15 @@ def test_data_factory(spark: SparkSession) -> Callable[..., EnergyResults]:
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: [],
+                Colname.to_grid_area: [],
+                Colname.from_grid_area: [],
                 Colname.balance_responsible_id: [],
                 Colname.energy_supplier_id: [],
                 Colname.time_window: [],
                 Colname.sum_quantity: [],
                 Colname.qualities: [],
                 Colname.metering_point_type: [],
+                Colname.settlement_method: [],
             }
         )
         for i in range(3):
@@ -61,6 +64,8 @@ def test_data_factory(spark: SparkSession) -> Callable[..., EnergyResults]:
                     pandas_df = pandas_df.append(
                         {
                             Colname.grid_area: str(i),
+                            Colname.to_grid_area: None,
+                            Colname.from_grid_area: None,
                             Colname.balance_responsible_id: str(j),
                             Colname.energy_supplier_id: str(k),
                             Colname.time_window: {
@@ -72,6 +77,7 @@ def test_data_factory(spark: SparkSession) -> Callable[..., EnergyResults]:
                             Colname.metering_point_type: [
                                 MeteringPointType.CONSUMPTION.value
                             ],
+                            Colname.settlement_method: None,
                         },
                         ignore_index=True,
                     )

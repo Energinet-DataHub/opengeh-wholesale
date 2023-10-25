@@ -99,12 +99,15 @@ def hourly_production_result_row_factory(
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: [domain],
+                Colname.to_grid_area: [None],
+                Colname.from_grid_area: [None],
                 Colname.balance_responsible_id: [responsible],
                 Colname.energy_supplier_id: [supplier],
-                Colname.sum_quantity: [sum_quantity],
                 Colname.time_window: [time_window],
+                Colname.sum_quantity: [sum_quantity],
                 Colname.qualities: [[aggregated_quality]],
                 Colname.metering_point_type: [metering_point_type],
+                Colname.settlement_method: [None],
             }
         )
         df = spark.createDataFrame(pandas_df, schema=energy_results_schema)
@@ -115,8 +118,8 @@ def hourly_production_result_row_factory(
 
 @pytest.fixture(scope="module")
 def negative_grid_loss_result_row_factory(
-    spark: SparkSession, negative_grid_loss_result_schema: StructType
-) -> Callable[..., DataFrame]:
+    hourly_production_result_row_factory: Callable[..., EnergyResults],
+) -> Callable[..., EnergyResults]:
     """
     Factory to generate a single row of  data, with default parameters as specified above.
     """
@@ -127,19 +130,16 @@ def negative_grid_loss_result_row_factory(
         negative_grid_loss: Decimal = default_negative_grid_loss,
         aggregated_quality: str = default_aggregated_quality,
         metering_point_type: str = default_metering_point_type,
-    ) -> DataFrame:
+    ) -> EnergyResults:
         if time_window is None:
             time_window = default_time_window
-        pandas_df = pd.DataFrame(
-            {
-                Colname.grid_area: [domain],
-                Colname.time_window: [time_window],
-                Colname.sum_quantity: [negative_grid_loss],
-                Colname.qualities: [[aggregated_quality]],
-                Colname.metering_point_type: [metering_point_type],
-            }
+        return hourly_production_result_row_factory(
+            domain=domain,
+            time_window=time_window,
+            sum_quantity=negative_grid_loss,
+            aggregated_quality=aggregated_quality,
+            metering_point_type=metering_point_type,
         )
-        return spark.createDataFrame(pandas_df, schema=negative_grid_loss_result_schema)
 
     return factory
 
@@ -220,16 +220,16 @@ def test_grid_area_grid_loss_is_not_added_to_non_grid_loss_energy_responsible(
 
 
 def test_result_dataframe_contains_same_number_of_results_with_same_energy_suppliers_as_flex_consumption_result_dataframe(
-    hourly_production_result_row_factory: Callable[..., DataFrame],
-    negative_grid_loss_result_row_factory: Callable[..., DataFrame],
+    hourly_production_result_row_factory: Callable[..., EnergyResults],
+    negative_grid_loss_result_row_factory: Callable[..., EnergyResults],
     sys_cor_row_factory: Callable[..., DataFrame],
 ) -> None:
     hp_row_1 = hourly_production_result_row_factory(supplier="A")
     hp_row_2 = hourly_production_result_row_factory(supplier="B")
     hp_row_3 = hourly_production_result_row_factory(supplier="C")
 
-    production = EnergyResults(hp_row_1.union(hp_row_2).union(hp_row_3))
-    negative_grid_loss = EnergyResults(negative_grid_loss_result_row_factory())
+    production = EnergyResults(hp_row_1.df.union(hp_row_2.df).union(hp_row_3.df))
+    negative_grid_loss = negative_grid_loss_result_row_factory()
     grid_loss_sys_cor_master_data = sys_cor_row_factory(supplier="C")
 
     result_df = adjust_production(
@@ -244,8 +244,8 @@ def test_result_dataframe_contains_same_number_of_results_with_same_energy_suppl
 
 
 def test_correct_negative_grid_loss_entry_is_used_to_determine_energy_responsible_for_the_given_time_window_from_hourly_production_result_dataframe(
-    hourly_production_result_row_factory: Callable[..., DataFrame],
-    negative_grid_loss_result_row_factory: Callable[..., DataFrame],
+    hourly_production_result_row_factory: Callable[..., EnergyResults],
+    negative_grid_loss_result_row_factory: Callable[..., EnergyResults],
     sys_cor_row_factory: Callable[..., DataFrame],
 ) -> None:
     time_window_1 = {
@@ -271,7 +271,7 @@ def test_correct_negative_grid_loss_entry_is_used_to_determine_energy_responsibl
         supplier="B", time_window=time_window_3
     )
 
-    production = EnergyResults(hp_row_1.union(hp_row_2).union(hp_row_3))
+    production = EnergyResults(hp_row_1.df.union(hp_row_2.df).union(hp_row_3.df))
 
     gasc_result_1 = Decimal(1)
     gasc_result_2 = Decimal(2)
@@ -287,7 +287,9 @@ def test_correct_negative_grid_loss_entry_is_used_to_determine_energy_responsibl
         time_window=time_window_3, negative_grid_loss=gasc_result_3
     )
 
-    negative_grid_loss = EnergyResults(gasc_row_1.union(gasc_row_2).union(gasc_row_3))
+    negative_grid_loss = EnergyResults(
+        gasc_row_1.df.union(gasc_row_2.df).union(gasc_row_3.df)
+    )
 
     sc_row_1 = sys_cor_row_factory(
         supplier="A", valid_from=time_window_1["start"], valid_to=time_window_1["end"]
