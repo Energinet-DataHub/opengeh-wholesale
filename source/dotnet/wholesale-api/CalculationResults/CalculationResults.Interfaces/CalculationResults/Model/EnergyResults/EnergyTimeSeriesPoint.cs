@@ -26,4 +26,4 @@ public sealed record EnergyTimeSeriesPoint(
     DateTimeOffset Time,
     decimal Quantity,
     QuantityQuality Quality,
-    IReadOnlyList<QuantityQuality> Qualities = null!); // TODO AJW
+    IReadOnlyCollection<QuantityQuality> Qualities);

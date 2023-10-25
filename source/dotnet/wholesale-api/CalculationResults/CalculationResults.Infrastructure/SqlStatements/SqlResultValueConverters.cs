@@ -48,6 +48,11 @@ public static class SqlResultValueConverters
         return QuantityQualitiesMapper.FromDeltaTableValue(value).First();
     }
 
+    public static IReadOnlyCollection<QuantityQuality> ToQuantityQualities(string value)
+    {
+        return QuantityQualitiesMapper.FromDeltaTableValue(value);
+    }
+
     public static TimeSeriesType ToTimeSeriesType(string value)
     {
         return TimeSeriesTypeMapper.FromDeltaTableValue(value);

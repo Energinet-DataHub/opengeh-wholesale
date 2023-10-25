@@ -20,6 +20,7 @@ using FluentAssertions;
 using Google.Protobuf.WellKnownTypes;
 using NodaTime;
 using Xunit;
+using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
 using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests;
@@ -63,6 +64,7 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
 
     private EnergyResult CreateEnergyResult()
     {
+        var quantityQualities = new List<QuantityQuality>();
         return new EnergyResult(
             _id,
             _batchId,
@@ -72,9 +74,9 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
             _balanceResponsibleId,
             new EnergyTimeSeriesPoint[]
             {
-                new(new DateTime(2021, 1, 1), 1, CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Estimated),
-                new(new DateTime(2021, 1, 1), 2, CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Estimated),
-                new(new DateTime(2021, 1, 1), 3, CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Estimated),
+                new(new DateTime(2021, 1, 1), 1, QuantityQuality.Estimated, quantityQualities),
+                new(new DateTime(2021, 1, 1), 2, QuantityQuality.Estimated, quantityQualities),
+                new(new DateTime(2021, 1, 1), 3, QuantityQuality.Estimated, quantityQualities),
             },
             ProcessType.Aggregation,
             _periodStart,
