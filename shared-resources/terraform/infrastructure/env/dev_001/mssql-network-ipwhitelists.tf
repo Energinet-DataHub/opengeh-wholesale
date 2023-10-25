@@ -22,3 +22,11 @@ resource "azurerm_sql_firewall_rule" "vesterballevej" {
   start_ip_address    = "152.115.37.250"
   end_ip_address      = "152.115.37.250"
 }
+
+resource "azurerm_sql_firewall_rule" "systemate" {
+  name                = "Systemate"
+  resource_group_name = azurerm_resource_group.this.name
+  server_name         = module.mssql_data_additional.name
+  start_ip_address    = "93.160.57.54"
+  end_ip_address      = "93.160.57.54"
+}
