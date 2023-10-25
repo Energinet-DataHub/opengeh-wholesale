@@ -30,3 +30,11 @@ resource "azurerm_sql_firewall_rule" "systemate" {
   start_ip_address    = "93.160.57.54"
   end_ip_address      = "93.160.57.54"
 }
+
+resource "azurerm_sql_firewall_rule" "esett_deprecated_powerbi" {
+  name                = "Esett Deprecated PowerBI"
+  resource_group_name = azurerm_resource_group.this.name
+  server_name         = module.mssql_data_additional.name
+  start_ip_address    = "20.38.84.191"
+  end_ip_address      = "20.38.84.191"
+}
