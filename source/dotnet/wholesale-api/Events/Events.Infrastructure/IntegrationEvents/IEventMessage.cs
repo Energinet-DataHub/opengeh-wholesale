@@ -20,7 +20,7 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents
     /// Extends the generated protobuf message types with additional properties
     /// to support generic creation of the type "IntegrationEvent".
     /// </summary>
-    internal interface IEventMessage : IMessage
+    public interface IEventMessage : IMessage
     {
         /// <summary>
         /// The message type for transport message meta data in accordance with ADR-008.
