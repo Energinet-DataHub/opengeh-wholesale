@@ -63,35 +63,51 @@ public class IntegrationEventProvider : IIntegrationEventProvider
             }
 
             // Publish energy results
-            var energyResultCount = 0;
-            await foreach (var energyResult in _energyResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
+            var energyEventProviderState = new EventProviderState();
+            await foreach (var integrationEvent in GetEnergyResultsAsync(batch.Id, energyEventProviderState).ConfigureAwait(false))
             {
-                energyResultCount++;
-                yield return _integrationEventFactory.CreateCalculationResultCompleted(energyResult); // Deprecated
-                yield return _integrationEventFactory.CreateEnergyResultProducedV1(energyResult);
+                yield return integrationEvent;
             }
 
             // Publish wholesale results
-            var wholesaleResultCount = 0;
+            var wholesaleEventProviderState = new EventProviderState();
             if (IsWholesaleCalculationType(batch.ProcessType))
             {
-                await foreach (var wholesaleResult in _wholesaleResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
+                await foreach (var integrationEvent in GetWholesaleResultsAsync(batch.Id, wholesaleEventProviderState).ConfigureAwait(false))
                 {
-                    wholesaleResultCount++;
-                    yield return CreateEventFromWholesaleResult(wholesaleResult);
+                    yield return integrationEvent;
                 }
             }
 
             batch.PublishedTime = _clock.GetCurrentInstant();
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
-            _logger.LogInformation("Published {EnergyResultCount} energy results for completed batch {BatchId}", energyResultCount, batch.Id);
+            _logger.LogInformation("Published {EnergyResultCount} energy results for completed batch {BatchId}", energyEventProviderState.EventCount, batch.Id);
             if (IsWholesaleCalculationType(batch.ProcessType))
             {
-                _logger.LogInformation("Published {WholesaleResultCount} wholesale results for completed batch {BatchId}", wholesaleResultCount, batch.Id);
+                _logger.LogInformation("Published {WholesaleResultCount} wholesale results for completed batch {BatchId}", wholesaleEventProviderState.EventCount, batch.Id);
             }
         }
         while (true);
+    }
+
+    private async IAsyncEnumerable<IntegrationEvent> GetEnergyResultsAsync(Guid batchId, EventProviderState state)
+    {
+        await foreach (var energyResult in _energyResultQueries.GetAsync(batchId).ConfigureAwait(false))
+        {
+            state.EventCount++;
+            yield return _integrationEventFactory.CreateCalculationResultCompleted(energyResult); // Deprecated
+            yield return _integrationEventFactory.CreateEnergyResultProducedV1(energyResult);
+        }
+    }
+
+    private async IAsyncEnumerable<IntegrationEvent> GetWholesaleResultsAsync(Guid batchId, EventProviderState state)
+    {
+        await foreach (var wholesaleResult in _wholesaleResultQueries.GetAsync(batchId).ConfigureAwait(false))
+        {
+            state.EventCount++;
+            yield return CreateEventFromWholesaleResult(wholesaleResult);
+        }
     }
 
     private IntegrationEvent CreateEventFromWholesaleResult(WholesaleResult wholesaleResult)
