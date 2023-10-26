@@ -17,7 +17,7 @@ from decimal import Decimal
 
 import pandas as pd
 import pytest
-from pyspark.sql.functions import col, window
+from pyspark.sql.functions import col, window, lit
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 
 from package.calculation.energy.exchange_aggregators import (
@@ -30,6 +30,7 @@ from package.codelists import (
     MeteringPointType,
     QuantityQuality,
     MeteringPointResolution,
+    SettlementMethod,
 )
 from package.constants import Colname
 
@@ -102,6 +103,7 @@ def single_quarter_test_data(spark, time_series_schema):
             Colname.time_window, window(col(Colname.observation_time), "15 minutes")
         )
         .withColumn(Colname.quarter_quantity, col(Colname.quantity))
+        .withColumn(Colname.settlement_method, lit(SettlementMethod.NON_PROFILED.value))
     )
 
     return QuarterlyMeteringPointTimeSeries(df)
@@ -173,6 +175,7 @@ def multi_quarter_test_data(spark, time_series_schema):
             Colname.time_window, window(col(Colname.observation_time), "15 minutes")
         )
         .withColumn(Colname.quarter_quantity, col(Colname.quantity))
+        .withColumn(Colname.settlement_method, lit(SettlementMethod.NON_PROFILED.value))
     )
 
     return QuarterlyMeteringPointTimeSeries(df)

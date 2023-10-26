@@ -36,6 +36,7 @@ from package.codelists import (
     MeteringPointType,
     QuantityQuality,
     MeteringPointResolution,
+    SettlementMethod,
 )
 from package.constants import Colname
 
@@ -79,6 +80,7 @@ def enriched_time_series_factory(
                 Colname.quarter_time: obs_time_datetime,
                 Colname.quality: quality,
                 Colname.resolution: MeteringPointResolution.QUARTER.value,
+                Colname.settlement_method: SettlementMethod.NON_PROFILED.value,
             }
         ]
         df = spark.createDataFrame(rows).withColumn(

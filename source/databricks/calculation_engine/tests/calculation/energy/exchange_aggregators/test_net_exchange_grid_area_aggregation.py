@@ -18,7 +18,7 @@ from decimal import Decimal
 import pandas as pd
 import pytest
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import window, col
+from pyspark.sql.functions import window, col, lit
 
 from package.calculation.energy.energy_results import (
     EnergyResults,
@@ -33,6 +33,7 @@ from package.codelists import (
     MeteringPointType,
     QuantityQuality,
     MeteringPointResolution,
+    SettlementMethod,
 )
 from package.constants import Colname
 
@@ -185,6 +186,7 @@ def enriched_time_series_data_frame(
         )
         .withColumn(Colname.quarter_time, col(Colname.observation_time))
         .withColumn(Colname.quarter_quantity, col(Colname.quantity))
+        .withColumn(Colname.settlement_method, lit(SettlementMethod.NON_PROFILED.value))
     )
     return QuarterlyMeteringPointTimeSeries(df)
 
