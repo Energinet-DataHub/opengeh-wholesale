@@ -32,6 +32,8 @@ module "app_health_checks_ui" {
     "HealthChecksUI__HealthChecks__12__Uri"  = "https://app-webapi-esett-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/ready"
     "HealthChecksUI__HealthChecks__13__Name" = "Wholesale: Web API"
     "HealthChecksUI__HealthChecks__13__Uri"  = "https://app-webapi-wholsal-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/ready"
+    "HealthChecksUI__HealthChecks__29__Name" = "Esett Deprecated: Web API"
+    "HealthChecksUI__HealthChecks__29__Uri"  = "https://app-importer-esettdepr-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/ready"
     # Live
     "HealthChecksUI__HealthChecks__14__Name" = "Health Check UI - live"
     "HealthChecksUI__HealthChecks__14__Uri"  = "https://app-healthchecksui-health-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/live"
@@ -61,6 +63,8 @@ module "app_health_checks_ui" {
     "HealthChecksUI__HealthChecks__26__Uri"  = "https://app-webapi-esett-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/live"
     "HealthChecksUI__HealthChecks__27__Name" = "Wholesale: Web API - live"
     "HealthChecksUI__HealthChecks__27__Uri"  = "https://app-webapi-wholsal-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/live"
+    "HealthChecksUI__HealthChecks__28__Name" = "Esett Deprecated: Web API - live"
+    "HealthChecksUI__HealthChecks__28__Uri"  = "https://app-importer-esettdepr-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/live"
 
     # Polling Interval
     "HealthChecksUI__EvaluationTimeinSeconds" = 60
