@@ -163,6 +163,7 @@ def get_basis_data_time_series_points_df(
             Colname.quality,
             Colname.energy_supplier_id,
             Colname.balance_responsible_id,
+            Colname.settlement_method,
         )
     )
 
