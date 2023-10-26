@@ -78,10 +78,10 @@ public class IntegrationEventProvider : IIntegrationEventProvider
             unpublishedBatch.PublishedTime = _clock.GetCurrentInstant();
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
-            _logger.LogInformation("Handled '{EnergyResultCount}' energy results for completed batch {BatchId}", energyResultCount, unpublishedBatch.Id);
+            _logger.LogInformation("Handled '{EnergyResultCount}' energy results for completed batch {BatchId}.", energyResultCount, unpublishedBatch.Id);
             if (_wholesaleResultEventProvider.CanContainWholesaleResults(unpublishedBatch))
             {
-                _logger.LogInformation("Handled '{WholesaleResultCount}' wholesale results for completed batch {BatchId}", wholesaleResultCount, unpublishedBatch.Id);
+                _logger.LogInformation("Handled '{WholesaleResultCount}' wholesale results for completed batch {BatchId}.", wholesaleResultCount, unpublishedBatch.Id);
             }
         }
         while (true);
