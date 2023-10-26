@@ -185,7 +185,7 @@ public class IntegrationEventProviderTests
             .Create();
 
         completedBatchRepositoryMock
-            .SetupSequence(p => p.GetNextUnpublishedOrNullAsync())
+            .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
             .ReturnsAsync(aggregationBatch)
             .ReturnsAsync(wholesaleFixingBatch)
             .ReturnsAsync((CompletedBatch)null!);

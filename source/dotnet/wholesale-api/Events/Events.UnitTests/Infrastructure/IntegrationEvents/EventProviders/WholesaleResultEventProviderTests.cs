@@ -34,10 +34,8 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
         [InlineAutoMoqData]
         public async Task GetAsync_WhenMultipleResults_ReturnsOneEventPerResult(
             WholesaleResult[] wholesaleResults,
-#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
-            [Frozen(Matching.ImplementedInterfaces)] AmountPerChargeResultProducedV1Factory amountPerChargeResultProducedV1Factory,
-            [Frozen(Matching.ImplementedInterfaces)] MonthlyAmountPerChargeResultProducedV1Factory monthlyAmountPerChargeResultProducedV1Factory,
-#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
+            [Frozen] Mock<IAmountPerChargeResultProducedV1Factory> amountPerChargeResultProducedV1FactoryMock,
+            [Frozen] Mock<IMonthlyAmountPerChargeResultProducedV1Factory> monthlyAmountPerChargeResultProducedV1FactoryMock,
             [Frozen] Mock<IWholesaleResultQueries> wholesaleResultQueriesMock,
             WholesaleResultEventProvider sut)
         {
@@ -51,7 +49,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
                 .Create();
 
             wholesaleResultQueriesMock
-                .Setup(queries => queries.GetAsync(wholesaleFixingBatch.Id))
+                .Setup(mock => mock.GetAsync(wholesaleFixingBatch.Id))
                 .Returns(wholesaleResults.ToAsyncEnumerable());
 
             // Act

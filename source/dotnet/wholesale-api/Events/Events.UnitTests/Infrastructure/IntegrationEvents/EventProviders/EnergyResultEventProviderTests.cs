@@ -44,7 +44,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
             var expectedEventsCount = energyResults.Length * expectedEventsPerResult;
 
             energyResultQueriesMock
-                .Setup(queries => queries.GetAsync(completedBatch.Id))
+                .Setup(mock => mock.GetAsync(completedBatch.Id))
                 .Returns(energyResults.ToAsyncEnumerable());
 
             // Act
