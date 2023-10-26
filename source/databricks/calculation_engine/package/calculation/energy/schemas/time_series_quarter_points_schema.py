@@ -30,6 +30,7 @@ time_series_quarter_points_schema = t.StructType(
         t.StructField(Colname.energy_supplier_id, t.StringType(), True),
         t.StructField(Colname.balance_responsible_id, t.StringType(), True),
         t.StructField(Colname.quarter_time, t.TimestampType(), False),
+        t.StructField(Colname.settlement_method, t.StringType(), True),
         t.StructField(
             Colname.time_window,
             t.StructType(

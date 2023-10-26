@@ -44,6 +44,7 @@ def basis_data_time_series_points_row(
     quality: QuantityQuality = QuantityQuality.ESTIMATED,
     energy_supplier_id: str = "the_energy_supplier_id",
     balance_responsible_id: str = "the_balance_responsible_id",
+    settlement_method: str = "the_settlement_method",
 ) -> Row:
     row = {
         Colname.grid_area: grid_area,
@@ -57,6 +58,7 @@ def basis_data_time_series_points_row(
         Colname.quality: quality.value,
         Colname.energy_supplier_id: energy_supplier_id,
         Colname.balance_responsible_id: balance_responsible_id,
+        Colname.settlement_method: settlement_method,
     }
 
     return Row(**row)
