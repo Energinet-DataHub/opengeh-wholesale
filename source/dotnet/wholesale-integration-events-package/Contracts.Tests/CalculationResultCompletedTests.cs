@@ -40,7 +40,7 @@ public class CalculationResultCompletedTests
     public void CalculationResultCompleted_HasCorrectEventName()
     {
         // Be careful to change the event name as it is public available and used for transport message meta data in accordance with ADR-008
-        new CalculationResultCompleted().EventName.Should().Be("CalculationResultCompleted");
+        CalculationResultCompleted.EventName.Should().Be("CalculationResultCompleted");
     }
 
     /// <summary>
@@ -53,7 +53,7 @@ public class CalculationResultCompletedTests
     public void Fail_If_MinorEventVersion_ShouldHaveBeenBumped()
     {
         // Arrange
-        var actualVersion = new CalculationResultCompleted().EventMinorVersion;
+        var actualVersion = CalculationResultCompleted.EventMinorVersion;
         var actualContent = File.ReadAllText(@"calculation_result_completed.proto");
 
         // Act: There is no assert but the test will fail if the minor event version has not been bumped while the contract has changed.

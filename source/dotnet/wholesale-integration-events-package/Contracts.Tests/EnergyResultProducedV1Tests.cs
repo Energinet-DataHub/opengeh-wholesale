@@ -40,7 +40,7 @@ public class EnergyResultProducedV1Tests
     public void EnergyResultProduced_HasCorrectEventName()
     {
         // Be careful to change the event name as it is public available and used for transport message meta data in accordance with ADR-008
-        new EnergyResultProducedV1().EventName.Should().Be("EnergyResultProducedV1");
+        EnergyResultProducedV1.EventName.Should().Be("EnergyResultProducedV1");
     }
 
     /// <summary>
@@ -53,7 +53,7 @@ public class EnergyResultProducedV1Tests
     public void Fail_If_MinorEventVersion_ShouldHaveBeenBumped()
     {
         // Arrange
-        var actualVersion = new EnergyResultProducedV1().EventMinorVersion;
+        var actualVersion = EnergyResultProducedV1.EventMinorVersion;
         var actualContent = File.ReadAllText(@"energy_result_produced_v1.proto");
 
         // Act: There is no assert but the test will fail if the minor event version has not been bumped while the contract has changed.

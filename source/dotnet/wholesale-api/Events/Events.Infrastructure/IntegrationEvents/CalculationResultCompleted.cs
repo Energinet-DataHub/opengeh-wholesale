@@ -19,7 +19,11 @@ namespace Energinet.DataHub.Wholesale.Contracts.Events;
 
 public partial class CalculationResultCompleted : IEventMessage
 {
-    public string EventName => "CalculationResultCompleted";
+    public const string EventName = "CalculationResultCompleted";
 
-    public int EventMinorVersion => 2;
+    public const int EventMinorVersion = 2;
+
+    string IEventMessage.EventName => EventName;
+
+    int IEventMessage.EventMinorVersion => EventMinorVersion;
 }

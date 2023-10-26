@@ -19,7 +19,11 @@ namespace Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 
 public partial class AmountPerChargeResultProducedV1 : IEventMessage
 {
-    public string EventName => "AmountPerChargeResultProducedV1";
+    public const string EventName = "AmountPerChargeResultProducedV1";
 
-    public int EventMinorVersion => 1;
+    public const int EventMinorVersion = 1;
+
+    string IEventMessage.EventName => EventName;
+
+    int IEventMessage.EventMinorVersion => EventMinorVersion;
 }

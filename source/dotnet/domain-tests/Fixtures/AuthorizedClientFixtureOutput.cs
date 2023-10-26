@@ -30,9 +30,6 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         private readonly WholesaleClient_V3 _wholesaleClient;
         private readonly ServiceBusReceiver _receiver;
 
-        private static readonly string _calculationResultCompletedEventName = new CalculationResultCompleted().EventName;
-        private static readonly string _energyResultProducedV1EventName = new EnergyResultProducedV1().EventName;
-
         public AuthorizedClientFixtureOutput(WholesaleClient_V3 wholesaleClient, ServiceBusReceiver receiver)
         {
             _wholesaleClient = wholesaleClient;
@@ -141,7 +138,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         {
             var data = message.Body.ToArray();
 
-            if (message.Subject == _calculationResultCompletedEventName)
+            if (message.Subject == CalculationResultCompleted.EventName)
             {
                 var calculationResultCompleted = CalculationResultCompleted.Parser.ParseFrom(data);
                 if (calculationResultCompleted.BatchId == BalanceFixingCalculationId.ToString())
@@ -149,7 +146,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                 else if (calculationResultCompleted.BatchId == WholesaleFixingCalculationId.ToString())
                     CalculationResultCompletedFromWholesaleFixing.Add(calculationResultCompleted);
             }
-            else if (message.Subject == _energyResultProducedV1EventName)
+            else if (message.Subject == EnergyResultProducedV1.EventName)
             {
                 var energyResultProduced = EnergyResultProducedV1.Parser.ParseFrom(data);
                 if (energyResultProduced.CalculationId == BalanceFixingCalculationId.ToString())
