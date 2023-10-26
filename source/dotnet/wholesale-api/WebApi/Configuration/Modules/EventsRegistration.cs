@@ -44,7 +44,6 @@ public static class EventsRegistration
         serviceCollection.AddScoped<IEnergyResultEventProvider, EnergyResultEventProvider>();
         serviceCollection.AddScoped<IWholesaleResultEventProvider, WholesaleResultEventProvider>();
 
-        serviceCollection.AddApplications();
         serviceCollection.AddInfrastructure();
 
         serviceCollection.AddCommunication<IntegrationEventProvider>(_ => new CommunicationSettings
@@ -57,23 +56,19 @@ public static class EventsRegistration
         RegisterHostedServices(serviceCollection);
     }
 
-    private static void AddApplications(this IServiceCollection services)
-    {
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
-        services
-            .AddScoped<ICalculationResultCompletedFactory,
-                CalculationResultCompletedFactory>();
-        services.AddScoped<IEnergyResultProducedV1Factory,
-            EnergyResultProducedV1Factory>();
-        services.AddScoped<IAmountPerChargeResultProducedV1Factory,
-            AmountPerChargeResultProducedV1Factory>();
-        services.AddScoped<IMonthlyAmountPerChargeResultProducedV1Factory,
-            MonthlyAmountPerChargeResultProducedV1Factory>();
-    }
-
     private static void AddInfrastructure(
         this IServiceCollection serviceCollection)
     {
+        serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
+        serviceCollection
+            .AddScoped<ICalculationResultCompletedFactory,
+                CalculationResultCompletedFactory>();
+        serviceCollection.AddScoped<IEnergyResultProducedV1Factory,
+            EnergyResultProducedV1Factory>();
+        serviceCollection.AddScoped<IAmountPerChargeResultProducedV1Factory,
+            AmountPerChargeResultProducedV1Factory>();
+        serviceCollection.AddScoped<IMonthlyAmountPerChargeResultProducedV1Factory,
+            MonthlyAmountPerChargeResultProducedV1Factory>();
         serviceCollection.AddScoped<IEventsDatabaseContext, EventsDatabaseContext>();
         serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
     }
