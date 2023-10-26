@@ -38,3 +38,12 @@ resource "azurerm_sql_firewall_rule" "esett_deprecated_powerbi" {
   start_ip_address    = "20.38.84.191"
   end_ip_address      = "20.38.84.191"
 }
+
+resource "azurerm_sql_firewall_rule" "esett_deprecated_powerbi_data" {
+  name                = "Esett Deprecated PowerBI Data"
+  resource_group_name = azurerm_resource_group.this.name
+  server_name         = module.mssql_data_additional.name
+  start_ip_address    = "20.38.85.35"
+  end_ip_address      = "20.38.85.35"
+}
+
