@@ -17,6 +17,8 @@ from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
 
 
+# TODO BJM: Simplify these signatures (and use type data frames),
+#           or perhaps even move to the type data types
 def aggregate_sum_and_quality(
     result: DataFrame, quantity_col_name: str, group_by: list[str]
 ) -> DataFrame:

@@ -16,13 +16,18 @@ import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
 from pyspark.sql.types import DecimalType
 
+from package.calculation.preparation.quarterly_metering_point_time_series import (
+    QuarterlyMeteringPointTimeSeries,
+)
 from package.constants import Colname
 from package.codelists import MeteringPointResolution
 from package.common import assert_schema
 from package.calculation.energy.schemas import basis_data_time_series_points_schema
 
 
-def transform_hour_to_quarter(basis_data_time_series_points_df: DataFrame) -> DataFrame:
+def transform_hour_to_quarter(
+    basis_data_time_series_points_df: DataFrame,
+) -> QuarterlyMeteringPointTimeSeries:
     assert_schema(
         basis_data_time_series_points_df.schema,
         basis_data_time_series_points_schema,
@@ -44,10 +49,10 @@ def transform_hour_to_quarter(basis_data_time_series_points_df: DataFrame) -> Da
         ),
     ).select(
         basis_data_time_series_points_df["*"],
-        f.explode("quarter_times").alias("quarter_time"),
+        f.explode("quarter_times").alias(Colname.quarter_time),
     )
     result = result.withColumn(
-        Colname.time_window, f.window(f.col("quarter_time"), "15 minutes")
+        Colname.time_window, f.window(f.col(Colname.quarter_time), "15 minutes")
     )
     result = result.withColumn(
         Colname.quantity,
@@ -62,23 +67,4 @@ def transform_hour_to_quarter(basis_data_time_series_points_df: DataFrame) -> Da
         .cast(DecimalType(18, 6)),
     )
 
-    result = result.select(
-        Colname.grid_area,
-        Colname.to_grid_area,
-        Colname.from_grid_area,
-        Colname.metering_point_id,
-        Colname.metering_point_type,
-        Colname.resolution,
-        Colname.observation_time,
-        Colname.quantity,
-        Colname.quality,
-        Colname.energy_supplier_id,
-        Colname.balance_responsible_id,
-        Colname.settlement_method,
-        Colname.time_window,
-    )
-
-    # Workaround to enforce quantity nullable=False. This should be safe as quantity in input is nullable=False
-    result.schema[Colname.quantity].nullable = False
-
-    return result
+    return QuarterlyMeteringPointTimeSeries(result)
