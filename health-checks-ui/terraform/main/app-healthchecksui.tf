@@ -86,12 +86,6 @@ module "app_health_checks_ui" {
     # Max. health status history entries returned to UI
     "HealthChecksUI__MaximumExecutionHistoriesPerEndpoint" = 30
 
-    # Database
-    # Currently we migrate the database during startup by using SQL Server Authentication.
-    # Migration during startup will not work with a managed identity unless we elevate its access (assign it a role that can create/drop tables).
-    "HealthChecksUI__DisableMigrations"       = false
-    "HealthStatusHistoryDb__ConnectionString" = local.mssql_connection_string
-
     # Logging
     "Logging__LogLevel__Default"              = "Information"
     "Logging__LogLevel__Microsoft.AspNetCore" = "Warning"
