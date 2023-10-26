@@ -50,15 +50,15 @@ public class IntegrationEventProvider : IIntegrationEventProvider
     {
         do
         {
-            var batch = await _completedBatchRepository.GetNextUnpublishedOrNullAsync().ConfigureAwait(false);
-            if (batch == null)
+            var unpublishedBatch = await _completedBatchRepository.GetNextUnpublishedOrNullAsync().ConfigureAwait(false);
+            if (unpublishedBatch == null)
             {
                 break;
             }
 
             // Publish energy results
             var energyResultCount = 0;
-            await foreach (var integrationEvent in _energyResultEventProvider.GetAsync(batch).ConfigureAwait(false))
+            await foreach (var integrationEvent in _energyResultEventProvider.GetAsync(unpublishedBatch).ConfigureAwait(false))
             {
                 energyResultCount++;
                 yield return integrationEvent;
@@ -66,22 +66,22 @@ public class IntegrationEventProvider : IIntegrationEventProvider
 
             // Publish wholesale results
             var wholesaleResultCount = 0;
-            if (_wholesaleResultEventProvider.CanContainWholesaleResults(batch))
+            if (_wholesaleResultEventProvider.CanContainWholesaleResults(unpublishedBatch))
             {
-                await foreach (var integrationEvent in _wholesaleResultEventProvider.GetAsync(batch).ConfigureAwait(false))
+                await foreach (var integrationEvent in _wholesaleResultEventProvider.GetAsync(unpublishedBatch).ConfigureAwait(false))
                 {
                     wholesaleResultCount++;
                     yield return integrationEvent;
                 }
             }
 
-            batch.PublishedTime = _clock.GetCurrentInstant();
+            unpublishedBatch.PublishedTime = _clock.GetCurrentInstant();
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
-            _logger.LogInformation("Handled '{EnergyResultCount}' energy results for completed batch {BatchId}", energyResultCount, batch.Id);
-            if (_wholesaleResultEventProvider.CanContainWholesaleResults(batch))
+            _logger.LogInformation("Handled '{EnergyResultCount}' energy results for completed batch {BatchId}", energyResultCount, unpublishedBatch.Id);
+            if (_wholesaleResultEventProvider.CanContainWholesaleResults(unpublishedBatch))
             {
-                _logger.LogInformation("Handled '{WholesaleResultCount}' wholesale results for completed batch {BatchId}", wholesaleResultCount, batch.Id);
+                _logger.LogInformation("Handled '{WholesaleResultCount}' wholesale results for completed batch {BatchId}", wholesaleResultCount, unpublishedBatch.Id);
             }
         }
         while (true);
