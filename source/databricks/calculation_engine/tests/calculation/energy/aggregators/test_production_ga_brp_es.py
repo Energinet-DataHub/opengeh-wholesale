@@ -481,7 +481,7 @@ def test__when_time_series_point_is_missing__quantity_is_0(
     enriched_time_series_factory: Callable[..., QuarterlyMeteringPointTimeSeries],
 ) -> None:
     df = enriched_time_series_factory().df.withColumn(
-        Colname.quarter_quantity, F.lit(None).cast(DecimalType())
+        Colname.quantity, F.lit(None).cast(DecimalType())
     )
     df = QuarterlyMeteringPointTimeSeries(df)
     result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)

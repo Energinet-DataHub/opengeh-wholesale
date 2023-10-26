@@ -55,7 +55,7 @@ def adjust_flex_consumption(
 
 
 def _apply_grid_loss_adjustment(
-    result_df: EnergyResults,
+    results: EnergyResults,
     grid_loss_result_df: EnergyResults,
     grid_loss_responsible_df: DataFrame,
     grid_loss_responsible_type_col: str,
@@ -71,17 +71,17 @@ def _apply_grid_loss_adjustment(
     )
 
     # join result dataframes from previous steps on time window and grid area.
-    df = result_df.df.join(
+    df = results.df.join(
         grid_loss_result_df.df,
         [Colname.time_window, Colname.grid_area],
         "inner",
     ).select(
-        result_df.df[Colname.grid_area],
-        result_df.df[Colname.balance_responsible_id],
-        result_df.df[Colname.energy_supplier_id],
-        result_df.df[Colname.time_window],
-        result_df.df[Colname.sum_quantity],
-        result_df.df[Colname.qualities],
+        results.df[Colname.grid_area],
+        results.df[Colname.balance_responsible_id],
+        results.df[Colname.energy_supplier_id],
+        results.df[Colname.time_window],
+        results.df[Colname.sum_quantity],
+        results.df[Colname.qualities],
         grid_loss_result_df.df[Colname.sum_quantity].alias("grid_loss_sum_quantity"),
     )
 

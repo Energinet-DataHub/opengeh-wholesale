@@ -48,12 +48,12 @@ class EnergyCalculationResultWriter:
         Nullable columns are, however, optional.
         """
         # TODO BJM: Two schemas and duplicate adding nullable columns?
-        results = self._add_nullable_columns_if_missing(results.df)
+        results_df = self._add_nullable_columns_if_missing(results.df)
 
         # Assert schema after adding optional columns but before internal data frame transformations.
         # The order of the columns in the input data frame doesn't matter.
         assert_schema(
-            results.schema,
+            results_df.schema,
             _write_input_schema,
             ignore_nullability=True,
             ignore_column_order=True,
@@ -61,14 +61,14 @@ class EnergyCalculationResultWriter:
             ignore_decimal_precision=True,
         )
 
-        results = self._add_aggregation_level_and_time_series_type(
-            results, aggregation_level, time_series_type
+        results_df = self._add_aggregation_level_and_time_series_type(
+            results_df, aggregation_level, time_series_type
         )
-        results = self._add_batch_columns(results)
-        results = self._add_calculation_result_id(results)
-        results = self._map_to_storage_dataframe(results)
+        results_df = self._add_batch_columns(results_df)
+        results_df = self._add_calculation_result_id(results_df)
+        results_df = self._map_to_storage_dataframe(results_df)
 
-        self._write_to_storage(results)
+        self._write_to_storage(results_df)
 
     @staticmethod
     def _add_aggregation_level_and_time_series_type(
