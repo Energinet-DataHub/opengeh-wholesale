@@ -14,11 +14,13 @@
 
 using AutoFixture;
 using AutoFixture.Xunit2;
+using Energinet.DataHub.Core.Messaging.Communication.Internal;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Extensions;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Common.Models;
+using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
@@ -51,6 +53,13 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
             wholesaleResultQueriesMock
                 .Setup(mock => mock.GetAsync(wholesaleFixingBatch.Id))
                 .Returns(wholesaleResults.ToAsyncEnumerable());
+
+            amountPerChargeResultProducedV1FactoryMock
+                .Setup(mock => mock.Create(It.IsAny<WholesaleResult>()))
+                .Returns(new AmountPerChargeResultProducedV1());
+            monthlyAmountPerChargeResultProducedV1FactoryMock
+                .Setup(mock => mock.Create(It.IsAny<WholesaleResult>()))
+                .Returns(new MonthlyAmountPerChargeResultProducedV1());
 
             // Act
             var actualIntegrationEvents = await sut.GetAsync(wholesaleFixingBatch).ToListAsync();
