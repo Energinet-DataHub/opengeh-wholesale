@@ -96,9 +96,14 @@ def single_quarter_test_data(spark, time_series_schema):
         pandas_df, "C", "C", "A", default_obs_time, Decimal("5")
     )
 
-    df = spark.createDataFrame(pandas_df, time_series_schema).withColumn(
-        Colname.time_window, window(col(Colname.observation_time), "15 minutes")
+    df = (
+        spark.createDataFrame(pandas_df, time_series_schema)
+        .withColumn(
+            Colname.time_window, window(col(Colname.observation_time), "15 minutes")
+        )
+        .withColumn(Colname.quarter_quantity, col(Colname.quantity))
     )
+
     return QuarterlyMeteringPointTimeSeries(df)
 
 
@@ -162,9 +167,14 @@ def multi_quarter_test_data(spark, time_series_schema):
             default_obs_time + timedelta(minutes=i * 15),
             Decimal("5"),
         )
-    df = spark.createDataFrame(pandas_df, schema=time_series_schema).withColumn(
-        Colname.time_window, window(col(Colname.observation_time), "15 minutes")
+    df = (
+        spark.createDataFrame(pandas_df, schema=time_series_schema)
+        .withColumn(
+            Colname.time_window, window(col(Colname.observation_time), "15 minutes")
+        )
+        .withColumn(Colname.quarter_quantity, col(Colname.quantity))
     )
+
     return QuarterlyMeteringPointTimeSeries(df)
 
 

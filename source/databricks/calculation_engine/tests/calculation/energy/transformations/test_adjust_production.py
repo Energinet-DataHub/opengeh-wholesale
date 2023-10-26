@@ -25,6 +25,8 @@ from pyspark.sql.types import (
     StringType,
     TimestampType,
     BooleanType,
+    DecimalType,
+    ArrayType,
 )
 
 from package.calculation.energy.energy_results import (
@@ -59,7 +61,50 @@ default_valid_to = datetime.strptime(
 )
 
 
-# TODO BJM: Seems duplicated in multiple test files
+@pytest.fixture(scope="module")  # TODO BJM: Seems duplicated in multiple test files
+def hourly_production_result_schema() -> StructType:
+    """
+    Input hourly production result data frame schema
+    """
+    return (
+        StructType()
+        .add(Colname.grid_area, StringType(), False)
+        .add(Colname.balance_responsible_id, StringType())
+        .add(Colname.energy_supplier_id, StringType())
+        .add(Colname.sum_quantity, DecimalType())
+        .add(
+            Colname.time_window,
+            StructType()
+            .add(Colname.start, TimestampType())
+            .add(Colname.end, TimestampType()),
+            False,
+        )
+        .add(Colname.qualities, ArrayType(StringType(), False), False)
+        .add(Colname.metering_point_type, StringType())
+    )
+
+
+@pytest.fixture(scope="module")
+def negative_grid_loss_result_schema() -> StructType:
+    """
+    Input system correction result schema
+    """
+    return (
+        StructType()
+        .add(Colname.grid_area, StringType(), False)
+        .add(
+            Colname.time_window,
+            StructType()
+            .add(Colname.start, TimestampType())
+            .add(Colname.end, TimestampType()),
+            False,
+        )
+        .add(Colname.sum_quantity, DecimalType())
+        .add(Colname.qualities, ArrayType(StringType(), False), False)
+        .add(Colname.metering_point_type, StringType())
+    )
+
+
 @pytest.fixture(scope="module")
 def sys_cor_schema() -> StructType:
     """
@@ -100,8 +145,8 @@ def hourly_production_result_row_factory(
                 Colname.grid_area: [domain],
                 Colname.balance_responsible_id: [responsible],
                 Colname.energy_supplier_id: [supplier],
-                Colname.time_window: [time_window],
                 Colname.sum_quantity: [sum_quantity],
+                Colname.time_window: [time_window],
                 Colname.qualities: [[aggregated_quality]],
                 Colname.metering_point_type: [metering_point_type],
             }
