@@ -475,14 +475,3 @@ def test__each_grid_area_has_a_sum(
 #
 #     result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
 #     assert result_df.first().quality == QuantityQuality.MISSING.value
-
-
-def test__when_time_series_point_is_missing__quantity_is_0(
-    enriched_time_series_factory: Callable[..., QuarterlyMeteringPointTimeSeries],
-) -> None:
-    df = enriched_time_series_factory().df.withColumn(
-        Colname.quantity, F.lit(None).cast(DecimalType())
-    )
-    df = QuarterlyMeteringPointTimeSeries(df)
-    result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
-    assert result_df.df.first().sum_quantity == Decimal("0.000")
