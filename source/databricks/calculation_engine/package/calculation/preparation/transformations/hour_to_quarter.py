@@ -74,6 +74,7 @@ def transform_hour_to_quarter(basis_data_time_series_points_df: DataFrame) -> Da
         Colname.quality,
         Colname.energy_supplier_id,
         Colname.balance_responsible_id,
+        Colname.settlement_method,
         Colname.time_window,
     )
 

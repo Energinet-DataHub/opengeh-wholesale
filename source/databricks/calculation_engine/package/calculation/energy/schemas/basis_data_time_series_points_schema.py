@@ -35,5 +35,6 @@ basis_data_time_series_points_schema = StructType(
         StructField(Colname.quality, StringType(), False),
         StructField(Colname.energy_supplier_id, StringType(), True),
         StructField(Colname.balance_responsible_id, StringType(), True),
+        StructField(Colname.settlement_method, StringType(), True),
     ]
 )
