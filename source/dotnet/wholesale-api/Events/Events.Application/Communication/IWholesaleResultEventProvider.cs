@@ -21,16 +21,14 @@ namespace Energinet.DataHub.Wholesale.Events.Application.Communication
     public interface IWholesaleResultEventProvider
     {
         /// <summary>
-        /// Determines if <paramref name="batch"/> is in a state where it can
-        /// contain <see cref="WholesaleResult"/>.
+        /// Determines if <paramref name="batch"/> is in a state where it can contain <see cref="WholesaleResult"/>.
         /// </summary>
-        /// <returns><langword>true</langword> if <paramref name="batch"/> can
-        /// contain <see cref="WholesaleResult"/>; otherwise <langword>false</langword>.</returns>
+        /// <returns><langword>true</langword> if <paramref name="batch"/> can contain <see cref="WholesaleResult"/>; otherwise <langword>false</langword>.</returns>
         bool CanContainWholesaleResults(CompletedBatch batch);
 
         /// <summary>
-        /// Responsible for creating an <see cref="IntegrationEvent"/> for each
-        /// <see cref="WholesaleResult"/> available in <paramref name="batch"/>.
+        /// Responsible for creating at least one <see cref="IntegrationEvent"/> for each <see cref="WholesaleResult"/> available in <paramref name="batch"/>.
+        /// If we currently support multiple versions of an event then each result will cause multiple events to be provided.
         /// </summary>
         IAsyncEnumerable<IntegrationEvent> GetAsync(CompletedBatch batch);
     }

@@ -16,12 +16,10 @@ using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 using FluentAssertions;
-using FluentAssertions.Execution;
 using Moq;
 using Xunit;
 
@@ -29,14 +27,11 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
 {
     public class EnergyResultEventProviderTests
     {
-        /// <summary>
-        /// Each result might return multiple events, if we currently support multiple versions of an event.
-        /// </summary>
         [Theory]
         [InlineAutoMoqData]
-        public async Task GetAsync_WhenTwoEventResults_ReturnsFourIntegrationEvents(
+        public async Task GetAsync_WhenMultipleResults_ReturnsTwoEventsPerResult(
             CompletedBatch completedBatch,
-            EnergyResult energyResult,
+            EnergyResult[] energyResults,
 #pragma warning disable xUnit1026 // Theory methods should use all of their parameters
             [Frozen(Matching.ImplementedInterfaces)] CalculationResultCompletedFactory calculationResultCompletedFactory,
             [Frozen(Matching.ImplementedInterfaces)] EnergyResultProducedV1Factory energyResultProducedV1Factory,
@@ -45,22 +40,18 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
             EnergyResultEventProvider sut)
         {
             // Arrange
+            var expectedEventsPerResult = 2;
+            var expectedEventsCount = energyResults.Length * expectedEventsPerResult;
+
             energyResultQueriesMock
                 .Setup(queries => queries.GetAsync(completedBatch.Id))
-                .Returns(AsAsyncEnumerable(energyResult, energyResult));
+                .Returns(energyResults.ToAsyncEnumerable());
 
             // Act
             var actualIntegrationEvents = await sut.GetAsync(completedBatch).ToListAsync();
 
             // Assert
-            actualIntegrationEvents.Should().HaveCount(4);
-        }
-
-        private async IAsyncEnumerable<T> AsAsyncEnumerable<T>(params T[] items)
-        {
-            foreach (var item in items)
-                yield return item;
-            await Task.Delay(0);
+            actualIntegrationEvents.Should().HaveCount(expectedEventsCount);
         }
     }
 }
