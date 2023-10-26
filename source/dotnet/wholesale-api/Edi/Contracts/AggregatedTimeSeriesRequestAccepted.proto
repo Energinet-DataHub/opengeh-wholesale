@@ -19,18 +19,11 @@ import "google/protobuf/timestamp.proto";
 option csharp_namespace = "Energinet.DataHub.Edi.Responses";
 
 message AggregatedTimeSeriesRequestAccepted {
-  string settlement_version = 1;
-  string grid_area = 2;
-  QuantityUnit quantity_unit = 3;
-  Period period = 4;
-  repeated TimeSeriesPoint time_series_points = 5;
-  TimeSeriesType time_series_type = 6;
-}
-
-message Period {
-  google.protobuf.Timestamp start_of_period = 1;
-  google.protobuf.Timestamp end_of_period = 2;
-  Resolution resolution = 3;
+    string grid_area = 1;
+    QuantityUnit quantity_unit = 2;
+    repeated TimeSeriesPoint time_series_points = 3;
+    TimeSeriesType time_series_type = 4;
+    Resolution resolution = 5;
 }
 
 message TimeSeriesPoint {
