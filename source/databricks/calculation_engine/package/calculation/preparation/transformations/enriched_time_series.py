@@ -33,7 +33,9 @@ def get_basis_data_time_series_points_df(
     period_start_datetime: datetime,
     period_end_datetime: datetime,
 ) -> DataFrame:
-    """Get enriched time-series points in quarterly resolution"""
+    """
+    Get enriched time-series points - both for metering points with hourly and quarterly resolution.
+    """
     assert_schema(raw_time_series_points_df.schema, time_series_point_schema)
     assert_schema(metering_point_periods_df.schema, metering_point_period_schema)
 
@@ -163,6 +165,7 @@ def get_basis_data_time_series_points_df(
             Colname.quality,
             Colname.energy_supplier_id,
             Colname.balance_responsible_id,
+            Colname.settlement_method,
         )
     )
 

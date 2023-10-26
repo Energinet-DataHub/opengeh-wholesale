@@ -52,6 +52,8 @@ class Colname:
     """Aggregated qualities: An array of unique quality values aggregated from metering point time series."""
     quality = "quality"
     quantity = "quantity"
+    # TODO BJM: Replace by time/observation_time?
+    quarter_time = "quarter_time"
     resolution = "resolution"
     settlement_method = "settlement_method"
     start = "start"
