@@ -28,7 +28,6 @@ from package.calculation.preparation.transformations.hour_to_quarter import (
 )
 from package.calculation.energy.schemas import (
     basis_data_time_series_points_schema,
-    time_series_quarter_points_schema,
 )
 
 
@@ -91,20 +90,4 @@ def test__transform_hour_to_quarter__when_valid_input__split_basis_data_time_ser
 
     # Assert
     assert actual.df.count() == 4
-    assert actual.collect()[0][Colname.quantity] == Decimal("1.111111")
-
-
-def test__transform_hour_to_quarter__when_valid_input__returns_expected_schema(
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    rows = [basis_data_time_series_points_row()]
-    basis_data_time_series_points = spark.createDataFrame(
-        rows, basis_data_time_series_points_schema
-    )
-
-    # Act
-    actual = transform_hour_to_quarter(basis_data_time_series_points)
-
-    # Assert
-    assert actual.df.schema == time_series_quarter_points_schema
+    assert actual.df.collect()[0][Colname.quantity] == Decimal("1.111111")

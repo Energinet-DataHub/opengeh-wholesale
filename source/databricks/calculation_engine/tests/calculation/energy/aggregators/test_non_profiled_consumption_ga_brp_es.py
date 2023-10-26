@@ -79,7 +79,6 @@ def time_series_row_factory(
                 Colname.balance_responsible_id: [responsible],
                 Colname.energy_supplier_id: [supplier],
                 Colname.quantity: [quantity],
-                Colname.quarter_quantity: [quantity],
                 Colname.quality: QuantityQuality.MEASURED.value,
                 Colname.time_window: [obs_time],
                 Colname.observation_time: [obs_time],

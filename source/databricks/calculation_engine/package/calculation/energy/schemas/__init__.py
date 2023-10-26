@@ -13,4 +13,3 @@
 # limitations under the License.
 
 from .basis_data_time_series_points_schema import basis_data_time_series_points_schema
-from .time_series_quarter_points_schema import time_series_quarter_points_schema

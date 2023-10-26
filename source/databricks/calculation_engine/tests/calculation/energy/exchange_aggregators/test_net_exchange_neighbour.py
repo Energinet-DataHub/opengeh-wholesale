@@ -102,7 +102,6 @@ def single_quarter_test_data(spark, time_series_schema):
         .withColumn(
             Colname.time_window, window(col(Colname.observation_time), "15 minutes")
         )
-        .withColumn(Colname.quarter_quantity, col(Colname.quantity))
         .withColumn(Colname.settlement_method, lit(SettlementMethod.NON_PROFILED.value))
     )
 
@@ -174,7 +173,6 @@ def multi_quarter_test_data(spark, time_series_schema):
         .withColumn(
             Colname.time_window, window(col(Colname.observation_time), "15 minutes")
         )
-        .withColumn(Colname.quarter_quantity, col(Colname.quantity))
         .withColumn(Colname.settlement_method, lit(SettlementMethod.NON_PROFILED.value))
     )
 

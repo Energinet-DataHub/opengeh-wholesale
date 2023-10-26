@@ -74,7 +74,6 @@ def enriched_time_series_factory(
                 Colname.balance_responsible_id: default_responsible,
                 Colname.energy_supplier_id: default_supplier,
                 Colname.quantity: quantity,
-                Colname.quarter_quantity: quantity,
                 Colname.observation_time: obs_time_datetime,
                 Colname.time_window: obs_time_datetime,
                 Colname.quarter_time: obs_time_datetime,

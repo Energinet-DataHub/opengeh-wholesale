@@ -185,7 +185,6 @@ def enriched_time_series_data_frame(
             Colname.time_window, window(col(Colname.observation_time), "15 minutes")
         )
         .withColumn(Colname.quarter_time, col(Colname.observation_time))
-        .withColumn(Colname.quarter_quantity, col(Colname.quantity))
         .withColumn(Colname.settlement_method, lit(SettlementMethod.NON_PROFILED.value))
     )
     return QuarterlyMeteringPointTimeSeries(df)
