@@ -19,6 +19,7 @@ from package.calculation_input import TableReader
 from package.codelists import ChargeResolution
 
 from . import transformations as T
+from .quarterly_metering_point_time_series import QuarterlyMeteringPointTimeSeries
 
 
 class PreparedDataReader:
@@ -86,5 +87,8 @@ class PreparedDataReader:
             period_end_datetime,
         )
 
-    def transform_hour_to_quarter(self, df: DataFrame) -> DataFrame:
+    # TODO BJM: Does not belong in preparation. Move to calculations.
+    def transform_hour_to_quarter(
+        self, df: DataFrame
+    ) -> QuarterlyMeteringPointTimeSeries:
         return T.transform_hour_to_quarter(df)
