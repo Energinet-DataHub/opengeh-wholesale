@@ -1,0 +1,16 @@
+{
+  "literals": [
+    {
+      "name": "AMOUNT_PER_CHARGE",
+      "value": "amount_per_charge"
+    },
+    {
+      "name": "MONTHLY_AMOUNT_PER_CHARGE",
+      "value": "monthly_amount_per_charge"
+    },
+    {
+      "name": "TOTAL_MONTHLY_AMOUNT",
+      "value": "total_monthly_amount"
+    }
+  ]
+}
