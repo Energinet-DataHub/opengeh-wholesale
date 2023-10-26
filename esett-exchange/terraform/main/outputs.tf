@@ -1,6 +1,6 @@
 output "ms_esett_exchange_connection_string" {
-  description = "Connection string to the eSett exchange database created in the shared server."
-  value       = local.MS_ESETT_EXCHANGE_CONNECTION_STRING_SQL_AUTH
+  description = "Connection string for executing database migrations on the eSett exchange database"
+  value       = local.CONNECTION_STRING_DB_MIGRATIONS
   sensitive   = true
 }
 

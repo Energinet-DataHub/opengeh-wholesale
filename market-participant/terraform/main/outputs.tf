@@ -1,6 +1,6 @@
 output "ms_market_participant_connection_string" {
-  description = "Connection string of the market participant database created in the shared server"
-  value       = local.MS_MARKET_PARTICIPANT_CONNECTION_STRING_SQL_AUTH
+  description = "Connection string for executing database migrations on the market participant database"
+  value       = local.CONNECTION_STRING_DB_MIGRATIONS
   sensitive   = true
 }
 

@@ -1,6 +1,6 @@
 output "ms_edi_connection_string" {
-  description = "Connectionstring to the database in the shared sql server"
-  value       = local.CONNECTION_STRING_SQL_AUTH
+  description = "Connection string for executing database migrations on the EDI database"
+  value       = local.CONNECTION_STRING_DB_MIGRATIONS
   sensitive   = true
 }
 
