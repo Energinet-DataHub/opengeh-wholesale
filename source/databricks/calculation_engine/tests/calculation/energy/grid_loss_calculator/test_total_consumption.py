@@ -11,15 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from decimal import Decimal
+
 from datetime import datetime
+from decimal import Decimal
 
-from package.codelists import (
-    QuantityQuality,
-    MeteringPointType,
-)
-
-from package.calculation.energy.grid_loss_calculator import calculate_total_consumption
+import pandas as pd
+import pytest
 from pyspark.sql.types import (
     StructType,
     StringType,
@@ -27,8 +24,15 @@ from pyspark.sql.types import (
     TimestampType,
     ArrayType,
 )
-import pytest
-import pandas as pd
+
+from package.calculation.energy.energy_results import (
+    EnergyResults,
+)
+from package.calculation.energy.grid_loss_calculator import calculate_total_consumption
+from package.codelists import (
+    QuantityQuality,
+    MeteringPointType,
+)
 from package.constants import Colname
 
 
@@ -44,9 +48,9 @@ def net_exchange_schema():
             .add(Colname.end, TimestampType()),
             False,
         )
-        .add(Colname.from_grid_area, DecimalType(20, 1))
-        .add(Colname.to_grid_area, DecimalType(20, 1))
-        .add(Colname.sum_quantity, DecimalType(20, 1))
+        .add(Colname.from_grid_area, StringType())
+        .add(Colname.to_grid_area, StringType())
+        .add(Colname.sum_quantity, DecimalType(18, 6))
         .add(Colname.qualities, ArrayType(StringType(), False), False)
         .add(Colname.metering_point_type, StringType())
     )
@@ -120,7 +124,8 @@ def agg_net_exchange_factory(spark, net_exchange_schema):
             }
         )
 
-        return spark.createDataFrame(pandas_df, schema=net_exchange_schema)
+        df = spark.createDataFrame(pandas_df, schema=net_exchange_schema)
+        return EnergyResults(df)
 
     return factory
 
@@ -195,7 +200,8 @@ def agg_production_factory(spark, production_schema):
             }
         )
 
-        return spark.createDataFrame(pandas_df, schema=production_schema)
+        df = spark.createDataFrame(pandas_df, schema=production_schema)
+        return EnergyResults(df)
 
     return factory
 
@@ -227,7 +233,8 @@ def agg_total_production_factory(spark, production_schema):
             ignore_index=True,
         )
 
-        return spark.createDataFrame(pandas_df, schema=production_schema)
+        df = spark.createDataFrame(pandas_df, schema=production_schema)
+        return EnergyResults(df)
 
     return factory
 
@@ -263,7 +270,8 @@ def agg_total_net_exchange_factory(spark, net_exchange_schema):
             ignore_index=True,
         )
 
-        return spark.createDataFrame(pandas_df, schema=net_exchange_schema)
+        df = spark.createDataFrame(pandas_df, schema=net_exchange_schema)
+        return EnergyResults(df)
 
     return factory
 
@@ -272,7 +280,7 @@ def test_grid_area_total_consumption(agg_net_exchange_factory, agg_production_fa
     net_exchange_per_ga = agg_net_exchange_factory()
     production_ga = agg_production_factory()
     aggregated_df = calculate_total_consumption(net_exchange_per_ga, production_ga)
-    aggregated_df_collect = aggregated_df.collect()
+    aggregated_df_collect = aggregated_df.df.collect()
     assert (
         aggregated_df_collect[0][Colname.sum_quantity] == Decimal("14.0")
         and aggregated_df_collect[1][Colname.sum_quantity] == Decimal("6.0")
@@ -327,4 +335,4 @@ def test_aggregated_quality(
 
     result_df = calculate_total_consumption(net_exchange_per_ga, production_ga)
 
-    assert result_df.collect()[0][Colname.qualities] == expected_quality
+    assert result_df.df.collect()[0][Colname.qualities] == expected_quality

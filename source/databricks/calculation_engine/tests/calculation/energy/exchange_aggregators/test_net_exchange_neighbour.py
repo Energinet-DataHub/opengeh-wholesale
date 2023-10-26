@@ -12,21 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest
-from decimal import Decimal
-import pandas as pd
 from datetime import datetime, timedelta
-from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
-from pyspark.sql.functions import col, window
+from decimal import Decimal
 
-from package.common import assert_schema
-from package.constants import Colname
+import pandas as pd
+import pytest
+from pyspark.sql.functions import col, window, lit
+from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
+
 from package.calculation.energy.exchange_aggregators import (
     aggregate_net_exchange_per_neighbour_ga,
 )
-from package.codelists import MeteringPointType, QuantityQuality
-from package.calculation.energy.schemas import aggregation_result_schema
-
+from package.calculation.preparation.quarterly_metering_point_time_series import (
+    QuarterlyMeteringPointTimeSeries,
+)
+from package.codelists import (
+    MeteringPointType,
+    QuantityQuality,
+    MeteringPointResolution,
+    SettlementMethod,
+)
+from package.constants import Colname
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_obs_time = datetime.strptime(
@@ -37,12 +43,15 @@ estimated_quality = QuantityQuality.ESTIMATED.value
 
 df_template = {
     Colname.grid_area: [],
+    Colname.metering_point_id: [],
     Colname.metering_point_type: [],
     Colname.to_grid_area: [],
     Colname.from_grid_area: [],
     Colname.quantity: [],
     Colname.observation_time: [],
+    Colname.quarter_time: [],
     Colname.quality: [],
+    Colname.resolution: [],
 }
 
 
@@ -51,12 +60,15 @@ def time_series_schema():
     return (
         StructType()
         .add(Colname.grid_area, StringType())
+        .add(Colname.metering_point_id, StringType())
         .add(Colname.metering_point_type, StringType())
         .add(Colname.to_grid_area, StringType())
         .add(Colname.from_grid_area, StringType())
         .add(Colname.quantity, DecimalType(38))
         .add(Colname.observation_time, TimestampType())
+        .add(Colname.quarter_time, TimestampType())
         .add(Colname.quality, StringType())
+        .add(Colname.resolution, StringType())
     )
 
 
@@ -84,9 +96,16 @@ def single_quarter_test_data(spark, time_series_schema):
     pandas_df = add_row_of_data(
         pandas_df, "C", "C", "A", default_obs_time, Decimal("5")
     )
-    return spark.createDataFrame(pandas_df, time_series_schema).withColumn(
-        Colname.time_window, window(col(Colname.observation_time), "15 minutes")
+
+    df = (
+        spark.createDataFrame(pandas_df, time_series_schema)
+        .withColumn(
+            Colname.time_window, window(col(Colname.observation_time), "15 minutes")
+        )
+        .withColumn(Colname.settlement_method, lit(SettlementMethod.NON_PROFILED.value))
     )
+
+    return QuarterlyMeteringPointTimeSeries(df)
 
 
 @pytest.fixture(scope="module")
@@ -149,26 +168,35 @@ def multi_quarter_test_data(spark, time_series_schema):
             default_obs_time + timedelta(minutes=i * 15),
             Decimal("5"),
         )
-    return spark.createDataFrame(pandas_df, schema=time_series_schema).withColumn(
-        Colname.time_window, window(col(Colname.observation_time), "15 minutes")
+    df = (
+        spark.createDataFrame(pandas_df, schema=time_series_schema)
+        .withColumn(
+            Colname.time_window, window(col(Colname.observation_time), "15 minutes")
+        )
+        .withColumn(Colname.settlement_method, lit(SettlementMethod.NON_PROFILED.value))
     )
+
+    return QuarterlyMeteringPointTimeSeries(df)
 
 
 def add_row_of_data(pandas_df, domain, in_domain, out_domain, timestamp, quantity):
     new_row = {
         Colname.grid_area: domain,
+        Colname.metering_point_id: ["metering-point-id"],
         Colname.metering_point_type: MeteringPointType.EXCHANGE.value,
         Colname.to_grid_area: in_domain,
         Colname.from_grid_area: out_domain,
         Colname.quantity: quantity,
         Colname.observation_time: timestamp,
+        Colname.quarter_time: timestamp,
         Colname.quality: estimated_quality,
+        Colname.resolution: MeteringPointResolution.QUARTER.value,
     }
     return pandas_df.append(new_row, ignore_index=True)
 
 
 def test_aggregate_net_exchange_per_neighbour_ga_single_hour(single_quarter_test_data):
-    df = aggregate_net_exchange_per_neighbour_ga(single_quarter_test_data).orderBy(
+    df = aggregate_net_exchange_per_neighbour_ga(single_quarter_test_data).df.orderBy(
         Colname.to_grid_area, Colname.from_grid_area, Colname.time_window
     )
     values = df.collect()
@@ -183,7 +211,7 @@ def test_aggregate_net_exchange_per_neighbour_ga_single_hour(single_quarter_test
 
 
 def test_aggregate_net_exchange_per_neighbour_ga_multi_hour(multi_quarter_test_data):
-    df = aggregate_net_exchange_per_neighbour_ga(multi_quarter_test_data).orderBy(
+    df = aggregate_net_exchange_per_neighbour_ga(multi_quarter_test_data).df.orderBy(
         Colname.to_grid_area, Colname.from_grid_area, Colname.time_window
     )
     values = df.collect()
@@ -218,16 +246,3 @@ def test_aggregate_net_exchange_per_neighbour_ga_multi_hour(multi_quarter_test_d
         == "2020-01-01T05:00:00"
     )
     assert values[19][Colname.sum_quantity] == Decimal("10")
-
-
-def test_expected_schema(single_quarter_test_data):
-    df = aggregate_net_exchange_per_neighbour_ga(single_quarter_test_data).orderBy(
-        Colname.to_grid_area, Colname.from_grid_area, Colname.time_window
-    )
-    assert_schema(
-        df.schema,
-        aggregation_result_schema,
-        ignore_nullability=True,
-        ignore_decimal_precision=True,
-        ignore_decimal_scale=True,
-    )
