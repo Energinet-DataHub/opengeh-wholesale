@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Events.Application.Communication
+namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.EventProviders
 {
-    public class EventProviderState
+    public class WholesaleResultEventProviderTests
     {
-        public int EventCount { get; set; } = 0;
     }
 }

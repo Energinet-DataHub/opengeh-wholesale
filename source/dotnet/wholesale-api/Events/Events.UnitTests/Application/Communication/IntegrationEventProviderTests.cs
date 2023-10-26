@@ -116,7 +116,7 @@ public class IntegrationEventProviderTests
             .ReturnsAsync((CompletedBatch)null!);
 
         energyResultEventProviderMock
-            .Setup(mock => mock.GetAsync(completedBatch, It.IsAny<EventProviderState>()))
+            .Setup(mock => mock.GetAsync(completedBatch))
             .Returns(AsAsyncEnumerable(anyIntegrationEvent, anyIntegrationEvent));
 
         // Act
@@ -149,7 +149,7 @@ public class IntegrationEventProviderTests
             .Setup(mock => mock.CanContainWholesaleResults(completedBatch))
             .Returns(true);
         wholesaleResultEventProviderMock
-            .Setup(mock => mock.GetAsync(completedBatch, It.IsAny<EventProviderState>()))
+            .Setup(mock => mock.GetAsync(completedBatch))
             .Returns(AsAsyncEnumerable(anyIntegrationEvent, anyIntegrationEvent));
 
         // Act
@@ -184,17 +184,17 @@ public class IntegrationEventProviderTests
             .ReturnsAsync((CompletedBatch)null!);
 
         energyResultEventProviderMock
-            .Setup(mock => mock.GetAsync(aggregationBatch, It.IsAny<EventProviderState>()))
+            .Setup(mock => mock.GetAsync(aggregationBatch))
             .Returns(AsAsyncEnumerable(anyIntegrationEvent, anyIntegrationEvent));
 
         energyResultEventProviderMock
-            .Setup(mock => mock.GetAsync(wholesaleFixingBatch, It.IsAny<EventProviderState>()))
+            .Setup(mock => mock.GetAsync(wholesaleFixingBatch))
             .Returns(AsAsyncEnumerable(anyIntegrationEvent));
         wholesaleResultEventProviderMock
             .Setup(mock => mock.CanContainWholesaleResults(wholesaleFixingBatch))
             .Returns(true);
         wholesaleResultEventProviderMock
-            .Setup(mock => mock.GetAsync(wholesaleFixingBatch, It.IsAny<EventProviderState>()))
+            .Setup(mock => mock.GetAsync(wholesaleFixingBatch))
             .Returns(AsAsyncEnumerable(anyIntegrationEvent, anyIntegrationEvent));
 
         // Act

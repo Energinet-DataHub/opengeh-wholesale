@@ -47,11 +47,10 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Ev
                 or ProcessType.ThirdCorrectionSettlement;
         }
 
-        public async IAsyncEnumerable<IntegrationEvent> GetAsync(CompletedBatch batch, EventProviderState state)
+        public async IAsyncEnumerable<IntegrationEvent> GetAsync(CompletedBatch batch)
         {
             await foreach (var wholesaleResult in _wholesaleResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
             {
-                state.EventCount++;
                 yield return CreateEventFromWholesaleResult(wholesaleResult);
             }
         }

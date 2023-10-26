@@ -21,6 +21,6 @@ namespace Energinet.DataHub.Wholesale.Events.Application.Communication
     {
         bool CanContainWholesaleResults(CompletedBatch batch);
 
-        IAsyncEnumerable<IntegrationEvent> GetAsync(CompletedBatch batch, EventProviderState state);
+        IAsyncEnumerable<IntegrationEvent> GetAsync(CompletedBatch batch);
     }
 }

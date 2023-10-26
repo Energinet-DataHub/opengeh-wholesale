@@ -36,11 +36,10 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Ev
             _energyResultProducedV1Factory = energyResultProducedV1Factory;
         }
 
-        public async IAsyncEnumerable<IntegrationEvent> GetAsync(CompletedBatch batch, EventProviderState state)
+        public async IAsyncEnumerable<IntegrationEvent> GetAsync(CompletedBatch batch)
         {
             await foreach (var energyResult in _energyResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
             {
-                state.EventCount++;
                 yield return CreateIntegrationEvent(_calculationResultCompletedFactory.Create(energyResult)); // Deprecated
                 yield return CreateIntegrationEvent(_energyResultProducedV1Factory.Create(energyResult));
             }

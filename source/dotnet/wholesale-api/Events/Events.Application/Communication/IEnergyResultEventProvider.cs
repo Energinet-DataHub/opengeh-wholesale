@@ -19,6 +19,6 @@ namespace Energinet.DataHub.Wholesale.Events.Application.Communication
 {
     public interface IEnergyResultEventProvider
     {
-        IAsyncEnumerable<IntegrationEvent> GetAsync(CompletedBatch batch, EventProviderState state);
+        IAsyncEnumerable<IntegrationEvent> GetAsync(CompletedBatch batch);
     }
 }
