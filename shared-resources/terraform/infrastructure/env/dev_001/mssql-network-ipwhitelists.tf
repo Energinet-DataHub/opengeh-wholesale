@@ -43,6 +43,6 @@ resource "azurerm_sql_firewall_rule" "esett_deprecated_powerbi_data" {
   name                = "Esett Deprecated PowerBI Data"
   resource_group_name = azurerm_resource_group.this.name
   server_name         = module.mssql_data_additional.name
-  start_ip_address    = "20.38.85.6"
-  end_ip_address      = "20.38.85.6"
+  start_ip_address    = "20.38.85.0"
+  end_ip_address      = "20.38.85.255"
 }
