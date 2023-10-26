@@ -18,11 +18,17 @@ from typing import Callable
 
 import pandas as pd
 import pytest
-from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
+from pyspark.sql.types import (
+    StructType,
+    StringType,
+    DecimalType,
+    TimestampType,
+    ArrayType,
+)
 
 from package.calculation.energy.energy_results import (
-    energy_results_schema,
     EnergyResults,
 )
 from package.calculation.energy.grid_loss_calculator import calculate_positive_grid_loss
@@ -30,17 +36,36 @@ from package.codelists import (
     MeteringPointType,
     QuantityQuality,
 )
-from package.common import assert_schema
 from package.constants import Colname
 
 
 @pytest.fixture(scope="module")
-def agg_result_factory(spark: SparkSession) -> Callable[[], DataFrame]:
+def grid_loss_schema() -> StructType:
+    return (
+        StructType()
+        .add(Colname.grid_area, StringType(), False)
+        .add(
+            Colname.time_window,
+            StructType()
+            .add(Colname.start, TimestampType())
+            .add(Colname.end, TimestampType()),
+            False,
+        )
+        .add(Colname.sum_quantity, DecimalType(18, 3))
+        .add(Colname.qualities, ArrayType(StringType(), False), False)
+        .add(Colname.metering_point_type, StringType())
+    )
+
+
+@pytest.fixture(scope="module")
+def agg_result_factory(
+    spark: SparkSession, grid_loss_schema: StructType
+) -> Callable[[], EnergyResults]:
     """
     Factory to generate a single row of time series data, with default parameters as specified above.
     """
 
-    def factory() -> DataFrame:
+    def factory() -> EnergyResults:
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: [],
@@ -86,7 +111,8 @@ def agg_result_factory(spark: SparkSession) -> Callable[[], DataFrame]:
             ignore_index=True,
         )
 
-        return spark.createDataFrame(pandas_df, schema=energy_results_schema)
+        df = spark.createDataFrame(pandas_df, schema=grid_loss_schema)
+        return EnergyResults(df)
 
     return factory
 
@@ -128,14 +154,3 @@ def test_grid_area_grid_loss_values_that_are_zero_stay_zero(
     result = call_calculate_grid_loss(agg_result_factory)
 
     assert result.df.collect()[2][Colname.sum_quantity] == Decimal("0.00000")
-
-
-def test_returns_correct_schema(
-    agg_result_factory: Callable[[], EnergyResults]
-) -> None:
-    """
-    Aggregator should return the correct schema, including the proper fields for the aggregated quantity values
-    and time window (from the single-hour resolution specified in the aggregator).
-    """
-    result = call_calculate_grid_loss(agg_result_factory)
-    assert_schema(result.df.schema, energy_results_schema, ignore_nullability=True)

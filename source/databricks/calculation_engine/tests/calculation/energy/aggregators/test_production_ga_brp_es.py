@@ -27,7 +27,6 @@ from package.calculation.energy.aggregators import (
     _aggregate_per_ga_and_brp_and_es,
 )
 from package.calculation.energy.energy_results import (
-    energy_results_schema,
     EnergyResults,
 )
 from package.calculation.preparation.quarterly_metering_point_time_series import (
@@ -37,7 +36,6 @@ from package.codelists import (
     MeteringPointType,
     QuantityQuality,
 )
-from package.common import assert_schema
 from package.constants import Colname
 
 minimum_quantity = Decimal("0.001")
@@ -68,6 +66,7 @@ def enriched_time_series_factory(
         obs_time_datetime = timestamp_factory(obs_time_string)
         rows = [
             {
+                Colname.metering_point_id: ["metering-point-id"],
                 Colname.metering_point_type: metering_point_type,
                 Colname.grid_area: grid_area,
                 Colname.balance_responsible_id: default_responsible,
@@ -243,25 +242,7 @@ def test_production_aggregator_returns_distinct_rows_for_observations_in_differe
     )
 
 
-def test_production_aggregator_returns_correct_schema(
-    enriched_time_series_factory: Callable[..., QuarterlyMeteringPointTimeSeries],
-) -> None:
-    """
-    Aggregator should return the correct schema, including the proper fields for the aggregated quantity values
-    and time window (from the quarter-hour resolution specified in the aggregator).
-    """
-    time_series = enriched_time_series_factory()
-    aggregated_df = aggregate_production_ga_brp_es(time_series)
-    assert_schema(
-        aggregated_df.df.schema,
-        energy_results_schema,
-        ignore_nullability=True,
-        ignore_decimal_precision=True,
-        ignore_decimal_scale=True,
-    )
-
-
-def test_production_test_filter_by_domain_is_pressent(
+def test_production_test_filter_by_domain_is_present(
     enriched_time_series_factory: Callable[..., QuarterlyMeteringPointTimeSeries],
 ) -> None:
     df = enriched_time_series_factory()

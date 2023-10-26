@@ -21,7 +21,6 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import window, col
 
 from package.calculation.energy.energy_results import (
-    energy_results_schema,
     EnergyResults,
 )
 from package.calculation.energy.exchange_aggregators import (
@@ -31,7 +30,6 @@ from package.calculation.preparation.quarterly_metering_point_time_series import
     QuarterlyMeteringPointTimeSeries,
 )
 from package.codelists import MeteringPointType, QuantityQuality
-from package.common import assert_schema
 from package.constants import Colname
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
@@ -50,7 +48,9 @@ def enriched_time_series_data_frame(
     # Create empty pandas df
     pandas_df = pd.DataFrame(
         {
+            Colname.metering_point_id: ["metering-point-id"],
             Colname.metering_point_type: [],
+            Colname.grid_area: ["grid-area"],
             Colname.to_grid_area: [],
             Colname.from_grid_area: [],
             Colname.quantity: [],
@@ -191,7 +191,9 @@ def add_row_of_data(
     Helper method to create a new row in the dataframe to improve readability and maintainability
     """
     new_row = {
+        Colname.metering_point_id: "metering-point-id",
         Colname.metering_point_type: point_type,
+        Colname.grid_area: "grid-area",
         Colname.to_grid_area: to_grid_area,
         Colname.from_grid_area: from_grid_area,
         Colname.quantity: quantity,
@@ -210,17 +212,6 @@ def aggregated_data_frame(enriched_time_series_data_frame):
 def test_test_data_has_correct_row_count(enriched_time_series_data_frame):
     """Check sample data row count"""
     assert enriched_time_series_data_frame.df.count() == (13 * numberOfQuarters)
-
-
-def test_exchange_aggregator_returns_correct_schema(aggregated_data_frame):
-    """Check aggregation schema"""
-    assert_schema(
-        aggregated_data_frame.df.schema,
-        energy_results_schema,
-        ignore_nullability=True,
-        ignore_decimal_precision=True,
-        ignore_decimal_scale=True,
-    )
 
 
 def test_exchange_has_correct_sign(aggregated_data_frame):

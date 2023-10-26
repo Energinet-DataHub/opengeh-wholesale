@@ -17,10 +17,16 @@ from decimal import Decimal
 
 import pandas as pd
 import pytest
+from pyspark.sql.types import (
+    StructType,
+    StringType,
+    DecimalType,
+    TimestampType,
+    ArrayType,
+)
 
 from package.calculation.energy.energy_results import (
     EnergyResults,
-    energy_results_schema,
 )
 from package.calculation.energy.grid_loss_calculator import calculate_total_consumption
 from package.codelists import (
@@ -31,7 +37,27 @@ from package.constants import Colname
 
 
 @pytest.fixture(scope="module")
-def agg_net_exchange_factory(spark):
+def net_exchange_schema():
+    return (
+        StructType()
+        .add(Colname.grid_area, StringType(), False)
+        .add(
+            Colname.time_window,
+            StructType()
+            .add(Colname.start, TimestampType())
+            .add(Colname.end, TimestampType()),
+            False,
+        )
+        .add(Colname.from_grid_area, DecimalType(20, 1))
+        .add(Colname.to_grid_area, DecimalType(20, 1))
+        .add(Colname.sum_quantity, DecimalType(20, 1))
+        .add(Colname.qualities, ArrayType(StringType(), False), False)
+        .add(Colname.metering_point_type, StringType())
+    )
+
+
+@pytest.fixture(scope="module")
+def agg_net_exchange_factory(spark, net_exchange_schema):
     def factory():
         pandas_df = pd.DataFrame(
             {
@@ -98,14 +124,32 @@ def agg_net_exchange_factory(spark):
             }
         )
 
-        df = spark.createDataFrame(pandas_df, schema=energy_results_schema)
+        df = spark.createDataFrame(pandas_df, schema=net_exchange_schema)
         return EnergyResults(df)
 
     return factory
 
 
 @pytest.fixture(scope="module")
-def agg_production_factory(spark):
+def production_schema():
+    return (
+        StructType()
+        .add(Colname.grid_area, StringType(), False)
+        .add(
+            Colname.time_window,
+            StructType()
+            .add(Colname.start, TimestampType())
+            .add(Colname.end, TimestampType()),
+            False,
+        )
+        .add(Colname.sum_quantity, DecimalType(20, 1))
+        .add(Colname.qualities, ArrayType(StringType(), False), False)
+        .add(Colname.metering_point_type, StringType())
+    )
+
+
+@pytest.fixture(scope="module")
+def agg_production_factory(spark, production_schema):
     def factory():
         pandas_df = pd.DataFrame(
             {
@@ -156,14 +200,14 @@ def agg_production_factory(spark):
             }
         )
 
-        df = spark.createDataFrame(pandas_df, schema=energy_results_schema)
+        df = spark.createDataFrame(pandas_df, schema=production_schema)
         return EnergyResults(df)
 
     return factory
 
 
 @pytest.fixture(scope="module")
-def agg_total_production_factory(spark):
+def agg_total_production_factory(spark, production_schema):
     def factory(quality):
         pandas_df = pd.DataFrame(
             {
@@ -189,14 +233,14 @@ def agg_total_production_factory(spark):
             ignore_index=True,
         )
 
-        df = spark.createDataFrame(pandas_df, schema=energy_results_schema)
+        df = spark.createDataFrame(pandas_df, schema=production_schema)
         return EnergyResults(df)
 
     return factory
 
 
 @pytest.fixture(scope="module")
-def agg_total_net_exchange_factory(spark):
+def agg_total_net_exchange_factory(spark, net_exchange_schema):
     def factory(quality):
         pandas_df = pd.DataFrame(
             {
@@ -226,7 +270,7 @@ def agg_total_net_exchange_factory(spark):
             ignore_index=True,
         )
 
-        df = spark.createDataFrame(pandas_df, schema=energy_results_schema)
+        df = spark.createDataFrame(pandas_df, schema=net_exchange_schema)
         return EnergyResults(df)
 
     return factory

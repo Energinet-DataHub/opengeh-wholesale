@@ -24,10 +24,12 @@ from pyspark.sql.functions import col
 import package.codelists as e
 from package.calculation.energy.energy_results import (
     EnergyResults,
-    energy_results_schema,
 )
 from package.calculation_output import EnergyCalculationResultWriter
 from package.constants import Colname, EnergyResultColumnNames
+from package.calculation_output.energy_calculation_result_writer import (
+    _write_input_schema,
+)
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
 from tests.contract_utils import (
     assert_contract_matches_schema,
@@ -101,7 +103,7 @@ def _create_result_row(
 
 
 def _create_result_df(spark: SparkSession, row: List[dict]) -> EnergyResults:
-    df = spark.createDataFrame(data=row, schema=energy_results_schema)
+    df = spark.createDataFrame(data=row, schema=_write_input_schema)
     return EnergyResults(df)
 
 

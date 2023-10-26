@@ -11,18 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from decimal import Decimal
 from datetime import datetime
+from decimal import Decimal
+from typing import Callable
 
-from package.calculation.energy.energy_results import (
-    EnergyResults,
-    energy_results_schema,
-)
-from package.codelists import (
-    MeteringPointType,
-    QuantityQuality,
-)
-from package.calculation.energy.transformations import adjust_flex_consumption
+import pandas as pd
+import pytest
+from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col
 from pyspark.sql.types import (
     StructType,
@@ -32,11 +27,16 @@ from pyspark.sql.types import (
     BooleanType,
     ArrayType,
 )
-import pytest
-import pandas as pd
+
+from package.calculation.energy.energy_results import (
+    EnergyResults,
+)
+from package.calculation.energy.transformations import adjust_flex_consumption
+from package.codelists import (
+    MeteringPointType,
+    QuantityQuality,
+)
 from package.constants import Colname
-from pyspark.sql import SparkSession, DataFrame
-from typing import Callable
 
 # Default values
 default_domain = "D1"
@@ -58,6 +58,50 @@ default_valid_from = datetime.strptime(
 default_valid_to = datetime.strptime(
     "2020-01-01T01:00:00+0000", date_time_formatting_string
 )
+
+
+@pytest.fixture(scope="module")
+def flex_consumption_result_schema() -> StructType:
+    """
+    Input flex consumption result data frame schema
+    """
+    return (
+        StructType()
+        .add(Colname.grid_area, StringType(), False)
+        .add(Colname.balance_responsible_id, StringType())
+        .add(Colname.energy_supplier_id, StringType())
+        .add(Colname.sum_quantity, DecimalType())
+        .add(
+            Colname.time_window,
+            StructType()
+            .add(Colname.start, TimestampType())
+            .add(Colname.end, TimestampType()),
+            False,
+        )
+        .add(Colname.qualities, ArrayType(StringType(), False), False)
+        .add(Colname.metering_point_type, StringType())
+    )
+
+
+@pytest.fixture(scope="module")
+def positive_grid_loss_result_schema() -> StructType:
+    """
+    Input grid loss result schema
+    """
+    return (
+        StructType()
+        .add(Colname.grid_area, StringType(), False)
+        .add(
+            Colname.time_window,
+            StructType()
+            .add(Colname.start, TimestampType())
+            .add(Colname.end, TimestampType()),
+            False,
+        )
+        .add(Colname.sum_quantity, DecimalType())
+        .add(Colname.qualities, ArrayType(StringType(), False), False)
+        .add(Colname.metering_point_type, StringType())
+    )
 
 
 @pytest.fixture(scope="module")
@@ -105,7 +149,7 @@ def expected_schema() -> StructType:
 
 @pytest.fixture(scope="module")
 def flex_consumption_result_row_factory(
-    spark: SparkSession,
+    spark: SparkSession, flex_consumption_result_schema: StructType
 ) -> Callable[..., EnergyResults]:
     """
     Factory to generate a single row of  data, with default parameters as specified above.
@@ -133,7 +177,7 @@ def flex_consumption_result_row_factory(
                 Colname.metering_point_type: [metering_point_type],
             }
         )
-        df = spark.createDataFrame(pandas_df, schema=energy_results_schema)
+        df = spark.createDataFrame(pandas_df, schema=flex_consumption_result_schema)
         return EnergyResults(df)
 
     return factory

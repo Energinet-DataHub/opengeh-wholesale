@@ -29,7 +29,6 @@ from pyspark.sql.types import (
 
 from package.calculation.energy.energy_results import (
     EnergyResults,
-    energy_results_schema,
 )
 from package.calculation.energy.transformations import adjust_production
 from package.codelists import (
@@ -79,7 +78,7 @@ def sys_cor_schema() -> StructType:
 
 @pytest.fixture(scope="module")
 def hourly_production_result_row_factory(
-    spark: SparkSession,
+    spark: SparkSession, hourly_production_result_schema: StructType
 ) -> Callable[..., EnergyResults]:
     """
     Factory to generate a single row of  data, with default parameters as specified above.
@@ -99,18 +98,15 @@ def hourly_production_result_row_factory(
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: [domain],
-                Colname.to_grid_area: [None],
-                Colname.from_grid_area: [None],
                 Colname.balance_responsible_id: [responsible],
                 Colname.energy_supplier_id: [supplier],
                 Colname.time_window: [time_window],
                 Colname.sum_quantity: [sum_quantity],
                 Colname.qualities: [[aggregated_quality]],
                 Colname.metering_point_type: [metering_point_type],
-                Colname.settlement_method: [None],
             }
         )
-        df = spark.createDataFrame(pandas_df, schema=energy_results_schema)
+        df = spark.createDataFrame(pandas_df, schema=hourly_production_result_schema)
         return EnergyResults(df)
 
     return factory

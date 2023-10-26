@@ -86,8 +86,8 @@ def test__transform_hour_to_quarter__when_valid_input__split_basis_data_time_ser
     actual = transform_hour_to_quarter(basis_data_time_series_points)
 
     # Assert
-    assert actual.count() == 4
-    assert actual.collect()[0]["quarter_quantity"] == Decimal("1.111111")
+    assert actual.df.count() == 4
+    assert actual.df.collect()[0]["quarter_quantity"] == Decimal("1.111111")
 
 
 def test__transform_hour_to_quarter__when_valid_input__returns_expected_schema(
@@ -103,4 +103,4 @@ def test__transform_hour_to_quarter__when_valid_input__returns_expected_schema(
     actual = transform_hour_to_quarter(basis_data_time_series_points)
 
     # Assert
-    assert actual.schema == time_series_quarter_points_schema
+    assert actual.df.schema == time_series_quarter_points_schema

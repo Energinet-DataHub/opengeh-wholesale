@@ -27,7 +27,6 @@ from package.calculation.energy.aggregators import (
     _aggregate_per_ga_and_brp_and_es,
 )
 from package.calculation.energy.energy_results import (
-    energy_results_schema,
     EnergyResults,
 )
 from package.calculation.preparation.quarterly_metering_point_time_series import (
@@ -39,7 +38,6 @@ from package.codelists import (
     QuantityQuality,
     MeteringPointResolution,
 )
-from package.common import assert_schema
 from package.constants import Colname
 
 # Default time series data point values
@@ -239,24 +237,6 @@ def test_returns_distinct_rows_for_observations_in_different_hours(
         default_quantity,
         start_time_row2,
         end_time_row2,
-    )
-
-
-def test_returns_correct_schema(
-    time_series_row_factory: Callable[..., QuarterlyMeteringPointTimeSeries]
-) -> None:
-    """
-    Aggregator should return the correct schema, including the proper fields for the aggregated quantity values
-    and time window (from the quarter-hour resolution specified in the aggregator).
-    """
-    df = time_series_row_factory()
-    aggregated_df = aggregate_flex_consumption_ga_brp_es(df)
-    assert_schema(
-        aggregated_df.df.schema,
-        energy_results_schema,
-        ignore_nullability=True,
-        ignore_decimal_precision=True,
-        ignore_decimal_scale=True,
     )
 
 

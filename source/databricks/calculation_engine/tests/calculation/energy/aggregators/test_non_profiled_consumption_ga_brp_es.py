@@ -14,7 +14,7 @@
 
 from decimal import Decimal
 from datetime import datetime
-from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, window
 from typing import Callable
 import pytest
@@ -23,12 +23,10 @@ from pandas.core.frame import DataFrame as PandasDataFrame
 
 from package.calculation.energy.energy_results import (
     EnergyResults,
-    energy_results_schema,
 )
 from package.calculation.preparation.quarterly_metering_point_time_series import (
     QuarterlyMeteringPointTimeSeries,
 )
-from package.common import assert_schema
 from package.constants import Colname
 from package.calculation.energy.aggregators import (
     aggregate_non_profiled_consumption_ga_brp_es,
@@ -73,6 +71,7 @@ def time_series_row_factory(
     ) -> QuarterlyMeteringPointTimeSeries:
         pandas_df = pd.DataFrame(
             {
+                Colname.metering_point_id: ["metering-point-id"],
                 Colname.metering_point_type: [point_type],
                 Colname.settlement_method: [settlement_method],
                 Colname.grid_area: [domain],
@@ -120,14 +119,13 @@ def check_aggregation_row(
 
 
 def test_consumption_supplier_aggregator_filters_out_incorrect_point_type(
-    time_series_row_factory: Callable[..., DataFrame],
+    time_series_row_factory: Callable[..., QuarterlyMeteringPointTimeSeries],
 ) -> None:
     """
     Aggregator should filter out all non-consumption MarketEvaluationPointType rows
     """
     # Arrange
     time_series = time_series_row_factory(point_type=MeteringPointType.PRODUCTION.value)
-    time_series = QuarterlyMeteringPointTimeSeries(time_series)
 
     # Act
     aggregated_df = aggregate_non_profiled_consumption_ga_brp_es(time_series)
@@ -137,7 +135,7 @@ def test_consumption_supplier_aggregator_filters_out_incorrect_point_type(
 
 
 def test_consumption_supplier_aggregator_aggregates_observations_in_same_hour(
-    time_series_row_factory: Callable[..., DataFrame],
+    time_series_row_factory: Callable[..., QuarterlyMeteringPointTimeSeries],
 ) -> None:
     """
     Aggregator should can calculate the correct sum of a "domain"-"responsible"-"supplier" grouping within the
@@ -145,7 +143,7 @@ def test_consumption_supplier_aggregator_aggregates_observations_in_same_hour(
     """
     row1_df = time_series_row_factory(quantity=Decimal(1))
     row2_df = time_series_row_factory(quantity=Decimal(2))
-    time_series = row1_df.union(row2_df)
+    time_series = row1_df.df.union(row2_df.df)
     time_series = QuarterlyMeteringPointTimeSeries(time_series)
     aggregated_df = aggregate_non_profiled_consumption_ga_brp_es(time_series)
 
@@ -168,7 +166,7 @@ def test_consumption_supplier_aggregator_aggregates_observations_in_same_hour(
 
 
 def test_consumption_supplier_aggregator_returns_distinct_rows_for_observations_in_different_hours(
-    time_series_row_factory: Callable[..., DataFrame],
+    time_series_row_factory: Callable[..., QuarterlyMeteringPointTimeSeries],
 ) -> None:
     """
     Aggregator should calculate the correct sum of a "domain"-"responsible"-"supplier" grouping within the
@@ -180,7 +178,7 @@ def test_consumption_supplier_aggregator_returns_distinct_rows_for_observations_
     )
     row1_df = time_series_row_factory()
     row2_df = time_series_row_factory(obs_time=diff_obs_time)
-    time_series = row1_df.union(row2_df)
+    time_series = row1_df.df.union(row2_df.df)
     time_series = QuarterlyMeteringPointTimeSeries(time_series)
 
     # Act
@@ -219,30 +217,12 @@ def test_consumption_supplier_aggregator_returns_distinct_rows_for_observations_
     )
 
 
-def test_consumption_supplier_aggregator_returns_correct_schema(
-    time_series_row_factory: Callable[..., QuarterlyMeteringPointTimeSeries],
-) -> None:
-    """
-    Aggregator should return the correct schema, including the proper fields for the aggregated quantity values
-    and time window (from the quarter-hour resolution specified in the aggregator).
-    """
-    time_series = time_series_row_factory()
-    aggregated_df = aggregate_non_profiled_consumption_ga_brp_es(time_series)
-    assert_schema(
-        aggregated_df.df.schema,
-        energy_results_schema,
-        ignore_nullability=True,
-        ignore_decimal_precision=True,
-        ignore_decimal_scale=True,
-    )
-
-
 def test_consumption_test_filter_by_domain_is_pressent(
-    time_series_row_factory: Callable[..., DataFrame],
+    time_series_row_factory: Callable[..., QuarterlyMeteringPointTimeSeries],
 ) -> None:
     df = time_series_row_factory()
     aggregated_df = _aggregate_per_ga_and_brp_and_es(
-        QuarterlyMeteringPointTimeSeries(df),
+        df,
         MeteringPointType.CONSUMPTION,
         SettlementMethod.NON_PROFILED,
     )
@@ -250,24 +230,12 @@ def test_consumption_test_filter_by_domain_is_pressent(
 
 
 def test_consumption_test_filter_by_domain_is_not_pressent(
-    time_series_row_factory: Callable[..., DataFrame],
+    time_series_row_factory: Callable[..., QuarterlyMeteringPointTimeSeries],
 ) -> None:
     df = time_series_row_factory()
     aggregated_df = _aggregate_per_ga_and_brp_and_es(
-        QuarterlyMeteringPointTimeSeries(df),
+        df,
         MeteringPointType.CONSUMPTION,
         SettlementMethod.FLEX,
     )
     assert aggregated_df.df.count() == 0
-
-
-def test_expected_schema(time_series_row_factory: Callable[..., DataFrame]) -> None:
-    time_series = QuarterlyMeteringPointTimeSeries(time_series_row_factory())
-    aggregated_df = aggregate_non_profiled_consumption_ga_brp_es(time_series)
-    assert_schema(
-        aggregated_df.df.schema,
-        energy_results_schema,
-        ignore_nullability=True,
-        ignore_decimal_precision=True,
-        ignore_decimal_scale=True,
-    )

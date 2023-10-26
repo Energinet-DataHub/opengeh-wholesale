@@ -20,7 +20,6 @@ import pytest
 from pyspark.sql.functions import col, window
 from pyspark.sql.types import StructType, StringType, DecimalType, TimestampType
 
-from package.calculation.energy.energy_results import energy_results_schema
 from package.calculation.energy.exchange_aggregators import (
     aggregate_net_exchange_per_neighbour_ga,
 )
@@ -28,7 +27,6 @@ from package.calculation.preparation.quarterly_metering_point_time_series import
     QuarterlyMeteringPointTimeSeries,
 )
 from package.codelists import MeteringPointType, QuantityQuality
-from package.common import assert_schema
 from package.constants import Colname
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
@@ -40,6 +38,7 @@ estimated_quality = QuantityQuality.ESTIMATED.value
 
 df_template = {
     Colname.grid_area: [],
+    Colname.metering_point_id: [],
     Colname.metering_point_type: [],
     Colname.to_grid_area: [],
     Colname.from_grid_area: [],
@@ -54,6 +53,7 @@ def time_series_schema():
     return (
         StructType()
         .add(Colname.grid_area, StringType())
+        .add(Colname.metering_point_id, StringType())
         .add(Colname.metering_point_type, StringType())
         .add(Colname.to_grid_area, StringType())
         .add(Colname.from_grid_area, StringType())
@@ -163,6 +163,7 @@ def multi_quarter_test_data(spark, time_series_schema):
 def add_row_of_data(pandas_df, domain, in_domain, out_domain, timestamp, quantity):
     new_row = {
         Colname.grid_area: domain,
+        Colname.metering_point_id: ["metering-point-id"],
         Colname.metering_point_type: MeteringPointType.EXCHANGE.value,
         Colname.to_grid_area: in_domain,
         Colname.from_grid_area: out_domain,
@@ -224,16 +225,3 @@ def test_aggregate_net_exchange_per_neighbour_ga_multi_hour(multi_quarter_test_d
         == "2020-01-01T05:00:00"
     )
     assert values[19][Colname.sum_quantity] == Decimal("10")
-
-
-def test_expected_schema(single_quarter_test_data):
-    df = aggregate_net_exchange_per_neighbour_ga(single_quarter_test_data).df.orderBy(
-        Colname.to_grid_area, Colname.from_grid_area, Colname.time_window
-    )
-    assert_schema(
-        df.schema,
-        energy_results_schema,
-        ignore_nullability=True,
-        ignore_decimal_precision=True,
-        ignore_decimal_scale=True,
-    )
