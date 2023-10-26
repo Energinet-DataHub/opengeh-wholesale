@@ -48,6 +48,10 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
         public List<EnergyResultProducedV1> EnergyResultProducedFromWholesaleFixing { get; } = new();
 
+        public List<AmountPerChargeResultProducedV1> AmountPerChargeResultProduced { get; } = new();
+
+        public List<MonthlyAmountPerChargeResultProducedV1> MonthlyAmountPerChargeResultProduced { get; } = new();
+
         private Guid BalanceFixingCalculationId { get; set; }
 
         private Guid WholesaleFixingCalculationId { get; set; }
@@ -152,6 +156,16 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                         EnergyResultProducedFromBalanceFixing.Add(energyResultProduced);
                     else if (energyResultProduced.CalculationId == WholesaleFixingCalculationId.ToString())
                         EnergyResultProducedFromWholesaleFixing.Add(energyResultProduced);
+                    break;
+                case AmountPerChargeResultProducedV1.EventName:
+                    var amountPerChargeResultProduced = AmountPerChargeResultProducedV1.Parser.ParseFrom(data);
+                    if (amountPerChargeResultProduced.CalculationId == WholesaleFixingCalculationId.ToString())
+                        AmountPerChargeResultProduced.Add(amountPerChargeResultProduced);
+                    break;
+                case MonthlyAmountPerChargeResultProducedV1.EventName:
+                    var monthlyAmountPerChargeResultProduced = MonthlyAmountPerChargeResultProducedV1.Parser.ParseFrom(data);
+                    if (monthlyAmountPerChargeResultProduced.CalculationId == WholesaleFixingCalculationId.ToString())
+                        MonthlyAmountPerChargeResultProduced.Add(monthlyAmountPerChargeResultProduced);
                     break;
             }
         }

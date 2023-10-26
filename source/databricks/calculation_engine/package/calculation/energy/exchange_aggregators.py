@@ -62,11 +62,11 @@ def aggregate_net_exchange_per_neighbour_ga(
     from_qualities = "from_qualities"
     exchange = (
         exchange_to.join(exchange_from, [Colname.time_window], "inner")
-        .filter(
+        .where(
             exchange_to[exchange_in_to_grid_area]
             == exchange_from[exchange_out_from_grid_area]
         )
-        .filter(
+        .where(
             exchange_to[exchange_in_from_grid_area]
             == exchange_from[exchange_out_to_grid_area]
         )
@@ -109,31 +109,36 @@ def aggregate_net_exchange_per_ga(
         .withColumnRenamed(Colname.to_grid_area, Colname.grid_area)
     )
 
-    exchange_from = data.df.filter(
+    exchange_from = data.df.where(
         F.col(Colname.metering_point_type) == MeteringPointType.EXCHANGE.value
     )
     exchange_from_group_by = [
         Colname.from_grid_area,
         Colname.time_window,
     ]
+
+    from_time_window = "from_time_window"
+
     exchange_from = (
         T.aggregate_sum_and_quality(
             exchange_from, Colname.quantity, exchange_from_group_by
         )
         .withColumnRenamed(Colname.sum_quantity, from_sum)
         .withColumnRenamed(Colname.from_grid_area, Colname.grid_area)
-        .withColumnRenamed(Colname.time_window, "from_time_window")
+        .withColumnRenamed(Colname.time_window, from_time_window)
     )
+
+    from_grid_area = "from_grid_area"
     joined = exchange_to.join(
         exchange_from,
         (exchange_to[Colname.grid_area] == exchange_from[Colname.grid_area])
-        & (exchange_to[Colname.time_window] == exchange_from["from_time_window"]),
+        & (exchange_to[Colname.time_window] == exchange_from[from_time_window]),
         how="outer",
     ).select(
         exchange_to["*"],
         exchange_from[from_sum],
-        exchange_from[Colname.grid_area].alias("from_grid_area"),
-        exchange_from["from_time_window"],
+        exchange_from[Colname.grid_area].alias(from_grid_area),
+        exchange_from[from_time_window],
     )
     result_df = (
         joined
@@ -152,13 +157,13 @@ def aggregate_net_exchange_per_ga(
             Colname.grid_area,
             F.when(
                 F.col(Colname.grid_area).isNotNull(), F.col(Colname.grid_area)
-            ).otherwise(F.col("from_grid_area")),
+            ).otherwise(F.col(from_grid_area)),
         )
         .withColumn(
             Colname.time_window,
             F.when(
                 F.col(Colname.time_window).isNotNull(), F.col(Colname.time_window)
-            ).otherwise(F.col("from_time_window")),
+            ).otherwise(F.col(from_time_window)),
         )
         .select(
             Colname.grid_area,

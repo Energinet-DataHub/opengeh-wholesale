@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Core.Messaging.Communication.Internal;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
@@ -25,11 +26,19 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Fa
     {
         private readonly ICalculationResultCompletedFactory _calculationResultCompletedFactory;
         private readonly IEnergyResultProducedV1Factory _energyResultProducedV1Factory;
+        private readonly IAmountPerChargeResultProducedV1Factory _amountPerChargeResultProducedV1Factory;
+        private readonly IMonthlyAmountPerChargeResultProducedV1Factory _monthlyAmountPerChargeResultProducedV1Factory;
 
-        public CalculationResultIntegrationEventFactory(ICalculationResultCompletedFactory calculationResultCompletedFactory, IEnergyResultProducedV1Factory energyResultProducedV1Factory)
+        public CalculationResultIntegrationEventFactory(
+            ICalculationResultCompletedFactory calculationResultCompletedFactory,
+            IEnergyResultProducedV1Factory energyResultProducedV1Factory,
+            IAmountPerChargeResultProducedV1Factory amountPerChargeResultProducedV1Factory,
+            IMonthlyAmountPerChargeResultProducedV1Factory monthlyAmountPerChargeResultProducedV1Factory)
         {
             _calculationResultCompletedFactory = calculationResultCompletedFactory;
             _energyResultProducedV1Factory = energyResultProducedV1Factory;
+            _amountPerChargeResultProducedV1Factory = amountPerChargeResultProducedV1Factory;
+            _monthlyAmountPerChargeResultProducedV1Factory = monthlyAmountPerChargeResultProducedV1Factory;
         }
 
         public IntegrationEvent CreateCalculationResultCompleted(EnergyResult energyResult)
@@ -44,6 +53,20 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Fa
             var calculationResultCompleted = _energyResultProducedV1Factory.Create(energyResult);
             var eventIdentification = Guid.NewGuid();
             return CreateIntegrationEvent(calculationResultCompleted, eventIdentification, EnergyResultProducedV1.EventName, EnergyResultProducedV1.EventMinorVersion);
+        }
+
+        public IntegrationEvent CreateAmountPerChargeResultProducedV1(WholesaleResult wholesaleResult)
+        {
+            var calculationResultCompleted = _amountPerChargeResultProducedV1Factory.Create(wholesaleResult);
+            var eventIdentification = Guid.NewGuid();
+            return CreateIntegrationEvent(calculationResultCompleted, eventIdentification, AmountPerChargeResultProducedV1.EventName, AmountPerChargeResultProducedV1.EventMinorVersion);
+        }
+
+        public IntegrationEvent CreateMonthlyAmountPerChargeResultProducedV1(WholesaleResult wholesaleResult)
+        {
+            var calculationResultCompleted = _monthlyAmountPerChargeResultProducedV1Factory.Create(wholesaleResult);
+            var eventIdentification = Guid.NewGuid();
+            return CreateIntegrationEvent(calculationResultCompleted, eventIdentification, MonthlyAmountPerChargeResultProducedV1.EventName, MonthlyAmountPerChargeResultProducedV1.EventMinorVersion);
         }
 
         private IntegrationEvent CreateIntegrationEvent(IMessage protobufMessage, Guid eventIdentification, string eventName, int eventMinorVersion)

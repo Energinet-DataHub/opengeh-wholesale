@@ -57,34 +57,50 @@ def get_basis_data_time_series_points_df(
 
     quarterly_times_df = (
         quarterly_mp_df.select(
-            Colname.metering_point_id, Colname.from_date, Colname.to_date
+            Colname.metering_point_id,
+            Colname.metering_point_type,
+            Colname.resolution,
+            Colname.grid_area,
+            Colname.from_date,
+            Colname.to_date,
         )
         .distinct()
-        .select(
-            Colname.metering_point_id,
+        .withColumn(
+            "quarter_times",
             F.expr(
                 f"sequence(to_timestamp({Colname.from_date}), to_timestamp({Colname.to_date}), interval 15 minutes)"
-            ).alias("quarter_times"),
+            ),
         )
         .select(
             Colname.metering_point_id,
+            Colname.grid_area,
+            Colname.metering_point_type,
+            Colname.resolution,
             F.explode("quarter_times").alias(Colname.observation_time),
         )
     )
 
     hourly_times_df = (
         hourly_mp_df.select(
-            Colname.metering_point_id, Colname.from_date, Colname.to_date
+            Colname.metering_point_id,
+            Colname.metering_point_type,
+            Colname.resolution,
+            Colname.grid_area,
+            Colname.from_date,
+            Colname.to_date,
         )
         .distinct()
-        .select(
-            Colname.metering_point_id,
+        .withColumn(
+            "times",
             F.expr(
                 f"sequence(to_timestamp({Colname.from_date}), to_timestamp({Colname.to_date}), interval 1 hour)"
-            ).alias("times"),
+            ),
         )
         .select(
             Colname.metering_point_id,
+            Colname.grid_area,
+            Colname.metering_point_type,
+            Colname.resolution,
             F.explode("times").alias(Colname.observation_time),
         )
     )
@@ -117,25 +133,15 @@ def get_basis_data_time_series_points_df(
     # rejoining master_basis_data_df with empty_points_for_each_metering_point_df requires the GSRN number and
     # Resolution column must be renamed for the select to be successful.
 
-    new_points_for_each_metering_point_df = (
-        new_points_for_each_metering_point_df.withColumnRenamed(
-            Colname.metering_point_id, "pfemp_MeteringPointId"
-        ).withColumnRenamed(Colname.resolution, "pfemp_Resolution")
-    )
-
-    metering_point_periods_renamed_df = metering_point_periods_df.withColumnRenamed(
-        Colname.metering_point_id, "master_MeteringPointId"
-    ).withColumnRenamed(Colname.resolution, "master_Resolution")
-
     result = (
         new_points_for_each_metering_point_df.withColumn(
             Colname.quantity, F.col(Colname.quantity).cast(DecimalType(18, 6))
         )
         .join(
-            metering_point_periods_renamed_df,
+            metering_point_periods_df,
             (
-                metering_point_periods_renamed_df["master_MeteringPointId"]
-                == new_points_for_each_metering_point_df["pfemp_MeteringPointId"]
+                metering_point_periods_df[Colname.metering_point_id]
+                == new_points_for_each_metering_point_df[Colname.metering_point_id]
             )
             & (
                 new_points_for_each_metering_point_df[Colname.observation_time]
@@ -148,17 +154,13 @@ def get_basis_data_time_series_points_df(
             "left",
         )
         .select(
-            Colname.grid_area,
+            new_points_for_each_metering_point_df[Colname.grid_area],
             Colname.to_grid_area,
             Colname.from_grid_area,
-            metering_point_periods_renamed_df["master_MeteringPointId"].alias(
-                Colname.metering_point_id
-            ),
-            Colname.metering_point_type,
-            metering_point_periods_renamed_df["master_Resolution"].alias(
-                Colname.resolution
-            ),
-            Colname.observation_time,
+            new_points_for_each_metering_point_df[Colname.metering_point_id],
+            new_points_for_each_metering_point_df[Colname.metering_point_type],
+            new_points_for_each_metering_point_df[Colname.resolution],
+            new_points_for_each_metering_point_df[Colname.observation_time],
             Colname.quantity,
             Colname.quality,
             Colname.energy_supplier_id,
@@ -169,6 +171,14 @@ def get_basis_data_time_series_points_df(
     # Quality of metering point time series are mandatory. This result has, however, been padded with
     # time series points that haven't been provided by the market actors. These added points must have
     # the quality "missing".
-    result = result.na.fill(value=QuantityQuality.MISSING.value, subset=Colname.quality)
+    # Quantity is set to 0 as well in case of missing values.
+    result = result.na.fill(
+        value=QuantityQuality.MISSING.value, subset=[Colname.quality]
+    )
+    result = result.fillna(0, subset=[Colname.quantity])
+
+    # Workaround to enforce quantity nullable=False. This should be safe according to `fillna(..)` above
+    # note that this only change the schema for an instance of the dataframe, not the dataframe itself
+    result.schema[Colname.quantity].nullable = False
 
     return result
