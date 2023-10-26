@@ -46,6 +46,6 @@ time_series_quarter_points_schema = StructType(
             ),
             False,
         ),
-        StructField(Colname.quarter_quantity, DecimalType(18, 6), True),
+        StructField(Colname.quarter_quantity, DecimalType(18, 6), False),
     ]
 )

@@ -91,8 +91,4 @@ class QuarterlyMeteringPointTimeSeries(DataFrameWrapper):
             result = result.withColumn(
                 Colname.balance_responsible_id, f.lit(None).cast(t.StringType())
             )
-        if Colname.quarter_quantity not in result.columns:
-            result = result.withColumn(
-                Colname.quarter_quantity, f.lit(None).cast(t.DecimalType(18, 6))
-            )
         return result
