@@ -90,7 +90,7 @@ def _aggregate_per_ga_and_brp_and_es(
         Colname.energy_supplier_id,
         Colname.time_window,
     ]
-    result = t.aggregate_sum_and_quality(result, "quarter_quantity", sum_group_by)
+    result = t.aggregate_sum_and_quality(result, Colname.quarter_quantity, sum_group_by)
 
     result = result.select(
         Colname.grid_area,

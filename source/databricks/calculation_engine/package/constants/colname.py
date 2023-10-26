@@ -51,6 +51,10 @@ class Colname:
     qualities = "qualities"
     quality = "quality"
     quantity = "quantity"
+    # TODO BJM: Replace by quantity?
+    quarter_quantity = "quarter_quantity"
+    # TODO BJM: Replace by time/observation_time?
+    quarter_time = "quarter_time"
     resolution = "resolution"
     settlement_method = "settlement_method"
     start = "start"

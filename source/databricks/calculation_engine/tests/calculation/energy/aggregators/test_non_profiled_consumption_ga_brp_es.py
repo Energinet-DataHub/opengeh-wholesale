@@ -36,6 +36,7 @@ from package.codelists import (
     MeteringPointType,
     SettlementMethod,
     QuantityQuality,
+    MeteringPointResolution,
 )
 
 # Default time series data point values
@@ -77,13 +78,20 @@ def time_series_row_factory(
                 Colname.grid_area: [domain],
                 Colname.balance_responsible_id: [responsible],
                 Colname.energy_supplier_id: [supplier],
-                "quarter_quantity": [quantity],
+                Colname.quantity: [quantity],
+                Colname.quarter_quantity: [quantity],
                 Colname.quality: QuantityQuality.MEASURED.value,
                 Colname.time_window: [obs_time],
+                Colname.observation_time: [obs_time],
+                Colname.resolution: [MeteringPointResolution.QUARTER.value],
             },
         )
-        df = spark.createDataFrame(pandas_df).withColumn(
-            Colname.time_window, window(col(Colname.time_window), "15 minutes")
+        df = (
+            spark.createDataFrame(pandas_df)
+            .withColumn(
+                Colname.time_window, window(col(Colname.time_window), "15 minutes")
+            )
+            .withColumn(Colname.quarter_time, col(Colname.observation_time))
         )
 
         return QuarterlyMeteringPointTimeSeries(df)
@@ -229,7 +237,7 @@ def test_consumption_test_filter_by_domain_is_pressent(
     assert aggregated_df.df.count() == 1
 
 
-def test_consumption_test_filter_by_domain_is_not_pressent(
+def test_consumption_test_filter_by_domain_is_not_present(
     time_series_row_factory: Callable[..., QuarterlyMeteringPointTimeSeries],
 ) -> None:
     df = time_series_row_factory()

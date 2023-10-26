@@ -29,7 +29,11 @@ from package.calculation.energy.exchange_aggregators import (
 from package.calculation.preparation.quarterly_metering_point_time_series import (
     QuarterlyMeteringPointTimeSeries,
 )
-from package.codelists import MeteringPointType, QuantityQuality
+from package.codelists import (
+    MeteringPointType,
+    QuantityQuality,
+    MeteringPointResolution,
+)
 from package.constants import Colname
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
@@ -48,14 +52,15 @@ def enriched_time_series_data_frame(
     # Create empty pandas df
     pandas_df = pd.DataFrame(
         {
-            Colname.metering_point_id: ["metering-point-id"],
+            Colname.metering_point_id: [],
             Colname.metering_point_type: [],
-            Colname.grid_area: ["grid-area"],
+            Colname.grid_area: [],
             Colname.to_grid_area: [],
             Colname.from_grid_area: [],
             Colname.quantity: [],
             Colname.observation_time: [],
             Colname.quality: [],
+            Colname.resolution: [],
         }
     )
 
@@ -173,8 +178,12 @@ def enriched_time_series_data_frame(
             default_obs_time + timedelta(minutes=quarter_number * 15),
         )
 
-    df = spark.createDataFrame(pandas_df).withColumn(
-        Colname.time_window, window(col(Colname.observation_time), "15 minutes")
+    df = (
+        spark.createDataFrame(pandas_df)
+        .withColumn(
+            Colname.time_window, window(col(Colname.observation_time), "15 minutes")
+        )
+        .withColumn(Colname.quarter_time, col(Colname.observation_time))
     )
     return QuarterlyMeteringPointTimeSeries(df)
 
@@ -199,6 +208,7 @@ def add_row_of_data(
         Colname.quantity: quantity,
         Colname.observation_time: timestamp,
         Colname.quality: QuantityQuality.ESTIMATED.value,
+        Colname.resolution: MeteringPointResolution.QUARTER.value,
     }
     return pandas_df.append(new_row, ignore_index=True)
 

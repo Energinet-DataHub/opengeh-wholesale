@@ -45,15 +45,17 @@ class QuarterlyMeteringPointTimeSeries(DataFrameWrapper):
             Colname.from_grid_area,
             Colname.metering_point_id,
             Colname.metering_point_type,
+            # TODO BJM: Does it make sense to require a resolution col in a "quarterly type"
             Colname.resolution,
+            # TODO BJM: Does it make sense to have both observation_time, quarter_time, time_window and resolution?
             Colname.observation_time,
             Colname.quantity,
             Colname.quality,
             Colname.energy_supplier_id,
             Colname.balance_responsible_id,
-            "quarter_time",
+            Colname.quarter_time,
             Colname.time_window,
-            "quarter_quantity",
+            Colname.quarter_quantity,
         )
 
         # Workaround to enforce quantity nullable=False. This should be safe as quantity in input is nullable=False
@@ -89,8 +91,8 @@ class QuarterlyMeteringPointTimeSeries(DataFrameWrapper):
             result = result.withColumn(
                 Colname.balance_responsible_id, f.lit(None).cast(t.StringType())
             )
-        if "quarter_quantity" not in result.columns:
+        if Colname.quarter_quantity not in result.columns:
             result = result.withColumn(
-                "quarter_quantity", f.lit(None).cast(t.DecimalType(18, 6))
+                Colname.quarter_quantity, f.lit(None).cast(t.DecimalType(18, 6))
             )
         return result

@@ -50,13 +50,13 @@ def transform_hour_to_quarter(
         ),
     ).select(
         basis_data_time_series_points_df["*"],
-        F.explode("quarter_times").alias("quarter_time"),
+        F.explode("quarter_times").alias(Colname.quarter_time),
     )
     result = result.withColumn(
-        Colname.time_window, F.window(F.col("quarter_time"), "15 minutes")
+        Colname.time_window, F.window(F.col(Colname.quarter_time), "15 minutes")
     )
     result = result.withColumn(
-        "quarter_quantity",
+        Colname.quarter_quantity,
         F.when(
             F.col(Colname.resolution) == MeteringPointResolution.HOUR.value,
             F.col(Colname.quantity) / 4,

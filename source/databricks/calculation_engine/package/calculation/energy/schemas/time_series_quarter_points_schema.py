@@ -35,7 +35,7 @@ time_series_quarter_points_schema = StructType(
         StructField(Colname.quality, StringType(), False),
         StructField(Colname.energy_supplier_id, StringType(), True),
         StructField(Colname.balance_responsible_id, StringType(), True),
-        StructField("quarter_time", TimestampType(), False),
+        StructField(Colname.quarter_time, TimestampType(), False),
         StructField(
             Colname.time_window,
             StructType(
@@ -46,6 +46,6 @@ time_series_quarter_points_schema = StructType(
             ),
             False,
         ),
-        StructField("quarter_quantity", DecimalType(18, 6), True),
+        StructField(Colname.quarter_quantity, DecimalType(18, 6), True),
     ]
 )

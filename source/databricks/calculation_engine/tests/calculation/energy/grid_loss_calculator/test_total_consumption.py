@@ -48,9 +48,9 @@ def net_exchange_schema():
             .add(Colname.end, TimestampType()),
             False,
         )
-        .add(Colname.from_grid_area, DecimalType(20, 1))
-        .add(Colname.to_grid_area, DecimalType(20, 1))
-        .add(Colname.sum_quantity, DecimalType(20, 1))
+        .add(Colname.from_grid_area, StringType())
+        .add(Colname.to_grid_area, StringType())
+        .add(Colname.sum_quantity, DecimalType(18, 6))
         .add(Colname.qualities, ArrayType(StringType(), False), False)
         .add(Colname.metering_point_type, StringType())
     )

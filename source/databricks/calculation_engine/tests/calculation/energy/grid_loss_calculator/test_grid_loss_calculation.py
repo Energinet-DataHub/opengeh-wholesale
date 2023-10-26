@@ -95,6 +95,8 @@ def agg_consumption_and_production_schema() -> StructType:
 @pytest.fixture(scope="module")
 def agg_result_factory(
     spark: SparkSession,
+    agg_net_exchange_schema: StructType,
+    agg_consumption_and_production_schema: StructType,
 ) -> Callable[[AggregationMethod], EnergyResults]:
     """
     Factory to generate a single row of time series data, with default parameters as specified above.
@@ -407,9 +409,10 @@ def agg_hourly_consumption_factory(
             }
         )
 
-        return spark.createDataFrame(
+        df = spark.createDataFrame(
             pandas_df, schema=agg_consumption_and_production_schema
         )
+        return EnergyResults(df)
 
     return factory
 
@@ -470,9 +473,10 @@ def agg_hourly_production_factory(
             }
         )
 
-        return spark.createDataFrame(
+        df = spark.createDataFrame(
             pandas_df, schema=agg_consumption_and_production_schema
         )
+        return EnergyResults(df)
 
     return factory
 

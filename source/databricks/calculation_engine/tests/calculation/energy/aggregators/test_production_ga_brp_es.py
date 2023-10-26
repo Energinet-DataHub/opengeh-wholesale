@@ -35,6 +35,7 @@ from package.calculation.preparation.quarterly_metering_point_time_series import
 from package.codelists import (
     MeteringPointType,
     QuantityQuality,
+    MeteringPointResolution,
 )
 from package.constants import Colname
 
@@ -66,14 +67,17 @@ def enriched_time_series_factory(
         obs_time_datetime = timestamp_factory(obs_time_string)
         rows = [
             {
-                Colname.metering_point_id: ["metering-point-id"],
+                Colname.metering_point_id: "metering-point-id",
                 Colname.metering_point_type: metering_point_type,
                 Colname.grid_area: grid_area,
                 Colname.balance_responsible_id: default_responsible,
                 Colname.energy_supplier_id: default_supplier,
-                "quarter_quantity": quantity,
+                Colname.quantity: quantity,
+                Colname.observation_time: obs_time_datetime,
                 Colname.time_window: obs_time_datetime,
+                Colname.quarter_time: obs_time_datetime,
                 Colname.quality: quality,
+                Colname.resolution: MeteringPointResolution.QUARTER.value,
             }
         ]
         df = spark.createDataFrame(rows).withColumn(
@@ -476,7 +480,7 @@ def test__when_time_series_point_is_missing__quantity_is_0(
     enriched_time_series_factory: Callable[..., QuarterlyMeteringPointTimeSeries],
 ) -> None:
     df = enriched_time_series_factory().df.withColumn(
-        "quarter_quantity", F.lit(None).cast(DecimalType())
+        Colname.quarter_quantity, F.lit(None).cast(DecimalType())
     )
     df = QuarterlyMeteringPointTimeSeries(df)
     result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
