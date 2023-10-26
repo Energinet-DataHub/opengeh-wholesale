@@ -29,7 +29,7 @@ using NodaTime;
 using Test.Core.Attributes;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Events.UnitTests.Application.CalculationResultPublishing;
+namespace Energinet.DataHub.Wholesale.Events.UnitTests.Application.Communication;
 
 public class IntegrationEventProviderTests
 {
@@ -209,7 +209,7 @@ public class IntegrationEventProviderTests
     public void AProvider_MustImplement_IIntegrationEventProvider()
     {
         // Arrange
-        var assembly = Assembly.GetAssembly(typeof(Energinet.DataHub.Wholesale.Events.Application.Root));
+        var assembly = Assembly.GetAssembly(typeof(Events.Application.Root));
         var interfaceType = typeof(IIntegrationEventProvider);
 
         // Act
