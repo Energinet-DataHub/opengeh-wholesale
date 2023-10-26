@@ -53,7 +53,7 @@ public class EnergyResultProducedV1Tests
     public void Fail_If_MinorEventVersion_ShouldHaveBeenBumped()
     {
         // Arrange
-        var actualVersion = EnergyResultProducedV1.EventMinorVersion;
+        const int actualVersion = EnergyResultProducedV1.EventMinorVersion;
         var actualContent = File.ReadAllText(@"energy_result_produced_v1.proto");
 
         // Act: There is no assert but the test will fail if the minor event version has not been bumped while the contract has changed.
