@@ -12,9 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from decimal import Decimal
 from datetime import datetime
-from pyspark.sql import DataFrame, SparkSession
+from decimal import Decimal
+from typing import Callable
+
+import pandas as pd
+import pytest
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col
 from pyspark.sql.types import (
     StructType,
     StringType,
@@ -22,19 +27,16 @@ from pyspark.sql.types import (
     TimestampType,
     ArrayType,
 )
-from pyspark.sql.functions import col
-import pytest
-import pandas as pd
-from typing import Callable
 
+from package.calculation.energy.energy_results import (
+    EnergyResults,
+)
+from package.calculation.energy.grid_loss_calculator import calculate_positive_grid_loss
 from package.codelists import (
     MeteringPointType,
     QuantityQuality,
 )
-from package.common import assert_schema
 from package.constants import Colname
-from package.calculation.energy.grid_loss_calculator import calculate_positive_grid_loss
-from package.calculation.energy.schemas import aggregation_result_schema
 
 
 @pytest.fixture(scope="module")
@@ -58,12 +60,12 @@ def grid_loss_schema() -> StructType:
 @pytest.fixture(scope="module")
 def agg_result_factory(
     spark: SparkSession, grid_loss_schema: StructType
-) -> Callable[[], DataFrame]:
+) -> Callable[[], EnergyResults]:
     """
     Factory to generate a single row of time series data, with default parameters as specified above.
     """
 
-    def factory() -> DataFrame:
+    def factory() -> EnergyResults:
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: [],
@@ -109,52 +111,46 @@ def agg_result_factory(
             ignore_index=True,
         )
 
-        return spark.createDataFrame(pandas_df, schema=grid_loss_schema)
+        df = spark.createDataFrame(pandas_df, schema=grid_loss_schema)
+        return EnergyResults(df)
 
     return factory
 
 
-def call_calculate_grid_loss(agg_result_factory: Callable[[], DataFrame]) -> DataFrame:
+def call_calculate_grid_loss(
+    agg_result_factory: Callable[[], EnergyResults]
+) -> EnergyResults:
     df = agg_result_factory()
     return calculate_positive_grid_loss(df)
 
 
 def test_grid_area_grid_loss_has_no_values_below_zero(
-    agg_result_factory: Callable[[], DataFrame]
+    agg_result_factory: Callable[[], EnergyResults]
 ) -> None:
     result = call_calculate_grid_loss(agg_result_factory)
 
-    assert result.where(col(Colname.sum_quantity) < 0).count() == 0
+    assert result.df.where(col(Colname.sum_quantity) < 0).count() == 0
 
 
 def test_grid_area_grid_loss_changes_negative_values_to_zero(
-    agg_result_factory: Callable[[], DataFrame]
+    agg_result_factory: Callable[[], EnergyResults]
 ) -> None:
     result = call_calculate_grid_loss(agg_result_factory)
 
-    assert result.collect()[0][Colname.sum_quantity] == Decimal("0.00000")
+    assert result.df.collect()[0][Colname.sum_quantity] == Decimal("0.00000")
 
 
 def test_grid_area_grid_loss_positive_values_will_not_change(
-    agg_result_factory: Callable[[], DataFrame]
+    agg_result_factory: Callable[[], EnergyResults]
 ) -> None:
     result = call_calculate_grid_loss(agg_result_factory)
 
-    assert result.collect()[1][Colname.sum_quantity] == Decimal("34.32000")
+    assert result.df.collect()[1][Colname.sum_quantity] == Decimal("34.32000")
 
 
 def test_grid_area_grid_loss_values_that_are_zero_stay_zero(
-    agg_result_factory: Callable[[], DataFrame]
+    agg_result_factory: Callable[[], EnergyResults]
 ) -> None:
     result = call_calculate_grid_loss(agg_result_factory)
 
-    assert result.collect()[2][Colname.sum_quantity] == Decimal("0.00000")
-
-
-def test_returns_correct_schema(agg_result_factory: Callable[[], DataFrame]) -> None:
-    """
-    Aggregator should return the correct schema, including the proper fields for the aggregated quantity values
-    and time window (from the single-hour resolution specified in the aggregator).
-    """
-    result = call_calculate_grid_loss(agg_result_factory)
-    assert_schema(result.schema, aggregation_result_schema, ignore_nullability=True)
+    assert result.df.collect()[2][Colname.sum_quantity] == Decimal("0.00000")

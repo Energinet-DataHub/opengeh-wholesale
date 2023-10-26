@@ -16,10 +16,10 @@ from package.codelists import (
     MeteringPointType,
     QuantityQuality,
 )
-from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
 from . import transformations as t
 from package.constants import Colname
+from package.calculation.energy.energy_results import EnergyResults
 
 production_sum_quantity = "production_sum_quantity"
 exchange_sum_quantity = "exchange_sum_quantity"
@@ -32,11 +32,11 @@ net_exchange_result = "net_exchange_result"
 
 
 def calculate_grid_loss(
-    net_exchange_per_ga: DataFrame,
-    non_profiled_consumption: DataFrame,
-    flex_consumption: DataFrame,
-    production: DataFrame,
-) -> DataFrame:
+    net_exchange_per_ga: EnergyResults,
+    non_profiled_consumption: EnergyResults,
+    flex_consumption: EnergyResults,
+    production: EnergyResults,
+) -> EnergyResults:
     return _calculate_grid_loss_or_residual_ga(
         net_exchange_per_ga,
         non_profiled_consumption,
@@ -46,29 +46,31 @@ def calculate_grid_loss(
 
 
 def _calculate_grid_loss_or_residual_ga(
-    agg_net_exchange: DataFrame,
-    agg_non_profiled_consumption: DataFrame,
-    agg_flex_consumption: DataFrame,
-    agg_production: DataFrame,
-) -> DataFrame:
+    agg_net_exchange: EnergyResults,
+    agg_non_profiled_consumption: EnergyResults,
+    agg_flex_consumption: EnergyResults,
+    agg_production: EnergyResults,
+) -> EnergyResults:
     agg_non_profiled_consumption_result = t.aggregate_sum_and_qualities(
-        agg_non_profiled_consumption,
+        agg_non_profiled_consumption.df,
         Colname.sum_quantity,
         [Colname.grid_area, Colname.time_window],
     ).withColumnRenamed(Colname.sum_quantity, hourly_result)
 
     agg_flex_consumption_result = t.aggregate_sum_and_qualities(
-        agg_flex_consumption,
+        agg_flex_consumption.df,
         Colname.sum_quantity,
         [Colname.grid_area, Colname.time_window],
     ).withColumnRenamed(Colname.sum_quantity, flex_result)
 
     agg_production_result = t.aggregate_sum_and_qualities(
-        agg_production, Colname.sum_quantity, [Colname.grid_area, Colname.time_window]
+        agg_production.df,
+        Colname.sum_quantity,
+        [Colname.grid_area, Colname.time_window],
     ).withColumnRenamed(Colname.sum_quantity, prod_result)
 
     result = (
-        agg_net_exchange.withColumnRenamed(Colname.sum_quantity, net_exchange_result)
+        agg_net_exchange.df.withColumnRenamed(Colname.sum_quantity, net_exchange_result)
         .join(agg_production_result, [Colname.grid_area, Colname.time_window], "left")
         .join(
             agg_flex_consumption_result.join(
@@ -99,11 +101,11 @@ def _calculate_grid_loss_or_residual_ga(
         f.array(f.lit(QuantityQuality.CALCULATED.value)).alias(Colname.qualities),
     )
 
-    return t.create_dataframe_from_aggregation_result_schema(result)
+    return EnergyResults(result)
 
 
-def calculate_negative_grid_loss(grid_loss: DataFrame) -> DataFrame:
-    result = grid_loss.select(
+def calculate_negative_grid_loss(grid_loss: EnergyResults) -> EnergyResults:
+    result = grid_loss.df.select(
         Colname.grid_area,
         Colname.time_window,
         f.when(f.col(Colname.sum_quantity) < 0, -f.col(Colname.sum_quantity))
@@ -113,11 +115,11 @@ def calculate_negative_grid_loss(grid_loss: DataFrame) -> DataFrame:
         Colname.qualities,
     )
 
-    return t.create_dataframe_from_aggregation_result_schema(result)
+    return EnergyResults(result)
 
 
-def calculate_positive_grid_loss(grid_loss: DataFrame) -> DataFrame:
-    result = grid_loss.select(
+def calculate_positive_grid_loss(grid_loss: EnergyResults) -> EnergyResults:
+    result = grid_loss.df.select(
         Colname.grid_area,
         Colname.time_window,
         f.when(f.col(Colname.sum_quantity) > 0, f.col(Colname.sum_quantity))
@@ -126,15 +128,15 @@ def calculate_positive_grid_loss(grid_loss: DataFrame) -> DataFrame:
         f.lit(MeteringPointType.CONSUMPTION.value).alias(Colname.metering_point_type),
         Colname.qualities,
     )
-    return t.create_dataframe_from_aggregation_result_schema(result)
+    return EnergyResults(result)
 
 
 def calculate_total_consumption(
-    agg_net_exchange: DataFrame, agg_production: DataFrame
-) -> DataFrame:
+    agg_net_exchange: EnergyResults, agg_production: EnergyResults
+) -> EnergyResults:
     result_production = (
         t.aggregate_sum_and_qualities(
-            agg_production,
+            agg_production.df,
             Colname.sum_quantity,
             [Colname.grid_area, Colname.time_window],
         )
@@ -144,7 +146,7 @@ def calculate_total_consumption(
 
     result_net_exchange = (
         t.aggregate_sum_and_qualities(
-            agg_net_exchange,
+            agg_net_exchange.df,
             Colname.sum_quantity,
             [Colname.grid_area, Colname.time_window],
         )
@@ -176,4 +178,4 @@ def calculate_total_consumption(
         f.lit(MeteringPointType.CONSUMPTION.value).alias(Colname.metering_point_type),
     )
 
-    return t.create_dataframe_from_aggregation_result_schema(result)
+    return EnergyResults(result)

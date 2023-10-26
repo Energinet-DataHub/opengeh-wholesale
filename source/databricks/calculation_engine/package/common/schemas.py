@@ -83,7 +83,7 @@ def _assert_struct_field_nullability(
 ) -> None:
     if actual.nullable != expected.nullable:
         _raise(
-            f"Expected column name '{expected.name}' to have nullable={expected.dataType}, but got nullable={actual.dataType}"
+            f"Expected column name '{expected.name}' to have nullable={expected.nullable}, but got nullable={actual.nullable}"
         )
 
     _assert_data_type_nullability(actual.dataType, expected.dataType)

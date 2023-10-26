@@ -18,6 +18,7 @@ import pyspark.sql.functions as f
 import pyspark.sql.types as t
 from pyspark.sql.window import Window
 
+from package.calculation.energy.energy_results import EnergyResults
 from package.codelists import TimeSeriesType, AggregationLevel, ProcessType
 from package.common import assert_schema
 from package.constants import Colname, EnergyResultColumnNames
@@ -37,7 +38,7 @@ class EnergyCalculationResultWriter:
 
     def write(
         self,
-        results: DataFrame,
+        results: EnergyResults,
         time_series_type: TimeSeriesType,
         aggregation_level: AggregationLevel,
     ) -> None:
@@ -46,12 +47,13 @@ class EnergyCalculationResultWriter:
         The schema of the input data frame must match the schema {_write_input_schema}.
         Nullable columns are, however, optional.
         """
-        results = self._add_nullable_columns_if_missing(results)
+        # TODO BJM: Two schemas and duplicate adding nullable columns?
+        results_df = self._add_nullable_columns_if_missing(results.df)
 
         # Assert schema after adding optional columns but before internal data frame transformations.
         # The order of the columns in the input data frame doesn't matter.
         assert_schema(
-            results.schema,
+            results_df.schema,
             _write_input_schema,
             ignore_nullability=True,
             ignore_column_order=True,
@@ -59,14 +61,14 @@ class EnergyCalculationResultWriter:
             ignore_decimal_precision=True,
         )
 
-        results = self._add_aggregation_level_and_time_series_type(
-            results, aggregation_level, time_series_type
+        results_df = self._add_aggregation_level_and_time_series_type(
+            results_df, aggregation_level, time_series_type
         )
-        results = self._add_batch_columns(results)
-        results = self._add_calculation_result_id(results)
-        results = self._map_to_storage_dataframe(results)
+        results_df = self._add_batch_columns(results_df)
+        results_df = self._add_calculation_result_id(results_df)
+        results_df = self._map_to_storage_dataframe(results_df)
 
-        self._write_to_storage(results)
+        self._write_to_storage(results_df)
 
     @staticmethod
     def _add_aggregation_level_and_time_series_type(
@@ -172,6 +174,7 @@ class EnergyCalculationResultWriter:
         ).insertInto(f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}")
 
 
+# TODO BJM: Remove? Kinda duplicate considering the schema of EnergyResults
 _write_input_schema = t.StructType(
     [
         t.StructField(Colname.grid_area, t.StringType(), False),
