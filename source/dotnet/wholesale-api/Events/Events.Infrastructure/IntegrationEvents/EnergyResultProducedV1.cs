@@ -19,6 +19,9 @@ namespace Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 
 public partial class EnergyResultProducedV1 : IEventMessage
 {
+    /// <summary>
+    /// The message type for transport message meta data in accordance with ADR-008.
+    /// </summary>
     public const string EventName = "EnergyResultProducedV1";
 
     public const int EventMinorVersion = 1;

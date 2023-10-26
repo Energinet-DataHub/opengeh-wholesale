@@ -73,17 +73,6 @@ public class IntegrationEventProvider : IIntegrationEventProvider
                 }
             }
 
-            // Publish wholesale results
-            var wholesaleResultCount = 0;
-            if (IsWholesaleCalculationType(batch.ProcessType))
-            {
-                await foreach (var wholesaleResult in _wholesaleResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
-                {
-                    wholesaleResultCount++;
-                    yield return CreateEventFromWholesaleResult(wholesaleResult);
-                }
-            }
-
             batch.PublishedTime = _clock.GetCurrentInstant();
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
@@ -94,29 +83,5 @@ public class IntegrationEventProvider : IIntegrationEventProvider
             }
         }
         while (true);
-    }
-
-    private IntegrationEvent CreateEventFromWholesaleResult(WholesaleResult wholesaleResult)
-    {
-        return wholesaleResult.ChargeResolution switch
-        {
-            ChargeResolution.Day or ChargeResolution.Hour => _calculationResultIntegrationEventFactory
-                .CreateAmountPerChargeResultProducedV1(wholesaleResult),
-            ChargeResolution.Month => _calculationResultIntegrationEventFactory
-                .CreateMonthlyAmountPerChargeResultProducedV1(wholesaleResult),
-            _ => throw new ArgumentOutOfRangeException(
-                nameof(wholesaleResult.ChargeResolution),
-                actualValue: wholesaleResult.ChargeResolution,
-                "Unexpected resolution."),
-        };
-    }
-
-    private static bool IsWholesaleCalculationType(ProcessType calculationType)
-    {
-        return calculationType
-            is ProcessType.WholesaleFixing
-            or ProcessType.FirstCorrectionSettlement
-            or ProcessType.SecondCorrectionSettlement
-            or ProcessType.ThirdCorrectionSettlement;
     }
 }

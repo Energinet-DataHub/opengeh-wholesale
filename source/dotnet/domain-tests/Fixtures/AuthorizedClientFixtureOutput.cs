@@ -141,8 +141,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         private void HandleMessage(ServiceBusReceivedMessage message)
         {
             var data = message.Body.ToArray();
-
-            if (message.Subject == CalculationResultCompleted.EventName)
+            switch (message.Subject)
             {
                 case CalculationResultCompleted.EventName:
                     var calculationResultCompleted = CalculationResultCompleted.Parser.ParseFrom(data);
