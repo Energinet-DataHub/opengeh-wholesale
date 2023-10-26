@@ -31,18 +31,26 @@ resource "azurerm_sql_firewall_rule" "systemate" {
   end_ip_address      = "93.160.57.54"
 }
 
-resource "azurerm_sql_firewall_rule" "esett_deprecated_powerbi" {
-  name                = "Esett Deprecated PowerBI"
+resource "azurerm_sql_firewall_rule" "esett_deprecated_powerbi_rule_1" {
+  name                = "Esett Deprecated PowerBI Rule #1"
   resource_group_name = azurerm_resource_group.this.name
   server_name         = module.mssql_data_additional.name
-  start_ip_address    = "20.38.84.191"
-  end_ip_address      = "20.38.84.191"
+  start_ip_address    = "20.38.84.0"
+  end_ip_address      = "20.38.84.255"
 }
 
-resource "azurerm_sql_firewall_rule" "esett_deprecated_powerbi_data" {
-  name                = "Esett Deprecated PowerBI Data"
+resource "azurerm_sql_firewall_rule" "esett_deprecated_powerbi_rule_2" {
+  name                = "Esett Deprecated PowerBI Rule #2"
   resource_group_name = azurerm_resource_group.this.name
   server_name         = module.mssql_data_additional.name
   start_ip_address    = "20.38.85.0"
   end_ip_address      = "20.38.85.255"
+}
+
+resource "azurerm_sql_firewall_rule" "esett_deprecated_powerbi_rule_3" {
+  name                = "Esett Deprecated PowerBI Rule #3"
+  resource_group_name = azurerm_resource_group.this.name
+  server_name         = module.mssql_data_additional.name
+  start_ip_address    = "20.38.86.0"
+  end_ip_address      = "20.38.86.255"
 }
