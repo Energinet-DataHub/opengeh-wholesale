@@ -3,6 +3,7 @@
 ## Version 5.0.0
 
 Updated produced events to use an interface `IEventMessage` for exposing `EventName` and `EventMinorVersion`.
+Added integration event types `AmountPerChargeResultProducedV1` and `MonthlyAmountPerChargeResultProducedV1`.
 
 ## Version 4.4.1
 
