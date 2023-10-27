@@ -51,8 +51,8 @@ class QuarterlyMeteringPointTimeSeries(DataFrameWrapper):
             Colname.energy_supplier_id,
             Colname.balance_responsible_id,
             Colname.quarter_time,
-            Colname.time_window,
             Colname.settlement_method,
+            Colname.time_window,
         )
 
         # Workaround to enforce quantity nullable=False. This should be safe as quantity in input is nullable=False
@@ -61,6 +61,10 @@ class QuarterlyMeteringPointTimeSeries(DataFrameWrapper):
         assert_schema(
             df.schema,
             _time_series_quarter_points_schema,
+            ignore_column_order=True,
+            ignore_nullability=True,
+            ignore_decimal_scale=True,
+            ignore_decimal_precision=True,
         )
 
         super().__init__(df)

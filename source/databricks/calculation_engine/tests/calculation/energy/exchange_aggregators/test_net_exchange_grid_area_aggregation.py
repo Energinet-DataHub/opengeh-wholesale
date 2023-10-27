@@ -181,6 +181,7 @@ def enriched_time_series_data_frame(
 
     df = (
         spark.createDataFrame(pandas_df)
+        .withColumn(Colname.quality, lit(QuantityQuality.ESTIMATED.value))
         .withColumn(
             Colname.time_window, window(col(Colname.observation_time), "15 minutes")
         )
