@@ -18,19 +18,28 @@ module "app_importer" {
       name = "CONNECTION_STRING_SHARED_BLOB"
       type = "Custom"
       value = module.stor_esett.primary_connection_string
+    },
+    {
+      name = "CONNECTION_STRING_DATABASE"
+      type = "Custom"
+      value = local.connection_string_database
     }
   ]
 }
 
 locals {
   default_importer_app_settings = {
-    WEBSITE_LOAD_CERTIFICATES       = resource.azurerm_key_vault_certificate.dh2_certificate.thumbprint
-    BLOB_FILES_ERROR_CONTAINER_NAME = local.blob_files_error_container.name
-    BLOB_FILES_RAW_CONTAINER_NAME   = local.blob_files_raw_container.name
-    RunIntervalSeconds              = "20"
-    NamespacePrefix                 = "ns0"
-    NamespaceUri                    = "un:unece:260:data:EEM-DK_AggregatedMeteredDataTimeSeriesForNBS:v3"
-    ResponseNamespaceUri            = "urn:www:datahub:dk:b2b:v01"
-    CONNECTION_STRING_DATABASE      = local.connection_string_database
+    WEBSITE_LOAD_CERTIFICATES                                             = resource.azurerm_key_vault_certificate.dh2_certificate.thumbprint
+    BLOB_FILES_ERROR_CONTAINER_NAME                                       = local.blob_files_error_container.name
+    BLOB_FILES_RAW_CONTAINER_NAME                                         = local.blob_files_raw_container.name
+    RunIntervalSeconds                                                    = "20"
+    NamespacePrefix                                                       = "ns0"
+    NamespaceUri                                                          = "un:unece:260:data:EEM-DK_AggregatedMeteredDataTimeSeriesForNBS:v3"
+    ResponseNamespaceUri                                                  = "urn:www:datahub:dk:b2b:v01"
+    "Logging__LogLevel__Default"                                          = "Information"
+    "Logging__LogLevel__Microsoft"                                        = "Warning"
+    "Logging__ApplicationInsights__LogLevel__Default"                     = "Information"
+    "Logging__ApplicationInsights__LogLevel__Microsoft"                   = "Warning"
+    "Logging__ApplicationInsights__LogLevel__Microsoft.Hosting.Lifetime"  = "Information"
   }
 }

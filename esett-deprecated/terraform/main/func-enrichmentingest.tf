@@ -15,13 +15,13 @@ module "func_enrichmentingest" {
   dotnet_framework_version                  = "v6.0"
   app_settings = {
     # EndRegion
-    BLOB_FILES_ENRICHMENTS_CONTAINER_NAME = local.blob_files_enrichments_container.name
+    BLOB_FILES_ENRICHMENTS_CONTAINER_NAME                                 = local.blob_files_enrichments_container.name
+    "Logging__LogLevel__Default"                                          = "Information"
+    "Logging__LogLevel__Microsoft"                                        = "Warning"
+    "Logging__ApplicationInsights__LogLevel__Default"                     = "Information"
+    "Logging__ApplicationInsights__LogLevel__Microsoft"                   = "Warning"
+    "Logging__ApplicationInsights__LogLevel__Microsoft.Hosting.Lifetime"  = "Information"
+    CONNECTION_STRING_SHARED_BLOB                                         = module.stor_esett.primary_connection_string
+    CONNECTION_STRING_DATABASE                                            = local.connection_string_database
   }
-  connection_strings = [
-    {
-      name = "CONNECTION_STRING_SHARED_BLOB"
-      type = "Custom"
-      value = module.stor_esett.primary_connection_string
-    }
-  ]
 }

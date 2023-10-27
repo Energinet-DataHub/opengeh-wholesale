@@ -21,25 +21,34 @@ module "app_biztalkshipper" {
       name = "CONNECTION_STRING_SHARED_BLOB"
       type = "Custom"
       value = module.stor_esett.primary_connection_string
+    },
+    {
+      name = "CONNECTION_STRING_DATABASE"
+      type = "Custom"
+      value = local.connection_string_database
     }
   ]
 }
 
 locals {
   default_biztalkshipper_app_settings = {
-    WEBSITE_LOAD_CERTIFICATES           = resource.azurerm_key_vault_certificate.biztalk_certificate.thumbprint
-    BLOB_FILES_ERROR_CONTAINER_NAME     = local.blob_files_error_container.name
-    BLOB_FILES_SENT_CONTAINER_NAME      = local.blob_files_sent_container.name
-    BLOB_FILES_CONVERTED_CONTAINER_NAME = local.blob_files_converted_container.name
-    BLOB_FILES_ACK_CONTAINER_NAME       = local.blob_files_ack_container.name
-    "RunIntervalSeconds"                = "20"
-    "biztalk:Endpoint"                  = "/EL_DataHubService/IntegrationService.svc"
-    "biztalk:businessTypeConsumption"   = "NBS-RECI"
-    "biztalk:businessTypeProduction"    = "NBS-MEPI"
-    "biztalk:businessTypeExchange"      = "NBS-MGXI"
-    "biztalk:senderCode"                = "45V0000000000601"
-    "biztalk:receiverCode"              = "44V000000000028C"
-    CONNECTION_STRING_DATABASE          = local.connection_string_database
+    WEBSITE_LOAD_CERTIFICATES                                             = resource.azurerm_key_vault_certificate.biztalk_certificate.thumbprint
+    BLOB_FILES_ERROR_CONTAINER_NAME                                       = local.blob_files_error_container.name
+    BLOB_FILES_SENT_CONTAINER_NAME                                        = local.blob_files_sent_container.name
+    BLOB_FILES_CONVERTED_CONTAINER_NAME                                   = local.blob_files_converted_container.name
+    BLOB_FILES_ACK_CONTAINER_NAME                                         = local.blob_files_ack_container.name
+    "RunIntervalSeconds"                                                  = "20"
+    "biztalk:Endpoint"                                                    = "/EL_DataHubService/IntegrationService.svc"
+    "biztalk:businessTypeConsumption"                                     = "NBS-RECI"
+    "biztalk:businessTypeProduction"                                      = "NBS-MEPI"
+    "biztalk:businessTypeExchange"                                        = "NBS-MGXI"
+    "biztalk:senderCode"                                                  = "45V0000000000601"
+    "biztalk:receiverCode"                                                = "44V000000000028C"
+    "Logging__LogLevel__Default"                                          = "Information"
+    "Logging__LogLevel__Microsoft"                                        = "Warning"
+    "Logging__ApplicationInsights__LogLevel__Default"                     = "Information"
+    "Logging__ApplicationInsights__LogLevel__Microsoft"                   = "Warning"
+    "Logging__ApplicationInsights__LogLevel__Microsoft.Hosting.Lifetime"  = "Information"
   }
 }
 

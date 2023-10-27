@@ -14,28 +14,27 @@ module "func_changeobserver" {
   ip_restriction_allow_ip_range             = var.hosted_deployagent_public_ip_range
   dotnet_framework_version                  = "v6.0"
   app_settings = {
-    BLOB_FILES_CONVERTED_CONTAINER_NAME       = local.blob_files_converted_container.name
-    BLOB_FILES_ERROR_CONTAINER_NAME           = local.blob_files_error_container.name
-    BLOB_FILES_RAW_CONTAINER_NAME             = local.blob_files_raw_container.name
-    BLOB_FILES_SENT_CONTAINER_NAME            = local.blob_files_sent_container.name
-    BLOB_FILES_ACK_CONTAINER_NAME             = local.blob_files_ack_container.name
-    BLOB_FILES_OTHER_CONTAINER_NAME           = local.blob_files_other_container.name
-    BLOB_FILES_CONFIRMED_CONTAINER_NAME       = local.blob_files_confirmed_container.name
-    BLOB_FILES_MGA_IMBALANCE_CONTAINER_NAME   = local.blob_files_mga_imbalance_container.name
-    BLOB_FILES_BRP_CHANGE_CONTAINER_NAME      = local.blob_files_brp_change_container.name
-    CONNECTION_STRING_DATABASE                = local.connection_string_database
-    STORAGE_ACCOUNT_BLOB_CONFIRMED_SAS_TOKEN  = data.azurerm_storage_account_blob_container_sas.blob_confirmed.sas
-    STORAGE_ACCOUNT_BLOB_MGA_SAS_TOKEN        = data.azurerm_storage_account_blob_container_sas.blob_mga.sas
-    STORAGE_ACCOUNT_BLOB_BRP_SAS_TOKEN        = data.azurerm_storage_account_blob_container_sas.blob_brp.sas
-    STORAGE_ACCOUNT_BLOB_SENT_SAS_TOKEN       = data.azurerm_storage_account_blob_container_sas.blob_sent.sas
-    STORAGE_ACCOUNT_BLOB_OTHER_SAS_TOKEN      = data.azurerm_storage_account_blob_container_sas.blob_other.sas
-    STORAGE_ACCOUNT_BLOB_ERROR_SAS_TOKEN      = data.azurerm_storage_account_blob_container_sas.blob_error.sas
+    BLOB_FILES_CONVERTED_CONTAINER_NAME                                   = local.blob_files_converted_container.name
+    BLOB_FILES_ERROR_CONTAINER_NAME                                       = local.blob_files_error_container.name
+    BLOB_FILES_RAW_CONTAINER_NAME                                         = local.blob_files_raw_container.name
+    BLOB_FILES_SENT_CONTAINER_NAME                                        = local.blob_files_sent_container.name
+    BLOB_FILES_ACK_CONTAINER_NAME                                         = local.blob_files_ack_container.name
+    BLOB_FILES_OTHER_CONTAINER_NAME                                       = local.blob_files_other_container.name
+    BLOB_FILES_CONFIRMED_CONTAINER_NAME                                   = local.blob_files_confirmed_container.name
+    BLOB_FILES_MGA_IMBALANCE_CONTAINER_NAME                               = local.blob_files_mga_imbalance_container.name
+    BLOB_FILES_BRP_CHANGE_CONTAINER_NAME                                  = local.blob_files_brp_change_container.name
+    STORAGE_ACCOUNT_BLOB_CONFIRMED_SAS_TOKEN                              = data.azurerm_storage_account_blob_container_sas.blob_confirmed.sas
+    STORAGE_ACCOUNT_BLOB_MGA_SAS_TOKEN                                    = data.azurerm_storage_account_blob_container_sas.blob_mga.sas
+    STORAGE_ACCOUNT_BLOB_BRP_SAS_TOKEN                                    = data.azurerm_storage_account_blob_container_sas.blob_brp.sas
+    STORAGE_ACCOUNT_BLOB_SENT_SAS_TOKEN                                   = data.azurerm_storage_account_blob_container_sas.blob_sent.sas
+    STORAGE_ACCOUNT_BLOB_OTHER_SAS_TOKEN                                  = data.azurerm_storage_account_blob_container_sas.blob_other.sas
+    STORAGE_ACCOUNT_BLOB_ERROR_SAS_TOKEN                                  = data.azurerm_storage_account_blob_container_sas.blob_error.sas
+    "Logging__LogLevel__Default"                                          = "Information"
+    "Logging__LogLevel__Microsoft"                                        = "Warning"
+    "Logging__ApplicationInsights__LogLevel__Default"                     = "Information"
+    "Logging__ApplicationInsights__LogLevel__Microsoft"                   = "Warning"
+    "Logging__ApplicationInsights__LogLevel__Microsoft.Hosting.Lifetime"  = "Information"
+    CONNECTION_STRING_SHARED_BLOB                                         = module.stor_esett.primary_connection_string
+    CONNECTION_STRING_DATABASE                                            = local.connection_string_database
   }
-  connection_strings = [
-    {
-      name = "CONNECTION_STRING_SHARED_BLOB"
-      type = "Custom"
-      value = module.stor_esett.primary_connection_string
-    }
-  ]
 }
