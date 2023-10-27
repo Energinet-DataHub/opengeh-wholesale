@@ -14,9 +14,6 @@
 
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Internal;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
-using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Microsoft.Extensions.Logging;
@@ -26,26 +23,23 @@ namespace Energinet.DataHub.Wholesale.Events.Application.Communication;
 
 public class IntegrationEventProvider : IIntegrationEventProvider
 {
-    private readonly ICalculationResultIntegrationEventFactory _calculationResultIntegrationEventFactory;
-    private readonly IEnergyResultQueries _energyResultQueries;
-    private readonly IWholesaleResultQueries _wholesaleResultQueries;
+    private readonly IEnergyResultEventProvider _energyResultEventProvider;
+    private readonly IWholesaleResultEventProvider _wholesaleResultEventProvider;
     private readonly ICompletedBatchRepository _completedBatchRepository;
     private readonly IClock _clock;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<IntegrationEventProvider> _logger;
 
     public IntegrationEventProvider(
-        ICalculationResultIntegrationEventFactory integrationEventFactory,
-        IEnergyResultQueries energyResultQueries,
-        IWholesaleResultQueries wholesaleResultQueries,
+        IEnergyResultEventProvider energyResultEventProvider,
+        IWholesaleResultEventProvider wholesaleResultEventProvider,
         ICompletedBatchRepository completedBatchRepository,
         IClock clock,
         IUnitOfWork unitOfWork,
         ILogger<IntegrationEventProvider> logger)
     {
-        _calculationResultIntegrationEventFactory = integrationEventFactory;
-        _energyResultQueries = energyResultQueries;
-        _wholesaleResultQueries = wholesaleResultQueries;
+        _energyResultEventProvider = energyResultEventProvider;
+        _wholesaleResultEventProvider = wholesaleResultEventProvider;
         _completedBatchRepository = completedBatchRepository;
         _clock = clock;
         _unitOfWork = unitOfWork;
@@ -56,65 +50,40 @@ public class IntegrationEventProvider : IIntegrationEventProvider
     {
         do
         {
-            var batch = await _completedBatchRepository.GetNextUnpublishedOrNullAsync().ConfigureAwait(false);
-            if (batch == null)
+            var unpublishedBatch = await _completedBatchRepository.GetNextUnpublishedOrNullAsync().ConfigureAwait(false);
+            if (unpublishedBatch == null)
             {
                 break;
             }
 
-            // Publish energy results
+            // Publish integration events for energy results
             var energyResultCount = 0;
-            await foreach (var energyResult in _energyResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
+            await foreach (var integrationEvent in _energyResultEventProvider.GetAsync(unpublishedBatch).ConfigureAwait(false))
             {
                 energyResultCount++;
-                yield return _calculationResultIntegrationEventFactory.CreateCalculationResultCompleted(energyResult); // Deprecated
-                yield return _calculationResultIntegrationEventFactory.CreateEnergyResultProducedV1(energyResult);
+                yield return integrationEvent;
             }
 
-            // Publish wholesale results
+            // Publish integration events for wholesale results
             var wholesaleResultCount = 0;
-            if (IsWholesaleCalculationType(batch.ProcessType))
+            if (_wholesaleResultEventProvider.CanContainWholesaleResults(unpublishedBatch))
             {
-                await foreach (var wholesaleResult in _wholesaleResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
+                await foreach (var integrationEvent in _wholesaleResultEventProvider.GetAsync(unpublishedBatch).ConfigureAwait(false))
                 {
                     wholesaleResultCount++;
-                    yield return CreateEventFromWholesaleResult(wholesaleResult);
+                    yield return integrationEvent;
                 }
             }
 
-            batch.PublishedTime = _clock.GetCurrentInstant();
+            unpublishedBatch.PublishedTime = _clock.GetCurrentInstant();
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
-            _logger.LogInformation("Published {EnergyResultCount} energy results for completed batch {BatchId}", energyResultCount, batch.Id);
-            if (IsWholesaleCalculationType(batch.ProcessType))
+            _logger.LogInformation("Handled '{EnergyResultCount}' energy results for completed batch {BatchId}.", energyResultCount, unpublishedBatch.Id);
+            if (_wholesaleResultEventProvider.CanContainWholesaleResults(unpublishedBatch))
             {
-                _logger.LogInformation("Published {WholesaleResultCount} wholesale results for completed batch {BatchId}", wholesaleResultCount, batch.Id);
+                _logger.LogInformation("Handled '{WholesaleResultCount}' wholesale results for completed batch {BatchId}.", wholesaleResultCount, unpublishedBatch.Id);
             }
         }
         while (true);
-    }
-
-    private IntegrationEvent CreateEventFromWholesaleResult(WholesaleResult wholesaleResult)
-    {
-        return wholesaleResult.AmountType switch
-        {
-            AmountType.AmountPerCharge => _calculationResultIntegrationEventFactory
-                .CreateAmountPerChargeResultProducedV1(wholesaleResult),
-            AmountType.MonthlyAmountPerCharge => _calculationResultIntegrationEventFactory
-                .CreateMonthlyAmountPerChargeResultProducedV1(wholesaleResult),
-            _ => throw new ArgumentOutOfRangeException(
-                nameof(wholesaleResult.AmountType),
-                actualValue: wholesaleResult.AmountType,
-                "Unexpected amount type."),
-        };
-    }
-
-    private static bool IsWholesaleCalculationType(ProcessType calculationType)
-    {
-        return calculationType
-            is ProcessType.WholesaleFixing
-            or ProcessType.FirstCorrectionSettlement
-            or ProcessType.SecondCorrectionSettlement
-            or ProcessType.ThirdCorrectionSettlement;
     }
 }
