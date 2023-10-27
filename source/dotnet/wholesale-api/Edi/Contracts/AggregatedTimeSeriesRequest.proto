@@ -32,6 +32,8 @@ message AggregatedTimeSeriesRequest {
   string requested_by_actor_role = 10;
   optional string balance_responsible_id = 11;
   optional string settlement_series_version = 12;
+  optional string grid_area_code = 13;
+  string business_reason = 14;
 }
 
 message Period {
