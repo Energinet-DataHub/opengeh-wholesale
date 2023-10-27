@@ -24,7 +24,6 @@ public class WholesaleResultColumnNames
     public const string CalculationResultId = "calculation_result_id";
     public const string GridArea = "grid_area";
     public const string EnergySupplierId = "energy_supplier_id";
-    public const string AmountType = "amount_type";
     public const string Time = "time";
     public const string Quantity = "quantity";
 
@@ -39,6 +38,7 @@ public class WholesaleResultColumnNames
     public const string ChargeCode = "charge_code";
     public const string ChargeType = "charge_type";
     public const string ChargeOwnerId = "charge_owner_id";
+    public const string AmountType = "amount_type";
 
     public static IReadOnlyCollection<string> GetAllNames()
     {
