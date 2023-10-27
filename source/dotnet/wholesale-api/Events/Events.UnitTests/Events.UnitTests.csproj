@@ -6,11 +6,6 @@
         <IsTestProject>true</IsTestProject>
     </PropertyGroup>
     <ItemGroup>
-      <Compile Remove="Application\UseCases\Mappers\**" />
-      <EmbeddedResource Remove="Application\UseCases\Mappers\**" />
-      <None Remove="Application\UseCases\Mappers\**" />
-    </ItemGroup>
-    <ItemGroup>
       <PackageReference Include="Energinet.DataHub.Core.FunctionApp.TestCommon" Version="4.3.5" />
       <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="4.3.5" />
       <PackageReference Include="Energinet.DataHub.MessageHub.IntegrationTesting" Version="3.2.0" />
