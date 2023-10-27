@@ -56,7 +56,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
                 break;
             }
 
-            // Publish energy results
+            // Publish integration events for energy results
             var energyResultCount = 0;
             await foreach (var integrationEvent in _energyResultEventProvider.GetAsync(unpublishedBatch).ConfigureAwait(false))
             {
@@ -64,7 +64,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
                 yield return integrationEvent;
             }
 
-            // Publish wholesale results
+            // Publish integration events for wholesale results
             var wholesaleResultCount = 0;
             if (_wholesaleResultEventProvider.CanContainWholesaleResults(unpublishedBatch))
             {
