@@ -30,8 +30,3 @@ variable "mitid_client_secret" {
   description = "Client secret for OpenID Connect configuration of the MitID provider."
   sensitive   = true
 }
-
-variable "platform_team_members" {
-  type        = string
-  description = "Comma-delimited list with email addresses of the platform team members"
-}
