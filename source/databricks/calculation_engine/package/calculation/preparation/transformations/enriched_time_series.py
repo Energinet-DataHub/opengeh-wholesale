@@ -14,7 +14,7 @@
 
 from datetime import datetime
 from pyspark.sql import DataFrame
-import pyspark.sql.functions as F
+import pyspark.sql.functions as f
 from pyspark.sql.types import DecimalType
 
 from package.constants import Colname
@@ -40,19 +40,19 @@ def get_basis_data_time_series_points_df(
     assert_schema(metering_point_periods_df.schema, metering_point_period_schema)
 
     raw_time_series_points_df = raw_time_series_points_df.where(
-        F.col(Colname.observation_time) >= period_start_datetime
-    ).where(F.col(Colname.observation_time) < period_end_datetime)
+        f.col(Colname.observation_time) >= period_start_datetime
+    ).where(f.col(Colname.observation_time) < period_end_datetime)
 
     quarterly_mp_df = metering_point_periods_df.where(
-        F.col(Colname.resolution) == MeteringPointResolution.QUARTER.value
+        f.col(Colname.resolution) == MeteringPointResolution.QUARTER.value
     ).withColumn(
-        Colname.to_date, (F.col(Colname.to_date) - F.expr("INTERVAL 1 seconds"))
+        Colname.to_date, (f.col(Colname.to_date) - f.expr("INTERVAL 1 seconds"))
     )
 
     hourly_mp_df = metering_point_periods_df.where(
-        F.col(Colname.resolution) == MeteringPointResolution.HOUR.value
+        f.col(Colname.resolution) == MeteringPointResolution.HOUR.value
     ).withColumn(
-        Colname.to_date, (F.col(Colname.to_date) - F.expr("INTERVAL 1 seconds"))
+        Colname.to_date, (f.col(Colname.to_date) - f.expr("INTERVAL 1 seconds"))
     )
 
     quarterly_times_df = (
@@ -67,7 +67,7 @@ def get_basis_data_time_series_points_df(
         .distinct()
         .withColumn(
             "quarter_times",
-            F.expr(
+            f.expr(
                 f"sequence(to_timestamp({Colname.from_date}), to_timestamp({Colname.to_date}), interval 15 minutes)"
             ),
         )
@@ -76,7 +76,7 @@ def get_basis_data_time_series_points_df(
             Colname.grid_area,
             Colname.metering_point_type,
             Colname.resolution,
-            F.explode("quarter_times").alias(Colname.observation_time),
+            f.explode("quarter_times").alias(Colname.observation_time),
         )
     )
 
@@ -92,7 +92,7 @@ def get_basis_data_time_series_points_df(
         .distinct()
         .withColumn(
             "times",
-            F.expr(
+            f.expr(
                 f"sequence(to_timestamp({Colname.from_date}), to_timestamp({Colname.to_date}), interval 1 hour)"
             ),
         )
@@ -101,7 +101,7 @@ def get_basis_data_time_series_points_df(
             Colname.grid_area,
             Colname.metering_point_type,
             Colname.resolution,
-            F.explode("times").alias(Colname.observation_time),
+            f.explode("times").alias(Colname.observation_time),
         )
     )
 
@@ -110,22 +110,29 @@ def get_basis_data_time_series_points_df(
     debug(
         "Time series points where time is within period",
         raw_time_series_points_df.orderBy(
-            Colname.metering_point_id, F.col(Colname.observation_time)
+            Colname.metering_point_id, f.col(Colname.observation_time)
         ),
     )
 
-    raw_time_series_points_df = raw_time_series_points_df.select(
-        Colname.metering_point_id,
-        Colname.observation_time,
-        Colname.quantity,
-        Colname.quality,
-    )
-
+    # Quality of metering point time series are mandatory. This result has, however, been padded with
+    # time series points that haven't been provided by the market actors. These added points must have
+    # the quality "missing".
+    # Quantity is set to 0 as well in case of missing values.
     new_points_for_each_metering_point_df = (
         empty_points_for_each_metering_point_df.join(
             raw_time_series_points_df,
             [Colname.metering_point_id, Colname.observation_time],
             "left",
+        )
+        .na.fill(value=QuantityQuality.MISSING.value, subset=[Colname.quality])
+        .select(
+            Colname.metering_point_id,
+            Colname.observation_time,
+            Colname.grid_area,
+            Colname.metering_point_type,
+            Colname.resolution,
+            f.coalesce(Colname.quantity, f.lit(0)).alias(Colname.quantity),
+            Colname.quality,
         )
     )
 
@@ -135,7 +142,7 @@ def get_basis_data_time_series_points_df(
 
     result = (
         new_points_for_each_metering_point_df.withColumn(
-            Colname.quantity, F.col(Colname.quantity).cast(DecimalType(18, 6))
+            Colname.quantity, f.col(Colname.quantity).cast(DecimalType(18, 6))
         )
         .join(
             metering_point_periods_df,
@@ -145,11 +152,11 @@ def get_basis_data_time_series_points_df(
             )
             & (
                 new_points_for_each_metering_point_df[Colname.observation_time]
-                >= F.col(Colname.from_date)
+                >= f.col(Colname.from_date)
             )
             & (
                 new_points_for_each_metering_point_df[Colname.observation_time]
-                < F.col(Colname.to_date)
+                < f.col(Colname.to_date)
             ),
             "left",
         )
@@ -168,18 +175,5 @@ def get_basis_data_time_series_points_df(
             Colname.settlement_method,
         )
     )
-
-    # Quality of metering point time series are mandatory. This result has, however, been padded with
-    # time series points that haven't been provided by the market actors. These added points must have
-    # the quality "missing".
-    # Quantity is set to 0 as well in case of missing values.
-    result = result.na.fill(
-        value=QuantityQuality.MISSING.value, subset=[Colname.quality]
-    )
-    result = result.fillna(0, subset=[Colname.quantity])
-
-    # Workaround to enforce quantity nullable=False. This should be safe according to `fillna(..)` above
-    # note that this only change the schema for an instance of the dataframe, not the dataframe itself
-    result.schema[Colname.quantity].nullable = False
 
     return result
