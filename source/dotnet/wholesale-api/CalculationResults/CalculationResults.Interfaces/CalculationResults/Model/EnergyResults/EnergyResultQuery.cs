@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Common.Models;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
@@ -22,4 +23,5 @@ public record EnergyResultQuery(
     Instant EndOfPeriod,
     string GridArea,
     string? EnergySupplierId,
-    string? BalanceResponsibleId);
+    string? BalanceResponsibleId,
+    ProcessType ProcessType);

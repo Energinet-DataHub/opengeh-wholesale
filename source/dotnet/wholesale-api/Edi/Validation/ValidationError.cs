@@ -14,18 +14,8 @@
 
 namespace Energinet.DataHub.Wholesale.EDI.Validation;
 
-public sealed class ValidationError
+public sealed record ValidationError(string Message, string ErrorCode)
 {
-    public ValidationError(string message, string errorCode)
-    {
-        Message = message;
-        ErrorCode = errorCode;
-    }
-
-    public string Message { get; }
-
-    public string ErrorCode { get; }
-
     public ValidationError WithPropertyName(string propertyName)
     {
         return new ValidationError(Message.Replace("{PropertyName}", propertyName), ErrorCode);

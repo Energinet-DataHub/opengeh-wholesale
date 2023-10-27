@@ -12,26 +12,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from decimal import Decimal
 from datetime import datetime
-from pyspark.sql import DataFrame, SparkSession
-import pyspark.sql.functions as F
-from pyspark.sql.types import DecimalType
-import pytest
+from decimal import Decimal
 from typing import Callable, Optional
-from pandas.core.frame import DataFrame as PandasDataFrame
 
-from package.common import assert_schema
-from package.constants import Colname
+import pyspark.sql.functions as F
+import pytest
+from pandas.core.frame import DataFrame as PandasDataFrame
+from pyspark.sql import SparkSession
+from pyspark.sql.types import DecimalType
+
 from package.calculation.energy.aggregators import (
     aggregate_production_ga_brp_es,
     _aggregate_per_ga_and_brp_and_es,
 )
+from package.calculation.energy.energy_results import (
+    EnergyResults,
+)
+from package.calculation.preparation.quarterly_metering_point_time_series import (
+    QuarterlyMeteringPointTimeSeries,
+)
 from package.codelists import (
     MeteringPointType,
     QuantityQuality,
+    MeteringPointResolution,
+    SettlementMethod,
 )
-from package.calculation.energy.schemas import aggregation_result_schema
+from package.constants import Colname
 
 minimum_quantity = Decimal("0.001")
 grid_area_code_805 = "805"
@@ -50,37 +57,43 @@ default_obs_time_string = "2020-01-01T00:00:00.000Z"
 @pytest.fixture
 def enriched_time_series_factory(
     spark: SparkSession, timestamp_factory: Callable[[str], Optional[datetime]]
-) -> Callable[..., DataFrame]:
+) -> Callable[..., QuarterlyMeteringPointTimeSeries]:
     def factory(
         quantity: Decimal = default_quantity,
         quality: str = default_quality,
         grid_area: str = default_grid_area,
         obs_time_string: str = default_obs_time_string,
         metering_point_type: str = default_metering_point_type,
-    ) -> DataFrame:
+    ) -> QuarterlyMeteringPointTimeSeries:
         obs_time_datetime = timestamp_factory(obs_time_string)
-        df = [
+        rows = [
             {
+                Colname.metering_point_id: "metering-point-id",
                 Colname.metering_point_type: metering_point_type,
                 Colname.grid_area: grid_area,
                 Colname.balance_responsible_id: default_responsible,
                 Colname.energy_supplier_id: default_supplier,
                 Colname.quantity: quantity,
+                Colname.observation_time: obs_time_datetime,
                 Colname.time_window: obs_time_datetime,
+                Colname.quarter_time: obs_time_datetime,
                 Colname.quality: quality,
+                Colname.resolution: MeteringPointResolution.QUARTER.value,
+                Colname.settlement_method: SettlementMethod.NON_PROFILED.value,
             }
         ]
-        return spark.createDataFrame(df).withColumn(
+        df = spark.createDataFrame(rows).withColumn(
             Colname.time_window, F.window(F.col(Colname.time_window), "15 minutes")
         )
+        return QuarterlyMeteringPointTimeSeries(df)
 
     return factory
 
 
 @pytest.fixture
 def enriched_time_series_quarterly_same_time_factory(
-    enriched_time_series_factory: Callable[..., DataFrame],
-) -> Callable[..., DataFrame]:
+    enriched_time_series_factory: Callable[..., QuarterlyMeteringPointTimeSeries],
+) -> Callable[..., QuarterlyMeteringPointTimeSeries]:
     def factory(
         first_quantity: Decimal = Decimal("1"),
         second_quantity: Decimal = Decimal("2"),
@@ -88,25 +101,25 @@ def enriched_time_series_quarterly_same_time_factory(
         second_obs_time_string: str = default_obs_time_string,
         first_grid_area_code: str = grid_area_code_805,
         second_grid_area_code: str = grid_area_code_805,
-    ) -> DataFrame:
+    ) -> QuarterlyMeteringPointTimeSeries:
         df = enriched_time_series_factory(
             quantity=first_quantity,
             obs_time_string=first_obs_time_string,
             grid_area=first_grid_area_code,
-        ).union(
+        ).df.union(
             enriched_time_series_factory(
                 quantity=second_quantity,
                 obs_time_string=second_obs_time_string,
                 grid_area=second_grid_area_code,
-            )
+            ).df
         )
-        return df
+        return QuarterlyMeteringPointTimeSeries(df)
 
     return factory
 
 
 def check_aggregation_row(
-    df: DataFrame,
+    df: EnergyResults,
     row: int,
     grid: str,
     responsible: str,
@@ -123,7 +136,7 @@ def check_aggregation_row(
         "TimestampType in pyspark is not tz aware like in Pandas rather it passes long ints
         and displays them according to your machine's local time zone (by default)"
     """
-    pandas_df: PandasDataFrame = df.toPandas()
+    pandas_df: PandasDataFrame = df.df.toPandas()
     assert pandas_df[Colname.grid_area][row] == grid
     assert pandas_df[Colname.balance_responsible_id][row] == responsible
     assert pandas_df[Colname.energy_supplier_id][row] == supplier
@@ -146,7 +159,8 @@ def check_aggregation_row(
     ],
 )
 def test_production_aggregator_filters_out_incorrect_point_type(
-    metering_point_type: str, enriched_time_series_factory: Callable[..., DataFrame]
+    metering_point_type: str,
+    enriched_time_series_factory: Callable[..., QuarterlyMeteringPointTimeSeries],
 ) -> None:
     """
     Aggregator should filter out all non-production MarketEvaluationPointType rows
@@ -155,11 +169,11 @@ def test_production_aggregator_filters_out_incorrect_point_type(
         metering_point_type=metering_point_type
     )
     aggregated_df = aggregate_production_ga_brp_es(enriched_time_series)
-    assert aggregated_df.count() == 0
+    assert aggregated_df.df.count() == 0
 
 
 def test_production_aggregator_aggregates_observations_in_same_quarter_hour(
-    enriched_time_series_factory: Callable[..., DataFrame],
+    enriched_time_series_factory: Callable[..., QuarterlyMeteringPointTimeSeries],
 ) -> None:
     """
     Aggregator should calculate the correct sum of a "grid area" grouping within the
@@ -168,7 +182,9 @@ def test_production_aggregator_aggregates_observations_in_same_quarter_hour(
     row1_df = enriched_time_series_factory(quantity=Decimal(1))
     row2_df = enriched_time_series_factory(quantity=Decimal(2))
 
-    enriched_time_series = row1_df.union(row2_df)
+    enriched_time_series = QuarterlyMeteringPointTimeSeries(
+        row1_df.df.union(row2_df.df)
+    )
     aggregated_df = aggregate_production_ga_brp_es(enriched_time_series)
 
     # Create the start/end datetimes representing the start and end of the 1 hr time period
@@ -176,7 +192,7 @@ def test_production_aggregator_aggregates_observations_in_same_quarter_hour(
     start_time = datetime(2020, 1, 1, 0, 0, 0)
     end_time = datetime(2020, 1, 1, 0, 15, 0)
 
-    assert aggregated_df.count() == 1
+    assert aggregated_df.df.count() == 1
     check_aggregation_row(
         aggregated_df,
         0,
@@ -190,7 +206,7 @@ def test_production_aggregator_aggregates_observations_in_same_quarter_hour(
 
 
 def test_production_aggregator_returns_distinct_rows_for_observations_in_different_hours(
-    enriched_time_series_factory: Callable[..., DataFrame],
+    enriched_time_series_factory: Callable[..., QuarterlyMeteringPointTimeSeries],
 ) -> None:
     """
     Aggregator can calculate the correct sum of a "grid area"-"responsible"-"supplier" grouping
@@ -198,10 +214,10 @@ def test_production_aggregator_returns_distinct_rows_for_observations_in_differe
     """
     row1_df = enriched_time_series_factory()
     row2_df = enriched_time_series_factory(obs_time_string="2020-01-01T01:00:00.000Z")
-    time_series = row1_df.union(row2_df)
+    time_series = QuarterlyMeteringPointTimeSeries(row1_df.df.union(row2_df.df))
     aggregated_df = aggregate_production_ga_brp_es(time_series)
 
-    assert aggregated_df.count() == 2
+    assert aggregated_df.df.count() == 2
 
     # Create the start/end datetimes representing the start and end of the quarter hour time period for each row's ObservationTime
     # These should be datetime naive in order to compare to the Spark Dataframe
@@ -232,44 +248,28 @@ def test_production_aggregator_returns_distinct_rows_for_observations_in_differe
     )
 
 
-def test_production_aggregator_returns_correct_schema(
-    enriched_time_series_factory: Callable[..., DataFrame],
-) -> None:
-    """
-    Aggregator should return the correct schema, including the proper fields for the aggregated quantity values
-    and time window (from the quarter-hour resolution specified in the aggregator).
-    """
-    time_series = enriched_time_series_factory()
-    aggregated_df = aggregate_production_ga_brp_es(time_series)
-    assert_schema(
-        aggregated_df.schema,
-        aggregation_result_schema,
-        ignore_nullability=True,
-        ignore_decimal_precision=True,
-        ignore_decimal_scale=True,
-    )
-
-
-def test_production_test_filter_by_domain_is_pressent(
-    enriched_time_series_factory: Callable[..., DataFrame],
+def test_production_test_filter_by_domain_is_present(
+    enriched_time_series_factory: Callable[..., QuarterlyMeteringPointTimeSeries],
 ) -> None:
     df = enriched_time_series_factory()
     aggregated_df = _aggregate_per_ga_and_brp_and_es(
         df, MeteringPointType.PRODUCTION, None
     )
-    assert aggregated_df.count() == 1
+    assert aggregated_df.df.count() == 1
 
 
 # Test sums with only quarterly can be calculated
 def test__quarterly_sums_correctly(
-    enriched_time_series_quarterly_same_time_factory: Callable[..., DataFrame],
+    enriched_time_series_quarterly_same_time_factory: Callable[
+        ..., QuarterlyMeteringPointTimeSeries
+    ],
 ) -> None:
     """Test that checks quantity is summed correctly with only quarterly times"""
     df = enriched_time_series_quarterly_same_time_factory(
         first_quantity=Decimal("1"), second_quantity=Decimal("2")
     )
     result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
-    assert result_df.first().sum_quantity == 3
+    assert result_df.df.first().sum_quantity == 3
 
 
 # TODO: Turn into test of get_enriched_time_series function
@@ -295,7 +295,7 @@ def test__quarterly_sums_correctly(
 #     ],
 # )
 # def test__hourly_sums_are_rounded_correctly(
-#     enriched_time_series_factory: Callable[..., DataFrame],
+#     enriched_time_series_factory: Callable[..., QuarterlyMeteringPointTimeSeries],
 #     quantity: Decimal,
 #     expected_point_quantity: Decimal,
 # ) -> None:
@@ -369,28 +369,32 @@ def test__quarterly_sums_correctly(
 
 
 def test__that_grid_area_code_in_input_is_in_output(
-    enriched_time_series_quarterly_same_time_factory: Callable[..., DataFrame],
+    enriched_time_series_quarterly_same_time_factory: Callable[
+        ..., QuarterlyMeteringPointTimeSeries
+    ],
 ) -> None:
     """Test that the grid area codes in input are in result"""
     df = enriched_time_series_quarterly_same_time_factory()
     result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
-    actual_row = result_df.first()
+    actual_row = result_df.df.first()
     assert getattr(actual_row, Colname.grid_area) == str(grid_area_code_805)
 
 
 def test__each_grid_area_has_a_sum(
-    enriched_time_series_quarterly_same_time_factory: Callable[..., DataFrame],
+    enriched_time_series_quarterly_same_time_factory: Callable[
+        ..., QuarterlyMeteringPointTimeSeries
+    ],
 ) -> None:
     """Test that multiple GridAreas receive each their calculation for a period"""
     df = enriched_time_series_quarterly_same_time_factory(second_grid_area_code="806")
     result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
-    assert result_df.where(F.col(Colname.grid_area) == "805").count() == 1
-    assert result_df.where(F.col(Colname.grid_area) == "806").count() == 1
+    assert result_df.df.where(F.col(Colname.grid_area) == "805").count() == 1
+    assert result_df.df.where(F.col(Colname.grid_area) == "806").count() == 1
 
 
 # TODO: Turn into test of get_enriched_time_series function
 # def test__final_sum_of_different_magnitudes_should_not_lose_precision(
-#     enriched_time_series_factory: Callable[..., DataFrame],
+#     enriched_time_series_factory: Callable[..., QuarterlyMeteringPointTimeSeries],
 # ) -> None:
 #     """Test that values with different magnitudes do not lose precision when accumulated"""
 #     df = (
@@ -449,7 +453,7 @@ def test__each_grid_area_has_a_sum(
 #     ],
 # )
 # def test__quality_is_lowest_common_denominator_among_measured_estimated_and_missing(
-#     enriched_time_series_factory: Callable[..., DataFrame],
+#     enriched_time_series_factory: Callable[..., QuarterlyMeteringPointTimeSeries],
 #     quality_1: str,
 #     quality_2: str,
 #     quality_3: str,
@@ -466,19 +470,9 @@ def test__each_grid_area_has_a_sum(
 
 # TODO BJM
 # def test__when_time_series_point_is_missing__quality_has_value_incomplete(
-#     enriched_time_series_factory: Callable[..., DataFrame],
+#     enriched_time_series_factory: Callable[..., QuarterlyMeteringPointTimeSeries],
 # ) -> None:
 #     df = enriched_time_series_factory().withColumn(Colname.quality, F.lit(None))
 #
 #     result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
 #     assert result_df.first().quality == QuantityQuality.MISSING.value
-
-
-def test__when_time_series_point_is_missing__quantity_is_0(
-    enriched_time_series_factory: Callable[..., DataFrame],
-) -> None:
-    df = enriched_time_series_factory().withColumn(
-        Colname.quantity, F.lit(None).cast(DecimalType())
-    )
-    result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
-    assert result_df.first().sum_quantity == Decimal("0.000")

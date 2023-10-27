@@ -14,7 +14,6 @@
 
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Internal;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Microsoft.Extensions.Logging;
@@ -24,23 +23,23 @@ namespace Energinet.DataHub.Wholesale.Events.Application.Communication;
 
 public class IntegrationEventProvider : IIntegrationEventProvider
 {
-    private readonly ICalculationResultIntegrationEventFactory _calculationResultIntegrationEventFactory;
-    private readonly IEnergyResultQueries _energyResultQueries;
+    private readonly IEnergyResultEventProvider _energyResultEventProvider;
+    private readonly IWholesaleResultEventProvider _wholesaleResultEventProvider;
     private readonly ICompletedBatchRepository _completedBatchRepository;
     private readonly IClock _clock;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<IntegrationEventProvider> _logger;
 
     public IntegrationEventProvider(
-        ICalculationResultIntegrationEventFactory integrationEventFactory,
-        IEnergyResultQueries energyResultQueries,
+        IEnergyResultEventProvider energyResultEventProvider,
+        IWholesaleResultEventProvider wholesaleResultEventProvider,
         ICompletedBatchRepository completedBatchRepository,
         IClock clock,
         IUnitOfWork unitOfWork,
         ILogger<IntegrationEventProvider> logger)
     {
-        _calculationResultIntegrationEventFactory = integrationEventFactory;
-        _energyResultQueries = energyResultQueries;
+        _energyResultEventProvider = energyResultEventProvider;
+        _wholesaleResultEventProvider = wholesaleResultEventProvider;
         _completedBatchRepository = completedBatchRepository;
         _clock = clock;
         _unitOfWork = unitOfWork;
@@ -51,26 +50,39 @@ public class IntegrationEventProvider : IIntegrationEventProvider
     {
         do
         {
-            var batch = await _completedBatchRepository.GetNextUnpublishedOrNullAsync().ConfigureAwait(false);
-            if (batch == null)
+            var unpublishedBatch = await _completedBatchRepository.GetNextUnpublishedOrNullAsync().ConfigureAwait(false);
+            if (unpublishedBatch == null)
             {
                 break;
             }
 
-            var resultCount = 0;
-            await foreach (var energyResult in _energyResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
+            // Publish integration events for energy results
+            var energyResultCount = 0;
+            await foreach (var integrationEvent in _energyResultEventProvider.GetAsync(unpublishedBatch).ConfigureAwait(false))
             {
-                resultCount++;
-                yield return _calculationResultIntegrationEventFactory.CreateCalculationResultCompleted(energyResult); // Deprecated
-                yield return _calculationResultIntegrationEventFactory.CreateEnergyResultProducedV1(energyResult);
-                // TODO AJW Do not Uncomment the next version of EnergyResultProduced (V2) yet. Needs more work.
-                // yield return _calculationResultIntegrationEventFactory.CreateEnergyResultProducedV2(energyResult);
+                energyResultCount++;
+                yield return integrationEvent;
             }
 
-            batch.PublishedTime = _clock.GetCurrentInstant();
+            // Publish integration events for wholesale results
+            var wholesaleResultCount = 0;
+            if (_wholesaleResultEventProvider.CanContainWholesaleResults(unpublishedBatch))
+            {
+                await foreach (var integrationEvent in _wholesaleResultEventProvider.GetAsync(unpublishedBatch).ConfigureAwait(false))
+                {
+                    wholesaleResultCount++;
+                    yield return integrationEvent;
+                }
+            }
+
+            unpublishedBatch.PublishedTime = _clock.GetCurrentInstant();
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
-            _logger.LogInformation("Published {ResultCount} results for completed batch {BatchId}", resultCount, batch.Id);
+            _logger.LogInformation("Handled '{EnergyResultCount}' energy results for completed batch {BatchId}.", energyResultCount, unpublishedBatch.Id);
+            if (_wholesaleResultEventProvider.CanContainWholesaleResults(unpublishedBatch))
+            {
+                _logger.LogInformation("Handled '{WholesaleResultCount}' wholesale results for completed batch {BatchId}.", wholesaleResultCount, unpublishedBatch.Id);
+            }
         }
         while (true);
     }

@@ -65,8 +65,8 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
             if (result is not null)
             {
                 message = AggregatedTimeSeriesRequestAcceptedMessageFactory.Create(
-                result,
-                referenceId);
+                    result,
+                    referenceId);
             }
             else
             {
@@ -91,7 +91,8 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
             aggregatedTimeSeriesRequestMessage.Period.End,
             aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea.GridAreaCode,
             aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea.EnergySupplierId,
-            aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea.BalanceResponsibleId);
+            aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea.BalanceResponsibleId,
+            aggregatedTimeSeriesRequestMessage.ProcessType);
 
         var calculationResult = await _requestCalculationResultQueries.GetAsync(query)
             .ConfigureAwait(false);

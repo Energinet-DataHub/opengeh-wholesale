@@ -14,7 +14,7 @@
 
 from datetime import datetime
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, lit, first, when
+from pyspark.sql.functions import col, lit, first
 import pyspark.sql.functions as f
 from pyspark.sql.window import Window
 
@@ -116,4 +116,6 @@ class WholesaleCalculationResultWriter:
             Colname.grid_area,
             Colname.charge_owner,
             Colname.energy_supplier_id,
+            Colname.metering_point_type,
+            Colname.settlement_method,
         ]

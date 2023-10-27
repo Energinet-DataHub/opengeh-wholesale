@@ -21,7 +21,7 @@ using Energinet.DataHub.Wholesale.Events.Application.Options;
 using Energinet.DataHub.Wholesale.Events.Application.Triggers;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Energinet.DataHub.Wholesale.Events.Application.Workers;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProducedV2.Factories;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedBatches;
@@ -37,13 +37,7 @@ public static class EventsRegistration
         this IServiceCollection serviceCollection,
         ServiceBusOptions serviceBusOptions)
     {
-        serviceCollection.AddScoped<ICompletedBatchRepository, CompletedBatchRepository>();
-        serviceCollection.AddScoped<ICompletedBatchFactory, CompletedBatchFactory>();
-        serviceCollection.AddScoped<IRegisterCompletedBatchesHandler, RegisterCompletedBatchesHandler>();
-
-        serviceCollection.AddScoped<ICalculationResultIntegrationEventFactory, CalculationResultIntegrationEventFactory>();
-
-        serviceCollection.AddApplications();
+        serviceCollection.AddApplication();
         serviceCollection.AddInfrastructure();
 
         serviceCollection.AddCommunication<IntegrationEventProvider>(_ => new CommunicationSettings
@@ -56,29 +50,38 @@ public static class EventsRegistration
         RegisterHostedServices(serviceCollection);
     }
 
-    private static void AddApplications(this IServiceCollection services)
+    private static void AddApplication(this IServiceCollection serviceCollection)
     {
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
-        services
-            .AddScoped<ICalculationResultCompletedFactory,
-                CalculationResultCompletedFactory>();
-        services.AddScoped<IEnergyResultProducedV1Factory,
-            EnergyResultProducedV1Factory>();
-        services.AddScoped<IEnergyResultProducedV2Factory,
-            EnergyResultProducedV2Factory>();
+        serviceCollection
+            .AddScoped<IUnitOfWork, UnitOfWork>();
+
+        serviceCollection
+            .AddScoped<ICompletedBatchRepository, CompletedBatchRepository>()
+            .AddScoped<ICompletedBatchFactory, CompletedBatchFactory>()
+            .AddScoped<IRegisterCompletedBatchesHandler, RegisterCompletedBatchesHandler>();
+
+        serviceCollection
+            .AddScoped<IEnergyResultEventProvider, EnergyResultEventProvider>()
+            .AddScoped<IWholesaleResultEventProvider, WholesaleResultEventProvider>();
     }
 
-    private static void AddInfrastructure(
-        this IServiceCollection serviceCollection)
+    private static void AddInfrastructure(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddScoped<IEventsDatabaseContext, EventsDatabaseContext>();
-        serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
+        serviceCollection
+            .AddScoped<ICalculationResultCompletedFactory, CalculationResultCompletedFactory>()
+            .AddScoped<IEnergyResultProducedV1Factory, EnergyResultProducedV1Factory>()
+            .AddScoped<IAmountPerChargeResultProducedV1Factory, AmountPerChargeResultProducedV1Factory>()
+            .AddScoped<IMonthlyAmountPerChargeResultProducedV1Factory, MonthlyAmountPerChargeResultProducedV1Factory>()
+            .AddScoped<IEventsDatabaseContext, EventsDatabaseContext>()
+            .AddSingleton<IJsonSerializer, JsonSerializer>();
     }
 
     private static void RegisterHostedServices(IServiceCollection serviceCollection)
     {
-        serviceCollection.AddHostedService<AggregatedTimeSeriesServiceBusWorker>();
-        serviceCollection.AddHostedService<RegisterCompletedBatchesTrigger>();
+        serviceCollection
+            .AddHostedService<AggregatedTimeSeriesServiceBusWorker>()
+            .AddHostedService<RegisterCompletedBatchesTrigger>();
+
         serviceCollection
             .AddHealthChecks()
             .AddRepeatingTriggerHealthCheck<RegisterCompletedBatchesTrigger>(TimeSpan.FromMinutes(1));

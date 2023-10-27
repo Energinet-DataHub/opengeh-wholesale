@@ -19,7 +19,7 @@ using FluentAssertions;
 using NodaTime.Extensions;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Events.UnitTests.Application.UseCases.Factories;
+namespace Energinet.DataHub.Wholesale.Events.UnitTests.Application.CompletedBatches;
 
 public class CompletedBatchFactoryTests
 {

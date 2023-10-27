@@ -13,15 +13,18 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Messaging.Communication.Internal;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 
-namespace Energinet.DataHub.Wholesale.Events.Application.Communication;
-
-public interface ICalculationResultIntegrationEventFactory
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders
 {
-    IntegrationEvent CreateCalculationResultCompleted(EnergyResult energyResult);
-
-    IntegrationEvent CreateEnergyResultProducedV1(EnergyResult energyResult);
-
-    IntegrationEvent CreateEnergyResultProducedV2(EnergyResult energyResult);
+    public abstract class ResultEventProvider
+    {
+        protected static IntegrationEvent CreateIntegrationEvent(IEventMessage eventMessage)
+        {
+            return new IntegrationEvent(
+                Guid.NewGuid(),
+                eventMessage.EventName,
+                eventMessage.EventMinorVersion,
+                eventMessage);
+        }
+    }
 }

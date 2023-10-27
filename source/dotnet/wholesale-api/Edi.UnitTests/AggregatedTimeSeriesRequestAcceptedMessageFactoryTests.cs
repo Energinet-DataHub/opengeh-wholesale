@@ -33,12 +33,12 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
     private readonly string _energySupplierId = "es_id";
     private readonly string _balanceResponsibleId = "br_id";
     private readonly string _fromGridArea = "123";
-    private readonly Instant _periodStart = SystemClock.Instance.GetCurrentInstant();
-    private readonly Instant _periodEnd = SystemClock.Instance.GetCurrentInstant();
+    private readonly Instant _periodStart = Instant.FromUtc(2020, 12, 31, 23, 0);
+    private readonly Instant _periodEnd = Instant.FromUtc(2021, 1, 1, 23, 0);
     private readonly TimeSeriesType _timeSeriesType = TimeSeriesType.Production;
 
     [Fact]
-    public void Create_WithCalculationResultFromTotalProductionPerGridArea_CreatesAcceptedEdiMessage()
+    public void Create_WithCalculationResultFromTotalProductionPerGridArea_CreatesCorrectAcceptedEdiMessage()
     {
         // Arrange
         var expectedAcceptedSubject = nameof(AggregatedTimeSeriesRequestAccepted);
@@ -57,8 +57,18 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
         var responseBody = AggregatedTimeSeriesRequestAccepted.Parser.ParseFrom(response.Body);
         responseBody.GridArea.Should().Be(_gridArea);
         responseBody.TimeSeriesType.Should().Be(Energinet.DataHub.Edi.Responses.TimeSeriesType.Production);
-        responseBody.Period.StartOfPeriod.Should().Be(new Timestamp() { Seconds = _periodStart.ToUnixTimeSeconds() });
-        responseBody.Period.EndOfPeriod.Should().Be(new Timestamp() { Seconds = _periodEnd.ToUnixTimeSeconds() });
+
+        var timeSeriesOrdered = responseBody.TimeSeriesPoints.OrderBy(ts => ts.Time).ToList();
+        var earliestTimestamp = timeSeriesOrdered.First();
+        var latestTimestamp = timeSeriesOrdered.Last();
+
+        var periodStartTimestamp = new Timestamp() { Seconds = _periodStart.ToUnixTimeSeconds() };
+        var periodEndTimestamp = new Timestamp() { Seconds = _periodEnd.ToUnixTimeSeconds() };
+        earliestTimestamp.Time.Should().BeGreaterThanOrEqualTo(periodStartTimestamp)
+            .And.BeLessThan(periodEndTimestamp);
+        latestTimestamp.Time.Should().BeLessThan(periodEndTimestamp)
+            .And.BeGreaterOrEqualTo(earliestTimestamp.Time);
+
         responseBody.TimeSeriesPoints.Count.Should().Be(energyResult.TimeSeriesPoints.Length);
     }
 

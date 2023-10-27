@@ -28,7 +28,6 @@ from package.calculation.preparation.transformations.hour_to_quarter import (
 )
 from package.calculation.energy.schemas import (
     basis_data_time_series_points_schema,
-    time_series_quarter_points_schema,
 )
 
 
@@ -44,6 +43,7 @@ def basis_data_time_series_points_row(
     quality: QuantityQuality = QuantityQuality.ESTIMATED,
     energy_supplier_id: str = "the_energy_supplier_id",
     balance_responsible_id: str = "the_balance_responsible_id",
+    settlement_method: str = "the_settlement_method",
 ) -> Row:
     row = {
         Colname.grid_area: grid_area,
@@ -57,6 +57,7 @@ def basis_data_time_series_points_row(
         Colname.quality: quality.value,
         Colname.energy_supplier_id: energy_supplier_id,
         Colname.balance_responsible_id: balance_responsible_id,
+        Colname.settlement_method: settlement_method,
     }
 
     return Row(**row)
@@ -88,21 +89,5 @@ def test__transform_hour_to_quarter__when_valid_input__split_basis_data_time_ser
     actual = transform_hour_to_quarter(basis_data_time_series_points)
 
     # Assert
-    assert actual.count() == 4
-    assert actual.collect()[0][Colname.quantity] == Decimal("1.111111")
-
-
-def test__transform_hour_to_quarter__when_valid_input__returns_expected_schema(
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    rows = [basis_data_time_series_points_row()]
-    basis_data_time_series_points = spark.createDataFrame(
-        rows, basis_data_time_series_points_schema
-    )
-
-    # Act
-    actual = transform_hour_to_quarter(basis_data_time_series_points)
-
-    # Assert
-    assert actual.schema == time_series_quarter_points_schema
+    assert actual.df.count() == 4
+    assert actual.df.collect()[0][Colname.quantity] == Decimal("1.111111")

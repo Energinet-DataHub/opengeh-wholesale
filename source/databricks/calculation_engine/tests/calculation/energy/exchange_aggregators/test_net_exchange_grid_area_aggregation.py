@@ -12,21 +12,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest
-from decimal import Decimal
-import pandas as pd
 from datetime import datetime, timedelta
+from decimal import Decimal
 
-from package.common import assert_schema
-from package.constants import Colname
+import pandas as pd
+import pytest
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import window, col, lit
+
+from package.calculation.energy.energy_results import (
+    EnergyResults,
+)
 from package.calculation.energy.exchange_aggregators import (
     aggregate_net_exchange_per_ga,
 )
-from package.codelists import MeteringPointType, QuantityQuality
-from package.calculation.energy.schemas import aggregation_result_schema
-from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import window, col
-
+from package.calculation.preparation.quarterly_metering_point_time_series import (
+    QuarterlyMeteringPointTimeSeries,
+)
+from package.codelists import (
+    MeteringPointType,
+    QuantityQuality,
+    MeteringPointResolution,
+    SettlementMethod,
+)
+from package.constants import Colname
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_obs_time = datetime.strptime(
@@ -36,18 +45,23 @@ numberOfQuarters = 5  # Not too many as it has a massive impact on test performa
 
 
 @pytest.fixture(scope="module")
-def enriched_time_series_data_frame(spark: SparkSession) -> DataFrame:
-    "Sample Time Series DataFrame"
+def enriched_time_series_data_frame(
+    spark: SparkSession,
+) -> QuarterlyMeteringPointTimeSeries:
+    """Sample Time Series DataFrame"""
 
     # Create empty pandas df
     pandas_df = pd.DataFrame(
         {
+            Colname.metering_point_id: [],
             Colname.metering_point_type: [],
+            Colname.grid_area: [],
             Colname.to_grid_area: [],
             Colname.from_grid_area: [],
             Colname.quantity: [],
             Colname.observation_time: [],
             Colname.quality: [],
+            Colname.resolution: [],
         }
     )
 
@@ -165,9 +179,16 @@ def enriched_time_series_data_frame(spark: SparkSession) -> DataFrame:
             default_obs_time + timedelta(minutes=quarter_number * 15),
         )
 
-    return spark.createDataFrame(pandas_df).withColumn(
-        Colname.time_window, window(col(Colname.observation_time), "15 minutes")
+    df = (
+        spark.createDataFrame(pandas_df)
+        .withColumn(Colname.quality, lit(QuantityQuality.ESTIMATED.value))
+        .withColumn(
+            Colname.time_window, window(col(Colname.observation_time), "15 minutes")
+        )
+        .withColumn(Colname.quarter_time, col(Colname.observation_time))
+        .withColumn(Colname.settlement_method, lit(SettlementMethod.NON_PROFILED.value))
     )
+    return QuarterlyMeteringPointTimeSeries(df)
 
 
 def add_row_of_data(
@@ -182,12 +203,15 @@ def add_row_of_data(
     Helper method to create a new row in the dataframe to improve readability and maintainability
     """
     new_row = {
+        Colname.metering_point_id: "metering-point-id",
         Colname.metering_point_type: point_type,
+        Colname.grid_area: "grid-area",
         Colname.to_grid_area: to_grid_area,
         Colname.from_grid_area: from_grid_area,
         Colname.quantity: quantity,
         Colname.observation_time: timestamp,
         Colname.quality: QuantityQuality.ESTIMATED.value,
+        Colname.resolution: MeteringPointResolution.QUARTER.value,
     }
     return pandas_df.append(new_row, ignore_index=True)
 
@@ -200,22 +224,11 @@ def aggregated_data_frame(enriched_time_series_data_frame):
 
 def test_test_data_has_correct_row_count(enriched_time_series_data_frame):
     """Check sample data row count"""
-    assert enriched_time_series_data_frame.count() == (13 * numberOfQuarters)
-
-
-def test_exchange_aggregator_returns_correct_schema(aggregated_data_frame):
-    """Check aggregation schema"""
-    assert_schema(
-        aggregated_data_frame.schema,
-        aggregation_result_schema,
-        ignore_nullability=True,
-        ignore_decimal_precision=True,
-        ignore_decimal_scale=True,
-    )
+    assert enriched_time_series_data_frame.df.count() == (13 * numberOfQuarters)
 
 
 def test_exchange_has_correct_sign(aggregated_data_frame):
-    "Check that the sign of the net exchange is positive for the to-grid-area and negative for the from-grid-area"
+    """Check that the sign of the net exchange is positive for the to-grid-area and negative for the from-grid-area"""
     check_aggregation_row(
         aggregated_data_frame,
         "X",
@@ -279,14 +292,14 @@ def test_exchange_aggregator_returns_correct_aggregations(
 
 
 def check_aggregation_row(
-    df: DataFrame, grid_area: str, sum: Decimal, time: datetime
+    df: EnergyResults, grid_area: str, sum_quantity: Decimal, time: datetime
 ) -> None:
     """Helper function that checks column values for the given row"""
-    gridfiltered = df.filter(df[Colname.grid_area] == grid_area).select(
+    gridfiltered = df.df.where(df.df[Colname.grid_area] == grid_area).select(
         col(Colname.grid_area),
         col(Colname.sum_quantity),
         col(f"{Colname.time_window_start}").alias("start"),
         col(f"{Colname.time_window_end}").alias("end"),
     )
     res = gridfiltered.filter(gridfiltered["start"] == time).toPandas()
-    assert res[Colname.sum_quantity][0] == sum
+    assert res[Colname.sum_quantity][0] == sum_quantity
