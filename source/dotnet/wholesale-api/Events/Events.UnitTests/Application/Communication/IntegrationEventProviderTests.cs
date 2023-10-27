@@ -18,7 +18,6 @@ using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Internal;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Core.TestCommon.AutoFixture.Extensions;
 using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
@@ -136,8 +135,9 @@ public class IntegrationEventProviderTests
     {
         // Arrange
         var fixture = new Fixture();
-        var completedBatch = fixture.ForConstructorOn<CompletedBatch>()
-            .SetParameter("processType").To(ProcessType.WholesaleFixing)
+        var completedBatch = fixture
+            .Build<CompletedBatch>()
+            .With(p => p.ProcessType, ProcessType.WholesaleFixing)
             .Create();
 
         completedBatchRepositoryMock
@@ -177,11 +177,13 @@ public class IntegrationEventProviderTests
             eventsFromWholesaleResultsInWholesaleFixingBatch.Length;
 
         var fixture = new Fixture();
-        var aggregationBatch = fixture.ForConstructorOn<CompletedBatch>()
-            .SetParameter("processType").To(ProcessType.Aggregation)
+        var aggregationBatch = fixture
+            .Build<CompletedBatch>()
+            .With(p => p.ProcessType, ProcessType.Aggregation)
             .Create();
-        var wholesaleFixingBatch = fixture.ForConstructorOn<CompletedBatch>()
-            .SetParameter("processType").To(ProcessType.WholesaleFixing)
+        var wholesaleFixingBatch = fixture
+            .Build<CompletedBatch>()
+            .With(p => p.ProcessType, ProcessType.WholesaleFixing)
             .Create();
 
         completedBatchRepositoryMock

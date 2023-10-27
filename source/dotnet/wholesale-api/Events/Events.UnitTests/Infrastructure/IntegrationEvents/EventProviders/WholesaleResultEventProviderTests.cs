@@ -14,9 +14,7 @@
 
 using AutoFixture;
 using AutoFixture.Xunit2;
-using Energinet.DataHub.Core.Messaging.Communication.Internal;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Core.TestCommon.AutoFixture.Extensions;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Common.Models;
@@ -46,8 +44,9 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
             var expectedEventsCount = wholesaleResults.Length * expectedEventsPerResult;
 
             var fixture = new Fixture();
-            var wholesaleFixingBatch = fixture.ForConstructorOn<CompletedBatch>()
-                .SetParameter("processType").To(ProcessType.WholesaleFixing)
+            var wholesaleFixingBatch = fixture
+                .Build<CompletedBatch>()
+                .With(p => p.ProcessType, ProcessType.WholesaleFixing)
                 .Create();
 
             wholesaleResultQueriesMock
@@ -66,6 +65,38 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
 
             // Assert
             actualIntegrationEvents.Should().HaveCount(expectedEventsCount);
+        }
+
+        [Theory]
+        [InlineData(ProcessType.Aggregation, false)]
+        [InlineData(ProcessType.BalanceFixing, false)]
+        [InlineData(ProcessType.WholesaleFixing, true)]
+        [InlineData(ProcessType.FirstCorrectionSettlement, true)]
+        [InlineData(ProcessType.SecondCorrectionSettlement, true)]
+        [InlineData(ProcessType.ThirdCorrectionSettlement, true)]
+        public void CanContainWholesaleResults_WhenProcessTypeCanContainWholesaleResults_ReturnsTrue(
+            ProcessType processType,
+            bool canContainWholesaleResults)
+        {
+            // Arrange
+            var fixture = new Fixture();
+            var batch = fixture
+                .Build<CompletedBatch>()
+                .With(p => p.ProcessType, processType)
+                .Create();
+
+            var wholesaleResultQueriesStub = Mock.Of<IWholesaleResultQueries>();
+
+            var sut = new WholesaleResultEventProvider(
+                wholesaleResultQueriesStub,
+                new AmountPerChargeResultProducedV1Factory(),
+                new MonthlyAmountPerChargeResultProducedV1Factory());
+
+            // Act
+            var actualResult = sut.CanContainWholesaleResults(batch);
+
+            // Assert
+            actualResult.Should().Be(canContainWholesaleResults);
         }
     }
 }
