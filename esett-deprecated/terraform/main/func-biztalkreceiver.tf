@@ -12,7 +12,7 @@ module "func_biztalkreceiver" {
   app_service_plan_id                       = data.azurerm_key_vault_secret.plan_shared_id.value
   application_insights_instrumentation_key  = data.azurerm_key_vault_secret.appi_shared_instrumentation_key.value
   ip_restriction_allow_ip_range             = var.hosted_deployagent_public_ip_range
-  dotnet_framework_version                  = "v7.0"
+  dotnet_framework_version                  = "v6.0"
   app_settings = {
     BLOB_FILES_ERROR_CONTAINER_NAME         = local.blob_files_error_container.name
     BLOB_FILES_CONFIRMED_CONTAINER_NAME     = local.blob_files_confirmed_container.name
