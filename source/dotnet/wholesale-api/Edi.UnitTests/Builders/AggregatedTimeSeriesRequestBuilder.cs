@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Edi.Requests;
 using Energinet.DataHub.Wholesale.EDI.Models;
+using Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 using NodaTime;
 using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 
@@ -31,6 +32,8 @@ public class AggregatedTimeSeriesRequestBuilder
     private string _requestedByActorId;
     private string? _settlementMethod;
     private string? _balanceResponsibleId;
+    private string? _settlementSeriesVersion;
+    private string _businessReason;
 
     private AggregatedTimeSeriesRequestBuilder()
     {
@@ -38,7 +41,9 @@ public class AggregatedTimeSeriesRequestBuilder
         _start = Instant.FromUtc(now.InUtc().Year, 1, 1, 23, 0, 0).ToString();
         _end = Instant.FromUtc(now.InUtc().Year, 1, 2, 23, 0, 0).ToString();
         _requestedByActorRoleId = ActorRoleCode.EnergySupplier;
-        _requestedByActorId = "qwertyuiopasd";
+        _requestedByActorId = EnergySupplierValidatorTest.ValidGlnNumber;
+        _energySupplierId = _requestedByActorId;
+        _businessReason = BusinessReason.WholesaleFixing;
     }
 
     public static AggregatedTimeSeriesRequestBuilder AggregatedTimeSeriesRequest()
@@ -59,6 +64,7 @@ public class AggregatedTimeSeriesRequestBuilder
             MeteringPointType = _meteringPointType,
             RequestedByActorRole = _requestedByActorRoleId,
             RequestedByActorId = _requestedByActorId,
+            BusinessReason = _businessReason,
         };
 
         if (_energySupplierId != null)
@@ -69,6 +75,9 @@ public class AggregatedTimeSeriesRequestBuilder
 
         if (_settlementMethod != null)
             request.SettlementMethod = _settlementMethod;
+
+        if (_settlementSeriesVersion != null)
+            request.SettlementSeriesVersion = _settlementSeriesVersion;
 
         return request;
     }
@@ -119,6 +128,18 @@ public class AggregatedTimeSeriesRequestBuilder
     public AggregatedTimeSeriesRequestBuilder WithBalanceResponsibleId(string? balanceResponsibleId)
     {
         _balanceResponsibleId = balanceResponsibleId;
+        return this;
+    }
+
+    public AggregatedTimeSeriesRequestBuilder WithSettlementSeriesVersion(string? settlementSeriesVersion)
+    {
+        _settlementSeriesVersion = settlementSeriesVersion;
+        return this;
+    }
+
+    public AggregatedTimeSeriesRequestBuilder WithBusinessReason(string businessReason)
+    {
+        _businessReason = businessReason;
         return this;
     }
 }
