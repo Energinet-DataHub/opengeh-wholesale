@@ -43,6 +43,15 @@ jobs:
       infrastructure_path: ./market-participant/terraform
     secrets: inherit
 
+  dh2_bridge_ci:
+    needs: changes
+    if: ${{ needs.changes.outputs.dh2_bridge_ci == 'true' }}
+    uses: ./.github/workflows/infrastructure-build-prerelease.yml
+    with:
+      release_name_prefix: dh2_bridge_infrastructure
+      infrastructure_path: ./dh2-bridge/terraform
+    secrets: inherit
+
   esett_exchange_ci:
     needs: changes
     if: ${{ needs.changes.outputs.esett_exchange_ci == 'true' }}
@@ -151,6 +160,7 @@ jobs:
         ci_base,
         edi_ci,
         market_participant_ci,
+        dh2_bridge_ci,
         esett_exchange_ci,
         migrations_ci,
         shared_resources_ci,

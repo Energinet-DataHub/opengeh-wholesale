@@ -12,6 +12,8 @@ on:
         value: ${{ jobs.changes.outputs.edi_ci }}
       market_participant_ci:
         value: ${{ jobs.changes.outputs.market_participant_ci }}
+      dh2_bridge_ci:
+        value: ${{ jobs.changes.outputs.dh2_bridge_ci }}
       esett_exchange_ci:
         value: ${{ jobs.changes.outputs.esett_exchange_ci }}
       migrations_ci:
@@ -40,6 +42,7 @@ jobs:
     outputs:
       edi_ci: ${{ steps.filter.outputs.edi_ci }}
       market_participant_ci: ${{ steps.filter.outputs.market_participant_ci }}
+      dh2_bridge_ci: ${{ steps.filter.outputs.dh2_bridge_ci }}
       esett_exchange_ci: ${{ steps.filter.outputs.esett_exchange_ci }}
       migrations_ci: ${{ steps.filter.outputs.migrations_ci }}
       shared_resources_ci: ${{ steps.filter.outputs.shared_resources_ci }}
@@ -69,6 +72,12 @@ jobs:
             market_participant_ci:
               - market-participant/**
               - .github/workflows/market-participant-*.yml
+              - .github/workflows/infrastructure-build-prerelease.yml
+              - .github/workflows/infrastructure-validate.yml
+              - .github/actions/terraform-validate/*
+            dh2_bridge_ci:
+              - dh2-bridge/**
+              - .github/workflows/dh2-bridge-*.yml
               - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*
