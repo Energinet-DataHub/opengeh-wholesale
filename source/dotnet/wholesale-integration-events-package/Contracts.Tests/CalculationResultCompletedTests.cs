@@ -53,7 +53,7 @@ public class CalculationResultCompletedTests
     public void Fail_If_MinorEventVersion_ShouldHaveBeenBumped()
     {
         // Arrange
-        var actualVersion = CalculationResultCompleted.EventMinorVersion;
+        const int actualVersion = CalculationResultCompleted.EventMinorVersion;
         var actualContent = File.ReadAllText(@"calculation_result_completed.proto");
 
         // Act: There is no assert but the test will fail if the minor event version has not been bumped while the contract has changed.
