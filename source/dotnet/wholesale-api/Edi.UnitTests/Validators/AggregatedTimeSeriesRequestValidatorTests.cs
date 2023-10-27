@@ -45,11 +45,6 @@ public class AggregatedTimeSeriesRequestValidatorTests
         // Arrange
         var request = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithStartDate(Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString())
-            .WithEndDate(Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString())
-            .WithRequestedByActorId(EnergySupplierValidatorTest.ValidGlnNumber)
-            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
-            .WithEnergySupplierId(EnergySupplierValidatorTest.ValidGlnNumber)
             .Build();
 
         // Act
@@ -67,16 +62,14 @@ public class AggregatedTimeSeriesRequestValidatorTests
             .AggregatedTimeSeriesRequest()
             .WithStartDate(Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString())
             .WithEndDate(Instant.FromUtc(2022, 3, 2, 23, 0, 0).ToString())
-            .WithRequestedByActorId(EnergySupplierValidatorTest.ValidGlnNumber)
-            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
-            .WithEnergySupplierId(EnergySupplierValidatorTest.ValidGlnNumber)
             .Build();
 
         // Act
         var validationErrors = _sut.Validate(request);
 
         // Assert
-        validationErrors.Should().ContainSingle();
+        validationErrors.Should().ContainSingle()
+            .Which.ErrorCode.Should().Be("E17");
     }
 
     [Fact]
@@ -85,19 +78,15 @@ public class AggregatedTimeSeriesRequestValidatorTests
         // Arrange
         var request = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithStartDate(Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString())
-            .WithEndDate(Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString())
             .WithMeteringPointType("invalid")
-            .WithRequestedByActorId(EnergySupplierValidatorTest.ValidGlnNumber)
-            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
-            .WithEnergySupplierId(EnergySupplierValidatorTest.ValidGlnNumber)
             .Build();
 
         // Act
         var validationErrors = _sut.Validate(request);
 
         // Assert
-        validationErrors.Should().ContainSingle();
+        validationErrors.Should().ContainSingle()
+            .Which.ErrorCode.Should().Be("D18");
     }
 
     [Fact]
@@ -106,10 +95,8 @@ public class AggregatedTimeSeriesRequestValidatorTests
         // Arrange
         var request = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithStartDate(Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString())
-            .WithEndDate(Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString())
-            .WithRequestedByActorId(EnergySupplierValidatorTest.ValidGlnNumber)
             .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
+            .WithRequestedByActorId(EnergySupplierValidatorTest.ValidGlnNumber)
             .WithEnergySupplierId("invalid-id")
             .Build();
 
@@ -117,7 +104,8 @@ public class AggregatedTimeSeriesRequestValidatorTests
         var validationErrors = _sut.Validate(request);
 
         // Assert
-        validationErrors.Should().ContainSingle();
+        validationErrors.Should().ContainSingle()
+            .Which.ErrorCode.Should().Be("E16");
     }
 
     [Fact]
@@ -126,29 +114,41 @@ public class AggregatedTimeSeriesRequestValidatorTests
         // Arrange
         var request = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithStartDate(Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString())
-            .WithEndDate(Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString())
             .WithSettlementMethod("invalid-settlement-method")
-            .WithRequestedByActorId(EnergySupplierValidatorTest.ValidGlnNumber)
-            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
-            .WithEnergySupplierId(EnergySupplierValidatorTest.ValidGlnNumber)
             .Build();
 
         // Act
         var validationErrors = _sut.Validate(request);
 
         // Assert
-        validationErrors.Should().ContainSingle();
+        validationErrors.Should().ContainSingle()
+            .Which.ErrorCode.Should().Be("D15");
     }
 
     [Fact]
-    public void Validate_AsEnergySupplierTotalConsumption_ReturnsUnsuccessfulValidation()
+    public void Validate_WhenSettlementSeriesVersionIsInvalid_ReturnsUnsuccessfulValidation()
     {
         // Arrange
         var request = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
-            .WithStartDate(Instant.FromUtc(2022, 1, 1, 23, 0, 0).ToString())
-            .WithEndDate(Instant.FromUtc(2022, 1, 2, 23, 0, 0).ToString())
+            .WithBusinessReason(BusinessReason.Correction)
+            .WithSettlementSeriesVersion("invalid-settlement-series-version")
+            .Build();
+
+        // Act
+        var validationErrors = _sut.Validate(request);
+
+        // Assert
+        validationErrors.Should().ContainSingle()
+            .Which.ErrorCode.Should().Be("E86");
+    }
+
+    [Fact]
+    public void Validate_WhenConsumptionAndNoSettlementMethod_ReturnsUnsuccessfulValidation()
+    {
+        // Arrange
+        var request = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
             .WithMeteringPointType(MeteringPointType.Consumption)
             .WithSettlementMethod(null)
             .WithRequestedByActorId(EnergySupplierValidatorTest.ValidGlnNumber)
@@ -160,6 +160,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
         var validationErrors = _sut.Validate(request);
 
         // Assert
-        validationErrors.Should().ContainSingle();
+        validationErrors.Should().ContainSingle()
+            .Which.ErrorCode.Should().Be("D11");
     }
 }

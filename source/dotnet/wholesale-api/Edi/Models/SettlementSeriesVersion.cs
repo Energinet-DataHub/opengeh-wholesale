@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.EDI.Validation;
+namespace Energinet.DataHub.Wholesale.EDI.Models;
 
-public sealed record ValidationError(string Message, string ErrorCode)
+public static class SettlementSeriesVersion
 {
-    public ValidationError WithPropertyName(string propertyName)
-    {
-        return new ValidationError(Message.Replace("{PropertyName}", propertyName), ErrorCode);
-    }
+    public const string FirstCorrection = "D01";
+    public const string SecondCorrection = "D02";
+    public const string ThirdCorrection = "D03";
 }
