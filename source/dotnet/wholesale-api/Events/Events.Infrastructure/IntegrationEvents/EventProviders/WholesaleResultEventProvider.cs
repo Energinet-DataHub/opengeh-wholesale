@@ -57,16 +57,16 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Ev
 
         private IntegrationEvent CreateEventFromWholesaleResult(WholesaleResult wholesaleResult)
         {
-            return wholesaleResult.ChargeResolution switch
+            return wholesaleResult.AmountType switch
             {
-                ChargeResolution.Day or ChargeResolution.Hour =>
+                AmountType.AmountPerCharge =>
                     CreateIntegrationEvent(_amountPerChargeResultProducedV1Factory.Create(wholesaleResult)),
-                ChargeResolution.Month =>
+                AmountType.MonthlyAmountPerCharge =>
                     CreateIntegrationEvent(_monthlyAmountPerChargeResultProducedV1Factory.Create(wholesaleResult)),
                 _ => throw new ArgumentOutOfRangeException(
-                    nameof(wholesaleResult.ChargeResolution),
-                    actualValue: wholesaleResult.ChargeResolution,
-                    "Unexpected resolution."),
+                    nameof(wholesaleResult.AmountType),
+                    actualValue: wholesaleResult.AmountType,
+                    "Unexpected amount type."),
             };
         }
     }
