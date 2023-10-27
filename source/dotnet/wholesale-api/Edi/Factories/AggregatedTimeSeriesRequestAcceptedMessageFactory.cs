@@ -18,7 +18,6 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.EDI.Mappers;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
-using PeriodContract = Energinet.DataHub.Edi.Responses.Period;
 using TimeSeriesPoint = Energinet.DataHub.Edi.Responses.TimeSeriesPoint;
 
 namespace Energinet.DataHub.Wholesale.EDI.Factories;
@@ -43,20 +42,13 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
     {
         var points = CreateTimeSeriesPoints(energyResult);
 
-        var period = new PeriodContract()
-        {
-            StartOfPeriod = new Timestamp() { Seconds = energyResult.PeriodStart.ToUnixTimeSeconds(), },
-            EndOfPeriod = new Timestamp() { Seconds = energyResult.PeriodEnd.ToUnixTimeSeconds(), },
-            Resolution = Resolution.Pt15M,
-        };
-
-        var acceptedResponse = new AggregatedTimeSeriesRequestAccepted()
+        return new AggregatedTimeSeriesRequestAccepted()
         {
             GridArea = energyResult.GridArea,
             QuantityUnit = QuantityUnit.Kwh,
-            Period = period,
             TimeSeriesPoints = { points },
             TimeSeriesType = CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromCalculationsResult(energyResult.TimeSeriesType),
+            Resolution = Resolution.Pt15M,
         };
 
         var businessReasonResult = ProcessTypeMapper.ToBusinessReason(energyResult.ProcessType);
