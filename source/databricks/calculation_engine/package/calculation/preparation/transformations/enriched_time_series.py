@@ -123,7 +123,17 @@ def get_basis_data_time_series_points_df(
             raw_time_series_points_df,
             [Colname.metering_point_id, Colname.observation_time],
             "left",
-        ).na.fill(value=QuantityQuality.MISSING.value, subset=[Colname.quality])
+        )
+        .na.fill(value=QuantityQuality.MISSING.value, subset=[Colname.quality])
+        .select(
+            Colname.metering_point_id,
+            Colname.observation_time,
+            Colname.grid_area,
+            Colname.metering_point_type,
+            Colname.resolution,
+            f.coalesce(Colname.quantity, f.lit(0)).alias(Colname.quantity),
+            Colname.quality,
+        )
     )
 
     # The master_basis_data_df is already used once when creating the empty_points_for_each_metering_point_df
@@ -165,11 +175,5 @@ def get_basis_data_time_series_points_df(
             Colname.settlement_method,
         )
     )
-
-    result = result.fillna(0, subset=[Colname.quantity])
-
-    # Workaround to enforce quantity nullable=False. This should be safe according to `fillna(..)` above
-    # note that this only change the schema for an instance of the dataframe, not the dataframe itself
-    result.schema[Colname.quantity].nullable = False
 
     return result
