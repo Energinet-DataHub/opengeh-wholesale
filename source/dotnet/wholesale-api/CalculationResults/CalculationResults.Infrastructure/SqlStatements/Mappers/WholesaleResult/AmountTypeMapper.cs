@@ -23,7 +23,7 @@ public static class AmountTypeMapper
         {
             "amount_per_charge" => AmountType.AmountPerCharge,
             "monthly_amount_per_charge" => AmountType.MonthlyAmountPerCharge,
-            "total_monthly_amount_per_charge" => AmountType.TotalMonthlyAmount,
+            "total_monthly_amount" => AmountType.TotalMonthlyAmount,
             _ => throw new ArgumentOutOfRangeException(
                 nameof(amountType),
                 actualValue: amountType,
