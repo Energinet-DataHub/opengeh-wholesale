@@ -61,10 +61,6 @@ class QuarterlyMeteringPointTimeSeries(DataFrameWrapper):
         assert_schema(
             df.schema,
             _time_series_quarter_points_schema,
-            ignore_column_order=True,
-            ignore_nullability=True,
-            ignore_decimal_scale=True,
-            ignore_decimal_precision=True,
         )
 
         super().__init__(df)

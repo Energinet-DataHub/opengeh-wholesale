@@ -36,7 +36,7 @@ time_series_point_schema = StructType(
         # Energy quantity in kWh for the given observation time.
         # Null when quality is missing.
         # Example: 1234.534217
-        StructField("quantity", DecimalType(18, 6), True),
+        StructField("quantity", DecimalType(18, 6), False),
         # "missing" | "estimated" | "measured" | "calculated"
         # Example: measured
         StructField("quality", StringType(), False),
