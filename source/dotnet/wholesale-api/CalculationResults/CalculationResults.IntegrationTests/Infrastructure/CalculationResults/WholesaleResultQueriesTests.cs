@@ -78,10 +78,12 @@ public class WholesaleResultQueriesTests : IClassFixture<DatabricksSqlStatementA
         // Assert
         using var assertionScope = new AssertionScope();
         var actualHourlyAmount = actual.Single(row => row.Id.ToString() == HourlyTariffCalculationResultId);
+        actualHourlyAmount.AmountType.Should().Be(AmountType.AmountPerCharge);
         actualHourlyAmount.ChargeResolution.Should().Be(ChargeResolution.Hour);
         actualHourlyAmount.TimeSeriesPoints.First().Amount.Should().Be(decimal.Parse(DefaultHourlyAmount, CultureInfo.InvariantCulture));
 
         var actualMonthlyAmount = actual.Single(row => row.Id.ToString() == MonthlyAmountTariffCalculationResultId);
+        actualMonthlyAmount.AmountType.Should().Be(AmountType.MonthlyAmountPerCharge);
         actualMonthlyAmount.ChargeResolution.Should().Be(ChargeResolution.Month);
         actualMonthlyAmount.TimeSeriesPoints.First().Amount.Should().Be(decimal.Parse(DefaultMonthlyAmount, CultureInfo.InvariantCulture));
     }

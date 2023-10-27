@@ -113,6 +113,7 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
             _periodEnd,
             _gridArea,
             _energySupplierId,
+            AmountType.MonthlyAmountPerCharge,
             _chargeCode,
             _chargeType,
             _chargeOwnerId,

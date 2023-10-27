@@ -96,16 +96,16 @@ public class IntegrationEventProvider : IIntegrationEventProvider
 
     private IntegrationEvent CreateEventFromWholesaleResult(WholesaleResult wholesaleResult)
     {
-        return wholesaleResult.ChargeResolution switch
+        return wholesaleResult.AmountType switch
         {
-            ChargeResolution.Day or ChargeResolution.Hour => _calculationResultIntegrationEventFactory
+            AmountType.AmountPerCharge => _calculationResultIntegrationEventFactory
                 .CreateAmountPerChargeResultProducedV1(wholesaleResult),
-            ChargeResolution.Month => _calculationResultIntegrationEventFactory
+            AmountType.MonthlyAmountPerCharge => _calculationResultIntegrationEventFactory
                 .CreateMonthlyAmountPerChargeResultProducedV1(wholesaleResult),
             _ => throw new ArgumentOutOfRangeException(
-                nameof(wholesaleResult.ChargeResolution),
-                actualValue: wholesaleResult.ChargeResolution,
-                "Unexpected resolution."),
+                nameof(wholesaleResult.AmountType),
+                actualValue: wholesaleResult.AmountType,
+                "Unexpected amount type."),
         };
     }
 
