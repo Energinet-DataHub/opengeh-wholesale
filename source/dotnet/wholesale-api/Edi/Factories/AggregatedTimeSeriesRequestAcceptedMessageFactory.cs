@@ -50,13 +50,6 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
             TimeSeriesType = CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromCalculationsResult(energyResult.TimeSeriesType),
             Resolution = Resolution.Pt15M,
         };
-
-        var businessReasonResult = ProcessTypeMapper.ToBusinessReason(energyResult.ProcessType);
-
-        if (businessReasonResult.SettlementSeriesVersion != null)
-            acceptedResponse.SettlementVersion = businessReasonResult.SettlementSeriesVersion;
-
-        return acceptedResponse;
     }
 
     private static IList<TimeSeriesPoint> CreateTimeSeriesPoints(EnergyResult energyResult)
