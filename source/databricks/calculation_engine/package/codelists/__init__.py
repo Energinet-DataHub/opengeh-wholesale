@@ -26,3 +26,4 @@ from .process_type import ProcessType
 from .settlement_method import SettlementMethod
 from .quantity_quality import QuantityQuality
 from .time_series_type import TimeSeriesType
+from .amount_type import AmountType

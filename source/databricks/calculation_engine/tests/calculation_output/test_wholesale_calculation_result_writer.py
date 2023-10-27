@@ -28,6 +28,7 @@ from package.codelists import (
     MeteringPointType,
     ProcessType,
     SettlementMethod,
+    AmountType,
 )
 from package.constants import Colname, WholesaleResultColumnNames
 from package.infrastructure.paths import (
@@ -46,6 +47,7 @@ DEFAULT_PROCESS_TYPE = ProcessType.FIRST_CORRECTION_SETTLEMENT
 DEFAULT_BATCH_EXECUTION_START = datetime(2022, 6, 10, 13, 15)
 
 # Input dataframe parameters
+DEFAULT_AMOUNT_TYPE = AmountType.AMOUNT_PER_CHARGE
 DEFAULT_ENERGY_SUPPLIER_ID = "9876543210123"
 DEFAULT_GRID_AREA = "543"
 DEFAULT_CHARGE_TIME = datetime(2022, 6, 10, 13, 30)
@@ -179,7 +181,7 @@ def test__write__writes_column(
     result_df = _create_result_df(spark, row)
 
     # Act
-    sut.write(result_df)
+    sut.write(result_df, DEFAULT_AMOUNT_TYPE)
 
     # Assert
     actual_df = spark.read.table(TABLE_NAME).where(
@@ -205,7 +207,7 @@ def test__write__writes_calculation_result_id(
     )
 
     # Act
-    sut.write(result_df)
+    sut.write(result_df, DEFAULT_AMOUNT_TYPE)
 
     # Assert
     actual_df = (
@@ -215,6 +217,29 @@ def test__write__writes_calculation_result_id(
     )
 
     assert actual_df.distinct().count() == expected_number_of_calculation_result_ids
+
+
+def test__write__writes_amount_type(
+    sut: WholesaleCalculationResultWriter,
+    spark: SparkSession,
+    migrations_executed: None,
+) -> None:
+    # Arrange
+    row = [_create_result_row()]
+    result_df = _create_result_df(spark, row)
+
+    # Act
+    sut.write(result_df, DEFAULT_AMOUNT_TYPE)
+
+    # Assert
+    actual_df = spark.read.table(TABLE_NAME).where(
+        col(WholesaleResultColumnNames.calculation_id) == DEFAULT_BATCH_ID
+    )
+    actual_row = actual_df.collect()[0]
+
+    assert (
+        actual_row[WholesaleResultColumnNames.amount_type] == DEFAULT_AMOUNT_TYPE.value
+    )
 
 
 def test__get_column_group_for_calculation_result_id__returns_expected_column_names(
@@ -251,6 +276,7 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
         WholesaleResultColumnNames.calculation_type,
         WholesaleResultColumnNames.calculation_execution_time_start,
         WholesaleResultColumnNames.calculation_result_id,
+        WholesaleResultColumnNames.amount_type,
         WholesaleResultColumnNames.grid_area,
         WholesaleResultColumnNames.quantity,
         WholesaleResultColumnNames.quantity_unit,

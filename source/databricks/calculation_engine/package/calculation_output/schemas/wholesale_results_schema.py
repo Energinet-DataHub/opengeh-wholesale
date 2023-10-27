@@ -57,5 +57,6 @@ wholesale_results_schema = StructType(
         StructField(WholesaleResultColumnNames.charge_code, StringType(), False),
         StructField(WholesaleResultColumnNames.charge_type, StringType(), False),
         StructField(WholesaleResultColumnNames.charge_owner_id, StringType(), False),
+        StructField(WholesaleResultColumnNames.amount_type, StringType(), False),
     ]
 )
