@@ -51,8 +51,8 @@ class QuarterlyMeteringPointTimeSeries(DataFrameWrapper):
             Colname.energy_supplier_id,
             Colname.balance_responsible_id,
             Colname.quarter_time,
-            Colname.time_window,
             Colname.settlement_method,
+            Colname.time_window,
         )
 
         # Workaround to enforce quantity nullable=False. This should be safe as quantity in input is nullable=False
