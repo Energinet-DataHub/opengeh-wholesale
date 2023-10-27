@@ -17,6 +17,7 @@ from .result_column_names import ResultColumnNames
 
 
 class WholesaleResultColumnNames(ResultColumnNames):
+    amount_type = "amount_type"
     quantity_unit = "quantity_unit"
     resolution = "resolution"
 

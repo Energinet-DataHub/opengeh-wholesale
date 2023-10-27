@@ -22,6 +22,7 @@ from package.calculation_output.wholesale_calculation_result_writer import (
 from datetime import datetime
 
 from package.common import assert_schema
+from package.codelists.amount_type import AmountType
 
 
 def execute(
@@ -47,9 +48,13 @@ def _calculate_tariff_charges(
     hourly_tariff_per_ga_co_es = tariffs.calculate_tariff_price_per_ga_co_es(
         tariffs_hourly_df
     )
-    wholesale_calculation_result_writer.write(hourly_tariff_per_ga_co_es)
+    wholesale_calculation_result_writer.write(
+        hourly_tariff_per_ga_co_es, AmountType.AMOUNT_PER_CHARGE
+    )
 
     monthly_tariff_per_ga_co_es = tariffs.sum_within_month(
         hourly_tariff_per_ga_co_es, period_start_datetime
     )
-    wholesale_calculation_result_writer.write(monthly_tariff_per_ga_co_es)
+    wholesale_calculation_result_writer.write(
+        monthly_tariff_per_ga_co_es, AmountType.MONTHLY_AMOUNT_PER_CHARGE
+    )
