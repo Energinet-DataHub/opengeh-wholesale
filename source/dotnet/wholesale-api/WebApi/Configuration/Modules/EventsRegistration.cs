@@ -37,13 +37,7 @@ public static class EventsRegistration
         this IServiceCollection serviceCollection,
         ServiceBusOptions serviceBusOptions)
     {
-        serviceCollection.AddScoped<ICompletedBatchRepository, CompletedBatchRepository>();
-        serviceCollection.AddScoped<ICompletedBatchFactory, CompletedBatchFactory>();
-        serviceCollection.AddScoped<IRegisterCompletedBatchesHandler, RegisterCompletedBatchesHandler>();
-
-        serviceCollection.AddScoped<IEnergyResultEventProvider, EnergyResultEventProvider>();
-        serviceCollection.AddScoped<IWholesaleResultEventProvider, WholesaleResultEventProvider>();
-
+        serviceCollection.AddApplication();
         serviceCollection.AddInfrastructure();
 
         serviceCollection.AddCommunication<IntegrationEventProvider>(_ => new CommunicationSettings
@@ -56,27 +50,38 @@ public static class EventsRegistration
         RegisterHostedServices(serviceCollection);
     }
 
-    private static void AddInfrastructure(
-        this IServiceCollection serviceCollection)
+    private static void AddApplication(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
         serviceCollection
-            .AddScoped<ICalculationResultCompletedFactory,
-                CalculationResultCompletedFactory>();
-        serviceCollection.AddScoped<IEnergyResultProducedV1Factory,
-            EnergyResultProducedV1Factory>();
-        serviceCollection.AddScoped<IAmountPerChargeResultProducedV1Factory,
-            AmountPerChargeResultProducedV1Factory>();
-        serviceCollection.AddScoped<IMonthlyAmountPerChargeResultProducedV1Factory,
-            MonthlyAmountPerChargeResultProducedV1Factory>();
-        serviceCollection.AddScoped<IEventsDatabaseContext, EventsDatabaseContext>();
-        serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
+            .AddScoped<IUnitOfWork, UnitOfWork>();
+
+        serviceCollection
+            .AddScoped<ICompletedBatchRepository, CompletedBatchRepository>()
+            .AddScoped<ICompletedBatchFactory, CompletedBatchFactory>()
+            .AddScoped<IRegisterCompletedBatchesHandler, RegisterCompletedBatchesHandler>();
+
+        serviceCollection
+            .AddScoped<IEnergyResultEventProvider, EnergyResultEventProvider>()
+            .AddScoped<IWholesaleResultEventProvider, WholesaleResultEventProvider>();
+    }
+
+    private static void AddInfrastructure(this IServiceCollection serviceCollection)
+    {
+        serviceCollection
+            .AddScoped<ICalculationResultCompletedFactory, CalculationResultCompletedFactory>()
+            .AddScoped<IEnergyResultProducedV1Factory, EnergyResultProducedV1Factory>()
+            .AddScoped<IAmountPerChargeResultProducedV1Factory, AmountPerChargeResultProducedV1Factory>()
+            .AddScoped<IMonthlyAmountPerChargeResultProducedV1Factory, MonthlyAmountPerChargeResultProducedV1Factory>()
+            .AddScoped<IEventsDatabaseContext, EventsDatabaseContext>()
+            .AddSingleton<IJsonSerializer, JsonSerializer>();
     }
 
     private static void RegisterHostedServices(IServiceCollection serviceCollection)
     {
-        serviceCollection.AddHostedService<AggregatedTimeSeriesServiceBusWorker>();
-        serviceCollection.AddHostedService<RegisterCompletedBatchesTrigger>();
+        serviceCollection
+            .AddHostedService<AggregatedTimeSeriesServiceBusWorker>()
+            .AddHostedService<RegisterCompletedBatchesTrigger>();
+
         serviceCollection
             .AddHealthChecks()
             .AddRepeatingTriggerHealthCheck<RegisterCompletedBatchesTrigger>(TimeSpan.FromMinutes(1));
