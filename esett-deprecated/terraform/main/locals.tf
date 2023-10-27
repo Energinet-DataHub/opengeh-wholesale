@@ -1,45 +1,15 @@
 // Local Variables
 locals {
-  blob_files_raw_container = {
-    name        = "files-raw"
-    access_type = "private"
-  }
-  blob_files_enrichments_container = {
-    name        = "files-enrichments"
-    access_type = "private"
-  }
-  blob_files_converted_container = {
-    name        = "files-converted"
-    access_type = "private"
-  }
-  blob_files_sent_container = {
-    name        = "files-sent"
-    access_type = "blob"
-  }
-  blob_files_error_container = {
-    name        = "files-error"
-    access_type = "blob"
-  }
-  blob_files_confirmed_container = {
-    name        = "files-confirmed"
-    access_type = "blob"
-  }
-  blob_files_other_container = {
-    name        = "files-other"
-    access_type = "blob"
-  }
-  blob_files_mga_imbalance_container = {
-    name        = "files-mga-imbalance"
-    access_type = "blob"
-  }
-  blob_files_brp_change_container = {
-    name        = "files-brp-change"
-    access_type = "blob"
-  }
-  blob_files_ack_container = {
-    name        = "files-acknowledgement"
-    access_type = "blob"
-  }
+  blob_files_raw_container_name = "files-raw"
+  blob_files_enrichments_container_name= "files-enrichments"
+  blob_files_converted_container_name= "files-converted"
+  blob_files_sent_container_name= "files-sent"
+  blob_files_error_container_name= "files-error"
+  blob_files_confirmed_container_name= "files-confirmed"
+  blob_files_other_container_name= "files-other"
+  blob_files_mga_imbalance_container_name= "files-mga-imbalance"
+  blob_files_brp_change_container_name= "files-brp-change"
+  blob_files_ack_container_name= "files-acknowledgement"
   name_suffix                              = "${lower(var.domain_name_short)}-${lower(var.environment_short)}-we-${lower(var.environment_instance)}"
   name_suffix_no_dash                      = "${lower(var.domain_name_short)}${lower(var.environment_short)}we${lower(var.environment_instance)}"
   connection_string_database               = "Server=tcp:${data.azurerm_key_vault_secret.mssql_data_url.value},1433;Initial Catalog=${module.mssqldb_esett.name};Persist Security Info=False;Authentication=Active Directory Managed Identity;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;"

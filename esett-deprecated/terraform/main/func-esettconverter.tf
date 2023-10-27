@@ -15,11 +15,11 @@ module "func_converter" {
   dotnet_framework_version                  = "v6.0"
   app_settings = {
     # EndRegion
-    BLOB_FILES_ERROR_CONTAINER_NAME                                       = local.blob_files_error_container.name
-    BLOB_FILES_RAW_CONTAINER_NAME                                         = local.blob_files_raw_container.name
-    BLOB_FILES_ENRICHMENTS_CONTAINER_NAME                                 = local.blob_files_enrichments_container.name
-    BLOB_FILES_CONVERTED_CONTAINER_NAME                                   = local.blob_files_converted_container.name
-    BLOB_FILES_ACK_CONTAINER_NAME                                         = local.blob_files_ack_container.name
+    BLOB_FILES_ERROR_CONTAINER_NAME                                       = local.blob_files_error_container_name
+    BLOB_FILES_RAW_CONTAINER_NAME                                         = local.blob_files_raw_container_name
+    BLOB_FILES_ENRICHMENTS_CONTAINER_NAME                                 = local.blob_files_enrichments_container_name
+    BLOB_FILES_CONVERTED_CONTAINER_NAME                                   = local.blob_files_converted_container_name
+    BLOB_FILES_ACK_CONTAINER_NAME                                         = local.blob_files_ack_container_name
     "biztalk:acknowledgementMgaImbalance"                                 = "NBS-ACK-MGA-IMBALANCE-RESULTS"
     "biztalk:acknowledgementBrpChange"                                    = "NBS-ACK-RETAILER-BALANCE-RESPONSIBILITY"
     "Logging__LogLevel__Default"                                          = "Information"

@@ -11,22 +11,42 @@ module "stor_esett" {
   access_tier               = "Hot"
   account_tier              = "Standard"
   containers                = [
-    local.blob_files_raw_container,
-    local.blob_files_enrichments_container,
-    local.blob_files_converted_container,
-    local.blob_files_sent_container,
-    local.blob_files_confirmed_container,
-    local.blob_files_other_container,
-    local.blob_files_error_container,
-    local.blob_files_mga_imbalance_container,
-    local.blob_files_brp_change_container,
-    local.blob_files_ack_container
+    {
+      name: local.blob_files_raw_container_name,
+    },
+    {
+      name: local.blob_files_enrichments_container_name,
+    },
+    {
+      name: local.blob_files_converted_container_name,
+    },
+    {
+      name: local.blob_files_sent_container_name,
+    },
+    {
+      name: local.blob_files_confirmed_container_name,
+    },
+    {
+      name: local.blob_files_other_container_name,
+    },
+    {
+      name: local.blob_files_error_container_name,
+    },
+    {
+      name: local.blob_files_mga_imbalance_container_name,
+    },
+    {
+      name: local.blob_files_brp_change_container_name,
+    },
+    {
+      name: local.blob_files_ack_container_name
+    },
   ]
 }
 
 data "azurerm_storage_account_blob_container_sas" "blob_confirmed" {
   connection_string = module.stor_esett.primary_connection_string
-  container_name    = local.blob_files_confirmed_container.name
+  container_name    = local.blob_files_confirmed_container_name
   https_only        = true
 
   ip_address = "194.239.2.0-194.239.2.255"
@@ -46,7 +66,7 @@ data "azurerm_storage_account_blob_container_sas" "blob_confirmed" {
 
 data "azurerm_storage_account_blob_container_sas" "blob_mga" {
   connection_string = module.stor_esett.primary_connection_string
-  container_name    = local.blob_files_mga_imbalance_container.name
+  container_name    = local.blob_files_mga_imbalance_container_name
   https_only        = true
 
   ip_address = "194.239.2.0-194.239.2.255"
@@ -66,7 +86,7 @@ data "azurerm_storage_account_blob_container_sas" "blob_mga" {
 
 data "azurerm_storage_account_blob_container_sas" "blob_brp" {
   connection_string = module.stor_esett.primary_connection_string
-  container_name    = local.blob_files_brp_change_container.name
+  container_name    = local.blob_files_brp_change_container_name
   https_only        = true
 
   ip_address = "194.239.2.0-194.239.2.255"
@@ -86,7 +106,7 @@ data "azurerm_storage_account_blob_container_sas" "blob_brp" {
 
 data "azurerm_storage_account_blob_container_sas" "blob_sent" {
   connection_string = module.stor_esett.primary_connection_string
-  container_name    = local.blob_files_sent_container.name
+  container_name    = local.blob_files_sent_container_name
   https_only        = true
 
   ip_address = "194.239.2.0-194.239.2.255"
@@ -106,7 +126,7 @@ data "azurerm_storage_account_blob_container_sas" "blob_sent" {
 
 data "azurerm_storage_account_blob_container_sas" "blob_other" {
   connection_string = module.stor_esett.primary_connection_string
-  container_name    = local.blob_files_other_container.name
+  container_name    = local.blob_files_other_container_name
   https_only        = true
 
   ip_address = "194.239.2.0-194.239.2.255"
@@ -126,7 +146,7 @@ data "azurerm_storage_account_blob_container_sas" "blob_other" {
 
 data "azurerm_storage_account_blob_container_sas" "blob_error" {
   connection_string = module.stor_esett.primary_connection_string
-  container_name    = local.blob_files_error_container.name
+  container_name    = local.blob_files_error_container_name
   https_only        = true
 
   ip_address = "194.239.2.0-194.239.2.255"

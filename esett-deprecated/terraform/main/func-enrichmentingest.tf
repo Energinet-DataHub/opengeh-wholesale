@@ -15,7 +15,7 @@ module "func_enrichmentingest" {
   dotnet_framework_version                  = "v6.0"
   app_settings = {
     # EndRegion
-    BLOB_FILES_ENRICHMENTS_CONTAINER_NAME                                 = local.blob_files_enrichments_container.name
+    BLOB_FILES_ENRICHMENTS_CONTAINER_NAME                                 = local.blob_files_enrichments_container_name
     "Logging__LogLevel__Default"                                          = "Information"
     "Logging__LogLevel__Microsoft"                                        = "Warning"
     "Logging__ApplicationInsights__LogLevel__Default"                     = "Information"
