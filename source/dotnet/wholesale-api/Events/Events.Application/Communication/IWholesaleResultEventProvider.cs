@@ -23,7 +23,7 @@ namespace Energinet.DataHub.Wholesale.Events.Application.Communication
         /// <summary>
         /// Determines if <paramref name="batch"/> is in a state where it can contain <see cref="WholesaleResult"/>.
         /// </summary>
-        /// <returns><langword>true</langword> if <paramref name="batch"/> can contain <see cref="WholesaleResult"/>; otherwise <langword>false</langword>.</returns>
+        /// <returns><see langword="true"/> if <paramref name="batch"/> can contain <see cref="WholesaleResult"/>; otherwise <see langword="false"/>.</returns>
         bool CanContainWholesaleResults(CompletedBatch batch);
 
         /// <summary>
