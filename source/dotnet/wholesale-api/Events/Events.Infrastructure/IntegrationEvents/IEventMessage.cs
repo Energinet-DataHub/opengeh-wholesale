@@ -12,21 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// ReSharper disable once CheckNamespace - the namespace is exposed publicly in the Contracts package
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents;
+using Google.Protobuf;
 
-namespace Energinet.DataHub.Wholesale.Contracts.Events;
-
-public partial class CalculationResultCompleted : IEventMessage
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents
 {
     /// <summary>
-    /// The message type for transport message meta data in accordance with ADR-008.
+    /// Extends the generated protobuf message types with additional properties
+    /// to support generic creation of the type "IntegrationEvent".
     /// </summary>
-    public const string EventName = "CalculationResultCompleted";
+    public interface IEventMessage : IMessage
+    {
+        /// <summary>
+        /// The message type for transport message meta data in accordance with ADR-008.
+        /// </summary>
+        string EventName { get; }
 
-    public const int EventMinorVersion = 2;
-
-    string IEventMessage.EventName => EventName;
-
-    int IEventMessage.EventMinorVersion => EventMinorVersion;
+        /// <summary>
+        /// For new events we start this version at zero (0).
+        /// </summary>
+        int EventMinorVersion { get; }
+    }
 }
