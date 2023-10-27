@@ -92,7 +92,7 @@ data "databricks_spark_version" "latest_lts" {
 }
 
 resource "databricks_instance_pool" "migration_pool_integration_test" {
-  instance_pool_name                    = "migration-playground-instance-pool"
+  instance_pool_name                    = "migration-integration-test-instance-pool"
   min_idle_instances                    = 0
   max_capacity                          = 5
   node_type_id                          = "Standard_DS3_v2"
@@ -100,10 +100,10 @@ resource "databricks_instance_pool" "migration_pool_integration_test" {
 }
 
 resource "databricks_job" "migration_workflow" {
-  name = "Landing_To_Wholesale_Gold_Fully_In_Playground"
+  name = "Domaintest"
 
   job_cluster {
-    job_cluster_key = "playground_job_cluster"
+    job_cluster_key = "domaintest_job_cluster"
     new_cluster {
       instance_pool_id = databricks_instance_pool.migration_pool_integration_test.id
       spark_version    = data.databricks_spark_version.latest_lts.id
@@ -138,7 +138,7 @@ resource "databricks_job" "migration_workflow" {
     notebook_task {
       notebook_path = "dummy_task_1"
     }
-    job_cluster_key = "playground_job_cluster"
+    job_cluster_key = "domaintest_job_cluster"
   }
 
   depends_on = [
@@ -199,8 +199,8 @@ resource "azurerm_key_vault_secret" "kvs_dbw_sql_endpoint_id" {
   ]
 }
 
-resource "azurerm_key_vault_secret" "kvs_databricks_dbw_playground_workspace_token" {
-  name         = "dbw-playground-workspace-token"
+resource "azurerm_key_vault_secret" "kvs_databricks_dbw_domain_test_workspace_token" {
+  name         = "dbw-domain-test-workspace-token"
   value        = data.external.databricks_token_integration_test.result.pat_token
   key_vault_id = azurerm_key_vault.this.id
 
@@ -215,8 +215,8 @@ resource "azurerm_key_vault_secret" "kvs_databricks_dbw_playground_workspace_tok
   ]
 }
 
-resource "azurerm_key_vault_secret" "kvs_databricks_dbw_playground_workspace_url" {
-  name         = "dbw-playground-workspace-url"
+resource "azurerm_key_vault_secret" "kvs_databricks_dbw_domain_test_workspace_url" {
+  name         = "dbw-domain-test-workspace-url"
   value        = azurerm_databricks_workspace.this.workspace_url
   key_vault_id = azurerm_key_vault.this.id
 
@@ -231,8 +231,8 @@ resource "azurerm_key_vault_secret" "kvs_databricks_dbw_playground_workspace_url
   ]
 }
 
-resource "azurerm_key_vault_secret" "kvs_databricks_dbw_playground_workspace_id" {
-  name         = "dbw-playground-workspace-id"
+resource "azurerm_key_vault_secret" "kvs_databricks_dbw_domain_test_workspace_id" {
+  name         = "dbw-domain-test-workspace-id"
   value        = azurerm_databricks_workspace.this.id
   key_vault_id = azurerm_key_vault.this.id
 
@@ -247,8 +247,8 @@ resource "azurerm_key_vault_secret" "kvs_databricks_dbw_playground_workspace_id"
   ]
 }
 
-resource "azurerm_key_vault_secret" "kvs_databricks_dbw_playground_storage_account_name" {
-  name         = "dbw-playground-storage-account-name"
+resource "azurerm_key_vault_secret" "kvs_databricks_dbw_domain_test_storage_account_name" {
+  name         = "dbw-domain-test-storage-account-name"
   value        = azurerm_storage_account.this.name
   key_vault_id = azurerm_key_vault.this.id
 
