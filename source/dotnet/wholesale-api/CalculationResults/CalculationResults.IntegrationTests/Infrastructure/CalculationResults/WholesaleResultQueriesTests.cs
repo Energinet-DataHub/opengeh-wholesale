@@ -95,6 +95,7 @@ public class WholesaleResultQueriesTests : IClassFixture<DatabricksSqlStatementA
             calculationResultId: HourlyTariffCalculationResultId,
             chargeType: "tariff",
             chargeResolution: "PT1H",
+            amountType: "amount_per_charge",
             meteringPointType: "production",
             settlementMethod: null,
             amount: DefaultHourlyAmount);
@@ -104,6 +105,7 @@ public class WholesaleResultQueriesTests : IClassFixture<DatabricksSqlStatementA
             calculationResultId: MonthlyAmountTariffCalculationResultId,
             chargeType: "tariff",
             chargeResolution: "P1M",
+            amountType: "monthly_amount_per_charge",
             meteringPointType: null,
             settlementMethod: null,
             amount: DefaultMonthlyAmount);
