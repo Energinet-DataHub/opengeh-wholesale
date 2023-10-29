@@ -63,6 +63,8 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Ev
                     CreateIntegrationEvent(_amountPerChargeResultProducedV1Factory.Create(wholesaleResult)),
                 AmountType.MonthlyAmountPerCharge =>
                     CreateIntegrationEvent(_monthlyAmountPerChargeResultProducedV1Factory.Create(wholesaleResult)),
+                AmountType.TotalMonthlyAmount =>
+                    throw new NotImplementedException($"Factory for '{AmountType.TotalMonthlyAmount}' not implemented."),
                 _ => throw new ArgumentOutOfRangeException(
                     nameof(wholesaleResult.AmountType),
                     actualValue: wholesaleResult.AmountType,
