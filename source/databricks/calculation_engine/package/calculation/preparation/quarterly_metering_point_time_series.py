@@ -44,13 +44,12 @@ class QuarterlyMeteringPointTimeSeries(DataFrameWrapper):
             Colname.metering_point_type,
             # TODO BJM: Does it make sense to require a resolution col in a "quarterly type"
             Colname.resolution,
-            # TODO BJM: Does it make sense to have both observation_time, quarter_time, time_window and resolution?
+            # TODO BJM: Does it make sense to have both observation_time, time_window and resolution?
             Colname.observation_time,
             Colname.quantity,
             Colname.quality,
             Colname.energy_supplier_id,
             Colname.balance_responsible_id,
-            Colname.quarter_time,
             Colname.settlement_method,
             Colname.time_window,
         )
@@ -104,7 +103,6 @@ _time_series_quarter_points_schema = t.StructType(
         t.StructField(Colname.quality, t.StringType(), False),
         t.StructField(Colname.energy_supplier_id, t.StringType(), True),
         t.StructField(Colname.balance_responsible_id, t.StringType(), True),
-        t.StructField(Colname.quarter_time, t.TimestampType(), False),
         t.StructField(Colname.settlement_method, t.StringType(), True),
         t.StructField(
             Colname.time_window,
