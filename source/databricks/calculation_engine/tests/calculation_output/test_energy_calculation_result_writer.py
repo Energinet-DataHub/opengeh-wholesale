@@ -144,51 +144,6 @@ def _create_result_df_corresponding_to_four_calculation_results(
     return _create_result_df(spark, rows)
 
 
-# TODO BJM: What should this be replaced with?
-# def test__write__when_invalid_results_schema__raises_assertion_error(
-#     spark: SparkSession,
-# ) -> None:
-#     # Arrange
-#     invalid_df = spark.createDataFrame([{"foo": 42}])
-#     sut = EnergyCalculationResultWriter(
-#         DEFAULT_BATCH_ID,
-#         DEFAULT_PROCESS_TYPE,
-#         DEFAULT_BATCH_EXECUTION_START,
-#     )
-#
-#     # Act and assert
-#     with pytest.raises(AssertionError) as excinfo:
-#         sut.write(
-#             invalid_df,
-#             DEFAULT_TIME_SERIES_TYPE,
-#             DEFAULT_AGGREGATION_LEVEL,
-#         )
-#     assert "Schema mismatch" in str(excinfo)
-
-
-# TODO BJM: What should this be replaced with?
-# def test__write__when_results_schema_missing_optional_column__does_not_raise(
-#     spark: SparkSession,
-#     migrations_executed: None,
-# ) -> None:
-#     # Arrange
-#     row = [_create_result_row()]
-#     result = _create_result_df(spark, row)
-#     df_missing_optional_column = result.drop(col(Colname.balance_responsible_id))
-#     sut = EnergyCalculationResultWriter(
-#         DEFAULT_BATCH_ID,
-#         DEFAULT_PROCESS_TYPE,
-#         DEFAULT_BATCH_EXECUTION_START,
-#     )
-#
-#     # Act and assert (implicitly that no error is raised)
-#     sut.write(
-#         df_missing_optional_column,
-#         DEFAULT_TIME_SERIES_TYPE,
-#         DEFAULT_AGGREGATION_LEVEL,
-#     )
-
-
 @pytest.mark.parametrize(
     "aggregation_level",
     e.AggregationLevel,
