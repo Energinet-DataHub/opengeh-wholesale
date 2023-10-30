@@ -49,7 +49,6 @@ df_template = {
     Colname.from_grid_area: [],
     Colname.quantity: [],
     Colname.observation_time: [],
-    Colname.quarter_time: [],
     Colname.quality: [],
     Colname.resolution: [],
 }
@@ -66,7 +65,6 @@ def time_series_schema():
         .add(Colname.from_grid_area, StringType())
         .add(Colname.quantity, DecimalType(38))
         .add(Colname.observation_time, TimestampType())
-        .add(Colname.quarter_time, TimestampType())
         .add(Colname.quality, StringType())
         .add(Colname.resolution, StringType())
     )
@@ -188,7 +186,6 @@ def add_row_of_data(pandas_df, domain, in_domain, out_domain, timestamp, quantit
         Colname.from_grid_area: out_domain,
         Colname.quantity: quantity,
         Colname.observation_time: timestamp,
-        Colname.quarter_time: timestamp,
         Colname.quality: estimated_quality,
         Colname.resolution: MeteringPointResolution.QUARTER.value,
     }

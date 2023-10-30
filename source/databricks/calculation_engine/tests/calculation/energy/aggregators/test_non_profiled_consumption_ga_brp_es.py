@@ -85,12 +85,8 @@ def time_series_row_factory(
                 Colname.resolution: [MeteringPointResolution.QUARTER.value],
             },
         )
-        df = (
-            spark.createDataFrame(pandas_df)
-            .withColumn(
-                Colname.time_window, window(col(Colname.time_window), "15 minutes")
-            )
-            .withColumn(Colname.quarter_time, col(Colname.observation_time))
+        df = spark.createDataFrame(pandas_df).withColumn(
+            Colname.time_window, window(col(Colname.time_window), "15 minutes")
         )
 
         return QuarterlyMeteringPointTimeSeries(df)
