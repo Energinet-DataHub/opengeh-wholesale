@@ -61,6 +61,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
         WholesaleResultColumnNames.charge_code: "charge_code",
         WholesaleResultColumnNames.charge_type: "fee",
         WholesaleResultColumnNames.charge_owner_id: "1234567890123",
+        WholesaleResultColumnNames.amount_type: "amount_per_charge",
     }
     return spark.createDataFrame(data=[row], schema=wholesale_results_schema)
 
@@ -75,6 +76,8 @@ def _create_df(spark: SparkSession) -> DataFrame:
         (WholesaleResultColumnNames.calculation_execution_time_start, None),
         (WholesaleResultColumnNames.calculation_result_id, None),
         (WholesaleResultColumnNames.calculation_result_id, "not-a-uuid"),
+        (WholesaleResultColumnNames.amount_type, None),
+        (WholesaleResultColumnNames.amount_type, "foo"),
         (WholesaleResultColumnNames.grid_area, None),
         (WholesaleResultColumnNames.grid_area, "12"),
         (WholesaleResultColumnNames.grid_area, "1234"),
@@ -149,6 +152,7 @@ actor_eic = "1234567890123456"
             WholesaleResultColumnNames.calculation_result_id,
             "9252d7a0-4363-42cc-a2d6-e04c026523f8",
         ),
+        (WholesaleResultColumnNames.amount_type, "amount_per_charge"),
         (WholesaleResultColumnNames.grid_area, "123"),
         (WholesaleResultColumnNames.grid_area, "007"),
         (WholesaleResultColumnNames.energy_supplier_id, actor_gln),

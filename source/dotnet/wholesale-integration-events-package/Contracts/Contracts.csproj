@@ -33,7 +33,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Wholesale.Contracts</PackageId>
-    <PackageVersion>4.4.1$(VersionSuffix)</PackageVersion>
+    <PackageVersion>5.0.0$(VersionSuffix)</PackageVersion>
     <Title>Wholesale Contracts</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -84,11 +84,20 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\AmountPerChargeResultProducedV1.cs">
+      <Link>IntegrationEvents\AmountPerChargeResultProducedV1.cs</Link>
+    </Compile>
     <Compile Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\CalculationResultCompleted.cs">
       <Link>IntegrationEvents\CalculationResultCompleted.cs</Link>
     </Compile>
     <Compile Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\EnergyResultProducedV1.cs">
       <Link>IntegrationEvents\EnergyResultProducedV1.cs</Link>
+    </Compile>
+    <Compile Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\IEventMessage.cs">
+      <Link>IntegrationEvents\IEventMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\MonthlyAmountPerChargeResultProducedV1.cs">
+      <Link>IntegrationEvents\MonthlyAmountPerChargeResultProducedV1.cs</Link>
     </Compile>
   </ItemGroup>
 
