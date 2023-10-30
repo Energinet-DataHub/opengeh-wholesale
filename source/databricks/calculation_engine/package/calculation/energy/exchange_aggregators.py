@@ -45,13 +45,13 @@ def aggregate_net_exchange_per_neighbour_ga(
     ]
 
     exchange_to = (
-        T.aggregate_sum_and_quality(df, Colname.quantity, group_by)
+        T.aggregate_quantity_and_quality(df, group_by)
         .withColumnRenamed(Colname.sum_quantity, to_sum)
         .withColumnRenamed(Colname.to_grid_area, exchange_in_to_grid_area)
         .withColumnRenamed(Colname.from_grid_area, exchange_in_from_grid_area)
     )
     exchange_from = (
-        T.aggregate_sum_and_quality(df, Colname.quantity, group_by)
+        T.aggregate_quantity_and_quality(df, group_by)
         .withColumnRenamed(Colname.sum_quantity, from_sum)
         .withColumnRenamed(Colname.to_grid_area, exchange_out_to_grid_area)
         .withColumnRenamed(Colname.from_grid_area, exchange_out_from_grid_area)
@@ -102,7 +102,7 @@ def aggregate_net_exchange_per_ga(
         Colname.time_window,
     ]
     exchange_to = (
-        T.aggregate_sum_and_quality(exchange_to, Colname.quantity, exchange_to_group_by)
+        T.aggregate_quantity_and_quality(exchange_to, exchange_to_group_by)
         .withColumnRenamed(Colname.sum_quantity, to_sum)
         .withColumnRenamed(Colname.to_grid_area, Colname.grid_area)
     )
@@ -118,9 +118,7 @@ def aggregate_net_exchange_per_ga(
     from_time_window = "from_time_window"
 
     exchange_from = (
-        T.aggregate_sum_and_quality(
-            exchange_from, Colname.quantity, exchange_from_group_by
-        )
+        T.aggregate_quantity_and_quality(exchange_from, exchange_from_group_by)
         .withColumnRenamed(Colname.sum_quantity, from_sum)
         .withColumnRenamed(Colname.from_grid_area, Colname.grid_area)
         .withColumnRenamed(Colname.time_window, from_time_window)
@@ -175,6 +173,7 @@ def aggregate_net_exchange_per_ga(
             Colname.grid_area,
             Colname.time_window,
             Colname.sum_quantity,
+            # TODO BJM: Missing the to-grid-area qualities?
             Colname.qualities,
             F.lit(MeteringPointType.EXCHANGE.value).alias(Colname.metering_point_type),
         )

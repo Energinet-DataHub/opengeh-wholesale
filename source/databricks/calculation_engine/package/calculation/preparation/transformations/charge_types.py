@@ -148,9 +148,8 @@ def _join_with_metering_points(df: DataFrame, metering_points: DataFrame) -> Dat
 def _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
     time_series: DataFrame,
 ) -> DataFrame:
-    grouped_time_series = t.aggregate_sum_and_quality(
+    grouped_time_series = t.aggregate_quantity_and_quality(
         time_series,
-        Colname.quantity,
         [
             Colname.metering_point_id,
             Colname.observation_time,
