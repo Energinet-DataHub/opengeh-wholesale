@@ -17,5 +17,6 @@ module "app_webapi" {
     AZURE_B2C_BACKEND_ID                       = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-b2b-app-id)"
     TOKEN_KEY_VAULT                            = module.kv_internal.vault_uri
     TOKEN_KEY_NAME                             = azurerm_key_vault_key.token_sign.name
+    CERTIFICATES_KEY_VAULT                     = module.kv_dh2_certificates.vault_uri
   }
 }
