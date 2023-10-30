@@ -90,7 +90,7 @@ def _aggregate_per_ga_and_brp_and_es(
         Colname.metering_point_type,
         Colname.settlement_method,
     ]
-    result = t.aggregate_sum_and_quality(result, Colname.quantity, sum_group_by)
+    result = t.aggregate_quantity_and_quality(result, sum_group_by)
 
     return EnergyResults(result)
 
@@ -122,7 +122,7 @@ def _aggregate_per_ga_and_es(
     df: EnergyResults, market_evaluation_point_type: MeteringPointType
 ) -> EnergyResults:
     group_by = [Colname.grid_area, Colname.energy_supplier_id, Colname.time_window]
-    result = t.aggregate_sum_and_qualities(df.df, Colname.sum_quantity, group_by)
+    result = t.aggregate_sum_quantity_and_qualities(df.df, group_by)
 
     result = result.withColumn(
         Colname.metering_point_type, lit(market_evaluation_point_type.value)
@@ -157,7 +157,7 @@ def _aggregate_per_ga_and_brp(
     market_evaluation_point_type: MeteringPointType,
 ) -> EnergyResults:
     group_by = [Colname.grid_area, Colname.balance_responsible_id, Colname.time_window]
-    result = t.aggregate_sum_and_qualities(df.df, Colname.sum_quantity, group_by)
+    result = t.aggregate_sum_quantity_and_qualities(df.df, group_by)
 
     result = result.select(
         Colname.grid_area,
@@ -198,7 +198,7 @@ def _aggregate_per_ga(
     market_evaluation_point_type: MeteringPointType,
 ) -> EnergyResults:
     group_by = [Colname.grid_area, Colname.time_window]
-    result = t.aggregate_sum_and_qualities(df.df, Colname.sum_quantity, group_by)
+    result = t.aggregate_sum_quantity_and_qualities(df.df, group_by)
 
     result = result.select(
         Colname.grid_area,

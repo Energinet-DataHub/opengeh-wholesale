@@ -17,32 +17,29 @@ from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
 
 
-# TODO BJM: Simplify these signatures (and use type data frames),
-#           or perhaps even move to the type data types
-def aggregate_sum_and_quality(
-    result: DataFrame, quantity_col_name: str, group_by: list[str]
-) -> DataFrame:
+def aggregate_quantity_and_quality(result: DataFrame, group_by: list[str]) -> DataFrame:
     """
     Aggregates values from metering point time series and groups into an aggregated time-series.
 
     Sums quantity and collects distinct quality from the metering point time-series.
     """
     return result.groupBy(group_by).agg(
-        f.sum(quantity_col_name).alias(Colname.sum_quantity),
+        f.sum(Colname.quantity).alias(Colname.sum_quantity),
         f.collect_set(Colname.quality).alias(Colname.qualities),
     )
 
 
-def aggregate_sum_and_qualities(
-    result: DataFrame, quantity_col_name: str, group_by: list[str]
+def aggregate_sum_quantity_and_qualities(
+    result: DataFrame, group_by: list[str]
 ) -> DataFrame:
     """
-    Aggregates values from metering point time series and groups into an aggregated time-series.
+    Aggregates values from already aggregated time series (energy results) and groups into
+    further aggregated time-series (also energy results).
 
-    Sums quantity and collects distinct quality from the aggregated time-series.
+    Sums sum_quantity and collects distinct qualities from the aggregated time-series.
     """
     return result.groupBy(group_by).agg(
-        f.sum(quantity_col_name).alias(Colname.sum_quantity),
+        f.sum(Colname.sum_quantity).alias(Colname.sum_quantity),
         f.array_distinct(f.flatten(f.collect_set(Colname.qualities))).alias(
             Colname.qualities
         ),

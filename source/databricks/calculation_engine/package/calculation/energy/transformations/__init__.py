@@ -12,6 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .aggregate_sum_and_quality import aggregate_sum_and_quality
-from .aggregate_sum_and_quality import aggregate_sum_and_qualities
+from .aggregate_sum_and_quality import aggregate_quantity_and_quality
+from .aggregate_sum_and_quality import aggregate_sum_quantity_and_qualities
 from .apply_grid_loss_adjustment import adjust_production, adjust_flex_consumption
