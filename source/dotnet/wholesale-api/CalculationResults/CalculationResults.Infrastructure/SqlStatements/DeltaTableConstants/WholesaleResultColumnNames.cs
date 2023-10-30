@@ -38,6 +38,7 @@ public class WholesaleResultColumnNames
     public const string ChargeCode = "charge_code";
     public const string ChargeType = "charge_type";
     public const string ChargeOwnerId = "charge_owner_id";
+    public const string AmountType = "amount_type";
 
     public static IReadOnlyCollection<string> GetAllNames()
     {

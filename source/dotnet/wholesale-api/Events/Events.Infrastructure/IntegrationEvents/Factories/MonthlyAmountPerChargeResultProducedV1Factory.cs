@@ -26,6 +26,12 @@ public class MonthlyAmountPerChargeResultProducedV1Factory : IMonthlyAmountPerCh
         if (result.TimeSeriesPoints.Count != 1)
             throw new ArgumentException("MonthlyAmountPerChargeResultProducedV1 expects exactly one time series point.");
 
+        if (result.AmountType != AmountType.MonthlyAmountPerCharge)
+            throw new ArgumentException($"MonthlyAmountPerChargeResultProducedV1 expect amount type to be '{AmountType.MonthlyAmountPerCharge}'.");
+
+        if (result.ChargeResolution != ChargeResolution.Month)
+            throw new ArgumentException($"MonthlyAmountPerChargeResultProducedV1 expect resolution to be '{ChargeResolution.Month}'.");
+
         var amountPerChargeResultProducedV1 = new MonthlyAmountPerChargeResultProducedV1
         {
             CalculationId = result.CalculationId.ToString(),
