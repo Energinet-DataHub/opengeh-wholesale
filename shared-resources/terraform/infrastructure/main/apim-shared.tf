@@ -104,6 +104,14 @@ module "kvs_apim_logger_id" {
   key_vault_id = module.kv_shared.id
 }
 
+module "kvs_apim_instance_id" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
+
+  name         = "apim-instance-id"
+  value        = module.apim_shared.id
+  key_vault_id = module.kv_shared.id
+}
+
 module "kvs_apim_instance_name" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
 
