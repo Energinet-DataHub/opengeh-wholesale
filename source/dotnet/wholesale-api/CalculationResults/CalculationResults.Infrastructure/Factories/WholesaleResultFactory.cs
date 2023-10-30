@@ -35,6 +35,7 @@ public class WholesaleResultFactory
         var calculationType = sqlResultRow[WholesaleResultColumnNames.CalculationType];
         var gridArea = sqlResultRow[WholesaleResultColumnNames.GridArea];
         var energySupplierId = sqlResultRow[WholesaleResultColumnNames.EnergySupplierId];
+        var amountType = sqlResultRow[WholesaleResultColumnNames.AmountType];
         var chargeCode = sqlResultRow[WholesaleResultColumnNames.ChargeCode];
         var chargeType = sqlResultRow[WholesaleResultColumnNames.ChargeType];
         var chargeOwnerId = sqlResultRow[WholesaleResultColumnNames.ChargeOwnerId];
@@ -52,6 +53,7 @@ public class WholesaleResultFactory
             periodEnd,
             gridArea,
             energySupplierId,
+            AmountTypeMapper.FromDeltaTableValue(amountType),
             chargeCode,
             ChargeTypeMapper.FromDeltaTableValue(chargeType),
             chargeOwnerId,

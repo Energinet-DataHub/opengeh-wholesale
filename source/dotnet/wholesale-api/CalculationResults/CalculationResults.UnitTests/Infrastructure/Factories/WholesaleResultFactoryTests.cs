@@ -55,6 +55,7 @@ public class WholesaleResultFactoryTests
          actual.EnergySupplierId.Should().Be("energySupplierId");
          actual.GridArea.Should().Be("504");
          actual.Id.Should().Be(Guid.Parse("aaaaaaaa-bbbb-cccc-dddd-0123456789ab"));
+         actual.AmountType.Should().Be(AmountType.AmountPerCharge);
          actual.IsTax.Should().BeTrue();
          actual.ChargeResolution.Should().Be(ChargeResolution.Hour);
          actual.MeteringPointType.Should().Be(MeteringPointType.Consumption);
@@ -74,6 +75,7 @@ public class WholesaleResultFactoryTests
             new(WholesaleResultColumnNames.CalculationResultId, "aaaaaaaa-bbbb-cccc-dddd-0123456789ab"),
             new(WholesaleResultColumnNames.EnergySupplierId, "energySupplierId"),
             new(WholesaleResultColumnNames.GridArea, "504"),
+            new(WholesaleResultColumnNames.AmountType, "amount_per_charge"),
             new(WholesaleResultColumnNames.CalculationType, "WholesaleFixing"),
             new(WholesaleResultColumnNames.ChargeCode, "chargeCode"),
             new(WholesaleResultColumnNames.ChargeType, "tariff"),
