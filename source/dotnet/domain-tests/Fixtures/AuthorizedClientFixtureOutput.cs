@@ -112,7 +112,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             Console.WriteLine($"LOOK AT ME: Calculation took {stopwatch.Elapsed} to complete for calculationId {calculationId}");
             if (stopwatch.Elapsed >= TimeSpan.FromMinutes(15))
             {
-                Console.WriteLine($"LOOK AT ME: Calculation with calculationId {calculationId} took more than 15 minutes to complete. And failed the test");
+                Console.Error.WriteLine($"Calculation with ID {calculationId} took more than 15 minutes to complete");
             }
 
             return isCompleted;
