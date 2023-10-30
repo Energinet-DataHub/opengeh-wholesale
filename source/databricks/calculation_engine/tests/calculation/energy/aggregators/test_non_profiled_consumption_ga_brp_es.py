@@ -189,7 +189,6 @@ def test_consumption_supplier_aggregator_returns_distinct_rows_for_observations_
     time_series = QuarterlyMeteringPointTimeSeries(time_series)
 
     # Act
-    # TODO BJM: Need to sort?
     actual = aggregate_non_profiled_consumption_ga_brp_es(time_series)
 
     # Assert
