@@ -36,7 +36,6 @@ from package.codelists import (
     MeteringPointType,
     SettlementMethod,
     QuantityQuality,
-    MeteringPointResolution,
 )
 from package.constants import Colname
 
@@ -84,7 +83,6 @@ def time_series_row_factory(
                 Colname.quarter_time: [obs_time],
                 Colname.observation_time: [obs_time],
                 Colname.quality: [QuantityQuality.ESTIMATED.value],
-                Colname.resolution: [MeteringPointResolution.QUARTER.value],
             }
         )
         df = spark.createDataFrame(pandas_df).withColumn(

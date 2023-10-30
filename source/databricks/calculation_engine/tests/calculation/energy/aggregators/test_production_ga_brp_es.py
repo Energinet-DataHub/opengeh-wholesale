@@ -20,7 +20,6 @@ import pyspark.sql.functions as F
 import pytest
 from pandas.core.frame import DataFrame as PandasDataFrame
 from pyspark.sql import SparkSession
-from pyspark.sql.types import DecimalType
 
 from package.calculation.energy.aggregators import (
     aggregate_production_ga_brp_es,
@@ -35,7 +34,6 @@ from package.calculation.preparation.quarterly_metering_point_time_series import
 from package.codelists import (
     MeteringPointType,
     QuantityQuality,
-    MeteringPointResolution,
     SettlementMethod,
 )
 from package.constants import Colname
@@ -78,7 +76,6 @@ def enriched_time_series_factory(
                 Colname.time_window: obs_time_datetime,
                 Colname.quarter_time: obs_time_datetime,
                 Colname.quality: quality,
-                Colname.resolution: MeteringPointResolution.QUARTER.value,
                 Colname.settlement_method: SettlementMethod.NON_PROFILED.value,
             }
         ]
@@ -124,7 +121,7 @@ def check_aggregation_row(
     grid: str,
     responsible: str,
     supplier: str,
-    sum: Decimal,
+    sum_quantity: Decimal,
     start: datetime,
     end: datetime,
 ) -> None:
@@ -140,7 +137,7 @@ def check_aggregation_row(
     assert pandas_df[Colname.grid_area][row] == grid
     assert pandas_df[Colname.balance_responsible_id][row] == responsible
     assert pandas_df[Colname.energy_supplier_id][row] == supplier
-    assert pandas_df[Colname.sum_quantity][row] == sum
+    assert pandas_df[Colname.sum_quantity][row] == sum_quantity
     assert pandas_df[Colname.time_window][row].start == start
     assert pandas_df[Colname.time_window][row].end == end
 
