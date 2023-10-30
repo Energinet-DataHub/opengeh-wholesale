@@ -173,6 +173,7 @@ def aggregate_net_exchange_per_ga(
             Colname.grid_area,
             Colname.time_window,
             Colname.sum_quantity,
+            # TODO BJM: Missing the to-grid-area qualities?
             Colname.qualities,
             F.lit(MeteringPointType.EXCHANGE.value).alias(Colname.metering_point_type),
         )
