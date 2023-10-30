@@ -110,6 +110,11 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                 defaultDelay);
             stopwatch.Stop();
             Console.WriteLine($"LOOK AT ME: Calculation took {stopwatch.Elapsed} to complete for calculationId {calculationId}");
+            if (stopwatch.Elapsed >= TimeSpan.FromMinutes(15))
+            {
+                Console.WriteLine($"LOOK AT ME: Calculation with calculationId {calculationId} took more than 15 minutes to complete. And failed the test");
+            }
+
             return isCompleted;
         }
 
@@ -138,7 +143,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             Console.WriteLine($"LOOK AT ME: the loop took {stopwatch.Elapsed} to complete and received {CalculationResultCompletedFromBalanceFixing.Count} messages");
             if (stopwatch.Elapsed >= TimeSpan.FromMinutes(15))
             {
-                Console.WriteLine("LOOK AT ME: No messages received within the 15 minute time limit, and the loop was stopped.");
+                Console.WriteLine("LOOK AT ME: No messages received within the 15 minute time limit, and the loop was stopped. Test failed");
             }
         }
 
