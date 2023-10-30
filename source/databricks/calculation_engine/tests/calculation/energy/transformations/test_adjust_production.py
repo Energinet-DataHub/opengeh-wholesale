@@ -61,7 +61,7 @@ default_valid_to = datetime.strptime(
 )
 
 
-@pytest.fixture(scope="module")  # TODO BJM: Seems duplicated in multiple test files
+@pytest.fixture(scope="module")
 def hourly_production_result_schema() -> StructType:
     """
     Input hourly production result data frame schema

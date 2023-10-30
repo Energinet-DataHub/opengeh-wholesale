@@ -205,7 +205,6 @@ def test_returns_distinct_rows_for_observations_in_different_hours(
     row2_df = time_series_row_factory(obs_time=diff_obs_time)
     df = row1_df.df.union(row2_df.df)
     df = QuarterlyMeteringPointTimeSeries(df)
-    # TODO BJM: Need to sort by time_window?
     aggregated_df = aggregate_flex_consumption_ga_brp_es(df)
 
     assert aggregated_df.df.count() == 2
