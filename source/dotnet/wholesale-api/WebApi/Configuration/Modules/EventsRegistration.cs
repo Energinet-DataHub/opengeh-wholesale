@@ -44,12 +44,7 @@ public static class EventsRegistration
 
         serviceCollection.AddInfrastructure();
 
-        serviceCollection.AddCommunication<IntegrationEventProvider>(_ => new CommunicationSettings
-        {
-            ServiceBusIntegrationEventWriteConnectionString =
-                serviceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING,
-            IntegrationEventTopicName = serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
-        });
+        serviceCollection.AddPublisher<IntegrationEventProvider>();
 
         RegisterHostedServices(serviceCollection);
     }

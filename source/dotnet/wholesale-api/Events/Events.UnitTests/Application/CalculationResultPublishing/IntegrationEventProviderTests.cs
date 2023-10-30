@@ -15,7 +15,7 @@
 using System.Reflection;
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.Messaging.Communication;
-using Energinet.DataHub.Core.Messaging.Communication.Internal;
+using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
