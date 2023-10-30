@@ -20,25 +20,25 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SqlStatements.Mappers.WholesaleResult
 {
-    public class ChargeTypeMapperTests
+    public class AmountTypeMapperTests
     {
-        private const string DocumentPath = "DeltaTableContracts.enums.charge-type.json";
+        private const string DocumentPath = "DeltaTableContracts.enums.amount-type.json";
 
         [Fact]
-        public async Task ChargeType_Matches_Contract()
+        public async Task AmountType_Matches_Contract()
         {
             await using var stream = EmbeddedResources.GetStream<Root>(DocumentPath);
-            await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<ChargeType>(stream);
+            await ContractComplianceTestHelper.VerifyEnumCompliesWithContractAsync<AmountType>(stream);
         }
 
         [Theory]
-        [InlineData("fee", ChargeType.Fee)]
-        [InlineData("subscription", ChargeType.Subscription)]
-        [InlineData("tariff", ChargeType.Tariff)]
-        public void FromDeltaTableValue_WhenValidDeltaTableValue_ReturnsExpectedType(string deltaTableValue, ChargeType expectedType)
+        [InlineData("amount_per_charge", AmountType.AmountPerCharge)]
+        [InlineData("monthly_amount_per_charge", AmountType.MonthlyAmountPerCharge)]
+        [InlineData("total_monthly_amount", AmountType.TotalMonthlyAmount)]
+        public void FromDeltaTableValue_WhenValidDeltaTableValue_ReturnsExpectedType(string deltaTableValue, AmountType expectedType)
         {
             // Act
-            var actualType = ChargeTypeMapper.FromDeltaTableValue(deltaTableValue);
+            var actualType = AmountTypeMapper.FromDeltaTableValue(deltaTableValue);
 
             // Assert
             actualType.Should().Be(expectedType);
@@ -51,7 +51,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
             var invalidDeltaTableValue = Guid.NewGuid().ToString();
 
             // Act
-            var act = () => ChargeTypeMapper.FromDeltaTableValue(invalidDeltaTableValue);
+            var act = () => AmountTypeMapper.FromDeltaTableValue(invalidDeltaTableValue);
 
             // Assert
             act.Should().Throw<ArgumentOutOfRangeException>()

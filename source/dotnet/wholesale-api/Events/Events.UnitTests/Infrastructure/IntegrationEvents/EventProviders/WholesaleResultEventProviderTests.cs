@@ -16,6 +16,7 @@ using AutoFixture;
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
@@ -24,6 +25,7 @@ using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventP
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 using FluentAssertions;
 using Moq;
+using NodaTime;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.EventProviders
@@ -33,7 +35,6 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
         [Theory]
         [InlineAutoMoqData]
         public async Task GetAsync_WhenMultipleResults_ReturnsOneEventPerResult(
-            WholesaleResult[] wholesaleResults,
             [Frozen] Mock<IAmountPerChargeResultProducedV1Factory> amountPerChargeResultProducedV1FactoryMock,
             [Frozen] Mock<IMonthlyAmountPerChargeResultProducedV1Factory> monthlyAmountPerChargeResultProducedV1FactoryMock,
             [Frozen] Mock<IWholesaleResultQueries> wholesaleResultQueriesMock,
@@ -41,6 +42,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
         {
             // Arrange
             var expectedEventsPerResult = 1;
+            var wholesaleResults = new[] { CreateWholesaleResult(AmountType.AmountPerCharge), CreateWholesaleResult(AmountType.MonthlyAmountPerCharge) };
             var expectedEventsCount = wholesaleResults.Length * expectedEventsPerResult;
 
             var fixture = new Fixture();
@@ -97,6 +99,36 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
 
             // Assert
             actualResult.Should().Be(canContainWholesaleResults);
+        }
+
+        private WholesaleResult CreateWholesaleResult(AmountType amountType)
+        {
+            var qualities = new List<QuantityQuality>
+            {
+                QuantityQuality.Measured,
+            };
+
+            return new WholesaleResult(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                ProcessType.FirstCorrectionSettlement,
+                Instant.FromUtc(2022, 5, 1, 0, 0),
+                Instant.FromUtc(2022, 5, 1, 1, 0),
+                "gridArea",
+                "energySupplierId",
+                amountType,
+                "chargeCode",
+                ChargeType.Tariff,
+                "chargeOwnerId",
+                false,
+                QuantityUnit.Kwh,
+                amountType == AmountType.AmountPerCharge ? ChargeResolution.Hour : ChargeResolution.Month,
+                MeteringPointType.Production,
+                null,
+                new WholesaleTimeSeriesPoint[]
+                {
+                    new(new DateTime(2021, 1, 1), 1, qualities, 2, 3),
+                });
         }
     }
 }

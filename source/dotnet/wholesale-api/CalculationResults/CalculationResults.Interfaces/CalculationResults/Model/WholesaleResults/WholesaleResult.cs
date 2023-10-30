@@ -27,6 +27,7 @@ public sealed class WholesaleResult
         Instant periodEnd,
         string gridArea,
         string energySupplierId,
+        AmountType amountType,
         string chargeCode,
         ChargeType chargeType,
         string chargeOwnerId,
@@ -47,6 +48,7 @@ public sealed class WholesaleResult
         PeriodEnd = periodEnd;
         GridArea = gridArea;
         EnergySupplierId = energySupplierId;
+        AmountType = amountType;
         IsTax = isTax;
         ChargeCode = chargeCode;
         ChargeType = chargeType;
@@ -72,6 +74,8 @@ public sealed class WholesaleResult
     public Instant PeriodEnd { get; }
 
     public string? EnergySupplierId { get; }
+
+    public AmountType AmountType { get; }
 
     public bool IsTax { get; }
 
