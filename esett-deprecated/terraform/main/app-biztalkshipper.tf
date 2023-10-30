@@ -42,19 +42,10 @@ locals {
     "biztalk:businessTypeConsumption"                                     = "NBS-RECI"
     "biztalk:businessTypeProduction"                                      = "NBS-MEPI"
     "biztalk:businessTypeExchange"                                        = "NBS-MGXI"
-    "biztalk:senderCode"                                                  = "45V0000000000601"
-    "biztalk:receiverCode"                                                = "44V000000000028C"
     "Logging__LogLevel__Default"                                          = "Information"
     "Logging__LogLevel__Microsoft"                                        = "Warning"
     "Logging__ApplicationInsights__LogLevel__Default"                     = "Information"
     "Logging__ApplicationInsights__LogLevel__Microsoft"                   = "Warning"
     "Logging__ApplicationInsights__LogLevel__Microsoft.Hosting.Lifetime"  = "Information"
   }
-}
-
-resource "azurerm_web_app_hybrid_connection" "biztalkshipper_biztalk" {
-  web_app_id  = module.app_biztalkshipper.id
-  relay_id    = azurerm_relay_hybrid_connection.biztalk.id
-  hostname    = "datahub.preproduction.biztalk.energinet.local"
-  port        = 443
 }
