@@ -18,6 +18,7 @@ using Energinet.DataHub.Wholesale.EDI;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Energinet.DataHub.Wholesale.Events.Application.Workers;
 using Energinet.DataHub.Wholesale.Events.IntegrationTests.Fixture;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
@@ -36,6 +37,7 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
     [Theory]
     [InlineAutoMoqData]
     public async Task Can_Receive_aggregated_time_series_request_service_bus_message(
+        Mock<IServiceProvider> serviceProviderMock,
         Mock<IAggregatedTimeSeriesRequestHandler> handlerMock,
         Mock<ILogger<AggregatedTimeSeriesServiceBusWorker>> loggerMock)
     {
@@ -50,8 +52,12 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
                 messageHasBeenReceivedEvent.Set();
             });
 
+        serviceProviderMock
+            .Setup(sp => sp.GetService(typeof(IAggregatedTimeSeriesRequestHandler)))
+            .Returns(handlerMock.Object);
+
         var sut = new AggregatedTimeSeriesServiceBusWorker(
-            handlerMock.Object,
+            serviceProviderMock.Object,
             loggerMock.Object,
             _sender.ServiceBusOptions,
             _sender.ServiceBusClient);

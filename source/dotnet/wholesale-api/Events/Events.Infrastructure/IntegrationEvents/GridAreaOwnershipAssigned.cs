@@ -12,21 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
-using Microsoft.EntityFrameworkCore;
+// ReSharper disable once CheckNamespace - the namespace is exposed publicly in the Contracts package
+namespace Energinet.DataHub.Wholesale.Contracts.Events;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
-
-public interface IEventsDatabaseContext
+public partial class GridAreaOwnershipAssigned
 {
-    DbSet<CompletedBatch> CompletedBatches { get; }
-
-    DbSet<Application.GridArea.GridArea> GridAreas { get; }
-
-    DbSet<Application.IntegrationEvents.ReceivedIntegrationEvent> ReceivedIntegrationEvents { get; }
-
     /// <summary>
-    /// Saves changes to the database.
+    /// The message type for transport message meta data in accordance with ADR-008.
     /// </summary>
-    Task<int> SaveChangesAsync();
+    public const string EventName = "GridAreaOwnershipAssigned";
 }

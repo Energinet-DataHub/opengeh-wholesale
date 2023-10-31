@@ -12,21 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
-using Microsoft.EntityFrameworkCore;
+using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
+namespace Energinet.DataHub.Wholesale.Events.Application.GridArea;
 
-public interface IEventsDatabaseContext
+public interface IGridAreaRepository
 {
-    DbSet<CompletedBatch> CompletedBatches { get; }
+    Task UpdateAsync(string code, string ownerActorNumber, Instant validFrom);
 
-    DbSet<Application.GridArea.GridArea> GridAreas { get; }
-
-    DbSet<Application.IntegrationEvents.ReceivedIntegrationEvent> ReceivedIntegrationEvents { get; }
-
-    /// <summary>
-    /// Saves changes to the database.
-    /// </summary>
-    Task<int> SaveChangesAsync();
+    Task<GridArea> GetAsync(string code, string ownerActorNumber);
 }

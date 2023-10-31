@@ -12,21 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
-using Microsoft.EntityFrameworkCore;
+namespace Energinet.DataHub.Wholesale.Events.Application.IntegrationEvents;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
-
-public interface IEventsDatabaseContext
-{
-    DbSet<CompletedBatch> CompletedBatches { get; }
-
-    DbSet<Application.GridArea.GridArea> GridAreas { get; }
-
-    DbSet<Application.IntegrationEvents.ReceivedIntegrationEvent> ReceivedIntegrationEvents { get; }
-
-    /// <summary>
-    /// Saves changes to the database.
-    /// </summary>
-    Task<int> SaveChangesAsync();
-}
+public record ReceivedIntegrationEvent(
+    Guid Id,
+    string EventType);

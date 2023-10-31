@@ -15,8 +15,13 @@
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Core.Messaging.Communication;
+using Energinet.DataHub.Core.Messaging.Communication.Subscriber;
+using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Application.GridArea;
+using Energinet.DataHub.Wholesale.Events.Application.IntegrationEvents;
+using Energinet.DataHub.Wholesale.Events.Application.IntegrationEvents.Handlers;
 using Energinet.DataHub.Wholesale.Events.Application.Options;
 using Energinet.DataHub.Wholesale.Events.Application.Triggers;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
@@ -24,6 +29,9 @@ using Energinet.DataHub.Wholesale.Events.Application.Workers;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.GridArea;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.ReceivedIntegrationEvent;
+using Google.Protobuf.Reflection;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
 
@@ -33,12 +41,12 @@ namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
 public static class EventsRegistration
 {
     public static void AddEventsModule(
-        this IServiceCollection serviceCollection,
-        ServiceBusOptions serviceBusOptions)
+        this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddScoped<ICompletedBatchRepository, CompletedBatchRepository>();
-        serviceCollection.AddScoped<ICompletedBatchFactory, CompletedBatchFactory>();
-        serviceCollection.AddScoped<IRegisterCompletedBatchesHandler, RegisterCompletedBatchesHandler>();
+        RegisterCompletedBatch(serviceCollection);
+
+        serviceCollection.AddScoped<IGridAreaRepository, GridAreaRepository>();
+        serviceCollection.AddScoped<IReceivedIntegrationEventRepository, ReceivedIntegrationEventRepository>();
 
         serviceCollection.AddScoped<ICalculationResultIntegrationEventFactory, CalculationResultIntegrationEventFactory>();
 
@@ -47,6 +55,26 @@ public static class EventsRegistration
         serviceCollection.AddPublisher<IntegrationEventProvider>();
 
         RegisterHostedServices(serviceCollection);
+
+        RegisterIntegrationEvents(serviceCollection);
+    }
+
+    private static void RegisterIntegrationEvents(IServiceCollection serviceCollection)
+    {
+        var integrationEventDescriptors = new List<MessageDescriptor>
+        {
+            GridAreaOwnershipAssigned.Descriptor,
+        };
+        serviceCollection.AddSubscriber<ReceivedIntegrationEventHandler>(integrationEventDescriptors);
+
+        serviceCollection.AddScoped<IntegrationEventHandlerFactory>();
+    }
+
+    private static void RegisterCompletedBatch(IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddScoped<ICompletedBatchRepository, CompletedBatchRepository>();
+        serviceCollection.AddScoped<ICompletedBatchFactory, CompletedBatchFactory>();
+        serviceCollection.AddScoped<IRegisterCompletedBatchesHandler, RegisterCompletedBatchesHandler>();
     }
 
     private static void AddInfrastructure(
@@ -69,6 +97,7 @@ public static class EventsRegistration
     private static void RegisterHostedServices(IServiceCollection serviceCollection)
     {
         serviceCollection.AddHostedService<AggregatedTimeSeriesServiceBusWorker>();
+        serviceCollection.AddHostedService<ReceiveIntegrationEventServiceBusWorker>();
         serviceCollection.AddHostedService<RegisterCompletedBatchesTrigger>();
         serviceCollection
             .AddHealthChecks()
