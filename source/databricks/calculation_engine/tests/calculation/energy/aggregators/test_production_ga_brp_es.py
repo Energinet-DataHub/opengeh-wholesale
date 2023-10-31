@@ -465,13 +465,3 @@ def test__each_grid_area_has_a_sum(
 #     )
 #     result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
 #     assert result_df.first().quality == expected_quality
-
-
-# TODO BJM
-# def test__when_time_series_point_is_missing__quality_has_value_incomplete(
-#     enriched_time_series_factory: Callable[..., QuarterlyMeteringPointTimeSeries],
-# ) -> None:
-#     df = enriched_time_series_factory().withColumn(Colname.quality, F.lit(None))
-#
-#     result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
-#     assert result_df.first().quality == QuantityQuality.MISSING.value
