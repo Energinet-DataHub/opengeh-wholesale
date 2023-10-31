@@ -52,7 +52,7 @@ def calculate_tariff_price_per_ga_co_es(tariffs: DataFrame) -> DataFrame:
         Colname.charge_type,
         Colname.charge_owner,
         Colname.charge_tax,
-        Colname.charge_resolution.alias(
+        f.col(Colname.charge_resolution).alias(
             Colname.wholesale_result_resolution
         ),  # For these tariffs the input resolution equals output resolution
         Colname.charge_price,
