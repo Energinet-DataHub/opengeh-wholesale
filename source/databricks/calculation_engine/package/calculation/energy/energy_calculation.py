@@ -33,7 +33,7 @@ def execute(
     batch_id: str,
     batch_process_type: ProcessType,
     batch_execution_time_start: datetime,
-    time_series_quarter_points_df: QuarterlyMeteringPointTimeSeries,
+    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
     grid_loss_responsible_df: DataFrame,
 ) -> None:
     calculation_result_writer = EnergyCalculationResultWriter(
@@ -45,7 +45,7 @@ def execute(
     _calculate(
         batch_process_type,
         calculation_result_writer,
-        time_series_quarter_points_df,
+        quarterly_metering_point_time_series,
         grid_loss_responsible_df,
     )
 
@@ -53,27 +53,27 @@ def execute(
 def _calculate(
     process_type: ProcessType,
     result_writer: EnergyCalculationResultWriter,
-    time_series_quarter_points_df: QuarterlyMeteringPointTimeSeries,
+    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
     grid_loss_responsible_df: DataFrame,
 ) -> None:
     net_exchange_per_ga = _calculate_net_exchange(
-        process_type, result_writer, time_series_quarter_points_df
+        process_type, result_writer, quarterly_metering_point_time_series
     )
 
     temporary_production_per_ga_and_brp_and_es = (
         _calculate_temporary_production_per_per_ga_and_brp_and_es(
-            result_writer, time_series_quarter_points_df
+            result_writer, quarterly_metering_point_time_series
         )
     )
 
     temporary_flex_consumption_per_ga_and_brp_and_es = (
         _calculate_temporary_flex_consumption_per_per_ga_and_brp_and_es(
-            result_writer, time_series_quarter_points_df
+            result_writer, quarterly_metering_point_time_series
         )
     )
 
     consumption_per_ga_and_brp_and_es = _calculate_consumption_per_ga_and_brp_and_es(
-        time_series_quarter_points_df
+        quarterly_metering_point_time_series
     )
 
     positive_grid_loss, negative_grid_loss = _calculate_grid_loss(
@@ -116,13 +116,13 @@ def _calculate(
 def _calculate_net_exchange(
     process_type: ProcessType,
     result_writer: EnergyCalculationResultWriter,
-    time_series_quarter_points_df: QuarterlyMeteringPointTimeSeries,
+    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
 ) -> EnergyResults:
     if _is_aggregation_or_balance_fixing(process_type):
         # Could the exchange_per_neighbour_ga be re-used for NET_EXCHANGE_PER_GA?
         exchange_per_neighbour_ga = (
             exchange_aggr.aggregate_net_exchange_per_neighbour_ga(
-                time_series_quarter_points_df
+                quarterly_metering_point_time_series
             )
         )
 
@@ -133,7 +133,7 @@ def _calculate_net_exchange(
         )
 
     exchange_per_grid_area = exchange_aggr.aggregate_net_exchange_per_ga(
-        time_series_quarter_points_df
+        quarterly_metering_point_time_series
     )
 
     result_writer.write(
@@ -146,12 +146,12 @@ def _calculate_net_exchange(
 
 
 def _calculate_consumption_per_ga_and_brp_and_es(
-    time_series_quarter_points_df: QuarterlyMeteringPointTimeSeries,
+    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
 ) -> EnergyResults:
     # Non-profiled consumption per balance responsible party and energy supplier
     consumption_per_ga_and_brp_and_es = (
         aggregators.aggregate_non_profiled_consumption_ga_brp_es(
-            time_series_quarter_points_df
+            quarterly_metering_point_time_series
         )
     )
     return consumption_per_ga_and_brp_and_es
@@ -159,10 +159,10 @@ def _calculate_consumption_per_ga_and_brp_and_es(
 
 def _calculate_temporary_production_per_per_ga_and_brp_and_es(
     result_writer: EnergyCalculationResultWriter,
-    time_series_quarter_points_df: QuarterlyMeteringPointTimeSeries,
+    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
 ) -> EnergyResults:
     temporary_production_per_per_ga_and_brp_and_es = (
-        aggregators.aggregate_production_ga_brp_es(time_series_quarter_points_df)
+        aggregators.aggregate_production_ga_brp_es(quarterly_metering_point_time_series)
     )
     # temp production per grid area - used as control result for grid loss
     temporary_production_per_ga = aggregators.aggregate_production_ga(
@@ -178,10 +178,10 @@ def _calculate_temporary_production_per_per_ga_and_brp_and_es(
 
 def _calculate_temporary_flex_consumption_per_per_ga_and_brp_and_es(
     result_writer: EnergyCalculationResultWriter,
-    time_series_quarter_points_df: QuarterlyMeteringPointTimeSeries,
+    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
 ) -> EnergyResults:
     temporary_flex_consumption_per_ga_and_brp_and_es = (
-        aggregators.aggregate_flex_consumption_ga_brp_es(time_series_quarter_points_df)
+        aggregators.aggregate_flex_consumption_ga_brp_es(quarterly_metering_point_time_series)
     )
     # temp flex consumption per grid area - used as control result for grid loss
     temporary_flex_consumption_per_ga = aggregators.aggregate_flex_consumption_ga(

@@ -29,7 +29,7 @@ from package.calculation_input.schemas import (
 
 # TODO BJM: Settle on name: Basis data ts? Enriched ts? Metering point ts? Other?
 #           And update file names, suts, variables etc
-def get_basis_data_time_series_points_df(
+def get_metering_point_time_series(
     raw_time_series_points_df: DataFrame,
     metering_point_periods_df: DataFrame,
     period_start_datetime: datetime,

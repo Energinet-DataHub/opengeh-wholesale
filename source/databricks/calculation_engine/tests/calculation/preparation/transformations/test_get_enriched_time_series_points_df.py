@@ -21,7 +21,7 @@ from pyspark.sql.types import Row
 
 from package.calculation.energy.schemas import basis_data_time_series_points_schema
 from package.calculation.preparation.transformations import (
-    get_basis_data_time_series_points_df,
+    get_metering_point_time_series,
 )
 from package.constants import Colname
 
@@ -110,7 +110,7 @@ def test__when_success__returns_dataframe_with_expected_schema(
     )
 
     # Act
-    actual = get_basis_data_time_series_points_df(
+    actual = get_metering_point_time_series(
         raw_time_series_points,
         metering_point_period_df,
         timestamp_factory(start_time),
@@ -154,7 +154,7 @@ def test__given_different_from_date_and_to_date__return_dataframe_with_correct_n
     )
 
     # Act
-    actual = get_basis_data_time_series_points_df(
+    actual = get_metering_point_time_series(
         raw_time_series_points,
         metering_point_period_df,
         timestamp_factory(from_date),
@@ -181,7 +181,7 @@ def test__missing_point_has_quantity_0_for_quarterly_resolution(
         to_date=timestamp_factory(end_time),
     )
     # Act
-    actual = get_basis_data_time_series_points_df(
+    actual = get_metering_point_time_series(
         raw_time_series_points,
         metering_point_period_df,
         timestamp_factory(start_time),
@@ -213,7 +213,7 @@ def test__missing_point_has_quantity_0_for_hourly_resolution(
     )
 
     # Act
-    actual = get_basis_data_time_series_points_df(
+    actual = get_metering_point_time_series(
         raw_time_series_points,
         metering_point_period_df,
         timestamp_factory(start_time),
@@ -245,7 +245,7 @@ def test__df_is_not_empty_when_no_time_series_points(
     )
 
     # Act
-    actual = get_basis_data_time_series_points_df(
+    actual = get_metering_point_time_series(
         empty_raw_time_series_points,
         metering_point_period_df,
         timestamp_factory(start_time),
@@ -324,7 +324,7 @@ def test__df_has_expected_row_count_according_to_dst(
     )
 
     # Act
-    actual = get_basis_data_time_series_points_df(
+    actual = get_metering_point_time_series(
         raw_time_series_points,
         metering_point_period_df,
         timestamp_factory(period_start),
@@ -403,7 +403,7 @@ def test__support_metering_point_period_switch_on_resolution_provides_correct_nu
     )
 
     # Act
-    actual = get_basis_data_time_series_points_df(
+    actual = get_metering_point_time_series(
         raw_time_series_points,
         metering_point_period_df.union(second_metering_point_period_df),
         timestamp_factory(from_date),
@@ -444,7 +444,7 @@ def test__when_time_series_point_is_missing__quality_has_value_incomplete(
     )
 
     # Act
-    actual = get_basis_data_time_series_points_df(
+    actual = get_metering_point_time_series(
         empty_time_series,
         metering_point_period_df,
         timestamp_factory(start_time),
@@ -479,7 +479,7 @@ def test__when_time_series_point_is_missing__quantity_is_zero(
     )
 
     # Act
-    actual = get_basis_data_time_series_points_df(
+    actual = get_metering_point_time_series(
         empty_time_series,
         metering_point_period_df,
         timestamp_factory(start_time),
