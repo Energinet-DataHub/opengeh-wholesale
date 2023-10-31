@@ -112,6 +112,8 @@ public class CalculationResultCompletedFactoryTests
 
     private EnergyResult CreateEnergyResult()
     {
+        var quantityQualities = new List<QuantityQuality> { QuantityQuality.Estimated };
+
         return new EnergyResult(
             _id,
             _batchId,
@@ -121,9 +123,9 @@ public class CalculationResultCompletedFactoryTests
             _balanceResponsibleId,
             new EnergyTimeSeriesPoint[]
             {
-                new(new DateTime(2021, 1, 1), 1, QuantityQuality.Estimated),
-                new(new DateTime(2021, 1, 1), 2, QuantityQuality.Estimated),
-                new(new DateTime(2021, 1, 1), 3, QuantityQuality.Estimated),
+                new(new DateTime(2021, 1, 1), 1, quantityQualities),
+                new(new DateTime(2021, 1, 1), 2, quantityQualities),
+                new(new DateTime(2021, 1, 1), 3, quantityQualities),
             },
             Common.Models.ProcessType.Aggregation,
             _periodStart,
@@ -146,7 +148,7 @@ public class CalculationResultCompletedFactoryTests
         };
         calculationResultCompleted.TimeSeriesPoints.AddRange(
             energyResult.TimeSeriesPoints.Select(
-                p => new Contracts.Events.TimeSeriesPoint
+                p => new TimeSeriesPoint
                 {
                     Time = p.Time.ToTimestamp(),
                     Quantity = p.Quantity,

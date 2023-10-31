@@ -12,11 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
+using Google.Protobuf.WellKnownTypes;
+using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
-
-public interface ICalculationResultCompletedFactory
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Common
 {
-    Contracts.Events.CalculationResultCompleted Create(EnergyResult result);
+    public static class InstantExtensions
+    {
+        public static Timestamp ToTimestamp(this Instant instant)
+        {
+            return Timestamp.FromDateTimeOffset(instant.ToDateTimeOffset());
+        }
+    }
 }
