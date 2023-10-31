@@ -70,7 +70,9 @@ message AmountPerChargeResultProducedV1 {
 
   bool is_tax = 14;
 
-  repeated TimeSeriesPoint time_series_points = 15;
+  Currency currency = 15;
+
+  repeated TimeSeriesPoint time_series_points = 16;
 
    // ---------------------------- NESTED TYPES BELOW ----------------------------------------
 
@@ -155,6 +157,11 @@ message AmountPerChargeResultProducedV1 {
     SETTLEMENT_METHOD_UNSPECIFIED = 0;
     SETTLEMENT_METHOD_FLEX = 1;
     SETTLEMENT_METHOD_NON_PROFILED = 2;
+  }
+
+  enum Currency {
+    CURRENCY_UNSPECIFIED = 0;
+    CURRENCY_DKK = 1;
   }
 
   message TimeSeriesPoint {

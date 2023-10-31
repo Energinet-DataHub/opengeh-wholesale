@@ -53,7 +53,9 @@ message TotalMonthlyAmountResultProducedV1 {
 
   optional string charge_owner_id = 7;
 
-  optional DecimalValue amount = 8;
+  Currency currency = 8;
+
+  optional DecimalValue amount = 9;
 
   // ---------------------------- NESTED TYPES BELOW ----------------------------------------
 
@@ -67,5 +69,10 @@ message TotalMonthlyAmountResultProducedV1 {
     CALCULATION_TYPE_FIRST_CORRECTION_SETTLEMENT = 2;
     CALCULATION_TYPE_SECOND_CORRECTION_SETTLEMENT = 3;
     CALCULATION_TYPE_THIRD_CORRECTION_SETTLEMENT = 4;
+  }
+
+  enum Currency {
+    CURRENCY_UNSPECIFIED = 0;
+    CURRENCY_DKK = 1;
   }
 }

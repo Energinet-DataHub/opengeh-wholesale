@@ -61,10 +61,12 @@ message MonthlyAmountPerChargeResultProducedV1 {
 
   bool is_tax = 11;
 
+  Currency currency = 12;
+
   /*
    * 6 digit scale decimal value of the amount.
    */
-  optional DecimalValue amount = 12;
+  optional DecimalValue amount = 13;
 
   // ---------------------------- NESTED TYPES BELOW ----------------------------------------
 
@@ -85,6 +87,11 @@ message MonthlyAmountPerChargeResultProducedV1 {
     CHARGE_TYPE_FEE = 1;
     CHARGE_TYPE_TARIFF = 2;
     CHARGE_TYPE_SUBSCRIPTION = 3;
+  }
+
+  enum Currency {
+    CURRENCY_UNSPECIFIED = 0;
+    CURRENCY_DKK = 1;
   }
 
   enum QuantityUnit {
