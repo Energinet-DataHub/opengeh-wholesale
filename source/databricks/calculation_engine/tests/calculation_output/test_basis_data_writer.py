@@ -47,8 +47,12 @@ TIME_ZONE = "Europe/Copenhagen"
 def metering_point_time_series_factory(spark: SparkSession) -> Callable[..., DataFrame]:
     def factory() -> DataFrame:
         df = []
-        df.append(_create_metering_point_time_series_point(MeteringPointResolution.HOUR))
-        df.append(_create_metering_point_time_series_point(MeteringPointResolution.QUARTER))
+        df.append(
+            _create_metering_point_time_series_point(MeteringPointResolution.HOUR)
+        )
+        df.append(
+            _create_metering_point_time_series_point(MeteringPointResolution.QUARTER)
+        )
         return spark.createDataFrame(df)
 
     return factory
@@ -163,7 +167,7 @@ def test__write__writes_to_paths_that_match_contract(
     contracts_path: str,
     tmpdir: Path,
     metering_point_period_df_factory: Callable[..., DataFrame],
-        metering_point_time_series_factory,
+    metering_point_time_series_factory,
 ) -> None:
     """
     This test calls 'write' once and then asserts on all file contracts.
