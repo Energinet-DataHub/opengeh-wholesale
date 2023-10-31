@@ -36,7 +36,6 @@ from package.codelists import (
     MeteringPointType,
     SettlementMethod,
     QuantityQuality,
-    MeteringPointResolution,
 )
 from package.constants import Colname
 
@@ -81,10 +80,8 @@ def time_series_row_factory(
                 Colname.energy_supplier_id: [supplier],
                 Colname.quantity: [quantity],
                 Colname.time_window: [obs_time],
-                Colname.quarter_time: [obs_time],
                 Colname.observation_time: [obs_time],
                 Colname.quality: [QuantityQuality.ESTIMATED.value],
-                Colname.resolution: [MeteringPointResolution.QUARTER.value],
             }
         )
         df = spark.createDataFrame(pandas_df).withColumn(
@@ -205,7 +202,6 @@ def test_returns_distinct_rows_for_observations_in_different_hours(
     row2_df = time_series_row_factory(obs_time=diff_obs_time)
     df = row1_df.df.union(row2_df.df)
     df = QuarterlyMeteringPointTimeSeries(df)
-    # TODO BJM: Need to sort by time_window?
     aggregated_df = aggregate_flex_consumption_ga_brp_es(df)
 
     assert aggregated_df.df.count() == 2

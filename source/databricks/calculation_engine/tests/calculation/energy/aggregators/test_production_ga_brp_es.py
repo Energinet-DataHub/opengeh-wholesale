@@ -20,7 +20,6 @@ import pyspark.sql.functions as F
 import pytest
 from pandas.core.frame import DataFrame as PandasDataFrame
 from pyspark.sql import SparkSession
-from pyspark.sql.types import DecimalType
 
 from package.calculation.energy.aggregators import (
     aggregate_production_ga_brp_es,
@@ -35,7 +34,6 @@ from package.calculation.preparation.quarterly_metering_point_time_series import
 from package.codelists import (
     MeteringPointType,
     QuantityQuality,
-    MeteringPointResolution,
     SettlementMethod,
 )
 from package.constants import Colname
@@ -76,9 +74,7 @@ def enriched_time_series_factory(
                 Colname.quantity: quantity,
                 Colname.observation_time: obs_time_datetime,
                 Colname.time_window: obs_time_datetime,
-                Colname.quarter_time: obs_time_datetime,
                 Colname.quality: quality,
-                Colname.resolution: MeteringPointResolution.QUARTER.value,
                 Colname.settlement_method: SettlementMethod.NON_PROFILED.value,
             }
         ]
@@ -124,7 +120,7 @@ def check_aggregation_row(
     grid: str,
     responsible: str,
     supplier: str,
-    sum: Decimal,
+    sum_quantity: Decimal,
     start: datetime,
     end: datetime,
 ) -> None:
@@ -140,7 +136,7 @@ def check_aggregation_row(
     assert pandas_df[Colname.grid_area][row] == grid
     assert pandas_df[Colname.balance_responsible_id][row] == responsible
     assert pandas_df[Colname.energy_supplier_id][row] == supplier
-    assert pandas_df[Colname.sum_quantity][row] == sum
+    assert pandas_df[Colname.sum_quantity][row] == sum_quantity
     assert pandas_df[Colname.time_window][row].start == start
     assert pandas_df[Colname.time_window][row].end == end
 
@@ -466,13 +462,3 @@ def test__each_grid_area_has_a_sum(
 #     )
 #     result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
 #     assert result_df.first().quality == expected_quality
-
-
-# TODO BJM
-# def test__when_time_series_point_is_missing__quality_has_value_incomplete(
-#     enriched_time_series_factory: Callable[..., QuarterlyMeteringPointTimeSeries],
-# ) -> None:
-#     df = enriched_time_series_factory().withColumn(Colname.quality, F.lit(None))
-#
-#     result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
-#     assert result_df.first().quality == QuantityQuality.MISSING.value

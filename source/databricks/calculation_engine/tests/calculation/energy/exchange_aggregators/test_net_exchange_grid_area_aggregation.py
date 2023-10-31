@@ -32,7 +32,6 @@ from package.calculation.preparation.quarterly_metering_point_time_series import
 from package.codelists import (
     MeteringPointType,
     QuantityQuality,
-    MeteringPointResolution,
     SettlementMethod,
 )
 from package.constants import Colname
@@ -61,7 +60,6 @@ def enriched_time_series_data_frame(
             Colname.quantity: [],
             Colname.observation_time: [],
             Colname.quality: [],
-            Colname.resolution: [],
         }
     )
 
@@ -185,7 +183,6 @@ def enriched_time_series_data_frame(
         .withColumn(
             Colname.time_window, window(col(Colname.observation_time), "15 minutes")
         )
-        .withColumn(Colname.quarter_time, col(Colname.observation_time))
         .withColumn(Colname.settlement_method, lit(SettlementMethod.NON_PROFILED.value))
     )
     return QuarterlyMeteringPointTimeSeries(df)
@@ -211,7 +208,6 @@ def add_row_of_data(
         Colname.quantity: quantity,
         Colname.observation_time: timestamp,
         Colname.quality: QuantityQuality.ESTIMATED.value,
-        Colname.resolution: MeteringPointResolution.QUARTER.value,
     }
     return pandas_df.append(new_row, ignore_index=True)
 

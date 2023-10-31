@@ -16,18 +16,17 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
 
-public static class ChargeTypeMapper
+public static class AmountTypeMapper
 {
-    public static ChargeType FromDeltaTableValue(string chargeType) =>
-        chargeType switch
+    public static AmountType FromDeltaTableValue(string amountType) =>
+        amountType switch
         {
-            "fee" => ChargeType.Fee,
-            "subscription" => ChargeType.Subscription,
-            "tariff" => ChargeType.Tariff,
-
+            "amount_per_charge" => AmountType.AmountPerCharge,
+            "monthly_amount_per_charge" => AmountType.MonthlyAmountPerCharge,
+            "total_monthly_amount" => AmountType.TotalMonthlyAmount,
             _ => throw new ArgumentOutOfRangeException(
-                nameof(chargeType),
-                actualValue: chargeType,
-                "Value does not contain a valid string representation of a charge type."),
+                nameof(amountType),
+                actualValue: amountType,
+                "Value does not contain a valid string representation of a amount type."),
         };
 }

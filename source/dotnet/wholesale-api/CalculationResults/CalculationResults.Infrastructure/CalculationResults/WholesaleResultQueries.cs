@@ -98,6 +98,7 @@ ORDER BY {WholesaleResultColumnNames.CalculationResultId}, {WholesaleResultColum
         WholesaleResultColumnNames.CalculationType,
         WholesaleResultColumnNames.GridArea,
         WholesaleResultColumnNames.EnergySupplierId,
+        WholesaleResultColumnNames.AmountType,
         WholesaleResultColumnNames.MeteringPointType,
         WholesaleResultColumnNames.SettlementMethod,
         WholesaleResultColumnNames.ChargeType,
