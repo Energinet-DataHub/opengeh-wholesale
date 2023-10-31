@@ -15,6 +15,7 @@
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Core.Messaging.Communication;
+using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Energinet.DataHub.Wholesale.Events.Application.Options;
@@ -40,12 +41,7 @@ public static class EventsRegistration
         serviceCollection.AddApplication();
         serviceCollection.AddInfrastructure();
 
-        serviceCollection.AddCommunication<IntegrationEventProvider>(_ => new CommunicationSettings
-        {
-            ServiceBusIntegrationEventWriteConnectionString =
-                serviceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING,
-            IntegrationEventTopicName = serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME,
-        });
+        serviceCollection.AddIntegrationEventPublisher(serviceBusOptions);
 
         RegisterHostedServices(serviceCollection);
     }
@@ -74,6 +70,21 @@ public static class EventsRegistration
             .AddScoped<IMonthlyAmountPerChargeResultProducedV1Factory, MonthlyAmountPerChargeResultProducedV1Factory>()
             .AddScoped<IEventsDatabaseContext, EventsDatabaseContext>()
             .AddSingleton<IJsonSerializer, JsonSerializer>();
+    }
+
+    private static void AddIntegrationEventPublisher(this IServiceCollection serviceCollection, ServiceBusOptions serviceBusOptions)
+    {
+        // Register integration event publisher
+        serviceCollection.Configure<PublisherOptions>(options =>
+        {
+            options.ServiceBusConnectionString = serviceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING;
+            options.TopicName = serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME;
+        });
+        serviceCollection.AddPublisher<IntegrationEventProvider>();
+
+        // Register hosted service for publishing integration events
+        serviceCollection.Configure<PublisherWorkerOptions>(options => options.HostedServiceExecutionDelayMs = 10000);
+        serviceCollection.AddPublisherWorker();
     }
 
     private static void RegisterHostedServices(IServiceCollection serviceCollection)

@@ -16,13 +16,15 @@ using System.Reflection;
 using AutoFixture;
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.Messaging.Communication;
-using Energinet.DataHub.Core.Messaging.Communication.Internal;
+using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using FluentAssertions;
+using FluentAssertions.Execution;
+using Microsoft.ApplicationInsights.WindowsServer;
 using Moq;
 using NodaTime;
 using Test.Core.Attributes;
@@ -101,7 +103,7 @@ public class IntegrationEventProviderTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_WhenUnpublishedBatchWithMultipleEnergyResultEvents_ReturnsOneEventPerResult(
+    public async Task GetAsync_WhenBatchWithMultipleEnergyResultEvents_ReturnsOneEventPerResult(
         CompletedBatch completedBatch,
         IntegrationEvent[] anyIntegrationEvents,
         [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
@@ -122,6 +124,34 @@ public class IntegrationEventProviderTests
         var actualEvents = await sut.GetAsync().ToListAsync();
 
         // Assert
+        actualEvents.Should().HaveCount(anyIntegrationEvents.Length);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetAsync_WhenRetrievalOfEnergyResultEventsFails_ReturnsEventsUpUntilFailureAndSetsPublishedTimeOfBatchToUnixEpoch(
+        CompletedBatch completedBatch,
+        IntegrationEvent[] anyIntegrationEvents,
+        [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
+        [Frozen] Mock<IEnergyResultEventProvider> energyResultEventProviderMock,
+        IntegrationEventProvider sut)
+    {
+        // Arrange
+        completedBatchRepositoryMock
+            .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
+            .ReturnsAsync(completedBatch)
+            .ReturnsAsync((CompletedBatch)null!);
+
+        energyResultEventProviderMock
+            .Setup(mock => mock.GetAsync(completedBatch))
+            .Returns(ThrowsExceptionAfterAllItems(anyIntegrationEvents));
+
+        // Act
+        var actualEvents = await sut.GetAsync().ToListAsync();
+
+        // Assert
+        using var assertionAcope = new AssertionScope();
+        completedBatch.PublishedTime.Should().Be(NodaConstants.UnixEpoch);
         actualEvents.Should().HaveCount(anyIntegrationEvents.Length);
     }
 
@@ -156,6 +186,42 @@ public class IntegrationEventProviderTests
         var actualEvents = await sut.GetAsync().ToListAsync();
 
         // Assert
+        actualEvents.Should().HaveCount(anyIntegrationEvents.Length);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetAsync_WhenBatchCanContainWholesaleResultsAndRetrievalOfWholesaleResultEventsFails_ReturnsEventsUpUntilFailureAndSetsPublishedTimeOfBatchToUnixEpoch(
+        IntegrationEvent[] anyIntegrationEvents,
+        [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
+        [Frozen] Mock<IWholesaleResultEventProvider> wholesaleResultEventProviderMock,
+        IntegrationEventProvider sut)
+    {
+        // Arrange
+        var fixture = new Fixture();
+        var completedBatch = fixture
+            .Build<CompletedBatch>()
+            .With(p => p.ProcessType, ProcessType.WholesaleFixing)
+            .Create();
+
+        completedBatchRepositoryMock
+            .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
+            .ReturnsAsync(completedBatch)
+            .ReturnsAsync((CompletedBatch)null!);
+
+        wholesaleResultEventProviderMock
+            .Setup(mock => mock.CanContainWholesaleResults(completedBatch))
+            .Returns(true);
+        wholesaleResultEventProviderMock
+            .Setup(mock => mock.GetAsync(completedBatch))
+            .Returns(ThrowsExceptionAfterAllItems(anyIntegrationEvents));
+
+        // Act
+        var actualEvents = await sut.GetAsync().ToListAsync();
+
+        // Assert
+        using var assertionAcope = new AssertionScope();
+        completedBatch.PublishedTime.Should().Be(NodaConstants.UnixEpoch);
         actualEvents.Should().HaveCount(anyIntegrationEvents.Length);
     }
 
@@ -228,5 +294,15 @@ public class IntegrationEventProviderTests
 
         // Assert
         actualImplementations.Should().HaveCount(1, $"The interface {nameof(IIntegrationEventProvider)} must be implemented.");
+    }
+
+    private static async IAsyncEnumerable<IntegrationEvent> ThrowsExceptionAfterAllItems(IntegrationEvent[] integrationEvents)
+    {
+        await foreach (var integrationEvent in integrationEvents.ToAsyncEnumerable())
+        {
+            yield return integrationEvent;
+        }
+
+        throw new Exception("Simulate retrieval is failing with an exception.");
     }
 }
