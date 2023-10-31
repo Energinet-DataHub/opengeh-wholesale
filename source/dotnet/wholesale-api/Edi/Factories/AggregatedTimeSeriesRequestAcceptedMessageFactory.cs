@@ -52,7 +52,7 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
         };
     }
 
-    private static IEnumerable<TimeSeriesPoint> CreateTimeSeriesPoints(EnergyResult energyResult)
+    private static IReadOnlyCollection<TimeSeriesPoint> CreateTimeSeriesPoints(EnergyResult energyResult)
     {
         const decimal nanoFactor = 1_000_000_000;
         var points = new List<TimeSeriesPoint>();

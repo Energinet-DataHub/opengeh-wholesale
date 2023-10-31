@@ -38,7 +38,6 @@
       <ProtoCompile>True</ProtoCompile>
       <ProtoRoot>IntegrationEvents/Common/Protos/</ProtoRoot>
       <CompileOutputs>True</CompileOutputs>
-      <OutputDir>obj\contracts\v2</OutputDir>
       <Generator>MSBuild:Compile</Generator>
     </Protobuf>
     <Protobuf Include="IntegrationEvents/EnergyResultProducedV2/Protos/*.proto">
@@ -47,7 +46,6 @@
       <ProtoCompile>True</ProtoCompile>
       <ProtoRoot>IntegrationEvents</ProtoRoot>
       <CompileOutputs>True</CompileOutputs>
-      <OutputDir>obj\contracts\v2</OutputDir>
       <Generator>MSBuild:Compile</Generator>
     </Protobuf>
   </ItemGroup>
