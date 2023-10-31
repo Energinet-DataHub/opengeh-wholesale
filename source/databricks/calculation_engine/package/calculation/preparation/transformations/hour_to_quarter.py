@@ -22,7 +22,7 @@ from package.calculation.preparation.quarterly_metering_point_time_series import
 from package.constants import Colname
 from package.codelists import MeteringPointResolution
 from package.common import assert_schema
-from package.calculation.energy.schemas import basis_data_time_series_points_schema
+from package.calculation.energy.schemas import metering_point_time_series_schema
 
 
 def transform_hour_to_quarter(
@@ -30,7 +30,7 @@ def transform_hour_to_quarter(
 ) -> QuarterlyMeteringPointTimeSeries:
     assert_schema(
         metering_point_time_series.schema,
-        basis_data_time_series_points_schema,
+        metering_point_time_series_schema,
     )
 
     result = metering_point_time_series.withColumn(

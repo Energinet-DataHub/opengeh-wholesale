@@ -19,7 +19,7 @@ from datetime import datetime
 from pyspark.sql import SparkSession
 from pyspark.sql.types import Row
 
-from package.calculation.energy.schemas import basis_data_time_series_points_schema
+from package.calculation.energy.schemas import metering_point_time_series_schema
 from package.calculation.preparation.transformations import (
     get_metering_point_time_series,
 )
@@ -118,7 +118,7 @@ def test__when_success__returns_dataframe_with_expected_schema(
     )
 
     # Assert
-    assert actual.schema == basis_data_time_series_points_schema
+    assert actual.schema == metering_point_time_series_schema
 
 
 @pytest.mark.parametrize(
