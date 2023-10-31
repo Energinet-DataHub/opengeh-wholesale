@@ -68,6 +68,8 @@ def _create_df(spark: SparkSession) -> DataFrame:
         (EnergyResultColumnNames.from_grid_area, "12"),
         (EnergyResultColumnNames.from_grid_area, "1234"),
         (EnergyResultColumnNames.time, None),
+        (EnergyResultColumnNames.quantity, None),
+        (EnergyResultColumnNames.quantity, Decimal("0.1234")),
         (EnergyResultColumnNames.quantity_qualities, []),
         (EnergyResultColumnNames.quantity_qualities, [None]),
         (EnergyResultColumnNames.quantity_qualities, ["foo"]),
