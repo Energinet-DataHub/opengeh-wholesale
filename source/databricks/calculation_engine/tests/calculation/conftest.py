@@ -249,7 +249,7 @@ def metering_point_period_factory(spark: SparkSession) -> Callable[..., DataFram
                 Colname.calculation_type: DataframeDefaults.default_calculation_type,
                 Colname.settlement_method: settlement_method,
                 Colname.grid_area: grid_area,
-                Colname.charge_resolution: resolution,
+                Colname.resolution: resolution,
                 Colname.from_grid_area: from_grid_area,
                 Colname.to_grid_area: to_grid_area,
                 Colname.parent_metering_point_id: parent_metering_point_id,

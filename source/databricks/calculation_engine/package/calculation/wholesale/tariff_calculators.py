@@ -16,7 +16,7 @@ from datetime import datetime
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
 
-from package.codelists import ChargeResolution, ChargeUnit
+from package.codelists import ChargeUnit, WholesaleResultResolution
 from package.common import assert_schema
 from package.constants import Colname
 from .schemas.tariffs_schema import tariff_schema
@@ -52,7 +52,9 @@ def calculate_tariff_price_per_ga_co_es(tariffs: DataFrame) -> DataFrame:
         Colname.charge_type,
         Colname.charge_owner,
         Colname.charge_tax,
-        Colname.charge_resolution,
+        Colname.charge_resolution.alias(
+            Colname.wholesale_result_resolution
+        ),  # For these tariffs the input resolution equals output resolution
         Colname.charge_price,
         Colname.total_quantity,
         Colname.charge_count,
@@ -115,7 +117,9 @@ def sum_within_month(df: DataFrame, period_start_datetime: datetime) -> DataFram
             f.col(Colname.unit),
             f.col(Colname.qualities),
             f.lit(period_start_datetime).alias(Colname.charge_time),
-            f.lit(ChargeResolution.MONTH.value).alias(Colname.charge_resolution),
+            f.lit(WholesaleResultResolution.MONTH.value).alias(
+                Colname.wholesale_result_resolution
+            ),
             f.lit(None).alias(Colname.metering_point_type),
             f.lit(None).alias(Colname.settlement_method),
             f.col(Colname.charge_price),
