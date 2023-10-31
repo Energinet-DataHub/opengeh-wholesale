@@ -39,14 +39,16 @@ def create_row(
     to_grid_area: str = DEFAULT_TO_GRID_AREA,
     observation_time: datetime = DEFAULT_OBSERVATION_TIME,
     sum_quantity: int | Decimal = DEFAULT_SUM_QUANTITY,
-    qualities: None | list[QuantityQuality] = None,
+    qualities: None | QuantityQuality | list[QuantityQuality] = None,
     metering_point_type: MeteringPointType = DEFAULT_METERING_POINT_TYPE,
 ) -> Row:
-    if type(sum_quantity) == int:
+    if isinstance(sum_quantity, int):
         sum_quantity = Decimal(sum_quantity)
 
     if qualities is None:
         qualities = DEFAULT_QUALITIES
+    elif isinstance(qualities, QuantityQuality):
+        qualities = [qualities]
     qualities = [q.value for q in qualities]
 
     row = {
@@ -64,16 +66,14 @@ def create_row(
         Colname.metering_point_type: metering_point_type.value,
         Colname.settlement_method: None,
     }
-    if type(qualities) == str:
-        row[Colname.qualities] = [qualities]
 
     return Row(**row)
 
 
 def create(spark: SparkSession, data: None | Row | list[Row] = None) -> EnergyResults:
-    if type(data) == Row:
-        data = [data]
-    elif type(data) is None:
+    if data is None:
         data = [create_row()]
+    elif isinstance(data, Row):
+        data = [data]
     df = spark.createDataFrame(data, schema=energy_results_schema)
     return EnergyResults(df)
