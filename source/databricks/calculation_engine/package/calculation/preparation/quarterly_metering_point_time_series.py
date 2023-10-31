@@ -42,9 +42,7 @@ class QuarterlyMeteringPointTimeSeries(DataFrameWrapper):
             Colname.from_grid_area,
             Colname.metering_point_id,
             Colname.metering_point_type,
-            # TODO BJM: Does it make sense to require a resolution col in a "quarterly type"
-            Colname.resolution,
-            # TODO BJM: Does it make sense to have both observation_time, time_window and resolution?
+            # TODO BJM: Does it make sense to have both observation_time, and time_window?
             Colname.observation_time,
             Colname.quantity,
             Colname.quality,
@@ -76,7 +74,6 @@ _time_series_quarter_points_schema = t.StructType(
         t.StructField(Colname.from_grid_area, t.StringType(), True),
         t.StructField(Colname.metering_point_id, t.StringType(), False),
         t.StructField(Colname.metering_point_type, t.StringType(), False),
-        t.StructField(Colname.resolution, t.StringType(), False),
         t.StructField(Colname.observation_time, t.TimestampType(), False),
         t.StructField(Colname.quantity, t.DecimalType(18, 6), False),
         t.StructField(Colname.quality, t.StringType(), False),
