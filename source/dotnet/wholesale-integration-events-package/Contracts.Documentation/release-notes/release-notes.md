@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 5.1.0
+
+Added 'Currency' to 'AmountPerChargeResultProducedV1' and 'MonthlyAmountPerChargeResultProducedV1
+
 ## Version 5.0.0
 
 Updated produced events to use an interface `IEventMessage` for exposing `EventName` and `EventMinorVersion`.
