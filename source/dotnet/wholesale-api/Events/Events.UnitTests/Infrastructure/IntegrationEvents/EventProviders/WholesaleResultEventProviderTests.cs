@@ -122,7 +122,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
                 "chargeOwnerId",
                 false,
                 QuantityUnit.Kwh,
-                amountType == AmountType.AmountPerCharge ? ChargeResolution.Hour : ChargeResolution.Month,
+                amountType == AmountType.AmountPerCharge ? Resolution.Hour : Resolution.Month,
                 MeteringPointType.Production,
                 null,
                 new WholesaleTimeSeriesPoint[]

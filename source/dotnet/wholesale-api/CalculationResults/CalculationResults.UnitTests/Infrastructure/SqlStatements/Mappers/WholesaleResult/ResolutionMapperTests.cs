@@ -20,7 +20,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SqlStatements.Mappers.WholesaleResult
 {
-    public class ChargeResolutionMapperTests
+    public class ResolutionMapperTests
     {
         private const string DocumentPath = "DeltaTableContracts.enums.charge-resolution.json";
 
@@ -32,7 +32,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
             var validDeltaValues = await ContractComplianceTestHelper.GetCodeListValuesAsync(stream);
 
             // Act
-            var expectedLength = Enum.GetNames(typeof(ChargeResolution)).Length;
+            var expectedLength = Enum.GetNames(typeof(Resolution)).Length;
 
             // Assert
             expectedLength.Should().Be(validDeltaValues.Count);
@@ -62,7 +62,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
             foreach (var validDeltaValue in validDeltaValues)
             {
                 // Act
-                var actual = ChargeResolutionMapper.FromDeltaTableValue(validDeltaValue);
+                var actual = ResolutionMapper.FromDeltaTableValue(validDeltaValue);
 
                 // Assert it's a defined enum value (and not null)
                 actual.Should().BeDefined();
@@ -70,13 +70,13 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
         }
 
         [Theory]
-        [InlineData("P1M", ChargeResolution.Month)]
-        [InlineData("P1D", ChargeResolution.Day)]
-        [InlineData("PT1H", ChargeResolution.Hour)]
-        public void FromDeltaTableValue_WhenValidDeltaTableValue_ReturnsExpectedType(string deltaTableValue, ChargeResolution expectedType)
+        [InlineData("P1M", Resolution.Month)]
+        [InlineData("P1D", Resolution.Day)]
+        [InlineData("PT1H", Resolution.Hour)]
+        public void FromDeltaTableValue_WhenValidDeltaTableValue_ReturnsExpectedType(string deltaTableValue, Resolution expectedType)
         {
             // Act
-            var actualType = ChargeResolutionMapper.FromDeltaTableValue(deltaTableValue);
+            var actualType = ResolutionMapper.FromDeltaTableValue(deltaTableValue);
 
             // Assert
             actualType.Should().Be(expectedType);
@@ -89,7 +89,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
             var invalidDeltaTableValue = Guid.NewGuid().ToString();
 
             // Act
-            var act = () => ChargeResolutionMapper.FromDeltaTableValue(invalidDeltaTableValue);
+            var act = () => ResolutionMapper.FromDeltaTableValue(invalidDeltaTableValue);
 
             // Assert
             act.Should().Throw<ArgumentOutOfRangeException>()

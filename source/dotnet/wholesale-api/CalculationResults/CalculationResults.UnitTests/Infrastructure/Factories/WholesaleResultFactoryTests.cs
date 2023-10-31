@@ -57,7 +57,7 @@ public class WholesaleResultFactoryTests
          actual.Id.Should().Be(Guid.Parse("aaaaaaaa-bbbb-cccc-dddd-0123456789ab"));
          actual.AmountType.Should().Be(AmountType.AmountPerCharge);
          actual.IsTax.Should().BeTrue();
-         actual.ChargeResolution.Should().Be(ChargeResolution.Hour);
+         actual.Resolution.Should().Be(Resolution.Hour);
          actual.MeteringPointType.Should().Be(MeteringPointType.Consumption);
          actual.SettlementMethod.Should().Be(SettlementMethod.Flex);
          actual.PeriodEnd.Should().Be(_defaultPeriodEnd);
@@ -81,7 +81,7 @@ public class WholesaleResultFactoryTests
             new(WholesaleResultColumnNames.ChargeType, "tariff"),
             new(WholesaleResultColumnNames.ChargeOwnerId, "chargeOwnerId"),
             new(WholesaleResultColumnNames.QuantityUnit, "kWh"),
-            new(WholesaleResultColumnNames.ChargeResolution, "PT1H"),
+            new(WholesaleResultColumnNames.Resolution, "PT1H"),
             new(WholesaleResultColumnNames.MeteringPointType, "consumption"),
             new(WholesaleResultColumnNames.SettlementMethod, "flex"),
             new(WholesaleResultColumnNames.IsTax, "true"),

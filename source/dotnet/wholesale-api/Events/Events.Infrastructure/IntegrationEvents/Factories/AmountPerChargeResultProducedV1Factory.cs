@@ -27,8 +27,8 @@ public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProd
         if (result.AmountType != AmountType.AmountPerCharge)
             throw new ArgumentException($"AmountPerChargeResultProducedV1 expect amount type to be '{AmountType.AmountPerCharge}'.");
 
-        if (result.ChargeResolution != ChargeResolution.Hour && result.ChargeResolution != ChargeResolution.Day)
-            throw new ArgumentException($"AmountPerChargeResultProducedV1 expect resolution to be '{ChargeResolution.Hour}' or '{ChargeResolution.Day}' .");
+        if (result.Resolution != Resolution.Hour && result.Resolution != Resolution.Day)
+            throw new ArgumentException($"AmountPerChargeResultProducedV1 expect resolution to be '{Resolution.Hour}' or '{Resolution.Day}' .");
 
         var amountPerChargeResultProducedV1 = new AmountPerChargeResultProducedV1
         {
@@ -41,7 +41,7 @@ public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProd
             ChargeCode = result.ChargeCode,
             ChargeType = ChargeTypeMapper.MapChargeType(result.ChargeType),
             ChargeOwnerId = result.ChargeOwnerId,
-            Resolution = ResolutionMapper.MapResolution(result.ChargeResolution),
+            Resolution = ResolutionMapper.MapResolution(result.Resolution),
             QuantityUnit = QuantityUnitMapper.MapQuantityUnit(result.QuantityUnit),
             MeteringPointType = MeteringPointTypeMapper.MapMeteringPointType(result.MeteringPointType),
             SettlementMethod = SettlementMethodMapper.MapSettlementMethod(result.SettlementMethod),

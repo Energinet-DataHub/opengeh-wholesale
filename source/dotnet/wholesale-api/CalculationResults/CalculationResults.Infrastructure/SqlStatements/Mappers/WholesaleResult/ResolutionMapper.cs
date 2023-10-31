@@ -16,18 +16,17 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
 
-public static class ChargeResolutionMapper
+public static class ResolutionMapper
 {
-    public static ChargeResolution FromDeltaTableValue(string chargeResolution) =>
-        chargeResolution switch
+    public static Resolution FromDeltaTableValue(string resolution) =>
+        resolution switch
         {
-            "P1M" => ChargeResolution.Month,
-            "P1D" => ChargeResolution.Day,
-            "PT1H" => ChargeResolution.Hour,
-
+            "P1M" => Resolution.Month,
+            "P1D" => Resolution.Day,
+            "PT1H" => Resolution.Hour,
             _ => throw new ArgumentOutOfRangeException(
-                nameof(chargeResolution),
-                actualValue: chargeResolution,
-                "Value does not contain a valid string representation of a charge resolution."),
+                nameof(resolution),
+                actualValue: resolution,
+                "Value does not contain a valid string representation of a resolution."),
         };
 }

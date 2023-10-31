@@ -29,8 +29,8 @@ public class MonthlyAmountPerChargeResultProducedV1Factory : IMonthlyAmountPerCh
         if (result.AmountType != AmountType.MonthlyAmountPerCharge)
             throw new ArgumentException($"MonthlyAmountPerChargeResultProducedV1 expect amount type to be '{AmountType.MonthlyAmountPerCharge}'.");
 
-        if (result.ChargeResolution != ChargeResolution.Month)
-            throw new ArgumentException($"MonthlyAmountPerChargeResultProducedV1 expect resolution to be '{ChargeResolution.Month}'.");
+        if (result.Resolution != Resolution.Month)
+            throw new ArgumentException($"MonthlyAmountPerChargeResultProducedV1 expect resolution to be '{Resolution.Month}'.");
 
         var amountPerChargeResultProducedV1 = new MonthlyAmountPerChargeResultProducedV1
         {

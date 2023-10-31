@@ -15,9 +15,9 @@
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 
 /// <summary>
-/// Defines time resolution of the charge
+/// Defines time resolution of the wholesale time series point
 /// </summary>
-public enum ChargeResolution
+public enum Resolution
 {
     Month,
     Hour,

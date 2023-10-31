@@ -119,7 +119,7 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
             _chargeOwnerId,
             _isTax,
             QuantityUnit.Kwh,
-            ChargeResolution.Month,
+            Resolution.Month,
             CalculationResults.Interfaces.CalculationResults.Model.MeteringPointType.Production,
             null,
             timeSeriesPoints);

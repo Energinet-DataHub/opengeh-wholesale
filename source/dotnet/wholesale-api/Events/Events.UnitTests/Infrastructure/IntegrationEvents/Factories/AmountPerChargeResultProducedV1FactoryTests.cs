@@ -94,7 +94,7 @@ public class AmountPerChargeResultProducedV1FactoryTests
             _chargeOwnerId,
             _isTax,
             QuantityUnit.Kwh,
-            ChargeResolution.Hour,
+            Resolution.Hour,
             CalculationResults.Interfaces.CalculationResults.Model.MeteringPointType.Production,
             null,
             new WholesaleTimeSeriesPoint[]
