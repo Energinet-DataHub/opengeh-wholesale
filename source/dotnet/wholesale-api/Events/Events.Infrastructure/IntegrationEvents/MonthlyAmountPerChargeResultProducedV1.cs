@@ -24,7 +24,7 @@ public partial class MonthlyAmountPerChargeResultProducedV1 : IEventMessage
     /// </summary>
     public const string EventName = "MonthlyAmountPerChargeResultProducedV1";
 
-    public const int EventMinorVersion = 1;
+    public const int EventMinorVersion = 2;
 
     string IEventMessage.EventName => EventName;
 
