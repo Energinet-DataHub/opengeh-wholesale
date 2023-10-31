@@ -49,28 +49,28 @@ message AmountPerChargeResultProducedV1 {
 
   string grid_area_code = 5;
 
-  string energy_supplier_id = 9;
+  string energy_supplier_id = 6;
 
-  string charge_code = 10;
+  string charge_code = 7;
 
-  ChargeType charge_type = 11;
+  ChargeType charge_type = 8;
 
-  string charge_owner_id = 12;
+  string charge_owner_id = 9;
 
-  Resolution resolution = 13;
+  Resolution resolution = 10;
 
-  QuantityUnit quantity_unit = 14;
+  QuantityUnit quantity_unit = 11;
 
-  MeteringPointType metering_point_type = 15;
+  MeteringPointType metering_point_type = 12;
 
   /*
    * Settlement method is only set when metering point type is 'METERING_POINT_TYPE_CONSUMPTION'.
    */
-  optional SettlementMethod settlement_method = 16;
+  optional SettlementMethod settlement_method = 13;
 
-  bool is_tax = 17;
+  bool is_tax = 14;
 
-  repeated TimeSeriesPoint time_series_points = 20;
+  repeated TimeSeriesPoint time_series_points = 15;
 
    // ---------------------------- NESTED TYPES BELOW ----------------------------------------
 
@@ -80,10 +80,10 @@ message AmountPerChargeResultProducedV1 {
      * Read more at https://protobuf.dev/programming-guides/style/#enums.
      */
     CALCULATION_TYPE_UNSPECIFIED = 0;
-    CALCULATION_TYPE_WHOLESALE_FIXING = 3;
-    CALCULATION_TYPE_FIRST_CORRECTION_SETTLEMENT = 4;
-    CALCULATION_TYPE_SECOND_CORRECTION_SETTLEMENT = 5;
-    CALCULATION_TYPE_THIRD_CORRECTION_SETTLEMENT = 6;
+    CALCULATION_TYPE_WHOLESALE_FIXING = 1;
+    CALCULATION_TYPE_FIRST_CORRECTION_SETTLEMENT = 2;
+    CALCULATION_TYPE_SECOND_CORRECTION_SETTLEMENT = 3;
+    CALCULATION_TYPE_THIRD_CORRECTION_SETTLEMENT = 4;
   }
 
   enum ChargeType {
@@ -131,7 +131,7 @@ message AmountPerChargeResultProducedV1 {
     QUANTITY_QUALITY_ESTIMATED = 1;
     QUANTITY_QUALITY_MEASURED = 2;
     QUANTITY_QUALITY_MISSING = 3;
-    QUANTITY_QUALITY_CALCULATED = 5;
+    QUANTITY_QUALITY_CALCULATED = 4;
   }
 
   /*
