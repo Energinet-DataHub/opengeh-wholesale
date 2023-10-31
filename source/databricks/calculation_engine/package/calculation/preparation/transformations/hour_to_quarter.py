@@ -26,14 +26,14 @@ from package.calculation.energy.schemas import basis_data_time_series_points_sch
 
 
 def transform_hour_to_quarter(
-    basis_data_time_series_points_df: DataFrame,
+    metering_point_time_series: DataFrame,
 ) -> QuarterlyMeteringPointTimeSeries:
     assert_schema(
-        basis_data_time_series_points_df.schema,
+        metering_point_time_series.schema,
         basis_data_time_series_points_schema,
     )
 
-    result = basis_data_time_series_points_df.withColumn(
+    result = metering_point_time_series.withColumn(
         "quarter_times",
         f.when(
             f.col(Colname.resolution) == MeteringPointResolution.HOUR.value,
@@ -48,7 +48,7 @@ def transform_hour_to_quarter(
             f.array(f.col(Colname.observation_time)),
         ),
     ).select(
-        basis_data_time_series_points_df["*"],
+        metering_point_time_series["*"],
         f.explode("quarter_times").alias("quarter_time"),
     )
     result = result.withColumn(

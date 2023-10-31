@@ -34,7 +34,7 @@ class QuarterlyMeteringPointTimeSeries(DataFrameWrapper):
     def __init__(self, df: DataFrame):
         super().__init__(
             df,
-            _time_series_quarter_points_schema,
+            _quarterly_metering_point_time_series_schema,
             # TODO BJM: These should eventually all be set to False
             ignore_nullability=True,
             ignore_decimal_scale=True,
@@ -42,7 +42,7 @@ class QuarterlyMeteringPointTimeSeries(DataFrameWrapper):
         )
 
 
-_time_series_quarter_points_schema = t.StructType(
+_quarterly_metering_point_time_series_schema = t.StructType(
     [
         t.StructField(Colname.grid_area, t.StringType(), False),
         t.StructField(Colname.to_grid_area, t.StringType(), True),

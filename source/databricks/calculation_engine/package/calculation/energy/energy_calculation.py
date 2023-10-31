@@ -181,7 +181,9 @@ def _calculate_temporary_flex_consumption_per_per_ga_and_brp_and_es(
     quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
 ) -> EnergyResults:
     temporary_flex_consumption_per_ga_and_brp_and_es = (
-        aggregators.aggregate_flex_consumption_ga_brp_es(quarterly_metering_point_time_series)
+        aggregators.aggregate_flex_consumption_ga_brp_es(
+            quarterly_metering_point_time_series
+        )
     )
     # temp flex consumption per grid area - used as control result for grid loss
     temporary_flex_consumption_per_ga = aggregators.aggregate_flex_consumption_ga(

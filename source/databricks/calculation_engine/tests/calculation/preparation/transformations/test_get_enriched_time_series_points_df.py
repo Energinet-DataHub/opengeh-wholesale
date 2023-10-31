@@ -139,7 +139,7 @@ def test__given_different_from_date_and_to_date__return_dataframe_with_correct_n
     expected_rows,
     resolution,
 ):
-    """Test the outcome of _get_basis_data_time_series_points_df with different scenarios.
+    """Test the outcome of _get_metering_point_time_series with different scenarios.
     expected_rows is the number of rows in the output dataframe when given different parameters,
     FromDate and ToDate on the metering point"""
 

@@ -44,7 +44,7 @@ numberOfQuarters = 5  # Not too many as it has a massive impact on test performa
 
 
 @pytest.fixture(scope="module")
-def enriched_time_series_data_frame(
+def quarterly_metering_point_time_series(
     spark: SparkSession,
 ) -> QuarterlyMeteringPointTimeSeries:
     """Sample Time Series DataFrame"""
@@ -213,14 +213,14 @@ def add_row_of_data(
 
 
 @pytest.fixture(scope="module")
-def aggregated_data_frame(enriched_time_series_data_frame):
+def aggregated_data_frame(quarterly_metering_point_time_series):
     """Perform aggregation"""
-    return aggregate_net_exchange_per_ga(enriched_time_series_data_frame)
+    return aggregate_net_exchange_per_ga(quarterly_metering_point_time_series)
 
 
-def test_test_data_has_correct_row_count(enriched_time_series_data_frame):
+def test_test_data_has_correct_row_count(quarterly_metering_point_time_series):
     """Check sample data row count"""
-    assert enriched_time_series_data_frame.df.count() == (13 * numberOfQuarters)
+    assert quarterly_metering_point_time_series.df.count() == (13 * numberOfQuarters)
 
 
 def test_exchange_has_correct_sign(aggregated_data_frame):

@@ -30,14 +30,14 @@ class BasisDataWriter:
     def write(
         self,
         metering_points_periods_df: DataFrame,
-        enriched_time_series_point_df: DataFrame,
+        metering_point_time_series: DataFrame,
         time_zone: str,
     ) -> None:
         (
             timeseries_quarter_df,
             timeseries_hour_df,
-        ) = basis_data.get_time_series_basis_data_dfs(
-            enriched_time_series_point_df, time_zone
+        ) = basis_data.get_metering_point_time_series_basis_data_dfs(
+            metering_point_time_series, time_zone
         )
 
         master_basis_data_df = basis_data.get_master_basis_data_df(
