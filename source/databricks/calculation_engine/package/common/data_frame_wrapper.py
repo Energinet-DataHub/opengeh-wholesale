@@ -35,9 +35,9 @@ class DataFrameWrapper:
         self,
         df: DataFrame,
         schema: t.StructType,
-        ignore_nullability=False,
-        ignore_decimal_scale=False,
-        ignore_decimal_precision=False,
+        ignore_nullability: bool = False,
+        ignore_decimal_scale: bool = False,
+        ignore_decimal_precision: bool = False,
     ):
         df = DataFrameWrapper._add_missing_nullable_columns(df, schema)
 
