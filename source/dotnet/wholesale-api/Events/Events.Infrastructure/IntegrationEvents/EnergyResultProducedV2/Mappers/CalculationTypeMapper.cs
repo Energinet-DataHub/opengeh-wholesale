@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Common.Models;
-using CalculationType = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV1.Types.CalculationType;
+using CalculationType = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV2.Types.CalculationType;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.EnergyResultProducedV1;
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProducedV2.Mappers;
 
 public static class CalculationTypeMapper
 {

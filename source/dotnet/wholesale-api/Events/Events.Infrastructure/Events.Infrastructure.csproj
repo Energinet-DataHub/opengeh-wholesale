@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyName>Energinet.DataHub.Wholesale.Events.Infrastructure</AssemblyName>
     <RootNamespace>Energinet.DataHub.Wholesale.Events.Infrastructure</RootNamespace>
@@ -32,12 +32,20 @@
       <OutputDir>obj\contracts</OutputDir>
       <Generator>MSBuild:Compile</Generator>
     </Protobuf>
-    <Protobuf Include="InboxEvents/*.proto">
+    <Protobuf Include="IntegrationEvents/Common/Protos/*.proto">
       <GrpcServices>None</GrpcServices>
       <Access>Public</Access>
       <ProtoCompile>True</ProtoCompile>
+      <ProtoRoot>IntegrationEvents/Common/Protos/</ProtoRoot>
       <CompileOutputs>True</CompileOutputs>
-      <OutputDir>obj\contracts</OutputDir>
+      <Generator>MSBuild:Compile</Generator>
+    </Protobuf>
+    <Protobuf Include="IntegrationEvents/EnergyResultProducedV2/Protos/*.proto">
+      <GrpcServices>None</GrpcServices>
+      <Access>Public</Access>
+      <ProtoCompile>True</ProtoCompile>
+      <ProtoRoot>IntegrationEvents</ProtoRoot>
+      <CompileOutputs>True</CompileOutputs>
       <Generator>MSBuild:Compile</Generator>
     </Protobuf>
   </ItemGroup>

@@ -19,6 +19,9 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationR
 /// Immutable value object.
 /// </summary>
 /// <param name="Time"></param>
-/// <param name="Quantity">In kWh.</param>
-/// <param name="Quality"></param>
-public sealed record EnergyTimeSeriesPoint(DateTimeOffset Time, decimal Quantity, QuantityQuality Quality);
+/// <param name="Quantity"></param>
+/// <param name="Qualities"></param>
+public sealed record EnergyTimeSeriesPoint(
+    DateTimeOffset Time,
+    decimal Quantity,
+    IReadOnlyCollection<QuantityQuality> Qualities);
