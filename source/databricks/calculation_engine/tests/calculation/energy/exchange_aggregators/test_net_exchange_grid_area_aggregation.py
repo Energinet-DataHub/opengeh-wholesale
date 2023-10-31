@@ -32,7 +32,6 @@ from package.calculation.preparation.quarterly_metering_point_time_series import
 from package.codelists import (
     MeteringPointType,
     QuantityQuality,
-    MeteringPointResolution,
     SettlementMethod,
 )
 from package.constants import Colname
@@ -45,7 +44,7 @@ numberOfQuarters = 5  # Not too many as it has a massive impact on test performa
 
 
 @pytest.fixture(scope="module")
-def enriched_time_series_data_frame(
+def quarterly_metering_point_time_series(
     spark: SparkSession,
 ) -> QuarterlyMeteringPointTimeSeries:
     """Sample Time Series DataFrame"""
@@ -61,7 +60,6 @@ def enriched_time_series_data_frame(
             Colname.quantity: [],
             Colname.observation_time: [],
             Colname.quality: [],
-            Colname.resolution: [],
         }
     )
 
@@ -210,20 +208,19 @@ def add_row_of_data(
         Colname.quantity: quantity,
         Colname.observation_time: timestamp,
         Colname.quality: QuantityQuality.ESTIMATED.value,
-        Colname.resolution: MeteringPointResolution.QUARTER.value,
     }
     return pandas_df.append(new_row, ignore_index=True)
 
 
 @pytest.fixture(scope="module")
-def aggregated_data_frame(enriched_time_series_data_frame):
+def aggregated_data_frame(quarterly_metering_point_time_series):
     """Perform aggregation"""
-    return aggregate_net_exchange_per_ga(enriched_time_series_data_frame)
+    return aggregate_net_exchange_per_ga(quarterly_metering_point_time_series)
 
 
-def test_test_data_has_correct_row_count(enriched_time_series_data_frame):
+def test_test_data_has_correct_row_count(quarterly_metering_point_time_series):
     """Check sample data row count"""
-    assert enriched_time_series_data_frame.df.count() == (13 * numberOfQuarters)
+    assert quarterly_metering_point_time_series.df.count() == (13 * numberOfQuarters)
 
 
 def test_exchange_has_correct_sign(aggregated_data_frame):

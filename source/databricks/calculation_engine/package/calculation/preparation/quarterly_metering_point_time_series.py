@@ -15,7 +15,7 @@
 import pyspark.sql.types as t
 from pyspark.sql import DataFrame
 
-from package.common import DataFrameWrapper, assert_schema
+from package.common import DataFrameWrapper
 from package.constants import Colname
 
 
@@ -32,57 +32,30 @@ class QuarterlyMeteringPointTimeSeries(DataFrameWrapper):
     """
 
     def __init__(self, df: DataFrame):
-        df = DataFrameWrapper._add_missing_nullable_columns(
-            df, _time_series_quarter_points_schema
-        )
-
-        df = df.select(
-            Colname.grid_area,
-            Colname.to_grid_area,
-            Colname.from_grid_area,
-            Colname.metering_point_id,
-            Colname.metering_point_type,
-            # TODO BJM: Does it make sense to require a resolution col in a "quarterly type"
-            Colname.resolution,
-            # TODO BJM: Does it make sense to have both observation_time, time_window and resolution?
-            Colname.observation_time,
-            Colname.quantity,
-            Colname.quality,
-            Colname.energy_supplier_id,
-            Colname.balance_responsible_id,
-            Colname.settlement_method,
-            Colname.time_window,
-        )
-
-        # Workaround to enforce quantity nullable=False. This should be safe as quantity in input is nullable=False
-        df.schema[Colname.quantity].nullable = False
-
-        assert_schema(
-            df.schema,
-            _time_series_quarter_points_schema,
-            ignore_column_order=True,
+        super().__init__(
+            df,
+            _quarterly_metering_point_time_series_schema,
+            # TODO BJM: These should eventually all be set to False
             ignore_nullability=True,
             ignore_decimal_scale=True,
             ignore_decimal_precision=True,
         )
 
-        super().__init__(df)
 
-
-_time_series_quarter_points_schema = t.StructType(
+_quarterly_metering_point_time_series_schema = t.StructType(
     [
         t.StructField(Colname.grid_area, t.StringType(), False),
         t.StructField(Colname.to_grid_area, t.StringType(), True),
         t.StructField(Colname.from_grid_area, t.StringType(), True),
         t.StructField(Colname.metering_point_id, t.StringType(), False),
         t.StructField(Colname.metering_point_type, t.StringType(), False),
-        t.StructField(Colname.resolution, t.StringType(), False),
         t.StructField(Colname.observation_time, t.TimestampType(), False),
         t.StructField(Colname.quantity, t.DecimalType(18, 6), False),
         t.StructField(Colname.quality, t.StringType(), False),
         t.StructField(Colname.energy_supplier_id, t.StringType(), True),
         t.StructField(Colname.balance_responsible_id, t.StringType(), True),
         t.StructField(Colname.settlement_method, t.StringType(), True),
+        # TODO BJM: Does it make sense to have both observation_time and time_window?
         t.StructField(
             Colname.time_window,
             t.StructType(
