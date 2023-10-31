@@ -18,7 +18,7 @@ from package.codelists import MeteringPointResolution, MeteringPointType
 from package.constants import Colname
 from decimal import Decimal
 from package.calculation.preparation.transformations.basis_data import (
-    get_time_series_basis_data_dfs,
+    get_metering_point_time_series_basis_data_dfs,
 )
 from pyspark.sql.functions import lit
 from pyspark.sql.types import (
@@ -35,7 +35,7 @@ grid_area_code_806 = "806"
 
 
 @pytest.fixture
-def enriched_time_series_factory(spark, timestamp_factory):
+def metering_point_time_series_factory(spark, timestamp_factory):
     def factory(
         resolution=MeteringPointResolution.QUARTER.value,
         quantity=Decimal("1"),
@@ -125,20 +125,20 @@ def enriched_time_series_factory(spark, timestamp_factory):
     ],
 )
 def test__has_correct_number_of_quantity_columns_according_to_dst(
-    enriched_time_series_factory,
+    metering_point_time_series_factory,
     period_start,
     resolution,
     number_of_points,
     expected_number_of_quarter_quantity_columns,
     expected_number_of_hour_quantity_columns,
 ):
-    enriched_time_series_points_df = enriched_time_series_factory(
+    metering_point_time_series = metering_point_time_series_factory(
         time=period_start,
         resolution=resolution,
         number_of_points=number_of_points,
     )
-    (quarter_df, hour_df) = get_time_series_basis_data_dfs(
-        enriched_time_series_points_df, "Europe/Copenhagen"
+    (quarter_df, hour_df) = get_metering_point_time_series_basis_data_dfs(
+        metering_point_time_series, "Europe/Copenhagen"
     )
 
     quantity_columns_quarter = list(
@@ -152,67 +152,69 @@ def test__has_correct_number_of_quantity_columns_according_to_dst(
 
 
 def test__returns_dataframe_with_quarter_resolution_metering_points(
-    enriched_time_series_factory,
+    metering_point_time_series_factory,
 ):
-    enriched_time_series_points_df = enriched_time_series_factory(
+    metering_point_time_series = metering_point_time_series_factory(
         time="2022-10-28T22:00:00.000Z",
         resolution=MeteringPointResolution.QUARTER.value,
         number_of_points=96,
     )
-    (quarter_df, hour_df) = get_time_series_basis_data_dfs(
-        enriched_time_series_points_df, "Europe/Copenhagen"
+    (quarter_df, hour_df) = get_metering_point_time_series_basis_data_dfs(
+        metering_point_time_series, "Europe/Copenhagen"
     )
     assert quarter_df.count() == 1
     assert hour_df.count() == 0
 
 
 def test__returns_dataframe_with_hour_resolution_metering_points(
-    enriched_time_series_factory,
+    metering_point_time_series_factory,
 ):
-    enriched_time_series_points_df = enriched_time_series_factory(
+    metering_point_time_series = metering_point_time_series_factory(
         time="2022-10-28T22:00:00.000Z",
         resolution=MeteringPointResolution.HOUR.value,
         number_of_points=24,
     )
-    (quarter_df, hour_df) = get_time_series_basis_data_dfs(
-        enriched_time_series_points_df, "Europe/Copenhagen"
+    (quarter_df, hour_df) = get_metering_point_time_series_basis_data_dfs(
+        metering_point_time_series, "Europe/Copenhagen"
     )
     assert quarter_df.count() == 0
     assert hour_df.count() == 1
 
 
 def test__splits_single_metering_point_with_different_resolution_on_different_dates(
-    enriched_time_series_factory,
+    metering_point_time_series_factory,
 ):
-    enriched_time_series_points_df = enriched_time_series_factory(
+    metering_point_time_series = metering_point_time_series_factory(
         metering_point_id="the_metering_point_id",
         time="2022-10-28T22:00:00.000Z",
         resolution=MeteringPointResolution.QUARTER.value,
         number_of_points=96,
     ).union(
-        enriched_time_series_factory(
+        metering_point_time_series_factory(
             metering_point_id="the_metering_point_id",
             time="2022-10-29T22:00:00.000Z",
             resolution=MeteringPointResolution.HOUR.value,
             number_of_points=24,
         )
     )
-    (quarter_df, hour_df) = get_time_series_basis_data_dfs(
-        enriched_time_series_points_df, "Europe/Copenhagen"
+    (quarter_df, hour_df) = get_metering_point_time_series_basis_data_dfs(
+        metering_point_time_series, "Europe/Copenhagen"
     )
     assert quarter_df.count() == 1
     assert hour_df.count() == 1
 
 
-def test__returns_expected_quantity_for_each_hour_column(enriched_time_series_factory):
-    enriched_time_series_points_df = enriched_time_series_factory(
+def test__returns_expected_quantity_for_each_hour_column(
+    metering_point_time_series_factory,
+):
+    metering_point_time_series = metering_point_time_series_factory(
         time="2022-10-28T22:00:00.000Z",
         resolution=MeteringPointResolution.HOUR.value,
         number_of_points=24,
     )
 
-    (_, hour_df) = get_time_series_basis_data_dfs(
-        enriched_time_series_points_df, "Europe/Copenhagen"
+    (_, hour_df) = get_metering_point_time_series_basis_data_dfs(
+        metering_point_time_series, "Europe/Copenhagen"
     )
 
     for position in range(1, 25):
@@ -223,16 +225,16 @@ def test__returns_expected_quantity_for_each_hour_column(enriched_time_series_fa
 
 
 def test__returns_expected_quantity_for_each_quarter_column(
-    enriched_time_series_factory,
+    metering_point_time_series_factory,
 ):
-    enriched_time_series_points_df = enriched_time_series_factory(
+    metering_point_time_series = metering_point_time_series_factory(
         time="2022-10-28T22:00:00.000Z",
         resolution=MeteringPointResolution.QUARTER.value,
         number_of_points=96,
     )
 
-    (quarter_df, _) = get_time_series_basis_data_dfs(
-        enriched_time_series_points_df, "Europe/Copenhagen"
+    (quarter_df, _) = get_metering_point_time_series_basis_data_dfs(
+        metering_point_time_series, "Europe/Copenhagen"
     )
 
     for position in range(1, 97):
@@ -252,16 +254,16 @@ def test__returns_expected_quantity_for_each_quarter_column(
     ],
 )
 def test__multiple_dates_are_split_into_rows_for_quarterly_meteringpoints(
-    enriched_time_series_factory, number_of_points, expected_number_of_rows
+    metering_point_time_series_factory, number_of_points, expected_number_of_rows
 ):
-    enriched_time_series_points_df = enriched_time_series_factory(
+    metering_point_time_series = metering_point_time_series_factory(
         time="2022-10-18T22:00:00.000Z",
         resolution=MeteringPointResolution.QUARTER.value,
         number_of_points=number_of_points,
     )
 
-    (quarter_df, _) = get_time_series_basis_data_dfs(
-        enriched_time_series_points_df, "Europe/Copenhagen"
+    (quarter_df, _) = get_metering_point_time_series_basis_data_dfs(
+        metering_point_time_series, "Europe/Copenhagen"
     )
 
     assert quarter_df.count() == expected_number_of_rows
@@ -277,31 +279,31 @@ def test__multiple_dates_are_split_into_rows_for_quarterly_meteringpoints(
     ],
 )
 def test__multiple_dates_are_split_into_rows_for_hourly_meteringpoints(
-    enriched_time_series_factory, number_of_points, expected_number_of_rows
+    metering_point_time_series_factory, number_of_points, expected_number_of_rows
 ):
-    enriched_time_series_points_df = enriched_time_series_factory(
+    metering_point_time_series = metering_point_time_series_factory(
         time="2022-10-18T22:00:00.000Z",
         resolution=MeteringPointResolution.HOUR.value,
         number_of_points=number_of_points,
     )
 
-    (_, hour_df) = get_time_series_basis_data_dfs(
-        enriched_time_series_points_df, "Europe/Copenhagen"
+    (_, hour_df) = get_metering_point_time_series_basis_data_dfs(
+        metering_point_time_series, "Europe/Copenhagen"
     )
 
     assert hour_df.count() == expected_number_of_rows
 
 
 def test__missing_point_has_empty_quantity(
-    enriched_time_series_factory,
+    metering_point_time_series_factory,
 ):
-    enriched_time_series_points_df = enriched_time_series_factory(
+    metering_point_time_series = metering_point_time_series_factory(
         time="2022-10-28T22:00:00.000Z",
         resolution=MeteringPointResolution.QUARTER.value,
         number_of_points=96,
     ).withColumn("quantity", lit(None).cast(DecimalType()))
-    (quarter_df, _) = get_time_series_basis_data_dfs(
-        enriched_time_series_points_df, "Europe/Copenhagen"
+    (quarter_df, _) = get_metering_point_time_series_basis_data_dfs(
+        metering_point_time_series, "Europe/Copenhagen"
     )
 
     for position in range(1, 97):

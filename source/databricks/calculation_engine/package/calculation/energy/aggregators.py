@@ -31,35 +31,35 @@ from ..preparation.quarterly_metering_point_time_series import (
 
 
 def aggregate_non_profiled_consumption_ga_brp_es(
-    enriched_time_series: QuarterlyMeteringPointTimeSeries,
+    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
 ) -> EnergyResults:
     return _aggregate_per_ga_and_brp_and_es(
-        enriched_time_series,
+        quarterly_metering_point_time_series,
         MeteringPointType.CONSUMPTION,
         SettlementMethod.NON_PROFILED,
     )
 
 
 def aggregate_flex_consumption_ga_brp_es(
-    enriched_time_series: QuarterlyMeteringPointTimeSeries,
+    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
 ) -> EnergyResults:
     return _aggregate_per_ga_and_brp_and_es(
-        enriched_time_series,
+        quarterly_metering_point_time_series,
         MeteringPointType.CONSUMPTION,
         SettlementMethod.FLEX,
     )
 
 
 def aggregate_production_ga_brp_es(
-    enriched_time_series: QuarterlyMeteringPointTimeSeries,
+    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
 ) -> EnergyResults:
     return _aggregate_per_ga_and_brp_and_es(
-        enriched_time_series, MeteringPointType.PRODUCTION, None
+        quarterly_metering_point_time_series, MeteringPointType.PRODUCTION, None
     )
 
 
 def _aggregate_per_ga_and_brp_and_es(
-    df: QuarterlyMeteringPointTimeSeries,
+    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
     market_evaluation_point_type: MeteringPointType,
     settlement_method: Union[SettlementMethod, None],
 ) -> EnergyResults:
@@ -74,7 +74,7 @@ def _aggregate_per_ga_and_brp_and_es(
     Each row in the output dataframe corresponds to a unique combination of: ga, brp, es, and quarter_time
     """
 
-    result = df.df.where(
+    result = quarterly_metering_point_time_series.df.where(
         col(Colname.metering_point_type) == market_evaluation_point_type.value
     )
 
