@@ -78,9 +78,7 @@ def get_subscription_charges(
 def _get_charges_based_on_resolution(
     charges_df: DataFrame, resolution_duration: ChargeResolution
 ) -> DataFrame:
-    return charges_df.filter(
-        f.col(Colname.charge_resolution) == resolution_duration.value
-    )
+    return charges_df.filter(f.col(Colname.resolution) == resolution_duration.value)
 
 
 def _get_charges_based_on_charge_type(
@@ -109,7 +107,7 @@ def _explode_subscription(charges_df: DataFrame) -> DataFrame:
             Colname.charge_type,
             Colname.charge_owner,
             Colname.charge_tax,
-            Colname.charge_resolution,
+            Colname.resolution,
             Colname.charge_time,
             Colname.charge_price,
             Colname.metering_point_id,
@@ -133,7 +131,7 @@ def _join_with_metering_points(df: DataFrame, metering_points: DataFrame) -> Dat
         df[Colname.charge_type],
         df[Colname.charge_owner],
         df[Colname.charge_tax],
-        df[Colname.charge_resolution],
+        df[Colname.resolution],
         df[Colname.charge_time],
         df[Colname.charge_price],
         df[Colname.metering_point_id],
@@ -191,7 +189,7 @@ def _join_with_grouped_time_series(
         df[Colname.charge_type],
         df[Colname.charge_owner],
         df[Colname.charge_tax],
-        df[Colname.charge_resolution],
+        df[Colname.resolution],
         df[Colname.charge_time],
         df[Colname.charge_price],
         df[Colname.metering_point_id],

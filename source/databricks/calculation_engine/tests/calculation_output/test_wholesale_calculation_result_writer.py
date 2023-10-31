@@ -100,7 +100,7 @@ def _create_result_row(
         Colname.charge_type: charge_type.value,
         Colname.charge_owner: charge_owner,
         Colname.charge_tax: charge_tax,
-        Colname.charge_resolution: resolution.value,
+        Colname.resolution: resolution.value,
         Colname.charge_price: charge_price,
         Colname.total_quantity: total_quantity,
         Colname.charge_count: charge_count,
@@ -248,7 +248,7 @@ def test__get_column_group_for_calculation_result_id__returns_expected_column_na
     # Arrange
     expected_column_names = [
         Colname.batch_id,
-        Colname.charge_resolution,
+        Colname.resolution,
         Colname.charge_type,
         Colname.grid_area,
         Colname.charge_owner,

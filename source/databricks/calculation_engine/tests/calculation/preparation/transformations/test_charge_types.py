@@ -112,7 +112,7 @@ def _create_charges_row(
         Colname.charge_type: charge_type.value,
         Colname.charge_owner: charge_owner,
         Colname.charge_tax: charge_tax,
-        Colname.charge_resolution: charge_resolution.value,
+        Colname.resolution: charge_resolution.value,
         Colname.charge_time: charge_time,
         Colname.from_date: from_date,
         Colname.to_date: to_date,
@@ -150,7 +150,7 @@ def _create_expected_tariff_charges_row(
         Colname.charge_type: charge_type.value,
         Colname.charge_owner: charge_owner,
         Colname.charge_tax: charge_tax,
-        Colname.charge_resolution: charge_resolution.value,
+        Colname.resolution: charge_resolution.value,
         Colname.charge_time: charge_time,
         Colname.charge_price: charge_price,
         Colname.metering_point_id: metering_point_id,
@@ -201,7 +201,7 @@ def test__get_tariff_charges__filters_on_resolution(
 
     # Assert
     assert actual.count() == 1
-    assert actual.collect()[0][Colname.charge_resolution] == charge_resolution.value
+    assert actual.collect()[0][Colname.resolution] == charge_resolution.value
 
 
 def test__get_tariff_charges__filters_on_tariff_charge_type(
