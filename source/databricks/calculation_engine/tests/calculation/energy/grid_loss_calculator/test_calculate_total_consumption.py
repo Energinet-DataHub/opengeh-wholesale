@@ -12,74 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import datetime
-from decimal import Decimal
-
 import pytest
-from pyspark.sql import Row, SparkSession
+from pyspark.sql import SparkSession
 
-from package.calculation.energy.energy_results import (
-    EnergyResults,
-    energy_results_schema,
-)
 from package.calculation.energy.grid_loss_calculator import (
     calculate_total_consumption as sut,
 )
-from package.codelists import MeteringPointType, QuantityQuality
+from package.codelists import QuantityQuality
 from package.constants import Colname
 
-DEFAULT_GRID_AREA = "100"
-DEFAULT_FROM_GRID_AREA = "200"
-DEFAULT_TO_GRID_AREA = "300"
-DEFAULT_OBSERVATION_TIME = datetime.datetime.now()
-DEFAULT_SUM_QUANTITY = Decimal("999.123456")
-DEFAULT_QUALITIES = [QuantityQuality.MEASURED]
-DEFAULT_METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
-
-
-def create_energy_result_point(
-    grid_area: str = DEFAULT_GRID_AREA,
-    from_grid_area: str = DEFAULT_FROM_GRID_AREA,
-    to_grid_area: str = DEFAULT_TO_GRID_AREA,
-    observation_time: datetime = DEFAULT_OBSERVATION_TIME,
-    sum_quantity: Decimal = DEFAULT_SUM_QUANTITY,
-    qualities: None | list[QuantityQuality] = None,
-    metering_point_type: MeteringPointType = DEFAULT_METERING_POINT_TYPE,
-) -> Row:
-    if qualities is None:
-        qualities = DEFAULT_QUALITIES
-    qualities = [q.value for q in qualities]
-
-    row = {
-        Colname.grid_area: grid_area,
-        Colname.from_grid_area: from_grid_area,
-        Colname.to_grid_area: to_grid_area,
-        Colname.balance_responsible_id: None,
-        Colname.energy_supplier_id: None,
-        Colname.time_window: {
-            Colname.start: observation_time,
-            Colname.end: observation_time + datetime.timedelta(minutes=15),
-        },
-        Colname.sum_quantity: sum_quantity,
-        Colname.qualities: qualities,
-        Colname.metering_point_type: metering_point_type.value,
-        Colname.settlement_method: None,
-    }
-    if type(qualities) == str:
-        row[Colname.qualities] = [qualities]
-
-    return Row(**row)
-
-
-def create_energy_results(
-    spark: SparkSession, data: None | Row | list[Row] = None
-) -> EnergyResults:
-    if type(data) == Row:
-        data = [data]
-    elif type(data) is None:
-        data = [create_energy_result_point()]
-    df = spark.createDataFrame(data, schema=energy_results_schema)
-    return EnergyResults(df)
+from tests.calculation.energy import energy_results
 
 
 @pytest.mark.parametrize(
@@ -107,10 +49,10 @@ def test__when_valid_input__returns_expected_qualities(
     Test that qualities from both production and net exchange is aggregated.
     """
     # Arrange
-    production = create_energy_result_point(qualities=prod_qualities)
-    net_exchange = create_energy_result_point(qualities=exchange_qualities)
-    production_per_ga = create_energy_results(spark, production)
-    net_exchange_per_ga = create_energy_results(spark, net_exchange)
+    production = energy_results.create_row(qualities=prod_qualities)
+    net_exchange = energy_results.create_row(qualities=exchange_qualities)
+    production_per_ga = energy_results.create(spark, production)
+    net_exchange_per_ga = energy_results.create(spark, net_exchange)
 
     # Act
     actual = sut(production_per_ga, net_exchange_per_ga)
@@ -128,13 +70,13 @@ def test__when_valid_input__includes_only_qualities_from_neighbour_ga(
     Test that qualities from both production and net exchange is aggregated.
     """
     # Arrange
-    production = create_energy_result_point(qualities=[QuantityQuality.MEASURED])
-    net_exchange = create_energy_result_point(qualities=[QuantityQuality.CALCULATED])
-    net_exchange_other_ga = create_energy_result_point(
-        grid_area="some-other-grid-area", qualities=[QuantityQuality.ESTIMATED]
+    production = energy_results.create_row(qualities=[QuantityQuality.MEASURED])
+    net_exchange = energy_results.create_row(qualities=[QuantityQuality.CALCULATED])
+    net_exchange_other_ga = energy_results.create_row(
+        qualities=[QuantityQuality.ESTIMATED], grid_area="some-other-grid-area"
     )
-    production_per_ga = create_energy_results(spark, production)
-    net_exchange_per_ga = create_energy_results(
+    production_per_ga = energy_results.create(spark, production)
+    net_exchange_per_ga = energy_results.create(
         spark, [net_exchange, net_exchange_other_ga]
     )
 
@@ -148,18 +90,24 @@ def test__when_valid_input__includes_only_qualities_from_neighbour_ga(
     )
 
 
-def test_grid_area_total_consumption(spark: SparkSession):
+def test__when_valid_input__adds_production_and_exchange(spark: SparkSession):
     # Arrange
-    production = create_energy_result_point()
-    net_exchange = create_energy_result_point()
-    net_exchange_other_ga = create_energy_result_point(grid_area="some-other-grid-area")
-    production_per_ga = create_energy_results(spark, production)
-    net_exchange_per_ga = create_energy_results(
-        spark, [net_exchange, net_exchange_other_ga]
-    )
+    production = [
+        energy_results.create_row(sum_quantity=1),
+        energy_results.create_row(sum_quantity=2),
+    ]
+    net_exchange = [
+        energy_results.create_row(sum_quantity=4),
+        energy_results.create_row(sum_quantity=8, grid_area="some-other-grid-area"),
+    ]
+    production_per_ga = energy_results.create(spark, production)
+    net_exchange_per_ga = energy_results.create(spark, net_exchange)
+    # The sum of production and exchange, but not including exchange for the other grid area
+    expected_sum_quantity = 7
 
     # Act
     actual = sut(production_per_ga, net_exchange_per_ga)
 
     # Assert
-    assert False
+    actual_row = actual.df.collect()[0]
+    assert actual_row[Colname.sum_quantity] == expected_sum_quantity
