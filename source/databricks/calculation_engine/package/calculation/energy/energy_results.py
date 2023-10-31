@@ -15,7 +15,7 @@
 import pyspark.sql.types as t
 from pyspark.sql import DataFrame
 
-from package.common import DataFrameWrapper, assert_schema
+from package.common import DataFrameWrapper
 from package.constants import Colname
 
 
@@ -25,33 +25,18 @@ class EnergyResults(DataFrameWrapper):
     """
 
     def __init__(self, df: DataFrame):
-        """Fit data frame in a general DataFrame. This is used for all results and missing columns will be null."""
+        """
+        Fit data frame in a general DataFrame. This is used for all results and missing columns will be null.
+        """
 
-        df = DataFrameWrapper._add_missing_nullable_columns(df, energy_results_schema)
-
-        df = df.select(
-            Colname.grid_area,
-            Colname.to_grid_area,
-            Colname.from_grid_area,
-            Colname.balance_responsible_id,
-            Colname.energy_supplier_id,
-            Colname.time_window,
-            Colname.sum_quantity,
-            Colname.qualities,
-            Colname.metering_point_type,
-            Colname.settlement_method,
-        )
-
-        assert_schema(
-            df.schema,
+        super().__init__(
+            df,
             energy_results_schema,
+            # TODO BJM: These should eventually all be set to False
             ignore_nullability=True,
-            ignore_column_order=True,
             ignore_decimal_scale=True,
             ignore_decimal_precision=True,
         )
-
-        super().__init__(df)
 
 
 energy_results_schema = t.StructType(
@@ -61,6 +46,8 @@ energy_results_schema = t.StructType(
         t.StructField(Colname.from_grid_area, t.StringType(), True),
         t.StructField(Colname.balance_responsible_id, t.StringType(), True),
         t.StructField(Colname.energy_supplier_id, t.StringType(), True),
+        # TODO BJM: Why not just a single time stamp?
+        #           That is much simpler to manage throughout the code and especially in all the tests
         t.StructField(
             Colname.time_window,
             t.StructType(

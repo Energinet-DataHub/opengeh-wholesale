@@ -12,24 +12,52 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from dataclasses import dataclass
-
-from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
 import pyspark.sql.types as t
+from pyspark.sql import DataFrame
+
+from package.common import assert_schema
 
 
-@dataclass(frozen=True)
 class DataFrameWrapper:
     """
     Base class of "typed" data frames.
     The raw pyspark DataFrame is accessible as `data.df`.
+
+    The wrapper will transform and verify the provided data frame:
+    - Missing nullable columns will be added
+    - Columns not present in the schema is removed
+    - The resulting data frame is validated against the schema regarding types and
+      nullability
     """
 
-    df: DataFrame
-    """
-    The data frame.
-    """
+    def __init__(
+        self,
+        df: DataFrame,
+        schema: t.StructType,
+        ignore_nullability=False,
+        ignore_decimal_scale=False,
+        ignore_decimal_precision=False,
+    ):
+        df = DataFrameWrapper._add_missing_nullable_columns(df, schema)
+
+        columns = [field.name for field in schema.fields]
+        df = df.select(columns)
+
+        assert_schema(
+            df.schema,
+            schema,
+            ignore_nullability=ignore_nullability,
+            ignore_column_order=True,
+            ignore_decimal_scale=ignore_decimal_scale,
+            ignore_decimal_precision=ignore_decimal_precision,
+        )
+
+        self._df: DataFrame = df
+
+    @property
+    def df(self) -> DataFrame:
+        return self._df
 
     @staticmethod
     def _add_missing_nullable_columns(df: DataFrame, schema: t.StructType) -> DataFrame:
