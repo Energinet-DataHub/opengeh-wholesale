@@ -135,7 +135,7 @@ public class EnergyResultQueriesTests
         var actualPoint = actual.TimeSeriesPoints.Single();
         actualPoint.Time.Should().Be(new DateTimeOffset(2022, 5, 16, 22, 0, 0, TimeSpan.Zero));
         actualPoint.Quantity.Should().Be(1.111m);
-        actualPoint.Quality.Should().Be(QuantityQuality.Measured);
+        actualPoint.Qualities.Should().ContainEquivalentOf(QuantityQuality.Measured);
     }
 
     [Theory]

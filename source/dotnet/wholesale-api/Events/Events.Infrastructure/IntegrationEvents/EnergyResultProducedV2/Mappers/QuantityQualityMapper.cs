@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using QuantityQuality = Energinet.DataHub.Wholesale.Contracts.Events.QuantityQuality;
+using QuantityQuality = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV2.Types.QuantityQuality;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.CalculationResultCompleted;
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProducedV2.Mappers;
 
 public static class QuantityQualityMapper
 {
@@ -32,31 +32,5 @@ public static class QuantityQualityMapper
                 actualValue: quantityQuality,
                 "Value cannot be mapped to a quantity quality."),
         };
-    }
-
-    /// <summary>
-    /// NOTE. This a temporary solution.
-    /// When V1 is no longer in use this method can be deleted.
-    /// </summary>
-    public static QuantityQuality SelectBestSuitedQuality(IEnumerable<CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality> qualities)
-    {
-        if (qualities == null)
-            throw new ArgumentNullException(nameof(qualities));
-
-        var quantityQualities = qualities.ToList();
-
-        if (!quantityQualities.Any())
-            return QuantityQuality.Incomplete;
-
-        if (quantityQualities.Contains(CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Missing))
-            return QuantityQuality.Missing;
-
-        if (quantityQualities.Contains(CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Estimated))
-            return QuantityQuality.Estimated;
-
-        if (quantityQualities.Contains(CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality.Measured))
-            return QuantityQuality.Measured;
-
-        return QuantityQuality.Calculated;
     }
 }
