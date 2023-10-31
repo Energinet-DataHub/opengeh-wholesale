@@ -47,24 +47,26 @@ message MonthlyAmountPerChargeResultProducedV1 {
    */
   google.protobuf.Timestamp period_end_utc = 4;
 
-  string grid_area_code = 8;
+  string grid_area_code = 5;
 
-  string energy_supplier_id = 9;
+  string energy_supplier_id = 6;
 
-  string charge_code = 10;
+  string charge_code = 7;
 
-  ChargeType charge_type = 11;
+  ChargeType charge_type = 8;
 
-  string charge_owner_id = 12;
+  string charge_owner_id = 9;
 
-  QuantityUnit quantity_unit = 14;
+  QuantityUnit quantity_unit = 10;
 
-  bool is_tax = 15;
+  bool is_tax = 11;
+
+  Currency currency = 12;
 
   /*
    * 6 digit scale decimal value of the amount.
    */
-  optional DecimalValue amount = 20;
+  optional DecimalValue amount = 13;
 
   // ---------------------------- NESTED TYPES BELOW ----------------------------------------
 
@@ -74,10 +76,10 @@ message MonthlyAmountPerChargeResultProducedV1 {
      * Read more at https://protobuf.dev/programming-guides/style/#enums.
      */
     CALCULATION_TYPE_UNSPECIFIED = 0;
-    CALCULATION_TYPE_WHOLESALE_FIXING = 3;
-    CALCULATION_TYPE_FIRST_CORRECTION_SETTLEMENT = 4;
-    CALCULATION_TYPE_SECOND_CORRECTION_SETTLEMENT = 5;
-    CALCULATION_TYPE_THIRD_CORRECTION_SETTLEMENT = 6;
+    CALCULATION_TYPE_WHOLESALE_FIXING = 1;
+    CALCULATION_TYPE_FIRST_CORRECTION_SETTLEMENT = 2;
+    CALCULATION_TYPE_SECOND_CORRECTION_SETTLEMENT = 3;
+    CALCULATION_TYPE_THIRD_CORRECTION_SETTLEMENT = 4;
   }
 
   enum ChargeType {
@@ -85,6 +87,11 @@ message MonthlyAmountPerChargeResultProducedV1 {
     CHARGE_TYPE_FEE = 1;
     CHARGE_TYPE_TARIFF = 2;
     CHARGE_TYPE_SUBSCRIPTION = 3;
+  }
+
+  enum Currency {
+    CURRENCY_UNSPECIFIED = 0;
+    CURRENCY_DKK = 1;
   }
 
   enum QuantityUnit {
