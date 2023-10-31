@@ -74,7 +74,6 @@ def enriched_time_series_factory(
                 Colname.quantity: quantity,
                 Colname.observation_time: obs_time_datetime,
                 Colname.time_window: obs_time_datetime,
-                Colname.quarter_time: obs_time_datetime,
                 Colname.quality: quality,
                 Colname.settlement_method: SettlementMethod.NON_PROFILED.value,
             }

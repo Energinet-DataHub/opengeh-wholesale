@@ -42,13 +42,12 @@ class QuarterlyMeteringPointTimeSeries(DataFrameWrapper):
             Colname.from_grid_area,
             Colname.metering_point_id,
             Colname.metering_point_type,
-            # TODO BJM: Does it make sense to have both observation_time, quarter_time, and time_window?
+            # TODO BJM: Does it make sense to have both observation_time, and time_window?
             Colname.observation_time,
             Colname.quantity,
             Colname.quality,
             Colname.energy_supplier_id,
             Colname.balance_responsible_id,
-            Colname.quarter_time,
             Colname.settlement_method,
             Colname.time_window,
         )
@@ -80,7 +79,6 @@ _time_series_quarter_points_schema = t.StructType(
         t.StructField(Colname.quality, t.StringType(), False),
         t.StructField(Colname.energy_supplier_id, t.StringType(), True),
         t.StructField(Colname.balance_responsible_id, t.StringType(), True),
-        t.StructField(Colname.quarter_time, t.TimestampType(), False),
         t.StructField(Colname.settlement_method, t.StringType(), True),
         t.StructField(
             Colname.time_window,
