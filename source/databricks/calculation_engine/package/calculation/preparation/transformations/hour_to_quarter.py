@@ -49,10 +49,10 @@ def transform_hour_to_quarter(
         ),
     ).select(
         basis_data_time_series_points_df["*"],
-        f.explode("quarter_times").alias(Colname.quarter_time),
+        f.explode("quarter_times").alias("quarter_time"),
     )
     result = result.withColumn(
-        Colname.time_window, f.window(f.col(Colname.quarter_time), "15 minutes")
+        Colname.time_window, f.window(f.col("quarter_time"), "15 minutes")
     )
     result = result.withColumn(
         Colname.quantity,
