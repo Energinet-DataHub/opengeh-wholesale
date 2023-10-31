@@ -12,11 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
+// ReSharper disable once CheckNamespace - the namespace is exposed publicly in the Contracts package
+namespace Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
-
-public interface ICalculationResultCompletedFactory
+public partial class EnergyResultProducedV2
 {
-    Contracts.Events.CalculationResultCompleted Create(EnergyResult result);
+    /// <summary>
+    /// The message type for transport message meta data in accordance with ADR-008.
+    /// </summary>
+    public const string EventName = "EnergyResultProducedV2";
+
+    public const int EventMinorVersion = 0;
 }
