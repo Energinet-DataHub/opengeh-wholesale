@@ -32,9 +32,9 @@ exchange_out_from_grid_area = "ExOut_FromGridArea"
 
 # Function to aggregate net exchange per neighbouring grid areas
 def aggregate_net_exchange_per_neighbour_ga(
-    enriched_time_series: QuarterlyMeteringPointTimeSeries,
+    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
 ) -> EnergyResults:
-    df = enriched_time_series.df.where(
+    df = quarterly_metering_point_time_series.df.where(
         F.col(Colname.metering_point_type) == MeteringPointType.EXCHANGE.value
     )
 

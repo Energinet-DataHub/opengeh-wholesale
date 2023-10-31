@@ -36,7 +36,6 @@ from package.codelists import (
     MeteringPointType,
     SettlementMethod,
     QuantityQuality,
-    MeteringPointResolution,
 )
 
 # Default time series data point values
@@ -82,15 +81,10 @@ def time_series_row_factory(
                 Colname.quality: QuantityQuality.MEASURED.value,
                 Colname.time_window: [obs_time],
                 Colname.observation_time: [obs_time],
-                Colname.resolution: [MeteringPointResolution.QUARTER.value],
             },
         )
-        df = (
-            spark.createDataFrame(pandas_df)
-            .withColumn(
-                Colname.time_window, window(col(Colname.time_window), "15 minutes")
-            )
-            .withColumn(Colname.quarter_time, col(Colname.observation_time))
+        df = spark.createDataFrame(pandas_df).withColumn(
+            Colname.time_window, window(col(Colname.time_window), "15 minutes")
         )
 
         return QuarterlyMeteringPointTimeSeries(df)

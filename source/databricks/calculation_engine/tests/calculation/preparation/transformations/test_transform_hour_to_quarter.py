@@ -27,7 +27,7 @@ from package.calculation.preparation.transformations.hour_to_quarter import (
     transform_hour_to_quarter,
 )
 from package.calculation.energy.schemas import (
-    basis_data_time_series_points_schema,
+    metering_point_time_series_schema,
 )
 
 
@@ -82,7 +82,7 @@ def test__transform_hour_to_quarter__when_valid_input__split_basis_data_time_ser
     # Arrange
     rows = [basis_data_time_series_points_row()]
     basis_data_time_series_points = spark.createDataFrame(
-        rows, basis_data_time_series_points_schema
+        rows, metering_point_time_series_schema
     )
 
     # Act

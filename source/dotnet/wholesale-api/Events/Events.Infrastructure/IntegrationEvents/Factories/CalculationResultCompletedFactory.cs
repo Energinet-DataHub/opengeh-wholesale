@@ -14,8 +14,8 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Contracts.Events;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Common;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.CalculationResultCompleted;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Types;
 using Google.Protobuf.WellKnownTypes;
 using TimeSeriesPoint = Energinet.DataHub.Wholesale.Contracts.Events.TimeSeriesPoint;
 
@@ -111,7 +111,7 @@ public class CalculationResultCompletedFactory : ICalculationResultCompletedFact
                 {
                     Quantity = new DecimalValue(timeSeriesPoint.Quantity),
                     Time = timeSeriesPoint.Time.ToTimestamp(),
-                    QuantityQuality = QuantityQualityMapper.MapQuantityQuality(timeSeriesPoint.Quality),
+                    QuantityQuality = QuantityQualityMapper.SelectBestSuitedQuality(timeSeriesPoint.Qualities),
                 }));
         return calculationResultCompleted;
     }

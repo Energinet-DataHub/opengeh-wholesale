@@ -12,4 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .basis_data_time_series_points_schema import basis_data_time_series_points_schema
+from .metering_point_time_series_schema import metering_point_time_series_schema
