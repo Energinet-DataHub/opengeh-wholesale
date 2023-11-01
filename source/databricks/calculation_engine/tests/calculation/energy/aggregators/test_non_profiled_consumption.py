@@ -18,13 +18,6 @@ from typing import Callable
 import pandas as pd
 import pytest
 from pyspark.sql import SparkSession
-from pyspark.sql.types import (
-    StructType,
-    StringType,
-    DecimalType,
-    TimestampType,
-    ArrayType,
-)
 
 from package.calculation.energy.aggregators import (
     aggregate_non_profiled_consumption_ga_es,
