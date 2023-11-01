@@ -66,7 +66,14 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
         private static async Task<TFixture> PrepareFixtureAsync(IMessageSink diagnosticMessageSink)
         {
-            var fixture = new TFixture(diagnosticMessageSink);
+            var fixtureType = typeof(TFixture);
+            diagnosticMessageSink.OnMessage(new DiagnosticMessage($"Creating LazyFixture of type '{fixtureType.FullName}'."));
+
+            if (Activator.CreateInstance(fixtureType, diagnosticMessageSink) is not TFixture fixture)
+            {
+                throw new InvalidOperationException($"Could not create LazyFixture of type '{fixtureType.FullName}'.");
+            }
+
             await fixture.InitializeAsync();
 
             return fixture;
