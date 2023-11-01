@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Messaging.Communication;
-using Energinet.DataHub.Core.Messaging.Communication.Internal;
+using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Microsoft.Extensions.Logging;
@@ -50,6 +50,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
     {
         do
         {
+            var hasFailed = false;
             var unpublishedBatch = await _completedBatchRepository.GetNextUnpublishedOrNullAsync().ConfigureAwait(false);
             if (unpublishedBatch == null)
             {
@@ -58,30 +59,91 @@ public class IntegrationEventProvider : IIntegrationEventProvider
 
             // Publish integration events for energy results
             var energyResultCount = 0;
-            await foreach (var integrationEvent in _energyResultEventProvider.GetAsync(unpublishedBatch).ConfigureAwait(false))
+            var energyResultEventProviderEnumerator = _energyResultEventProvider.GetAsync(unpublishedBatch).GetAsyncEnumerator();
+            try
             {
-                energyResultCount++;
-                yield return integrationEvent;
+                var hasResult = true;
+                while (hasResult)
+                {
+                    try
+                    {
+                        hasResult = await energyResultEventProviderEnumerator.MoveNextAsync().ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        hasResult = false;
+                        hasFailed = true;
+                        _logger.LogError(ex, "Failed energy result event publishing for completed batch {BatchId}. Handled '{EnergyResultCount}' energy results before failing.", unpublishedBatch.Id, energyResultCount);
+                    }
+
+                    if (hasResult)
+                    {
+                        energyResultCount++;
+                        yield return energyResultEventProviderEnumerator.Current;
+                    }
+                }
+            }
+            finally
+            {
+                if (energyResultEventProviderEnumerator != null)
+                {
+                    await energyResultEventProviderEnumerator.DisposeAsync().ConfigureAwait(false);
+                }
             }
 
             // Publish integration events for wholesale results
             var wholesaleResultCount = 0;
             if (_wholesaleResultEventProvider.CanContainWholesaleResults(unpublishedBatch))
             {
-                await foreach (var integrationEvent in _wholesaleResultEventProvider.GetAsync(unpublishedBatch).ConfigureAwait(false))
+                var wholesaleResultEventProviderEnumerator = _wholesaleResultEventProvider.GetAsync(unpublishedBatch).GetAsyncEnumerator();
+                try
                 {
-                    wholesaleResultCount++;
-                    yield return integrationEvent;
+                    var hasResult = true;
+                    while (hasResult)
+                    {
+                        try
+                        {
+                            hasResult = await wholesaleResultEventProviderEnumerator.MoveNextAsync().ConfigureAwait(false);
+                        }
+                        catch (Exception ex)
+                        {
+                            hasResult = false;
+                            hasFailed = true;
+                            _logger.LogError(ex, "Failed wholesale result event publishing for completed batch {BatchId}. Handled '{WholesaleResultCount}' wholesale results before failing.", unpublishedBatch.Id, wholesaleResultCount);
+                        }
+
+                        if (hasResult)
+                        {
+                            wholesaleResultCount++;
+                            yield return wholesaleResultEventProviderEnumerator.Current;
+                        }
+                    }
+                }
+                finally
+                {
+                    if (wholesaleResultEventProviderEnumerator != null)
+                    {
+                        await wholesaleResultEventProviderEnumerator.DisposeAsync().ConfigureAwait(false);
+                    }
                 }
             }
 
-            unpublishedBatch.PublishedTime = _clock.GetCurrentInstant();
+            if (hasFailed)
+            {
+                // Quick fix: We currently do not have any status field to mark failures, so instead we set this property to a constant.
+                unpublishedBatch.PublishedTime = NodaConstants.UnixEpoch;
+            }
+            else
+            {
+                unpublishedBatch.PublishedTime = _clock.GetCurrentInstant();
+            }
+
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
-            _logger.LogInformation("Handled '{EnergyResultCount}' energy results for completed batch {BatchId}.", energyResultCount, unpublishedBatch.Id);
+            _logger.LogInformation("Handled '{EnergyResultCount}' energy results for completed batch '{BatchId}'.", energyResultCount, unpublishedBatch.Id);
             if (_wholesaleResultEventProvider.CanContainWholesaleResults(unpublishedBatch))
             {
-                _logger.LogInformation("Handled '{WholesaleResultCount}' wholesale results for completed batch {BatchId}.", wholesaleResultCount, unpublishedBatch.Id);
+                _logger.LogInformation("Handled '{WholesaleResultCount}' wholesale results for completed batch '{BatchId}'.", wholesaleResultCount, unpublishedBatch.Id);
             }
         }
         while (true);
