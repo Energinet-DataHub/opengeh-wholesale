@@ -24,11 +24,12 @@ from typing import Any, Union
 from package.calculation.wholesale.schemas.tariffs_schema import tariff_schema
 from package.codelists import (
     ChargeQuality,
-    WholesaleResultResolution,
+    ChargeResolution,
     ChargeType,
     ChargeUnit,
     MeteringPointType,
     SettlementMethod,
+    WholesaleResultResolution,
 )
 from package.calculation.wholesale.tariff_calculators import (
     calculate_tariff_price_per_ga_co_es,

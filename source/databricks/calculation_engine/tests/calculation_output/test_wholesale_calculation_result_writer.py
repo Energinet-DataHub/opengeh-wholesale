@@ -81,7 +81,7 @@ def _create_result_row(
     charge_type: ChargeType = DEFAULT_CHARGE_TYPE,
     charge_owner: str = DEFAULT_CHARGE_OWNER_ID,
     charge_tax: bool = DEFAULT_CHARGE_TAX,
-    resolution: ChargeResolution = DEFAULT_RESOLUTION,
+    resolution: WholesaleResultResolution = DEFAULT_RESOLUTION,
     charge_price: Decimal = DEFAULT_CHARGE_PRICE,
     total_quantity: Decimal = DEFAULT_TOTAL_QUANTITY,
     charge_count: str = DEFAULT_CHARGE_COUNT,
