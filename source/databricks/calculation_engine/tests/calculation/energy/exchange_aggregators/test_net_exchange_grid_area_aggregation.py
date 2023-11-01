@@ -28,6 +28,7 @@ from package.calculation.energy.exchange_aggregators import (
 )
 from package.calculation.preparation.quarterly_metering_point_time_series import (
     QuarterlyMeteringPointTimeSeries,
+    _quarterly_metering_point_time_series_schema,
 )
 from package.codelists import (
     MeteringPointType,
@@ -52,14 +53,17 @@ def quarterly_metering_point_time_series(
     # Create empty pandas df
     pandas_df = pd.DataFrame(
         {
-            Colname.metering_point_id: [],
-            Colname.metering_point_type: [],
             Colname.grid_area: [],
             Colname.to_grid_area: [],
             Colname.from_grid_area: [],
-            Colname.quantity: [],
+            Colname.metering_point_id: [],
+            Colname.metering_point_type: [],
             Colname.observation_time: [],
+            Colname.quantity: [],
             Colname.quality: [],
+            Colname.energy_supplier_id: [],
+            Colname.balance_responsible_id: [],
+            Colname.settlement_method: [],
         }
     )
 
@@ -177,14 +181,8 @@ def quarterly_metering_point_time_series(
             default_obs_time + timedelta(minutes=quarter_number * 15),
         )
 
-    df = (
-        spark.createDataFrame(pandas_df)
-        .withColumn(Colname.quality, lit(QuantityQuality.ESTIMATED.value))
-        .withColumn(
-            Colname.time_window, window(col(Colname.observation_time), "15 minutes")
-        )
-        .withColumn(Colname.settlement_method, lit(SettlementMethod.NON_PROFILED.value))
-    )
+    df = spark.createDataFrame(pandas_df, _quarterly_metering_point_time_series_schema)
+
     return QuarterlyMeteringPointTimeSeries(df)
 
 
@@ -194,20 +192,24 @@ def add_row_of_data(
     to_grid_area,
     from_grid_area,
     quantity: Decimal,
-    timestamp,
+    timestamp: datetime,
 ):
     """
     Helper method to create a new row in the dataframe to improve readability and maintainability
     """
     new_row = {
-        Colname.metering_point_id: "metering-point-id",
-        Colname.metering_point_type: point_type,
         Colname.grid_area: "grid-area",
         Colname.to_grid_area: to_grid_area,
         Colname.from_grid_area: from_grid_area,
-        Colname.quantity: quantity,
+        Colname.metering_point_id: "metering-point-id",
+        Colname.metering_point_type: point_type,
         Colname.observation_time: timestamp,
+        Colname.quantity: quantity,
         Colname.quality: QuantityQuality.ESTIMATED.value,
+        Colname.energy_supplier_id: "energy-supplier-id",
+        Colname.balance_responsible_id: "balance-responsible-id",
+        Colname.settlement_method: SettlementMethod.NON_PROFILED.value,
+        Colname.time_window: [timestamp, timestamp + timedelta(minutes=15)],
     }
     return pandas_df.append(new_row, ignore_index=True)
 

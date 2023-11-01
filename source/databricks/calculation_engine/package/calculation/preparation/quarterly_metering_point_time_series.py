@@ -36,7 +36,6 @@ class QuarterlyMeteringPointTimeSeries(DataFrameWrapper):
             df,
             _quarterly_metering_point_time_series_schema,
             # TODO BJM: These should eventually all be set to False
-            ignore_nullability=True,
             ignore_decimal_scale=True,
             ignore_decimal_precision=True,
         )
