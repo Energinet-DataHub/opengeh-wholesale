@@ -23,9 +23,13 @@ def aggregate_quantity_and_quality(result: DataFrame, group_by: list[str]) -> Da
 
     Sums quantity and collects distinct quality from the metering point time-series.
     """
-    return result.groupBy(group_by).agg(
-        f.sum(Colname.quantity).alias(Colname.sum_quantity),
-        f.collect_set(Colname.quality).alias(Colname.qualities),
+    return (
+        result.groupBy(group_by)
+        .agg(
+            f.sum(Colname.quantity).alias(Colname.sum_quantity),
+            f.collect_set(Colname.quality).alias(Colname.qualities),
+        )
+        .withColumn(Colname.sum_quantity, f.coalesce(Colname.sum_quantity, f.lit(0)))
     )
 
 
