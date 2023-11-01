@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 from typing import Callable, Optional
 
@@ -30,6 +30,7 @@ from package.calculation.energy.energy_results import (
 )
 from package.calculation.preparation.quarterly_metering_point_time_series import (
     QuarterlyMeteringPointTimeSeries,
+    _quarterly_metering_point_time_series_schema,
 )
 from package.codelists import (
     MeteringPointType,
@@ -66,21 +67,24 @@ def quarterly_metering_point_time_series_factory(
         obs_time_datetime = timestamp_factory(obs_time_string)
         rows = [
             {
+                Colname.grid_area: grid_area,
+                Colname.to_grid_area: ["to-grid-area"],
+                Colname.from_grid_area: ["from-grid-area"],
                 Colname.metering_point_id: "metering-point-id",
                 Colname.metering_point_type: metering_point_type,
-                Colname.grid_area: grid_area,
-                Colname.balance_responsible_id: default_responsible,
-                Colname.energy_supplier_id: default_supplier,
-                Colname.quantity: quantity,
                 Colname.observation_time: obs_time_datetime,
-                Colname.time_window: obs_time_datetime,
+                Colname.quantity: quantity,
                 Colname.quality: quality,
+                Colname.energy_supplier_id: default_supplier,
+                Colname.balance_responsible_id: default_responsible,
                 Colname.settlement_method: SettlementMethod.NON_PROFILED.value,
+                Colname.time_window: [
+                    obs_time_datetime,
+                    obs_time_datetime + timedelta(minutes=15),
+                ],
             }
         ]
-        df = spark.createDataFrame(rows).withColumn(
-            Colname.time_window, F.window(F.col(Colname.time_window), "15 minutes")
-        )
+        df = spark.createDataFrame(rows, _quarterly_metering_point_time_series_schema)
         return QuarterlyMeteringPointTimeSeries(df)
 
     return factory
