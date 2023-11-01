@@ -20,7 +20,6 @@ using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factor
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Types;
 using FluentAssertions;
 using NodaTime;
-using Test.Core;
 using Xunit;
 using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
 
@@ -91,7 +90,7 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
     }
 
     private WholesaleResult CreateWholesaleResult(
-        Common.Models.ProcessType calculationType = Common.Models.ProcessType.FirstCorrectionSettlement,
+        ProcessType calculationType = ProcessType.FirstCorrectionSettlement,
         IReadOnlyCollection<WholesaleTimeSeriesPoint>? timeSeriesPoints = default)
     {
         var qualities = new List<QuantityQuality>
