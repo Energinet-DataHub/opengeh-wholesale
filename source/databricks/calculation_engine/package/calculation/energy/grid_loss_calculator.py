@@ -129,11 +129,11 @@ def calculate_positive_grid_loss(grid_loss: EnergyResults) -> EnergyResults:
 
 
 def calculate_total_consumption(
-    agg_net_exchange: EnergyResults, agg_production: EnergyResults
+    net_exchange_per_ga: EnergyResults, production_per_ga: EnergyResults
 ) -> EnergyResults:
     result_production = (
         t.aggregate_sum_quantity_and_qualities(
-            agg_production.df,
+            production_per_ga.df,
             [Colname.grid_area, Colname.time_window],
         )
         .withColumnRenamed(Colname.sum_quantity, production_sum_quantity)
@@ -142,7 +142,7 @@ def calculate_total_consumption(
 
     result_net_exchange = (
         t.aggregate_sum_quantity_and_qualities(
-            agg_net_exchange.df,
+            net_exchange_per_ga.df,
             [Colname.grid_area, Colname.time_window],
         )
         .withColumnRenamed(Colname.sum_quantity, exchange_sum_quantity)
