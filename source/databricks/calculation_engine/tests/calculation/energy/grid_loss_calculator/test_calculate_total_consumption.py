@@ -21,7 +21,7 @@ from package.calculation.energy.grid_loss_calculator import (
 from package.codelists import QuantityQuality
 from package.constants import Colname
 
-from tests.calculation.energy import energy_results
+from tests.calculation.energy import energy_results_factories as energy_results
 
 
 class TestWhenValidInput:
