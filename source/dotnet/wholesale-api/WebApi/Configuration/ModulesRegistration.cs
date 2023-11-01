@@ -39,7 +39,7 @@ internal static class ServiceCollectionExtensions
 
         serviceCollection.AddCalculationResultsModule(configuration);
 
-        serviceCollection.AddEventsModule();
+        serviceCollection.AddEventsModule(configuration.Get<ServiceBusOptions>()!);
         serviceCollection.AddEdiModule();
 
         // Add registration that are used by more than one module
