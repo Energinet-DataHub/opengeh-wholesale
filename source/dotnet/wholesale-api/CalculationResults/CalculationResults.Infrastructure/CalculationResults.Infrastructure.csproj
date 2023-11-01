@@ -4,7 +4,7 @@
     <RootNamespace>Energinet.DataHub.Wholesale.CalculationResults.Infrastructure</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.15.0" />
+    <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.16.0" />
     <PackageReference Include="CsvHelper" Version="30.0.1" />
     <PackageReference Include="Energinet.DataHub.Core.Databricks.SqlStatementExecution" Version="7.0.1" />
     <PackageReference Include="Energinet.DataHub.Core.JsonSerialization" Version="2.2.8" />

@@ -12,23 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.ObjectModel;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Models;
-using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Types;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Common;
 using FluentAssertions;
 using Google.Protobuf.WellKnownTypes;
 using NodaTime;
 using Test.Core;
 using Xunit;
-using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
-using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType;
+using EnergyResultProduced = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV2;
+using EnergyResultProducedFactory = Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProducedV2.Factories.EnergyResultProducedV2Factory;
 
-namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.Factories;
+namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.EnergyResultProducedV2.Factories;
 
-public class EnergyResultProducedV1FactoryTests
+public class EnergyResultProducedV2FactoryTests
 {
     private readonly Guid _batchId = Guid.NewGuid();
     private readonly Guid _id = Guid.NewGuid();
@@ -42,7 +42,7 @@ public class EnergyResultProducedV1FactoryTests
     [Theory]
     [InlineAutoMoqData]
     public void Create_WhenForTotalGridArea_ReturnsExpectedObject(
-        EnergyResultProducedV1Factory sut)
+        EnergyResultProducedFactory sut)
     {
         // Arrange
         var energyResult = CreateEnergyResult();
@@ -61,7 +61,7 @@ public class EnergyResultProducedV1FactoryTests
     [Theory]
     [InlineAutoMoqData]
     public void Create_WhenForEnergySupplier_ReturnsExpectedObject(
-        EnergyResultProducedV1Factory sut)
+        EnergyResultProducedFactory sut)
     {
         // Arrange
         var energyResult = CreateEnergyResult();
@@ -79,7 +79,7 @@ public class EnergyResultProducedV1FactoryTests
     [Theory]
     [InlineAutoMoqData]
     public void Create_WhenForBalanceResponsibleParty_ReturnsExpectedObject(
-        EnergyResultProducedV1Factory sut)
+        EnergyResultProducedFactory sut)
     {
         // Arrange
         var energyResult = CreateEnergyResult();
@@ -97,7 +97,7 @@ public class EnergyResultProducedV1FactoryTests
     [Theory]
     [InlineAutoMoqData]
     public void Create_WhenForEnergySupplierPerBalanceResponsibleParty_ReturnsExpectedObject(
-        EnergyResultProducedV1Factory sut)
+        EnergyResultProducedFactory sut)
     {
         // Arrange
         var energyResult = CreateEnergyResult();
@@ -112,7 +112,7 @@ public class EnergyResultProducedV1FactoryTests
 
     private EnergyResult CreateEnergyResult()
     {
-        var quantityQualities = new List<QuantityQuality> { QuantityQuality.Estimated };
+        var quantityQualities = new Collection<QuantityQuality> { QuantityQuality.Estimated, QuantityQuality.Calculated };
 
         return new EnergyResult(
             _id,
@@ -133,36 +133,40 @@ public class EnergyResultProducedV1FactoryTests
             _fromGridArea);
     }
 
-    private static EnergyResultProducedV1 CreateExpected(EnergyResult energyResult)
+    private static EnergyResultProduced CreateExpected(EnergyResult energyResult)
     {
-        var energyResultProducedV1 = new EnergyResultProducedV1
+        var energyResultProduced = new EnergyResultProduced
         {
             CalculationId = energyResult.BatchId.ToString(),
-            Resolution = EnergyResultProducedV1.Types.Resolution.Quarter,
-            CalculationType = EnergyResultProducedV1.Types.CalculationType.Aggregation,
-            QuantityUnit = EnergyResultProducedV1.Types.QuantityUnit.Kwh,
+            Resolution = EnergyResultProduced.Types.Resolution.Quarter,
+            CalculationType = EnergyResultProduced.Types.CalculationType.Aggregation,
+            QuantityUnit = EnergyResultProduced.Types.QuantityUnit.Kwh,
             PeriodStartUtc = energyResult.PeriodStart.ToTimestamp(),
             PeriodEndUtc = energyResult.PeriodEnd.ToTimestamp(),
-            TimeSeriesType = EnergyResultProducedV1.Types.TimeSeriesType.FlexConsumption,
+            TimeSeriesType = EnergyResultProduced.Types.TimeSeriesType.FlexConsumption,
             FromGridAreaCode = energyResult.FromGridArea,
         };
-        energyResultProducedV1.TimeSeriesPoints.AddRange(
-            energyResult.TimeSeriesPoints.Select(
-                p => new EnergyResultProducedV1.Types.TimeSeriesPoint
+        energyResultProduced.TimeSeriesPoints.AddRange(
+            energyResult.TimeSeriesPoints.Select(p =>
+            {
+                var timeSeriesPoint = new EnergyResultProduced.Types.TimeSeriesPoint
                 {
                     Time = p.Time.ToTimestamp(),
                     Quantity = p.Quantity,
-                    QuantityQuality = EnergyResultProducedV1.Types.QuantityQuality.Estimated,
-                }));
+                };
+                timeSeriesPoint.QuantityQualities.Add(EnergyResultProduced.Types.QuantityQuality.Estimated);
+                timeSeriesPoint.QuantityQualities.Add(EnergyResultProduced.Types.QuantityQuality.Calculated);
+                return timeSeriesPoint;
+            }));
 
         if (energyResult.EnergySupplierId == null && energyResult.BalanceResponsibleId == null)
         {
-            energyResultProducedV1.AggregationPerGridarea = new EnergyResultProducedV1.Types.AggregationPerGridArea { GridAreaCode = energyResult.GridArea };
+            energyResultProduced.AggregationPerGridarea = new EnergyResultProduced.Types.AggregationPerGridArea { GridAreaCode = energyResult.GridArea };
         }
         else if (energyResult.BalanceResponsibleId != null && energyResult.EnergySupplierId != null)
         {
-            energyResultProducedV1.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea =
-                new EnergyResultProducedV1.Types.AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea
+            energyResultProduced.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea =
+                new EnergyResultProduced.Types.AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea
                 {
                     GridAreaCode = energyResult.GridArea,
                     EnergySupplierId = energyResult.EnergySupplierId,
@@ -171,8 +175,8 @@ public class EnergyResultProducedV1FactoryTests
         }
         else if (energyResult.BalanceResponsibleId == null && energyResult.EnergySupplierId != null)
         {
-            energyResultProducedV1.AggregationPerEnergysupplierPerGridarea =
-                new EnergyResultProducedV1.Types.AggregationPerEnergySupplierPerGridArea
+            energyResultProduced.AggregationPerEnergysupplierPerGridarea =
+                new EnergyResultProduced.Types.AggregationPerEnergySupplierPerGridArea
                 {
                     GridAreaCode = energyResult.GridArea,
                     EnergySupplierId = energyResult.EnergySupplierId,
@@ -180,14 +184,14 @@ public class EnergyResultProducedV1FactoryTests
         }
         else
         {
-            energyResultProducedV1.AggregationPerBalanceresponsiblepartyPerGridarea =
-                new EnergyResultProducedV1.Types.AggregationPerBalanceResponsiblePartyPerGridArea
+            energyResultProduced.AggregationPerBalanceresponsiblepartyPerGridarea =
+                new EnergyResultProduced.Types.AggregationPerBalanceResponsiblePartyPerGridArea
                 {
                     GridAreaCode = energyResult.GridArea,
                     BalanceResponsibleId = energyResult.BalanceResponsibleId,
                 };
         }
 
-        return energyResultProducedV1;
+        return energyResultProduced;
     }
 }
