@@ -4,10 +4,9 @@ resource "azurerm_key_vault_access_policy" "kv_dh2_certificates_access_policy_ap
   tenant_id = module.app_webapi.identity.0.tenant_id
   object_id = module.app_webapi.identity.0.principal_id
 
-  certificate_permissions = [
+  secret_permissions = [
       "Delete",
-      "Import",
+      "Set",
       "List",
-      "Purge",
     ]
 }
