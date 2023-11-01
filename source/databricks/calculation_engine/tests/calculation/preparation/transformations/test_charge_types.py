@@ -229,7 +229,7 @@ def test__get_tariff_charges__filters_on_resolution(
 
     # Assert
     assert actual.count() == 1
-    assert actual.collect()[0][Colname.charge_resolution] == charge_resolution.value
+    assert actual.collect()[0][Colname.resolution] == charge_resolution.value
 
 
 def test__get_tariff_charges__filters_on_tariff_charge_type(
