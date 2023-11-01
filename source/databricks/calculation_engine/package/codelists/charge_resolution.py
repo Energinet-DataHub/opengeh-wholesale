@@ -17,7 +17,7 @@ from enum import Enum
 
 class ChargeResolution(Enum):
     """
-    Resolution of the charges, which is read from input delta table
+    Time resolution of the charges, which is read from input delta table
     """
 
     MONTH = "P1M"

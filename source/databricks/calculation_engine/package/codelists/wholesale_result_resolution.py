@@ -16,6 +16,13 @@ from enum import Enum
 
 
 class WholesaleResultResolution(Enum):
-    MONTH = "P1M"  # tariff, subscription, fee
-    DAY = "P1D"  # tariff, subscription, fee
-    HOUR = "PT1H"  # tariff
+    """
+    Time resolution of a wholesale result, which is stored in the wholesale result delta table
+    """
+
+    MONTH = "P1M"
+    """Applies to tariffs (monthly amount), subscriptions and fees"""
+    DAY = "P1D"
+    """Applies to tariffs, subscriptions and fees"""
+    HOUR = "PT1H"
+    """Applies to tariffs"""

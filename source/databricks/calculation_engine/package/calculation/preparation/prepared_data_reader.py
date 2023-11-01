@@ -16,6 +16,7 @@ from datetime import datetime
 from pyspark.sql import DataFrame
 
 from package.calculation_input import TableReader
+from package.codelists import ChargeResolution
 
 from . import transformations as T
 from .quarterly_metering_point_time_series import QuarterlyMeteringPointTimeSeries
