@@ -21,7 +21,7 @@ from package.calculation.preparation.transformations import (
     get_fee_charges,
     get_subscription_charges,
 )
-import package.codelists as E
+import package.codelists as e
 from package.calculation.wholesale.schemas.tariffs_schema import tariff_schema
 from package.calculation_input.schemas import (
     time_series_point_schema,
@@ -38,20 +38,20 @@ DEFAULT_CHARGE_TIME_HOUR_0 = datetime(2020, 1, 1, 0)
 DEFAULT_CHARGE_PRICE = Decimal("2.000005")
 DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
 DEFAULT_METERING_POINT_ID = "123456789012345678901234567"
-DEFAULT_METERING_POINT_TYPE = E.MeteringPointType.CONSUMPTION
-DEFAULT_SETTLEMENT_METHOD = E.SettlementMethod.FLEX
+DEFAULT_METERING_POINT_TYPE = e.MeteringPointType.CONSUMPTION
+DEFAULT_SETTLEMENT_METHOD = e.SettlementMethod.FLEX
 DEFAULT_QUANTITY = Decimal("1.005")
-DEFAULT_QUALITY = E.ChargeQuality.CALCULATED
+DEFAULT_QUALITY = e.ChargeQuality.CALCULATED
 DEFAULT_PERIOD_START_DATETIME = datetime(2019, 12, 31, 23)
 
 
 def _create_metering_point_row(
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
-    metering_point_type: E.MeteringPointType = DEFAULT_METERING_POINT_TYPE,
+    metering_point_type: e.MeteringPointType = DEFAULT_METERING_POINT_TYPE,
     calculation_type: str = "calculation_type",
-    settlement_method: E.SettlementMethod = DEFAULT_SETTLEMENT_METHOD,
+    settlement_method: e.SettlementMethod = DEFAULT_SETTLEMENT_METHOD,
     grid_area: str = DEFAULT_GRID_AREA,
-    resolution: E.MeteringPointResolution = E.MeteringPointResolution.HOUR,
+    resolution: e.MeteringPointResolution = e.MeteringPointResolution.HOUR,
     from_grid_area: str = "from_grid_area",
     to_grid_area: str = "to_grid_area",
     parent_metering_point_id: str = "parent_metering_point_id",
@@ -81,7 +81,7 @@ def _create_metering_point_row(
 def _create_time_series_row(
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
     quantity: Decimal = DEFAULT_QUANTITY,
-    quality: E.QuantityQuality = E.QuantityQuality.CALCULATED,
+    quality: e.QuantityQuality = e.QuantityQuality.CALCULATED,
     observation_time: datetime = datetime(2020, 1, 1, 0),
 ) -> Row:
     row = {
@@ -97,19 +97,19 @@ def _create_tariff_charges_row(
     charge_code: str = DEFAULT_CHARGE_CODE,
     charge_owner: str = DEFAULT_CHARGE_OWNER,
     charge_tax: bool = DEFAULT_CHARGE_TAX,
-    resolution: E.ChargeResolution = E.ChargeResolution.HOUR,
+    resolution: e.ChargeResolution = e.ChargeResolution.HOUR,
     charge_time: datetime = DEFAULT_CHARGE_TIME_HOUR_0,
     from_date: datetime = datetime(2020, 1, 1, 0),
     to_date: datetime = datetime(2020, 1, 1, 1),
     charge_price: Decimal = DEFAULT_CHARGE_PRICE,
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
 ) -> Row:
-    charge_key: str = f"{charge_code}-{charge_owner}-{E.ChargeType.TARIFF.value}"
+    charge_key: str = f"{charge_code}-{charge_owner}-{e.ChargeType.TARIFF.value}"
 
     row = {
         Colname.charge_key: charge_key,
         Colname.charge_code: charge_code,
-        Colname.charge_type: E.ChargeType.TARIFF.value,
+        Colname.charge_type: e.ChargeType.TARIFF.value,
         Colname.charge_owner: charge_owner,
         Colname.charge_tax: charge_tax,
         Colname.resolution: resolution.value,
@@ -123,7 +123,7 @@ def _create_tariff_charges_row(
 
 
 def _create_subscription_or_fee_charges_row(
-    charge_type: E.ChargeType,
+    charge_type: e.ChargeType,
     charge_code: str = DEFAULT_CHARGE_CODE,
     charge_owner: str = DEFAULT_CHARGE_OWNER,
     charge_tax: bool = DEFAULT_CHARGE_TAX,
@@ -141,7 +141,7 @@ def _create_subscription_or_fee_charges_row(
         Colname.charge_type: charge_type.value,
         Colname.charge_owner: charge_owner,
         Colname.charge_tax: charge_tax,
-        Colname.resolution: ChargeResolution.MONTH.value,
+        Colname.resolution: e.ChargeResolution.MONTH.value,
         Colname.charge_time: charge_time,
         Colname.from_date: from_date,
         Colname.to_date: to_date,
@@ -152,30 +152,30 @@ def _create_subscription_or_fee_charges_row(
 
 
 def _create_expected_tariff_charges_row(
-    charge_key: str = f"{DEFAULT_CHARGE_CODE}-{DEFAULT_CHARGE_OWNER}-{E.ChargeType.TARIFF.value}",
+    charge_key: str = f"{DEFAULT_CHARGE_CODE}-{DEFAULT_CHARGE_OWNER}-{e.ChargeType.TARIFF.value}",
     charge_code: str = DEFAULT_CHARGE_CODE,
     charge_owner: str = DEFAULT_CHARGE_OWNER,
     charge_tax: bool = DEFAULT_CHARGE_TAX,
-    charge_resolution: E.ChargeResolution = E.ChargeResolution.HOUR,
+    resolution: e.ChargeResolution = e.ChargeResolution.HOUR,
     charge_time: datetime = DEFAULT_CHARGE_TIME_HOUR_0,
     charge_price: Decimal = DEFAULT_CHARGE_PRICE,
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
     energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
-    metering_point_type: E.MeteringPointType = DEFAULT_METERING_POINT_TYPE,
-    settlement_method: E.SettlementMethod = DEFAULT_SETTLEMENT_METHOD,
+    metering_point_type: e.MeteringPointType = DEFAULT_METERING_POINT_TYPE,
+    settlement_method: e.SettlementMethod = DEFAULT_SETTLEMENT_METHOD,
     grid_area: str = DEFAULT_GRID_AREA,
     quantity: Decimal = DEFAULT_QUANTITY,
     qualities=None,
 ) -> Row:
     if qualities is None:
         qualities = [
-            E.ChargeQuality.ESTIMATED.value,
-            E.ChargeQuality.CALCULATED.value,
+            e.ChargeQuality.ESTIMATED.value,
+            e.ChargeQuality.CALCULATED.value,
         ]
     row = {
         Colname.charge_key: charge_key,
         Colname.charge_code: charge_code,
-        Colname.charge_type: E.ChargeType.TARIFF.value,
+        Colname.charge_type: e.ChargeType.TARIFF.value,
         Colname.charge_owner: charge_owner,
         Colname.charge_tax: charge_tax,
         Colname.resolution: resolution.value,
@@ -193,10 +193,10 @@ def _create_expected_tariff_charges_row(
 
 
 @pytest.mark.parametrize(
-    "charge_resolution", [E.ChargeResolution.HOUR, E.ChargeResolution.DAY]
+    "charge_resolution", [e.ChargeResolution.HOUR, e.ChargeResolution.DAY]
 )
 def test__get_tariff_charges__filters_on_resolution(
-    spark: SparkSession, charge_resolution: E.ChargeResolution
+    spark: SparkSession, charge_resolution: e.ChargeResolution
 ) -> None:
     """
     Only charges with the given resolution are accepted.
@@ -206,10 +206,10 @@ def test__get_tariff_charges__filters_on_resolution(
     time_series_rows = [_create_time_series_row()]
     charges_rows = [
         _create_tariff_charges_row(
-            resolution=E.ChargeResolution.HOUR,
+            resolution=e.ChargeResolution.HOUR,
         ),
         _create_tariff_charges_row(
-            resolution=E.ChargeResolution.DAY,
+            resolution=e.ChargeResolution.DAY,
         ),
     ]
 
@@ -241,10 +241,10 @@ def test__get_tariff_charges__filters_on_tariff_charge_type(
     charges_rows = [
         _create_tariff_charges_row(),
         _create_subscription_or_fee_charges_row(
-            charge_type=E.ChargeType.FEE,
+            charge_type=e.ChargeType.FEE,
         ),
         _create_subscription_or_fee_charges_row(
-            charge_type=E.ChargeType.SUBSCRIPTION,
+            charge_type=e.ChargeType.SUBSCRIPTION,
         ),
     ]
 
@@ -259,11 +259,11 @@ def test__get_tariff_charges__filters_on_tariff_charge_type(
         metering_point,
         time_series,
         charges,
-        E.ChargeResolution.HOUR,
+        e.ChargeResolution.HOUR,
     )
 
     # Assert
-    assert actual_tariff.collect()[0][Colname.charge_type] == E.ChargeType.TARIFF.value
+    assert actual_tariff.collect()[0][Colname.charge_type] == e.ChargeType.TARIFF.value
 
 
 def test__get_fee_charges__filters_on_fee_charge_type(
@@ -272,14 +272,12 @@ def test__get_fee_charges__filters_on_fee_charge_type(
     # Arrange
     metering_point_rows = [_create_metering_point_row()]
     charges_rows = [
-        _create_charges_row(
-            charge_type=E.ChargeType.TARIFF,
+        _create_tariff_charges_row(),
+        _create_subscription_or_fee_charges_row(
+            charge_type=e.ChargeType.FEE,
         ),
-        _create_charges_row(
-            charge_type=E.ChargeType.FEE,
-        ),
-        _create_charges_row(
-            charge_type=E.ChargeType.SUBSCRIPTION,
+        _create_subscription_or_fee_charges_row(
+            charge_type=e.ChargeType.SUBSCRIPTION,
         ),
     ]
 
@@ -292,7 +290,7 @@ def test__get_fee_charges__filters_on_fee_charge_type(
     actual_fee = get_fee_charges(charges, metering_point)
 
     # Assert
-    assert actual_fee.collect()[0][Colname.charge_type] == E.ChargeType.FEE.value
+    assert actual_fee.collect()[0][Colname.charge_type] == e.ChargeType.FEE.value
 
 
 def test__get_subscription_charges__filters_on_subscription_charge_type(
@@ -301,14 +299,12 @@ def test__get_subscription_charges__filters_on_subscription_charge_type(
     # Arrange
     metering_point_rows = [_create_metering_point_row()]
     charges_rows = [
-        _create_charges_row(
-            charge_type=E.ChargeType.TARIFF,
+        _create_tariff_charges_row(),
+        _create_subscription_or_fee_charges_row(
+            charge_type=e.ChargeType.FEE,
         ),
-        _create_charges_row(
-            charge_type=E.ChargeType.FEE,
-        ),
-        _create_charges_row(
-            charge_type=E.ChargeType.SUBSCRIPTION,
+        _create_subscription_or_fee_charges_row(
+            charge_type=e.ChargeType.SUBSCRIPTION,
         ),
     ]
 
@@ -323,7 +319,7 @@ def test__get_subscription_charges__filters_on_subscription_charge_type(
     # Assert
     assert (
         actual_subscription.collect()[0][Colname.charge_type]
-        == E.ChargeType.SUBSCRIPTION.value
+        == e.ChargeType.SUBSCRIPTION.value
     )
 
 
@@ -348,11 +344,11 @@ def test__get_subscription_charges__split_into_days_between_from_and_to_date(
         _create_metering_point_row(from_date=from_date, to_date=to_date)
     ]
     charges_rows = [
-        _create_charges_row(
+        _create_subscription_or_fee_charges_row(
             charge_time=charge_time,
             from_date=from_date,
             to_date=to_date,
-            charge_type=E.ChargeType.SUBSCRIPTION,
+            charge_type=e.ChargeType.SUBSCRIPTION,
         ),
     ]
 
@@ -398,7 +394,7 @@ def test__get_tariff_charges__only_accepts_charges_in_metering_point_period(
         _create_time_series_row(observation_time=from_date),
     ]
     charges_rows = [
-        _create_charges_row(
+        _create_tariff_charges_row(
             from_date=from_date,
             to_date=to_date,
             charge_time=from_date,
@@ -416,7 +412,7 @@ def test__get_tariff_charges__only_accepts_charges_in_metering_point_period(
         metering_point,
         time_series,
         charges,
-        E.ChargeResolution.HOUR,
+        e.ChargeResolution.HOUR,
     )
 
     # Assert
@@ -433,7 +429,7 @@ def test__get_tariff_charges__when_same_metering_point_and_resolution__sums_quan
     # Arrange
     metering_point_rows = [_create_metering_point_row()]
     time_series_rows = [_create_time_series_row(), _create_time_series_row()]
-    charges_rows = [_create_charges_row()]
+    charges_rows = [_create_tariff_charges_row()]
 
     metering_point = spark.createDataFrame(
         metering_point_rows, metering_point_period_schema
@@ -446,7 +442,7 @@ def test__get_tariff_charges__when_same_metering_point_and_resolution__sums_quan
         metering_point,
         time_series,
         charges,
-        E.ChargeResolution.HOUR,
+        e.ChargeResolution.HOUR,
     )
 
     # Assert
@@ -459,7 +455,7 @@ def test__get_tariff_charges__when_no_matching_charge_resolution__returns_empty_
     # Arrange
     metering_point_rows = [_create_metering_point_row()]
     time_series_rows = [_create_time_series_row()]
-    charges_rows = [_create_tariff_charges_row(resolution=E.ChargeResolution.DAY)]
+    charges_rows = [_create_tariff_charges_row(resolution=e.ChargeResolution.DAY)]
 
     metering_point = spark.createDataFrame(
         metering_point_rows, metering_point_period_schema
@@ -472,7 +468,7 @@ def test__get_tariff_charges__when_no_matching_charge_resolution__returns_empty_
         metering_point,
         time_series,
         charges,
-        E.ChargeResolution.HOUR,
+        e.ChargeResolution.HOUR,
     )
 
     # Assert
@@ -486,8 +482,8 @@ def test__get_tariff_charges__when_two_tariff_overlap__returns_both_tariffs(
     metering_point_rows = [_create_metering_point_row()]
     time_series_rows = [_create_time_series_row()]
     charges_rows = [
-        _create_charges_row(charge_code="4000"),
-        _create_charges_row(charge_code="3000"),
+        _create_tariff_charges_row(charge_code="4000"),
+        _create_tariff_charges_row(charge_code="3000"),
     ]
 
     metering_point = spark.createDataFrame(
@@ -501,7 +497,7 @@ def test__get_tariff_charges__when_two_tariff_overlap__returns_both_tariffs(
         metering_point,
         time_series,
         charges,
-        E.ChargeResolution.HOUR,
+        e.ChargeResolution.HOUR,
     )
 
     # Assert
@@ -514,10 +510,10 @@ def test__get_tariff_charges__returns_df_with_expected_values(
     # Arrange
     metering_point_rows = [_create_metering_point_row()]
     time_series_rows = [
-        _create_time_series_row(quality=E.QuantityQuality.CALCULATED),
-        _create_time_series_row(quality=E.QuantityQuality.ESTIMATED),
+        _create_time_series_row(quality=e.QuantityQuality.CALCULATED),
+        _create_time_series_row(quality=e.QuantityQuality.ESTIMATED),
     ]
-    charges_rows = [_create_charges_row()]
+    charges_rows = [_create_tariff_charges_row()]
 
     expected_tariff_charges_row = [
         _create_expected_tariff_charges_row(quantity=2 * DEFAULT_QUANTITY)
@@ -538,7 +534,7 @@ def test__get_tariff_charges__returns_df_with_expected_values(
         metering_point,
         time_series,
         charges,
-        E.ChargeResolution.HOUR,
+        e.ChargeResolution.HOUR,
     )
 
     # Assert
