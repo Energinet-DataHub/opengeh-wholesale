@@ -26,7 +26,7 @@ from tests.contract_utils import assert_codelist_matches_contract
         ("aggregation-level.json", enums.AggregationLevel),
         ("basis-data-type.json", enums.BasisDataType),
         ("charge-quality.json", enums.ChargeQuality),
-        ("charge-resolution.json", enums.ChargeResolution),
+        ("wholesale-result-resolution.json", enums.ChargeResolution),
         ("charge-type.json", enums.ChargeType),
         ("charge-unit.json", enums.ChargeUnit),
         ("metering-point-resolution.json", enums.MeteringPointResolution),
