@@ -25,8 +25,8 @@ limitations under the License.
 
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.AzureServiceBus" Version="7.0.0" />
-    <PackageReference Include="Energinet.DataHub.Core.App.Common.Security" Version="8.1.0" />
-    <PackageReference Include="Energinet.DataHub.Core.App.WebApp" Version="8.1.0" />
+    <PackageReference Include="Energinet.DataHub.Core.App.Common.Security" Version="8.1.1" />
+    <PackageReference Include="Energinet.DataHub.Core.App.WebApp" Version="8.1.1" />
     <PackageReference Include="Energinet.DataHub.Core.Databricks.Jobs" Version="7.0.1" />
     <PackageReference Include="Energinet.DataHub.Core.Databricks.SqlStatementExecution" Version="7.0.1" />
     <PackageReference Include="Energinet.DataHub.Core.Logging.LoggingMiddleware " Version="3.0.0" />
@@ -38,6 +38,7 @@ limitations under the License.
     <PackageReference Include="Microsoft.Extensions.Logging.AzureAppServices" Version="7.0.10" />
     <PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" Version="7.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Update="Energinet.DataHub.Core.Logging.LoggingMiddleware" Version="3.1.1" />
     <PackageReference Update="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

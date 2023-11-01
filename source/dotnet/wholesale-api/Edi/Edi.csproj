@@ -16,7 +16,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-  
+
   <ItemGroup>
     <Protobuf Include="Contracts/*.proto">
       <GrpcServices>None</GrpcServices>
@@ -27,12 +27,8 @@
       <Generator>MSBuild:Compile</Generator>
     </Protobuf>
   </ItemGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="..\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
   </ItemGroup>
-  
-  
-  
-  
 </Project>
