@@ -1,11 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyName>Energinet.DataHub.Wholesale.Events.Infrastructure</AssemblyName>
     <RootNamespace>Energinet.DataHub.Wholesale.Events.Infrastructure</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.16.1" />
-    <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.15.0" />
+    <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.16.0" />
     <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="8.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.8" />
     <PackageReference Include="NodaTime.Serialization.Protobuf" Version="2.0.1" />
