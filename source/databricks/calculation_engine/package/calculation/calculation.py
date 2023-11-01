@@ -16,7 +16,7 @@
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as F
 
-from package.codelists import ChargeResolution, MeteringPointType, ProcessType
+from package.codelists import TariffResolution, MeteringPointType, ProcessType
 from package.calculation_output.wholesale_calculation_result_writer import (
     WholesaleCalculationResultWriter,
 )
@@ -84,7 +84,7 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
             metering_points_periods_df,
             raw_time_series_points,
             charges_df,
-            ChargeResolution.HOUR,
+            TariffResolution.HOUR,
         )
 
         wholesale_calculation.execute(

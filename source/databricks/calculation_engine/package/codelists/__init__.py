@@ -27,4 +27,5 @@ from .settlement_method import SettlementMethod
 from .quantity_quality import QuantityQuality
 from .time_series_type import TimeSeriesType
 from .amount_type import AmountType
+from .tariff_resolution import TariffResolution
 from .wholesale_result_resolution import WholesaleResultResolution

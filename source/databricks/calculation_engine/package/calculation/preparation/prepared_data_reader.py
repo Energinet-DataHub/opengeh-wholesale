@@ -16,7 +16,7 @@ from datetime import datetime
 from pyspark.sql import DataFrame
 
 from package.calculation_input import TableReader
-from package.codelists import ChargeResolution
+from package.codelists import TariffResolution
 
 from . import transformations as T
 from .quarterly_metering_point_time_series import QuarterlyMeteringPointTimeSeries
@@ -64,10 +64,10 @@ class PreparedDataReader:
         metering_points: DataFrame,
         time_series: DataFrame,
         charges_df: DataFrame,
-        charge_resolution: ChargeResolution,
+        resolution: TariffResolution,
     ) -> DataFrame:
         return T.get_tariff_charges(
-            metering_points, time_series, charges_df, charge_resolution
+            metering_points, time_series, charges_df, resolution
         )
 
     def get_raw_time_series_points(self) -> DataFrame:

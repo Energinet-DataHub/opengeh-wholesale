@@ -17,7 +17,7 @@ import pyspark.sql.functions as f
 from pyspark.sql.types import DecimalType, StringType, ArrayType
 
 import package.calculation.energy.transformations as t
-from package.codelists import ChargeType, ChargeResolution
+from package.codelists import ChargeType, TariffResolution
 from package.constants import Colname
 
 
@@ -25,10 +25,10 @@ def get_tariff_charges(
     metering_points: DataFrame,
     time_series: DataFrame,
     charges_df: DataFrame,
-    charge_resolution: ChargeResolution,
+    resolution: TariffResolution,
 ) -> DataFrame:
     # filter on resolution
-    charges_df = charges_df.filter(f.col(Colname.resolution) == charge_resolution.value)
+    charges_df = charges_df.filter(f.col(Colname.resolution) == resolution.value)
 
     df = _join_properties_on_charges_with_given_charge_type(
         charges_df,
