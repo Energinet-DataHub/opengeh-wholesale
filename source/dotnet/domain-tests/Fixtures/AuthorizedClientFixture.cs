@@ -17,7 +17,6 @@ using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
 using Moq;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
@@ -64,7 +63,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             WholesaleClient = await CreateWholesaleClientAsync();
             await CreateTopicSubscriptionAsync();
             Receiver = CreateServiceBusReceiver();
-            Output = new AuthorizedClientFixtureOutput(WholesaleClient, Receiver);
+            Output = new AuthorizedClientFixtureOutput(DiagnosticMessageSink, WholesaleClient, Receiver);
             await Output.InitializeAsync();
         }
 
