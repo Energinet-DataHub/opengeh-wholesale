@@ -13,8 +13,14 @@
 # limitations under the License.
 
 from enum import Enum
+from package.codelists import ChargeResolution
 
 
 class TariffResolution(Enum):
-    DAY = "P1D"
-    HOUR = "PT1H"
+    """
+    The part of `ChargeResolution` which is relevant for tariffs.
+    These are from charges that are read from the input delta table.
+    """
+
+    DAY = ChargeResolution.DAY
+    HOUR = ChargeResolution.HOUR
