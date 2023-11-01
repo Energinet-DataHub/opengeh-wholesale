@@ -155,7 +155,9 @@ def aggregate_net_exchange_per_ga(
             from_sum,
             F.when(joined[from_sum].isNotNull(), joined[from_sum]).otherwise(F.lit(0)),
         )
-        .withColumn(Colname.sum_quantity, F.col(to_sum) - F.col(from_sum))
+        .withColumn(
+            Colname.sum_quantity, F.coalesce(F.col(to_sum) - F.col(from_sum), F.lit(0))
+        )
         # when().otherwise() cases to handle the case where a metering point exists with an from-grid-area, which never occurs as an to-grid-area
         .withColumn(
             Colname.grid_area,
