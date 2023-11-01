@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 from typing import Callable
 
@@ -84,7 +84,7 @@ def time_series_row_factory(
                 Colname.energy_supplier_id: [supplier],
                 Colname.balance_responsible_id: [responsible],
                 Colname.settlement_method: [settlement_method],
-                Colname.time_window: [obs_time],
+                Colname.time_window: [[obs_time, obs_time + timedelta(minutes=15)]],
             }
         )
         df = spark.createDataFrame(
