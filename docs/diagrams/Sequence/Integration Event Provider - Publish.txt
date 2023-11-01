@@ -1,0 +1,40 @@
+--autoactivation
+--autonumber 1
+participantgroup #lightyellow **Core**
+participant OutboxSender
+end
+participantgroup #lightblue **Application**
+participant IntegrationEventProvider
+end
+participantgroup #lightgreen **Infrastructure**
+participant CompletedBatchRepository
+participant EnergyResultEventProvider
+participant EnergyResultQueries
+participant BatchesClient
+participant BatchRepository
+participant SqlStatementClient
+participant EnergyResultProducedV1Factory
+participant UnitOfWork
+end
+OutboxSender->IntegrationEventProvider:Get
+loop
+IntegrationEventProvider->CompletedBatchRepository:Get Next Unpublished batch
+IntegrationEventProvider<--CompletedBatchRepository:Unpublished batch
+IntegrationEventProvider->EnergyResultEventProvider:Get Integration Events
+EnergyResultEventProvider->EnergyResultQueries:Get by batch id
+EnergyResultQueries->BatchesClient:Get
+BatchesClient->BatchRepository:Get
+BatchesClient<--BatchRepository:BatchDto
+EnergyResultQueries<--BatchesClient: BatchDto
+
+EnergyResultQueries->SqlStatementClient:Execute
+EnergyResultQueries<--SqlStatementClient:SQL Result
+EnergyResultEventProvider<--EnergyResultQueries: Energy results
+EnergyResultEventProvider->EnergyResultProducedV1Factory:Create from energy result
+EnergyResultEventProvider<--EnergyResultProducedV1Factory:Energy Result Produced
+EnergyResultEventProvider->EnergyResultEventProvider: Create Integration Event
+IntegrationEventProvider<--EnergyResultEventProvider:Integration Events
+end
+OutboxSender<--IntegrationEventProvider: Integration Events
+note over OutboxSender:Message Bus Send
+IntegrationEventProvider->UnitOfWork:Commit batch changes
