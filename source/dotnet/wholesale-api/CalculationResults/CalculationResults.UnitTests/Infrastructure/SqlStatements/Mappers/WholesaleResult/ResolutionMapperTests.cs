@@ -22,7 +22,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 {
     public class ResolutionMapperTests
     {
-        private const string DocumentPath = "DeltaTableContracts.enums.charge-resolution.json";
+        private const string DocumentPath = "DeltaTableContracts.enums.wholesale-result-resolution.json";
 
         [Fact]
         public async Task ContractPropertyCount_Matches_ModelValuesCount()
