@@ -80,7 +80,10 @@ def test__transform_hour_to_quarter__when_valid_input__split_basis_data_time_ser
     spark: SparkSession,
 ) -> None:
     # Arrange
-    rows = [basis_data_time_series_points_row()]
+    rows = [
+        basis_data_time_series_points_row(resolution=MeteringPointResolution.HOUR),
+        basis_data_time_series_points_row(resolution=MeteringPointResolution.QUARTER),
+    ]
     basis_data_time_series_points = spark.createDataFrame(
         rows, metering_point_time_series_schema
     )
@@ -89,5 +92,8 @@ def test__transform_hour_to_quarter__when_valid_input__split_basis_data_time_ser
     actual = transform_hour_to_quarter(basis_data_time_series_points)
 
     # Assert
-    assert actual.df.count() == 4
+    assert actual.df.count() == 5
+    # Check that hourly quantity is divided by 4
     assert actual.df.collect()[0][Colname.quantity] == Decimal("1.111111")
+    # Check that quarterly quantity is not divided by 4
+    assert actual.df.collect()[4][Colname.quantity] == Decimal("4.444444")
