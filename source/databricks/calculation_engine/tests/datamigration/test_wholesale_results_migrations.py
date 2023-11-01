@@ -37,6 +37,8 @@ from package.infrastructure.paths import (
 )
 from package.calculation_output.schemas import wholesale_results_schema
 
+from helpers.data_frame_utils import set_column
+
 
 def _create_df(spark: SparkSession) -> DataFrame:
     row = {
