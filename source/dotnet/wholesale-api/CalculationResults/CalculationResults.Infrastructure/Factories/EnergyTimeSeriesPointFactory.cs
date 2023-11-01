@@ -30,6 +30,6 @@ public static class EnergyTimeSeriesPointFactory
         return new EnergyTimeSeriesPoint(
             SqlResultValueConverters.ToDateTimeOffset(time)!.Value,
             SqlResultValueConverters.ToDecimal(quantity)!.Value,
-            SqlResultValueConverters.ToQuantityQuality(quality));
+            SqlResultValueConverters.ToQuantityQualities(quality));
     }
 }

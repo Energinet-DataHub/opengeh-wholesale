@@ -140,6 +140,7 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
             ChargeType = MonthlyAmountPerChargeResultProducedV1.Types.ChargeType.Tariff,
             ChargeOwnerId = wholesaleResult.ChargeOwnerId,
             IsTax = wholesaleResult.IsTax,
+            Currency = MonthlyAmountPerChargeResultProducedV1.Types.Currency.Dkk,
             Amount = wholesaleResult.TimeSeriesPoints.Single().Amount,
         };
 

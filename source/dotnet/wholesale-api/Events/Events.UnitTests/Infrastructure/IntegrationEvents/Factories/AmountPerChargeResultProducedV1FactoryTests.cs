@@ -123,6 +123,7 @@ public class AmountPerChargeResultProducedV1FactoryTests
             MeteringPointType = AmountPerChargeResultProducedV1.Types.MeteringPointType.Production,
             SettlementMethod = AmountPerChargeResultProducedV1.Types.SettlementMethod.Unspecified,
             IsTax = wholesaleResult.IsTax,
+            Currency = AmountPerChargeResultProducedV1.Types.Currency.Dkk,
         };
 
         var qualities = new List<AmountPerChargeResultProducedV1.Types.QuantityQuality>

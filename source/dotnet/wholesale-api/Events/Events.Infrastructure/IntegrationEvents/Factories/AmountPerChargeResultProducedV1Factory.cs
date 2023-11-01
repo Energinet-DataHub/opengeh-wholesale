@@ -45,6 +45,7 @@ public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProd
             QuantityUnit = QuantityUnitMapper.MapQuantityUnit(result.QuantityUnit),
             MeteringPointType = MeteringPointTypeMapper.MapMeteringPointType(result.MeteringPointType),
             SettlementMethod = SettlementMethodMapper.MapSettlementMethod(result.SettlementMethod),
+            Currency = AmountPerChargeResultProducedV1.Types.Currency.Dkk,
             IsTax = result.IsTax,
         };
 
