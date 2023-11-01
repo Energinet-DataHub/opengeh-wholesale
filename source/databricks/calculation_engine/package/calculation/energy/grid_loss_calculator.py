@@ -155,7 +155,9 @@ def calculate_total_consumption(
         )
         .withColumn(
             Colname.sum_quantity,
-            f.col(production_sum_quantity) + f.col(exchange_sum_quantity),
+            f.coalesce(
+                f.col(production_sum_quantity) + f.col(exchange_sum_quantity), f.lit(0)
+            ),
         )
         .withColumn(
             Colname.qualities,
