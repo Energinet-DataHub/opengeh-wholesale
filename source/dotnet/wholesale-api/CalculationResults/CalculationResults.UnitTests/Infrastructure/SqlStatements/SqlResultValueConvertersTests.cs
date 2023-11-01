@@ -84,16 +84,17 @@ public class SqlResultValueConvertersTests
     }
 
     [Fact]
-    public void ToQuantityQuality_WhenValueIsValid_ReturnsQuantityQuality()
+    public void ToQuantityQualities_WhenValueIsValid_ReturnsQuantityQualities()
     {
         // Arrange
-        var value = "[\"measured\"]";
+        const string value = "[\"measured\", \"calculated\"]";
+        var expected = new List<QuantityQuality> { QuantityQuality.Measured, QuantityQuality.Calculated };
 
         // Act
-        var actual = SqlResultValueConverters.ToQuantityQuality(value);
+        var actual = SqlResultValueConverters.ToQuantityQualities(value);
 
         // Assert
-        actual.Should().Be(QuantityQuality.Measured);
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Fact]

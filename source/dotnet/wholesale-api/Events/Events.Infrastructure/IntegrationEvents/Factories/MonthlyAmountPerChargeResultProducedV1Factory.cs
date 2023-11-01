@@ -45,6 +45,7 @@ public class MonthlyAmountPerChargeResultProducedV1Factory : IMonthlyAmountPerCh
             ChargeOwnerId = result.ChargeOwnerId,
             QuantityUnit = QuantityUnitMapper.MapQuantityUnit(result.QuantityUnit),
             IsTax = result.IsTax,
+            Currency = MonthlyAmountPerChargeResultProducedV1.Types.Currency.Dkk,
             Amount = result.TimeSeriesPoints.Single().Amount,
         };
 

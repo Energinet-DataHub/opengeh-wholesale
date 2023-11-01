@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 from typing import Callable
 
@@ -31,12 +31,12 @@ from package.calculation.energy.energy_results import (
 )
 from package.calculation.preparation.quarterly_metering_point_time_series import (
     QuarterlyMeteringPointTimeSeries,
+    _quarterly_metering_point_time_series_schema,
 )
 from package.codelists import (
     MeteringPointType,
     SettlementMethod,
     QuantityQuality,
-    MeteringPointResolution,
 )
 from package.constants import Colname
 
@@ -73,23 +73,24 @@ def time_series_row_factory(
     ) -> QuarterlyMeteringPointTimeSeries:
         pandas_df = pd.DataFrame(
             {
+                Colname.grid_area: [domain],
+                Colname.to_grid_area: ["to-grid-area"],
+                Colname.from_grid_area: ["from-grid-area"],
                 Colname.metering_point_id: ["metering-point-id"],
                 Colname.metering_point_type: [point_type],
-                Colname.settlement_method: [settlement_method],
-                Colname.grid_area: [domain],
-                Colname.balance_responsible_id: [responsible],
-                Colname.energy_supplier_id: [supplier],
-                Colname.quantity: [quantity],
-                Colname.time_window: [obs_time],
-                Colname.quarter_time: [obs_time],
                 Colname.observation_time: [obs_time],
+                Colname.quantity: [quantity],
                 Colname.quality: [QuantityQuality.ESTIMATED.value],
-                Colname.resolution: [MeteringPointResolution.QUARTER.value],
+                Colname.energy_supplier_id: [supplier],
+                Colname.balance_responsible_id: [responsible],
+                Colname.settlement_method: [settlement_method],
+                Colname.time_window: [[obs_time, obs_time + timedelta(minutes=15)]],
             }
         )
-        df = spark.createDataFrame(pandas_df).withColumn(
-            Colname.time_window, window(col(Colname.time_window), "15 minutes")
+        df = spark.createDataFrame(
+            pandas_df, _quarterly_metering_point_time_series_schema
         )
+
         return QuarterlyMeteringPointTimeSeries(df)
 
     return factory

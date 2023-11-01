@@ -44,11 +44,15 @@ TIME_ZONE = "Europe/Copenhagen"
 
 
 @pytest.fixture(scope="module")
-def enriched_time_series_factory(spark: SparkSession) -> Callable[..., DataFrame]:
+def metering_point_time_series_factory(spark: SparkSession) -> Callable[..., DataFrame]:
     def factory() -> DataFrame:
         df = []
-        df.append(_create_enriched_time_series_point(MeteringPointResolution.HOUR))
-        df.append(_create_enriched_time_series_point(MeteringPointResolution.QUARTER))
+        df.append(
+            _create_metering_point_time_series_point(MeteringPointResolution.HOUR)
+        )
+        df.append(
+            _create_metering_point_time_series_point(MeteringPointResolution.QUARTER)
+        )
         return spark.createDataFrame(df)
 
     return factory
@@ -65,7 +69,7 @@ def metering_point_period_df_factory(spark: SparkSession) -> Callable[..., DataF
     return factory
 
 
-def _create_enriched_time_series_point(
+def _create_metering_point_time_series_point(
     resolution: MeteringPointResolution,
 ) -> dict[str, Any]:
     data = {
@@ -163,7 +167,7 @@ def test__write__writes_to_paths_that_match_contract(
     contracts_path: str,
     tmpdir: Path,
     metering_point_period_df_factory: Callable[..., DataFrame],
-    enriched_time_series_factory: Callable[..., DataFrame],
+    metering_point_time_series_factory,
 ) -> None:
     """
     This test calls 'write' once and then asserts on all file contracts.
@@ -171,11 +175,11 @@ def test__write__writes_to_paths_that_match_contract(
     """
     # Arrange
     metering_point_period_df = metering_point_period_df_factory()
-    enriched_time_series = enriched_time_series_factory()
+    metering_point_time_series = metering_point_time_series_factory()
     sut = BasisDataWriter(str(tmpdir), DEFAULT_BATCH_ID)
 
     # Act
-    sut.write(metering_point_period_df, enriched_time_series, TIME_ZONE)
+    sut.write(metering_point_period_df, metering_point_time_series, TIME_ZONE)
 
     # Assert
     for file_type in _get_all_basis_data_file_types():

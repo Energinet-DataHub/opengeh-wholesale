@@ -42,10 +42,9 @@ public static class SqlResultValueConverters
         return DateTimeOffset.Parse(value, CultureInfo.InvariantCulture);
     }
 
-    public static QuantityQuality ToQuantityQuality(string value)
+    public static IReadOnlyCollection<QuantityQuality> ToQuantityQualities(string value)
     {
-        // This is a temporary solution until the .NET part handles multiple qualities
-        return QuantityQualitiesMapper.FromDeltaTableValue(value).First();
+        return QuantityQualitiesMapper.FromDeltaTableValue(value);
     }
 
     public static TimeSeriesType ToTimeSeriesType(string value)
