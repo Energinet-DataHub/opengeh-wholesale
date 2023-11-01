@@ -14,6 +14,8 @@
 
 using Nito.AsyncEx;
 using Xunit;
+using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 {
@@ -30,11 +32,11 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
     /// </summary>
     /// <typeparam name="TFixture">A xUnit fixture that implements <see cref="IAsyncLifetime"/>.</typeparam>
     public sealed class LazyFixtureFactory<TFixture> : IAsyncLifetime
-        where TFixture : IAsyncLifetime, new()
+        where TFixture : LazyFixtureBase
     {
-        public LazyFixtureFactory()
+        public LazyFixtureFactory(IMessageSink diagnosticMessageSink)
         {
-            LazyFixture = new AsyncLazy<TFixture>(PrepareFixtureAsync);
+            LazyFixture = new AsyncLazy<TFixture>(() => LazyFixtureFactory<TFixture>.PrepareFixtureAsync(diagnosticMessageSink));
         }
 
         /// <summary>
@@ -62,9 +64,9 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             }
         }
 
-        private async Task<TFixture> PrepareFixtureAsync()
+        private static async Task<TFixture> PrepareFixtureAsync(IMessageSink diagnosticMessageSink)
         {
-            var fixture = new TFixture();
+            var fixture = new TFixture(diagnosticMessageSink);
             await fixture.InitializeAsync();
 
             return fixture;

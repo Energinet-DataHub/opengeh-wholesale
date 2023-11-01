@@ -24,7 +24,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
     /// </summary>
     /// <typeparam name="TFixture">A xUnit fixture that implements <see cref="IAsyncLifetime"/>.</typeparam>
     public abstract class DomainTestsBase<TFixture> : IClassFixture<LazyFixtureFactory<TFixture>>, IAsyncLifetime
-        where TFixture : IAsyncLifetime, new()
+        where TFixture : LazyFixtureBase
     {
         /// <summary>
         /// Any fixture given in the constructor is always created and initialized by xUnit,
