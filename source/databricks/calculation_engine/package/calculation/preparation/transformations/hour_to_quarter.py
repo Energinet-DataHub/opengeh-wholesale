@@ -51,20 +51,21 @@ def transform_hour_to_quarter(
         metering_point_time_series["*"],
         f.explode("quarter_times").alias("quarter_time"),
     )
+
     result = result.withColumn(
         Colname.time_window, f.window(f.col("quarter_time"), "15 minutes")
     )
+
     result = result.withColumn(
         Colname.quantity,
-        f.when(
-            f.col(Colname.resolution) == MeteringPointResolution.HOUR.value,
-            f.col(Colname.quantity) / 4,
-        )
-        .when(
-            f.col(Colname.resolution) == MeteringPointResolution.QUARTER.value,
+        f.coalesce(
+            f.when(
+                f.col(Colname.resolution) == MeteringPointResolution.HOUR.value,
+                f.col(Colname.quantity) / 4,
+            ),
+            # When resolution is quarter, quantity is already correct
             f.col(Colname.quantity),
-        )
-        .cast(DecimalType(18, 6)),
+        ),
     )
 
     return QuarterlyMeteringPointTimeSeries(result)
