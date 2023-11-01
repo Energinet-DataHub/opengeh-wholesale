@@ -113,12 +113,13 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
             _periodEnd,
             _gridArea,
             _energySupplierId,
+            AmountType.MonthlyAmountPerCharge,
             _chargeCode,
             _chargeType,
             _chargeOwnerId,
             _isTax,
             QuantityUnit.Kwh,
-            ChargeResolution.Hour,
+            ChargeResolution.Month,
             CalculationResults.Interfaces.CalculationResults.Model.MeteringPointType.Production,
             null,
             timeSeriesPoints);
@@ -139,6 +140,7 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
             ChargeType = MonthlyAmountPerChargeResultProducedV1.Types.ChargeType.Tariff,
             ChargeOwnerId = wholesaleResult.ChargeOwnerId,
             IsTax = wholesaleResult.IsTax,
+            Currency = MonthlyAmountPerChargeResultProducedV1.Types.Currency.Dkk,
             Amount = wholesaleResult.TimeSeriesPoints.Single().Amount,
         };
 

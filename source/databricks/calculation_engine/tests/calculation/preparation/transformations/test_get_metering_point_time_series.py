@@ -16,11 +16,12 @@ import pytest
 from decimal import Decimal
 from datetime import datetime
 
+from pyspark.sql import SparkSession
 from pyspark.sql.types import Row
 
-from package.calculation.energy.schemas import basis_data_time_series_points_schema
+from package.calculation.energy.schemas import metering_point_time_series_schema
 from package.calculation.preparation.transformations import (
-    get_basis_data_time_series_points_df,
+    get_metering_point_time_series,
 )
 from package.constants import Colname
 
@@ -35,15 +36,18 @@ from package.calculation_input.schemas import (
 )
 
 
+DEFAULT_METERING_POINT_ID = "the-metering-point-id"
+
+
 @pytest.fixture(scope="module")
 def raw_time_series_points_factory(spark, timestamp_factory):
     def factory(
         time: datetime = timestamp_factory("2022-06-08T12:15:00.000Z"),
     ):
         row = {
-            "metering_point_id": "the-meteringpoint-id",
-            "quantity": Decimal("1.1"),
-            "quality": QuantityQuality.CALCULATED.value,
+            Colname.metering_point_id: DEFAULT_METERING_POINT_ID,
+            Colname.quantity: Decimal("1.1"),
+            Colname.quality: QuantityQuality.CALCULATED.value,
             Colname.observation_time: time,
         }
         rows = [Row(**row)]
@@ -60,7 +64,7 @@ def metering_point_period_df_factory(spark, timestamp_factory):
         to_date: datetime = timestamp_factory("2022-12-22T22:00:00.000Z"),
     ):
         row = {
-            Colname.metering_point_id: "the-meteringpoint-id",
+            Colname.metering_point_id: DEFAULT_METERING_POINT_ID,
             Colname.metering_point_type: "the_metering_point_type",
             Colname.calculation_type: "calculation-type",
             Colname.settlement_method: "D01",
@@ -106,7 +110,7 @@ def test__when_success__returns_dataframe_with_expected_schema(
     )
 
     # Act
-    actual = get_basis_data_time_series_points_df(
+    actual = get_metering_point_time_series(
         raw_time_series_points,
         metering_point_period_df,
         timestamp_factory(start_time),
@@ -114,7 +118,7 @@ def test__when_success__returns_dataframe_with_expected_schema(
     )
 
     # Assert
-    assert actual.schema == basis_data_time_series_points_schema
+    assert actual.schema == metering_point_time_series_schema
 
 
 @pytest.mark.parametrize(
@@ -135,9 +139,9 @@ def test__given_different_from_date_and_to_date__return_dataframe_with_correct_n
     expected_rows,
     resolution,
 ):
-    """Test the outcome of _get_basis_data_time_series_points_df with different scenarios.
+    """Test the outcome of _get_metering_point_time_series with different scenarios.
     expected_rows is the number of rows in the output dataframe when given different parameters,
-    FromDate and ToDate on the meteringpoint"""
+    FromDate and ToDate on the metering point"""
 
     # Arrange
     raw_time_series_points = raw_time_series_points_factory(
@@ -150,7 +154,7 @@ def test__given_different_from_date_and_to_date__return_dataframe_with_correct_n
     )
 
     # Act
-    actual = get_basis_data_time_series_points_df(
+    actual = get_metering_point_time_series(
         raw_time_series_points,
         metering_point_period_df,
         timestamp_factory(from_date),
@@ -177,7 +181,7 @@ def test__missing_point_has_quantity_0_for_quarterly_resolution(
         to_date=timestamp_factory(end_time),
     )
     # Act
-    actual = get_basis_data_time_series_points_df(
+    actual = get_metering_point_time_series(
         raw_time_series_points,
         metering_point_period_df,
         timestamp_factory(start_time),
@@ -189,7 +193,7 @@ def test__missing_point_has_quantity_0_for_quarterly_resolution(
     actual = actual.where(
         col(Colname.observation_time) != timestamp_factory(start_time)
     )
-    assert actual.where(col("quantity") == 0).count() == 95
+    assert actual.where(col(Colname.quantity) == 0).count() == 95
 
 
 def test__missing_point_has_quantity_0_for_hourly_resolution(
@@ -209,7 +213,7 @@ def test__missing_point_has_quantity_0_for_hourly_resolution(
     )
 
     # Act
-    actual = get_basis_data_time_series_points_df(
+    actual = get_metering_point_time_series(
         raw_time_series_points,
         metering_point_period_df,
         timestamp_factory(start_time),
@@ -241,7 +245,7 @@ def test__df_is_not_empty_when_no_time_series_points(
     )
 
     # Act
-    actual = get_basis_data_time_series_points_df(
+    actual = get_metering_point_time_series(
         empty_raw_time_series_points,
         metering_point_period_df,
         timestamp_factory(start_time),
@@ -270,7 +274,7 @@ def test__df_is_not_empty_when_no_time_series_points(
             24,
         ),
         # going from DST to standard time there are 25 hours (100 quarters)
-        # where the 30 oktober is day with 25 hours.and
+        # where the 30 october is day with 25 hours.and
         # Therefore there should be 100 rows for quarter resolution and 25 for  hour resolution
         (
             "2022-10-29T22:00:00.000Z",
@@ -284,7 +288,7 @@ def test__df_is_not_empty_when_no_time_series_points(
             MeteringPointResolution.HOUR.value,
             25,
         ),
-        # going from vinter to summertime there are 23 hours (92 quarters)
+        # going from winter to summer there are 23 hours (92 quarters)
         (
             "2022-03-26T23:00:00.000Z",
             "2022-03-27T22:00:00.000Z",
@@ -311,7 +315,7 @@ def test__df_has_expected_row_count_according_to_dst(
     # Arrange
     raw_time_series_points = raw_time_series_points_factory(
         time=timestamp_factory(period_start)
-    ).where(col("metering_point_id") != "the-meteringpoint-id")
+    ).where(col(Colname.metering_point_id) != DEFAULT_METERING_POINT_ID)
 
     metering_point_period_df = metering_point_period_df_factory(
         from_date=timestamp_factory(period_start),
@@ -320,7 +324,7 @@ def test__df_has_expected_row_count_according_to_dst(
     )
 
     # Act
-    actual = get_basis_data_time_series_points_df(
+    actual = get_metering_point_time_series(
         raw_time_series_points,
         metering_point_period_df,
         timestamp_factory(period_start),
@@ -367,7 +371,7 @@ def test__df_has_expected_row_count_according_to_dst(
         ),
     ],
 )
-def test__support_meteringpoint_period_switch_on_resolution_provides_correct_number_of_periods(
+def test__support_metering_point_period_switch_on_resolution_provides_correct_number_of_periods(
     raw_time_series_points_factory,
     metering_point_period_df_factory,
     timestamp_factory,
@@ -399,17 +403,89 @@ def test__support_meteringpoint_period_switch_on_resolution_provides_correct_num
     )
 
     # Act
-    actual = get_basis_data_time_series_points_df(
+    actual = get_metering_point_time_series(
         raw_time_series_points,
         metering_point_period_df.union(second_metering_point_period_df),
         timestamp_factory(from_date),
         timestamp_factory(to_date),
     )
 
-    hour = actual.filter(col("resolution") == MeteringPointResolution.HOUR.value)
-    quarter = actual.filter(col("resolution") == MeteringPointResolution.QUARTER.value)
+    hour = actual.filter(col(Colname.resolution) == MeteringPointResolution.HOUR.value)
+    quarter = actual.filter(
+        col(Colname.resolution) == MeteringPointResolution.QUARTER.value
+    )
 
     # Assert
     assert actual.count() == total
     assert hour.count() == hourly
     assert quarter.count() == quarterly
+
+
+@pytest.mark.parametrize(
+    "resolution",
+    [MeteringPointResolution.HOUR, MeteringPointResolution.QUARTER],
+)
+def test__when_time_series_point_is_missing__quality_has_value_incomplete(
+    spark: SparkSession,
+    raw_time_series_points_factory,
+    metering_point_period_df_factory,
+    timestamp_factory,
+    resolution: MeteringPointResolution,
+):
+    # Arrange
+    start_time = "2022-06-08T22:00:00.000Z"
+    end_time = "2022-06-08T23:00:00.000Z"
+    empty_time_series = spark.createDataFrame(data=[], schema=time_series_point_schema)
+
+    metering_point_period_df = metering_point_period_df_factory(
+        resolution=resolution.value,
+        from_date=timestamp_factory(start_time),
+        to_date=timestamp_factory(end_time),
+    )
+
+    # Act
+    actual = get_metering_point_time_series(
+        empty_time_series,
+        metering_point_period_df,
+        timestamp_factory(start_time),
+        timestamp_factory(end_time),
+    )
+
+    # Assert
+    actual_row = actual.collect()[0]
+    assert actual_row[Colname.quality] == QuantityQuality.MISSING.value
+
+
+@pytest.mark.parametrize(
+    "resolution",
+    [MeteringPointResolution.HOUR, MeteringPointResolution.QUARTER],
+)
+def test__when_time_series_point_is_missing__quantity_is_zero(
+    spark: SparkSession,
+    raw_time_series_points_factory,
+    metering_point_period_df_factory,
+    timestamp_factory,
+    resolution: MeteringPointResolution,
+):
+    # Arrange
+    start_time = "2022-06-08T22:00:00.000Z"
+    end_time = "2022-06-08T23:00:00.000Z"
+    empty_time_series = spark.createDataFrame(data=[], schema=time_series_point_schema)
+
+    metering_point_period_df = metering_point_period_df_factory(
+        resolution=resolution.value,
+        from_date=timestamp_factory(start_time),
+        to_date=timestamp_factory(end_time),
+    )
+
+    # Act
+    actual = get_metering_point_time_series(
+        empty_time_series,
+        metering_point_period_df,
+        timestamp_factory(start_time),
+        timestamp_factory(end_time),
+    )
+
+    # Assert
+    actual_row = actual.collect()[0]
+    assert actual_row[Colname.quantity] == 0

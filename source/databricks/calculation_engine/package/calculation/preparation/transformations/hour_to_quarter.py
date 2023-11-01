@@ -22,18 +22,18 @@ from package.calculation.preparation.quarterly_metering_point_time_series import
 from package.constants import Colname
 from package.codelists import MeteringPointResolution
 from package.common import assert_schema
-from package.calculation.energy.schemas import basis_data_time_series_points_schema
+from package.calculation.energy.schemas import metering_point_time_series_schema
 
 
 def transform_hour_to_quarter(
-    basis_data_time_series_points_df: DataFrame,
+    metering_point_time_series: DataFrame,
 ) -> QuarterlyMeteringPointTimeSeries:
     assert_schema(
-        basis_data_time_series_points_df.schema,
-        basis_data_time_series_points_schema,
+        metering_point_time_series.schema,
+        metering_point_time_series_schema,
     )
 
-    result = basis_data_time_series_points_df.withColumn(
+    result = metering_point_time_series.withColumn(
         "quarter_times",
         f.when(
             f.col(Colname.resolution) == MeteringPointResolution.HOUR.value,
@@ -48,23 +48,24 @@ def transform_hour_to_quarter(
             f.array(f.col(Colname.observation_time)),
         ),
     ).select(
-        basis_data_time_series_points_df["*"],
-        f.explode("quarter_times").alias(Colname.quarter_time),
+        metering_point_time_series["*"],
+        f.explode("quarter_times").alias("quarter_time"),
     )
+
     result = result.withColumn(
-        Colname.time_window, f.window(f.col(Colname.quarter_time), "15 minutes")
+        Colname.time_window, f.window(f.col("quarter_time"), "15 minutes")
     )
+
     result = result.withColumn(
         Colname.quantity,
-        f.when(
-            f.col(Colname.resolution) == MeteringPointResolution.HOUR.value,
-            f.col(Colname.quantity) / 4,
-        )
-        .when(
-            f.col(Colname.resolution) == MeteringPointResolution.QUARTER.value,
+        f.coalesce(
+            f.when(
+                f.col(Colname.resolution) == MeteringPointResolution.HOUR.value,
+                f.col(Colname.quantity) / 4,
+            ),
+            # When resolution is quarter, quantity is already correct
             f.col(Colname.quantity),
-        )
-        .cast(DecimalType(18, 6)),
+        ),
     )
 
     return QuarterlyMeteringPointTimeSeries(result)

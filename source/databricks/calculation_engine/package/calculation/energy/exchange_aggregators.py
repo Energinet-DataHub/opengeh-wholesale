@@ -14,9 +14,7 @@
 
 import pyspark.sql.functions as F
 
-from package.codelists import (
-    MeteringPointType,
-)
+from package.codelists import MeteringPointType, QuantityQuality
 from package.constants import Colname
 from . import transformations as T
 from package.calculation.energy.energy_results import EnergyResults
@@ -34,9 +32,9 @@ exchange_out_from_grid_area = "ExOut_FromGridArea"
 
 # Function to aggregate net exchange per neighbouring grid areas
 def aggregate_net_exchange_per_neighbour_ga(
-    enriched_time_series: QuarterlyMeteringPointTimeSeries,
+    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
 ) -> EnergyResults:
-    df = enriched_time_series.df.where(
+    df = quarterly_metering_point_time_series.df.where(
         F.col(Colname.metering_point_type) == MeteringPointType.EXCHANGE.value
     )
 
@@ -47,13 +45,13 @@ def aggregate_net_exchange_per_neighbour_ga(
     ]
 
     exchange_to = (
-        T.aggregate_sum_and_quality(df, Colname.quantity, group_by)
+        T.aggregate_quantity_and_quality(df, group_by)
         .withColumnRenamed(Colname.sum_quantity, to_sum)
         .withColumnRenamed(Colname.to_grid_area, exchange_in_to_grid_area)
         .withColumnRenamed(Colname.from_grid_area, exchange_in_from_grid_area)
     )
     exchange_from = (
-        T.aggregate_sum_and_quality(df, Colname.quantity, group_by)
+        T.aggregate_quantity_and_quality(df, group_by)
         .withColumnRenamed(Colname.sum_quantity, from_sum)
         .withColumnRenamed(Colname.to_grid_area, exchange_out_to_grid_area)
         .withColumnRenamed(Colname.from_grid_area, exchange_out_from_grid_area)
@@ -104,7 +102,7 @@ def aggregate_net_exchange_per_ga(
         Colname.time_window,
     ]
     exchange_to = (
-        T.aggregate_sum_and_quality(exchange_to, Colname.quantity, exchange_to_group_by)
+        T.aggregate_quantity_and_quality(exchange_to, exchange_to_group_by)
         .withColumnRenamed(Colname.sum_quantity, to_sum)
         .withColumnRenamed(Colname.to_grid_area, Colname.grid_area)
     )
@@ -120,9 +118,7 @@ def aggregate_net_exchange_per_ga(
     from_time_window = "from_time_window"
 
     exchange_from = (
-        T.aggregate_sum_and_quality(
-            exchange_from, Colname.quantity, exchange_from_group_by
-        )
+        T.aggregate_quantity_and_quality(exchange_from, exchange_from_group_by)
         .withColumnRenamed(Colname.sum_quantity, from_sum)
         .withColumnRenamed(Colname.from_grid_area, Colname.grid_area)
         .withColumnRenamed(Colname.time_window, from_time_window)
@@ -135,11 +131,19 @@ def aggregate_net_exchange_per_ga(
         & (exchange_to[Colname.time_window] == exchange_from[from_time_window]),
         how="outer",
     ).select(
-        exchange_to["*"],
+        exchange_to[Colname.grid_area],
+        exchange_to[Colname.time_window],
+        exchange_to[to_sum],
+        F.coalesce(
+            exchange_to[Colname.qualities],
+            exchange_from[Colname.qualities],
+            F.array(F.lit(QuantityQuality.MISSING.value)),
+        ).alias(Colname.qualities),
         exchange_from[from_sum],
         exchange_from[Colname.grid_area].alias(from_grid_area),
         exchange_from[from_time_window],
     )
+
     result_df = (
         joined
         # Set null sums to 0 to avoid null values in the sum column
@@ -174,4 +178,5 @@ def aggregate_net_exchange_per_ga(
             F.lit(MeteringPointType.EXCHANGE.value).alias(Colname.metering_point_type),
         )
     )
+
     return EnergyResults(result_df)

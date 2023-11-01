@@ -28,11 +28,11 @@ from package.calculation.energy.exchange_aggregators import (
 )
 from package.calculation.preparation.quarterly_metering_point_time_series import (
     QuarterlyMeteringPointTimeSeries,
+    _quarterly_metering_point_time_series_schema,
 )
 from package.codelists import (
     MeteringPointType,
     QuantityQuality,
-    MeteringPointResolution,
     SettlementMethod,
 )
 from package.constants import Colname
@@ -45,7 +45,7 @@ numberOfQuarters = 5  # Not too many as it has a massive impact on test performa
 
 
 @pytest.fixture(scope="module")
-def enriched_time_series_data_frame(
+def quarterly_metering_point_time_series(
     spark: SparkSession,
 ) -> QuarterlyMeteringPointTimeSeries:
     """Sample Time Series DataFrame"""
@@ -53,15 +53,17 @@ def enriched_time_series_data_frame(
     # Create empty pandas df
     pandas_df = pd.DataFrame(
         {
-            Colname.metering_point_id: [],
-            Colname.metering_point_type: [],
             Colname.grid_area: [],
             Colname.to_grid_area: [],
             Colname.from_grid_area: [],
-            Colname.quantity: [],
+            Colname.metering_point_id: [],
+            Colname.metering_point_type: [],
             Colname.observation_time: [],
+            Colname.quantity: [],
             Colname.quality: [],
-            Colname.resolution: [],
+            Colname.energy_supplier_id: [],
+            Colname.balance_responsible_id: [],
+            Colname.settlement_method: [],
         }
     )
 
@@ -179,14 +181,8 @@ def enriched_time_series_data_frame(
             default_obs_time + timedelta(minutes=quarter_number * 15),
         )
 
-    df = (
-        spark.createDataFrame(pandas_df)
-        .withColumn(
-            Colname.time_window, window(col(Colname.observation_time), "15 minutes")
-        )
-        .withColumn(Colname.quarter_time, col(Colname.observation_time))
-        .withColumn(Colname.settlement_method, lit(SettlementMethod.NON_PROFILED.value))
-    )
+    df = spark.createDataFrame(pandas_df, _quarterly_metering_point_time_series_schema)
+
     return QuarterlyMeteringPointTimeSeries(df)
 
 
@@ -196,34 +192,37 @@ def add_row_of_data(
     to_grid_area,
     from_grid_area,
     quantity: Decimal,
-    timestamp,
+    timestamp: datetime,
 ):
     """
     Helper method to create a new row in the dataframe to improve readability and maintainability
     """
     new_row = {
-        Colname.metering_point_id: "metering-point-id",
-        Colname.metering_point_type: point_type,
         Colname.grid_area: "grid-area",
         Colname.to_grid_area: to_grid_area,
         Colname.from_grid_area: from_grid_area,
-        Colname.quantity: quantity,
+        Colname.metering_point_id: "metering-point-id",
+        Colname.metering_point_type: point_type,
         Colname.observation_time: timestamp,
+        Colname.quantity: quantity,
         Colname.quality: QuantityQuality.ESTIMATED.value,
-        Colname.resolution: MeteringPointResolution.QUARTER.value,
+        Colname.energy_supplier_id: "energy-supplier-id",
+        Colname.balance_responsible_id: "balance-responsible-id",
+        Colname.settlement_method: SettlementMethod.NON_PROFILED.value,
+        Colname.time_window: [timestamp, timestamp + timedelta(minutes=15)],
     }
     return pandas_df.append(new_row, ignore_index=True)
 
 
 @pytest.fixture(scope="module")
-def aggregated_data_frame(enriched_time_series_data_frame):
+def aggregated_data_frame(quarterly_metering_point_time_series):
     """Perform aggregation"""
-    return aggregate_net_exchange_per_ga(enriched_time_series_data_frame)
+    return aggregate_net_exchange_per_ga(quarterly_metering_point_time_series)
 
 
-def test_test_data_has_correct_row_count(enriched_time_series_data_frame):
+def test_test_data_has_correct_row_count(quarterly_metering_point_time_series):
     """Check sample data row count"""
-    assert enriched_time_series_data_frame.df.count() == (13 * numberOfQuarters)
+    assert quarterly_metering_point_time_series.df.count() == (13 * numberOfQuarters)
 
 
 def test_exchange_has_correct_sign(aggregated_data_frame):

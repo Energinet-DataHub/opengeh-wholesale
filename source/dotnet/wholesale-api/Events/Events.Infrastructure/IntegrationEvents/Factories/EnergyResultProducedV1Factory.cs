@@ -22,7 +22,6 @@ using AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea = Energi
 using AggregationPerEnergySupplierPerGridArea = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV1.Types.AggregationPerEnergySupplierPerGridArea;
 using AggregationPerGridArea = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV1.Types.AggregationPerGridArea;
 using QuantityUnit = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV1.Types.QuantityUnit;
-using TimeSeriesPoint = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV1.Types.TimeSeriesPoint;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 
@@ -112,11 +111,11 @@ public class EnergyResultProducedV1Factory : IEnergyResultProducedV1Factory
 
         energyResultProducedV1.TimeSeriesPoints
             .AddRange(result.TimeSeriesPoints
-                .Select(timeSeriesPoint => new TimeSeriesPoint()
+                .Select(timeSeriesPoint => new Contracts.IntegrationEvents.EnergyResultProducedV1.Types.TimeSeriesPoint
                 {
                     Quantity = new DecimalValue(timeSeriesPoint.Quantity),
                     Time = timeSeriesPoint.Time.ToTimestamp(),
-                    QuantityQuality = QuantityQualityMapper.MapQuantityQuality(timeSeriesPoint.Quality),
+                    QuantityQuality = QuantityQualityMapper.SelectBestSuitedQuality(timeSeriesPoint.Qualities),
                 }));
         return energyResultProducedV1;
     }

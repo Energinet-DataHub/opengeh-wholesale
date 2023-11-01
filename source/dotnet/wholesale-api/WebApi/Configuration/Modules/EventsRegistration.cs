@@ -15,7 +15,7 @@
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Core.Messaging.Communication;
-using Energinet.DataHub.Core.Messaging.Communication.Subscriber;
+using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
@@ -26,6 +26,7 @@ using Energinet.DataHub.Wholesale.Events.Application.Options;
 using Energinet.DataHub.Wholesale.Events.Application.Triggers;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Energinet.DataHub.Wholesale.Events.Application.Workers;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedBatches;
@@ -41,22 +42,17 @@ namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
 public static class EventsRegistration
 {
     public static void AddEventsModule(
-        this IServiceCollection serviceCollection)
+        this IServiceCollection serviceCollection,
+        ServiceBusOptions serviceBusOptions)
     {
-        RegisterCompletedBatch(serviceCollection);
-
-        serviceCollection.AddScoped<IGridAreaRepository, GridAreaRepository>();
-        serviceCollection.AddScoped<IReceivedIntegrationEventRepository, ReceivedIntegrationEventRepository>();
-
-        serviceCollection.AddScoped<ICalculationResultIntegrationEventFactory, CalculationResultIntegrationEventFactory>();
-
+        serviceCollection.AddApplication();
         serviceCollection.AddInfrastructure();
 
-        serviceCollection.AddPublisher<IntegrationEventProvider>();
-
-        RegisterHostedServices(serviceCollection);
+        serviceCollection.AddIntegrationEventPublisher(serviceBusOptions);
 
         RegisterIntegrationEvents(serviceCollection);
+
+        RegisterHostedServices(serviceCollection);
     }
 
     private static void RegisterIntegrationEvents(IServiceCollection serviceCollection)
@@ -70,35 +66,57 @@ public static class EventsRegistration
         serviceCollection.AddScoped<IntegrationEventHandlerFactory>();
     }
 
-    private static void RegisterCompletedBatch(IServiceCollection serviceCollection)
+    private static void AddApplication(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddScoped<ICompletedBatchRepository, CompletedBatchRepository>();
-        serviceCollection.AddScoped<ICompletedBatchFactory, CompletedBatchFactory>();
-        serviceCollection.AddScoped<IRegisterCompletedBatchesHandler, RegisterCompletedBatchesHandler>();
+        serviceCollection
+            .AddScoped<IUnitOfWork, UnitOfWork>();
+
+        serviceCollection
+            .AddScoped<ICompletedBatchRepository, CompletedBatchRepository>()
+            .AddScoped<ICompletedBatchFactory, CompletedBatchFactory>()
+            .AddScoped<IRegisterCompletedBatchesHandler, RegisterCompletedBatchesHandler>();
+
+        serviceCollection
+            .AddScoped<IEnergyResultEventProvider, EnergyResultEventProvider>()
+            .AddScoped<IWholesaleResultEventProvider, WholesaleResultEventProvider>();
+
+        serviceCollection.AddScoped<IGridAreaRepository, GridAreaRepository>();
+        serviceCollection.AddScoped<IReceivedIntegrationEventRepository, ReceivedIntegrationEventRepository>();
     }
 
-    private static void AddInfrastructure(
-        this IServiceCollection serviceCollection)
+    private static void AddInfrastructure(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
         serviceCollection
-            .AddScoped<ICalculationResultCompletedFactory,
-                CalculationResultCompletedFactory>();
-        serviceCollection.AddScoped<IEnergyResultProducedV1Factory,
-            EnergyResultProducedV1Factory>();
-        serviceCollection.AddScoped<IAmountPerChargeResultProducedV1Factory,
-            AmountPerChargeResultProducedV1Factory>();
-        serviceCollection.AddScoped<IMonthlyAmountPerChargeResultProducedV1Factory,
-            MonthlyAmountPerChargeResultProducedV1Factory>();
-        serviceCollection.AddScoped<IEventsDatabaseContext, EventsDatabaseContext>();
-        serviceCollection.AddSingleton<IJsonSerializer, JsonSerializer>();
+            .AddScoped<ICalculationResultCompletedFactory, CalculationResultCompletedFactory>()
+            .AddScoped<IEnergyResultProducedV1Factory, EnergyResultProducedV1Factory>()
+            .AddScoped<IAmountPerChargeResultProducedV1Factory, AmountPerChargeResultProducedV1Factory>()
+            .AddScoped<IMonthlyAmountPerChargeResultProducedV1Factory, MonthlyAmountPerChargeResultProducedV1Factory>()
+            .AddScoped<IEventsDatabaseContext, EventsDatabaseContext>()
+            .AddSingleton<IJsonSerializer, JsonSerializer>();
+    }
+
+    private static void AddIntegrationEventPublisher(this IServiceCollection serviceCollection, ServiceBusOptions serviceBusOptions)
+    {
+        // Register integration event publisher
+        serviceCollection.Configure<PublisherOptions>(options =>
+        {
+            options.ServiceBusConnectionString = serviceBusOptions.SERVICE_BUS_SEND_CONNECTION_STRING;
+            options.TopicName = serviceBusOptions.INTEGRATIONEVENTS_TOPIC_NAME;
+        });
+        serviceCollection.AddPublisher<IntegrationEventProvider>();
+
+        // Register hosted service for publishing integration events
+        serviceCollection.Configure<PublisherWorkerOptions>(options => options.HostedServiceExecutionDelayMs = 10000);
+        serviceCollection.AddPublisherWorker();
     }
 
     private static void RegisterHostedServices(IServiceCollection serviceCollection)
     {
-        serviceCollection.AddHostedService<AggregatedTimeSeriesServiceBusWorker>();
-        serviceCollection.AddHostedService<ReceiveIntegrationEventServiceBusWorker>();
-        serviceCollection.AddHostedService<RegisterCompletedBatchesTrigger>();
+        serviceCollection
+            .AddHostedService<AggregatedTimeSeriesServiceBusWorker>()
+            .AddHostedService<RegisterCompletedBatchesTrigger>()
+            .AddHostedService<ReceiveIntegrationEventServiceBusWorker>();
+
         serviceCollection
             .AddHealthChecks()
             .AddRepeatingTriggerHealthCheck<RegisterCompletedBatchesTrigger>(TimeSpan.FromMinutes(1));

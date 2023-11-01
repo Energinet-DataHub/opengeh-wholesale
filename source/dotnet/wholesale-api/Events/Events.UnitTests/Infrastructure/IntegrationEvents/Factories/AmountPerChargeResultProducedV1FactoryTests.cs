@@ -72,7 +72,7 @@ public class AmountPerChargeResultProducedV1FactoryTests
         act.Should().Throw<ArgumentOutOfRangeException>();
     }
 
-    private WholesaleResult CreateWholesaleResult(Common.Models.ProcessType calculationType = Common.Models.ProcessType.FirstCorrectionSettlement)
+    private WholesaleResult CreateWholesaleResult(ProcessType calculationType = ProcessType.FirstCorrectionSettlement)
     {
         var qualities = new List<QuantityQuality>
         {
@@ -88,6 +88,7 @@ public class AmountPerChargeResultProducedV1FactoryTests
             _periodEnd,
             _gridArea,
             _energySupplierId,
+            AmountType.AmountPerCharge,
             _chargeCode,
             _chargeType,
             _chargeOwnerId,
@@ -122,6 +123,7 @@ public class AmountPerChargeResultProducedV1FactoryTests
             MeteringPointType = AmountPerChargeResultProducedV1.Types.MeteringPointType.Production,
             SettlementMethod = AmountPerChargeResultProducedV1.Types.SettlementMethod.Unspecified,
             IsTax = wholesaleResult.IsTax,
+            Currency = AmountPerChargeResultProducedV1.Types.Currency.Dkk,
         };
 
         var qualities = new List<AmountPerChargeResultProducedV1.Types.QuantityQuality>

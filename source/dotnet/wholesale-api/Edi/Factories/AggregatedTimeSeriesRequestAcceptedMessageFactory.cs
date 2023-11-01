@@ -52,7 +52,7 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
         };
     }
 
-    private static IList<TimeSeriesPoint> CreateTimeSeriesPoints(EnergyResult energyResult)
+    private static IReadOnlyCollection<TimeSeriesPoint> CreateTimeSeriesPoints(EnergyResult energyResult)
     {
         const decimal nanoFactor = 1_000_000_000;
         var points = new List<TimeSeriesPoint>();
@@ -60,10 +60,10 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
         {
             var units = decimal.ToInt64(timeSeriesPoint.Quantity);
             var nanos = decimal.ToInt32((timeSeriesPoint.Quantity - units) * nanoFactor);
-            var point = new TimeSeriesPoint()
+            var point = new TimeSeriesPoint
             {
-                Quantity = new DecimalValue() { Units = units, Nanos = nanos },
-                QuantityQuality = QuantityQualityMapper.MapQuantityQuality(timeSeriesPoint.Quality),
+                Quantity = new DecimalValue { Units = units, Nanos = nanos },
+                QuantityQuality = QuantityQualityMapper.SelectBestSuitedQuality(timeSeriesPoint.Qualities),
                 Time = new Timestamp() { Seconds = timeSeriesPoint.Time.ToUnixTimeSeconds(), },
             };
             points.Add(point);

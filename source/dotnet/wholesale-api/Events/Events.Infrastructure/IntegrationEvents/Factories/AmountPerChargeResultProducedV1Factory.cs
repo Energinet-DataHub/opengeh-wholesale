@@ -24,6 +24,12 @@ public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProd
 {
     public AmountPerChargeResultProducedV1 Create(WholesaleResult result)
     {
+        if (result.AmountType != AmountType.AmountPerCharge)
+            throw new ArgumentException($"AmountPerChargeResultProducedV1 expect amount type to be '{AmountType.AmountPerCharge}'.");
+
+        if (result.ChargeResolution != ChargeResolution.Hour && result.ChargeResolution != ChargeResolution.Day)
+            throw new ArgumentException($"AmountPerChargeResultProducedV1 expect resolution to be '{ChargeResolution.Hour}' or '{ChargeResolution.Day}' .");
+
         var amountPerChargeResultProducedV1 = new AmountPerChargeResultProducedV1
         {
             CalculationId = result.CalculationId.ToString(),
@@ -39,6 +45,7 @@ public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProd
             QuantityUnit = QuantityUnitMapper.MapQuantityUnit(result.QuantityUnit),
             MeteringPointType = MeteringPointTypeMapper.MapMeteringPointType(result.MeteringPointType),
             SettlementMethod = SettlementMethodMapper.MapSettlementMethod(result.SettlementMethod),
+            Currency = AmountPerChargeResultProducedV1.Types.Currency.Dkk,
             IsTax = result.IsTax,
         };
 
