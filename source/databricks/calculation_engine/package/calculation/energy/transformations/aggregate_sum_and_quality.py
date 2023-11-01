@@ -38,9 +38,13 @@ def aggregate_sum_quantity_and_qualities(
 
     Sums sum_quantity and collects distinct qualities from the aggregated time-series.
     """
-    return result.groupBy(group_by).agg(
-        f.sum(Colname.sum_quantity).alias(Colname.sum_quantity),
-        f.array_distinct(f.flatten(f.collect_set(Colname.qualities))).alias(
-            Colname.qualities
-        ),
+    return (
+        result.groupBy(group_by)
+        .agg(
+            f.sum(Colname.sum_quantity).alias(Colname.sum_quantity),
+            f.array_distinct(f.flatten(f.collect_set(Colname.qualities))).alias(
+                Colname.qualities
+            ),
+        )
+        .withColumn(Colname.sum_quantity, f.coalesce(Colname.sum_quantity, f.lit(0)))
     )

@@ -33,7 +33,7 @@ class EnergyResults(DataFrameWrapper):
             df,
             energy_results_schema,
             # TODO BJM: These should eventually all be set to False
-            ignore_nullability=True,
+            # ignore_nullability=True,
             ignore_decimal_scale=True,
             ignore_decimal_precision=True,
         )
