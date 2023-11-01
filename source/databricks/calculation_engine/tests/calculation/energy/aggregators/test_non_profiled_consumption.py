@@ -31,11 +31,11 @@ from package.calculation.energy.aggregators import (
     aggregate_non_profiled_consumption_ga_brp,
     aggregate_non_profiled_consumption_ga,
 )
-from package.calculation.energy.energy_results import EnergyResults
-from package.codelists import (
-    MeteringPointType,
-    QuantityQuality,
+from package.calculation.energy.energy_results import (
+    EnergyResults,
+    energy_results_schema,
 )
+from package.codelists import MeteringPointType, QuantityQuality, SettlementMethod
 from package.constants import Colname
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
@@ -45,33 +45,13 @@ default_obs_time = datetime.strptime(
 
 
 @pytest.fixture(scope="module")
-def settled_schema() -> StructType:
-    return (
-        StructType()
-        .add(Colname.grid_area, StringType(), False)
-        .add(Colname.balance_responsible_id, StringType())
-        .add(Colname.energy_supplier_id, StringType())
-        .add(
-            Colname.time_window,
-            StructType()
-            .add(Colname.start, TimestampType())
-            .add(Colname.end, TimestampType()),
-            False,
-        )
-        .add(Colname.sum_quantity, DecimalType(20, 1))
-        .add(Colname.qualities, ArrayType(StringType(), False), False)
-        .add(Colname.metering_point_type, StringType())
-    )
-
-
-@pytest.fixture(scope="module")
-def agg_result_factory(
-    spark: SparkSession, settled_schema: StructType
-) -> Callable[..., EnergyResults]:
+def agg_result_factory(spark: SparkSession) -> Callable[..., EnergyResults]:
     def factory() -> EnergyResults:
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: ["1", "1", "1", "1", "1", "2"],
+                Colname.to_grid_area: ["1", "1", "1", "1", "1", "2"],
+                Colname.from_grid_area: ["1", "1", "1", "1", "1", "2"],
                 Colname.balance_responsible_id: ["1", "2", "1", "2", "1", "1"],
                 Colname.energy_supplier_id: ["1", "2", "3", "4", "5", "6"],
                 Colname.time_window: [
@@ -124,10 +104,18 @@ def agg_result_factory(
                     MeteringPointType.CONSUMPTION.value,
                     MeteringPointType.CONSUMPTION.value,
                 ],
+                Colname.settlement_method: [
+                    SettlementMethod.NON_PROFILED.value,
+                    SettlementMethod.NON_PROFILED.value,
+                    SettlementMethod.NON_PROFILED.value,
+                    SettlementMethod.NON_PROFILED.value,
+                    SettlementMethod.NON_PROFILED.value,
+                    SettlementMethod.NON_PROFILED.value,
+                ],
             }
         )
 
-        df = spark.createDataFrame(pandas_df, schema=settled_schema)
+        df = spark.createDataFrame(pandas_df, schema=energy_results_schema)
         return EnergyResults(df)
 
     return factory
