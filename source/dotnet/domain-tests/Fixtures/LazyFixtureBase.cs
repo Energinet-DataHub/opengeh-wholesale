@@ -18,21 +18,21 @@ using Xunit.Abstractions;
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 {
     /// <summary>
-    /// Base class for lazy fixtures which can be constructed by <see cref="LazyFixtureFactory{TFixture}"/>.
+    /// Base class for lazy fixtures which should be constructed using <see cref="LazyFixtureFactory{TFixture}"/>.
     /// </summary>
     public abstract class LazyFixtureBase : IAsyncLifetime
     {
         /// <summary>
-        /// Create test fixture.
+        /// Create lazy fixture.
         /// </summary>
-        /// <param name="diagnosticMessageSink">Used for writing messages to the output from test fixtures.</param>
-        public LazyFixtureBase(IMessageSink diagnosticMessageSink)
+        /// <param name="diagnosticMessageSink">Used for writing messages to the output from xUnit fixtures.</param>
+        protected LazyFixtureBase(IMessageSink diagnosticMessageSink)
         {
             DiagnosticMessageSink = diagnosticMessageSink;
         }
 
         /// <summary>
-        /// Can be used from test fixtures for writing messages to output.
+        /// Can be used from xUnit fixtures for writing messages to output.
         /// Messages are only written if the test runner has been configured to do so.
         /// See details at https://xunit.net/docs/capturing-output#output-in-extensions
         /// </summary>
