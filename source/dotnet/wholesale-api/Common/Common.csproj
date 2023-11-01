@@ -21,7 +21,7 @@ limitations under the License.
   <ItemGroup>
     <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="8.1.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
-    <PackageReference Include="Microsoft.Azure.Databricks.Client" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Azure.Databricks.Client" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
     <PackageReference Update="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.4">
       <PrivateAssets>all</PrivateAssets>
