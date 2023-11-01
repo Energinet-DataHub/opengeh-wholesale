@@ -25,6 +25,7 @@ from package.calculation.energy.exchange_aggregators import (
 )
 from package.calculation.preparation.quarterly_metering_point_time_series import (
     QuarterlyMeteringPointTimeSeries,
+    _quarterly_metering_point_time_series_schema,
 )
 from package.codelists import (
     MeteringPointType,
@@ -42,33 +43,21 @@ estimated_quality = QuantityQuality.ESTIMATED.value
 
 df_template = {
     Colname.grid_area: [],
-    Colname.metering_point_id: [],
-    Colname.metering_point_type: [],
     Colname.to_grid_area: [],
     Colname.from_grid_area: [],
-    Colname.quantity: [],
+    Colname.metering_point_id: [],
+    Colname.metering_point_type: [],
     Colname.observation_time: [],
+    Colname.quantity: [],
     Colname.quality: [],
+    Colname.energy_supplier_id: [],
+    Colname.balance_responsible_id: [],
+    Colname.settlement_method: [],
 }
 
 
 @pytest.fixture(scope="module")
-def time_series_schema():
-    return (
-        StructType()
-        .add(Colname.grid_area, StringType())
-        .add(Colname.metering_point_id, StringType())
-        .add(Colname.metering_point_type, StringType())
-        .add(Colname.to_grid_area, StringType())
-        .add(Colname.from_grid_area, StringType())
-        .add(Colname.quantity, DecimalType(38))
-        .add(Colname.observation_time, TimestampType())
-        .add(Colname.quality, StringType())
-    )
-
-
-@pytest.fixture(scope="module")
-def single_quarter_test_data(spark, time_series_schema):
+def single_quarter_test_data(spark):
     pandas_df = pd.DataFrame(df_template)
     pandas_df = add_row_of_data(
         pandas_df, "A", "A", "B", default_obs_time, Decimal("10")
@@ -92,19 +81,13 @@ def single_quarter_test_data(spark, time_series_schema):
         pandas_df, "C", "C", "A", default_obs_time, Decimal("5")
     )
 
-    df = (
-        spark.createDataFrame(pandas_df, time_series_schema)
-        .withColumn(
-            Colname.time_window, window(col(Colname.observation_time), "15 minutes")
-        )
-        .withColumn(Colname.settlement_method, lit(SettlementMethod.NON_PROFILED.value))
-    )
+    df = spark.createDataFrame(pandas_df, _quarterly_metering_point_time_series_schema)
 
     return QuarterlyMeteringPointTimeSeries(df)
 
 
 @pytest.fixture(scope="module")
-def multi_quarter_test_data(spark, time_series_schema):
+def multi_quarter_test_data(spark):
     pandas_df = pd.DataFrame(df_template)
     for i in range(numberOfTestQuarters):
         pandas_df = add_row_of_data(
@@ -163,12 +146,8 @@ def multi_quarter_test_data(spark, time_series_schema):
             default_obs_time + timedelta(minutes=i * 15),
             Decimal("5"),
         )
-    df = (
-        spark.createDataFrame(pandas_df, schema=time_series_schema)
-        .withColumn(
-            Colname.time_window, window(col(Colname.observation_time), "15 minutes")
-        )
-        .withColumn(Colname.settlement_method, lit(SettlementMethod.NON_PROFILED.value))
+    df = spark.createDataFrame(
+        pandas_df, schema=_quarterly_metering_point_time_series_schema
     )
 
     return QuarterlyMeteringPointTimeSeries(df)
@@ -177,13 +156,17 @@ def multi_quarter_test_data(spark, time_series_schema):
 def add_row_of_data(pandas_df, domain, in_domain, out_domain, timestamp, quantity):
     new_row = {
         Colname.grid_area: domain,
-        Colname.metering_point_id: ["metering-point-id"],
-        Colname.metering_point_type: MeteringPointType.EXCHANGE.value,
         Colname.to_grid_area: in_domain,
         Colname.from_grid_area: out_domain,
-        Colname.quantity: quantity,
+        Colname.metering_point_id: ["metering-point-id"],
+        Colname.metering_point_type: MeteringPointType.EXCHANGE.value,
         Colname.observation_time: timestamp,
+        Colname.quantity: quantity,
         Colname.quality: estimated_quality,
+        Colname.energy_supplier_id: "energy-supplier-id",
+        Colname.balance_responsible_id: "balance-responsible-id",
+        Colname.settlement_method: SettlementMethod.NON_PROFILED.value,
+        Colname.time_window: [timestamp, timestamp + timedelta(minutes=15)],
     }
     return pandas_df.append(new_row, ignore_index=True)
 
