@@ -31,7 +31,7 @@ tariff_schema = StructType(
         StructField(Colname.charge_type, StringType(), False),
         StructField(Colname.charge_owner, StringType(), False),
         StructField(Colname.charge_tax, BooleanType(), False),
-        StructField(Colname.charge_resolution, StringType(), False),
+        StructField(Colname.wholesale_result_resolution, StringType(), False),
         StructField(Colname.charge_time, TimestampType(), False),
         StructField(Colname.charge_price, DecimalType(18, 6), False),
         StructField(Colname.metering_point_id, StringType(), False),

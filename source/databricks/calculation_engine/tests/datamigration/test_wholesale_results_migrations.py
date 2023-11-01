@@ -23,12 +23,12 @@ import uuid
 from helpers.data_frame_utils import set_column
 from package.codelists import (
     ChargeQuality,
-    ChargeResolution,
     ChargeType,
     ChargeUnit,
     MeteringPointType,
     ProcessType,
     SettlementMethod,
+    WholesaleResultResolution,
 )
 from package.constants import WholesaleResultColumnNames
 from package.infrastructure.paths import (
@@ -213,7 +213,10 @@ def test__migrated_table_accepts_valid_data(
             (WholesaleResultColumnNames.quantity_qualities, [x.value])
             for x in ChargeQuality
         ],
-        *[(WholesaleResultColumnNames.resolution, x.value) for x in ChargeResolution],
+        *[
+            (WholesaleResultColumnNames.resolution, x.value)
+            for x in WholesaleResultResolution
+        ],
         *[
             (WholesaleResultColumnNames.metering_point_type, x.value)
             for x in MeteringPointType

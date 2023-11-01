@@ -24,11 +24,11 @@ from typing import Any, Union
 from package.calculation.wholesale.schemas.tariffs_schema import tariff_schema
 from package.codelists import (
     ChargeQuality,
-    ChargeResolution,
     ChargeType,
     ChargeUnit,
     MeteringPointType,
     SettlementMethod,
+    WholesaleResultResolution,
 )
 from package.calculation.wholesale.tariff_calculators import (
     calculate_tariff_price_per_ga_co_es,
@@ -75,7 +75,6 @@ def _create_tariff_hour_row(
         Colname.charge_type: ChargeType.TARIFF.value,
         Colname.charge_owner: charge_owner,
         Colname.charge_tax: DEFAULT_CHARGE_TAX,
-        Colname.charge_resolution: ChargeResolution.HOUR.value,
         Colname.charge_time: charge_time,
         Colname.charge_price: charge_price,
         Colname.metering_point_id: metering_point_id,
@@ -87,6 +86,7 @@ def _create_tariff_hour_row(
         Colname.grid_area: grid_area,
         Colname.quantity: quantity,
         Colname.qualities: [quality.value],
+        Colname.wholesale_result_resolution: WholesaleResultResolution.HOUR.value,
     }
 
     return Row(**row)
@@ -139,7 +139,7 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_correct_columns(
     assert Colname.charge_type in actual.columns
     assert Colname.charge_owner in actual.columns
     assert Colname.charge_tax in actual.columns
-    assert Colname.charge_resolution in actual.columns
+    assert Colname.wholesale_result_resolution in actual.columns
     assert Colname.charge_price in actual.columns
     assert Colname.total_quantity in actual.columns
     assert Colname.charge_count in actual.columns
@@ -178,7 +178,10 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_expected_values(
     assert actual_row[Colname.charge_type] == ChargeType.TARIFF.value
     assert actual_row[Colname.charge_owner] == DEFAULT_CHARGE_OWNER
     assert actual_row[Colname.charge_tax] == DEFAULT_CHARGE_TAX
-    assert actual_row[Colname.charge_resolution] == ChargeResolution.HOUR.value
+    assert (
+        actual_row[Colname.wholesale_result_resolution]
+        == WholesaleResultResolution.HOUR.value
+    )
     assert actual_row[Colname.charge_price] == DEFAULT_CHARGE_PRICE
     assert actual_row[Colname.total_quantity] == 3 * DEFAULT_QUANTITY
     assert actual_row[Colname.charge_count] == 3

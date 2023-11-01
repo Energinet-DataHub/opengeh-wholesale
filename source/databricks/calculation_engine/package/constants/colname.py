@@ -27,7 +27,7 @@ class Colname:
     charge_key = "charge_key"
     charge_owner = "charge_owner_id"
     charge_price = "charge_price"
-    charge_resolution = "resolution"
+    charge_resolution = "charge_resolution"
     charge_tax = "is_tax"
     charge_time = "charge_time"
     charge_type = "charge_type"
@@ -70,3 +70,4 @@ class Colname:
     total_amount = "total_amount"
     total_quantity = "total_quantity"
     unit = "unit"
+    wholesale_result_resolution = "wholesale_result_resolution"
