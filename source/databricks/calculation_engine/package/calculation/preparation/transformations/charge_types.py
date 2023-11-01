@@ -25,10 +25,10 @@ def get_tariff_charges(
     metering_points: DataFrame,
     time_series: DataFrame,
     charges_df: DataFrame,
-    resolution_duration: ChargeResolution,
+    charge_resolution: ChargeResolution,
 ) -> DataFrame:
     # filter on resolution
-    charges_df = _get_charges_based_on_resolution(charges_df, resolution_duration)
+    charges_df = charges_df.filter(f.col(Colname.resolution) == charge_resolution.value)
 
     df = _join_properties_on_charges_with_given_charge_type(
         charges_df,
@@ -73,12 +73,6 @@ def get_subscription_charges(
         metering_points,
         ChargeType.SUBSCRIPTION,
     )
-
-
-def _get_charges_based_on_resolution(
-    charges_df: DataFrame, resolution_duration: ChargeResolution
-) -> DataFrame:
-    return charges_df.filter(f.col(Colname.resolution) == resolution_duration.value)
 
 
 def _get_charges_based_on_charge_type(
@@ -201,20 +195,6 @@ def _join_with_grouped_time_series(
         grouped_time_series[Colname.qualities],
     )
     return df
-
-
-def _get_window_duration_string_based_on_resolution(
-    resolution_duration: ChargeResolution,
-) -> str:
-    window_duration_string = "1 hour"
-
-    if resolution_duration == ChargeResolution.DAY:
-        window_duration_string = "1 day"
-
-    if resolution_duration == ChargeResolution.MONTH:
-        raise NotImplementedError("Month not yet implemented")
-
-    return window_duration_string
 
 
 # Join charge_master_data, charge prices, charge links, and metering points together.

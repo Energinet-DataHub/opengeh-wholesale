@@ -99,7 +99,7 @@ def _create_charges_row(
     charge_type: E.ChargeType = E.ChargeType.TARIFF,
     charge_owner: str = DEFAULT_CHARGE_OWNER,
     charge_tax: bool = DEFAULT_CHARGE_TAX,
-    charge_resolution: E.ChargeResolution = E.ChargeResolution.HOUR,
+    resolution: E.ChargeResolution = E.ChargeResolution.HOUR,
     charge_time: datetime = DEFAULT_CHARGE_TIME_HOUR_0,
     from_date: datetime = datetime(2020, 1, 1, 0),
     to_date: datetime = datetime(2020, 1, 1, 1),
@@ -112,7 +112,7 @@ def _create_charges_row(
         Colname.charge_type: charge_type.value,
         Colname.charge_owner: charge_owner,
         Colname.charge_tax: charge_tax,
-        Colname.resolution: charge_resolution.value,
+        Colname.resolution: resolution.value,
         Colname.charge_time: charge_time,
         Colname.from_date: from_date,
         Colname.to_date: to_date,
@@ -128,7 +128,7 @@ def _create_expected_tariff_charges_row(
     charge_type: E.ChargeType = E.ChargeType.TARIFF,
     charge_owner: str = DEFAULT_CHARGE_OWNER,
     charge_tax: bool = DEFAULT_CHARGE_TAX,
-    charge_resolution: E.ChargeResolution = E.ChargeResolution.HOUR,
+    resolution: E.ChargeResolution = E.ChargeResolution.HOUR,
     charge_time: datetime = DEFAULT_CHARGE_TIME_HOUR_0,
     charge_price: Decimal = DEFAULT_CHARGE_PRICE,
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
@@ -150,7 +150,7 @@ def _create_expected_tariff_charges_row(
         Colname.charge_type: charge_type.value,
         Colname.charge_owner: charge_owner,
         Colname.charge_tax: charge_tax,
-        Colname.resolution: charge_resolution.value,
+        Colname.resolution: resolution.value,
         Colname.charge_time: charge_time,
         Colname.charge_price: charge_price,
         Colname.metering_point_id: metering_point_id,
@@ -178,10 +178,10 @@ def test__get_tariff_charges__filters_on_resolution(
     time_series_rows = [_create_time_series_row()]
     charges_rows = [
         _create_charges_row(
-            charge_resolution=E.ChargeResolution.HOUR,
+            resolution=E.ChargeResolution.HOUR,
         ),
         _create_charges_row(
-            charge_resolution=E.ChargeResolution.DAY,
+            resolution=E.ChargeResolution.DAY,
         ),
     ]
 

@@ -15,7 +15,7 @@
 from enum import Enum
 
 
-class ChargeResolution(Enum):
-    MONTH = "P1M"  # Only subscription and fee
-    DAY = "P1D"  # Only tariff
-    HOUR = "PT1H"  # Only tariff
+class WholesaleResultResolution(Enum):
+    MONTH = "P1M"  # tariff, subscription, fee
+    DAY = "P1D"  # tariff, subscription, fee
+    HOUR = "PT1H"  # tariff

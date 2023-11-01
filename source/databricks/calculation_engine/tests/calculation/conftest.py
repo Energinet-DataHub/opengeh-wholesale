@@ -129,7 +129,7 @@ def charge_master_data_factory(spark: SparkSession) -> Callable[..., DataFrame]:
         charge_code: str = DataframeDefaults.default_charge_code,
         charge_type: str = DataframeDefaults.default_charge_type,
         charge_owner: str = DataframeDefaults.default_charge_owner,
-        charge_resolution: str = DataframeDefaults.default_charge_resolution,
+        resolution: str = DataframeDefaults.default_charge_resolution,
         charge_tax: str = DataframeDefaults.default_charge_tax,
         currency: str = DataframeDefaults.default_currency,
     ) -> DataFrame:
@@ -139,7 +139,7 @@ def charge_master_data_factory(spark: SparkSession) -> Callable[..., DataFrame]:
                 Colname.charge_code: charge_code,
                 Colname.charge_type: charge_type,
                 Colname.charge_owner: charge_owner,
-                Colname.resolution: charge_resolution,
+                Colname.resolution: resolution,
                 Colname.charge_tax: charge_tax,
                 Colname.currency: currency,
                 Colname.from_date: from_date,

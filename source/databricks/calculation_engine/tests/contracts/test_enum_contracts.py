@@ -36,6 +36,7 @@ from tests.contract_utils import assert_codelist_matches_contract
         ("settlement-method.json", enums.SettlementMethod),
         ("time-series-type.json", enums.TimeSeriesType),
         ("amount-type.json", enums.AmountType),
+        ("wholesale-result-resolution.json", enums.WholesaleResultResolution),
     ],
 )
 def test_codelist_matches_contract(

@@ -22,7 +22,7 @@ import pytest
 
 from package.codelists import (
     ChargeQuality,
-    ChargeResolution,
+    WholesaleResultResolution,
     ChargeType,
     ChargeUnit,
     MeteringPointType,
@@ -61,7 +61,7 @@ DEFAULT_CHARGE_CODE = "4000"
 DEFAULT_CHARGE_TYPE = ChargeType.TARIFF
 DEFAULT_CHARGE_OWNER_ID = "5790001330552"
 DEFAULT_CHARGE_TAX = True
-DEFAULT_RESOLUTION = ChargeResolution.HOUR
+DEFAULT_RESOLUTION = WholesaleResultResolution.HOUR
 DEFAULT_CHARGE_PRICE = Decimal("0.756998")
 DEFAULT_TOTAL_QUANTITY = Decimal("1.1")
 DEFAULT_CHARGE_COUNT = "3"

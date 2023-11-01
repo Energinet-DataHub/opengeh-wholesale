@@ -24,7 +24,7 @@ from typing import Any, Union
 from package.calculation.wholesale.schemas.tariffs_schema import tariff_schema
 from package.codelists import (
     ChargeQuality,
-    ChargeResolution,
+    WholesaleResultResolution,
     ChargeType,
     ChargeUnit,
     MeteringPointType,
@@ -178,7 +178,7 @@ def test__calculate_tariff_price_per_ga_co_es__returns_df_with_expected_values(
     assert actual_row[Colname.charge_type] == ChargeType.TARIFF.value
     assert actual_row[Colname.charge_owner] == DEFAULT_CHARGE_OWNER
     assert actual_row[Colname.charge_tax] == DEFAULT_CHARGE_TAX
-    assert actual_row[Colname.resolution] == ChargeResolution.HOUR.value
+    assert actual_row[Colname.resolution] == WholesaleResultResolution.HOUR.value
     assert actual_row[Colname.charge_price] == DEFAULT_CHARGE_PRICE
     assert actual_row[Colname.total_quantity] == 3 * DEFAULT_QUANTITY
     assert actual_row[Colname.charge_count] == 3

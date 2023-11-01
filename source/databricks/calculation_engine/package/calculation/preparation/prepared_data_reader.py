@@ -64,10 +64,10 @@ class PreparedDataReader:
         metering_points: DataFrame,
         time_series: DataFrame,
         charges_df: DataFrame,
-        resolution_duration: ChargeResolution,
+        charge_resolution: ChargeResolution,
     ) -> DataFrame:
         return T.get_tariff_charges(
-            metering_points, time_series, charges_df, resolution_duration
+            metering_points, time_series, charges_df, charge_resolution
         )
 
     def get_raw_time_series_points(self) -> DataFrame:
