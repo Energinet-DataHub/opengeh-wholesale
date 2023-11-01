@@ -83,9 +83,12 @@ def _calculate_grid_loss_or_residual_ga(
 
     result = result.withColumn(
         Colname.sum_quantity,
-        result[net_exchange_result]
-        + result[prod_result]
-        - (result[hourly_result] + result[flex_result]),
+        f.coalesce(
+            result[net_exchange_result]
+            + result[prod_result]
+            - (result[hourly_result] + result[flex_result]),
+            f.lit(0),
+        ),
     )
 
     result = result.select(
