@@ -20,6 +20,7 @@ from pyspark.sql.functions import array, col, lit
 import pytest
 import uuid
 
+from helpers.data_frame_utils import set_column
 from package.codelists import (
     AmountType,
     ChargeQuality,
@@ -36,8 +37,6 @@ from package.infrastructure.paths import (
     WHOLESALE_RESULT_TABLE_NAME,
 )
 from package.calculation_output.schemas import wholesale_results_schema
-
-from helpers.data_frame_utils import set_column
 
 
 def _create_df(spark: SparkSession) -> DataFrame:
