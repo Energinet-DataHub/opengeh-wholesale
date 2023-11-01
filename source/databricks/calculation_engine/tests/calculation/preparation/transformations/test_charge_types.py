@@ -97,7 +97,7 @@ def _create_tariff_charges_row(
     charge_code: str = DEFAULT_CHARGE_CODE,
     charge_owner: str = DEFAULT_CHARGE_OWNER,
     charge_tax: bool = DEFAULT_CHARGE_TAX,
-    resolution: E.TariffResolution = E.TariffResolution.HOUR,
+    resolution: E.ChargeResolution = E.ChargeResolution.HOUR,
     charge_time: datetime = DEFAULT_CHARGE_TIME_HOUR_0,
     from_date: datetime = datetime(2020, 1, 1, 0),
     to_date: datetime = datetime(2020, 1, 1, 1),
@@ -156,7 +156,7 @@ def _create_expected_tariff_charges_row(
     charge_code: str = DEFAULT_CHARGE_CODE,
     charge_owner: str = DEFAULT_CHARGE_OWNER,
     charge_tax: bool = DEFAULT_CHARGE_TAX,
-    resolution: E.TariffResolution = E.TariffResolution.HOUR,
+    charge_resolution: E.ChargeResolution = E.ChargeResolution.HOUR,
     charge_time: datetime = DEFAULT_CHARGE_TIME_HOUR_0,
     charge_price: Decimal = DEFAULT_CHARGE_PRICE,
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
@@ -193,10 +193,10 @@ def _create_expected_tariff_charges_row(
 
 
 @pytest.mark.parametrize(
-    "tariff_resolution", [E.TariffResolution.HOUR, E.TariffResolution.DAY]
+    "charge_resolution", [E.ChargeResolution.HOUR, E.ChargeResolution.DAY]
 )
 def test__get_tariff_charges__filters_on_resolution(
-    spark: SparkSession, tariff_resolution: E.TariffResolution
+    spark: SparkSession, charge_resolution: E.ChargeResolution
 ) -> None:
     """
     Only charges with the given resolution are accepted.
@@ -206,10 +206,10 @@ def test__get_tariff_charges__filters_on_resolution(
     time_series_rows = [_create_time_series_row()]
     charges_rows = [
         _create_tariff_charges_row(
-            resolution=E.TariffResolution.HOUR,
+            resolution=E.ChargeResolution.HOUR,
         ),
         _create_tariff_charges_row(
-            resolution=E.TariffResolution.DAY,
+            resolution=E.ChargeResolution.DAY,
         ),
     ]
 
@@ -224,12 +224,12 @@ def test__get_tariff_charges__filters_on_resolution(
         metering_point,
         time_series,
         charges,
-        tariff_resolution,
+        charge_resolution,
     )
 
     # Assert
     assert actual.count() == 1
-    assert actual.collect()[0][Colname.resolution] == tariff_resolution.value
+    assert actual.collect()[0][Colname.charge_resolution] == charge_resolution.value
 
 
 def test__get_tariff_charges__filters_on_tariff_charge_type(
@@ -259,7 +259,7 @@ def test__get_tariff_charges__filters_on_tariff_charge_type(
         metering_point,
         time_series,
         charges,
-        E.TariffResolution.HOUR,
+        E.ChargeResolution.HOUR,
     )
 
     # Assert
@@ -416,7 +416,7 @@ def test__get_tariff_charges__only_accepts_charges_in_metering_point_period(
         metering_point,
         time_series,
         charges,
-        E.TariffResolution.HOUR,
+        E.ChargeResolution.HOUR,
     )
 
     # Assert
@@ -446,7 +446,7 @@ def test__get_tariff_charges__when_same_metering_point_and_resolution__sums_quan
         metering_point,
         time_series,
         charges,
-        E.TariffResolution.HOUR,
+        E.ChargeResolution.HOUR,
     )
 
     # Assert
@@ -459,7 +459,7 @@ def test__get_tariff_charges__when_no_matching_charge_resolution__returns_empty_
     # Arrange
     metering_point_rows = [_create_metering_point_row()]
     time_series_rows = [_create_time_series_row()]
-    charges_rows = [_create_tariff_charges_row(resolution=E.TariffResolution.DAY)]
+    charges_rows = [_create_tariff_charges_row(resolution=E.ChargeResolution.DAY)]
 
     metering_point = spark.createDataFrame(
         metering_point_rows, metering_point_period_schema
@@ -472,7 +472,7 @@ def test__get_tariff_charges__when_no_matching_charge_resolution__returns_empty_
         metering_point,
         time_series,
         charges,
-        E.TariffResolution.HOUR,
+        E.ChargeResolution.HOUR,
     )
 
     # Assert
@@ -501,7 +501,7 @@ def test__get_tariff_charges__when_two_tariff_overlap__returns_both_tariffs(
         metering_point,
         time_series,
         charges,
-        E.TariffResolution.HOUR,
+        E.ChargeResolution.HOUR,
     )
 
     # Assert
@@ -538,7 +538,7 @@ def test__get_tariff_charges__returns_df_with_expected_values(
         metering_point,
         time_series,
         charges,
-        E.TariffResolution.HOUR,
+        E.ChargeResolution.HOUR,
     )
 
     # Assert
