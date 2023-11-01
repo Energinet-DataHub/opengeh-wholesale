@@ -385,7 +385,7 @@ public class RequestCalculationResultQueriesTests : IClassFixture<DatabricksSqlS
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsyncRequestFromGridOperatorTotalProductionThirdCorrectionSettlement_ReturnsResult(
+    public async Task GetAsync_RequestFromGridOperatorTotalProductionThirdCorrectionSettlement_ReturnsResult(
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock)
@@ -431,6 +431,51 @@ public class RequestCalculationResultQueriesTests : IClassFixture<DatabricksSqlS
             ;
     }
 
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetAsync_RequestFromGridOperatorStartAndEndDataAreEqual_ReturnsResult(
+        Mock<IHttpClientFactory> httpClientFactoryMock,
+        Mock<ILogger<SqlStatusResponseParser>> loggerMock,
+        Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock)
+    {
+        // Arrange
+        var gridAreaFilter = GridAreaCode;
+        var timeSeriesTypeFilter = TimeSeriesType.Production;
+        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 3, 0, 0);
+
+        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
+        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
+        var sqlStatementClient = _fixture.CreateSqlStatementClient(
+            httpClientFactoryMock,
+            loggerMock,
+            new Mock<ILogger<DatabricksSqlStatementClient>>());
+
+        var request = CreateRequest(
+            gridArea: gridAreaFilter,
+            timeSeriesType: timeSeriesTypeFilter,
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter);
+
+        var sut = new RequestCalculationResultQueries(sqlStatementClient, deltaTableOptions, requestCalculationResultQueriesLoggerMock.Object);
+
+        // Act
+        var actual = await sut.GetAsync(request);
+
+        // Assert
+        actual.Should().NotBeNull();
+        actual!.GridArea.Should().Be(gridAreaFilter);
+        actual.PeriodStart.Should().Be(startOfPeriodFilter);
+        actual.PeriodEnd.Should().Be(endOfPeriodFilter);
+        actual.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
+        actual.TimeSeriesPoints
+            .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
+            .ToArray()
+            .Should()
+            .Equal(FirstQuantity)
+            ;
+    }
+
     private EnergyResultQuery CreateRequest(
         TimeSeriesType? timeSeriesType = null,
         Instant? startOfPeriod = null,
@@ -460,6 +505,9 @@ public class RequestCalculationResultQueriesTests : IClassFixture<DatabricksSqlS
         const string secondHour = "2022-01-01T02:00:00.000Z";
         const string thirdHour = "2022-01-01T03:00:00.000Z";
 
+        const string secondDay = "2022-01-02T00:00:00.000Z";
+        const string thirdDay = "2022-01-03T00:00:00.000Z";
+
         const string energySupplier = "4321987654321";
         const string balanceResponsibleId = "1234567891234";
         var row1 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: firstHour, gridArea: GridAreaCode, quantity: FirstQuantity);
@@ -483,6 +531,9 @@ public class RequestCalculationResultQueriesTests : IClassFixture<DatabricksSqlS
         var row2ThirdCorrection = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, batchProcessType: DeltaTableProcessType.ThirdCorrectionSettlement, time: secondHour, gridArea: GridAreaCode, quantity: SecondQuantityThirdCorrection);
         var row4ThirdCorrection = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, batchProcessType: DeltaTableProcessType.ThirdCorrectionSettlement, time: thirdHour, gridArea: GridAreaCode, quantity: FourthQuantityThirdCorrection);
 
+        var row1SecondDay = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: secondDay, gridArea: GridAreaCode, quantity: FirstQuantity);
+        var row1ThirdDay = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: thirdDay, gridArea: GridAreaCode, quantity: SecondQuantity);
+
         // mix up the order of the rows
         var rows = new List<IReadOnlyCollection<string>>
         {
@@ -490,6 +541,7 @@ public class RequestCalculationResultQueriesTests : IClassFixture<DatabricksSqlS
             row1FirstCorrection, row2FirstCorrection,
             row1SecondCorrection, row2SecondCorrection,
             row1ThirdCorrection, row2ThirdCorrection, row4ThirdCorrection,
+            row1SecondDay, row1ThirdDay,
         }.OrderBy(r => Guid.NewGuid()).ToList();
 
         await _fixture.DatabricksSchemaManager.EmptyAsync(options.Value.ENERGY_RESULTS_TABLE_NAME);
