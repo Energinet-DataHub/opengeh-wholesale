@@ -63,7 +63,7 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Ev
             if (_monthlyAmountPerChargeResultProducedV1Factory.CanCreate(wholesaleResult))
                 return CreateIntegrationEvent(_monthlyAmountPerChargeResultProducedV1Factory.Create(wholesaleResult));
 
-            throw new ArgumentException($@"Cannot create event from {nameof(WholesaleResult)}");
+            throw new ArgumentException($@"Cannot create event from wholesaleResult");
         }
     }
 }
