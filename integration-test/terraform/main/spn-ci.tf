@@ -9,7 +9,7 @@ resource "azuread_application" "app_ci" {
 }
 
 resource "azuread_service_principal" "spn_ci" {
-  application_id               = azuread_application.app_ci.application_id
+  application_id               = azuread_application.app_ci.client_id
   app_role_assignment_required = false
   owners = [
     data.azuread_client_config.this.object_id

@@ -33,7 +33,9 @@ resource "azurerm_key_vault_access_policy" "kv_spn_ci" {
 
   secret_permissions = [
     "Get",
+    "Set",
     "List",
+    "Delete",
   ]
 
   key_permissions = [
