@@ -13,12 +13,14 @@
 // limitations under the License.
 
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 {
-    public sealed class UnauthorizedClientFixture : IAsyncLifetime
+    public sealed class UnauthorizedClientFixture : LazyFixtureBase
     {
-        public UnauthorizedClientFixture()
+        public UnauthorizedClientFixture(IMessageSink diagnosticMessageSink)
+            : base(diagnosticMessageSink)
         {
             var configuration = new WholesaleDomainConfiguration();
             UnauthorizedHttpClient = new HttpClient
@@ -29,12 +31,12 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
         public HttpClient UnauthorizedHttpClient { get; }
 
-        Task IAsyncLifetime.InitializeAsync()
+        protected override Task OnInitializeAsync()
         {
             return Task.CompletedTask;
         }
 
-        Task IAsyncLifetime.DisposeAsync()
+        protected override Task OnDisposeAsync()
         {
             UnauthorizedHttpClient.Dispose();
 

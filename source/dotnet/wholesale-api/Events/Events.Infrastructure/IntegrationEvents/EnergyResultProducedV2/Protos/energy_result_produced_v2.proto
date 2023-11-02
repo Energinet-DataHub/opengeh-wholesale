@@ -69,7 +69,7 @@ message EnergyResultProducedV2 {
      */
     google.protobuf.StringValue from_grid_area_code = 16;
 
-    repeated TimeSeriesPoint time_series_points = 20;
+    repeated TimeSeriesPoint time_series_points = 17;
 
     enum TimeSeriesType {
         /*
