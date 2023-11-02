@@ -22,16 +22,16 @@ namespace Energinet.DataHub.Wholesale.DomainTests
     /// Simplify the implementation of domain tests for which we only want to perform the
     /// test setup phase if they should actually be executed.
     /// </summary>
-    /// <typeparam name="TFixture">A xUnit fixture that implements <see cref="IAsyncLifetime"/>.</typeparam>
-    public abstract class DomainTestsBase<TFixture> : IClassFixture<LazyFixtureFactory<TFixture>>, IAsyncLifetime
-        where TFixture : IAsyncLifetime, new()
+    /// <typeparam name="TLazyFixture">A xUnit fixture that inherits from <see cref="LazyFixtureBase"/>.</typeparam>
+    public abstract class DomainTestsBase<TLazyFixture> : IClassFixture<LazyFixtureFactory<TLazyFixture>>, IAsyncLifetime
+        where TLazyFixture : LazyFixtureBase
     {
         /// <summary>
-        /// Any fixture given in the constructor is always created and initialized by xUnit,
-        /// even if no test is executed. For this reason we use a factory to handle lazy initialization
-        /// of the fixture, which means we only perform the initialization if we actually execute any test.
+        /// Any fixture given in the constructor is always created and initialized by xUnit, even if no test is executed
+        /// in the test class. For this reason we use a factory to handle lazy initialization of the fixture, which means
+        /// we only perform the initialization if we actually execute any test.
         /// </summary>
-        public DomainTestsBase(LazyFixtureFactory<TFixture> lazyFixtureFactory)
+        public DomainTestsBase(LazyFixtureFactory<TLazyFixture> lazyFixtureFactory)
         {
             LazyFixtureFactory = lazyFixtureFactory;
         }
@@ -40,9 +40,9 @@ namespace Energinet.DataHub.Wholesale.DomainTests
         /// This property only contains a value if any test is executed.
         /// </summary>
         [NotNull]
-        protected TFixture? Fixture { get; set; }
+        protected TLazyFixture? Fixture { get; set; }
 
-        private LazyFixtureFactory<TFixture> LazyFixtureFactory { get; }
+        private LazyFixtureFactory<TLazyFixture> LazyFixtureFactory { get; }
 
         /// <summary>
         /// This method only gets called by xUnit if any test is executed.

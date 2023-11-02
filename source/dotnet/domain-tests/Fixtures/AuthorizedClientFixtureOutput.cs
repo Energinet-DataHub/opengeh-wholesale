@@ -18,6 +18,7 @@ using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
+using Xunit.Abstractions;
 using ProcessType = Energinet.DataHub.Wholesale.DomainTests.Clients.v3.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
@@ -27,11 +28,13 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
     /// </summary>
     public sealed class AuthorizedClientFixtureOutput
     {
+        private readonly IMessageSink _diagnosticMessageSink;
         private readonly WholesaleClient_V3 _wholesaleClient;
         private readonly ServiceBusReceiver _receiver;
 
-        public AuthorizedClientFixtureOutput(WholesaleClient_V3 wholesaleClient, ServiceBusReceiver receiver)
+        public AuthorizedClientFixtureOutput(IMessageSink diagnosticMessageSink, WholesaleClient_V3 wholesaleClient, ServiceBusReceiver receiver)
         {
+            _diagnosticMessageSink = diagnosticMessageSink;
             _wholesaleClient = wholesaleClient;
             _receiver = receiver;
         }
@@ -109,7 +112,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                 defaultTimeout,
                 defaultDelay);
             stopwatch.Stop();
-            Console.WriteLine($"LOOK AT ME: Calculation took {stopwatch.Elapsed} to complete for calculationId {calculationId}");
+            _diagnosticMessageSink.OnMessage(new Xunit.Sdk.DiagnosticMessage($"LOOK AT ME: Calculation took '{stopwatch.Elapsed}' to complete for calculationId '{calculationId}'."));
             return isCompleted;
         }
 
@@ -135,10 +138,10 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
             stopwatch.Stop();
 
-            Console.WriteLine($"LOOK AT ME: the loop took {stopwatch.Elapsed} to complete and received {CalculationResultCompletedFromBalanceFixing.Count} messages");
+            _diagnosticMessageSink.OnMessage(new Xunit.Sdk.DiagnosticMessage($"LOOK AT ME: the loop took '{stopwatch.Elapsed}' to complete and received '{CalculationResultCompletedFromBalanceFixing.Count}' messages."));
             if (stopwatch.Elapsed >= TimeSpan.FromMinutes(15))
             {
-                Console.WriteLine("LOOK AT ME: No messages received within the 15 minute time limit, and the loop was stopped.");
+                _diagnosticMessageSink.OnMessage(new Xunit.Sdk.DiagnosticMessage("LOOK AT ME: No messages received within the 15 minute time limit, and the loop was stopped."));
             }
         }
 

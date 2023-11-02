@@ -17,19 +17,20 @@ using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
 using Moq;
-using Xunit;
+using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 {
     /// <summary>
     /// Support testing Wholesale Web API using an authorized Wholesale client.
     /// </summary>
-    public sealed class AuthorizedClientFixture : IAsyncLifetime
+    public sealed class AuthorizedClientFixture : LazyFixtureBase
     {
         private readonly string _subscriptionName = Guid.NewGuid().ToString();
         private readonly TimeSpan _httpTimeout = TimeSpan.FromMinutes(10); // IDatabricksSqlStatementClient can take up to 8 minutes to get ready.
 
-        public AuthorizedClientFixture()
+        public AuthorizedClientFixture(IMessageSink diagnosticMessageSink)
+            : base(diagnosticMessageSink)
         {
             Configuration = new WholesaleDomainConfiguration();
             UserAuthenticationClient = new B2CUserTokenAuthenticationClient(Configuration.UserTokenConfiguration);
@@ -38,12 +39,12 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         }
 
         /// <summary>
-        /// The actual client is not created until <see cref="IAsyncLifetime.InitializeAsync"/> has been called by xUnit.
+        /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.
         /// </summary>
         public WholesaleClient_V3 WholesaleClient { get; private set; } = null!;
 
         /// <summary>
-        /// The actual client is not created until <see cref="IAsyncLifetime.InitializeAsync"/> has been called by xUnit.
+        /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.
         /// </summary>
         public ServiceBusReceiver Receiver { get; private set; } = null!;
 
@@ -57,16 +58,16 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
         private ServiceBusClient ServiceBusClient { get; }
 
-        async Task IAsyncLifetime.InitializeAsync()
+        protected override async Task OnInitializeAsync()
         {
             WholesaleClient = await CreateWholesaleClientAsync();
             await CreateTopicSubscriptionAsync();
             Receiver = CreateServiceBusReceiver();
-            Output = new AuthorizedClientFixtureOutput(WholesaleClient, Receiver);
+            Output = new AuthorizedClientFixtureOutput(DiagnosticMessageSink, WholesaleClient, Receiver);
             await Output.InitializeAsync();
         }
 
-        async Task IAsyncLifetime.DisposeAsync()
+        protected override async Task OnDisposeAsync()
         {
             UserAuthenticationClient.Dispose();
             await ServiceBusAdministrationClient.DeleteSubscriptionAsync(Configuration.DomainRelayTopicName, _subscriptionName);
