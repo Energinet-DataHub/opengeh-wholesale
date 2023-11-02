@@ -16,6 +16,7 @@ using System.Collections.ObjectModel;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
+using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Common;
 using FluentAssertions;
 using Google.Protobuf.WellKnownTypes;
@@ -111,7 +112,7 @@ public class EnergyResultProducedV2FactoryTests
 
     private EnergyResult CreateEnergyResult()
     {
-        var quantityQualities = new Collection<QuantityQuality> { QuantityQuality.Estimated };
+        var quantityQualities = new Collection<QuantityQuality> { QuantityQuality.Estimated, QuantityQuality.Calculated };
 
         return new EnergyResult(
             _id,
@@ -126,7 +127,7 @@ public class EnergyResultProducedV2FactoryTests
                 new(new DateTime(2021, 1, 1), 2, quantityQualities),
                 new(new DateTime(2021, 1, 1), 3, quantityQualities),
             },
-            Common.Models.ProcessType.Aggregation,
+            ProcessType.Aggregation,
             _periodStart,
             _periodEnd,
             _fromGridArea);
@@ -154,6 +155,7 @@ public class EnergyResultProducedV2FactoryTests
                     Quantity = p.Quantity,
                 };
                 timeSeriesPoint.QuantityQualities.Add(EnergyResultProduced.Types.QuantityQuality.Estimated);
+                timeSeriesPoint.QuantityQualities.Add(EnergyResultProduced.Types.QuantityQuality.Calculated);
                 return timeSeriesPoint;
             }));
 
