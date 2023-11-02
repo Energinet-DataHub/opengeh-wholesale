@@ -106,7 +106,7 @@ public class AmountPerChargeResultProducedV1FactoryTests
         var amountPerChargeResultProducedV1 = new AmountPerChargeResultProducedV1()
         {
             CalculationId = wholesaleResult.CalculationId.ToString(),
-            CalculationType = AmountPerChargeResultProducedV1.Types.CalculationType.FirstCorrectionSettlement,
+            CalculationType = AmountPerChargeResultProducedV1.Types.CalculationType.WholesaleFixing,
             QuantityUnit = AmountPerChargeResultProducedV1.Types.QuantityUnit.Kwh,
             PeriodStartUtc = wholesaleResult.PeriodStart.ToTimestamp(),
             PeriodEndUtc = wholesaleResult.PeriodEnd.ToTimestamp(),
@@ -124,7 +124,6 @@ public class AmountPerChargeResultProducedV1FactoryTests
 
         var qualities = new List<AmountPerChargeResultProducedV1.Types.QuantityQuality>
         {
-            AmountPerChargeResultProducedV1.Types.QuantityQuality.Estimated,
             AmountPerChargeResultProducedV1.Types.QuantityQuality.Measured,
         };
 
