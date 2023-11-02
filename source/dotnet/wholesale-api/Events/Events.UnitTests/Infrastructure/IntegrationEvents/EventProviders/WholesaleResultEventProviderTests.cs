@@ -99,6 +99,34 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
 
         [Theory]
         [InlineAutoMoqData]
+        public async Task GetAsync_WhenCannotCreateAnyEvents_ThrowsException(
+            [Frozen] Mock<IAmountPerChargeResultProducedV1Factory> amountPerChargeResultProducedV1FactoryMock,
+            [Frozen] Mock<IMonthlyAmountPerChargeResultProducedV1Factory> monthlyAmountPerChargeResultProducedV1FactoryMock,
+            [Frozen] Mock<IWholesaleResultQueries> wholesaleResultQueriesMock,
+            WholesaleResult wholesaleResult,
+            WholesaleResultEventProvider sut)
+        {
+            // Arrange
+            var wholesaleFixingBatch = CreateWholesaleFixingBatch();
+            var wholesaleResults = new[] { wholesaleResult };
+
+            wholesaleResultQueriesMock
+                .Setup(mock => mock.GetAsync(wholesaleFixingBatch.Id))
+                .Returns(wholesaleResults.ToAsyncEnumerable());
+
+            amountPerChargeResultProducedV1FactoryMock
+                .Setup(mock => mock.CanCreate(It.IsAny<WholesaleResult>()))
+                .Returns(false);
+            monthlyAmountPerChargeResultProducedV1FactoryMock
+                .Setup(mock => mock.CanCreate(It.IsAny<WholesaleResult>()))
+                .Returns(false);
+
+             // Act and Assert
+            await Assert.ThrowsAsync<ArgumentException>(async () => await sut.GetAsync(wholesaleFixingBatch).SingleAsync());
+        }
+
+        [Theory]
+        [InlineAutoMoqData]
         public async Task GetAsync_WhenMultipleResults_ReturnsOneEventPerResult(
             [Frozen] Mock<IAmountPerChargeResultProducedV1Factory> amountPerChargeResultProducedV1FactoryMock,
             [Frozen] Mock<IWholesaleResultQueries> wholesaleResultQueriesMock,
