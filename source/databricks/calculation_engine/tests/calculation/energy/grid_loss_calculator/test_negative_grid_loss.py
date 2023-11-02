@@ -20,16 +20,11 @@ import pandas as pd
 import pytest
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
-from pyspark.sql.types import (
-    StructType,
-    StringType,
-    DecimalType,
-    TimestampType,
-    ArrayType,
-)
+
 
 from package.calculation.energy.energy_results import (
     EnergyResults,
+    energy_results_schema,
 )
 from package.calculation.energy.grid_loss_calculator import calculate_negative_grid_loss
 from package.codelists import (
@@ -40,27 +35,7 @@ from package.constants import Colname
 
 
 @pytest.fixture(scope="module")
-def grid_loss_schema() -> StructType:
-    return (
-        StructType()
-        .add(Colname.grid_area, StringType(), False)
-        .add(
-            Colname.time_window,
-            StructType()
-            .add(Colname.start, TimestampType())
-            .add(Colname.end, TimestampType()),
-            False,
-        )
-        .add(Colname.sum_quantity, DecimalType(18, 3))
-        .add(Colname.qualities, ArrayType(StringType(), False), False)
-        .add(Colname.metering_point_type, StringType())
-    )
-
-
-@pytest.fixture(scope="module")
-def agg_result_factory(
-    spark: SparkSession, grid_loss_schema: StructType
-) -> Callable[[], EnergyResults]:
+def agg_result_factory(spark: SparkSession) -> Callable[[], EnergyResults]:
     """
     Factory to generate a single row of time series data, with default parameters as specified above.
     """
@@ -69,16 +44,25 @@ def agg_result_factory(
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: [],
+                Colname.to_grid_area: [],
+                Colname.from_grid_area: [],
+                Colname.balance_responsible_id: [],
+                Colname.energy_supplier_id: [],
                 Colname.time_window: [],
                 Colname.sum_quantity: [],
                 Colname.qualities: [],
                 Colname.metering_point_type: [],
+                Colname.settlement_method: [],
             }
         )
         pandas_df = pandas_df.append(
             [
                 {
                     Colname.grid_area: str(1),
+                    Colname.to_grid_area: "to_grid_area",
+                    Colname.from_grid_area: "from_grid_area",
+                    Colname.balance_responsible_id: "balance_responsible_id",
+                    Colname.energy_supplier_id: "energy_supplier_id",
                     Colname.time_window: {
                         Colname.start: datetime(2020, 1, 1, 0, 0),
                         Colname.end: datetime(2020, 1, 1, 1, 0),
@@ -86,9 +70,14 @@ def agg_result_factory(
                     Colname.sum_quantity: Decimal(-12.567),
                     Colname.qualities: [QuantityQuality.ESTIMATED.value],
                     Colname.metering_point_type: MeteringPointType.EXCHANGE.value,
+                    Colname.settlement_method: None,
                 },
                 {
                     Colname.grid_area: str(2),
+                    Colname.to_grid_area: "to_grid_area",
+                    Colname.from_grid_area: "from_grid_area",
+                    Colname.balance_responsible_id: "balance_responsible_id",
+                    Colname.energy_supplier_id: "energy_supplier_id",
                     Colname.time_window: {
                         Colname.start: datetime(2020, 1, 1, 0, 0),
                         Colname.end: datetime(2020, 1, 1, 1, 0),
@@ -96,9 +85,14 @@ def agg_result_factory(
                     Colname.sum_quantity: Decimal(34.32),
                     Colname.qualities: [QuantityQuality.ESTIMATED.value],
                     Colname.metering_point_type: MeteringPointType.EXCHANGE.value,
+                    Colname.settlement_method: None,
                 },
                 {
                     Colname.grid_area: str(3),
+                    Colname.to_grid_area: "to_grid_area",
+                    Colname.from_grid_area: "from_grid_area",
+                    Colname.balance_responsible_id: "balance_responsible_id",
+                    Colname.energy_supplier_id: "energy_supplier_id",
                     Colname.time_window: {
                         Colname.start: datetime(2020, 1, 1, 0, 0),
                         Colname.end: datetime(2020, 1, 1, 1, 0),
@@ -106,12 +100,13 @@ def agg_result_factory(
                     Colname.sum_quantity: Decimal(0.0),
                     Colname.qualities: [QuantityQuality.ESTIMATED.value],
                     Colname.metering_point_type: MeteringPointType.EXCHANGE.value,
+                    Colname.settlement_method: None,
                 },
             ],
             ignore_index=True,
         )
 
-        df = spark.createDataFrame(pandas_df, schema=grid_loss_schema)
+        df = spark.createDataFrame(pandas_df, schema=energy_results_schema)
         return EnergyResults(df)
 
     return factory
