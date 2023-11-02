@@ -34,14 +34,78 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
     {
         [Theory]
         [InlineAutoMoqData]
-        public async Task GetAsync_WhenMultipleResults_ReturnsOneEventPerResult(
+        public async Task GetAsync_WhenCanCreateAmountPerChargeResultProducedV1_ReturnsExpectedEvent(
             [Frozen] Mock<IAmountPerChargeResultProducedV1Factory> amountPerChargeResultProducedV1FactoryMock,
-            [Frozen] Mock<IMonthlyAmountPerChargeResultProducedV1Factory> monthlyAmountPerChargeResultProducedV1FactoryMock,
             [Frozen] Mock<IWholesaleResultQueries> wholesaleResultQueriesMock,
             WholesaleResultEventProvider sut)
         {
             // Arrange
-            var expectedEventsPerResult = 1;
+            var expectedIntegrationEvent = new AmountPerChargeResultProducedV1();
+            var amountPerChargeResult = new[] { CreateWholesaleResult(AmountType.AmountPerCharge) };
+            var wholesaleFixingBatch = CreateWholesaleFixingBatch();
+
+            wholesaleResultQueriesMock
+                .Setup(mock => mock.GetAsync(wholesaleFixingBatch.Id))
+                .Returns(amountPerChargeResult.ToAsyncEnumerable());
+
+            amountPerChargeResultProducedV1FactoryMock
+                .Setup(mock => mock.CanCreate(It.IsAny<WholesaleResult>()))
+                .Returns(true);
+            amountPerChargeResultProducedV1FactoryMock
+                .Setup(mock => mock.Create(It.IsAny<WholesaleResult>()))
+                .Returns(expectedIntegrationEvent);
+
+            // Act
+            var actualIntegrationEvents = await sut.GetAsync(wholesaleFixingBatch).ToListAsync();
+
+            // Assert
+            actualIntegrationEvents.Single().EventName.Should().Be(AmountPerChargeResultProducedV1.EventName);
+        }
+
+        [Theory]
+        [InlineAutoMoqData]
+        public async Task GetAsync_WhenCanCreateMonthlyAmountPerChargeResultProducedV1_ReturnsExpectedEvent(
+            [Frozen] Mock<IAmountPerChargeResultProducedV1Factory> amountPerChargeResultProducedV1FactoryMock,
+            [Frozen] Mock<IMonthlyAmountPerChargeResultProducedV1Factory> monthlyAmountPerChargeResultProducedV1FactoryMock,
+            [Frozen] Mock<IWholesaleResultQueries> wholesaleResultQueriesMock,
+            WholesaleResult wholesaleResult,
+            WholesaleResultEventProvider sut)
+        {
+            // Arrange
+            var expectedIntegrationEvent = new MonthlyAmountPerChargeResultProducedV1();
+            var wholesaleFixingBatch = CreateWholesaleFixingBatch();
+            var wholesaleResults = new[] { wholesaleResult };
+
+            wholesaleResultQueriesMock
+                .Setup(mock => mock.GetAsync(wholesaleFixingBatch.Id))
+                .Returns(wholesaleResults.ToAsyncEnumerable());
+
+            amountPerChargeResultProducedV1FactoryMock
+                .Setup(mock => mock.CanCreate(It.IsAny<WholesaleResult>()))
+                .Returns(false);
+            monthlyAmountPerChargeResultProducedV1FactoryMock
+                .Setup(mock => mock.CanCreate(It.IsAny<WholesaleResult>()))
+                .Returns(true);
+            monthlyAmountPerChargeResultProducedV1FactoryMock
+                .Setup(mock => mock.Create(It.IsAny<WholesaleResult>()))
+                .Returns(expectedIntegrationEvent);
+
+            // Act
+            var actualIntegrationEvents = await sut.GetAsync(wholesaleFixingBatch).ToListAsync();
+
+            // Assert
+            actualIntegrationEvents.Single().EventName.Should().Be(MonthlyAmountPerChargeResultProducedV1.EventName);
+        }
+
+        [Theory]
+        [InlineAutoMoqData]
+        public async Task GetAsync_WhenMultipleResults_ReturnsOneEventPerResult(
+            [Frozen] Mock<IAmountPerChargeResultProducedV1Factory> amountPerChargeResultProducedV1FactoryMock,
+            [Frozen] Mock<IWholesaleResultQueries> wholesaleResultQueriesMock,
+            WholesaleResultEventProvider sut)
+        {
+            // Arrange
+            const int expectedEventsPerResult = 1;
             var wholesaleResults = new[] { CreateWholesaleResult(AmountType.AmountPerCharge), CreateWholesaleResult(AmountType.MonthlyAmountPerCharge) };
             var expectedEventsCount = wholesaleResults.Length * expectedEventsPerResult;
 
@@ -56,11 +120,11 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
                 .Returns(wholesaleResults.ToAsyncEnumerable());
 
             amountPerChargeResultProducedV1FactoryMock
+                .Setup(mock => mock.CanCreate(It.IsAny<WholesaleResult>()))
+                .Returns(true);
+            amountPerChargeResultProducedV1FactoryMock
                 .Setup(mock => mock.Create(It.IsAny<WholesaleResult>()))
                 .Returns(new AmountPerChargeResultProducedV1());
-            monthlyAmountPerChargeResultProducedV1FactoryMock
-                .Setup(mock => mock.Create(It.IsAny<WholesaleResult>()))
-                .Returns(new MonthlyAmountPerChargeResultProducedV1());
 
             // Act
             var actualIntegrationEvents = await sut.GetAsync(wholesaleFixingBatch).ToListAsync();
@@ -129,6 +193,16 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
                 {
                     new(new DateTime(2021, 1, 1), 1, qualities, 2, 3),
                 });
+        }
+
+        private static CompletedBatch CreateWholesaleFixingBatch()
+        {
+            var fixture = new Fixture();
+            var wholesaleFixingBatch = fixture
+                .Build<CompletedBatch>()
+                .With(p => p.ProcessType, ProcessType.WholesaleFixing)
+                .Create();
+            return wholesaleFixingBatch;
         }
     }
 }

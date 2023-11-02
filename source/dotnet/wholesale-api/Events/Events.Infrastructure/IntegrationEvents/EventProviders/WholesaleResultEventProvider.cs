@@ -57,19 +57,13 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Ev
 
         private IntegrationEvent CreateEventFromWholesaleResult(WholesaleResult wholesaleResult)
         {
-            return wholesaleResult.AmountType switch
-            {
-                AmountType.AmountPerCharge =>
-                    CreateIntegrationEvent(_amountPerChargeResultProducedV1Factory.Create(wholesaleResult)),
-                AmountType.MonthlyAmountPerCharge =>
-                    CreateIntegrationEvent(_monthlyAmountPerChargeResultProducedV1Factory.Create(wholesaleResult)),
-                AmountType.TotalMonthlyAmount =>
-                    throw new NotImplementedException($"Factory for '{AmountType.TotalMonthlyAmount}' not implemented."),
-                _ => throw new ArgumentOutOfRangeException(
-                    nameof(wholesaleResult.AmountType),
-                    actualValue: wholesaleResult.AmountType,
-                    "Unexpected amount type."),
-            };
+            if (_amountPerChargeResultProducedV1Factory.CanCreate(wholesaleResult))
+                return CreateIntegrationEvent(_amountPerChargeResultProducedV1Factory.Create(wholesaleResult));
+
+            if (_monthlyAmountPerChargeResultProducedV1Factory.CanCreate(wholesaleResult))
+                return CreateIntegrationEvent(_monthlyAmountPerChargeResultProducedV1Factory.Create(wholesaleResult));
+
+            throw new ArgumentException($@"Cannot create event from {nameof(WholesaleResult)}");
         }
     }
 }
