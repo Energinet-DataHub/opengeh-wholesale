@@ -121,8 +121,11 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
                 .Setup(mock => mock.CanCreate(It.IsAny<WholesaleResult>()))
                 .Returns(false);
 
-             // Act and Assert
-            await Assert.ThrowsAsync<ArgumentException>(async () => await sut.GetAsync(wholesaleFixingBatch).SingleAsync());
+            // Act
+            var act = async () => await sut.GetAsync(wholesaleFixingBatch).SingleAsync();
+
+            // Assert
+            await act.Should().ThrowAsync<ArgumentException>();
         }
 
         [Theory]
