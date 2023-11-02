@@ -30,6 +30,7 @@ from pyspark.sql.types import (
 
 from package.calculation.energy.energy_results import (
     EnergyResults,
+    energy_results_schema,
 )
 from package.calculation.energy.transformations import adjust_flex_consumption
 from package.codelists import (
@@ -58,50 +59,6 @@ default_valid_from = datetime.strptime(
 default_valid_to = datetime.strptime(
     "2020-01-01T01:00:00+0000", date_time_formatting_string
 )
-
-
-@pytest.fixture(scope="module")
-def flex_consumption_result_schema() -> StructType:
-    """
-    Input flex consumption result data frame schema
-    """
-    return (
-        StructType()
-        .add(Colname.grid_area, StringType(), False)
-        .add(Colname.balance_responsible_id, StringType())
-        .add(Colname.energy_supplier_id, StringType())
-        .add(Colname.sum_quantity, DecimalType())
-        .add(
-            Colname.time_window,
-            StructType()
-            .add(Colname.start, TimestampType())
-            .add(Colname.end, TimestampType()),
-            False,
-        )
-        .add(Colname.qualities, ArrayType(StringType(), False), False)
-        .add(Colname.metering_point_type, StringType())
-    )
-
-
-@pytest.fixture(scope="module")
-def positive_grid_loss_result_schema() -> StructType:
-    """
-    Input grid loss result schema
-    """
-    return (
-        StructType()
-        .add(Colname.grid_area, StringType(), False)
-        .add(
-            Colname.time_window,
-            StructType()
-            .add(Colname.start, TimestampType())
-            .add(Colname.end, TimestampType()),
-            False,
-        )
-        .add(Colname.sum_quantity, DecimalType())
-        .add(Colname.qualities, ArrayType(StringType(), False), False)
-        .add(Colname.metering_point_type, StringType())
-    )
 
 
 @pytest.fixture(scope="module")
@@ -149,7 +106,7 @@ def expected_schema() -> StructType:
 
 @pytest.fixture(scope="module")
 def flex_consumption_result_row_factory(
-    spark: SparkSession, flex_consumption_result_schema: StructType
+    spark: SparkSession,
 ) -> Callable[..., EnergyResults]:
     """
     Factory to generate a single row of  data, with default parameters as specified above.
@@ -169,15 +126,18 @@ def flex_consumption_result_row_factory(
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: [domain],
+                Colname.to_grid_area: ["to_grid_area"],
+                Colname.from_grid_area: ["from_grid_area"],
                 Colname.balance_responsible_id: [responsible],
                 Colname.energy_supplier_id: [supplier],
-                Colname.sum_quantity: [sum_quantity],
                 Colname.time_window: [time_window],
+                Colname.sum_quantity: [sum_quantity],
                 Colname.qualities: [[aggregated_quality]],
                 Colname.metering_point_type: [metering_point_type],
+                Colname.settlement_method: [None],
             }
         )
-        df = spark.createDataFrame(pandas_df, schema=flex_consumption_result_schema)
+        df = spark.createDataFrame(pandas_df, schema=energy_results_schema)
         return EnergyResults(df)
 
     return factory
@@ -185,7 +145,7 @@ def flex_consumption_result_row_factory(
 
 @pytest.fixture(scope="module")
 def positive_grid_loss_result_row_factory(
-    spark: SparkSession, positive_grid_loss_result_schema: StructType
+    spark: SparkSession,
 ) -> Callable[..., EnergyResults]:
     """
     Factory to generate a single row of  data, with default parameters as specified above.
@@ -203,13 +163,18 @@ def positive_grid_loss_result_row_factory(
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: [domain],
+                Colname.to_grid_area: ["to_grid_area"],
+                Colname.from_grid_area: ["from_grid_area"],
+                Colname.balance_responsible_id: ["balance_responsible_id"],
+                Colname.energy_supplier_id: ["energy_supplier_id"],
                 Colname.time_window: [time_window],
                 Colname.sum_quantity: [positive_grid_loss],
                 Colname.qualities: [[aggregated_quality]],
                 Colname.metering_point_type: [metering_point_type],
+                Colname.settlement_method: [None],
             }
         )
-        df = spark.createDataFrame(pandas_df, schema=positive_grid_loss_result_schema)
+        df = spark.createDataFrame(pandas_df, schema=energy_results_schema)
         return EnergyResults(df)
 
     return factory
