@@ -15,6 +15,7 @@
 using Energinet.DataHub.Edi.Requests;
 using Energinet.DataHub.Wholesale.EDI.Client;
 using Energinet.DataHub.Wholesale.EDI.Factories;
+using Energinet.DataHub.Wholesale.EDI.Mappers;
 using Energinet.DataHub.Wholesale.EDI.Validation;
 using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie;
 using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
@@ -32,6 +33,8 @@ public static class EdiRegistration
         serviceCollection.AddScoped<IAggregatedTimeSeriesRequestHandler, AggregatedTimeSeriesRequestHandler>();
         serviceCollection.AddSingleton<IEdiClient, EdiClient>();
         serviceCollection.AddScoped<IAggregatedTimeSeriesRequestFactory, AggregatedTimeSeriesRequestFactory>();
+        serviceCollection.AddScoped<RequestedProcessTypeMapper>();
+
         AddAggregatedTimeSeriesRequestValidation(serviceCollection);
     }
 

@@ -24,37 +24,20 @@ namespace Energinet.DataHub.Wholesale.EDI.Factories;
 
 public class AggregatedTimeSeriesRequestFactory : IAggregatedTimeSeriesRequestFactory
 {
-    public AggregatedTimeSeriesRequest Parse(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request)
+    private readonly RequestedProcessTypeMapper _requestedProcessTypeMapper;
+
+    public AggregatedTimeSeriesRequestFactory(RequestedProcessTypeMapper requestedProcessTypeMapper)
     {
-        return MapAggregatedTimeSeriesRequest(request);
+        _requestedProcessTypeMapper = requestedProcessTypeMapper;
     }
 
-    private AggregatedTimeSeriesRequest MapAggregatedTimeSeriesRequest(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request)
+    public AggregatedTimeSeriesRequest Parse(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request)
     {
         return new AggregatedTimeSeriesRequest(
             MapPeriod(request.Period),
             TimeSeriesTypeMapper.MapTimeSeriesType(request.MeteringPointType, request.SettlementMethod),
             MapAggregationPerRoleAndGridArea(request),
-            MapRequestedProcessType(request.BusinessReason, request.HasSettlementSeriesVersion ? request.SettlementSeriesVersion : null));
-    }
-
-    private RequestedProcessType MapRequestedProcessType(string businessReason, string? settlementSeriesVersion)
-    {
-        return businessReason switch
-        {
-            BusinessReason.BalanceFixing => RequestedProcessType.BalanceFixing,
-            BusinessReason.PreliminaryAggregation => RequestedProcessType.PreliminaryAggregation,
-            BusinessReason.WholesaleFixing => RequestedProcessType.WholesaleFixing,
-            BusinessReason.Correction => settlementSeriesVersion switch
-            {
-                SettlementSeriesVersion.FirstCorrection => RequestedProcessType.FirstCorrection,
-                SettlementSeriesVersion.SecondCorrection => RequestedProcessType.SecondCorrection,
-                SettlementSeriesVersion.ThirdCorrection => RequestedProcessType.ThirdCorrection,
-                null => RequestedProcessType.LatestCorrection,
-                _ => throw new ArgumentException("Unknown settlement series version", nameof(settlementSeriesVersion)),
-            },
-            _ => throw new ArgumentException("Unknown business reason", nameof(businessReason)),
-        };
+            _requestedProcessTypeMapper.ToRequestedProcessType(request.BusinessReason, request.HasSettlementSeriesVersion ? request.SettlementSeriesVersion : null));
     }
 
     private AggregationPerRoleAndGridArea MapAggregationPerRoleAndGridArea(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request)
