@@ -14,9 +14,11 @@
 
 from datetime import datetime
 from pyspark.sql import DataFrame
+import pyspark.sql.functions as f
 
 from package.calculation_input import TableReader
 from package.codelists import ChargeResolution
+from package.constants import Colname
 
 from . import transformations as T
 from .quarterly_metering_point_time_series import QuarterlyMeteringPointTimeSeries
@@ -71,7 +73,9 @@ class PreparedDataReader:
         )
 
     def get_raw_time_series_points(self) -> DataFrame:
-        return self._table_reader.read_time_series_points()
+        df = self._table_reader.read_time_series_points()
+        df.withColumn(Colname.quantity, f.coalesce(f.col(Colname.quantity), f.lit(0)))
+        return df
 
     def get_metering_point_time_series(
         self,
@@ -79,7 +83,7 @@ class PreparedDataReader:
         period_start_datetime: datetime,
         period_end_datetime: datetime,
     ) -> DataFrame:
-        raw_time_series_points_df = self._table_reader.read_time_series_points()
+        raw_time_series_points_df = self.get_raw_time_series_points()
         return T.get_metering_point_time_series(
             raw_time_series_points_df,
             metering_point_periods_df,
