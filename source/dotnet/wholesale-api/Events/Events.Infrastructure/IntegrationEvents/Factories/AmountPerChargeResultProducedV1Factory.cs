@@ -29,7 +29,7 @@ public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProd
     public AmountPerChargeResultProducedV1 Create(WholesaleResult result)
     {
         if (!CanCreate(result))
-            throw new ArgumentException("Cannot create AmountPerChargeResultProducedV1 from result.");
+            throw new ArgumentException($"Cannot create '{nameof(AmountPerChargeResultProducedV1)}' from wholesale result.", nameof(result));
 
         var amountPerChargeResultProducedV1 = new AmountPerChargeResultProducedV1
         {
