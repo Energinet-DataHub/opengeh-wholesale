@@ -478,7 +478,7 @@ public class RequestCalculationResultQueriesTests : IClassFixture<DatabricksSqlS
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_RequestFromGridOperatorStartAndEndDataAreEqual_ReturnsEmptyResult(
+    public async Task GetAsync_RequestFromGridOperatorStartAndEndDataAreEqual_ReturnsNoResult(
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock)
