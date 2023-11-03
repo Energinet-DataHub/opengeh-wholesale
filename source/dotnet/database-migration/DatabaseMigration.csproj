@@ -1,4 +1,4 @@
-<!--
+﻿<!--
 Copyright 2020 Energinet DataHub A/S
 
 Licensed under the Apache License, Version 2.0 (the "License2");
@@ -15,52 +15,45 @@ limitations under the License.
 -->
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <OutputType>Exe</OutputType>
-        <AssemblyName>Energinet.DataHub.Wholesale.DatabaseMigration</AssemblyName>
-        <RootNamespace>Energinet.DataHub.Wholesale.DatabaseMigration</RootNamespace>
-    </PropertyGroup>
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>Energinet.DataHub.Wholesale.DatabaseMigration</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Wholesale.DatabaseMigration</RootNamespace>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <None Remove="Scripts\202302091300_Add_ProcessType_column_To_Batch.sql" />
-    </ItemGroup>
+  <ItemGroup>
+    <None Remove="Scripts\202302091300_Add_ProcessType_column_To_Batch.sql" />
+  </ItemGroup>
 
-    <ItemGroup>
-      <EmbeddedResource Include="Scripts\202302031200_Drop_MessageHub.sql" />
-      <EmbeddedResource Include="Scripts\202206161400_Create_Batch_Table.sql" />
-      <EmbeddedResource Include="Scripts\202206281330_Create_MessageHub_Process_Table.sql" />
-      <EmbeddedResource Include="Scripts\202208111100_Add_Batch_RunId.sql" />
-      <EmbeddedResource Include="Scripts\202207141500_Add_Process_BatchId.sql" />
-      <EmbeddedResource Include="Scripts\202209071400_Add_Batch_Period.sql" />
-      <EmbeddedResource Include="Scripts\202209131440_Alter_Batch_Period.sql" />
-      <EmbeddedResource Include="Scripts\202209191000_Add_Batch_Execution_Time.sql" />
-      <EmbeddedResource Include="Scripts\202210261230_Add_IsBatchDataDownloadAvailable.sql" />
-      <EmbeddedResource Include="Scripts\202301241200_Rename_To_Batch_AreSettlementReportsCreated.sql" />
-      <EmbeddedResource Include="Scripts\202302091300_Add_ProcessType_column_To_Batch.sql" />
-      <EmbeddedResource Include="Scripts\202302031300_Fix_Batch_PeriodEnds.sql" />
-      <EmbeddedResource Include="Scripts\202302020800_Rename_RunId_To_CalculationId.sql" />
-      <EmbeddedResource Include="Scripts\202303081500_Create_Outbox_Table.sql" />
-      <EmbeddedResource Include="Scripts\202304041500_Add_CreatedByUserId_to_Batch.sql" />
-      <EmbeddedResource Include="Scripts\202305161700_Add_Integration_Events_Module.sql" />
-      <EmbeddedResource Include="Scripts\202305241400_Remove_Outbox_Table.sql" />
-      <EmbeddedResource Include="Scripts\202305260800_Add_BatchCompleted_PublishedTime.sql" />
-      <EmbeddedResource Include="Scripts\202305261500_Add_Batch_CreatedTime.sql" />
-    </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\202302031200_Drop_MessageHub.sql" />
+    <EmbeddedResource Include="Scripts\202206161400_Create_Batch_Table.sql" />
+    <EmbeddedResource Include="Scripts\202206281330_Create_MessageHub_Process_Table.sql" />
+    <EmbeddedResource Include="Scripts\202208111100_Add_Batch_RunId.sql" />
+    <EmbeddedResource Include="Scripts\202207141500_Add_Process_BatchId.sql" />
+    <EmbeddedResource Include="Scripts\202209071400_Add_Batch_Period.sql" />
+    <EmbeddedResource Include="Scripts\202209131440_Alter_Batch_Period.sql" />
+    <EmbeddedResource Include="Scripts\202209191000_Add_Batch_Execution_Time.sql" />
+    <EmbeddedResource Include="Scripts\202210261230_Add_IsBatchDataDownloadAvailable.sql" />
+    <EmbeddedResource Include="Scripts\202301241200_Rename_To_Batch_AreSettlementReportsCreated.sql" />
+    <EmbeddedResource Include="Scripts\202302091300_Add_ProcessType_column_To_Batch.sql" />
+    <EmbeddedResource Include="Scripts\202302031300_Fix_Batch_PeriodEnds.sql" />
+    <EmbeddedResource Include="Scripts\202302020800_Rename_RunId_To_CalculationId.sql" />
+    <EmbeddedResource Include="Scripts\202303081500_Create_Outbox_Table.sql" />
+    <EmbeddedResource Include="Scripts\202304041500_Add_CreatedByUserId_to_Batch.sql" />
+    <EmbeddedResource Include="Scripts\202305161700_Add_Integration_Events_Module.sql" />
+    <EmbeddedResource Include="Scripts\202305241400_Remove_Outbox_Table.sql" />
+    <EmbeddedResource Include="Scripts\202305260800_Add_BatchCompleted_PublishedTime.sql" />
+    <EmbeddedResource Include="Scripts\202305261500_Add_Batch_CreatedTime.sql" />
+  </ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="dbup-sqlserver" Version="5.0.8" />
-      <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.6.2" />
-      <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.1" />
-      <PackageReference Update="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.4">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.7.30">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="dbup-sqlserver" Version="5.0.8" />
+    <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.6.2" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.7.30">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
 </Project>

@@ -1,52 +1,45 @@
-<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-      <AssemblyName>Energinet.DataHub.Wholesale.CalculationResults.UnitTests</AssemblyName>
-      <RootNamespace>Energinet.DataHub.Wholesale.CalculationResults.UnitTests</RootNamespace>
-        <IsPackable>false</IsPackable>
-        <IsTestProject>true</IsTestProject>
-    </PropertyGroup>
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Energinet.DataHub.Wholesale.CalculationResults.UnitTests</AssemblyName>
+    <RootNamespace>Energinet.DataHub.Wholesale.CalculationResults.UnitTests</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <PackageReference Include="FluentAssertions" Version="6.11.0" />
-      <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
-      <PackageReference Include="Moq" Version="4.18.4" />
-      <PackageReference Include="System.Linq.Async" Version="6.0.1" />
-      <PackageReference Include="xunit" Version="2.5.1" />
-      <PackageReference Include="YamlDotNet" Version="13.1.1" />
-      <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="4.4.2" />
-      <PackageReference Include="xunit.runner.visualstudio" Version="2.5.1">
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        <PrivateAssets>all</PrivateAssets>
-      </PackageReference>
-      <PackageReference Include="coverlet.collector" Version="6.0.0">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
-      <PackageReference Update="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.4">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
-    </ItemGroup>
-  
-    <ItemGroup>
-      <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.7.30">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="6.11.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
+    <PackageReference Include="Moq" Version="4.18.4" />
+    <PackageReference Include="System.Linq.Async" Version="6.0.1" />
+    <PackageReference Include="xunit" Version="2.5.1" />
+    <PackageReference Include="YamlDotNet" Version="13.1.1" />
+    <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="4.4.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.1">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.collector" Version="6.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.7.30">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
 
-    <ItemGroup>
-      <EmbeddedResource Include="..\..\..\..\databricks\calculation_engine\contracts\**">
-        <Link>DeltaTableContracts\%(RecursiveDir)%(Filename)%(Extension)</Link>
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </EmbeddedResource>
-    </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\..\..\databricks\calculation_engine\contracts\**">
+      <Link>DeltaTableContracts\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\..\Test.Core\Test.Core.csproj" />
-      <ProjectReference Include="..\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-      <Folder Include="Interfaces" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Test.Core\Test.Core.csproj" />
+    <ProjectReference Include="..\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Interfaces" />
+  </ItemGroup>
 </Project>
