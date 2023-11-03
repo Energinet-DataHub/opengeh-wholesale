@@ -133,7 +133,7 @@ def get_metering_point_time_series(
             Colname.grid_area,
             Colname.metering_point_type,
             Colname.resolution,
-            Colname.quantity,
+            f.coalesce(Colname.quantity, f.lit(0)).alias(Colname.quantity),
             Colname.quality,
         )
     )
