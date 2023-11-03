@@ -22,6 +22,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Energinet.DataHub.Wholesale.Common.Models;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -81,6 +82,7 @@ public class RequestCalculationResultQueriesTests : IClassFixture<DatabricksSqlS
         var actual = await sut.GetAsync(request);
 
         // Assert
+        using var assertionScope = new AssertionScope();
         actual.Should().NotBeNull();
         actual!.GridArea.Should().Be(gridAreaFilter);
         actual.PeriodStart.Should().Be(startOfPeriodFilter);
@@ -151,6 +153,7 @@ public class RequestCalculationResultQueriesTests : IClassFixture<DatabricksSqlS
         var actual = await sut.GetAsync(request);
 
         // Assert
+        using var assertionScope = new AssertionScope();
         actual.Should().NotBeNull();
         actual!.GridArea.Should().Be(gridAreaFilter);
         actual.PeriodStart.Should().Be(startOfPeriodFilter);
@@ -230,6 +233,7 @@ public class RequestCalculationResultQueriesTests : IClassFixture<DatabricksSqlS
         var actual = await sut.GetAsync(request);
 
         // Assert
+        using var assertionScope = new AssertionScope();
         actual.Should().NotBeNull();
         actual!.GridArea.Should().Be(gridAreaFilter);
         actual.PeriodStart.Should().Be(startOfPeriodFilter);
@@ -276,6 +280,7 @@ public class RequestCalculationResultQueriesTests : IClassFixture<DatabricksSqlS
         var actual = await sut.GetAsync(request);
 
         // Assert
+        using var assertionScope = new AssertionScope();
         actual.Should().NotBeNull();
         actual!.GridArea.Should().Be(gridAreaFilter);
         actual.PeriodStart.Should().Be(startOfPeriodFilter);
@@ -322,6 +327,7 @@ public class RequestCalculationResultQueriesTests : IClassFixture<DatabricksSqlS
         var actual = await sut.GetAsync(request);
 
         // Assert
+        using var assertionScope = new AssertionScope();
         actual.Should().NotBeNull();
         actual!.GridArea.Should().Be(gridAreaFilter);
         actual.PeriodStart.Should().Be(startOfPeriodFilter);
@@ -369,6 +375,7 @@ public class RequestCalculationResultQueriesTests : IClassFixture<DatabricksSqlS
         var actual = await sut.GetAsync(request);
 
         // Assert
+        using var assertionScope = new AssertionScope();
         actual.Should().NotBeNull();
         actual!.GridArea.Should().Be(gridAreaFilter);
         actual.PeriodStart.Should().Be(startOfPeriodFilter);
@@ -417,6 +424,7 @@ public class RequestCalculationResultQueriesTests : IClassFixture<DatabricksSqlS
         var actual = await sut.GetAsync(request);
 
         // Assert
+        using var assertionScope = new AssertionScope();
         actual.Should().NotBeNull();
         actual!.GridArea.Should().Be(gridAreaFilter);
         actual.PeriodStart.Should().Be(startOfPeriodFilter);
@@ -463,6 +471,7 @@ public class RequestCalculationResultQueriesTests : IClassFixture<DatabricksSqlS
         var actual = await sut.GetAsync(request);
 
         // Assert
+        using var assertionScope = new AssertionScope();
         actual.Should().NotBeNull();
         actual!.GridArea.Should().Be(gridAreaFilter);
         actual.PeriodStart.Should().Be(startOfPeriodFilter);
