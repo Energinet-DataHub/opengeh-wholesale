@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Globalization;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.RequestCalculationResult;
@@ -31,7 +32,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.RequestCalculationResult;
 
-public class RequestCalculationResultTests : IClassFixture<DatabricksSqlStatementApiFixture>
+public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSqlStatementApiFixture>
 {
     private const string BatchId = "019703e7-98ee-45c1-b343-0cbf185a47d9";
     private const string FirstQuantity = "1.111";
@@ -48,7 +49,7 @@ public class RequestCalculationResultTests : IClassFixture<DatabricksSqlStatemen
     private const string GridAreaCode = "301";
     private readonly DatabricksSqlStatementApiFixture _fixture;
 
-    public RequestCalculationResultTests(DatabricksSqlStatementApiFixture fixture)
+    public RequestCalculationResultRetrieverTests(DatabricksSqlStatementApiFixture fixture)
     {
         _fixture = fixture;
     }
@@ -59,28 +60,23 @@ public class RequestCalculationResultTests : IClassFixture<DatabricksSqlStatemen
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> sqlStatusResponseParserLoggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
-        Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResult>> requestCalculationResultLoggerMock)
+        Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResultRetriever>> requestCalculationResultLoggerMock)
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(
-            httpClientFactoryMock,
-            sqlStatusResponseParserLoggerMock,
-            new Mock<ILogger<DatabricksSqlStatementClient>>());
+
         var filter = CreateFilter(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
 
-        var queries = new RequestCalculationResultQueries(sqlStatementClient, deltaTableOptions, requestCalculationResultQueriesLoggerMock.Object);
+        var queries = await CreateRequestCalculationResultQueries(requestCalculationResultQueriesLoggerMock, httpClientFactoryMock, sqlStatusResponseParserLoggerMock);
 
-        var sut = new Application.RequestCalculationResult.RequestCalculationResult(requestCalculationResultLoggerMock.Object, queries);
+        var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
         var actual = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.BalanceFixing);
@@ -104,21 +100,15 @@ public class RequestCalculationResultTests : IClassFixture<DatabricksSqlStatemen
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
-        Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResult>> requestCalculationResultLoggerMock)
+        Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResultRetriever>> requestCalculationResultLoggerMock)
     {
         // Arrange
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(
-            httpClientFactoryMock,
-            loggerMock,
-            new Mock<ILogger<DatabricksSqlStatementClient>>());
-
         var filter = CreateFilter(
             startOfPeriod: Instant.FromUtc(2020, 1, 1, 1, 1),
             endOfPeriod: Instant.FromUtc(2021, 1, 2, 1, 1));
-        var queries = new RequestCalculationResultQueries(sqlStatementClient, deltaTableOptions, requestCalculationResultQueriesLoggerMock.Object);
-        var sut = new Application.RequestCalculationResult.RequestCalculationResult(requestCalculationResultLoggerMock.Object, queries);
+        var queries = await CreateRequestCalculationResultQueries(requestCalculationResultQueriesLoggerMock, httpClientFactoryMock, loggerMock);
+
+        var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
         var actual = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.BalanceFixing);
@@ -133,7 +123,7 @@ public class RequestCalculationResultTests : IClassFixture<DatabricksSqlStatemen
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
-        Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResult>> requestCalculationResultLoggerMock)
+        Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResultRetriever>> requestCalculationResultLoggerMock)
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
@@ -141,20 +131,16 @@ public class RequestCalculationResultTests : IClassFixture<DatabricksSqlStatemen
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(
-            httpClientFactoryMock,
-            loggerMock,
-            new Mock<ILogger<DatabricksSqlStatementClient>>());
         var filter = CreateFilter(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter,
             energySupplierId: energySupplierIdFilter);
-        var queries = new RequestCalculationResultQueries(sqlStatementClient, deltaTableOptions, requestCalculationResultQueriesLoggerMock.Object);
-        var sut = new Application.RequestCalculationResult.RequestCalculationResult(requestCalculationResultLoggerMock.Object, queries);
+
+        var queries = await CreateRequestCalculationResultQueries(requestCalculationResultQueriesLoggerMock, httpClientFactoryMock, loggerMock);
+
+        var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
         var actual = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.BalanceFixing);
@@ -179,7 +165,7 @@ public class RequestCalculationResultTests : IClassFixture<DatabricksSqlStatemen
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
-        Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResult>> requestCalculationResultLoggerMock)
+        Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResultRetriever>> requestCalculationResultLoggerMock)
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
@@ -187,20 +173,15 @@ public class RequestCalculationResultTests : IClassFixture<DatabricksSqlStatemen
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(
-            httpClientFactoryMock,
-            loggerMock,
-            new Mock<ILogger<DatabricksSqlStatementClient>>());
         var filter = CreateFilter(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter,
             energySupplierId: energySupplierId);
-        var queries = new RequestCalculationResultQueries(sqlStatementClient, deltaTableOptions, requestCalculationResultQueriesLoggerMock.Object);
-        var sut = new Application.RequestCalculationResult.RequestCalculationResult(requestCalculationResultLoggerMock.Object, queries);
+        var queries = await CreateRequestCalculationResultQueries(requestCalculationResultQueriesLoggerMock, httpClientFactoryMock, loggerMock);
+
+        var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
         var actual = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.BalanceFixing);
@@ -215,7 +196,7 @@ public class RequestCalculationResultTests : IClassFixture<DatabricksSqlStatemen
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
-        Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResult>> requestCalculationResultLoggerMock)
+        Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResultRetriever>> requestCalculationResultLoggerMock)
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
@@ -223,20 +204,15 @@ public class RequestCalculationResultTests : IClassFixture<DatabricksSqlStatemen
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(
-            httpClientFactoryMock,
-            loggerMock,
-            new Mock<ILogger<DatabricksSqlStatementClient>>());
         var filter = CreateFilter(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter,
             balanceResponsibleId: balanceResponsibleIdFilter);
-        var queries = new RequestCalculationResultQueries(sqlStatementClient, deltaTableOptions, requestCalculationResultQueriesLoggerMock.Object);
-        var sut = new Application.RequestCalculationResult.RequestCalculationResult(requestCalculationResultLoggerMock.Object, queries);
+        var queries = await CreateRequestCalculationResultQueries(requestCalculationResultQueriesLoggerMock, httpClientFactoryMock, loggerMock);
+
+        var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
         var actual = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.BalanceFixing);
@@ -261,7 +237,7 @@ public class RequestCalculationResultTests : IClassFixture<DatabricksSqlStatemen
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
-        Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResult>> requestCalculationResultLoggerMock)
+        Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResultRetriever>> requestCalculationResultLoggerMock)
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
@@ -270,12 +246,6 @@ public class RequestCalculationResultTests : IClassFixture<DatabricksSqlStatemen
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(
-            httpClientFactoryMock,
-            loggerMock,
-            new Mock<ILogger<DatabricksSqlStatementClient>>());
         var filter = CreateFilter(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
@@ -283,8 +253,9 @@ public class RequestCalculationResultTests : IClassFixture<DatabricksSqlStatemen
             endOfPeriod: endOfPeriodFilter,
             energySupplierId: energySupplierIdFilter,
             balanceResponsibleId: balanceResponsibleIdFilter);
-        var queries = new RequestCalculationResultQueries(sqlStatementClient, deltaTableOptions, requestCalculationResultQueriesLoggerMock.Object);
-        var sut = new Application.RequestCalculationResult.RequestCalculationResult(requestCalculationResultLoggerMock.Object, queries);
+        var queries = await CreateRequestCalculationResultQueries(requestCalculationResultQueriesLoggerMock, httpClientFactoryMock, loggerMock);
+
+        var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
         var actual = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.BalanceFixing);
@@ -310,27 +281,21 @@ public class RequestCalculationResultTests : IClassFixture<DatabricksSqlStatemen
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
-        Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResult>> requestCalculationResultLoggerMock)
+        Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResultRetriever>> requestCalculationResultLoggerMock)
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(
-            httpClientFactoryMock,
-            loggerMock,
-            new Mock<ILogger<DatabricksSqlStatementClient>>());
-
         var filter = CreateFilter(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
-        var queries = new RequestCalculationResultQueries(sqlStatementClient, deltaTableOptions, requestCalculationResultQueriesLoggerMock.Object);
-        var sut = new Application.RequestCalculationResult.RequestCalculationResult(requestCalculationResultLoggerMock.Object, queries);
+        var queries = await CreateRequestCalculationResultQueries(requestCalculationResultQueriesLoggerMock, httpClientFactoryMock, loggerMock);
+
+        var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
         var actual = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.FirstCorrection);
@@ -356,28 +321,21 @@ public class RequestCalculationResultTests : IClassFixture<DatabricksSqlStatemen
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
-        Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResult>> requestCalculationResultLoggerMock)
+        Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResultRetriever>> requestCalculationResultLoggerMock)
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(
-            httpClientFactoryMock,
-            loggerMock,
-            new Mock<ILogger<DatabricksSqlStatementClient>>());
-
         var filter = CreateFilter(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
+        var queries = await CreateRequestCalculationResultQueries(requestCalculationResultQueriesLoggerMock, httpClientFactoryMock, loggerMock);
 
-        var queries = new RequestCalculationResultQueries(sqlStatementClient, deltaTableOptions, requestCalculationResultQueriesLoggerMock.Object);
-        var sut = new Application.RequestCalculationResult.RequestCalculationResult(requestCalculationResultLoggerMock.Object, queries);
+        var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
         var actual = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.SecondCorrection);
@@ -403,29 +361,21 @@ public class RequestCalculationResultTests : IClassFixture<DatabricksSqlStatemen
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
-        Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResult>> requestCalculationResultLoggerMock)
+        Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResultRetriever>> requestCalculationResultLoggerMock)
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(
-            httpClientFactoryMock,
-            loggerMock,
-            new Mock<ILogger<DatabricksSqlStatementClient>>());
-
         var filter = CreateFilter(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
+        var queries = await CreateRequestCalculationResultQueries(requestCalculationResultQueriesLoggerMock, httpClientFactoryMock, loggerMock);
 
-        var queries = new RequestCalculationResultQueries(sqlStatementClient, deltaTableOptions, requestCalculationResultQueriesLoggerMock.Object);
-        var sut = new Application.RequestCalculationResult.RequestCalculationResult(requestCalculationResultLoggerMock.Object, queries);
+        var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
         var actual = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.ThirdCorrection);
@@ -451,28 +401,20 @@ public class RequestCalculationResultTests : IClassFixture<DatabricksSqlStatemen
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
-        Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResult>> requestCalculationResultLoggerMock)
+        Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResultRetriever>> requestCalculationResultLoggerMock)
     {
         var gridAreaFilter = GridAreaCode;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(
-            httpClientFactoryMock,
-            loggerMock,
-            new Mock<ILogger<DatabricksSqlStatementClient>>());
-
         var filter = CreateFilter(
             timeSeriesTypeFilter,
             startOfPeriodFilter,
             endOfPeriodFilter,
             gridAreaFilter);
+        var queries = await CreateRequestCalculationResultQueries(requestCalculationResultQueriesLoggerMock, httpClientFactoryMock, loggerMock);
 
-        var queries = new RequestCalculationResultQueries(sqlStatementClient, deltaTableOptions, requestCalculationResultQueriesLoggerMock.Object);
-        var sut = new Application.RequestCalculationResult.RequestCalculationResult(requestCalculationResultLoggerMock.Object, queries);
+        var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
         var actual = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.LatestCorrection);
@@ -487,28 +429,21 @@ public class RequestCalculationResultTests : IClassFixture<DatabricksSqlStatemen
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
-        Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResult>> requestCalculationResultLoggerMock)
+        Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResultRetriever>> requestCalculationResultLoggerMock)
     {
         var gridAreaFilter = GridAreaCode;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
 
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions, addThirdCorrection: false);
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(
-            httpClientFactoryMock,
-            loggerMock,
-            new Mock<ILogger<DatabricksSqlStatementClient>>());
-
         var filter = CreateFilter(
             timeSeriesTypeFilter,
             startOfPeriodFilter,
             endOfPeriodFilter,
             gridAreaFilter);
+        var queries = await CreateRequestCalculationResultQueries(requestCalculationResultQueriesLoggerMock, httpClientFactoryMock, loggerMock, addThirdCorrection: false);
 
-        var queries = new RequestCalculationResultQueries(sqlStatementClient, deltaTableOptions, requestCalculationResultQueriesLoggerMock.Object);
-        var sut = new Application.RequestCalculationResult.RequestCalculationResult(requestCalculationResultLoggerMock.Object, queries);
+        var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
         var actual = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.LatestCorrection);
@@ -523,28 +458,20 @@ public class RequestCalculationResultTests : IClassFixture<DatabricksSqlStatemen
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
-        Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResult>> requestCalculationResultLoggerMock)
+        Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResultRetriever>> requestCalculationResultLoggerMock)
     {
         var gridAreaFilter = GridAreaCode;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions, addSecondCorrection: false, addThirdCorrection: false);
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(
-            httpClientFactoryMock,
-            loggerMock,
-            new Mock<ILogger<DatabricksSqlStatementClient>>());
-
         var filter = CreateFilter(
             timeSeriesTypeFilter,
             startOfPeriodFilter,
             endOfPeriodFilter,
             gridAreaFilter);
+        var queries = await CreateRequestCalculationResultQueries(requestCalculationResultQueriesLoggerMock, httpClientFactoryMock, loggerMock, addSecondCorrection: false, addThirdCorrection: false);
 
-        var queries = new RequestCalculationResultQueries(sqlStatementClient, deltaTableOptions, requestCalculationResultQueriesLoggerMock.Object);
-        var sut = new Application.RequestCalculationResult.RequestCalculationResult(requestCalculationResultLoggerMock.Object, queries);
+        var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
         var actual = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.LatestCorrection);
@@ -559,33 +486,20 @@ public class RequestCalculationResultTests : IClassFixture<DatabricksSqlStatemen
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
-        Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResult>> requestCalculationResultLoggerMock)
+        Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResultRetriever>> requestCalculationResultLoggerMock)
     {
         var gridAreaFilter = GridAreaCode;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(
-            deltaTableOptions,
-            addFirstCorrection: false,
-            addSecondCorrection: false,
-            addThirdCorrection: false);
-
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(
-            httpClientFactoryMock,
-            loggerMock,
-            new Mock<ILogger<DatabricksSqlStatementClient>>());
-
         var filter = CreateFilter(
             timeSeriesTypeFilter,
             startOfPeriodFilter,
             endOfPeriodFilter,
             gridAreaFilter);
+        var queries = await CreateRequestCalculationResultQueries(requestCalculationResultQueriesLoggerMock, httpClientFactoryMock, loggerMock, addFirstCorrection: false, addSecondCorrection: false, addThirdCorrection: false);
 
-        var queries = new RequestCalculationResultQueries(sqlStatementClient, deltaTableOptions, requestCalculationResultQueriesLoggerMock.Object);
-        var sut = new Application.RequestCalculationResult.RequestCalculationResult(requestCalculationResultLoggerMock.Object, queries);
+        var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
         var actual = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.LatestCorrection);
@@ -610,7 +524,27 @@ public class RequestCalculationResultTests : IClassFixture<DatabricksSqlStatemen
             BalanceResponsibleId: balanceResponsibleId);
     }
 
-    private async Task AddCreatedRowsInArbitraryOrderAsync(IOptions<DeltaTableOptions> options, bool addFirstCorrection = true, bool addSecondCorrection = true, bool addThirdCorrection = true)
+    private async Task<RequestCalculationResultQueries> CreateRequestCalculationResultQueries(
+        Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
+        Mock<IHttpClientFactory> httpClientFactoryMock,
+        Mock<ILogger<SqlStatusResponseParser>> sqlStatusResponseParserLoggerMock,
+        bool addFirstCorrection = true,
+        bool addSecondCorrection = true,
+        bool addThirdCorrection = true)
+    {
+        var sqlStatementClient = _fixture.CreateSqlStatementClient(
+            httpClientFactoryMock,
+            sqlStatusResponseParserLoggerMock,
+            new Mock<ILogger<DatabricksSqlStatementClient>>());
+
+        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
+        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions, addFirstCorrection, addSecondCorrection, addThirdCorrection);
+
+        var queries = new RequestCalculationResultQueries(sqlStatementClient, deltaTableOptions, requestCalculationResultQueriesLoggerMock.Object);
+        return queries;
+    }
+
+    private async Task AddCreatedRowsInArbitraryOrderAsync(IOptions<DeltaTableOptions> options, bool addFirstCorrection, bool addSecondCorrection, bool addThirdCorrection)
     {
         const string firstCalculationResultId = "aaaaaaaa-386f-49eb-8b56-63fae62e4fc7";
         const string secondCalculationResultId = "bbbbbbbb-b58b-4190-a873-eded0ed50c20";

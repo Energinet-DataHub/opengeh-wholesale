@@ -42,7 +42,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
     [Theory]
     [InlineAutoMoqData]
     public async Task ProcessAsync_WithTotalProductionPerGridAreaRequest_SendsAcceptedEdiMessage(
-        [Frozen] Mock<IRequestCalculationResult> requestCalculationResultMock,
+        [Frozen] Mock<IRequestCalculationResultRetriever> requestCalculationResultMock,
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<AggregatedTimeSeriesRequestFactory> aggregatedTimeSeriesRequestMessageParseMock,
         [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
@@ -95,7 +95,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
     [Theory]
     [InlineAutoMoqData]
     public async Task ProcessAsync_WithTotalProductionPerGridAreaRequest_SendsRejectedEdiMessage(
-        [Frozen] Mock<IRequestCalculationResult> requestCalculationResultMock,
+        [Frozen] Mock<IRequestCalculationResultRetriever> requestCalculationResultMock,
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<AggregatedTimeSeriesRequestFactory> aggregatedTimeSeriesRequestMessageParseMock,
         [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
@@ -142,7 +142,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
     [Theory]
     [InlineAutoMoqData]
     public async Task ProcessAsync_WhenNoCalculationResult_SendsRejectedEdiMessage(
-        [Frozen] Mock<IRequestCalculationResult> requestCalculationResultMock,
+        [Frozen] Mock<IRequestCalculationResultRetriever> requestCalculationResultMock,
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<AggregatedTimeSeriesRequestFactory> aggregatedTimeSeriesRequestMessageParseMock,
         [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,

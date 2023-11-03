@@ -28,7 +28,7 @@ namespace Energinet.DataHub.Wholesale.EDI;
 
 public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHandler
 {
-    private readonly IRequestCalculationResult _requestCalculationResult;
+    private readonly IRequestCalculationResultRetriever _requestCalculationResultRetriever;
     private readonly IEdiClient _ediClient;
     private readonly IValidator<Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest> _validator;
     private readonly ILogger<AggregatedTimeSeriesRequestHandler> _logger;
@@ -36,13 +36,13 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
     private static readonly ValidationError _noDataAvailable = new("Ingen data tilgængelig / No data available", "E0H");
 
     public AggregatedTimeSeriesRequestHandler(
-        IRequestCalculationResult requestCalculationResult,
+        IRequestCalculationResultRetriever requestCalculationResultRetriever,
         IEdiClient ediClient,
         IAggregatedTimeSeriesRequestFactory aggregatedTimeSeriesRequestFactory,
         IValidator<Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest> validator,
         ILogger<AggregatedTimeSeriesRequestHandler> logger)
     {
-        _requestCalculationResult = requestCalculationResult;
+        _requestCalculationResultRetriever = requestCalculationResultRetriever;
         _ediClient = ediClient;
         _aggregatedTimeSeriesRequestFactory = aggregatedTimeSeriesRequestFactory;
         _validator = validator;
@@ -92,6 +92,6 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
             request.AggregationPerRoleAndGridArea.EnergySupplierId,
             request.AggregationPerRoleAndGridArea.BalanceResponsibleId);
 
-        return _requestCalculationResult.GetRequestCalculationResultAsync(filter, request.RequestedProcessType);
+        return _requestCalculationResultRetriever.GetRequestCalculationResultAsync(filter, request.RequestedProcessType);
     }
 }

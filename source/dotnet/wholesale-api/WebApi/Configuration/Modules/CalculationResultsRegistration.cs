@@ -43,7 +43,7 @@ public static class CalculationResultsRegistration
         serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
         serviceCollection.AddScoped<IEnergyResultQueries, EnergyResultQueries>();
         serviceCollection.AddScoped<IWholesaleResultQueries, WholesaleResultQueries>();
-        serviceCollection.AddScoped<IRequestCalculationResult, RequestCalculationResult>();
+        serviceCollection.AddScoped<IRequestCalculationResultRetriever, RequestCalculationResultRetriever>();
         serviceCollection.AddScoped<IRequestCalculationResultQueries, RequestCalculationResultQueries>();
         serviceCollection.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
         serviceCollection.AddScoped<ISettlementReportRepository>(

@@ -19,10 +19,14 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Application.RequestCalc
 
 public static class ProcessTypeMapper
 {
+    /// <summary>
+    /// Maps a <see cref="RequestedProcessType"/> to a <see cref="ProcessType"/>. Cannot map <see cref="RequestedProcessType.LatestCorrection"/> to a <see cref="ProcessType"/>.
+    /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">Throws a ArgumentOutOfRangeException if the request process type is unknown or has the value LatestCorrection</exception>
     public static ProcessType FromRequestedProcessType(RequestedProcessType requestedProcessType)
     {
         if (requestedProcessType == RequestedProcessType.LatestCorrection)
-            throw new ArgumentOutOfRangeException(nameof(requestedProcessType), actualValue: requestedProcessType, "Requested process type cannot be mapped to process type.");
+            throw new ArgumentOutOfRangeException(nameof(requestedProcessType), actualValue: requestedProcessType, "Requested process type (RequestedProcessType.LatestCorrection) cannot be mapped to process type.");
 
         return requestedProcessType switch
         {

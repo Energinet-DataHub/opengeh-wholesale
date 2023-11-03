@@ -20,12 +20,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application.RequestCalculationResult;
 
-public class RequestCalculationResult : IRequestCalculationResult
+public class RequestCalculationResultRetriever : IRequestCalculationResultRetriever
 {
-    private readonly ILogger<RequestCalculationResult> _logger;
+    private readonly ILogger<RequestCalculationResultRetriever> _logger;
     private readonly IRequestCalculationResultQueries _requestCalculationResultQueries;
 
-    public RequestCalculationResult(ILogger<RequestCalculationResult> logger, IRequestCalculationResultQueries requestCalculationResultQueries)
+    public RequestCalculationResultRetriever(ILogger<RequestCalculationResultRetriever> logger, IRequestCalculationResultQueries requestCalculationResultQueries)
     {
         _logger = logger;
         _requestCalculationResultQueries = requestCalculationResultQueries;
@@ -33,7 +33,7 @@ public class RequestCalculationResult : IRequestCalculationResult
 
     public async Task<EnergyResult?> GetRequestCalculationResultAsync(IEnergyResultFilter filter, RequestedProcessType requestedProcessType)
     {
-        var processType = await GetProcessTypeAsync(filter, requestedProcessType).ConfigureAwait(false);
+        var processType = await GetSpecificProcessTypeAsync(filter, requestedProcessType).ConfigureAwait(false);
 
         var query = new EnergyResultQuery(filter, processType);
 
@@ -43,7 +43,7 @@ public class RequestCalculationResult : IRequestCalculationResult
         return calculationResult;
     }
 
-    private Task<ProcessType> GetProcessTypeAsync(IEnergyResultFilter filter, RequestedProcessType requestedProcessType)
+    private Task<ProcessType> GetSpecificProcessTypeAsync(IEnergyResultFilter filter, RequestedProcessType requestedProcessType)
     {
         if (requestedProcessType == RequestedProcessType.LatestCorrection)
             return _requestCalculationResultQueries.GetLatestCorrectionAsync(filter);
