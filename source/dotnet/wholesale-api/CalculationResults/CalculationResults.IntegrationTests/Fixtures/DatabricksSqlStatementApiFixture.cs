@@ -13,10 +13,10 @@
 // limitations under the License.
 
 using System.Net.Http.Headers;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Configuration;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Constants;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Constants;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.ResponseParsers;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -51,27 +51,6 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
     public async Task DisposeAsync()
     {
         await DatabricksSchemaManager.DropSchemaAsync();
-    }
-
-    public IDatabricksSqlStatementClient CreateSqlStatementClient(
-        Mock<IHttpClientFactory> httpClientFactoryMock,
-        Mock<ILogger<SqlStatusResponseParser>> loggerMock,
-        Mock<ILogger<DatabricksSqlStatementClient>> loggerMock2)
-    {
-        var databricksSqlChunkResponseParser = new SqlChunkResponseParser();
-
-        httpClientFactoryMock.Setup(f => f.CreateClient(HttpClientNameConstants.Databricks))
-            .Returns(CreateHttpClient(DatabricksSqlStatementOptionsMock.Object.Value));
-
-        var sqlStatementClient = new DatabricksSqlStatementClient(
-            httpClientFactoryMock.Object,
-            DatabricksSqlStatementOptionsMock.Object,
-            new SqlResponseParser(
-                new SqlStatusResponseParser(loggerMock.Object, databricksSqlChunkResponseParser),
-                databricksSqlChunkResponseParser,
-                new SqlChunkDataResponseParser()),
-            loggerMock2.Object);
-        return sqlStatementClient;
     }
 
     private static Mock<IOptions<DatabricksSqlStatementOptions>> CreateDatabricksOptionsMock(DatabricksSchemaManager databricksSchemaManager)

@@ -13,19 +13,17 @@
 // limitations under the License.
 
 using System.Globalization;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
-using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 
@@ -49,9 +47,7 @@ public class WholesaleResultQueriesTests : IClassFixture<DatabricksSqlStatementA
     [Theory]
     [InlineAutoMoqData]
     public async Task GetAsync_WhenCalculationHasHourlyAndMonthlyTariff_ReturnsExpectedWholesaleResult(
-        Mock<IHttpClientFactory> httpClientFactoryMock,
-        Mock<ILogger<SqlStatusResponseParser>> sqlStatusResponseParserLoggerMock,
-        Mock<ILogger<DatabricksSqlStatementClient>> databricksSqlStatementClientLoggerMock,
+        Mock<IDatabricksSqlWarehouseQueryExecutorWrapper> databricksSqlWarehouseQueryExecutorMock,
         Mock<IBatchesClient> batchesClientMock,
         BatchDto batch,
         Mock<ILogger<WholesaleResultQueries>> wholesaleResultQueriesLoggerMock)
@@ -59,15 +55,11 @@ public class WholesaleResultQueriesTests : IClassFixture<DatabricksSqlStatementA
         // Arrange
         await InsertHourlyTariffAndMonthlyAmountTariffRowsAsync();
         batch = batch with { BatchId = Guid.Parse(CalculationId) };
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(
-            httpClientFactoryMock,
-            sqlStatusResponseParserLoggerMock,
-            databricksSqlStatementClientLoggerMock);
         batchesClientMock
             .Setup(b => b.GetAsync(It.IsAny<Guid>()))
             .ReturnsAsync(batch);
         var sut = new WholesaleResultQueries(
-            sqlStatementClient,
+            databricksSqlWarehouseQueryExecutorMock.Object,
             batchesClientMock.Object,
             _fixture.DatabricksSchemaManager.DeltaTableOptions,
             wholesaleResultQueriesLoggerMock.Object);

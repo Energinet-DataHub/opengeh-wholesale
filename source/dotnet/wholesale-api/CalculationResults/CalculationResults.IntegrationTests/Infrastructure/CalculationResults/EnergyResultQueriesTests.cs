@@ -13,10 +13,10 @@
 // limitations under the License.
 
 using System.Globalization;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
@@ -49,9 +49,8 @@ public class EnergyResultQueriesTests : IClassFixture<DatabricksSqlStatementApiF
     [Theory]
     [InlineAutoMoqData]
     public async Task GetAsync_ReturnsExpectedEnergyResult(
-        Mock<IHttpClientFactory> httpClientFactoryMock,
-        Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<IBatchesClient> batchesClientMock,
+        Mock<IDatabricksSqlWarehouseQueryExecutorWrapper> databricksSqlWarehouseQueryExecutorMock,
         BatchDto batch,
         Mock<ILogger<EnergyResultQueries>> energyResultQueriesLoggerMock)
     {
@@ -60,12 +59,8 @@ public class EnergyResultQueriesTests : IClassFixture<DatabricksSqlStatementApiF
         var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
         await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
         batch = batch with { BatchId = Guid.Parse(BatchId) };
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(
-            httpClientFactoryMock,
-            loggerMock,
-            new Mock<ILogger<DatabricksSqlStatementClient>>());
         batchesClientMock.Setup(b => b.GetAsync(It.IsAny<Guid>())).ReturnsAsync(batch);
-        var sut = new EnergyResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions, energyResultQueriesLoggerMock.Object);
+        var sut = new EnergyResultQueries(databricksSqlWarehouseQueryExecutorMock.Object, batchesClientMock.Object, deltaTableOptions, energyResultQueriesLoggerMock.Object);
 
         // Act
         var actual = await sut.GetAsync(batch.BatchId).ToListAsync();

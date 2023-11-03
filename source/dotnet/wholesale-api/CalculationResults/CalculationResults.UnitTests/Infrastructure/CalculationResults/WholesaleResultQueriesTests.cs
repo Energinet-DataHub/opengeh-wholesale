@@ -13,12 +13,14 @@
 // limitations under the License.
 
 using AutoFixture.Xunit2;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.Fixtures;
@@ -48,7 +50,7 @@ public class WholesaleResultQueriesTests
         var rows = new List<string[]> { row0, row1, };
 
         // Using the columns from the WholesaleResultQueries class to ensure that the test is not broken if the columns are changed
-        _tableChunk = new TableChunk(WholesaleResultQueries.SqlColumnNames, rows);
+        _tableChunk = new TableChunk(QueryWholesaleResultStatement.SqlColumnNames, rows);
     }
 
     [Theory]
@@ -56,7 +58,7 @@ public class WholesaleResultQueriesTests
     public async Task GetAsync_WhenNoRows_ReturnsNoResults(
         BatchDto batch,
         [Frozen] Mock<IBatchesClient> batchesClientMock,
-        [Frozen] Mock<IDatabricksSqlStatementClient> sqlStatementClientMock,
+        [Frozen] Mock<IDatabricksSqlWarehouseQueryExecutorWrapper> databricksSqlWarehouseQueryExecutorMock,
         WholesaleResultQueries sut)
     {
         // Arrange
@@ -64,8 +66,8 @@ public class WholesaleResultQueriesTests
         batchesClientMock
             .Setup(client => client.GetAsync(batch.BatchId))
             .ReturnsAsync(batch);
-        sqlStatementClientMock
-            .Setup(x => x.ExecuteAsync(It.IsAny<string>(), null))
+        databricksSqlWarehouseQueryExecutorMock
+            .Setup(x => x.ExecuteStatementAsync(It.IsAny<DatabricksStatement>()))
             .Returns(GetRowsAsync(0));
 
         // Act
@@ -80,7 +82,7 @@ public class WholesaleResultQueriesTests
     public async Task GetAsync_WhenOneRow_ReturnsSingleResultWithOneTimeSeriesPoint(
         BatchDto batch,
         [Frozen] Mock<IBatchesClient> batchesClientMock,
-        [Frozen] Mock<IDatabricksSqlStatementClient> sqlStatementClientMock,
+        [Frozen] Mock<IDatabricksSqlWarehouseQueryExecutorWrapper> databricksSqlWarehouseQueryExecutorMock,
         WholesaleResultQueries sut)
     {
         // Arrange
@@ -88,8 +90,8 @@ public class WholesaleResultQueriesTests
         batchesClientMock
             .Setup(client => client.GetAsync(batch.BatchId))
             .ReturnsAsync(batch);
-        sqlStatementClientMock
-            .Setup(x => x.ExecuteAsync(It.IsAny<string>(), null))
+        databricksSqlWarehouseQueryExecutorMock
+            .Setup(x => x.ExecuteStatementAsync(It.IsAny<DatabricksStatement>()))
             .Returns(GetRowsAsync(1));
 
         // Act
@@ -104,7 +106,7 @@ public class WholesaleResultQueriesTests
     public async Task GetAsync_WhenCalculationHasOneResult_ReturnsResultRowWithExpectedValues(
         BatchDto batch,
         [Frozen] Mock<IBatchesClient> batchesClientMock,
-        [Frozen] Mock<IDatabricksSqlStatementClient> sqlStatementClientMock,
+        [Frozen] Mock<IDatabricksSqlWarehouseQueryExecutorWrapper> databricksSqlWarehouseQueryExecutorMock,
         WholesaleResultQueries sut)
     {
         // Arrange
@@ -112,8 +114,8 @@ public class WholesaleResultQueriesTests
         batchesClientMock
             .Setup(client => client.GetAsync(batch.BatchId))
             .ReturnsAsync(batch);
-        sqlStatementClientMock
-            .Setup(x => x.ExecuteAsync(It.IsAny<string>(), null))
+        databricksSqlWarehouseQueryExecutorMock
+            .Setup(x => x.ExecuteStatementAsync(It.IsAny<DatabricksStatement>()))
             .Returns(GetRowsAsync(1));
 
         // Act
@@ -143,7 +145,7 @@ public class WholesaleResultQueriesTests
     public async Task GetAsync_WhenRowsBelongsToDifferentResults_ReturnsMultipleResults(
         BatchDto batch,
         [Frozen] Mock<IBatchesClient> batchesClientMock,
-        [Frozen] Mock<IDatabricksSqlStatementClient> sqlStatementClientMock,
+        [Frozen] Mock<IDatabricksSqlWarehouseQueryExecutorWrapper> databricksSqlWarehouseQueryExecutorMock,
         WholesaleResultQueries sut)
     {
         // Arrange
@@ -151,8 +153,8 @@ public class WholesaleResultQueriesTests
         batchesClientMock
             .Setup(client => client.GetAsync(batch.BatchId))
             .ReturnsAsync(batch);
-        sqlStatementClientMock
-            .Setup(x => x.ExecuteAsync(It.IsAny<string>(), null))
+        databricksSqlWarehouseQueryExecutorMock
+            .Setup(x => x.ExecuteStatementAsync(It.IsAny<DatabricksStatement>()))
             .Returns(GetRowsAsync(2));
 
         // Act

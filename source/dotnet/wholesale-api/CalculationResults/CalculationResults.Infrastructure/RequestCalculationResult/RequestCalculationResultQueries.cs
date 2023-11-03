@@ -12,13 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.EnergyResult;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.RequestCalculationResult.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
@@ -29,27 +26,27 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.RequestC
 
 public class RequestCalculationResultQueries : IRequestCalculationResultQueries
 {
-    private readonly IDatabricksSqlStatementClient _sqlStatementClient;
+    private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor;
     private readonly DeltaTableOptions _deltaTableOptions;
     private readonly ILogger<RequestCalculationResultQueries> _logger;
 
     public RequestCalculationResultQueries(
-        IDatabricksSqlStatementClient sqlStatementClient,
+        DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor,
         IOptions<DeltaTableOptions> deltaTableOptions,
         ILogger<RequestCalculationResultQueries> logger)
     {
-        _sqlStatementClient = sqlStatementClient;
+        _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
         _deltaTableOptions = deltaTableOptions.Value;
         _logger = logger;
     }
 
     public async Task<EnergyResult?> GetAsync(EnergyResultQuery query)
     {
-        var sqlStatement = CreateRequestSql(query);
+        var statement = new QueryCalculationResultsStatement2(_deltaTableOptions, query);
         var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
         SqlResultRow? firstRow = null;
         var resultCount = 0;
-        await foreach (var currentRow in _sqlStatementClient.ExecuteAsync(sqlStatement, sqlStatementParameters: null).ConfigureAwait(false))
+        await foreach (var currentRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement).ConfigureAwait(false))
         {
             if (firstRow is null)
                 firstRow = currentRow;
@@ -66,47 +63,4 @@ public class RequestCalculationResultQueries : IRequestCalculationResultQueries
 
         return EnergyResultFactory.CreateEnergyResult(firstRow, timeSeriesPoints, query.StartOfPeriod, query.EndOfPeriod);
     }
-
-    private string CreateRequestSql(EnergyResultQuery query)
-    {
-        var sql = $@"
-            SELECT {string.Join(", ", SqlColumnNames.Select(columenName => $"t1.{columenName}"))}
-            FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} t1
-            LEFT JOIN {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} t2
-                ON t1.{EnergyResultColumnNames.Time} = t2.{EnergyResultColumnNames.Time}
-                    AND t1.{EnergyResultColumnNames.BatchExecutionTimeStart} < t2.{EnergyResultColumnNames.BatchExecutionTimeStart}
-                    AND t1.{EnergyResultColumnNames.GridArea} = t2.{EnergyResultColumnNames.GridArea}
-                    AND COALESCE(t1.{EnergyResultColumnNames.FromGridArea}, 'N/A') = COALESCE(t2.{EnergyResultColumnNames.FromGridArea}, 'N/A')
-                    AND t1.{EnergyResultColumnNames.TimeSeriesType} = t2.{EnergyResultColumnNames.TimeSeriesType}
-                    AND t1.{EnergyResultColumnNames.BatchProcessType} = t2.{EnergyResultColumnNames.BatchProcessType}
-                    AND t1.{EnergyResultColumnNames.AggregationLevel} = t2.{EnergyResultColumnNames.AggregationLevel}
-            WHERE t2.time IS NULL
-                AND t1.{EnergyResultColumnNames.GridArea} IN ({query.GridArea})
-                AND t1.{EnergyResultColumnNames.TimeSeriesType} IN ('{TimeSeriesTypeMapper.ToDeltaTableValue(query.TimeSeriesType)}')
-                AND t1.{EnergyResultColumnNames.Time} BETWEEN '{query.StartOfPeriod.ToString()}' AND '{query.EndOfPeriod.ToString()}'
-                AND t1.{EnergyResultColumnNames.AggregationLevel} = '{AggregationLevelMapper.ToDeltaTableValue(query.TimeSeriesType, query.EnergySupplierId, query.BalanceResponsibleId)}'
-                AND t1.{EnergyResultColumnNames.BatchProcessType} = '{ProcessTypeMapper.ToDeltaTableValue(query.ProcessType)}'
-            ";
-        if (query.EnergySupplierId != null)
-        {
-            sql += $@"AND t1.{EnergyResultColumnNames.EnergySupplierId} = '{query.EnergySupplierId}'";
-        }
-
-        if (query.BalanceResponsibleId != null)
-        {
-            sql += $@"AND t1.{EnergyResultColumnNames.BalanceResponsibleId} = '{query.BalanceResponsibleId}'";
-        }
-
-        sql += $@"ORDER BY t1.time";
-        return sql;
-    }
-
-    private static string[] SqlColumnNames { get; } =
-    {
-        EnergyResultColumnNames.BatchId, EnergyResultColumnNames.GridArea, EnergyResultColumnNames.FromGridArea,
-        EnergyResultColumnNames.TimeSeriesType, EnergyResultColumnNames.EnergySupplierId,
-        EnergyResultColumnNames.BalanceResponsibleId, EnergyResultColumnNames.Time,
-        EnergyResultColumnNames.Quantity, EnergyResultColumnNames.QuantityQualities,
-        EnergyResultColumnNames.CalculationResultId, EnergyResultColumnNames.BatchProcessType,
-    };
 }

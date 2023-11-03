@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
+using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
@@ -23,7 +24,6 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReport
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Energinet.DataHub.Wholesale.Common.Models;
 using FluentAssertions;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using NodaTime;
@@ -49,17 +49,12 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
     [Theory]
     [InlineAutoMoqData]
     public async Task GetRowsAsync_ReturnsExpectedReportRows(
-        Mock<IHttpClientFactory> httpClientFactoryMock,
-        Mock<ILogger<SqlStatusResponseParser>> loggerMock)
+        [Frozen] Mock<IDatabricksSqlWarehouseQueryExecutorWrapper> databricksSqlWarehouseQueryExecutorMock)
     {
         // Arrange
         var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
         var expectedSettlementReportRow = await InsertRowsFromMultipleBatches(deltaTableOptions);
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(
-            httpClientFactoryMock,
-            loggerMock,
-            new Mock<ILogger<DatabricksSqlStatementClient>>());
-        var sut = new SettlementReportResultQueries(sqlStatementClient, deltaTableOptions);
+        var sut = new SettlementReportResultQueries(databricksSqlWarehouseQueryExecutorMock.Object, deltaTableOptions);
 
         // Act
         var actual = await sut.GetRowsAsync(_gridAreaCodes, DefaultProcessType, _january1St, _january5Th, null);
