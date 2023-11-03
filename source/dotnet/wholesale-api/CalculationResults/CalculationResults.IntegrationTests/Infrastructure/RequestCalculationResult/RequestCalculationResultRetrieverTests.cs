@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Globalization;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.RequestCalculationResult;
@@ -24,6 +23,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Energinet.DataHub.Wholesale.Common.Models;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -147,6 +147,8 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
 
         // Assert
         actual.Should().NotBeNull();
+
+        using var assertionScope = new AssertionScope();
         actual!.GridArea.Should().Be(gridAreaFilter);
         actual.PeriodStart.Should().Be(startOfPeriodFilter);
         actual.PeriodEnd.Should().Be(endOfPeriodFilter);
@@ -219,6 +221,8 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
 
         // Assert
         actual.Should().NotBeNull();
+
+        using var assertionScope = new AssertionScope();
         actual!.GridArea.Should().Be(gridAreaFilter);
         actual.PeriodStart.Should().Be(startOfPeriodFilter);
         actual.PeriodEnd.Should().Be(endOfPeriodFilter);
@@ -262,6 +266,8 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
 
         // Assert
         actual.Should().NotBeNull();
+
+        using var assertionScope = new AssertionScope();
         actual!.GridArea.Should().Be(gridAreaFilter);
         actual.PeriodStart.Should().Be(startOfPeriodFilter);
         actual.PeriodEnd.Should().Be(endOfPeriodFilter);
@@ -302,6 +308,8 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
 
         // Assert
         actual.Should().NotBeNull();
+
+        using var assertionScope = new AssertionScope();
         actual!.GridArea.Should().Be(gridAreaFilter);
         actual.PeriodStart.Should().Be(startOfPeriodFilter);
         actual.PeriodEnd.Should().Be(endOfPeriodFilter);
@@ -342,6 +350,8 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
 
         // Assert
         actual.Should().NotBeNull();
+
+        using var assertionScope = new AssertionScope();
         actual!.GridArea.Should().Be(gridAreaFilter);
         actual.PeriodStart.Should().Be(startOfPeriodFilter);
         actual.PeriodEnd.Should().Be(endOfPeriodFilter);
@@ -382,6 +392,8 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
 
         // Assert
         actual.Should().NotBeNull();
+
+        using var assertionScope = new AssertionScope();
         actual!.GridArea.Should().Be(gridAreaFilter);
         actual.PeriodStart.Should().Be(startOfPeriodFilter);
         actual.PeriodEnd.Should().Be(endOfPeriodFilter);
@@ -393,6 +405,76 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
             .Should()
             .Equal(FirstQuantityThirdCorrection, SecondQuantityThirdCorrection, FourthQuantityThirdCorrection)
             ;
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetAsync_WhenRequestFromGridOperatorForOneDay_ReturnsResult(
+        Mock<IHttpClientFactory> httpClientFactoryMock,
+        Mock<ILogger<SqlStatusResponseParser>> loggerMock,
+        Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
+        Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResultRetriever>> requestCalculationResultLoggerMock)
+    {
+        // Arrange
+        var gridAreaFilter = GridAreaCode;
+        var timeSeriesTypeFilter = TimeSeriesType.Production;
+        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 3, 0, 0);
+        var request = CreateFilter(
+            gridArea: gridAreaFilter,
+            timeSeriesType: timeSeriesTypeFilter,
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter);
+        var queries = await CreateRequestCalculationResultQueries(requestCalculationResultQueriesLoggerMock, httpClientFactoryMock, loggerMock);
+
+        var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
+
+        // Act
+        var actual = await sut.GetRequestCalculationResultAsync(request, RequestedProcessType.BalanceFixing);
+
+        // Assert
+        actual.Should().NotBeNull();
+
+        using var assertionScope = new AssertionScope();
+        actual!.GridArea.Should().Be(gridAreaFilter);
+        actual.PeriodStart.Should().Be(startOfPeriodFilter);
+        actual.PeriodEnd.Should().Be(endOfPeriodFilter);
+        actual.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
+        actual.TimeSeriesPoints
+            .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
+            .ToArray()
+            .Should()
+            .Equal(FirstQuantity)
+            ;
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetAsync_WhenRequestFromGridOperatorStartAndEndDataAreEqual_ReturnsNoResult(
+        Mock<IHttpClientFactory> httpClientFactoryMock,
+        Mock<ILogger<SqlStatusResponseParser>> loggerMock,
+        Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
+        Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResultRetriever>> requestCalculationResultLoggerMock)
+    {
+        // Arrange
+        var gridAreaFilter = GridAreaCode;
+        var timeSeriesTypeFilter = TimeSeriesType.Production;
+        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+        var request = CreateFilter(
+            gridArea: gridAreaFilter,
+            timeSeriesType: timeSeriesTypeFilter,
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter);
+        var queries = await CreateRequestCalculationResultQueries(requestCalculationResultQueriesLoggerMock, httpClientFactoryMock, loggerMock);
+
+        var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
+
+        // Act
+        var actual = await sut.GetRequestCalculationResultAsync(request, RequestedProcessType.BalanceFixing);
+
+        // Assert
+        actual.Should().BeNull();
     }
 
     [Theory]
@@ -554,6 +636,9 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         const string secondHour = "2022-01-01T02:00:00.000Z";
         const string thirdHour = "2022-01-01T03:00:00.000Z";
 
+        const string secondDay = "2022-01-02T00:00:00.000Z";
+        const string thirdDay = "2022-01-03T00:00:00.000Z";
+
         const string energySupplier = "4321987654321";
         const string balanceResponsibleId = "1234567891234";
         var row1 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: firstHour, gridArea: GridAreaCode, quantity: FirstQuantity);
@@ -577,6 +662,9 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var row2ThirdCorrection = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, batchProcessType: DeltaTableProcessType.ThirdCorrectionSettlement, time: secondHour, gridArea: GridAreaCode, quantity: SecondQuantityThirdCorrection);
         var row4ThirdCorrection = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, batchProcessType: DeltaTableProcessType.ThirdCorrectionSettlement, time: thirdHour, gridArea: GridAreaCode, quantity: FourthQuantityThirdCorrection);
 
+        var row1SecondDay = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: secondDay, gridArea: GridAreaCode, quantity: FirstQuantity);
+        var row1ThirdDay = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: thirdDay, gridArea: GridAreaCode, quantity: SecondQuantity);
+
         // mix up the order of the rows
         var rows = new List<IReadOnlyCollection<string>>
         {
@@ -587,6 +675,8 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
             row5,
             row6,
             row7,
+            row1SecondDay,
+            row1ThirdDay,
         };
 
         if (addFirstCorrection)
@@ -617,7 +707,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
             });
         }
 
-        rows = rows.OrderBy(r => Guid.NewGuid()).ToList();
+        rows = rows.OrderBy(_ => Guid.NewGuid()).ToList();
 
         await _fixture.DatabricksSchemaManager.EmptyAsync(options.Value.ENERGY_RESULTS_TABLE_NAME);
         await _fixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(options.Value.ENERGY_RESULTS_TABLE_NAME, rows);
