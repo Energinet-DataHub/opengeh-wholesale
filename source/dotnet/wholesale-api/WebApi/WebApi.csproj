@@ -1,4 +1,4 @@
-<!--
+﻿<!--
 Copyright 2020 Energinet DataHub A/S
 
 Licensed under the Apache License, Version 2.0 (the "License2");
@@ -29,7 +29,6 @@ limitations under the License.
     <PackageReference Include="Energinet.DataHub.Core.App.WebApp" Version="8.1.1" />
     <PackageReference Include="Energinet.DataHub.Core.Databricks.Jobs" Version="7.0.1" />
     <PackageReference Include="Energinet.DataHub.Core.Databricks.SqlStatementExecution" Version="7.0.1" />
-    <PackageReference Include="Energinet.DataHub.Core.Logging.LoggingMiddleware " Version="3.0.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.1.0" />
