@@ -140,12 +140,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
             const int expectedEventsPerResult = 1;
             var wholesaleResults = new[] { CreateWholesaleResult(AmountType.AmountPerCharge), CreateWholesaleResult(AmountType.MonthlyAmountPerCharge) };
             var expectedEventsCount = wholesaleResults.Length * expectedEventsPerResult;
-
-            var fixture = new Fixture();
-            var wholesaleFixingBatch = fixture
-                .Build<CompletedBatch>()
-                .With(p => p.ProcessType, ProcessType.WholesaleFixing)
-                .Create();
+            var wholesaleFixingBatch = CreateWholesaleFixingBatch();
 
             wholesaleResultQueriesMock
                 .Setup(mock => mock.GetAsync(wholesaleFixingBatch.Id))
