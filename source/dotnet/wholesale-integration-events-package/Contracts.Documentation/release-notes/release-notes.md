@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 5.2.0
+
+- Bump versions of NuGet package dependencies.
+
 ## Version 5.1.0
 
 Added 'Currency' to 'AmountPerChargeResultProducedV1' and 'MonthlyAmountPerChargeResultProducedV1

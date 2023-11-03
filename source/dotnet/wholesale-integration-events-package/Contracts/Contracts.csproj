@@ -19,21 +19,9 @@ limitations under the License.
     <RootNamespace>Energinet.DataHub.Wholesale.Contracts</RootNamespace>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Google.Protobuf" Version="3.22.1" />
-    <PackageReference Include="Grpc.Tools" Version="2.52.0" PrivateAssets="All" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.5.22">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Wholesale.Contracts</PackageId>
-    <PackageVersion>5.1.0$(VersionSuffix)</PackageVersion>
+    <PackageVersion>5.2.0$(VersionSuffix)</PackageVersion>
     <Title>Wholesale Contracts</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -43,16 +31,16 @@ limitations under the License.
         Is shown in Azure DevOps artifacts Release Notes section.
       -->
     <PackageReleaseNotes>
-        [Release Notes](https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/dotnet/Packages/Contracts.Documentation/release-notes/release-notes.md)
-        [Documentation](https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/dotnet/Packages/Contracts.Documentation/documentation.md)
+      [Release Notes](https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/dotnet/Packages/Contracts.Documentation/release-notes/release-notes.md)
+      [Documentation](https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/dotnet/Packages/Contracts.Documentation/documentation.md)
     </PackageReleaseNotes>
     <!-- PackageDescription:
         Is shown in GitHub packages "About this package" section,
         and in Visual Studio package manager view.
       -->
     <PackageDescription>
-        [Release Notes](https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/dotnet/Packages/Contracts.Documentation/release-notes/release-notes.md)
-        [Documentation](https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/dotnet/Packages/Contracts.Documentation/documentation.md)
+      [Release Notes](https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/dotnet/Packages/Contracts.Documentation/release-notes/release-notes.md)
+      [Documentation](https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/dotnet/Packages/Contracts.Documentation/documentation.md)
     </PackageDescription>
     <Description>A package containing contracts for integrations with the wholesale domain in Energinet.DataHub.</Description>
     <PackageTags>energinet;datahub;wholesale</PackageTags>
@@ -71,6 +59,15 @@ limitations under the License.
     <!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.25.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.59.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.7.30">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
 
   <ItemGroup>
     <Protobuf Include="../../wholesale-api/Events/Events.Infrastructure/IntegrationEvents/Protos/*.proto">
