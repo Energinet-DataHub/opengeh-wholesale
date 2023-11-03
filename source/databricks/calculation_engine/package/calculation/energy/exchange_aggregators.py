@@ -73,9 +73,7 @@ def aggregate_net_exchange_per_neighbour_ga(
             exchange_from[from_sum],
             exchange_from[Colname.qualities].alias(from_qualities),
         )
-        .withColumn(
-            Colname.sum_quantity, F.coalesce(F.col(to_sum) - F.col(from_sum), F.lit(0))
-        )
+        .withColumn(Colname.sum_quantity, F.col(to_sum) - F.col(from_sum))
         .withColumnRenamed(exchange_in_to_grid_area, Colname.to_grid_area)
         .withColumnRenamed(exchange_in_from_grid_area, Colname.from_grid_area)
         .select(
@@ -157,9 +155,7 @@ def aggregate_net_exchange_per_ga(
             from_sum,
             F.when(joined[from_sum].isNotNull(), joined[from_sum]).otherwise(F.lit(0)),
         )
-        .withColumn(
-            Colname.sum_quantity, F.coalesce(F.col(to_sum) - F.col(from_sum), F.lit(0))
-        )
+        .withColumn(Colname.sum_quantity, F.col(to_sum) - F.col(from_sum))
         # when().otherwise() cases to handle the case where a metering point exists with an from-grid-area, which never occurs as an to-grid-area
         .withColumn(
             Colname.grid_area,
