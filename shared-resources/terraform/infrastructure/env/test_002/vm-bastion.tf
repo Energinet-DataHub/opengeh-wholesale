@@ -24,7 +24,7 @@ resource "azurerm_linux_virtual_machine" "vm_bastion" {
   name                            = "vm-bastion-${local.resources_suffix}"
   resource_group_name             = azurerm_resource_group.this.name
   location                        = azurerm_resource_group.this.location
-  size                            = "Standard_D4s_v3"
+  size                            = "Standard_D8s_v3"
   admin_username                  = "theoutlaws"
   admin_password                  = random_string.this.result
   disable_password_authentication = false
