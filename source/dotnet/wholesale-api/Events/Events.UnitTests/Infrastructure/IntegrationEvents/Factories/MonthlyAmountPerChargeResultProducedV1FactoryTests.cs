@@ -38,7 +38,10 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
         AmountType amountType, bool expected)
     {
         // Arrange
-        var wholesaleResult = new WholesaleResultBuilder().WithResolution(ChargeResolution.Month).WithAmountType(amountType).Build();
+        var wholesaleResult = new WholesaleResultBuilder()
+            .WithResolution(ChargeResolution.Month)
+            .WithAmountType(amountType)
+            .Build();
         var sut = new MonthlyAmountPerChargeResultProducedV1Factory();
 
         // Act
@@ -56,7 +59,10 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
         ChargeResolution resolution, bool expected)
     {
         // Arrange
-        var wholesaleResult = new WholesaleResultBuilder().WithResolution(resolution).WithAmountType(AmountType.MonthlyAmountPerCharge).Build();
+        var wholesaleResult = new WholesaleResultBuilder()
+            .WithResolution(resolution)
+            .WithAmountType(AmountType.MonthlyAmountPerCharge)
+            .Build();
         var sut = new MonthlyAmountPerChargeResultProducedV1Factory();
 
         // Act

@@ -92,7 +92,9 @@ public class AmountPerChargeResultProducedV1FactoryTests
     {
         // Arrange
         var sut = new AmountPerChargeResultProducedV1Factory();
-        var wholesaleResult = new WholesaleResultBuilder().WithCalculationType(calculationType).Build();
+        var wholesaleResult = new WholesaleResultBuilder()
+            .WithCalculationType(calculationType)
+            .Build();
 
         // Act
         var act = () => sut.Create(wholesaleResult);
