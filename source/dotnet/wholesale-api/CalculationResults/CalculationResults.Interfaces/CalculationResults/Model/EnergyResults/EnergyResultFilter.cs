@@ -12,6 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports;
+using NodaTime;
 
-public record SettlementReport(Stream Stream);
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
+
+public record EnergyResultFilter(
+    TimeSeriesType TimeSeriesType,
+    Instant StartOfPeriod,
+    Instant EndOfPeriod,
+    string GridArea,
+    string? EnergySupplierId,
+    string? BalanceResponsibleId) : IEnergyResultFilter;

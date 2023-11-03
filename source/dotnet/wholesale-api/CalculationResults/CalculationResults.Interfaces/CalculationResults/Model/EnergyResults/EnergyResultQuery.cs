@@ -24,4 +24,15 @@ public record EnergyResultQuery(
     string GridArea,
     string? EnergySupplierId,
     string? BalanceResponsibleId,
-    ProcessType ProcessType);
+    ProcessType ProcessType) : IEnergyResultFilter
+{
+    public EnergyResultQuery(IEnergyResultFilter energyResultFilter, ProcessType processType)
+        : this(
+            energyResultFilter.TimeSeriesType,
+            energyResultFilter.StartOfPeriod,
+            energyResultFilter.EndOfPeriod,
+            energyResultFilter.GridArea,
+            energyResultFilter.EnergySupplierId,
+            energyResultFilter.BalanceResponsibleId,
+            processType) { }
+}

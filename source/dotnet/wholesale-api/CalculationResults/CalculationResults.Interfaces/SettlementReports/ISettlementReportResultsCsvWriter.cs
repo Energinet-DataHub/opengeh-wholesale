@@ -12,22 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using NodaTime;
+using System.Globalization;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Application;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 
-public class BatchInfo
+public interface ISettlementReportResultsCsvWriter
 {
-    public BatchInfo()
-    {
-        GridAreaCodes = new List<string>();
-    }
-
-    public Guid Id { get; set; }
-
-    public Instant PeriodStart { get; set; }
-
-    public Instant PeriodEnd { get; set; }
-
-    public List<string> GridAreaCodes { get; set; }
+    Task WriteAsync(Stream destination, IEnumerable<SettlementReportResultRow> rows, CultureInfo csvFormatLocale);
 }

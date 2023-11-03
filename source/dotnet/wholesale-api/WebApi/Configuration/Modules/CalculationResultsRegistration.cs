@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Extensions.DependencyInjection;
+using Energinet.DataHub.Wholesale.CalculationResults.Application.RequestCalculationResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
@@ -42,6 +43,7 @@ public static class CalculationResultsRegistration
         serviceCollection.AddScoped<IStreamZipper, StreamZipper>();
         serviceCollection.AddScoped<IEnergyResultQueries, EnergyResultQueries>();
         serviceCollection.AddScoped<IWholesaleResultQueries, WholesaleResultQueries>();
+        serviceCollection.AddScoped<IRequestCalculationResult, RequestCalculationResult>();
         serviceCollection.AddScoped<IRequestCalculationResultQueries, RequestCalculationResultQueries>();
         serviceCollection.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
         serviceCollection.AddScoped<ISettlementReportRepository>(

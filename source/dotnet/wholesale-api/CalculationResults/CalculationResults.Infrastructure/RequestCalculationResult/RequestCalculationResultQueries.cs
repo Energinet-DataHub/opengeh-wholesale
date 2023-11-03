@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
@@ -22,6 +21,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatement
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
+using Energinet.DataHub.Wholesale.Common.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -46,6 +46,7 @@ public class RequestCalculationResultQueries : IRequestCalculationResultQueries
     public async Task<EnergyResult?> GetAsync(EnergyResultQuery query)
     {
         var sqlStatement = CreateRequestSql(query);
+
         var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
         SqlResultRow? firstRow = null;
         var resultCount = 0;
@@ -67,6 +68,43 @@ public class RequestCalculationResultQueries : IRequestCalculationResultQueries
         return EnergyResultFactory.CreateEnergyResult(firstRow, timeSeriesPoints, query.StartOfPeriod, query.EndOfPeriod);
     }
 
+    public async Task<ProcessType> GetLatestCorrectionAsync(IEnergyResultFilter query)
+    {
+        var thirdCorrectionExists = await PerformCorrectionVersionExistsQueryAsync(query, ProcessType.ThirdCorrectionSettlement).ConfigureAwait(false);
+        if (thirdCorrectionExists)
+            return ProcessType.ThirdCorrectionSettlement;
+
+        var secondCorrectionExists = await PerformCorrectionVersionExistsQueryAsync(query, ProcessType.SecondCorrectionSettlement).ConfigureAwait(false);
+        if (secondCorrectionExists)
+            return ProcessType.SecondCorrectionSettlement;
+
+        return ProcessType.FirstCorrectionSettlement;
+    }
+
+    private Task<bool> PerformCorrectionVersionExistsQueryAsync(IEnergyResultFilter queryFilter, ProcessType processType)
+    {
+        var sql = CreateSelectCorrectionVersionSql(queryFilter, processType);
+
+        var tableRows = _sqlStatementClient.ExecuteAsync(sql, sqlStatementParameters: null);
+
+        return tableRows.AnyAsync().AsTask();
+    }
+
+    private string CreateSelectCorrectionVersionSql(IEnergyResultFilter query, ProcessType processType)
+    {
+        if (processType != ProcessType.FirstCorrectionSettlement
+            && processType != ProcessType.SecondCorrectionSettlement
+            && processType != ProcessType.ThirdCorrectionSettlement)
+            throw new ArgumentOutOfRangeException(nameof(processType), processType, "ProcessType must be a correction settlement type");
+
+        var sql = $@"
+            SELECT 1
+            FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} t1
+            WHERE {CreateSqlQueryFilters(query, processType)}";
+
+        return sql;
+    }
+
     private string CreateRequestSql(EnergyResultQuery query)
     {
         var sql = $@"
@@ -80,25 +118,33 @@ public class RequestCalculationResultQueries : IRequestCalculationResultQueries
                     AND t1.{EnergyResultColumnNames.TimeSeriesType} = t2.{EnergyResultColumnNames.TimeSeriesType}
                     AND t1.{EnergyResultColumnNames.BatchProcessType} = t2.{EnergyResultColumnNames.BatchProcessType}
                     AND t1.{EnergyResultColumnNames.AggregationLevel} = t2.{EnergyResultColumnNames.AggregationLevel}
-            WHERE t2.time IS NULL
-                AND t1.{EnergyResultColumnNames.GridArea} IN ({query.GridArea})
-                AND t1.{EnergyResultColumnNames.TimeSeriesType} IN ('{TimeSeriesTypeMapper.ToDeltaTableValue(query.TimeSeriesType)}')
-                AND t1.{EnergyResultColumnNames.Time} BETWEEN '{query.StartOfPeriod.ToString()}' AND '{query.EndOfPeriod.ToString()}'
-                AND t1.{EnergyResultColumnNames.AggregationLevel} = '{AggregationLevelMapper.ToDeltaTableValue(query.TimeSeriesType, query.EnergySupplierId, query.BalanceResponsibleId)}'
-                AND t1.{EnergyResultColumnNames.BatchProcessType} = '{ProcessTypeMapper.ToDeltaTableValue(query.ProcessType)}'
+            WHERE t2.{EnergyResultColumnNames.Time} IS NULL
+                AND {CreateSqlQueryFilters(query, query.ProcessType)}";
+
+        sql += $@"ORDER BY t1.time";
+        return sql;
+    }
+
+    private string CreateSqlQueryFilters(IEnergyResultFilter query, ProcessType processType)
+    {
+        var whereClausesSql = $@"t1.{EnergyResultColumnNames.GridArea} IN ({query.GridArea})
+            AND t1.{EnergyResultColumnNames.TimeSeriesType} IN ('{TimeSeriesTypeMapper.ToDeltaTableValue(query.TimeSeriesType)}')
+            AND t1.{EnergyResultColumnNames.Time} BETWEEN '{query.StartOfPeriod.ToString()}' AND '{query.EndOfPeriod.ToString()}'
+            AND t1.{EnergyResultColumnNames.AggregationLevel} = '{AggregationLevelMapper.ToDeltaTableValue(query.TimeSeriesType, query.EnergySupplierId, query.BalanceResponsibleId)}'
+            AND t1.{EnergyResultColumnNames.BatchProcessType} = '{ProcessTypeMapper.ToDeltaTableValue(processType)}'
             ";
+
         if (query.EnergySupplierId != null)
         {
-            sql += $@"AND t1.{EnergyResultColumnNames.EnergySupplierId} = '{query.EnergySupplierId}'";
+            whereClausesSql += $@"AND t1.{EnergyResultColumnNames.EnergySupplierId} = '{query.EnergySupplierId}'";
         }
 
         if (query.BalanceResponsibleId != null)
         {
-            sql += $@"AND t1.{EnergyResultColumnNames.BalanceResponsibleId} = '{query.BalanceResponsibleId}'";
+            whereClausesSql += $@"AND t1.{EnergyResultColumnNames.BalanceResponsibleId} = '{query.BalanceResponsibleId}'";
         }
 
-        sql += $@"ORDER BY t1.time";
-        return sql;
+        return whereClausesSql;
     }
 
     private static string[] SqlColumnNames { get; } =

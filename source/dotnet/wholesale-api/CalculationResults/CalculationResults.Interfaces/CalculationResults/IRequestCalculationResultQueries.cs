@@ -13,13 +13,21 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
+using Energinet.DataHub.Wholesale.Common.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 
 public interface IRequestCalculationResultQueries
 {
     /// <summary>
-    /// Gets all result for a given request.
+    /// Gets the latest result for a given request.
     /// </summary>
+    /// <returns>Returns null if no result was found</returns>
     Task<EnergyResult?> GetAsync(EnergyResultQuery query);
+
+    /// <summary>
+    /// Get the latest correction version for the given request. Defaults to FirstCorrection if there is no corrections available.
+    /// </summary>
+    /// <returns>Returns the latest correction that exists. If none exists it defaults to FirstCorrection</returns>
+    Task<ProcessType> GetLatestCorrectionAsync(IEnergyResultFilter query);
 }

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.EDI.Mappers;
 using Energinet.DataHub.Wholesale.EDI.Models;
 using NodaTime;
@@ -28,36 +29,53 @@ public class AggregatedTimeSeriesRequestFactory : IAggregatedTimeSeriesRequestFa
         return MapAggregatedTimeSeriesRequest(request);
     }
 
-    private AggregatedTimeSeriesRequest MapAggregatedTimeSeriesRequest(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest aggregatedTimeSeriesRequest)
+    private AggregatedTimeSeriesRequest MapAggregatedTimeSeriesRequest(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request)
     {
         return new AggregatedTimeSeriesRequest(
-            MapPeriod(aggregatedTimeSeriesRequest.Period),
-            TimeSeriesTypeMapper.MapTimeSeriesType(aggregatedTimeSeriesRequest.MeteringPointType, aggregatedTimeSeriesRequest.SettlementMethod),
-            MapAggregationPerRoleAndGridArea(aggregatedTimeSeriesRequest),
-            ProcessTypeMapper.FromBusinessReason(
-                aggregatedTimeSeriesRequest.BusinessReason,
-                aggregatedTimeSeriesRequest.HasSettlementSeriesVersion ? aggregatedTimeSeriesRequest.SettlementSeriesVersion : null));
+            MapPeriod(request.Period),
+            TimeSeriesTypeMapper.MapTimeSeriesType(request.MeteringPointType, request.SettlementMethod),
+            MapAggregationPerRoleAndGridArea(request),
+            MapRequestedProcessType(request.BusinessReason, request.HasSettlementSeriesVersion ? request.SettlementSeriesVersion : null));
     }
 
-    private AggregationPerRoleAndGridArea MapAggregationPerRoleAndGridArea(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest aggregatedTimeSeriesRequest)
+    private RequestedProcessType MapRequestedProcessType(string businessReason, string? settlementSeriesVersion)
     {
-        return aggregatedTimeSeriesRequest.AggregationLevelCase switch
+        return businessReason switch
+        {
+            BusinessReason.BalanceFixing => RequestedProcessType.BalanceFixing,
+            BusinessReason.PreliminaryAggregation => RequestedProcessType.PreliminaryAggregation,
+            BusinessReason.WholesaleFixing => RequestedProcessType.WholesaleFixing,
+            BusinessReason.Correction => settlementSeriesVersion switch
+            {
+                SettlementSeriesVersion.FirstCorrection => RequestedProcessType.FirstCorrection,
+                SettlementSeriesVersion.SecondCorrection => RequestedProcessType.SecondCorrection,
+                SettlementSeriesVersion.ThirdCorrection => RequestedProcessType.ThirdCorrection,
+                null => RequestedProcessType.LatestCorrection,
+                _ => throw new ArgumentException("Unknown settlement series version", nameof(settlementSeriesVersion)),
+            },
+            _ => throw new ArgumentException("Unknown business reason", nameof(businessReason)),
+        };
+    }
+
+    private AggregationPerRoleAndGridArea MapAggregationPerRoleAndGridArea(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request)
+    {
+        return request.AggregationLevelCase switch
         {
             Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerGridarea =>
-                new AggregationPerRoleAndGridArea(GridAreaCode: aggregatedTimeSeriesRequest.AggregationPerGridarea.GridAreaCode),
+                new AggregationPerRoleAndGridArea(GridAreaCode: request.AggregationPerGridarea.GridAreaCode),
             Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerEnergysupplierPerGridarea =>
                 new AggregationPerRoleAndGridArea(
-                    GridAreaCode: aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerGridarea.GridAreaCode,
-                    EnergySupplierId: aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerGridarea.EnergySupplierId),
+                    GridAreaCode: request.AggregationPerEnergysupplierPerGridarea.GridAreaCode,
+                    EnergySupplierId: request.AggregationPerEnergysupplierPerGridarea.EnergySupplierId),
             Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerBalanceresponsiblepartyPerGridarea =>
                 new AggregationPerRoleAndGridArea(
-                    GridAreaCode: aggregatedTimeSeriesRequest.AggregationPerBalanceresponsiblepartyPerGridarea.GridAreaCode,
-                    BalanceResponsibleId: aggregatedTimeSeriesRequest.AggregationPerBalanceresponsiblepartyPerGridarea.BalanceResponsiblePartyId),
+                    GridAreaCode: request.AggregationPerBalanceresponsiblepartyPerGridarea.GridAreaCode,
+                    BalanceResponsibleId: request.AggregationPerBalanceresponsiblepartyPerGridarea.BalanceResponsiblePartyId),
             Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea =>
                 new AggregationPerRoleAndGridArea(
-                    GridAreaCode: aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.GridAreaCode,
-                    EnergySupplierId: aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.EnergySupplierId,
-                    BalanceResponsibleId: aggregatedTimeSeriesRequest.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.BalanceResponsiblePartyId),
+                    GridAreaCode: request.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.GridAreaCode,
+                    EnergySupplierId: request.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.EnergySupplierId,
+                    BalanceResponsibleId: request.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.BalanceResponsiblePartyId),
             _ => throw new InvalidOperationException("Unknown aggregation level"),
         };
     }

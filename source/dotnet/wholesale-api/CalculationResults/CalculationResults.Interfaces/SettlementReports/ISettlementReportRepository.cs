@@ -12,13 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
-using Energinet.DataHub.Wholesale.Common.Models;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 
-namespace Energinet.DataHub.Wholesale.EDI.Models;
+public interface ISettlementReportRepository
+{
+    /// <summary>
+    /// Create zip archives for each process in the batch.
+    /// The archive contains the basis data files and the result file.
+    /// </summary>
+    Task CreateSettlementReportsAsync(BatchInfo completedBatchInfo);
 
-public record AggregatedTimeSeriesRequest(
-    Period Period,
-    TimeSeriesType TimeSeriesType,
-    AggregationPerRoleAndGridArea AggregationPerRoleAndGridArea,
-    RequestedProcessType RequestedProcessType);
+    Task<SettlementReport> GetSettlementReportAsync(BatchInfo batchInfo);
+
+    Task GetSettlementReportAsync(BatchInfo completedBatchInfo, string gridAreaCode, Stream outputStream);
+}

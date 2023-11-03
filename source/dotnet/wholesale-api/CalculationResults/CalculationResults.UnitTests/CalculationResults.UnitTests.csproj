@@ -44,6 +44,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Test.Core\Test.Core.csproj" />
+      <ProjectReference Include="..\CalculationResults.Application\CalculationResults.Application.csproj" />
       <ProjectReference Include="..\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" />
     </ItemGroup>
     <ItemGroup>

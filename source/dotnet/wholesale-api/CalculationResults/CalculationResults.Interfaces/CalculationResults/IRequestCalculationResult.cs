@@ -12,17 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 
-public interface ISettlementReportRepository
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+
+public interface IRequestCalculationResult
 {
     /// <summary>
-    /// Create zip archives for each process in the batch.
-    /// The archive contains the basis data files and the result file.
+    /// Get the latest request calculation result for the given query
     /// </summary>
-    Task CreateSettlementReportsAsync(BatchInfo completedBatchInfo);
-
-    Task<SettlementReport> GetSettlementReportAsync(BatchInfo batchInfo);
-
-    Task GetSettlementReportAsync(BatchInfo completedBatchInfo, string gridAreaCode, Stream outputStream);
+    /// <returns>Returns null if no result was found</returns>
+    Task<EnergyResult?> GetRequestCalculationResultAsync(IEnergyResultFilter query, RequestedProcessType requestedProcessType);
 }

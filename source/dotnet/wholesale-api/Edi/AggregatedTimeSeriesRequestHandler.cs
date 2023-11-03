@@ -16,6 +16,7 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Logging;
+using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.EDI.Client;
 using Energinet.DataHub.Wholesale.EDI.Factories;
 using Energinet.DataHub.Wholesale.EDI.Mappers;
@@ -27,7 +28,7 @@ namespace Energinet.DataHub.Wholesale.EDI;
 
 public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHandler
 {
-    private readonly IRequestCalculationResultQueries _requestCalculationResultQueries;
+    private readonly IRequestCalculationResult _requestCalculationResult;
     private readonly IEdiClient _ediClient;
     private readonly IValidator<Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest> _validator;
     private readonly ILogger<AggregatedTimeSeriesRequestHandler> _logger;
@@ -35,13 +36,13 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
     private static readonly ValidationError _noDataAvailable = new("Ingen data tilgængelig / No data available", "E0H");
 
     public AggregatedTimeSeriesRequestHandler(
-        IRequestCalculationResultQueries requestCalculationResultQueries,
+        IRequestCalculationResult requestCalculationResult,
         IEdiClient ediClient,
         IAggregatedTimeSeriesRequestFactory aggregatedTimeSeriesRequestFactory,
         IValidator<Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest> validator,
         ILogger<AggregatedTimeSeriesRequestHandler> logger)
     {
-        _requestCalculationResultQueries = requestCalculationResultQueries;
+        _requestCalculationResult = requestCalculationResult;
         _ediClient = ediClient;
         _aggregatedTimeSeriesRequestFactory = aggregatedTimeSeriesRequestFactory;
         _validator = validator;
@@ -50,7 +51,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
 
     public async Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken)
     {
-        var aggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest.Parser.ParseFrom(receivedMessage.Body);
+        var aggregatedTimeSeriesRequest = Edi.Requests.AggregatedTimeSeriesRequest.Parser.ParseFrom(receivedMessage.Body);
 
         var validationErrors = _validator.Validate(aggregatedTimeSeriesRequest);
 
@@ -59,8 +60,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         {
             var aggregatedTimeSeriesRequestMessage = _aggregatedTimeSeriesRequestFactory.Parse(aggregatedTimeSeriesRequest);
             var result = await GetCalculationResultsAsync(
-                aggregatedTimeSeriesRequestMessage,
-                cancellationToken).ConfigureAwait(false);
+                aggregatedTimeSeriesRequestMessage).ConfigureAwait(false);
 
             if (result is not null)
             {
@@ -81,23 +81,17 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
     }
 
-    private async Task<EnergyResult?> GetCalculationResultsAsync(
-        AggregatedTimeSeriesRequest aggregatedTimeSeriesRequestMessage,
-        CancellationToken cancellationToken)
+    private Task<EnergyResult?> GetCalculationResultsAsync(
+        AggregatedTimeSeriesRequest request)
     {
-        var query = new EnergyResultQuery(
-            CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromEdi(aggregatedTimeSeriesRequestMessage.TimeSeriesType),
-            aggregatedTimeSeriesRequestMessage.Period.Start,
-            aggregatedTimeSeriesRequestMessage.Period.End,
-            aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea.GridAreaCode,
-            aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea.EnergySupplierId,
-            aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea.BalanceResponsibleId,
-            aggregatedTimeSeriesRequestMessage.ProcessType);
+        var filter = new EnergyResultFilter(
+            CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromEdi(request.TimeSeriesType),
+            request.Period.Start,
+            request.Period.End,
+            request.AggregationPerRoleAndGridArea.GridAreaCode,
+            request.AggregationPerRoleAndGridArea.EnergySupplierId,
+            request.AggregationPerRoleAndGridArea.BalanceResponsibleId);
 
-        var calculationResult = await _requestCalculationResultQueries.GetAsync(query)
-            .ConfigureAwait(false);
-
-        _logger.LogDebug("Found {CalculationResult} calculation results based on {Query} query.", calculationResult?.ToJsonString(), query.ToJsonString());
-        return calculationResult;
+        return _requestCalculationResult.GetRequestCalculationResultAsync(filter, request.RequestedProcessType);
     }
 }
