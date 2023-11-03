@@ -83,7 +83,8 @@ public class RequestCalculationResultQueries : IRequestCalculationResultQueries
             WHERE t2.time IS NULL
                 AND t1.{EnergyResultColumnNames.GridArea} IN ({query.GridArea})
                 AND t1.{EnergyResultColumnNames.TimeSeriesType} IN ('{TimeSeriesTypeMapper.ToDeltaTableValue(query.TimeSeriesType)}')
-                AND t1.{EnergyResultColumnNames.Time} BETWEEN '{query.StartOfPeriod.ToString()}' AND '{query.EndOfPeriod.ToString()}'
+                AND t1.{EnergyResultColumnNames.Time}  >= '{query.StartOfPeriod.ToString()}'
+                AND t1.{EnergyResultColumnNames.Time} < '{query.EndOfPeriod.ToString()}'
                 AND t1.{EnergyResultColumnNames.AggregationLevel} = '{AggregationLevelMapper.ToDeltaTableValue(query.TimeSeriesType, query.EnergySupplierId, query.BalanceResponsibleId)}'
                 AND t1.{EnergyResultColumnNames.BatchProcessType} = '{ProcessTypeMapper.ToDeltaTableValue(query.ProcessType)}'
             ";
