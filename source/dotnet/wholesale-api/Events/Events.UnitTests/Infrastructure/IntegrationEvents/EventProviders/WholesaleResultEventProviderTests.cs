@@ -59,7 +59,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
             var actualIntegrationEvents = await sut.GetAsync(wholesaleFixingBatch).ToListAsync();
 
             // Assert
-            actualIntegrationEvents.Single().EventName.Should().Be(AmountPerChargeResultProducedV1.EventName);
+            actualIntegrationEvents.Single().EventName.Should().Be(((IEventMessage)expectedIntegrationEvent).EventName);
         }
 
         [Theory]
