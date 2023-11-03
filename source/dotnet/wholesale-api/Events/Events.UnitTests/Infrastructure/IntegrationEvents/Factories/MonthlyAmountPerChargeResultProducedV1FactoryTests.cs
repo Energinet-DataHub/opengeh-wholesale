@@ -18,8 +18,8 @@ using Energinet.DataHub.Wholesale.Common.Models;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Types;
+using Energinet.DataHub.Wholesale.Events.UnitTests.Fixtures;
 using FluentAssertions;
-using NodaTime;
 using Xunit;
 using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
 
@@ -27,16 +27,74 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
 
 public class MonthlyAmountPerChargeResultProducedV1FactoryTests
 {
-    private readonly Guid _calculationId = Guid.NewGuid();
-    private readonly Guid _resultId = Guid.NewGuid();
-    private readonly Instant _periodStart = SystemClock.Instance.GetCurrentInstant();
-    private readonly Instant _periodEnd = SystemClock.Instance.GetCurrentInstant();
-    private readonly string _gridArea = "543";
-    private readonly string _energySupplierId = "es_id";
-    private readonly string _chargeCode = "charge_code";
-    private readonly string _chargeOwnerId = "charge_owner_id";
-    private readonly ChargeType _chargeType = ChargeType.Tariff;
-    private readonly bool _isTax = true;
+    private readonly WholesaleTimeSeriesPoint _someTimeSeriesPoint =
+        new(new DateTime(2021, 1, 1), 1, new[] { QuantityQuality.Measured }, 2, 3);
+
+    [Theory]
+    [InlineData(AmountType.AmountPerCharge, false)]
+    [InlineData(AmountType.MonthlyAmountPerCharge, true)]
+    [InlineData(AmountType.TotalMonthlyAmount, false)]
+    public void CanCreate_WhenAmountType_ReturnsExpectedValue(
+        AmountType amountType, bool expected)
+    {
+        // Arrange
+        var wholesaleResult = new WholesaleResultBuilder()
+            .WithResolution(ChargeResolution.Month)
+            .WithAmountType(amountType)
+            .Build();
+        var sut = new MonthlyAmountPerChargeResultProducedV1Factory();
+
+        // Act
+        var actual = sut.CanCreate(wholesaleResult);
+
+        // Assert
+        actual.Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData(ChargeResolution.Hour, false)]
+    [InlineData(ChargeResolution.Day, false)]
+    [InlineData(ChargeResolution.Month, true)]
+    public void CanCreate_WhenResolution_ReturnsExpectedValue(
+        ChargeResolution resolution, bool expected)
+    {
+        // Arrange
+        var wholesaleResult = new WholesaleResultBuilder()
+            .WithResolution(resolution)
+            .WithAmountType(AmountType.MonthlyAmountPerCharge)
+            .Build();
+        var sut = new MonthlyAmountPerChargeResultProducedV1Factory();
+
+        // Act
+        var actual = sut.CanCreate(wholesaleResult);
+
+        // Assert
+        actual.Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData(1, true)]
+    [InlineData(2, false)]
+    public void CanCreate_WhenTimeSeriesLength_ReturnsExpectedValue(
+        int numberOfTimeSeriesPoints, bool expected)
+    {
+        // Arrange
+        var timeSeriesPoints = new List<WholesaleTimeSeriesPoint>();
+        for (var p = 0; p < numberOfTimeSeriesPoints; p++)
+            timeSeriesPoints.Add(_someTimeSeriesPoint);
+
+        var wholesaleResult = new WholesaleResultBuilder()
+            .WithResolution(ChargeResolution.Month)
+            .WithAmountType(AmountType.MonthlyAmountPerCharge)
+            .WithTimeSeriesPoints(timeSeriesPoints).Build();
+        var sut = new MonthlyAmountPerChargeResultProducedV1Factory();
+
+        // Act
+        var actual = sut.CanCreate(wholesaleResult);
+
+        // Assert
+        actual.Should().Be(expected);
+    }
 
     [Theory]
     [InlineAutoMoqData]
@@ -44,7 +102,10 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
         MonthlyAmountPerChargeResultProducedV1Factory sut)
     {
         // Arrange
-        var wholesaleResult = CreateWholesaleResult();
+        var wholesaleResult = new WholesaleResultBuilder()
+            .WithResolution(ChargeResolution.Month)
+            .WithAmountType(AmountType.MonthlyAmountPerCharge)
+            .Build();
         var expected = CreateExpected(wholesaleResult);
 
         // Act
@@ -61,7 +122,10 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
     {
         // Arrange
         var sut = new MonthlyAmountPerChargeResultProducedV1Factory();
-        var wholesaleResult = CreateWholesaleResult(calculationType);
+        var wholesaleResult = new WholesaleResultBuilder()
+            .WithCalculationType(calculationType)
+            .WithResolution(ChargeResolution.Month)
+            .WithAmountType(AmountType.MonthlyAmountPerCharge).Build();
 
         // Act
         var act = () => sut.Create(wholesaleResult);
@@ -80,7 +144,10 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
             new(new DateTime(2021, 1, 1), 1, new List<QuantityQuality> { QuantityQuality.Measured }, 2, 3),
             new(new DateTime(2021, 1, 2), 1, new List<QuantityQuality> { QuantityQuality.Measured }, 2, 3),
         };
-        var wholesaleResult = CreateWholesaleResult(timeSeriesPoints: timeSeriesPoints);
+        var wholesaleResult = new WholesaleResultBuilder()
+            .WithTimeSeriesPoints(timeSeriesPoints)
+            .WithResolution(ChargeResolution.Month)
+            .WithAmountType(AmountType.MonthlyAmountPerCharge).Build();
 
         // Act
         var act = () => sut.Create(wholesaleResult);
@@ -89,47 +156,12 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
         act.Should().Throw<ArgumentException>();
     }
 
-    private WholesaleResult CreateWholesaleResult(
-        ProcessType calculationType = ProcessType.FirstCorrectionSettlement,
-        IReadOnlyCollection<WholesaleTimeSeriesPoint>? timeSeriesPoints = default)
-    {
-        var qualities = new List<QuantityQuality>
-        {
-            QuantityQuality.Estimated,
-            QuantityQuality.Measured,
-        };
-
-        timeSeriesPoints ??= new WholesaleTimeSeriesPoint[]
-        {
-            new(new DateTime(2021, 1, 1), 1, qualities, 2, 3),
-        };
-
-        return new WholesaleResult(
-            _resultId,
-            _calculationId,
-            calculationType,
-            _periodStart,
-            _periodEnd,
-            _gridArea,
-            _energySupplierId,
-            AmountType.MonthlyAmountPerCharge,
-            _chargeCode,
-            _chargeType,
-            _chargeOwnerId,
-            _isTax,
-            QuantityUnit.Kwh,
-            ChargeResolution.Month,
-            CalculationResults.Interfaces.CalculationResults.Model.MeteringPointType.Production,
-            null,
-            timeSeriesPoints);
-    }
-
     private static MonthlyAmountPerChargeResultProducedV1 CreateExpected(WholesaleResult wholesaleResult)
     {
         var monthlyAmountPerChargeResultProducedV1 = new MonthlyAmountPerChargeResultProducedV1
         {
             CalculationId = wholesaleResult.CalculationId.ToString(),
-            CalculationType = MonthlyAmountPerChargeResultProducedV1.Types.CalculationType.FirstCorrectionSettlement,
+            CalculationType = MonthlyAmountPerChargeResultProducedV1.Types.CalculationType.WholesaleFixing,
             QuantityUnit = MonthlyAmountPerChargeResultProducedV1.Types.QuantityUnit.Kwh,
             PeriodStartUtc = wholesaleResult.PeriodStart.ToTimestamp(),
             PeriodEndUtc = wholesaleResult.PeriodEnd.ToTimestamp(),
