@@ -385,7 +385,7 @@ public class RequestCalculationResultQueriesTests : IClassFixture<DatabricksSqlS
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_RequestFromGridOperatorTotalProductionThirdCorrectionSettlement_ReturnsResult(
+    public async Task GetAsync_WhenRequestFromGridOperatorTotalProductionThirdCorrectionSettlement_ReturnsResult(
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock)
@@ -433,7 +433,7 @@ public class RequestCalculationResultQueriesTests : IClassFixture<DatabricksSqlS
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_RequestFromGridOperatorForOneDay_ReturnsResult(
+    public async Task GetAsync_WhenRequestFromGridOperatorForOneDay_ReturnsResult(
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock)
@@ -478,7 +478,7 @@ public class RequestCalculationResultQueriesTests : IClassFixture<DatabricksSqlS
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_RequestFromGridOperatorStartAndEndDataAreEqual_ReturnsNoResult(
+    public async Task GetAsync_WhenRequestFromGridOperatorStartAndEndDataAreEqual_ReturnsNoResult(
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock)
