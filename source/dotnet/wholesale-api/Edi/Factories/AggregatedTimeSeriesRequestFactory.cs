@@ -64,10 +64,8 @@ public class AggregatedTimeSeriesRequestFactory : IAggregatedTimeSeriesRequestFa
 
     private Period MapPeriod(Energinet.DataHub.Edi.Requests.Period period)
     {
-        var end = Instant.FromDateTimeUtc(DateTime.UtcNow);
-
         return new Period(
         InstantPattern.General.Parse(period.Start).Value,
-        end);
+        InstantPattern.General.Parse(period.End).Value);
     }
 }
