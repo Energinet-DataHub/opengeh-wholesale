@@ -19,5 +19,7 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Fa
 
 public interface IMonthlyAmountPerChargeResultProducedV1Factory
 {
+    bool CanCreate(WholesaleResult result);
+
     MonthlyAmountPerChargeResultProducedV1 Create(WholesaleResult result);
 }
