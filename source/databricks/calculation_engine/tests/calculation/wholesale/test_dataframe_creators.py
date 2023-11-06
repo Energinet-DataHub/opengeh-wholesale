@@ -72,9 +72,7 @@ def test_charges(charges_factory):
     assert result[Colname.charge_type] == DataframeDefaults.default_charge_type
     assert result[Colname.charge_owner] == DataframeDefaults.default_charge_owner
     assert result[Colname.charge_tax] == DataframeDefaults.default_charge_tax
-    assert (
-        result[Colname.charge_resolution] == DataframeDefaults.default_charge_resolution
-    )
+    assert result[Colname.resolution] == DataframeDefaults.default_charge_resolution
     assert result[Colname.charge_time] == DataframeDefaults.default_charge_time
     assert result[Colname.from_date] == DataframeDefaults.default_from_date
     assert result[Colname.to_date] == DataframeDefaults.default_to_date
@@ -94,9 +92,7 @@ def test_charge_master_data(charge_master_data_factory):
     assert result[Colname.charge_code] == DataframeDefaults.default_charge_code
     assert result[Colname.charge_type] == DataframeDefaults.default_charge_type
     assert result[Colname.charge_owner] == DataframeDefaults.default_charge_owner
-    assert (
-        result[Colname.charge_resolution] == DataframeDefaults.default_charge_resolution
-    )
+    assert result[Colname.resolution] == DataframeDefaults.default_charge_resolution
     assert result[Colname.charge_tax] == DataframeDefaults.default_charge_tax
     assert result[Colname.currency] == DataframeDefaults.default_currency
     assert result[Colname.from_date] == from_date

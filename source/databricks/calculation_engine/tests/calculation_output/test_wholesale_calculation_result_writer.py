@@ -22,7 +22,7 @@ import pytest
 
 from package.codelists import (
     ChargeQuality,
-    ChargeResolution,
+    WholesaleResultResolution,
     ChargeType,
     ChargeUnit,
     MeteringPointType,
@@ -61,7 +61,7 @@ DEFAULT_CHARGE_CODE = "4000"
 DEFAULT_CHARGE_TYPE = ChargeType.TARIFF
 DEFAULT_CHARGE_OWNER_ID = "5790001330552"
 DEFAULT_CHARGE_TAX = True
-DEFAULT_RESOLUTION = ChargeResolution.HOUR
+DEFAULT_RESOLUTION = WholesaleResultResolution.HOUR
 DEFAULT_CHARGE_PRICE = Decimal("0.756998")
 DEFAULT_TOTAL_QUANTITY = Decimal("1.1")
 DEFAULT_CHARGE_COUNT = "3"
@@ -81,7 +81,7 @@ def _create_result_row(
     charge_type: ChargeType = DEFAULT_CHARGE_TYPE,
     charge_owner: str = DEFAULT_CHARGE_OWNER_ID,
     charge_tax: bool = DEFAULT_CHARGE_TAX,
-    resolution: ChargeResolution = DEFAULT_RESOLUTION,
+    resolution: WholesaleResultResolution = DEFAULT_RESOLUTION,
     charge_price: Decimal = DEFAULT_CHARGE_PRICE,
     total_quantity: Decimal = DEFAULT_TOTAL_QUANTITY,
     charge_count: str = DEFAULT_CHARGE_COUNT,
@@ -100,7 +100,7 @@ def _create_result_row(
         Colname.charge_type: charge_type.value,
         Colname.charge_owner: charge_owner,
         Colname.charge_tax: charge_tax,
-        Colname.charge_resolution: resolution.value,
+        Colname.resolution: resolution.value,
         Colname.charge_price: charge_price,
         Colname.total_quantity: total_quantity,
         Colname.charge_count: charge_count,
@@ -248,7 +248,7 @@ def test__get_column_group_for_calculation_result_id__returns_expected_column_na
     # Arrange
     expected_column_names = [
         Colname.batch_id,
-        Colname.charge_resolution,
+        Colname.resolution,
         Colname.charge_type,
         Colname.grid_area,
         Colname.charge_owner,
