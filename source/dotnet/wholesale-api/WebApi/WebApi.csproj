@@ -1,4 +1,4 @@
-<!--
+﻿<!--
 Copyright 2020 Energinet DataHub A/S
 
 Licensed under the Apache License, Version 2.0 (the "License2");
@@ -24,22 +24,21 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Asp.Versioning.Mvc" Version="7.1.0" />
+    <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="7.1.0" />
     <PackageReference Include="AspNetCore.HealthChecks.AzureServiceBus" Version="7.0.0" />
     <PackageReference Include="Energinet.DataHub.Core.App.Common.Security" Version="8.1.1" />
     <PackageReference Include="Energinet.DataHub.Core.App.WebApp" Version="8.1.1" />
     <PackageReference Include="Energinet.DataHub.Core.Databricks.Jobs" Version="7.0.1" />
     <PackageReference Include="Energinet.DataHub.Core.Databricks.SqlStatementExecution" Version="7.0.1" />
-    <PackageReference Include="Energinet.DataHub.Core.Logging.LoggingMiddleware " Version="3.0.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.0" />
-    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="7.0.8" />
-    <PackageReference Include="Microsoft.Extensions.Logging.AzureAppServices" Version="7.0.10" />
-    <PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.1" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="7.0.13" />
+    <PackageReference Include="Microsoft.Extensions.Logging.AzureAppServices" Version="7.0.13" />
+    <PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" Version="7.1.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-    <PackageReference Update="Energinet.DataHub.Core.Logging.LoggingMiddleware" Version="3.1.1" />
-    <PackageReference Update="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.4">
+    <PackageReference Include="Energinet.DataHub.Core.Logging.LoggingMiddleware" Version="3.1.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.7.30">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -50,13 +49,6 @@ limitations under the License.
     <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" />
     <ProjectReference Include="..\Events\Events.Infrastructure\Events.Infrastructure.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.7.30">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
   </ItemGroup>
 
 </Project>
