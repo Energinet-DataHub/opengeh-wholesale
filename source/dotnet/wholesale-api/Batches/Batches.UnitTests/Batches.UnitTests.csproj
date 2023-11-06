@@ -27,6 +27,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Common.Interfaces\Common.Interfaces.csproj" />
     <ProjectReference Include="..\..\Test.Core\Test.Core.csproj" />
     <ProjectReference Include="..\Batches.Infrastructure\Batches.Infrastructure.csproj" />
   </ItemGroup>

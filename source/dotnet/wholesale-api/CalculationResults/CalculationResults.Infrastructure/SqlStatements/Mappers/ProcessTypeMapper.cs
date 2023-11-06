@@ -12,14 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Common.Models;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 
 public static class ProcessTypeMapper
 {
-    public static ProcessType FromDeltaTableValue(string processType) =>
-        processType switch
+    public static ProcessType FromDeltaTableValue(string processType)
+    {
+        return processType switch
         {
             DeltaTableConstants.DeltaTableProcessType.BalanceFixing => ProcessType.BalanceFixing,
             DeltaTableConstants.DeltaTableProcessType.Aggregation => ProcessType.Aggregation,
@@ -33,9 +34,11 @@ public static class ProcessTypeMapper
                 actualValue: processType,
                 "Value does not contain a valid string representation of a process type."),
         };
+    }
 
-    public static string ToDeltaTableValue(ProcessType processType) =>
-        processType switch
+    public static string ToDeltaTableValue(ProcessType processType)
+    {
+        return processType switch
         {
             ProcessType.BalanceFixing => DeltaTableConstants.DeltaTableProcessType.BalanceFixing,
             ProcessType.Aggregation => DeltaTableConstants.DeltaTableProcessType.Aggregation,
@@ -49,4 +52,5 @@ public static class ProcessTypeMapper
                 actualValue: processType,
                 "Value cannot be mapped to a string representation of a process type."),
         };
+    }
 }

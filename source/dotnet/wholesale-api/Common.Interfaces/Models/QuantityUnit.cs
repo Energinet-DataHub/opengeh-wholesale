@@ -12,20 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Common.Security;
+namespace Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
-public sealed class FrontendUser
+/// <summary>
+/// The unit of measurement for the quantity.
+/// </summary>
+public enum QuantityUnit
 {
-    public FrontendUser(Guid userId, Guid actorId, bool isFas)
-    {
-        UserId = userId;
-        ActorId = actorId;
-        IsFas = isFas;
-    }
+    /// <summary>
+    /// The quantity unit is Kilo Watt Hour.
+    /// Code: H87
+    /// </summary>
+    Kwh,
 
-    public Guid UserId { get; }
-
-    public Guid ActorId { get; }
-
-    public bool IsFas { get; }
+    /// <summary>
+    /// The quantity unit is pieces.
+    /// The unit is used for subscriptions and fees that are associated with the metering point.
+    /// </summary>
+    Pieces,
 }

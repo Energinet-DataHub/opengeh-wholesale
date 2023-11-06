@@ -15,7 +15,7 @@
 using System.Security.Claims;
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 
-namespace Energinet.DataHub.Wholesale.Common.Security;
+namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 
 // ReSharper disable once ClassNeverInstantiated.Global
 public sealed class FrontendUserProvider : IUserProvider<FrontendUser>

@@ -12,6 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Diagnostics.CodeAnalysis;
+namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 
-[assembly: SuppressMessage("Style", "VSTHRD200:Use \"Async\" suffix for async methods", Justification = "MS")]
+public sealed class FrontendUser
+{
+    public FrontendUser(Guid userId, Guid actorId, bool isFas)
+    {
+        UserId = userId;
+        ActorId = actorId;
+        IsFas = isFas;
+    }
+
+    public Guid UserId { get; }
+
+    public Guid ActorId { get; }
+
+    public bool IsFas { get; }
+}

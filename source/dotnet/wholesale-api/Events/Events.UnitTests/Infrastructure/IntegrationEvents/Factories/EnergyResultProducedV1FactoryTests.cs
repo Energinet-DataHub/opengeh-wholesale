@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.Common.Models;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Types;

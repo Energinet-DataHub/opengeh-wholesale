@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
-using Energinet.DataHub.Wholesale.Common.Models;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;
 using Test.Core;
 using Xunit;
@@ -49,7 +49,7 @@ public class QuantityUnitMapperTests
 
         // Assert
         quantityUnit.Should().BeOneOf(validDeltaValues);
-   }
+    }
 
     [Fact]
     public async Task FromDeltaTableValue_MapsAllValidDeltaTableValues()

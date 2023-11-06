@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
-using Energinet.DataHub.Wholesale.Common.Models;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 

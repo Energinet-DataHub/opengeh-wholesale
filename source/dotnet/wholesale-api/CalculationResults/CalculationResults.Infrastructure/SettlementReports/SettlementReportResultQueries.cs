@@ -15,8 +15,8 @@
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
-using Energinet.DataHub.Wholesale.Common.Databricks.Options;
-using Energinet.DataHub.Wholesale.Common.Models;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Microsoft.Extensions.Options;
 using NodaTime;
 

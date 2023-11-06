@@ -19,7 +19,7 @@ using Energinet.DataHub.Wholesale.Batches.Application.Model;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
 using Energinet.DataHub.Wholesale.Batches.Application.UseCases;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
-using Energinet.DataHub.Wholesale.Common.Models;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;
 using Moq;
 using NodaTime;

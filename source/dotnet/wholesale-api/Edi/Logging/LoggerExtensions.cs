@@ -12,26 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Runtime.CompilerServices;
 using System.Text.Json;
-using Microsoft.Extensions.Logging;
 
-namespace Energinet.DataHub.Wholesale.Common.Logging;
+namespace Energinet.DataHub.Wholesale.EDI.Logging;
 
 public static class LoggerExtensions
 {
-    /// <summary>
-    /// Utility method to log entering a method for debugging purposes.
-    /// </summary>
-    public static void EnterMethod(
-        this ILogger logger,
-        [CallerMemberName] string? methodName = null,
-        [CallerFilePath] string? sourceFile = null,
-        [CallerLineNumber] int? lineNumber = null)
-    {
-        logger.LogDebug("Entering {MethodName} in {FilePath}:{LineNo}", methodName, sourceFile, lineNumber);
-    }
-
     /// <summary>
     /// Utility method to log entire objects.
     /// </summary>

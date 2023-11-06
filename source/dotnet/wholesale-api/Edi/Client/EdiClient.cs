@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.Wholesale.Events.Application.Options;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.EDI.Client;
