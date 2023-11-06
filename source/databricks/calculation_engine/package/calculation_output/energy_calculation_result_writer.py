@@ -138,7 +138,7 @@ class EnergyCalculationResultWriter:
                 EnergyResultColumnNames.balance_responsible_id
             ),
             # TODO JVM: This is a temporary fix for the fact that the sum_quantity column is not nullable
-            f.coalesce(f.col(Colname.sum_quantity, f.lit(0))).alias(
+            f.coalesce(f.col(Colname.sum_quantity), f.lit(0)).alias(
                 EnergyResultColumnNames.quantity
             ),
             f.col(Colname.qualities).alias(EnergyResultColumnNames.quantity_qualities),
