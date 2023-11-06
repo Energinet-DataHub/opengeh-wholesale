@@ -23,7 +23,7 @@ public interface IRequestCalculationResultQueries
     /// Gets the latest result for a given request.
     /// </summary>
     /// <returns>Returns null if no result was found</returns>
-    Task<EnergyResult?> GetAsync(EnergyResultQuery query);
+    IAsyncEnumerable<EnergyResult> GetAsync(EnergyResultQuery query);
 
     /// <summary>
     /// Get the latest correction version for the given request. Defaults to FirstCorrection if there is no corrections available.

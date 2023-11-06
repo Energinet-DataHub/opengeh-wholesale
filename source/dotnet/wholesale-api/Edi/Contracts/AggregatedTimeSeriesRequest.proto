@@ -18,80 +18,19 @@ syntax = "proto3";
 option csharp_namespace = "Energinet.DataHub.Edi.Requests";
 
 message AggregatedTimeSeriesRequest {
-  Period period = 1;
-  oneof aggregation_level {
-    AggregationPerGridArea aggregation_per_gridarea = 2;
-    AggregationPerEnergySupplierPerGridArea aggregation_per_energysupplier_per_gridarea = 3;
-    AggregationPerBalanceResponsiblePartyPerGridArea aggregation_per_balanceresponsibleparty_per_gridarea = 4;
-    AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea aggregation_per_energysupplier_per_balanceresponsibleparty_per_gridarea = 5;
-  }
-  string metering_point_type = 6;
-  optional string settlement_method = 7;
-  optional string energy_supplier_id = 8;
-  string requested_by_actor_id = 9;
-  string requested_by_actor_role = 10;
-  optional string balance_responsible_id = 11;
-  optional string settlement_series_version = 12;
-  optional string grid_area_code = 13;
-  string business_reason = 14;
+    Period period = 1;
+    string metering_point_type = 2;
+    optional string settlement_method = 3;
+    optional string energy_supplier_id = 4;
+    string requested_by_actor_id = 5;
+    string requested_by_actor_role = 6;
+    optional string balance_responsible_id = 7;
+    optional string settlement_series_version = 8;
+    optional string grid_area_code = 9;
+    string business_reason = 10;
 }
 
 message Period {
-  string start = 1;
-  optional string end = 2;
-}
-
-message AggregationPerGridArea {
-  /*
-   * The grid area code specifying the grid area for which the time series is aggregated.
-   * The grid area code is a 3 character string consisting solely of digits.
-   * Examples:
-   *   543
-   *   020
-   *
-   * The grid responsible id is the sender id of the grid responsible.
-   */
-  string grid_area_code = 1;
-  string grid_responsible_id = 2;
-}
-
-message AggregationPerEnergySupplierPerGridArea {
-  /*
-   * The grid area code specifying the grid area for which the time series is aggregated.
-   * The grid area code is a 3 character string consisting solely of digits.
-   * Examples:
-   *   543
-   *   020
-   */
-  string grid_area_code = 1;
-
-  string energy_supplier_id = 2;
-}
-
-message AggregationPerBalanceResponsiblePartyPerGridArea {
-  /*
-   * The grid area code specifying the grid area for which the time series is aggregated.
-   * The grid area code is a 3 character string consisting solely of digits.
-   * Examples:
-   *   543
-   *   020
-   */
-  string grid_area_code = 1;
-
-  string balance_responsible_party_id = 2;
-}
-
-message AggregationPerEnergySupplierPerBalanceResponsiblePartyPerGridArea {
-  /*
-   * The grid area code specifying the grid area for which the time series is aggregated.
-   * The grid area code is a 3 character string consisting solely of digits.
-   * Examples:
-   *   543
-   *   020
-   */
-  string grid_area_code = 1;
-
-  string balance_responsible_party_id = 2;
-
-  string energy_supplier_id = 3;
+    string start = 1;
+    optional string end = 2;
 }

@@ -24,7 +24,7 @@ public interface IEnergyResultFilter
 
     Instant EndOfPeriod { get; }
 
-    string GridArea { get; }
+    string? GridArea { get; }
 
     string? EnergySupplierId { get; }
 

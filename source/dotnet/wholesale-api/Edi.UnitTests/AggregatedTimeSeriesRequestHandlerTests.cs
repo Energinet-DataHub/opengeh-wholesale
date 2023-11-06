@@ -59,10 +59,10 @@ public class AggregatedTimeSeriesRequestHandlerTests
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(request.ToByteArray()));
 
-        var calculationResult = CreateEnergyResult();
+        var calculationResults = new List<EnergyResult> { CreateEnergyResult() }.ToAsyncEnumerable();
         requestCalculationResultMock
             .Setup(calculationResultQueries => calculationResultQueries.GetRequestCalculationResultAsync(It.IsAny<EnergyResultFilter>(), It.IsAny<RequestedProcessType>()))
-            .ReturnsAsync(() => calculationResult);
+            .Returns(() => calculationResults);
 
         validator.Setup(vali => vali.Validate(
                 It.IsAny<AggregatedTimeSeriesRequest>()))
@@ -162,12 +162,13 @@ public class AggregatedTimeSeriesRequestHandlerTests
                 It.IsAny<AggregatedTimeSeriesRequest>()))
             .Returns(() => new List<ValidationError>());
 
+        var emptyEnergyResult = new List<EnergyResult>().ToAsyncEnumerable();
         requestCalculationResultMock
             .Setup(rcr =>
                 rcr.GetRequestCalculationResultAsync(
                     It.IsAny<EnergyResultFilter>(),
                     It.IsAny<RequestedProcessType>()))
-            .ReturnsAsync(() => null);
+            .Returns(() => emptyEnergyResult);
 
         var sut = new AggregatedTimeSeriesRequestHandler(
             requestCalculationResultMock.Object,

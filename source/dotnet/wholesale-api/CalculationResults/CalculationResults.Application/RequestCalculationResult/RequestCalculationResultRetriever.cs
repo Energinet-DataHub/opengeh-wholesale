@@ -31,16 +31,20 @@ public class RequestCalculationResultRetriever : IRequestCalculationResultRetrie
         _requestCalculationResultQueries = requestCalculationResultQueries;
     }
 
-    public async Task<EnergyResult?> GetRequestCalculationResultAsync(IEnergyResultFilter filter, RequestedProcessType requestedProcessType)
+    public async IAsyncEnumerable<EnergyResult> GetRequestCalculationResultAsync(IEnergyResultFilter filter, RequestedProcessType requestedProcessType)
     {
         var processType = await GetSpecificProcessTypeAsync(filter, requestedProcessType).ConfigureAwait(false);
 
         var query = new EnergyResultQuery(filter, processType);
 
-        var calculationResult = await _requestCalculationResultQueries.GetAsync(query).ConfigureAwait(false);
+        var calculationResultCount = 0;
+        await foreach (var calculationResult in _requestCalculationResultQueries.GetAsync(query))
+        {
+            yield return calculationResult;
+            calculationResultCount++;
+        }
 
-        _logger.LogDebug("Found {CalculationResult} calculation results based on {Query} query.", calculationResult?.ToJsonString(), query.ToJsonString());
-        return calculationResult;
+        _logger.LogDebug("Found {CalculationResults} calculation results based on {Query} query.", calculationResultCount, query.ToJsonString());
     }
 
     private Task<ProcessType> GetSpecificProcessTypeAsync(IEnergyResultFilter filter, RequestedProcessType requestedProcessType)

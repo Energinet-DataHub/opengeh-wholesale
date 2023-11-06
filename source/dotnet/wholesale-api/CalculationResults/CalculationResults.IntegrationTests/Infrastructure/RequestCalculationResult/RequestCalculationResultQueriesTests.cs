@@ -22,7 +22,6 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Energinet.DataHub.Wholesale.Common.Models;
 using FluentAssertions;
-using FluentAssertions.Execution;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -194,7 +193,7 @@ public class RequestCalculationResultQueriesTests : IClassFixture<DatabricksSqlS
         TimeSeriesType? timeSeriesType = null,
         Instant? startOfPeriod = null,
         Instant? endOfPeriod = null,
-        string gridArea = "101",
+        string? gridArea = null,
         string? energySupplierId = null,
         string? balanceResponsibleId = null)
     {

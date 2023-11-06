@@ -46,7 +46,9 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
     private const string ThirdQuantity = "3.333";
     private const string FourthQuantity = "4.444";
     private const string FourthQuantityThirdCorrection = "4.555";
-    private const string GridAreaCode = "301";
+    private const string GridAreaCodeC = "301";
+    private const string GridAreaCodeB = "201";
+    private const string GridAreaCodeA = "101";
     private readonly DatabricksSqlStatementApiFixture _fixture;
 
     public RequestCalculationResultRetrieverTests(DatabricksSqlStatementApiFixture fixture)
@@ -63,7 +65,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResultRetriever>> requestCalculationResultLoggerMock)
     {
         // Arrange
-        var gridAreaFilter = GridAreaCode;
+        var gridAreaFilter = GridAreaCodeC;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
@@ -79,9 +81,12 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
-        var actual = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.BalanceFixing);
+        var results = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.BalanceFixing).ToListAsync();
 
         // Assert
+        results.Should().NotBeNull();
+        results.Should().HaveCount(1);
+        var actual = results.First();
         actual.Should().NotBeNull();
         actual!.GridArea.Should().Be(gridAreaFilter);
         actual.PeriodStart.Should().Be(startOfPeriodFilter);
@@ -111,10 +116,10 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
-        var actual = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.BalanceFixing);
+        var results = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.BalanceFixing).ToListAsync();
 
         // Assert
-        actual.Should().BeNull();
+        results.Should().HaveCount(0);
     }
 
     [Theory]
@@ -126,7 +131,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResultRetriever>> requestCalculationResultLoggerMock)
     {
         // Arrange
-        var gridAreaFilter = GridAreaCode;
+        var gridAreaFilter = GridAreaCodeC;
         var energySupplierIdFilter = "4321987654321";
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
@@ -143,11 +148,12 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
-        var actual = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.BalanceFixing);
+        var results = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.BalanceFixing).ToListAsync();
 
         // Assert
-        actual.Should().NotBeNull();
-
+        results.Should().NotBeNull();
+        results.Should().HaveCount(1);
+        var actual = results.First();
         using var assertionScope = new AssertionScope();
         actual!.GridArea.Should().Be(gridAreaFilter);
         actual.PeriodStart.Should().Be(startOfPeriodFilter);
@@ -170,7 +176,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResultRetriever>> requestCalculationResultLoggerMock)
     {
         // Arrange
-        var gridAreaFilter = GridAreaCode;
+        var gridAreaFilter = GridAreaCodeC;
         var energySupplierId = "badId";
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
@@ -186,10 +192,10 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
-        var actual = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.BalanceFixing);
+        var results = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.BalanceFixing).ToListAsync();
 
         // Assert
-        actual.Should().BeNull();
+        results.Should().HaveCount(0);
     }
 
     [Theory]
@@ -201,7 +207,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResultRetriever>> requestCalculationResultLoggerMock)
     {
         // Arrange
-        var gridAreaFilter = GridAreaCode;
+        var gridAreaFilter = GridAreaCodeC;
         var balanceResponsibleIdFilter = "1234567891234";
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
@@ -217,11 +223,12 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
-        var actual = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.BalanceFixing);
+        var results = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.BalanceFixing).ToListAsync();
 
         // Assert
-        actual.Should().NotBeNull();
-
+        results.Should().NotBeNull();
+        results.Should().HaveCount(1);
+        var actual = results.First();
         using var assertionScope = new AssertionScope();
         actual!.GridArea.Should().Be(gridAreaFilter);
         actual.PeriodStart.Should().Be(startOfPeriodFilter);
@@ -244,7 +251,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResultRetriever>> requestCalculationResultLoggerMock)
     {
         // Arrange
-        var gridAreaFilter = GridAreaCode;
+        var gridAreaFilter = GridAreaCodeC;
         var balanceResponsibleIdFilter = "1234567891234";
         var energySupplierIdFilter = "4321987654321";
         var timeSeriesTypeFilter = TimeSeriesType.Production;
@@ -262,10 +269,12 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
-        var actual = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.BalanceFixing);
+        var results = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.BalanceFixing).ToListAsync();
 
         // Assert
-        actual.Should().NotBeNull();
+        results.Should().NotBeNull();
+        results.Should().HaveCount(1);
+        var actual = results.First();
 
         using var assertionScope = new AssertionScope();
         actual!.GridArea.Should().Be(gridAreaFilter);
@@ -290,7 +299,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResultRetriever>> requestCalculationResultLoggerMock)
     {
         // Arrange
-        var gridAreaFilter = GridAreaCode;
+        var gridAreaFilter = GridAreaCodeC;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
@@ -304,10 +313,12 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
-        var actual = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.FirstCorrection);
+        var results = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.FirstCorrection).ToListAsync();
 
         // Assert
-        actual.Should().NotBeNull();
+        results.Should().NotBeNull();
+        results.Should().HaveCount(1);
+        var actual = results.First();
 
         using var assertionScope = new AssertionScope();
         actual!.GridArea.Should().Be(gridAreaFilter);
@@ -332,7 +343,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResultRetriever>> requestCalculationResultLoggerMock)
     {
         // Arrange
-        var gridAreaFilter = GridAreaCode;
+        var gridAreaFilter = GridAreaCodeC;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
@@ -346,10 +357,12 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
-        var actual = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.SecondCorrection);
+        var results = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.SecondCorrection).ToListAsync();
 
         // Assert
-        actual.Should().NotBeNull();
+        results.Should().NotBeNull();
+        results.Should().HaveCount(1);
+        var actual = results.First();
 
         using var assertionScope = new AssertionScope();
         actual!.GridArea.Should().Be(gridAreaFilter);
@@ -374,7 +387,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResultRetriever>> requestCalculationResultLoggerMock)
     {
         // Arrange
-        var gridAreaFilter = GridAreaCode;
+        var gridAreaFilter = GridAreaCodeC;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
@@ -388,10 +401,12 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
-        var actual = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.ThirdCorrection);
+        var results = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.ThirdCorrection).ToListAsync();
 
         // Assert
-        actual.Should().NotBeNull();
+        results.Should().NotBeNull();
+        results.Should().HaveCount(1);
+        var actual = results.First();
 
         using var assertionScope = new AssertionScope();
         actual!.GridArea.Should().Be(gridAreaFilter);
@@ -416,7 +431,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResultRetriever>> requestCalculationResultLoggerMock)
     {
         // Arrange
-        var gridAreaFilter = GridAreaCode;
+        var gridAreaFilter = GridAreaCodeC;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 3, 0, 0);
@@ -430,10 +445,12 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
-        var actual = await sut.GetRequestCalculationResultAsync(request, RequestedProcessType.BalanceFixing);
+        var results = await sut.GetRequestCalculationResultAsync(request, RequestedProcessType.BalanceFixing).ToListAsync();
 
         // Assert
-        actual.Should().NotBeNull();
+        results.Should().NotBeNull();
+        results.Should().HaveCount(1);
+        var actual = results.First();
 
         using var assertionScope = new AssertionScope();
         actual!.GridArea.Should().Be(gridAreaFilter);
@@ -457,7 +474,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResultRetriever>> requestCalculationResultLoggerMock)
     {
         // Arrange
-        var gridAreaFilter = GridAreaCode;
+        var gridAreaFilter = GridAreaCodeC;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
@@ -471,10 +488,10 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
-        var actual = await sut.GetRequestCalculationResultAsync(request, RequestedProcessType.BalanceFixing);
+        var results = await sut.GetRequestCalculationResultAsync(request, RequestedProcessType.BalanceFixing).ToListAsync();
 
         // Assert
-        actual.Should().BeNull();
+        results.Should().HaveCount(0);
     }
 
     [Theory]
@@ -485,7 +502,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
         Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResultRetriever>> requestCalculationResultLoggerMock)
     {
-        var gridAreaFilter = GridAreaCode;
+        var gridAreaFilter = GridAreaCodeC;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
@@ -499,9 +516,13 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
-        var actual = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.LatestCorrection);
+        var results = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.LatestCorrection).ToListAsync();
 
-        actual.Should().NotBeNull();
+        // Assert
+        results.Should().NotBeNull();
+        results.Should().HaveCount(1);
+        var actual = results.First();
+
         actual!.ProcessType.Should().Be(ProcessType.ThirdCorrectionSettlement);
     }
 
@@ -513,7 +534,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
         Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResultRetriever>> requestCalculationResultLoggerMock)
     {
-        var gridAreaFilter = GridAreaCode;
+        var gridAreaFilter = GridAreaCodeC;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
@@ -528,9 +549,12 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
-        var actual = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.LatestCorrection);
+        var results = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.LatestCorrection).ToListAsync();
 
-        actual.Should().NotBeNull();
+        // Assert
+        results.Should().NotBeNull();
+        results.Should().HaveCount(1);
+        var actual = results.First();
         actual!.ProcessType.Should().Be(ProcessType.SecondCorrectionSettlement);
     }
 
@@ -542,7 +566,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
         Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResultRetriever>> requestCalculationResultLoggerMock)
     {
-        var gridAreaFilter = GridAreaCode;
+        var gridAreaFilter = GridAreaCodeC;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
@@ -556,9 +580,12 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
-        var actual = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.LatestCorrection);
+        var results = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.LatestCorrection).ToListAsync();
 
-        actual.Should().NotBeNull();
+        // Assert
+        results.Should().NotBeNull();
+        results.Should().HaveCount(1);
+        var actual = results.First();
         actual!.ProcessType.Should().Be(ProcessType.FirstCorrectionSettlement);
     }
 
@@ -570,7 +597,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
         Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResultRetriever>> requestCalculationResultLoggerMock)
     {
-        var gridAreaFilter = GridAreaCode;
+        var gridAreaFilter = GridAreaCodeC;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
@@ -584,16 +611,55 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
-        var actual = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.LatestCorrection);
+        var results = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.LatestCorrection).ToListAsync();
 
-        actual.Should().BeNull();
+        results.Should().HaveCount(0);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetRequestCalculationResultAsync_WhenRequestFromEnergySupplierPerBalanceResponsibleTotalProduction_ReturnsTwoResult(
+        Mock<IHttpClientFactory> httpClientFactoryMock,
+        Mock<ILogger<SqlStatusResponseParser>> loggerMock,
+        Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
+        Mock<ILogger<Application.RequestCalculationResult.RequestCalculationResultRetriever>> requestCalculationResultLoggerMock)
+    {
+        // Arrange
+        var balanceResponsibleIdFilter = "1234567891234";
+        var energySupplierIdFilter = "4321987654321";
+        var timeSeriesTypeFilter = TimeSeriesType.Production;
+        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
+        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+        var filter = CreateFilter(
+            timeSeriesType: timeSeriesTypeFilter,
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter,
+            energySupplierId: energySupplierIdFilter,
+            balanceResponsibleId: balanceResponsibleIdFilter);
+
+        var queries = await CreateRequestCalculationResultQueries(requestCalculationResultQueriesLoggerMock, httpClientFactoryMock, loggerMock, addFirstCorrection: false, addSecondCorrection: false, addThirdCorrection: false);
+
+        var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
+
+        // Act
+        var actual = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.BalanceFixing).ToListAsync();
+
+        // Assert
+        actual.Should().NotBeNull();
+        actual.Should().HaveCount(3);
+        actual.Select(result => result.GridArea).Should().Equal(GridAreaCodeA, GridAreaCodeB, GridAreaCodeC);
+        actual.Should().AllSatisfy(energyResult => energyResult.TimeSeriesType.Should().Be(timeSeriesTypeFilter));
+        actual.Should().AllSatisfy(energyResult => energyResult.PeriodStart.Should().Be(startOfPeriodFilter));
+        actual.Should().AllSatisfy(energyResult => energyResult.PeriodEnd.Should().Be(endOfPeriodFilter));
+        actual.Should().AllSatisfy(energyResult => energyResult.EnergySupplierId.Should().Be(energySupplierIdFilter));
+        actual.Should().AllSatisfy(energyResult => energyResult.BalanceResponsibleId.Should().Be(balanceResponsibleIdFilter));
     }
 
     private EnergyResultFilter CreateFilter(
         TimeSeriesType? timeSeriesType = null,
         Instant? startOfPeriod = null,
         Instant? endOfPeriod = null,
-        string gridArea = "101",
+        string? gridArea = null,
         string? energySupplierId = null,
         string? balanceResponsibleId = null)
     {
@@ -635,35 +701,43 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         const string firstHour = "2022-01-01T01:00:00.000Z";
         const string secondHour = "2022-01-01T02:00:00.000Z";
         const string thirdHour = "2022-01-01T03:00:00.000Z";
+        const string fourthHour = "2022-01-01T04:00:00.000Z";
 
         const string secondDay = "2022-01-02T00:00:00.000Z";
         const string thirdDay = "2022-01-03T00:00:00.000Z";
 
         const string energySupplier = "4321987654321";
         const string balanceResponsibleId = "1234567891234";
-        var row1 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: firstHour, gridArea: GridAreaCode, quantity: FirstQuantity);
-        var row2 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: secondHour, gridArea: GridAreaCode, quantity: SecondQuantity);
+        var row1 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: firstHour, gridArea: GridAreaCodeC, quantity: FirstQuantity);
+        var row2 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: secondHour, gridArea: GridAreaCodeC, quantity: SecondQuantity);
 
-        var row3 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: secondCalculationResultId, time: secondHour, gridArea: GridAreaCode, quantity: ThirdQuantity, batchExecutionTimeStart: "2022-03-12T03:00:00.000Z");
-        var row4 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: secondCalculationResultId, time: thirdHour, gridArea: GridAreaCode, quantity: FourthQuantity, batchExecutionTimeStart: "2022-03-12T03:00:00.000Z");
+        var row3 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: secondCalculationResultId, time: secondHour, gridArea: GridAreaCodeC, quantity: ThirdQuantity, batchExecutionTimeStart: "2022-03-12T03:00:00.000Z");
+        var row4 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: secondCalculationResultId, time: thirdHour, gridArea: GridAreaCodeC, quantity: FourthQuantity, batchExecutionTimeStart: "2022-03-12T03:00:00.000Z");
 
-        var row5 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: firstHour, gridArea: GridAreaCode, quantity: FirstQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndGridArea, energySupplierId: energySupplier);
-        var row6 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: secondCalculationResultId, time: secondHour, gridArea: GridAreaCode, quantity: SecondQuantity, aggregationLevel: DeltaTableAggregationLevel.BalanceResponsibleAndGridArea, balanceResponsibleId: balanceResponsibleId);
+        var row5 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: firstHour, gridArea: GridAreaCodeC, quantity: FirstQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndGridArea, energySupplierId: energySupplier);
+        var row6 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: secondCalculationResultId, time: secondHour, gridArea: GridAreaCodeC, quantity: SecondQuantity, aggregationLevel: DeltaTableAggregationLevel.BalanceResponsibleAndGridArea, balanceResponsibleId: balanceResponsibleId);
 
-        var row7 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: secondHour, gridArea: GridAreaCode, quantity: ThirdQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea, balanceResponsibleId: balanceResponsibleId, energySupplierId: energySupplier);
+        var row7 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: secondHour, gridArea: GridAreaCodeC, quantity: ThirdQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea, balanceResponsibleId: balanceResponsibleId, energySupplierId: energySupplier);
+        var row8 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: thirdHour, gridArea: GridAreaCodeB, quantity: FourthQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea, balanceResponsibleId: balanceResponsibleId, energySupplierId: energySupplier);
 
-        var row1FirstCorrection = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, batchProcessType: DeltaTableProcessType.FirstCorrectionSettlement, time: firstHour, gridArea: GridAreaCode, quantity: FirstQuantityFirstCorrection);
-        var row2FirstCorrection = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, batchProcessType: DeltaTableProcessType.FirstCorrectionSettlement, time: secondHour, gridArea: GridAreaCode, quantity: SecondQuantityFirstCorrection);
+        var row9 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: firstHour, gridArea: GridAreaCodeC, quantity: FirstQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea);
+        var row10 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: secondHour, gridArea: GridAreaCodeC, quantity: SecondQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea);
 
-        var row1SecondCorrection = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: secondCalculationResultId, batchProcessType: DeltaTableProcessType.SecondCorrectionSettlement, time: firstHour, gridArea: GridAreaCode, quantity: FirstQuantitySecondCorrection);
-        var row2SecondCorrection = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: secondCalculationResultId, batchProcessType: DeltaTableProcessType.SecondCorrectionSettlement, time: secondHour, gridArea: GridAreaCode, quantity: SecondQuantitySecondCorrection);
+        var row11 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: secondHour, gridArea: GridAreaCodeC, quantity: ThirdQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea, balanceResponsibleId: balanceResponsibleId, energySupplierId: energySupplier);
+        var row12 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: fourthHour, gridArea: GridAreaCodeB, quantity: FourthQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea, balanceResponsibleId: balanceResponsibleId, energySupplierId: energySupplier);
 
-        var row1ThirdCorrection = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, batchProcessType: DeltaTableProcessType.ThirdCorrectionSettlement, time: firstHour, gridArea: GridAreaCode, quantity: FirstQuantityThirdCorrection);
-        var row2ThirdCorrection = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, batchProcessType: DeltaTableProcessType.ThirdCorrectionSettlement, time: secondHour, gridArea: GridAreaCode, quantity: SecondQuantityThirdCorrection);
-        var row4ThirdCorrection = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, batchProcessType: DeltaTableProcessType.ThirdCorrectionSettlement, time: thirdHour, gridArea: GridAreaCode, quantity: FourthQuantityThirdCorrection);
+        var row1FirstCorrection = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, batchProcessType: DeltaTableProcessType.FirstCorrectionSettlement, time: firstHour, gridArea: GridAreaCodeC, quantity: FirstQuantityFirstCorrection);
+        var row2FirstCorrection = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, batchProcessType: DeltaTableProcessType.FirstCorrectionSettlement, time: secondHour, gridArea: GridAreaCodeC, quantity: SecondQuantityFirstCorrection);
 
-        var row1SecondDay = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: secondDay, gridArea: GridAreaCode, quantity: FirstQuantity);
-        var row1ThirdDay = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: thirdDay, gridArea: GridAreaCode, quantity: SecondQuantity);
+        var row1SecondCorrection = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: secondCalculationResultId, batchProcessType: DeltaTableProcessType.SecondCorrectionSettlement, time: firstHour, gridArea: GridAreaCodeC, quantity: FirstQuantitySecondCorrection);
+        var row2SecondCorrection = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: secondCalculationResultId, batchProcessType: DeltaTableProcessType.SecondCorrectionSettlement, time: secondHour, gridArea: GridAreaCodeC, quantity: SecondQuantitySecondCorrection);
+
+        var row1ThirdCorrection = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, batchProcessType: DeltaTableProcessType.ThirdCorrectionSettlement, time: firstHour, gridArea: GridAreaCodeC, quantity: FirstQuantityThirdCorrection);
+        var row2ThirdCorrection = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, batchProcessType: DeltaTableProcessType.ThirdCorrectionSettlement, time: secondHour, gridArea: GridAreaCodeC, quantity: SecondQuantityThirdCorrection);
+        var row4ThirdCorrection = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: thirdCalculationResultId, batchProcessType: DeltaTableProcessType.ThirdCorrectionSettlement, time: thirdHour, gridArea: GridAreaCodeC, quantity: FourthQuantityThirdCorrection);
+
+        var row1SecondDay = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: secondDay, gridArea: GridAreaCodeC, quantity: FirstQuantity);
+        var row1ThirdDay = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: thirdDay, gridArea: GridAreaCodeC, quantity: SecondQuantity);
 
         // mix up the order of the rows
         var rows = new List<IReadOnlyCollection<string>>
@@ -675,6 +749,11 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
             row5,
             row6,
             row7,
+            row8,
+            row9,
+            row10,
+            row11,
+            row12,
             row1SecondDay,
             row1ThirdDay,
         };

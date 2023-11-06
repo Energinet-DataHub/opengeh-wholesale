@@ -59,19 +59,16 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         if (!validationErrors.Any())
         {
             var aggregatedTimeSeriesRequestMessage = _aggregatedTimeSeriesRequestFactory.Parse(aggregatedTimeSeriesRequest);
-            var result = await GetCalculationResultsAsync(
-                aggregatedTimeSeriesRequestMessage).ConfigureAwait(false);
+            var results = await GetCalculationResultsAsync(aggregatedTimeSeriesRequestMessage)
+                .ToListAsync(cancellationToken).ConfigureAwait(false);
 
-            if (result is not null)
+            if (!results.Any())
             {
-                message = AggregatedTimeSeriesRequestAcceptedMessageFactory.Create(
-                    result,
-                    referenceId);
+                await SendRejectedMessageAsync(new List<ValidationError> { _noDataAvailable }, referenceId, cancellationToken).ConfigureAwait(false);
+                return;
             }
-            else
-            {
-                message = AggregatedTimeSeriesRequestRejectedMessageFactory.Create(new[] { _noDataAvailable }, referenceId);
-            }
+
+            message = AggregatedTimeSeriesRequestAcceptedMessageFactory.Create(results, referenceId);
         }
         else
         {
@@ -81,7 +78,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
     }
 
-    private Task<EnergyResult?> GetCalculationResultsAsync(
+    private IAsyncEnumerable<EnergyResult> GetCalculationResultsAsync(
         AggregatedTimeSeriesRequest request)
     {
         var filter = new EnergyResultFilter(
@@ -93,5 +90,11 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
             request.AggregationPerRoleAndGridArea.BalanceResponsibleId);
 
         return _requestCalculationResultRetriever.GetRequestCalculationResultAsync(filter, request.RequestedProcessType);
+    }
+
+    private async Task SendRejectedMessageAsync(List<ValidationError> validationErrors, string referenceId, CancellationToken cancellationToken)
+    {
+        var message = AggregatedTimeSeriesRequestRejectedMessageFactory.Create(validationErrors, referenceId);
+        await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
     }
 }

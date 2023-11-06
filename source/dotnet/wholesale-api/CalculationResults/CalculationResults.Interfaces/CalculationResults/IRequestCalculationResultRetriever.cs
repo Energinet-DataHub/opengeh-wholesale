@@ -19,8 +19,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationR
 public interface IRequestCalculationResultRetriever
 {
     /// <summary>
-    /// Get the latest request calculation result for the given query
+    /// Get a list of the latest calculation results for the given query
     /// </summary>
-    /// <returns>Returns null if no result was found</returns>
-    Task<EnergyResult?> GetRequestCalculationResultAsync(IEnergyResultFilter query, RequestedProcessType requestedProcessType);
+    IAsyncEnumerable<EnergyResult> GetRequestCalculationResultAsync(IEnergyResultFilter query, RequestedProcessType requestedProcessType);
 }

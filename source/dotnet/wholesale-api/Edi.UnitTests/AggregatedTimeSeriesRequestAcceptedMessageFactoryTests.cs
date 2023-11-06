@@ -55,10 +55,11 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
         response.Subject.Should().Be(expectedAcceptedSubject);
 
         var responseBody = AggregatedTimeSeriesRequestAccepted.Parser.ParseFrom(response.Body);
-        responseBody.GridArea.Should().Be(_gridArea);
-        responseBody.TimeSeriesType.Should().Be(Energinet.DataHub.Edi.Responses.TimeSeriesType.Production);
+        var serie = responseBody.Series.First();
+        serie.GridArea.Should().Be(_gridArea);
+        serie.TimeSeriesType.Should().Be(Energinet.DataHub.Edi.Responses.TimeSeriesType.Production);
 
-        var timeSeriesOrdered = responseBody.TimeSeriesPoints.OrderBy(ts => ts.Time).ToList();
+        var timeSeriesOrdered = serie.TimeSeriesPoints.OrderBy(ts => ts.Time).ToList();
         var earliestTimestamp = timeSeriesOrdered.First();
         var latestTimestamp = timeSeriesOrdered.Last();
 
@@ -69,14 +70,14 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
         latestTimestamp.Time.Should().BeLessThan(periodEndTimestamp)
             .And.BeGreaterOrEqualTo(earliestTimestamp.Time);
 
-        responseBody.TimeSeriesPoints.Count.Should().Be(energyResult.TimeSeriesPoints.Length);
+        serie.TimeSeriesPoints.Count.Should().Be(energyResult.First().TimeSeriesPoints.Length);
     }
 
-    private EnergyResult CreateEnergyResult()
+    private List<EnergyResult> CreateEnergyResult()
     {
         var quantityQualities = new List<QuantityQuality> { QuantityQuality.Estimated };
 
-        return new EnergyResult(
+        var result = new EnergyResult(
             _id,
             _batchId,
             _gridArea,
@@ -93,5 +94,6 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
             _periodStart,
             _periodEnd,
             _fromGridArea);
+        return new List<EnergyResult> { result };
     }
 }

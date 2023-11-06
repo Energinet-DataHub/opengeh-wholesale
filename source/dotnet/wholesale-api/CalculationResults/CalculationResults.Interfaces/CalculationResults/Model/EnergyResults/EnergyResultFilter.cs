@@ -20,6 +20,6 @@ public record EnergyResultFilter(
     TimeSeriesType TimeSeriesType,
     Instant StartOfPeriod,
     Instant EndOfPeriod,
-    string GridArea,
+    string? GridArea,
     string? EnergySupplierId,
     string? BalanceResponsibleId) : IEnergyResultFilter;

@@ -21,7 +21,7 @@ public record EnergyResultQuery(
     TimeSeriesType TimeSeriesType,
     Instant StartOfPeriod,
     Instant EndOfPeriod,
-    string GridArea,
+    string? GridArea,
     string? EnergySupplierId,
     string? BalanceResponsibleId,
     ProcessType ProcessType) : IEnergyResultFilter

@@ -24,9 +24,9 @@ namespace Energinet.DataHub.Wholesale.EDI.Factories;
 
 public class AggregatedTimeSeriesRequestAcceptedMessageFactory
 {
-    public static ServiceBusMessage Create(EnergyResult calculationResult, string referenceId)
+    public static ServiceBusMessage Create(List<EnergyResult> calculationResults, string referenceId)
     {
-        var body = CreateAcceptedResponse(calculationResult);
+        var body = CreateAcceptedResponse(calculationResults);
 
         var message = new ServiceBusMessage()
         {
@@ -38,18 +38,24 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
         return message;
     }
 
-    private static AggregatedTimeSeriesRequestAccepted CreateAcceptedResponse(EnergyResult energyResult)
+    private static AggregatedTimeSeriesRequestAccepted CreateAcceptedResponse(List<EnergyResult> energyResults)
     {
-        var points = CreateTimeSeriesPoints(energyResult);
+        var response = new AggregatedTimeSeriesRequestAccepted();
 
-        return new AggregatedTimeSeriesRequestAccepted()
+        foreach (var energyResult in energyResults)
         {
-            GridArea = energyResult.GridArea,
-            QuantityUnit = QuantityUnit.Kwh,
-            TimeSeriesPoints = { points },
-            TimeSeriesType = CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromCalculationsResult(energyResult.TimeSeriesType),
-            Resolution = Resolution.Pt15M,
-        };
+            var points = CreateTimeSeriesPoints(energyResult);
+            response.Series.Add(new Serie()
+            {
+                GridArea = energyResult.GridArea,
+                QuantityUnit = QuantityUnit.Kwh,
+                TimeSeriesPoints = { points },
+                TimeSeriesType = CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromCalculationsResult(energyResult.TimeSeriesType),
+                Resolution = Resolution.Pt15M,
+            });
+        }
+
+        return response;
     }
 
     private static IReadOnlyCollection<TimeSeriesPoint> CreateTimeSeriesPoints(EnergyResult energyResult)
