@@ -22,13 +22,14 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Fa
 
 public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProducedV1Factory
 {
+    public bool CanCreate(WholesaleResult result) =>
+        result.AmountType == AmountType.AmountPerCharge
+        && result.Resolution is Resolution.Hour or Resolution.Day;
+
     public AmountPerChargeResultProducedV1 Create(WholesaleResult result)
     {
-        if (result.AmountType != AmountType.AmountPerCharge)
-            throw new ArgumentException($"AmountPerChargeResultProducedV1 expect amount type to be '{AmountType.AmountPerCharge}'.");
-
-        if (result.Resolution != Resolution.Hour && result.Resolution != Resolution.Day)
-            throw new ArgumentException($"AmountPerChargeResultProducedV1 expect resolution to be '{Resolution.Hour}' or '{Resolution.Day}' .");
+        if (!CanCreate(result))
+            throw new ArgumentException($"Cannot create '{nameof(AmountPerChargeResultProducedV1)}' from wholesale result.", nameof(result));
 
         var amountPerChargeResultProducedV1 = new AmountPerChargeResultProducedV1
         {
