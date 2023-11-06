@@ -24,7 +24,7 @@ public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProd
 {
     public bool CanCreate(WholesaleResult result) =>
         result.AmountType == AmountType.AmountPerCharge
-        && result.ChargeResolution is ChargeResolution.Hour or ChargeResolution.Day;
+        && result.Resolution is Resolution.Hour or Resolution.Day;
 
     public AmountPerChargeResultProducedV1 Create(WholesaleResult result)
     {
@@ -42,7 +42,7 @@ public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProd
             ChargeCode = result.ChargeCode,
             ChargeType = ChargeTypeMapper.MapChargeType(result.ChargeType),
             ChargeOwnerId = result.ChargeOwnerId,
-            Resolution = ResolutionMapper.MapResolution(result.ChargeResolution),
+            Resolution = ResolutionMapper.MapResolution(result.Resolution),
             QuantityUnit = QuantityUnitMapper.MapQuantityUnit(result.QuantityUnit),
             MeteringPointType = MeteringPointTypeMapper.MapMeteringPointType(result.MeteringPointType),
             SettlementMethod = SettlementMethodMapper.MapSettlementMethod(result.SettlementMethod),
