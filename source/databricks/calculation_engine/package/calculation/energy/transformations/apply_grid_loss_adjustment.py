@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, when, lit, coalesce
+from pyspark.sql.functions import col, when, lit
 
 from package.calculation.energy.energy_results import EnergyResults
 from package.codelists import MeteringPointType
@@ -104,16 +104,16 @@ def _apply_grid_loss_adjustment(
     )
 
     # update function that selects the sum of two columns if condition is met, or selects data from a single column if condition is not met.
-    update_func = coalesce(
-        when(
-            col(Colname.energy_supplier_id)
-            == col(grid_loss_responsible_energy_supplier),
-            col(Colname.sum_quantity) + col("grid_loss_sum_quantity"),
-        ),
-        col(Colname.sum_quantity),
-    )
+    update_func = when(
+        col(Colname.energy_supplier_id) == col(grid_loss_responsible_energy_supplier),
+        col(Colname.sum_quantity) + col("grid_loss_sum_quantity"),
+    ).otherwise(col(Colname.sum_quantity))
 
-    result_df = df.withColumn(Colname.sum_quantity, update_func)
+    result_df = (
+        df.withColumn(adjusted_sum_quantity, update_func)
+        .drop(Colname.sum_quantity)
+        .withColumnRenamed(adjusted_sum_quantity, Colname.sum_quantity)
+    )
 
     result = result_df.select(
         Colname.grid_area,
