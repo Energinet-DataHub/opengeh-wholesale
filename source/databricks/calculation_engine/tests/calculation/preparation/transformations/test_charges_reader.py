@@ -131,7 +131,7 @@ def test__read_changes__returns_expected_joined_row_values(
     assert actual_row[Colname.charge_type] == DEFAULT_CHARGE_TYPE
     assert actual_row[Colname.charge_owner] == DEFAULT_CHARGE_OWNER
     assert actual_row[Colname.charge_tax] == DEFAULT_CHARGE_TAX
-    assert actual_row[Colname.charge_resolution] == DEFAULT_RESOLUTION
+    assert actual_row[Colname.resolution] == DEFAULT_RESOLUTION
     assert actual_row[Colname.charge_price] == DEFAULT_CHARGE_PRICE
     assert actual_row[Colname.from_date] == DEFAULT_FROM_DATE
     assert actual_row[Colname.to_date] == DEFAULT_TO_DATE

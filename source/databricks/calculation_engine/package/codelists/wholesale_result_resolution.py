@@ -15,14 +15,14 @@
 from enum import Enum
 
 
-class ChargeResolution(Enum):
+class WholesaleResultResolution(Enum):
     """
-    Time resolution of the charges, which is read from input delta table
+    Time resolution of a wholesale result, which is stored in the wholesale result delta table
     """
 
     MONTH = "P1M"
-    """Applies to subscriptions and fees"""
+    """Applies to tariffs (monthly amount), subscriptions and fees"""
     DAY = "P1D"
-    """Applies to tariffs"""
+    """Applies to tariffs, subscriptions and fees"""
     HOUR = "PT1H"
     """Applies to tariffs"""
