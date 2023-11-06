@@ -46,6 +46,8 @@ module "app_health_checks_ui" {
     "HealthChecksUI__HealthChecks__218__Uri"  = "https://func-converter-esettdepr-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/ready"
     "HealthChecksUI__HealthChecks__218__Name" = "Esett Deprecated: EnrichmentIngestor Function"
     "HealthChecksUI__HealthChecks__218__Uri"  = "https://func-enrichmentingestor-esettdepr-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/ready"
+    "HealthChecksUI__HealthChecks__019__Name" = "Market Participant: Certificate Synchronization"
+    "HealthChecksUI__HealthChecks__019__Uri"  = "https://func-certificatesynchronization-markpart-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/ready"
     # Live - prefix with 2xx
     "HealthChecksUI__HealthChecks__200__Name" = "Health Check UI - live"
     "HealthChecksUI__HealthChecks__200__Uri"  = "https://app-healthchecksui-health-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/live"
@@ -87,6 +89,8 @@ module "app_health_checks_ui" {
     "HealthChecksUI__HealthChecks__218__Uri"  = "https://func-converter-esettdepr-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/live"
     "HealthChecksUI__HealthChecks__218__Name" = "Esett Deprecated: EnrichmentIngestor Function - live"
     "HealthChecksUI__HealthChecks__218__Uri"  = "https://func-enrichmentingestor-esettdepr-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/live"
+    "HealthChecksUI__HealthChecks__219__Name" = "Market Participant: Certificate Synchronization - live"
+    "HealthChecksUI__HealthChecks__219__Uri"  = "https://func-certificatesynchronization-markpart-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
 
     # Polling Interval
     "HealthChecksUI__EvaluationTimeinSeconds" = 60
