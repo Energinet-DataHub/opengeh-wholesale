@@ -43,8 +43,8 @@ def agg_result_factory(spark: SparkSession) -> Callable[..., EnergyResults]:
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: ["1", "1", "1", "1", "1", "2"],
-                Colname.to_grid_area: ["1", "1", "1", "1", "1", "2"],
-                Colname.from_grid_area: ["1", "1", "1", "1", "1", "2"],
+                Colname.to_grid_area: [None, None, None, None, None, None],
+                Colname.from_grid_area: [None, None, None, None, None, None],
                 Colname.balance_responsible_id: ["1", "2", "1", "2", "1", "1"],
                 Colname.energy_supplier_id: ["1", "2", "3", "4", "5", "6"],
                 Colname.time_window: [
@@ -98,12 +98,12 @@ def agg_result_factory(spark: SparkSession) -> Callable[..., EnergyResults]:
                     MeteringPointType.CONSUMPTION.value,
                 ],
                 Colname.settlement_method: [
-                    SettlementMethod.NON_PROFILED.value,
-                    SettlementMethod.NON_PROFILED.value,
-                    SettlementMethod.NON_PROFILED.value,
-                    SettlementMethod.NON_PROFILED.value,
-                    SettlementMethod.NON_PROFILED.value,
-                    SettlementMethod.NON_PROFILED.value,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
                 ],
             }
         )
