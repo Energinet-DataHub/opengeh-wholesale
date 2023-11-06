@@ -14,6 +14,8 @@
 
 using Nito.AsyncEx;
 using Xunit;
+using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 {
@@ -24,23 +26,27 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
     /// are shared between tests.
     ///
     /// During the test setup phase the <see cref="LazyFixture"/> property should be accessed. Doing so will
-    /// create and initialize the "TFixture", but only once.
+    /// create and initialize the <typeparamref name="TLazyFixture"/>, but only once.
     ///
-    /// During the test cleanup phase the factory will only call Dispose of the "TFixture" if it was actually created.
+    /// During the test cleanup phase the factory will only call Dispose of the <typeparamref name="TLazyFixture"/> if it was actually created.
     /// </summary>
-    /// <typeparam name="TFixture">A xUnit fixture that implements <see cref="IAsyncLifetime"/>.</typeparam>
-    public sealed class LazyFixtureFactory<TFixture> : IAsyncLifetime
-        where TFixture : IAsyncLifetime, new()
+    /// <typeparam name="TLazyFixture">A xUnit fixture that inherits from <see cref="LazyFixtureBase"/>.</typeparam>
+    public sealed class LazyFixtureFactory<TLazyFixture> : IAsyncLifetime
+        where TLazyFixture : LazyFixtureBase
     {
-        public LazyFixtureFactory()
+        /// <summary>
+        /// Create lazy fixture factory.
+        /// </summary>
+        /// <param name="diagnosticMessageSink">Used for writing messages to the output from xUnit fixtures.</param>
+        public LazyFixtureFactory(IMessageSink diagnosticMessageSink)
         {
-            LazyFixture = new AsyncLazy<TFixture>(PrepareFixtureAsync);
+            LazyFixture = new AsyncLazy<TLazyFixture>(() => LazyFixtureFactory<TLazyFixture>.PrepareFixtureAsync(diagnosticMessageSink));
         }
 
         /// <summary>
-        /// Accessing this property will create and initialize the "TFixture" using lazy async initialization.
+        /// Accessing this property will create and initialize the <typeparamref name="TLazyFixture"/> using lazy async initialization.
         /// </summary>
-        public AsyncLazy<TFixture> LazyFixture { get; }
+        public AsyncLazy<TLazyFixture> LazyFixture { get; }
 
         /// <summary>
         /// This method is only implemented to conform to <see cref="IAsyncLifetime"/>.
@@ -51,7 +57,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         }
 
         /// <summary>
-        /// Responsible for disposing the "TFixture" if it was ever created.
+        /// Responsible for disposing the <typeparamref name="TLazyFixture"/> if it was ever created.
         /// </summary>
         async Task IAsyncLifetime.DisposeAsync()
         {
@@ -62,12 +68,19 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             }
         }
 
-        private async Task<TFixture> PrepareFixtureAsync()
+        private static async Task<TLazyFixture> PrepareFixtureAsync(IMessageSink diagnosticMessageSink)
         {
-            var fixture = new TFixture();
-            await fixture.InitializeAsync();
+            var lazyFixtureType = typeof(TLazyFixture);
+            diagnosticMessageSink.OnMessage(new DiagnosticMessage($"Creating lazy fixture of type '{lazyFixtureType.FullName}'."));
 
-            return fixture;
+            if (Activator.CreateInstance(lazyFixtureType, diagnosticMessageSink) is not TLazyFixture lazyFixture)
+            {
+                throw new InvalidOperationException($"Could not create lazy fixture of type '{lazyFixtureType.FullName}'.");
+            }
+
+            await lazyFixture.InitializeAsync();
+
+            return lazyFixture;
         }
     }
 }
