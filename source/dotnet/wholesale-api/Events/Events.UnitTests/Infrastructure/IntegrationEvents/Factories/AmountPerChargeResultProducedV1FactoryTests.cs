@@ -37,7 +37,7 @@ public class AmountPerChargeResultProducedV1FactoryTests
         // Arrange
         var wholesaleResult = new WholesaleResultBuilder()
             .WithAmountType(amountType)
-            .WithResolution(ChargeResolution.Day)
+            .WithResolution(Resolution.Day)
             .Build();
         var sut = new AmountPerChargeResultProducedV1Factory();
 
@@ -49,11 +49,11 @@ public class AmountPerChargeResultProducedV1FactoryTests
     }
 
     [Theory]
-    [InlineData(ChargeResolution.Hour, true)]
-    [InlineData(ChargeResolution.Day, true)]
-    [InlineData(ChargeResolution.Month, false)]
+    [InlineData(Resolution.Hour, true)]
+    [InlineData(Resolution.Day, true)]
+    [InlineData(Resolution.Month, false)]
     public void CanCreate_WhenResolution_ReturnsExpectedValue(
-        ChargeResolution resolution, bool expected)
+        Resolution resolution, bool expected)
     {
         // Arrange
         var wholesaleResult = new WholesaleResultBuilder()

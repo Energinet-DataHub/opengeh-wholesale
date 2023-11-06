@@ -77,12 +77,12 @@ public class WholesaleResultQueriesTests : IClassFixture<DatabricksSqlStatementA
         using var assertionScope = new AssertionScope();
         var actualHourlyAmount = actual.Single(row => row.Id.ToString() == HourlyTariffCalculationResultId);
         actualHourlyAmount.AmountType.Should().Be(AmountType.AmountPerCharge);
-        actualHourlyAmount.ChargeResolution.Should().Be(ChargeResolution.Hour);
+        actualHourlyAmount.Resolution.Should().Be(Resolution.Hour);
         actualHourlyAmount.TimeSeriesPoints.First().Amount.Should().Be(decimal.Parse(DefaultHourlyAmount, CultureInfo.InvariantCulture));
 
         var actualMonthlyAmount = actual.Single(row => row.Id.ToString() == MonthlyAmountTariffCalculationResultId);
         actualMonthlyAmount.AmountType.Should().Be(AmountType.MonthlyAmountPerCharge);
-        actualMonthlyAmount.ChargeResolution.Should().Be(ChargeResolution.Month);
+        actualMonthlyAmount.Resolution.Should().Be(Resolution.Month);
         actualMonthlyAmount.TimeSeriesPoints.First().Amount.Should().Be(decimal.Parse(DefaultMonthlyAmount, CultureInfo.InvariantCulture));
     }
 
@@ -92,7 +92,7 @@ public class WholesaleResultQueriesTests : IClassFixture<DatabricksSqlStatementA
             calculationId: CalculationId,
             calculationResultId: HourlyTariffCalculationResultId,
             chargeType: "tariff",
-            chargeResolution: "PT1H",
+            resolution: "PT1H",
             amountType: "amount_per_charge",
             meteringPointType: "production",
             settlementMethod: null,
@@ -102,7 +102,7 @@ public class WholesaleResultQueriesTests : IClassFixture<DatabricksSqlStatementA
             calculationId: CalculationId,
             calculationResultId: MonthlyAmountTariffCalculationResultId,
             chargeType: "tariff",
-            chargeResolution: "P1M",
+            resolution: "P1M",
             amountType: "monthly_amount_per_charge",
             meteringPointType: null,
             settlementMethod: null,

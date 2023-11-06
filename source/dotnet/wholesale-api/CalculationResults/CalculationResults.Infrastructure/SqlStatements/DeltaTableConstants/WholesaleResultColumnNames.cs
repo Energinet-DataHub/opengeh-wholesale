@@ -29,7 +29,7 @@ public class WholesaleResultColumnNames
 
     public const string QuantityUnit = "quantity_unit";
     public const string QuantityQualities = "quantity_qualities";
-    public const string ChargeResolution = "resolution";
+    public const string Resolution = "resolution";
     public const string MeteringPointType = "metering_point_type";
     public const string SettlementMethod = "settlement_method";
     public const string Price = "price";
@@ -55,7 +55,7 @@ public class WholesaleResultColumnNames
             CalculationResultId => "string",
             GridArea => "string",
             EnergySupplierId => "string",
-            ChargeResolution => "string",
+            Resolution => "string",
             MeteringPointType => "string",
             SettlementMethod => "string",
             ChargeCode => "string",

@@ -23,7 +23,7 @@ public class MonthlyAmountPerChargeResultProducedV1Factory : IMonthlyAmountPerCh
 {
     public bool CanCreate(WholesaleResult result) =>
         result.AmountType == AmountType.MonthlyAmountPerCharge
-        && result.ChargeResolution is ChargeResolution.Month
+        && result.Resolution is Resolution.Month
         && result.TimeSeriesPoints.Count == 1;
 
     public MonthlyAmountPerChargeResultProducedV1 Create(WholesaleResult result)

@@ -36,7 +36,7 @@ public sealed class WholesaleResultBuilder
 
     private ProcessType _calculationType = ProcessType.WholesaleFixing;
     private AmountType _amountType = AmountType.AmountPerCharge;
-    private ChargeResolution _resolution = ChargeResolution.Hour;
+    private Resolution _resolution = Resolution.Hour;
 
     public WholesaleResultBuilder WithCalculationType(ProcessType calculationType)
     {
@@ -50,7 +50,7 @@ public sealed class WholesaleResultBuilder
         return this;
     }
 
-    public WholesaleResultBuilder WithResolution(ChargeResolution resolution)
+    public WholesaleResultBuilder WithResolution(Resolution resolution)
     {
         _resolution = resolution;
         return this;

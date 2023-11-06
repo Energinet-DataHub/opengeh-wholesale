@@ -39,7 +39,7 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
     {
         // Arrange
         var wholesaleResult = new WholesaleResultBuilder()
-            .WithResolution(ChargeResolution.Month)
+            .WithResolution(Resolution.Month)
             .WithAmountType(amountType)
             .Build();
         var sut = new MonthlyAmountPerChargeResultProducedV1Factory();
@@ -52,11 +52,11 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
     }
 
     [Theory]
-    [InlineData(ChargeResolution.Hour, false)]
-    [InlineData(ChargeResolution.Day, false)]
-    [InlineData(ChargeResolution.Month, true)]
+    [InlineData(Resolution.Hour, false)]
+    [InlineData(Resolution.Day, false)]
+    [InlineData(Resolution.Month, true)]
     public void CanCreate_WhenResolution_ReturnsExpectedValue(
-        ChargeResolution resolution, bool expected)
+        Resolution resolution, bool expected)
     {
         // Arrange
         var wholesaleResult = new WholesaleResultBuilder()
@@ -84,7 +84,7 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
             timeSeriesPoints.Add(_someTimeSeriesPoint);
 
         var wholesaleResult = new WholesaleResultBuilder()
-            .WithResolution(ChargeResolution.Month)
+            .WithResolution(Resolution.Month)
             .WithAmountType(AmountType.MonthlyAmountPerCharge)
             .WithTimeSeriesPoints(timeSeriesPoints).Build();
         var sut = new MonthlyAmountPerChargeResultProducedV1Factory();
@@ -103,7 +103,7 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
     {
         // Arrange
         var wholesaleResult = new WholesaleResultBuilder()
-            .WithResolution(ChargeResolution.Month)
+            .WithResolution(Resolution.Month)
             .WithAmountType(AmountType.MonthlyAmountPerCharge)
             .Build();
         var expected = CreateExpected(wholesaleResult);
@@ -124,7 +124,7 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
         var sut = new MonthlyAmountPerChargeResultProducedV1Factory();
         var wholesaleResult = new WholesaleResultBuilder()
             .WithCalculationType(calculationType)
-            .WithResolution(ChargeResolution.Month)
+            .WithResolution(Resolution.Month)
             .WithAmountType(AmountType.MonthlyAmountPerCharge).Build();
 
         // Act
@@ -146,7 +146,7 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
         };
         var wholesaleResult = new WholesaleResultBuilder()
             .WithTimeSeriesPoints(timeSeriesPoints)
-            .WithResolution(ChargeResolution.Month)
+            .WithResolution(Resolution.Month)
             .WithAmountType(AmountType.MonthlyAmountPerCharge).Build();
 
         // Act
