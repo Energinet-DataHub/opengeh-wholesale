@@ -1,108 +1,111 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<DirectedGraph ZoomLevel="-1" xmlns="http://schemas.microsoft.com/vs/2009/dgml">
+<DirectedGraph Layout="Sugiyama" ZoomLevel="-1" xmlns="http://schemas.microsoft.com/vs/2009/dgml">
   <Nodes>
-    <Node Id="Asp.Versioning.Mvc-7.1.0" Category="DgmlPowerTool_PackageReference" Bounds="1213.16731316556,1097.09474227911,142.876666666667,25.96" Label="Asp.Versioning.Mvc" Nuget-Version="7.1.0" />
-    <Node Id="Asp.Versioning.Mvc.ApiExplorer-7.1.0" Category="DgmlPowerTool_PackageReference" Bounds="1213.16731316415,1264.97474236551,206.366666666667,25.96" Label="Asp.Versioning.Mvc.ApiExplorer" Nuget-Version="7.1.0" />
-    <Node Id="AspNetCore.HealthChecks.AzureServiceBus-7.0.0" Category="DgmlPowerTool_PackageReference" Bounds="-5.76153858874746,1269.03591260679,267.546666666667,25.96" Label="AspNetCore.HealthChecks.AzureServiceBus" Nuget-Version="7.0.0" />
-    <Node Id="Azure.Messaging.ServiceBus-7.16.2" Category="DgmlPowerTool_PackageReference" Bounds="-5.76153858511464,1213.07591257799,188.843333333332,25.96" Label="Azure.Messaging.ServiceBus" Nuget-Version="7.16.2" />
-    <Node Id="Azure.Storage.Files.DataLake-12.16.0" Category="DgmlPowerTool_PackageReference" Bounds="1353.4582582091,1384.9939674255,190.646666666667,25.96" Label="Azure.Storage.Files.DataLake" Nuget-Version="12.16.0" />
-    <Node Id="Batches" Bounds="809.857583067469,230.052138916277,195.352233505249,198.007100515747" Group="Expanded" UseManualLocation="True" />
-    <Node Id="CalculationResults" Bounds="1192.0225383558,243.834908202588,250.232233505249,198.007100515747" Group="Expanded" UseManualLocation="True" />
-    <Node Id="CsvHelper-30.0.1" Category="DgmlPowerTool_PackageReference" Bounds="1333.52938622941,1460.92251616504,93.4766666666665,25.96" Label="CsvHelper" Nuget-Version="30.0.1" />
-    <Node Id="DataHub.Core.App" Bounds="-25.7674637105523,1344.99591265831,328.120000004687,197.8800001152" Group="Expanded" />
-    <Node Id="DataHub.Core.Databricks" Bounds="753.646034434312,1097.11591245739,389.51,141.9200000864" Group="Expanded" Label="DataHub.Core.Databricks" />
-    <Node Id="DataHub.Core.JsonSerialization" Bounds="331.799367769052,1097.11591245739,297.356666666667,85.9600000575999" Group="Expanded" Label="DataHub.Core.JsonSerialization" />
-    <Node Id="DataHub.Core.Logging" Bounds="582.583980137366,697.315891646081,362.16666666819,141.9200000864" Group="Expanded" Label="DataHub.Core.Logging" />
-    <Node Id="Energinet.DataHub.Core.App.Common.Security-8.1.1" Category="DgmlPowerTool_PackageReference" Bounds="-5.76746370586478,1496.91591274471,288.12,25.96" Label="Energinet.DataHub.Core.App.Common.Security" Nuget-Version="8.1.1" />
-    <Node Id="Energinet.DataHub.Core.App.FunctionApp-8.1.1" Category="DgmlPowerTool_PackageReference" Bounds="-5.76746371055226,1440.95591271591,262.253333333334,25.96" Label="Energinet.DataHub.Core.App.FunctionApp" Nuget-Version="8.1.1" />
-    <Node Id="Energinet.DataHub.Core.App.WebApp-8.1.1" Category="DgmlPowerTool_PackageReference" Bounds="-5.76746371031788,1384.99591268711,240.546666666667,25.96" Label="Energinet.DataHub.Core.App.WebApp" Nuget-Version="8.1.1" />
-    <Node Id="Energinet.DataHub.Core.Databricks.Jobs-7.0.1" Category="DgmlPowerTool_PackageReference" Bounds="773.646034439234,1137.11591248619,251.67,25.96" Label="Energinet.DataHub.Core.Databricks.Jobs" Nuget-Version="7.0.1" />
-    <Node Id="Energinet.DataHub.Core.Databricks.SqlStatementExecution-7.0.1" Category="DgmlPowerTool_PackageReference" Bounds="773.646034434312,1193.07591251499,349.51,25.96" Label="Energinet.DataHub.Core.Databricks.SqlStatementExecution" Nuget-Version="7.0.1" />
-    <Node Id="Energinet.DataHub.Core.FunctionApp.TestCommon-4.4.2" Category="DgmlPowerTool_PackageReference" Bounds="14.2639801026832,793.275891685428,309.913333333333,25.96" Label="Energinet.DataHub.Core.FunctionApp.TestCommon" Nuget-Version="4.4.2" />
-    <Node Id="Energinet.DataHub.Core.JsonSerialization-2.2.8" Category="DgmlPowerTool_PackageReference" Bounds="351.799367769052,1137.11591248619,257.356666666667,25.96" Label="Energinet.DataHub.Core.JsonSerialization" Nuget-Version="2.2.8" />
-    <Node Id="Energinet.DataHub.Core.Logging-3.1.1" Category="DgmlPowerTool_PackageReference" Bounds="602.583980137366,737.315891674881,213.76,25.96" Label="Energinet.DataHub.Core.Logging" Nuget-Version="3.1.1" />
-    <Node Id="Energinet.DataHub.Core.Logging.LoggingMiddleware-3.1.1" Category="DgmlPowerTool_PackageReference" Bounds="602.58398013889,793.275891703681,322.166666666667,25.96" Label="Energinet.DataHub.Core.Logging.LoggingMiddleware" Nuget-Version="3.1.1" />
-    <Node Id="Energinet.DataHub.Core.Messaging-3.2.0" Category="DgmlPowerTool_PackageReference" Bounds="14.2384614142994,1137.11591252039,227.360000000001,25.96" Label="Energinet.DataHub.Core.Messaging" Nuget-Version="3.2.0" />
-    <Node Id="Energinet.DataHub.Core.TestCommon-4.4.2" Category="DgmlPowerTool_PackageReference" Bounds="14.263980099109,737.315891656628,239.690000000001,25.96" Label="Energinet.DataHub.Core.TestCommon" Nuget-Version="4.4.2" />
-    <Node Id="Energinet.DataHub.MessageHub.IntegrationTesting-3.2.0" Category="DgmlPowerTool_PackageReference" Bounds="-5.73601989459222,981.155891814133,310.110000000001,25.96" Label="Energinet.DataHub.MessageHub.IntegrationTesting" Nuget-Version="3.2.0" />
-    <Node Id="Energinet.Messaging" Bounds="-5.76153858570058,1097.11591249159,267.360000000001,85.9600000576002" Group="Expanded" Label="DataHub.Core.Messaging" />
-    <Node Id="Energinet.TestCommon" Bounds="-5.73601990089102,697.315891627828,349.913333336907,141.9200000864" Group="Expanded" Label="DataHub.Core.TestCommon" />
-    <Node Id="Events" Bounds="592.841108726562,48.8634133761694,188.638900171916,142.005801882935" Group="Expanded" UseManualLocation="True" />
-    <Node Id="FluentAssertions-6.12.0" Category="DgmlPowerTool_PackageReference" Bounds="374.177313438477,809.235891756533,126.953333333333,25.96" Label="FluentAssertions" Nuget-Version="6.12.0" />
-    <Node Id="Google.Protobuf-3.25.0" Category="DgmlPowerTool_PackageReference" Bounds="824.742536300931,1440.95591272199,127.763333333333,25.96" Label="Google.Protobuf" Nuget-Version="3.25.0" />
-    <Node Id="Grpc.Tools-2.59.0" Category="DgmlPowerTool_PackageReference" Bounds="824.742536309181,1384.99591269319,94.7800000000002,25.96" Label="Grpc.Tools" Nuget-Version="2.59.0" />
-    <Node Id="Microsoft.ApplicationInsights.AspNetCore-2.21.0" Category="DgmlPowerTool_PackageReference" Bounds="582.583980111648,869.235891761281,260.796666666667,25.96" Label="Microsoft.ApplicationInsights.AspNetCore" Nuget-Version="2.21.0" />
-    <Node Id="Microsoft.AspNetCore.Mvc.Testing-7.0.13" Category="DgmlPowerTool_PackageReference" Bounds="204.947313438886,925.195891785333,221.676666666667,25.96" Label="Microsoft.AspNetCore.Mvc.Testing" Nuget-Version="7.0.13" />
-    <Node Id="Microsoft.Azure.Databricks.Client-2.2.0" Category="DgmlPowerTool_PackageReference" Bounds="753.646034440406,1269.03591257259,214.386666666667,25.96" Label="Microsoft.Azure.Databricks.Client" Nuget-Version="2.2.0" />
-    <Node Id="Microsoft.Configuration" Bounds="1186.42064677878,657.312022048692,487.23000001664,309.8000001728" Group="Expanded" Label="Support Configuration" />
-    <Node Id="Microsoft.Data" Bounds="332.352536294135,1344.99591263019,442.390000006796,197.880000143318" Group="Expanded" Label="Supporting Database" />
-    <Node Id="Microsoft.Data.SqlClient-5.1.2" Category="DgmlPowerTool_PackageReference" Bounds="501.922536294182,1384.99591265899,166.993333333333,25.96" Label="Microsoft.Data.SqlClient" Nuget-Version="5.1.2" />
-    <Node Id="Microsoft.EntityFrameworkCore.SqlServer-7.0.13" Category="DgmlPowerTool_PackageReference" Bounds="352.352536296948,1440.95591271591,258.153333333334,25.96" Label="Microsoft.EntityFrameworkCore.SqlServer" Nuget-Version="7.0.13" />
-    <Node Id="Microsoft.Extensions.Azure-1.7.1" Category="DgmlPowerTool_PackageReference" Bounds="1128.57760233537,1516.89979616916,181.606666666667,25.96" Label="Microsoft.Extensions.Azure" Nuget-Version="1.7.1" />
-    <Node Id="Microsoft.Extensions.Configuration-7.0.0" Category="DgmlPowerTool_PackageReference" Bounds="1429.60731346209,697.312022077492,224.043333333334,25.96" Label="Microsoft.Extensions.Configuration" Nuget-Version="7.0.0" />
-    <Node Id="Microsoft.Extensions.Configuration.Binder-7.0.4" Category="DgmlPowerTool_PackageReference" Bounds="1206.42064678769,809.232022135092,260.736666666668,25.96" Label="Microsoft.Extensions.Configuration.Binder" Nuget-Version="7.0.4" />
-    <Node Id="Microsoft.Extensions.Configuration.EnvironmentVariables-7.0.0" Category="DgmlPowerTool_PackageReference" Bounds="1206.42064678136,921.152022192692,340.816666666668,25.96" Label="Microsoft.Extensions.Configuration.EnvironmentVariables" Nuget-Version="7.0.0" />
-    <Node Id="Microsoft.Extensions.Configuration.FileExtensions-7.0.0" Category="DgmlPowerTool_PackageReference" Bounds="1206.42064678488,865.192022163892,300.216666666667,25.96" Label="Microsoft.Extensions.Configuration.FileExtensions" Nuget-Version="7.0.0" />
-    <Node Id="Microsoft.Extensions.Configuration.Json-7.0.0" Category="DgmlPowerTool_PackageReference" Bounds="1206.42064677878,753.272022106292,249.84,25.96" Label="Microsoft.Extensions.Configuration.Json" Nuget-Version="7.0.0" />
-    <Node Id="Microsoft.Extensions.DependencyInjection-7.0.0" Category="DgmlPowerTool_PackageReference" Bounds="1340.17525859876,1516.94029625581,262.996666666666,25.96" Label="Microsoft.Extensions.DependencyInjection" Nuget-Version="7.0.0" />
-    <Node Id="Microsoft.Extensions.DependencyInjection.Abstractions-7.0.0" Category="DgmlPowerTool_PackageReference" Bounds="271.241758933408,1572.87591280231,331.26,25.96" Label="Microsoft.Extensions.DependencyInjection.Abstractions" Nuget-Version="7.0.0" />
-    <Node Id="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore-7.0.13" Category="DgmlPowerTool_PackageReference" Bounds="352.352536300979,1496.91591274471,402.389999999999,25.96" Label="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Nuget-Version="7.0.13" />
-    <Node Id="Microsoft.Extensions.Hosting-7.0.1" Category="DgmlPowerTool_PackageReference" Bounds="1022.61237924036,1384.99591254879,192.673333333333,25.96" Label="Microsoft.Extensions.Hosting" Nuget-Version="7.0.1" />
-    <Node Id="Microsoft.Extensions.Hosting.Abstractions-7.0.0" Category="DgmlPowerTool_PackageReference" Bounds="1022.58093587426,1440.91746245189,260.936666666666,25.96" Label="Microsoft.Extensions.Hosting.Abstractions" Nuget-Version="7.0.0" />
-    <Node Id="Microsoft.Extensions.Http-7.0.0" Category="DgmlPowerTool_PackageReference" Bounds="1213.16731316978,1153.05474230791,174.906666666668,25.96" Label="Microsoft.Extensions.Http" Nuget-Version="7.0.0" />
-    <Node Id="Microsoft.Extensions.Logging.Abstractions-7.0.1" Category="DgmlPowerTool_PackageReference" Bounds="873.380646778784,869.235891761281,263.04,25.96" Label="Microsoft.Extensions.Logging.Abstractions" Nuget-Version="7.0.1" />
-    <Node Id="Microsoft.Extensions.Logging.AzureAppServices-7.0.13" Category="DgmlPowerTool_PackageReference" Bounds="582.583980110828,925.195891790081,292.02,25.96" Label="Microsoft.Extensions.Logging.AzureAppServices" Nuget-Version="7.0.13" />
-    <Node Id="Microsoft.Extensions.Options-7.0.1" Category="DgmlPowerTool_PackageReference" Bounds="1206.42064678066,697.312022077492,193.186666666666,25.96" Label="Microsoft.Extensions.Options" Nuget-Version="7.0.1" />
-    <Node Id="Microsoft.NET.Test.Sdk-17.7.2" Category="DgmlPowerTool_PackageReference" Bounds="154.360646772513,869.235891743028,159.466666666667,25.96" Label="Microsoft.NET.Test.Sdk" Nuget-Version="17.7.2" />
-    <Node Id="Microsoft.OpenApi.Readers-1.6.10" Category="DgmlPowerTool_PackageReference" Bounds="1213.16731317306,1209.01474233669,184.263333333332,25.96" Label="Microsoft.OpenApi.Readers" Nuget-Version="1.6.10" />
-    <Node Id="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Category="DgmlPowerTool_PackageReference" Bounds="-25.7517417908973,1572.8739674255,267.063333333334,25.96" Label="Microsoft.VisualStudio.Threading.Analyzers" Nuget-Version="17.7.30" />
-    <Node Id="Moq-4.20.69" Category="DgmlPowerTool_PackageReference" Bounds="374.177313436016,697.315891707936,64.873333333333,25.96" Label="Moq" Nuget-Version="4.20.69" />
-    <Node Id="Moq.EntityFrameworkCore-7.0.0.2" Category="DgmlPowerTool_PackageReference" Bounds="-5.7360198945336,925.195891771828,180.683333333332,25.96" Label="Moq.EntityFrameworkCore" Nuget-Version="7.0.0.2" />
-    <Node Id="Newtonsoft.Json-13.0.3" Category="DgmlPowerTool_PackageReference" Bounds="804.830935668705,1516.89979627079,127.556666666667,25.96" Label="Newtonsoft.Json" Nuget-Version="13.0.3" />
-    <Node Id="NodaTime-3.1.9" Category="DgmlPowerTool_PackageReference" Bounds="331.799367769755,1213.07591254379,94.9866666666667,25.96" Label="NodaTime" Nuget-Version="3.1.9" />
-    <Node Id="NodaTime.Serialization.Protobuf-2.0.1" Category="DgmlPowerTool_PackageReference" Bounds="456.786034439235,1213.07591254379,210.783333333333,25.96" Label="NodaTime.Serialization.Protobuf" Nuget-Version="2.0.1" />
-    <Node Id="Package Reference" Bounds="-45.7674637105523,617.312022019892,1739.41811050598,1001.52389081122" Expression="Package. Reference" Group="Expanded" Label="Package References" Priority="0" />
-    <Node Id="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime-7.1.0" Category="DgmlPowerTool_PackageReference" Bounds="331.799367767646,1269.03591257259,351.846666666666,25.96" Label="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" Nuget-Version="7.1.0" />
-    <Node Id="SupportHosting" Bounds="1002.58093587426,1344.97357890309,300.948450192758,141.9262171945" Group="Expanded" Label="Support Hosting" />
-    <Node Id="SupportLogging" Bounds="562.583980109422,657.315891617281,593.836666669362,313.8400002016" Group="Expanded" Label="Support Logging" />
-    <Node Id="SupportingDataLake" Bounds="1333.4582582091,1344.9939674255,230.646666666667,85.96" Group="Expanded" Label="Supporting DataLake" />
-    <Node Id="SupportingDatabricks" Bounds="733.646034434312,1057.11591242859,429.51,257.8800001728" Group="Expanded" Label="Supporting Databricks" />
-    <Node Id="SupportingNodaTime" Bounds="311.799367767646,1057.11591242859,391.846666666666,257.8800001728" Group="Expanded" Label="Supporting NodaTime" />
-    <Node Id="SupportingProtobuf" Bounds="804.742536300931,1344.99591266439,167.763333333333,141.9200000864" Group="Expanded" Label="Supporting Protobuf" />
-    <Node Id="SupportingTests" Bounds="-25.736019900891,657.315891590025,558.320000010313,369.800000252908" Group="Expanded" Label="Supporting Tests" />
-    <Node Id="SupportingWeb" Bounds="1193.16731316415,1057.09474225029,386.99,253.840000144" Group="Expanded" Label="Supporting Web API" />
-    <Node Id="Swashbuckle.AspNetCore-6.5.0" Category="DgmlPowerTool_PackageReference" Bounds="1386.04397983082,1097.09474227909,174.113333333333,25.96" Label="Swashbuckle.AspNetCore" Nuget-Version="6.5.0" />
-    <Node Id="System.Linq.Async-6.0.1" Category="DgmlPowerTool_PackageReference" Bounds="962.387602335373,1516.89979617382,136.190000000001,25.96" Label="System.Linq.Async" Nuget-Version="6.0.1" />
-    <Node Id="Tests" Bounds="150.386916768209,216.479452257293,65.6466666666665,25" Group="Collapsed" UseManualLocation="True" />
-    <Node Id="YamlDotNet-13.7.1" Category="DgmlPowerTool_PackageReference" Bounds="1456.97049163787,1460.93863267384,103.756666666667,25.96" Label="YamlDotNet" Nuget-Version="13.7.1" />
-    <Node Id="c0257fe7-ad16-4e1f-b081-7e231f4dda57" Bounds="-25.7615385887475,1057.11591246279,307.546666666667,257.8800001728" Group="Expanded" Label="Supporting ServiceBus" />
-    <Node Id="coverlet.collector-6.0.0" Category="DgmlPowerTool_PackageReference" Bounds="-5.73601989500236,869.235891743028,130.096666666666,25.96" Label="coverlet.collector" Nuget-Version="6.0.0" />
-    <Node Id="database-migration\DatabaseMigration.csproj" Category="CodeSchema_Project" Bounds="424.817067954843,319.533149877296,142.048900171916,26.002233505249" Label="DatabaseMigration" UseManualLocation="True" />
-    <Node Id="dbup-sqlserver-5.0.37" Category="DgmlPowerTool_PackageReference" Bounds="352.352536294182,1384.99591268711,119.57,25.96" Label="dbup-sqlserver" Nuget-Version="5.0.37" />
-    <Node Id="domain-tests\DomainTests.csproj" Category="CodeSchema_Project" Bounds="38.8032637192119,-273.730735934633,108.232233505249,26.002233505249" Label="DomainTests" UseManualLocation="True" />
-    <Node Id="wholesale-api\Batches\Batches.Application\Batches.Application.csproj" Category="CodeSchema_Project" Bounds="835.328675596766,326.044992441932,144.462233505249,26.002233505249" Label="Batches.Application" />
-    <Node Id="wholesale-api\Batches\Batches.Infrastructure\Batches.Infrastructure.csproj" Category="CodeSchema_Project" Bounds="829.857583067469,270.071519846718,155.352233505249,26.002233505249" Label="Batches.Infrastructure" />
-    <Node Id="wholesale-api\Batches\Batches.IntegrationTests\Batches.IntegrationTests.csproj" Category="CodeSchema_Project" Bounds="889.559423387181,-385.73519150104,168.472233505248,26.002233505249" Label="Batches.IntegrationTests" UseManualLocation="True" />
-    <Node Id="wholesale-api\Batches\Batches.Interfaces\Batches.Interfaces.csproj" Category="CodeSchema_Project" Bounds="839.741978412521,382.047204966347,135.635566838582,26.002233505249" Label="Batches.Interfaces" />
-    <Node Id="wholesale-api\Batches\Batches.UnitTests\Batches.UnitTests.csproj" Category="CodeSchema_Project" Bounds="1279.79070512546,-385.73519150104,132.012233505249,26.002233505249" Label="Batches.UnitTests" UseManualLocation="True" />
-    <Node Id="wholesale-api\CalculationResults\CalculationResults.Application\CalculationResults.Application.csproj" Category="CodeSchema_Project" Bounds="1217.47895193002,339.833061616078,199.342233505249,26.002233505249" Label="CalculationResults.Application" />
-    <Node Id="wholesale-api\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" Category="CodeSchema_Project" Bounds="1212.02253835581,283.843643586293,210.232233505249,26.002233505249" Label="CalculationResults.Infrastructure" />
-    <Node Id="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Category="CodeSchema_Project" Bounds="56.8034596420636,-385.73519150104,223.352233505249,26.002233505249" Label="CalculationResults.IntegrationTests" UseManualLocation="True" />
-    <Node Id="wholesale-api\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" Category="CodeSchema_Project" Bounds="1221.89246836883,395.835319916859,190.515566838581,26.0022335052491" Label="CalculationResults.Interfaces" />
-    <Node Id="wholesale-api\CalculationResults\CalculationResults.UnitTests\CalculationResults.UnitTests.csproj" Category="CodeSchema_Project" Bounds="672.667050340306,-385.73519150104,186.892233505248,26.002233505249" Label="CalculationResults.UnitTests" UseManualLocation="True" />
-    <Node Id="wholesale-api\Common\Common.csproj" Category="CodeSchema_Project" Bounds="895.906549366326,490.049942204976,89.9555668385819,26.002233505249" Label="Common" UseManualLocation="True" />
-    <Node Id="wholesale-api\Edi.UnitTests\Edi.UnitTests.csproj" Category="CodeSchema_Project" Bounds="-98.4956030613872,-273.730728305239,107.298900171916,26.002233505249" Label="Edi.UnitTests" UseManualLocation="True" />
-    <Node Id="wholesale-api\Edi\Edi.csproj" Category="CodeSchema_Project" Bounds="639.57341665951,322.857490544281,57.0455668385821,26.002233505249" Label="Edi" UseManualLocation="True" />
-    <Node Id="wholesale-api\Events\Events.Application\Events.Application.csproj" Category="CodeSchema_Project" Bounds="618.3079593125,144.866866495066,137.748900171915,26.002233505249" Label="Events.Application" />
-    <Node Id="wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" Category="CodeSchema_Project" Bounds="612.841108726562,88.8635133761694,148.638900171916,26.002233505249" Label="Events.Infrastructure" />
-    <Node Id="wholesale-api\Events\Events.IntegrationTests\Events.IntegrationTests.csproj" Category="CodeSchema_Project" Bounds="1088.03169063978,-385.73519150104,161.758900171916,26.002233505249" Label="Events.IntegrationTests" UseManualLocation="True" />
-    <Node Id="wholesale-api\Events\Events.UnitTests\Events.UnitTests.csproj" Category="CodeSchema_Project" Bounds="-98.4955725438091,-385.73519150104,125.298900171916,26.002233505249" Label="Events.UnitTests" UseManualLocation="True" />
-    <Node Id="wholesale-api\Test.Core\Test.Core.csproj" Category="CodeSchema_Project" Bounds="618.754700079889,-329.732956088442,89.0655668385825,26.002233505249" Label="Test.Core" UseManualLocation="True" />
-    <Node Id="wholesale-api\WebApi.IntegrationTests\WebApi.IntegrationTests.csproj" Category="CodeSchema_Project" Bounds="473.181418829889,-385.73519150104,169.485566838583,26.002233505249" Label="WebApi.IntegrationTests" UseManualLocation="True" />
-    <Node Id="wholesale-api\WebApi.UnitTests\WebApi.UnitTests.csproj" Category="CodeSchema_Project" Bounds="310.155742560357,-385.73519150104,133.025566838583,26.002233505249" Label="WebApi.UnitTests" UseManualLocation="True" />
-    <Node Id="wholesale-api\WebApi\WebApi.csproj" Category="CodeSchema_Project" Bounds="864.264638518511,-96.3162071325174,82.7722335052495,26.002233505249" Label="WebApi" UseManualLocation="True" />
-    <Node Id="xunit-2.6.1" Category="DgmlPowerTool_PackageReference" Bounds="374.177313469703,753.275891727733,66.0599999999995,25.96" Label="xunit" Nuget-Version="2.6.1" />
-    <Node Id="xunit.runner.visualstudio-2.5.3" Category="DgmlPowerTool_PackageReference" Bounds="343.827313442754,869.235891756533,168.756666666667,25.96" Label="xunit.runner.visualstudio" Nuget-Version="2.5.3" />
+    <Node Id="Asp.Versioning.Mvc-7.1.0" Category="DgmlPowerTool_PackageReference" Bounds="442.169284020997,1920.31004047128,142.876666666667,25.96" Label="Asp.Versioning.Mvc" Nuget-Version="7.1.0" />
+    <Node Id="Asp.Versioning.Mvc.ApiExplorer-7.1.0" Category="DgmlPowerTool_PackageReference" Bounds="442.169284020997,2088.19004047128,206.366666666667,25.96" Label="Asp.Versioning.Mvc.ApiExplorer" Nuget-Version="7.1.0" />
+    <Node Id="AspNetCore.HealthChecks.AzureServiceBus-7.0.0" Category="DgmlPowerTool_PackageReference" Bounds="601.279284020997,1752.43004047128,267.546666666667,25.96" Label="AspNetCore.HealthChecks.AzureServiceBus" Nuget-Version="7.0.0" />
+    <Node Id="Azure.Messaging.ServiceBus-7.16.2" Category="DgmlPowerTool_PackageReference" Bounds="601.279284020997,1696.47004047128,188.843333333332,25.96" Label="Azure.Messaging.ServiceBus" Nuget-Version="7.16.2" />
+    <Node Id="Azure.Storage.Files.DataLake-12.16.0" Category="DgmlPowerTool_PackageReference" Bounds="84.0492840209974,2204.15004047128,190.646666666667,25.96" Label="Azure.Storage.Files.DataLake" Nuget-Version="12.16.0" />
+    <Node Id="Batches" Bounds="678.473167268372,760.741106450281,195.352233505249,198.006700515747" Group="Expanded" />
+    <Node Id="CalculationResults" Bounds="774.033167268371,532.734405934534,250.232233505249,198.006700515747" Group="Expanded" />
+    <Node Id="CsvHelper-30.0.1" Category="DgmlPowerTool_PackageReference" Bounds="482.252617354332,2164.15004047128,93.4766666666665,25.96" Label="CsvHelper" Nuget-Version="30.0.1" />
+    <Node Id="DataHub.Core.App" Bounds="64.0492840209974,1880.31004047128,328.12,253.84" Group="Expanded" />
+    <Node Id="DataHub.Core.Databricks" Bounds="1360.67261735433,1580.51004047128,389.51,141.92" Group="Expanded" Label="DataHub.Core.Databricks" />
+    <Node Id="DataHub.Core.JsonSerialization" Bounds="938.825950687665,1580.51004047128,297.356666666667,85.96" Group="Expanded" Label="DataHub.Core.JsonSerialization" />
+    <Node Id="DataHub.Core.Logging" Bounds="781.209284020997,1124.75004047128,362.166666666667,141.92" Group="Expanded" Label="DataHub.Core.Logging" />
+    <Node Id="Energinet.DataHub.Core.App.Common.Security-8.1.1" Category="DgmlPowerTool_PackageReference" Bounds="84.0492840209974,2088.19004047128,288.12,25.96" Label="Energinet.DataHub.Core.App.Common.Security" Nuget-Version="8.1.1" />
+    <Node Id="Energinet.DataHub.Core.App.FunctionApp-8.1.1" Category="DgmlPowerTool_PackageReference" Bounds="84.0492840209974,1976.27004047128,262.253333333334,25.96" Label="Energinet.DataHub.Core.App.FunctionApp" Nuget-Version="8.1.1" />
+    <Node Id="Energinet.DataHub.Core.App.WebApp-8.1.1" Category="DgmlPowerTool_PackageReference" Bounds="84.0492840209974,2032.23004047128,240.546666666667,25.96" Label="Energinet.DataHub.Core.App.WebApp" Nuget-Version="8.1.1" />
+    <Node Id="Energinet.DataHub.Core.Databricks.Jobs-7.0.1" Category="DgmlPowerTool_PackageReference" Bounds="1380.67261735433,1620.51004047128,251.67,25.96" Label="Energinet.DataHub.Core.Databricks.Jobs" Nuget-Version="7.0.1" />
+    <Node Id="Energinet.DataHub.Core.Databricks.SqlStatementExecution-7.0.1" Category="DgmlPowerTool_PackageReference" Bounds="1380.67261735433,1676.47004047128,349.51,25.96" Label="Energinet.DataHub.Core.Databricks.SqlStatementExecution" Nuget-Version="7.0.1" />
+    <Node Id="Energinet.DataHub.Core.FunctionApp.TestCommon-4.4.2" Category="DgmlPowerTool_PackageReference" Bounds="104.049284020997,1220.71004047128,309.913333333333,25.96" Label="Energinet.DataHub.Core.FunctionApp.TestCommon" Nuget-Version="4.4.2" />
+    <Node Id="Energinet.DataHub.Core.JsonSerialization-2.2.8" Category="DgmlPowerTool_PackageReference" Bounds="958.825950687665,1620.51004047128,257.356666666667,25.96" Label="Energinet.DataHub.Core.JsonSerialization" Nuget-Version="2.2.8" />
+    <Node Id="Energinet.DataHub.Core.Logging-3.1.1" Category="DgmlPowerTool_PackageReference" Bounds="801.209284020997,1164.75004047128,213.76,25.96" Label="Energinet.DataHub.Core.Logging" Nuget-Version="3.1.1" />
+    <Node Id="Energinet.DataHub.Core.Logging.LoggingMiddleware-3.1.1" Category="DgmlPowerTool_PackageReference" Bounds="801.209284020997,1220.71004047128,322.166666666667,25.96" Label="Energinet.DataHub.Core.Logging.LoggingMiddleware" Nuget-Version="3.1.1" />
+    <Node Id="Energinet.DataHub.Core.Messaging-3.2.0" Category="DgmlPowerTool_PackageReference" Bounds="621.279284020997,1620.51004047128,227.360000000001,25.96" Label="Energinet.DataHub.Core.Messaging" Nuget-Version="3.2.0" />
+    <Node Id="Energinet.DataHub.Core.TestCommon-4.4.2" Category="DgmlPowerTool_PackageReference" Bounds="104.049284020997,1164.75004047128,239.690000000001,25.96" Label="Energinet.DataHub.Core.TestCommon" Nuget-Version="4.4.2" />
+    <Node Id="Energinet.DataHub.MessageHub.IntegrationTesting-3.2.0" Category="DgmlPowerTool_PackageReference" Bounds="84.0492840209974,1352.63004047128,310.110000000001,25.96" Label="Energinet.DataHub.MessageHub.IntegrationTesting" Nuget-Version="3.2.0" />
+    <Node Id="Energinet.Messaging" Bounds="601.279284020997,1580.51004047128,267.360000000001,85.96" Group="Expanded" Label="DataHub.Core.Messaging" />
+    <Node Id="Energinet.TestCommon" Bounds="84.0492840209974,1124.75004047128,349.913333333333,141.92" Group="Expanded" Label="DataHub.Core.TestCommon" />
+    <Node Id="Events" Bounds="805.829833935038,304.727705418787,188.638900171916,142.004467010498" Group="Expanded" />
+    <Node Id="FluentAssertions-6.12.0" Category="DgmlPowerTool_PackageReference" Bounds="424.159284020998,1352.63004047128,126.953333333333,25.96" Label="FluentAssertions" Nuget-Version="6.12.0" />
+    <Node Id="Google.Protobuf-3.25.0" Category="DgmlPowerTool_PackageReference" Bounds="1331.549284021,1976.27004047128,127.763333333333,25.96" Label="Google.Protobuf" Nuget-Version="3.25.0" />
+    <Node Id="Grpc.Tools-2.59.0" Category="DgmlPowerTool_PackageReference" Bounds="1331.549284021,1920.31004047128,94.7800000000002,25.96" Label="Grpc.Tools" Nuget-Version="2.59.0" />
+    <Node Id="Microsoft.ApplicationInsights.AspNetCore-2.21.0" Category="DgmlPowerTool_PackageReference" Bounds="781.209284020997,1296.67004047128,260.796666666667,25.96" Label="Microsoft.ApplicationInsights.AspNetCore" Nuget-Version="2.21.0" />
+    <Node Id="Microsoft.AspNetCore.Mvc.Testing-7.0.13" Category="DgmlPowerTool_PackageReference" Bounds="84.0492840209974,1464.55004047128,221.676666666667,25.96" Label="Microsoft.AspNetCore.Mvc.Testing" Nuget-Version="7.0.13" />
+    <Node Id="Microsoft.Azure.Databricks.Client-2.2.0" Category="DgmlPowerTool_PackageReference" Bounds="1360.67261735433,1752.43004047128,214.386666666667,25.96" Label="Microsoft.Azure.Databricks.Client" Nuget-Version="2.2.0" />
+    <Node Id="Microsoft.Configuration" Bounds="64.0492840209974,1540.51004047128,487.23,309.8" Group="Expanded" Label="Support Configuration" />
+    <Node Id="Microsoft.Data" Bounds="839.159284020997,1880.31004047128,442.389999999999,197.88" Group="Expanded" Label="Supporting Database" />
+    <Node Id="Microsoft.Data.SqlClient-5.1.2" Category="DgmlPowerTool_PackageReference" Bounds="1008.729284021,1920.31004047128,166.993333333333,25.96" Label="Microsoft.Data.SqlClient" Nuget-Version="5.1.2" />
+    <Node Id="Microsoft.EntityFrameworkCore.SqlServer-7.0.13" Category="DgmlPowerTool_PackageReference" Bounds="859.159284020997,1976.27004047128,258.153333333334,25.96" Label="Microsoft.EntityFrameworkCore.SqlServer" Nuget-Version="7.0.13" />
+    <Node Id="Microsoft.Extensions.Azure-1.7.1" Category="DgmlPowerTool_PackageReference" Bounds="905.675950687666,2164.15004047128,181.606666666667,25.96" Label="Microsoft.Extensions.Azure" Nuget-Version="1.7.1" />
+    <Node Id="Microsoft.Extensions.Configuration-7.0.0" Category="DgmlPowerTool_PackageReference" Bounds="307.235950687664,1580.51004047128,224.043333333334,25.96" Label="Microsoft.Extensions.Configuration" Nuget-Version="7.0.0" />
+    <Node Id="Microsoft.Extensions.Configuration.Binder-7.0.4" Category="DgmlPowerTool_PackageReference" Bounds="84.0492840209974,1692.43004047128,260.736666666668,25.96" Label="Microsoft.Extensions.Configuration.Binder" Nuget-Version="7.0.4" />
+    <Node Id="Microsoft.Extensions.Configuration.EnvironmentVariables-7.0.0" Category="DgmlPowerTool_PackageReference" Bounds="84.0492840209974,1804.35004047128,340.816666666668,25.96" Label="Microsoft.Extensions.Configuration.EnvironmentVariables" Nuget-Version="7.0.0" />
+    <Node Id="Microsoft.Extensions.Configuration.FileExtensions-7.0.0" Category="DgmlPowerTool_PackageReference" Bounds="84.0492840209974,1748.39004047128,300.216666666667,25.96" Label="Microsoft.Extensions.Configuration.FileExtensions" Nuget-Version="7.0.0" />
+    <Node Id="Microsoft.Extensions.Configuration.Json-7.0.0" Category="DgmlPowerTool_PackageReference" Bounds="84.0492840209974,1636.47004047128,249.84,25.96" Label="Microsoft.Extensions.Configuration.Json" Nuget-Version="7.0.0" />
+    <Node Id="Microsoft.Extensions.DependencyInjection-7.0.0" Category="DgmlPowerTool_PackageReference" Bounds="1117.28261735433,2164.15004047128,262.996666666666,25.96" Label="Microsoft.Extensions.DependencyInjection" Nuget-Version="7.0.0" />
+    <Node Id="Microsoft.Extensions.DependencyInjection.Abstractions-7.0.0" Category="DgmlPowerTool_PackageReference" Bounds="482.252617354332,2220.11004047128,331.26,25.96" Label="Microsoft.Extensions.DependencyInjection.Abstractions" Nuget-Version="7.0.0" />
+    <Node Id="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore-7.0.13" Category="DgmlPowerTool_PackageReference" Bounds="859.159284020997,2032.23004047128,402.389999999999,25.96" Label="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Nuget-Version="7.0.13" />
+    <Node Id="Microsoft.Extensions.Hosting-7.0.1" Category="DgmlPowerTool_PackageReference" Bounds="1529.31261735433,1920.31004047128,192.673333333333,25.96" Label="Microsoft.Extensions.Hosting" Nuget-Version="7.0.1" />
+    <Node Id="Microsoft.Extensions.Hosting.Abstractions-7.0.0" Category="DgmlPowerTool_PackageReference" Bounds="1529.31261735433,1976.27004047128,260.936666666666,25.96" Label="Microsoft.Extensions.Hosting.Abstractions" Nuget-Version="7.0.0" />
+    <Node Id="Microsoft.Extensions.Http-7.0.0" Category="DgmlPowerTool_PackageReference" Bounds="442.169284020997,1976.27004047128,174.906666666668,25.96" Label="Microsoft.Extensions.Http" Nuget-Version="7.0.0" />
+    <Node Id="Microsoft.Extensions.Logging.Abstractions-7.0.1" Category="DgmlPowerTool_PackageReference" Bounds="1072.00595068766,1296.67004047128,263.04,25.96" Label="Microsoft.Extensions.Logging.Abstractions" Nuget-Version="7.0.1" />
+    <Node Id="Microsoft.Extensions.Logging.AzureAppServices-7.0.13" Category="DgmlPowerTool_PackageReference" Bounds="781.209284020997,1352.63004047128,292.02,25.96" Label="Microsoft.Extensions.Logging.AzureAppServices" Nuget-Version="7.0.13" />
+    <Node Id="Microsoft.Extensions.Options-7.0.1" Category="DgmlPowerTool_PackageReference" Bounds="84.0492840209974,1580.51004047128,193.186666666666,25.96" Label="Microsoft.Extensions.Options" Nuget-Version="7.0.1" />
+    <Node Id="Microsoft.NET.Test.Sdk-17.7.2" Category="DgmlPowerTool_PackageReference" Bounds="84.0492840209974,1408.59004047128,159.466666666667,25.96" Label="Microsoft.NET.Test.Sdk" Nuget-Version="17.7.2" />
+    <Node Id="Microsoft.OpenApi.Readers-1.6.10" Category="DgmlPowerTool_PackageReference" Bounds="442.169284020997,2032.23004047128,184.263333333332,25.96" Label="Microsoft.OpenApi.Readers" Nuget-Version="1.6.10" />
+    <Node Id="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Category="DgmlPowerTool_PackageReference" Bounds="1410.279284021,2164.15004047128,267.063333333334,25.96" Label="Microsoft.VisualStudio.Threading.Analyzers" Nuget-Version="17.7.30" />
+    <Node Id="Moq-4.20.69" Category="DgmlPowerTool_PackageReference" Bounds="424.159284020998,1296.67004047128,64.873333333333,25.96" Label="Moq" Nuget-Version="4.20.69" />
+    <Node Id="Moq.EntityFrameworkCore-7.0.0.2" Category="DgmlPowerTool_PackageReference" Bounds="472.272617354331,1408.59004047128,180.683333333332,25.96" Label="Moq.EntityFrameworkCore" Nuget-Version="7.0.0.2" />
+    <Node Id="Newtonsoft.Json-13.0.3" Category="DgmlPowerTool_PackageReference" Bounds="324.695950687664,2220.11004047128,127.556666666667,25.96" Label="Newtonsoft.Json" Nuget-Version="13.0.3" />
+    <Node Id="NodaTime-3.1.9" Category="DgmlPowerTool_PackageReference" Bounds="938.825950687665,1696.47004047128,94.9866666666665,25.96" Label="NodaTime" Nuget-Version="3.1.9" />
+    <Node Id="NodaTime.Serialization.Protobuf-2.0.1" Category="DgmlPowerTool_PackageReference" Bounds="1063.81261735433,1696.47004047128,210.783333333333,25.96" Label="NodaTime.Serialization.Protobuf" Nuget-Version="2.0.1" />
+    <Node Id="Package Reference" Bounds="44.0492840209974,1044.75004047128,1786.2,1225.36" Expression="Package. Reference" Group="Expanded" Label="Package References" Priority="0" />
+    <Node Id="Remove" Category="Comment" Bounds="178.895950687665,1296.67004047128,120.416666666667,25.96" Label="Remove references" />
+    <Node Id="Remove1" Category="Comment" Bounds="328.265950687665,2164.15004047128,120.416666666667,25.96" Label="Remove references" />
+    <Node Id="RemoveReferences1" Category="Comment" Bounds="154.967617354331,1920.31004047128,120.416666666667,25.96" Label="Remove references" />
+    <Node Id="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime-7.1.0" Category="DgmlPowerTool_PackageReference" Bounds="938.825950687665,1752.43004047128,351.846666666666,25.96" Label="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" Nuget-Version="7.1.0" />
+    <Node Id="SupportHosting" Bounds="1509.31261735433,1880.31004047128,300.936666666666,141.92" Group="Expanded" Label="Support Hosting" />
+    <Node Id="SupportLogging" Bounds="761.209284020997,1084.75004047128,593.836666666667,313.84" Group="Expanded" Label="Support Logging" />
+    <Node Id="SupportingDataLake" Bounds="64.0492840209974,2164.15004047128,230.646666666667,85.96" Group="Expanded" Label="Supporting DataLake" />
+    <Node Id="SupportingDatabricks" Bounds="1340.67261735433,1540.51004047128,429.51,257.88" Group="Expanded" Label="Supporting Databricks" />
+    <Node Id="SupportingNodaTime" Bounds="918.825950687665,1540.51004047128,391.846666666666,257.88" Group="Expanded" Label="Supporting NodaTime" />
+    <Node Id="SupportingProtobuf" Bounds="1311.549284021,1880.31004047128,167.763333333333,141.92" Group="Expanded" Label="Supporting Protobuf" />
+    <Node Id="SupportingTests" Bounds="64.0492840209974,1084.75004047128,667.16,425.76" Group="Expanded" Label="Supporting Tests" />
+    <Node Id="SupportingWeb" Bounds="422.169284020997,1880.31004047128,386.99,253.84" Group="Expanded" Label="Supporting Web API" />
+    <Node Id="Swashbuckle.AspNetCore-6.5.0" Category="DgmlPowerTool_PackageReference" Bounds="615.045950687664,1920.31004047128,174.113333333333,25.96" Label="Swashbuckle.AspNetCore" Nuget-Version="6.5.0" />
+    <Node Id="System.Linq.Async-6.0.1" Category="DgmlPowerTool_PackageReference" Bounds="739.485950687665,2164.15004047128,136.190000000001,25.96" Label="System.Linq.Async" Nuget-Version="6.0.1" />
+    <Node Id="Tests" Bounds="0,0,1550.29856804199,218.725471913538" Group="Expanded" />
+    <Node Id="YamlDotNet-13.7.1" Category="DgmlPowerTool_PackageReference" Bounds="605.729284020998,2164.15004047128,103.756666666667,25.96" Label="YamlDotNet" Nuget-Version="13.7.1" />
+    <Node Id="c0257fe7-ad16-4e1f-b081-7e231f4dda57" Bounds="581.279284020997,1540.51004047128,307.546666666667,257.88" Group="Expanded" Label="Supporting ServiceBus" />
+    <Node Id="coverlet.collector-6.0.0" Category="DgmlPowerTool_PackageReference" Bounds="581.112617354331,1352.63004047128,130.096666666666,25.96" Label="coverlet.collector" Nuget-Version="6.0.0" />
+    <Node Id="database-migration\DatabaseMigration.csproj" Category="CodeSchema_Project" Bounds="1150.12483393504,988.747806966028,142.048900171916,26.002233505249" Label="DatabaseMigration" />
+    <Node Id="dbup-sqlserver-5.0.37" Category="DgmlPowerTool_PackageReference" Bounds="859.159284020997,1920.31004047128,119.57,25.96" Label="dbup-sqlserver" Nuget-Version="5.0.37" />
+    <Node Id="domain-tests\DomainTests.csproj" Category="CodeSchema_Project" Bounds="157.298900171916,172.723238408289,108.232233505249,26.002233505249" Label="DomainTests" />
+    <Node Id="wholesale-api\Batches\Batches.Application\Batches.Application.csproj" Category="CodeSchema_Project" Bounds="703.918167268371,856.74333995553,144.462233505249,26.002233505249" Label="Batches.Application" />
+    <Node Id="wholesale-api\Batches\Batches.Infrastructure\Batches.Infrastructure.csproj" Category="CodeSchema_Project" Bounds="698.473167268372,800.741106450281,155.352233505249,26.002233505249" Label="Batches.Infrastructure" />
+    <Node Id="wholesale-api\Batches\Batches.IntegrationTests\Batches.IntegrationTests.csproj" Category="CodeSchema_Project" Bounds="999.315000859578,60.718771397791,168.472233505248,26.002233505249" Label="Batches.IntegrationTests" />
+    <Node Id="wholesale-api\Batches\Batches.Interfaces\Batches.Interfaces.csproj" Category="CodeSchema_Project" Bounds="708.331500601705,912.745573460779,135.635566838582,26.002233505249" Label="Batches.Interfaces" />
+    <Node Id="wholesale-api\Batches\Batches.UnitTests\Batches.UnitTests.csproj" Category="CodeSchema_Project" Bounds="428.651333677164,60.7187713977909,132.012233505249,26.002233505249" Label="Batches.UnitTests" />
+    <Node Id="wholesale-api\CalculationResults\CalculationResults.Application\CalculationResults.Application.csproj" Category="CodeSchema_Project" Bounds="799.478167268371,628.736639439783,199.342233505249,26.002233505249" Label="CalculationResults.Application" />
+    <Node Id="wholesale-api\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" Category="CodeSchema_Project" Bounds="794.033167268371,572.734405934534,210.232233505249,26.002233505249" Label="CalculationResults.Infrastructure" />
+    <Node Id="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Category="CodeSchema_Project" Bounds="745.962667354329,40,223.352233505249,26.002233505249" Label="CalculationResults.IntegrationTests" />
+    <Node Id="wholesale-api\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" Category="CodeSchema_Project" Bounds="803.891500601706,684.738872945032,190.515566838581,26.002233505249" Label="CalculationResults.Interfaces" />
+    <Node Id="wholesale-api\CalculationResults\CalculationResults.UnitTests\CalculationResults.UnitTests.csproj" Category="CodeSchema_Project" Bounds="211.759000171916,60.7187713977909,186.892233505248,26.002233505249" Label="CalculationResults.UnitTests" />
+    <Node Id="wholesale-api\Common\Common.csproj" Category="CodeSchema_Project" Bounds="816.171500601705,988.747806966028,89.9555668385819,26.002233505249" Label="Common" />
+    <Node Id="wholesale-api\Edi.UnitTests\Edi.UnitTests.csproj" Category="CodeSchema_Project" Bounds="20,172.723238408289,107.298900171916,26.002233505249" Label="Edi.UnitTests" />
+    <Node Id="wholesale-api\Edi\Edi.csproj" Category="CodeSchema_Project" Bounds="1118.6265006017,476.732172429285,57.0455668385821,26.002233505249" Label="Edi" />
+    <Node Id="wholesale-api\Events\Events.Application\Events.Application.csproj" Category="CodeSchema_Project" Bounds="831.274833935038,400.729938924036,137.748900171915,26.002233505249" Label="Events.Application" />
+    <Node Id="wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" Category="CodeSchema_Project" Bounds="825.829833935038,344.727705418787,148.638900171916,26.002233505249" Label="Events.Infrastructure" />
+    <Node Id="wholesale-api\Events\Events.IntegrationTests\Events.IntegrationTests.csproj" Category="CodeSchema_Project" Bounds="20.0000000000001,60.718771397791,161.758900171916,26.002233505249" Label="Events.IntegrationTests" />
+    <Node Id="wholesale-api\Events\Events.UnitTests\Events.UnitTests.csproj" Category="CodeSchema_Project" Bounds="590.663667182413,60.718771397791,125.298900171916,26.002233505249" Label="Events.UnitTests" />
+    <Node Id="wholesale-api\Test.Core\Test.Core.csproj" Category="CodeSchema_Project" Bounds="741.887753028505,116.72100490304,89.0655668385825,26.002233505249" Label="Test.Core" />
+    <Node Id="wholesale-api\WebApi.IntegrationTests\WebApi.IntegrationTests.csproj" Category="CodeSchema_Project" Bounds="1197.78733436483,60.718771397791,169.485566838583,26.002233505249" Label="WebApi.IntegrationTests" />
+    <Node Id="wholesale-api\WebApi.UnitTests\WebApi.UnitTests.csproj" Category="CodeSchema_Project" Bounds="1397.27300120341,60.7187713977909,133.025566838583,26.002233505249" Label="WebApi.UnitTests" />
+    <Node Id="wholesale-api\WebApi\WebApi.csproj" Category="CodeSchema_Project" Bounds="661.763167268371,248.725471913538,82.7722335052495,26.002233505249" Label="WebApi" />
+    <Node Id="xunit-2.6.1" Category="DgmlPowerTool_PackageReference" Bounds="519.032617354331,1296.67004047128,66.0599999999995,25.96" Label="xunit" Nuget-Version="2.6.1" />
+    <Node Id="xunit.runner.visualstudio-2.5.3" Category="DgmlPowerTool_PackageReference" Bounds="273.515950687664,1408.59004047128,168.756666666667,25.96" Label="xunit.runner.visualstudio" Nuget-Version="2.5.3" />
   </Nodes>
   <Links>
     <Link Source="Batches" Target="wholesale-api\Batches\Batches.Application\Batches.Application.csproj" Category="Contains" />
@@ -114,6 +117,7 @@
     <Link Source="DataHub.Core.App" Target="Energinet.DataHub.Core.App.Common.Security-8.1.1" Category="Contains" />
     <Link Source="DataHub.Core.App" Target="Energinet.DataHub.Core.App.FunctionApp-8.1.1" Category="Contains" />
     <Link Source="DataHub.Core.App" Target="Energinet.DataHub.Core.App.WebApp-8.1.1" Category="Contains" />
+    <Link Source="DataHub.Core.App" Target="RemoveReferences1" Category="Contains" />
     <Link Source="DataHub.Core.Databricks" Target="Energinet.DataHub.Core.Databricks.Jobs-7.0.1" Category="Contains" />
     <Link Source="DataHub.Core.Databricks" Target="Energinet.DataHub.Core.Databricks.SqlStatementExecution-7.0.1" Category="Contains" />
     <Link Source="DataHub.Core.JsonSerialization" Target="Energinet.DataHub.Core.JsonSerialization-2.2.8" Category="Contains" />
@@ -143,6 +147,7 @@
     <Link Source="Package Reference" Target="Microsoft.Extensions.DependencyInjection.Abstractions-7.0.0" Category="Contains" />
     <Link Source="Package Reference" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Category="Contains" />
     <Link Source="Package Reference" Target="Newtonsoft.Json-13.0.3" Category="Contains" />
+    <Link Source="Package Reference" Target="Remove1" Category="Contains" />
     <Link Source="Package Reference" Target="SupportHosting" Category="Contains" />
     <Link Source="Package Reference" Target="SupportLogging" Category="Contains" />
     <Link Source="Package Reference" Target="SupportingDataLake" Category="Contains" />
@@ -154,6 +159,9 @@
     <Link Source="Package Reference" Target="System.Linq.Async-6.0.1" Category="Contains" />
     <Link Source="Package Reference" Target="YamlDotNet-13.7.1" Category="Contains" />
     <Link Source="Package Reference" Target="c0257fe7-ad16-4e1f-b081-7e231f4dda57" Category="Contains" />
+    <Link Source="Remove" Target="Energinet.DataHub.MessageHub.IntegrationTesting-3.2.0" Bounds="239.104278564453,1322.63000488281,0,21" />
+    <Link Source="Remove1" Target="Newtonsoft.Json-13.0.3" Bounds="388.474273681641,2190.11010742188,0,21" />
+    <Link Source="RemoveReferences1" Target="Energinet.DataHub.Core.App.FunctionApp-8.1.1" Bounds="215.17594909668,1946.27001953125,0,21" />
     <Link Source="SupportHosting" Target="Microsoft.Extensions.Hosting-7.0.1" Category="Contains" />
     <Link Source="SupportHosting" Target="Microsoft.Extensions.Hosting.Abstractions-7.0.0" Category="Contains" />
     <Link Source="SupportLogging" Target="DataHub.Core.Logging" Category="Contains" />
@@ -176,6 +184,7 @@
     <Link Source="SupportingTests" Target="Microsoft.NET.Test.Sdk-17.7.2" Category="Contains" />
     <Link Source="SupportingTests" Target="Moq-4.20.69" Category="Contains" />
     <Link Source="SupportingTests" Target="Moq.EntityFrameworkCore-7.0.0.2" Category="Contains" />
+    <Link Source="SupportingTests" Target="Remove" Category="Contains" />
     <Link Source="SupportingTests" Target="coverlet.collector-6.0.0" Category="Contains" />
     <Link Source="SupportingTests" Target="xunit-2.6.1" Category="Contains" />
     <Link Source="SupportingTests" Target="xunit.runner.visualstudio-2.5.3" Category="Contains" />
@@ -198,11 +207,11 @@
     <Link Source="c0257fe7-ad16-4e1f-b081-7e231f4dda57" Target="AspNetCore.HealthChecks.AzureServiceBus-7.0.0" Category="Contains" />
     <Link Source="c0257fe7-ad16-4e1f-b081-7e231f4dda57" Target="Azure.Messaging.ServiceBus-7.16.2" Category="Contains" />
     <Link Source="c0257fe7-ad16-4e1f-b081-7e231f4dda57" Target="Energinet.Messaging" Category="Contains" />
-    <Link Source="database-migration\DatabaseMigration.csproj" Target="Microsoft.Data.SqlClient-5.1.2" Bounds="496.934584047762,345.53537273407,86.6392833277692,1030.49222096657" />
-    <Link Source="database-migration\DatabaseMigration.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="114.460888284032,345.53537273407,377.355122881584,1218.74130860009" />
-    <Link Source="database-migration\DatabaseMigration.csproj" Target="dbup-sqlserver-5.0.37" Bounds="413.86217863583,345.53537273407,80.9579256348505,1030.48822593446" />
-    <Link Source="domain-tests\DomainTests.csproj" Target="Azure.Messaging.ServiceBus-7.16.2" Bounds="679.05386198398,-107.954536003385,382.044907097011,1085.29080560049" />
-    <Link Source="domain-tests\DomainTests.csproj" Target="Energinet.DataHub.Core.FunctionApp.TestCommon-4.4.2" Bounds="257.091961865269,-107.954536003385,793.150748431051,668.180605043339" />
+    <Link Source="database-migration\DatabaseMigration.csproj" Target="Microsoft.Data.SqlClient-5.1.2" Bounds="1095.25620215703,1014.74868104017,124.093766234109,896.646685531284" />
+    <Link Source="database-migration\DatabaseMigration.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="1224.7183106449,1014.74868104017,313.146950126419,1140.72255022429" />
+    <Link Source="database-migration\DatabaseMigration.csproj" Target="dbup-sqlserver-5.0.37" Bounds="925.932423836134,1014.74868104017,290.999131522255,897.000930194777" />
+    <Link Source="domain-tests\DomainTests.csproj" Target="Azure.Messaging.ServiceBus-7.16.2" Bounds="-374.14181857217,286.874820917706,452.45941689478,921.69590411761" />
+    <Link Source="domain-tests\DomainTests.csproj" Target="Energinet.DataHub.Core.FunctionApp.TestCommon-4.4.2" Bounds="212.005400233058,198.725456419396,46.0028142109376,1012.99305861127" />
     <Link Source="domain-tests\DomainTests.csproj" Target="FluentAssertions-6.12.0" Bounds="518.991884166372,-107.954536003385,536.469621412715,682.862176012067" />
     <Link Source="domain-tests\DomainTests.csproj" Target="Microsoft.EntityFrameworkCore.SqlServer-7.0.13" Bounds="554.978489592409,-107.954536003385,505.879131616332,1365.14147531663" />
     <Link Source="domain-tests\DomainTests.csproj" Target="Microsoft.Extensions.Configuration-7.0.0" Bounds="408.724255837425,-107.954536003385,648.265349234516,970.336311484936" />
@@ -217,96 +226,96 @@
     <Link Source="domain-tests\DomainTests.csproj" Target="wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" Bounds="627.863455956532,61.8418133516863,414.572661084081,143.066688977623" />
     <Link Source="domain-tests\DomainTests.csproj" Target="xunit-2.6.1" Bounds="490.463380025068,-107.954536003385,563.532260481945,627.284191594796" />
     <Link Source="domain-tests\DomainTests.csproj" Target="xunit.runner.visualstudio-2.5.3" Bounds="508.692858812029,-107.954536003385,547.400150790077,742.694571415398" />
-    <Link Source="wholesale-api\Batches\Batches.Application\Batches.Application.csproj" Target="Energinet.DataHub.Core.App.FunctionApp-8.1.1" Bounds="248.126348587443,387.623521349842,860.781348628069,1030.65994622827" />
-    <Link Source="wholesale-api\Batches\Batches.Application\Batches.Application.csproj" Target="Energinet.DataHub.Core.App.WebApp-8.1.1" Bounds="238.237917442498,387.623521349843,869.926687144973,974.892383326868" />
-    <Link Source="wholesale-api\Batches\Batches.Application\Batches.Application.csproj" Target="Microsoft.Extensions.Hosting-7.0.1" Bounds="982.104149938866,298.80232270878,443.279973205347,1084.61485211519" />
-    <Link Source="wholesale-api\Batches\Batches.Application\Batches.Application.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="1517.17607571514,283.850977900836,57.6907633311896,1280.91508100197" />
-    <Link Source="wholesale-api\Batches\Batches.Application\Batches.Application.csproj" Target="wholesale-api\Batches\Batches.Interfaces\Batches.Interfaces.csproj" Bounds="907.6044921875,352.154174804688,0,20.9893188476563" />
-    <Link Source="wholesale-api\Batches\Batches.Application\Batches.Application.csproj" Target="wholesale-api\Common\Common.csproj" Bounds="944.500537400273,298.792742729187,30.141398029131,182.377646995371" />
-    <Link Source="wholesale-api\Batches\Batches.Infrastructure\Batches.Infrastructure.csproj" Target="Energinet.DataHub.Core.Databricks.Jobs-7.0.1" Bounds="1074.32245700848,536.342057397721,436.16679425297,730.082287009558" />
-    <Link Source="wholesale-api\Batches\Batches.Infrastructure\Batches.Infrastructure.csproj" Target="Microsoft.EntityFrameworkCore.SqlServer-7.0.13" Bounds="596.690075585381,536.342057397721,464.303194569879,1085.29580333501" />
-    <Link Source="wholesale-api\Batches\Batches.Infrastructure\Batches.Infrastructure.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="1517.13529573948,227.848644395587,57.7296313461597,1336.91667923262" />
-    <Link Source="wholesale-api\Batches\Batches.Infrastructure\Batches.Infrastructure.csproj" Target="NodaTime-3.1.9" Bounds="1004.34116168395,536.342057397721,61.2250843995552,804.794629961671" />
-    <Link Source="wholesale-api\Batches\Batches.Infrastructure\Batches.Infrastructure.csproj" Target="wholesale-api\Batches\Batches.Application\Batches.Application.csproj" Bounds="907.6044921875,296.180450439453,0,20.9893188476563" />
-    <Link Source="wholesale-api\Batches\Batches.IntegrationTests\Batches.IntegrationTests.csproj" Target="Energinet.DataHub.Core.FunctionApp.TestCommon-4.4.2" Bounds="257.763138746551,4.05013100711274,684.730744878004,556.299439570372" />
-    <Link Source="wholesale-api\Batches\Batches.IntegrationTests\Batches.IntegrationTests.csproj" Target="Energinet.DataHub.Core.TestCommon-4.4.2" Bounds="225.572756654651,4.05013100711274,714.379750584617,500.847827322002" />
-    <Link Source="wholesale-api\Batches\Batches.IntegrationTests\Batches.IntegrationTests.csproj" Target="Energinet.DataHub.MessageHub.IntegrationTesting-3.2.0" Bounds="233.567722545046,4.05013100711274,712.467940477253,743.357373066144" />
-    <Link Source="wholesale-api\Batches\Batches.IntegrationTests\Batches.IntegrationTests.csproj" Target="FluentAssertions-6.12.0" Bounds="518.437234820357,4.05013100711274,430.258404876008,570.748003957659" />
-    <Link Source="wholesale-api\Batches\Batches.IntegrationTests\Batches.IntegrationTests.csproj" Target="Microsoft.NET.Test.Sdk-17.7.2" Bounds="318.894382548872,4.05013100711274,626.700782966216,631.546279820898" />
-    <Link Source="wholesale-api\Batches\Batches.IntegrationTests\Batches.IntegrationTests.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="1220.85489350901,-279.791464864323,291.871351690247,1844.65899563449" />
-    <Link Source="wholesale-api\Batches\Batches.IntegrationTests\Batches.IntegrationTests.csproj" Target="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime-7.1.0" Bounds="960.110469389434,4.05013100711274,127.714016251355,1028.80378911279" />
-    <Link Source="wholesale-api\Batches\Batches.IntegrationTests\Batches.IntegrationTests.csproj" Target="coverlet.collector-6.0.0" Bounds="148.230424065739,4.05013100711274,793.942083137516,632.327738165942" />
-    <Link Source="wholesale-api\Batches\Batches.IntegrationTests\Batches.IntegrationTests.csproj" Target="wholesale-api\Batches\Batches.Infrastructure\Batches.Infrastructure.csproj" Bounds="1011.20365085156,-151.91279435704,53.5506589605618,653.282703796464" />
-    <Link Source="wholesale-api\Batches\Batches.IntegrationTests\Batches.IntegrationTests.csproj" Target="wholesale-api\Test.Core\Test.Core.csproj" Bounds="716.677363909588,-359.733058209192,185.032623436071,33.3718448065583" />
-    <Link Source="wholesale-api\Batches\Batches.IntegrationTests\Batches.IntegrationTests.csproj" Target="xunit-2.6.1" Bounds="490.263311431296,4.05013100711274,456.709014854427,515.239604234437" />
-    <Link Source="wholesale-api\Batches\Batches.IntegrationTests\Batches.IntegrationTests.csproj" Target="xunit.runner.visualstudio-2.5.3" Bounds="508.032580571314,4.05013100711274,441.363772736443,630.561453098302" />
-    <Link Source="wholesale-api\Batches\Batches.Interfaces\Batches.Interfaces.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="1517.22002330756,339.853311406085,57.6208480774885,1224.91357442339" />
-    <Link Source="wholesale-api\Batches\Batches.Interfaces\Batches.Interfaces.csproj" Target="NodaTime-3.1.9" Bounds="996.378469228705,339.853311406085,571.060073557488,926.441390386775" />
-    <Link Source="wholesale-api\Batches\Batches.Interfaces\Batches.Interfaces.csproj" Target="wholesale-api\Common\Common.csproj" Bounds="945.735300976975,354.794955253601,28.1604008603879,126.470123831317" />
-    <Link Source="wholesale-api\Batches\Batches.UnitTests\Batches.UnitTests.csproj" Target="Energinet.DataHub.Core.FunctionApp.TestCommon-4.4.2" Bounds="311.32728112716,-47.3827133032351,637.809668338543,667.47226358428" />
-    <Link Source="wholesale-api\Batches\Batches.UnitTests\Batches.UnitTests.csproj" Target="Energinet.DataHub.Core.TestCommon-4.4.2" Bounds="278.423783150237,-47.3827133032351,668.924807905119,611.944219441897" />
-    <Link Source="wholesale-api\Batches\Batches.UnitTests\Batches.UnitTests.csproj" Target="Energinet.DataHub.MessageHub.IntegrationTesting-3.2.0" Bounds="288.390673046169,-47.3827133032351,663.083812632004,854.748544158046" />
-    <Link Source="wholesale-api\Batches\Batches.UnitTests\Batches.UnitTests.csproj" Target="FluentAssertions-6.12.0" Bounds="572.792854001751,-47.3827133032351,381.495801645908,682.084442271024" />
-    <Link Source="wholesale-api\Batches\Batches.UnitTests\Batches.UnitTests.csproj" Target="Microsoft.NET.Test.Sdk-17.7.2" Bounds="373.211644052169,-47.3827133032351,578.228512329183,742.837361293157" />
-    <Link Source="wholesale-api\Batches\Batches.UnitTests\Batches.UnitTests.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="1517.05880421552,-279.791464864323,73.2241568158772,1844.55549257133" />
-    <Link Source="wholesale-api\Batches\Batches.UnitTests\Batches.UnitTests.csproj" Target="Moq.EntityFrameworkCore-7.0.0.2" Bounds="225.889710732226,-47.3827133032351,723.894930200632,799.228915030821" />
-    <Link Source="wholesale-api\Batches\Batches.UnitTests\Batches.UnitTests.csproj" Target="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime-7.1.0" Bounds="963.62691568806,-47.3827133032351,181.346597740133,1140.85147614136" />
-    <Link Source="wholesale-api\Batches\Batches.UnitTests\Batches.UnitTests.csproj" Target="coverlet.collector-6.0.0" Bounds="202.201153927113,-47.3827133032351,746.310407413128,743.587053200759" />
-    <Link Source="wholesale-api\Batches\Batches.UnitTests\Batches.UnitTests.csproj" Target="wholesale-api\Batches\Batches.Infrastructure\Batches.Infrastructure.csproj" Bounds="1076.32393511053,-147.680288558701,299.817375471894,649.847940053104" />
-    <Link Source="wholesale-api\Batches\Batches.UnitTests\Batches.UnitTests.csproj" Target="wholesale-api\Test.Core\Test.Core.csproj" Bounds="716.798950195313,-359.733062744141,570.138305664063,39.3114013671875" />
-    <Link Source="wholesale-api\Batches\Batches.UnitTests\Batches.UnitTests.csproj" Target="xunit-2.6.1" Bounds="544.087402142719,-47.3827133032351,408.984874422875,626.443110087376" />
-    <Link Source="wholesale-api\Batches\Batches.UnitTests\Batches.UnitTests.csproj" Target="xunit.runner.visualstudio-2.5.3" Bounds="562.751633388251,-47.3827133032351,391.941007255478,741.981351894266" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.Application\CalculationResults.Application.csproj" Target="Microsoft.Extensions.DependencyInjection-7.0.0" Bounds="936.759179609318,380.674096414365,290.373997120262,1220.81643468263" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.Application\CalculationResults.Application.csproj" Target="Microsoft.Extensions.DependencyInjection.Abstractions-7.0.0" Bounds="935.005142071819,380.674096414365,131.408556671516,1276.58058062414" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.Application\CalculationResults.Application.csproj" Target="Microsoft.Extensions.Http-7.0.0" Bounds="940.660989081969,380.674096414365,248.564070818956,462.044450883244" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.Application\CalculationResults.Application.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="1256.53145569136,288.22717571401,255.294809334741,1276.70448152719" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.Application\CalculationResults.Application.csproj" Target="wholesale-api\Batches\Batches.Interfaces\Batches.Interfaces.csproj" Bounds="1136.38437358856,284.778184693537,362.291335736368,34.7168240226155" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.Application\CalculationResults.Application.csproj" Target="wholesale-api\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" Bounds="1317.12194824219,365.892913818359,0,20.9904479980469" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" Target="Azure.Storage.Files.DataLake-12.16.0" Bounds="957.255425427931,341.367188265892,276.353477247581,1256.82668541458" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" Target="CsvHelper-30.0.1" Bounds="959.34185559143,341.367188265892,462.979340405096,1217.20466484634" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" Target="Energinet.DataHub.Core.Databricks.SqlStatementExecution-7.0.1" Bounds="962.236184851674,341.367188265892,611.46748000248,1014.06855689318" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" Target="Energinet.DataHub.Core.JsonSerialization-2.2.8" Bounds="956.544663990494,341.367188265892,158.097972232894,956.936127495501" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="1256.4136251744,232.22484220876,255.588404647481,1332.69318604398" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" Target="Newtonsoft.Json-13.0.3" Bounds="962.190902862159,341.367188265892,730.131333939994,1217.89756964806" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" Target="NodaTime-3.1.9" Bounds="955.159824115149,341.367188265892,60.620390161193,1032.79142096708" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" Target="System.Linq.Async-6.0.1" Bounds="959.342561561859,341.367188265892,484.333670710918,1273.16491663588" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" Target="wholesale-api\CalculationResults\CalculationResults.Application\CalculationResults.Application.csproj" Bounds="1317.12194824219,309.916137695313,0,20.9904479980469" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Target="Energinet.DataHub.Core.FunctionApp.TestCommon-4.4.2" Bounds="259.307546504329,-279.827059688349,152.412974032549,1125.07384982885" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Target="Energinet.DataHub.Core.TestCommon-4.4.2" Bounds="225.033457682065,-279.827059688349,186.184303267783,1069.16571951491" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Target="Energinet.DataHub.MessageHub.IntegrationTesting-3.2.0" Bounds="239.316456952371,-279.827059688349,172.457602847572,1312.94978877061" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Target="FluentAssertions-6.12.0" Bounds="414.712223894867,-279.827059688349,107.985781501405,1140.99273403343" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Target="Microsoft.NET.Test.Sdk-17.7.2" Bounds="322.853492442422,-279.827059688349,89.657696138531,1200.97787103775" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="421.10947639349,-279.791464864323,1082.90752128046,1845.78577071412" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Target="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime-7.1.0" Bounds="419.034394872444,-279.827059688349,683.971730225351,1601.4769621314" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Target="System.Linq.Async-6.0.1" Bounds="420.662048258586,-279.827059688349,986.217834820281,1785.71606301365" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Target="coverlet.collector-6.0.0" Bounds="151.138116638509,-279.827059688349,259.534496852926,1201.15590397998" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Target="database-migration\DatabaseMigration.csproj" Bounds="413.979219689714,-279.791348457336,19.3966354247032,506.999432377736" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Target="wholesale-api\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" Bounds="429.306531654041,-279.827059688349,584.616331206298,480.302117087142" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Target="wholesale-api\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" Bounds="426.466412954551,-279.827059688349,590.902209556543,591.65202327131" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Target="wholesale-api\Test.Core\Test.Core.csproj" Bounds="278.831222378808,-360.24459832589,330.980571094192,37.4602434754397" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Target="xunit-2.6.1" Bounds="414.420269294257,-279.827059688349,78.3227766834875,1085.01584811192" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Target="xunit.runner.visualstudio-2.5.3" Bounds="414.553103452343,-279.827059688349,98.964586832765,1200.98323630413" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="1256.64747889859,344.229509219258,254.987519558449,1220.71758022634" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" Target="NodaTime-3.1.9" Bounds="857.91475378982,437.284424598013,132.670139149337,748.904349200978" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" Target="wholesale-api\Common\Common.csproj" Bounds="983.607360011497,352.607043266297,354.265496320981,134.253562500612" />
+    <Link Source="wholesale-api\Batches\Batches.Application\Batches.Application.csproj" Target="Energinet.DataHub.Core.App.FunctionApp-8.1.1" Bounds="672.7365990757,891.421643276526,127.628782081001,1231.99599296086" />
+    <Link Source="wholesale-api\Batches\Batches.Application\Batches.Application.csproj" Target="Energinet.DataHub.Core.App.WebApp-8.1.1" Bounds="129.617435232742,352.056806249632,768.205439533328,1025.73590166658" />
+    <Link Source="wholesale-api\Batches\Batches.Application\Batches.Application.csproj" Target="Microsoft.Extensions.Hosting-7.0.1" Bounds="910.155150942875,352.056806249632,204.436380946094,1024.10661109324" />
+    <Link Source="wholesale-api\Batches\Batches.Application\Batches.Application.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="120.920201301393,352.056806249632,778.299365949268,1213.24472519363" />
+    <Link Source="wholesale-api\Batches\Batches.Application\Batches.Application.csproj" Target="wholesale-api\Batches\Batches.Interfaces\Batches.Interfaces.csproj" Bounds="776.149291992188,882.745544433594,0,21" />
+    <Link Source="wholesale-api\Batches\Batches.Application\Batches.Application.csproj" Target="wholesale-api\Common\Common.csproj" Bounds="784.52092090378,882.744033392545,63.3842550984853,98.4355744283474" />
+    <Link Source="wholesale-api\Batches\Batches.Infrastructure\Batches.Infrastructure.csproj" Target="Energinet.DataHub.Core.Databricks.Jobs-7.0.1" Bounds="899.685245814475,296.054472744383,7.72772791209468,832.054598730945" />
+    <Link Source="wholesale-api\Batches\Batches.Infrastructure\Batches.Infrastructure.csproj" Target="Microsoft.EntityFrameworkCore.SqlServer-7.0.13" Bounds="489.226085079457,296.054472744383,413.576255406492,1136.44466277973" />
+    <Link Source="wholesale-api\Batches\Batches.Infrastructure\Batches.Infrastructure.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="120.411107506419,296.054472744383,779.141141624561,1269.15234969055" />
+    <Link Source="wholesale-api\Batches\Batches.Infrastructure\Batches.Infrastructure.csproj" Target="NodaTime-3.1.9" Bounds="390.957665430028,296.054472744383,509.293168624477,909.169558203876" />
+    <Link Source="wholesale-api\Batches\Batches.Infrastructure\Batches.Infrastructure.csproj" Target="wholesale-api\Batches\Batches.Application\Batches.Application.csproj" Bounds="776.149291992188,826.743347167969,0,21" />
+    <Link Source="wholesale-api\Batches\Batches.IntegrationTests\Batches.IntegrationTests.csproj" Target="Energinet.DataHub.Core.FunctionApp.TestCommon-4.4.2" Bounds="273.446947695775,86.7210073471069,800.862544619586,1126.6526822336" />
+    <Link Source="wholesale-api\Batches\Batches.IntegrationTests\Batches.IntegrationTests.csproj" Target="Energinet.DataHub.Core.TestCommon-4.4.2" Bounds="146.600032426269,174.871516227722,337.161956959188,558.312919931707" />
+    <Link Source="wholesale-api\Batches\Batches.IntegrationTests\Batches.IntegrationTests.csproj" Target="Energinet.DataHub.MessageHub.IntegrationTesting-3.2.0" Bounds="96.7690243493026,61.4200491346754,388.17208619769,756.379583238856" />
+    <Link Source="wholesale-api\Batches\Batches.IntegrationTests\Batches.IntegrationTests.csproj" Target="FluentAssertions-6.12.0" Bounds="439.437990004692,174.871516227722,51.1186463169838,628.966882450897" />
+    <Link Source="wholesale-api\Batches\Batches.IntegrationTests\Batches.IntegrationTests.csproj" Target="Microsoft.NET.Test.Sdk-17.7.2" Bounds="241.727762677128,174.871516227722,245.260643428194,689.457958084218" />
+    <Link Source="wholesale-api\Batches\Batches.IntegrationTests\Batches.IntegrationTests.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="113.561468333819,174.871516227722,374.555743655839,1392.88781517182" />
+    <Link Source="wholesale-api\Batches\Batches.IntegrationTests\Batches.IntegrationTests.csproj" Target="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime-7.1.0" Bounds="491.799617494136,174.871516227722,15.6035238355072,1088.73925167391" />
+    <Link Source="wholesale-api\Batches\Batches.IntegrationTests\Batches.IntegrationTests.csproj" Target="coverlet.collector-6.0.0" Bounds="71.6779183808072,174.871516227722,412.171519921454,690.210350275945" />
+    <Link Source="wholesale-api\Batches\Batches.IntegrationTests\Batches.IntegrationTests.csproj" Target="wholesale-api\Batches\Batches.Infrastructure\Batches.Infrastructure.csproj" Bounds="517.092770193452,174.871516227722,387.868312535179,197.913025045152" />
+    <Link Source="wholesale-api\Batches\Batches.IntegrationTests\Batches.IntegrationTests.csproj" Target="wholesale-api\Test.Core\Test.Core.csproj" Bounds="839.797600728535,86.72100490304,174.773600642799,32.9407762586899" />
+    <Link Source="wholesale-api\Batches\Batches.IntegrationTests\Batches.IntegrationTests.csproj" Target="xunit-2.6.1" Bounds="410.247090366661,174.871516227722,79.5611878575318,573.062694959539" />
+    <Link Source="wholesale-api\Batches\Batches.IntegrationTests\Batches.IntegrationTests.csproj" Target="xunit.runner.visualstudio-2.5.3" Bounds="430.127867654655,174.871516227722,60.3466604786663,688.971722106631" />
+    <Link Source="wholesale-api\Batches\Batches.Interfaces\Batches.Interfaces.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="121.47040400785,408.059139754881,777.356867583416,1157.34651322163" />
+    <Link Source="wholesale-api\Batches\Batches.Interfaces\Batches.Interfaces.csproj" Target="NodaTime-3.1.9" Bounds="392.367950621908,408.059139754881,506.926895849313,797.421652832526" />
+    <Link Source="wholesale-api\Batches\Batches.Interfaces\Batches.Interfaces.csproj" Target="wholesale-api\Common\Common.csproj" Bounds="790.689498505464,938.746366897794,49.2103834348404,44.0012495194251" />
+    <Link Source="wholesale-api\Batches\Batches.UnitTests\Batches.UnitTests.csproj" Target="Energinet.DataHub.Core.FunctionApp.TestCommon-4.4.2" Bounds="263.434673227475,86.7210073471069,228.581578807975,1125.16840424959" />
+    <Link Source="wholesale-api\Batches\Batches.UnitTests\Batches.UnitTests.csproj" Target="Energinet.DataHub.Core.TestCommon-4.4.2" Bounds="-92.1984476760896,174.871516227722,217.95768124162,557.634643329368" />
+    <Link Source="wholesale-api\Batches\Batches.UnitTests\Batches.UnitTests.csproj" Target="Energinet.DataHub.MessageHub.IntegrationTesting-3.2.0" Bounds="-94.2652466595438,61.4200491346754,175.220728023199,755.619352022952" />
+    <Link Source="wholesale-api\Batches\Batches.UnitTests\Batches.UnitTests.csproj" Target="FluentAssertions-6.12.0" Bounds="-86.8047847985811,174.871516227722,508.35382153578,630.929091069868" />
+    <Link Source="wholesale-api\Batches\Batches.UnitTests\Batches.UnitTests.csproj" Target="Microsoft.NET.Test.Sdk-17.7.2" Bounds="-91.3288106009766,174.871516227722,315.735252890235,689.754035193429" />
+    <Link Source="wholesale-api\Batches\Batches.UnitTests\Batches.UnitTests.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="-95.4129687455323,174.871516227722,200.003455760649,1392.67046320691" />
+    <Link Source="wholesale-api\Batches\Batches.UnitTests\Batches.UnitTests.csproj" Target="Moq.EntityFrameworkCore-7.0.0.2" Bounds="-94.2479171209749,174.871516227722,173.782189882232,745.132739620775" />
+    <Link Source="wholesale-api\Batches\Batches.UnitTests\Batches.UnitTests.csproj" Target="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime-7.1.0" Bounds="-90.2804196701915,174.871516227722,586.743816811773,1089.81384777211" />
+    <Link Source="wholesale-api\Batches\Batches.UnitTests\Batches.UnitTests.csproj" Target="coverlet.collector-6.0.0" Bounds="-94.4677784040385,174.871516227722,149.069561704081,689.140871110954" />
+    <Link Source="wholesale-api\Batches\Batches.UnitTests\Batches.UnitTests.csproj" Target="wholesale-api\Batches\Batches.Infrastructure\Batches.Infrastructure.csproj" Bounds="-38.2213187583907,174.871516227722,908.830259767902,200.068684379448" />
+    <Link Source="wholesale-api\Batches\Batches.UnitTests\Batches.UnitTests.csproj" Target="wholesale-api\Test.Core\Test.Core.csproj" Bounds="559.422608227167,86.1511848558157,173.626491520789,33.3265988290384" />
+    <Link Source="wholesale-api\Batches\Batches.UnitTests\Batches.UnitTests.csproj" Target="xunit-2.6.1" Bounds="-86.4916737084785,174.871516227722,477.180929745455,575.051199393722" />
+    <Link Source="wholesale-api\Batches\Batches.UnitTests\Batches.UnitTests.csproj" Target="xunit.runner.visualstudio-2.5.3" Bounds="-87.8426881592295,174.871516227722,501.339324843532,690.653986107695" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.Application\CalculationResults.Application.csproj" Target="Microsoft.Extensions.DependencyInjection-7.0.0" Bounds="902.109865281325,654.73679554088,341.717083108744,1500.63823990043" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.Application\CalculationResults.Application.csproj" Target="Microsoft.Extensions.DependencyInjection.Abstractions-7.0.0" Bounds="651.335765628236,654.736832876798,245.760748458309,1556.48434981831" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.Application\CalculationResults.Application.csproj" Target="Microsoft.Extensions.Http-7.0.0" Bounds="1301.06740878716,365.839577040509,15.8184073362477,778.209729748149" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.Application\CalculationResults.Application.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="126.767654853732,365.839577040509,1177.63017874605,1200.61206648536" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.Application\CalculationResults.Application.csproj" Target="wholesale-api\Batches\Batches.Interfaces\Batches.Interfaces.csproj" Bounds="1015.22794029113,365.426405357886,203.731713014763,26.1182638314884" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.Application\CalculationResults.Application.csproj" Target="wholesale-api\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" Bounds="899.149291992188,654.738891601563,0,21" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" Target="Azure.Storage.Files.DataLake-12.16.0" Bounds="1318.69369482764,309.83724353526,127.521430601956,1066.21325518021" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" Target="CsvHelper-30.0.1" Bounds="1317.83595028212,309.83724353526,61.2491825736276,1142.12268032913" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" Target="Energinet.DataHub.Core.Databricks.SqlStatementExecution-7.0.1" Bounds="957.047596360989,309.83724353526,354.818440582349,874.891327136244" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" Target="Energinet.DataHub.Core.JsonSerialization-2.2.8" Bounds="499.501867272162,309.83724353526,804.888592848525,820.852419876323" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="126.070279763899,309.83724353526,1178.87034559445,1256.47613239835" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" Target="Newtonsoft.Json-13.0.3" Bounds="876.383538240883,309.83724353526,436.041080854372,1202.56345597953" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" Target="NodaTime-3.1.9" Bounds="398.78200691882,309.83724353526,905.234853084565,896.904283185344" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" Target="System.Linq.Async-6.0.1" Bounds="808.844794167419,598.734499371549,89.5564490509914,1556.43106755791" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" Target="wholesale-api\CalculationResults\CalculationResults.Application\CalculationResults.Application.csproj" Bounds="899.149291992188,598.736633300781,0,21" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Target="Energinet.DataHub.Core.FunctionApp.TestCommon-4.4.2" Bounds="269.657031600442,66.0022344589233,581.389962660533,1146.67983728653" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Target="Energinet.DataHub.Core.TestCommon-4.4.2" Bounds="138.786497349955,154.153407096863,124.122329638475,577.935847044107" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Target="Energinet.DataHub.MessageHub.IntegrationTesting-3.2.0" Bounds="90.8211170431374,40.7019419111647,171.999461529595,776.317904023858" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Target="FluentAssertions-6.12.0" Bounds="268.966408781436,154.153407096863,163.23518848929,649.92651750558" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Target="Microsoft.NET.Test.Sdk-17.7.2" Bounds="235.026619865179,154.153407096863,30.1225864085923,709.663629986661" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="110.125563966118,154.153407096863,154.157429113315,1413.35023705282" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Target="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime-7.1.0" Bounds="268.450434230583,154.153407096863,234.660720727146,1109.65117176305" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Target="System.Linq.Async-6.0.1" Bounds="808.098857121173,66.0022344589233,49.2335789962983,2089.1509688581" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Target="coverlet.collector-6.0.0" Bounds="65.3138220193423,154.153407096863,196.783752305028,709.982507573251" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Target="database-migration\DatabaseMigration.csproj" Bounds="862.620178591994,66.0022344589233,350.327691971579,914.339978037241" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Target="wholesale-api\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" Bounds="353.506342820246,154.153407096863,866.924167569863,128.363366842257" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Target="wholesale-api\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" Bounds="316.767925312845,154.153407096863,940.593691756366,239.46579116952" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Target="wholesale-api\Test.Core\Test.Core.csproj" Bounds="804.612170216367,66.0022335052489,40.9579926061782,44.1226575328862" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Target="xunit-2.6.1" Bounds="268.627425844784,154.153407096863,133.681994594955,593.914974025932" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.IntegrationTests\CalculationResults.IntegrationTests.csproj" Target="xunit.runner.visualstudio-2.5.3" Bounds="268.538333688346,154.153407096863,154.915717515125,709.862457683812" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="127.521022593802,421.841910545758,1176.27024090113,1144.7579116999" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" Target="NodaTime-3.1.9" Bounds="400.969813637581,421.841910545758,901.259960341355,785.321552806077" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" Target="wholesale-api\Common\Common.csproj" Bounds="863.890657865565,710.739166382047,33.6335460329813,269.076895271447" />
     <Link Source="wholesale-api\CalculationResults\CalculationResults.UnitTests\CalculationResults.UnitTests.csproj" Target="Energinet.DataHub.Core.TestCommon-4.4.2" Bounds="240.233846637415,-271.276041857273,1175.16723716433,1071.96698800825" />
     <Link Source="wholesale-api\CalculationResults\CalculationResults.UnitTests\CalculationResults.UnitTests.csproj" Target="FluentAssertions-6.12.0" Bounds="538.404866480415,-271.276041857273,881.223914709708,1142.82546791853" />
     <Link Source="wholesale-api\CalculationResults\CalculationResults.UnitTests\CalculationResults.UnitTests.csproj" Target="Microsoft.NET.Test.Sdk-17.7.2" Bounds="337.015686731738,-271.276041857273,1080.95847403928,1203.2577645568" />
     <Link Source="wholesale-api\CalculationResults\CalculationResults.UnitTests\CalculationResults.UnitTests.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="1014.60910467063,-279.791562956974,495.75377953105,1844.85685678828" />
     <Link Source="wholesale-api\CalculationResults\CalculationResults.UnitTests\CalculationResults.UnitTests.csproj" Target="Moq-4.20.69" Bounds="509.25132470207,-271.276041857273,908.943672351138,1031.28043792953" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.UnitTests\CalculationResults.UnitTests.csproj" Target="System.Linq.Async-6.0.1" Bounds="1416.68408305829,-271.276041857273,12.8759552864376,1784.59465940637" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.UnitTests\CalculationResults.UnitTests.csproj" Target="YamlDotNet-13.7.1" Bounds="1430.34777093321,-271.276041857273,92.2657635180908,1728.64711762444" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.UnitTests\CalculationResults.UnitTests.csproj" Target="System.Linq.Async-6.0.1" Bounds="308.310300684104,86.7210035324097,494.079759399217,2068.67591420697" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.UnitTests\CalculationResults.UnitTests.csproj" Target="YamlDotNet-13.7.1" Bounds="307.383319989883,86.7210035324097,346.562513986642,2068.55365868578" />
     <Link Source="wholesale-api\CalculationResults\CalculationResults.UnitTests\CalculationResults.UnitTests.csproj" Target="coverlet.collector-6.0.0" Bounds="164.541789868995,-271.276041857273,1251.59379593329,1203.71419436962" />
     <Link Source="wholesale-api\CalculationResults\CalculationResults.UnitTests\CalculationResults.UnitTests.csproj" Target="wholesale-api\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" Bounds="1049.29720514246,-271.276041857273,370.303589011202,478.895573648695" />
-    <Link Source="wholesale-api\CalculationResults\CalculationResults.UnitTests\CalculationResults.UnitTests.csproj" Target="wholesale-api\Test.Core\Test.Core.csproj" Bounds="695.06262477483,-359.733058209192,47.1792169781473,25.6953044454353" />
+    <Link Source="wholesale-api\CalculationResults\CalculationResults.UnitTests\CalculationResults.UnitTests.csproj" Target="wholesale-api\Test.Core\Test.Core.csproj" Bounds="398.525563141464,84.5802080982505,334.422523576301,38.9189695402716" />
     <Link Source="wholesale-api\CalculationResults\CalculationResults.UnitTests\CalculationResults.UnitTests.csproj" Target="xunit-2.6.1" Bounds="509.091412555852,-271.276041857273,909.683025019791,1087.09030151817" />
     <Link Source="wholesale-api\CalculationResults\CalculationResults.UnitTests\CalculationResults.UnitTests.csproj" Target="xunit.runner.visualstudio-2.5.3" Bounds="528.434071914402,-271.276041857273,891.582002829231,1202.72270596192" />
-    <Link Source="wholesale-api\Common\Common.csproj" Target="Energinet.DataHub.Core.App.FunctionApp-8.1.1" Bounds="142.350597223323,516.052172660828,787.3833506374,918.07213873057" />
-    <Link Source="wholesale-api\Common\Common.csproj" Target="Microsoft.Azure.Databricks.Client-2.2.0" Bounds="863.093194540258,516.052172660828,76.4551741554571,744.030839953367" />
-    <Link Source="wholesale-api\Common\Common.csproj" Target="Microsoft.Extensions.Hosting-7.0.1" Bounds="943.471193474457,516.052172660828,171.138932539781,860.116690221983" />
-    <Link Source="wholesale-api\Common\Common.csproj" Target="Microsoft.Extensions.Logging.Abstractions-7.0.1" Bounds="943.079382901311,516.052172660828,58.1314922689777,344.309334174791" />
-    <Link Source="wholesale-api\Common\Common.csproj" Target="Microsoft.Extensions.Options-7.0.1" Bounds="963.602287367116,516.052172660828,308.919331240206,176.789563823781" />
-    <Link Source="wholesale-api\Common\Common.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="123.254867442156,516.052172660828,807.626462353295,1049.68878532515" />
+    <Link Source="wholesale-api\Common\Common.csproj" Target="Energinet.DataHub.Core.App.FunctionApp-8.1.1" Bounds="674.821638118457,1023.42642663529,219.821204319934,1100.11776297756" />
+    <Link Source="wholesale-api\Common\Common.csproj" Target="Microsoft.Azure.Databricks.Client-2.2.0" Bounds="871.478454834317,1014.74880040304,580.476609118949,730.634639289625" />
+    <Link Source="wholesale-api\Common\Common.csproj" Target="Microsoft.Extensions.Hosting-7.0.1" Bounds="871.819073886307,1014.74880040304,737.46821364436,898.604155369271" />
+    <Link Source="wholesale-api\Common\Common.csproj" Target="Microsoft.Extensions.Logging.Abstractions-7.0.1" Bounds="875.606083936904,1014.74880040304,306.794610665496,275.903019673459" />
+    <Link Source="wholesale-api\Common\Common.csproj" Target="Microsoft.Extensions.Options-7.0.1" Bounds="202.361149381405,1014.74880040304,643.836794875157,559.855705841288" />
+    <Link Source="wholesale-api\Common\Common.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="868.700335796659,1014.74880040304,663.051753534507,1141.61875946598" />
     <Link Source="wholesale-api\Edi.UnitTests\Edi.UnitTests.csproj" Target="Energinet.DataHub.Core.TestCommon-4.4.2" Bounds="221.108899227502,-107.954536003385,692.099608177062,612.056914404721" />
     <Link Source="wholesale-api\Edi.UnitTests\Edi.UnitTests.csproj" Target="FluentAssertions-6.12.0" Bounds="515.52577796874,-107.954536003385,404.671983609636,682.198765631185" />
     <Link Source="wholesale-api\Edi.UnitTests\Edi.UnitTests.csproj" Target="Microsoft.NET.Test.Sdk-17.7.2" Bounds="315.847388669106,-107.954536003385,601.535933533978,742.944645623016" />
@@ -316,27 +325,27 @@
     <Link Source="wholesale-api\Edi.UnitTests\Edi.UnitTests.csproj" Target="wholesale-api\Edi\Edi.csproj" Bounds="214.135273094727,-167.786885261536,452.564690155175,420.90081049193" />
     <Link Source="wholesale-api\Edi.UnitTests\Edi.UnitTests.csproj" Target="xunit-2.6.1" Bounds="486.848603706278,-107.954536003385,432.095430163744,626.570231549197" />
     <Link Source="wholesale-api\Edi.UnitTests\Edi.UnitTests.csproj" Target="xunit.runner.visualstudio-2.5.3" Bounds="505.442906160395,-107.954536003385,415.192899707414,742.085123494001" />
-    <Link Source="wholesale-api\Edi\Edi.csproj" Target="Azure.Messaging.ServiceBus-7.16.2" Bounds="102.018582024044,348.859728813171,557.615145128375,856.673316448459" />
+    <Link Source="wholesale-api\Edi\Edi.csproj" Target="Azure.Messaging.ServiceBus-7.16.2" Bounds="102.155058124267,362.877245903015,557.378140844343,846.256339225147" />
     <Link Source="wholesale-api\Edi\Edi.csproj" Target="Google.Protobuf-3.25.0" Bounds="670.66057360158,348.859728813171,213.661852945626,1083.2663002087" />
     <Link Source="wholesale-api\Edi\Edi.csproj" Target="Grpc.Tools-2.59.0" Bounds="670.59381035534,348.859728813171,197.347341418993,1027.29783053067" />
     <Link Source="wholesale-api\Edi\Edi.csproj" Target="Microsoft.Extensions.Logging.Abstractions-7.0.1" Bounds="676.11084929171,348.859728813171,316.065416055946,512.714919085947" />
     <Link Source="wholesale-api\Edi\Edi.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="117.279672288727,348.859728813171,544.988768725103,1215.80162623933" />
     <Link Source="wholesale-api\Edi\Edi.csproj" Target="NodaTime.Serialization.Protobuf-2.0.1" Bounds="564.785484532509,348.859728813171,101.763853505075,855.279217355285" />
-    <Link Source="wholesale-api\Edi\Edi.csproj" Target="wholesale-api\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" Bounds="696.619035860697,336.01041765086,571.303239826828,3.04062279948755" />
-    <Link Source="wholesale-api\Events\Events.Application\Events.Application.csproj" Target="Energinet.DataHub.Core.App.FunctionApp-8.1.1" Bounds="258.080312773953,287.309838867129,824.060568938946,1086.39923046638" />
-    <Link Source="wholesale-api\Events\Events.Application\Events.Application.csproj" Target="Energinet.DataHub.Core.Logging-3.1.1" Bounds="841.623020150871,287.309838867129,240.909374171354,330.732816145973" />
-    <Link Source="wholesale-api\Events\Events.Application\Events.Application.csproj" Target="Energinet.DataHub.Core.Messaging-3.2.0" Bounds="771.741796801371,287.309838867129,314.653357267811,729.544671134778" />
-    <Link Source="wholesale-api\Events\Events.Application\Events.Application.csproj" Target="Microsoft.Extensions.Hosting.Abstractions-7.0.0" Bounds="937.648905431979,14.9554610936238,212.066578221893,1417.09813496603" />
-    <Link Source="wholesale-api\Events\Events.Application\Events.Application.csproj" Target="Microsoft.Extensions.Logging.Abstractions-7.0.1" Bounds="842.512851381496,287.309838867129,242.66041684952,461.960278550567" />
-    <Link Source="wholesale-api\Events\Events.Application\Events.Application.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="939.153703195562,60.2212413490558,568.944018043752,1505.11709108248" />
-    <Link Source="wholesale-api\Events\Events.Application\Events.Application.csproj" Target="System.Linq.Async-6.0.1" Bounds="1096.29809587222,287.309838867129,345.273965433824,1045.02341358538" />
-    <Link Source="wholesale-api\Events\Events.Application\Events.Application.csproj" Target="wholesale-api\Batches\Batches.Interfaces\Batches.Interfaces.csproj" Bounds="964.051523295509,60.2210455252241,573.338948413427,250.032368410027" />
-    <Link Source="wholesale-api\Events\Events.Application\Events.Application.csproj" Target="wholesale-api\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" Bounds="881.131358289011,265.367339930765,196.904658338055,140.682805624999" />
-    <Link Source="wholesale-api\Events\Events.Application\Events.Application.csproj" Target="wholesale-api\Common\Common.csproj" Bounds="935.837731606929,14.9554243087769,4.81913381367235,466.094995870846" />
-    <Link Source="wholesale-api\Events\Events.Application\Events.Application.csproj" Target="wholesale-api\Edi\Edi.csproj" Bounds="684.14443150638,14.9554243087769,241.139152960969,300.879216201563" />
-    <Link Source="wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" Target="Azure.Messaging.ServiceBus-7.16.2" Bounds="739.705778254489,233.846680362184,343.724326511986,861.412073293013" />
+    <Link Source="wholesale-api\Edi\Edi.csproj" Target="wholesale-api\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" Bounds="696.619035860697,339.06582580755,516.412792179673,58.0674817692081" />
+    <Link Source="wholesale-api\Events\Events.Application\Events.Application.csproj" Target="Energinet.DataHub.Core.App.FunctionApp-8.1.1" Bounds="673.399590403458,435.407193200233,226.229726183041,1688.0422867039" />
+    <Link Source="wholesale-api\Events\Events.Application\Events.Application.csproj" Target="Energinet.DataHub.Core.Logging-3.1.1" Bounds="687.671419158467,170.869097709656,20.9660888408307,557.445578610524" />
+    <Link Source="wholesale-api\Events\Events.Application\Events.Application.csproj" Target="Energinet.DataHub.Core.Messaging-3.2.0" Bounds="139.649165643999,170.869097709656,540.205196579518,958.406381201759" />
+    <Link Source="wholesale-api\Events\Events.Application\Events.Application.csproj" Target="Microsoft.Extensions.Hosting.Abstractions-7.0.0" Bounds="691.8556152112,170.869097709656,453.479180830828,1261.61079827762" />
+    <Link Source="wholesale-api\Events\Events.Application\Events.Application.csproj" Target="Microsoft.Extensions.Logging.Abstractions-7.0.1" Bounds="692.885127062802,170.869097709656,302.706915639573,690.117452461018" />
+    <Link Source="wholesale-api\Events\Events.Application\Events.Application.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="116.384987899259,170.869097709656,565.521860457398,1393.66813785348" />
+    <Link Source="wholesale-api\Events\Events.Application\Events.Application.csproj" Target="System.Linq.Async-6.0.1" Bounds="808.734102772227,426.732165336609,90.7327051915577,1728.43091469584" />
+    <Link Source="wholesale-api\Events\Events.Application\Events.Application.csproj" Target="wholesale-api\Batches\Batches.Interfaces\Batches.Interfaces.csproj" Bounds="699.261993719575,170.869097709656,190.092208529153,204.59446130556" />
+    <Link Source="wholesale-api\Events\Events.Application\Events.Application.csproj" Target="wholesale-api\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" Bounds="719.816587852805,170.869097709656,556.338602684419,221.639671685611" />
+    <Link Source="wholesale-api\Events\Events.Application\Events.Application.csproj" Target="wholesale-api\Common\Common.csproj" Bounds="862.607199851498,426.732165336609,36.6797975675178,553.034131809481" />
+    <Link Source="wholesale-api\Events\Events.Application\Events.Application.csproj" Target="wholesale-api\Edi\Edi.csproj" Bounds="670.449961493804,170.869097709656,15.3383448505302,143.039699162154" />
+    <Link Source="wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" Target="Azure.Messaging.ServiceBus-7.16.2" Bounds="98.6789608242933,-17.8544015884399,582.308416901991,1226.37410714603" />
     <Link Source="wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" Target="Azure.Storage.Files.DataLake-12.16.0" Bounds="1090.41218517773,233.846680362184,149.701793607394,1084.69576934377" />
-    <Link Source="wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" Target="Energinet.DataHub.Core.App.FunctionApp-8.1.1" Bounds="265.142138925581,233.846680362184,814.208334149952,1142.24332337838" />
+    <Link Source="wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" Target="Energinet.DataHub.Core.App.FunctionApp-8.1.1" Bounds="673.307826741727,379.404859694984,226.376341579676,1744.03973944497" />
     <Link Source="wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" Target="Google.Protobuf-3.25.0" Bounds="1015.32615119153,233.846680362184,72.4657078799795,1140.58995869382" />
     <Link Source="wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" Target="Grpc.Tools-2.59.0" Bounds="999.227023403283,233.846680362184,88.3320454112679,1084.64144691618" />
     <Link Source="wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" Target="Microsoft.EntityFrameworkCore.SqlServer-7.0.13" Bounds="615.470074987132,233.846680362184,467.818379560003,1141.24448923856" />
@@ -344,47 +353,47 @@
     <Link Source="wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="938.959590121063,4.21786534197572,569.408447717519,1561.08397195957" />
     <Link Source="wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" Target="NodaTime.Serialization.Protobuf-2.0.1" Bounds="1090.30262371283,233.846680362184,111.553174002925,860.845312125158" />
     <Link Source="wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" Target="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime-7.1.0" Bounds="1089.45966226834,233.846680362184,59.3577046866781,916.749591010023" />
-    <Link Source="wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" Target="wholesale-api\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" Bounds="875.869731034707,209.36392959141,206.617109892671,195.728788599181" />
-    <Link Source="wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" Target="wholesale-api\Events\Events.Application\Events.Application.csproj" Bounds="687.303771972656,115.205604553223,0,20.9919815063477" />
-    <Link Source="wholesale-api\Events\Events.IntegrationTests\Events.IntegrationTests.csproj" Target="Energinet.DataHub.Core.FunctionApp.TestCommon-4.4.2" Bounds="291.707098765381,-46.4522754634026,782.177129205513,668.133773271866" />
-    <Link Source="wholesale-api\Events\Events.IntegrationTests\Events.IntegrationTests.csproj" Target="Energinet.DataHub.Core.TestCommon-4.4.2" Bounds="258.967734775562,-46.4522754634026,812.885097748421,612.60255257957" />
-    <Link Source="wholesale-api\Events\Events.IntegrationTests\Events.IntegrationTests.csproj" Target="Energinet.DataHub.MessageHub.IntegrationTesting-3.2.0" Bounds="268.220386487215,-46.4522754634026,808.593249513151,855.319633730764" />
-    <Link Source="wholesale-api\Events\Events.IntegrationTests\Events.IntegrationTests.csproj" Target="FluentAssertions-6.12.0" Bounds="553.580907915869,-46.4522754634026,525.517378832116,682.807198273163" />
-    <Link Source="wholesale-api\Events\Events.IntegrationTests\Events.IntegrationTests.csproj" Target="Microsoft.NET.Test.Sdk-17.7.2" Bounds="353.43893788243,-46.4522754634026,723.022308057558,743.487331740488" />
-    <Link Source="wholesale-api\Events\Events.IntegrationTests\Events.IntegrationTests.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="1414.62083681736,-279.791464864323,100.370397269491,1844.56170401674" />
-    <Link Source="wholesale-api\Events\Events.IntegrationTests\Events.IntegrationTests.csproj" Target="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime-7.1.0" Bounds="1089.50598186259,-46.4522754634026,35.2270403849868,1140.74425441355" />
-    <Link Source="wholesale-api\Events\Events.IntegrationTests\Events.IntegrationTests.csproj" Target="coverlet.collector-6.0.0" Bounds="182.215190388779,-46.4522754634026,891.317460895308,744.171380649139" />
-    <Link Source="wholesale-api\Events\Events.IntegrationTests\Events.IntegrationTests.csproj" Target="database-migration\DatabaseMigration.csproj" Bounds="465.592977974462,-279.791348457336,924.81993615639,511.636081859687" />
-    <Link Source="wholesale-api\Events\Events.IntegrationTests\Events.IntegrationTests.csproj" Target="wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" Bounds="1096.71188404164,-50.1626555661604,94.3118785094227,249.588110502616" />
-    <Link Source="wholesale-api\Events\Events.IntegrationTests\Events.IntegrationTests.csproj" Target="wholesale-api\Test.Core\Test.Core.csproj" Bounds="716.774169921875,-362.017852783203,371.344116210938,39.8514404296875" />
-    <Link Source="wholesale-api\Events\Events.IntegrationTests\Events.IntegrationTests.csproj" Target="xunit-2.6.1" Bounds="525.040479342944,-46.4522754634026,552.609554455473,627.22633377276" />
-    <Link Source="wholesale-api\Events\Events.IntegrationTests\Events.IntegrationTests.csproj" Target="xunit.runner.visualstudio-2.5.3" Bounds="543.298731852239,-46.4522754634026,536.414997006847,742.643567930489" />
-    <Link Source="wholesale-api\Events\Events.UnitTests\Events.UnitTests.csproj" Target="Energinet.DataHub.Core.FunctionApp.TestCommon-4.4.2" Bounds="300.883383231956,-47.3767301999249,496.767035322637,666.762135258834" />
-    <Link Source="wholesale-api\Events\Events.UnitTests\Events.UnitTests.csproj" Target="Energinet.DataHub.Core.TestCommon-4.4.2" Bounds="267.827787561965,-47.3767301999249,528.272098181871,611.210014896469" />
-    <Link Source="wholesale-api\Events\Events.UnitTests\Events.UnitTests.csproj" Target="Energinet.DataHub.MessageHub.IntegrationTesting-3.2.0" Bounds="278.53490673714,-47.3767301999249,520.873870854162,854.175722115961" />
-    <Link Source="wholesale-api\Events\Events.UnitTests\Events.UnitTests.csproj" Target="FluentAssertions-6.12.0" Bounds="561.856809700699,-47.3767301999249,240.884300801147,681.453950503885" />
-    <Link Source="wholesale-api\Events\Events.UnitTests\Events.UnitTests.csproj" Target="Microsoft.NET.Test.Sdk-17.7.2" Bounds="362.912445973606,-47.3767301999249,436.773242587576,742.182956097143" />
-    <Link Source="wholesale-api\Events\Events.UnitTests\Events.UnitTests.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="218.197143082335,-279.791464864323,1283.82472234648,1846.15939950567" />
-    <Link Source="wholesale-api\Events\Events.UnitTests\Events.UnitTests.csproj" Target="Moq.EntityFrameworkCore-7.0.0.2" Bounds="215.977963736147,-47.3767301999249,581.886121007637,798.625589677558" />
-    <Link Source="wholesale-api\Events\Events.UnitTests\Events.UnitTests.csproj" Target="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime-7.1.0" Bounds="811.032868404286,-47.3767301999249,324.395009156146,1141.08307223515" />
-    <Link Source="wholesale-api\Events\Events.UnitTests\Events.UnitTests.csproj" Target="System.Linq.Async-6.0.1" Bounds="813.462294025337,-47.3767301999249,624.480178108304,1325.43876509936" />
-    <Link Source="wholesale-api\Events\Events.UnitTests\Events.UnitTests.csproj" Target="coverlet.collector-6.0.0" Bounds="192.170525345881,-47.3767301999249,604.586568495482,742.958737595371" />
-    <Link Source="wholesale-api\Events\Events.UnitTests\Events.UnitTests.csproj" Target="wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" Bounds="680.488722661603,-50.1626555661604,381.052325326644,253.028517572943" />
-    <Link Source="wholesale-api\Events\Events.UnitTests\Events.UnitTests.csproj" Target="wholesale-api\Test.Core\Test.Core.csproj" Bounds="21.9256114959717,-359.733062744141,587.849229812622,39.4132385253906" />
-    <Link Source="wholesale-api\Events\Events.UnitTests\Events.UnitTests.csproj" Target="xunit-2.6.1" Bounds="532.950945335345,-47.3767301999249,268.800686255857,625.710068614924" />
-    <Link Source="wholesale-api\Events\Events.UnitTests\Events.UnitTests.csproj" Target="xunit.runner.visualstudio-2.5.3" Bounds="552.096622869792,-47.3767301999249,250.841549208828,741.414124067748" />
-    <Link Source="wholesale-api\Test.Core\Test.Core.csproj" Target="Energinet.DataHub.Core.FunctionApp.TestCommon-4.4.2" Bounds="321.026662566009,46.1186340022016,611.093770452911,611.610186219841" />
-    <Link Source="wholesale-api\Test.Core\Test.Core.csproj" Target="Energinet.DataHub.Core.TestCommon-4.4.2" Bounds="288.364498925274,46.1186340022016,641.743305444136,556.122691611282" />
-    <Link Source="wholesale-api\Test.Core\Test.Core.csproj" Target="Energinet.DataHub.MessageHub.IntegrationTesting-3.2.0" Bounds="297.756271793267,46.1186340022016,636.987087907184,798.820655341088" />
-    <Link Source="wholesale-api\Test.Core\Test.Core.csproj" Target="FluentAssertions-6.12.0" Bounds="581.951634751462,46.1186340022016,355.77140115956,626.11205273096" />
-    <Link Source="wholesale-api\Test.Core\Test.Core.csproj" Target="Microsoft.NET.Test.Sdk-17.7.2" Bounds="382.638487984408,46.1186340022016,552.024124553333,686.921687209667" />
-    <Link Source="wholesale-api\Test.Core\Test.Core.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="912.623827118784,-223.789229451725,596.389375543872,1789.00810072722" />
-    <Link Source="wholesale-api\Test.Core\Test.Core.csproj" Target="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime-7.1.0" Bounds="947.575937942659,46.1186340022016,205.725671302442,1084.89521380671" />
-    <Link Source="wholesale-api\Test.Core\Test.Core.csproj" Target="coverlet.collector-6.0.0" Bounds="211.876943858477,46.1186340022016,719.629258636627,687.71903429456" />
-    <Link Source="wholesale-api\Test.Core\Test.Core.csproj" Target="database-migration\DatabaseMigration.csproj" Bounds="453.184000974185,-223.789113044739,442.423507562019,453.548136619869" />
-    <Link Source="wholesale-api\Test.Core\Test.Core.csproj" Target="xunit-2.6.1" Bounds="553.412604251039,46.1186340022016,382.970525470547,570.504419220208" />
-    <Link Source="wholesale-api\Test.Core\Test.Core.csproj" Target="xunit.runner.visualstudio-2.5.3" Bounds="571.852067227618,46.1186340022016,366.316039395325,685.998011687719" />
-    <Link Source="wholesale-api\WebApi.IntegrationTests\WebApi.IntegrationTests.csproj" Target="Energinet.DataHub.Core.FunctionApp.TestCommon-4.4.2" Bounds="295.098430550603,17.6364397639764,584.250762766927,555.77155508951" />
+    <Link Source="wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" Target="wholesale-api\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" Bounds="713.84203456151,114.865748405457,568.536167963919,277.031600705153" />
+    <Link Source="wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" Target="wholesale-api\Events\Events.Application\Events.Application.csproj" Bounds="900.149291992188,370.729949951172,0,21" />
+    <Link Source="wholesale-api\Events\Events.IntegrationTests\Events.IntegrationTests.csproj" Target="Energinet.DataHub.Core.FunctionApp.TestCommon-4.4.2" Bounds="102.651731857163,86.7209894088981,153.369172985735,1125.07073541897" />
+    <Link Source="wholesale-api\Events\Events.IntegrationTests\Events.IntegrationTests.csproj" Target="Energinet.DataHub.Core.TestCommon-4.4.2" Bounds="-477.32833151313,174.871508598328,591.195108708832,559.828855121944" />
+    <Link Source="wholesale-api\Events\Events.IntegrationTests\Events.IntegrationTests.csproj" Target="Energinet.DataHub.MessageHub.IntegrationTesting-3.2.0" Bounds="-481.565643491005,61.4200281538404,552.780251848904,757.117937345382" />
+    <Link Source="wholesale-api\Events\Events.IntegrationTests\Events.IntegrationTests.csproj" Target="FluentAssertions-6.12.0" Bounds="-472.871470560336,174.871508598328,885.04705362973,632.703282866639" />
+    <Link Source="wholesale-api\Events\Events.IntegrationTests\Events.IntegrationTests.csproj" Target="Microsoft.NET.Test.Sdk-17.7.2" Bounds="-478.034612138489,174.871508598328,692.757117357367,691.578889560249" />
+    <Link Source="wholesale-api\Events\Events.IntegrationTests\Events.IntegrationTests.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="-485.60454471913,174.871508598328,584.412789541789,1393.27960882282" />
+    <Link Source="wholesale-api\Events\Events.IntegrationTests\Events.IntegrationTests.csproj" Target="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime-7.1.0" Bounds="-479.502322103042,174.871508598328,969.704686181381,1091.01139649524" />
+    <Link Source="wholesale-api\Events\Events.IntegrationTests\Events.IntegrationTests.csproj" Target="coverlet.collector-6.0.0" Bounds="-481.17357990847,174.871508598328,525.170697999086,690.772888067931" />
+    <Link Source="wholesale-api\Events\Events.IntegrationTests\Events.IntegrationTests.csproj" Target="database-migration\DatabaseMigration.csproj" Bounds="116.573740494282,86.7209894088981,1081.95044657454,896.284016041246" />
+    <Link Source="wholesale-api\Events\Events.IntegrationTests\Events.IntegrationTests.csproj" Target="wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" Bounds="-412.328232621307,-17.3748439304829,1017.07550979663,166.3671124318" />
+    <Link Source="wholesale-api\Events\Events.IntegrationTests\Events.IntegrationTests.csproj" Target="wholesale-api\Test.Core\Test.Core.csproj" Bounds="167.033660888672,86.7210083007813,565.875701904297,39.2860870361328" />
+    <Link Source="wholesale-api\Events\Events.IntegrationTests\Events.IntegrationTests.csproj" Target="xunit-2.6.1" Bounds="-471.848582443992,174.871508598328,852.424490146936,576.932659277133" />
+    <Link Source="wholesale-api\Events\Events.IntegrationTests\Events.IntegrationTests.csproj" Target="xunit.runner.visualstudio-2.5.3" Bounds="-474.54848945682,174.871508598328,879.200840748529,692.36921332224" />
+    <Link Source="wholesale-api\Events\Events.UnitTests\Events.UnitTests.csproj" Target="Energinet.DataHub.Core.FunctionApp.TestCommon-4.4.2" Bounds="266.314825266007,86.7208836868522,382.578860010518,1125.46722596172" />
+    <Link Source="wholesale-api\Events\Events.UnitTests\Events.UnitTests.csproj" Target="Energinet.DataHub.Core.TestCommon-4.4.2" Bounds="62.9728162615429,174.870566912842,68.4439374980329,557.085204966624" />
+    <Link Source="wholesale-api\Events\Events.UnitTests\Events.UnitTests.csproj" Target="Energinet.DataHub.MessageHub.IntegrationTesting-3.2.0" Bounds="61.7805638571827,61.4181409681715,23.5332952765024,755.392986974571" />
+    <Link Source="wholesale-api\Events\Events.UnitTests\Events.UnitTests.csproj" Target="FluentAssertions-6.12.0" Bounds="68.7439145734858,174.870566912842,357.115992441609,630.108344991447" />
+    <Link Source="wholesale-api\Events\Events.UnitTests\Events.UnitTests.csproj" Target="Microsoft.NET.Test.Sdk-17.7.2" Bounds="64.4773990573187,174.870566912842,164.431055907529,689.184090530912" />
+    <Link Source="wholesale-api\Events\Events.UnitTests\Events.UnitTests.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="61.7976853149487,174.870566912842,45.2226341306563,1392.58475646658" />
+    <Link Source="wholesale-api\Events\Events.UnitTests\Events.UnitTests.csproj" Target="Moq.EntityFrameworkCore-7.0.0.2" Bounds="61.7627511305255,174.870566912842,22.1883118313319,744.90246352087" />
+    <Link Source="wholesale-api\Events\Events.UnitTests\Events.UnitTests.csproj" Target="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime-7.1.0" Bounds="66.5395426847766,174.870566912842,432.700608047931,1089.37493741924" />
+    <Link Source="wholesale-api\Events\Events.UnitTests\Events.UnitTests.csproj" Target="System.Linq.Async-6.0.1" Bounds="654.266665203497,86.7208800992119,151.703980321905,2068.45393341237" />
+    <Link Source="wholesale-api\Events\Events.UnitTests\Events.UnitTests.csproj" Target="coverlet.collector-6.0.0" Bounds="59.3749598247258,174.870566912842,1.96347554582978,688.938410067917" />
+    <Link Source="wholesale-api\Events\Events.UnitTests\Events.UnitTests.csproj" Target="wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" Bounds="103.590595128879,-15.205422818563,532.753549852507,164.073756226156" />
+    <Link Source="wholesale-api\Events\Events.UnitTests\Events.UnitTests.csproj" Target="wholesale-api\Test.Core\Test.Core.csproj" Bounds="684.214475822759,86.7210049030399,63.0090256472113,26.5097632347362" />
+    <Link Source="wholesale-api\Events\Events.UnitTests\Events.UnitTests.csproj" Target="xunit-2.6.1" Bounds="68.7710509845114,174.870566912842,326.602785914628,574.155245469827" />
+    <Link Source="wholesale-api\Events\Events.UnitTests\Events.UnitTests.csproj" Target="xunit.runner.visualstudio-2.5.3" Bounds="67.9635168160551,174.870566912842,349.596739213542,689.910221328563" />
+    <Link Source="wholesale-api\Test.Core\Test.Core.csproj" Target="Energinet.DataHub.Core.FunctionApp.TestCommon-4.4.2" Bounds="269.086782186498,142.723217192101,511.122539599553,1069.86519324021" />
+    <Link Source="wholesale-api\Test.Core\Test.Core.csproj" Target="Energinet.DataHub.Core.TestCommon-4.4.2" Bounds="136.578410099091,230.872900418091,56.4401231154803,501.072260451754" />
+    <Link Source="wholesale-api\Test.Core\Test.Core.csproj" Target="Energinet.DataHub.MessageHub.IntegrationTesting-3.2.0" Bounds="89.2312054540131,117.420474473421,103.331174624926,699.482912715588" />
+    <Link Source="wholesale-api\Test.Core\Test.Core.csproj" Target="FluentAssertions-6.12.0" Bounds="199.683498820512,230.872900418091,229.435836848916,573.579649899289" />
+    <Link Source="wholesale-api\Test.Core\Test.Core.csproj" Target="Microsoft.NET.Test.Sdk-17.7.2" Bounds="195.253997199707,230.872900418091,37.5374024473465,632.95182542198" />
+    <Link Source="wholesale-api\Test.Core\Test.Core.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="109.123008005072,230.872900418091,84.5376529910568,1336.59562906265" />
+    <Link Source="wholesale-api\Test.Core\Test.Core.csproj" Target="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime-7.1.0" Bounds="198.297084138982,230.872900418091,303.079584122118,1033.10090525439" />
+    <Link Source="wholesale-api\Test.Core\Test.Core.csproj" Target="coverlet.collector-6.0.0" Bounds="63.7243587664513,230.872900418091,128.127484484846,633.114868160832" />
+    <Link Source="wholesale-api\Test.Core\Test.Core.csproj" Target="database-migration\DatabaseMigration.csproj" Bounds="792.901953213007,142.723217192101,417.750491503356,837.968647360375" />
+    <Link Source="wholesale-api\Test.Core\Test.Core.csproj" Target="xunit-2.6.1" Bounds="199.49359724202,230.872900418091,199.474719134303,517.577906869348" />
+    <Link Source="wholesale-api\Test.Core\Test.Core.csproj" Target="xunit.runner.visualstudio-2.5.3" Bounds="199.032412692755,230.872900418091,221.658577323217,633.441094963089" />
+    <Link Source="wholesale-api\WebApi.IntegrationTests\WebApi.IntegrationTests.csproj" Target="Energinet.DataHub.Core.FunctionApp.TestCommon-4.4.2" Bounds="276.413817575127,86.7210073471069,994.644521237726,1127.23976384559" />
     <Link Source="wholesale-api\WebApi.IntegrationTests\WebApi.IntegrationTests.csproj" Target="Energinet.DataHub.Core.TestCommon-4.4.2" Bounds="262.736194539107,17.6364397639764,614.317272716944,500.330972768054" />
     <Link Source="wholesale-api\WebApi.IntegrationTests\WebApi.IntegrationTests.csproj" Target="FluentAssertions-6.12.0" Bounds="555.39028233176,17.6364397639764,330.098948869688,570.146049725531" />
     <Link Source="wholesale-api\WebApi.IntegrationTests\WebApi.IntegrationTests.csproj" Target="Microsoft.AspNetCore.Mvc.Testing-7.0.13" Bounds="434.930636087108,17.6364397639764,449.570148226502,686.366157470267" />
@@ -392,8 +401,8 @@
     <Link Source="wholesale-api\WebApi.IntegrationTests\WebApi.IntegrationTests.csproj" Target="Microsoft.OpenApi.Readers-1.6.10" Bounds="905.460739286626,17.6364397639764,493.392790306456,515.472929921961" />
     <Link Source="wholesale-api\WebApi.IntegrationTests\WebApi.IntegrationTests.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="807.860228348792,-279.791562956975,700.207345465544,1845.13402730592" />
     <Link Source="wholesale-api\WebApi.IntegrationTests\WebApi.IntegrationTests.csproj" Target="coverlet.collector-6.0.0" Bounds="185.906672240912,17.6364397639764,692.853955238354,631.870227880621" />
-    <Link Source="wholesale-api\WebApi.IntegrationTests\WebApi.IntegrationTests.csproj" Target="database-migration\DatabaseMigration.csproj" Bounds="448.123954257079,-279.791348457336,345.95808141847,508.551488219387" />
-    <Link Source="wholesale-api\WebApi.IntegrationTests\WebApi.IntegrationTests.csproj" Target="wholesale-api\Test.Core\Test.Core.csproj" Bounds="582.384653951441,-359.733058209192,48.4952007301988,25.7759224325227" />
+    <Link Source="wholesale-api\WebApi.IntegrationTests\WebApi.IntegrationTests.csproj" Target="database-migration\DatabaseMigration.csproj" Bounds="1222.60317448179,86.7210073471069,59.0670729736917,893.045061795994" />
+    <Link Source="wholesale-api\WebApi.IntegrationTests\WebApi.IntegrationTests.csproj" Target="wholesale-api\Test.Core\Test.Core.csproj" Bounds="839.902587890625,83.8780822753906,357.888916015625,40.1396484375" />
     <Link Source="wholesale-api\WebApi.IntegrationTests\WebApi.IntegrationTests.csproj" Target="wholesale-api\WebApi\WebApi.csproj" Bounds="919.697911947963,17.6364397639764,94.521715758388,46.0578648016478" />
     <Link Source="wholesale-api\WebApi.IntegrationTests\WebApi.IntegrationTests.csproj" Target="xunit-2.6.1" Bounds="527.052522279948,17.6364397639764,356.945587875756,514.57966974282" />
     <Link Source="wholesale-api\WebApi.IntegrationTests\WebApi.IntegrationTests.csproj" Target="xunit.runner.visualstudio-2.5.3" Bounds="545.219790745397,17.6364397639764,340.764682049109,630.018568053089" />
@@ -404,32 +413,33 @@
     <Link Source="wholesale-api\WebApi.UnitTests\WebApi.UnitTests.csproj" Target="Moq-4.20.69" Bounds="489.142376616133,-51.9522024981363,440.513909060316,515.176536429985" />
     <Link Source="wholesale-api\WebApi.UnitTests\WebApi.UnitTests.csproj" Target="coverlet.collector-6.0.0" Bounds="146.351511408632,-51.9522024981363,779.687574603717,687.982329311278" />
     <Link Source="wholesale-api\WebApi.UnitTests\WebApi.UnitTests.csproj" Target="wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" Bounds="832.365055853778,-50.1627517514631,237.776117607128,251.467701160436" />
-    <Link Source="wholesale-api\WebApi.UnitTests\WebApi.UnitTests.csproj" Target="wholesale-api\Test.Core\Test.Core.csproj" Bounds="441.54088614183,-360.058819314915,168.380840434625,32.899745101408" />
+    <Link Source="wholesale-api\WebApi.UnitTests\WebApi.UnitTests.csproj" Target="wholesale-api\Test.Core\Test.Core.csproj" Bounds="839.931640625,86.7210083007813,564.915283203125,39.2803192138672" />
     <Link Source="wholesale-api\WebApi.UnitTests\WebApi.UnitTests.csproj" Target="wholesale-api\WebApi\WebApi.csproj" Bounds="947.005529423416,-51.9522024981363,46.9238988915847,97.8868288626614" />
     <Link Source="wholesale-api\WebApi.UnitTests\WebApi.UnitTests.csproj" Target="xunit-2.6.1" Bounds="488.358187464789,-51.9522024981363,442.340915374203,570.862730246114" />
     <Link Source="wholesale-api\WebApi.UnitTests\WebApi.UnitTests.csproj" Target="xunit.runner.visualstudio-2.5.3" Bounds="506.592696762141,-51.9522024981363,426.108293364485,686.290945059118" />
-    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="Asp.Versioning.Mvc-7.1.0" Bounds="909.779195699664,-70.3139772415161,367.980851184809,1158.83077524031" />
-    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="Asp.Versioning.Mvc.ApiExplorer-7.1.0" Bounds="909.573239153524,-70.3139772415161,400.26170268411,1326.67242497673" />
-    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="AspNetCore.HealthChecks.AzureServiceBus-7.0.0" Bounds="139.858883306827,-70.3139772415161,758.38694695689,1331.52937370681" />
-    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="Energinet.DataHub.Core.App.Common.Security-8.1.1" Bounds="148.449658716077,-70.3139772415161,750.939207123447,1559.12140781856" />
-    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="Energinet.DataHub.Core.App.WebApp-8.1.1" Bounds="125.678356902031,-70.3139772415161,773.028614606822,1447.37125331643" />
-    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="Energinet.DataHub.Core.Databricks.Jobs-7.0.1" Bounds="899.591055246862,-70.3139772415161,5.99466868349543,1198.43003709962" />
-    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="Energinet.DataHub.Core.Databricks.SqlStatementExecution-7.0.1" Bounds="906.081820750894,-70.3139772415161,41.5906076277948,1254.3948282857" />
-    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="Energinet.DataHub.Core.Logging.LoggingMiddleware-3.1.1" Bounds="767.157546472503,-70.3139772415161,136.418116225943,854.702359850979" />
-    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="Microsoft.ApplicationInsights.AspNetCore-2.21.0" Bounds="717.333672354429,-70.3139772415161,185.722756205298,930.723863739978" />
-    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="Microsoft.Extensions.Azure-1.7.1" Bounds="908.179181520623,-70.3139772415161,306.959251581166,1578.37925419603" />
-    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore-7.0.13" Bounds="558.358311702972,-70.3139772415161,344.419169173568,1558.44196434456" />
-    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="Microsoft.Extensions.Logging.AzureAppServices-7.0.13" Bounds="732.380876006679,-70.3139772415161,171.016374879174,986.642105973211" />
-    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="117.865877122519,-70.3139772415161,781.570283907151,1635.06796390716" />
-    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime-7.1.0" Bounds="514.024048646471,-70.3139772415161,387.837510521624,1330.70934729319" />
-    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="Swashbuckle.AspNetCore-6.5.0" Bounds="911.832712024923,-70.3139772415161,551.231232477361,1159.28074404357" />
-    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="wholesale-api\Batches\Batches.Infrastructure\Batches.Infrastructure.csproj" Bounds="905.717573069679,-70.3139772415161,1.70307981198471,331.385626435641" />
-    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="wholesale-api\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" Bounds="919.723266608143,-70.3139772415161,376.732326748499,348.050279859749" />
-    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="wholesale-api\Common\Common.csproj" Bounds="910.387329101563,-70.3139801025391,105.529113769531,554.508255004883" />
+    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="Asp.Versioning.Mvc-7.1.0" Bounds="909.779220802207,-70.3139772415161,367.980783533957,1158.8235160911" />
+    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="Asp.Versioning.Mvc.ApiExplorer-7.1.0" Bounds="909.573259859712,-70.3139772415161,400.261648727419,1326.66524287216" />
+    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="AspNetCore.HealthChecks.AzureServiceBus-7.0.0" Bounds="139.854319934698,-70.3139772415161,758.391467549082,1331.52961813789" />
+    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="Energinet.DataHub.Core.App.Common.Security-8.1.1" Bounds="148.445080975088,-70.3139772415161,750.943749700157,1559.12208383908" />
+    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="Energinet.DataHub.Core.App.WebApp-8.1.1" Bounds="125.673783027314,-70.3139772415161,773.033149950002,1447.37171345022" />
+    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="Energinet.DataHub.Core.Databricks.Jobs-7.0.1" Bounds="899.591055894361,-70.3139772415161,5.99466765299508,1198.42277317421" />
+    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="Energinet.DataHub.Core.Databricks.SqlStatementExecution-7.0.1" Bounds="906.081823132899,-70.3139772415161,41.590601221429,1254.38770347605" />
+    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="Energinet.DataHub.Core.Logging.LoggingMiddleware-3.1.1" Bounds="767.157575495119,-70.3139772415161,136.418069772214,854.694889233959" />
+    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="Microsoft.ApplicationInsights.AspNetCore-2.21.0" Bounds="717.333704594426,-70.3139772415161,185.722704440622,930.71659983987" />
+    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="Microsoft.Extensions.Azure-1.7.1" Bounds="705.140317354337,274.727889924645,287.988752596834,1880.52621886885" />
+    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore-7.0.13" Bounds="558.353746222856,-70.3139772415161,344.423698111729,1558.44263699568" />
+    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="Microsoft.Extensions.Logging.AzureAppServices-7.0.13" Bounds="732.380902340552,-70.3139772415161,171.016332686861,986.634919377006" />
+    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="Microsoft.VisualStudio.Threading.Analyzers-17.7.30" Bounds="117.820379493014,-70.3139772415161,781.615433492273,1635.07084708792" />
+    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime-7.1.0" Bounds="514.019529505287,-70.3139772415161,387.841986617458,1330.7095883427" />
+    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="Swashbuckle.AspNetCore-6.5.0" Bounds="911.832750172306,-70.3139772415161,551.231139235055,1159.27339434613" />
+    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="wholesale-api\Batches\Batches.Infrastructure\Batches.Infrastructure.csproj" Bounds="905.717576587883,-70.3139772415161,1.70307034020334,331.366335345189" />
+    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="wholesale-api\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" Bounds="919.723586086125,-70.3139772415161,376.731618685368,348.041724365288" />
+    <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="wholesale-api\Common\Common.csproj" Bounds="672.898010253906,274.727691650391,134.425231933594,717.010284423828" />
     <Link Source="wholesale-api\WebApi\WebApi.csproj" Target="wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" Bounds="709.366136207618,-70.3139772415161,180.944840622878,153.358457415208" />
   </Links>
   <Categories>
     <Category Id="CodeSchema_Project" Label="Project" CanBeDataDriven="True" DefaultAction="Node:Both:CodeSchema_ProjectItem" Icon="CodeSchema_Project" IsProviderRoot="False" NavigationActionLabel="Projects" />
+    <Category Id="Comment" Label="Comment" Description="Represents a user defined comment on the diagram" CanBeDataDriven="True" IsProviderRoot="False" NavigationActionLabel="Comments" />
     <Category Id="Contains" Label="Contains" Description="Whether the source of the link contains the target object" CanBeDataDriven="False" CanLinkedNodesBeDataDriven="True" IncomingActionLabel="Contained By" IsContainment="True" OutgoingActionLabel="Contains" />
     <Category Id="DgmlPowerTool_PackageReference" Label="Package Reference" CanBeDataDriven="True" IsProviderRoot="False" NavigationActionLabel="PackagesReferences" />
   </Categories>
@@ -448,12 +458,12 @@
     <Property Id="IsEnabled" DataType="System.Boolean" />
     <Property Id="IsProviderRoot" Label="IsProviderRoot" Description="IsProviderRoot" DataType="System.Boolean" />
     <Property Id="Label" Label="Label" Description="Displayable label of an Annotatable object" DataType="System.String" />
+    <Property Id="Layout" DataType="System.String" />
     <Property Id="NavigationActionLabel" Label="NavigationActionLabel" Description="NavigationActionLabel" DataType="System.String" />
     <Property Id="Nuget-Version" Label="Version" Description="Nuget package version" DataType="System.String" IsBrowsable="True" />
     <Property Id="OutgoingActionLabel" Label="OutgoingActionLabel" Description="OutgoingActionLabel" DataType="System.String" />
     <Property Id="Priority" Label="Priority" Description="Priority" DataType="System.Int32" />
     <Property Id="TargetType" DataType="System.Type" />
-    <Property Id="UseManualLocation" DataType="System.Boolean" />
     <Property Id="Value" DataType="System.String" />
     <Property Id="ValueLabel" DataType="System.String" />
     <Property Id="ZoomLevel" DataType="System.String" />
@@ -468,6 +478,14 @@
       <Condition Expression="HasCategory('CodeSchema_Project')" />
       <Setter Property="Background" Value="#FF307A69" />
       <Setter Property="Icon" Value="CodeSchema_Project" />
+    </Style>
+    <Style TargetType="Node" GroupLabel="Comment" ValueLabel="Has comment">
+      <Condition Expression="HasCategory('Comment')" />
+      <Setter Property="Background" Value="#FFFFFACD" />
+      <Setter Property="Stroke" Value="#FFE5C365" />
+      <Setter Property="StrokeThickness" Value="1" />
+      <Setter Property="NodeRadius" Value="2" />
+      <Setter Property="MaxWidth" Value="250" />
     </Style>
   </Styles>
 </DirectedGraph>
