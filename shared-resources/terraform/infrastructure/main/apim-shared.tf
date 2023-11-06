@@ -88,6 +88,17 @@ resource "azurerm_api_management_logger" "apim_logger" {
   }
 }
 
+# The if-else constructor is added to circumvent a bug causing the principal_id to be null during the TF plan.
+# The if-else constructor triggers a bug (named "Error: Provider produced inconsistent final plan") in the TF provider caused at TF apply time.
+# Once re-run, the Key vault secret is created as expected.
+module "kvs_apim_principal_id" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
+
+  name         = "apim-principal-id"
+  value        = module.apim_shared.identity[0].principal_id == null ? "" : module.apim_shared.identity[0].principal_id
+  key_vault_id = module.kv_shared.id
+}
+
 module "kvs_apim_gateway_url" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
 
