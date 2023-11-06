@@ -104,7 +104,7 @@ ORDER BY {WholesaleResultColumnNames.CalculationResultId}, {WholesaleResultColum
         WholesaleResultColumnNames.ChargeType,
         WholesaleResultColumnNames.ChargeCode,
         WholesaleResultColumnNames.ChargeOwnerId,
-        WholesaleResultColumnNames.ChargeResolution,
+        WholesaleResultColumnNames.Resolution,
         WholesaleResultColumnNames.IsTax,
         WholesaleResultColumnNames.QuantityUnit,
         WholesaleResultColumnNames.Time,
