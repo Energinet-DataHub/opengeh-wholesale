@@ -83,8 +83,8 @@ def agg_result_factory(
                 pandas_df = pandas_df.append(
                     {
                         Colname.grid_area: str(i),
-                        Colname.to_grid_area: "to_grid_area",
-                        Colname.from_grid_area: "from_grid_area",
+                        Colname.to_grid_area: None,
+                        Colname.from_grid_area: None,
                         Colname.balance_responsible_id: "balance_responsible_id",
                         Colname.energy_supplier_id: "energy_supplier_id",
                         Colname.time_window: {
@@ -119,8 +119,8 @@ def agg_result_factory(
                 pandas_df = pandas_df.append(
                     {
                         Colname.grid_area: str(i),
-                        Colname.to_grid_area: "to_grid_area",
-                        Colname.from_grid_area: "from_grid_area",
+                        Colname.to_grid_area: None,
+                        Colname.from_grid_area: None,
                         Colname.balance_responsible_id: str(i),
                         Colname.energy_supplier_id: str(i),
                         Colname.time_window: {
@@ -155,8 +155,8 @@ def agg_result_factory(
                 pandas_df = pandas_df.append(
                     {
                         Colname.grid_area: str(i),
-                        Colname.to_grid_area: "to_grid_area",
-                        Colname.from_grid_area: "from_grid_area",
+                        Colname.to_grid_area: None,
+                        Colname.from_grid_area: None,
                         Colname.balance_responsible_id: str(i),
                         Colname.energy_supplier_id: str(i),
                         Colname.time_window: {
@@ -191,8 +191,8 @@ def agg_result_factory(
                 pandas_df = pandas_df.append(
                     {
                         Colname.grid_area: str(i),
-                        Colname.to_grid_area: "to_grid_area",
-                        Colname.from_grid_area: "from_grid_area",
+                        Colname.to_grid_area: None,
+                        Colname.from_grid_area: None,
                         Colname.balance_responsible_id: str(i),
                         Colname.energy_supplier_id: str(i),
                         Colname.time_window: {
@@ -218,8 +218,8 @@ def agg_net_exchange_factory(spark: SparkSession) -> Callable[[], EnergyResults]
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: ["1", "1", "1", "2", "2", "3"],
-                Colname.to_grid_area: ["1", "1", "1", "2", "2", "3"],
-                Colname.from_grid_area: ["1", "1", "1", "2", "2", "3"],
+                Colname.to_grid_area: [None, None, None, None, None, None],
+                Colname.from_grid_area: [None, None, None, None, None, None],
                 Colname.balance_responsible_id: ["1", "2", "2", "1", "2", "1"],
                 Colname.energy_supplier_id: ["1", "1", "2", "1", "1", "1"],
                 Colname.time_window: [
@@ -288,8 +288,8 @@ def agg_flex_consumption_factory(spark: SparkSession) -> Callable[[], EnergyResu
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: ["1", "1", "1", "2", "2", "3"],
-                Colname.to_grid_area: ["1", "1", "1", "2", "2", "3"],
-                Colname.from_grid_area: ["1", "1", "1", "2", "2", "3"],
+                Colname.to_grid_area: [None, None, None, None, None, None],
+                Colname.from_grid_area: [None, None, None, None, None, None],
                 Colname.balance_responsible_id: ["1", "2", "2", "1", "2", "1"],
                 Colname.energy_supplier_id: ["1", "1", "2", "1", "1", "1"],
                 Colname.time_window: [
@@ -428,8 +428,8 @@ def agg_hourly_production_factory(spark: SparkSession) -> Callable[[], EnergyRes
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: ["1", "1", "1", "2", "2", "3"],
-                Colname.to_grid_area: ["1", "1", "1", "2", "2", "3"],
-                Colname.from_grid_area: ["1", "1", "1", "2", "2", "3"],
+                Colname.to_grid_area: [None, None, None, None, None, None],
+                Colname.from_grid_area: [None, None, None, None, None, None],
                 Colname.balance_responsible_id: ["1", "2", "2", "1", "2", "1"],
                 Colname.energy_supplier_id: ["1", "1", "2", "1", "1", "1"],
                 Colname.time_window: [

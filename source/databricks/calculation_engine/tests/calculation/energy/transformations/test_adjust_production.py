@@ -121,8 +121,8 @@ def hourly_production_result_row_factory(
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: [domain],
-                Colname.to_grid_area: ["to_grid_area"],
-                Colname.from_grid_area: ["from_grid_area"],
+                Colname.to_grid_area: [None],
+                Colname.from_grid_area: [None],
                 Colname.balance_responsible_id: [responsible],
                 Colname.energy_supplier_id: [supplier],
                 Colname.time_window: [time_window],

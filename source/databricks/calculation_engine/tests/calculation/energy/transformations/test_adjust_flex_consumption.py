@@ -126,8 +126,8 @@ def flex_consumption_result_row_factory(
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: [domain],
-                Colname.to_grid_area: ["to_grid_area"],
-                Colname.from_grid_area: ["from_grid_area"],
+                Colname.to_grid_area: [None],
+                Colname.from_grid_area: [None],
                 Colname.balance_responsible_id: [responsible],
                 Colname.energy_supplier_id: [supplier],
                 Colname.time_window: [time_window],
@@ -163,8 +163,8 @@ def positive_grid_loss_result_row_factory(
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: [domain],
-                Colname.to_grid_area: ["to_grid_area"],
-                Colname.from_grid_area: ["from_grid_area"],
+                Colname.to_grid_area: [None],
+                Colname.from_grid_area: [None],
                 Colname.balance_responsible_id: ["balance_responsible_id"],
                 Colname.energy_supplier_id: ["energy_supplier_id"],
                 Colname.time_window: [time_window],

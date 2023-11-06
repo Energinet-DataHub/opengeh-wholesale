@@ -59,8 +59,8 @@ def agg_result_factory(spark: SparkSession) -> Callable[[], EnergyResults]:
             [
                 {
                     Colname.grid_area: str(1),
-                    Colname.to_grid_area: "to_grid_area",
-                    Colname.from_grid_area: "from_grid_area",
+                    Colname.to_grid_area: None,
+                    Colname.from_grid_area: None,
                     Colname.balance_responsible_id: "balance_responsible_id",
                     Colname.energy_supplier_id: "energy_supplier_id",
                     Colname.time_window: {
@@ -74,8 +74,8 @@ def agg_result_factory(spark: SparkSession) -> Callable[[], EnergyResults]:
                 },
                 {
                     Colname.grid_area: str(2),
-                    Colname.to_grid_area: "to_grid_area",
-                    Colname.from_grid_area: "from_grid_area",
+                    Colname.to_grid_area: None,
+                    Colname.from_grid_area: None,
                     Colname.balance_responsible_id: "balance_responsible_id",
                     Colname.energy_supplier_id: "energy_supplier_id",
                     Colname.time_window: {
@@ -89,8 +89,8 @@ def agg_result_factory(spark: SparkSession) -> Callable[[], EnergyResults]:
                 },
                 {
                     Colname.grid_area: str(3),
-                    Colname.to_grid_area: "to_grid_area",
-                    Colname.from_grid_area: "from_grid_area",
+                    Colname.to_grid_area: None,
+                    Colname.from_grid_area: None,
                     Colname.balance_responsible_id: "balance_responsible_id",
                     Colname.energy_supplier_id: "energy_supplier_id",
                     Colname.time_window: {
