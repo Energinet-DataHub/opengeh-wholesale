@@ -35,7 +35,7 @@ jobs:
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@v2
         with:
-          token: ${{ secrets.PAT_TOKEN }}
+          token: ${{ secrets.internal_github_pat }}
           repository: ${{ vars.environment_repository_path }}
           event-type: dh2-bridge-deployment-request-infrastructure
           # yamllint disable-line rule:quoted-strings

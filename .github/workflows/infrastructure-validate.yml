@@ -70,7 +70,7 @@ jobs:
       - name: Terraform validate
         uses: ./.github/actions/terraform-validate
         with:
-          pat_token: ${{ secrets.PAT_TOKEN }}
+          pat_token: ${{ secrets.internal_github_pat }}
           working_directory: ${{ env.TERRAFORM_RELEASE_FOLDER_PATH }}
 
   # If environments exists, we validate the environments
@@ -95,5 +95,5 @@ jobs:
       - name: Terraform validate
         uses: ./.github/actions/terraform-validate
         with:
-          pat_token: ${{ secrets.PAT_TOKEN }}
+          pat_token: ${{ secrets.internal_github_pat }}
           working_directory: ${{ env.TERRAFORM_RELEASE_FOLDER_PATH }}
