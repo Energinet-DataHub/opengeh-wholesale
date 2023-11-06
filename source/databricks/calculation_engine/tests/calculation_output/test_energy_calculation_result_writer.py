@@ -24,6 +24,7 @@ from pyspark.sql.functions import col
 import package.codelists as e
 from package.calculation.energy.energy_results import (
     EnergyResults,
+    energy_results_schema,
 )
 from package.calculation_output import EnergyCalculationResultWriter
 from package.constants import Colname, EnergyResultColumnNames
@@ -77,6 +78,7 @@ TABLE_NAME = f"{OUTPUT_DATABASE_NAME}.{ENERGY_RESULT_TABLE_NAME}"
 
 def _create_result_row(
     grid_area: str = DEFAULT_GRID_AREA,
+    to_grid_area: str = DEFAULT_TO_GRID_AREA,
     from_grid_area: str = DEFAULT_FROM_GRID_AREA,
     energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
     balance_responsible_id: str = DEFAULT_BALANCE_RESPONSIBLE_ID,
@@ -87,23 +89,25 @@ def _create_result_row(
 ) -> dict:
     row = {
         Colname.grid_area: grid_area,
+        Colname.to_grid_area: to_grid_area,
         Colname.from_grid_area: from_grid_area,
-        Colname.sum_quantity: Decimal(quantity),
-        Colname.qualities: [quality.value],
+        Colname.balance_responsible_id: balance_responsible_id,
+        Colname.energy_supplier_id: energy_supplier_id,
         Colname.time_window: {
             Colname.start: time_window_start,
             Colname.end: time_window_end,
         },
-        Colname.energy_supplier_id: energy_supplier_id,
-        Colname.balance_responsible_id: balance_responsible_id,
-        Colname.time_series_type: e.TimeSeriesType.PRODUCTION.value,
+        Colname.sum_quantity: Decimal(quantity),
+        Colname.qualities: [quality.value],
+        Colname.metering_point_type: e.MeteringPointType.PRODUCTION.value,
+        Colname.settlement_method: [],
     }
 
     return row
 
 
 def _create_result_df(spark: SparkSession, row: List[dict]) -> EnergyResults:
-    df = spark.createDataFrame(data=row, schema=_write_input_schema)
+    df = spark.createDataFrame(data=row, schema=energy_results_schema)
     return EnergyResults(df)
 
 
