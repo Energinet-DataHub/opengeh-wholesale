@@ -14,6 +14,8 @@
 
 using System.Reflection;
 using System.Text.Json.Serialization;
+using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
@@ -30,8 +32,6 @@ using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Energinet.DataHub.Wholesale.WebApi.HealthChecks;
 using Energinet.DataHub.Wholesale.WebApi.HealthChecks.DataLake;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Azure;
 using Microsoft.OpenApi.Models;
 
@@ -87,14 +87,13 @@ public class Startup
             config.AddSecurityRequirement(securityRequirement);
         });
 
-        serviceCollection.AddApiVersioning(config =>
+        var apiVersioningBuilder = serviceCollection.AddApiVersioning(config =>
         {
             config.DefaultApiVersion = new ApiVersion(3, 0);
             config.AssumeDefaultVersionWhenUnspecified = true;
             config.ReportApiVersions = true;
         });
-
-        serviceCollection.AddVersionedApiExplorer(setup =>
+        apiVersioningBuilder.AddApiExplorer(setup =>
         {
             setup.GroupNameFormat = "'v'VVV";
             setup.SubstituteApiVersionInUrl = true;
