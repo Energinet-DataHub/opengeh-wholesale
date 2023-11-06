@@ -12,20 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using EventResolution = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.AmountPerChargeResultProducedV1.Types.Resolution;
+using ModelResolution = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.AmountPerChargeResultProducedV1;
 
 public static class ResolutionMapper
 {
-    public static EventResolution MapResolution(Resolution resolution)
+    public static EventResolution MapResolution(ModelResolution resolution)
     {
         return resolution switch
         {
-            Resolution.Hour => EventResolution.Hour,
-            Resolution.Day => EventResolution.Day,
-            Resolution.Month => throw new ArgumentOutOfRangeException(
+            ModelResolution.Hour => EventResolution.Hour,
+            ModelResolution.Day => EventResolution.Day,
+            ModelResolution.Month => throw new ArgumentOutOfRangeException(
                 nameof(resolution),
                 actualValue: resolution,
                 $"Value is not valid for {nameof(AmountPerChargeResultProducedV1)}."),

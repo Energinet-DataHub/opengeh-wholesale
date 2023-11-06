@@ -12,20 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.AmountPerChargeResultProducedV1;
 using FluentAssertions;
 using Xunit;
 using EventResolution = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.AmountPerChargeResultProducedV1.Types.Resolution;
+using ModelResolution = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults.Resolution;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.Mappers.AmountPerChargeResultProducedV1;
 
 public class ResolutionMapperTests
 {
     [Theory]
-    [InlineData(Resolution.Day, EventResolution.Day)]
-    [InlineData(Resolution.Hour, EventResolution.Hour)]
-    public void MapResolution_WhenCalled_MapsCorrectly(Resolution resolution, EventResolution expected)
+    [InlineData(ModelResolution.Day, EventResolution.Day)]
+    [InlineData(ModelResolution.Hour, EventResolution.Hour)]
+    public void MapResolution_WhenCalled_MapsCorrectly(ModelResolution resolution, EventResolution expected)
     {
         // Act & Assert
         ResolutionMapper.MapResolution(resolution).Should().Be(expected);
@@ -34,10 +34,10 @@ public class ResolutionMapperTests
     [Fact]
     public void MapResolution_WhenResolutionIsNotMonth_MapsAnyValidValue()
     {
-        foreach (var resolution in Enum.GetValues(typeof(Resolution)).Cast<Resolution>())
+        foreach (var resolution in Enum.GetValues(typeof(ModelResolution)).Cast<ModelResolution>())
         {
             // Arrange
-            if (resolution == Resolution.Month)
+            if (resolution == ModelResolution.Month)
                 continue;
 
             // Act
@@ -52,7 +52,7 @@ public class ResolutionMapperTests
     public void MapResolution_WhenInvalidEnum_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
-        var invalidValue = (Resolution)99;
+        var invalidValue = (ModelResolution)99;
 
         // Act
         var act = () => ResolutionMapper.MapResolution(invalidValue);
