@@ -92,6 +92,10 @@ def input_agg_result_factory(spark: SparkSession) -> Callable[..., DataFrame]:
                 [
                     {
                         Colname.grid_area: grid_area,
+                        Colname.to_grid_area: None,
+                        Colname.from_grid_area: None,
+                        Colname.balance_responsible_id: None,
+                        Colname.energy_supplier_id: None,
                         Colname.time_window: {
                             Colname.start: start,
                             Colname.end: end,
@@ -99,10 +103,12 @@ def input_agg_result_factory(spark: SparkSession) -> Callable[..., DataFrame]:
                         Colname.sum_quantity: sum_quantity,
                         Colname.qualities: [quality],
                         Colname.metering_point_type: metering_point_type,
+                        Colname.settlement_method: None,
                     }
                 ],
                 ignore_index=True,
-            )
+            ),
+            schema=energy_results_schema,
         ).withColumn(
             Colname.time_window,
             struct(
