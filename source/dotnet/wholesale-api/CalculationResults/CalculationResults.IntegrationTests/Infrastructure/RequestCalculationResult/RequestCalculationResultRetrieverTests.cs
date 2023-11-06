@@ -46,6 +46,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
     private const string ThirdQuantity = "3.333";
     private const string FourthQuantity = "4.444";
     private const string FourthQuantityThirdCorrection = "4.555";
+    private const string GridAreaCodeD = "401";
     private const string GridAreaCodeC = "301";
     private const string GridAreaCodeB = "201";
     private const string GridAreaCodeA = "101";
@@ -646,8 +647,8 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
 
         // Assert
         actual.Should().NotBeNull();
-        actual.Should().HaveCount(3);
-        actual.Select(result => result.GridArea).Should().Equal(GridAreaCodeA, GridAreaCodeB, GridAreaCodeC);
+        actual.Should().HaveCount(2);
+        actual.Select(result => result.GridArea).Should().Equal(GridAreaCodeB, GridAreaCodeC);
         actual.Should().AllSatisfy(energyResult => energyResult.TimeSeriesType.Should().Be(timeSeriesTypeFilter));
         actual.Should().AllSatisfy(energyResult => energyResult.PeriodStart.Should().Be(startOfPeriodFilter));
         actual.Should().AllSatisfy(energyResult => energyResult.PeriodEnd.Should().Be(endOfPeriodFilter));
@@ -721,10 +722,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var row8 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: thirdHour, gridArea: GridAreaCodeB, quantity: FourthQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea, balanceResponsibleId: balanceResponsibleId, energySupplierId: energySupplier);
 
         var row9 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: firstHour, gridArea: GridAreaCodeA, quantity: FirstQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea);
-        var row10 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: secondHour, gridArea: GridAreaCodeA, quantity: SecondQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea);
-
-        var row11 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: secondHour, gridArea: GridAreaCodeA, quantity: ThirdQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea, balanceResponsibleId: balanceResponsibleId, energySupplierId: energySupplier);
-        var row12 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: fourthHour, gridArea: GridAreaCodeB, quantity: FourthQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea, balanceResponsibleId: balanceResponsibleId, energySupplierId: energySupplier);
+        var row10 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: fourthHour, gridArea: GridAreaCodeB, quantity: FourthQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea, balanceResponsibleId: balanceResponsibleId, energySupplierId: energySupplier);
 
         var row1FirstCorrection = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, batchProcessType: DeltaTableProcessType.FirstCorrectionSettlement, time: firstHour, gridArea: GridAreaCodeC, quantity: FirstQuantityFirstCorrection);
         var row2FirstCorrection = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, batchProcessType: DeltaTableProcessType.FirstCorrectionSettlement, time: secondHour, gridArea: GridAreaCodeC, quantity: SecondQuantityFirstCorrection);
@@ -752,8 +750,6 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
             row8,
             row9,
             row10,
-            row11,
-            row12,
             row1SecondDay,
             row1ThirdDay,
         };
