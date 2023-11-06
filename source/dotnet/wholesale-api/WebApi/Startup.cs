@@ -17,7 +17,6 @@ using System.Text.Json.Serialization;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
-using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
 using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
@@ -116,7 +115,6 @@ public class Startup
         AddJwtTokenSecurity(serviceCollection);
         AddHealthCheck(serviceCollection);
         serviceCollection.AddApplicationInsightsTelemetry(options => options.EnableAdaptiveSampling = false);
-        AddCorrelationContext(serviceCollection);
 
         serviceCollection.AddUserAuthentication<FrontendUser, FrontendUserProvider>();
         serviceCollection.AddHttpLoggingScope(DomainName);
@@ -202,22 +200,5 @@ public class Startup
                 serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
                 serviceBusOptions.EDI_INBOX_MESSAGE_QUEUE_NAME,
                 name: HealthCheckNames.EdiInboxEventsQueue);
-    }
-
-    /// <summary>
-    /// The middleware to handle properly set a CorrelationContext is only supported for Functions.
-    /// This registry will ensure a new CorrelationContext (with a new Id) is set for each session
-    /// </summary>
-    private static void AddCorrelationContext(IServiceCollection serviceCollection)
-    {
-        var serviceDescriptor =
-            serviceCollection.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(ICorrelationContext));
-        serviceCollection.Remove(serviceDescriptor!);
-        serviceCollection.AddScoped<ICorrelationContext>(_ =>
-        {
-            var correlationContext = new CorrelationContext();
-            correlationContext.SetId(Guid.NewGuid().ToString());
-            return correlationContext;
-        });
     }
 }

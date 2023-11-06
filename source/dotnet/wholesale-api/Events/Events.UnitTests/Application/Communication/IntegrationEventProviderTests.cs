@@ -24,7 +24,6 @@ using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Microsoft.ApplicationInsights.WindowsServer;
 using Moq;
 using NodaTime;
 using Test.Core.Attributes;
