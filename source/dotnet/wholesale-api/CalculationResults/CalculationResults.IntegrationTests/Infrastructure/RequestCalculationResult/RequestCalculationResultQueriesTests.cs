@@ -55,7 +55,7 @@ public class RequestCalculationResultQueriesTests : IClassFixture<DatabricksSqlS
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetLatestCorrectionAsync_LatestCorrectionSettlementIsThirdCorrection_ReturnsThirdCorrection(
+    public async Task GetLatestCorrectionAsync_WhenLatestCorrectionSettlementIsThirdCorrection_ReturnsThirdCorrection(
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock)
@@ -88,7 +88,7 @@ public class RequestCalculationResultQueriesTests : IClassFixture<DatabricksSqlS
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetLatestCorrectionAsync_LatestCorrectionSettlementIsSecondCorrection_ReturnsSecondCorrection(
+    public async Task GetLatestCorrectionAsync_WhenLatestCorrectionSettlementIsSecondCorrection_ReturnsSecondCorrection(
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock)
@@ -121,7 +121,7 @@ public class RequestCalculationResultQueriesTests : IClassFixture<DatabricksSqlS
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetLatestCorrectionAsync_LatestCorrectionSettlementIsFirstCorrection_ReturnsFirstCorrection(
+    public async Task GetLatestCorrectionAsync_WhenLatestCorrectionSettlementIsFirstCorrection_ReturnsFirstCorrection(
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock)
@@ -154,7 +154,7 @@ public class RequestCalculationResultQueriesTests : IClassFixture<DatabricksSqlS
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetLatestCorrectionAsync_NoCorrectionsExists_ReturnsFirstCorrection(
+    public async Task GetLatestCorrectionAsync_WhenNoCorrectionsExists_ReturnsFirstCorrection(
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock)
