@@ -8,7 +8,6 @@
   <ItemGroup>
     <PackageReference Include="Energinet.DataHub.Core.FunctionApp.TestCommon" Version="4.4.2" />
     <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="4.4.2" />
-    <PackageReference Include="Energinet.DataHub.MessageHub.IntegrationTesting" Version="3.2.0" />
     <PackageReference Include="FluentAssertions" Version="6.12.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
     <PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" Version="7.1.0" />
@@ -28,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Common.Interfaces\Common.Interfaces.csproj" />
     <ProjectReference Include="..\..\Test.Core\Test.Core.csproj" />
     <ProjectReference Include="..\Batches.Infrastructure\Batches.Infrastructure.csproj" />
   </ItemGroup>

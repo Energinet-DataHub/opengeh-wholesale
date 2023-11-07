@@ -12,22 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Common.Models;
+namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 
-/// <summary>
-/// The unit of measurement for the quantity.
-/// </summary>
-public enum QuantityUnit
+public class DeltaTableOptions
 {
     /// <summary>
-    /// The quantity unit is Kilo Watt Hour.
-    /// Code: H87
+    /// Name of the schema/database under which the result tables are associated.
     /// </summary>
-    Kwh,
+    public string SCHEMA_NAME { get; set; } = "wholesale_output";
 
     /// <summary>
-    /// The quantity unit is pieces.
-    /// The unit is used for subscriptions and fees that are associated with the metering point.
+    /// Name of the energy results delta table.
     /// </summary>
-    Pieces,
+    public string ENERGY_RESULTS_TABLE_NAME { get; set; } = "energy_results";
+
+    /// <summary>
+    /// Name of the wholesale results delta table.
+    /// </summary>
+    public string WHOLESALE_RESULTS_TABLE_NAME { get; set; } = "wholesale_results";
 }
