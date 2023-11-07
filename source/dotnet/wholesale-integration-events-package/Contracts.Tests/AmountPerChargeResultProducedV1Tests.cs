@@ -87,10 +87,10 @@ option csharp_namespace = ""Energinet.DataHub.Wholesale.Contracts.IntegrationEve
 
 
 /*
- * A calculation will result in one or more wholesale results with total amounts. Each result is
+ * A calculation will result in one or more wholesale results. Each result is
  * published as an instance of this type.
  */
-message TotalMonthlyAmountResultProducedV1 {
+message AmountPerChargeResultProducedV1 {
   /*
    * The ID of the calculation creating the result.
    * The ID is a UUID consisting of hexadecimal digits in the form XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX.
@@ -117,13 +117,30 @@ message TotalMonthlyAmountResultProducedV1 {
 
   string energy_supplier_id = 6;
 
-  optional string charge_owner_id = 7;
+  string charge_code = 7;
 
-  Currency currency = 8;
+  ChargeType charge_type = 8;
 
-  optional DecimalValue amount = 9;
+  string charge_owner_id = 9;
 
-  // ---------------------------- NESTED TYPES BELOW ----------------------------------------
+  Resolution resolution = 10;
+
+  QuantityUnit quantity_unit = 11;
+
+  MeteringPointType metering_point_type = 12;
+
+  /*
+   * Settlement method is only set when metering point type is 'METERING_POINT_TYPE_CONSUMPTION'.
+   */
+  optional SettlementMethod settlement_method = 13;
+
+  bool is_tax = 14;
+
+  Currency currency = 15;
+
+  repeated TimeSeriesPoint time_series_points = 16;
+
+   // ---------------------------- NESTED TYPES BELOW ----------------------------------------
 
   enum CalculationType {
     /*
@@ -137,9 +154,104 @@ message TotalMonthlyAmountResultProducedV1 {
     CALCULATION_TYPE_THIRD_CORRECTION_SETTLEMENT = 4;
   }
 
+  enum ChargeType {
+    /*
+     * Unspecified is unused but according to best practice.
+     * Read more at https://protobuf.dev/programming-guides/style/#enums.
+     */
+    CHARGE_TYPE_UNSPECIFIED = 0;
+    CHARGE_TYPE_FEE = 1;
+    CHARGE_TYPE_TARIFF = 2;
+    CHARGE_TYPE_SUBSCRIPTION = 3;
+  }
+
+  enum MeteringPointType {
+    /*
+     * Unspecified is unused but according to best practice.
+     * Read more at https://protobuf.dev/programming-guides/style/#enums.
+     */
+    METERING_POINT_TYPE_UNSPECIFIED = 0;
+    METERING_POINT_TYPE_PRODUCTION = 1;
+    METERING_POINT_TYPE_CONSUMPTION = 2;
+  }
+
+  enum QuantityUnit {
+    /*
+     * Unspecified is unused but according to best practice.
+     * Read more at https://protobuf.dev/programming-guides/style/#enums.
+     */
+    QUANTITY_UNIT_UNSPECIFIED = 0;
+
+    // States that the energy quantity is measured in kWh (kilo Watt hours).
+    QUANTITY_UNIT_KWH = 1;
+    QUANTITY_UNIT_PIECES = 2;
+  }
+
+  /*
+   * The quality of the energy quantity.
+   */
+  enum QuantityQuality {
+    /*
+     * Unspecified is unused but according to best practice.
+     * Read more at https://protobuf.dev/programming-guides/style/#enums.
+     */
+    QUANTITY_QUALITY_UNSPECIFIED = 0;
+    QUANTITY_QUALITY_ESTIMATED = 1;
+    QUANTITY_QUALITY_MEASURED = 2;
+    QUANTITY_QUALITY_MISSING = 3;
+    QUANTITY_QUALITY_CALCULATED = 4;
+  }
+
+  /*
+   *  States the duration that each time series point represents
+   */
+  enum Resolution {
+    /*
+     * Unspecified is unused but according to best practice.
+     * Read more at https://protobuf.dev/programming-guides/style/#enums.
+     */
+    RESOLUTION_UNSPECIFIED = 0;
+    RESOLUTION_DAY = 4;
+    RESOLUTION_HOUR = 6;
+  }
+
+  enum SettlementMethod {
+    /*
+     * Unspecified is unused but according to best practice.
+     * Read more at https://protobuf.dev/programming-guides/style/#enums.
+     */
+    SETTLEMENT_METHOD_UNSPECIFIED = 0;
+    SETTLEMENT_METHOD_FLEX = 1;
+    SETTLEMENT_METHOD_NON_PROFILED = 2;
+  }
+
   enum Currency {
     CURRENCY_UNSPECIFIED = 0;
     CURRENCY_DKK = 1;
+  }
+
+  message TimeSeriesPoint {
+
+    google.protobuf.Timestamp time = 1;
+
+    /*
+     * 3 digit scale decimal value. The value represents either energy quantity or pieces (dependency on QuantityUnit).
+     */
+    DecimalValue quantity = 2;
+
+    repeated QuantityQuality quantity_qualities = 3;
+
+    /*
+     * 6 digit scale decimal value of the amount.
+     * The value can be null if no price data is present for the given time series point.
+     */
+    optional DecimalValue price = 4;
+
+    /*
+     * 6 digit scale decimal value of the amount.
+     * The value can be null if price is null
+     */
+    optional DecimalValue amount = 5;
   }
 }
 ";
