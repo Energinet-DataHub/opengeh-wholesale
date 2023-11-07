@@ -112,7 +112,7 @@ def calculate_negative_grid_loss(grid_loss: EnergyResults) -> EnergyResults:
         Colname.qualities,
     )
 
-    return EnergyResults(result, True)
+    return EnergyResults(result)
 
 
 def calculate_positive_grid_loss(grid_loss: EnergyResults) -> EnergyResults:
@@ -125,7 +125,7 @@ def calculate_positive_grid_loss(grid_loss: EnergyResults) -> EnergyResults:
         f.lit(MeteringPointType.CONSUMPTION.value).alias(Colname.metering_point_type),
         Colname.qualities,
     )
-    return EnergyResults(result, True)
+    return EnergyResults(result)
 
 
 def calculate_total_consumption(
