@@ -104,9 +104,6 @@ limitations under the License.
     <Compile Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\AmountPerChargeResultProducedV1.cs">
       <Link>Contracts\IntegrationEvents\AmountPerChargeResultProducedV1.cs</Link>
     </Compile>
-    <Compile Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\EnergyResultProducedV1.cs">
-      <Link>Contracts\IntegrationEvents\EnergyResultProducedV1.cs</Link>
-    </Compile>
     <Compile Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\EnergyResultProducedV2\EnergyResultProducedV2.cs">
       <Link>Contracts\IntegrationEvents\EnergyResultProducedV2.cs</Link>
     </Compile>
