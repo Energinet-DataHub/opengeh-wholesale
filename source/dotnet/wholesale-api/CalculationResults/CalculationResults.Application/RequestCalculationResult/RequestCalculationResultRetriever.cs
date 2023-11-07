@@ -44,7 +44,7 @@ public class RequestCalculationResultRetriever : IRequestCalculationResultRetrie
             calculationResultCount++;
         }
 
-        _logger.LogDebug("Found {CalculationResults} calculation results based on {Query} query.", calculationResultCount, query.ToJsonString());
+        _logger.LogDebug("Found {Count} calculation results based on the query  '{Query}'", calculationResultCount, query.ToJsonString());
     }
 
     private Task<ProcessType> GetSpecificProcessTypeAsync(EnergyResultFilter filter)
