@@ -16,7 +16,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.EnergyResultProducedV1;
 using FluentAssertions;
 using Xunit;
-using ProcessType = Energinet.DataHub.Wholesale.Common.Models.ProcessType;
+using ProcessType = Energinet.DataHub.Wholesale.Common.Interfaces.Models.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.Mappers.EnergyResultProducedV1;
 
@@ -52,7 +52,7 @@ public class CalculationTypeMapperTests
     public void MapCalculationType_WhenInvalidEnumNumberForCalculationType_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
-        var invalidValue = (Wholesale.Common.Models.ProcessType)99;
+        var invalidValue = (Wholesale.Common.Interfaces.Models.ProcessType)99;
 
         // Act
         var act = () => CalculationTypeMapper.MapCalculationType(invalidValue);

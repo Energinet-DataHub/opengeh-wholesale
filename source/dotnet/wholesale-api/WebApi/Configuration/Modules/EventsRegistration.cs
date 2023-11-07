@@ -13,12 +13,11 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
-using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Publisher;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
-using Energinet.DataHub.Wholesale.Events.Application.Options;
 using Energinet.DataHub.Wholesale.Events.Application.Triggers;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Energinet.DataHub.Wholesale.Events.Application.Workers;
@@ -68,8 +67,7 @@ public static class EventsRegistration
             .AddScoped<IEnergyResultProducedV1Factory, EnergyResultProducedV1Factory>()
             .AddScoped<IAmountPerChargeResultProducedV1Factory, AmountPerChargeResultProducedV1Factory>()
             .AddScoped<IMonthlyAmountPerChargeResultProducedV1Factory, MonthlyAmountPerChargeResultProducedV1Factory>()
-            .AddScoped<IEventsDatabaseContext, EventsDatabaseContext>()
-            .AddSingleton<IJsonSerializer, JsonSerializer>();
+            .AddScoped<IEventsDatabaseContext, EventsDatabaseContext>();
     }
 
     private static void AddIntegrationEventPublisher(this IServiceCollection serviceCollection, ServiceBusOptions serviceBusOptions)

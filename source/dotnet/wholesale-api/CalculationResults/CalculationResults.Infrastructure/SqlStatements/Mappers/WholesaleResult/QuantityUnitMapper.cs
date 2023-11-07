@@ -12,23 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
-using Energinet.DataHub.Wholesale.Common.Models;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.WholesaleResult;
 
 public static class QuantityUnitMapper
 {
-        public static QuantityUnit FromDeltaTableValue(string quantityUnit)
+    public static QuantityUnit FromDeltaTableValue(string quantityUnit)
+    {
+        return quantityUnit switch
         {
-            return quantityUnit switch
-            {
-                "kWh" => QuantityUnit.Kwh,
-                "pcs" => QuantityUnit.Pieces,
-                _ => throw new ArgumentOutOfRangeException(
-                    nameof(quantityUnit),
-                    actualValue: quantityUnit,
-                    "Value does not contain a valid string representation of a quantity unit."),
-            };
-        }
+            "kWh" => QuantityUnit.Kwh,
+            "pcs" => QuantityUnit.Pieces,
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(quantityUnit),
+                actualValue: quantityUnit,
+                "Value does not contain a valid string representation of a quantity unit."),
+        };
+    }
 }

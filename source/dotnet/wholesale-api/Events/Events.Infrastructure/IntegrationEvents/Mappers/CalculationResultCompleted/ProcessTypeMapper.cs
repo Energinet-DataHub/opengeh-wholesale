@@ -18,16 +18,16 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Ma
 
 public static class ProcessTypeMapper
 {
-    public static ProcessType MapProcessType(Wholesale.Common.Models.ProcessType processType)
+    public static ProcessType MapProcessType(Wholesale.Common.Interfaces.Models.ProcessType processType)
     {
         return processType switch
         {
-            Wholesale.Common.Models.ProcessType.Aggregation => ProcessType.Aggregation,
-            Wholesale.Common.Models.ProcessType.BalanceFixing => ProcessType.BalanceFixing,
-            Wholesale.Common.Models.ProcessType.WholesaleFixing => ProcessType.WholesaleFixing,
-            Wholesale.Common.Models.ProcessType.FirstCorrectionSettlement => ProcessType.FirstCorrectionSettlement,
-            Wholesale.Common.Models.ProcessType.SecondCorrectionSettlement => ProcessType.SecondCorrectionSettlement,
-            Wholesale.Common.Models.ProcessType.ThirdCorrectionSettlement => ProcessType.ThirdCorrectionSettlement,
+            Wholesale.Common.Interfaces.Models.ProcessType.Aggregation => ProcessType.Aggregation,
+            Wholesale.Common.Interfaces.Models.ProcessType.BalanceFixing => ProcessType.BalanceFixing,
+            Wholesale.Common.Interfaces.Models.ProcessType.WholesaleFixing => ProcessType.WholesaleFixing,
+            Wholesale.Common.Interfaces.Models.ProcessType.FirstCorrectionSettlement => ProcessType.FirstCorrectionSettlement,
+            Wholesale.Common.Interfaces.Models.ProcessType.SecondCorrectionSettlement => ProcessType.SecondCorrectionSettlement,
+            Wholesale.Common.Interfaces.Models.ProcessType.ThirdCorrectionSettlement => ProcessType.ThirdCorrectionSettlement,
 
             _ => throw new ArgumentOutOfRangeException(
                 nameof(processType),
