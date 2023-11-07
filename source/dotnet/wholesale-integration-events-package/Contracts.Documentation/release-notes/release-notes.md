@@ -2,7 +2,7 @@
 
 ## Version 5.3.0
 
-Update 'AmountPerChargeResultProducedV1': 'quantity' is not nullable 
+Update 'AmountPerChargeResultProducedV1': 'quantity' is not nullable
 
 ## Version 5.2.0
 
