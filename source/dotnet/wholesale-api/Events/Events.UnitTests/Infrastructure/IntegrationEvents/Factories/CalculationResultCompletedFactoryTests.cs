@@ -127,7 +127,7 @@ public class CalculationResultCompletedFactoryTests
                 new(new DateTime(2021, 1, 1), 2, quantityQualities),
                 new(new DateTime(2021, 1, 1), 3, quantityQualities),
             },
-            Energinet.DataHub.Wholesale.Common.Models.ProcessType.Aggregation,
+            Energinet.DataHub.Wholesale.Common.Interfaces.Models.ProcessType.Aggregation,
             _periodStart,
             _periodEnd,
             _fromGridArea);

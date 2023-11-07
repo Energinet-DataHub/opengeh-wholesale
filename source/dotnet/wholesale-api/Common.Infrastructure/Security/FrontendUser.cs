@@ -12,23 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Security.Claims;
-using Energinet.DataHub.Core.App.Common.Abstractions.Users;
+namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 
-namespace Energinet.DataHub.Wholesale.Common.Security;
-
-// ReSharper disable once ClassNeverInstantiated.Global
-public sealed class FrontendUserProvider : IUserProvider<FrontendUser>
+public sealed class FrontendUser
 {
-    public Task<FrontendUser?> ProvideUserAsync(
-        Guid userId,
-        Guid actorId,
-        bool isFas,
-        IEnumerable<Claim> claims)
+    public FrontendUser(Guid userId, Guid actorId, bool isFas)
     {
-        return Task.FromResult<FrontendUser?>(new FrontendUser(
-            userId,
-            actorId,
-            isFas));
+        UserId = userId;
+        ActorId = actorId;
+        IsFas = isFas;
     }
+
+    public Guid UserId { get; }
+
+    public Guid ActorId { get; }
+
+    public bool IsFas { get; }
 }

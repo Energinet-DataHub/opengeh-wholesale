@@ -12,14 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestCommon
+using System.Security.Claims;
+using Energinet.DataHub.Core.App.Common.Abstractions.Users;
+
+namespace Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
+
+// ReSharper disable once ClassNeverInstantiated.Global
+public sealed class FrontendUserProvider : IUserProvider<FrontendUser>
 {
-    /// <summary>
-    /// These constants represents the required meta data for integration events described here:
-    /// https://github.com/Energinet-DataHub/green-energy-hub/blob/main/docs/architecture-decision-record/ADR-0008%20Integration%20events.md
-    /// </summary>
-    public static class MessageMetaDataConstants
+    public Task<FrontendUser?> ProvideUserAsync(
+        Guid userId,
+        Guid actorId,
+        bool isFas,
+        IEnumerable<Claim> claims)
     {
-        public const string MessageType = "MessageType";
+        return Task.FromResult<FrontendUser?>(new FrontendUser(
+            userId,
+            actorId,
+            isFas));
     }
 }

@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mapper
 using FluentAssertions;
 using Xunit;
 using EventQuantityUnit = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1.Types.QuantityUnit;
-using ModelQuantityUnit = Energinet.DataHub.Wholesale.Common.Models.QuantityUnit;
+using ModelQuantityUnit = Energinet.DataHub.Wholesale.Common.Interfaces.Models.QuantityUnit;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.Mappers.MonthlyAmountPerChargeResultProducedV1;
 
