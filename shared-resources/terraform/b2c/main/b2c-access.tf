@@ -2,6 +2,10 @@ resource "azuread_directory_role" "global_reader" {
   display_name = "Global Reader"
 }
 
+resource "azuread_directory_role" "global_admin" {
+  display_name = "Global Administrator"
+}
+
 # locals {
 #   platform_team_members = "comma_delimited_list_of_members_in_SEC-A-Greenforce-PlatformteamAzure"
 # }
@@ -32,7 +36,7 @@ resource "azuread_directory_role" "global_reader" {
 #XKBER
 resource "azuread_directory_role_assignment" "xkber" {
   count = 1
-  role_id             = azuread_directory_role.global_reader.template_id
+  role_id             = azuread_directory_role.global_admin.template_id
   principal_object_id = azuread_invitation.xkber[0].user_id
 }
 
