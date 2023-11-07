@@ -56,7 +56,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetRequestCalculationResultAsync_RequestFromGridOperatorTotalProduction_ReturnsCorrectResult(
+    public async Task GetRequestCalculationResultAsync_WhenRequestFromGridOperatorTotalProduction_ReturnsCorrectResult(
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> sqlStatusResponseParserLoggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
@@ -96,7 +96,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetRequestCalculationResultAsync_RequestFromGridOperatorTotalProductionInWrongPeriod_ReturnsNoResults(
+    public async Task GetRequestCalculationResultAsync_WhenRequestFromGridOperatorTotalProductionInWrongPeriod_ReturnsNoResults(
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
@@ -119,7 +119,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetRequestCalculationResultAsync_RequestFromEnergySupplierTotalProduction_ReturnsCorrectResult(
+    public async Task GetRequestCalculationResultAsync_WhenRequestFromEnergySupplierTotalProduction_ReturnsCorrectResult(
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
@@ -163,7 +163,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetRequestCalculationResultAsync_RequestFromEnergySupplierTotalProductionBadId_ReturnsNoResults(
+    public async Task GetRequestCalculationResultAsync_WhenRequestFromEnergySupplierTotalProductionBadId_ReturnsNoResults(
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
@@ -194,7 +194,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetRequestCalculationResultAsync_RequestFromBalanceResponsibleTotalProduction_ReturnsCorrectResult(
+    public async Task GetRequestCalculationResultAsync_WhenRequestFromBalanceResponsibleTotalProduction_ReturnsCorrectResult(
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
@@ -237,7 +237,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetRequestCalculationResultAsync_RequestFromEnergySupplierPerBalanceResponsibleTotalProduction_ReturnsCorrectResult(
+    public async Task GetRequestCalculationResultAsync_WhenRequestFromEnergySupplierPerBalanceResponsibleTotalProduction_ReturnsCorrectResult(
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
@@ -283,7 +283,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetRequestCalculationResultAsync_RequestFromGridOperatorTotalProductionFirstCorrectionSettlement_ReturnsCorrectResult(
+    public async Task GetRequestCalculationResultAsync_WhenRequestFromGridOperatorTotalProductionFirstCorrectionSettlement_ReturnsCorrectResult(
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
@@ -325,7 +325,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetRequestCalculationResultAsync_RequestFromGridOperatorTotalProductionSecondCorrectionSettlement_ReturnsCorrectResult(
+    public async Task GetRequestCalculationResultAsync_WhenRequestFromGridOperatorTotalProductionSecondCorrectionSettlement_ReturnsCorrectResult(
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
@@ -367,7 +367,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetRequestCalculationResultAsync_RequestFromGridOperatorTotalProductionThirdCorrectionSettlement_ReturnsCorrectResult(
+    public async Task GetRequestCalculationResultAsync_WhenRequestFromGridOperatorTotalProductionThirdCorrectionSettlement_ReturnsCorrectResult(
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
@@ -479,7 +479,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetRequestCalculationResultAsync_LatestCorrectionSettlementIsThirdCorrection_ReturnsThirdCorrection(
+    public async Task GetRequestCalculationResultAsync_WhenLatestCorrectionSettlementIsThirdCorrection_ReturnsThirdCorrection(
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
@@ -507,7 +507,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetRequestCalculationResultAsync_LatestCorrectionSettlementIsSecondCorrection_ReturnsSecondCorrection(
+    public async Task GetRequestCalculationResultAsync_WhenLatestCorrectionSettlementIsSecondCorrection_ReturnsSecondCorrection(
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
@@ -536,7 +536,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetRequestCalculationResultAsync_LatestCorrectionSettlementIsFirstCorrection_ReturnsFirstCorrection(
+    public async Task GetRequestCalculationResultAsync_WhenLatestCorrectionSettlementIsFirstCorrection_ReturnsFirstCorrection(
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
@@ -564,7 +564,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetRequestCalculationResultAsync_NoCorrectionsExists_ReturnsNoResult(
+    public async Task GetRequestCalculationResultAsync_WhenNoCorrectionsExists_ReturnsNoResult(
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock,
         Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock,
