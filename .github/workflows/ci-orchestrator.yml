@@ -25,7 +25,7 @@ jobs:
   ci_base:
     uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@v12
     secrets:
-      pat_token: ${{ secrets.PAT_TOKEN_REPO_WORKFLOW }}
+      pat_token: ${{ secrets.internal_github_pat }}
 
   #
   # Detect changes to start relevant workflows
@@ -59,7 +59,7 @@ jobs:
       structurizr_workspace_filename: views
       included_model_filename: model
     secrets:
-      pat_token_retrigger_workflow: ${{ secrets.pat_token_repo_workflow }}
+      pat_token_retrigger_workflow: ${{ secrets.internal_github_pat }}
 
   #
   # Branch policy status check
