@@ -63,7 +63,7 @@ public class AmountPerChargeResultProducedV1Tests
         Assert.Equal(LastKnownContentOfContract, actualContent, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
     }
 
-    private const int LastKnownMinorEventVersion = 2;
+    private const int LastKnownMinorEventVersion = 3;
     private const string LastKnownContentOfContract = @"/* Copyright 2020 Energinet DataHub A/S
  *
  * Licensed under the Apache License, Version 2.0 (the ""License2"");
