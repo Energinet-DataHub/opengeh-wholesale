@@ -12,17 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests.Fixtures.TestHelpers;
+namespace Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 /// <summary>
-/// A requirement that must be meet by the composition root
+/// The unit of measurement for the quantity.
 /// </summary>
-/// <param name="Name">Friendly name for the requirement</param>
-/// <param name="DependentOn">All dependencies that must be resolved</param>
-public record Requirement(string Name, IEnumerable<Type> DependentOn)
+public enum QuantityUnit
 {
-    public override string ToString()
-    {
-        return Name;
-    }
+    /// <summary>
+    /// The quantity unit is Kilo Watt Hour.
+    /// Code: H87
+    /// </summary>
+    Kwh,
+
+    /// <summary>
+    /// The quantity unit is pieces.
+    /// The unit is used for subscriptions and fees that are associated with the metering point.
+    /// </summary>
+    Pieces,
 }

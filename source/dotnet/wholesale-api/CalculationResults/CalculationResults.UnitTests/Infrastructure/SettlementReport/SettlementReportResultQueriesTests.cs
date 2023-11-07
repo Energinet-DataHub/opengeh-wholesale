@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal.Models;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
@@ -22,8 +20,8 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatement
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SqlStatements;
-using Energinet.DataHub.Wholesale.Common.Databricks.Options;
-using Energinet.DataHub.Wholesale.Common.Models;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -71,7 +69,7 @@ public class SettlementReportResultQueriesTests
             MeteringPointType.Consumption,
             SettlementMethod.NonProfiled,
             1.234m);
-        var table = new TableChunk(_columnNames,  new List<string[]> { row });
+        var table = new TableChunk(_columnNames, new List<string[]> { row });
         var asyncResult = ToAsyncEnumerable(table);
         mockSqlStatementClient.Setup(s => s.ExecuteAsync(It.IsAny<string>(), null)).Returns(asyncResult);
         var sut = new SettlementReportResultQueries(mockSqlStatementClient.Object, _someDeltaTableOptions);

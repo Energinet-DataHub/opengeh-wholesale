@@ -16,16 +16,16 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 
 public static class ProcessTypeMapper
 {
-    public static Common.Models.ProcessType Map(ProcessType batchDtoProcessType)
+    public static Common.Interfaces.Models.ProcessType Map(ProcessType batchDtoProcessType)
     {
         return batchDtoProcessType switch
         {
-            ProcessType.Aggregation => Common.Models.ProcessType.Aggregation,
-            ProcessType.BalanceFixing => Common.Models.ProcessType.BalanceFixing,
-            ProcessType.WholesaleFixing => Common.Models.ProcessType.WholesaleFixing,
-            ProcessType.FirstCorrectionSettlement => Common.Models.ProcessType.FirstCorrectionSettlement,
-            ProcessType.SecondCorrectionSettlement => Common.Models.ProcessType.SecondCorrectionSettlement,
-            ProcessType.ThirdCorrectionSettlement => Common.Models.ProcessType.ThirdCorrectionSettlement,
+            ProcessType.Aggregation => Common.Interfaces.Models.ProcessType.Aggregation,
+            ProcessType.BalanceFixing => Common.Interfaces.Models.ProcessType.BalanceFixing,
+            ProcessType.WholesaleFixing => Common.Interfaces.Models.ProcessType.WholesaleFixing,
+            ProcessType.FirstCorrectionSettlement => Common.Interfaces.Models.ProcessType.FirstCorrectionSettlement,
+            ProcessType.SecondCorrectionSettlement => Common.Interfaces.Models.ProcessType.SecondCorrectionSettlement,
+            ProcessType.ThirdCorrectionSettlement => Common.Interfaces.Models.ProcessType.ThirdCorrectionSettlement,
 
             _ => throw new ArgumentOutOfRangeException(
                 nameof(batchDtoProcessType),
@@ -34,16 +34,16 @@ public static class ProcessTypeMapper
         };
     }
 
-    public static ProcessType Map(Common.Models.ProcessType batchDtoProcessType)
+    public static ProcessType Map(Common.Interfaces.Models.ProcessType batchDtoProcessType)
     {
         return batchDtoProcessType switch
         {
-            Common.Models.ProcessType.Aggregation => ProcessType.Aggregation,
-            Common.Models.ProcessType.BalanceFixing => ProcessType.BalanceFixing,
-            Common.Models.ProcessType.WholesaleFixing => ProcessType.WholesaleFixing,
-            Common.Models.ProcessType.FirstCorrectionSettlement => ProcessType.FirstCorrectionSettlement,
-            Common.Models.ProcessType.SecondCorrectionSettlement => ProcessType.SecondCorrectionSettlement,
-            Common.Models.ProcessType.ThirdCorrectionSettlement => ProcessType.ThirdCorrectionSettlement,
+            Common.Interfaces.Models.ProcessType.Aggregation => ProcessType.Aggregation,
+            Common.Interfaces.Models.ProcessType.BalanceFixing => ProcessType.BalanceFixing,
+            Common.Interfaces.Models.ProcessType.WholesaleFixing => ProcessType.WholesaleFixing,
+            Common.Interfaces.Models.ProcessType.FirstCorrectionSettlement => ProcessType.FirstCorrectionSettlement,
+            Common.Interfaces.Models.ProcessType.SecondCorrectionSettlement => ProcessType.SecondCorrectionSettlement,
+            Common.Interfaces.Models.ProcessType.ThirdCorrectionSettlement => ProcessType.ThirdCorrectionSettlement,
 
             _ => throw new ArgumentOutOfRangeException(
                 nameof(batchDtoProcessType),

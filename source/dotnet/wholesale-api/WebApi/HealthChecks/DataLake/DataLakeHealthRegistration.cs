@@ -13,8 +13,7 @@
 // limitations under the License.
 
 using Azure.Storage.Files.DataLake;
-using Energinet.DataHub.Wholesale.Common.Databricks.Options;
-using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using NodaTime;
 
