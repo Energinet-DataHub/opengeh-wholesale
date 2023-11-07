@@ -130,4 +130,4 @@ def _apply_grid_loss_adjustment(
         Colname.time_window,
     )
 
-    return EnergyResults(result)
+    return EnergyResults(result, True)
