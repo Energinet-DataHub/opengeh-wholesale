@@ -39,7 +39,6 @@ public class RequestCalculationResultRetriever : IRequestCalculationResultRetrie
 
         var calculationResult = await _requestCalculationResultQueries.GetAsync(query).ConfigureAwait(false);
 
-        _logger.LogDebug("Found {CalculationResult} calculation results based on {Query} query.", calculationResult?.ToJsonString(), query.ToJsonString());
         return calculationResult;
     }
 
