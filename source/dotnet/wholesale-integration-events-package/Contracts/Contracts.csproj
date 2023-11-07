@@ -21,7 +21,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Wholesale.Contracts</PackageId>
-    <PackageVersion>5.2.0$(VersionSuffix)</PackageVersion>
+    <PackageVersion>5.3.0$(VersionSuffix)</PackageVersion>
     <Title>Wholesale Contracts</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
