@@ -31,9 +31,9 @@ public class RequestCalculationResultRetriever : IRequestCalculationResultRetrie
         _requestCalculationResultQueries = requestCalculationResultQueries;
     }
 
-    public async IAsyncEnumerable<EnergyResult> GetRequestCalculationResultAsync(IEnergyResultFilter filter, RequestedProcessType requestedProcessType)
+    public async IAsyncEnumerable<EnergyResult> GetRequestCalculationResultAsync(EnergyResultFilter filter)
     {
-        var processType = await GetSpecificProcessTypeAsync(filter, requestedProcessType).ConfigureAwait(false);
+        var processType = await GetSpecificProcessTypeAsync(filter).ConfigureAwait(false);
 
         var query = new EnergyResultQuery(filter, processType);
 
@@ -47,12 +47,12 @@ public class RequestCalculationResultRetriever : IRequestCalculationResultRetrie
         _logger.LogDebug("Found {CalculationResults} calculation results based on {Query} query.", calculationResultCount, query.ToJsonString());
     }
 
-    private Task<ProcessType> GetSpecificProcessTypeAsync(IEnergyResultFilter filter, RequestedProcessType requestedProcessType)
+    private Task<ProcessType> GetSpecificProcessTypeAsync(EnergyResultFilter filter)
     {
-        if (requestedProcessType == RequestedProcessType.LatestCorrection)
+        if (filter.ProcessType == RequestedProcessType.LatestCorrection)
             return _requestCalculationResultQueries.GetLatestCorrectionAsync(filter);
 
-        var processType = ProcessTypeMapper.FromRequestedProcessType(requestedProcessType);
+        var processType = ProcessTypeMapper.FromRequestedProcessType(filter.ProcessType);
         return Task.FromResult(processType);
     }
 }

@@ -21,5 +21,5 @@ public interface IRequestCalculationResultRetriever
     /// <summary>
     /// Get a list of the latest calculation results for the given query
     /// </summary>
-    IAsyncEnumerable<EnergyResult> GetRequestCalculationResultAsync(IEnergyResultFilter query, RequestedProcessType requestedProcessType);
+    IAsyncEnumerable<EnergyResult> GetRequestCalculationResultAsync(EnergyResultFilter query);
 }

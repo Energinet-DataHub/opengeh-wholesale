@@ -18,6 +18,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.RequestCalculationResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Energinet.DataHub.Wholesale.Common.Models;
@@ -195,9 +196,11 @@ public class RequestCalculationResultQueriesTests : IClassFixture<DatabricksSqlS
         Instant? endOfPeriod = null,
         string? gridArea = null,
         string? energySupplierId = null,
-        string? balanceResponsibleId = null)
+        string? balanceResponsibleId = null,
+        RequestedProcessType? processType = null)
     {
         return new EnergyResultFilter(
+            ProcessType: processType ?? RequestedProcessType.BalanceFixing,
             TimeSeriesType: timeSeriesType ?? TimeSeriesType.Production,
             StartOfPeriod: startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
             EndOfPeriod: endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0),

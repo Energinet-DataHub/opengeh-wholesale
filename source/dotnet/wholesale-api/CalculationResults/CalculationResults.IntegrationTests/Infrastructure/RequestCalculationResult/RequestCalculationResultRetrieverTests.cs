@@ -46,7 +46,6 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
     private const string ThirdQuantity = "3.333";
     private const string FourthQuantity = "4.444";
     private const string FourthQuantityThirdCorrection = "4.555";
-    private const string GridAreaCodeD = "401";
     private const string GridAreaCodeC = "301";
     private const string GridAreaCodeB = "201";
     private const string GridAreaCodeA = "101";
@@ -82,7 +81,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
-        var results = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.BalanceFixing).ToListAsync();
+        var results = await sut.GetRequestCalculationResultAsync(filter).ToListAsync();
 
         // Assert
         results.Should().NotBeNull();
@@ -117,7 +116,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
-        var results = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.BalanceFixing).ToListAsync();
+        var results = await sut.GetRequestCalculationResultAsync(filter).ToListAsync();
 
         // Assert
         results.Should().HaveCount(0);
@@ -149,7 +148,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
-        var results = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.BalanceFixing).ToListAsync();
+        var results = await sut.GetRequestCalculationResultAsync(filter).ToListAsync();
 
         // Assert
         results.Should().NotBeNull();
@@ -193,7 +192,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
-        var results = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.BalanceFixing).ToListAsync();
+        var results = await sut.GetRequestCalculationResultAsync(filter).ToListAsync();
 
         // Assert
         results.Should().HaveCount(0);
@@ -224,7 +223,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
-        var results = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.BalanceFixing).ToListAsync();
+        var results = await sut.GetRequestCalculationResultAsync(filter).ToListAsync();
 
         // Assert
         results.Should().NotBeNull();
@@ -270,7 +269,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
-        var results = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.BalanceFixing).ToListAsync();
+        var results = await sut.GetRequestCalculationResultAsync(filter).ToListAsync();
 
         // Assert
         results.Should().NotBeNull();
@@ -305,6 +304,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         var filter = CreateFilter(
+            processType: RequestedProcessType.FirstCorrection,
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
@@ -314,7 +314,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
-        var results = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.FirstCorrection).ToListAsync();
+        var results = await sut.GetRequestCalculationResultAsync(filter).ToListAsync();
 
         // Assert
         results.Should().NotBeNull();
@@ -349,6 +349,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         var filter = CreateFilter(
+            processType: RequestedProcessType.SecondCorrection,
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
@@ -358,7 +359,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
-        var results = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.SecondCorrection).ToListAsync();
+        var results = await sut.GetRequestCalculationResultAsync(filter).ToListAsync();
 
         // Assert
         results.Should().NotBeNull();
@@ -393,6 +394,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         var filter = CreateFilter(
+            processType: RequestedProcessType.ThirdCorrection,
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
@@ -402,7 +404,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
-        var results = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.ThirdCorrection).ToListAsync();
+        var results = await sut.GetRequestCalculationResultAsync(filter).ToListAsync();
 
         // Assert
         results.Should().NotBeNull();
@@ -446,7 +448,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
-        var results = await sut.GetRequestCalculationResultAsync(request, RequestedProcessType.BalanceFixing).ToListAsync();
+        var results = await sut.GetRequestCalculationResultAsync(request).ToListAsync();
 
         // Assert
         results.Should().NotBeNull();
@@ -489,7 +491,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
-        var results = await sut.GetRequestCalculationResultAsync(request, RequestedProcessType.BalanceFixing).ToListAsync();
+        var results = await sut.GetRequestCalculationResultAsync(request).ToListAsync();
 
         // Assert
         results.Should().HaveCount(0);
@@ -508,6 +510,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         var filter = CreateFilter(
+            processType: RequestedProcessType.LatestCorrection,
             timeSeriesTypeFilter,
             startOfPeriodFilter,
             endOfPeriodFilter,
@@ -517,7 +520,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
-        var results = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.LatestCorrection).ToListAsync();
+        var results = await sut.GetRequestCalculationResultAsync(filter).ToListAsync();
 
         // Assert
         results.Should().NotBeNull();
@@ -541,6 +544,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
 
         var filter = CreateFilter(
+            processType: RequestedProcessType.LatestCorrection,
             timeSeriesTypeFilter,
             startOfPeriodFilter,
             endOfPeriodFilter,
@@ -550,7 +554,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
-        var results = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.LatestCorrection).ToListAsync();
+        var results = await sut.GetRequestCalculationResultAsync(filter).ToListAsync();
 
         // Assert
         results.Should().NotBeNull();
@@ -572,6 +576,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         var filter = CreateFilter(
+            processType: RequestedProcessType.LatestCorrection,
             timeSeriesTypeFilter,
             startOfPeriodFilter,
             endOfPeriodFilter,
@@ -581,7 +586,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
-        var results = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.LatestCorrection).ToListAsync();
+        var results = await sut.GetRequestCalculationResultAsync(filter).ToListAsync();
 
         // Assert
         results.Should().NotBeNull();
@@ -603,6 +608,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         var filter = CreateFilter(
+            processType: RequestedProcessType.LatestCorrection,
             timeSeriesTypeFilter,
             startOfPeriodFilter,
             endOfPeriodFilter,
@@ -612,7 +618,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
-        var results = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.LatestCorrection).ToListAsync();
+        var results = await sut.GetRequestCalculationResultAsync(filter).ToListAsync();
 
         results.Should().HaveCount(0);
     }
@@ -643,7 +649,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         var sut = new Application.RequestCalculationResult.RequestCalculationResultRetriever(requestCalculationResultLoggerMock.Object, queries);
 
         // Act
-        var actual = await sut.GetRequestCalculationResultAsync(filter, RequestedProcessType.BalanceFixing).ToListAsync();
+        var actual = await sut.GetRequestCalculationResultAsync(filter).ToListAsync();
 
         // Assert
         actual.Should().NotBeNull();
@@ -657,6 +663,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
     }
 
     private EnergyResultFilter CreateFilter(
+        RequestedProcessType? processType = null,
         TimeSeriesType? timeSeriesType = null,
         Instant? startOfPeriod = null,
         Instant? endOfPeriod = null,
@@ -665,6 +672,7 @@ public class RequestCalculationResultRetrieverTests : IClassFixture<DatabricksSq
         string? balanceResponsibleId = null)
     {
         return new EnergyResultFilter(
+            ProcessType: processType ?? RequestedProcessType.BalanceFixing,
             TimeSeriesType: timeSeriesType ?? TimeSeriesType.Production,
             StartOfPeriod: startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
             EndOfPeriod: endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0),

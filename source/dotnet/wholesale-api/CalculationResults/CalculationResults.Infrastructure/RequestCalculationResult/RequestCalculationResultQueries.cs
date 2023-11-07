@@ -94,26 +94,6 @@ public class RequestCalculationResultQueries : IRequestCalculationResultQueries
         _logger.LogDebug("Fetched {ResultCount} calculation results", resultCount);
     }
 
-    //     var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
-    //     SqlResultRow? firstRow = null;
-    //     var resultCount = 0;
-    //     await foreach (var currentRow in _sqlStatementClient.ExecuteAsync(sqlStatement, sqlStatementParameters: null).ConfigureAwait(false))
-    //     {
-    //         if (firstRow is null)
-    //             firstRow = currentRow;
-    //
-    //         var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(currentRow);
-    //
-    //         timeSeriesPoints.Add(timeSeriesPoint);
-    //         resultCount++;
-    //     }
-    //
-    //     _logger.LogDebug("Fetched {ResultCount} calculation results", resultCount);
-    //     if (firstRow is null)
-    //         return null;
-    //
-    //     return EnergyResultFactory.CreateEnergyResult(firstRow, timeSeriesPoints, query.StartOfPeriod, query.EndOfPeriod);
-    // }
     private Task<bool> PerformCorrectionVersionExistsQueryAsync(IEnergyResultFilter queryFilter, ProcessType processType)
     {
         var sql = CreateSelectCorrectionVersionSql(queryFilter, processType);

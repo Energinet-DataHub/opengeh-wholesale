@@ -85,11 +85,12 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
             CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromEdi(request.TimeSeriesType),
             request.Period.Start,
             request.Period.End,
+            request.RequestedProcessType,
             request.AggregationPerRoleAndGridArea.GridAreaCode,
             request.AggregationPerRoleAndGridArea.EnergySupplierId,
             request.AggregationPerRoleAndGridArea.BalanceResponsibleId);
 
-        return _requestCalculationResultRetriever.GetRequestCalculationResultAsync(filter, request.RequestedProcessType);
+        return _requestCalculationResultRetriever.GetRequestCalculationResultAsync(filter);
     }
 
     private async Task SendRejectedMessageAsync(List<ValidationError> validationErrors, string referenceId, CancellationToken cancellationToken)
