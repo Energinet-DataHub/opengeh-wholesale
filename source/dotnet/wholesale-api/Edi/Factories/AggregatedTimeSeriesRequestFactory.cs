@@ -24,20 +24,13 @@ namespace Energinet.DataHub.Wholesale.EDI.Factories;
 
 public class AggregatedTimeSeriesRequestFactory : IAggregatedTimeSeriesRequestFactory
 {
-    private readonly RequestedProcessTypeMapper _requestedProcessTypeMapper;
-
-    public AggregatedTimeSeriesRequestFactory(RequestedProcessTypeMapper requestedProcessTypeMapper)
-    {
-        _requestedProcessTypeMapper = requestedProcessTypeMapper;
-    }
-
     public AggregatedTimeSeriesRequest Parse(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request)
     {
         return new AggregatedTimeSeriesRequest(
             MapPeriod(request.Period),
             TimeSeriesTypeMapper.MapTimeSeriesType(request.MeteringPointType, request.SettlementMethod),
             MapAggregationPerRoleAndGridArea(request),
-            _requestedProcessTypeMapper.ToRequestedProcessType(request.BusinessReason, request.HasSettlementSeriesVersion ? request.SettlementSeriesVersion : null));
+            RequestedProcessTypeMapper.ToRequestedProcessType(request.BusinessReason, request.HasSettlementSeriesVersion ? request.SettlementSeriesVersion : null));
     }
 
     private AggregationPerRoleAndGridArea MapAggregationPerRoleAndGridArea(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request)

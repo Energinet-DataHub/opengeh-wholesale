@@ -32,11 +32,8 @@ public class RequestedProcessTypeMapperTests
     [InlineData(BusinessReason.Correction, null, RequestedProcessType.LatestCorrection)]
     public void ToRequestedProcessType_WhenValidBusinessReasonAndSettlementSeriesVersion_ReturnsExpectedType(string businessReason, string? settlementSeriesVersion, RequestedProcessType expectedType)
     {
-        // Arrange
-        var sut = new RequestedProcessTypeMapper();
-
         // Act
-        var actualType = sut.ToRequestedProcessType(businessReason, settlementSeriesVersion);
+        var actualType = RequestedProcessTypeMapper.ToRequestedProcessType(businessReason, settlementSeriesVersion);
 
         // Assert
         actualType.Should().Be(expectedType);
@@ -53,11 +50,8 @@ public class RequestedProcessTypeMapperTests
     [InlineData(BusinessReason.Correction, "random-string")]
     public void ToRequestedProcessType_WhenInvalidSettlementSeriesVersion_ThrowsArgumentOutOfRangeException(string businessReason, string? settlementSeriesVersion)
     {
-        // Arrange
-        var sut = new RequestedProcessTypeMapper();
-
         // Act
-        var act = () => sut.ToRequestedProcessType(businessReason, settlementSeriesVersion);
+        var act = () => RequestedProcessTypeMapper.ToRequestedProcessType(businessReason, settlementSeriesVersion);
 
         // Assert
         act.Should().ThrowExactly<ArgumentOutOfRangeException>().And.ActualValue.Should().Be(settlementSeriesVersion);
@@ -68,10 +62,8 @@ public class RequestedProcessTypeMapperTests
     [InlineData("random-string", null)]
     public void ToRequestedProcessType_WhenInvalidBusinessReason_ThrowsArgumentOutOfRangeException(string businessReason, string? settlementSeriesVersion)
     {
-        var sut = new RequestedProcessTypeMapper();
-
         // Act
-        var act = () => sut.ToRequestedProcessType(businessReason, settlementSeriesVersion);
+        var act = () => RequestedProcessTypeMapper.ToRequestedProcessType(businessReason, settlementSeriesVersion);
 
         // Assert
         act.Should().ThrowExactly<ArgumentOutOfRangeException>().And.ActualValue.Should().Be(businessReason);

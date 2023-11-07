@@ -17,9 +17,9 @@ using Energinet.DataHub.Wholesale.EDI.Models;
 
 namespace Energinet.DataHub.Wholesale.EDI.Mappers;
 
-public class RequestedProcessTypeMapper
+public static class RequestedProcessTypeMapper
 {
-    public RequestedProcessType ToRequestedProcessType(string businessReason, string? settlementSeriesVersion)
+    public static RequestedProcessType ToRequestedProcessType(string businessReason, string? settlementSeriesVersion)
     {
         if (businessReason != BusinessReason.Correction && settlementSeriesVersion != null)
             throw new ArgumentOutOfRangeException(nameof(settlementSeriesVersion), settlementSeriesVersion, "Settlement series version must be null when business reason is not correction");
