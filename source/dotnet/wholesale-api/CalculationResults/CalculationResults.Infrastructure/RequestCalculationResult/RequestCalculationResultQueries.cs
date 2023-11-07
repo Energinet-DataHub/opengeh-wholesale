@@ -43,7 +43,7 @@ public class RequestCalculationResultQueries : IRequestCalculationResultQueries
     {
         var statement = new QueryCalculationResultsStatement2(_deltaTableOptions, query);
         var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
-        SqlResultRow? firstRow = null;
+        IDictionary<string, object>? firstRow = null;
         var resultCount = 0;
         await foreach (var currentRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement).ConfigureAwait(false))
         {

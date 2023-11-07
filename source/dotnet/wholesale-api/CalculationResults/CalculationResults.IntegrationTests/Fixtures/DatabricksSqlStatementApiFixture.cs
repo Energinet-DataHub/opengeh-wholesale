@@ -45,10 +45,10 @@ public class DatabricksSqlStatementApiFixture : IAsyncLifetime
         await DatabricksSchemaManager.DropSchemaAsync();
     }
 
-    public DatabricksSqlWarehouseQueryExecutor GetExecutor()
+    public DatabricksSqlWarehouseQueryExecutor GetDatabricksExecutor()
     {
         var builder = new ConfigurationBuilder();
-        builder.AddInMemoryCollection(new Dictionary<string, string?>()
+        builder.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["WorkspaceUrl"] = DatabricksSchemaManager.Settings.WorkspaceUrl,
             ["WarehouseId"] = DatabricksSchemaManager.Settings.WarehouseId,

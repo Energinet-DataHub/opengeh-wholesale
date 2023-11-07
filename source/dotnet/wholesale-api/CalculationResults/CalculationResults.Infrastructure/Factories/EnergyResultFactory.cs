@@ -23,29 +23,29 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factorie
 public class EnergyResultFactory
 {
     public static EnergyResult CreateEnergyResult(
-        SqlResultRow sqlResultRow,
+        IDictionary<string, object> sqlResultRow,
         List<EnergyTimeSeriesPoint> timeSeriesPoints,
         Instant periodStart,
         Instant periodEnd)
     {
-        var id = sqlResultRow[EnergyResultColumnNames.CalculationResultId];
-        var batchId = sqlResultRow[EnergyResultColumnNames.BatchId];
-        var gridArea = sqlResultRow[EnergyResultColumnNames.GridArea];
-        var timeSeriesType = sqlResultRow[EnergyResultColumnNames.TimeSeriesType];
-        var energySupplierId = sqlResultRow[EnergyResultColumnNames.EnergySupplierId];
-        var balanceResponsibleId = sqlResultRow[EnergyResultColumnNames.BalanceResponsibleId];
-        var processType = sqlResultRow[EnergyResultColumnNames.BatchProcessType];
-        var fromGridArea = sqlResultRow[EnergyResultColumnNames.FromGridArea];
+        var id = Convert.ToString(sqlResultRow[EnergyResultColumnNames.CalculationResultId]);
+        var batchId = sqlResultRow[EnergyResultColumnNames.BatchId].ToString();
+        var gridArea = sqlResultRow[EnergyResultColumnNames.GridArea].ToString();
+        var timeSeriesType = sqlResultRow[EnergyResultColumnNames.TimeSeriesType].ToString();
+        var energySupplierId = sqlResultRow[EnergyResultColumnNames.EnergySupplierId].ToString();
+        var balanceResponsibleId = sqlResultRow[EnergyResultColumnNames.BalanceResponsibleId].ToString();
+        var processType = Convert.ToString(sqlResultRow[EnergyResultColumnNames.BatchProcessType]);
+        var fromGridArea = Convert.ToString(sqlResultRow[EnergyResultColumnNames.FromGridArea]);
 
         return new EnergyResult(
-            SqlResultValueConverters.ToGuid(id),
-            Guid.Parse(batchId),
-            gridArea,
-            SqlResultValueConverters.ToTimeSeriesType(timeSeriesType),
+            SqlResultValueConverters.ToGuid(id!),
+            Guid.Parse(batchId!),
+            gridArea!,
+            SqlResultValueConverters.ToTimeSeriesType(timeSeriesType!),
             energySupplierId,
             balanceResponsibleId,
             timeSeriesPoints.ToArray(),
-            ProcessTypeMapper.FromDeltaTableValue(processType),
+            ProcessTypeMapper.FromDeltaTableValue(processType!),
             periodStart,
             periodEnd,
             fromGridArea);

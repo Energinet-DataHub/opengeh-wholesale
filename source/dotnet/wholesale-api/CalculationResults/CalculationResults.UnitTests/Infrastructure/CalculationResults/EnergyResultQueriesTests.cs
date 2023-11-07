@@ -24,7 +24,6 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationR
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.Fixtures;
 using FluentAssertions;
 using Moq;
 using NodaTime.Extensions;
@@ -167,21 +166,20 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>
         bool expected)
     {
         // Arrange
-        var listA = new List<KeyValuePair<string, string>>
+        var listA = new Dictionary<string, object>
         {
-            new(EnergyResultColumnNames.BatchId, "batchId"),
-            new(EnergyResultColumnNames.CalculationResultId, calculationResultIdA),
+            { EnergyResultColumnNames.BatchId, "batchId" },
+            { EnergyResultColumnNames.CalculationResultId, calculationResultIdA },
         };
-        var sqlResultRowA = new TestSqlResultRow(listA);
-        var listB = new List<KeyValuePair<string, string>>
+
+        var listB = new Dictionary<string, object>
         {
-            new(EnergyResultColumnNames.BatchId, "batchId"),
-            new(EnergyResultColumnNames.CalculationResultId, calculationResultIdB),
+            { EnergyResultColumnNames.BatchId, "batchId" },
+            { EnergyResultColumnNames.CalculationResultId, calculationResultIdB },
         };
-        var sqlResultRowB = new TestSqlResultRow(listB);
 
         // Act
-        var actual = EnergyResultQueries.BelongsToDifferentResults(sqlResultRowA, sqlResultRowB);
+        var actual = EnergyResultQueries.BelongsToDifferentResults(listA, listB);
 
         // Assert
         actual.Should().Be(expected);

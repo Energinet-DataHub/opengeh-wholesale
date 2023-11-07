@@ -52,22 +52,23 @@ public class EnergyResultQueries : IEnergyResultQueries
         _logger.LogDebug("Fetched all energy results for batch {BatchId}", batchId);
     }
 
-    public static bool BelongsToDifferentResults(SqlResultRow row, SqlResultRow otherRow)
+    public static bool BelongsToDifferentResults(IDictionary<string, object> row, IDictionary<string, object> otherRow)
     {
-        return row[EnergyResultColumnNames.CalculationResultId] != otherRow[EnergyResultColumnNames.CalculationResultId];
+        return !row[EnergyResultColumnNames.CalculationResultId].Equals(otherRow[EnergyResultColumnNames.CalculationResultId]);
     }
 
     private async IAsyncEnumerable<EnergyResult> GetInternalAsync(QueryEnergyResultStatement statement, Instant periodStart, Instant periodEnd)
     {
         var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
-        SqlResultRow? currentRow = null;
+        IDictionary<string, object>? currentRow = null;
         var resultCount = 0;
 
         await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
         {
-            var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(nextRow);
+            var convertedNextRow = (IDictionary<string, object>)nextRow;
+            var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(convertedNextRow);
 
-            if (currentRow != null && BelongsToDifferentResults(currentRow, nextRow))
+            if (currentRow != null && BelongsToDifferentResults(currentRow, convertedNextRow))
             {
                 yield return EnergyResultFactory.CreateEnergyResult(currentRow!, timeSeriesPoints, periodStart, periodEnd);
                 resultCount++;
@@ -75,7 +76,7 @@ public class EnergyResultQueries : IEnergyResultQueries
             }
 
             timeSeriesPoints.Add(timeSeriesPoint);
-            currentRow = nextRow;
+            currentRow = convertedNextRow;
         }
 
         if (currentRow != null)
