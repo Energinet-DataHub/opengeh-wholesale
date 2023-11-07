@@ -34,8 +34,8 @@ time_series_point_schema = StructType(
         # Example: 578710000000000103
         StructField("metering_point_id", StringType(), False),
         # Energy quantity in kWh for the given observation time.
-        # Example: 1234.534217
-        StructField("quantity", DecimalType(18, 6), False),
+        # Example: 1234.534
+        StructField("quantity", DecimalType(18, 3), False),
         # "missing" | "estimated" | "measured" | "calculated"
         # Example: measured
         StructField("quality", StringType(), False),
