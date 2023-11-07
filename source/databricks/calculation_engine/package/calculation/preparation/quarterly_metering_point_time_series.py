@@ -49,7 +49,7 @@ _quarterly_metering_point_time_series_schema = t.StructType(
         t.StructField(Colname.metering_point_id, t.StringType(), False),
         t.StructField(Colname.metering_point_type, t.StringType(), False),
         t.StructField(Colname.observation_time, t.TimestampType(), False),
-        t.StructField(Colname.quantity, t.DecimalType(18, 3), False),
+        t.StructField(Colname.quantity, t.DecimalType(18, 6), False),
         t.StructField(Colname.quality, t.StringType(), False),
         t.StructField(Colname.energy_supplier_id, t.StringType(), True),
         t.StructField(Colname.balance_responsible_id, t.StringType(), True),

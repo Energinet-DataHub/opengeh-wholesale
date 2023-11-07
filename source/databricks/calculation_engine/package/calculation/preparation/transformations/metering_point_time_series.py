@@ -41,6 +41,10 @@ def get_metering_point_time_series(
     assert_schema(raw_time_series_points_df.schema, time_series_point_schema)
     assert_schema(metering_point_periods_df.schema, metering_point_period_schema)
 
+    raw_time_series_points_df = raw_time_series_points_df.withColumn(
+        Colname.quantity, f.col(Colname.quantity).cast(DecimalType(18, 6))
+    )
+
     raw_time_series_points_df = raw_time_series_points_df.where(
         f.col(Colname.observation_time) >= period_start_datetime
     ).where(f.col(Colname.observation_time) < period_end_datetime)
