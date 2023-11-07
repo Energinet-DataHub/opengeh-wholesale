@@ -57,7 +57,7 @@ class EnergyCalculationResultWriter:
         assert_schema(
             results_df.schema,
             energy_results_schema,
-            # ignore_nullability=True,
+            ignore_nullability=True,
             ignore_column_order=True,
             ignore_decimal_scale=True,
             ignore_decimal_precision=True,
@@ -69,7 +69,6 @@ class EnergyCalculationResultWriter:
         results_df = self._add_batch_columns(results_df)
         results_df = self._add_calculation_result_id(results_df)
         results_df = self._map_to_storage_dataframe(results_df)
-        results_df.printSchema()
 
         self._write_to_storage(results_df)
 
