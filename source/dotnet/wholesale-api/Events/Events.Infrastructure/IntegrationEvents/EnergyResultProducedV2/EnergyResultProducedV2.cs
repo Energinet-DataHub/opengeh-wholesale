@@ -13,9 +13,11 @@
 // limitations under the License.
 
 // ReSharper disable once CheckNamespace - the namespace is exposed publicly in the Contracts package
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents;
+
 namespace Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 
-public partial class EnergyResultProducedV2
+public partial class EnergyResultProducedV2 : IEventMessage
 {
     /// <summary>
     /// The message type for transport message meta data in accordance with ADR-008.
@@ -23,4 +25,8 @@ public partial class EnergyResultProducedV2
     public const string EventName = "EnergyResultProducedV2";
 
     public const int EventMinorVersion = 0;
+
+    string IEventMessage.EventName => EventName;
+
+    int IEventMessage.EventMinorVersion => EventMinorVersion;
 }
