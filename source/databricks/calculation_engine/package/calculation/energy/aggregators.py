@@ -92,7 +92,7 @@ def _aggregate_per_ga_and_brp_and_es(
     ]
     result = t.aggregate_quantity_and_quality(result, sum_group_by)
 
-    return EnergyResults(result)
+    return EnergyResults(result, True)
 
 
 def aggregate_production_ga_es(production: EnergyResults) -> EnergyResults:
@@ -208,4 +208,4 @@ def _aggregate_per_ga(
         lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
     )
 
-    return EnergyResults(result)
+    return EnergyResults(result, True)

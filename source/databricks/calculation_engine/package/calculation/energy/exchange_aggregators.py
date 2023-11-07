@@ -203,4 +203,4 @@ def aggregate_net_exchange_per_ga(
         )
     )
 
-    return EnergyResults(result_df)
+    return EnergyResults(result_df, True)
