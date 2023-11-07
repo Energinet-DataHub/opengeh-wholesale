@@ -14,20 +14,16 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.Common.Logging;
 using Energinet.DataHub.Wholesale.Common.Models;
-using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Application.RequestCalculationResult;
 
 public class RequestCalculationResultRetriever : IRequestCalculationResultRetriever
 {
-    private readonly ILogger<RequestCalculationResultRetriever> _logger;
     private readonly IRequestCalculationResultQueries _requestCalculationResultQueries;
 
-    public RequestCalculationResultRetriever(ILogger<RequestCalculationResultRetriever> logger, IRequestCalculationResultQueries requestCalculationResultQueries)
+    public RequestCalculationResultRetriever(IRequestCalculationResultQueries requestCalculationResultQueries)
     {
-        _logger = logger;
         _requestCalculationResultQueries = requestCalculationResultQueries;
     }
 
@@ -37,14 +33,10 @@ public class RequestCalculationResultRetriever : IRequestCalculationResultRetrie
 
         var query = new EnergyResultQuery(filter, processType);
 
-        var calculationResultCount = 0;
         await foreach (var calculationResult in _requestCalculationResultQueries.GetAsync(query))
         {
             yield return calculationResult;
-            calculationResultCount++;
         }
-
-        _logger.LogDebug("Found {Count} calculation results based on the query  '{Query}'", calculationResultCount, query.ToJsonString());
     }
 
     private Task<ProcessType> GetSpecificProcessTypeAsync(EnergyResultFilter filter)
