@@ -63,7 +63,7 @@ public class AmountPerChargeResultProducedV1Tests
         Assert.Equal(LastKnownContentOfContract, actualContent, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
     }
 
-    private const int LastKnownMinorEventVersion = 2;
+    private const int LastKnownMinorEventVersion = 3;
     private const string LastKnownContentOfContract = @"/* Copyright 2020 Energinet DataHub A/S
  *
  * Licensed under the Apache License, Version 2.0 (the ""License2"");
@@ -236,21 +236,20 @@ message AmountPerChargeResultProducedV1 {
 
     /*
      * 3 digit scale decimal value. The value represents either energy quantity or pieces (dependency on QuantityUnit).
-     * The value can null if no data is present for the given time series point.
      */
-    optional DecimalValue quantity = 2;
+    DecimalValue quantity = 2;
 
     repeated QuantityQuality quantity_qualities = 3;
 
     /*
-     * 6 digit scale decimal value of the amount.
-     * The value can be null if price data is present for the given time series point.
+     * 6 digit scale decimal value of the price.
+     * The value can be null if no price data is present for the given time series point.
      */
     optional DecimalValue price = 4;
 
     /*
      * 6 digit scale decimal value of the amount.
-     * The value can be null if price or quantity is null
+     * The value can be null if price is null
      */
     optional DecimalValue amount = 5;
   }

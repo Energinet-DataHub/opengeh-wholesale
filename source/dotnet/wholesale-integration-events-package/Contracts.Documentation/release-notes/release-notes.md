@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 5.3.0
+
+- Updated `AmountPerChargeResultProducedV1`: `quantity` is not nullable. Bumped `EventMinorVersion` to `3`.
+
 ## Version 5.2.0
 
 - Bump versions of NuGet package dependencies.
