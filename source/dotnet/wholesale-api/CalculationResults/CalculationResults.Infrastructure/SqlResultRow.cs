@@ -12,14 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
-
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
 
-public interface IDatabricksSqlWarehouseQueryExecutorWrapper
+public record SqlResultRow
 {
-    public IAsyncEnumerable<dynamic> ExecuteStatementAsync(DatabricksStatement statement);
+    private readonly TableChunk _chunk;
 
-    public IAsyncEnumerable<dynamic> ExecuteStatementAsync(DatabricksStatement statement, Format format);
+    private readonly int _index;
+
+    public SqlResultRow(TableChunk chunk, int index)
+    {
+        _chunk = chunk;
+        _index = index;
+    }
+
+    public virtual string this[string column] => _chunk[_index, column];
 }

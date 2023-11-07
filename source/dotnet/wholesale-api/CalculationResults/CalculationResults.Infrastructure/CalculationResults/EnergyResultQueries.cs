@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
@@ -29,12 +30,12 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 
 public class EnergyResultQueries : IEnergyResultQueries
 {
-    private readonly IDatabricksSqlWarehouseQueryExecutorWrapper _databricksSqlWarehouseQueryExecutor;
+    private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor;
     private readonly IBatchesClient _batchesClient;
     private readonly DeltaTableOptions _deltaTableOptions;
     private readonly ILogger<EnergyResultQueries> _logger;
 
-    public EnergyResultQueries(IDatabricksSqlWarehouseQueryExecutorWrapper databricksSqlWarehouseQueryExecutor, IBatchesClient batchesClient, IOptions<DeltaTableOptions> deltaTableOptions, ILogger<EnergyResultQueries> logger)
+    public EnergyResultQueries(DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor, IBatchesClient batchesClient, IOptions<DeltaTableOptions> deltaTableOptions, ILogger<EnergyResultQueries> logger)
     {
         _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
         _batchesClient = batchesClient;
@@ -62,7 +63,7 @@ public class EnergyResultQueries : IEnergyResultQueries
         SqlResultRow? currentRow = null;
         var resultCount = 0;
 
-        await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement).ConfigureAwait(false))
+        await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
         {
             var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(nextRow);
 

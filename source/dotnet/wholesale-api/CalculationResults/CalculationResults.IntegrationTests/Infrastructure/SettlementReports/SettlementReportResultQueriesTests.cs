@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using AutoFixture.Xunit2;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
@@ -49,7 +49,7 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
     [Theory]
     [InlineAutoMoqData]
     public async Task GetRowsAsync_ReturnsExpectedReportRows(
-        [Frozen] Mock<IDatabricksSqlWarehouseQueryExecutorWrapper> databricksSqlWarehouseQueryExecutorMock)
+        [Frozen] Mock<DatabricksSqlWarehouseQueryExecutor> databricksSqlWarehouseQueryExecutorMock)
     {
         // Arrange
         var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;

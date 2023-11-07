@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.Fixtures;
 

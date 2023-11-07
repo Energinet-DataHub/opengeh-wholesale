@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
@@ -42,7 +41,7 @@ public class SettlementReportResultQueriesTests
     [Theory]
     [AutoMoqData]
     public async Task GetRowsAsync_ReturnsExpectedNumberOfRows(
-        Mock<IDatabricksSqlWarehouseQueryExecutorWrapper> databricksSqlWarehouseQueryExecutorMock)
+        Mock<DatabricksSqlWarehouseQueryExecutor> databricksSqlWarehouseQueryExecutorMock)
     {
         // Arrange
         var asyncResult = ToAsyncEnumerable(_someTableChunk);
@@ -59,7 +58,7 @@ public class SettlementReportResultQueriesTests
     [Theory]
     [AutoMoqData]
     public async Task GetRowsAsync_ReturnsExpectedData(
-        Mock<IDatabricksSqlWarehouseQueryExecutorWrapper> databricksSqlWarehouseQueryExecutorMock)
+        Mock<DatabricksSqlWarehouseQueryExecutor> databricksSqlWarehouseQueryExecutorMock)
     {
         // Arrange
         var row = new[] { "123", "BalanceFixing", "2022-05-16T01:00:00.000Z", "non_profiled_consumption", "1.234" };

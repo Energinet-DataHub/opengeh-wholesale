@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
@@ -26,10 +25,10 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public class SettlementReportResultQueries : ISettlementReportResultQueries
 {
-    private readonly IDatabricksSqlWarehouseQueryExecutorWrapper _databricksSqlWarehouseQueryExecutor;
+    private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor;
     private readonly DeltaTableOptions _deltaTableOptions;
 
-    public SettlementReportResultQueries(IDatabricksSqlWarehouseQueryExecutorWrapper databricksSqlWarehouseQueryExecutor, IOptions<DeltaTableOptions> deltaTableOptions)
+    public SettlementReportResultQueries(DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor, IOptions<DeltaTableOptions> deltaTableOptions)
     {
         _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
         _deltaTableOptions = deltaTableOptions.Value;

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
@@ -30,12 +29,12 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 
 public class WholesaleResultQueries : IWholesaleResultQueries
 {
-    private readonly IDatabricksSqlWarehouseQueryExecutorWrapper _databricksSqlWarehouseQueryExecutor;
+    private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor;
     private readonly IBatchesClient _batchesClient;
     private readonly DeltaTableOptions _deltaTableOptions;
     private readonly ILogger<WholesaleResultQueries> _logger;
 
-    public WholesaleResultQueries(IDatabricksSqlWarehouseQueryExecutorWrapper databricksSqlWarehouseQueryExecutor, IBatchesClient batchesClient, IOptions<DeltaTableOptions> deltaTableOptions, ILogger<WholesaleResultQueries> logger)
+    public WholesaleResultQueries(DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor, IBatchesClient batchesClient, IOptions<DeltaTableOptions> deltaTableOptions, ILogger<WholesaleResultQueries> logger)
     {
         _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
         _batchesClient = batchesClient;
@@ -67,15 +66,11 @@ public class WholesaleResultQueries : IWholesaleResultQueries
         {
             var timeSeriesPoint = WholesaleTimeSeriesPointFactory.Create(nextRow);
 
-            if (currentRow != null)
+            if (currentRow != null && BelongsToDifferentResults(currentRow, nextRow))
             {
-                // The two if-statement are split because the IDE thinks "currentRow" can be null if the statements are combined
-                if (BelongsToDifferentResults(currentRow, nextRow))
-                {
-                    yield return WholesaleResultFactory.CreateWholesaleResult(currentRow, timeSeriesPoints, periodStart, periodEnd);
-                    resultCount++;
-                    timeSeriesPoints = new List<WholesaleTimeSeriesPoint>();
-                }
+                yield return WholesaleResultFactory.CreateWholesaleResult(currentRow!, timeSeriesPoints, periodStart, periodEnd);
+                resultCount++;
+                timeSeriesPoints = new List<WholesaleTimeSeriesPoint>();
             }
 
             timeSeriesPoints.Add(timeSeriesPoint);
