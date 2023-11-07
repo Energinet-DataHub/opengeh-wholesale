@@ -242,7 +242,7 @@ message AmountPerChargeResultProducedV1 {
     repeated QuantityQuality quantity_qualities = 3;
 
     /*
-     * 6 digit scale decimal value of the amount.
+     * 6 digit scale decimal value of the price.
      * The value can be null if no price data is present for the given time series point.
      */
     optional DecimalValue price = 4;
