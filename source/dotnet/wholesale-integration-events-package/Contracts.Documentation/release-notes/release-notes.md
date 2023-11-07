@@ -2,7 +2,7 @@
 
 ## Version 5.3.0
 
-Update 'AmountPerChargeResultProducedV1': 'quantity' is not nullable
+- Updated `AmountPerChargeResultProducedV1`: `quantity` is not nullable. Bumped `EventMinorVersion` to `3`.
 
 ## Version 5.2.0
 
