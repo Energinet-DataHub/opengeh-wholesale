@@ -24,7 +24,7 @@ class EnergyResults(DataFrameWrapper):
     Time series of energy results.
     """
 
-    def __init__(self, df: DataFrame):
+    def __init__(self, df: DataFrame, ignore_nullability: bool = False):
         """
         Fit data frame in a general DataFrame. This is used for all results and missing columns will be null.
         """
@@ -33,7 +33,7 @@ class EnergyResults(DataFrameWrapper):
             df,
             energy_results_schema,
             # TODO BJM: These should eventually all be set to False
-            ignore_nullability=True,
+            ignore_nullability=ignore_nullability,
             ignore_decimal_scale=True,
             ignore_decimal_precision=True,
         )
