@@ -29,7 +29,7 @@ public class ProcessTypeMapperTests
     [InlineData(RequestedProcessType.FirstCorrection, ProcessType.FirstCorrectionSettlement)]
     [InlineData(RequestedProcessType.SecondCorrection, ProcessType.SecondCorrectionSettlement)]
     [InlineData(RequestedProcessType.ThirdCorrection, ProcessType.ThirdCorrectionSettlement)]
-    public void FromRequestedProcessType_ValidProcessType_ReturnsExpectedProcessType(RequestedProcessType requestedProcessType, ProcessType expectedResult)
+    public void FromRequestedProcessType_WhenValidProcessType_ReturnsExpectedProcessType(RequestedProcessType requestedProcessType, ProcessType expectedResult)
     {
         // Act
         var actualProcessType = ProcessTypeMapper.FromRequestedProcessType(requestedProcessType);
@@ -41,7 +41,7 @@ public class ProcessTypeMapperTests
     [Theory]
     [InlineData(RequestedProcessType.LatestCorrection)]
     [InlineData((RequestedProcessType)999999)]
-    public void FromRequestedProcessType_InvalidValidProcessType_ThrowsArgumentOutOfRangeException(RequestedProcessType requestedProcessType)
+    public void FromRequestedProcessType_WhenInvalidValidProcessType_ThrowsArgumentOutOfRangeException(RequestedProcessType requestedProcessType)
     {
         var act = () => ProcessTypeMapper.FromRequestedProcessType(requestedProcessType);
 
