@@ -12,6 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 
-[assembly: SuppressMessage("Style", "VSTHRD200:Use \"Async\" suffix for async methods", Justification = "MS")]
+namespace Energinet.DataHub.Wholesale.EDI.Logging;
+
+public static class LoggerExtensions
+{
+    /// <summary>
+    /// Utility method to log entire objects.
+    /// </summary>
+    public static string ToJsonString(this object o)
+    {
+        return JsonSerializer.Serialize(o);
+    }
+}

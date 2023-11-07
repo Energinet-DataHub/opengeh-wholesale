@@ -4,7 +4,6 @@
     <RootNamespace>Energinet.DataHub.Wholesale.Events.Application</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="8.1.1" />
     <PackageReference Include="Energinet.DataHub.Core.Logging" Version="3.1.1" />
     <PackageReference Include="Energinet.DataHub.Core.Messaging" Version="3.2.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
@@ -18,7 +17,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Batches\Batches.Interfaces\Batches.Interfaces.csproj" />
     <ProjectReference Include="..\..\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
-    <ProjectReference Include="..\..\Common\Common.csproj" />
     <ProjectReference Include="..\..\Edi\Edi.csproj" />
   </ItemGroup>
 </Project>

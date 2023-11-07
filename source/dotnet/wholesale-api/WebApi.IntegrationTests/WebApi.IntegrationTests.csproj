@@ -55,9 +55,6 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="functionapphost.settings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="integrationtest.local.settings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
