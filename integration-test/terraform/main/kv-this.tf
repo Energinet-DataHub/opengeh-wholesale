@@ -55,7 +55,9 @@ resource "azurerm_key_vault_access_policy" "kv_developer_ad_group" {
 
   secret_permissions = [
     "Get",
+    "Set",
     "List",
+    "Delete",
   ]
 
   key_permissions = [
