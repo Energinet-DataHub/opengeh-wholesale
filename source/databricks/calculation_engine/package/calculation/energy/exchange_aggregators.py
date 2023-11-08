@@ -48,14 +48,32 @@ def aggregate_net_exchange_per_neighbour_ga(
     exchange_to = (
         t.aggregate_quantity_and_quality(df, group_by)
         .withColumnRenamed(Colname.sum_quantity, to_sum)
-        .withColumnRenamed(Colname.to_grid_area, exchange_in_to_grid_area)
-        .withColumnRenamed(Colname.from_grid_area, exchange_in_from_grid_area)
+        .withColumn(
+            exchange_in_to_grid_area, f.coalesce(f.col(Colname.to_grid_area), f.lit(""))
+        )
+        .withColumn(
+            exchange_in_from_grid_area,
+            f.coalesce(f.col(Colname.from_grid_area), f.lit("")),
+        )
     )
+    # Set null sums to 0 to avoid null values in the sum column (only overflow can cause null values)
+    exchange_to = exchange_to.withColumn(to_sum, f.coalesce(f.col(to_sum), f.lit(0)))
+
     exchange_from = (
         t.aggregate_quantity_and_quality(df, group_by)
         .withColumnRenamed(Colname.sum_quantity, from_sum)
-        .withColumnRenamed(Colname.to_grid_area, exchange_out_to_grid_area)
-        .withColumnRenamed(Colname.from_grid_area, exchange_out_from_grid_area)
+        .withColumn(
+            exchange_out_to_grid_area,
+            f.coalesce(f.col(Colname.to_grid_area), f.lit("")),
+        )
+        .withColumn(
+            exchange_out_from_grid_area,
+            f.coalesce(f.col(Colname.from_grid_area), f.lit("")),
+        )
+    )
+    # Set null sums to 0 to avoid null values in the sum column (only overflow can cause null values)
+    exchange_from = exchange_from.withColumn(
+        from_sum, f.coalesce(f.col(from_sum), f.lit(0))
     )
 
     from_qualities = "from_qualities"
@@ -87,12 +105,19 @@ def aggregate_net_exchange_per_neighbour_ga(
         # Since both exchange_from or exchange_to can be missing we need to coalesce all columns
         .select(
             f.coalesce(
-                exchange_to[to_time_window], exchange_from[from_time_window]
+                exchange_to[to_time_window],
+                exchange_from[from_time_window],  # can be null because of outer join
             ).alias(Colname.time_window),
             f.coalesce(
                 exchange_to[exchange_in_to_grid_area],
                 exchange_from[exchange_out_from_grid_area],
             ).alias(Colname.to_grid_area),
+            f.coalesce(
+                exchange_to[exchange_in_to_grid_area],
+                exchange_from[
+                    exchange_out_from_grid_area
+                ],  # can be null because of outer join
+            ).alias(Colname.grid_area),
             f.coalesce(
                 exchange_to[exchange_in_from_grid_area],
                 exchange_from[exchange_out_to_grid_area],
@@ -107,20 +132,23 @@ def aggregate_net_exchange_per_neighbour_ga(
             ),
         )
         # Calculate netto sum between neighboring grid areas
-        .withColumn(Colname.sum_quantity, f.col(to_sum) - f.col(from_sum))
+        .withColumn(
+            Colname.sum_quantity, f.coalesce(f.col(to_sum) - f.col(from_sum), f.lit(0))
+        )
         # Finally select the result columns
         .select(
+            Colname.grid_area,
             Colname.to_grid_area,
             Colname.from_grid_area,
             Colname.time_window,
+            Colname.sum_quantity,
             # Include qualities from all to- and from- metering point time series
             f.array_union(Colname.qualities, from_qualities).alias(Colname.qualities),
-            Colname.sum_quantity,
-            f.col(Colname.to_grid_area).alias(Colname.grid_area),
             f.lit(MeteringPointType.EXCHANGE.value).alias(Colname.metering_point_type),
         )
     )
-    return EnergyResults(exchange)
+
+    return EnergyResults(exchange, ignore_nullability=True)
 
 
 # Function to aggregate net exchange per grid area
