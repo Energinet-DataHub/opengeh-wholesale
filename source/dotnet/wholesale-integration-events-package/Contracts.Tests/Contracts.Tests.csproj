@@ -34,8 +34,8 @@
       <Link>calculation_result_completed.proto</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\Protos\energy_result_produced_v1.proto">
-      <Link>energy_result_produced_v1.proto</Link>
+    <Content Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\EnergyResultProducedV2\Protos\energy_result_produced_v2.proto">
+      <Link>energy_result_produced_v2.proto</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\Protos\monthly_amount_per_charge_result_produced_v1.proto">
