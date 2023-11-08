@@ -14,6 +14,7 @@ module "func_changeobserver" {
   ip_restriction_allow_ip_range             = var.hosted_deployagent_public_ip_range
   dotnet_framework_version                  = "v6.0"
   app_settings = {
+    STORAGE_ACCOUNT_URL                                                   = "https://${module.stor_esett.name}.blob.core.windows.net"
     BLOB_FILES_CONVERTED_CONTAINER_NAME                                   = local.blob_files_converted_container_name
     BLOB_FILES_ERROR_CONTAINER_NAME                                       = local.blob_files_error_container_name
     BLOB_FILES_RAW_CONTAINER_NAME                                         = local.blob_files_raw_container_name

@@ -29,6 +29,7 @@ module "app_importer" {
 
 locals {
   default_importer_app_settings = {
+    STORAGE_ACCOUNT_URL                                                   = "https://${module.stor_esett.name}.blob.core.windows.net"
     WEBSITE_LOAD_CERTIFICATES                                             = resource.azurerm_key_vault_certificate.dh2_certificate.thumbprint
     BLOB_FILES_ERROR_CONTAINER_NAME                                       = local.blob_files_error_container_name
     BLOB_FILES_RAW_CONTAINER_NAME                                         = local.blob_files_raw_container_name

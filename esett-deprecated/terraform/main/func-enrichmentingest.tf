@@ -14,7 +14,7 @@ module "func_enrichmentingest" {
   ip_restriction_allow_ip_range             = var.hosted_deployagent_public_ip_range
   dotnet_framework_version                  = "v6.0"
   app_settings = {
-    # EndRegion
+    STORAGE_ACCOUNT_URL                                                   = "https://${module.stor_esett.name}.blob.core.windows.net"
     BLOB_FILES_ENRICHMENTS_CONTAINER_NAME                                 = local.blob_files_enrichments_container_name
     "Logging__LogLevel__Default"                                          = "Information"
     "Logging__LogLevel__Microsoft"                                        = "Warning"
