@@ -33,12 +33,17 @@ class EnergyResults(DataFrameWrapper):
             df,
             energy_results_schema,
             # TODO BJM: These should eventually all be set to False
+            # ignore_nullability should remain True, because we are preforming aggregations,
+            # which could potentially cause overflow and therefor null values,
+            # these null values will get caught in the constraint when we write to storage.
             ignore_nullability=True,
             ignore_decimal_scale=True,
             ignore_decimal_precision=True,
         )
 
 
+# The nullability is not representative of the actual dataframe schema when running,
+# because of what is mentioned in ignore_nullability above.
 energy_results_schema = t.StructType(
     [
         t.StructField(Colname.grid_area, t.StringType(), False),
