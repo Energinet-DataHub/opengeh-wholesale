@@ -72,9 +72,6 @@ class TestWhenValidInput:
         # Act
         actual = sut(metering_point_time_series)
 
-        metering_point_time_series.df.show()
-        actual.df.show()
-
         # Assert
         actual_rows = actual.df.collect()
         assert len(actual_rows) == 2
