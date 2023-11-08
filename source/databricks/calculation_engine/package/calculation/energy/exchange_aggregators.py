@@ -14,7 +14,7 @@
 
 import pyspark.sql.functions as F
 
-from package.codelists import MeteringPointType, QuantityQuality
+from package.codelists import MeteringPointType
 from package.constants import Colname
 from . import transformations as T
 from package.calculation.energy.energy_results import EnergyResults
@@ -158,6 +158,9 @@ def aggregate_net_exchange_per_ga(
     )
 
     from_grid_area = "from_grid_area"
+    to_qualities = "to_qualities"
+    from_qualities = "from_qualities"
+
     joined = exchange_to.join(
         exchange_from,
         (exchange_to[Colname.grid_area] == exchange_from[Colname.grid_area])
@@ -167,11 +170,8 @@ def aggregate_net_exchange_per_ga(
         exchange_to[Colname.grid_area],
         exchange_to[Colname.time_window],
         exchange_to[to_sum],
-        F.coalesce(
-            exchange_to[Colname.qualities],
-            exchange_from[Colname.qualities],
-            F.array(F.lit(QuantityQuality.MISSING.value)),
-        ).alias(Colname.qualities),
+        F.coalesce(exchange_to[Colname.qualities], F.array()).alias(to_qualities),
+        F.coalesce(exchange_from[Colname.qualities], F.array()).alias(from_qualities),
         exchange_from[from_sum],
         exchange_from[Colname.grid_area].alias(from_grid_area),
         exchange_from[from_time_window],
@@ -206,8 +206,8 @@ def aggregate_net_exchange_per_ga(
             Colname.grid_area,
             Colname.time_window,
             Colname.sum_quantity,
-            # TODO BJM: Missing the to-grid-area qualities?
-            Colname.qualities,
+            # Include qualities from all to- and from- metering point time series
+            F.array_union(to_qualities, from_qualities).alias(Colname.qualities),
             F.lit(MeteringPointType.EXCHANGE.value).alias(Colname.metering_point_type),
         )
     )
