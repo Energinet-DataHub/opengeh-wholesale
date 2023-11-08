@@ -33,13 +33,17 @@ def execute(
     batch_id: str,
     batch_process_type: ProcessType,
     batch_execution_time_start: datetime,
-    quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
+    metering_point_time_series: DataFrame,
     grid_loss_responsible_df: DataFrame,
 ) -> None:
     calculation_result_writer = EnergyCalculationResultWriter(
         batch_id,
         batch_process_type,
         batch_execution_time_start,
+    )
+
+    quarterly_metering_point_time_series = transformations.transform_hour_to_quarter(
+        metering_point_time_series
     )
 
     _calculate(
