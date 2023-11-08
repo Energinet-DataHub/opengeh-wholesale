@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 5.4.0
+
+- Added `EnergyResultProducedV2` with `EventMinorVersion=0`. We also deleted `EnergyResultProducedV1`, but as it was never used by anyone we only bump our minor version of the package.
+
 ## Version 5.3.0
 
 - Updated `AmountPerChargeResultProducedV1`: `quantity` is not nullable. Bumped `EventMinorVersion` to `3`.
