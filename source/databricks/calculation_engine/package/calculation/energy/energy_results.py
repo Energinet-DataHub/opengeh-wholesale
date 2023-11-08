@@ -32,10 +32,9 @@ class EnergyResults(DataFrameWrapper):
         super().__init__(
             df,
             energy_results_schema,
-            # TODO BJM: These should eventually all be set to False
-            # ignore_nullability should remain True, because we are preforming aggregations,
-            # which could potentially cause overflow and therefor null values,
-            # these null values will get caught in the constraint when we write to storage.
+            # We ignore_nullability because it has turned out to be too hard and even possibly
+            # introducing more errors than solving in order to stay in exact sync with the
+            # logically correct schema.
             ignore_nullability=True,
             ignore_decimal_scale=True,
             ignore_decimal_precision=True,
