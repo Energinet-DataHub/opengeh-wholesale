@@ -78,7 +78,7 @@ module "app_health_checks_ui" {
     "HealthChecksUI__HealthChecks__214__Name" = "Esett Deprecated: Importer Web App - live"
     "HealthChecksUI__HealthChecks__214__Uri"  = "https://app-importer-esettdepr-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/live"
     "HealthChecksUI__HealthChecks__215__Name" = "Esett Deprecated: BiztalkShipper Web App - live"
-    "HealthChecksUI__HealthChecks__215__Uri"  = "https://app-biztalkshipper-esettdepr-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
+    "HealthChecksUI__HealthChecks__215__Uri"  = "https://app-biztalkshipper-esettdepr-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/live"
     "HealthChecksUI__HealthChecks__216__Name" = "Esett Deprecated: Receiver Function - live"
     "HealthChecksUI__HealthChecks__216__Uri"  = "https://func-biztalkreceiver-esettdepr-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
     "HealthChecksUI__HealthChecks__217__Name" = "Esett Deprecated: ChangeObserver Function - live"
