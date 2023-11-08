@@ -98,7 +98,7 @@ def _calculate_grid_loss_or_residual_ga(
         f.array(f.lit(QuantityQuality.CALCULATED.value)).alias(Colname.qualities),
     )
 
-    return EnergyResults(result)
+    return EnergyResults(result, ignore_nullability=True)
 
 
 def calculate_negative_grid_loss(grid_loss: EnergyResults) -> EnergyResults:
@@ -112,7 +112,7 @@ def calculate_negative_grid_loss(grid_loss: EnergyResults) -> EnergyResults:
         Colname.qualities,
     )
 
-    return EnergyResults(result)
+    return EnergyResults(result, ignore_nullability=True)
 
 
 def calculate_positive_grid_loss(grid_loss: EnergyResults) -> EnergyResults:
@@ -125,7 +125,7 @@ def calculate_positive_grid_loss(grid_loss: EnergyResults) -> EnergyResults:
         f.lit(MeteringPointType.CONSUMPTION.value).alias(Colname.metering_point_type),
         Colname.qualities,
     )
-    return EnergyResults(result)
+    return EnergyResults(result, ignore_nullability=True)
 
 
 def calculate_total_consumption(
@@ -173,4 +173,4 @@ def calculate_total_consumption(
         f.lit(MeteringPointType.CONSUMPTION.value).alias(Colname.metering_point_type),
     )
 
-    return EnergyResults(result)
+    return EnergyResults(result, ignore_nullability=True)
