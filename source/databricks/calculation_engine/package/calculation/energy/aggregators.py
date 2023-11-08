@@ -128,7 +128,7 @@ def _aggregate_per_ga_and_es(
         Colname.metering_point_type, lit(market_evaluation_point_type.value)
     )
 
-    return EnergyResults(result, True)
+    return EnergyResults(result, ignore_nullability=True)
 
 
 def aggregate_production_ga_brp(production: EnergyResults) -> EnergyResults:
@@ -167,7 +167,7 @@ def _aggregate_per_ga_and_brp(
         Colname.sum_quantity,
         lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
     )
-    return EnergyResults(result, True)
+    return EnergyResults(result, ignore_nullability=True)
 
 
 def aggregate_production_ga(production: EnergyResults) -> EnergyResults:
@@ -208,4 +208,4 @@ def _aggregate_per_ga(
         lit(market_evaluation_point_type.value).alias(Colname.metering_point_type),
     )
 
-    return EnergyResults(result, True)
+    return EnergyResults(result, ignore_nullability=True)
