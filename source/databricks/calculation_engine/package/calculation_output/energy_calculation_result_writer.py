@@ -42,7 +42,7 @@ class EnergyCalculationResultWriter:
         time_series_type: TimeSeriesType,
         aggregation_level: AggregationLevel,
     ) -> None:
-        f"""
+        """
         Write one or more results to storage.
         """
 
