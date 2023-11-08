@@ -41,8 +41,8 @@ class EnergyResults(DataFrameWrapper):
         )
 
 
-# The nullability is not representative of the actual dataframe schema when running,
-# because of what is mentioned in ignore_nullability above.
+# The nullability and decimal types are not precisely representative of the actual data frame schema at runtime,
+# See comments to the `assert_schema()` invocation.
 energy_results_schema = t.StructType(
     [
         t.StructField(Colname.grid_area, t.StringType(), False),
