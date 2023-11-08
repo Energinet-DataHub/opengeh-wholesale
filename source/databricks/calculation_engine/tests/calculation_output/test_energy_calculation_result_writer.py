@@ -28,9 +28,6 @@ from package.calculation.energy.energy_results import (
 )
 from package.calculation_output import EnergyCalculationResultWriter
 from package.constants import Colname, EnergyResultColumnNames
-from package.calculation_output.energy_calculation_result_writer import (
-    _write_input_schema,
-)
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
 from tests.contract_utils import (
     assert_contract_matches_schema,
