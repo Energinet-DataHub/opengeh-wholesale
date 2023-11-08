@@ -23,7 +23,7 @@ from pyspark.sql.types import (
 
 from package.constants import Colname
 from package.codelists import MeteringPointResolution, QuantityQuality
-from package.calculation.preparation.transformations.hour_to_quarter import (
+from package.calculation.energy.transformations.hour_to_quarter import (
     transform_hour_to_quarter,
 )
 from package.calculation.energy.schemas import (

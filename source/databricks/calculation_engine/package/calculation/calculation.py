@@ -15,6 +15,7 @@
 
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as F
+from . import transformations as T
 
 from package.codelists import ChargeResolution, MeteringPointType, ProcessType
 from package.calculation_output.wholesale_calculation_result_writer import (
@@ -52,8 +53,8 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
         args.time_zone,
     )
 
-    quarterly_metering_point_time_series = (
-        prepared_data_reader.transform_hour_to_quarter(metering_point_time_series)
+    quarterly_metering_point_time_series = T.transform_hour_to_quarter(
+        metering_point_time_series
     )
 
     energy_calculation.execute(

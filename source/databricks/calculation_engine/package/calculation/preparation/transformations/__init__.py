@@ -22,4 +22,3 @@ from .charge_types import (
     get_tariff_charges,
 )
 from .metering_point_time_series import get_metering_point_time_series
-from .hour_to_quarter import transform_hour_to_quarter
