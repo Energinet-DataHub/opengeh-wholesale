@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.EDI.Models;
 
 namespace Energinet.DataHub.Wholesale.EDI.Mappers;

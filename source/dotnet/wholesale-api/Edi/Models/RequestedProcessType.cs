@@ -12,14 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using NodaTime;
+namespace Energinet.DataHub.Wholesale.Edi.Models;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-
-public record EnergyResultFilter(
-    TimeSeriesType TimeSeriesType,
-    Instant StartOfPeriod,
-    Instant EndOfPeriod,
-    string GridArea,
-    string? EnergySupplierId,
-    string? BalanceResponsibleId) : IEnergyResultFilter;
+public enum RequestedProcessType
+{
+    BalanceFixing,
+    PreliminaryAggregation,
+    WholesaleFixing,
+    FirstCorrection,
+    SecondCorrection,
+    ThirdCorrection,
+    LatestCorrection,
+}

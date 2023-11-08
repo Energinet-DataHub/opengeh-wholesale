@@ -17,16 +17,17 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 
-public record EnergyResultQuery(
+public record EnergyResultQueryParameters(
     TimeSeriesType TimeSeriesType,
     Instant StartOfPeriod,
     Instant EndOfPeriod,
     string GridArea,
     string? EnergySupplierId,
     string? BalanceResponsibleId,
-    ProcessType ProcessType) : IEnergyResultFilter
+    ProcessType? ProcessType = null)
+    //:// EnergyResultFilter(TimeSeriesType, StartOfPeriod, EndOfPeriod, GridArea, EnergySupplierId, BalanceResponsibleId)
 {
-    public EnergyResultQuery(IEnergyResultFilter energyResultFilter, ProcessType processType)
+    public EnergyResultQueryParameters(EnergyResultQueryParameters energyResultFilter, ProcessType processType)
         : this(
             energyResultFilter.TimeSeriesType,
             energyResultFilter.StartOfPeriod,

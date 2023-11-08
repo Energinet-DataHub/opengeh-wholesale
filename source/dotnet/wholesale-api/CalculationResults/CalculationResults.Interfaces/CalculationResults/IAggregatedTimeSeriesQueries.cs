@@ -16,11 +16,17 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 
-public interface IRequestCalculationResultRetriever
+public interface IAggregatedTimeSeriesQueries
 {
     /// <summary>
-    /// Get the latest request calculation result for the given query
+    /// Gets the latest result for a given request.
     /// </summary>
     /// <returns>Returns null if no result was found</returns>
-    Task<EnergyResult?> GetRequestCalculationResultAsync(IEnergyResultFilter query, RequestedProcessType requestedProcessType);
+    Task<EnergyResult?> GetAsync(EnergyResultQueryParameters parameters);
+
+    /// <summary>
+    /// Gets the results with the latest correction version
+    /// </summary>
+    /// <returns>Returns null if no result was found</returns>
+    Task<EnergyResult?> GetLatestCorrectionAsync(EnergyResultQueryParameters parameters);
 }

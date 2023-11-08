@@ -22,34 +22,29 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using Energinet.DataHub.Wholesale.Common.Models;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.RequestCalculationResult;
 
-public class RequestCalculationResultQueries : IRequestCalculationResultQueries
+public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
 {
     private readonly IDatabricksSqlStatementClient _sqlStatementClient;
     private readonly DeltaTableOptions _deltaTableOptions;
-    private readonly ILogger<RequestCalculationResultQueries> _logger;
 
-    public RequestCalculationResultQueries(
+    public AggregatedTimeSeriesQueries(
         IDatabricksSqlStatementClient sqlStatementClient,
-        IOptions<DeltaTableOptions> deltaTableOptions,
-        ILogger<RequestCalculationResultQueries> logger)
+        IOptions<DeltaTableOptions> deltaTableOptions)
     {
         _sqlStatementClient = sqlStatementClient;
         _deltaTableOptions = deltaTableOptions.Value;
-        _logger = logger;
     }
 
-    public async Task<EnergyResult?> GetAsync(EnergyResultQuery query)
+    public async Task<EnergyResult?> GetAsync(EnergyResultQueryParameters parameters)
     {
-        var sqlStatement = CreateRequestSql(query);
+        var sqlStatement = CreateRequestSql(parameters);
 
         var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
         SqlResultRow? firstRow = null;
-        var resultCount = 0;
         await foreach (var currentRow in _sqlStatementClient.ExecuteAsync(sqlStatement, sqlStatementParameters: null).ConfigureAwait(false))
         {
             if (firstRow is null)
@@ -58,40 +53,61 @@ public class RequestCalculationResultQueries : IRequestCalculationResultQueries
             var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(currentRow);
 
             timeSeriesPoints.Add(timeSeriesPoint);
-            resultCount++;
         }
 
-        _logger.LogDebug("Fetched {ResultCount} calculation results", resultCount);
         if (firstRow is null)
             return null;
 
-        return EnergyResultFactory.CreateEnergyResult(firstRow, timeSeriesPoints, query.StartOfPeriod, query.EndOfPeriod);
+        return EnergyResultFactory.CreateEnergyResult(firstRow, timeSeriesPoints, parameters.StartOfPeriod, parameters.EndOfPeriod);
     }
 
-    public async Task<ProcessType> GetLatestCorrectionAsync(IEnergyResultFilter query)
+    public async Task<EnergyResult?> GetLatestCorrectionAsync(EnergyResultQueryParameters parameters)
     {
-        var thirdCorrectionExists = await PerformCorrectionVersionExistsQueryAsync(query, ProcessType.ThirdCorrectionSettlement).ConfigureAwait(false);
+        if (parameters.ProcessType != null)
+        {
+            throw new ArgumentException("ProcessType must be null, since it will be overwritten", nameof(parameters));
+        }
+
+        var processType = await GetProcessTypeOfLatestCorrectionAsync(parameters).ConfigureAwait(false);
+
+        var queryWithLatestCorrection = new EnergyResultQueryParameters(parameters, processType);
+
+        return await GetAsync(queryWithLatestCorrection).ConfigureAwait(false);
+    }
+
+    public async Task<ProcessType> GetProcessTypeOfLatestCorrectionAsync(EnergyResultQueryParameters parameters)
+    {
+        var thirdCorrectionExists = await PerformCorrectionVersionExistsQueryAsync(
+            new EnergyResultQueryParameters(
+                parameters,
+                ProcessType.ThirdCorrectionSettlement)).ConfigureAwait(false);
         if (thirdCorrectionExists)
             return ProcessType.ThirdCorrectionSettlement;
 
-        var secondCorrectionExists = await PerformCorrectionVersionExistsQueryAsync(query, ProcessType.SecondCorrectionSettlement).ConfigureAwait(false);
+        var secondCorrectionExists = await PerformCorrectionVersionExistsQueryAsync(
+            new EnergyResultQueryParameters(
+                parameters,
+                ProcessType.SecondCorrectionSettlement)).ConfigureAwait(false);
+
         if (secondCorrectionExists)
             return ProcessType.SecondCorrectionSettlement;
 
         return ProcessType.FirstCorrectionSettlement;
     }
 
-    private Task<bool> PerformCorrectionVersionExistsQueryAsync(IEnergyResultFilter queryFilter, ProcessType processType)
+    private Task<bool> PerformCorrectionVersionExistsQueryAsync(EnergyResultQueryParameters parameters)
     {
-        var sql = CreateSelectCorrectionVersionSql(queryFilter, processType);
+        var sql = CreateSelectCorrectionVersionSql(parameters);
 
         var tableRows = _sqlStatementClient.ExecuteAsync(sql, sqlStatementParameters: null);
 
         return tableRows.AnyAsync().AsTask();
     }
 
-    private string CreateSelectCorrectionVersionSql(IEnergyResultFilter query, ProcessType processType)
+    private string CreateSelectCorrectionVersionSql(EnergyResultQueryParameters parameters)
     {
+        var processType = parameters.ProcessType;
+
         if (processType != ProcessType.FirstCorrectionSettlement
             && processType != ProcessType.SecondCorrectionSettlement
             && processType != ProcessType.ThirdCorrectionSettlement)
@@ -100,15 +116,15 @@ public class RequestCalculationResultQueries : IRequestCalculationResultQueries
         var sql = $@"
             SELECT 1
             FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} t1
-            WHERE {CreateSqlQueryFilters(query, processType)}";
+            WHERE {CreateSqlQueryFilters(parameters)}";
 
         return sql;
     }
 
-    private string CreateRequestSql(EnergyResultQuery query)
+    private string CreateRequestSql(EnergyResultQueryParameters parameters)
     {
         var sql = $@"
-            SELECT {string.Join(", ", SqlColumnNames.Select(columenName => $"t1.{columenName}"))}
+            SELECT {string.Join(", ", SqlColumnNames.Select(columnName => $"t1.{columnName}"))}
             FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} t1
             LEFT JOIN {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} t2
                 ON t1.{EnergyResultColumnNames.Time} = t2.{EnergyResultColumnNames.Time}
@@ -119,30 +135,34 @@ public class RequestCalculationResultQueries : IRequestCalculationResultQueries
                     AND t1.{EnergyResultColumnNames.BatchProcessType} = t2.{EnergyResultColumnNames.BatchProcessType}
                     AND t1.{EnergyResultColumnNames.AggregationLevel} = t2.{EnergyResultColumnNames.AggregationLevel}
             WHERE t2.{EnergyResultColumnNames.Time} IS NULL
-                AND {CreateSqlQueryFilters(query, query.ProcessType)}";
+                AND {CreateSqlQueryFilters(parameters)}";
 
         sql += $@"ORDER BY t1.time";
         return sql;
     }
 
-    private string CreateSqlQueryFilters(IEnergyResultFilter query, ProcessType processType)
+    private string CreateSqlQueryFilters(EnergyResultQueryParameters parameters)
     {
-        var whereClausesSql = $@"t1.{EnergyResultColumnNames.GridArea} IN ({query.GridArea})
-            AND t1.{EnergyResultColumnNames.TimeSeriesType} IN ('{TimeSeriesTypeMapper.ToDeltaTableValue(query.TimeSeriesType)}')
-            AND t1.{EnergyResultColumnNames.Time} >= '{query.StartOfPeriod.ToString()}'
-            AND t1.{EnergyResultColumnNames.Time} < '{query.EndOfPeriod.ToString()}'
-            AND t1.{EnergyResultColumnNames.AggregationLevel} = '{AggregationLevelMapper.ToDeltaTableValue(query.TimeSeriesType, query.EnergySupplierId, query.BalanceResponsibleId)}'
-            AND t1.{EnergyResultColumnNames.BatchProcessType} = '{ProcessTypeMapper.ToDeltaTableValue(processType)}'
+        var whereClausesSql = $@"t1.{EnergyResultColumnNames.GridArea} IN ({parameters.GridArea})
+            AND t1.{EnergyResultColumnNames.TimeSeriesType} IN ('{TimeSeriesTypeMapper.ToDeltaTableValue(parameters.TimeSeriesType)}')
+            AND t1.{EnergyResultColumnNames.Time} >= '{parameters.StartOfPeriod.ToString()}'
+            AND t1.{EnergyResultColumnNames.Time} < '{parameters.EndOfPeriod.ToString()}'
+            AND t1.{EnergyResultColumnNames.AggregationLevel} = '{AggregationLevelMapper.ToDeltaTableValue(parameters.TimeSeriesType, parameters.EnergySupplierId, parameters.BalanceResponsibleId)}'
             ";
-
-        if (query.EnergySupplierId != null)
+        if (parameters.ProcessType != null)
         {
-            whereClausesSql += $@"AND t1.{EnergyResultColumnNames.EnergySupplierId} = '{query.EnergySupplierId}'";
+            whereClausesSql +=
+                $@"AND t1.{EnergyResultColumnNames.BatchProcessType} = '{ProcessTypeMapper.ToDeltaTableValue((ProcessType)parameters.ProcessType)}'";
         }
 
-        if (query.BalanceResponsibleId != null)
+        if (parameters.EnergySupplierId != null)
         {
-            whereClausesSql += $@"AND t1.{EnergyResultColumnNames.BalanceResponsibleId} = '{query.BalanceResponsibleId}'";
+            whereClausesSql += $@"AND t1.{EnergyResultColumnNames.EnergySupplierId} = '{parameters.EnergySupplierId}'";
+        }
+
+        if (parameters.BalanceResponsibleId != null)
+        {
+            whereClausesSql += $@"AND t1.{EnergyResultColumnNames.BalanceResponsibleId} = '{parameters.BalanceResponsibleId}'";
         }
 
         return whereClausesSql;

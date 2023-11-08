@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Application.RequestCalculationResult;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.Common.Models;
+using Energinet.DataHub.Wholesale.Edi.Mappers;
+using Energinet.DataHub.Wholesale.Edi.Models;
 using FluentAssertions;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Mappers;
+namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Mappers;
 
 public class ProcessTypeMapperTests
 {
