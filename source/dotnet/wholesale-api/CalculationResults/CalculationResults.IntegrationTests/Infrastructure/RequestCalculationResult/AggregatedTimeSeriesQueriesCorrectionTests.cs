@@ -18,8 +18,8 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.RequestCalcu
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.Common.Databricks.Options;
-using Energinet.DataHub.Wholesale.Common.Models;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -36,12 +36,9 @@ public class AggregatedTimeSeriesQueriesCorrectionTests : IClassFixture<Databric
     private const string FirstQuantityFirstCorrection = "1.222";
     private const string FirstQuantitySecondCorrection = "1.333";
     private const string FirstQuantityThirdCorrection = "1.444";
-    private const string SecondQuantity = "2.222";
     private const string SecondQuantityFirstCorrection = "2.333";
     private const string SecondQuantitySecondCorrection = "2.444";
     private const string SecondQuantityThirdCorrection = "2.555";
-    private const string ThirdQuantity = "3.333";
-    private const string FourthQuantity = "4.444";
     private const string FourthQuantityThirdCorrection = "4.555";
     private const string GridAreaCode = "301";
     private readonly DatabricksSqlStatementApiFixture _fixture;

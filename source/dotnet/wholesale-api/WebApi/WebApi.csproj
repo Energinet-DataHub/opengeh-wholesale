@@ -26,8 +26,6 @@ limitations under the License.
   <ItemGroup>
     <PackageReference Include="Asp.Versioning.Mvc" Version="7.1.0" />
     <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="7.1.0" />
-    <PackageReference Include="Asp.Versioning.Mvc" Version="7.1.0" />
-    <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="7.1.0" />
     <PackageReference Include="AspNetCore.HealthChecks.AzureServiceBus" Version="7.0.0" />
     <PackageReference Include="Energinet.DataHub.Core.App.Common.Security" Version="8.1.1" />
     <PackageReference Include="Energinet.DataHub.Core.App.WebApp" Version="8.1.1" />
@@ -49,13 +47,11 @@ limitations under the License.
   <ItemGroup>
     <ProjectReference Include="..\Batches\Batches.Infrastructure\Batches.Infrastructure.csproj" />
     <ProjectReference Include="..\CalculationResults\CalculationResults.Application\CalculationResults.Application.csproj" />
-    <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\CalculationResults\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" />
-    <ProjectReference Include="..\Common.Infrastructure\Common.Infrastructure.csproj" />
-    <ProjectReference Include="..\Common.Interfaces\Common.Interfaces.csproj" />
     <ProjectReference Include="..\Events\Events.Infrastructure\Events.Infrastructure.csproj" />
     <ProjectReference Include="..\Common.Infrastructure\Common.Infrastructure.csproj" />
     <ProjectReference Include="..\Common.Interfaces\Common.Interfaces.csproj" />
+    <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>
 
 </Project>
