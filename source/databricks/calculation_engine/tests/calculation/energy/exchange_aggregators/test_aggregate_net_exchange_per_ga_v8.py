@@ -58,12 +58,12 @@ def quarterly_metering_point_time_series(
             Colname.from_grid_area: [],
             Colname.metering_point_id: [],
             Colname.metering_point_type: [],
-            Colname.observation_time: [],
             Colname.quantity: [],
             Colname.quality: [],
             Colname.energy_supplier_id: [],
             Colname.balance_responsible_id: [],
             Colname.settlement_method: [],
+            Colname.time_window: [],
         }
     )
 
