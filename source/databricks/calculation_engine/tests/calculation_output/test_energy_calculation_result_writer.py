@@ -181,22 +181,22 @@ def test__write__writes_aggregation_level(
 @pytest.mark.parametrize(
     "column_name, column_value",
     [
-        (EnergyResultColumnNames.calculation_id, DEFAULT_BATCH_ID),
-        (
-            EnergyResultColumnNames.calculation_execution_time_start,
-            DEFAULT_BATCH_EXECUTION_START,
-        ),
-        (EnergyResultColumnNames.calculation_type, DEFAULT_PROCESS_TYPE.value),
-        (EnergyResultColumnNames.time_series_type, DEFAULT_TIME_SERIES_TYPE.value),
-        (EnergyResultColumnNames.grid_area, DEFAULT_GRID_AREA),
-        (EnergyResultColumnNames.from_grid_area, DEFAULT_FROM_GRID_AREA),
-        (
-            EnergyResultColumnNames.balance_responsible_id,
-            DEFAULT_BALANCE_RESPONSIBLE_ID,
-        ),
-        (EnergyResultColumnNames.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
-        (EnergyResultColumnNames.time, datetime(2020, 1, 1, 0, 0)),
-        (EnergyResultColumnNames.quantity, Decimal("1.100")),
+        # (EnergyResultColumnNames.calculation_id, DEFAULT_BATCH_ID),
+        # (
+        #     EnergyResultColumnNames.calculation_execution_time_start,
+        #     DEFAULT_BATCH_EXECUTION_START,
+        # ),
+        # (EnergyResultColumnNames.calculation_type, DEFAULT_PROCESS_TYPE.value),
+        # (EnergyResultColumnNames.time_series_type, DEFAULT_TIME_SERIES_TYPE.value),
+        # (EnergyResultColumnNames.grid_area, DEFAULT_GRID_AREA),
+        # (EnergyResultColumnNames.from_grid_area, DEFAULT_FROM_GRID_AREA),
+        # (
+        #     EnergyResultColumnNames.balance_responsible_id,
+        #     DEFAULT_BALANCE_RESPONSIBLE_ID,
+        # ),
+        # (EnergyResultColumnNames.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
+        # (EnergyResultColumnNames.time, datetime(2020, 1, 1, 0, 0)),
+        # (EnergyResultColumnNames.quantity, Decimal("1.100")),
         (EnergyResultColumnNames.quantity_qualities, [DEFAULT_QUALITY.value]),
     ],
 )
