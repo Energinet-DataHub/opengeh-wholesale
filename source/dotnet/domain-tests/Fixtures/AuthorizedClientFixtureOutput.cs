@@ -61,13 +61,14 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
         public async Task InitializeAsync()
         {
-            BalanceFixingCalculationId = await StartBalanceFixingCalculation();
-            WholesaleFixingCalculationId = await StartWholesaleFixingCalculation();
-
-            BalanceFixingCalculationIsComplete = await WaitForCalculationToComplete(BalanceFixingCalculationId);
-            WholesaleFixingCalculationIsComplete = await WaitForCalculationToComplete(WholesaleFixingCalculationId);
-
-            await CollectResultsFromServiceBus();
+            // All tasks are created/started at the same time.
+            // We could wait to start the message receiver loop until all calculations are completed,
+            // but by starting it with the calculations it can start reading messages from any completed
+            // calculation right away.
+            await Task.WhenAll(
+                HandleBalanceFixingCalculation(calculationTimeLimit: TimeSpan.FromMinutes(15)),
+                HandleWholesaleFixingCalculation(calculationTimeLimit: TimeSpan.FromMinutes(25)),
+                CollectResultsFromServiceBus(loopTimeLimit: TimeSpan.FromMinutes(30)));
         }
 
         private static Xunit.Sdk.DiagnosticMessage CreateDiagnosticMessage(string message)
@@ -75,7 +76,29 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             return new Xunit.Sdk.DiagnosticMessage($"LOOK AT ME: {message}");
         }
 
-        private async Task<Guid> StartBalanceFixingCalculation()
+        private async Task HandleBalanceFixingCalculation(TimeSpan calculationTimeLimit)
+        {
+            BalanceFixingCalculationId = await StartBalanceFixingCalculation();
+            _diagnosticMessageSink.OnMessage(CreateDiagnosticMessage($"Calculation for BalanceFixing with id '{BalanceFixingCalculationId}' started."));
+
+            var stopwatch = Stopwatch.StartNew();
+            BalanceFixingCalculationIsComplete = await WaitForCalculationToComplete(BalanceFixingCalculationId, calculationTimeLimit);
+            stopwatch.Stop();
+            _diagnosticMessageSink.OnMessage(CreateDiagnosticMessage($"Calculation for BalanceFixing completed. Calculation took '{stopwatch.Elapsed}'."));
+        }
+
+        private async Task HandleWholesaleFixingCalculation(TimeSpan calculationTimeLimit)
+        {
+            WholesaleFixingCalculationId = await StartWholesaleFixingCalculation();
+            _diagnosticMessageSink.OnMessage(CreateDiagnosticMessage($"Calculation for WholesaleFixing with id '{WholesaleFixingCalculationId}' started."));
+
+            var stopwatch = Stopwatch.StartNew();
+            WholesaleFixingCalculationIsComplete = await WaitForCalculationToComplete(WholesaleFixingCalculationId, calculationTimeLimit);
+            stopwatch.Stop();
+            _diagnosticMessageSink.OnMessage(CreateDiagnosticMessage($"Calculation for WholesaleFixing completed. Calculation took '{stopwatch.Elapsed}'."));
+        }
+
+        private Task<Guid> StartBalanceFixingCalculation()
         {
             var startDate = new DateTimeOffset(2022, 1, 11, 23, 0, 0, TimeSpan.Zero);
             var endDate = new DateTimeOffset(2022, 1, 12, 23, 0, 0, TimeSpan.Zero);
@@ -86,12 +109,10 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                 StartDate = startDate,
                 EndDate = endDate,
             };
-            var calculationId = await _wholesaleClient.CreateBatchAsync(batchRequestDto);
-            _diagnosticMessageSink.OnMessage(CreateDiagnosticMessage($"Calculation for BalanceFixing with id '{calculationId}' started."));
-            return calculationId;
+            return _wholesaleClient.CreateBatchAsync(batchRequestDto);
         }
 
-        private async Task<Guid> StartWholesaleFixingCalculation()
+        private Task<Guid> StartWholesaleFixingCalculation()
         {
             var startDate = new DateTimeOffset(2023, 1, 31, 23, 0, 0, TimeSpan.Zero);
             var endDate = new DateTimeOffset(2023, 2, 28, 23, 0, 0, TimeSpan.Zero);
@@ -102,32 +123,25 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                 StartDate = startDate,
                 EndDate = endDate,
             };
-            var calculationId = await _wholesaleClient.CreateBatchAsync(batchRequestDto);
-            _diagnosticMessageSink.OnMessage(CreateDiagnosticMessage($"Calculation for WholesaleFixing with id '{calculationId}' started."));
-            return calculationId;
+            return _wholesaleClient.CreateBatchAsync(batchRequestDto);
         }
 
-        private async Task<bool> WaitForCalculationToComplete(Guid calculationId)
+        private async Task<bool> WaitForCalculationToComplete(Guid calculationId, TimeSpan timeLimit)
         {
-            var defaultTimeout = TimeSpan.FromMinutes(15);
-            var defaultDelay = TimeSpan.FromSeconds(30);
-            var stopwatch = Stopwatch.StartNew();
+            var delay = TimeSpan.FromSeconds(30);
             var isCompleted = await Awaiter.TryWaitUntilConditionAsync(
                 async () =>
                 {
                     var batchResult = await _wholesaleClient.GetBatchAsync(calculationId);
                     return batchResult?.ExecutionState == BatchState.Completed;
                 },
-                defaultTimeout,
-                defaultDelay);
-            stopwatch.Stop();
-            _diagnosticMessageSink.OnMessage(CreateDiagnosticMessage($"Calculation with id '{calculationId}' completed. Calculation took '{stopwatch.Elapsed}'."));
+                timeLimit,
+                delay);
             return isCompleted;
         }
 
-        private async Task CollectResultsFromServiceBus()
+        private async Task CollectResultsFromServiceBus(TimeSpan loopTimeLimit)
         {
-            var loopTimeLimit = TimeSpan.FromMinutes(15);
             using var cts = new CancellationTokenSource(loopTimeLimit);
 
             var stopwatch = Stopwatch.StartNew();
