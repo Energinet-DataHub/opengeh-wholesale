@@ -58,12 +58,12 @@ def quarterly_metering_point_time_series(
             Colname.from_grid_area: [],
             Colname.metering_point_id: [],
             Colname.metering_point_type: [],
-            Colname.observation_time: [],
             Colname.quantity: [],
             Colname.quality: [],
             Colname.energy_supplier_id: [],
             Colname.balance_responsible_id: [],
             Colname.settlement_method: [],
+            Colname.time_window: [],
         }
     )
 
@@ -203,7 +203,6 @@ def add_row_of_data(
         Colname.from_grid_area: from_grid_area,
         Colname.metering_point_id: "metering-point-id",
         Colname.metering_point_type: point_type,
-        Colname.observation_time: timestamp,
         Colname.quantity: quantity,
         Colname.quality: QuantityQuality.ESTIMATED.value,
         Colname.energy_supplier_id: "energy-supplier-id",
