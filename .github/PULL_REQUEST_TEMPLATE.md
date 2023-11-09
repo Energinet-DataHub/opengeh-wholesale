@@ -7,4 +7,5 @@ Please complete and remove this TODO section before entering PR ready for review
 - [ ] Title: Follow [this guide](https://github.com/Mech0z/GitHubGuidelines)
 - [ ] Write tests
 - [ ] Update documentation
+- [ ] Update [event catalog](https://energinet.atlassian.net/wiki/spaces/D3/pages/555581556/Event+catalog) if there are relevant changes to integration events
 - [ ] Inform team Outlaws if there are relevant C4 changes

@@ -17,7 +17,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatement
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.Fixtures;
-using Energinet.DataHub.Wholesale.Common.Models;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using NodaTime;
@@ -32,7 +32,7 @@ public class WholesaleResultFactoryTests
     private readonly Instant _defaultPeriodStart = Instant.FromUtc(2022, 5, 1, 0, 0);
     private readonly Instant _defaultPeriodEnd = Instant.FromUtc(2022, 5, 2, 0, 0);
     private static readonly Instant _defaultTime = Instant.FromUtc(2022, 5, 1, 1, 0);
-    private readonly IEnumerable<QuantityQuality> _quantityQualities = new List<QuantityQuality> { QuantityQuality.Measured,  QuantityQuality.Missing };
+    private readonly IEnumerable<QuantityQuality> _quantityQualities = new List<QuantityQuality> { QuantityQuality.Measured, QuantityQuality.Missing };
     private readonly List<WholesaleTimeSeriesPoint> _defaultWholesaleTimeSeriesPoints = new()
     {
         new WholesaleTimeSeriesPoint(_defaultTime.ToDateTimeOffset(), 1.0m, new List<QuantityQuality> { QuantityQuality.Measured,  QuantityQuality.Missing }, DefaultPrice, DefaultAmount),
@@ -41,30 +41,30 @@ public class WholesaleResultFactoryTests
     [Fact]
     public void CreateWholesaleResult_ReturnExpectedWholesaleResult()
     {
-         // Arrange
-         var row = CreateDefaultSqlResultRow();
+        // Arrange
+        var row = CreateDefaultSqlResultRow();
 
-         // Act
-         var actual = WholesaleResultFactory.CreateWholesaleResult(row, _defaultWholesaleTimeSeriesPoints, _defaultPeriodStart, _defaultPeriodEnd);
+        // Act
+        var actual = WholesaleResultFactory.CreateWholesaleResult(row, _defaultWholesaleTimeSeriesPoints, _defaultPeriodStart, _defaultPeriodEnd);
 
-         // Assert
-         using var assertionScope = new AssertionScope();
-         actual.ChargeType.Should().Be(ChargeType.Tariff);
-         actual.ChargeCode.Should().Be("chargeCode");
-         actual.ChargeOwnerId.Should().Be("chargeOwnerId");
-         actual.EnergySupplierId.Should().Be("energySupplierId");
-         actual.GridArea.Should().Be("504");
-         actual.Id.Should().Be(Guid.Parse("aaaaaaaa-bbbb-cccc-dddd-0123456789ab"));
-         actual.AmountType.Should().Be(AmountType.AmountPerCharge);
-         actual.IsTax.Should().BeTrue();
-         actual.ChargeResolution.Should().Be(ChargeResolution.Hour);
-         actual.MeteringPointType.Should().Be(MeteringPointType.Consumption);
-         actual.SettlementMethod.Should().Be(SettlementMethod.Flex);
-         actual.PeriodEnd.Should().Be(_defaultPeriodEnd);
-         actual.PeriodStart.Should().Be(_defaultPeriodStart);
-         actual.CalculationType.Should().Be(ProcessType.WholesaleFixing);
-         actual.QuantityUnit.Should().Be(QuantityUnit.Kwh);
-         actual.TimeSeriesPoints.Should().HaveCount(1);
+        // Assert
+        using var assertionScope = new AssertionScope();
+        actual.ChargeType.Should().Be(ChargeType.Tariff);
+        actual.ChargeCode.Should().Be("chargeCode");
+        actual.ChargeOwnerId.Should().Be("chargeOwnerId");
+        actual.EnergySupplierId.Should().Be("energySupplierId");
+        actual.GridArea.Should().Be("504");
+        actual.Id.Should().Be(Guid.Parse("aaaaaaaa-bbbb-cccc-dddd-0123456789ab"));
+        actual.AmountType.Should().Be(AmountType.AmountPerCharge);
+        actual.IsTax.Should().BeTrue();
+        actual.Resolution.Should().Be(Resolution.Hour);
+        actual.MeteringPointType.Should().Be(MeteringPointType.Consumption);
+        actual.SettlementMethod.Should().Be(SettlementMethod.Flex);
+        actual.PeriodEnd.Should().Be(_defaultPeriodEnd);
+        actual.PeriodStart.Should().Be(_defaultPeriodStart);
+        actual.CalculationType.Should().Be(ProcessType.WholesaleFixing);
+        actual.QuantityUnit.Should().Be(QuantityUnit.Kwh);
+        actual.TimeSeriesPoints.Should().HaveCount(1);
     }
 
     private static TestSqlResultRow CreateDefaultSqlResultRow()
@@ -81,7 +81,7 @@ public class WholesaleResultFactoryTests
             new(WholesaleResultColumnNames.ChargeType, "tariff"),
             new(WholesaleResultColumnNames.ChargeOwnerId, "chargeOwnerId"),
             new(WholesaleResultColumnNames.QuantityUnit, "kWh"),
-            new(WholesaleResultColumnNames.ChargeResolution, "PT1H"),
+            new(WholesaleResultColumnNames.Resolution, "PT1H"),
             new(WholesaleResultColumnNames.MeteringPointType, "consumption"),
             new(WholesaleResultColumnNames.SettlementMethod, "flex"),
             new(WholesaleResultColumnNames.IsTax, "true"),

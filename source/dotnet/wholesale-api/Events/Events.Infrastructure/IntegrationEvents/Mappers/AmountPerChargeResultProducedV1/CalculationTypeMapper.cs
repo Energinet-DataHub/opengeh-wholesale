@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using EventCalculationType = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.AmountPerChargeResultProducedV1.Types.CalculationType;
-using ModelCalculationType = Energinet.DataHub.Wholesale.Common.Models.ProcessType;
+using ModelCalculationType = Energinet.DataHub.Wholesale.Common.Interfaces.Models.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.AmountPerChargeResultProducedV1;
 

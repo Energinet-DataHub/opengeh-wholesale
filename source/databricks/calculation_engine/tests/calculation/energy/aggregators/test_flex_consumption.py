@@ -19,13 +19,6 @@ from typing import Callable
 import pandas as pd
 import pytest
 from pyspark.sql import SparkSession
-from pyspark.sql.types import (
-    StructType,
-    StringType,
-    DecimalType,
-    TimestampType,
-    ArrayType,
-)
 
 from package.calculation.energy.aggregators import (
     aggregate_flex_consumption_ga_es,
@@ -34,10 +27,12 @@ from package.calculation.energy.aggregators import (
 )
 from package.calculation.energy.energy_results import (
     EnergyResults,
+    energy_results_schema,
 )
 from package.codelists import (
     MeteringPointType,
     QuantityQuality,
+    SettlementMethod,
 )
 from package.constants import Colname
 
@@ -48,39 +43,20 @@ default_obs_time = datetime.strptime(
 
 
 @pytest.fixture(scope="module")
-def agg_flex_consumption_schema() -> StructType:
-    return (
-        StructType()
-        .add(Colname.grid_area, StringType(), False)
-        .add(Colname.balance_responsible_id, StringType())
-        .add(Colname.energy_supplier_id, StringType())
-        .add(
-            Colname.time_window,
-            StructType()
-            .add(Colname.start, TimestampType())
-            .add(Colname.end, TimestampType()),
-            False,
-        )
-        .add(Colname.sum_quantity, DecimalType(18, 3))
-        .add(Colname.qualities, ArrayType(StringType(), False), False)
-        .add(Colname.metering_point_type, StringType())
-    )
-
-
-@pytest.fixture(scope="module")
-def test_data_factory(
-    spark: SparkSession, agg_flex_consumption_schema: StructType
-) -> Callable[..., EnergyResults]:
+def test_data_factory(spark: SparkSession) -> Callable[..., EnergyResults]:
     def factory() -> EnergyResults:
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: [],
+                Colname.to_grid_area: [],
+                Colname.from_grid_area: [],
                 Colname.balance_responsible_id: [],
                 Colname.energy_supplier_id: [],
                 Colname.time_window: [],
                 Colname.sum_quantity: [],
                 Colname.qualities: [],
                 Colname.metering_point_type: [],
+                Colname.settlement_method: [],
             }
         )
         for i in range(3):
@@ -89,6 +65,8 @@ def test_data_factory(
                     pandas_df = pandas_df.append(
                         {
                             Colname.grid_area: str(i),
+                            Colname.to_grid_area: None,
+                            Colname.from_grid_area: None,
                             Colname.balance_responsible_id: str(j),
                             Colname.energy_supplier_id: str(k),
                             Colname.time_window: {
@@ -100,10 +78,11 @@ def test_data_factory(
                             Colname.metering_point_type: [
                                 MeteringPointType.CONSUMPTION.value
                             ],
+                            Colname.settlement_method: [None],
                         },
                         ignore_index=True,
                     )
-        df = spark.createDataFrame(pandas_df, schema=agg_flex_consumption_schema)
+        df = spark.createDataFrame(pandas_df, schema=energy_results_schema)
         return EnergyResults(df)
 
     return factory

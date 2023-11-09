@@ -41,7 +41,7 @@ public class WholesaleResultFactory
         var chargeOwnerId = sqlResultRow[WholesaleResultColumnNames.ChargeOwnerId];
         var isTax = sqlResultRow[WholesaleResultColumnNames.IsTax];
         var quantityUnit = sqlResultRow[WholesaleResultColumnNames.QuantityUnit];
-        var chargeResolution = sqlResultRow[WholesaleResultColumnNames.ChargeResolution];
+        var resolution = sqlResultRow[WholesaleResultColumnNames.Resolution];
         var meteringPointType = sqlResultRow[WholesaleResultColumnNames.MeteringPointType];
         var settlementMethod = sqlResultRow[WholesaleResultColumnNames.SettlementMethod];
 
@@ -59,7 +59,7 @@ public class WholesaleResultFactory
             chargeOwnerId,
             SqlResultValueConverters.ToBool(isTax),
             QuantityUnitMapper.FromDeltaTableValue(quantityUnit),
-            ChargeResolutionMapper.FromDeltaTableValue(chargeResolution),
+            ResolutionMapper.FromDeltaTableValue(resolution),
             MeteringPointTypeMapper.FromDeltaTableValue(meteringPointType),
             SettlementMethodMapper.FromDeltaTableValue(settlementMethod),
             wholesaleTimeSeriesPoints);

@@ -7,21 +7,18 @@
     <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.16.0" />
     <PackageReference Include="CsvHelper" Version="30.0.1" />
     <PackageReference Include="Energinet.DataHub.Core.Databricks.SqlStatementExecution" Version="7.0.1" />
-    <PackageReference Include="Energinet.DataHub.Core.JsonSerialization" Version="2.2.8" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="NodaTime" Version="3.1.9" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
-    <PackageReference Update="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.4">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.7.30">
-      <PrivateAssets>all</PrivateAssets>
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.7.30">
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.7.30">
+    <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Batches\Batches.Interfaces\Batches.Interfaces.csproj" />
     <ProjectReference Include="..\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
+    <ProjectReference Include="..\..\Common.Infrastructure\Common.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Common.Interfaces\Common.Interfaces.csproj" />
   </ItemGroup>
 </Project>

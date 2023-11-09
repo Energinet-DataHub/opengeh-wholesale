@@ -14,31 +14,60 @@
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
-using Energinet.DataHub.Wholesale.Common.Models;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Types;
+using Energinet.DataHub.Wholesale.Events.UnitTests.Fixtures;
 using FluentAssertions;
 using Google.Protobuf.WellKnownTypes;
-using NodaTime;
-using Test.Core;
 using Xunit;
-using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.Factories;
 
 public class AmountPerChargeResultProducedV1FactoryTests
 {
-    private readonly Guid _calculationId = Guid.NewGuid();
-    private readonly Guid _resultId = Guid.NewGuid();
-    private readonly Instant _periodStart = SystemClock.Instance.GetCurrentInstant();
-    private readonly Instant _periodEnd = SystemClock.Instance.GetCurrentInstant();
-    private readonly string _gridArea = "543";
-    private readonly string _energySupplierId = "es_id";
-    private readonly string _chargeCode = "charge_code";
-    private readonly string _chargeOwnerId = "charge_owner_id";
-    private readonly ChargeType _chargeType = ChargeType.Tariff;
-    private readonly bool _isTax = true;
+    [Theory]
+    [InlineData(AmountType.AmountPerCharge, true)]
+    [InlineData(AmountType.MonthlyAmountPerCharge, false)]
+    [InlineData(AmountType.TotalMonthlyAmount, false)]
+    public void CanCreate_WhenAmountType_ReturnsExpectedValue(
+        AmountType amountType, bool expected)
+    {
+        // Arrange
+        var wholesaleResult = new WholesaleResultBuilder()
+            .WithAmountType(amountType)
+            .WithResolution(Resolution.Day)
+            .Build();
+        var sut = new AmountPerChargeResultProducedV1Factory();
+
+        // Act
+        var actual = sut.CanCreate(wholesaleResult);
+
+        // Assert
+        actual.Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData(Resolution.Hour, true)]
+    [InlineData(Resolution.Day, true)]
+    [InlineData(Resolution.Month, false)]
+    public void CanCreate_WhenResolution_ReturnsExpectedValue(
+        Resolution resolution, bool expected)
+    {
+        // Arrange
+        var wholesaleResult = new WholesaleResultBuilder()
+            .WithAmountType(AmountType.AmountPerCharge)
+            .WithResolution(resolution)
+            .Build();
+        var sut = new AmountPerChargeResultProducedV1Factory();
+
+        // Act
+        var actual = sut.CanCreate(wholesaleResult);
+
+        // Assert
+        actual.Should().Be(expected);
+    }
 
     [Theory]
     [InlineAutoMoqData]
@@ -46,7 +75,7 @@ public class AmountPerChargeResultProducedV1FactoryTests
         AmountPerChargeResultProducedV1Factory sut)
     {
         // Arrange
-        var wholesaleResult = CreateWholesaleResult();
+        var wholesaleResult = new WholesaleResultBuilder().Build();
         var expected = CreateExpected(wholesaleResult);
 
         // Act
@@ -63,7 +92,9 @@ public class AmountPerChargeResultProducedV1FactoryTests
     {
         // Arrange
         var sut = new AmountPerChargeResultProducedV1Factory();
-        var wholesaleResult = CreateWholesaleResult(calculationType);
+        var wholesaleResult = new WholesaleResultBuilder()
+            .WithCalculationType(calculationType)
+            .Build();
 
         // Act
         var act = () => sut.Create(wholesaleResult);
@@ -72,45 +103,12 @@ public class AmountPerChargeResultProducedV1FactoryTests
         act.Should().Throw<ArgumentOutOfRangeException>();
     }
 
-    private WholesaleResult CreateWholesaleResult(ProcessType calculationType = ProcessType.FirstCorrectionSettlement)
-    {
-        var qualities = new List<QuantityQuality>
-        {
-            QuantityQuality.Estimated,
-            QuantityQuality.Measured,
-        };
-
-        return new WholesaleResult(
-            _resultId,
-            _calculationId,
-            calculationType,
-            _periodStart,
-            _periodEnd,
-            _gridArea,
-            _energySupplierId,
-            AmountType.AmountPerCharge,
-            _chargeCode,
-            _chargeType,
-            _chargeOwnerId,
-            _isTax,
-            QuantityUnit.Kwh,
-            ChargeResolution.Hour,
-            CalculationResults.Interfaces.CalculationResults.Model.MeteringPointType.Production,
-            null,
-            new WholesaleTimeSeriesPoint[]
-            {
-                new(new DateTime(2021, 1, 1), 1, qualities, 2, 3),
-                new(new DateTime(2021, 1, 1), 2, qualities, 4, 5),
-                new(new DateTime(2021, 1, 1), 3, qualities, 6, 7),
-            });
-    }
-
     private static AmountPerChargeResultProducedV1 CreateExpected(WholesaleResult wholesaleResult)
     {
         var amountPerChargeResultProducedV1 = new AmountPerChargeResultProducedV1()
         {
             CalculationId = wholesaleResult.CalculationId.ToString(),
-            CalculationType = AmountPerChargeResultProducedV1.Types.CalculationType.FirstCorrectionSettlement,
+            CalculationType = AmountPerChargeResultProducedV1.Types.CalculationType.WholesaleFixing,
             QuantityUnit = AmountPerChargeResultProducedV1.Types.QuantityUnit.Kwh,
             PeriodStartUtc = wholesaleResult.PeriodStart.ToTimestamp(),
             PeriodEndUtc = wholesaleResult.PeriodEnd.ToTimestamp(),
@@ -128,7 +126,6 @@ public class AmountPerChargeResultProducedV1FactoryTests
 
         var qualities = new List<AmountPerChargeResultProducedV1.Types.QuantityQuality>
         {
-            AmountPerChargeResultProducedV1.Types.QuantityQuality.Estimated,
             AmountPerChargeResultProducedV1.Types.QuantityQuality.Measured,
         };
 

@@ -47,9 +47,9 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
         public List<CalculationResultCompleted> CalculationResultCompletedFromWholesaleFixing { get; } = new();
 
-        public List<EnergyResultProducedV1> EnergyResultProducedFromBalanceFixing { get; } = new();
+        public List<EnergyResultProducedV2> EnergyResultProducedFromBalanceFixing { get; } = new();
 
-        public List<EnergyResultProducedV1> EnergyResultProducedFromWholesaleFixing { get; } = new();
+        public List<EnergyResultProducedV2> EnergyResultProducedFromWholesaleFixing { get; } = new();
 
         public List<AmountPerChargeResultProducedV1> AmountPerChargeResultProduced { get; } = new();
 
@@ -157,8 +157,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                     else if (calculationResultCompleted.BatchId == WholesaleFixingCalculationId.ToString())
                         CalculationResultCompletedFromWholesaleFixing.Add(calculationResultCompleted);
                     break;
-                case EnergyResultProducedV1.EventName:
-                    var energyResultProduced = EnergyResultProducedV1.Parser.ParseFrom(data);
+                case EnergyResultProducedV2.EventName:
+                    var energyResultProduced = EnergyResultProducedV2.Parser.ParseFrom(data);
                     if (energyResultProduced.CalculationId == BalanceFixingCalculationId.ToString())
                         EnergyResultProducedFromBalanceFixing.Add(energyResultProduced);
                     else if (energyResultProduced.CalculationId == WholesaleFixingCalculationId.ToString())

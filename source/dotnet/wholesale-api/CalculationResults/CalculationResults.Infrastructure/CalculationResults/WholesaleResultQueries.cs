@@ -19,7 +19,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
-using Energinet.DataHub.Wholesale.Common.Databricks.Options;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NodaTime;
@@ -104,7 +104,7 @@ ORDER BY {WholesaleResultColumnNames.CalculationResultId}, {WholesaleResultColum
         WholesaleResultColumnNames.ChargeType,
         WholesaleResultColumnNames.ChargeCode,
         WholesaleResultColumnNames.ChargeOwnerId,
-        WholesaleResultColumnNames.ChargeResolution,
+        WholesaleResultColumnNames.Resolution,
         WholesaleResultColumnNames.IsTax,
         WholesaleResultColumnNames.QuantityUnit,
         WholesaleResultColumnNames.Time,
