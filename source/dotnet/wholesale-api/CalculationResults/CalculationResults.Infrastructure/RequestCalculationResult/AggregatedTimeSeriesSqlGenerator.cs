@@ -88,10 +88,10 @@ public class AggregatedTimeSeriesSqlGenerator
 
     private string[] SqlColumnNames { get; } =
     {
-        EnergyResultColumnNames.GridArea, EnergyResultColumnNames.FromGridArea,
+        EnergyResultColumnNames.BatchId, EnergyResultColumnNames.GridArea, EnergyResultColumnNames.FromGridArea,
         EnergyResultColumnNames.TimeSeriesType, EnergyResultColumnNames.EnergySupplierId,
         EnergyResultColumnNames.BalanceResponsibleId, EnergyResultColumnNames.Time,
         EnergyResultColumnNames.Quantity, EnergyResultColumnNames.QuantityQualities,
-        EnergyResultColumnNames.BatchProcessType,
+        EnergyResultColumnNames.CalculationResultId, EnergyResultColumnNames.BatchProcessType,
     };
 }
