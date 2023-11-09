@@ -7,8 +7,9 @@ module "apim_timeseriesapi" {
   environment_instance       = var.environment_instance
   api_management_name        = data.azurerm_key_vault_secret.apim_instance_name.value
   resource_group_name        = data.azurerm_key_vault_secret.apim_instance_resource_group_name.value
-  display_name               = "TimeSeriesApi"
   authorization_server_name  = data.azurerm_key_vault_secret.apim_oauth_server_name.value
+  display_name               = jsondecode(data.local_file.swagger_file.content).info.title
+  description                = jsondecode(data.local_file.swagger_file.content).info.description
   apim_logger_id             = data.azurerm_key_vault_secret.apim_logger_id.value
   logger_sampling_percentage = 100.0
   logger_verbosity           = "verbose"
