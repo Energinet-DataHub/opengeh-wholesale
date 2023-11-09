@@ -25,7 +25,6 @@ public record EnergyResultQueryParameters(
     string? EnergySupplierId,
     string? BalanceResponsibleId,
     ProcessType? ProcessType = null)
-    //:// EnergyResultFilter(TimeSeriesType, StartOfPeriod, EndOfPeriod, GridArea, EnergySupplierId, BalanceResponsibleId)
 {
     public EnergyResultQueryParameters(EnergyResultQueryParameters energyResultFilter, ProcessType processType)
         : this(

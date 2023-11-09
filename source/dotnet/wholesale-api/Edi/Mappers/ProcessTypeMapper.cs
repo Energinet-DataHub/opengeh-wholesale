@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Common.Models;
-using Energinet.DataHub.Wholesale.Edi.Models;
+using Energinet.DataHub.Wholesale.EDI.Models;
 
-namespace Energinet.DataHub.Wholesale.Edi.Mappers;
+namespace Energinet.DataHub.Wholesale.EDI.Mappers;
 
 public static class ProcessTypeMapper
 {

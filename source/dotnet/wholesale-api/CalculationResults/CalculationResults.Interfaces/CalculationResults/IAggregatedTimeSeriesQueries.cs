@@ -25,7 +25,7 @@ public interface IAggregatedTimeSeriesQueries
     Task<EnergyResult?> GetAsync(EnergyResultQueryParameters parameters);
 
     /// <summary>
-    /// Gets the results with the latest correction version
+    /// Gets the latest result with the latest correction version
     /// </summary>
     /// <returns>Returns null if no result was found</returns>
     Task<EnergyResult?> GetLatestCorrectionAsync(EnergyResultQueryParameters parameters);

@@ -17,9 +17,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.EDI.Client;
 using Energinet.DataHub.Wholesale.EDI.Factories;
-using Energinet.DataHub.Wholesale.Edi.Mappers;
 using Energinet.DataHub.Wholesale.EDI.Mappers;
-using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.EDI.Models;
 using Energinet.DataHub.Wholesale.EDI.Validation;
 
@@ -93,8 +91,9 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
             return _aggregatedTimeSeriesQueries.GetLatestCorrectionAsync(parameters);
         }
 
-        var query = new EnergyResultQueryParameters(parameters, ProcessTypeMapper.FromRequestedProcessType(request.RequestedProcessType));
-
-        return _aggregatedTimeSeriesQueries.GetAsync(query);
+        return _aggregatedTimeSeriesQueries.GetAsync(
+            new EnergyResultQueryParameters(
+                parameters,
+                ProcessTypeMapper.FromRequestedProcessType(request.RequestedProcessType)));
     }
 }

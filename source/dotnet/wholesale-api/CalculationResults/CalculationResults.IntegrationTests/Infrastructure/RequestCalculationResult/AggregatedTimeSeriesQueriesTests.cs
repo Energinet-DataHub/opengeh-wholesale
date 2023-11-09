@@ -78,6 +78,7 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
 
         // Act
         var actual = await sut.GetAsync(parameters);
+
         // Assert
         actual.Should().NotBeNull();
         actual!.GridArea.Should().Be(gridAreaFilter);
@@ -185,6 +186,7 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
 
         // Act
         var actual = await sut.GetAsync(parameters);
+
         // Assert
         actual.Should().BeNull();
     }
@@ -342,6 +344,7 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             addFirstCorrection: true,
             addSecondCorrection: true,
             addThirdCorrection: false);
+
         // Act
         var actual = await sut.GetAsync(parameters);
 
@@ -528,6 +531,7 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
         // Act
         var actual = await sut.GetLatestCorrectionAsync(parameters);
 
+        // Assert
         actual.Should().NotBeNull();
         actual!.ProcessType.Should().Be(ProcessType.SecondCorrectionSettlement);
     }
@@ -557,6 +561,7 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
         // Act
         var actual = await sut.GetLatestCorrectionAsync(parameters);
 
+        // Assert
         actual.Should().NotBeNull();
         actual!.ProcessType.Should().Be(ProcessType.FirstCorrectionSettlement);
     }
@@ -586,6 +591,7 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
         // Act
         var actual = await sut.GetLatestCorrectionAsync(parameters);
 
+        // Assert
         actual.Should().BeNull();
     }
 
@@ -595,6 +601,7 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> loggerMock)
     {
+        // Arrange
         var gridAreaFilter = GridAreaCode;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
@@ -612,16 +619,9 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             addSecondCorrection: false,
             addThirdCorrection: false);
 
-        // // Act
-        // var act = () => ProcessTypeMapper.Map(invalidValue);
-        //
-        // // Assert
-        // act.Should().Throw<ArgumentOutOfRangeException>()
-        //     .And.ActualValue.Should().Be(invalidValue);ualValue.Should().Be(invalidDeltaTableValue);
-        //
-        // Act
         var act = () => sut.GetLatestCorrectionAsync(parameters);
 
+        // Act and Assert
         await act.Should().ThrowAsync<ArgumentException>(
             "The process type will be overwritten when fetching the latest correction.",
             parameters.ProcessType);

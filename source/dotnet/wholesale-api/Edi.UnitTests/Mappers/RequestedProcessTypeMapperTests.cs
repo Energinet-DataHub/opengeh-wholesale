@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.EDI.Mappers;
-using Energinet.DataHub.Wholesale.Edi.Models;
 using Energinet.DataHub.Wholesale.EDI.Models;
 using FluentAssertions;
 using Xunit;
@@ -43,12 +42,12 @@ public class RequestedProcessTypeMapperTests
     [InlineData(BusinessReason.BalanceFixing, SettlementSeriesVersion.FirstCorrection)]
     [InlineData(BusinessReason.PreliminaryAggregation, "random-string")]
     [InlineData(BusinessReason.WholesaleFixing, SettlementSeriesVersion.FirstCorrection)]
+    [InlineData(BusinessReason.Correction, "")]
+    [InlineData(BusinessReason.Correction, "random-string")]
     [InlineData("", "")]
     [InlineData("random-string", "")]
     [InlineData("random-string", SettlementSeriesVersion.FirstCorrection)]
-    [InlineData(BusinessReason.Correction, "")]
-    [InlineData(BusinessReason.Correction, "random-string")]
-    public void ToRequestedProcessType_WhenInvalidSettlementSeriesVersion_ThrowsArgumentOutOfRangeException(string businessReason, string? settlementSeriesVersion)
+    public void ToRequestedProcessType_WhenInvalidBusinessReasonAndSettlementSeriesVersionCombination_ThrowsArgumentOutOfRangeException(string businessReason, string? settlementSeriesVersion)
     {
         // Act
         var act = () => RequestedProcessTypeMapper.ToRequestedProcessType(businessReason, settlementSeriesVersion);
