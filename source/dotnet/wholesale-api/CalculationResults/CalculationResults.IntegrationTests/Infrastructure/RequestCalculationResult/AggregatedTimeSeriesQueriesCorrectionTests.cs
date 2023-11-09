@@ -204,9 +204,10 @@ public class AggregatedTimeSeriesQueriesCorrectionTests : IClassFixture<Databric
             new Mock<ILogger<DatabricksSqlStatementClient>>());
 
         var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
+        var queryGenerator = new AggregatedTimeSeriesSqlGenerator(deltaTableOptions);
         await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions, addFirstCorrection, addSecondCorrection, addThirdCorrection);
 
-        var queries = new AggregatedTimeSeriesQueries(sqlStatementClient, deltaTableOptions);
+        var queries = new AggregatedTimeSeriesQueries(sqlStatementClient, queryGenerator);
         return queries;
     }
 

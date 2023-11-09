@@ -15,33 +15,28 @@
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.EnergyResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
-using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.RequestCalculationResult;
 
 public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
 {
     private readonly IDatabricksSqlStatementClient _sqlStatementClient;
-    private readonly DeltaTableOptions _deltaTableOptions;
+    private readonly AggregatedTimeSeriesSqlGenerator _aggregatedTimeSeriesSqlGenerator;
 
     public AggregatedTimeSeriesQueries(
         IDatabricksSqlStatementClient sqlStatementClient,
-        IOptions<DeltaTableOptions> deltaTableOptions)
+        AggregatedTimeSeriesSqlGenerator aggregatedTimeSeriesSqlGenerator)
     {
         _sqlStatementClient = sqlStatementClient;
-        _deltaTableOptions = deltaTableOptions.Value;
+        _aggregatedTimeSeriesSqlGenerator = aggregatedTimeSeriesSqlGenerator;
     }
 
     public async Task<EnergyResult?> GetAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
-        var sqlStatement = CreateRequestSql(parameters);
+        var sqlStatement = _aggregatedTimeSeriesSqlGenerator.CreateRequestSql(parameters);
 
         var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
         SqlResultRow? firstRow = null;
@@ -113,67 +108,8 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
             && processType != ProcessType.ThirdCorrectionSettlement)
             throw new ArgumentOutOfRangeException(nameof(processType), processType, "ProcessType must be a correction settlement type");
 
-        var sql = $@"
-            SELECT 1
-            FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} t1
-            WHERE {CreateSqlQueryFilters(parameters)}";
+        var sql = _aggregatedTimeSeriesSqlGenerator.GetSingleRow(parameters);
 
         return sql;
     }
-
-    private string CreateRequestSql(AggregatedTimeSeriesQueryParameters parameters)
-    {
-        var sql = $@"
-            SELECT {string.Join(", ", SqlColumnNames.Select(columnName => $"t1.{columnName}"))}
-            FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} t1
-            LEFT JOIN {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} t2
-                ON t1.{EnergyResultColumnNames.Time} = t2.{EnergyResultColumnNames.Time}
-                    AND t1.{EnergyResultColumnNames.BatchExecutionTimeStart} < t2.{EnergyResultColumnNames.BatchExecutionTimeStart}
-                    AND t1.{EnergyResultColumnNames.GridArea} = t2.{EnergyResultColumnNames.GridArea}
-                    AND COALESCE(t1.{EnergyResultColumnNames.FromGridArea}, 'N/A') = COALESCE(t2.{EnergyResultColumnNames.FromGridArea}, 'N/A')
-                    AND t1.{EnergyResultColumnNames.TimeSeriesType} = t2.{EnergyResultColumnNames.TimeSeriesType}
-                    AND t1.{EnergyResultColumnNames.BatchProcessType} = t2.{EnergyResultColumnNames.BatchProcessType}
-                    AND t1.{EnergyResultColumnNames.AggregationLevel} = t2.{EnergyResultColumnNames.AggregationLevel}
-            WHERE t2.{EnergyResultColumnNames.Time} IS NULL
-                AND {CreateSqlQueryFilters(parameters)}";
-
-        sql += $@"ORDER BY t1.time";
-        return sql;
-    }
-
-    private string CreateSqlQueryFilters(AggregatedTimeSeriesQueryParameters parameters)
-    {
-        var whereClausesSql = $@"t1.{EnergyResultColumnNames.GridArea} IN ({parameters.GridArea})
-            AND t1.{EnergyResultColumnNames.TimeSeriesType} IN ('{TimeSeriesTypeMapper.ToDeltaTableValue(parameters.TimeSeriesType)}')
-            AND t1.{EnergyResultColumnNames.Time} >= '{parameters.StartOfPeriod.ToString()}'
-            AND t1.{EnergyResultColumnNames.Time} < '{parameters.EndOfPeriod.ToString()}'
-            AND t1.{EnergyResultColumnNames.AggregationLevel} = '{AggregationLevelMapper.ToDeltaTableValue(parameters.TimeSeriesType, parameters.EnergySupplierId, parameters.BalanceResponsibleId)}'
-            ";
-        if (parameters.ProcessType != null)
-        {
-            whereClausesSql +=
-                $@"AND t1.{EnergyResultColumnNames.BatchProcessType} = '{ProcessTypeMapper.ToDeltaTableValue((ProcessType)parameters.ProcessType)}'";
-        }
-
-        if (parameters.EnergySupplierId != null)
-        {
-            whereClausesSql += $@"AND t1.{EnergyResultColumnNames.EnergySupplierId} = '{parameters.EnergySupplierId}'";
-        }
-
-        if (parameters.BalanceResponsibleId != null)
-        {
-            whereClausesSql += $@"AND t1.{EnergyResultColumnNames.BalanceResponsibleId} = '{parameters.BalanceResponsibleId}'";
-        }
-
-        return whereClausesSql;
-    }
-
-    private static string[] SqlColumnNames { get; } =
-    {
-        EnergyResultColumnNames.BatchId, EnergyResultColumnNames.GridArea, EnergyResultColumnNames.FromGridArea,
-        EnergyResultColumnNames.TimeSeriesType, EnergyResultColumnNames.EnergySupplierId,
-        EnergyResultColumnNames.BalanceResponsibleId, EnergyResultColumnNames.Time,
-        EnergyResultColumnNames.Quantity, EnergyResultColumnNames.QuantityQualities,
-        EnergyResultColumnNames.CalculationResultId, EnergyResultColumnNames.BatchProcessType,
-    };
 }

@@ -43,6 +43,7 @@ public static class CalculationResultsRegistration
         serviceCollection.AddScoped<IEnergyResultQueries, EnergyResultQueries>();
         serviceCollection.AddScoped<IWholesaleResultQueries, WholesaleResultQueries>();
         serviceCollection.AddScoped<IAggregatedTimeSeriesQueries, AggregatedTimeSeriesQueries>();
+        serviceCollection.AddScoped<AggregatedTimeSeriesSqlGenerator>();
         serviceCollection.AddScoped<IJsonNewlineSerializer, JsonNewlineSerializer>();
         serviceCollection.AddScoped<ISettlementReportRepository>(
             provider => new SettlementReportRepository(
