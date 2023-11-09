@@ -17,7 +17,7 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 
-public record EnergyResultQueryParameters(
+public record AggregatedTimeSeriesQueryParameters(
     TimeSeriesType TimeSeriesType,
     Instant StartOfPeriod,
     Instant EndOfPeriod,
@@ -26,13 +26,13 @@ public record EnergyResultQueryParameters(
     string? BalanceResponsibleId,
     ProcessType? ProcessType = null)
 {
-    public EnergyResultQueryParameters(EnergyResultQueryParameters energyResultFilter, ProcessType processType)
+    public AggregatedTimeSeriesQueryParameters(AggregatedTimeSeriesQueryParameters aggregatedTimeSeriesFilter, ProcessType processType)
         : this(
-            energyResultFilter.TimeSeriesType,
-            energyResultFilter.StartOfPeriod,
-            energyResultFilter.EndOfPeriod,
-            energyResultFilter.GridArea,
-            energyResultFilter.EnergySupplierId,
-            energyResultFilter.BalanceResponsibleId,
+            aggregatedTimeSeriesFilter.TimeSeriesType,
+            aggregatedTimeSeriesFilter.StartOfPeriod,
+            aggregatedTimeSeriesFilter.EndOfPeriod,
+            aggregatedTimeSeriesFilter.GridArea,
+            aggregatedTimeSeriesFilter.EnergySupplierId,
+            aggregatedTimeSeriesFilter.BalanceResponsibleId,
             processType) { }
 }

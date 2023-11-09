@@ -174,7 +174,7 @@ public class AggregatedTimeSeriesQueriesCorrectionTests : IClassFixture<Databric
         actual.Should().Be(ProcessType.FirstCorrectionSettlement);
     }
 
-    private EnergyResultQueryParameters CreateQueryParameters(
+    private AggregatedTimeSeriesQueryParameters CreateQueryParameters(
         TimeSeriesType? timeSeriesType = null,
         Instant? startOfPeriod = null,
         Instant? endOfPeriod = null,
@@ -182,7 +182,7 @@ public class AggregatedTimeSeriesQueriesCorrectionTests : IClassFixture<Databric
         string? energySupplierId = null,
         string? balanceResponsibleId = null)
     {
-        return new EnergyResultQueryParameters(
+        return new AggregatedTimeSeriesQueryParameters(
             TimeSeriesType: timeSeriesType ?? TimeSeriesType.Production,
             StartOfPeriod: startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
             EndOfPeriod: endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0),

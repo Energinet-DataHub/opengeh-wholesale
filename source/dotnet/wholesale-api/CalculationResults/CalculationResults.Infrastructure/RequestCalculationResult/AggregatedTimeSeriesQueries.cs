@@ -39,7 +39,7 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
         _deltaTableOptions = deltaTableOptions.Value;
     }
 
-    public async Task<EnergyResult?> GetAsync(EnergyResultQueryParameters parameters)
+    public async Task<EnergyResult?> GetAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
         var sqlStatement = CreateRequestSql(parameters);
 
@@ -61,7 +61,7 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
         return EnergyResultFactory.CreateEnergyResult(firstRow, timeSeriesPoints, parameters.StartOfPeriod, parameters.EndOfPeriod);
     }
 
-    public async Task<EnergyResult?> GetLatestCorrectionAsync(EnergyResultQueryParameters parameters)
+    public async Task<EnergyResult?> GetLatestCorrectionAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
         if (parameters.ProcessType != null)
         {
@@ -70,22 +70,22 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
 
         var processType = await GetProcessTypeOfLatestCorrectionAsync(parameters).ConfigureAwait(false);
 
-        var queryWithLatestCorrection = new EnergyResultQueryParameters(parameters, processType);
+        var queryWithLatestCorrection = new AggregatedTimeSeriesQueryParameters(parameters, processType);
 
         return await GetAsync(queryWithLatestCorrection).ConfigureAwait(false);
     }
 
-    public async Task<ProcessType> GetProcessTypeOfLatestCorrectionAsync(EnergyResultQueryParameters parameters)
+    public async Task<ProcessType> GetProcessTypeOfLatestCorrectionAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
         var thirdCorrectionExists = await PerformCorrectionVersionExistsQueryAsync(
-            new EnergyResultQueryParameters(
+            new AggregatedTimeSeriesQueryParameters(
                 parameters,
                 ProcessType.ThirdCorrectionSettlement)).ConfigureAwait(false);
         if (thirdCorrectionExists)
             return ProcessType.ThirdCorrectionSettlement;
 
         var secondCorrectionExists = await PerformCorrectionVersionExistsQueryAsync(
-            new EnergyResultQueryParameters(
+            new AggregatedTimeSeriesQueryParameters(
                 parameters,
                 ProcessType.SecondCorrectionSettlement)).ConfigureAwait(false);
 
@@ -95,7 +95,7 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
         return ProcessType.FirstCorrectionSettlement;
     }
 
-    private Task<bool> PerformCorrectionVersionExistsQueryAsync(EnergyResultQueryParameters parameters)
+    private Task<bool> PerformCorrectionVersionExistsQueryAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
         var sql = CreateSelectCorrectionVersionSql(parameters);
 
@@ -104,7 +104,7 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
         return tableRows.AnyAsync().AsTask();
     }
 
-    private string CreateSelectCorrectionVersionSql(EnergyResultQueryParameters parameters)
+    private string CreateSelectCorrectionVersionSql(AggregatedTimeSeriesQueryParameters parameters)
     {
         var processType = parameters.ProcessType;
 
@@ -121,7 +121,7 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
         return sql;
     }
 
-    private string CreateRequestSql(EnergyResultQueryParameters parameters)
+    private string CreateRequestSql(AggregatedTimeSeriesQueryParameters parameters)
     {
         var sql = $@"
             SELECT {string.Join(", ", SqlColumnNames.Select(columnName => $"t1.{columnName}"))}
@@ -141,7 +141,7 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
         return sql;
     }
 
-    private string CreateSqlQueryFilters(EnergyResultQueryParameters parameters)
+    private string CreateSqlQueryFilters(AggregatedTimeSeriesQueryParameters parameters)
     {
         var whereClausesSql = $@"t1.{EnergyResultColumnNames.GridArea} IN ({parameters.GridArea})
             AND t1.{EnergyResultColumnNames.TimeSeriesType} IN ('{TimeSeriesTypeMapper.ToDeltaTableValue(parameters.TimeSeriesType)}')

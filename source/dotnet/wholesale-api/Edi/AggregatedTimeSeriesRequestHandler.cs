@@ -79,7 +79,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
     private Task<EnergyResult?> GetCalculationResultsAsync(
         AggregatedTimeSeriesRequest request)
     {
-        var parameters = new EnergyResultQueryParameters(
+        var parameters = new AggregatedTimeSeriesQueryParameters(
             CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromEdi(request.TimeSeriesType),
             request.Period.Start,
             request.Period.End,
@@ -93,7 +93,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         }
 
         return _aggregatedTimeSeriesQueries.GetAsync(
-            new EnergyResultQueryParameters(
+            new AggregatedTimeSeriesQueryParameters(
                 parameters,
                 ProcessTypeMapper.FromRequestedProcessType(request.RequestedProcessType)));
     }

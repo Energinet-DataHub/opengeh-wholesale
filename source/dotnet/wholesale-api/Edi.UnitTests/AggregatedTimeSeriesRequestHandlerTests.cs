@@ -59,7 +59,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
 
         var calculationResult = CreateEnergyResult();
         aggregatedTimeSeriesQueries
-            .Setup(calculationResultQueries => calculationResultQueries.GetAsync(It.IsAny<EnergyResultQueryParameters>()))
+            .Setup(calculationResultQueries => calculationResultQueries.GetAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
             .ReturnsAsync(() => calculationResult);
 
         validator.Setup(vali => vali.Validate(
@@ -159,7 +159,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
         aggregatedTimeSeriesQueries
             .Setup(rcr =>
                 rcr.GetAsync(
-                    It.IsAny<EnergyResultQueryParameters>()))
+                    It.IsAny<AggregatedTimeSeriesQueryParameters>()))
             .ReturnsAsync(() => null);
 
         var sut = new AggregatedTimeSeriesRequestHandler(

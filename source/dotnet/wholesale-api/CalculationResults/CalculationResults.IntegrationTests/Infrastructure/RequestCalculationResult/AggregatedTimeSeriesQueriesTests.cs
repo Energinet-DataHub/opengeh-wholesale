@@ -627,7 +627,7 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             parameters.ProcessType);
     }
 
-    private EnergyResultQueryParameters CreateQueryParameters(
+    private AggregatedTimeSeriesQueryParameters CreateQueryParameters(
         TimeSeriesType? timeSeriesType = null,
         Instant? startOfPeriod = null,
         Instant? endOfPeriod = null,
@@ -636,7 +636,7 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
         string? balanceResponsibleId = null,
         ProcessType? processType = null)
     {
-        return new EnergyResultQueryParameters(
+        return new AggregatedTimeSeriesQueryParameters(
             TimeSeriesType: timeSeriesType ?? TimeSeriesType.Production,
             StartOfPeriod: startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
             EndOfPeriod: endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0),
