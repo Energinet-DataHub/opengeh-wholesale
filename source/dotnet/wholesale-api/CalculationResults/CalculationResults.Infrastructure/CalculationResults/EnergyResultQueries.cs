@@ -52,23 +52,23 @@ public class EnergyResultQueries : IEnergyResultQueries
         _logger.LogDebug("Fetched all energy results for batch {BatchId}", batchId);
     }
 
-    public static bool BelongsToDifferentResults(IDictionary<string, object> row, IDictionary<string, object> otherRow)
+    public static bool BelongsToDifferentResults(DatabricksSqlRow row, DatabricksSqlRow otherRow)
     {
-        return !row[EnergyResultColumnNames.CalculationResultId].Equals(otherRow[EnergyResultColumnNames.CalculationResultId]);
+        return !row[EnergyResultColumnNames.CalculationResultId]!.Equals(otherRow[EnergyResultColumnNames.CalculationResultId]);
     }
 
     private async IAsyncEnumerable<EnergyResult> GetInternalAsync(QueryEnergyResultStatement statement, Instant periodStart, Instant periodEnd)
     {
         var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
-        IDictionary<string, object>? currentRow = null;
+        DatabricksSqlRow? currentRow = null;
         var resultCount = 0;
 
         await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
         {
-            var convertedNextRow = (IDictionary<string, object>)nextRow;
-            var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(convertedNextRow);
+            var databricksSqlNextRow = new DatabricksSqlRow(nextRow);
+            var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(databricksSqlNextRow);
 
-            if (currentRow != null && BelongsToDifferentResults(currentRow, convertedNextRow))
+            if (currentRow != null && BelongsToDifferentResults(currentRow, databricksSqlNextRow))
             {
                 yield return EnergyResultFactory.CreateEnergyResult(currentRow!, timeSeriesPoints, periodStart, periodEnd);
                 resultCount++;
@@ -76,7 +76,7 @@ public class EnergyResultQueries : IEnergyResultQueries
             }
 
             timeSeriesPoints.Add(timeSeriesPoint);
-            currentRow = convertedNextRow;
+            currentRow = databricksSqlNextRow;
         }
 
         if (currentRow != null)

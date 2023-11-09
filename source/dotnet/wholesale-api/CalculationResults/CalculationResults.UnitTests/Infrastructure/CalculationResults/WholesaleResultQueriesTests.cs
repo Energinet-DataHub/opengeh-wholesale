@@ -14,6 +14,7 @@
 
 using AutoFixture;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
@@ -23,7 +24,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationR
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
-using Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.Fixtures;
+using Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SettlementReport;
 using Energinet.DataHub.Wholesale.Common.Models;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -73,8 +74,9 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
         _batchesClientMock
             .Setup(client => client.GetAsync(batch.BatchId))
             .ReturnsAsync(batch);
-        _databricksSqlWarehouseQueryExecutorMock.Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>()))
-            .Returns(GetRowsAsync(0));
+        _databricksSqlWarehouseQueryExecutorMock
+            .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
+            .Returns(TableTestHelper.GetRowsAsync(_tableChunk, 0));
 
         // Act
         var actual = await Sut.GetAsync(batch.BatchId).ToListAsync();
@@ -91,8 +93,8 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
         _batchesClientMock
             .Setup(client => client.GetAsync(batch.BatchId))
             .ReturnsAsync(batch);
-        _databricksSqlWarehouseQueryExecutorMock.Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>()))
-            .Returns(GetRowsAsync(1));
+        _databricksSqlWarehouseQueryExecutorMock.Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
+            .Returns(TableTestHelper.GetRowsAsync(_tableChunk, 1));
 
         // Act
         var actual = await Sut.GetAsync(batch.BatchId).ToListAsync();
@@ -110,8 +112,9 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
         _batchesClientMock
             .Setup(client => client.GetAsync(batch.BatchId))
             .ReturnsAsync(batch);
-        _databricksSqlWarehouseQueryExecutorMock.Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>()))
-            .Returns(GetRowsAsync(1));
+        _databricksSqlWarehouseQueryExecutorMock
+            .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
+            .Returns(TableTestHelper.GetRowsAsync(_tableChunk, 1));
 
         // Act
         var actual = await Sut.GetAsync(batch.BatchId).ToListAsync();
@@ -143,8 +146,9 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
         _batchesClientMock
             .Setup(client => client.GetAsync(batch.BatchId))
             .ReturnsAsync(batch);
-        _databricksSqlWarehouseQueryExecutorMock.Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>()))
-            .Returns(GetRowsAsync(2));
+        _databricksSqlWarehouseQueryExecutorMock
+            .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
+            .Returns(TableTestHelper.GetRowsAsync(_tableChunk, 2));
 
         // Act
         var actual = await Sut.GetAsync(batch.BatchId).ToListAsync();
@@ -162,32 +166,21 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
         bool expected)
     {
         // Arrange
-        var listA = new List<KeyValuePair<string, string>>
+        var listA = new DatabricksSqlRow(new Dictionary<string, object?>
         {
-            new(WholesaleResultColumnNames.CalculationId, "calculationId"),
-            new(WholesaleResultColumnNames.CalculationResultId, calculationResultIdA),
-        };
-        var sqlResultRowA = new TestSqlResultRow(listA);
-        var listB = new List<KeyValuePair<string, string>>
+            { WholesaleResultColumnNames.CalculationId, "calculationId" },
+            { WholesaleResultColumnNames.CalculationResultId, calculationResultIdA },
+        });
+        var listB = new DatabricksSqlRow(new Dictionary<string, object?>
         {
-            new(WholesaleResultColumnNames.CalculationId, "calculationId"),
-            new(WholesaleResultColumnNames.CalculationResultId, calculationResultIdB),
-        };
-        var sqlResultRowB = new TestSqlResultRow(listB);
+            { WholesaleResultColumnNames.CalculationId, "calculationId" },
+            { WholesaleResultColumnNames.CalculationResultId, calculationResultIdB },
+        });
 
         // Act
-        var actual = WholesaleResultQueries.BelongsToDifferentResults(sqlResultRowA, sqlResultRowB);
+        var actual = WholesaleResultQueries.BelongsToDifferentResults(listA, listB);
 
         // Assert
         actual.Should().Be(expected);
-    }
-
-    private async IAsyncEnumerable<SqlResultRow> GetRowsAsync(int rowCount)
-    {
-        await Task.Delay(0);
-        for (var i = 0; i < rowCount; i++)
-        {
-            yield return new SqlResultRow(_tableChunk, i);
-        }
     }
 }

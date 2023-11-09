@@ -19,23 +19,57 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 
 public static class TableTestHelper
 {
-    public static TableChunk CreateTableForSettlementReport(int rowCount)
+    // TODO AJW Remove
+    public static IEnumerable<Dictionary<string, object?>> CreateTableForSettlementReport2(int rowCount)
     {
-        var columnNames = new[]
-        {
-            EnergyResultColumnNames.GridArea,
-            EnergyResultColumnNames.BatchProcessType,
-            EnergyResultColumnNames.Time,
-            EnergyResultColumnNames.TimeSeriesType,
-            EnergyResultColumnNames.Quantity,
-        };
-        var rows = new List<string[]>();
+        var rows = new List<Dictionary<string, object?>>();
         for (var row = 0; row < rowCount; row++)
         {
             var dummyQuantity = $@"{row}.1";
-            rows.Add(new[] { "123", "BalanceFixing", "2022-05-16T01:00:00.000Z", "non_profiled_consumption", $@"{dummyQuantity}" });
+            var newRow = NewRow(quantity: dummyQuantity);
+            rows.Add(newRow);
         }
 
-        return new TableChunk(columnNames, rows);
+        return new List<Dictionary<string, object?>>(rows);
+    }
+
+    public static Dictionary<string, object?> NewRow(
+        string gridAre = "123",
+        string batchProcessType = "BalanceFixing",
+        string time = "2022-05-16T01:00:00.000Z",
+        string timeSeriesType = "non_profiled_consumption",
+        string quantity = "1.234")
+    {
+        var newRow = new Dictionary<string, object?>
+        {
+            { EnergyResultColumnNames.GridArea, gridAre },
+            { EnergyResultColumnNames.BatchProcessType, batchProcessType },
+            { EnergyResultColumnNames.Time, time },
+            { EnergyResultColumnNames.TimeSeriesType, timeSeriesType },
+            { EnergyResultColumnNames.Quantity, $@"{quantity}" },
+        };
+        return newRow;
+    }
+
+    public static DatabricksSqlRow CreateRow(string gridArea, string balanceFixing, string time, string timeSeriesType, string quantity)
+    {
+        var row = new Dictionary<string, object?>
+        {
+            { EnergyResultColumnNames.GridArea, gridArea },
+            { EnergyResultColumnNames.BatchProcessType, balanceFixing },
+            { EnergyResultColumnNames.Time, time },
+            { EnergyResultColumnNames.TimeSeriesType, timeSeriesType },
+            { EnergyResultColumnNames.Quantity, quantity },
+        };
+        return new DatabricksSqlRow(row);
+    }
+
+    public static async IAsyncEnumerable<IDictionary<string, object?>> GetRowsAsync(TableChunk tableChunk, int rowCount)
+    {
+        await Task.Delay(0);
+        for (var i = 0; i < rowCount; i++)
+        {
+            yield return new SqlResultRow(tableChunk, i).ToDic();
+        }
     }
 }

@@ -12,19 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.Fixtures;
-
-public record TestSqlResultRow : SqlResultRow
+public class DatabricksSqlRow
 {
-    private readonly IList<KeyValuePair<string, string>> _list;
+    private readonly IDictionary<string, object?> _dictionary;
 
-    public TestSqlResultRow(IList<KeyValuePair<string, string>> list)
-        : base(null!, 0)
+    public DatabricksSqlRow(IDictionary<string, object?> dictionary)
     {
-        _list = list;
+        _dictionary = dictionary;
     }
 
-    public override string this[string column] => _list.Single(pair => pair.Key == column).Value;
+    public string? this[string key]
+    {
+        get
+        {
+            var value = _dictionary[key];
+            return value == null ? null : Convert.ToString(value);
+        }
+    }
 }

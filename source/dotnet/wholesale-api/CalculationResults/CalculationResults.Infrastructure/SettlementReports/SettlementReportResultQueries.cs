@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
@@ -43,11 +44,11 @@ public class SettlementReportResultQueries : ISettlementReportResultQueries
     {
         var statement = new QuerySettlementReportStatement(_deltaTableOptions.SCHEMA_NAME, _deltaTableOptions.ENERGY_RESULTS_TABLE_NAME, gridAreaCodes, processType, periodStart, periodEnd, energySupplier);
         var rows = await _databricksSqlWarehouseQueryExecutor
-            .ExecuteStatementAsync(statement)
+            .ExecuteStatementAsync(statement, Format.JsonArray)
             .ToListAsync()
             .ConfigureAwait(false);
 
-        var listOfRows = rows.Select(x => (SqlResultRow)x);
-        return SettlementReportDataFactory.Create(listOfRows);
+        var databricksSqlRows = rows.Select(x => new DatabricksSqlRow(x));
+        return SettlementReportDataFactory.Create(databricksSqlRows);
     }
 }

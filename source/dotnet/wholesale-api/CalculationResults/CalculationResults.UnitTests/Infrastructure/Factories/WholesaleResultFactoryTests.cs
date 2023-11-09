@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
-using Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.Fixtures;
 using Energinet.DataHub.Wholesale.Common.Models;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -32,7 +32,6 @@ public class WholesaleResultFactoryTests
     private readonly Instant _defaultPeriodStart = Instant.FromUtc(2022, 5, 1, 0, 0);
     private readonly Instant _defaultPeriodEnd = Instant.FromUtc(2022, 5, 2, 0, 0);
     private static readonly Instant _defaultTime = Instant.FromUtc(2022, 5, 1, 1, 0);
-    private readonly IEnumerable<QuantityQuality> _quantityQualities = new List<QuantityQuality> { QuantityQuality.Measured,  QuantityQuality.Missing };
     private readonly List<WholesaleTimeSeriesPoint> _defaultWholesaleTimeSeriesPoints = new()
     {
         new WholesaleTimeSeriesPoint(_defaultTime.ToDateTimeOffset(), 1.0m, new List<QuantityQuality> { QuantityQuality.Measured,  QuantityQuality.Missing }, DefaultPrice, DefaultAmount),
@@ -42,7 +41,7 @@ public class WholesaleResultFactoryTests
     public void CreateWholesaleResult_ReturnExpectedWholesaleResult()
     {
          // Arrange
-         var row = CreateDefaultSqlResultRow();
+         var row = CreateSqlResultRow();
 
          // Act
          var actual = WholesaleResultFactory.CreateWholesaleResult(row, _defaultWholesaleTimeSeriesPoints, _defaultPeriodStart, _defaultPeriodEnd);
@@ -67,25 +66,24 @@ public class WholesaleResultFactoryTests
          actual.TimeSeriesPoints.Should().HaveCount(1);
     }
 
-    private static TestSqlResultRow CreateDefaultSqlResultRow()
+    private static DatabricksSqlRow CreateSqlResultRow()
     {
-        var list = new List<KeyValuePair<string, string>>
+        return new DatabricksSqlRow(new Dictionary<string, object?>
         {
-            new(WholesaleResultColumnNames.CalculationId, "bbbbbbbb-aaaa-bbbb-cccc-0123456789ab"),
-            new(WholesaleResultColumnNames.CalculationResultId, "aaaaaaaa-bbbb-cccc-dddd-0123456789ab"),
-            new(WholesaleResultColumnNames.EnergySupplierId, "energySupplierId"),
-            new(WholesaleResultColumnNames.GridArea, "504"),
-            new(WholesaleResultColumnNames.AmountType, "amount_per_charge"),
-            new(WholesaleResultColumnNames.CalculationType, "WholesaleFixing"),
-            new(WholesaleResultColumnNames.ChargeCode, "chargeCode"),
-            new(WholesaleResultColumnNames.ChargeType, "tariff"),
-            new(WholesaleResultColumnNames.ChargeOwnerId, "chargeOwnerId"),
-            new(WholesaleResultColumnNames.QuantityUnit, "kWh"),
-            new(WholesaleResultColumnNames.ChargeResolution, "PT1H"),
-            new(WholesaleResultColumnNames.MeteringPointType, "consumption"),
-            new(WholesaleResultColumnNames.SettlementMethod, "flex"),
-            new(WholesaleResultColumnNames.IsTax, "true"),
-        };
-        return new TestSqlResultRow(list);
+            { WholesaleResultColumnNames.CalculationId, "bbbbbbbb-aaaa-bbbb-cccc-0123456789ab" },
+            { WholesaleResultColumnNames.CalculationResultId, "aaaaaaaa-bbbb-cccc-dddd-0123456789ab" },
+            { WholesaleResultColumnNames.EnergySupplierId, "energySupplierId" },
+            { WholesaleResultColumnNames.GridArea, "504" },
+            { WholesaleResultColumnNames.AmountType, "amount_per_charge" },
+            { WholesaleResultColumnNames.CalculationType, "WholesaleFixing" },
+            { WholesaleResultColumnNames.ChargeCode, "chargeCode" },
+            { WholesaleResultColumnNames.ChargeType, "tariff" },
+            { WholesaleResultColumnNames.ChargeOwnerId, "chargeOwnerId" },
+            { WholesaleResultColumnNames.QuantityUnit, "kWh" },
+            { WholesaleResultColumnNames.ChargeResolution, "PT1H" },
+            { WholesaleResultColumnNames.MeteringPointType, "consumption" },
+            { WholesaleResultColumnNames.SettlementMethod, "flex" },
+            { WholesaleResultColumnNames.IsTax, "true" },
+        });
     }
 }

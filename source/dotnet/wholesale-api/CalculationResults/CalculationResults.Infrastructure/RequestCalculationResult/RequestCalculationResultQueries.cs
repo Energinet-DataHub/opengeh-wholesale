@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.RequestCalculationResult.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
@@ -43,23 +44,24 @@ public class RequestCalculationResultQueries : IRequestCalculationResultQueries
     {
         var statement = new QueryCalculationResultsStatement2(_deltaTableOptions, query);
         var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
-        IDictionary<string, object>? firstRow = null;
+        DatabricksSqlRow? databricksFirstRow = null;
         var resultCount = 0;
-        await foreach (var currentRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement).ConfigureAwait(false))
+        await foreach (var currentRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
         {
-            if (firstRow is null)
-                firstRow = currentRow;
+            var databricksCurrentRow = new DatabricksSqlRow(currentRow);
+            if (databricksFirstRow is null)
+                databricksFirstRow = databricksCurrentRow;
 
-            var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(currentRow);
+            var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(databricksCurrentRow);
 
             timeSeriesPoints.Add(timeSeriesPoint);
             resultCount++;
         }
 
         _logger.LogDebug("Fetched {ResultCount} calculation results", resultCount);
-        if (firstRow is null)
+        if (databricksFirstRow is null)
             return null;
 
-        return EnergyResultFactory.CreateEnergyResult(firstRow, timeSeriesPoints, query.StartOfPeriod, query.EndOfPeriod);
+        return EnergyResultFactory.CreateEnergyResult(databricksFirstRow, timeSeriesPoints, query.StartOfPeriod, query.EndOfPeriod);
     }
 }

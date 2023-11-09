@@ -28,26 +28,18 @@ public class SettlementReportDataFactoryTests
 {
     private readonly SettlementReportResultRow _firstRow;
     private readonly SettlementReportResultRow _lastRow;
-    private readonly List<SqlResultRow> _rows;
+    private readonly List<DatabricksSqlRow> _rows;
 
     public SettlementReportDataFactoryTests()
     {
-        var columnNames = new[]
-        {
-            EnergyResultColumnNames.GridArea,
-            EnergyResultColumnNames.BatchProcessType,
-            EnergyResultColumnNames.Time,
-            EnergyResultColumnNames.TimeSeriesType,
-            EnergyResultColumnNames.Quantity,
-        };
-        var rows = new List<string[]>
-        {
-            new[] { "123", "BalanceFixing", "2022-05-16T01:00:00.000Z", "non_profiled_consumption", "1.1" },
-            new[] { "234", "BalanceFixing", "2022-05-16T01:15:00.000Z", "production", "2.2" },
-            new[] { "234", "BalanceFixing", "2022-05-16T01:30:00.000Z", "production", "3.3" },
-        };
-        var tableChunk = new TableChunk(columnNames, rows);
-        _rows = tableChunk.Rows.Select((_, index) => new SqlResultRow(tableChunk, index)).ToList();
+        _rows = new List<DatabricksSqlRow>();
+        var row1 = TableTestHelper.CreateRow("123", "BalanceFixing", "2022-05-16T01:00:00.000Z", "non_profiled_consumption", "1.1");
+        var row2 = TableTestHelper.CreateRow("234", "BalanceFixing", "2022-05-16T01:15:00.000Z", "production", "2.2");
+        var row3 = TableTestHelper.CreateRow("234", "BalanceFixing", "2022-05-16T01:30:00.000Z", "production", "3.3");
+        _rows.Add(row1);
+        _rows.Add(row2);
+        _rows.Add(row3);
+
         _firstRow = new SettlementReportResultRow("123", ProcessType.BalanceFixing, Instant.FromUtc(2022, 5, 16, 1, 0, 0), "PT15M", MeteringPointType.Consumption, SettlementMethod.NonProfiled, new decimal(1.1));
         _lastRow = new SettlementReportResultRow("234", ProcessType.BalanceFixing, Instant.FromUtc(2022, 5, 16, 1, 30, 0), "PT15M", MeteringPointType.Production, null, new decimal(3.3));
     }

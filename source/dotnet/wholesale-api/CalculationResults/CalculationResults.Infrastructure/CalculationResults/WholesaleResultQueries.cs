@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
@@ -51,30 +52,31 @@ public class WholesaleResultQueries : IWholesaleResultQueries
         _logger.LogDebug("Fetched all wholesale calculation results for calculation {CalculationId}", calculationId);
     }
 
-    public static bool BelongsToDifferentResults(SqlResultRow row, SqlResultRow otherRow)
+    public static bool BelongsToDifferentResults(DatabricksSqlRow sqlRow, DatabricksSqlRow otherSqlRow)
     {
-        return row[WholesaleResultColumnNames.CalculationResultId] != otherRow[WholesaleResultColumnNames.CalculationResultId];
+        return !sqlRow[WholesaleResultColumnNames.CalculationResultId]!.Equals(otherSqlRow[WholesaleResultColumnNames.CalculationResultId]);
     }
 
     private async IAsyncEnumerable<WholesaleResult> GetInternalAsync(DatabricksStatement statement, Instant periodStart, Instant periodEnd)
     {
         var timeSeriesPoints = new List<WholesaleTimeSeriesPoint>();
-        SqlResultRow? currentRow = null;
+        DatabricksSqlRow? currentRow = null;
         var resultCount = 0;
 
-        await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement).ConfigureAwait(false))
+        await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
         {
-            var timeSeriesPoint = WholesaleTimeSeriesPointFactory.Create(nextRow);
+            var convertedNextRow = new DatabricksSqlRow(nextRow);
+            var timeSeriesPoint = WholesaleTimeSeriesPointFactory.Create(convertedNextRow);
 
-            if (currentRow != null && BelongsToDifferentResults(currentRow, nextRow))
+            if (currentRow != null && BelongsToDifferentResults(currentRow, convertedNextRow))
             {
-                yield return WholesaleResultFactory.CreateWholesaleResult(currentRow!, timeSeriesPoints, periodStart, periodEnd);
+                yield return WholesaleResultFactory.CreateWholesaleResult(currentRow, timeSeriesPoints, periodStart, periodEnd);
                 resultCount++;
                 timeSeriesPoints = new List<WholesaleTimeSeriesPoint>();
             }
 
             timeSeriesPoints.Add(timeSeriesPoint);
-            currentRow = nextRow;
+            currentRow = convertedNextRow;
         }
 
         if (currentRow != null)

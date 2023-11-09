@@ -13,10 +13,9 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 using Energinet.DataHub.Wholesale.Common.Databricks.Options;
@@ -34,8 +33,7 @@ public class SettlementReportResultQueriesTests
     private readonly Instant _somePeriodStart = Instant.FromUtc(2021, 3, 1, 10, 15);
     private readonly Instant _somePeriodEnd = Instant.FromUtc(2021, 3, 31, 10, 15);
     private readonly string[] _someGridAreas = { "123", "456", };
-    private readonly TableChunk _someTableChunk = TableTestHelper.CreateTableForSettlementReport(3);
-    private readonly string[] _columnNames = { EnergyResultColumnNames.GridArea, EnergyResultColumnNames.BatchProcessType, EnergyResultColumnNames.Time, EnergyResultColumnNames.TimeSeriesType, EnergyResultColumnNames.Quantity, };
+    private readonly IEnumerable<IDictionary<string, object?>> _rows = TableTestHelper.CreateTableForSettlementReport2(3);
     private readonly IOptions<DeltaTableOptions> _someDeltaTableOptions = Options.Create(new DeltaTableOptions { SCHEMA_NAME = "someSchema", ENERGY_RESULTS_TABLE_NAME = "someTable", });
 
     [Theory]
@@ -44,15 +42,16 @@ public class SettlementReportResultQueriesTests
         Mock<DatabricksSqlWarehouseQueryExecutor> databricksSqlWarehouseQueryExecutorMock)
     {
         // Arrange
-        var asyncResult = ToAsyncEnumerable(_someTableChunk);
-        databricksSqlWarehouseQueryExecutorMock.Setup(s => s.ExecuteStatementAsync(It.IsAny<DatabricksStatement>())).Returns(asyncResult);
+        databricksSqlWarehouseQueryExecutorMock
+            .Setup(s => s.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
+            .Returns(_rows.ToAsyncEnumerable);
         var sut = new SettlementReportResultQueries(databricksSqlWarehouseQueryExecutorMock.Object, _someDeltaTableOptions);
 
         // Act
         var actual = await sut.GetRowsAsync(_someGridAreas, ProcessType.BalanceFixing, _somePeriodStart, _somePeriodEnd, null);
 
         // Assert
-        actual.Count().Should().Be(_someTableChunk.RowCount);
+        actual.Count().Should().Be(_rows.Count());
     }
 
     [Theory]
@@ -61,7 +60,7 @@ public class SettlementReportResultQueriesTests
         Mock<DatabricksSqlWarehouseQueryExecutor> databricksSqlWarehouseQueryExecutorMock)
     {
         // Arrange
-        var row = new[] { "123", "BalanceFixing", "2022-05-16T01:00:00.000Z", "non_profiled_consumption", "1.234" };
+        var row = ToAsyncEnumerable();
         var expected = new SettlementReportResultRow(
             "123",
             ProcessType.BalanceFixing,
@@ -70,9 +69,9 @@ public class SettlementReportResultQueriesTests
             MeteringPointType.Consumption,
             SettlementMethod.NonProfiled,
             1.234m);
-        var table = new TableChunk(_columnNames,  new List<string[]> { row });
-        var asyncResult = ToAsyncEnumerable(table);
-        databricksSqlWarehouseQueryExecutorMock.Setup(s => s.ExecuteStatementAsync(It.IsAny<DatabricksStatement>())).Returns(asyncResult);
+        databricksSqlWarehouseQueryExecutorMock
+            .Setup(s => s.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
+            .Returns(row);
         var sut = new SettlementReportResultQueries(databricksSqlWarehouseQueryExecutorMock.Object, _someDeltaTableOptions);
 
         // Act
@@ -82,11 +81,9 @@ public class SettlementReportResultQueriesTests
         actual.First().Should().Be(expected);
     }
 
-    private static async IAsyncEnumerable<SqlResultRow> ToAsyncEnumerable(TableChunk tableChunk)
+    private static async IAsyncEnumerable<IDictionary<string, object?>> ToAsyncEnumerable()
     {
-        for (var index = 0; index < tableChunk.RowCount; index++)
-            yield return new SqlResultRow(tableChunk, index);
-
         await Task.Delay(0);
+        yield return TableTestHelper.NewRow();
     }
 }

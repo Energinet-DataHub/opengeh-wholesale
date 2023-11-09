@@ -26,5 +26,16 @@ public record SqlResultRow
         _index = index;
     }
 
-    public virtual string this[string column] => _chunk[_index, column];
+    ////public string this[string column] => _chunk[_index, column];
+
+    public IDictionary<string, object?> ToDic()
+    {
+        var dic = new Dictionary<string, object?>();
+        foreach (var columnName in _chunk.ColumnNames)
+        {
+            dic.Add(columnName, _chunk[_index, columnName]);
+        }
+
+        return dic;
+    }
 }

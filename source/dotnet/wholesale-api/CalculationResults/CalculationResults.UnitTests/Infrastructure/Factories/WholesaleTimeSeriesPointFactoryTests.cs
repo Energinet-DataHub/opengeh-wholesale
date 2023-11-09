@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
-using Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.Fixtures;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Xunit;
@@ -29,29 +29,28 @@ public class WholesaleTimeSeriesPointFactoryTests
     [Fact]
     public void Create_WhenNullableFieldsNull_ReturnsNullForThoseFields()
     {
-         // Arrange
-         var row = CreateDefaultSqlResultRow(DefaultTime, null, DefaultQuantityQualities, null, null);
+        // Arrange
+        var row = CreateDefaultSqlResultRow(DefaultTime, null, DefaultQuantityQualities, null, null);
 
-         // Act
-         var actual = WholesaleTimeSeriesPointFactory.Create(row);
+        // Act
+        var actual = WholesaleTimeSeriesPointFactory.Create(row);
 
-         // Assert
-         using var assertionScope = new AssertionScope();
-         actual.Quantity.Should().BeNull();
-         actual.Price.Should().BeNull();
-         actual.Amount.Should().BeNull();
+        // Assert
+        using var assertionScope = new AssertionScope();
+        actual.Quantity.Should().BeNull();
+        actual.Price.Should().BeNull();
+        actual.Amount.Should().BeNull();
     }
 
-    private static TestSqlResultRow CreateDefaultSqlResultRow(string time, string? quantity, string quantityQualities, string? price, string? amount)
+    private static DatabricksSqlRow CreateDefaultSqlResultRow(string time, string? quantity, string quantityQualities, string? price, string? amount)
     {
-        var list = new List<KeyValuePair<string, string>>
+        return new DatabricksSqlRow(new Dictionary<string, object?>
         {
-            new(WholesaleResultColumnNames.Time, time),
-            new(WholesaleResultColumnNames.Quantity, quantity!),
-            new(WholesaleResultColumnNames.QuantityQualities, quantityQualities!),
-            new(WholesaleResultColumnNames.Price, price!),
-            new(WholesaleResultColumnNames.Amount, amount!),
-        };
-        return new TestSqlResultRow(list);
+            { WholesaleResultColumnNames.Time, time },
+            { WholesaleResultColumnNames.Quantity, quantity! },
+            { WholesaleResultColumnNames.QuantityQualities, quantityQualities },
+            { WholesaleResultColumnNames.Price, price! },
+            { WholesaleResultColumnNames.Amount, amount! },
+        });
     }
 }

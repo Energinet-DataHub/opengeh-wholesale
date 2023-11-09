@@ -21,15 +21,26 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public static class SettlementReportDataFactory
 {
-    public static IEnumerable<SettlementReportResultRow> Create(IEnumerable<SqlResultRow> rows)
+    public static IEnumerable<SettlementReportResultRow> Create(IEnumerable<DatabricksSqlRow> databricksSqlRows)
     {
-        return rows.Select(row => new SettlementReportResultRow(
-            row[EnergyResultColumnNames.GridArea],
-            ProcessTypeMapper.FromDeltaTableValue(row[EnergyResultColumnNames.BatchProcessType]),
-            SqlResultValueConverters.ToInstant(row[EnergyResultColumnNames.Time])!.Value,
+        return databricksSqlRows.Select(Map);
+    }
+
+    private static SettlementReportResultRow Map(DatabricksSqlRow databricksSqlRow)
+    {
+        var gridArea = databricksSqlRow[EnergyResultColumnNames.GridArea];
+        var processType = databricksSqlRow[EnergyResultColumnNames.BatchProcessType];
+        var time = databricksSqlRow[EnergyResultColumnNames.Time];
+        var timeSeriesType = databricksSqlRow[EnergyResultColumnNames.TimeSeriesType];
+        var quantity = databricksSqlRow[EnergyResultColumnNames.Quantity];
+
+        return new SettlementReportResultRow(
+            gridArea!,
+            ProcessTypeMapper.FromDeltaTableValue(processType!),
+            SqlResultValueConverters.ToInstant(time)!.Value,
             "PT15M", // TODO (JMG): store resolution in delta table?
-            MeteringPointTypeMapper.FromTimeSeriesTypeDeltaTableValue(row[EnergyResultColumnNames.TimeSeriesType]),
-            SettlementMethodMapper.FromTimeSeriesTypeDeltaTableValue(row[EnergyResultColumnNames.TimeSeriesType]),
-            SqlResultValueConverters.ToDecimal(row[EnergyResultColumnNames.Quantity])!.Value));
+            MeteringPointTypeMapper.FromTimeSeriesTypeDeltaTableValue(timeSeriesType!),
+            SettlementMethodMapper.FromTimeSeriesTypeDeltaTableValue(timeSeriesType!),
+            SqlResultValueConverters.ToDecimal(quantity)!.Value);
     }
 }

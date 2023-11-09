@@ -13,7 +13,8 @@
 // limitations under the License.
 
 using System.Globalization;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+using AutoFixture;
+using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
@@ -23,13 +24,12 @@ using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.CalculationResults;
 
-public class WholesaleResultQueriesTests : IClassFixture<DatabricksSqlStatementApiFixture>
+public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>, IClassFixture<DatabricksSqlStatementApiFixture>
 {
     private const string CalculationId = "019703e7-98ee-45c1-b343-0cbf185a47d9";
     private const string HourlyTariffCalculationResultId = "12345678-98ee-45c1-b343-0cbf185a47d9";
@@ -38,34 +38,29 @@ public class WholesaleResultQueriesTests : IClassFixture<DatabricksSqlStatementA
     private const string DefaultMonthlyAmount = "1.123456";
 
     private readonly DatabricksSqlStatementApiFixture _fixture;
+    private readonly Mock<IBatchesClient> _batchesClientMock;
 
     public WholesaleResultQueriesTests(DatabricksSqlStatementApiFixture fixture)
     {
         _fixture = fixture;
+        _batchesClientMock = Fixture.Freeze<Mock<IBatchesClient>>();
+        Fixture.Inject(_fixture.DatabricksSchemaManager.DeltaTableOptions);
+        Fixture.Inject(_fixture.GetDatabricksExecutor());
     }
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_WhenCalculationHasHourlyAndMonthlyTariff_ReturnsExpectedWholesaleResult(
-        Mock<DatabricksSqlWarehouseQueryExecutor> databricksSqlWarehouseQueryExecutorMock,
-        Mock<IBatchesClient> batchesClientMock,
-        BatchDto batch,
-        Mock<ILogger<WholesaleResultQueries>> wholesaleResultQueriesLoggerMock)
+    public async Task GetAsync_WhenCalculationHasHourlyAndMonthlyTariff_ReturnsExpectedWholesaleResult(BatchDto batch)
     {
         // Arrange
         await InsertHourlyTariffAndMonthlyAmountTariffRowsAsync();
         batch = batch with { BatchId = Guid.Parse(CalculationId) };
-        batchesClientMock
+        _batchesClientMock
             .Setup(b => b.GetAsync(It.IsAny<Guid>()))
             .ReturnsAsync(batch);
-        var sut = new WholesaleResultQueries(
-            databricksSqlWarehouseQueryExecutorMock.Object,
-            batchesClientMock.Object,
-            _fixture.DatabricksSchemaManager.DeltaTableOptions,
-            wholesaleResultQueriesLoggerMock.Object);
 
         // Act
-        var actual = await sut.GetAsync(batch.BatchId).ToListAsync();
+        var actual = await Sut.GetAsync(batch.BatchId).ToListAsync();
 
         // Assert
         using var assertionScope = new AssertionScope();

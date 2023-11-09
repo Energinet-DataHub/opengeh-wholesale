@@ -20,11 +20,11 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factorie
 
 public static class EnergyTimeSeriesPointFactory
 {
-    public static EnergyTimeSeriesPoint CreateTimeSeriesPoint(IDictionary<string, object> row)
+    public static EnergyTimeSeriesPoint CreateTimeSeriesPoint(DatabricksSqlRow databricksSqlRow)
     {
-        var time = row[EnergyResultColumnNames.Time].ToString();
-        var quantity = row[EnergyResultColumnNames.Quantity].ToString();
-        var quality = row[EnergyResultColumnNames.QuantityQualities].ToString();
+        var time = databricksSqlRow[EnergyResultColumnNames.Time];
+        var quantity = databricksSqlRow[EnergyResultColumnNames.Quantity];
+        var quality = databricksSqlRow[EnergyResultColumnNames.QuantityQualities];
 
         return new EnergyTimeSeriesPoint(
             SqlResultValueConverters.ToDateTimeOffset(time)!.Value,

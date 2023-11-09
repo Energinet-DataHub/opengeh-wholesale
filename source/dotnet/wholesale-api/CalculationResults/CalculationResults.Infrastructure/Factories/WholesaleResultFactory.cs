@@ -24,43 +24,43 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factorie
 public class WholesaleResultFactory
 {
     public static WholesaleResult CreateWholesaleResult(
-        SqlResultRow sqlResultRow,
+        DatabricksSqlRow databricksSqlRow,
         IReadOnlyCollection<WholesaleTimeSeriesPoint> wholesaleTimeSeriesPoints,
         Instant periodStart,
         Instant periodEnd)
     {
-        var id = sqlResultRow[WholesaleResultColumnNames.CalculationResultId];
-        var calculationId = sqlResultRow[WholesaleResultColumnNames.CalculationId];
-        var calculationType = sqlResultRow[WholesaleResultColumnNames.CalculationType];
-        var gridArea = sqlResultRow[WholesaleResultColumnNames.GridArea];
-        var energySupplierId = sqlResultRow[WholesaleResultColumnNames.EnergySupplierId];
-        var amountType = sqlResultRow[WholesaleResultColumnNames.AmountType];
-        var chargeCode = sqlResultRow[WholesaleResultColumnNames.ChargeCode];
-        var chargeType = sqlResultRow[WholesaleResultColumnNames.ChargeType];
-        var chargeOwnerId = sqlResultRow[WholesaleResultColumnNames.ChargeOwnerId];
-        var isTax = sqlResultRow[WholesaleResultColumnNames.IsTax];
-        var quantityUnit = sqlResultRow[WholesaleResultColumnNames.QuantityUnit];
-        var chargeResolution = sqlResultRow[WholesaleResultColumnNames.ChargeResolution];
-        var meteringPointType = sqlResultRow[WholesaleResultColumnNames.MeteringPointType];
-        var settlementMethod = sqlResultRow[WholesaleResultColumnNames.SettlementMethod];
+        var id = databricksSqlRow[WholesaleResultColumnNames.CalculationResultId];
+        var calculationId = databricksSqlRow[WholesaleResultColumnNames.CalculationId];
+        var calculationType = databricksSqlRow[WholesaleResultColumnNames.CalculationType];
+        var gridArea = databricksSqlRow[WholesaleResultColumnNames.GridArea];
+        var energySupplierId = databricksSqlRow[WholesaleResultColumnNames.EnergySupplierId];
+        var amountType = databricksSqlRow[WholesaleResultColumnNames.AmountType];
+        var chargeCode = databricksSqlRow[WholesaleResultColumnNames.ChargeCode];
+        var chargeType = databricksSqlRow[WholesaleResultColumnNames.ChargeType];
+        var chargeOwnerId = databricksSqlRow[WholesaleResultColumnNames.ChargeOwnerId];
+        var isTax = databricksSqlRow[WholesaleResultColumnNames.IsTax];
+        var quantityUnit = databricksSqlRow[WholesaleResultColumnNames.QuantityUnit];
+        var chargeResolution = databricksSqlRow[WholesaleResultColumnNames.ChargeResolution];
+        var meteringPointType = databricksSqlRow[WholesaleResultColumnNames.MeteringPointType];
+        var settlementMethod = databricksSqlRow[WholesaleResultColumnNames.SettlementMethod];
 
         return new WholesaleResult(
-            SqlResultValueConverters.ToGuid(id),
-            SqlResultValueConverters.ToGuid(calculationId),
-            ProcessTypeMapper.FromDeltaTableValue(calculationType),
+            SqlResultValueConverters.ToGuid(id!),
+            SqlResultValueConverters.ToGuid(calculationId!),
+            ProcessTypeMapper.FromDeltaTableValue(calculationType!),
             periodStart,
             periodEnd,
-            gridArea,
-            energySupplierId,
-            AmountTypeMapper.FromDeltaTableValue(amountType),
-            chargeCode,
-            ChargeTypeMapper.FromDeltaTableValue(chargeType),
-            chargeOwnerId,
-            SqlResultValueConverters.ToBool(isTax),
-            QuantityUnitMapper.FromDeltaTableValue(quantityUnit),
-            ChargeResolutionMapper.FromDeltaTableValue(chargeResolution),
+            gridArea!,
+            energySupplierId!,
+            AmountTypeMapper.FromDeltaTableValue(amountType!),
+            chargeCode!,
+            ChargeTypeMapper.FromDeltaTableValue(chargeType!),
+            chargeOwnerId!,
+            SqlResultValueConverters.ToBool(isTax!),
+            QuantityUnitMapper.FromDeltaTableValue(quantityUnit!),
+            ChargeResolutionMapper.FromDeltaTableValue(chargeResolution!),
             MeteringPointTypeMapper.FromDeltaTableValue(meteringPointType),
-            SettlementMethodMapper.FromDeltaTableValue(settlementMethod),
+            SettlementMethodMapper.FromDeltaTableValue(settlementMethod!),
             wholesaleTimeSeriesPoints);
     }
 }
