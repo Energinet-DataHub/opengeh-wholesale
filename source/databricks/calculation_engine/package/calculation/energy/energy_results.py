@@ -50,7 +50,7 @@ energy_results_schema = t.StructType(
         t.StructField(Colname.from_grid_area, t.StringType(), True),
         t.StructField(Colname.balance_responsible_id, t.StringType(), True),
         t.StructField(Colname.energy_supplier_id, t.StringType(), True),
-        # TODO BJM: Why not just a single time stamp?
+        # Suggestion: Why not just a single time stamp?
         #           That is much simpler to manage throughout the code and especially in all the tests
         t.StructField(
             Colname.time_window,
