@@ -52,15 +52,11 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
         args.time_zone,
     )
 
-    quarterly_metering_point_time_series = (
-        prepared_data_reader.transform_hour_to_quarter(metering_point_time_series)
-    )
-
     energy_calculation.execute(
         args.batch_id,
         args.batch_process_type,
         args.batch_execution_time_start,
-        quarterly_metering_point_time_series,
+        metering_point_time_series,
         grid_loss_responsible_df,
     )
 
