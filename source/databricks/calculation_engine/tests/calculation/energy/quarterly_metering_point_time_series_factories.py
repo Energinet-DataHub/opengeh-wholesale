@@ -52,7 +52,6 @@ def create_row(
         Colname.from_grid_area: from_grid_area,
         Colname.metering_point_id: metering_point_id,
         Colname.metering_point_type: metering_point_type.value,
-        Colname.observation_time: observation_time,
         Colname.quantity: quantity,
         Colname.quality: quality.value,
         Colname.energy_supplier_id: None,
