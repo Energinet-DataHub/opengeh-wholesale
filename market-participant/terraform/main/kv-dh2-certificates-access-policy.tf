@@ -7,6 +7,7 @@ resource "azurerm_key_vault_access_policy" "kv_dh2_certificates_access_policy_ap
   secret_permissions = [
       "Recover",
       "Delete",
+      "Get",
       "Set",
       "List",
     ]
