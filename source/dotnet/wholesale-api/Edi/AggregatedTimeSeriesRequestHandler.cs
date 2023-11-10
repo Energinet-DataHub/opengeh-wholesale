@@ -93,8 +93,9 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         }
 
         return _aggregatedTimeSeriesQueries.GetAsync(
-            new AggregatedTimeSeriesQueryParameters(
-                parameters,
-                ProcessTypeMapper.FromRequestedProcessType(request.RequestedProcessType)));
+            parameters with
+            {
+                ProcessType = ProcessTypeMapper.FromRequestedProcessType(request.RequestedProcessType),
+            });
     }
 }

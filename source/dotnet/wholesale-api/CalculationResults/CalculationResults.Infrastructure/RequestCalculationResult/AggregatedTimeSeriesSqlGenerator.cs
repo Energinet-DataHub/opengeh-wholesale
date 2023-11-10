@@ -31,7 +31,7 @@ public class AggregatedTimeSeriesSqlGenerator
         _deltaTableOptions = deltaTableOptions.Value;
     }
 
-    public string GetSingleRow(AggregatedTimeSeriesQueryParameters parameters)
+    public string CreateGetSingleRowSql(AggregatedTimeSeriesQueryParameters parameters)
     {
         return $@"
             SELECT 1

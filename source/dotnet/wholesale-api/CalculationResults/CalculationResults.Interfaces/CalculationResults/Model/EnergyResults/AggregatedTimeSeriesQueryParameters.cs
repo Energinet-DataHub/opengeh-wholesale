@@ -24,15 +24,4 @@ public record AggregatedTimeSeriesQueryParameters(
     string GridArea,
     string? EnergySupplierId,
     string? BalanceResponsibleId,
-    ProcessType? ProcessType = null)
-{
-    public AggregatedTimeSeriesQueryParameters(AggregatedTimeSeriesQueryParameters aggregatedTimeSeriesFilter, ProcessType processType)
-        : this(
-            aggregatedTimeSeriesFilter.TimeSeriesType,
-            aggregatedTimeSeriesFilter.StartOfPeriod,
-            aggregatedTimeSeriesFilter.EndOfPeriod,
-            aggregatedTimeSeriesFilter.GridArea,
-            aggregatedTimeSeriesFilter.EnergySupplierId,
-            aggregatedTimeSeriesFilter.BalanceResponsibleId,
-            processType) { }
-}
+    ProcessType? ProcessType = null);

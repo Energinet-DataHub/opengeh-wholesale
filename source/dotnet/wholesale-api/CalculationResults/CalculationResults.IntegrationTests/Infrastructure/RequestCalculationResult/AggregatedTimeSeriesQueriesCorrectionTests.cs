@@ -66,7 +66,7 @@ public class AggregatedTimeSeriesQueriesCorrectionTests : IClassFixture<Databric
             endOfPeriodFilter,
             gridAreaFilter);
 
-        var sut = await CreateRequestCalculationResultQueries(
+        var sut = await CreateAggregatedTimeSeriesQueries(
             httpClientFactoryMock,
             loggerMock,
             addFirstCorrection: true,
@@ -98,7 +98,7 @@ public class AggregatedTimeSeriesQueriesCorrectionTests : IClassFixture<Databric
             endOfPeriodFilter,
             gridAreaFilter);
 
-        var sut = await CreateRequestCalculationResultQueries(
+        var sut = await CreateAggregatedTimeSeriesQueries(
             httpClientFactoryMock,
             loggerMock,
             addFirstCorrection: true,
@@ -129,7 +129,7 @@ public class AggregatedTimeSeriesQueriesCorrectionTests : IClassFixture<Databric
             endOfPeriodFilter,
             gridAreaFilter);
 
-        var sut = await CreateRequestCalculationResultQueries(
+        var sut = await CreateAggregatedTimeSeriesQueries(
             httpClientFactoryMock,
             loggerMock,
             addFirstCorrection: true,
@@ -160,7 +160,7 @@ public class AggregatedTimeSeriesQueriesCorrectionTests : IClassFixture<Databric
             endOfPeriodFilter,
             gridAreaFilter);
 
-        var sut = await CreateRequestCalculationResultQueries(
+        var sut = await CreateAggregatedTimeSeriesQueries(
             httpClientFactoryMock,
             loggerMock,
             addFirstCorrection: false,
@@ -191,7 +191,7 @@ public class AggregatedTimeSeriesQueriesCorrectionTests : IClassFixture<Databric
             BalanceResponsibleId: balanceResponsibleId);
     }
 
-    private async Task<AggregatedTimeSeriesQueries> CreateRequestCalculationResultQueries(
+    private async Task<AggregatedTimeSeriesQueries> CreateAggregatedTimeSeriesQueries(
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> sqlStatusResponseParserLoggerMock,
         bool addFirstCorrection = false,

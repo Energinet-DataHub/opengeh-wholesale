@@ -71,7 +71,7 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             endOfPeriod: endOfPeriodFilter,
             processType: ProcessType.BalanceFixing);
 
-        var sut = await CreateRequestCalculationResultQueries(
+        var sut = await CreateAggregatedTimeSeriesQueries(
             httpClientFactoryMock,
             loggerMock,
             addFirstCorrection: true);
@@ -104,7 +104,7 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             endOfPeriod: Instant.FromUtc(2021, 1, 2, 1, 1),
             processType: ProcessType.BalanceFixing);
 
-        var sut = await CreateRequestCalculationResultQueries(
+        var sut = await CreateAggregatedTimeSeriesQueries(
             httpClientFactoryMock,
             loggerMock,
             addFirstCorrection: true);
@@ -136,7 +136,7 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             energySupplierId: energySupplierIdFilter,
             processType: ProcessType.BalanceFixing);
 
-        var sut = await CreateRequestCalculationResultQueries(
+        var sut = await CreateAggregatedTimeSeriesQueries(
             httpClientFactoryMock,
             loggerMock,
             addFirstCorrection: true);
@@ -179,7 +179,7 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             energySupplierId: energySupplierId,
             processType: ProcessType.BalanceFixing);
 
-        var sut = await CreateRequestCalculationResultQueries(
+        var sut = await CreateAggregatedTimeSeriesQueries(
             httpClientFactoryMock,
             loggerMock,
             addFirstCorrection: true);
@@ -211,7 +211,7 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             balanceResponsibleId: balanceResponsibleIdFilter,
             processType: ProcessType.BalanceFixing);
 
-        var sut = await CreateRequestCalculationResultQueries(
+        var sut = await CreateAggregatedTimeSeriesQueries(
             httpClientFactoryMock,
             loggerMock,
             addFirstCorrection: true);
@@ -256,7 +256,7 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             balanceResponsibleId: balanceResponsibleIdFilter,
             processType: ProcessType.BalanceFixing);
 
-        var sut = await CreateRequestCalculationResultQueries(
+        var sut = await CreateAggregatedTimeSeriesQueries(
             httpClientFactoryMock,
             loggerMock,
             addFirstCorrection: true);
@@ -297,7 +297,7 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter,
             processType: ProcessType.FirstCorrectionSettlement);
-        var sut = await CreateRequestCalculationResultQueries(
+        var sut = await CreateAggregatedTimeSeriesQueries(
             httpClientFactoryMock,
             loggerMock,
             addFirstCorrection: true);
@@ -338,7 +338,7 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter,
             processType: ProcessType.SecondCorrectionSettlement);
-        var sut = await CreateRequestCalculationResultQueries(
+        var sut = await CreateAggregatedTimeSeriesQueries(
             httpClientFactoryMock,
             loggerMock,
             addFirstCorrection: true,
@@ -381,7 +381,7 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter,
             processType: ProcessType.ThirdCorrectionSettlement);
-        var sut = await CreateRequestCalculationResultQueries(
+        var sut = await CreateAggregatedTimeSeriesQueries(
             httpClientFactoryMock,
             loggerMock,
             addFirstCorrection: false,
@@ -424,7 +424,7 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter,
             processType: ProcessType.BalanceFixing);
-        var sut = await CreateRequestCalculationResultQueries(
+        var sut = await CreateAggregatedTimeSeriesQueries(
             httpClientFactoryMock,
             loggerMock);
 
@@ -464,7 +464,7 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             endOfPeriod: endOfPeriodFilter,
             processType: ProcessType.BalanceFixing);
 
-        var sut = await CreateRequestCalculationResultQueries(
+        var sut = await CreateAggregatedTimeSeriesQueries(
             httpClientFactoryMock,
             loggerMock);
 
@@ -490,7 +490,7 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             startOfPeriodFilter,
             endOfPeriodFilter,
             gridAreaFilter);
-        var sut = await CreateRequestCalculationResultQueries(
+        var sut = await CreateAggregatedTimeSeriesQueries(
             httpClientFactoryMock,
             loggerMock,
             addFirstCorrection: true,
@@ -521,7 +521,7 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             startOfPeriodFilter,
             endOfPeriodFilter,
             gridAreaFilter);
-        var sut = await CreateRequestCalculationResultQueries(
+        var sut = await CreateAggregatedTimeSeriesQueries(
             httpClientFactoryMock,
             loggerMock,
             addFirstCorrection: true,
@@ -551,7 +551,7 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             startOfPeriodFilter,
             endOfPeriodFilter,
             gridAreaFilter);
-        var sut = await CreateRequestCalculationResultQueries(
+        var sut = await CreateAggregatedTimeSeriesQueries(
             httpClientFactoryMock,
             loggerMock,
             addFirstCorrection: true,
@@ -581,7 +581,7 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             startOfPeriodFilter,
             endOfPeriodFilter,
             gridAreaFilter);
-        var sut = await CreateRequestCalculationResultQueries(
+        var sut = await CreateAggregatedTimeSeriesQueries(
             httpClientFactoryMock,
             loggerMock,
             addFirstCorrection: false,
@@ -612,7 +612,7 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             endOfPeriodFilter,
             gridAreaFilter,
             processType: ProcessType.BalanceFixing);
-        var sut = await CreateRequestCalculationResultQueries(
+        var sut = await CreateAggregatedTimeSeriesQueries(
             httpClientFactoryMock,
             loggerMock,
             addFirstCorrection: false,
@@ -646,7 +646,7 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             ProcessType: processType);
     }
 
-    private async Task<AggregatedTimeSeriesQueries> CreateRequestCalculationResultQueries(
+    private async Task<AggregatedTimeSeriesQueries> CreateAggregatedTimeSeriesQueries(
         Mock<IHttpClientFactory> httpClientFactoryMock,
         Mock<ILogger<SqlStatusResponseParser>> sqlStatusResponseParserLoggerMock,
         bool addFirstCorrection = false,

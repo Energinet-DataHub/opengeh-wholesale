@@ -65,24 +65,19 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
 
         var processType = await GetProcessTypeOfLatestCorrectionAsync(parameters).ConfigureAwait(false);
 
-        var queryWithLatestCorrection = new AggregatedTimeSeriesQueryParameters(parameters, processType);
-
-        return await GetAsync(queryWithLatestCorrection).ConfigureAwait(false);
+        return await GetAsync(
+            parameters with { ProcessType = processType }).ConfigureAwait(false);
     }
 
     public async Task<ProcessType> GetProcessTypeOfLatestCorrectionAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
         var thirdCorrectionExists = await PerformCorrectionVersionExistsQueryAsync(
-            new AggregatedTimeSeriesQueryParameters(
-                parameters,
-                ProcessType.ThirdCorrectionSettlement)).ConfigureAwait(false);
+            parameters with { ProcessType = ProcessType.ThirdCorrectionSettlement }).ConfigureAwait(false);
         if (thirdCorrectionExists)
             return ProcessType.ThirdCorrectionSettlement;
 
         var secondCorrectionExists = await PerformCorrectionVersionExistsQueryAsync(
-            new AggregatedTimeSeriesQueryParameters(
-                parameters,
-                ProcessType.SecondCorrectionSettlement)).ConfigureAwait(false);
+            parameters with { ProcessType = ProcessType.SecondCorrectionSettlement }).ConfigureAwait(false);
 
         if (secondCorrectionExists)
             return ProcessType.SecondCorrectionSettlement;
@@ -108,7 +103,7 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
             && processType != ProcessType.ThirdCorrectionSettlement)
             throw new ArgumentOutOfRangeException(nameof(processType), processType, "ProcessType must be a correction settlement type");
 
-        var sql = _aggregatedTimeSeriesSqlGenerator.GetSingleRow(parameters);
+        var sql = _aggregatedTimeSeriesSqlGenerator.CreateGetSingleRowSql(parameters);
 
         return sql;
     }
