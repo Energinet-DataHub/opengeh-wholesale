@@ -61,16 +61,41 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
         public async Task InitializeAsync()
         {
-            BalanceFixingCalculationId = await StartBalanceFixingCalculation();
-            WholesaleFixingCalculationId = await StartWholesaleFixingCalculation();
+            await Task.WhenAll(
+                HandleBalanceFixingCalculationAsync(calculationTimeLimit: TimeSpan.FromMinutes(15)),
+                HandleWholesaleFixingCalculationAsync(calculationTimeLimit: TimeSpan.FromMinutes(25)));
 
-            BalanceFixingCalculationIsComplete = await WaitForCalculationToComplete(BalanceFixingCalculationId);
-            WholesaleFixingCalculationIsComplete = await WaitForCalculationToComplete(WholesaleFixingCalculationId);
-
-            await CollectResultsFromServiceBus();
+            await ReceiveServiceBusMessagesAsync(loopTimeLimit: TimeSpan.FromMinutes(10));
         }
 
-        private async Task<Guid> StartBalanceFixingCalculation()
+        private static Xunit.Sdk.DiagnosticMessage CreateDiagnosticMessage(string message)
+        {
+            return new Xunit.Sdk.DiagnosticMessage($"LOOK AT ME: {message}");
+        }
+
+        private async Task HandleBalanceFixingCalculationAsync(TimeSpan calculationTimeLimit)
+        {
+            BalanceFixingCalculationId = await StartBalanceFixingCalculationAsync();
+            _diagnosticMessageSink.OnMessage(CreateDiagnosticMessage($"Calculation for BalanceFixing with id '{BalanceFixingCalculationId}' started."));
+
+            var stopwatch = Stopwatch.StartNew();
+            BalanceFixingCalculationIsComplete = await WaitForCalculationToCompleteAsync(BalanceFixingCalculationId, calculationTimeLimit);
+            stopwatch.Stop();
+            _diagnosticMessageSink.OnMessage(CreateDiagnosticMessage($"Calculation for BalanceFixing completed. Calculation took '{stopwatch.Elapsed}'."));
+        }
+
+        private async Task HandleWholesaleFixingCalculationAsync(TimeSpan calculationTimeLimit)
+        {
+            WholesaleFixingCalculationId = await StartWholesaleFixingCalculationAsync();
+            _diagnosticMessageSink.OnMessage(CreateDiagnosticMessage($"Calculation for WholesaleFixing with id '{WholesaleFixingCalculationId}' started."));
+
+            var stopwatch = Stopwatch.StartNew();
+            WholesaleFixingCalculationIsComplete = await WaitForCalculationToCompleteAsync(WholesaleFixingCalculationId, calculationTimeLimit);
+            stopwatch.Stop();
+            _diagnosticMessageSink.OnMessage(CreateDiagnosticMessage($"Calculation for WholesaleFixing completed. Calculation took '{stopwatch.Elapsed}'."));
+        }
+
+        private Task<Guid> StartBalanceFixingCalculationAsync()
         {
             var startDate = new DateTimeOffset(2022, 1, 11, 23, 0, 0, TimeSpan.Zero);
             var endDate = new DateTimeOffset(2022, 1, 12, 23, 0, 0, TimeSpan.Zero);
@@ -81,10 +106,10 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                 StartDate = startDate,
                 EndDate = endDate,
             };
-            return await _wholesaleClient.CreateBatchAsync(batchRequestDto);
+            return _wholesaleClient.CreateBatchAsync(batchRequestDto);
         }
 
-        private async Task<Guid> StartWholesaleFixingCalculation()
+        private Task<Guid> StartWholesaleFixingCalculationAsync()
         {
             var startDate = new DateTimeOffset(2023, 1, 31, 23, 0, 0, TimeSpan.Zero);
             var endDate = new DateTimeOffset(2023, 2, 28, 23, 0, 0, TimeSpan.Zero);
@@ -95,91 +120,124 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                 StartDate = startDate,
                 EndDate = endDate,
             };
-            return await _wholesaleClient.CreateBatchAsync(batchRequestDto);
+            return _wholesaleClient.CreateBatchAsync(batchRequestDto);
         }
 
-        private async Task<bool> WaitForCalculationToComplete(Guid calculationId)
+        private async Task<bool> WaitForCalculationToCompleteAsync(Guid calculationId, TimeSpan timeLimit)
         {
-            var defaultTimeout = TimeSpan.FromMinutes(15);
-            var defaultDelay = TimeSpan.FromSeconds(30);
-            var stopwatch = Stopwatch.StartNew();
+            var delay = TimeSpan.FromSeconds(30);
             var isCompleted = await Awaiter.TryWaitUntilConditionAsync(
                 async () =>
                 {
                     var batchResult = await _wholesaleClient.GetBatchAsync(calculationId);
                     return batchResult?.ExecutionState == BatchState.Completed;
                 },
-                defaultTimeout,
-                defaultDelay);
-            stopwatch.Stop();
-            _diagnosticMessageSink.OnMessage(new Xunit.Sdk.DiagnosticMessage($"LOOK AT ME: Calculation took '{stopwatch.Elapsed}' to complete for calculationId '{calculationId}'."));
+                timeLimit,
+                delay);
             return isCompleted;
         }
 
-        private async Task CollectResultsFromServiceBus()
+        private async Task ReceiveServiceBusMessagesAsync(TimeSpan loopTimeLimit)
         {
-            using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(15));
+            using var cts = new CancellationTokenSource(loopTimeLimit);
 
             var stopwatch = Stopwatch.StartNew();
 
+            var messageCount = 0;
             while (!cts.Token.IsCancellationRequested)
             {
-                var message = await _receiver.ReceiveMessageAsync();
-                if (message?.Body == null)
+                var messageOrNull = await _receiver.ReceiveMessageAsync(maxWaitTime: TimeSpan.FromMinutes(1));
+                if (messageOrNull?.Body == null)
                 {
-                    if (HasAlreadyReceivedMessage())
+                    if (messageCount > 0)
                         break;
                 }
                 else
                 {
-                    HandleMessage(message);
+                    if (await TryHandleMessageAsync(messageOrNull))
+                    {
+                        messageCount++;
+                    }
                 }
             }
 
             stopwatch.Stop();
 
-            _diagnosticMessageSink.OnMessage(new Xunit.Sdk.DiagnosticMessage($"LOOK AT ME: the loop took '{stopwatch.Elapsed}' to complete and received '{CalculationResultCompletedFromBalanceFixing.Count}' messages."));
-            if (stopwatch.Elapsed >= TimeSpan.FromMinutes(15))
+            _diagnosticMessageSink.OnMessage(CreateDiagnosticMessage($"Message receiver loop took '{stopwatch.Elapsed}' to complete. It handled a total of '{messageCount}' messages spanning various event types."));
+            if (stopwatch.Elapsed >= loopTimeLimit)
             {
-                _diagnosticMessageSink.OnMessage(new Xunit.Sdk.DiagnosticMessage("LOOK AT ME: No messages received within the 15 minute time limit, and the loop was stopped."));
+                _diagnosticMessageSink.OnMessage(CreateDiagnosticMessage($"No messages received within the time limit of '{loopTimeLimit}'. The loop was stopped."));
             }
         }
 
-        private void HandleMessage(ServiceBusReceivedMessage message)
+        /// <summary>
+        /// Returns <see langword="true"/> if we handled the message type; otherwise <see langword="false"/> .
+        /// </summary>
+        private async Task<bool> TryHandleMessageAsync(ServiceBusReceivedMessage message)
         {
+            var messageHandled = false;
             var data = message.Body.ToArray();
+
             switch (message.Subject)
             {
                 case CalculationResultCompleted.EventName:
                     var calculationResultCompleted = CalculationResultCompleted.Parser.ParseFrom(data);
                     if (calculationResultCompleted.BatchId == BalanceFixingCalculationId.ToString())
+                    {
                         CalculationResultCompletedFromBalanceFixing.Add(calculationResultCompleted);
+                        messageHandled = true;
+                    }
                     else if (calculationResultCompleted.BatchId == WholesaleFixingCalculationId.ToString())
+                    {
                         CalculationResultCompletedFromWholesaleFixing.Add(calculationResultCompleted);
+                        messageHandled = true;
+                    }
+
                     break;
                 case EnergyResultProducedV2.EventName:
                     var energyResultProduced = EnergyResultProducedV2.Parser.ParseFrom(data);
                     if (energyResultProduced.CalculationId == BalanceFixingCalculationId.ToString())
+                    {
                         EnergyResultProducedFromBalanceFixing.Add(energyResultProduced);
+                        messageHandled = true;
+                    }
                     else if (energyResultProduced.CalculationId == WholesaleFixingCalculationId.ToString())
+                    {
                         EnergyResultProducedFromWholesaleFixing.Add(energyResultProduced);
+                        messageHandled = true;
+                    }
+
                     break;
                 case AmountPerChargeResultProducedV1.EventName:
                     var amountPerChargeResultProduced = AmountPerChargeResultProducedV1.Parser.ParseFrom(data);
                     if (amountPerChargeResultProduced.CalculationId == WholesaleFixingCalculationId.ToString())
+                    {
                         AmountPerChargeResultProduced.Add(amountPerChargeResultProduced);
+                        messageHandled = true;
+                    }
+
                     break;
                 case MonthlyAmountPerChargeResultProducedV1.EventName:
                     var monthlyAmountPerChargeResultProduced = MonthlyAmountPerChargeResultProducedV1.Parser.ParseFrom(data);
                     if (monthlyAmountPerChargeResultProduced.CalculationId == WholesaleFixingCalculationId.ToString())
+                    {
                         MonthlyAmountPerChargeResultProduced.Add(monthlyAmountPerChargeResultProduced);
+                        messageHandled = true;
+                    }
+
                     break;
             }
-        }
 
-        private bool HasAlreadyReceivedMessage()
-        {
-            return CalculationResultCompletedFromBalanceFixing.Any() || CalculationResultCompletedFromWholesaleFixing.Any();
+            if (messageHandled)
+            {
+                await _receiver.CompleteMessageAsync(message);
+                return true;
+            }
+            else
+            {
+                await _receiver.AbandonMessageAsync(message);
+                return false;
+            }
         }
     }
 }
