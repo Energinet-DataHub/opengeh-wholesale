@@ -79,7 +79,4 @@
     <ProjectReference Include="..\..\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
     <ProjectReference Include="..\Events.Application\Events.Application.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="IntegrationEvents\Types\CalculationResultCompleted" />
-  </ItemGroup>
 </Project>
