@@ -13,13 +13,12 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
-using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1.Factories;
 
 public interface IMonthlyAmountPerChargeResultProducedV1Factory
 {
     bool CanCreate(WholesaleResult result);
 
-    MonthlyAmountPerChargeResultProducedV1 Create(WholesaleResult result);
+    Contracts.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1 Create(WholesaleResult result);
 }
