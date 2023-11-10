@@ -15,7 +15,6 @@
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
-using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.AmountPerChargeResultProducedV1.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Common;
 using Energinet.DataHub.Wholesale.Events.UnitTests.Fixtures;
@@ -23,7 +22,7 @@ using FluentAssertions;
 using Google.Protobuf.WellKnownTypes;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.Factories;
+namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.AmountPerChargeResultProducedV1.Factories;
 
 public class AmountPerChargeResultProducedV1FactoryTests
 {
@@ -103,36 +102,36 @@ public class AmountPerChargeResultProducedV1FactoryTests
         act.Should().Throw<ArgumentOutOfRangeException>();
     }
 
-    private static AmountPerChargeResultProducedV1 CreateExpected(WholesaleResult wholesaleResult)
+    private static Contracts.IntegrationEvents.AmountPerChargeResultProducedV1 CreateExpected(WholesaleResult wholesaleResult)
     {
-        var amountPerChargeResultProducedV1 = new AmountPerChargeResultProducedV1()
+        var amountPerChargeResultProducedV1 = new Contracts.IntegrationEvents.AmountPerChargeResultProducedV1()
         {
             CalculationId = wholesaleResult.CalculationId.ToString(),
-            CalculationType = AmountPerChargeResultProducedV1.Types.CalculationType.WholesaleFixing,
-            QuantityUnit = AmountPerChargeResultProducedV1.Types.QuantityUnit.Kwh,
+            CalculationType = Contracts.IntegrationEvents.AmountPerChargeResultProducedV1.Types.CalculationType.WholesaleFixing,
+            QuantityUnit = Contracts.IntegrationEvents.AmountPerChargeResultProducedV1.Types.QuantityUnit.Kwh,
             PeriodStartUtc = wholesaleResult.PeriodStart.ToTimestamp(),
             PeriodEndUtc = wholesaleResult.PeriodEnd.ToTimestamp(),
             GridAreaCode = wholesaleResult.GridArea,
             EnergySupplierId = wholesaleResult.EnergySupplierId,
             ChargeCode = wholesaleResult.ChargeCode,
-            ChargeType = AmountPerChargeResultProducedV1.Types.ChargeType.Tariff,
+            ChargeType = Contracts.IntegrationEvents.AmountPerChargeResultProducedV1.Types.ChargeType.Tariff,
             ChargeOwnerId = wholesaleResult.ChargeOwnerId,
-            Resolution = AmountPerChargeResultProducedV1.Types.Resolution.Hour,
-            MeteringPointType = AmountPerChargeResultProducedV1.Types.MeteringPointType.Production,
-            SettlementMethod = AmountPerChargeResultProducedV1.Types.SettlementMethod.Unspecified,
+            Resolution = Contracts.IntegrationEvents.AmountPerChargeResultProducedV1.Types.Resolution.Hour,
+            MeteringPointType = Contracts.IntegrationEvents.AmountPerChargeResultProducedV1.Types.MeteringPointType.Production,
+            SettlementMethod = Contracts.IntegrationEvents.AmountPerChargeResultProducedV1.Types.SettlementMethod.Unspecified,
             IsTax = wholesaleResult.IsTax,
-            Currency = AmountPerChargeResultProducedV1.Types.Currency.Dkk,
+            Currency = Contracts.IntegrationEvents.AmountPerChargeResultProducedV1.Types.Currency.Dkk,
         };
 
-        var qualities = new List<AmountPerChargeResultProducedV1.Types.QuantityQuality>
+        var qualities = new List<Contracts.IntegrationEvents.AmountPerChargeResultProducedV1.Types.QuantityQuality>
         {
-            AmountPerChargeResultProducedV1.Types.QuantityQuality.Measured,
+            Contracts.IntegrationEvents.AmountPerChargeResultProducedV1.Types.QuantityQuality.Measured,
         };
 
         amountPerChargeResultProducedV1.TimeSeriesPoints.AddRange(
             wholesaleResult.TimeSeriesPoints.Select(timeSeriesPoint =>
             {
-                var p = new AmountPerChargeResultProducedV1.Types.TimeSeriesPoint
+                var p = new Contracts.IntegrationEvents.AmountPerChargeResultProducedV1.Types.TimeSeriesPoint
                 {
                     Time = timeSeriesPoint.Time.ToTimestamp(),
                     Quantity = timeSeriesPoint.Quantity,

@@ -15,7 +15,6 @@
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
-using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Common;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1.Factories;
 using Energinet.DataHub.Wholesale.Events.UnitTests.Fixtures;
@@ -23,7 +22,7 @@ using FluentAssertions;
 using Xunit;
 using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
 
-namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.Factories;
+namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1.Factories;
 
 public class MonthlyAmountPerChargeResultProducedV1FactoryTests
 {
@@ -156,22 +155,22 @@ public class MonthlyAmountPerChargeResultProducedV1FactoryTests
         act.Should().Throw<ArgumentException>();
     }
 
-    private static MonthlyAmountPerChargeResultProducedV1 CreateExpected(WholesaleResult wholesaleResult)
+    private static Contracts.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1 CreateExpected(WholesaleResult wholesaleResult)
     {
-        var monthlyAmountPerChargeResultProducedV1 = new MonthlyAmountPerChargeResultProducedV1
+        var monthlyAmountPerChargeResultProducedV1 = new Contracts.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1
         {
             CalculationId = wholesaleResult.CalculationId.ToString(),
-            CalculationType = MonthlyAmountPerChargeResultProducedV1.Types.CalculationType.WholesaleFixing,
-            QuantityUnit = MonthlyAmountPerChargeResultProducedV1.Types.QuantityUnit.Kwh,
+            CalculationType = Contracts.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1.Types.CalculationType.WholesaleFixing,
+            QuantityUnit = Contracts.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1.Types.QuantityUnit.Kwh,
             PeriodStartUtc = wholesaleResult.PeriodStart.ToTimestamp(),
             PeriodEndUtc = wholesaleResult.PeriodEnd.ToTimestamp(),
             GridAreaCode = wholesaleResult.GridArea,
             EnergySupplierId = wholesaleResult.EnergySupplierId,
             ChargeCode = wholesaleResult.ChargeCode,
-            ChargeType = MonthlyAmountPerChargeResultProducedV1.Types.ChargeType.Tariff,
+            ChargeType = Contracts.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1.Types.ChargeType.Tariff,
             ChargeOwnerId = wholesaleResult.ChargeOwnerId,
             IsTax = wholesaleResult.IsTax,
-            Currency = MonthlyAmountPerChargeResultProducedV1.Types.Currency.Dkk,
+            Currency = Contracts.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1.Types.Currency.Dkk,
             Amount = wholesaleResult.TimeSeriesPoints.Single().Amount,
         };
 
