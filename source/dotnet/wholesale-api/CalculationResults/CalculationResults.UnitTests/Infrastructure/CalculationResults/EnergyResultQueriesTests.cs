@@ -12,17 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using AutoFixture.Xunit2;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
+using AutoFixture;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
+using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.Fixtures;
+using Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SettlementReport;
 using FluentAssertions;
 using Moq;
 using NodaTime.Extensions;
@@ -30,11 +34,14 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.CalculationResults;
 
-public class EnergyResultQueriesTests
+public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>
 {
     private readonly TableChunk _tableChunk;
     private readonly string _row0BatchId;
     private readonly string _calculationResultId0;
+
+    private readonly Mock<IBatchesClient> _batchesClientMock;
+    private readonly Mock<DatabricksSqlWarehouseQueryExecutor> _databricksSqlWarehouseQueryExecutorMock;
 
     public EnergyResultQueriesTests()
     {
@@ -42,34 +49,46 @@ public class EnergyResultQueriesTests
         _row0BatchId = "b78787d5-b544-44ac-87c2-7720aab86ed1";
         _calculationResultId0 = "9913f3bb-1208-400b-9cbe-50300e386d26";
         const string calculationResultId1 = "8c2bb7c6-d8e5-462c-9bce-8537f93ef8e7";
-        var row0 = new[] { _row0BatchId, "100", "200", "non_profiled_consumption", string.Empty, string.Empty, "2022-05-16T22:00:00.000Z", "1.111", "[\"measured\"]", _calculationResultId0, DeltaTableProcessType.Aggregation };
-        var row1 = new[] { "b78787d5-b544-44ac-87c2-7720aab86ed2", "200", "100", "non_profiled_consumption", string.Empty, string.Empty, "2022-05-16T22:00:00.000Z", "2.222", "[\"measured\"]", calculationResultId1, DeltaTableProcessType.BalanceFixing };
+        var row0 = new[]
+        {
+            _row0BatchId, "100", "200", "non_profiled_consumption", string.Empty, string.Empty,
+            "2022-05-16T22:00:00.000Z", "1.111", "[\"measured\"]", _calculationResultId0,
+            DeltaTableProcessType.Aggregation,
+        };
+        var row1 = new[]
+        {
+            "b78787d5-b544-44ac-87c2-7720aab86ed2", "200", "100", "non_profiled_consumption", string.Empty,
+            string.Empty, "2022-05-16T22:00:00.000Z", "2.222", "[\"measured\"]", calculationResultId1,
+            DeltaTableProcessType.BalanceFixing,
+        };
         var rows = new List<string[]> { row0, row1, };
 
         // Using the columns from the EnergyResultQueries class to ensure that the test is not broken if the columns are changed
-        _tableChunk = new TableChunk(EnergyResultQueries.SqlColumnNames, rows);
+        _tableChunk = new TableChunk(QueryEnergyResultStatement.SqlColumnNames, rows);
+
+        // Mocks Setup - This is another way to setup mocks used in tests. The reasons for this are:
+        // 1. Because DatabricksSqlWarehouseQueryExecutor doesn't implement an interface and the constructor is protected
+        // AutoFixture combined with inline is unable to create an instance of it.
+        // 2. The many mock parameters are avoided in tests
+        _batchesClientMock = Fixture.Freeze<Mock<IBatchesClient>>();
+        _databricksSqlWarehouseQueryExecutorMock = Fixture.Freeze<Mock<DatabricksSqlWarehouseQueryExecutor>>();
+        Fixture.Inject(_batchesClientMock.Object);
+        Fixture.Inject(_databricksSqlWarehouseQueryExecutorMock.Object);
     }
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_WhenNoRows_ReturnsNoResults(
-        BatchDto batch,
-        [Frozen] Mock<IBatchesClient> batchesClientMock,
-        [Frozen] Mock<IDatabricksSqlStatementClient> sqlStatementClientMock,
-        EnergyResultQueries sut)
+    public async Task GetAsync_WhenNoRows_ReturnsNoResults(BatchDto batch)
     {
         // Arrange
-        var batchId = Guid.Parse(_row0BatchId);
-        batch = batch with { BatchId = batchId };
-        batchesClientMock
-            .Setup(client => client.GetAsync(batchId))
+        _batchesClientMock
+            .Setup(client => client.GetAsync(batch.BatchId))
             .ReturnsAsync(batch);
-        sqlStatementClientMock
-            .Setup(x => x.ExecuteAsync(It.IsAny<string>(), null))
-            .Returns(GetRowsAsync(0));
+        _databricksSqlWarehouseQueryExecutorMock.Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
+            .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 0));
 
         // Act
-        var actual = await sut.GetAsync(batchId).ToListAsync();
+        var actual = await Sut.GetAsync(batch.BatchId).ToListAsync();
 
         // Assert
         actual.Should().BeEmpty();
@@ -77,24 +96,18 @@ public class EnergyResultQueriesTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_WhenOneRow_ReturnsSingleResultWithOneTimeSeriesPoint(
-        BatchDto batch,
-        [Frozen] Mock<IBatchesClient> batchesClientMock,
-        [Frozen] Mock<IDatabricksSqlStatementClient> sqlStatementClientMock,
-        EnergyResultQueries sut)
+    public async Task GetAsync_WhenOneRow_ReturnsSingleResultWithOneTimeSeriesPoint(BatchDto batch)
     {
         // Arrange
-        var batchId = Guid.Parse(_row0BatchId);
-        batch = batch with { BatchId = batchId };
-        batchesClientMock
-            .Setup(client => client.GetAsync(batchId))
+        _batchesClientMock
+            .Setup(client => client.GetAsync(batch.BatchId))
             .ReturnsAsync(batch);
-        sqlStatementClientMock
-            .Setup(x => x.ExecuteAsync(It.IsAny<string>(), null))
-            .Returns(GetRowsAsync(1));
+        _databricksSqlWarehouseQueryExecutorMock
+            .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
+            .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 1));
 
         // Act
-        var actual = await sut.GetAsync(batchId).ToListAsync();
+        var actual = await Sut.GetAsync(batch.BatchId).ToListAsync();
 
         // Assert
         actual.Single().TimeSeriesPoints.Length.Should().Be(1);
@@ -102,24 +115,18 @@ public class EnergyResultQueriesTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_ReturnsResultRowWithExpectedValues(
-        BatchDto batch,
-        [Frozen] Mock<IBatchesClient> batchesClientMock,
-        [Frozen] Mock<IDatabricksSqlStatementClient> sqlStatementClientMock,
-        EnergyResultQueries sut)
+    public async Task GetAsync_ReturnsResultRowWithExpectedValues(BatchDto batch)
     {
         // Arrange
-        var batchId = Guid.Parse(_row0BatchId);
-        batch = batch with { BatchId = batchId };
-        batchesClientMock
-            .Setup(client => client.GetAsync(batchId))
+        _batchesClientMock
+            .Setup(client => client.GetAsync(batch.BatchId))
             .ReturnsAsync(batch);
-        sqlStatementClientMock
-            .Setup(x => x.ExecuteAsync(It.IsAny<string>(), null))
-            .Returns(GetRowsAsync(1));
+        _databricksSqlWarehouseQueryExecutorMock
+            .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
+            .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 1));
 
         // Act
-        var actual = await sut.GetAsync(batchId).SingleAsync();
+        var actual = await Sut.GetAsync(batch.BatchId).SingleAsync();
 
         // Assert
         actual.Id.Should().Be(_calculationResultId0);
@@ -140,24 +147,18 @@ public class EnergyResultQueriesTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_WhenRowsBelongsToDifferentResults_ReturnsMultipleResults(
-        BatchDto batch,
-        [Frozen] Mock<IBatchesClient> batchesClientMock,
-        [Frozen] Mock<IDatabricksSqlStatementClient> sqlStatementClientMock,
-        EnergyResultQueries sut)
+    public async Task GetAsync_WhenRowsBelongsToDifferentResults_ReturnsMultipleResults(BatchDto batch)
     {
         // Arrange
-        var batchId = Guid.Parse(_row0BatchId);
-        batch = batch with { BatchId = batchId };
-        batchesClientMock
-            .Setup(client => client.GetAsync(batchId))
+        _batchesClientMock
+            .Setup(client => client.GetAsync(batch.BatchId))
             .ReturnsAsync(batch);
-        sqlStatementClientMock
-            .Setup(x => x.ExecuteAsync(It.IsAny<string>(), null))
-            .Returns(GetRowsAsync(2));
+        _databricksSqlWarehouseQueryExecutorMock
+            .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
+            .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 2));
 
         // Act
-        var actual = await sut.GetAsync(batchId).ToListAsync();
+        var actual = await Sut.GetAsync(batch.BatchId).ToListAsync();
 
         // Assert
         actual.Count.Should().Be(2);
@@ -172,32 +173,22 @@ public class EnergyResultQueriesTests
         bool expected)
     {
         // Arrange
-        var listA = new List<KeyValuePair<string, string>>
+        var listA = new DatabricksSqlRow(new Dictionary<string, object?>
         {
-            new(EnergyResultColumnNames.BatchId, "batchId"),
-            new(EnergyResultColumnNames.CalculationResultId, calculationResultIdA),
-        };
-        var sqlResultRowA = new TestSqlResultRow(listA);
-        var listB = new List<KeyValuePair<string, string>>
+            { EnergyResultColumnNames.BatchId, "batchId" },
+            { EnergyResultColumnNames.CalculationResultId, calculationResultIdA },
+        });
+
+        var listB = new DatabricksSqlRow(new Dictionary<string, object?>
         {
-            new(EnergyResultColumnNames.BatchId, "batchId"),
-            new(EnergyResultColumnNames.CalculationResultId, calculationResultIdB),
-        };
-        var sqlResultRowB = new TestSqlResultRow(listB);
+            { EnergyResultColumnNames.BatchId, "batchId" },
+            { EnergyResultColumnNames.CalculationResultId, calculationResultIdB },
+        });
 
         // Act
-        var actual = EnergyResultQueries.BelongsToDifferentResults(sqlResultRowA, sqlResultRowB);
+        var actual = EnergyResultQueries.BelongsToDifferentResults(listA, listB);
 
         // Assert
         actual.Should().Be(expected);
-    }
-
-    private async IAsyncEnumerable<SqlResultRow> GetRowsAsync(int rowCount)
-    {
-        await Task.Delay(0);
-        for (var i = 0; i < rowCount; i++)
-        {
-            yield return new SqlResultRow(_tableChunk, i);
-        }
     }
 }
