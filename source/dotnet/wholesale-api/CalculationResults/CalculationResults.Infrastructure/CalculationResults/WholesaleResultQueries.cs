@@ -53,9 +53,9 @@ public class WholesaleResultQueries : IWholesaleResultQueries
         _logger.LogDebug("Fetched all wholesale calculation results for calculation {CalculationId}", calculationId);
     }
 
-    public static bool BelongsToDifferentResults(DatabricksSqlRow sqlRow, DatabricksSqlRow otherSqlRow)
+    public static bool BelongsToDifferentResults(DatabricksSqlRow row, DatabricksSqlRow otherSqlRow)
     {
-        return !sqlRow[WholesaleResultColumnNames.CalculationResultId]!.Equals(otherSqlRow[WholesaleResultColumnNames.CalculationResultId]);
+        return !row[WholesaleResultColumnNames.CalculationResultId]!.Equals(otherSqlRow[WholesaleResultColumnNames.CalculationResultId]);
     }
 
     private async IAsyncEnumerable<WholesaleResult> GetInternalAsync(DatabricksStatement statement, Instant periodStart, Instant periodEnd)
