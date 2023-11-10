@@ -17,7 +17,7 @@ using System.Net.Http.Json;
 using System.Reflection;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Exceptions;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
-using Energinet.DataHub.Wholesale.Common.Databricks.Options;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -125,7 +125,7 @@ public class DatabricksSchemaManager
         sqlStatement = sqlStatement.Trim();
 
         if (string.IsNullOrEmpty(sqlStatement))
-          return;
+            return;
 
         var requestObject = new
         {

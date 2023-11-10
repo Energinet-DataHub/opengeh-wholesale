@@ -72,7 +72,6 @@ def quarterly_metering_point_time_series_factory(
                 Colname.from_grid_area: ["from-grid-area"],
                 Colname.metering_point_id: "metering-point-id",
                 Colname.metering_point_type: metering_point_type,
-                Colname.observation_time: obs_time_datetime,
                 Colname.quantity: quantity,
                 Colname.quality: quality,
                 Colname.energy_supplier_id: default_supplier,

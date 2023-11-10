@@ -16,6 +16,7 @@ using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProducedV2.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders
@@ -24,16 +25,16 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Ev
     {
         private readonly IEnergyResultQueries _energyResultQueries;
         private readonly ICalculationResultCompletedFactory _calculationResultCompletedFactory;
-        private readonly IEnergyResultProducedV1Factory _energyResultProducedV1Factory;
+        private readonly IEnergyResultProducedV2Factory _energyResultProducedV2Factory;
 
         public EnergyResultEventProvider(
             IEnergyResultQueries energyResultQueries,
             ICalculationResultCompletedFactory calculationResultCompletedFactory,
-            IEnergyResultProducedV1Factory energyResultProducedV1Factory)
+            IEnergyResultProducedV2Factory energyResultProducedV2Factory)
         {
             _energyResultQueries = energyResultQueries;
             _calculationResultCompletedFactory = calculationResultCompletedFactory;
-            _energyResultProducedV1Factory = energyResultProducedV1Factory;
+            _energyResultProducedV2Factory = energyResultProducedV2Factory;
         }
 
         public async IAsyncEnumerable<IntegrationEvent> GetAsync(CompletedBatch batch)
@@ -41,7 +42,7 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Ev
             await foreach (var energyResult in _energyResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
             {
                 yield return CreateIntegrationEvent(_calculationResultCompletedFactory.Create(energyResult)); // Deprecated
-                yield return CreateIntegrationEvent(_energyResultProducedV1Factory.Create(energyResult));
+                yield return CreateIntegrationEvent(_energyResultProducedV2Factory.Create(energyResult));
             }
         }
     }

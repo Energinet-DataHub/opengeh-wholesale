@@ -78,7 +78,6 @@ def time_series_row_factory(
                 Colname.from_grid_area: ["from-grid-area"],
                 Colname.metering_point_id: ["metering-point-id"],
                 Colname.metering_point_type: [point_type],
-                Colname.observation_time: [obs_time],
                 Colname.quantity: [quantity],
                 Colname.quality: [QuantityQuality.ESTIMATED.value],
                 Colname.energy_supplier_id: [supplier],

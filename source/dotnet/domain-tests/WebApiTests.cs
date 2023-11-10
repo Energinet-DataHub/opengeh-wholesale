@@ -237,7 +237,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 return calculationResults.Select(o => Enum.GetName(o.TimeSeriesType)).Distinct().ToList();
             }
 
-            private List<string?> GetTimeSeriesTypes(List<EnergyResultProducedV1> calculationResults)
+            private List<string?> GetTimeSeriesTypes(List<EnergyResultProducedV2> calculationResults)
             {
                 return calculationResults.Select(o => Enum.GetName(o.TimeSeriesType)).Distinct().ToList();
             }
@@ -255,7 +255,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             }
 
             private bool CheckIfExistsInCalculationResults(
-                List<EnergyResultProducedV1>? calculationResults,
+                List<EnergyResultProducedV2>? calculationResults,
                 string timeSeriesType,
                 string aggregationLevel)
             {

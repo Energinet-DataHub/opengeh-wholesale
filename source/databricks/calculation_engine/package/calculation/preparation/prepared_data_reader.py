@@ -19,7 +19,6 @@ from package.calculation_input import TableReader
 from package.codelists import ChargeResolution
 
 from . import transformations as T
-from .quarterly_metering_point_time_series import QuarterlyMeteringPointTimeSeries
 
 
 class PreparedDataReader:
@@ -64,10 +63,10 @@ class PreparedDataReader:
         metering_points: DataFrame,
         time_series: DataFrame,
         charges_df: DataFrame,
-        resolution_duration: ChargeResolution,
+        resolution: ChargeResolution,
     ) -> DataFrame:
         return T.get_tariff_charges(
-            metering_points, time_series, charges_df, resolution_duration
+            metering_points, time_series, charges_df, resolution
         )
 
     def get_raw_time_series_points(self) -> DataFrame:
@@ -86,9 +85,3 @@ class PreparedDataReader:
             period_start_datetime,
             period_end_datetime,
         )
-
-    # TODO BJM: Does not belong in preparation. Move to calculations.
-    def transform_hour_to_quarter(
-        self, df: DataFrame
-    ) -> QuarterlyMeteringPointTimeSeries:
-        return T.transform_hour_to_quarter(df)

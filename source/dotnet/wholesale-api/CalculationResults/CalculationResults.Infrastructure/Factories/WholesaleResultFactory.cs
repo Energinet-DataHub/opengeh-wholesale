@@ -40,7 +40,7 @@ public class WholesaleResultFactory
         var chargeOwnerId = databricksSqlRow[WholesaleResultColumnNames.ChargeOwnerId];
         var isTax = databricksSqlRow[WholesaleResultColumnNames.IsTax];
         var quantityUnit = databricksSqlRow[WholesaleResultColumnNames.QuantityUnit];
-        var chargeResolution = databricksSqlRow[WholesaleResultColumnNames.ChargeResolution];
+        var resolution = databricksSqlRow[WholesaleResultColumnNames.Resolution];
         var meteringPointType = databricksSqlRow[WholesaleResultColumnNames.MeteringPointType];
         var settlementMethod = databricksSqlRow[WholesaleResultColumnNames.SettlementMethod];
 
@@ -58,7 +58,16 @@ public class WholesaleResultFactory
             chargeOwnerId!,
             SqlResultValueConverters.ToBool(isTax!),
             QuantityUnitMapper.FromDeltaTableValue(quantityUnit!),
-            ChargeResolutionMapper.FromDeltaTableValue(chargeResolution!),
+            ResolutionMapper.FromDeltaTableValue(resolution!),
+            gridArea!,
+            energySupplierId!,
+            AmountTypeMapper.FromDeltaTableValue(amountType!),
+            chargeCode!,
+            ChargeTypeMapper.FromDeltaTableValue(chargeType!),
+            chargeOwnerId!,
+            SqlResultValueConverters.ToBool(isTax!),
+            QuantityUnitMapper.FromDeltaTableValue(quantityUnit!),
+            ResolutionMapper.FromDeltaTableValue(resolution!),
             MeteringPointTypeMapper.FromDeltaTableValue(meteringPointType),
             SettlementMethodMapper.FromDeltaTableValue(settlementMethod!),
             wholesaleTimeSeriesPoints);

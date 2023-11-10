@@ -32,13 +32,17 @@ class EnergyResults(DataFrameWrapper):
         super().__init__(
             df,
             energy_results_schema,
-            # TODO BJM: These should eventually all be set to False
+            # We ignore_nullability because it has turned out to be too hard and even possibly
+            # introducing more errors than solving in order to stay in exact sync with the
+            # logically correct schema.
             ignore_nullability=True,
             ignore_decimal_scale=True,
             ignore_decimal_precision=True,
         )
 
 
+# The nullability and decimal types are not precisely representative of the actual data frame schema at runtime,
+# See comments to the `assert_schema()` invocation.
 energy_results_schema = t.StructType(
     [
         t.StructField(Colname.grid_area, t.StringType(), False),
@@ -46,7 +50,7 @@ energy_results_schema = t.StructType(
         t.StructField(Colname.from_grid_area, t.StringType(), True),
         t.StructField(Colname.balance_responsible_id, t.StringType(), True),
         t.StructField(Colname.energy_supplier_id, t.StringType(), True),
-        # TODO BJM: Why not just a single time stamp?
+        # Suggestion: Why not just a single time stamp?
         #           That is much simpler to manage throughout the code and especially in all the tests
         t.StructField(
             Colname.time_window,

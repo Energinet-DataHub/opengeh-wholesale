@@ -22,13 +22,14 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Fa
 
 public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProducedV1Factory
 {
+    public bool CanCreate(WholesaleResult result) =>
+        result.AmountType == AmountType.AmountPerCharge
+        && result.Resolution is Resolution.Hour or Resolution.Day;
+
     public AmountPerChargeResultProducedV1 Create(WholesaleResult result)
     {
-        if (result.AmountType != AmountType.AmountPerCharge)
-            throw new ArgumentException($"AmountPerChargeResultProducedV1 expect amount type to be '{AmountType.AmountPerCharge}'.");
-
-        if (result.ChargeResolution != ChargeResolution.Hour && result.ChargeResolution != ChargeResolution.Day)
-            throw new ArgumentException($"AmountPerChargeResultProducedV1 expect resolution to be '{ChargeResolution.Hour}' or '{ChargeResolution.Day}' .");
+        if (!CanCreate(result))
+            throw new ArgumentException($"Cannot create '{nameof(AmountPerChargeResultProducedV1)}' from wholesale result.", nameof(result));
 
         var amountPerChargeResultProducedV1 = new AmountPerChargeResultProducedV1
         {
@@ -41,7 +42,7 @@ public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProd
             ChargeCode = result.ChargeCode,
             ChargeType = ChargeTypeMapper.MapChargeType(result.ChargeType),
             ChargeOwnerId = result.ChargeOwnerId,
-            Resolution = ResolutionMapper.MapResolution(result.ChargeResolution),
+            Resolution = ResolutionMapper.MapResolution(result.Resolution),
             QuantityUnit = QuantityUnitMapper.MapQuantityUnit(result.QuantityUnit),
             MeteringPointType = MeteringPointTypeMapper.MapMeteringPointType(result.MeteringPointType),
             SettlementMethod = SettlementMethodMapper.MapSettlementMethod(result.SettlementMethod),

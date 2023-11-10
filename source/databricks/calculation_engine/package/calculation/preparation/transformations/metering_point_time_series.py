@@ -27,8 +27,6 @@ from package.calculation_input.schemas import (
 )
 
 
-# TODO BJM: Settle on name: Basis data ts? Enriched ts? Metering point ts? Other?
-#           And update file names, suts, variables etc
 def get_metering_point_time_series(
     raw_time_series_points_df: DataFrame,
     metering_point_periods_df: DataFrame,
@@ -36,7 +34,10 @@ def get_metering_point_time_series(
     period_end_datetime: datetime,
 ) -> DataFrame:
     """
-    Get enriched time-series points - both for metering points with hourly and quarterly resolution.
+    Get metering point time-series points - both for metering points with hourly and quarterly resolution.
+    All missing time series points for a given metering point is added with quantity=0 and quality=MISSING.
+    Thus, there will be no missing points for a given metering point when it's connected. It may, however, not be
+    connected for the entire period of the calculation.
     """
     assert_schema(raw_time_series_points_df.schema, time_series_point_schema)
     assert_schema(metering_point_periods_df.schema, metering_point_period_schema)

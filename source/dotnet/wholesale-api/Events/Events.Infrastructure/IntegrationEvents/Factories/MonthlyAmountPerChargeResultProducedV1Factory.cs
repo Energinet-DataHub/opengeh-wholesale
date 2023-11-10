@@ -21,16 +21,15 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Fa
 
 public class MonthlyAmountPerChargeResultProducedV1Factory : IMonthlyAmountPerChargeResultProducedV1Factory
 {
+    public bool CanCreate(WholesaleResult result) =>
+        result.AmountType == AmountType.MonthlyAmountPerCharge
+        && result.Resolution is Resolution.Month
+        && result.TimeSeriesPoints.Count == 1;
+
     public MonthlyAmountPerChargeResultProducedV1 Create(WholesaleResult result)
     {
-        if (result.TimeSeriesPoints.Count != 1)
-            throw new ArgumentException("MonthlyAmountPerChargeResultProducedV1 expects exactly one time series point.");
-
-        if (result.AmountType != AmountType.MonthlyAmountPerCharge)
-            throw new ArgumentException($"MonthlyAmountPerChargeResultProducedV1 expect amount type to be '{AmountType.MonthlyAmountPerCharge}'.");
-
-        if (result.ChargeResolution != ChargeResolution.Month)
-            throw new ArgumentException($"MonthlyAmountPerChargeResultProducedV1 expect resolution to be '{ChargeResolution.Month}'.");
+        if (!CanCreate(result))
+            throw new ArgumentException($"Cannot create '{nameof(MonthlyAmountPerChargeResultProducedV1)}' from wholesale result.", nameof(result));
 
         var amountPerChargeResultProducedV1 = new MonthlyAmountPerChargeResultProducedV1
         {

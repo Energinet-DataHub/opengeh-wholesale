@@ -13,9 +13,10 @@
 // limitations under the License.
 
 using System.ComponentModel.DataAnnotations;
+using Asp.Versioning;
 using Energinet.DataHub.Core.App.Common.Abstractions.Users;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
-using Energinet.DataHub.Wholesale.Common.Security;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -67,7 +68,7 @@ public class BatchController : V3ControllerBase
     [MapToApiVersion(Version)]
     [Produces("application/json", Type = typeof(BatchDto))]
     [Authorize(Roles = Permissions.CalculationsManage)]
-    public async Task<IActionResult> GetAsync([FromRoute]Guid batchId)
+    public async Task<IActionResult> GetAsync([FromRoute] Guid batchId)
     {
         return Ok(await _batchesClient.GetAsync(batchId).ConfigureAwait(false));
     }
