@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
@@ -21,15 +20,15 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factorie
 
 public static class EnergyTimeSeriesPointFactory
 {
-    public static EnergyTimeSeriesPoint CreateTimeSeriesPoint(SqlResultRow row)
+    public static EnergyTimeSeriesPoint CreateTimeSeriesPoint(DatabricksSqlRow databricksSqlRow)
     {
-        var time = row[EnergyResultColumnNames.Time];
-        var quantity = row[EnergyResultColumnNames.Quantity];
-        var quality = row[EnergyResultColumnNames.QuantityQualities];
+        var time = databricksSqlRow[EnergyResultColumnNames.Time];
+        var quantity = databricksSqlRow[EnergyResultColumnNames.Quantity];
+        var quality = databricksSqlRow[EnergyResultColumnNames.QuantityQualities];
 
         return new EnergyTimeSeriesPoint(
             SqlResultValueConverters.ToDateTimeOffset(time)!.Value,
             SqlResultValueConverters.ToDecimal(quantity)!.Value,
-            SqlResultValueConverters.ToQuantityQualities(quality));
+            SqlResultValueConverters.ToQuantityQualities(quality!));
     }
 }
