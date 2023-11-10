@@ -29,8 +29,8 @@ limitations under the License.
     <PackageReference Include="AspNetCore.HealthChecks.AzureServiceBus" Version="7.0.0" />
     <PackageReference Include="Energinet.DataHub.Core.App.Common.Security" Version="8.1.1" />
     <PackageReference Include="Energinet.DataHub.Core.App.WebApp" Version="8.1.1" />
-    <PackageReference Include="Energinet.DataHub.Core.Databricks.Jobs" Version="7.0.1" />
-    <PackageReference Include="Energinet.DataHub.Core.Databricks.SqlStatementExecution" Version="7.0.1" />
+    <PackageReference Include="Energinet.DataHub.Core.Databricks.Jobs" Version="8.0.1" />
+    <PackageReference Include="Energinet.DataHub.Core.Databricks.SqlStatementExecution" Version="8.0.1" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
     <PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.1" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="7.0.13" />
@@ -50,5 +50,5 @@ limitations under the License.
     <ProjectReference Include="..\Common.Infrastructure\Common.Infrastructure.csproj" />
     <ProjectReference Include="..\Common.Interfaces\Common.Interfaces.csproj" />
     <ProjectReference Include="..\Events\Events.Infrastructure\Events.Infrastructure.csproj" />
-
+  </ItemGroup>
 </Project>

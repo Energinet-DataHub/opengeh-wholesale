@@ -23,7 +23,6 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NodaTime;
 using Xunit;
@@ -64,7 +63,7 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
         await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        var query = CreateQuery(
+        var query = CreateRequest(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
@@ -93,7 +92,7 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
         // Arrange
         var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
         await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        var request = CreateQuery(
+        var request = CreateRequest(
             startOfPeriod: Instant.FromUtc(2020, 1, 1, 1, 1),
             endOfPeriod: Instant.FromUtc(2021, 1, 2, 1, 1));
 
@@ -115,7 +114,7 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
         await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        var request = CreateQuery(
+        var request = CreateRequest(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
@@ -151,7 +150,7 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
         await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        var request = CreateQuery(
+        var request = CreateRequest(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
@@ -176,7 +175,7 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
         await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        var request = CreateQuery(
+        var request = CreateRequest(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
@@ -214,7 +213,7 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
         await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        var request = CreateQuery(
+        var request = CreateRequest(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
@@ -253,7 +252,7 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
         var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
         await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
 
-        var request = CreateQuery(
+        var request = CreateRequest(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
@@ -291,7 +290,7 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
         var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
         await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
 
-        var request = CreateQuery(
+        var request = CreateRequest(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
@@ -330,7 +329,7 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
         var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
         await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
 
-        var request = CreateQuery(
+        var request = CreateRequest(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
@@ -356,13 +355,8 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
             ;
     }
 
-    private static EnergyResultQuery CreateQuery(
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetAsync_WhenRequestFromGridOperatorForOneDay_ReturnsResult(
-        Mock<IHttpClientFactory> httpClientFactoryMock,
-        Mock<ILogger<SqlStatusResponseParser>> loggerMock,
-        Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock)
+    [Fact]
+    public async Task GetAsync_WhenRequestFromGridOperatorForOneDay_ReturnsResult()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
@@ -372,21 +366,14 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
 
         var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
         await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(
-            httpClientFactoryMock,
-            loggerMock,
-            new Mock<ILogger<DatabricksSqlStatementClient>>());
-
         var request = CreateRequest(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
 
-        var sut = new RequestCalculationResultQueries(sqlStatementClient, deltaTableOptions, requestCalculationResultQueriesLoggerMock.Object);
-
         // Act
-        var actual = await sut.GetAsync(request);
+        var actual = await Sut.GetAsync(request);
 
         // Assert
         using var assertionScope = new AssertionScope();
@@ -403,12 +390,8 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
             ;
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetAsync_WhenRequestFromGridOperatorStartAndEndDataAreEqual_ReturnsNoResult(
-        Mock<IHttpClientFactory> httpClientFactoryMock,
-        Mock<ILogger<SqlStatusResponseParser>> loggerMock,
-        Mock<ILogger<RequestCalculationResultQueries>> requestCalculationResultQueriesLoggerMock)
+    [Fact]
+    public async Task GetAsync_WhenRequestFromGridOperatorStartAndEndDataAreEqual_ReturnsNoResult()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
@@ -418,10 +401,6 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
 
         var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
         await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(
-            httpClientFactoryMock,
-            loggerMock,
-            new Mock<ILogger<DatabricksSqlStatementClient>>());
 
         var request = CreateRequest(
             gridArea: gridAreaFilter,
@@ -429,10 +408,8 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
 
-        var sut = new RequestCalculationResultQueries(sqlStatementClient, deltaTableOptions, requestCalculationResultQueriesLoggerMock.Object);
-
         // Act
-        var actual = await sut.GetAsync(request);
+        var actual = await Sut.GetAsync(request);
 
         // Assert
         actual.Should().BeNull();
@@ -503,9 +480,8 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
             row1FirstCorrection, row2FirstCorrection,
             row1SecondCorrection, row2SecondCorrection,
             row1ThirdCorrection, row2ThirdCorrection, row4ThirdCorrection,
-        }.OrderBy(_ => Guid.NewGuid()).ToList();
             row1SecondDay, row1ThirdDay,
-        }.OrderBy(r => Guid.NewGuid()).ToList();
+        }.OrderBy(_ => Guid.NewGuid()).ToList();
 
         await _fixture.DatabricksSchemaManager.EmptyAsync(options.Value.ENERGY_RESULTS_TABLE_NAME);
         await _fixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(options.Value.ENERGY_RESULTS_TABLE_NAME, rows);

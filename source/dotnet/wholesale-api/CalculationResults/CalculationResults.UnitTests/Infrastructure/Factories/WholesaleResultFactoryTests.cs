@@ -17,7 +17,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
-using Energinet.DataHub.Wholesale.Common.Models;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using NodaTime;
@@ -29,20 +29,19 @@ public class WholesaleResultFactoryTests
 {
     private const decimal DefaultPrice = 1.123456m;
     private const decimal DefaultAmount = 2.345678m;
-    private readonly Instant _defaultPeriodStart = Instant.FromUtc(2022, 5, 1, 0, 0);
-    private readonly Instant _defaultPeriodEnd = Instant.FromUtc(2022, 5, 2, 0, 0);
     private static readonly Instant _defaultTime = Instant.FromUtc(2022, 5, 1, 1, 0);
-    private readonly IEnumerable<QuantityQuality> _quantityQualities = new List<QuantityQuality> { QuantityQuality.Measured, QuantityQuality.Missing };
+    private readonly Instant _defaultPeriodEnd = Instant.FromUtc(2022, 5, 2, 0, 0);
+    private readonly Instant _defaultPeriodStart = Instant.FromUtc(2022, 5, 1, 0, 0);
     private readonly List<WholesaleTimeSeriesPoint> _defaultWholesaleTimeSeriesPoints = new()
     {
-        new WholesaleTimeSeriesPoint(_defaultTime.ToDateTimeOffset(), 1.0m, new List<QuantityQuality> { QuantityQuality.Measured,  QuantityQuality.Missing }, DefaultPrice, DefaultAmount),
+        new WholesaleTimeSeriesPoint(_defaultTime.ToDateTimeOffset(), 1.0m, new List<QuantityQuality> { QuantityQuality.Measured, QuantityQuality.Missing, }, DefaultPrice, DefaultAmount),
     };
 
     [Fact]
     public void CreateWholesaleResult_ReturnExpectedWholesaleResult()
     {
-         // Arrange
-         var row = CreateSqlResultRow();
+        // Arrange
+        var row = CreateSqlResultRow();
 
         // Act
         var actual = WholesaleResultFactory.CreateWholesaleResult(row, _defaultWholesaleTimeSeriesPoints, _defaultPeriodStart, _defaultPeriodEnd);

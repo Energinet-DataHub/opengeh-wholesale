@@ -17,16 +17,16 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatement
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.EnergyResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.Common.Databricks.Options;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.RequestCalculationResult.Statements;
 
-public class QueryCalculationResultsStatement2 : DatabricksStatement
+public class QueryCalculationResultsStatement : DatabricksStatement
 {
     private readonly EnergyResultQuery _query;
     private readonly DeltaTableOptions _deltaTableOptions;
 
-    public QueryCalculationResultsStatement2(DeltaTableOptions deltaTableOptions, EnergyResultQuery energyResultQuery)
+    public QueryCalculationResultsStatement(DeltaTableOptions deltaTableOptions, EnergyResultQuery energyResultQuery)
     {
         _query = energyResultQuery;
         _deltaTableOptions = deltaTableOptions;
@@ -48,11 +48,11 @@ public class QueryCalculationResultsStatement2 : DatabricksStatement
             WHERE t2.time IS NULL
                 AND t1.{EnergyResultColumnNames.GridArea} IN ({_query.GridArea})
                 AND t1.{EnergyResultColumnNames.TimeSeriesType} IN ('{TimeSeriesTypeMapper.ToDeltaTableValue(_query.TimeSeriesType)}')
-                AND t1.{EnergyResultColumnNames.Time} BETWEEN '{_query.StartOfPeriod.ToString()}' AND '{_query.EndOfPeriod.ToString()}'
+                AND t1.{EnergyResultColumnNames.Time}  >= '{_query.StartOfPeriod.ToString()}'
+                AND t1.{EnergyResultColumnNames.Time} < '{_query.EndOfPeriod.ToString()}'
                 AND t1.{EnergyResultColumnNames.AggregationLevel} = '{AggregationLevelMapper.ToDeltaTableValue(_query.TimeSeriesType, _query.EnergySupplierId, _query.BalanceResponsibleId)}'
                 AND t1.{EnergyResultColumnNames.BatchProcessType} = '{ProcessTypeMapper.ToDeltaTableValue(_query.ProcessType)}'
             ";
-
         if (_query.EnergySupplierId != null)
         {
             sql += $@"AND t1.{EnergyResultColumnNames.EnergySupplierId} = '{_query.EnergySupplierId}'";

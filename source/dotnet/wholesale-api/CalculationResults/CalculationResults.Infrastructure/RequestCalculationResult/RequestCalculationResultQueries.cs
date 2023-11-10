@@ -13,13 +13,15 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.RequestCalculationResult.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers.EnergyResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.Common.Databricks.Options;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -43,7 +45,7 @@ public class RequestCalculationResultQueries : IRequestCalculationResultQueries
 
     public async Task<EnergyResult?> GetAsync(EnergyResultQuery query)
     {
-        var statement = new QueryCalculationResultsStatement2(_deltaTableOptions, query);
+        var statement = new QueryCalculationResultsStatement(_deltaTableOptions, query);
         var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
         DatabricksSqlRow? databricksFirstRow = null;
         var resultCount = 0;
