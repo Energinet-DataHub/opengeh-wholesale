@@ -113,12 +113,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
         private ServiceBusReceiver CreateServiceBusReceiver()
         {
-            var serviceBusReceiverOptions = new ServiceBusReceiverOptions
-            {
-                ReceiveMode = ServiceBusReceiveMode.ReceiveAndDelete,
-            };
-
-            return ServiceBusClient.CreateReceiver(Configuration.DomainRelayTopicName, _subscriptionName, serviceBusReceiverOptions);
+            return ServiceBusClient.CreateReceiver(Configuration.DomainRelayTopicName, _subscriptionName);
         }
     }
 }
