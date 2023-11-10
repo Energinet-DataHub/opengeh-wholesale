@@ -37,37 +37,25 @@ def calculate_grid_loss(
     flex_consumption: EnergyResults,
     production: EnergyResults,
 ) -> EnergyResults:
-    return _calculate_grid_loss_or_residual_ga(
-        net_exchange_per_ga,
-        non_profiled_consumption,
-        flex_consumption,
-        production,
-    )
-
-
-def _calculate_grid_loss_or_residual_ga(
-    agg_net_exchange: EnergyResults,
-    agg_non_profiled_consumption: EnergyResults,
-    agg_flex_consumption: EnergyResults,
-    agg_production: EnergyResults,
-) -> EnergyResults:
     agg_non_profiled_consumption_result = t.aggregate_sum_quantity_and_qualities(
-        agg_non_profiled_consumption.df,
+        non_profiled_consumption.df,
         [Colname.grid_area, Colname.time_window],
     ).withColumnRenamed(Colname.sum_quantity, hourly_result)
 
     agg_flex_consumption_result = t.aggregate_sum_quantity_and_qualities(
-        agg_flex_consumption.df,
+        flex_consumption.df,
         [Colname.grid_area, Colname.time_window],
     ).withColumnRenamed(Colname.sum_quantity, flex_result)
 
     agg_production_result = t.aggregate_sum_quantity_and_qualities(
-        agg_production.df,
+        production.df,
         [Colname.grid_area, Colname.time_window],
     ).withColumnRenamed(Colname.sum_quantity, prod_result)
 
     result = (
-        agg_net_exchange.df.withColumnRenamed(Colname.sum_quantity, net_exchange_result)
+        net_exchange_per_ga.df.withColumnRenamed(
+            Colname.sum_quantity, net_exchange_result
+        )
         .join(agg_production_result, [Colname.grid_area, Colname.time_window], "left")
         .join(
             agg_flex_consumption_result.join(

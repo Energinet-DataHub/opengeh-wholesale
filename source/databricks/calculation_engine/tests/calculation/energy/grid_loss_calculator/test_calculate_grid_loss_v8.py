@@ -21,13 +21,6 @@ import pandas as pd
 import pytest
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
-from pyspark.sql.types import (
-    StructType,
-    StringType,
-    DecimalType,
-    TimestampType,
-    ArrayType,
-)
 
 from package.calculation.energy.energy_results import (
     EnergyResults,
