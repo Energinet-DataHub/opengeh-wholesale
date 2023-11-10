@@ -13,12 +13,12 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
-using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
+// using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.AmountPerChargeResultProducedV1;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Types;
 using Google.Protobuf.WellKnownTypes;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.AmountPerChargeResultProducedV1.Factories;
 
 public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProducedV1Factory
 {
@@ -26,12 +26,12 @@ public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProd
         result.AmountType == AmountType.AmountPerCharge
         && result.Resolution is Resolution.Hour or Resolution.Day;
 
-    public AmountPerChargeResultProducedV1 Create(WholesaleResult result)
+    public Contracts.IntegrationEvents.AmountPerChargeResultProducedV1 Create(WholesaleResult result)
     {
         if (!CanCreate(result))
-            throw new ArgumentException($"Cannot create '{nameof(AmountPerChargeResultProducedV1)}' from wholesale result.", nameof(result));
+            throw new ArgumentException($"Cannot create '{nameof(Contracts.IntegrationEvents.AmountPerChargeResultProducedV1)}' from wholesale result.", nameof(result));
 
-        var amountPerChargeResultProducedV1 = new AmountPerChargeResultProducedV1
+        var amountPerChargeResultProducedV1 = new Contracts.IntegrationEvents.AmountPerChargeResultProducedV1
         {
             CalculationId = result.CalculationId.ToString(),
             CalculationType = CalculationTypeMapper.MapCalculationType(result.CalculationType),
@@ -46,7 +46,7 @@ public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProd
             QuantityUnit = QuantityUnitMapper.MapQuantityUnit(result.QuantityUnit),
             MeteringPointType = MeteringPointTypeMapper.MapMeteringPointType(result.MeteringPointType),
             SettlementMethod = SettlementMethodMapper.MapSettlementMethod(result.SettlementMethod),
-            Currency = AmountPerChargeResultProducedV1.Types.Currency.Dkk,
+            Currency = Contracts.IntegrationEvents.AmountPerChargeResultProducedV1.Types.Currency.Dkk,
             IsTax = result.IsTax,
         };
 
@@ -54,12 +54,12 @@ public class AmountPerChargeResultProducedV1Factory : IAmountPerChargeResultProd
             .AddRange(result.TimeSeriesPoints
                 .Select(timeSeriesPoint =>
                 {
-                    var p = new AmountPerChargeResultProducedV1.Types.TimeSeriesPoint
+                    var p = new Contracts.IntegrationEvents.AmountPerChargeResultProducedV1.Types.TimeSeriesPoint
                     {
                         Time = timeSeriesPoint.Time.ToTimestamp(),
-                        Quantity = new DecimalValue(timeSeriesPoint.Quantity),
-                        Price = new DecimalValue(timeSeriesPoint.Price),
-                        Amount = new DecimalValue(timeSeriesPoint.Amount),
+                        Quantity = new Contracts.IntegrationEvents.Common.DecimalValue(timeSeriesPoint.Quantity),
+                        Price = new Contracts.IntegrationEvents.Common.DecimalValue(timeSeriesPoint.Price),
+                        Amount = new Contracts.IntegrationEvents.Common.DecimalValue(timeSeriesPoint.Amount),
                     };
                     p.QuantityQualities.AddRange(timeSeriesPoint.Qualities.Select(QuantityQualityMapper.MapQuantityQuality).ToList());
                     return p;

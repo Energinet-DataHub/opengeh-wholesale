@@ -42,6 +42,14 @@
       <CompileOutputs>True</CompileOutputs>
       <Generator>MSBuild:Compile</Generator>
     </Protobuf>
+    <Protobuf Include="IntegrationEvents/AmountPerChargeResultProducedV1/Protos/*.proto">
+      <GrpcServices>None</GrpcServices>
+      <Access>Public</Access>
+      <ProtoCompile>True</ProtoCompile>
+      <ProtoRoot>IntegrationEvents</ProtoRoot>
+      <CompileOutputs>True</CompileOutputs>
+      <Generator>MSBuild:Compile</Generator>
+    </Protobuf>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
