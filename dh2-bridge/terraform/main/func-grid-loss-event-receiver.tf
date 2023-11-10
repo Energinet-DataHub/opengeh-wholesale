@@ -1,7 +1,7 @@
-module "func_entrypoint_grid_loss_sender" {
+module "func_entrypoint_grid_loss_event_receiver" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=v12"
 
-  name                                     = "grid-loss-sender"
+  name                                     = "grid-loss-event-receiver"
   project_name                             = var.domain_name_short
   environment_short                        = var.environment_short
   environment_instance                     = var.environment_instance
@@ -27,8 +27,12 @@ module "func_entrypoint_grid_loss_sender" {
     }
   ]
   app_settings = {
-    "BlobStorageSettings:AccountUri"    = local.DH2_BRIDGE_DOCUMENT_STORAGE_ACCOUNT_URI
-    "BlobStorageSettings:ContainerName" = local.DH2_BRIDGE_DOCUMENT_STORAGE_CONTAINER_NAME
-    "DatabaseSettings:ConnectionString" = local.MS_DH2_BRIDGE_CONNECTION_STRING
+    "BlobStorageSettings:AccountUri"                        = local.DH2_BRIDGE_DOCUMENT_STORAGE_ACCOUNT_URI
+    "BlobStorageSettings:ContainerName"                     = local.DH2_BRIDGE_DOCUMENT_STORAGE_CONTAINER_NAME
+    "DatabaseSettings:ConnectionString"                     = local.MS_DH2_BRIDGE_CONNECTION_STRING
+    "ConsumeServiceBusSettings:ConnectionString"            = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-listen-connection-string)"
+    "ConsumeServiceBusSettings:HealthCheckConnectionString" = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-manage-connection-string)"
+    "ConsumeServiceBusSettings:SharedIntegrationEventTopic" = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbt-shres-integrationevent-received-name)"
+    "ConsumeServiceBusSettings:EsettExchangeSubscription"   = module.sbtsub_dh2_bridge_event_listener.name
   }
 }
