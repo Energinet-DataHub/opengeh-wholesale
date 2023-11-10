@@ -83,11 +83,6 @@ data "azurerm_key_vault_secret" "apim_eloverblik_timeseriesapi_client_app_id" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "apim_eloverblik_timeseriesapi_client_secret" {
-  name         = "eloverblik-timeseriesapi-client-secret"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
 data "azurerm_key_vault_secret" "apim_b2c_tenant_id" {
   name         = "b2c-tenant-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
