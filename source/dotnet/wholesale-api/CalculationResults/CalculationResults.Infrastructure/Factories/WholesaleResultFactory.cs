@@ -60,7 +60,7 @@ public class WholesaleResultFactory
             QuantityUnitMapper.FromDeltaTableValue(quantityUnit!),
             ResolutionMapper.FromDeltaTableValue(resolution!),
             MeteringPointTypeMapper.FromDeltaTableValue(meteringPointType),
-            SettlementMethodMapper.FromDeltaTableValue(settlementMethod!),
+            SettlementMethodMapper.FromDeltaTableValue(settlementMethod),
             wholesaleTimeSeriesPoints);
     }
 }

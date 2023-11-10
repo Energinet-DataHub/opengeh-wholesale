@@ -20,7 +20,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlState
 
 public static class SettlementMethodMapper
 {
-    public static SettlementMethod? FromDeltaTableValue(string settlementMethod) =>
+    public static SettlementMethod? FromDeltaTableValue(string? settlementMethod) =>
         settlementMethod switch
         {
             "flex" => SettlementMethod.Flex,
