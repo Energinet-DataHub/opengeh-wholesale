@@ -21,7 +21,7 @@ limitations under the License.
 
   <PropertyGroup>
     <PackageId>Energinet.DataHub.Wholesale.Contracts</PackageId>
-    <PackageVersion>5.4.0$(VersionSuffix)</PackageVersion>
+    <PackageVersion>6.0.0$(VersionSuffix)</PackageVersion>
     <Title>Wholesale Contracts</Title>
     <Company>Energinet-DataHub</Company>
     <Authors>Energinet-DataHub</Authors>
@@ -95,13 +95,37 @@ limitations under the License.
       <CompileOutputs>True</CompileOutputs>
       <Generator>MSBuild:Compile</Generator>
     </Protobuf>
+    <Protobuf Include="../../wholesale-api/Events/Events.Infrastructure/IntegrationEvents/AmountPerChargeResultProducedV1/Protos/*.proto">
+      <GrpcServices>None</GrpcServices>
+      <Access>Public</Access>
+      <ProtoCompile>True</ProtoCompile>
+      <ProtoRoot>../../wholesale-api/Events/Events.Infrastructure/IntegrationEvents</ProtoRoot>
+      <CompileOutputs>True</CompileOutputs>
+      <Generator>MSBuild:Compile</Generator>
+    </Protobuf>
+    <Protobuf Include="../../wholesale-api/Events/Events.Infrastructure/IntegrationEvents/MonthlyAmountPerChargeResultProducedV1/Protos/*.proto">
+      <GrpcServices>None</GrpcServices>
+      <Access>Public</Access>
+      <ProtoCompile>True</ProtoCompile>
+      <ProtoRoot>../../wholesale-api/Events/Events.Infrastructure/IntegrationEvents</ProtoRoot>
+      <CompileOutputs>True</CompileOutputs>
+      <Generator>MSBuild:Compile</Generator>
+    </Protobuf>
+    <Protobuf Include="../../wholesale-api/Events/Events.Infrastructure/IntegrationEvents/CalculationResultCompleted/Protos/*.proto">
+      <GrpcServices>None</GrpcServices>
+      <Access>Public</Access>
+      <ProtoCompile>True</ProtoCompile>
+      <ProtoRoot>../../wholesale-api/Events/Events.Infrastructure/IntegrationEvents</ProtoRoot>
+      <CompileOutputs>True</CompileOutputs>
+      <Generator>MSBuild:Compile</Generator>
+    </Protobuf>
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\CalculationResultCompleted.cs">
+    <Compile Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\CalculationResultCompleted\CalculationResultCompleted.cs">
       <Link>Contracts\CalculationResultCompleted.cs</Link>
     </Compile>
-    <Compile Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\AmountPerChargeResultProducedV1.cs">
+    <Compile Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\AmountPerChargeResultProducedV1\AmountPerChargeResultProducedV1.cs">
       <Link>Contracts\IntegrationEvents\AmountPerChargeResultProducedV1.cs</Link>
     </Compile>
     <Compile Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\EnergyResultProducedV2\EnergyResultProducedV2.cs">
@@ -110,7 +134,7 @@ limitations under the License.
     <Compile Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\IEventMessage.cs">
       <Link>Contracts\IntegrationEvents\IEventMessage.cs</Link>
     </Compile>
-    <Compile Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\MonthlyAmountPerChargeResultProducedV1.cs">
+    <Compile Include="..\..\wholesale-api\Events\Events.Infrastructure\IntegrationEvents\MonthlyAmountPerChargeResultProducedV1\MonthlyAmountPerChargeResultProducedV1.cs">
       <Link>Contracts\IntegrationEvents\MonthlyAmountPerChargeResultProducedV1.cs</Link>
     </Compile>
   </ItemGroup>
