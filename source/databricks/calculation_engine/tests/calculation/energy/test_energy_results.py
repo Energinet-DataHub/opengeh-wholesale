@@ -18,8 +18,7 @@ from decimal import Decimal
 from datetime import datetime
 from typing import Callable
 import pytest
-import pandas as pd
-from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql import DataFrame, Row, SparkSession
 from pyspark.sql.functions import col, struct
 
 from package.calculation.energy.energy_results import (
@@ -51,28 +50,23 @@ def aggregation_result_factory(spark: SparkSession) -> Callable[..., DataFrame]:
         metering_point_type: str = DataframeDefaults.default_metering_point_type,
         settlement_method: str | None = None,
     ) -> DataFrame:
-        pandas_df = pd.DataFrame().append(
-            [
-                {
-                    Colname.grid_area: grid_area,
-                    Colname.to_grid_area: to_grid_area,
-                    Colname.from_grid_area: from_grid_area,
-                    Colname.balance_responsible_id: balance_responsible_id,
-                    Colname.energy_supplier_id: energy_supplier_id,
-                    Colname.time_window: {
-                        Colname.start: time_window_start,
-                        Colname.end: time_window_end,
-                    },
-                    Colname.sum_quantity: sum_quantity,
-                    Colname.qualities: [quality],
-                    Colname.metering_point_type: metering_point_type,
-                    Colname.settlement_method: settlement_method,
-                }
-            ],
-            ignore_index=True,
-        )
+        row = {
+            Colname.grid_area: grid_area,
+            Colname.to_grid_area: to_grid_area,
+            Colname.from_grid_area: from_grid_area,
+            Colname.balance_responsible_id: balance_responsible_id,
+            Colname.energy_supplier_id: energy_supplier_id,
+            Colname.time_window: {
+                Colname.start: time_window_start,
+                Colname.end: time_window_end,
+            },
+            Colname.sum_quantity: sum_quantity,
+            Colname.qualities: [quality],
+            Colname.metering_point_type: metering_point_type,
+            Colname.settlement_method: settlement_method,
+        }
 
-        return spark.createDataFrame(pandas_df, schema=energy_results_schema)
+        return spark.createDataFrame(row, schema=energy_results_schema)
 
     return factory
 
@@ -87,29 +81,18 @@ def input_agg_result_factory(spark: SparkSession) -> Callable[..., DataFrame]:
         quality: str = QuantityQuality.ESTIMATED.value,
         metering_point_type: str = MeteringPointType.CONSUMPTION.value,
     ) -> DataFrame:
-        return spark.createDataFrame(
-            pd.DataFrame().append(
-                [
-                    {
-                        Colname.grid_area: grid_area,
-                        Colname.to_grid_area: None,
-                        Colname.from_grid_area: None,
-                        Colname.balance_responsible_id: None,
-                        Colname.energy_supplier_id: None,
-                        Colname.time_window: {
-                            Colname.start: start,
-                            Colname.end: end,
-                        },
-                        Colname.sum_quantity: sum_quantity,
-                        Colname.qualities: [quality],
-                        Colname.metering_point_type: metering_point_type,
-                        Colname.settlement_method: None,
-                    }
-                ],
-                ignore_index=True,
-            ),
-            schema=energy_results_schema,
-        ).withColumn(
+        row = {
+            Colname.grid_area: grid_area,
+            Colname.time_window: {
+                Colname.start: start,
+                Colname.end: end,
+            },
+            Colname.sum_quantity: sum_quantity,
+            Colname.qualities: [quality],
+            Colname.metering_point_type: metering_point_type,
+        }
+
+        return spark.createDataFrame([Row(**row)]).withColumn(
             Colname.time_window,
             struct(
                 col(Colname.time_window).getItem(Colname.start).alias(Colname.start),
