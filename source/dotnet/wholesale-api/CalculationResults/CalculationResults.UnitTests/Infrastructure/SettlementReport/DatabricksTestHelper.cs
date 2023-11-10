@@ -17,23 +17,31 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatement
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SettlementReport;
 
-public static class TableTestHelper
+public static class DatabricksTestHelper
 {
-    // TODO AJW Remove
-    public static IEnumerable<Dictionary<string, object?>> CreateTableForSettlementReport2(int rowCount)
+    public static IEnumerable<Dictionary<string, object?>> CreateSettlementRow(int rowCount)
     {
         var rows = new List<Dictionary<string, object?>>();
         for (var row = 0; row < rowCount; row++)
         {
             var dummyQuantity = $@"{row}.1";
-            var newRow = NewRow(quantity: dummyQuantity);
+            var newRow = CreateNewRow(quantity: dummyQuantity);
             rows.Add(newRow);
         }
 
         return new List<Dictionary<string, object?>>(rows);
     }
 
-    public static Dictionary<string, object?> NewRow(
+    public static async IAsyncEnumerable<IDictionary<string, object?>> GetRowsAsync(TableChunk tableChunk, int rowCount)
+    {
+        await Task.Delay(0);
+        for (var i = 0; i < rowCount; i++)
+        {
+            yield return GetRow(tableChunk, i);
+        }
+    }
+
+    private static Dictionary<string, object?> CreateNewRow(
         string gridAre = "123",
         string batchProcessType = "BalanceFixing",
         string time = "2022-05-16T01:00:00.000Z",
@@ -51,25 +59,14 @@ public static class TableTestHelper
         return newRow;
     }
 
-    public static DatabricksSqlRow CreateRow(string gridArea, string balanceFixing, string time, string timeSeriesType, string quantity)
+    private static IDictionary<string, object?> GetRow(TableChunk tableChunk, int i = 0)
     {
-        var row = new Dictionary<string, object?>
+        var dic = new Dictionary<string, object?>();
+        foreach (var columnName in tableChunk.ColumnNames)
         {
-            { EnergyResultColumnNames.GridArea, gridArea },
-            { EnergyResultColumnNames.BatchProcessType, balanceFixing },
-            { EnergyResultColumnNames.Time, time },
-            { EnergyResultColumnNames.TimeSeriesType, timeSeriesType },
-            { EnergyResultColumnNames.Quantity, quantity },
-        };
-        return new DatabricksSqlRow(row);
-    }
-
-    public static async IAsyncEnumerable<IDictionary<string, object?>> GetRowsAsync(TableChunk tableChunk, int rowCount)
-    {
-        await Task.Delay(0);
-        for (var i = 0; i < rowCount; i++)
-        {
-            yield return new SqlResultRow(tableChunk, i).ToDic();
+            dic.Add(columnName, tableChunk[i, columnName]);
         }
+
+        return dic;
     }
 }

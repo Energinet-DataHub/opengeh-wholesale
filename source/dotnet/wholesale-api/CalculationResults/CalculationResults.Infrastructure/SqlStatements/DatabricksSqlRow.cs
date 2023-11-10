@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 
+/// <summary>
+/// This class is used to wrap the result (a dynamic type) of a Databricks SQL query.
+/// </summary>
 public class DatabricksSqlRow
 {
     private readonly IDictionary<string, object?> _dictionary;

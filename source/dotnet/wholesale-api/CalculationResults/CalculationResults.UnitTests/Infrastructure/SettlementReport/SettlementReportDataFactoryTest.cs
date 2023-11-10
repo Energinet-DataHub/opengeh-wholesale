@@ -14,6 +14,8 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
@@ -32,9 +34,9 @@ public class SettlementReportDataFactoryTests
     public SettlementReportDataFactoryTests()
     {
         _rows = new List<DatabricksSqlRow>();
-        var row1 = TableTestHelper.CreateRow("123", "BalanceFixing", "2022-05-16T01:00:00.000Z", "non_profiled_consumption", "1.1");
-        var row2 = TableTestHelper.CreateRow("234", "BalanceFixing", "2022-05-16T01:15:00.000Z", "production", "2.2");
-        var row3 = TableTestHelper.CreateRow("234", "BalanceFixing", "2022-05-16T01:30:00.000Z", "production", "3.3");
+        var row1 = CreateRow("123", "BalanceFixing", "2022-05-16T01:00:00.000Z", "non_profiled_consumption", "1.1");
+        var row2 = CreateRow("234", "BalanceFixing", "2022-05-16T01:15:00.000Z", "production", "2.2");
+        var row3 = CreateRow("234", "BalanceFixing", "2022-05-16T01:30:00.000Z", "production", "3.3");
         _rows.Add(row1);
         _rows.Add(row2);
         _rows.Add(row3);
@@ -63,5 +65,18 @@ public class SettlementReportDataFactoryTests
         var actualRows = actual.ToList();
         actualRows.First().Should().BeEquivalentTo(_firstRow);
         actualRows.ToList().Last().Should().BeEquivalentTo(_lastRow);
+    }
+
+    private static DatabricksSqlRow CreateRow(string gridArea, string balanceFixing, string time, string timeSeriesType, string quantity)
+    {
+        var row = new Dictionary<string, object?>
+        {
+            { EnergyResultColumnNames.GridArea, gridArea },
+            { EnergyResultColumnNames.BatchProcessType, balanceFixing },
+            { EnergyResultColumnNames.Time, time },
+            { EnergyResultColumnNames.TimeSeriesType, timeSeriesType },
+            { EnergyResultColumnNames.Quantity, quantity },
+        };
+        return new DatabricksSqlRow(row);
     }
 }

@@ -22,6 +22,7 @@ using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
@@ -65,7 +66,7 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>
         // Using the columns from the EnergyResultQueries class to ensure that the test is not broken if the columns are changed
         _tableChunk = new TableChunk(QueryEnergyResultStatement.SqlColumnNames, rows);
 
-        // Mocks Setup - This is another way to setup mocks used in tests. The reason for this are:
+        // Mocks Setup - This is another way to setup mocks used in tests. The reasons for this are:
         // 1. Because DatabricksSqlWarehouseQueryExecutor doesn't implement an interface and the constructor is protected
         // AutoFixture combined with inline is unable to create an instance of it.
         // 2. The many mock parameters are avoided in tests
@@ -84,7 +85,7 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>
             .Setup(client => client.GetAsync(batch.BatchId))
             .ReturnsAsync(batch);
         _databricksSqlWarehouseQueryExecutorMock.Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
-            .Returns(TableTestHelper.GetRowsAsync(_tableChunk, 0));
+            .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 0));
 
         // Act
         var actual = await Sut.GetAsync(batch.BatchId).ToListAsync();
@@ -103,7 +104,7 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>
             .ReturnsAsync(batch);
         _databricksSqlWarehouseQueryExecutorMock
             .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
-            .Returns(TableTestHelper.GetRowsAsync(_tableChunk, 1));
+            .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 1));
 
         // Act
         var actual = await Sut.GetAsync(batch.BatchId).ToListAsync();
@@ -122,7 +123,7 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>
             .ReturnsAsync(batch);
         _databricksSqlWarehouseQueryExecutorMock
             .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
-            .Returns(TableTestHelper.GetRowsAsync(_tableChunk, 1));
+            .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 1));
 
         // Act
         var actual = await Sut.GetAsync(batch.BatchId).SingleAsync();
@@ -154,7 +155,7 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>
             .ReturnsAsync(batch);
         _databricksSqlWarehouseQueryExecutorMock
             .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
-            .Returns(TableTestHelper.GetRowsAsync(_tableChunk, 2));
+            .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 2));
 
         // Act
         var actual = await Sut.GetAsync(batch.BatchId).ToListAsync();

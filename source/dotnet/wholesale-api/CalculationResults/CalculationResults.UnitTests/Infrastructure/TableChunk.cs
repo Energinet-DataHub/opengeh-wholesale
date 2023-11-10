@@ -14,7 +14,7 @@
 
 using System.Collections.ObjectModel;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
+namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure;
 
 /// <summary>
 ///     Represents a table or a chunk of a table.
@@ -33,11 +33,7 @@ public class TableChunk
 
     public string this[Index rowIndex, string columnName] => Rows[rowIndex][_columnIndex[columnName]];
 
-    public IEnumerable<string> this[Index rowIndex] => Rows[rowIndex];
-
-    public int RowCount => Rows.Count;
-
     public string[] ColumnNames { get; }
 
-    public ReadOnlyCollection<string[]> Rows { get; }
+    private ReadOnlyCollection<string[]> Rows { get; }
 }

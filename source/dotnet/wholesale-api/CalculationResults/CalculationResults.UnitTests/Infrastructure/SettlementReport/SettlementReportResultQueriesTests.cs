@@ -16,6 +16,7 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
@@ -30,11 +31,14 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructur
 
 public class SettlementReportResultQueriesTests
 {
-    private readonly Instant _somePeriodStart = Instant.FromUtc(2021, 3, 1, 10, 15);
+    private readonly IEnumerable<IDictionary<string, object?>> _rows = DatabricksTestHelper.CreateSettlementRow(3);
+
+    private readonly IOptions<DeltaTableOptions> _someDeltaTableOptions =
+        Options.Create(new DeltaTableOptions { SCHEMA_NAME = "someSchema", ENERGY_RESULTS_TABLE_NAME = "someTable" });
+
+    private readonly string[] _someGridAreas = { "123", "456" };
     private readonly Instant _somePeriodEnd = Instant.FromUtc(2021, 3, 31, 10, 15);
-    private readonly string[] _someGridAreas = { "123", "456", };
-    private readonly IEnumerable<IDictionary<string, object?>> _rows = TableTestHelper.CreateTableForSettlementReport2(3);
-    private readonly IOptions<DeltaTableOptions> _someDeltaTableOptions = Options.Create(new DeltaTableOptions { SCHEMA_NAME = "someSchema", ENERGY_RESULTS_TABLE_NAME = "someTable", });
+    private readonly Instant _somePeriodStart = Instant.FromUtc(2021, 3, 1, 10, 15);
 
     [Theory]
     [AutoMoqData]
@@ -60,7 +64,7 @@ public class SettlementReportResultQueriesTests
         Mock<DatabricksSqlWarehouseQueryExecutor> databricksSqlWarehouseQueryExecutorMock)
     {
         // Arrange
-        var row = ToAsyncEnumerable();
+        var row = CreateRow();
         var expected = new SettlementReportResultRow(
             "123",
             ProcessType.BalanceFixing,
@@ -81,9 +85,22 @@ public class SettlementReportResultQueriesTests
         actual.First().Should().Be(expected);
     }
 
-    private static async IAsyncEnumerable<IDictionary<string, object?>> ToAsyncEnumerable()
+    private static IAsyncEnumerable<IDictionary<string, object?>> CreateRow()
     {
-        await Task.Delay(0);
-        yield return TableTestHelper.NewRow();
+        var row = new[]
+        {
+            "123", "BalanceFixing", "2022-05-16T01:00:00.000Z", "non_profiled_consumption", "1.234",
+        };
+        var list = new List<string[]> { row };
+        var columnNames = new[]
+        {
+            EnergyResultColumnNames.GridArea,
+            EnergyResultColumnNames.BatchProcessType,
+            EnergyResultColumnNames.Time,
+            EnergyResultColumnNames.TimeSeriesType,
+            EnergyResultColumnNames.Quantity,
+        };
+        var tableChunk = new TableChunk(columnNames, list);
+        return DatabricksTestHelper.GetRowsAsync(tableChunk, 1);
     }
 }
