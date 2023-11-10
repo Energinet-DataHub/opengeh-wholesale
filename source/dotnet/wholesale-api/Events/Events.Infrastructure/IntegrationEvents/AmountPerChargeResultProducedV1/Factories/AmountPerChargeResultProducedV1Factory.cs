@@ -14,8 +14,7 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.AmountPerChargeResultProducedV1.Mappers;
-// using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Types;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Common;
 using Google.Protobuf.WellKnownTypes;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.AmountPerChargeResultProducedV1.Factories;

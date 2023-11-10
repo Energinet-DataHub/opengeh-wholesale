@@ -17,7 +17,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.AmountPerChargeResultProducedV1.Factories;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Types;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Common;
 using Energinet.DataHub.Wholesale.Events.UnitTests.Fixtures;
 using FluentAssertions;
 using Google.Protobuf.WellKnownTypes;

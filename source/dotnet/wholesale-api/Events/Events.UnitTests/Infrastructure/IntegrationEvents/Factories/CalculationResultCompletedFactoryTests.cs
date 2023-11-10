@@ -15,8 +15,8 @@
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Contracts.Events;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Types;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.CalculationResultCompleted.Factories;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Common;
 using FluentAssertions;
 using Google.Protobuf.WellKnownTypes;
 using NodaTime;

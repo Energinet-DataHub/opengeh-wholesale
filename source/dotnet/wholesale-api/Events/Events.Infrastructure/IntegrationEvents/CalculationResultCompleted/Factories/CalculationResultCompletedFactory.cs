@@ -14,16 +14,16 @@
 
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Contracts.Events;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.CalculationResultCompleted.Mappers;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Common;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.CalculationResultCompleted;
 using Google.Protobuf.WellKnownTypes;
 using TimeSeriesPoint = Energinet.DataHub.Wholesale.Contracts.Events.TimeSeriesPoint;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.CalculationResultCompleted.Factories;
 
 public class CalculationResultCompletedFactory : ICalculationResultCompletedFactory
 {
-    public CalculationResultCompleted Create(EnergyResult energyResult)
+    public Contracts.Events.CalculationResultCompleted Create(EnergyResult energyResult)
     {
         if (energyResult.EnergySupplierId == null && energyResult.BalanceResponsibleId == null)
             return CreateForGridArea(energyResult);
@@ -37,7 +37,7 @@ public class CalculationResultCompletedFactory : ICalculationResultCompletedFact
         return CreateForEnergySupplierByBalanceResponsibleParty(energyResult);
     }
 
-    private CalculationResultCompleted CreateForGridArea(EnergyResult result)
+    private Contracts.Events.CalculationResultCompleted CreateForGridArea(EnergyResult result)
     {
         var calculationResultCompleted = CreateInternal(result);
         calculationResultCompleted.AggregationPerGridarea = new AggregationPerGridArea
@@ -48,7 +48,7 @@ public class CalculationResultCompletedFactory : ICalculationResultCompletedFact
         return calculationResultCompleted;
     }
 
-    private CalculationResultCompleted CreateForEnergySupplier(
+    private Contracts.Events.CalculationResultCompleted CreateForEnergySupplier(
         EnergyResult result)
     {
         var calculationResultCompleted = CreateInternal(result);
@@ -61,7 +61,7 @@ public class CalculationResultCompletedFactory : ICalculationResultCompletedFact
         return calculationResultCompleted;
     }
 
-    private CalculationResultCompleted CreateForBalanceResponsibleParty(
+    private Contracts.Events.CalculationResultCompleted CreateForBalanceResponsibleParty(
         EnergyResult result)
     {
         var calculationResultCompleted = CreateInternal(result);
@@ -75,7 +75,7 @@ public class CalculationResultCompletedFactory : ICalculationResultCompletedFact
         return calculationResultCompleted;
     }
 
-    private CalculationResultCompleted CreateForEnergySupplierByBalanceResponsibleParty(
+    private Contracts.Events.CalculationResultCompleted CreateForEnergySupplierByBalanceResponsibleParty(
         EnergyResult result)
     {
         var calculationResultCompleted = CreateInternal(result);
@@ -90,9 +90,9 @@ public class CalculationResultCompletedFactory : ICalculationResultCompletedFact
         return calculationResultCompleted;
     }
 
-    private static CalculationResultCompleted CreateInternal(EnergyResult result)
+    private static Contracts.Events.CalculationResultCompleted CreateInternal(EnergyResult result)
     {
-        var calculationResultCompleted = new CalculationResultCompleted
+        var calculationResultCompleted = new Contracts.Events.CalculationResultCompleted
         {
             BatchId = result.BatchId.ToString(),
             Resolution = Resolution.Quarter,

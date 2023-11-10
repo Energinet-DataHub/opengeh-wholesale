@@ -66,9 +66,20 @@
       <CompileOutputs>True</CompileOutputs>
       <Generator>MSBuild:Compile</Generator>
     </Protobuf>
+    <Protobuf Include="IntegrationEvents\CalculationResultCompleted\Protos\*.proto">
+      <GrpcServices>None</GrpcServices>
+      <Access>Public</Access>
+      <ProtoCompile>True</ProtoCompile>
+      <ProtoRoot>IntegrationEvents</ProtoRoot>
+      <CompileOutputs>True</CompileOutputs>
+      <Generator>MSBuild:Compile</Generator>
+    </Protobuf>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\CalculationResults\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
     <ProjectReference Include="..\Events.Application\Events.Application.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="IntegrationEvents\Types\CalculationResultCompleted" />
   </ItemGroup>
 </Project>

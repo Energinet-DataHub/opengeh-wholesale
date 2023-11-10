@@ -14,7 +14,7 @@
 
 using ProcessType = Energinet.DataHub.Wholesale.Contracts.Events.ProcessType;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.CalculationResultCompleted;
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.CalculationResultCompleted.Mappers;
 
 public static class ProcessTypeMapper
 {

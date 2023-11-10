@@ -14,7 +14,7 @@
 
 using TimeSeriesType = Energinet.DataHub.Wholesale.Contracts.Events.TimeSeriesType;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Mappers.CalculationResultCompleted;
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.CalculationResultCompleted.Mappers;
 
 public static class TimeSeriesTypeMapper
 {
