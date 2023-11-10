@@ -84,3 +84,9 @@ variable "cert_pwd_migration_dh2_authentication_key1" {
   description = "Password for the certificate"
   default     = ""
 }
+
+variable "datahub2_ip_whitelist" {
+  type        = string
+  description = "Comma-delimited string with IPs / CIDR block with IPs that should be whitelisted for DataHub2"
+  default     = ""
+}
