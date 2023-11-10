@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, when, lit
+from pyspark.sql.functions import col, when, lit, array_union
 
 from package.calculation.energy.energy_results import EnergyResults
 from package.codelists import MeteringPointType
@@ -81,7 +81,9 @@ def _apply_grid_loss_adjustment(
         results.df[Colname.energy_supplier_id],
         results.df[Colname.time_window],
         results.df[Colname.sum_quantity],
-        results.df[Colname.qualities],
+        array_union(
+            results.df[Colname.qualities], grid_loss_result_df.df[Colname.qualities]
+        ).alias(Colname.qualities),
         grid_loss_result_df.df[Colname.sum_quantity].alias("grid_loss_sum_quantity"),
     )
 

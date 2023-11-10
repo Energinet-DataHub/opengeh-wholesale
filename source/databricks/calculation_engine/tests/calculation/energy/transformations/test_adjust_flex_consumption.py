@@ -384,3 +384,31 @@ def test_that_the_correct_metering_point_type_is_put_on_the_result(
         ]
         == MeteringPointType.CONSUMPTION.value
     )
+
+
+def test__adjust_flex_consumption__joins_qualities(
+    flex_consumption_result_row_factory: Callable[..., EnergyResults],
+    positive_grid_loss_result_row_factory: Callable[..., EnergyResults],
+    grid_loss_sys_cor_row_factory: Callable[..., DataFrame],
+) -> None:
+    expected_qualities = [
+        QuantityQuality.CALCULATED.value,
+        QuantityQuality.ESTIMATED.value,
+    ]
+
+    flex_consumption = flex_consumption_result_row_factory(
+        aggregated_quality=QuantityQuality.CALCULATED.value
+    )
+    positive_grid_loss = positive_grid_loss_result_row_factory(
+        aggregated_quality=QuantityQuality.ESTIMATED.value
+    )
+
+    grid_loss_sys_cor_master_data = grid_loss_sys_cor_row_factory()
+
+    actual = adjust_flex_consumption(
+        flex_consumption, positive_grid_loss, grid_loss_sys_cor_master_data
+    )
+
+    actual_row = actual.df.collect()[0]
+    actual_qualities = actual_row[Colname.qualities]
+    assert set(actual_qualities) == set(expected_qualities)
