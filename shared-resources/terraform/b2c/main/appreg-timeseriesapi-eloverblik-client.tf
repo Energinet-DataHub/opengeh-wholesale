@@ -30,10 +30,6 @@ resource "azuread_service_principal" "eloverblik_timeseriesapi_client_app_sp" {
   }
 }
 
-resource "azuread_application_password" "eloverblik_timeseriesapi_client_secret" {
-  application_object_id = azuread_application.eloverblik_timeseriesapi_client_app.object_id
-}
-
 resource "null_resource" "grant_admin_consent" {
   triggers = {
     resourceId = azuread_service_principal.backend_timeseriesapi_app_sp.object_id # resource.azuread_application.backend_timeseriesapi_app.application_id

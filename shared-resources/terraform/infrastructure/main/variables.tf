@@ -6,7 +6,7 @@ variable "subscription_id" {
 variable "resource_group_name" { # Should be deleted when old subscriptions are deleted
   type        = string
   description = "Resource Group that the infrastructure code is deployed into."
-  default = ""
+  default     = ""
 }
 
 variable "environment_short" {
@@ -97,11 +97,6 @@ variable "backend_timeseriesapi_app_id" {
 variable "eloverblik_timeseriesapi_client_app_id" {
   type        = string
   description = "The Application ID of the Eloverblik TimeSeriesApi client app registration."
-}
-
-variable "eloverblik_timeseriesapi_client_secret" {
-  type        = string
-  description = "The client secret of the Eloverblik TimeSeriesApi client app registration."
 }
 
 variable "authentication_sign_in_user_flow_id" {

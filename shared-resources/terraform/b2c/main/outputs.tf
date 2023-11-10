@@ -75,9 +75,3 @@ output "eloverblik_timeseriesapi_client_app_id" {
   value       = azuread_application.eloverblik_timeseriesapi_client_app.application_id
   sensitive   = false
 }
-
-output "eloverblik_timeseriesapi_client_secret" {
-  description = "The client secret of the ElOverblik TimeSeriesApi client app registration."
-  value       = azuread_application_password.eloverblik_timeseriesapi_client_secret.value
-  sensitive   = true
-}
