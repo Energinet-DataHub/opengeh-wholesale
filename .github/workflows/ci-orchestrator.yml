@@ -124,6 +124,15 @@ jobs:
       infrastructure_path: ./esett-deprecated/terraform
     secrets: inherit
 
+  platform_tools_ui_ci:
+    needs: changes
+    if: ${{ needs.changes.outputs.platform_tools_ui_ci == 'true' }}
+    uses: ./.github/workflows/infrastructure-build-prerelease.yml
+    with:
+      release_name_prefix: platform_tools_ui_infrastructure
+      infrastructure_path: ./platform-tools-ui/terraform
+    secrets: inherit
+
   # If we have multiple Structurizr DSL files in the same repository, we can support rendering them by:
   #  1. Adding a job per file
   #  2. Ensure these jobs are executed in serial (by using 'needs')
