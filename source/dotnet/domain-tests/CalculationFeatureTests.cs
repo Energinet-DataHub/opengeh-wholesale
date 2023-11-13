@@ -12,14 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.IO.Compression;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Xunit;
-using ProcessType = Energinet.DataHub.Wholesale.DomainTests.Clients.v3.ProcessType;
 using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.DomainTests
@@ -34,10 +31,6 @@ namespace Energinet.DataHub.Wholesale.DomainTests
         /// </summary>
         public class Given_Calculated : DomainTestsBase<CalculationFixture>
         {
-            private static readonly DateTimeOffset _existingBatchPeriodStart = DateTimeOffset.Parse("2020-01-28T23:00:00Z");
-            private static readonly DateTimeOffset _existingBatchPeriodEnd = DateTimeOffset.Parse("2020-01-29T23:00:00Z");
-            private static readonly string ExistingGridAreaCode = "543";
-
             public Given_Calculated(LazyFixtureFactory<CalculationFixture> lazyFixtureFactory)
                 : base(lazyFixtureFactory)
             {
@@ -135,35 +128,6 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                         CheckIfExistsInCalculationResults(Fixture.Output.CalculationResultCompletedFromWholesaleFixing, timeSeriesType, aggregationLevel).Should().BeTrue();
                         CheckIfExistsInCalculationResults(Fixture.Output.EnergyResultProducedFromWholesaleFixing, timeSeriesType, aggregationLevel).Should().BeTrue();
                     }
-                }
-            }
-
-            [DomainFact(Skip = "Test fails on cold runs with a timeout error - expected to be fixed when switching to Databricks Serverless warehouse")]
-            public async Task When_DownloadingSettlementReport_Then_ResponseIsCompressedFileWithData()
-            {
-                // Arrange + Act
-                var fileResponse = await Fixture.WholesaleClient.DownloadAsync(
-                    new[] { ExistingGridAreaCode },
-                    ProcessType.BalanceFixing,
-                    _existingBatchPeriodStart,
-                    _existingBatchPeriodEnd);
-
-                // Assert
-                using var compressedSettlementReport = new ZipArchive(fileResponse.Stream, ZipArchiveMode.Read);
-                compressedSettlementReport.Entries.Should().NotBeEmpty();
-
-                var resultEntry = compressedSettlementReport.Entries.Single();
-                resultEntry.Name.Should().Be("Result.csv");
-
-                using var stringReader = new StreamReader(resultEntry.Open());
-                var content = await stringReader.ReadToEndAsync();
-
-                var lines = content.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
-
-                foreach (var line in lines[1..])
-                {
-                    // Check that the line contains the expected grid area code and process type.
-                    Assert.StartsWith("543,D04,", line);
                 }
             }
 
