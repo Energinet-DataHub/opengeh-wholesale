@@ -478,7 +478,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions);
+        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions, addFirstCorrection: false, addSecondCorrection: false, addThirdCorrection: false);
         var parameters = CreateQueryParameters(
             timeSeriesTypeFilter,
             startOfPeriodFilter,
