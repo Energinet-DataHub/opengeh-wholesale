@@ -386,7 +386,7 @@ def test_that_the_correct_metering_point_type_is_put_on_the_result(
     )
 
 
-def test__adjust_flex_consumption__joins_qualities(
+def test__adjust_flex_consumption__returns_qualities_from_flex_consumption_and_positive_grid_loss(
     flex_consumption_result_row_factory: Callable[..., EnergyResults],
     positive_grid_loss_result_row_factory: Callable[..., EnergyResults],
     grid_loss_sys_cor_row_factory: Callable[..., DataFrame],

@@ -371,7 +371,7 @@ def test_that_the_correct_metering_point_type_is_put_on_the_result(
     )
 
 
-def test__adjust_production__joins_qualities(
+def test__adjust_production__returns_qualities_from_hourly_production_and_negative_grid_loss(
     hourly_production_result_row_factory: Callable[..., EnergyResults],
     negative_grid_loss_result_row_factory: Callable[..., EnergyResults],
     sys_cor_row_factory: Callable[..., DataFrame],
