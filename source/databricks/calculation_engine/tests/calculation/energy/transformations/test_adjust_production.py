@@ -376,6 +376,7 @@ def test__adjust_production__returns_qualities_from_hourly_production_and_negati
     negative_grid_loss_result_row_factory: Callable[..., EnergyResults],
     sys_cor_row_factory: Callable[..., DataFrame],
 ) -> None:
+    # Arrange
     expected_qualities = [
         QuantityQuality.CALCULATED.value,
         QuantityQuality.ESTIMATED.value,
@@ -389,10 +390,12 @@ def test__adjust_production__returns_qualities_from_hourly_production_and_negati
     )
     grid_loss_sys_cor_master_data = sys_cor_row_factory()
 
+    # Act
     actual = adjust_production(
         production, negative_grid_loss, grid_loss_sys_cor_master_data
     )
 
+    # Assert
     actual_row = actual.df.collect()[0]
     actual_qualities = actual_row[Colname.qualities]
     assert set(actual_qualities) == set(expected_qualities)
