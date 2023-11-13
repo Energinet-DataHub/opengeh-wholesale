@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.RequestCalculationResult.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
@@ -42,12 +43,13 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
         var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
         DatabricksSqlRow? firstRow = null;
         await foreach (var currentRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(
-                           new QueryAggregatedTimeSeriesStatement(parameters, _deltaTableOptions)).ConfigureAwait(false))
+                           new QueryAggregatedTimeSeriesStatement(parameters, _deltaTableOptions), Format.JsonArray).ConfigureAwait(false))
         {
+            var databricksCurrentRow = new DatabricksSqlRow(currentRow);
             if (firstRow is null)
-                firstRow = currentRow;
+                firstRow = databricksCurrentRow;
 
-            var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(currentRow);
+            var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(databricksCurrentRow);
 
             timeSeriesPoints.Add(timeSeriesPoint);
         }
