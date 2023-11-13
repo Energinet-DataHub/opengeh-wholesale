@@ -32,50 +32,6 @@ namespace Energinet.DataHub.Wholesale.DomainTests
     public class WebApiTests
     {
         /// <summary>
-        /// These tests uses an unauthorized http client to perform requests.
-        /// </summary>
-        public class Given_Unauthorized : DomainTestsBase<UnauthorizedClientFixture>
-        {
-            public Given_Unauthorized(LazyFixtureFactory<UnauthorizedClientFixture> lazyFixtureFactory)
-                : base(lazyFixtureFactory)
-            {
-            }
-
-            /// <summary>
-            /// This is just to be able to verify everything works with regards to settings and executing the tests after deployment.
-            /// If needed, this test can be removed when the actual domain test has been implemented.
-            /// </summary>
-            [DomainFact]
-            public async Task When_RequestReadinessStatus_Then_ResponseIsOkAndHealthy()
-            {
-                // Act
-                using var actualResponse = await Fixture.UnauthorizedHttpClient.GetAsync("monitor/ready");
-
-                // Assert
-                actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
-                var actualContent = await actualResponse.Content.ReadAsStringAsync();
-                actualContent.Should().StartWith("{\"status\":\"Healthy\"");
-            }
-
-            /// <summary>
-            /// This shows our request will fail if we call Web API without a valid access token.
-            /// </summary>
-            [DomainFact]
-            public async Task When_RequestBatchId_Then_ResponseIsUnauthorized()
-            {
-                // Arrange
-                var request = new HttpRequestMessage(HttpMethod.Get, "v3/batches?batchId=1");
-
-                // Act
-                using var actualResponse = await Fixture.UnauthorizedHttpClient.SendAsync(request);
-
-                // Assert
-                actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-            }
-        }
-
-        /// <summary>
         /// These tests uses an authorized Wholesale client to perform requests.
         /// </summary>'
         public class Given_Authorized : DomainTestsBase<AuthorizedClientFixture>
