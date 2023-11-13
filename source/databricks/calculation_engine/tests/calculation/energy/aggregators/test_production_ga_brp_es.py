@@ -23,7 +23,7 @@ from pyspark.sql import SparkSession
 
 from package.calculation.energy.aggregators import (
     aggregate_production_ga_brp_es,
-    _aggregate_per_ga_and_brp_and_es,
+    aggregate_per_ga_and_brp_and_es,
 )
 from package.calculation.energy.energy_results import (
     EnergyResults,
@@ -253,7 +253,7 @@ def test_production_test_filter_by_domain_is_present(
     quarterly_metering_point_time_series_factory,
 ) -> None:
     df = quarterly_metering_point_time_series_factory()
-    aggregated_df = _aggregate_per_ga_and_brp_and_es(
+    aggregated_df = aggregate_per_ga_and_brp_and_es(
         df, MeteringPointType.PRODUCTION, None
     )
     assert aggregated_df.df.count() == 1
@@ -267,7 +267,7 @@ def test__quarterly_sums_correctly(
     df = quarterly_metering_point_time_series_same_time_factory(
         first_quantity=Decimal("1"), second_quantity=Decimal("2")
     )
-    result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
+    result_df = aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
     assert result_df.df.first().sum_quantity == 3
 
 
@@ -372,7 +372,7 @@ def test__that_grid_area_code_in_input_is_in_output(
 ) -> None:
     """Test that the grid area codes in input are in result"""
     df = quarterly_metering_point_time_series_same_time_factory()
-    result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
+    result_df = aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
     actual_row = result_df.df.first()
     assert getattr(actual_row, Colname.grid_area) == str(grid_area_code_805)
 
@@ -384,7 +384,7 @@ def test__each_grid_area_has_a_sum(
     df = quarterly_metering_point_time_series_same_time_factory(
         second_grid_area_code="806"
     )
-    result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
+    result_df = aggregate_per_ga_and_brp_and_es(df, MeteringPointType.PRODUCTION, None)
     assert result_df.df.where(F.col(Colname.grid_area) == "805").count() == 1
     assert result_df.df.where(F.col(Colname.grid_area) == "806").count() == 1
 
