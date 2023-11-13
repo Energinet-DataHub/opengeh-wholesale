@@ -15,7 +15,7 @@ import pytest
 from pyspark.sql import SparkSession
 
 from package.calculation.energy.exchange_aggregators import (
-    aggregate_net_exchange_per_neighbour_ga as sut,
+    aggregate_net_exchange_per_neighbour_ga,
 )
 import tests.calculation.energy.quarterly_metering_point_time_series_factories as factories
 from package.codelists import QuantityQuality
@@ -70,7 +70,7 @@ class TestWhenValidInput:
         expected_qualities = sorted([q.value for q in expected_qualities])
 
         # Act
-        actual = sut(metering_point_time_series)
+        actual = aggregate_net_exchange_per_neighbour_ga(metering_point_time_series)
 
         # Assert
         actual_rows = actual.df.collect()
