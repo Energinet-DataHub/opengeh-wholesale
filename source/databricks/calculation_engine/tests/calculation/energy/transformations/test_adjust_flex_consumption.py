@@ -218,16 +218,19 @@ def test_grid_area_grid_loss_is_added_to_grid_loss_energy_responsible(
     positive_grid_loss_result_row_factory: Callable[..., EnergyResults],
     grid_loss_sys_cor_row_factory: Callable[..., DataFrame],
 ) -> None:
+    # Arrange
     flex_consumption = flex_consumption_result_row_factory(supplier="A")
     positive_grid_loss = positive_grid_loss_result_row_factory()
     grid_loss_sys_cor_master_data = grid_loss_sys_cor_row_factory(supplier="A")
 
-    result_df = adjust_flex_consumption(
+    # Act
+    actual = adjust_flex_consumption(
         flex_consumption, positive_grid_loss, grid_loss_sys_cor_master_data
     )
 
+    # Assert
     assert (
-        result_df.df.where(col(Colname.energy_supplier_id) == "A").collect()[0][
+        actual.df.where(col(Colname.energy_supplier_id) == "A").collect()[0][
             Colname.sum_quantity
         ]
         == default_positive_grid_loss + default_sum_quantity
@@ -239,16 +242,19 @@ def test_grid_area_grid_loss_is_not_added_to_non_grid_loss_energy_responsible(
     positive_grid_loss_result_row_factory: Callable[..., EnergyResults],
     grid_loss_sys_cor_row_factory: Callable[..., DataFrame],
 ) -> None:
+    # Arrange
     flex_consumption = flex_consumption_result_row_factory(supplier="A")
     positive_grid_loss = positive_grid_loss_result_row_factory()
     grid_loss_sys_cor_master_data = grid_loss_sys_cor_row_factory(supplier="B")
 
-    result_df = adjust_flex_consumption(
+    # Act
+    actual = adjust_flex_consumption(
         flex_consumption, positive_grid_loss, grid_loss_sys_cor_master_data
     )
 
+    # Assert
     assert (
-        result_df.df.where(col(Colname.energy_supplier_id) == "A").collect()[0][
+        actual.df.where(col(Colname.energy_supplier_id) == "A").collect()[0][
             Colname.sum_quantity
         ]
         == default_sum_quantity
@@ -260,6 +266,7 @@ def test_result_dataframe_contains_same_number_of_results_with_same_energy_suppl
     positive_grid_loss_result_row_factory: Callable[..., EnergyResults],
     grid_loss_sys_cor_row_factory: Callable[..., DataFrame],
 ) -> None:
+    # Arrange
     fc_row_1 = flex_consumption_result_row_factory(supplier="A")
     fc_row_2 = flex_consumption_result_row_factory(supplier="B")
     fc_row_3 = flex_consumption_result_row_factory(supplier="C")
@@ -268,15 +275,17 @@ def test_result_dataframe_contains_same_number_of_results_with_same_energy_suppl
     positive_grid_loss = positive_grid_loss_result_row_factory()
     grid_loss_sys_cor_master_data = grid_loss_sys_cor_row_factory(supplier="C")
 
-    result_df = adjust_flex_consumption(
+    # Act
+    actual = adjust_flex_consumption(
         flex_consumption, positive_grid_loss, grid_loss_sys_cor_master_data
     )
 
-    result_df_collect = result_df.df.collect()
-    assert result_df.df.count() == 3
-    assert result_df_collect[0][Colname.energy_supplier_id] == "A"
-    assert result_df_collect[1][Colname.energy_supplier_id] == "B"
-    assert result_df_collect[2][Colname.energy_supplier_id] == "C"
+    # Assert
+    actual_collect = actual.df.collect()
+    assert actual.df.count() == 3
+    assert actual_collect[0][Colname.energy_supplier_id] == "A"
+    assert actual_collect[1][Colname.energy_supplier_id] == "B"
+    assert actual_collect[2][Colname.energy_supplier_id] == "C"
 
 
 def test_correct_grid_loss_entry_is_used_to_determine_energy_responsible_for_the_given_time_window_from_flex_consumption_result_dataframe(
@@ -284,6 +293,7 @@ def test_correct_grid_loss_entry_is_used_to_determine_energy_responsible_for_the
     positive_grid_loss_result_row_factory: Callable[..., EnergyResults],
     grid_loss_sys_cor_row_factory: Callable[..., DataFrame],
 ) -> None:
+    # Arrange
     time_window_1 = {
         Colname.start: datetime(2020, 1, 1, 0, 0),
         Colname.end: datetime(2020, 1, 1, 1, 0),
@@ -339,25 +349,27 @@ def test_correct_grid_loss_entry_is_used_to_determine_energy_responsible_for_the
 
     grid_loss_sys_cor_master_data = glsc_row_1.union(glsc_row_2).union(glsc_row_3)
 
-    result_df = adjust_flex_consumption(
+    # Act
+    actual = adjust_flex_consumption(
         flex_consumption, positive_grid_loss, grid_loss_sys_cor_master_data
     )
 
-    assert result_df.df.count() == 3
+    # Assert
+    assert actual.df.count() == 3
     assert (
-        result_df.df.where(col(Colname.energy_supplier_id) == "A")
+        actual.df.where(col(Colname.energy_supplier_id) == "A")
         .filter(col(f"{Colname.time_window_start}") == time_window_1["start"])
         .collect()[0][Colname.sum_quantity]
         == default_sum_quantity + gagl_result_1
     )
     assert (
-        result_df.df.where(col(Colname.energy_supplier_id) == "B")
+        actual.df.where(col(Colname.energy_supplier_id) == "B")
         .filter(col(f"{Colname.time_window_start}") == time_window_2["start"])
         .collect()[0][Colname.sum_quantity]
         == default_sum_quantity
     )
     assert (
-        result_df.df.where(col(Colname.energy_supplier_id) == "B")
+        actual.df.where(col(Colname.energy_supplier_id) == "B")
         .filter(col(f"{Colname.time_window_start}") == time_window_3["start"])
         .collect()[0][Colname.sum_quantity]
         == default_sum_quantity + gagl_result_3
@@ -369,17 +381,20 @@ def test_that_the_correct_metering_point_type_is_put_on_the_result(
     positive_grid_loss_result_row_factory: Callable[..., EnergyResults],
     grid_loss_sys_cor_row_factory: Callable[..., DataFrame],
 ) -> None:
+    # Arrange
     flex_consumption = flex_consumption_result_row_factory(supplier="A")
     positive_grid_loss = positive_grid_loss_result_row_factory()
 
     grid_loss_sys_cor_master_data = grid_loss_sys_cor_row_factory(supplier="A")
 
-    result_df = adjust_flex_consumption(
+    # Act
+    actual = adjust_flex_consumption(
         flex_consumption, positive_grid_loss, grid_loss_sys_cor_master_data
     )
 
+    # Assert
     assert (
-        result_df.df.where(col(Colname.energy_supplier_id) == "A").collect()[0][
+        actual.df.where(col(Colname.energy_supplier_id) == "A").collect()[0][
             Colname.metering_point_type
         ]
         == MeteringPointType.CONSUMPTION.value

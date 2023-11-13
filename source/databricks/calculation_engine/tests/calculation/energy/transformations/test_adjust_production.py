@@ -204,16 +204,19 @@ def test_grid_area_negative_grid_loss_is_added_to_grid_loss_responsible_energy_s
     negative_grid_loss_result_row_factory: Callable[..., EnergyResults],
     sys_cor_row_factory: Callable[..., DataFrame],
 ) -> None:
+    # Arrange
     production = hourly_production_result_row_factory(supplier="A")
     negative_grid_loss = negative_grid_loss_result_row_factory()
     grid_loss_sys_cor_master_data = sys_cor_row_factory(supplier="A")
 
-    result_df = adjust_production(
+    # Act
+    actual = adjust_production(
         production, negative_grid_loss, grid_loss_sys_cor_master_data
     )
 
+    # Assert
     assert (
-        result_df.df.where(col(Colname.energy_supplier_id) == "A").collect()[0][
+        actual.df.where(col(Colname.energy_supplier_id) == "A").collect()[0][
             Colname.sum_quantity
         ]
         == default_negative_grid_loss + default_sum_quantity
@@ -225,16 +228,19 @@ def test_grid_area_grid_loss_is_not_added_to_non_grid_loss_energy_responsible(
     negative_grid_loss_result_row_factory: Callable[..., EnergyResults],
     sys_cor_row_factory: Callable[..., DataFrame],
 ) -> None:
+    # Arrange
     production = hourly_production_result_row_factory(supplier="A")
     negative_grid_loss = negative_grid_loss_result_row_factory()
     grid_loss_sys_cor_master_data = sys_cor_row_factory(supplier="B")
 
-    result_df = adjust_production(
+    # Act
+    actual = adjust_production(
         production, negative_grid_loss, grid_loss_sys_cor_master_data
     )
 
+    # Assert
     assert (
-        result_df.df.where(col(Colname.energy_supplier_id) == "A").collect()[0][
+        actual.df.where(col(Colname.energy_supplier_id) == "A").collect()[0][
             Colname.sum_quantity
         ]
         == default_sum_quantity
@@ -246,6 +252,7 @@ def test_result_dataframe_contains_same_number_of_results_with_same_energy_suppl
     negative_grid_loss_result_row_factory: Callable[..., EnergyResults],
     sys_cor_row_factory: Callable[..., DataFrame],
 ) -> None:
+    # Arrange
     hp_row_1 = hourly_production_result_row_factory(supplier="A")
     hp_row_2 = hourly_production_result_row_factory(supplier="B")
     hp_row_3 = hourly_production_result_row_factory(supplier="C")
@@ -254,15 +261,17 @@ def test_result_dataframe_contains_same_number_of_results_with_same_energy_suppl
     negative_grid_loss = negative_grid_loss_result_row_factory()
     grid_loss_sys_cor_master_data = sys_cor_row_factory(supplier="C")
 
-    result_df = adjust_production(
+    # Act
+    actual = adjust_production(
         production, negative_grid_loss, grid_loss_sys_cor_master_data
     )
 
-    result_df_collect = result_df.df.collect()
-    assert result_df.df.count() == 3
-    assert result_df_collect[0][Colname.energy_supplier_id] == "A"
-    assert result_df_collect[1][Colname.energy_supplier_id] == "B"
-    assert result_df_collect[2][Colname.energy_supplier_id] == "C"
+    # Assert
+    actual_collect = actual.df.collect()
+    assert actual.df.count() == 3
+    assert actual_collect[0][Colname.energy_supplier_id] == "A"
+    assert actual_collect[1][Colname.energy_supplier_id] == "B"
+    assert actual_collect[2][Colname.energy_supplier_id] == "C"
 
 
 def test_correct_negative_grid_loss_entry_is_used_to_determine_energy_responsible_for_the_given_time_window_from_hourly_production_result_dataframe(
@@ -270,6 +279,7 @@ def test_correct_negative_grid_loss_entry_is_used_to_determine_energy_responsibl
     negative_grid_loss_result_row_factory: Callable[..., EnergyResults],
     sys_cor_row_factory: Callable[..., DataFrame],
 ) -> None:
+    # Arrange
     time_window_1 = {
         Colname.start: datetime(2020, 1, 1, 0, 0),
         Colname.end: datetime(2020, 1, 1, 1, 0),
@@ -325,25 +335,27 @@ def test_correct_negative_grid_loss_entry_is_used_to_determine_energy_responsibl
 
     grid_loss_sys_cor_master_data = sc_row_1.union(sc_row_2).union(sc_row_3)
 
-    result_df = adjust_production(
+    # Act
+    actual = adjust_production(
         production, negative_grid_loss, grid_loss_sys_cor_master_data
     )
 
-    assert result_df.df.count() == 3
+    # Assert
+    assert actual.df.count() == 3
     assert (
-        result_df.df.where(col(Colname.energy_supplier_id) == "A")
+        actual.df.where(col(Colname.energy_supplier_id) == "A")
         .filter(col(f"{Colname.time_window_start}") == time_window_1["start"])
         .collect()[0][Colname.sum_quantity]
         == default_sum_quantity + gasc_result_1
     )
     assert (
-        result_df.df.where(col(Colname.energy_supplier_id) == "B")
+        actual.df.where(col(Colname.energy_supplier_id) == "B")
         .filter(col(f"{Colname.time_window_start}") == time_window_2["start"])
         .collect()[0][Colname.sum_quantity]
         == default_sum_quantity
     )
     assert (
-        result_df.df.where(col(Colname.energy_supplier_id) == "B")
+        actual.df.where(col(Colname.energy_supplier_id) == "B")
         .filter(col(f"{Colname.time_window_start}") == time_window_3["start"])
         .collect()[0][Colname.sum_quantity]
         == default_sum_quantity + gasc_result_3
@@ -355,16 +367,19 @@ def test_that_the_correct_metering_point_type_is_put_on_the_result(
     negative_grid_loss_result_row_factory: Callable[..., EnergyResults],
     sys_cor_row_factory: Callable[..., DataFrame],
 ) -> None:
+    # Arrange
     production = hourly_production_result_row_factory(supplier="A")
     negative_grid_loss = negative_grid_loss_result_row_factory()
     grid_loss_sys_cor_master_data = sys_cor_row_factory(supplier="A")
 
-    result_df = adjust_production(
+    # Act
+    actual = adjust_production(
         production, negative_grid_loss, grid_loss_sys_cor_master_data
     )
 
+    # Assert
     assert (
-        result_df.df.where(col(Colname.energy_supplier_id) == "A").collect()[0][
+        actual.df.where(col(Colname.energy_supplier_id) == "A").collect()[0][
             Colname.metering_point_type
         ]
         == MeteringPointType.PRODUCTION.value
