@@ -122,11 +122,15 @@ class TestWhenValidInput:
             QuantityQuality.ESTIMATED.value,
         ]
 
-        production_row = factories.create_row(qualities=[QuantityQuality.CALCULATED])
+        production_row = factories.create_row(
+            qualities=[QuantityQuality.CALCULATED],
+            metering_point_type=MeteringPointType.PRODUCTION,
+        )
         production = factories.create(spark, [production_row])
 
         negative_grid_loss_row = factories.create_row(
-            qualities=[QuantityQuality.ESTIMATED]
+            qualities=[QuantityQuality.ESTIMATED],
+            metering_point_type=MeteringPointType.PRODUCTION,
         )
         negative_grid_loss = factories.create(spark, [negative_grid_loss_row])
 

@@ -122,12 +122,14 @@ class TestWhenValidInput:
         ]
 
         flex_consumption_row = factories.create_row(
-            qualities=[QuantityQuality.CALCULATED]
+            qualities=[QuantityQuality.CALCULATED],
+            metering_point_type=MeteringPointType.CONSUMPTION,
         )
         flex_consumption = factories.create(spark, [flex_consumption_row])
 
         positive_grid_loss_row = factories.create_row(
-            qualities=[QuantityQuality.ESTIMATED]
+            qualities=[QuantityQuality.ESTIMATED],
+            metering_point_type=MeteringPointType.CONSUMPTION,
         )
         positive_grid_loss = factories.create(spark, [positive_grid_loss_row])
 
