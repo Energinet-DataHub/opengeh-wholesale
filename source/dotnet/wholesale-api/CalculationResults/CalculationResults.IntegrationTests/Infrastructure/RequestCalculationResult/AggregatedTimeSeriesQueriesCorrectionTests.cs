@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
+using AutoFixture;
+using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.RequestCalculationResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
@@ -29,7 +30,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.RequestCalculationResult;
 
-public class AggregatedTimeSeriesQueriesCorrectionTests : IClassFixture<DatabricksSqlStatementApiFixture>
+public class AggregatedTimeSeriesQueriesCorrectionTests : TestBase<AggregatedTimeSeriesQueries>, IClassFixture<DatabricksSqlStatementApiFixture>
 {
     private const string BatchId = "019703e7-98ee-45c1-b343-0cbf185a47d9";
     private const string FirstQuantity = "1.111";
@@ -42,17 +43,18 @@ public class AggregatedTimeSeriesQueriesCorrectionTests : IClassFixture<Databric
     private const string FourthQuantityThirdCorrection = "4.555";
     private const string GridAreaCode = "301";
     private readonly DatabricksSqlStatementApiFixture _fixture;
+    private readonly IOptions<DeltaTableOptions> _deltaTableOptions;
 
     public AggregatedTimeSeriesQueriesCorrectionTests(DatabricksSqlStatementApiFixture fixture)
     {
         _fixture = fixture;
+        _deltaTableOptions = fixture.DatabricksSchemaManager.DeltaTableOptions;
+        Fixture.Inject(_fixture.DatabricksSchemaManager.DeltaTableOptions);
+        Fixture.Inject(_fixture.GetDatabricksExecutor());
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetProcessTypeOfLatestCorrectionAsync_WhenLatestCorrectionIsThirdCorrection_ReturnsThirdCorrection(
-        Mock<IHttpClientFactory> httpClientFactoryMock,
-        Mock<ILogger<SqlStatusResponseParser>> loggerMock)
+    [Fact]
+    public async Task GetProcessTypeOfLatestCorrectionAsync_WhenLatestCorrectionIsThirdCorrection_ReturnsThirdCorrection()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
@@ -66,25 +68,21 @@ public class AggregatedTimeSeriesQueriesCorrectionTests : IClassFixture<Databric
             endOfPeriodFilter,
             gridAreaFilter);
 
-        var sut = await CreateAggregatedTimeSeriesQueries(
-            httpClientFactoryMock,
-            loggerMock,
+        await AddCreatedRowsInArbitraryOrderAsync(
+            _deltaTableOptions,
             addFirstCorrection: true,
             addSecondCorrection: true,
             addThirdCorrection: true);
 
         // Act
-        var actual = await sut.GetProcessTypeOfLatestCorrectionAsync(parameters);
+        var actual = await Sut.GetProcessTypeOfLatestCorrectionAsync(parameters);
 
         // Assert
         actual.Should().Be(ProcessType.ThirdCorrectionSettlement);
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetProcessTypeOfLatestCorrectionAsync_WhenLatestCorrectionIsSecondCorrection_ReturnsSecondCorrection(
-        Mock<IHttpClientFactory> httpClientFactoryMock,
-        Mock<ILogger<SqlStatusResponseParser>> loggerMock)
+    [Fact]
+    public async Task GetProcessTypeOfLatestCorrectionAsync_WhenLatestCorrectionIsSecondCorrection_ReturnsSecondCorrection()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
@@ -98,25 +96,21 @@ public class AggregatedTimeSeriesQueriesCorrectionTests : IClassFixture<Databric
             endOfPeriodFilter,
             gridAreaFilter);
 
-        var sut = await CreateAggregatedTimeSeriesQueries(
-            httpClientFactoryMock,
-            loggerMock,
+        await AddCreatedRowsInArbitraryOrderAsync(
+            _deltaTableOptions,
             addFirstCorrection: true,
             addSecondCorrection: true,
             addThirdCorrection: false);
 
         // Act
-        var actual = await sut.GetProcessTypeOfLatestCorrectionAsync(parameters);
+        var actual = await Sut.GetProcessTypeOfLatestCorrectionAsync(parameters);
 
         // Assert
         actual.Should().Be(ProcessType.SecondCorrectionSettlement);
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetProcessTypeOfLatestCorrectionAsync_WhenLatestCorrectionIsFirstCorrection_ReturnsFirstCorrection(
-        Mock<IHttpClientFactory> httpClientFactoryMock,
-        Mock<ILogger<SqlStatusResponseParser>> loggerMock)
+    [Fact]
+    public async Task GetProcessTypeOfLatestCorrectionAsync_WhenLatestCorrectionIsFirstCorrection_ReturnsFirstCorrection()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
@@ -128,25 +122,20 @@ public class AggregatedTimeSeriesQueriesCorrectionTests : IClassFixture<Databric
             startOfPeriodFilter,
             endOfPeriodFilter,
             gridAreaFilter);
-
-        var sut = await CreateAggregatedTimeSeriesQueries(
-            httpClientFactoryMock,
-            loggerMock,
+        await AddCreatedRowsInArbitraryOrderAsync(
+            _deltaTableOptions,
             addFirstCorrection: true,
             addSecondCorrection: false,
             addThirdCorrection: false);
 
         // Act
-        var actual = await sut.GetProcessTypeOfLatestCorrectionAsync(parameters);
+        var actual = await Sut.GetProcessTypeOfLatestCorrectionAsync(parameters);
 
         actual.Should().Be(ProcessType.FirstCorrectionSettlement);
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetProcessTypeOfLatestCorrectionAsync_WhenNoCorrectionsExists_ReturnsFirstCorrection(
-        Mock<IHttpClientFactory> httpClientFactoryMock,
-        Mock<ILogger<SqlStatusResponseParser>> loggerMock)
+    [Fact]
+    public async Task GetProcessTypeOfLatestCorrectionAsync_WhenNoCorrectionsExists_ReturnsFirstCorrection()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
@@ -159,16 +148,14 @@ public class AggregatedTimeSeriesQueriesCorrectionTests : IClassFixture<Databric
             startOfPeriodFilter,
             endOfPeriodFilter,
             gridAreaFilter);
-
-        var sut = await CreateAggregatedTimeSeriesQueries(
-            httpClientFactoryMock,
-            loggerMock,
+        await AddCreatedRowsInArbitraryOrderAsync(
+            _deltaTableOptions,
             addFirstCorrection: false,
             addSecondCorrection: false,
             addThirdCorrection: false);
 
         // Act
-        var actual = await sut.GetProcessTypeOfLatestCorrectionAsync(parameters);
+        var actual = await Sut.GetProcessTypeOfLatestCorrectionAsync(parameters);
 
         // Assert
         actual.Should().Be(ProcessType.FirstCorrectionSettlement);
@@ -189,26 +176,6 @@ public class AggregatedTimeSeriesQueriesCorrectionTests : IClassFixture<Databric
             GridArea: gridArea,
             EnergySupplierId: energySupplierId,
             BalanceResponsibleId: balanceResponsibleId);
-    }
-
-    private async Task<AggregatedTimeSeriesQueries> CreateAggregatedTimeSeriesQueries(
-        Mock<IHttpClientFactory> httpClientFactoryMock,
-        Mock<ILogger<SqlStatusResponseParser>> sqlStatusResponseParserLoggerMock,
-        bool addFirstCorrection = false,
-        bool addSecondCorrection = false,
-        bool addThirdCorrection = false)
-    {
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(
-            httpClientFactoryMock,
-            sqlStatusResponseParserLoggerMock,
-            new Mock<ILogger<DatabricksSqlStatementClient>>());
-
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        var queryGenerator = new AggregatedTimeSeriesSqlGenerator(deltaTableOptions);
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions, addFirstCorrection, addSecondCorrection, addThirdCorrection);
-
-        var queries = new AggregatedTimeSeriesQueries(sqlStatementClient, queryGenerator);
-        return queries;
     }
 
     private async Task AddCreatedRowsInArbitraryOrderAsync(IOptions<DeltaTableOptions> options, bool addFirstCorrection, bool addSecondCorrection, bool addThirdCorrection)

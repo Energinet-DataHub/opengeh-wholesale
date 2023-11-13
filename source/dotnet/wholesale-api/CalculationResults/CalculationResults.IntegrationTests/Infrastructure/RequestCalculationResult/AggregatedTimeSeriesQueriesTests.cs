@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using System.Globalization;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
-using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using AutoFixture;
+using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.RequestCalculationResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
@@ -23,15 +23,13 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Moq;
 using NodaTime;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.RequestCalculationResult;
 
-public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlStatementApiFixture>
+public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQueries>, IClassFixture<DatabricksSqlStatementApiFixture>
 {
     private const string BatchId = "019703e7-98ee-45c1-b343-0cbf185a47d9";
     private const string FirstQuantity = "1.111";
@@ -47,37 +45,33 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
     private const string FourthQuantityThirdCorrection = "4.555";
     private const string GridAreaCode = "301";
     private readonly DatabricksSqlStatementApiFixture _fixture;
+    private readonly IOptions<DeltaTableOptions> _deltaTableOptions;
 
     public AggregatedTimeSeriesQueriesTests(DatabricksSqlStatementApiFixture fixture)
     {
         _fixture = fixture;
+        _deltaTableOptions = fixture.DatabricksSchemaManager.DeltaTableOptions;
+        Fixture.Inject(_fixture.DatabricksSchemaManager.DeltaTableOptions);
+        Fixture.Inject(_fixture.GetDatabricksExecutor());
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetAsync_WhenRequestFromGridOperatorTotalProduction_ReturnsCorrectResult(
-        Mock<IHttpClientFactory> httpClientFactoryMock,
-        Mock<ILogger<SqlStatusResponseParser>> loggerMock)
+    [Fact]
+    public async Task GetAsync_RequestFromGridOperatorTotalProduction_ReturnsResult()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions);
         var parameters = CreateQueryParameters(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
-            endOfPeriod: endOfPeriodFilter,
-            processType: ProcessType.BalanceFixing);
-
-        var sut = await CreateAggregatedTimeSeriesQueries(
-            httpClientFactoryMock,
-            loggerMock,
-            addFirstCorrection: true);
+            endOfPeriod: endOfPeriodFilter);
 
         // Act
-        var actual = await sut.GetAsync(parameters);
+        var actual = await Sut.GetAsync(parameters);
 
         // Assert
         actual.Should().NotBeNull();
@@ -92,35 +86,24 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             .Equal(FirstQuantity, ThirdQuantity, FourthQuantity);
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetAsync_WhenRequestFromGridOperatorTotalProductionInWrongPeriod_ReturnsNoResults(
-        Mock<IHttpClientFactory> httpClientFactoryMock,
-        Mock<ILogger<SqlStatusResponseParser>> loggerMock)
+    [Fact]
+    public async Task GetAsync_RequestFromGridOperatorTotalProductionInWrongPeriod_ReturnsNoResults()
     {
         // Arrange
+        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions);
         var parameters = CreateQueryParameters(
             startOfPeriod: Instant.FromUtc(2020, 1, 1, 1, 1),
-            endOfPeriod: Instant.FromUtc(2021, 1, 2, 1, 1),
-            processType: ProcessType.BalanceFixing);
-
-        var sut = await CreateAggregatedTimeSeriesQueries(
-            httpClientFactoryMock,
-            loggerMock,
-            addFirstCorrection: true);
+            endOfPeriod: Instant.FromUtc(2021, 1, 2, 1, 1));
 
         // Act
-        var actual = await sut.GetAsync(parameters);
+        var actual = await Sut.GetAsync(parameters);
 
         // Assert
         actual.Should().BeNull();
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetAsync_WhenRequestFromEnergySupplierTotalProduction_ReturnsCorrectResult(
-        Mock<IHttpClientFactory> httpClientFactoryMock,
-        Mock<ILogger<SqlStatusResponseParser>> loggerMock)
+    [Fact]
+    public async Task GetAsync_RequestFromEnergySupplierTotalProduction_ReturnsResult()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
@@ -128,21 +111,16 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions);
         var parameters = CreateQueryParameters(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter,
-            energySupplierId: energySupplierIdFilter,
-            processType: ProcessType.BalanceFixing);
-
-        var sut = await CreateAggregatedTimeSeriesQueries(
-            httpClientFactoryMock,
-            loggerMock,
-            addFirstCorrection: true);
+            energySupplierId: energySupplierIdFilter);
 
         // Act
-        var actual = await sut.GetAsync(parameters);
+        var actual = await Sut.GetAsync(parameters);
 
         // Assert
         actual.Should().NotBeNull();
@@ -159,11 +137,8 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             .Equal(FirstQuantity);
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetAsync_WhenRequestFromEnergySupplierTotalProductionBadId_ReturnsNoResults(
-        Mock<IHttpClientFactory> httpClientFactoryMock,
-        Mock<ILogger<SqlStatusResponseParser>> loggerMock)
+    [Fact]
+    public async Task GetAsync_RequestFromEnergySupplierTotalProductionBadId_ReturnsNoResults()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
@@ -171,31 +146,23 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions);
         var parameters = CreateQueryParameters(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter,
-            energySupplierId: energySupplierId,
-            processType: ProcessType.BalanceFixing);
-
-        var sut = await CreateAggregatedTimeSeriesQueries(
-            httpClientFactoryMock,
-            loggerMock,
-            addFirstCorrection: true);
+            energySupplierId: energySupplierId);
 
         // Act
-        var actual = await sut.GetAsync(parameters);
+        var actual = await Sut.GetAsync(parameters);
 
         // Assert
         actual.Should().BeNull();
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetAsync_WhenRequestFromBalanceResponsibleTotalProduction_ReturnsCorrectResult(
-        Mock<IHttpClientFactory> httpClientFactoryMock,
-        Mock<ILogger<SqlStatusResponseParser>> loggerMock)
+    [Fact]
+    public async Task GetAsync_RequestFromBalanceResponsibleTotalProduction_ReturnsResult()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
@@ -203,6 +170,7 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions);
         var parameters = CreateQueryParameters(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
@@ -211,13 +179,8 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             balanceResponsibleId: balanceResponsibleIdFilter,
             processType: ProcessType.BalanceFixing);
 
-        var sut = await CreateAggregatedTimeSeriesQueries(
-            httpClientFactoryMock,
-            loggerMock,
-            addFirstCorrection: true);
-
         // Act
-        var actual = await sut.GetAsync(parameters);
+        var actual = await Sut.GetAsync(parameters);
 
         // Assert
         actual.Should().NotBeNull();
@@ -234,11 +197,8 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             .Equal(SecondQuantity);
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetAsync_WhenRequestFromEnergySupplierPerBalanceResponsibleTotalProduction_ReturnsCorrectResult(
-        Mock<IHttpClientFactory> httpClientFactoryMock,
-        Mock<ILogger<SqlStatusResponseParser>> loggerMock)
+    [Fact]
+    public async Task GetAsync_RequestFromEnergySupplierPerBalanceResponsibleTotalProduction_ReturnsResult()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
@@ -247,22 +207,17 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions);
         var parameters = CreateQueryParameters(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter,
             energySupplierId: energySupplierIdFilter,
-            balanceResponsibleId: balanceResponsibleIdFilter,
-            processType: ProcessType.BalanceFixing);
-
-        var sut = await CreateAggregatedTimeSeriesQueries(
-            httpClientFactoryMock,
-            loggerMock,
-            addFirstCorrection: true);
+            balanceResponsibleId: balanceResponsibleIdFilter);
 
         // Act
-        var actual = await sut.GetAsync(parameters);
+        var actual = await Sut.GetAsync(parameters);
 
         // Assert
         actual.Should().NotBeNull();
@@ -280,30 +235,26 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             .Equal(ThirdQuantity);
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetAsync_WhenRequestFromGridOperatorTotalProductionFirstCorrectionSettlement_ReturnsCorrectResult(
-        Mock<IHttpClientFactory> httpClientFactoryMock,
-        Mock<ILogger<SqlStatusResponseParser>> loggerMock)
+    [Fact]
+    public async Task GetAsync_RequestFromGridOperatorTotalProductionFirstCorrectionSettlement_ReturnsResult()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+        var processTypeFilter = ProcessType.FirstCorrectionSettlement;
+        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions);
+
         var parameters = CreateQueryParameters(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter,
-            processType: ProcessType.FirstCorrectionSettlement);
-        var sut = await CreateAggregatedTimeSeriesQueries(
-            httpClientFactoryMock,
-            loggerMock,
-            addFirstCorrection: true);
+            processType: processTypeFilter);
 
         // Act
-        var actual = await sut.GetAsync(parameters);
+        var actual = await Sut.GetAsync(parameters);
 
         // Assert
         actual.Should().NotBeNull();
@@ -321,32 +272,26 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             ;
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetAsync_WhenRequestFromGridOperatorTotalProductionSecondCorrectionSettlement_ReturnsCorrectResult(
-        Mock<IHttpClientFactory> httpClientFactoryMock,
-        Mock<ILogger<SqlStatusResponseParser>> loggerMock)
+    [Fact]
+    public async Task GetAsync_RequestFromGridOperatorTotalProductionSecondCorrectionSettlement_ReturnsResult()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+        var processTypeFilter = ProcessType.SecondCorrectionSettlement;
+        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions);
+
         var parameters = CreateQueryParameters(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter,
-            processType: ProcessType.SecondCorrectionSettlement);
-        var sut = await CreateAggregatedTimeSeriesQueries(
-            httpClientFactoryMock,
-            loggerMock,
-            addFirstCorrection: true,
-            addSecondCorrection: true,
-            addThirdCorrection: false);
+            processType: processTypeFilter);
 
         // Act
-        var actual = await sut.GetAsync(parameters);
+        var actual = await Sut.GetAsync(parameters);
 
         // Assert
         actual.Should().NotBeNull();
@@ -364,32 +309,26 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             ;
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetAsync_WhenRequestFromGridOperatorTotalProductionThirdCorrectionSettlement_ReturnsCorrectResult(
-        Mock<IHttpClientFactory> httpClientFactoryMock,
-        Mock<ILogger<SqlStatusResponseParser>> loggerMock)
+    [Fact]
+    public async Task GetAsyncRequestFromGridOperatorTotalProductionThirdCorrectionSettlement_ReturnsResult()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+        var processTypeFilter = ProcessType.ThirdCorrectionSettlement;
+        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions);
+
         var parameters = CreateQueryParameters(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter,
-            processType: ProcessType.ThirdCorrectionSettlement);
-        var sut = await CreateAggregatedTimeSeriesQueries(
-            httpClientFactoryMock,
-            loggerMock,
-            addFirstCorrection: false,
-            addSecondCorrection: false,
-            addThirdCorrection: true);
+            processType: processTypeFilter);
 
         // Act
-        var actual = await sut.GetAsync(parameters);
+        var actual = await Sut.GetAsync(parameters);
 
         // Assert
         actual.Should().NotBeNull();
@@ -407,29 +346,24 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             ;
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetAsync_WhenRequestFromGridOperatorForOneDay_ReturnsResult(
-        Mock<IHttpClientFactory> httpClientFactoryMock,
-        Mock<ILogger<SqlStatusResponseParser>> loggerMock)
+    [Fact]
+    public async Task GetAsync_WhenRequestFromGridOperatorForOneDay_ReturnsResult()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 3, 0, 0);
+
+        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions);
         var parameters = CreateQueryParameters(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
-            endOfPeriod: endOfPeriodFilter,
-            processType: ProcessType.BalanceFixing);
-        var sut = await CreateAggregatedTimeSeriesQueries(
-            httpClientFactoryMock,
-            loggerMock);
+            endOfPeriod: endOfPeriodFilter);
 
         // Act
-        var actual = await sut.GetAsync(parameters);
+        var actual = await Sut.GetAsync(parameters);
 
         // Assert
         actual.Should().NotBeNull();
@@ -446,17 +380,17 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             ;
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetAsync_WhenRequestFromGridOperatorStartAndEndDataAreEqual_ReturnsNoResult(
-        Mock<IHttpClientFactory> httpClientFactoryMock,
-        Mock<ILogger<SqlStatusResponseParser>> loggerMock)
+    [Fact]
+    public async Task GetAsync_WhenRequestFromGridOperatorStartAndEndDataAreEqual_ReturnsNoResult()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+
+        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions);
+
         var parameters = CreateQueryParameters(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
@@ -464,142 +398,102 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             endOfPeriod: endOfPeriodFilter,
             processType: ProcessType.BalanceFixing);
 
-        var sut = await CreateAggregatedTimeSeriesQueries(
-            httpClientFactoryMock,
-            loggerMock);
-
         // Act
-        var actual = await sut.GetAsync(parameters);
+        var actual = await Sut.GetAsync(parameters);
 
         // Assert
         actual.Should().BeNull();
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetLatestCorrectionAsync_WhenLatestCorrectionSettlementIsThirdCorrection_ReturnsThirdCorrection(
-        Mock<IHttpClientFactory> httpClientFactoryMock,
-        Mock<ILogger<SqlStatusResponseParser>> loggerMock)
+    [Fact]
+    public async Task GetLatestCorrectionAsync_WhenLatestCorrectionSettlementIsThirdCorrection_ReturnsThirdCorrection()
     {
         var gridAreaFilter = GridAreaCode;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions, addThirdCorrection: true);
         var parameters = CreateQueryParameters(
             timeSeriesTypeFilter,
             startOfPeriodFilter,
             endOfPeriodFilter,
             gridAreaFilter);
-        var sut = await CreateAggregatedTimeSeriesQueries(
-            httpClientFactoryMock,
-            loggerMock,
-            addFirstCorrection: true,
-            addSecondCorrection: true,
-            addThirdCorrection: true);
 
         // Act
-        var actual = await sut.GetLatestCorrectionAsync(parameters);
+        var actual = await Sut.GetLatestCorrectionAsync(parameters);
 
         // Assert
         actual.Should().NotBeNull();
         actual!.ProcessType.Should().Be(ProcessType.ThirdCorrectionSettlement);
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetLatestCorrectionAsync_WhenLatestCorrectionSettlementIsSecondCorrection_ReturnsSecondCorrection(
-        Mock<IHttpClientFactory> httpClientFactoryMock,
-        Mock<ILogger<SqlStatusResponseParser>> loggerMock)
+    [Fact]
+    public async Task GetLatestCorrectionAsync_WhenLatestCorrectionSettlementIsSecondCorrection_ReturnsSecondCorrection()
     {
         var gridAreaFilter = GridAreaCode;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-
+        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions, addSecondCorrection: true);
         var parameters = CreateQueryParameters(
             timeSeriesTypeFilter,
             startOfPeriodFilter,
             endOfPeriodFilter,
             gridAreaFilter);
-        var sut = await CreateAggregatedTimeSeriesQueries(
-            httpClientFactoryMock,
-            loggerMock,
-            addFirstCorrection: true,
-            addSecondCorrection: true,
-            addThirdCorrection: false);
 
         // Act
-        var actual = await sut.GetLatestCorrectionAsync(parameters);
+        var actual = await Sut.GetLatestCorrectionAsync(parameters);
 
         // Assert
         actual.Should().NotBeNull();
         actual!.ProcessType.Should().Be(ProcessType.SecondCorrectionSettlement);
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetLatestCorrectionAsync_WhenLatestCorrectionSettlementIsFirstCorrection_ReturnsFirstCorrection(
-        Mock<IHttpClientFactory> httpClientFactoryMock,
-        Mock<ILogger<SqlStatusResponseParser>> loggerMock)
+    [Fact]
+    public async Task GetLatestCorrectionAsync_WhenLatestCorrectionSettlementIsFirstCorrection_ReturnsFirstCorrection()
     {
         var gridAreaFilter = GridAreaCode;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions, addFirstCorrection: true);
         var parameters = CreateQueryParameters(
             timeSeriesTypeFilter,
             startOfPeriodFilter,
             endOfPeriodFilter,
             gridAreaFilter);
-        var sut = await CreateAggregatedTimeSeriesQueries(
-            httpClientFactoryMock,
-            loggerMock,
-            addFirstCorrection: true,
-            addSecondCorrection: false,
-            addThirdCorrection: false);
 
         // Act
-        var actual = await sut.GetLatestCorrectionAsync(parameters);
+        var actual = await Sut.GetLatestCorrectionAsync(parameters);
 
         // Assert
         actual.Should().NotBeNull();
         actual!.ProcessType.Should().Be(ProcessType.FirstCorrectionSettlement);
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetLatestCorrectionAsync_WhenNoCorrectionsExists_ReturnsNoResult(
-        Mock<IHttpClientFactory> httpClientFactoryMock,
-        Mock<ILogger<SqlStatusResponseParser>> loggerMock)
+    [Fact]
+    public async Task GetLatestCorrectionAsync_WhenNoCorrectionsExists_ReturnsNoResult()
     {
         var gridAreaFilter = GridAreaCode;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions);
         var parameters = CreateQueryParameters(
             timeSeriesTypeFilter,
             startOfPeriodFilter,
             endOfPeriodFilter,
             gridAreaFilter);
-        var sut = await CreateAggregatedTimeSeriesQueries(
-            httpClientFactoryMock,
-            loggerMock,
-            addFirstCorrection: false,
-            addSecondCorrection: false,
-            addThirdCorrection: false);
 
         // Act
-        var actual = await sut.GetLatestCorrectionAsync(parameters);
+        var actual = await Sut.GetLatestCorrectionAsync(parameters);
 
         // Assert
         actual.Should().BeNull();
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetLatestCorrectionAsync_WhenProcessTypeIsDefined_ThrowsException(
-        Mock<IHttpClientFactory> httpClientFactoryMock,
-        Mock<ILogger<SqlStatusResponseParser>> loggerMock)
+    [Fact]
+    public async Task GetLatestCorrectionAsync_WhenProcessTypeIsDefined_ThrowsException()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
@@ -612,14 +506,8 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             endOfPeriodFilter,
             gridAreaFilter,
             processType: ProcessType.BalanceFixing);
-        var sut = await CreateAggregatedTimeSeriesQueries(
-            httpClientFactoryMock,
-            loggerMock,
-            addFirstCorrection: false,
-            addSecondCorrection: false,
-            addThirdCorrection: false);
 
-        var act = () => sut.GetLatestCorrectionAsync(parameters);
+        var act = () => Sut.GetLatestCorrectionAsync(parameters);
 
         // Act and Assert
         await act.Should().ThrowAsync<ArgumentException>(
@@ -644,26 +532,6 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             EnergySupplierId: energySupplierId,
             BalanceResponsibleId: balanceResponsibleId,
             ProcessType: processType);
-    }
-
-    private async Task<AggregatedTimeSeriesQueries> CreateAggregatedTimeSeriesQueries(
-        Mock<IHttpClientFactory> httpClientFactoryMock,
-        Mock<ILogger<SqlStatusResponseParser>> sqlStatusResponseParserLoggerMock,
-        bool addFirstCorrection = false,
-        bool addSecondCorrection = false,
-        bool addThirdCorrection = false)
-    {
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(
-            httpClientFactoryMock,
-            sqlStatusResponseParserLoggerMock,
-            new Mock<ILogger<DatabricksSqlStatementClient>>());
-
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        var queryGenerator = new AggregatedTimeSeriesSqlGenerator(deltaTableOptions);
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions, addFirstCorrection, addSecondCorrection, addThirdCorrection);
-
-        var queries = new AggregatedTimeSeriesQueries(sqlStatementClient, queryGenerator);
-        return queries;
     }
 
     private async Task AddCreatedRowsInArbitraryOrderAsync(IOptions<DeltaTableOptions> options, bool addFirstCorrection = true, bool addSecondCorrection = true, bool addThirdCorrection = true)
@@ -747,7 +615,7 @@ public class AggregatedTimeSeriesQueriesTests : IClassFixture<DatabricksSqlState
             });
         }
 
-        rows = rows.OrderBy(r => Guid.NewGuid()).ToList();
+        rows = rows.OrderBy(_ => Guid.NewGuid()).ToList();
 
         await _fixture.DatabricksSchemaManager.EmptyAsync(options.Value.ENERGY_RESULTS_TABLE_NAME);
         await _fixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(options.Value.ENERGY_RESULTS_TABLE_NAME, rows);

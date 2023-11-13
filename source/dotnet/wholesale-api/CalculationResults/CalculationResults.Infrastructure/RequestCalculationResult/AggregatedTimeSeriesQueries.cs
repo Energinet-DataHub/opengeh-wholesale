@@ -12,35 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.RequestCalculationResult.Statements;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.RequestCalculationResult;
 
 public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
 {
-    private readonly IDatabricksSqlStatementClient _sqlStatementClient;
-    private readonly AggregatedTimeSeriesSqlGenerator _aggregatedTimeSeriesSqlGenerator;
+    private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor;
+    private readonly DeltaTableOptions _deltaTableOptions;
 
     public AggregatedTimeSeriesQueries(
-        IDatabricksSqlStatementClient sqlStatementClient,
-        AggregatedTimeSeriesSqlGenerator aggregatedTimeSeriesSqlGenerator)
+        DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor,
+        DeltaTableOptions deltaTableOptions)
     {
-        _sqlStatementClient = sqlStatementClient;
-        _aggregatedTimeSeriesSqlGenerator = aggregatedTimeSeriesSqlGenerator;
+        _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
+        _deltaTableOptions = deltaTableOptions;
     }
 
     public async Task<EnergyResult?> GetAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
-        var sqlStatement = _aggregatedTimeSeriesSqlGenerator.CreateRequestSql(parameters);
-
         var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
-        SqlResultRow? firstRow = null;
-        await foreach (var currentRow in _sqlStatementClient.ExecuteAsync(sqlStatement, sqlStatementParameters: null).ConfigureAwait(false))
+        DatabricksSqlRow? firstRow = null;
+        await foreach (var currentRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(
+                           new QueryAggregatedTimeSeriesStatement(parameters, _deltaTableOptions)).ConfigureAwait(false))
         {
             if (firstRow is null)
                 firstRow = currentRow;
@@ -85,26 +86,23 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
         return ProcessType.FirstCorrectionSettlement;
     }
 
-    private Task<bool> PerformCorrectionVersionExistsQueryAsync(AggregatedTimeSeriesQueryParameters parameters)
+    private async Task<bool> PerformCorrectionVersionExistsQueryAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
-        var sql = CreateSelectCorrectionVersionSql(parameters);
-
-        var tableRows = _sqlStatementClient.ExecuteAsync(sql, sqlStatementParameters: null);
-
-        return tableRows.AnyAsync().AsTask();
+        return await _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(
+            new QuerySingleAggregatedTimeSeriesStatement(parameters, _deltaTableOptions)).AnyAsync().ConfigureAwait(false);
     }
 
-    private string CreateSelectCorrectionVersionSql(AggregatedTimeSeriesQueryParameters parameters)
-    {
-        var processType = parameters.ProcessType;
-
-        if (processType != ProcessType.FirstCorrectionSettlement
-            && processType != ProcessType.SecondCorrectionSettlement
-            && processType != ProcessType.ThirdCorrectionSettlement)
-            throw new ArgumentOutOfRangeException(nameof(processType), processType, "ProcessType must be a correction settlement type");
-
-        var sql = _aggregatedTimeSeriesSqlGenerator.CreateGetSingleRowSql(parameters);
-
-        return sql;
-    }
+    // private string CreateSelectCorrectionVersionSql(AggregatedTimeSeriesQueryParameters parameters)
+    // {
+    //     var processType = parameters.ProcessType;
+    //
+    //     if (processType != ProcessType.FirstCorrectionSettlement
+    //         && processType != ProcessType.SecondCorrectionSettlement
+    //         && processType != ProcessType.ThirdCorrectionSettlement)
+    //         throw new ArgumentOutOfRangeException(nameof(processType), processType, "ProcessType must be a correction settlement type");
+    //
+    //     var sql = _aggregatedTimeSeriesSqlGenerator.CreateGetSingleRowSql(parameters);
+    //
+    //     return sql;
+    // }
 }

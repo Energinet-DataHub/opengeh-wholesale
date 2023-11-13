@@ -12,16 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using AutoFixture.Xunit2;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
+using AutoFixture;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
+using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
-using Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.Fixtures;
+using Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.SettlementReport;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -31,11 +35,14 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.CalculationResults;
 
-public class WholesaleResultQueriesTests
+public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
 {
     private readonly TableChunk _tableChunk;
     private readonly string _row0CalculationId;
     private readonly string _calculationResultId0;
+
+    private readonly Mock<IBatchesClient> _batchesClientMock;
+    private readonly Mock<DatabricksSqlWarehouseQueryExecutor> _databricksSqlWarehouseQueryExecutorMock;
 
     public WholesaleResultQueriesTests()
     {
@@ -48,28 +55,32 @@ public class WholesaleResultQueriesTests
         var rows = new List<string[]> { row0, row1, };
 
         // Using the columns from the WholesaleResultQueries class to ensure that the test is not broken if the columns are changed
-        _tableChunk = new TableChunk(WholesaleResultQueries.SqlColumnNames, rows);
+        _tableChunk = new TableChunk(QueryWholesaleResultStatement.SqlColumnNames, rows);
+
+        // Mocks Setup - This is another way to setup mocks used in tests. The reason for this are:
+        // 1. Because DatabricksSqlWarehouseQueryExecutor doesn't implement an interface and the constructor is protected
+        // AutoFixture combined with inline is unable to create an instance of it.
+        // 2. The many mock parameters are avoided in tests
+        _batchesClientMock = Fixture.Freeze<Mock<IBatchesClient>>();
+        _databricksSqlWarehouseQueryExecutorMock = Fixture.Freeze<Mock<DatabricksSqlWarehouseQueryExecutor>>();
+        Fixture.Inject(_batchesClientMock.Object);
+        Fixture.Inject(_databricksSqlWarehouseQueryExecutorMock.Object);
     }
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_WhenNoRows_ReturnsNoResults(
-        BatchDto batch,
-        [Frozen] Mock<IBatchesClient> batchesClientMock,
-        [Frozen] Mock<IDatabricksSqlStatementClient> sqlStatementClientMock,
-        WholesaleResultQueries sut)
+    public async Task GetAsync_WhenNoRows_ReturnsNoResults(BatchDto batch)
     {
         // Arrange
-        batch = batch with { BatchId = Guid.Parse(_row0CalculationId) };
-        batchesClientMock
+        _batchesClientMock
             .Setup(client => client.GetAsync(batch.BatchId))
             .ReturnsAsync(batch);
-        sqlStatementClientMock
-            .Setup(x => x.ExecuteAsync(It.IsAny<string>(), null))
-            .Returns(GetRowsAsync(0));
+        _databricksSqlWarehouseQueryExecutorMock
+            .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
+            .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 0));
 
         // Act
-        var actual = await sut.GetAsync(batch.BatchId).ToListAsync();
+        var actual = await Sut.GetAsync(batch.BatchId).ToListAsync();
 
         // Assert
         actual.Should().BeEmpty();
@@ -77,23 +88,17 @@ public class WholesaleResultQueriesTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_WhenOneRow_ReturnsSingleResultWithOneTimeSeriesPoint(
-        BatchDto batch,
-        [Frozen] Mock<IBatchesClient> batchesClientMock,
-        [Frozen] Mock<IDatabricksSqlStatementClient> sqlStatementClientMock,
-        WholesaleResultQueries sut)
+    public async Task GetAsync_WhenOneRow_ReturnsSingleResultWithOneTimeSeriesPoint(BatchDto batch)
     {
         // Arrange
-        batch = batch with { BatchId = Guid.Parse(_row0CalculationId) };
-        batchesClientMock
+        _batchesClientMock
             .Setup(client => client.GetAsync(batch.BatchId))
             .ReturnsAsync(batch);
-        sqlStatementClientMock
-            .Setup(x => x.ExecuteAsync(It.IsAny<string>(), null))
-            .Returns(GetRowsAsync(1));
+        _databricksSqlWarehouseQueryExecutorMock.Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
+            .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 1));
 
         // Act
-        var actual = await sut.GetAsync(batch.BatchId).ToListAsync();
+        var actual = await Sut.GetAsync(batch.BatchId).ToListAsync();
 
         // Assert
         actual.Single().TimeSeriesPoints.Count.Should().Be(1);
@@ -101,23 +106,19 @@ public class WholesaleResultQueriesTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_WhenCalculationHasOneResult_ReturnsResultRowWithExpectedValues(
-        BatchDto batch,
-        [Frozen] Mock<IBatchesClient> batchesClientMock,
-        [Frozen] Mock<IDatabricksSqlStatementClient> sqlStatementClientMock,
-        WholesaleResultQueries sut)
+    public async Task GetAsync_WhenCalculationHasOneResult_ReturnsResultRowWithExpectedValues(BatchDto batch)
     {
         // Arrange
         batch = batch with { BatchId = Guid.Parse(_row0CalculationId), ProcessType = ProcessType.WholesaleFixing };
-        batchesClientMock
+        _batchesClientMock
             .Setup(client => client.GetAsync(batch.BatchId))
             .ReturnsAsync(batch);
-        sqlStatementClientMock
-            .Setup(x => x.ExecuteAsync(It.IsAny<string>(), null))
-            .Returns(GetRowsAsync(1));
+        _databricksSqlWarehouseQueryExecutorMock
+            .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
+            .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 1));
 
         // Act
-        var actual = await sut.GetAsync(batch.BatchId).ToListAsync();
+        var actual = await Sut.GetAsync(batch.BatchId).ToListAsync();
 
         // Assert
         using var assertionScope = new AssertionScope();
@@ -140,23 +141,18 @@ public class WholesaleResultQueriesTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_WhenRowsBelongsToDifferentResults_ReturnsMultipleResults(
-        BatchDto batch,
-        [Frozen] Mock<IBatchesClient> batchesClientMock,
-        [Frozen] Mock<IDatabricksSqlStatementClient> sqlStatementClientMock,
-        WholesaleResultQueries sut)
+    public async Task GetAsync_WhenRowsBelongsToDifferentResults_ReturnsMultipleResults(BatchDto batch)
     {
         // Arrange
-        batch = batch with { BatchId = Guid.Parse(_row0CalculationId) };
-        batchesClientMock
+        _batchesClientMock
             .Setup(client => client.GetAsync(batch.BatchId))
             .ReturnsAsync(batch);
-        sqlStatementClientMock
-            .Setup(x => x.ExecuteAsync(It.IsAny<string>(), null))
-            .Returns(GetRowsAsync(2));
+        _databricksSqlWarehouseQueryExecutorMock
+            .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
+            .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 2));
 
         // Act
-        var actual = await sut.GetAsync(batch.BatchId).ToListAsync();
+        var actual = await Sut.GetAsync(batch.BatchId).ToListAsync();
 
         // Assert
         actual.Count.Should().Be(2);
@@ -171,32 +167,21 @@ public class WholesaleResultQueriesTests
         bool expected)
     {
         // Arrange
-        var listA = new List<KeyValuePair<string, string>>
+        var listA = new DatabricksSqlRow(new Dictionary<string, object?>
         {
-            new(WholesaleResultColumnNames.CalculationId, "calculationId"),
-            new(WholesaleResultColumnNames.CalculationResultId, calculationResultIdA),
-        };
-        var sqlResultRowA = new TestSqlResultRow(listA);
-        var listB = new List<KeyValuePair<string, string>>
+            { WholesaleResultColumnNames.CalculationId, "calculationId" },
+            { WholesaleResultColumnNames.CalculationResultId, calculationResultIdA },
+        });
+        var listB = new DatabricksSqlRow(new Dictionary<string, object?>
         {
-            new(WholesaleResultColumnNames.CalculationId, "calculationId"),
-            new(WholesaleResultColumnNames.CalculationResultId, calculationResultIdB),
-        };
-        var sqlResultRowB = new TestSqlResultRow(listB);
+            { WholesaleResultColumnNames.CalculationId, "calculationId" },
+            { WholesaleResultColumnNames.CalculationResultId, calculationResultIdB },
+        });
 
         // Act
-        var actual = WholesaleResultQueries.BelongsToDifferentResults(sqlResultRowA, sqlResultRowB);
+        var actual = WholesaleResultQueries.BelongsToDifferentResults(listA, listB);
 
         // Assert
         actual.Should().Be(expected);
-    }
-
-    private async IAsyncEnumerable<SqlResultRow> GetRowsAsync(int rowCount)
-    {
-        await Task.Delay(0);
-        for (var i = 0; i < rowCount; i++)
-        {
-            yield return new SqlResultRow(_tableChunk, i);
-        }
     }
 }

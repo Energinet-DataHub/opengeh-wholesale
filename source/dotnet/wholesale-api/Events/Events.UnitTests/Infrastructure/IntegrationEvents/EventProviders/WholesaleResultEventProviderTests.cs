@@ -21,8 +21,9 @@ using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.AmountPerChargeResultProducedV1.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1.Factories;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -40,7 +41,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
             WholesaleResultEventProvider sut)
         {
             // Arrange
-            var expectedIntegrationEvent = new AmountPerChargeResultProducedV1();
+            var expectedIntegrationEvent = new Contracts.IntegrationEvents.AmountPerChargeResultProducedV1();
             var amountPerChargeResult = new[] { wholesaleResult };
             var wholesaleFixingBatch = CreateWholesaleFixingBatch();
 
@@ -72,7 +73,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
             WholesaleResultEventProvider sut)
         {
             // Arrange
-            var expectedIntegrationEvent = new MonthlyAmountPerChargeResultProducedV1();
+            var expectedIntegrationEvent = new Contracts.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1();
             var wholesaleFixingBatch = CreateWholesaleFixingBatch();
             var wholesaleResults = new[] { wholesaleResult };
 
@@ -150,7 +151,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
                 .Returns(true);
             amountPerChargeResultProducedV1FactoryMock
                 .Setup(mock => mock.Create(It.IsAny<WholesaleResult>()))
-                .Returns(new AmountPerChargeResultProducedV1());
+                .Returns(new Contracts.IntegrationEvents.AmountPerChargeResultProducedV1());
 
             // Act
             var actualIntegrationEvents = await sut.GetAsync(wholesaleFixingBatch).ToListAsync();
