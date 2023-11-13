@@ -34,29 +34,15 @@ namespace Energinet.DataHub.Wholesale.DomainTests
         /// <summary>
         /// These tests uses an authorized Wholesale client to perform requests.
         /// </summary>'
-        public class Given_Authorized : DomainTestsBase<AuthorizedClientFixture>
+        public class Given_Calculated : DomainTestsBase<CalculationFixture>
         {
-            private static readonly Guid _existingBatchId = new("ed39dbc5-bdc5-41b9-922a-08d3b12d4538");
             private static readonly DateTimeOffset _existingBatchPeriodStart = DateTimeOffset.Parse("2020-01-28T23:00:00Z");
             private static readonly DateTimeOffset _existingBatchPeriodEnd = DateTimeOffset.Parse("2020-01-29T23:00:00Z");
             private static readonly string ExistingGridAreaCode = "543";
 
-            public Given_Authorized(LazyFixtureFactory<AuthorizedClientFixture> lazyFixtureFactory)
+            public Given_Calculated(LazyFixtureFactory<CalculationFixture> lazyFixtureFactory)
                 : base(lazyFixtureFactory)
             {
-            }
-
-            [DomainFact]
-            public async Task When_RequestingExistingBatchId_Then_ResponseIsOk()
-            {
-                // Arrange
-
-                // Act
-                var batchResult = await Fixture.WholesaleClient.GetBatchAsync(_existingBatchId);
-
-                // Assert
-                batchResult.Should().NotBeNull();
-                batchResult!.BatchId.Should().Be(_existingBatchId);
             }
 
             [DomainFact]

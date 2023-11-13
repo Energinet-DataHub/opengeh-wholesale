@@ -65,5 +65,34 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
             }
         }
+
+        /// <summary>
+        /// These tests uses an authorized Wholesale client to perform requests.
+        /// </summary>'
+        public class Given_Authorized : DomainTestsBase<AuthorizedClientFixture>
+        {
+            private static readonly Guid _existingBatchId = new("ed39dbc5-bdc5-41b9-922a-08d3b12d4538");
+
+            public Given_Authorized(LazyFixtureFactory<AuthorizedClientFixture> lazyFixtureFactory)
+                : base(lazyFixtureFactory)
+            {
+            }
+
+            /// <summary>
+            /// Perform a request that do require authorization.
+            /// </summary>
+            [DomainFact]
+            public async Task When_RequestingExistingBatchId_Then_ResponseIsOk()
+            {
+                // Arrange
+
+                // Act
+                var batchResult = await Fixture.WholesaleClient.GetBatchAsync(_existingBatchId);
+
+                // Assert
+                batchResult.Should().NotBeNull();
+                batchResult!.BatchId.Should().Be(_existingBatchId);
+            }
+        }
     }
 }
