@@ -79,18 +79,15 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         /// </summary>
         private async Task<WholesaleClient_V3> CreateWholesaleClientAsync()
         {
-            var httpClientFactoryMock = new Mock<IHttpClientFactory>();
-            httpClientFactoryMock
-                .Setup(m => m.CreateClient(It.IsAny<string>()))
-                .Returns(new HttpClient { Timeout = _httpTimeout });
-
             var accessToken = await UserAuthenticationClient.AcquireAccessTokenAsync();
+
+            var httpClient = new HttpClient();
+            httpClient.BaseAddress = Configuration.WebApiBaseAddress;
+            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
 
             return new WholesaleClient_V3(
                 Configuration.WebApiBaseAddress.ToString(),
-                new AuthorizedHttpClientFactory(
-                    httpClientFactoryMock.Object,
-                    () => $"Bearer {accessToken}").CreateClient(Configuration.WebApiBaseAddress));
+                httpClient);
         }
 
         private async Task CreateTopicSubscriptionAsync()
