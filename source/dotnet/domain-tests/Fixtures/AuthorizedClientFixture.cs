@@ -19,7 +19,7 @@ using Xunit.Abstractions;
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 {
     /// <summary>
-    /// Support testing Wholesale Web API using an authorized Wholesale client.
+    /// Support calling the Wholesale Web API using an authorized Wholesale client.
     /// </summary>
     public sealed class AuthorizedClientFixture : LazyFixtureBase
     {
