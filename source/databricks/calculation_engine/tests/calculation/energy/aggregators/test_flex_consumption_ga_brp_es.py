@@ -24,7 +24,7 @@ from pyspark.sql.functions import col, window
 
 from package.calculation.energy.aggregators import (
     aggregate_flex_consumption_ga_brp_es,
-    _aggregate_per_ga_and_brp_and_es,
+    aggregate_per_ga_and_brp_and_es,
 )
 from package.calculation.energy.energy_results import (
     EnergyResults,
@@ -242,7 +242,7 @@ def test_flex_consumption_test_filter_by_domain_is_present(
     time_series_row_factory: Callable[..., QuarterlyMeteringPointTimeSeries],
 ) -> None:
     df = time_series_row_factory()
-    aggregated_df = _aggregate_per_ga_and_brp_and_es(
+    aggregated_df = aggregate_per_ga_and_brp_and_es(
         df,
         MeteringPointType.CONSUMPTION,
         SettlementMethod.FLEX,
@@ -254,7 +254,7 @@ def test_flex_consumption_test_filter_by_domain_is_not_present(
     time_series_row_factory: Callable[..., QuarterlyMeteringPointTimeSeries]
 ) -> None:
     df = time_series_row_factory()
-    aggregated_df = _aggregate_per_ga_and_brp_and_es(
+    aggregated_df = aggregate_per_ga_and_brp_and_es(
         df,
         MeteringPointType.CONSUMPTION,
         SettlementMethod.NON_PROFILED,
