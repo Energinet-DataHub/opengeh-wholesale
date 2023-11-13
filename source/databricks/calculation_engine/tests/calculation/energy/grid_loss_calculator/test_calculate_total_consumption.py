@@ -16,7 +16,7 @@ import pytest
 from pyspark.sql import SparkSession
 
 from package.calculation.energy.grid_loss_calculator import (
-    calculate_total_consumption as sut,
+    calculate_total_consumption,
 )
 from package.codelists import QuantityQuality
 from package.constants import Colname
@@ -54,7 +54,7 @@ class TestWhenValidInput:
         net_exchange_per_ga = energy_results.create(spark, net_exchange)
 
         # Act
-        actual = sut(production_per_ga, net_exchange_per_ga)
+        actual = calculate_total_consumption(production_per_ga, net_exchange_per_ga)
 
         # Assert
         actual_row = actual.df.collect()[0]
@@ -76,7 +76,7 @@ class TestWhenValidInput:
         net_exchange_per_ga = energy_results.create(spark, net_exchange_other_ga)
 
         # Act
-        actual = sut(production_per_ga, net_exchange_per_ga)
+        actual = calculate_total_consumption(production_per_ga, net_exchange_per_ga)
 
         # Assert
         actual_row = actual.df.collect()[0]
@@ -102,7 +102,7 @@ class TestWhenValidInput:
         expected_sum_quantity = 7
 
         # Act
-        actual = sut(production_per_ga, net_exchange_per_ga)
+        actual = calculate_total_consumption(production_per_ga, net_exchange_per_ga)
 
         # Assert
         actual_row = actual.df.collect()[0]
@@ -126,7 +126,7 @@ class TestWhenValidInput:
         expected_sum_quantity = 7
 
         # Act
-        actual = sut(production_per_ga, net_exchange_per_ga)
+        actual = calculate_total_consumption(production_per_ga, net_exchange_per_ga)
 
         # Assert
         actual_row = actual.df.collect()[0]
