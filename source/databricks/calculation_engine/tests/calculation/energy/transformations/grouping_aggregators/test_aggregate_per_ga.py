@@ -43,9 +43,7 @@ class TestWhenValidInput:
         assert len(actual_rows) == 1
         actual_row = actual_rows[0]
         assert actual_row[Colname.grid_area] == factories.DEFAULT_GRID_AREA
-        assert (
-            actual_row[Colname.sum_quantity] == 2 * factories.DEFAULT_SUM_QUANTITY
-        )  # TODO BJM: Fails due to decimal precision error in the schema of `EnergyResults`
+        assert actual_row[Colname.sum_quantity] == 2 * factories.DEFAULT_SUM_QUANTITY
         assert actual_row[Colname.qualities] == [
             q.value for q in factories.DEFAULT_QUALITIES
         ]
@@ -53,8 +51,8 @@ class TestWhenValidInput:
         assert actual_row[Colname.settlement_method] is None  # TODO BJM: Correct?
         assert actual_row[Colname.to_grid_area] is None  # TODO BJM: Correct?
         assert actual_row[Colname.from_grid_area] is None  # TODO BJM: Correct?
-        assert actual_row[Colname.energy_supplier_id] is None  # TODO BJM: Correct?
-        assert actual_row[Colname.balance_responsible_id] is None  # TODO BJM: Correct?
+        assert actual_row[Colname.energy_supplier_id] is None
+        assert actual_row[Colname.balance_responsible_id] is None
         assert (
             actual_row[Colname.time_window][Colname.start]
             == factories.DEFAULT_OBSERVATION_TIME
