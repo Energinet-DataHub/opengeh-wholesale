@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.IO.Compression;
-using System.Net;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures;
@@ -26,8 +25,7 @@ using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces
 namespace Energinet.DataHub.Wholesale.DomainTests
 {
     /// <summary>
-    /// Contains tests where we operate at the level of a "domain", so basically what in some context has been named "domain tests".
-    /// However, with the technique displayed here we perform these tests in a live environment.
+    /// Contains tests with focus on verifying calculations initiated and monitored using the Web API running in a live environment.
     /// </summary>
     public class CalculationFeatureTests
     {
