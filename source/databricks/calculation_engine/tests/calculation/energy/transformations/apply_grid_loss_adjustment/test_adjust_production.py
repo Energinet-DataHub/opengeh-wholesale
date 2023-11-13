@@ -19,20 +19,13 @@ from typing import Callable
 import pandas as pd
 import pytest
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import col
 from pyspark.sql.types import (
     StructType,
     StringType,
     TimestampType,
     BooleanType,
-    DecimalType,
-    ArrayType,
 )
 
-from package.calculation.energy.energy_results import (
-    EnergyResults,
-    energy_results_schema,
-)
 from package.calculation.energy.transformations import adjust_production
 from package.codelists import (
     MeteringPointType,

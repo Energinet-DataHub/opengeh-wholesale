@@ -384,33 +384,3 @@ def test_that_the_correct_metering_point_type_is_put_on_the_result(
         ]
         == MeteringPointType.PRODUCTION.value
     )
-
-
-def test__adjust_production__returns_qualities_from_hourly_production_and_negative_grid_loss(
-    hourly_production_result_row_factory: Callable[..., EnergyResults],
-    negative_grid_loss_result_row_factory: Callable[..., EnergyResults],
-    sys_cor_row_factory: Callable[..., DataFrame],
-) -> None:
-    # Arrange
-    expected_qualities = [
-        QuantityQuality.CALCULATED.value,
-        QuantityQuality.ESTIMATED.value,
-    ]
-
-    production = hourly_production_result_row_factory(
-        aggregated_quality=QuantityQuality.CALCULATED.value
-    )
-    negative_grid_loss = negative_grid_loss_result_row_factory(
-        aggregated_quality=QuantityQuality.ESTIMATED.value
-    )
-    grid_loss_sys_cor_master_data = sys_cor_row_factory()
-
-    # Act
-    actual = adjust_production(
-        production, negative_grid_loss, grid_loss_sys_cor_master_data
-    )
-
-    # Assert
-    actual_row = actual.df.collect()[0]
-    actual_qualities = actual_row[Colname.qualities]
-    assert set(actual_qualities) == set(expected_qualities)
