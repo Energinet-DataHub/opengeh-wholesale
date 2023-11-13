@@ -29,7 +29,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
     /// Contains tests where we operate at the level of a "domain", so basically what in some context has been named "domain tests".
     /// However, with the technique displayed here we perform these tests in a live environment.
     /// </summary>
-    public class WebApiTests
+    public class CalculationFeatureTests
     {
         /// <summary>
         /// These tests uses an authorized Wholesale client to perform requests.
