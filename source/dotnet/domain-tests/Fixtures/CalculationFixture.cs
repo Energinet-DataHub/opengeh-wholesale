@@ -45,7 +45,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         /// </summary>
         public ServiceBusReceiver Receiver { get; private set; } = null!;
 
-        public AuthorizedClientFixtureOutput Output { get; private set; } = null!;
+        public CalculationFixtureOutput Output { get; private set; } = null!;
 
         private WholesaleDomainConfiguration Configuration { get; }
 
@@ -60,7 +60,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             WholesaleClient = await CreateWholesaleClientAsync();
             await CreateTopicSubscriptionAsync();
             Receiver = CreateServiceBusReceiver();
-            Output = new AuthorizedClientFixtureOutput(DiagnosticMessageSink, WholesaleClient, Receiver);
+            Output = new CalculationFixtureOutput(DiagnosticMessageSink, WholesaleClient, Receiver);
             await Output.InitializeAsync();
         }
 
