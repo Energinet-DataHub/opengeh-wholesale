@@ -39,6 +39,7 @@ from package.codelists import (
     QuantityQuality,
 )
 from package.constants import Colname
+from package.calculation.preparation.grid_loss_responsible import GridLossResponsible
 
 # Default values
 default_domain = "D1"
@@ -169,7 +170,7 @@ def negative_grid_loss_result_row_factory(
 @pytest.fixture(scope="module")
 def sys_cor_row_factory(
     spark: SparkSession, sys_cor_schema: StructType
-) -> Callable[..., DataFrame]:
+) -> Callable[..., GridLossResponsible]:
     """
     Factory to generate a single row of  data, with default parameters as specified above.
     """
@@ -181,7 +182,7 @@ def sys_cor_row_factory(
         valid_from: datetime = default_valid_from,
         valid_to: datetime = default_valid_to,
         is_negative_grid_loss_responsible: bool = True,
-    ) -> DataFrame:
+    ) -> GridLossResponsible:
         pandas_df = pd.DataFrame(
             {
                 Colname.grid_area: [domain],
@@ -194,7 +195,8 @@ def sys_cor_row_factory(
                 ],
             }
         )
-        return spark.createDataFrame(pandas_df, schema=sys_cor_schema)
+        df = spark.createDataFrame(pandas_df, schema=sys_cor_schema)
+        return GridLossResponsible(df)
 
     return factory
 
@@ -202,7 +204,7 @@ def sys_cor_row_factory(
 def test_grid_area_negative_grid_loss_is_added_to_grid_loss_responsible_energy_supplier(
     hourly_production_result_row_factory: Callable[..., EnergyResults],
     negative_grid_loss_result_row_factory: Callable[..., EnergyResults],
-    sys_cor_row_factory: Callable[..., DataFrame],
+    sys_cor_row_factory: Callable[..., GridLossResponsible],
 ) -> None:
     # Arrange
     production = hourly_production_result_row_factory(supplier="A")
@@ -226,7 +228,7 @@ def test_grid_area_negative_grid_loss_is_added_to_grid_loss_responsible_energy_s
 def test_grid_area_grid_loss_is_not_added_to_non_grid_loss_energy_responsible(
     hourly_production_result_row_factory: Callable[..., EnergyResults],
     negative_grid_loss_result_row_factory: Callable[..., EnergyResults],
-    sys_cor_row_factory: Callable[..., DataFrame],
+    sys_cor_row_factory: Callable[..., GridLossResponsible],
 ) -> None:
     # Arrange
     production = hourly_production_result_row_factory(supplier="A")
@@ -250,7 +252,7 @@ def test_grid_area_grid_loss_is_not_added_to_non_grid_loss_energy_responsible(
 def test_result_dataframe_contains_same_number_of_results_with_same_energy_suppliers_as_flex_consumption_result_dataframe(
     hourly_production_result_row_factory: Callable[..., EnergyResults],
     negative_grid_loss_result_row_factory: Callable[..., EnergyResults],
-    sys_cor_row_factory: Callable[..., DataFrame],
+    sys_cor_row_factory: Callable[..., GridLossResponsible],
 ) -> None:
     # Arrange
     hp_row_1 = hourly_production_result_row_factory(supplier="A")
@@ -277,7 +279,7 @@ def test_result_dataframe_contains_same_number_of_results_with_same_energy_suppl
 def test_correct_negative_grid_loss_entry_is_used_to_determine_energy_responsible_for_the_given_time_window_from_hourly_production_result_dataframe(
     hourly_production_result_row_factory: Callable[..., EnergyResults],
     negative_grid_loss_result_row_factory: Callable[..., EnergyResults],
-    sys_cor_row_factory: Callable[..., DataFrame],
+    sys_cor_row_factory: Callable[..., GridLossResponsible],
 ) -> None:
     # Arrange
     time_window_1 = {
@@ -333,7 +335,9 @@ def test_correct_negative_grid_loss_entry_is_used_to_determine_energy_responsibl
         supplier="B", valid_from=time_window_3["start"], valid_to=None
     )
 
-    grid_loss_sys_cor_master_data = sc_row_1.union(sc_row_2).union(sc_row_3)
+    grid_loss_sys_cor_master_data = GridLossResponsible(
+        sc_row_1.df.union(sc_row_2.df).union(sc_row_3.df)
+    )
 
     # Act
     actual = adjust_production(
@@ -365,7 +369,7 @@ def test_correct_negative_grid_loss_entry_is_used_to_determine_energy_responsibl
 def test_that_the_correct_metering_point_type_is_put_on_the_result(
     hourly_production_result_row_factory: Callable[..., EnergyResults],
     negative_grid_loss_result_row_factory: Callable[..., EnergyResults],
-    sys_cor_row_factory: Callable[..., DataFrame],
+    sys_cor_row_factory: Callable[..., GridLossResponsible],
 ) -> None:
     # Arrange
     production = hourly_production_result_row_factory(supplier="A")

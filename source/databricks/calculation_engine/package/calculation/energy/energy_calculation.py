@@ -27,6 +27,7 @@ from package.codelists import TimeSeriesType, AggregationLevel, ProcessType
 from package.calculation_output.energy_calculation_result_writer import (
     EnergyCalculationResultWriter,
 )
+from package.calculation.preparation.grid_loss_responsible import GridLossResponsible
 
 
 def execute(
@@ -34,7 +35,7 @@ def execute(
     batch_process_type: ProcessType,
     batch_execution_time_start: datetime,
     metering_point_time_series: DataFrame,
-    grid_loss_responsible_df: DataFrame,
+    grid_loss_responsible_df: GridLossResponsible,
 ) -> None:
     calculation_result_writer = EnergyCalculationResultWriter(
         batch_id,
@@ -58,7 +59,7 @@ def _calculate(
     process_type: ProcessType,
     result_writer: EnergyCalculationResultWriter,
     quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
-    grid_loss_responsible_df: DataFrame,
+    grid_loss_responsible_df: GridLossResponsible,
 ) -> None:
     net_exchange_per_ga = _calculate_net_exchange(
         process_type, result_writer, quarterly_metering_point_time_series
@@ -243,7 +244,7 @@ def _calculate_grid_loss(
 def _calculate_adjust_production_per_ga_and_brp_and_es(
     temporary_production_per_ga_and_brp_and_es: EnergyResults,
     negative_grid_loss: EnergyResults,
-    grid_loss_responsible_df: DataFrame,
+    grid_loss_responsible_df: GridLossResponsible,
 ) -> EnergyResults:
     production_per_ga_and_brp_and_es = transformations.adjust_production(
         temporary_production_per_ga_and_brp_and_es,
@@ -257,7 +258,7 @@ def _calculate_adjust_production_per_ga_and_brp_and_es(
 def _calculate_adjust_flex_consumption_per_ga_and_brp_and_es(
     temporary_flex_consumption_per_ga_and_brp_and_es: EnergyResults,
     positive_grid_loss: EnergyResults,
-    grid_loss_responsible_df: DataFrame,
+    grid_loss_responsible_df: GridLossResponsible,
 ) -> EnergyResults:
     flex_consumption_per_ga_and_brp_and_es = transformations.adjust_flex_consumption(
         temporary_flex_consumption_per_ga_and_brp_and_es,

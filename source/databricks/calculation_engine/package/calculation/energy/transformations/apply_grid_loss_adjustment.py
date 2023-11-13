@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, when, lit, array_union
 
 from package.calculation.energy.energy_results import EnergyResults
 from package.codelists import MeteringPointType
 from package.constants import Colname
+from package.calculation.preparation.grid_loss_responsible import GridLossResponsible
 
 grid_loss_responsible_energy_supplier = "GridLossResponsible_EnergySupplier"
 grid_loss_responsible_grid_area = "GridLossResponsible_GridArea"
@@ -28,7 +28,7 @@ adjusted_sum_quantity = "adjusted_sum_quantity"
 def adjust_production(
     production_result_df: EnergyResults,
     negative_grid_loss_result_df: EnergyResults,
-    grid_loss_responsible_df: DataFrame,
+    grid_loss_responsible_df: GridLossResponsible,
 ) -> EnergyResults:
     return _apply_grid_loss_adjustment(
         production_result_df,
@@ -43,7 +43,7 @@ def adjust_production(
 def adjust_flex_consumption(
     flex_consumption_result_df: EnergyResults,
     positive_grid_loss_result_df: EnergyResults,
-    grid_loss_responsible_df: DataFrame,
+    grid_loss_responsible_df: GridLossResponsible,
 ) -> EnergyResults:
     return _apply_grid_loss_adjustment(
         flex_consumption_result_df,
@@ -57,12 +57,12 @@ def adjust_flex_consumption(
 def _apply_grid_loss_adjustment(
     results: EnergyResults,
     grid_loss_result_df: EnergyResults,
-    grid_loss_responsible_df: DataFrame,
+    grid_loss_responsible: GridLossResponsible,
     grid_loss_responsible_type_col: str,
     metering_point_type: str,
 ) -> EnergyResults:
     # select columns from dataframe that contains information about metering points registered as negative or positive grid loss to use in join.
-    glr_df = grid_loss_responsible_df.select(
+    glr_df = grid_loss_responsible.df.select(
         Colname.from_date,
         Colname.to_date,
         col(Colname.energy_supplier_id).alias(grid_loss_responsible_energy_supplier),
