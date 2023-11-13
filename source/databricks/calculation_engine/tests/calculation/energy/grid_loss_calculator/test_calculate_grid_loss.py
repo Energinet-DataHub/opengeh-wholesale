@@ -17,7 +17,7 @@ from pyspark.sql import SparkSession
 
 import tests.calculation.energy.energy_results_factories as factories
 from package.calculation.energy.grid_loss_calculator import (
-    calculate_grid_loss as sut,
+    calculate_grid_loss,
 )
 from package.codelists import QuantityQuality
 from package.constants import Colname
@@ -67,7 +67,7 @@ class TestWhenValidInput:
     ) -> None:
         """
         According to SME there is always a net exchange per grid area point for any given
-        observation time. Thus there is no test case where net exchange does not exist.
+        observation time. Thus, there is no test case where net exchange does not exist.
         """
 
         # Arrange
@@ -79,7 +79,7 @@ class TestWhenValidInput:
         production = self._create_energy_results(spark, production_qualities)
 
         # Act
-        actual = sut(exchange, non_profiled, flex, production)
+        actual = calculate_grid_loss(exchange, non_profiled, flex, production)
 
         # Assert
         actual_row = actual.df.collect()[0]
