@@ -12,22 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# TODO BJM: Refactor to match what it now tests
 
 from decimal import Decimal
 from datetime import datetime
 from typing import Callable
 import pytest
 from pyspark.sql import DataFrame, Row, SparkSession
-from pyspark.sql.functions import col, struct
+from pyspark.sql.functions import lit
+from pyspark.sql.types import DecimalType
 
 from package.calculation.energy.energy_results import (
     EnergyResults,
     energy_results_schema,
-)
-from package.codelists import (
-    MeteringPointType,
-    QuantityQuality,
 )
 from package.common import assert_schema
 from package.constants import Colname
@@ -36,7 +32,9 @@ from tests.calculation.dataframe_defaults import DataframeDefaults
 
 
 @pytest.fixture(scope="module")
-def aggregation_result_factory(spark: SparkSession) -> Callable[..., DataFrame]:
+def dataframe_with_energy_result_schema_factory(
+    spark: SparkSession,
+) -> Callable[..., DataFrame]:
     def factory(
         grid_area: str = DataframeDefaults.default_grid_area,
         to_grid_area: str | None = None,
@@ -66,77 +64,83 @@ def aggregation_result_factory(spark: SparkSession) -> Callable[..., DataFrame]:
             Colname.settlement_method: settlement_method,
         }
 
-        return spark.createDataFrame(row, schema=energy_results_schema)
+        return spark.createDataFrame([Row(**row)], schema=energy_results_schema)
 
     return factory
 
 
-@pytest.fixture(scope="module")
-def input_agg_result_factory(spark: SparkSession) -> Callable[..., DataFrame]:
-    def factory(
-        grid_area: str = "A",
-        start: datetime = datetime(2020, 1, 1, 0, 0),
-        end: datetime = datetime(2020, 1, 1, 1, 0),
-        sum_quantity: Decimal = Decimal("1.234"),
-        quality: str = QuantityQuality.ESTIMATED.value,
-        metering_point_type: str = MeteringPointType.CONSUMPTION.value,
-    ) -> DataFrame:
-        row = {
-            Colname.grid_area: grid_area,
-            Colname.time_window: {
-                Colname.start: start,
-                Colname.end: end,
-            },
-            Colname.sum_quantity: sum_quantity,
-            Colname.qualities: [quality],
-            Colname.metering_point_type: metering_point_type,
-        }
+class TestCtor:
+    class TestWhenNullableColumnsAreMissingInInputDataframe:
+        def test_returns_dataframe_that_includes_missing_column(
+            self,
+            dataframe_with_energy_result_schema_factory,
+        ) -> None:
+            # Arrange
+            df = dataframe_with_energy_result_schema_factory()
+            nullable_columns = [
+                col_name for col_name, nullable in df.dtypes if nullable == "true"
+            ]
+            df_with_missing_columns = df.drop(*nullable_columns)
 
-        return spark.createDataFrame([Row(**row)]).withColumn(
-            Colname.time_window,
-            struct(
-                col(Colname.time_window).getItem(Colname.start).alias(Colname.start),
-                col(Colname.time_window).getItem(Colname.end).alias(Colname.end),
-            ),
-        )
+            # Act
+            actual = EnergyResults(df_with_missing_columns)
 
-    return factory
+            # Assert
+            assert_schema(
+                actual.df.schema,
+                energy_results_schema,
+                ignore_nullability=True,
+                ignore_decimal_precision=True,
+                ignore_decimal_scale=True,
+            )
 
+    class TestWhenMismatchInNullability:
+        def test_respects_nullability_of_input_dataframe(
+            self,
+            dataframe_with_energy_result_schema_factory,
+        ) -> None:
+            # Arrange
+            df = dataframe_with_energy_result_schema_factory()
+            df = df.withColumn(Colname.sum_quantity, lit(None).cast(DecimalType(18, 6)))
 
-def test__create_dataframe_from_aggregation_result_schema__can_create_a_dataframe_that_match_aggregation_result_schema(
-    input_agg_result_factory,
-) -> None:
-    # Arrange
-    result = input_agg_result_factory()
+            # Act
+            actual = EnergyResults(df)
 
-    # Act
-    actual = EnergyResults(result)
+            # Assert
+            assert energy_results_schema[Colname.sum_quantity].nullable is False
+            assert actual.df.schema[Colname.sum_quantity].nullable is True
 
-    # Assert
-    assert_schema(
-        actual.df.schema,
-        energy_results_schema,
-        ignore_nullability=True,
-        ignore_decimal_precision=True,
-        ignore_decimal_scale=True,
-    )
+    class TestWhenValidInput:
+        def test_returns_expected_dataframe(
+            self,
+            dataframe_with_energy_result_schema_factory: Callable[..., DataFrame],
+        ) -> None:
+            # Arrange
+            df = dataframe_with_energy_result_schema_factory()
 
+            # Act
+            actual = EnergyResults(df)
 
-def test__create_dataframe_from_aggregation_result_schema__match_expected_dataframe(
-    input_agg_result_factory,
-    aggregation_result_factory: Callable[..., DataFrame],
-) -> None:
-    # Arrange
-    result = input_agg_result_factory()
-    expected = aggregation_result_factory(
-        grid_area="A",
-        time_window_start=datetime(2020, 1, 1, 0, 0),
-        time_window_end=datetime(2020, 1, 1, 1, 0),
-        sum_quantity=Decimal("1.234"),
-        quality=QuantityQuality.ESTIMATED.value,
-        metering_point_type=MeteringPointType.CONSUMPTION.value,
-    )
-    # Act
-    actual = EnergyResults(result)
-    # Assert
-    assert actual.df.collect() == expected.collect()
+            # Assert
+            assert actual.df.collect() == df.collect()
+
+    class TestWhenInputContainsIrrelevantColumn:
+        def test_returns_schema_without_irrelevant_column(
+            self,
+            dataframe_with_energy_result_schema_factory,
+        ) -> None:
+            # Arrange
+            df = dataframe_with_energy_result_schema_factory()
+            df.withColumn("irrelevant_column", lit("test"))
+
+            # Act
+            actual = EnergyResults(df)
+
+            # Assert
+            assert_schema(
+                actual.df.schema,
+                energy_results_schema,
+                ignore_nullability=True,
+                ignore_decimal_precision=True,
+                ignore_decimal_scale=True,
+            )
