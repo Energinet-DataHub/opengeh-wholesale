@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
@@ -24,29 +23,29 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factorie
 public class EnergyResultFactory
 {
     public static EnergyResult CreateEnergyResult(
-        SqlResultRow sqlResultRow,
+        DatabricksSqlRow databricksSqlRow,
         List<EnergyTimeSeriesPoint> timeSeriesPoints,
         Instant periodStart,
         Instant periodEnd)
     {
-        var id = sqlResultRow[EnergyResultColumnNames.CalculationResultId];
-        var batchId = sqlResultRow[EnergyResultColumnNames.BatchId];
-        var gridArea = sqlResultRow[EnergyResultColumnNames.GridArea];
-        var timeSeriesType = sqlResultRow[EnergyResultColumnNames.TimeSeriesType];
-        var energySupplierId = sqlResultRow[EnergyResultColumnNames.EnergySupplierId];
-        var balanceResponsibleId = sqlResultRow[EnergyResultColumnNames.BalanceResponsibleId];
-        var processType = sqlResultRow[EnergyResultColumnNames.BatchProcessType];
-        var fromGridArea = sqlResultRow[EnergyResultColumnNames.FromGridArea];
+        var id = databricksSqlRow[EnergyResultColumnNames.CalculationResultId];
+        var batchId = databricksSqlRow[EnergyResultColumnNames.BatchId];
+        var gridArea = databricksSqlRow[EnergyResultColumnNames.GridArea];
+        var timeSeriesType = databricksSqlRow[EnergyResultColumnNames.TimeSeriesType];
+        var energySupplierId = databricksSqlRow[EnergyResultColumnNames.EnergySupplierId];
+        var balanceResponsibleId = databricksSqlRow[EnergyResultColumnNames.BalanceResponsibleId];
+        var processType = databricksSqlRow[EnergyResultColumnNames.BatchProcessType];
+        var fromGridArea = databricksSqlRow[EnergyResultColumnNames.FromGridArea];
 
         return new EnergyResult(
-            SqlResultValueConverters.ToGuid(id),
-            Guid.Parse(batchId),
-            gridArea,
-            SqlResultValueConverters.ToTimeSeriesType(timeSeriesType),
+            SqlResultValueConverters.ToGuid(id!),
+            Guid.Parse(batchId!),
+            gridArea!,
+            SqlResultValueConverters.ToTimeSeriesType(timeSeriesType!),
             energySupplierId,
             balanceResponsibleId,
             timeSeriesPoints.ToArray(),
-            ProcessTypeMapper.FromDeltaTableValue(processType),
+            ProcessTypeMapper.FromDeltaTableValue(processType!),
             periodStart,
             periodEnd,
             fromGridArea);

@@ -81,7 +81,7 @@ public class AmountPerChargeResultProducedV1Tests
 
 syntax = ""proto3"";
 import ""google/protobuf/timestamp.proto"";
-import ""decimal_value.proto"";
+import ""Common/Protos/decimal_value.proto"";
 
 option csharp_namespace = ""Energinet.DataHub.Wholesale.Contracts.IntegrationEvents"";
 
