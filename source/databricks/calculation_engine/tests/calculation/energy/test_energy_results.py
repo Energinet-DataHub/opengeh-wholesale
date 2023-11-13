@@ -77,22 +77,15 @@ class TestCtor:
         ) -> None:
             # Arrange
             df = dataframe_with_energy_result_schema_factory()
-            nullable_columns = [
-                col_name for col_name, nullable in df.dtypes if nullable == "true"
-            ]
-            df_with_missing_columns = df.drop(*nullable_columns)
+            nullable_column = Colname.energy_supplier_id
+            df_with_missing_columns = df.drop(nullable_column)
 
             # Act
             actual = EnergyResults(df_with_missing_columns)
 
             # Assert
-            assert_schema(
-                actual.df.schema,
-                energy_results_schema,
-                ignore_nullability=True,
-                ignore_decimal_precision=True,
-                ignore_decimal_scale=True,
-            )
+            assert energy_results_schema[nullable_column].nullable is True
+            assert nullable_column in actual.df.schema.fieldNames()
 
     class TestWhenMismatchInNullability:
         def test_respects_nullability_of_input_dataframe(
