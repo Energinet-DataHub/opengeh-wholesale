@@ -68,7 +68,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
 
         /// <summary>
         /// These tests uses an authorized Wholesale client to perform requests.
-        /// </summary>'
+        /// </summary>
         public class Given_Authorized : DomainTestsBase<AuthorizedClientFixture>
         {
             private static readonly Guid _existingBatchId = new("ed39dbc5-bdc5-41b9-922a-08d3b12d4538");

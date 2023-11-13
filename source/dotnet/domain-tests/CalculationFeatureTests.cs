@@ -31,7 +31,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
     {
         /// <summary>
         /// These tests uses an authorized Wholesale client to perform requests.
-        /// </summary>'
+        /// </summary>
         public class Given_Calculated : DomainTestsBase<CalculationFixture>
         {
             private static readonly DateTimeOffset _existingBatchPeriodStart = DateTimeOffset.Parse("2020-01-28T23:00:00Z");
