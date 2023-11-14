@@ -31,7 +31,7 @@ from package.calculation.preparation.quarterly_metering_point_time_series import
 from package.constants import Colname
 from package.calculation.energy.aggregators import (
     aggregate_non_profiled_consumption_ga_brp_es,
-    _aggregate_per_ga_and_brp_and_es,
+    aggregate_per_ga_and_brp_and_es,
 )
 from package.codelists import (
     MeteringPointType,
@@ -223,7 +223,7 @@ def test_consumption_test_filter_by_domain_is_pressent(
     time_series_row_factory: Callable[..., QuarterlyMeteringPointTimeSeries],
 ) -> None:
     df = time_series_row_factory()
-    aggregated_df = _aggregate_per_ga_and_brp_and_es(
+    aggregated_df = aggregate_per_ga_and_brp_and_es(
         df,
         MeteringPointType.CONSUMPTION,
         SettlementMethod.NON_PROFILED,
@@ -235,7 +235,7 @@ def test_consumption_test_filter_by_domain_is_not_present(
     time_series_row_factory: Callable[..., QuarterlyMeteringPointTimeSeries],
 ) -> None:
     df = time_series_row_factory()
-    aggregated_df = _aggregate_per_ga_and_brp_and_es(
+    aggregated_df = aggregate_per_ga_and_brp_and_es(
         df,
         MeteringPointType.CONSUMPTION,
         SettlementMethod.FLEX,
