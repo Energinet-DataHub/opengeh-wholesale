@@ -23,13 +23,13 @@ class TestWhenValidInput:
     def test_returns_single_row_for_group(self, spark: SparkSession):
         # Arrange
         rows = [
-            Row(**{Colname.quantity: 1, Colname.quality: "foo"}),
-            Row(**{Colname.quantity: 2, Colname.quality: "foo"}),
+            Row(**{Colname.quantity: 1, Colname.quality: "foo", "group": "some-group"}),
+            Row(**{Colname.quantity: 2, Colname.quality: "foo", "group": "some-group"}),
         ]
         df = spark.createDataFrame(data=rows)
 
         # Act
-        actual = aggregate_quantity_and_quality(df, [Colname.quality])
+        actual = aggregate_quantity_and_quality(df, ["group"])
 
         # assert
         actual_rows = actual.collect()
@@ -38,13 +38,19 @@ class TestWhenValidInput:
     def test_returns_a_row_for_each_group(self, spark: SparkSession):
         # Arrange
         rows = [
-            Row(**{Colname.quantity: 1, Colname.quality: "one-group"}),
-            Row(**{Colname.quantity: 2, Colname.quality: "another-group"}),
+            Row(**{Colname.quantity: 1, Colname.quality: "foo", "group": "some-group"}),
+            Row(
+                **{
+                    Colname.quantity: 2,
+                    Colname.quality: "foo",
+                    "group": "another-group",
+                }
+            ),
         ]
         df = spark.createDataFrame(data=rows)
 
         # Act
-        actual = aggregate_quantity_and_quality(df, [Colname.quality])
+        actual = aggregate_quantity_and_quality(df, ["group"])
 
         # assert
         actual_rows = actual.collect()
@@ -53,13 +59,25 @@ class TestWhenValidInput:
     def test_returns_sum_of_quantity_in_group(self, spark: SparkSession):
         # Arrange
         rows = [
-            Row(**{Colname.quantity: Decimal("1.111"), Colname.quality: "the-group"}),
-            Row(**{Colname.quantity: Decimal("2.222"), Colname.quality: "the-group"}),
+            Row(
+                **{
+                    Colname.quantity: Decimal("1.111"),
+                    Colname.quality: "foo",
+                    "group": "some-group",
+                }
+            ),
+            Row(
+                **{
+                    Colname.quantity: Decimal("2.222"),
+                    Colname.quality: "foo",
+                    "group": "some-group",
+                }
+            ),
         ]
         df = spark.createDataFrame(data=rows)
 
         # Act
-        actual = aggregate_quantity_and_quality(df, [Colname.quality])
+        actual = aggregate_quantity_and_quality(df, ["group"])
 
         # assert
         actual_row = actual.collect()[0]
@@ -68,15 +86,39 @@ class TestWhenValidInput:
     def test_returns_sum_of_quantity_in_each_group(self, spark: SparkSession):
         # Arrange
         rows = [
-            Row(**{Colname.quantity: Decimal("1.1"), Colname.quality: "one-group"}),
-            Row(**{Colname.quantity: Decimal("2.2"), Colname.quality: "one-group"}),
-            Row(**{Colname.quantity: Decimal("3.0"), Colname.quality: "another-group"}),
-            Row(**{Colname.quantity: Decimal("4.0"), Colname.quality: "another-group"}),
+            Row(
+                **{
+                    Colname.quantity: Decimal("1.1"),
+                    Colname.quality: "foo",
+                    "group": "one-group",
+                }
+            ),
+            Row(
+                **{
+                    Colname.quantity: Decimal("2.2"),
+                    Colname.quality: "foo",
+                    "group": "one-group",
+                }
+            ),
+            Row(
+                **{
+                    Colname.quantity: Decimal("3.0"),
+                    Colname.quality: "foo",
+                    "group": "another-group",
+                }
+            ),
+            Row(
+                **{
+                    Colname.quantity: Decimal("4.0"),
+                    Colname.quality: "foo",
+                    "group": "another-group",
+                }
+            ),
         ]
         df = spark.createDataFrame(data=rows)
 
         # Act
-        actual = aggregate_quantity_and_quality(df, [Colname.quality])
+        actual = aggregate_quantity_and_quality(df, ["group"])
 
         # assert
         actual_rows = actual.collect()
