@@ -82,6 +82,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                 waitTimeLimit,
                 delay);
 
+            DiagnosticMessageSink.OnMessage(CreateDiagnosticMessage($"Wait for calculation with id '{calculationId}' completed with '{nameof(isState)}={isState}'."));
+
             return (isState, batch);
         }
 
