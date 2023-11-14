@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration;
+using Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 {
-    /// <summary>
-    /// Support calling the Wholesale Web API using an unauthorized Wholesale client.
-    /// </summary>
     public sealed class UnauthorizedClientFixture : LazyFixtureBase
     {
         public UnauthorizedClientFixture(IMessageSink diagnosticMessageSink)

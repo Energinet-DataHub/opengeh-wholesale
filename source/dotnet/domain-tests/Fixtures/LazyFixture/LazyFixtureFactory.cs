@@ -17,7 +17,7 @@ using Xunit;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
-namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
+namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture
 {
     /// <summary>
     /// Factory that creates and initialize a xUnit fixture using lazy async initialization.
@@ -74,9 +74,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             diagnosticMessageSink.OnMessage(new DiagnosticMessage($"Creating lazy fixture of type '{lazyFixtureType.FullName}'."));
 
             if (Activator.CreateInstance(lazyFixtureType, diagnosticMessageSink) is not TLazyFixture lazyFixture)
-            {
                 throw new InvalidOperationException($"Could not create lazy fixture of type '{lazyFixtureType.FullName}'.");
-            }
 
             await lazyFixture.InitializeAsync();
 

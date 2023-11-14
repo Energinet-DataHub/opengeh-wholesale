@@ -13,6 +13,9 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
+using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration;
+using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Identity;
+using Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture;
 using Moq;
 using Xunit.Abstractions;
 
