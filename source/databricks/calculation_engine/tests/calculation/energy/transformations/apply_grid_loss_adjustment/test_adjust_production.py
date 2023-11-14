@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from pyspark.sql import SparkSession
+from datetime import datetime
 
 from package.calculation.energy.transformations import adjust_production
 from package.codelists import (
@@ -36,22 +37,32 @@ class TestWhenValidInput:
         ]
 
         production_row = energy_results_factories.create_row(
+            observation_time=datetime.strptime(
+                "2020-01-01T00:00:00+0000", "%Y-%m-%dT%H:%M:%S%z"
+            ),
+            energy_supplier_id="energy_supplier_id",
             qualities=[QuantityQuality.CALCULATED],
             metering_point_type=MeteringPointType.PRODUCTION,
+            sum_quantity=10,
         )
         production = energy_results_factories.create(spark, [production_row])
 
         negative_grid_loss_row = energy_results_factories.create_row(
+            observation_time=datetime.strptime(
+                "2020-01-01T00:00:00+0000", "%Y-%m-%dT%H:%M:%S%z"
+            ),
             qualities=[QuantityQuality.ESTIMATED],
             metering_point_type=MeteringPointType.PRODUCTION,
+            sum_quantity=20,
         )
         negative_grid_loss = energy_results_factories.create(
             spark, [negative_grid_loss_row]
         )
 
         grid_loss_responsible_row = grid_loss_responsible_factories.create_row(
+            energy_supplier_id="energy_supplier_id",
             metering_point_type=MeteringPointType.PRODUCTION,
-            is_positive_grid_loss_responsible=True,
+            is_negative_grid_loss_responsible=True,
         )
         grid_loss_responsible = grid_loss_responsible_factories.create(
             spark, [grid_loss_responsible_row]
@@ -66,26 +77,33 @@ class TestWhenValidInput:
         actual_row = actual.df.collect()[0]
         actual_qualities = actual_row[Colname.qualities]
         assert set(actual_qualities) == set(expected_qualities)
+        assert actual_row[Colname.sum_quantity] == 30
 
 
 class TestWhenNoProduction:
-    def test_returns_no_results(
+    def test_returns_only_negative_grid_loss(
         self,
         spark: SparkSession,
     ) -> None:
         # Arrange
         production = energy_results_factories.create(spark, [])
 
-        negative_grid_loss_row = energy_results_factories.create_row(
-            metering_point_type=MeteringPointType.PRODUCTION,
-        )
+        negative_grid_loss_rows = [
+            energy_results_factories.create_row(
+                observation_time=datetime.strptime(
+                    "2020-01-01T00:00:00+0000", "%Y-%m-%dT%H:%M:%S%z"
+                ),
+                metering_point_type=MeteringPointType.PRODUCTION,
+                sum_quantity=20,
+            )
+        ]
         negative_grid_loss = energy_results_factories.create(
-            spark, [negative_grid_loss_row]
+            spark, negative_grid_loss_rows
         )
 
         grid_loss_responsible_row = grid_loss_responsible_factories.create_row(
             metering_point_type=MeteringPointType.PRODUCTION,
-            is_positive_grid_loss_responsible=True,
+            is_negative_grid_loss_responsible=True,
         )
         grid_loss_responsible = grid_loss_responsible_factories.create(
             spark, [grid_loss_responsible_row]
@@ -97,4 +115,5 @@ class TestWhenNoProduction:
         )
 
         # Assert
-        assert actual.df.count() == 0
+        assert actual.df.count() == 1
+        assert actual.df.collect()[0][Colname.sum_quantity] == 20
