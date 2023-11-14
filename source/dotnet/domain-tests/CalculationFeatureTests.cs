@@ -271,6 +271,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 Fixture.Scenario.Batch = actualResult.Batch;
 
                 // Assert
+                using var assertionScope = new AssertionScope();
                 actualResult.IsState.Should().BeTrue();
                 actualResult.Batch.Should().NotBeNull();
             }
