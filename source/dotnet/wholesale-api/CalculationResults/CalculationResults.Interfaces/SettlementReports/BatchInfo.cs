@@ -12,17 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports;
+using NodaTime;
 
-public interface ISettlementReportRepository
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
+
+public class BatchInfo
 {
-    /// <summary>
-    /// Create zip archives for each process in the batch.
-    /// The archive contains the basis data files and the result file.
-    /// </summary>
-    Task CreateSettlementReportsAsync(BatchInfo completedBatchInfo);
+    public BatchInfo()
+    {
+        GridAreaCodes = new List<string>();
+    }
 
-    Task<SettlementReport> GetSettlementReportAsync(BatchInfo batchInfo);
+    public Guid Id { get; set; }
 
-    Task GetSettlementReportAsync(BatchInfo completedBatchInfo, string gridAreaCode, Stream outputStream);
+    public Instant PeriodStart { get; set; }
+
+    public Instant PeriodEnd { get; set; }
+
+    public List<string> GridAreaCodes { get; set; }
 }

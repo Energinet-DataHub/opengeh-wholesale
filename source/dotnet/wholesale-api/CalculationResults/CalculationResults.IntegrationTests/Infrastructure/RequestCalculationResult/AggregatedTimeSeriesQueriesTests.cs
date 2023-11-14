@@ -23,13 +23,12 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Microsoft.Extensions.Options;
 using NodaTime;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.RequestCalculationResult;
 
-public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationResultQueries>, IClassFixture<DatabricksSqlStatementApiFixture>
+public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQueries>, IClassFixture<DatabricksSqlStatementApiFixture>
 {
     private const string BatchId = "019703e7-98ee-45c1-b343-0cbf185a47d9";
     private const string FirstQuantity = "1.111";
@@ -46,7 +45,7 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
     private const string GridAreaCode = "301";
     private readonly DatabricksSqlStatementApiFixture _fixture;
 
-    public RequestCalculationResultQueriesTests(DatabricksSqlStatementApiFixture fixture)
+    public AggregatedTimeSeriesQueriesTests(DatabricksSqlStatementApiFixture fixture)
     {
         _fixture = fixture;
         Fixture.Inject(_fixture.DatabricksSchemaManager.DeltaTableOptions);
@@ -54,27 +53,26 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
     }
 
     [Fact]
-    public async Task GetAsync_RequestFromGridOperatorTotalProduction_ReturnsResult()
+    public async Task GetAsync_WhenRequestFromGridOperatorTotalProduction_ReturnsResult()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        var query = CreateRequest(
+        await AddCreatedRowsInArbitraryOrderAsync();
+        var parameters = CreateQueryParameters(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
 
         // Act
-        var actual = await Sut.GetAsync(query);
+        var actual = await Sut.GetAsync(parameters);
 
         // Assert
-        using var assertionScope = new AssertionScope();
         actual.Should().NotBeNull();
+        using var assertionScope = new AssertionScope();
         actual!.GridArea.Should().Be(gridAreaFilter);
         actual.PeriodStart.Should().Be(startOfPeriodFilter);
         actual.PeriodEnd.Should().Be(endOfPeriodFilter);
@@ -87,24 +85,23 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
     }
 
     [Fact]
-    public async Task GetAsync_RequestFromGridOperatorTotalProductionInWrongPeriod_ReturnsNoResults()
+    public async Task GetAsync_WhenRequestFromGridOperatorTotalProductionInWrongPeriod_ReturnsNoResults()
     {
         // Arrange
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        var request = CreateRequest(
+        await AddCreatedRowsInArbitraryOrderAsync();
+        var parameters = CreateQueryParameters(
             startOfPeriod: Instant.FromUtc(2020, 1, 1, 1, 1),
             endOfPeriod: Instant.FromUtc(2021, 1, 2, 1, 1));
 
         // Act
-        var actual = await Sut.GetAsync(request);
+        var actual = await Sut.GetAsync(parameters);
 
         // Assert
         actual.Should().BeNull();
     }
 
     [Fact]
-    public async Task GetAsync_RequestFromEnergySupplierTotalProduction_ReturnsResult()
+    public async Task GetAsync_WhenRequestFromEnergySupplierTotalProduction_ReturnsResult()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
@@ -112,9 +109,8 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        var request = CreateRequest(
+        await AddCreatedRowsInArbitraryOrderAsync();
+        var parameters = CreateQueryParameters(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
@@ -122,11 +118,11 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
             energySupplierId: energySupplierIdFilter);
 
         // Act
-        var actual = await Sut.GetAsync(request);
+        var actual = await Sut.GetAsync(parameters);
 
         // Assert
-        using var assertionScope = new AssertionScope();
         actual.Should().NotBeNull();
+        using var assertionScope = new AssertionScope();
         actual!.GridArea.Should().Be(gridAreaFilter);
         actual.PeriodStart.Should().Be(startOfPeriodFilter);
         actual.PeriodEnd.Should().Be(endOfPeriodFilter);
@@ -140,7 +136,7 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
     }
 
     [Fact]
-    public async Task GetAsync_RequestFromEnergySupplierTotalProductionBadId_ReturnsNoResults()
+    public async Task GetAsync_WhenRequestFromEnergySupplierTotalProductionBadId_ReturnsNoResults()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
@@ -148,9 +144,8 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        var request = CreateRequest(
+        await AddCreatedRowsInArbitraryOrderAsync();
+        var parameters = CreateQueryParameters(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
@@ -158,14 +153,14 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
             energySupplierId: energySupplierId);
 
         // Act
-        var actual = await Sut.GetAsync(request);
+        var actual = await Sut.GetAsync(parameters);
 
         // Assert
         actual.Should().BeNull();
     }
 
     [Fact]
-    public async Task GetAsync_RequestFromBalanceResponsibleTotalProduction_ReturnsResult()
+    public async Task GetAsync_WhenRequestFromBalanceResponsibleTotalProduction_ReturnsResult()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
@@ -173,9 +168,8 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        var request = CreateRequest(
+        await AddCreatedRowsInArbitraryOrderAsync();
+        var parameters = CreateQueryParameters(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
@@ -184,11 +178,11 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
             processType: ProcessType.BalanceFixing);
 
         // Act
-        var actual = await Sut.GetAsync(request);
+        var actual = await Sut.GetAsync(parameters);
 
         // Assert
-        using var assertionScope = new AssertionScope();
         actual.Should().NotBeNull();
+        using var assertionScope = new AssertionScope();
         actual!.GridArea.Should().Be(gridAreaFilter);
         actual.PeriodStart.Should().Be(startOfPeriodFilter);
         actual.PeriodEnd.Should().Be(endOfPeriodFilter);
@@ -202,7 +196,7 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
     }
 
     [Fact]
-    public async Task GetAsync_RequestFromEnergySupplierPerBalanceResponsibleTotalProduction_ReturnsResult()
+    public async Task GetAsync_WhenRequestFromEnergySupplierPerBalanceResponsibleTotalProduction_ReturnsResult()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
@@ -211,9 +205,8 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        var request = CreateRequest(
+        await AddCreatedRowsInArbitraryOrderAsync();
+        var parameters = CreateQueryParameters(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
@@ -222,11 +215,11 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
             balanceResponsibleId: balanceResponsibleIdFilter);
 
         // Act
-        var actual = await Sut.GetAsync(request);
+        var actual = await Sut.GetAsync(parameters);
 
         // Assert
-        using var assertionScope = new AssertionScope();
         actual.Should().NotBeNull();
+        using var assertionScope = new AssertionScope();
         actual!.GridArea.Should().Be(gridAreaFilter);
         actual.PeriodStart.Should().Be(startOfPeriodFilter);
         actual.PeriodEnd.Should().Be(endOfPeriodFilter);
@@ -241,7 +234,7 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
     }
 
     [Fact]
-    public async Task GetAsync_RequestFromGridOperatorTotalProductionFirstCorrectionSettlement_ReturnsResult()
+    public async Task GetAsync_WhenRequestFromGridOperatorTotalProductionFirstCorrectionSettlement_ReturnsResult()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
@@ -249,10 +242,9 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         var processTypeFilter = ProcessType.FirstCorrectionSettlement;
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
+        await AddCreatedRowsInArbitraryOrderAsync(addFirstCorrection: true);
 
-        var request = CreateRequest(
+        var parameters = CreateQueryParameters(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
@@ -260,16 +252,16 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
             processType: processTypeFilter);
 
         // Act
-        var actual = await Sut.GetAsync(request);
+        var actual = await Sut.GetAsync(parameters);
 
         // Assert
-        using var assertionScope = new AssertionScope();
         actual.Should().NotBeNull();
+        using var assertionScope = new AssertionScope();
         actual!.GridArea.Should().Be(gridAreaFilter);
         actual.PeriodStart.Should().Be(startOfPeriodFilter);
         actual.PeriodEnd.Should().Be(endOfPeriodFilter);
         actual.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
-        actual.ProcessType.Should().Be(processTypeFilter);
+        actual.ProcessType.Should().Be(ProcessType.FirstCorrectionSettlement);
         actual.TimeSeriesPoints
             .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
             .ToArray()
@@ -279,7 +271,7 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
     }
 
     [Fact]
-    public async Task GetAsync_RequestFromGridOperatorTotalProductionSecondCorrectionSettlement_ReturnsResult()
+    public async Task GetAsync_WhenRequestFromGridOperatorTotalProductionSecondCorrectionSettlement_ReturnsResult()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
@@ -287,10 +279,9 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         var processTypeFilter = ProcessType.SecondCorrectionSettlement;
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
+        await AddCreatedRowsInArbitraryOrderAsync(addSecondCorrection: true);
 
-        var request = CreateRequest(
+        var parameters = CreateQueryParameters(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
@@ -298,15 +289,15 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
             processType: processTypeFilter);
 
         // Act
-        var actual = await Sut.GetAsync(request);
+        var actual = await Sut.GetAsync(parameters);
 
         // Assert
-        using var assertionScope = new AssertionScope();
         actual.Should().NotBeNull();
+        using var assertionScope = new AssertionScope();
         actual!.GridArea.Should().Be(gridAreaFilter);
         actual.PeriodStart.Should().Be(startOfPeriodFilter);
         actual.PeriodEnd.Should().Be(endOfPeriodFilter);
-        actual.ProcessType.Should().Be(processTypeFilter);
+        actual.ProcessType.Should().Be(ProcessType.SecondCorrectionSettlement);
         actual.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
         actual.TimeSeriesPoints
             .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
@@ -317,7 +308,7 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
     }
 
     [Fact]
-    public async Task GetAsyncRequestFromGridOperatorTotalProductionThirdCorrectionSettlement_ReturnsResult()
+    public async Task GetAsync_WhenRequestFromGridOperatorTotalProductionThirdCorrectionSettlement_ReturnsResult()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
@@ -325,11 +316,9 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         var processTypeFilter = ProcessType.ThirdCorrectionSettlement;
+        await AddCreatedRowsInArbitraryOrderAsync(addThirdCorrection: true);
 
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-
-        var request = CreateRequest(
+        var parameters = CreateQueryParameters(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
@@ -337,15 +326,15 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
             processType: processTypeFilter);
 
         // Act
-        var actual = await Sut.GetAsync(request);
+        var actual = await Sut.GetAsync(parameters);
 
         // Assert
-        using var assertionScope = new AssertionScope();
         actual.Should().NotBeNull();
+        using var assertionScope = new AssertionScope();
         actual!.GridArea.Should().Be(gridAreaFilter);
         actual.PeriodStart.Should().Be(startOfPeriodFilter);
         actual.PeriodEnd.Should().Be(endOfPeriodFilter);
-        actual.ProcessType.Should().Be(processTypeFilter);
+        actual.ProcessType.Should().Be(ProcessType.ThirdCorrectionSettlement);
         actual.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
         actual.TimeSeriesPoints
             .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
@@ -364,20 +353,19 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 3, 0, 0);
 
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        var request = CreateRequest(
+        await AddCreatedRowsInArbitraryOrderAsync();
+        var parameters = CreateQueryParameters(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
             endOfPeriod: endOfPeriodFilter);
 
         // Act
-        var actual = await Sut.GetAsync(request);
+        var actual = await Sut.GetAsync(parameters);
 
         // Assert
-        using var assertionScope = new AssertionScope();
         actual.Should().NotBeNull();
+        using var assertionScope = new AssertionScope();
         actual!.GridArea.Should().Be(gridAreaFilter);
         actual.PeriodStart.Should().Be(startOfPeriodFilter);
         actual.PeriodEnd.Should().Be(endOfPeriodFilter);
@@ -399,23 +387,133 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
 
-        var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
-        await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
+        await AddCreatedRowsInArbitraryOrderAsync();
 
-        var request = CreateRequest(
+        var parameters = CreateQueryParameters(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
             startOfPeriod: startOfPeriodFilter,
-            endOfPeriod: endOfPeriodFilter);
+            endOfPeriod: endOfPeriodFilter,
+            processType: ProcessType.BalanceFixing);
 
         // Act
-        var actual = await Sut.GetAsync(request);
+        var actual = await Sut.GetAsync(parameters);
 
         // Assert
         actual.Should().BeNull();
     }
 
-    private EnergyResultQuery CreateRequest(
+    [Fact]
+    public async Task GetLatestCorrectionAsync_WhenLatestCorrectionSettlementIsThirdCorrection_ReturnsThirdCorrection()
+    {
+        var gridAreaFilter = GridAreaCode;
+        var timeSeriesTypeFilter = TimeSeriesType.Production;
+        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
+        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+        await AddCreatedRowsInArbitraryOrderAsync(addThirdCorrection: true);
+        var parameters = CreateQueryParameters(
+            timeSeriesTypeFilter,
+            startOfPeriodFilter,
+            endOfPeriodFilter,
+            gridAreaFilter);
+
+        // Act
+        var actual = await Sut.GetLatestCorrectionAsync(parameters);
+
+        // Assert
+        actual.Should().NotBeNull();
+        actual!.ProcessType.Should().Be(ProcessType.ThirdCorrectionSettlement);
+    }
+
+    [Fact]
+    public async Task GetLatestCorrectionAsync_WhenLatestCorrectionSettlementIsSecondCorrection_ReturnsSecondCorrection()
+    {
+        var gridAreaFilter = GridAreaCode;
+        var timeSeriesTypeFilter = TimeSeriesType.Production;
+        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
+        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+        await AddCreatedRowsInArbitraryOrderAsync(addSecondCorrection: true);
+        var parameters = CreateQueryParameters(
+            timeSeriesTypeFilter,
+            startOfPeriodFilter,
+            endOfPeriodFilter,
+            gridAreaFilter);
+
+        // Act
+        var actual = await Sut.GetLatestCorrectionAsync(parameters);
+
+        // Assert
+        actual.Should().NotBeNull();
+        actual!.ProcessType.Should().Be(ProcessType.SecondCorrectionSettlement);
+    }
+
+    [Fact]
+    public async Task GetLatestCorrectionAsync_WhenLatestCorrectionSettlementIsFirstCorrection_ReturnsFirstCorrection()
+    {
+        var gridAreaFilter = GridAreaCode;
+        var timeSeriesTypeFilter = TimeSeriesType.Production;
+        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
+        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+        await AddCreatedRowsInArbitraryOrderAsync(addFirstCorrection: true);
+        var parameters = CreateQueryParameters(
+            timeSeriesTypeFilter,
+            startOfPeriodFilter,
+            endOfPeriodFilter,
+            gridAreaFilter);
+
+        // Act
+        var actual = await Sut.GetLatestCorrectionAsync(parameters);
+
+        // Assert
+        actual.Should().NotBeNull();
+        actual!.ProcessType.Should().Be(ProcessType.FirstCorrectionSettlement);
+    }
+
+    [Fact]
+    public async Task GetLatestCorrectionAsync_WhenNoCorrectionsExists_ReturnsNoResult()
+    {
+        var gridAreaFilter = GridAreaCode;
+        var timeSeriesTypeFilter = TimeSeriesType.Production;
+        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
+        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+        await AddCreatedRowsInArbitraryOrderAsync(addFirstCorrection: false, addSecondCorrection: false, addThirdCorrection: false);
+        var parameters = CreateQueryParameters(
+            timeSeriesTypeFilter,
+            startOfPeriodFilter,
+            endOfPeriodFilter,
+            gridAreaFilter);
+
+        // Act
+        var actual = await Sut.GetLatestCorrectionAsync(parameters);
+
+        // Assert
+        actual.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task GetLatestCorrectionAsync_WhenProcessTypeIsDefined_ThrowsException()
+    {
+        // Arrange
+        var gridAreaFilter = GridAreaCode;
+        var timeSeriesTypeFilter = TimeSeriesType.Production;
+        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
+        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+        var parameters = CreateQueryParameters(
+            timeSeriesTypeFilter,
+            startOfPeriodFilter,
+            endOfPeriodFilter,
+            gridAreaFilter,
+            processType: ProcessType.BalanceFixing);
+
+        var act = () => Sut.GetLatestCorrectionAsync(parameters);
+
+        // Act and Assert
+        await act.Should().ThrowAsync<ArgumentException>(
+            "The process type will be overwritten when fetching the latest correction.",
+            parameters.ProcessType);
+    }
+
+    private AggregatedTimeSeriesQueryParameters CreateQueryParameters(
         TimeSeriesType? timeSeriesType = null,
         Instant? startOfPeriod = null,
         Instant? endOfPeriod = null,
@@ -424,17 +522,17 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
         string? balanceResponsibleId = null,
         ProcessType? processType = null)
     {
-        return new EnergyResultQuery(
+        return new AggregatedTimeSeriesQueryParameters(
             TimeSeriesType: timeSeriesType ?? TimeSeriesType.Production,
             StartOfPeriod: startOfPeriod ?? Instant.FromUtc(2022, 1, 1, 0, 0),
             EndOfPeriod: endOfPeriod ?? Instant.FromUtc(2022, 1, 2, 0, 0),
             GridArea: gridArea,
             EnergySupplierId: energySupplierId,
             BalanceResponsibleId: balanceResponsibleId,
-            ProcessType: processType ?? ProcessType.BalanceFixing);
+            ProcessType: processType);
     }
 
-    private async Task AddCreatedRowsInArbitraryOrderAsync(IOptions<DeltaTableOptions> options)
+    private async Task AddCreatedRowsInArbitraryOrderAsync(bool addFirstCorrection = false, bool addSecondCorrection = false, bool addThirdCorrection = false)
     {
         const string firstCalculationResultId = "aaaaaaaa-386f-49eb-8b56-63fae62e4fc7";
         const string secondCalculationResultId = "bbbbbbbb-b58b-4190-a873-eded0ed50c20";
@@ -473,17 +571,50 @@ public class RequestCalculationResultQueriesTests : TestBase<RequestCalculationR
         var row1SecondDay = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: secondDay, gridArea: GridAreaCode, quantity: FirstQuantity);
         var row1ThirdDay = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: thirdDay, gridArea: GridAreaCode, quantity: SecondQuantity);
 
-        // mix up the order of the rows
         var rows = new List<IReadOnlyCollection<string>>
         {
-            row1, row2, row3, row4, row5, row6, row7,
-            row1FirstCorrection, row2FirstCorrection,
-            row1SecondCorrection, row2SecondCorrection,
-            row1ThirdCorrection, row2ThirdCorrection, row4ThirdCorrection,
-            row1SecondDay, row1ThirdDay,
-        }.OrderBy(_ => Guid.NewGuid()).ToList();
+            row1,
+            row2,
+            row3,
+            row4,
+            row5,
+            row6,
+            row7,
+            row1SecondDay,
+            row1ThirdDay,
+        };
 
-        await _fixture.DatabricksSchemaManager.EmptyAsync(options.Value.ENERGY_RESULTS_TABLE_NAME);
-        await _fixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(options.Value.ENERGY_RESULTS_TABLE_NAME, rows);
+        if (addFirstCorrection)
+        {
+            rows.AddRange(new[]
+            {
+                row1FirstCorrection,
+                row2FirstCorrection,
+            });
+        }
+
+        if (addSecondCorrection)
+        {
+            rows.AddRange(new[]
+            {
+                row1SecondCorrection,
+                row2SecondCorrection,
+            });
+        }
+
+        if (addThirdCorrection)
+        {
+            rows.AddRange(new[]
+            {
+                row1ThirdCorrection,
+                row2ThirdCorrection,
+                row4ThirdCorrection,
+            });
+        }
+
+        rows = rows.OrderBy(_ => Guid.NewGuid()).ToList();
+
+        await _fixture.DatabricksSchemaManager.EmptyAsync(_fixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME);
+        await _fixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(_fixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME, rows);
     }
 }
