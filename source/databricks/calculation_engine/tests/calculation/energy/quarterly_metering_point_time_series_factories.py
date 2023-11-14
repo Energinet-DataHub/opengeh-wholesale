@@ -21,7 +21,7 @@ from package.calculation.preparation.quarterly_metering_point_time_series import
     QuarterlyMeteringPointTimeSeries,
     _quarterly_metering_point_time_series_schema,
 )
-from package.codelists import MeteringPointType, QuantityQuality
+from package.codelists import MeteringPointType, QuantityQuality, SettlementMethod
 from package.constants import Colname
 
 DEFAULT_GRID_AREA = "100"
@@ -31,20 +31,28 @@ DEFAULT_QUANTITY = Decimal("999.123456")
 DEFAULT_QUALITY = QuantityQuality.MEASURED
 DEFAULT_METERING_POINT_ID = "1234567890123"
 DEFAULT_METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
+DEFAULT_SETTLEMENT_METHOD = SettlementMethod.NON_PROFILED
+DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
+DEFAULT_BALANCE_RESPONSIBLE_ID = "9999999999999"
 
 
 def create_row(
     grid_area: str = DEFAULT_GRID_AREA,
-    to_grid_area: str = None,
-    from_grid_area: str = None,
+    to_grid_area: str | None = None,
+    from_grid_area: str | None = None,
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
     metering_point_type: MeteringPointType = DEFAULT_METERING_POINT_TYPE,
     observation_time: datetime = DEFAULT_OBSERVATION_TIME,
     quantity: int | Decimal = DEFAULT_QUANTITY,
     quality: QuantityQuality = DEFAULT_QUALITY,
+    energy_supplier_id: str | None = DEFAULT_ENERGY_SUPPLIER_ID,
+    balance_responsible_id: str | None = DEFAULT_BALANCE_RESPONSIBLE_ID,
+    settlement_method: SettlementMethod | None = DEFAULT_SETTLEMENT_METHOD,
 ) -> Row:
     if isinstance(quantity, int):
         quantity = Decimal(quantity)
+    if settlement_method is not None:
+        settlement_method = settlement_method.value
 
     row = {
         Colname.grid_area: grid_area,
@@ -54,9 +62,9 @@ def create_row(
         Colname.metering_point_type: metering_point_type.value,
         Colname.quantity: quantity,
         Colname.quality: quality.value,
-        Colname.energy_supplier_id: None,
-        Colname.balance_responsible_id: None,
-        Colname.settlement_method: None,
+        Colname.energy_supplier_id: energy_supplier_id,
+        Colname.balance_responsible_id: balance_responsible_id,
+        Colname.settlement_method: settlement_method,
         Colname.time_window: {
             Colname.start: observation_time,
             Colname.end: observation_time + datetime.timedelta(minutes=15),
