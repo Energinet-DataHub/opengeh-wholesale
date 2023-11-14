@@ -36,7 +36,7 @@ class TestWhenValidInput:
         df = factories.create(spark, [row, row])
 
         # Act
-        actual = aggregate_per_ga_and_es(df, ANY_METERING_POINT_TYPE)
+        actual = aggregate_per_ga_and_es(df)
 
         # assert
         actual_rows = actual.df.collect()
@@ -47,8 +47,6 @@ class TestWhenValidInput:
         assert actual_row[Colname.qualities] == [
             q.value for q in factories.DEFAULT_QUALITIES
         ]
-        assert actual_row[Colname.metering_point_type] == ANY_METERING_POINT_TYPE.value
-        assert actual_row[Colname.settlement_method] is None  # TODO BJM: Correct?
         assert actual_row[Colname.to_grid_area] is None  # TODO BJM: Correct?
         assert actual_row[Colname.from_grid_area] is None  # TODO BJM: Correct?
         assert (
@@ -67,7 +65,7 @@ class TestWhenValidInput:
         df = factories.create(spark, rows)
 
         # Act
-        actual = aggregate_per_ga_and_es(df, ANY_METERING_POINT_TYPE)
+        actual = aggregate_per_ga_and_es(df)
 
         # assert
         actual_rows = actual.df.collect()
@@ -85,7 +83,7 @@ class TestWhenValidInput:
         df = factories.create(spark, rows)
 
         # Act
-        actual = aggregate_per_ga_and_es(df, ANY_METERING_POINT_TYPE)
+        actual = aggregate_per_ga_and_es(df)
 
         # assert
         actual_rows = actual.df.collect()
@@ -100,7 +98,7 @@ class TestWhenValidInput:
         df = factories.create(spark, rows)
 
         # Act
-        actual = aggregate_per_ga_and_es(df, ANY_METERING_POINT_TYPE)
+        actual = aggregate_per_ga_and_es(df)
 
         # assert
         actual_rows = actual.df.collect()

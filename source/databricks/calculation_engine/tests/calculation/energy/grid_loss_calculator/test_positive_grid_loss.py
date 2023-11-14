@@ -27,7 +27,6 @@ from package.calculation.energy.energy_results import (
 )
 from package.calculation.energy.grid_loss_calculator import calculate_positive_grid_loss
 from package.codelists import (
-    MeteringPointType,
     QuantityQuality,
 )
 from package.constants import Colname
@@ -50,8 +49,6 @@ def agg_result_factory(spark: SparkSession) -> Callable[[], EnergyResults]:
                 Colname.time_window: [],
                 Colname.sum_quantity: [],
                 Colname.qualities: [],
-                Colname.metering_point_type: [],
-                Colname.settlement_method: [],
             }
         )
         pandas_df = pandas_df.append(
@@ -68,8 +65,6 @@ def agg_result_factory(spark: SparkSession) -> Callable[[], EnergyResults]:
                     },
                     Colname.sum_quantity: Decimal(-12.567),
                     Colname.qualities: [QuantityQuality.ESTIMATED.value],
-                    Colname.metering_point_type: MeteringPointType.EXCHANGE.value,
-                    Colname.settlement_method: None,
                 },
                 {
                     Colname.grid_area: str(2),
@@ -83,8 +78,6 @@ def agg_result_factory(spark: SparkSession) -> Callable[[], EnergyResults]:
                     },
                     Colname.sum_quantity: Decimal(34.32),
                     Colname.qualities: [QuantityQuality.ESTIMATED.value],
-                    Colname.metering_point_type: MeteringPointType.EXCHANGE.value,
-                    Colname.settlement_method: None,
                 },
                 {
                     Colname.grid_area: str(3),
@@ -98,8 +91,6 @@ def agg_result_factory(spark: SparkSession) -> Callable[[], EnergyResults]:
                     },
                     Colname.sum_quantity: Decimal(0.0),
                     Colname.qualities: [QuantityQuality.ESTIMATED.value],
-                    Colname.metering_point_type: MeteringPointType.EXCHANGE.value,
-                    Colname.settlement_method: None,
                 },
             ],
             ignore_index=True,

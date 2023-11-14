@@ -119,7 +119,6 @@ def flex_consumption_result_row_factory(
         sum_quantity: Decimal = default_sum_quantity,
         time_window=None,
         aggregated_quality: str = default_aggregated_quality,
-        metering_point_type: str = default_metering_point_type,
     ) -> EnergyResults:
         if time_window is None:
             time_window = default_time_window
@@ -133,8 +132,6 @@ def flex_consumption_result_row_factory(
                 Colname.time_window: [time_window],
                 Colname.sum_quantity: [sum_quantity],
                 Colname.qualities: [[aggregated_quality]],
-                Colname.metering_point_type: [metering_point_type],
-                Colname.settlement_method: [None],
             }
         )
         df = spark.createDataFrame(pandas_df, schema=energy_results_schema)
@@ -156,7 +153,6 @@ def positive_grid_loss_result_row_factory(
         time_window=None,
         positive_grid_loss: Decimal = default_positive_grid_loss,
         aggregated_quality: str = default_aggregated_quality,
-        metering_point_type: str = default_metering_point_type,
     ) -> EnergyResults:
         if time_window is None:
             time_window = default_time_window
@@ -170,8 +166,6 @@ def positive_grid_loss_result_row_factory(
                 Colname.time_window: [time_window],
                 Colname.sum_quantity: [positive_grid_loss],
                 Colname.qualities: [[aggregated_quality]],
-                Colname.metering_point_type: [metering_point_type],
-                Colname.settlement_method: [None],
             }
         )
         df = spark.createDataFrame(pandas_df, schema=energy_results_schema)
@@ -361,26 +355,4 @@ def test_correct_grid_loss_entry_is_used_to_determine_energy_responsible_for_the
         .filter(col(f"{Colname.time_window_start}") == time_window_3["start"])
         .collect()[0][Colname.sum_quantity]
         == default_sum_quantity + gagl_result_3
-    )
-
-
-def test_that_the_correct_metering_point_type_is_put_on_the_result(
-    flex_consumption_result_row_factory: Callable[..., EnergyResults],
-    positive_grid_loss_result_row_factory: Callable[..., EnergyResults],
-    grid_loss_sys_cor_row_factory: Callable[..., DataFrame],
-) -> None:
-    flex_consumption = flex_consumption_result_row_factory(supplier="A")
-    positive_grid_loss = positive_grid_loss_result_row_factory()
-
-    grid_loss_sys_cor_master_data = grid_loss_sys_cor_row_factory(supplier="A")
-
-    result_df = adjust_flex_consumption(
-        flex_consumption, positive_grid_loss, grid_loss_sys_cor_master_data
-    )
-
-    assert (
-        result_df.df.where(col(Colname.energy_supplier_id) == "A").collect()[0][
-            Colname.metering_point_type
-        ]
-        == MeteringPointType.CONSUMPTION.value
     )

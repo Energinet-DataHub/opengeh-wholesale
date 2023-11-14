@@ -43,8 +43,6 @@ def create_row(
     observation_time: datetime = DEFAULT_OBSERVATION_TIME,
     sum_quantity: int | Decimal = DEFAULT_SUM_QUANTITY,
     qualities: None | QuantityQuality | list[QuantityQuality] = None,
-    metering_point_type: MeteringPointType = DEFAULT_METERING_POINT_TYPE,
-    settlement_method: SettlementMethod | None = DEFAULT_SETTLEMENT_METHOD,
     energy_supplier_id: str | None = DEFAULT_ENERGY_SUPPLIER_ID,
     balance_responsible_id: str | None = DEFAULT_BALANCE_RESPONSIBLE_ID,
 ) -> Row:
@@ -56,9 +54,6 @@ def create_row(
     elif isinstance(qualities, QuantityQuality):
         qualities = [qualities]
     qualities = [q.value for q in qualities]
-
-    if settlement_method is not None:
-        settlement_method = settlement_method.value
 
     row = {
         Colname.grid_area: grid_area,
@@ -72,8 +67,6 @@ def create_row(
         },
         Colname.sum_quantity: sum_quantity,
         Colname.qualities: qualities,
-        Colname.metering_point_type: metering_point_type.value,
-        Colname.settlement_method: settlement_method,
     }
 
     return Row(**row)

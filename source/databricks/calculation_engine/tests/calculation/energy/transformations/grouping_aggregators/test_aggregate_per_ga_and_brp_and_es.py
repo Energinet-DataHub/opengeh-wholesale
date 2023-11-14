@@ -61,14 +61,6 @@ class TestWhenValidInput:
         )
         assert actual_row[Colname.sum_quantity] == 2 * factories.DEFAULT_QUANTITY
         assert actual_row[Colname.qualities] == [factories.DEFAULT_QUALITY.value]
-        assert (
-            actual_row[Colname.metering_point_type]
-            == factories.DEFAULT_METERING_POINT_TYPE.value
-        )
-        assert (
-            actual_row[Colname.settlement_method]
-            == factories.DEFAULT_SETTLEMENT_METHOD.value
-        )
 
     def test_returns_rows_for_each_ga(self, spark: SparkSession):
         # Arrange
@@ -143,8 +135,12 @@ class TestWhenValidInputAndFilteringApplied:
     def test_returns_rows_for_selected_metering_point_type(self, spark: SparkSession):
         # Arrange
         rows = [
-            factories.create_row(metering_point_type=MeteringPointType.CONSUMPTION),
-            factories.create_row(metering_point_type=MeteringPointType.PRODUCTION),
+            factories.create_row(
+                grid_area="a", metering_point_type=MeteringPointType.CONSUMPTION
+            ),
+            factories.create_row(
+                grid_area="b", metering_point_type=MeteringPointType.PRODUCTION
+            ),
         ]
         df = factories.create(spark, rows)
 
@@ -156,16 +152,17 @@ class TestWhenValidInputAndFilteringApplied:
         # assert
         actual_rows = actual.df.collect()
         assert len(actual_rows) == 1
-        assert (
-            actual_rows[0][Colname.metering_point_type]
-            == MeteringPointType.CONSUMPTION.value
-        )
+        assert actual_rows[0][Colname.grid_area] == "a"
 
     def test_returns_rows_filtered_by_settlement_method(self, spark: SparkSession):
         # Arrange
         rows = [
-            factories.create_row(settlement_method=SettlementMethod.FLEX),
-            factories.create_row(settlement_method=SettlementMethod.NON_PROFILED),
+            factories.create_row(
+                grid_area="a", settlement_method=SettlementMethod.FLEX
+            ),
+            factories.create_row(
+                grid_area="b", settlement_method=SettlementMethod.NON_PROFILED
+            ),
         ]
         df = factories.create(spark, rows)
 
@@ -177,14 +174,17 @@ class TestWhenValidInputAndFilteringApplied:
         # assert
         actual_rows = actual.df.collect()
         assert len(actual_rows) == 1
-        assert actual_rows[0][Colname.settlement_method] == SettlementMethod.FLEX.value
+        assert actual_rows[0][Colname.grid_area] == "a"
 
     def test_returns_rows_not_filtered_by_settlement_method(self, spark: SparkSession):
         # Arrange
         rows = [
-            factories.create_row(settlement_method=None),
-            factories.create_row(settlement_method=SettlementMethod.FLEX),
-            factories.create_row(settlement_method=SettlementMethod.NON_PROFILED),
+            factories.create_row(
+                grid_area="a", settlement_method=SettlementMethod.NON_PROFILED
+            ),
+            factories.create_row(
+                grid_area="b", settlement_method=SettlementMethod.NON_PROFILED
+            ),
         ]
         df = factories.create(spark, rows)
 
@@ -195,4 +195,4 @@ class TestWhenValidInputAndFilteringApplied:
 
         # assert
         actual_rows = actual.df.collect()
-        assert len(actual_rows) == 3
+        assert len(actual_rows) == 2

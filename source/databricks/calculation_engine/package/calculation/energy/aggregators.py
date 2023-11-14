@@ -58,66 +58,42 @@ def aggregate_production_ga_brp_es(
 
 
 def aggregate_production_ga_es(production: EnergyResults) -> EnergyResults:
-    return aggregate_per_ga_and_es(
-        production,
-        MeteringPointType.PRODUCTION,
-    )
+    return aggregate_per_ga_and_es(production)
 
 
 def aggregate_non_profiled_consumption_ga_es(
     non_profiled_consumption: EnergyResults,
 ) -> EnergyResults:
-    return aggregate_per_ga_and_es(
-        non_profiled_consumption,
-        MeteringPointType.CONSUMPTION,
-    )
+    return aggregate_per_ga_and_es(non_profiled_consumption)
 
 
 def aggregate_flex_consumption_ga_es(flex_consumption: EnergyResults) -> EnergyResults:
-    return aggregate_per_ga_and_es(
-        flex_consumption,
-        MeteringPointType.CONSUMPTION,
-    )
+    return aggregate_per_ga_and_es(flex_consumption)
 
 
 def aggregate_production_ga_brp(production: EnergyResults) -> EnergyResults:
-    return aggregate_per_ga_and_brp(production, MeteringPointType.PRODUCTION)
+    return aggregate_per_ga_and_brp(production)
 
 
 def aggregate_non_profiled_consumption_ga_brp(
     non_profiled_consumption: EnergyResults,
 ) -> EnergyResults:
-    return aggregate_per_ga_and_brp(
-        non_profiled_consumption,
-        MeteringPointType.CONSUMPTION,
-    )
+    return aggregate_per_ga_and_brp(non_profiled_consumption)
 
 
 def aggregate_flex_consumption_ga_brp(flex_consumption: EnergyResults) -> EnergyResults:
-    return aggregate_per_ga_and_brp(
-        flex_consumption,
-        MeteringPointType.CONSUMPTION,
-    )
+    return aggregate_per_ga_and_brp(flex_consumption)
 
 
 def aggregate_production_ga(production: EnergyResults) -> EnergyResults:
-    return aggregate_per_ga(
-        production,
-        MeteringPointType.PRODUCTION,
-    )
+    return aggregate_per_ga(production)
 
 
 def aggregate_non_profiled_consumption_ga(consumption: EnergyResults) -> EnergyResults:
-    return aggregate_per_ga(
-        consumption,
-        MeteringPointType.CONSUMPTION,
-    )
+    return aggregate_per_ga(consumption)
 
 
 def aggregate_flex_consumption_ga(
     flex_consumption: EnergyResults,
 ) -> EnergyResults:
-    return aggregate_per_ga(
-        flex_consumption,
-        MeteringPointType.CONSUMPTION,
-    )
+    return aggregate_per_ga(flex_consumption)
