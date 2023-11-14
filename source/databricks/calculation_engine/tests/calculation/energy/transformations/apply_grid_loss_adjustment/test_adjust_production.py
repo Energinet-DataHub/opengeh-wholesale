@@ -25,7 +25,7 @@ import tests.calculation.energy.grid_loss_responsible_factories as grid_loss_res
 
 
 class TestWhenValidInput:
-    def test__adjust_production__returns_qualities_from_hourly_production_and_negative_grid_loss(
+    def test_returns_qualities_from_hourly_production_and_negative_grid_loss(
         self,
         spark: SparkSession,
     ) -> None:
@@ -66,3 +66,35 @@ class TestWhenValidInput:
         actual_row = actual.df.collect()[0]
         actual_qualities = actual_row[Colname.qualities]
         assert set(actual_qualities) == set(expected_qualities)
+
+
+class TestWhenNoProduction:
+    def test_returns_no_results(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+        production = energy_results_factories.create(spark, [])
+
+        negative_grid_loss_row = energy_results_factories.create_row(
+            metering_point_type=MeteringPointType.PRODUCTION,
+        )
+        negative_grid_loss = energy_results_factories.create(
+            spark, [negative_grid_loss_row]
+        )
+
+        grid_loss_responsible_row = grid_loss_responsible_factories.create_row(
+            metering_point_type=MeteringPointType.PRODUCTION,
+            is_positive_grid_loss_responsible=True,
+        )
+        grid_loss_responsible = grid_loss_responsible_factories.create(
+            spark, [grid_loss_responsible_row]
+        )
+
+        # Act
+        actual = adjust_production(
+            production, negative_grid_loss, grid_loss_responsible
+        )
+
+        # Assert
+        assert actual.df.count() == 0

@@ -68,3 +68,35 @@ class TestWhenValidInput:
         actual_row = actual.df.collect()[0]
         actual_qualities = actual_row[Colname.qualities]
         assert set(actual_qualities) == set(expected_qualities)
+
+
+class TestWhenNoFlexConsumption:
+    def test_returns_no_result(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+        flex_consumption = energy_results_factories.create(spark, [])
+
+        positive_grid_loss_row = energy_results_factories.create_row(
+            metering_point_type=MeteringPointType.CONSUMPTION,
+        )
+        positive_grid_loss = energy_results_factories.create(
+            spark, [positive_grid_loss_row]
+        )
+
+        grid_loss_responsible_row = grid_loss_responsible_factories.create_row(
+            metering_point_type=MeteringPointType.CONSUMPTION,
+            is_negative_grid_loss_responsible=True,
+        )
+        grid_loss_responsible = grid_loss_responsible_factories.create(
+            spark, [grid_loss_responsible_row]
+        )
+
+        # Act
+        actual = adjust_flex_consumption(
+            flex_consumption, positive_grid_loss, grid_loss_responsible
+        )
+
+        # Assert
+        assert actual.df.count() == 0
