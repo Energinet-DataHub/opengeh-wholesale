@@ -37,45 +37,45 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             }
 
             [DomainFact]
-            public void When_CreatingEnergyCalculationBatch_Then_BatchIsEventuallyCompleted()
+            public void WhenCreatingEnergyCalculationBatch_BatchIsEventuallyCompleted()
             {
                 Fixture.Output.BalanceFixingCalculationIsComplete.Should().BeTrue();
             }
 
             [DomainFact]
-            public void When_CreatingWholesaleCalculationBatch_Then_BatchIsEventuallyCompleted()
+            public void WhenCreatingWholesaleCalculationBatch_BatchIsEventuallyCompleted()
             {
                 Fixture.Output.WholesaleFixingCalculationIsComplete.Should().BeTrue();
             }
 
             [DomainFact]
-            public void When_BalanceFixingHasCompleted_Then_HasReceivedExpectedNumberOfResults()
+            public void WhenBalanceFixingHasCompleted_HasReceivedExpectedNumberOfResults()
             {
                 Fixture.Output.CalculationResultCompletedFromBalanceFixing.Count.Should().Be(112);
                 Fixture.Output.EnergyResultProducedFromBalanceFixing.Count.Should().Be(112);
             }
 
             [DomainFact]
-            public void When_WholesaleFixingHasCompleted_Then_HasReceivedExpectedNumberOfEnergyResults()
+            public void WhenWholesaleFixingHasCompleted_HasReceivedExpectedNumberOfEnergyResults()
             {
                 Fixture.Output.CalculationResultCompletedFromWholesaleFixing.Count.Should().Be(137);
                 Fixture.Output.EnergyResultProducedFromWholesaleFixing.Count.Should().Be(137);
             }
 
             [DomainFact]
-            public void When_WholesaleFixingHasCompleted_Then_HasReceivedExpectedNumberOfAmountPerChargeResults()
+            public void WhenWholesaleFixingHasCompleted_HasReceivedExpectedNumberOfAmountPerChargeResults()
             {
                 Fixture.Output.AmountPerChargeResultProduced.Count.Should().Be(28);
             }
 
             [DomainFact]
-            public void When_WholesaleFixingHasCompleted_Then_HasReceivedExpectedNumberOfMonthlyAmountPerChargeResults()
+            public void WhenWholesaleFixingHasCompleted_HasReceivedExpectedNumberOfMonthlyAmountPerChargeResults()
             {
                 Fixture.Output.MonthlyAmountPerChargeResultProduced.Count.Should().Be(16);
             }
 
             [DomainFact]
-            public void When_EnergyCalculationBatchIsComplete_Then_MessagesReceivedContainAllTimeSeriesTypes()
+            public void WhenEnergyCalculationBatchIsComplete_MessagesReceivedContainAllTimeSeriesTypes()
             {
                 var actualForCalculationResultCompleted = GetTimeSeriesTypes(Fixture.Output.CalculationResultCompletedFromBalanceFixing);
                 var actualForEnergyResultProduced = GetTimeSeriesTypes(Fixture.Output.EnergyResultProducedFromBalanceFixing);
@@ -87,7 +87,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             }
 
             [DomainFact]
-            public void When_WholesaleCalculationBatchIsComplete_Then_MessagesReceivedContainAllTimeSeriesTypes()
+            public void WhenWholesaleCalculationBatchIsComplete_MessagesReceivedContainAllTimeSeriesTypes()
             {
                 var actualForCalculationResultCompleted = GetTimeSeriesTypes(Fixture.Output.CalculationResultCompletedFromWholesaleFixing);
                 var actualForEnergyResultProduced = GetTimeSeriesTypes(Fixture.Output.EnergyResultProducedFromWholesaleFixing);
@@ -99,7 +99,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             }
 
             [DomainFact]
-            public void When_BalanceFixingBatchMessagesReceived_Then_ContainsExpectedResultTypes()
+            public void WhenBalanceFixingBatchMessagesReceived_ContainsExpectedResultTypes()
             {
                 using (new AssertionScope())
                 {
@@ -119,7 +119,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             }
 
             [DomainFact]
-            public void When_WholesaleFixingBatchIsReceivedOnTopicSubscription_Then_MessagesReceivedContainExpectedResultTypes()
+            public void WhenWholesaleFixingBatchIsReceivedOnTopicSubscription_MessagesReceivedContainExpectedResultTypes()
             {
                 using (new AssertionScope())
                 {

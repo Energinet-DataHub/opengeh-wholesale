@@ -39,7 +39,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             }
 
             [DomainFact(Skip = "Test fails on cold runs with a timeout error - expected to be fixed when switching to Databricks Serverless warehouse")]
-            public async Task When_DownloadingSettlementReport_Then_ResponseIsCompressedFileWithData()
+            public async Task WhenDownloadingSettlementReport_ResponseIsCompressedFileWithData()
             {
                 // Arrange + Act
                 var fileResponse = await Fixture.WholesaleClient.DownloadAsync(

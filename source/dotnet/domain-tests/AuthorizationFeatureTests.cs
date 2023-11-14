@@ -37,7 +37,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             /// Perform a request that doesn't require authorization.
             /// </summary>
             [DomainFact]
-            public async Task When_RequestReadinessStatus_Then_ResponseIsOkAndHealthy()
+            public async Task WhenRequestReadinessStatus_ResponseIsOkAndHealthy()
             {
                 // Act
                 using var actualResponse = await Fixture.UnauthorizedHttpClient.GetAsync("monitor/ready");
@@ -53,7 +53,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             /// Perform a request that do require authorization.
             /// </summary>
             [DomainFact]
-            public async Task When_RequestBatchId_Then_ResponseIsUnauthorized()
+            public async Task WhenRequestBatchId_ResponseIsUnauthorized()
             {
                 // Arrange
                 var request = new HttpRequestMessage(HttpMethod.Get, "v3/batches?batchId=1");
@@ -82,7 +82,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             /// Perform a request that do require authorization.
             /// </summary>
             [DomainFact]
-            public async Task When_RequestingExistingBatchId_Then_ResponseIsOk()
+            public async Task WhenRequestingExistingBatchId_ResponseIsOk()
             {
                 // Arrange
 
