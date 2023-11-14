@@ -29,8 +29,6 @@ class GridLossResponsible(DataFrameWrapper):
             df,
             grid_loss_responsible_schema,
             ignore_nullability=True,
-            ignore_decimal_scale=True,
-            ignore_decimal_precision=True,
         )
 
 
