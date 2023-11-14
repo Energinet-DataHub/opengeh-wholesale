@@ -49,7 +49,7 @@ class TestWhenValidInput:
         assert actual_row[Colname.from_grid_area] is None  # TODO BJM: Correct?
         assert (
             actual_row[Colname.balance_responsible_id]
-            == factories.DEFAULT_BALANCE_RESPONSIBLE_PARTY_ID
+            == factories.DEFAULT_BALANCE_RESPONSIBLE_ID
         )
         assert (
             actual_row[Colname.energy_supplier_id]
@@ -125,7 +125,7 @@ class TestWhenValidInput:
         # Arrange
         rows = [
             factories.create_row(),
-            factories.create_row(balance_responsible_party_id="another_brp"),
+            factories.create_row(balance_responsible_id="another_brp"),
         ]
         df = factories.create(spark, rows)
 

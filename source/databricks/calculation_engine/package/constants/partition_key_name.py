@@ -17,6 +17,6 @@ class PartitionKeyName:
     GROUPING: str = "grouping"
     TIME_SERIES_TYPE: str = "time_series_type"
     ENERGY_SUPPLIER_GLN: str = "energy_supplier_gln"
-    BALANCE_RESPONSIBLE_PARTY_GLN: str = "balance_responsible_party_gln"
+    BALANCE_RESPONSIBLE_ID: str = "balance_responsible_party_gln"
     GRID_AREA: str = "grid_area"
     GLN: str = "gln"

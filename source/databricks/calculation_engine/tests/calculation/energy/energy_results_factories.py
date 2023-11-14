@@ -33,7 +33,7 @@ DEFAULT_QUALITIES = [QuantityQuality.MEASURED]
 DEFAULT_METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
 DEFAULT_SETTLEMENT_METHOD = SettlementMethod.NON_PROFILED
 DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
-DEFAULT_BALANCE_RESPONSIBLE_PARTY_ID = "9999999999999"
+DEFAULT_BALANCE_RESPONSIBLE_ID = "9999999999999"
 
 
 def create_row(
@@ -46,7 +46,7 @@ def create_row(
     metering_point_type: MeteringPointType = DEFAULT_METERING_POINT_TYPE,
     settlement_method: SettlementMethod = DEFAULT_SETTLEMENT_METHOD,
     energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
-    balance_responsible_party_id: str = DEFAULT_BALANCE_RESPONSIBLE_PARTY_ID,
+    balance_responsible_id: str = DEFAULT_BALANCE_RESPONSIBLE_ID,
 ) -> Row:
     if isinstance(sum_quantity, int):
         sum_quantity = Decimal(sum_quantity)
@@ -61,7 +61,7 @@ def create_row(
         Colname.grid_area: grid_area,
         Colname.from_grid_area: from_grid_area,
         Colname.to_grid_area: to_grid_area,
-        Colname.balance_responsible_id: balance_responsible_party_id,
+        Colname.balance_responsible_id: balance_responsible_id,
         Colname.energy_supplier_id: energy_supplier_id,
         Colname.time_window: {
             Colname.start: observation_time,

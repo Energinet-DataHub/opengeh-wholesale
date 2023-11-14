@@ -54,7 +54,7 @@ class TestWhenValidInput:
         assert actual_row[Colname.energy_supplier_id] is None
         assert (
             actual_row[Colname.balance_responsible_id]
-            == factories.DEFAULT_BALANCE_RESPONSIBLE_PARTY_ID
+            == factories.DEFAULT_BALANCE_RESPONSIBLE_ID
         )
         assert (
             actual_row[Colname.time_window][Colname.start]
@@ -95,7 +95,7 @@ class TestWhenValidInput:
         # Arrange
         rows = [
             factories.create_row(),
-            factories.create_row(balance_responsible_party_id="another_brp"),
+            factories.create_row(balance_responsible_id="another_brp"),
         ]
         df = factories.create(spark, rows)
 
