@@ -30,7 +30,7 @@ public static class ProcessTypeMapper
             throw new ArgumentOutOfRangeException(
                 nameof(requestedProcessType),
                 actualValue: requestedProcessType,
-                "Requested process type (RequestedProcessType.LatestCorrection) cannot be mapped to process type.");
+                $"Value of type {nameof(RequestedProcessType.LatestCorrection)} cannot be mapped to {nameof(ProcessType)}.");
         }
 
         return requestedProcessType switch
@@ -41,7 +41,10 @@ public static class ProcessTypeMapper
             RequestedProcessType.FirstCorrection => ProcessType.FirstCorrectionSettlement,
             RequestedProcessType.SecondCorrection => ProcessType.SecondCorrectionSettlement,
             RequestedProcessType.ThirdCorrection => ProcessType.ThirdCorrectionSettlement,
-            _ => throw new ArgumentOutOfRangeException(nameof(requestedProcessType), actualValue: requestedProcessType, "Requested process type cannot be mapped to process type."),
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(requestedProcessType),
+                actualValue: requestedProcessType,
+                $"Value cannot be mapped to a {nameof(ProcessType)}."),
         };
     }
 }

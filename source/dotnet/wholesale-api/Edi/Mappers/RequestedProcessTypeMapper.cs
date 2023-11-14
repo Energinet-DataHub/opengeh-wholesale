@@ -21,7 +21,12 @@ public static class RequestedProcessTypeMapper
     public static RequestedProcessType ToRequestedProcessType(string businessReason, string? settlementSeriesVersion)
     {
         if (businessReason != BusinessReason.Correction && settlementSeriesVersion != null)
-            throw new ArgumentOutOfRangeException(nameof(settlementSeriesVersion), settlementSeriesVersion, "Settlement series version must be null when business reason is not correction");
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(settlementSeriesVersion),
+                settlementSeriesVersion,
+                $"Value must be null when {nameof(BusinessReason)} is not correction.");
+        }
 
         return businessReason switch
         {
@@ -34,9 +39,15 @@ public static class RequestedProcessTypeMapper
                 SettlementSeriesVersion.SecondCorrection => RequestedProcessType.SecondCorrection,
                 SettlementSeriesVersion.ThirdCorrection => RequestedProcessType.ThirdCorrection,
                 null => RequestedProcessType.LatestCorrection,
-                _ => throw new ArgumentOutOfRangeException(nameof(settlementSeriesVersion), settlementSeriesVersion, "Unknown settlement series version value"),
+                _ => throw new ArgumentOutOfRangeException(
+                    nameof(settlementSeriesVersion),
+                    settlementSeriesVersion,
+                    $"Value cannot be mapped to a {nameof(RequestedProcessType)}."),
             },
-            _ => throw new ArgumentOutOfRangeException(nameof(businessReason), businessReason, "Unknown business reason value"),
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(businessReason),
+                businessReason,
+                $"Value cannot be mapped to a {nameof(RequestedProcessType)}."),
         };
     }
 }

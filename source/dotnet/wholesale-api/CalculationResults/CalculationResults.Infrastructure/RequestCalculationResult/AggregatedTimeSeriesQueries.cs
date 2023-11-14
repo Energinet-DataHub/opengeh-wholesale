@@ -42,8 +42,7 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
     {
         var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
         DatabricksSqlRow? firstRow = null;
-        await foreach (var currentRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(
-                           new QueryAggregatedTimeSeriesStatement(parameters, _deltaTableOptions), Format.JsonArray).ConfigureAwait(false))
+        await foreach (var currentRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(new QueryAggregatedTimeSeriesStatement(parameters, _deltaTableOptions), Format.JsonArray).ConfigureAwait(false))
         {
             var databricksCurrentRow = new DatabricksSqlRow(currentRow);
             if (firstRow is null)
@@ -64,7 +63,7 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
     {
         if (parameters.ProcessType != null)
         {
-            throw new ArgumentException("ProcessType must be null, since it will be overwritten", nameof(parameters));
+            throw new ArgumentException($"{nameof(parameters.ProcessType)} must be null, it will be overwritten.", nameof(parameters));
         }
 
         var processType = await GetProcessTypeOfLatestCorrectionAsync(parameters).ConfigureAwait(false);
@@ -94,18 +93,4 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
         return await _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(
             new QuerySingleAggregatedTimeSeriesStatement(parameters, _deltaTableOptions)).AnyAsync().ConfigureAwait(false);
     }
-
-    // private string CreateSelectCorrectionVersionSql(AggregatedTimeSeriesQueryParameters parameters)
-    // {
-    //     var processType = parameters.ProcessType;
-    //
-    //     if (processType != ProcessType.FirstCorrectionSettlement
-    //         && processType != ProcessType.SecondCorrectionSettlement
-    //         && processType != ProcessType.ThirdCorrectionSettlement)
-    //         throw new ArgumentOutOfRangeException(nameof(processType), processType, "ProcessType must be a correction settlement type");
-    //
-    //     var sql = _aggregatedTimeSeriesSqlGenerator.CreateGetSingleRowSql(parameters);
-    //
-    //     return sql;
-    // }
 }
