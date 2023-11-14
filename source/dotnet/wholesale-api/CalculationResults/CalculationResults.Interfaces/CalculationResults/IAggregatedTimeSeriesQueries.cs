@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.AggregatedTimeSeriesResults;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 
@@ -22,11 +22,11 @@ public interface IAggregatedTimeSeriesQueries
     /// Get the latest aggregated time series
     /// </summary>
     /// <returns>Returns null if the aggregated time series does not contain any points.</returns>
-    Task<EnergyResult?> GetAsync(AggregatedTimeSeriesQueryParameters parameters);
+    Task<AggregatedTimeSeriesResult?> GetAsync(AggregatedTimeSeriesQueryParameters parameters);
 
     /// <summary>
     /// Get the most recent aggregated time series for the last correction settlements.
     /// </summary>
     /// <returns>Returns null if the aggregated time series does not contain any points.</returns>
-    Task<EnergyResult?> GetLatestCorrectionAsync(AggregatedTimeSeriesQueryParameters parameters);
+    Task<AggregatedTimeSeriesResult?> GetLatestCorrectionAsync(AggregatedTimeSeriesQueryParameters parameters);
 }

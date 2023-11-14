@@ -14,7 +14,7 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Edi.Responses;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.AggregatedTimeSeriesResults;
 using Energinet.DataHub.Wholesale.EDI.Mappers;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
@@ -24,7 +24,7 @@ namespace Energinet.DataHub.Wholesale.EDI.Factories;
 
 public class AggregatedTimeSeriesRequestAcceptedMessageFactory
 {
-    public static ServiceBusMessage Create(EnergyResult calculationResult, string referenceId)
+    public static ServiceBusMessage Create(AggregatedTimeSeriesResult calculationResult, string referenceId)
     {
         var body = CreateAcceptedResponse(calculationResult);
 
@@ -38,7 +38,7 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
         return message;
     }
 
-    private static AggregatedTimeSeriesRequestAccepted CreateAcceptedResponse(EnergyResult energyResult)
+    private static AggregatedTimeSeriesRequestAccepted CreateAcceptedResponse(AggregatedTimeSeriesResult energyResult)
     {
         var points = CreateTimeSeriesPoints(energyResult);
 
@@ -52,7 +52,7 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
         };
     }
 
-    private static IReadOnlyCollection<TimeSeriesPoint> CreateTimeSeriesPoints(EnergyResult energyResult)
+    private static IReadOnlyCollection<TimeSeriesPoint> CreateTimeSeriesPoints(AggregatedTimeSeriesResult energyResult)
     {
         const decimal nanoFactor = 1_000_000_000;
         var points = new List<TimeSeriesPoint>();

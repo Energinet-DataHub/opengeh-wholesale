@@ -17,6 +17,7 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.AggregatedTimeSeriesResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.EDI.Client;
@@ -26,7 +27,6 @@ using Energinet.DataHub.Wholesale.EDI.UnitTests.Extensions;
 using Energinet.DataHub.Wholesale.EDI.Validation;
 using Google.Protobuf;
 using Moq;
-using NodaTime;
 using Xunit;
 using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
@@ -57,7 +57,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(request.ToByteArray()));
 
-        var calculationResult = CreateEnergyResult();
+        var calculationResult = CreateAggregatedTimeSeriesResult();
         aggregatedTimeSeriesQueries
             .Setup(parameters => parameters.GetAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
             .ReturnsAsync(() => calculationResult);
@@ -110,6 +110,10 @@ public class AggregatedTimeSeriesRequestHandlerTests
         validator.Setup(vali => vali.Validate(
                 It.IsAny<AggregatedTimeSeriesRequest>()))
             .Returns(() => new List<ValidationError>());
+
+        aggregatedTimeSeriesQueries
+            .Setup(parameters => parameters.GetAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
+            .ReturnsAsync(() => null);
 
         var sut = new AggregatedTimeSeriesRequestHandler(
             senderMock.Object,
@@ -186,19 +190,12 @@ public class AggregatedTimeSeriesRequestHandlerTests
             Times.Once);
     }
 
-    private EnergyResult CreateEnergyResult()
+    private AggregatedTimeSeriesResult CreateAggregatedTimeSeriesResult()
     {
-        return new EnergyResult(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            "543",
-            TimeSeriesType.Production,
-            "1223456",
-            "123456",
+        return new AggregatedTimeSeriesResult(
+            gridArea: "543",
             timeSeriesPoints: new EnergyTimeSeriesPoint[] { new(DateTime.Now, 0, new List<QuantityQuality> { QuantityQuality.Measured }) },
-            ProcessType.Aggregation,
-            Instant.FromUtc(2022, 12, 31, 23, 0),
-            Instant.FromUtc(2023, 1, 31, 23, 0),
-            null);
+            timeSeriesType: TimeSeriesType.Production,
+            processType: ProcessType.Aggregation);
     }
 }

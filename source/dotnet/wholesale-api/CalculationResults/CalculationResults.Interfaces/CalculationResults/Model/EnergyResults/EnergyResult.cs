@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.AggregatedTimeSeriesResults;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 
-public sealed class EnergyResult
+public sealed class EnergyResult : AggregatedTimeSeriesResult
 {
     public EnergyResult(
         Guid id,
@@ -31,18 +32,12 @@ public sealed class EnergyResult
         Instant periodStart,
         Instant periodEnd,
         string? fromGridArea)
+    : base(gridArea, timeSeriesPoints, timeSeriesType, processType)
     {
-        if (timeSeriesPoints.Length == 0)
-            throw new ArgumentException("Time series points empty");
-
         Id = id;
         BatchId = batchId;
-        GridArea = gridArea;
-        TimeSeriesType = timeSeriesType;
         EnergySupplierId = energySupplierId;
         BalanceResponsibleId = balanceResponsibleId;
-        TimeSeriesPoints = timeSeriesPoints;
-        ProcessType = processType;
         PeriodStart = periodStart;
         PeriodEnd = periodEnd;
         FromGridArea = fromGridArea;
@@ -52,13 +47,7 @@ public sealed class EnergyResult
 
     public Guid BatchId { get; }
 
-    public ProcessType ProcessType { get; }
-
-    public string GridArea { get; }
-
     public string? FromGridArea { get; }
-
-    public TimeSeriesType TimeSeriesType { get; private set; }
 
     public string? EnergySupplierId { get; private set; }
 
@@ -67,6 +56,4 @@ public sealed class EnergyResult
     public Instant PeriodStart { get; }
 
     public Instant PeriodEnd { get; }
-
-    public EnergyTimeSeriesPoint[] TimeSeriesPoints { get; private set; }
 }

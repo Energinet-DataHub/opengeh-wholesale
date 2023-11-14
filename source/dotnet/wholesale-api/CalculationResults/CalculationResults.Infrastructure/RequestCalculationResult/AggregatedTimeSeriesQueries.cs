@@ -18,6 +18,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.RequestCalculationResult.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.AggregatedTimeSeriesResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
@@ -38,7 +39,7 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
         _deltaTableOptions = deltaTableOptions.Value;
     }
 
-    public async Task<EnergyResult?> GetAsync(AggregatedTimeSeriesQueryParameters parameters)
+    public async Task<AggregatedTimeSeriesResult?> GetAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
         var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
         DatabricksSqlRow? firstRow = null;
@@ -56,10 +57,10 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
         if (firstRow is null)
             return null;
 
-        return EnergyResultFactory.CreateEnergyResult(firstRow, timeSeriesPoints, parameters.StartOfPeriod, parameters.EndOfPeriod);
+        return AggregatedTimeSeriesResultFactory.CreateEnergyResult(firstRow, timeSeriesPoints);
     }
 
-    public async Task<EnergyResult?> GetLatestCorrectionAsync(AggregatedTimeSeriesQueryParameters parameters)
+    public async Task<AggregatedTimeSeriesResult?> GetLatestCorrectionAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
         if (parameters.ProcessType != null)
         {

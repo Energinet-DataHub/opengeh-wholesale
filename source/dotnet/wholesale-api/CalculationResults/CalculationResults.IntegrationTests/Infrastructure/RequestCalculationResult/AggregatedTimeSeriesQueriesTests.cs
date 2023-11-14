@@ -18,8 +18,8 @@ using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.RequestCalculationResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.AggregatedTimeSeriesResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -74,8 +74,6 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         actual.Should().NotBeNull();
         using var assertionScope = new AssertionScope();
         actual!.GridArea.Should().Be(gridAreaFilter);
-        actual.PeriodStart.Should().Be(startOfPeriodFilter);
-        actual.PeriodEnd.Should().Be(endOfPeriodFilter);
         actual.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
         actual.TimeSeriesPoints
             .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
@@ -124,15 +122,20 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         actual.Should().NotBeNull();
         using var assertionScope = new AssertionScope();
         actual!.GridArea.Should().Be(gridAreaFilter);
-        actual.PeriodStart.Should().Be(startOfPeriodFilter);
-        actual.PeriodEnd.Should().Be(endOfPeriodFilter);
-        actual.EnergySupplierId.Should().Be(energySupplierIdFilter);
         actual.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
         actual.TimeSeriesPoints
             .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
             .ToArray()
             .Should()
             .Equal(FirstQuantity);
+        actual.TimeSeriesPoints.Select(p => p.Time)
+            .ToArray()
+            .Should()
+            .AllSatisfy(p =>
+            {
+                p.Should().BeOnOrAfter(startOfPeriodFilter.ToDateTimeOffset());
+                p.Should().BeBefore(endOfPeriodFilter.ToDateTimeOffset());
+            });
     }
 
     [Fact]
@@ -184,9 +187,6 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         actual.Should().NotBeNull();
         using var assertionScope = new AssertionScope();
         actual!.GridArea.Should().Be(gridAreaFilter);
-        actual.PeriodStart.Should().Be(startOfPeriodFilter);
-        actual.PeriodEnd.Should().Be(endOfPeriodFilter);
-        actual.BalanceResponsibleId.Should().Be(balanceResponsibleIdFilter);
         actual.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
         actual.TimeSeriesPoints
             .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
@@ -221,10 +221,6 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         actual.Should().NotBeNull();
         using var assertionScope = new AssertionScope();
         actual!.GridArea.Should().Be(gridAreaFilter);
-        actual.PeriodStart.Should().Be(startOfPeriodFilter);
-        actual.PeriodEnd.Should().Be(endOfPeriodFilter);
-        actual.EnergySupplierId.Should().Be(energySupplierIdFilter);
-        actual.BalanceResponsibleId.Should().Be(balanceResponsibleIdFilter);
         actual.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
         actual.TimeSeriesPoints
             .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
@@ -258,8 +254,6 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         actual.Should().NotBeNull();
         using var assertionScope = new AssertionScope();
         actual!.GridArea.Should().Be(gridAreaFilter);
-        actual.PeriodStart.Should().Be(startOfPeriodFilter);
-        actual.PeriodEnd.Should().Be(endOfPeriodFilter);
         actual.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
         actual.ProcessType.Should().Be(ProcessType.FirstCorrectionSettlement);
         actual.TimeSeriesPoints
@@ -295,8 +289,6 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         actual.Should().NotBeNull();
         using var assertionScope = new AssertionScope();
         actual!.GridArea.Should().Be(gridAreaFilter);
-        actual.PeriodStart.Should().Be(startOfPeriodFilter);
-        actual.PeriodEnd.Should().Be(endOfPeriodFilter);
         actual.ProcessType.Should().Be(ProcessType.SecondCorrectionSettlement);
         actual.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
         actual.TimeSeriesPoints
@@ -332,8 +324,6 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         actual.Should().NotBeNull();
         using var assertionScope = new AssertionScope();
         actual!.GridArea.Should().Be(gridAreaFilter);
-        actual.PeriodStart.Should().Be(startOfPeriodFilter);
-        actual.PeriodEnd.Should().Be(endOfPeriodFilter);
         actual.ProcessType.Should().Be(ProcessType.ThirdCorrectionSettlement);
         actual.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
         actual.TimeSeriesPoints
@@ -367,8 +357,6 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         actual.Should().NotBeNull();
         using var assertionScope = new AssertionScope();
         actual!.GridArea.Should().Be(gridAreaFilter);
-        actual.PeriodStart.Should().Be(startOfPeriodFilter);
-        actual.PeriodEnd.Should().Be(endOfPeriodFilter);
         actual.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
         actual.TimeSeriesPoints
             .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
