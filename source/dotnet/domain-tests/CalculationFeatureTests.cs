@@ -29,9 +29,9 @@ namespace Energinet.DataHub.Wholesale.DomainTests
         /// <summary>
         /// These tests uses an authorized Wholesale client to perform requests.
         /// </summary>
-        public class Given_Calculated : DomainTestsBase<CalculationFixture>
+        public class Given_CalculatedCompleted : DomainTestsBase<CalculationFixture>
         {
-            public Given_Calculated(LazyFixtureFactory<CalculationFixture> lazyFixtureFactory)
+            public Given_CalculatedCompleted(LazyFixtureFactory<CalculationFixture> lazyFixtureFactory)
                 : base(lazyFixtureFactory)
             {
             }
