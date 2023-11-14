@@ -417,4 +417,3 @@ def test__each_grid_area_has_a_sum(
 #     result_df = _aggregate_per_ga_and_brp_and_es(df, MeteringPointType.production, None)
 #     assert result_df.count() == 4
 #     assert result_df.where(col(Colname.sum_quantity) == "100000000000.001").count() == 4
-
