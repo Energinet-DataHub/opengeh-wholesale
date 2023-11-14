@@ -35,7 +35,8 @@ class QuarterlyMeteringPointTimeSeries(DataFrameWrapper):
         super().__init__(
             df,
             _quarterly_metering_point_time_series_schema,
-            # TODO BJM: These should eventually all be set to False
+            # Setting these too False would cause errors, and there is no nice and easy fix for this.
+            # Should they eventually be set to False?
             ignore_decimal_scale=True,
             ignore_decimal_precision=True,
         )
