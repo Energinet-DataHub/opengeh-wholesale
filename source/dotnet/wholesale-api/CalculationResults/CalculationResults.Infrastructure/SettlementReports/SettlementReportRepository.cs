@@ -12,9 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Application;
-using Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.DataLake;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 
