@@ -17,7 +17,6 @@ using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration;
-using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Identity;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture;
 using Xunit.Abstractions;
 
@@ -31,7 +30,6 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             : base(diagnosticMessageSink)
         {
             Configuration = new WholesaleDomainConfiguration();
-            UserAuthenticationClient = new B2CUserTokenAuthenticationClient(Configuration.UserTokenConfiguration);
             ServiceBusAdministrationClient = new ServiceBusAdministrationClient(Configuration.ServiceBusFullyQualifiedNamespace, new DefaultAzureCredential());
             ServiceBusClient = new ServiceBusClient(Configuration.ServiceBusConnectionString);
         }
@@ -50,15 +48,13 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
         private WholesaleDomainConfiguration Configuration { get; }
 
-        private B2CUserTokenAuthenticationClient UserAuthenticationClient { get; }
-
         private ServiceBusAdministrationClient ServiceBusAdministrationClient { get; }
 
         private ServiceBusClient ServiceBusClient { get; }
 
         protected override async Task OnInitializeAsync()
         {
-            WholesaleClient = await CreateWholesaleClientAsync();
+            WholesaleClient = await WholesaleClientFactory.CreateWholesaleClientAsync(Configuration, useAuthentication: true);
             await CreateTopicSubscriptionAsync();
             Receiver = CreateServiceBusReceiver();
             Output = new CalculationFixtureOutput(DiagnosticMessageSink, WholesaleClient, Receiver);
@@ -67,30 +63,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
         protected override async Task OnDisposeAsync()
         {
-            UserAuthenticationClient.Dispose();
             await ServiceBusAdministrationClient.DeleteSubscriptionAsync(Configuration.DomainRelayTopicName, _subscriptionName);
             await ServiceBusClient.DisposeAsync();
-        }
-
-        /// <summary>
-        /// The current implementation of <see cref="WholesaleClient"/> is favored to
-        /// a usage scenario where the access token has already been retrieved or can
-        /// be retrieved synchronously.
-        /// However, in current tests we need to retrieve it asynchronously.
-        /// </summary>
-        private async Task<WholesaleClient_V3> CreateWholesaleClientAsync()
-        {
-            var accessToken = await UserAuthenticationClient.AcquireAccessTokenAsync();
-
-            var httpClient = new HttpClient
-            {
-                BaseAddress = Configuration.WebApiBaseAddress
-            };
-            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
-
-            return new WholesaleClient_V3(
-                Configuration.WebApiBaseAddress.ToString(),
-                httpClient);
         }
 
         private async Task CreateTopicSubscriptionAsync()
