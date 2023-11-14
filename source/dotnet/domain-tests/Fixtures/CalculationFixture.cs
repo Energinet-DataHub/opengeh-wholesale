@@ -19,7 +19,6 @@ using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Identity;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture;
-using Moq;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
@@ -27,7 +26,6 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
     public sealed class CalculationFixture : LazyFixtureBase
     {
         private readonly string _subscriptionName = Guid.NewGuid().ToString();
-        private readonly TimeSpan _httpTimeout = TimeSpan.FromMinutes(10); // IDatabricksSqlStatementClient can take up to 8 minutes to get ready.
 
         public CalculationFixture(IMessageSink diagnosticMessageSink)
             : base(diagnosticMessageSink)
@@ -84,8 +82,10 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         {
             var accessToken = await UserAuthenticationClient.AcquireAccessTokenAsync();
 
-            var httpClient = new HttpClient();
-            httpClient.BaseAddress = Configuration.WebApiBaseAddress;
+            var httpClient = new HttpClient
+            {
+                BaseAddress = Configuration.WebApiBaseAddress
+            };
             httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
 
             return new WholesaleClient_V3(
