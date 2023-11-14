@@ -12,14 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
+using System.Globalization;
+using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 
-public interface IRequestCalculationResultQueries
+public interface ISettlementReportResultsCsvWriter
 {
-    /// <summary>
-    /// Gets all result for a given request.
-    /// </summary>
-    Task<EnergyResult?> GetAsync(EnergyResultQuery query);
+    Task WriteAsync(Stream destination, IEnumerable<SettlementReportResultRow> rows, CultureInfo csvFormatLocale);
 }
