@@ -313,16 +313,14 @@ namespace Energinet.DataHub.Wholesale.DomainTests
 
             [Priority(6)]
             [DomainFact]
-            public async Task AndThen_ReceivedIntegrationEventsCountIsEqualToExpected()
+            public void AndThen_ReceivedIntegrationEventsCountIsEqualToExpected()
             {
-                int expectedIntegrationEventsCount = 112 * 2;
-                Fixture.Scenario.ReceivedIntegrationEvents = await Fixture.WaitForIntegrationEventsAsync(
-                    Fixture.Scenario.CalculationId,
-                    Fixture.Scenario.SubscribedIntegrationEventNames.AsReadOnly(),
-                    waitTimeLimit: TimeSpan.FromMinutes(8));
+                var expectedIntegrationEventTypesCount = 2;
+                var expectedIntegrationEventsPerTypeCount = 112;
+                var expectedTotalIntegrationEventsCount = expectedIntegrationEventsPerTypeCount * expectedIntegrationEventTypesCount;
 
                 // Assert
-                Fixture.Scenario.ReceivedIntegrationEvents.Count.Should().Be(expectedIntegrationEventsCount);
+                Fixture.Scenario.ReceivedIntegrationEvents!.Count.Should().Be(expectedTotalIntegrationEventsCount);
             }
         }
     }
