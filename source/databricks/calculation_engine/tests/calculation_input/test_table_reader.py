@@ -37,7 +37,8 @@ from package.constants import Colname
 from pyspark.sql.types import StructType
 
 
-# These tests seem incomplete. No tests seem to test the part of the table reader, which actually reads from the table
+# These tests seem incomplete. No tests seem to test the part of the table reader, which actually reads from the table.
+#       Consider adding such tests next time when refactoring this file.
 
 
 def _create_metering_point_period_row(
