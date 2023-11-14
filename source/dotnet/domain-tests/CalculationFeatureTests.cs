@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using AutoFixture;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures;
@@ -224,31 +225,66 @@ namespace Energinet.DataHub.Wholesale.DomainTests
         [TestCaseOrderer(
             ordererTypeName: "Energinet.DataHub.Wholesale.DomainTests.Fixtures.Orderers.PriorityOrderer",
             ordererAssemblyName: "Energinet.DataHub.Wholesale.DomainTests")]
-        public class BalanceFixingCalculationScenario
+        public class BalanceFixingCalculationScenario : DomainTestsBase<CalculationScenarioFixture>
         {
-            public BalanceFixingCalculationScenario()
+            public BalanceFixingCalculationScenario(LazyFixtureFactory<CalculationScenarioFixture> lazyFixtureFactory)
+                : base(lazyFixtureFactory)
             {
             }
 
             [Priority(0)]
             [DomainFact]
-            public async Task Given_Xxx()
+            public void Given_CalculationInput()
             {
-                await Task.Delay(5000);
+                var startDate = new DateTimeOffset(2022, 1, 11, 23, 0, 0, TimeSpan.Zero);
+                var endDate = new DateTimeOffset(2022, 1, 12, 23, 0, 0, TimeSpan.Zero);
+                var batchRequestDto = new Clients.v3.BatchRequestDto
+                {
+                    ProcessType = Clients.v3.ProcessType.BalanceFixing,
+                    GridAreaCodes = new List<string> { "543" },
+                    StartDate = startDate,
+                    EndDate = endDate,
+                };
+
+                Fixture.Scenario.CalculationInput = batchRequestDto;
             }
 
             [Priority(1)]
             [DomainFact]
-            public async Task When_Xxx()
+            public async Task When_CalculationStarted()
             {
-                await Task.Delay(5000);
+                Fixture.Scenario.CalculationId = await Fixture.StartCalculationAsync(Fixture.Scenario.CalculationInput);
+
+                // Assert
+                Fixture.Scenario.CalculationId.Should().NotBeEmpty();
             }
 
             [Priority(2)]
             [DomainFact]
-            public async Task Then_Xxx()
+            public async Task Then_CalculationIsCompleted()
             {
-                await Task.Delay(5000);
+                var actualResult = await Fixture.WaitForCalculationStateAsync(
+                    Fixture.Scenario.CalculationId,
+                    waitForState: Clients.v3.BatchState.Completed,
+                    waitTimeLimit: TimeSpan.FromMinutes(15));
+
+                Fixture.Scenario.Batch = actualResult.Batch;
+
+                // Assert
+                actualResult.IsState.Should().BeTrue();
+                actualResult.Batch.Should().NotBeNull();
+            }
+
+            [Priority(3)]
+            [DomainFact]
+            public void AndThen_CalculationTookLessThanTimeLimit()
+            {
+                var calculationTimeLimit = TimeSpan.FromMinutes(13);
+                var actualCalculationDuration =
+                    Fixture.Scenario.Batch!.PeriodEnd - Fixture.Scenario.Batch.PeriodEnd;
+
+                // Assert
+                actualCalculationDuration.Should().BeLessThanOrEqualTo(calculationTimeLimit);
             }
         }
     }
