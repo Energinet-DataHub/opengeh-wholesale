@@ -25,7 +25,7 @@ from package.calculation.energy.energy_results import (
     EnergyResults,
     energy_results_schema,
 )
-from package.common import assert_schema
+
 from package.constants import Colname
 
 from tests.calculation.dataframe_defaults import DataframeDefaults
@@ -77,15 +77,21 @@ class TestCtor:
         ) -> None:
             # Arrange
             df = dataframe_with_energy_result_schema_factory()
-            nullable_column = Colname.energy_supplier_id
-            df_with_missing_columns = df.drop(nullable_column)
+            nullable_columns = [
+                Colname.to_grid_area,
+                Colname.from_grid_area,
+                Colname.balance_responsible_id,
+                Colname.energy_supplier_id,
+                Colname.settlement_method,
+            ]
+            df_with_missing_columns = df.drop(*nullable_columns)
 
             # Act
             actual = EnergyResults(df_with_missing_columns)
 
             # Assert
-            assert energy_results_schema[nullable_column].nullable is True
-            assert nullable_column in actual.df.schema.fieldNames()
+            assert energy_results_schema[nullable_columns].nullable is True
+            assert nullable_columns in actual.df.schema.fieldNames()
 
     class TestWhenMismatchInNullability:
         def test_respects_nullability_of_input_dataframe(
@@ -124,16 +130,39 @@ class TestCtor:
         ) -> None:
             # Arrange
             df = dataframe_with_energy_result_schema_factory()
-            df.withColumn("irrelevant_column", lit("test"))
+            irrelevant_column = "irrelevant_column"
+            df.withColumn(irrelevant_column, lit("test"))
 
             # Act
             actual = EnergyResults(df)
 
             # Assert
-            assert_schema(
-                actual.df.schema,
-                energy_results_schema,
-                ignore_nullability=True,
-                ignore_decimal_precision=True,
-                ignore_decimal_scale=True,
+            assert irrelevant_column not in actual.df.schema.fieldNames()
+
+    class TestWhenInputDecimalScaleIsHigherThanSix:
+        def test_respects_input_scale(
+            self,
+            dataframe_with_energy_result_schema_factory,
+        ):
+            """
+            In practice the sum_quantity column in EnergyResult can be represented by 5 decimals, because time
+            series has 3 decimals and is divided by four (quarters). The end result should be stored with 6 decimals.
+            However, other scales are respected to reduce the risk of unexpected roundings (in the future)
+            in intermediate calculations.
+            """
+
+            # Arrange
+            expected_scale = 8
+            df = dataframe_with_energy_result_schema_factory()
+            df = df.withColumn(
+                Colname.sum_quantity,
+                lit(Decimal("0.12345678")).cast(DecimalType(18, expected_scale)),
+            )
+
+            # Act
+            actual = EnergyResults(df)
+
+            # Assert
+            assert (
+                actual.df.schema[Colname.sum_quantity].dataType.scale == expected_scale
             )
