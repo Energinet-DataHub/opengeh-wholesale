@@ -35,9 +35,9 @@ module "app_health_checks_ui" {
     "HealthChecksUI__HealthChecks__019__Name" = "geh-market-participant:::Certificate Synchronization"
     "HealthChecksUI__HealthChecks__019__Uri"  = "https://func-certificatesynchronization-markpart-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/ready"
     # Live - prefix with 2xx
-    "HealthChecksUI__HealthChecks__200__Name" = "Health Check UI - live"
+    "HealthChecksUI__HealthChecks__200__Name" = "health-checks-ui:::Health Check UI - live"
     "HealthChecksUI__HealthChecks__200__Uri"  = "https://app-healthchecksui-health-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/live"
-    "HealthChecksUI__HealthChecks__201__Name" = "BFF: Web API - live"
+    "HealthChecksUI__HealthChecks__201__Name" = "greenforce-frontend:::Web API - live"
     "HealthChecksUI__HealthChecks__201__Uri"  = "https://app-bff-fe-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/live"
     "HealthChecksUI__HealthChecks__202__Name" = "geh-market-participant:::Web API - live"
     "HealthChecksUI__HealthChecks__202__Uri"  = "https://app-webapi-markpart-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/live"
