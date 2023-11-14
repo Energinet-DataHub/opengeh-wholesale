@@ -25,7 +25,6 @@ using Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.EDI.UnitTests.Extensions;
 using Energinet.DataHub.Wholesale.EDI.Validation;
 using Google.Protobuf;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NodaTime;
 using Xunit;
@@ -42,11 +41,10 @@ public class AggregatedTimeSeriesRequestHandlerTests
     [Theory]
     [InlineAutoMoqData]
     public async Task ProcessAsync_WithTotalProductionPerGridAreaRequest_SendsAcceptedEdiMessage(
-        [Frozen] Mock<IRequestCalculationResultQueries> requestCalculationResultQueriesMock,
+        [Frozen] Mock<IAggregatedTimeSeriesQueries> aggregatedTimeSeriesQueries,
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<AggregatedTimeSeriesRequestFactory> aggregatedTimeSeriesRequestMessageParseMock,
-        [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
-        [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> loggerMock)
+        [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator)
     {
         // Arrange
         const string expectedAcceptedSubject = nameof(AggregatedTimeSeriesRequestAccepted);
@@ -60,8 +58,8 @@ public class AggregatedTimeSeriesRequestHandlerTests
             body: new BinaryData(request.ToByteArray()));
 
         var calculationResult = CreateEnergyResult();
-        requestCalculationResultQueriesMock.Setup(calculationResultQueries =>
-                calculationResultQueries.GetAsync(It.IsAny<EnergyResultQuery>()))
+        aggregatedTimeSeriesQueries
+            .Setup(parameters => parameters.GetAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
             .ReturnsAsync(() => calculationResult);
 
         validator.Setup(vali => vali.Validate(
@@ -69,11 +67,10 @@ public class AggregatedTimeSeriesRequestHandlerTests
             .Returns(() => new List<ValidationError>());
 
         var sut = new AggregatedTimeSeriesRequestHandler(
-            requestCalculationResultQueriesMock.Object,
             senderMock.Object,
             aggregatedTimeSeriesRequestMessageParseMock.Object,
             validator.Object,
-            loggerMock.Object);
+            aggregatedTimeSeriesQueries.Object);
 
         // Act
         await sut.ProcessAsync(
@@ -95,11 +92,10 @@ public class AggregatedTimeSeriesRequestHandlerTests
     [Theory]
     [InlineAutoMoqData]
     public async Task ProcessAsync_WithTotalProductionPerGridAreaRequest_SendsRejectedEdiMessage(
-        [Frozen] Mock<IRequestCalculationResultQueries> requestCalculationResultQueriesMock,
+        [Frozen] Mock<IAggregatedTimeSeriesQueries> aggregatedTimeSeriesQueries,
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<AggregatedTimeSeriesRequestFactory> aggregatedTimeSeriesRequestMessageParseMock,
-        [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
-        [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> loggerMock)
+        [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator)
     {
         // Arrange
         const string expectedRejectedSubject = nameof(AggregatedTimeSeriesRequestRejected);
@@ -116,11 +112,10 @@ public class AggregatedTimeSeriesRequestHandlerTests
             .Returns(() => new List<ValidationError>());
 
         var sut = new AggregatedTimeSeriesRequestHandler(
-            requestCalculationResultQueriesMock.Object,
             senderMock.Object,
             aggregatedTimeSeriesRequestMessageParseMock.Object,
             validator.Object,
-            loggerMock.Object);
+            aggregatedTimeSeriesQueries.Object);
 
         // Act
         await sut.ProcessAsync(
@@ -142,11 +137,10 @@ public class AggregatedTimeSeriesRequestHandlerTests
     [Theory]
     [InlineAutoMoqData]
     public async Task ProcessAsync_WhenNoCalculationResult_SendsRejectedEdiMessage(
-        [Frozen] Mock<IRequestCalculationResultQueries> requestCalculationResultQueriesMock,
+        [Frozen] Mock<IAggregatedTimeSeriesQueries> aggregatedTimeSeriesQueries,
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<AggregatedTimeSeriesRequestFactory> aggregatedTimeSeriesRequestMessageParseMock,
-        [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator,
-        [Frozen] Mock<ILogger<AggregatedTimeSeriesRequestHandler>> loggerMock)
+        [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator)
     {
         // Arrange
         const string expectedRejectedSubject = nameof(AggregatedTimeSeriesRequestRejected);
@@ -162,16 +156,17 @@ public class AggregatedTimeSeriesRequestHandlerTests
                 It.IsAny<AggregatedTimeSeriesRequest>()))
             .Returns(() => new List<ValidationError>());
 
-        requestCalculationResultQueriesMock.Setup(vali => vali.GetAsync(
-                It.IsAny<EnergyResultQuery>()))
+        aggregatedTimeSeriesQueries
+            .Setup(parameters =>
+                parameters.GetAsync(
+                    It.IsAny<AggregatedTimeSeriesQueryParameters>()))
             .ReturnsAsync(() => null);
 
         var sut = new AggregatedTimeSeriesRequestHandler(
-            requestCalculationResultQueriesMock.Object,
             senderMock.Object,
             aggregatedTimeSeriesRequestMessageParseMock.Object,
             validator.Object,
-            loggerMock.Object);
+            aggregatedTimeSeriesQueries.Object);
 
         // Act
         await sut.ProcessAsync(
