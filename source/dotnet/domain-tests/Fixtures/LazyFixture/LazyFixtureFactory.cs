@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Extensions;
 using Nito.AsyncEx;
 using Xunit;
 using Xunit.Abstractions;
@@ -71,7 +72,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture
         private static async Task<TLazyFixture> PrepareFixtureAsync(IMessageSink diagnosticMessageSink)
         {
             var lazyFixtureType = typeof(TLazyFixture);
-            diagnosticMessageSink.OnMessage(new DiagnosticMessage($"Creating lazy fixture of type '{lazyFixtureType.FullName}'."));
+            diagnosticMessageSink.WriteDiagnosticMessage($"Creating lazy fixture of type '{lazyFixtureType.FullName}'.");
 
             if (Activator.CreateInstance(lazyFixtureType, diagnosticMessageSink) is not TLazyFixture lazyFixture)
                 throw new InvalidOperationException($"Could not create lazy fixture of type '{lazyFixtureType.FullName}'.");

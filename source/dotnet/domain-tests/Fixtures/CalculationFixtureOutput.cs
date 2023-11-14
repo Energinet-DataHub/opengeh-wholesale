@@ -18,6 +18,7 @@ using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
+using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Extensions;
 using Xunit.Abstractions;
 using ProcessType = Energinet.DataHub.Wholesale.DomainTests.Clients.v3.ProcessType;
 
@@ -68,31 +69,26 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             await ReceiveServiceBusMessagesAsync(loopTimeLimit: TimeSpan.FromMinutes(10));
         }
 
-        private static Xunit.Sdk.DiagnosticMessage CreateDiagnosticMessage(string message)
-        {
-            return new Xunit.Sdk.DiagnosticMessage($"LOOK AT ME: {message}");
-        }
-
         private async Task HandleBalanceFixingCalculationAsync(TimeSpan calculationTimeLimit)
         {
             BalanceFixingCalculationId = await StartBalanceFixingCalculationAsync();
-            _diagnosticMessageSink.OnMessage(CreateDiagnosticMessage($"Calculation for BalanceFixing with id '{BalanceFixingCalculationId}' started."));
+            _diagnosticMessageSink.WriteDiagnosticMessage($"Calculation for BalanceFixing with id '{BalanceFixingCalculationId}' started.");
 
             var stopwatch = Stopwatch.StartNew();
             BalanceFixingCalculationIsComplete = await WaitForCalculationToCompleteAsync(BalanceFixingCalculationId, calculationTimeLimit);
             stopwatch.Stop();
-            _diagnosticMessageSink.OnMessage(CreateDiagnosticMessage($"Calculation for BalanceFixing completed. Calculation took '{stopwatch.Elapsed}'."));
+            _diagnosticMessageSink.WriteDiagnosticMessage($"Calculation for BalanceFixing completed. Calculation took '{stopwatch.Elapsed}'.");
         }
 
         private async Task HandleWholesaleFixingCalculationAsync(TimeSpan calculationTimeLimit)
         {
             WholesaleFixingCalculationId = await StartWholesaleFixingCalculationAsync();
-            _diagnosticMessageSink.OnMessage(CreateDiagnosticMessage($"Calculation for WholesaleFixing with id '{WholesaleFixingCalculationId}' started."));
+            _diagnosticMessageSink.WriteDiagnosticMessage($"Calculation for WholesaleFixing with id '{WholesaleFixingCalculationId}' started.");
 
             var stopwatch = Stopwatch.StartNew();
             WholesaleFixingCalculationIsComplete = await WaitForCalculationToCompleteAsync(WholesaleFixingCalculationId, calculationTimeLimit);
             stopwatch.Stop();
-            _diagnosticMessageSink.OnMessage(CreateDiagnosticMessage($"Calculation for WholesaleFixing completed. Calculation took '{stopwatch.Elapsed}'."));
+            _diagnosticMessageSink.WriteDiagnosticMessage($"Calculation for WholesaleFixing completed. Calculation took '{stopwatch.Elapsed}'.");
         }
 
         private Task<Guid> StartBalanceFixingCalculationAsync()
@@ -163,10 +159,10 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
             stopwatch.Stop();
 
-            _diagnosticMessageSink.OnMessage(CreateDiagnosticMessage($"Message receiver loop took '{stopwatch.Elapsed}' to complete. It handled a total of '{messageCount}' messages spanning various event types."));
+            _diagnosticMessageSink.WriteDiagnosticMessage($"Message receiver loop took '{stopwatch.Elapsed}' to complete. It handled a total of '{messageCount}' messages spanning various event types.");
             if (stopwatch.Elapsed >= loopTimeLimit)
             {
-                _diagnosticMessageSink.OnMessage(CreateDiagnosticMessage($"No messages received within the time limit of '{loopTimeLimit}'. The loop was stopped."));
+                _diagnosticMessageSink.WriteDiagnosticMessage($"No messages received within the time limit of '{loopTimeLimit}'. The loop was stopped.");
             }
         }
 

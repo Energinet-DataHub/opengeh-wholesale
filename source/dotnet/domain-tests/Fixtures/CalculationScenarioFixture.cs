@@ -18,6 +18,7 @@ using Azure.Messaging.ServiceBus.Administration;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration;
+using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Extensions;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture;
 using Xunit.Abstractions;
 
@@ -60,7 +61,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         public async Task<Guid> StartCalculationAsync(BatchRequestDto calculationInput)
         {
             var calculationId = await WholesaleClient.CreateBatchAsync(calculationInput);
-            DiagnosticMessageSink.OnMessage(CreateDiagnosticMessage($"Calculation for {calculationInput.ProcessType} with id '{calculationId}' started."));
+            DiagnosticMessageSink.WriteDiagnosticMessage($"Calculation for {calculationInput.ProcessType} with id '{calculationId}' started.");
 
             return calculationId;
         }
@@ -82,7 +83,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                 waitTimeLimit,
                 delay);
 
-            DiagnosticMessageSink.OnMessage(CreateDiagnosticMessage($"Wait for calculation with id '{calculationId}' completed with '{nameof(isState)}={isState}'."));
+            DiagnosticMessageSink.WriteDiagnosticMessage($"Wait for calculation with id '{calculationId}' completed with '{nameof(isState)}={isState}'.");
 
             return (isState, batch);
         }
@@ -98,11 +99,6 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         {
             await ServiceBusAdministrationClient.DeleteSubscriptionAsync(Configuration.DomainRelayTopicName, _subscriptionName);
             await ServiceBusClient.DisposeAsync();
-        }
-
-        private static Xunit.Sdk.DiagnosticMessage CreateDiagnosticMessage(string message)
-        {
-            return new Xunit.Sdk.DiagnosticMessage($"LOOK AT ME: {message}");
         }
 
         private async Task CreateTopicSubscriptionAsync()
