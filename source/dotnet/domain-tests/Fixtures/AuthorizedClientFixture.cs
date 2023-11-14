@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Azure.Identity;
-using Azure.Messaging.ServiceBus;
-using Azure.Messaging.ServiceBus.Administration;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
 using Moq;
 using Xunit.Abstractions;
@@ -22,20 +19,15 @@ using Xunit.Abstractions;
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 {
     /// <summary>
-    /// Support testing Wholesale Web API using an authorized Wholesale client.
+    /// Support calling the Wholesale Web API using an authorized Wholesale client.
     /// </summary>
     public sealed class AuthorizedClientFixture : LazyFixtureBase
     {
-        private readonly string _subscriptionName = Guid.NewGuid().ToString();
-        private readonly TimeSpan _httpTimeout = TimeSpan.FromMinutes(10); // IDatabricksSqlStatementClient can take up to 8 minutes to get ready.
-
         public AuthorizedClientFixture(IMessageSink diagnosticMessageSink)
             : base(diagnosticMessageSink)
         {
             Configuration = new WholesaleDomainConfiguration();
             UserAuthenticationClient = new B2CUserTokenAuthenticationClient(Configuration.UserTokenConfiguration);
-            ServiceBusAdministrationClient = new ServiceBusAdministrationClient(Configuration.ServiceBusFullyQualifiedNamespace, new DefaultAzureCredential());
-            ServiceBusClient = new ServiceBusClient(Configuration.ServiceBusConnectionString);
         }
 
         /// <summary>
@@ -43,35 +35,20 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         /// </summary>
         public WholesaleClient_V3 WholesaleClient { get; private set; } = null!;
 
-        /// <summary>
-        /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.
-        /// </summary>
-        public ServiceBusReceiver Receiver { get; private set; } = null!;
-
-        public AuthorizedClientFixtureOutput Output { get; private set; } = null!;
-
         private WholesaleDomainConfiguration Configuration { get; }
 
         private B2CUserTokenAuthenticationClient UserAuthenticationClient { get; }
 
-        private ServiceBusAdministrationClient ServiceBusAdministrationClient { get; }
-
-        private ServiceBusClient ServiceBusClient { get; }
-
         protected override async Task OnInitializeAsync()
         {
             WholesaleClient = await CreateWholesaleClientAsync();
-            await CreateTopicSubscriptionAsync();
-            Receiver = CreateServiceBusReceiver();
-            Output = new AuthorizedClientFixtureOutput(DiagnosticMessageSink, WholesaleClient, Receiver);
-            await Output.InitializeAsync();
         }
 
-        protected override async Task OnDisposeAsync()
+        protected override Task OnDisposeAsync()
         {
             UserAuthenticationClient.Dispose();
-            await ServiceBusAdministrationClient.DeleteSubscriptionAsync(Configuration.DomainRelayTopicName, _subscriptionName);
-            await ServiceBusClient.DisposeAsync();
+
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -82,38 +59,15 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         /// </summary>
         private async Task<WholesaleClient_V3> CreateWholesaleClientAsync()
         {
-            var httpClientFactoryMock = new Mock<IHttpClientFactory>();
-            httpClientFactoryMock
-                .Setup(m => m.CreateClient(It.IsAny<string>()))
-                .Returns(new HttpClient { Timeout = _httpTimeout });
-
             var accessToken = await UserAuthenticationClient.AcquireAccessTokenAsync();
+
+            var httpClient = new HttpClient();
+            httpClient.BaseAddress = Configuration.WebApiBaseAddress;
+            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
 
             return new WholesaleClient_V3(
                 Configuration.WebApiBaseAddress.ToString(),
-                new AuthorizedHttpClientFactory(
-                    httpClientFactoryMock.Object,
-                    () => $"Bearer {accessToken}").CreateClient(Configuration.WebApiBaseAddress));
-        }
-
-        private async Task CreateTopicSubscriptionAsync()
-        {
-            if (await ServiceBusAdministrationClient.SubscriptionExistsAsync(Configuration.DomainRelayTopicName, _subscriptionName))
-            {
-                await ServiceBusAdministrationClient.DeleteSubscriptionAsync(Configuration.DomainRelayTopicName, _subscriptionName);
-            }
-
-            var options = new CreateSubscriptionOptions(Configuration.DomainRelayTopicName, _subscriptionName)
-            {
-                AutoDeleteOnIdle = TimeSpan.FromHours(1),
-            };
-
-            await ServiceBusAdministrationClient.CreateSubscriptionAsync(options);
-        }
-
-        private ServiceBusReceiver CreateServiceBusReceiver()
-        {
-            return ServiceBusClient.CreateReceiver(Configuration.DomainRelayTopicName, _subscriptionName);
+                httpClient);
         }
     }
 }
