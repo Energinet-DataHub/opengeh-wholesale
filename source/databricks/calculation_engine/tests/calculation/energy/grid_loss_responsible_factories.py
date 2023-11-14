@@ -28,7 +28,7 @@ DEFAULT_GRID_AREA = "100"
 DEFAULT_FROM_DATE = datetime.strptime("2020-01-01T00:00:00+0000", "%Y-%m-%dT%H:%M:%S%z")
 DEFAULT_TO_DATE = datetime.strptime("2020-01-01T01:00:00+0000", "%Y-%m-%dT%H:%M:%S%z")
 DEFAULT_METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
-DEFAULT_ENERGY_SUPPLIER = "1234567890123"
+DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
 
 
 def create_row(
@@ -37,7 +37,7 @@ def create_row(
     from_date: datetime = DEFAULT_FROM_DATE,
     to_date: datetime | None = DEFAULT_TO_DATE,
     metering_point_type: MeteringPointType = DEFAULT_METERING_POINT_TYPE,
-    energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER,
+    energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
     is_negative_grid_loss_responsible: bool = False,
     is_positive_grid_loss_responsible: bool = False,
 ) -> Row:
