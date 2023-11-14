@@ -109,18 +109,19 @@ def _throw_if_no_grid_loss_responsible(
             )
 
 
-def _get_all_grid_loss_responsible() -> DataFrame:
-    schema = StructType(
-        [
-            StructField(Colname.metering_point_id, StringType(), nullable=False),
-            StructField(Colname.grid_area, StringType(), nullable=False),
-            StructField(Colname.from_date, TimestampType(), nullable=False),
-            StructField(Colname.to_date, TimestampType(), nullable=True),
-            StructField(Colname.metering_point_type, StringType(), nullable=False),
-            StructField(Colname.energy_supplier_id, StringType(), nullable=False),
-        ]
-    )
+grid_loss_responsible_schema = StructType(
+    [
+        StructField(Colname.metering_point_id, StringType(), nullable=False),
+        StructField(Colname.grid_area, StringType(), nullable=False),
+        StructField(Colname.from_date, TimestampType(), nullable=False),
+        StructField(Colname.to_date, TimestampType(), nullable=True),
+        StructField(Colname.metering_point_type, StringType(), nullable=False),
+        StructField(Colname.energy_supplier_id, StringType(), nullable=False),
+    ]
+)
 
+
+def _get_all_grid_loss_responsible() -> DataFrame:
     spark = SparkSession.builder.getOrCreate()
 
-    return spark.createDataFrame(GRID_AREA_RESPONSIBLE, schema)
+    return spark.createDataFrame(GRID_AREA_RESPONSIBLE, grid_loss_responsible_schema)
