@@ -12,12 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Globalization;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementReports;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 
-public interface ISettlementReportResultsCsvWriter
-{
-    Task WriteAsync(Stream destination, IEnumerable<SettlementReportResultRow> rows, CultureInfo csvFormatLocale);
-}
+public record AggregatedTimeSeriesQueryParameters(
+    TimeSeriesType TimeSeriesType,
+    Instant StartOfPeriod,
+    Instant EndOfPeriod,
+    string GridArea,
+    string? EnergySupplierId,
+    string? BalanceResponsibleId,
+    ProcessType? ProcessType = null);
