@@ -22,6 +22,8 @@ from package.constants import Colname
 class EnergyResults(DataFrameWrapper):
     """
     Time series of energy results.
+
+    Only exchange energy results have to- and from- grid area values.
     """
 
     def __init__(self, df: DataFrame):

@@ -47,8 +47,12 @@ class TestWhenValidInput:
         assert actual_row[Colname.qualities] == [
             q.value for q in factories.DEFAULT_QUALITIES
         ]
-        assert actual_row[Colname.to_grid_area] is None  # TODO BJM: Correct?
-        assert actual_row[Colname.from_grid_area] is None  # TODO BJM: Correct?
+        assert (
+            actual_row[Colname.to_grid_area] is None
+        )  # None because it's not an exchange result
+        assert (
+            actual_row[Colname.from_grid_area] is None
+        )  # None because it's not an exchange result
         assert actual_row[Colname.energy_supplier_id] is None
         assert (
             actual_row[Colname.balance_responsible_id]

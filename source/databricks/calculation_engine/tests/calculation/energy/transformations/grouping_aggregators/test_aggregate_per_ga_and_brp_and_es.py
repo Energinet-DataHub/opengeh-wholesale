@@ -45,8 +45,12 @@ class TestWhenValidInput:
         assert len(actual_rows) == 1
         actual_row = actual_rows[0]
         assert actual_row[Colname.grid_area] == factories.DEFAULT_GRID_AREA
-        assert actual_row[Colname.to_grid_area] is None  # TODO BJM: Correct?
-        assert actual_row[Colname.from_grid_area] is None  # TODO BJM: Correct?
+        assert (
+            actual_row[Colname.to_grid_area] is None
+        )  # None because it's not an exchange result
+        assert (
+            actual_row[Colname.from_grid_area] is None
+        )  # None because it's not an exchange result
         assert (
             actual_row[Colname.balance_responsible_id]
             == factories.DEFAULT_BALANCE_RESPONSIBLE_ID
