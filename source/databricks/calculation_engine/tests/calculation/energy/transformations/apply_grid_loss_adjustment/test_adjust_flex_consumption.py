@@ -52,7 +52,8 @@ class TestWhenValidInput:
         )
 
         grid_loss_responsible_row = grid_loss_responsible_factories.create_row(
-            is_negative_grid_loss_responsible=True
+            metering_point_type=MeteringPointType.CONSUMPTION,
+            is_negative_grid_loss_responsible=True,
         )
         grid_loss_responsible = grid_loss_responsible_factories.create(
             spark, [grid_loss_responsible_row]
