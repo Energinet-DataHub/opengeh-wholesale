@@ -16,7 +16,6 @@ using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Extensions;
 using Nito.AsyncEx;
 using Xunit;
 using Xunit.Abstractions;
-using Xunit.Sdk;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture
 {
