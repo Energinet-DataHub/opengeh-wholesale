@@ -57,3 +57,33 @@ class TestWhenValidInput:
             actual_row[Colname.time_window][Colname.start]
             == factories.DEFAULT_OBSERVATION_TIME
         )
+
+    def test_returns_rows_for_each_ga(self, spark: SparkSession):
+        # Arrange
+        rows = [factories.create_row(), factories.create_row(grid_area="another-ga")]
+        df = factories.create(spark, rows)
+
+        # Act
+        actual = aggregate_per_ga(df, ANY_METERING_POINT_TYPE)
+
+        # assert
+        actual_rows = actual.df.collect()
+        assert len(actual_rows) == 2
+
+    def test_returns_rows_for_each_time_window(self, spark: SparkSession):
+        # Arrange
+        another_time = factories.DEFAULT_OBSERVATION_TIME + datetime.timedelta(
+            minutes=15
+        )
+        rows = [
+            factories.create_row(),
+            factories.create_row(observation_time=another_time),
+        ]
+        df = factories.create(spark, rows)
+
+        # Act
+        actual = aggregate_per_ga(df, ANY_METERING_POINT_TYPE)
+
+        # assert
+        actual_rows = actual.df.collect()
+        assert len(actual_rows) == 2
