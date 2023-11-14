@@ -19,6 +19,7 @@ using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Attributes;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using Xunit;
 using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.DomainTests
@@ -217,6 +218,37 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                     ("TempFlexConsumption", "AggregationPerGridarea"),
                     ("TempProduction", "AggregationPerGridarea"),
                 };
+            }
+        }
+
+        [TestCaseOrderer(
+            ordererTypeName: "Energinet.DataHub.Wholesale.DomainTests.Fixtures.Orderers.PriorityOrderer",
+            ordererAssemblyName: "Energinet.DataHub.Wholesale.DomainTests")]
+        public class BalanceFixingCalculationScenario
+        {
+            public BalanceFixingCalculationScenario()
+            {
+            }
+
+            [Priority(0)]
+            [DomainFact]
+            public async Task Given_Xxx()
+            {
+                await Task.Delay(5000);
+            }
+
+            [Priority(1)]
+            [DomainFact]
+            public async Task When_Xxx()
+            {
+                await Task.Delay(5000);
+            }
+
+            [Priority(2)]
+            [DomainFact]
+            public async Task Then_Xxx()
+            {
+                await Task.Delay(5000);
             }
         }
     }
