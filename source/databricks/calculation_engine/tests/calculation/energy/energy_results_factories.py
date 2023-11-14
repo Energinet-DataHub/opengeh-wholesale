@@ -31,6 +31,8 @@ DEFAULT_OBSERVATION_TIME = datetime.datetime.now()
 DEFAULT_SUM_QUANTITY = Decimal("999.123456")
 DEFAULT_QUALITIES = [QuantityQuality.MEASURED]
 DEFAULT_METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
+DEFAULT_ENERGY_SUPPLIER = "1234567890123"
+DEFAULT_BALANCE_RESPONSIBLE_PARTY = "9999999999999"
 
 
 def create_row(
@@ -41,6 +43,8 @@ def create_row(
     sum_quantity: int | Decimal = DEFAULT_SUM_QUANTITY,
     qualities: None | QuantityQuality | list[QuantityQuality] = None,
     metering_point_type: MeteringPointType = DEFAULT_METERING_POINT_TYPE,
+    energy_supplier: str = DEFAULT_ENERGY_SUPPLIER,
+    balance_responsible_party: str = DEFAULT_BALANCE_RESPONSIBLE_PARTY,
 ) -> Row:
     if isinstance(sum_quantity, int):
         sum_quantity = Decimal(sum_quantity)
@@ -55,8 +59,8 @@ def create_row(
         Colname.grid_area: grid_area,
         Colname.from_grid_area: from_grid_area,
         Colname.to_grid_area: to_grid_area,
-        Colname.balance_responsible_id: None,
-        Colname.energy_supplier_id: None,
+        Colname.balance_responsible_id: balance_responsible_party,
+        Colname.energy_supplier_id: energy_supplier,
         Colname.time_window: {
             Colname.start: observation_time,
             Colname.end: observation_time + datetime.timedelta(minutes=15),
