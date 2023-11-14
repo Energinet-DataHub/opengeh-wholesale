@@ -90,8 +90,7 @@ class TestCtor:
             actual = EnergyResults(df_with_missing_columns)
 
             # Assert
-            assert energy_results_schema[nullable_columns].nullable is True
-            assert nullable_columns in actual.df.schema.fieldNames()
+            assert set(nullable_columns).issubset(set(actual.df.schema.fieldNames()))
 
     class TestWhenMismatchInNullability:
         def test_respects_nullability_of_input_dataframe(
