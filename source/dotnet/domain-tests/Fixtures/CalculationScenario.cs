@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 {
@@ -20,8 +21,12 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
     {
         public BatchRequestDto CalculationInput { get; set; } = new BatchRequestDto();
 
+        public IList<string> SubscribedIntegrationEventNames { get; } = new List<string>();
+
         public Guid CalculationId { get; set; }
 
         public BatchDto? Batch { get; set; }
+
+        public IReadOnlyCollection<IEventMessage>? ReceivedIntegrationEvents { get; set; }
     }
 }

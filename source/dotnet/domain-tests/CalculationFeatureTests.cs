@@ -251,7 +251,15 @@ namespace Energinet.DataHub.Wholesale.DomainTests
 
             [Priority(1)]
             [DomainFact]
-            public async Task When_CalculationStarted()
+            public void AndGiven_SubscribedIntegrationEvents()
+            {
+                Fixture.Scenario.SubscribedIntegrationEventNames.Add(CalculationResultCompleted.EventName);
+                Fixture.Scenario.SubscribedIntegrationEventNames.Add(EnergyResultProducedV2.EventName);
+            }
+
+            [Priority(2)]
+            [DomainFact]
+            public async Task When_CalculationIsStarted()
             {
                 Fixture.Scenario.CalculationId = await Fixture.StartCalculationAsync(Fixture.Scenario.CalculationInput);
 
@@ -259,9 +267,9 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 Fixture.Scenario.CalculationId.Should().NotBeEmpty();
             }
 
-            [Priority(2)]
+            [Priority(3)]
             [DomainFact]
-            public async Task Then_CalculationIsCompleted()
+            public async Task Then_CalculationIsCompletedWithinWaitTime()
             {
                 var actualResult = await Fixture.WaitForCalculationStateAsync(
                     Fixture.Scenario.CalculationId,
@@ -274,11 +282,13 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 using var assertionScope = new AssertionScope();
                 actualResult.IsState.Should().BeTrue();
                 actualResult.Batch.Should().NotBeNull();
+
+                actualResult.Batch!.ExecutionState.Should().Be(Clients.v3.BatchState.Completed);
             }
 
-            [Priority(3)]
+            [Priority(4)]
             [DomainFact]
-            public void AndThen_CalculationTookLessThanTimeLimit()
+            public void AndThen_CalculationDurationIsLessThanOrEqualToTimeLimit()
             {
                 var calculationTimeLimit = TimeSpan.FromMinutes(13);
                 var actualCalculationDuration =
@@ -286,6 +296,33 @@ namespace Energinet.DataHub.Wholesale.DomainTests
 
                 // Assert
                 actualCalculationDuration.Should().BeLessThanOrEqualTo(calculationTimeLimit);
+            }
+
+            [Priority(5)]
+            [DomainFact]
+            public async Task AndThen_IntegrationEventsAreReceivedWithinWaitTime()
+            {
+                Fixture.Scenario.ReceivedIntegrationEvents = await Fixture.WaitForIntegrationEventsAsync(
+                    Fixture.Scenario.CalculationId,
+                    Fixture.Scenario.SubscribedIntegrationEventNames.AsReadOnly(),
+                    waitTimeLimit: TimeSpan.FromMinutes(8));
+
+                // Assert
+                Fixture.Scenario.ReceivedIntegrationEvents.Should().NotBeEmpty();
+            }
+
+            [Priority(6)]
+            [DomainFact]
+            public async Task AndThen_ReceivedIntegrationEventsCountIsEqualToExpected()
+            {
+                int expectedIntegrationEventsCount = 112 * 2;
+                Fixture.Scenario.ReceivedIntegrationEvents = await Fixture.WaitForIntegrationEventsAsync(
+                    Fixture.Scenario.CalculationId,
+                    Fixture.Scenario.SubscribedIntegrationEventNames.AsReadOnly(),
+                    waitTimeLimit: TimeSpan.FromMinutes(8));
+
+                // Assert
+                Fixture.Scenario.ReceivedIntegrationEvents.Count.Should().Be(expectedIntegrationEventsCount);
             }
         }
     }
