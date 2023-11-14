@@ -26,23 +26,29 @@ public class SettlementSeriesVersionValidationRule : IValidationRule<AggregatedT
         SettlementSeriesVersion.ThirdCorrection,
     };
 
-    private static readonly ValidationError _invalidSettlementSeriesVersion = new("SettlementSeriesVersion kan kun benyttes i kombination med D32 og skal være enten D01, D02 eller D03 / SettlementSeriesVersion can only be used in combination with D32 and must be either D01, D02 or D03", "E86");
+    private static readonly ValidationError _invalidSettlementSeriesVersionError = new("SettlementSeriesVersion kan kun benyttes i kombination med D32 og skal være enten D01, D02 eller D03 / SettlementSeriesVersion can only be used in combination with D32 and must be either D01, D02 or D03", "E86");
 
     public IList<ValidationError> Validate(AggregatedTimeSeriesRequest subject)
     {
-        if (!subject.HasSettlementSeriesVersion)
+        var isCorrection = subject.BusinessReason == BusinessReason.Correction;
+        var hasSettlementVersion = subject.HasSettlementSeriesVersion;
+
+        if (!isCorrection && hasSettlementVersion)
+            return InvalidSettlementVersionError;
+
+        if (!isCorrection)
             return NoError;
 
-        if (subject.BusinessReason != BusinessReason.Correction)
-            return InvalidSettlementMethodError;
+        if (!hasSettlementVersion)
+            return NoError;
 
         if (!_validSettlementSeriesVersions.Contains(subject.SettlementSeriesVersion))
-            return InvalidSettlementMethodError;
+            return InvalidSettlementVersionError;
 
         return NoError;
     }
 
     private static IList<ValidationError> NoError => new List<ValidationError>();
 
-    private static IList<ValidationError> InvalidSettlementMethodError => new List<ValidationError> { _invalidSettlementSeriesVersion };
+    private static IList<ValidationError> InvalidSettlementVersionError => new List<ValidationError> { _invalidSettlementSeriesVersionError };
 }

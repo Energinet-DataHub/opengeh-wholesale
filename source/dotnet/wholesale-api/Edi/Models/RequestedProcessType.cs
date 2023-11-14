@@ -12,22 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using NodaTime;
+namespace Energinet.DataHub.Wholesale.EDI.Models;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Application;
-
-public class BatchInfo
+public enum RequestedProcessType
 {
-    public BatchInfo()
-    {
-        GridAreaCodes = new List<string>();
-    }
-
-    public Guid Id { get; set; }
-
-    public Instant PeriodStart { get; set; }
-
-    public Instant PeriodEnd { get; set; }
-
-    public List<string> GridAreaCodes { get; set; }
+    BalanceFixing,
+    PreliminaryAggregation,
+    WholesaleFixing,
+    FirstCorrection,
+    SecondCorrection,
+    ThirdCorrection,
+    LatestCorrection,
 }

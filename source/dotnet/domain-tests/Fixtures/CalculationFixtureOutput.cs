@@ -26,13 +26,13 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
     /// <summary>
     /// Support testing Wholesale Web API using an authorized Wholesale client.
     /// </summary>
-    public sealed class AuthorizedClientFixtureOutput
+    public sealed class CalculationFixtureOutput
     {
         private readonly IMessageSink _diagnosticMessageSink;
         private readonly WholesaleClient_V3 _wholesaleClient;
         private readonly ServiceBusReceiver _receiver;
 
-        public AuthorizedClientFixtureOutput(IMessageSink diagnosticMessageSink, WholesaleClient_V3 wholesaleClient, ServiceBusReceiver receiver)
+        public CalculationFixtureOutput(IMessageSink diagnosticMessageSink, WholesaleClient_V3 wholesaleClient, ServiceBusReceiver receiver)
         {
             _diagnosticMessageSink = diagnosticMessageSink;
             _wholesaleClient = wholesaleClient;
