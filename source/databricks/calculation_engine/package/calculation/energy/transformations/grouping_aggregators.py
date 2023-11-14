@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Union
-
 import pyspark.sql.functions as f
 
 from package.calculation.energy.energy_results import EnergyResults
@@ -34,7 +32,7 @@ from .aggregate_sum_and_quality import (
 def aggregate_per_ga_and_brp_and_es(
     quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
     market_evaluation_point_type: MeteringPointType,
-    settlement_method: Union[SettlementMethod, None],
+    settlement_method: SettlementMethod | None,
 ) -> EnergyResults:
     """
     This function creates an intermediate energy result, which is subsequently used
@@ -106,6 +104,7 @@ def aggregate_per_ga_and_brp(
     group_by = [Colname.grid_area, Colname.balance_responsible_id, Colname.time_window]
     result = aggregate_sum_quantity_and_qualities(df.df, group_by)
 
+    # TODO BJM: This simply adds a column with a metering point type that may or may not match the actual rows
     result = result.withColumn(
         Colname.metering_point_type, f.lit(market_evaluation_point_type.value)
     )

@@ -13,14 +13,13 @@
 # limitations under the License.
 
 from datetime import datetime
-from pyspark.sql import DataFrame
+
 import pyspark.sql.functions as f
-import pyspark.sql.types as t
+from pyspark.sql import DataFrame
 from pyspark.sql.window import Window
 
 from package.calculation.energy.energy_results import EnergyResults
 from package.codelists import TimeSeriesType, AggregationLevel, ProcessType
-from package.common import assert_schema
 from package.constants import Colname, EnergyResultColumnNames
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME, ENERGY_RESULT_TABLE_NAME
 

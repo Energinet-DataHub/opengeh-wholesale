@@ -52,7 +52,8 @@ class TestWhenValidInput:
         assert actual_row[Colname.to_grid_area] is None  # TODO BJM: Correct?
         assert actual_row[Colname.from_grid_area] is None  # TODO BJM: Correct?
         assert (
-            actual_row[Colname.energy_supplier_id] == factories.DEFAULT_ENERGY_SUPPLIER
+            actual_row[Colname.energy_supplier_id]
+            == factories.DEFAULT_ENERGY_SUPPLIER_ID
         )
         assert actual_row[Colname.balance_responsible_id] is None
         assert (
@@ -94,7 +95,7 @@ class TestWhenValidInput:
         # Arrange
         rows = [
             factories.create_row(),
-            factories.create_row(energy_supplier="another_es"),
+            factories.create_row(energy_supplier_id="another_es"),
         ]
         df = factories.create(spark, rows)
 
