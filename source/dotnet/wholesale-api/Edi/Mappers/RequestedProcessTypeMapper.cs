@@ -25,7 +25,7 @@ public static class RequestedProcessTypeMapper
             throw new ArgumentOutOfRangeException(
                 nameof(settlementSeriesVersion),
                 settlementSeriesVersion,
-                $"Value must be null when {nameof(BusinessReason)} is not correction.");
+                $"Value must be null when {nameof(BusinessReason)} is not {nameof(BusinessReason.Correction)}.");
         }
 
         return businessReason switch
