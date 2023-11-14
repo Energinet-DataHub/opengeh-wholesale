@@ -42,6 +42,7 @@ from package.constants import Colname
 from package.calculation.preparation.grid_loss_responsible import GridLossResponsible
 
 # Default values
+default_metering_point_id = "1234567890123"
 default_domain = "D1"
 default_responsible = "R1"
 default_supplier = "S1"
@@ -91,7 +92,9 @@ def sys_cor_schema() -> StructType:
     """
     return (
         StructType()
+        .add(Colname.metering_point_id, StringType(), False)
         .add(Colname.grid_area, StringType(), False)
+        .add(Colname.metering_point_type, StringType(), False)
         .add(Colname.balance_responsible_id, StringType())
         .add(Colname.energy_supplier_id, StringType())
         .add(Colname.from_date, TimestampType())
@@ -176,7 +179,9 @@ def sys_cor_row_factory(
     """
 
     def factory(
+        metering_point_id: str = default_metering_point_id,
         domain: str = default_domain,
+        metering_point_type: str = default_metering_point_type,
         responsible: str = default_responsible,
         supplier: str = default_supplier,
         valid_from: datetime = default_valid_from,
@@ -185,7 +190,9 @@ def sys_cor_row_factory(
     ) -> GridLossResponsible:
         pandas_df = pd.DataFrame(
             {
+                Colname.metering_point_id: [metering_point_id],
                 Colname.grid_area: [domain],
+                Colname.metering_point_type: [metering_point_type],
                 Colname.balance_responsible_id: [responsible],
                 Colname.energy_supplier_id: [supplier],
                 Colname.from_date: [valid_from],
