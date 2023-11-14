@@ -12,137 +12,70 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.IO.Compression;
-using System.Net;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Xunit;
-using ProcessType = Energinet.DataHub.Wholesale.DomainTests.Clients.v3.ProcessType;
 using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.DomainTests
 {
     /// <summary>
-    /// Contains tests where we operate at the level of a "domain", so basically what in some context has been named "domain tests".
-    /// However, with the technique displayed here we perform these tests in a live environment.
+    /// Contains tests with focus on verifying calculations initiated and monitored using the Web API running in a live environment.
     /// </summary>
-    public class WebApiTests
+    public class CalculationFeatureTests
     {
         /// <summary>
-        /// These tests uses an unauthorized http client to perform requests.
-        /// </summary>
-        public class Given_Unauthorized : DomainTestsBase<UnauthorizedClientFixture>
-        {
-            public Given_Unauthorized(LazyFixtureFactory<UnauthorizedClientFixture> lazyFixtureFactory)
-                : base(lazyFixtureFactory)
-            {
-            }
-
-            /// <summary>
-            /// This is just to be able to verify everything works with regards to settings and executing the tests after deployment.
-            /// If needed, this test can be removed when the actual domain test has been implemented.
-            /// </summary>
-            [DomainFact]
-            public async Task When_RequestReadinessStatus_Then_ResponseIsOkAndHealthy()
-            {
-                // Act
-                using var actualResponse = await Fixture.UnauthorizedHttpClient.GetAsync("monitor/ready");
-
-                // Assert
-                actualResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
-                var actualContent = await actualResponse.Content.ReadAsStringAsync();
-                actualContent.Should().StartWith("{\"status\":\"Healthy\"");
-            }
-
-            /// <summary>
-            /// This shows our request will fail if we call Web API without a valid access token.
-            /// </summary>
-            [DomainFact]
-            public async Task When_RequestBatchId_Then_ResponseIsUnauthorized()
-            {
-                // Arrange
-                var request = new HttpRequestMessage(HttpMethod.Get, "v3/batches?batchId=1");
-
-                // Act
-                using var actualResponse = await Fixture.UnauthorizedHttpClient.SendAsync(request);
-
-                // Assert
-                actualResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-            }
-        }
-
-        /// <summary>
         /// These tests uses an authorized Wholesale client to perform requests.
-        /// </summary>'
-        public class Given_Authorized : DomainTestsBase<AuthorizedClientFixture>
+        /// </summary>
+        public class Given_CalculatedCompleted : DomainTestsBase<CalculationFixture>
         {
-            private static readonly Guid _existingBatchId = new("ed39dbc5-bdc5-41b9-922a-08d3b12d4538");
-            private static readonly DateTimeOffset _existingBatchPeriodStart = DateTimeOffset.Parse("2020-01-28T23:00:00Z");
-            private static readonly DateTimeOffset _existingBatchPeriodEnd = DateTimeOffset.Parse("2020-01-29T23:00:00Z");
-            private static readonly string ExistingGridAreaCode = "543";
-
-            public Given_Authorized(LazyFixtureFactory<AuthorizedClientFixture> lazyFixtureFactory)
+            public Given_CalculatedCompleted(LazyFixtureFactory<CalculationFixture> lazyFixtureFactory)
                 : base(lazyFixtureFactory)
             {
             }
 
             [DomainFact]
-            public async Task When_RequestingExistingBatchId_Then_ResponseIsOk()
-            {
-                // Arrange
-
-                // Act
-                var batchResult = await Fixture.WholesaleClient.GetBatchAsync(_existingBatchId);
-
-                // Assert
-                batchResult.Should().NotBeNull();
-                batchResult!.BatchId.Should().Be(_existingBatchId);
-            }
-
-            [DomainFact]
-            public void When_CreatingEnergyCalculationBatch_Then_BatchIsEventuallyCompleted()
+            public void WhenCreatingEnergyCalculationBatch_BatchIsEventuallyCompleted()
             {
                 Fixture.Output.BalanceFixingCalculationIsComplete.Should().BeTrue();
             }
 
             [DomainFact]
-            public void When_CreatingWholesaleCalculationBatch_Then_BatchIsEventuallyCompleted()
+            public void WhenCreatingWholesaleCalculationBatch_BatchIsEventuallyCompleted()
             {
                 Fixture.Output.WholesaleFixingCalculationIsComplete.Should().BeTrue();
             }
 
             [DomainFact]
-            public void When_BalanceFixingHasCompleted_Then_HasReceivedExpectedNumberOfResults()
+            public void WhenBalanceFixingHasCompleted_HasReceivedExpectedNumberOfResults()
             {
                 Fixture.Output.CalculationResultCompletedFromBalanceFixing.Count.Should().Be(112);
                 Fixture.Output.EnergyResultProducedFromBalanceFixing.Count.Should().Be(112);
             }
 
             [DomainFact]
-            public void When_WholesaleFixingHasCompleted_Then_HasReceivedExpectedNumberOfEnergyResults()
+            public void WhenWholesaleFixingHasCompleted_HasReceivedExpectedNumberOfEnergyResults()
             {
                 Fixture.Output.CalculationResultCompletedFromWholesaleFixing.Count.Should().Be(137);
                 Fixture.Output.EnergyResultProducedFromWholesaleFixing.Count.Should().Be(137);
             }
 
             [DomainFact]
-            public void When_WholesaleFixingHasCompleted_Then_HasReceivedExpectedNumberOfAmountPerChargeResults()
+            public void WhenWholesaleFixingHasCompleted_HasReceivedExpectedNumberOfAmountPerChargeResults()
             {
                 Fixture.Output.AmountPerChargeResultProduced.Count.Should().Be(28);
             }
 
             [DomainFact]
-            public void When_WholesaleFixingHasCompleted_Then_HasReceivedExpectedNumberOfMonthlyAmountPerChargeResults()
+            public void WhenWholesaleFixingHasCompleted_HasReceivedExpectedNumberOfMonthlyAmountPerChargeResults()
             {
                 Fixture.Output.MonthlyAmountPerChargeResultProduced.Count.Should().Be(16);
             }
 
             [DomainFact]
-            public void When_EnergyCalculationBatchIsComplete_Then_MessagesReceivedContainAllTimeSeriesTypes()
+            public void WhenEnergyCalculationBatchIsComplete_MessagesReceivedContainAllTimeSeriesTypes()
             {
                 var actualForCalculationResultCompleted = GetTimeSeriesTypes(Fixture.Output.CalculationResultCompletedFromBalanceFixing);
                 var actualForEnergyResultProduced = GetTimeSeriesTypes(Fixture.Output.EnergyResultProducedFromBalanceFixing);
@@ -154,7 +87,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             }
 
             [DomainFact]
-            public void When_WholesaleCalculationBatchIsComplete_Then_MessagesReceivedContainAllTimeSeriesTypes()
+            public void WhenWholesaleCalculationBatchIsComplete_MessagesReceivedContainAllTimeSeriesTypes()
             {
                 var actualForCalculationResultCompleted = GetTimeSeriesTypes(Fixture.Output.CalculationResultCompletedFromWholesaleFixing);
                 var actualForEnergyResultProduced = GetTimeSeriesTypes(Fixture.Output.EnergyResultProducedFromWholesaleFixing);
@@ -166,7 +99,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             }
 
             [DomainFact]
-            public void When_BalanceFixingBatchMessagesReceived_Then_ContainsExpectedResultTypes()
+            public void WhenBalanceFixingBatchMessagesReceived_ContainsExpectedResultTypes()
             {
                 using (new AssertionScope())
                 {
@@ -186,7 +119,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             }
 
             [DomainFact]
-            public void When_WholesaleFixingBatchIsReceivedOnTopicSubscription_Then_MessagesReceivedContainExpectedResultTypes()
+            public void WhenWholesaleFixingBatchIsReceivedOnTopicSubscription_MessagesReceivedContainExpectedResultTypes()
             {
                 using (new AssertionScope())
                 {
@@ -195,35 +128,6 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                         CheckIfExistsInCalculationResults(Fixture.Output.CalculationResultCompletedFromWholesaleFixing, timeSeriesType, aggregationLevel).Should().BeTrue();
                         CheckIfExistsInCalculationResults(Fixture.Output.EnergyResultProducedFromWholesaleFixing, timeSeriesType, aggregationLevel).Should().BeTrue();
                     }
-                }
-            }
-
-            [DomainFact(Skip = "Test fails on cold runs with a timeout error - expected to be fixed when switching to Databricks Serverless warehouse")]
-            public async Task When_DownloadingSettlementReport_Then_ResponseIsCompressedFileWithData()
-            {
-                // Arrange + Act
-                var fileResponse = await Fixture.WholesaleClient.DownloadAsync(
-                    new[] { ExistingGridAreaCode },
-                    ProcessType.BalanceFixing,
-                    _existingBatchPeriodStart,
-                    _existingBatchPeriodEnd);
-
-                // Assert
-                using var compressedSettlementReport = new ZipArchive(fileResponse.Stream, ZipArchiveMode.Read);
-                compressedSettlementReport.Entries.Should().NotBeEmpty();
-
-                var resultEntry = compressedSettlementReport.Entries.Single();
-                resultEntry.Name.Should().Be("Result.csv");
-
-                using var stringReader = new StreamReader(resultEntry.Open());
-                var content = await stringReader.ReadToEndAsync();
-
-                var lines = content.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
-
-                foreach (var line in lines[1..])
-                {
-                    // Check that the line contains the expected grid area code and process type.
-                    Assert.StartsWith("543,D04,", line);
                 }
             }
 

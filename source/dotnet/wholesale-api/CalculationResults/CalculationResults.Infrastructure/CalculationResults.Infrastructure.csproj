@@ -16,8 +16,9 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Batches\Batches.Interfaces\Batches.Interfaces.csproj" />
+    <ProjectReference Include="..\CalculationResults.Interfaces\CalculationResults.Interfaces.csproj" />
     <ProjectReference Include="..\..\Common.Infrastructure\Common.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Common.Interfaces\Common.Interfaces.csproj" />
-    <ProjectReference Include="..\CalculationResults.Application\CalculationResults.Application.csproj" />
   </ItemGroup>
 </Project>
