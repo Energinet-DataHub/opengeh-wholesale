@@ -30,5 +30,6 @@ module "mssql_database_application_access" {
     module.func_biztalkreceiver.name,
     module.func_changeobserver.name,
     module.func_converter.name,
+    azuread_application.app_powerbi.display_name,
   ]
 }
