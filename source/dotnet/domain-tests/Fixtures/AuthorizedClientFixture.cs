@@ -16,7 +16,6 @@ using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Identity;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture;
-using Moq;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
@@ -64,8 +63,10 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         {
             var accessToken = await UserAuthenticationClient.AcquireAccessTokenAsync();
 
-            var httpClient = new HttpClient();
-            httpClient.BaseAddress = Configuration.WebApiBaseAddress;
+            var httpClient = new HttpClient
+            {
+                BaseAddress = Configuration.WebApiBaseAddress,
+            };
             httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
 
             return new WholesaleClient_V3(
