@@ -35,7 +35,7 @@ def create_row(
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
     grid_area: str = DEFAULT_GRID_AREA,
     from_date: datetime = DEFAULT_FROM_DATE,
-    to_date: datetime = DEFAULT_TO_DATE,
+    to_date: datetime | None = DEFAULT_TO_DATE,
     metering_point_type: MeteringPointType = DEFAULT_METERING_POINT_TYPE,
     energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER,
     is_negative_grid_loss_responsible: bool = False,
