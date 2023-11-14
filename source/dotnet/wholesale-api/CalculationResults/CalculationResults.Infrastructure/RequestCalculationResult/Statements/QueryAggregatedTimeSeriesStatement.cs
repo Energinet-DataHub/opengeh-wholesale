@@ -53,7 +53,7 @@ public class QueryAggregatedTimeSeriesStatement : DatabricksStatement
         return sql;
     }
 
-    private string CreateSqlQueryFilters(AggregatedTimeSeriesQueryParameters parameters)
+    private static string CreateSqlQueryFilters(AggregatedTimeSeriesQueryParameters parameters)
     {
         var whereClausesSql = $@"t1.{EnergyResultColumnNames.GridArea} IN ({parameters.GridArea})
             AND t1.{EnergyResultColumnNames.TimeSeriesType} IN ('{TimeSeriesTypeMapper.ToDeltaTableValue(parameters.TimeSeriesType)}')
@@ -82,10 +82,16 @@ public class QueryAggregatedTimeSeriesStatement : DatabricksStatement
 
     private static string[] SqlColumnNames { get; } =
     {
-        EnergyResultColumnNames.BatchId, EnergyResultColumnNames.GridArea, EnergyResultColumnNames.FromGridArea,
-        EnergyResultColumnNames.TimeSeriesType, EnergyResultColumnNames.EnergySupplierId,
-        EnergyResultColumnNames.BalanceResponsibleId, EnergyResultColumnNames.Time,
-        EnergyResultColumnNames.Quantity, EnergyResultColumnNames.QuantityQualities,
-        EnergyResultColumnNames.CalculationResultId, EnergyResultColumnNames.BatchProcessType,
+        EnergyResultColumnNames.BatchId,
+        EnergyResultColumnNames.GridArea,
+        EnergyResultColumnNames.FromGridArea,
+        EnergyResultColumnNames.TimeSeriesType,
+        EnergyResultColumnNames.EnergySupplierId,
+        EnergyResultColumnNames.BalanceResponsibleId,
+        EnergyResultColumnNames.Time,
+        EnergyResultColumnNames.Quantity,
+        EnergyResultColumnNames.QuantityQualities,
+        EnergyResultColumnNames.CalculationResultId,
+        EnergyResultColumnNames.BatchProcessType,
     };
 }

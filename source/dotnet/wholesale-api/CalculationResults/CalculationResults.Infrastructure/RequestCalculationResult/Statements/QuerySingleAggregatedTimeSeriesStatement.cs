@@ -41,7 +41,7 @@ public class QuerySingleAggregatedTimeSeriesStatement : DatabricksStatement
             WHERE {CreateSqlQueryFilters(_parameters)}";
     }
 
-    private string CreateSqlQueryFilters(AggregatedTimeSeriesQueryParameters parameters)
+    private static string CreateSqlQueryFilters(AggregatedTimeSeriesQueryParameters parameters)
     {
         var whereClausesSql = $@"t1.{EnergyResultColumnNames.GridArea} IN ({parameters.GridArea})
             AND t1.{EnergyResultColumnNames.TimeSeriesType} IN ('{TimeSeriesTypeMapper.ToDeltaTableValue(parameters.TimeSeriesType)}')

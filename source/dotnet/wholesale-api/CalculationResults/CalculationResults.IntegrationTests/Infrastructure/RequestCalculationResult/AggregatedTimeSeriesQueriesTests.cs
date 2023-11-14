@@ -23,7 +23,6 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Microsoft.Extensions.Options;
 using NodaTime;
 using Xunit;
 
@@ -45,25 +44,23 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
     private const string FourthQuantityThirdCorrection = "4.555";
     private const string GridAreaCode = "301";
     private readonly DatabricksSqlStatementApiFixture _fixture;
-    private readonly IOptions<DeltaTableOptions> _deltaTableOptions;
 
     public AggregatedTimeSeriesQueriesTests(DatabricksSqlStatementApiFixture fixture)
     {
         _fixture = fixture;
-        _deltaTableOptions = fixture.DatabricksSchemaManager.DeltaTableOptions;
         Fixture.Inject(_fixture.DatabricksSchemaManager.DeltaTableOptions);
         Fixture.Inject(_fixture.GetDatabricksExecutor());
     }
 
     [Fact]
-    public async Task GetAsync_RequestFromGridOperatorTotalProduction_ReturnsResult()
+    public async Task GetAsync_WhenRequestFromGridOperatorTotalProduction_ReturnsResult()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions);
+        await AddCreatedRowsInArbitraryOrderAsync();
         var parameters = CreateQueryParameters(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
@@ -75,6 +72,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
 
         // Assert
         actual.Should().NotBeNull();
+        using var assertionScope = new AssertionScope();
         actual!.GridArea.Should().Be(gridAreaFilter);
         actual.PeriodStart.Should().Be(startOfPeriodFilter);
         actual.PeriodEnd.Should().Be(endOfPeriodFilter);
@@ -87,10 +85,10 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
     }
 
     [Fact]
-    public async Task GetAsync_RequestFromGridOperatorTotalProductionInWrongPeriod_ReturnsNoResults()
+    public async Task GetAsync_WhenRequestFromGridOperatorTotalProductionInWrongPeriod_ReturnsNoResults()
     {
         // Arrange
-        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions);
+        await AddCreatedRowsInArbitraryOrderAsync();
         var parameters = CreateQueryParameters(
             startOfPeriod: Instant.FromUtc(2020, 1, 1, 1, 1),
             endOfPeriod: Instant.FromUtc(2021, 1, 2, 1, 1));
@@ -103,7 +101,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
     }
 
     [Fact]
-    public async Task GetAsync_RequestFromEnergySupplierTotalProduction_ReturnsResult()
+    public async Task GetAsync_WhenRequestFromEnergySupplierTotalProduction_ReturnsResult()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
@@ -111,7 +109,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions);
+        await AddCreatedRowsInArbitraryOrderAsync();
         var parameters = CreateQueryParameters(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
@@ -138,7 +136,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
     }
 
     [Fact]
-    public async Task GetAsync_RequestFromEnergySupplierTotalProductionBadId_ReturnsNoResults()
+    public async Task GetAsync_WhenRequestFromEnergySupplierTotalProductionBadId_ReturnsNoResults()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
@@ -146,7 +144,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions);
+        await AddCreatedRowsInArbitraryOrderAsync();
         var parameters = CreateQueryParameters(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
@@ -162,7 +160,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
     }
 
     [Fact]
-    public async Task GetAsync_RequestFromBalanceResponsibleTotalProduction_ReturnsResult()
+    public async Task GetAsync_WhenRequestFromBalanceResponsibleTotalProduction_ReturnsResult()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
@@ -170,7 +168,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions);
+        await AddCreatedRowsInArbitraryOrderAsync();
         var parameters = CreateQueryParameters(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
@@ -198,7 +196,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
     }
 
     [Fact]
-    public async Task GetAsync_RequestFromEnergySupplierPerBalanceResponsibleTotalProduction_ReturnsResult()
+    public async Task GetAsync_WhenRequestFromEnergySupplierPerBalanceResponsibleTotalProduction_ReturnsResult()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
@@ -207,7 +205,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions);
+        await AddCreatedRowsInArbitraryOrderAsync();
         var parameters = CreateQueryParameters(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
@@ -236,7 +234,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
     }
 
     [Fact]
-    public async Task GetAsync_RequestFromGridOperatorTotalProductionFirstCorrectionSettlement_ReturnsResult()
+    public async Task GetAsync_WhenRequestFromGridOperatorTotalProductionFirstCorrectionSettlement_ReturnsResult()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
@@ -244,7 +242,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         var processTypeFilter = ProcessType.FirstCorrectionSettlement;
-        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions, addFirstCorrection: true);
+        await AddCreatedRowsInArbitraryOrderAsync(addFirstCorrection: true);
 
         var parameters = CreateQueryParameters(
             gridArea: gridAreaFilter,
@@ -273,7 +271,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
     }
 
     [Fact]
-    public async Task GetAsync_RequestFromGridOperatorTotalProductionSecondCorrectionSettlement_ReturnsResult()
+    public async Task GetAsync_WhenRequestFromGridOperatorTotalProductionSecondCorrectionSettlement_ReturnsResult()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
@@ -281,7 +279,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         var processTypeFilter = ProcessType.SecondCorrectionSettlement;
-        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions, addSecondCorrection: true);
+        await AddCreatedRowsInArbitraryOrderAsync(addSecondCorrection: true);
 
         var parameters = CreateQueryParameters(
             gridArea: gridAreaFilter,
@@ -310,7 +308,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
     }
 
     [Fact]
-    public async Task GetAsyncRequestFromGridOperatorTotalProductionThirdCorrectionSettlement_ReturnsResult()
+    public async Task GetAsync_WhenRequestFromGridOperatorTotalProductionThirdCorrectionSettlement_ReturnsResult()
     {
         // Arrange
         var gridAreaFilter = GridAreaCode;
@@ -318,7 +316,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         var processTypeFilter = ProcessType.ThirdCorrectionSettlement;
-        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions, addThirdCorrection: true);
+        await AddCreatedRowsInArbitraryOrderAsync(addThirdCorrection: true);
 
         var parameters = CreateQueryParameters(
             gridArea: gridAreaFilter,
@@ -355,7 +353,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 3, 0, 0);
 
-        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions);
+        await AddCreatedRowsInArbitraryOrderAsync();
         var parameters = CreateQueryParameters(
             gridArea: gridAreaFilter,
             timeSeriesType: timeSeriesTypeFilter,
@@ -389,7 +387,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
 
-        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions);
+        await AddCreatedRowsInArbitraryOrderAsync();
 
         var parameters = CreateQueryParameters(
             gridArea: gridAreaFilter,
@@ -412,7 +410,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions, addThirdCorrection: true);
+        await AddCreatedRowsInArbitraryOrderAsync(addThirdCorrection: true);
         var parameters = CreateQueryParameters(
             timeSeriesTypeFilter,
             startOfPeriodFilter,
@@ -434,7 +432,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions, addSecondCorrection: true);
+        await AddCreatedRowsInArbitraryOrderAsync(addSecondCorrection: true);
         var parameters = CreateQueryParameters(
             timeSeriesTypeFilter,
             startOfPeriodFilter,
@@ -456,7 +454,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions, addFirstCorrection: true);
+        await AddCreatedRowsInArbitraryOrderAsync(addFirstCorrection: true);
         var parameters = CreateQueryParameters(
             timeSeriesTypeFilter,
             startOfPeriodFilter,
@@ -478,7 +476,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var timeSeriesTypeFilter = TimeSeriesType.Production;
         var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
         var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
-        await AddCreatedRowsInArbitraryOrderAsync(_deltaTableOptions, addFirstCorrection: false, addSecondCorrection: false, addThirdCorrection: false);
+        await AddCreatedRowsInArbitraryOrderAsync(addFirstCorrection: false, addSecondCorrection: false, addThirdCorrection: false);
         var parameters = CreateQueryParameters(
             timeSeriesTypeFilter,
             startOfPeriodFilter,
@@ -534,7 +532,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             ProcessType: processType);
     }
 
-    private async Task AddCreatedRowsInArbitraryOrderAsync(IOptions<DeltaTableOptions> options, bool addFirstCorrection = false, bool addSecondCorrection = false, bool addThirdCorrection = false)
+    private async Task AddCreatedRowsInArbitraryOrderAsync(bool addFirstCorrection = false, bool addSecondCorrection = false, bool addThirdCorrection = false)
     {
         const string firstCalculationResultId = "aaaaaaaa-386f-49eb-8b56-63fae62e4fc7";
         const string secondCalculationResultId = "bbbbbbbb-b58b-4190-a873-eded0ed50c20";
@@ -573,7 +571,6 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var row1SecondDay = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: secondDay, gridArea: GridAreaCode, quantity: FirstQuantity);
         var row1ThirdDay = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: thirdDay, gridArea: GridAreaCode, quantity: SecondQuantity);
 
-        // mix up the order of the rows
         var rows = new List<IReadOnlyCollection<string>>
         {
             row1,
@@ -617,7 +614,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
 
         rows = rows.OrderBy(_ => Guid.NewGuid()).ToList();
 
-        await _fixture.DatabricksSchemaManager.EmptyAsync(options.Value.ENERGY_RESULTS_TABLE_NAME);
-        await _fixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(options.Value.ENERGY_RESULTS_TABLE_NAME, rows);
+        await _fixture.DatabricksSchemaManager.EmptyAsync(_fixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME);
+        await _fixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(_fixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME, rows);
     }
 }

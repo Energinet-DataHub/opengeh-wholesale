@@ -14,17 +14,12 @@
 
 using AutoFixture;
 using Energinet.DataHub.Core.TestCommon;
-using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.RequestCalculationResult;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Moq;
 using NodaTime;
 using Xunit;
 
@@ -43,12 +38,10 @@ public class AggregatedTimeSeriesQueriesCorrectionTests : TestBase<AggregatedTim
     private const string FourthQuantityThirdCorrection = "4.555";
     private const string GridAreaCode = "301";
     private readonly DatabricksSqlStatementApiFixture _fixture;
-    private readonly IOptions<DeltaTableOptions> _deltaTableOptions;
 
     public AggregatedTimeSeriesQueriesCorrectionTests(DatabricksSqlStatementApiFixture fixture)
     {
         _fixture = fixture;
-        _deltaTableOptions = fixture.DatabricksSchemaManager.DeltaTableOptions;
         Fixture.Inject(_fixture.DatabricksSchemaManager.DeltaTableOptions);
         Fixture.Inject(_fixture.GetDatabricksExecutor());
     }
@@ -69,7 +62,6 @@ public class AggregatedTimeSeriesQueriesCorrectionTests : TestBase<AggregatedTim
             gridAreaFilter);
 
         await AddCreatedRowsInArbitraryOrderAsync(
-            _deltaTableOptions,
             addFirstCorrection: true,
             addSecondCorrection: true,
             addThirdCorrection: true);
@@ -97,7 +89,6 @@ public class AggregatedTimeSeriesQueriesCorrectionTests : TestBase<AggregatedTim
             gridAreaFilter);
 
         await AddCreatedRowsInArbitraryOrderAsync(
-            _deltaTableOptions,
             addFirstCorrection: true,
             addSecondCorrection: true,
             addThirdCorrection: false);
@@ -123,7 +114,6 @@ public class AggregatedTimeSeriesQueriesCorrectionTests : TestBase<AggregatedTim
             endOfPeriodFilter,
             gridAreaFilter);
         await AddCreatedRowsInArbitraryOrderAsync(
-            _deltaTableOptions,
             addFirstCorrection: true,
             addSecondCorrection: false,
             addThirdCorrection: false);
@@ -131,6 +121,7 @@ public class AggregatedTimeSeriesQueriesCorrectionTests : TestBase<AggregatedTim
         // Act
         var actual = await Sut.GetProcessTypeOfLatestCorrectionAsync(parameters);
 
+        // Assert
         actual.Should().Be(ProcessType.FirstCorrectionSettlement);
     }
 
@@ -149,7 +140,6 @@ public class AggregatedTimeSeriesQueriesCorrectionTests : TestBase<AggregatedTim
             endOfPeriodFilter,
             gridAreaFilter);
         await AddCreatedRowsInArbitraryOrderAsync(
-            _deltaTableOptions,
             addFirstCorrection: false,
             addSecondCorrection: false,
             addThirdCorrection: false);
@@ -178,7 +168,7 @@ public class AggregatedTimeSeriesQueriesCorrectionTests : TestBase<AggregatedTim
             BalanceResponsibleId: balanceResponsibleId);
     }
 
-    private async Task AddCreatedRowsInArbitraryOrderAsync(IOptions<DeltaTableOptions> options, bool addFirstCorrection, bool addSecondCorrection, bool addThirdCorrection)
+    private async Task AddCreatedRowsInArbitraryOrderAsync(bool addFirstCorrection, bool addSecondCorrection, bool addThirdCorrection)
     {
         const string firstCalculationResultId = "aaaaaaaa-386f-49eb-8b56-63fae62e4fc7";
         const string secondCalculationResultId = "bbbbbbbb-b58b-4190-a873-eded0ed50c20";
@@ -235,7 +225,7 @@ public class AggregatedTimeSeriesQueriesCorrectionTests : TestBase<AggregatedTim
 
         rows = rows.OrderBy(_ => Guid.NewGuid()).ToList();
 
-        await _fixture.DatabricksSchemaManager.EmptyAsync(options.Value.ENERGY_RESULTS_TABLE_NAME);
-        await _fixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(options.Value.ENERGY_RESULTS_TABLE_NAME, rows);
+        await _fixture.DatabricksSchemaManager.EmptyAsync(_fixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME);
+        await _fixture.DatabricksSchemaManager.InsertAsync<EnergyResultColumnNames>(_fixture.DatabricksSchemaManager.DeltaTableOptions.Value.ENERGY_RESULTS_TABLE_NAME, rows);
     }
 }

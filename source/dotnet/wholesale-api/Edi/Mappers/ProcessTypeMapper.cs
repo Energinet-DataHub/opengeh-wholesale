@@ -26,7 +26,12 @@ public static class ProcessTypeMapper
     public static ProcessType FromRequestedProcessType(RequestedProcessType requestedProcessType)
     {
         if (requestedProcessType == RequestedProcessType.LatestCorrection)
-            throw new ArgumentOutOfRangeException(nameof(requestedProcessType), actualValue: requestedProcessType, "Requested process type (RequestedProcessType.LatestCorrection) cannot be mapped to process type.");
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(requestedProcessType),
+                actualValue: requestedProcessType,
+                "Requested process type (RequestedProcessType.LatestCorrection) cannot be mapped to process type.");
+        }
 
         return requestedProcessType switch
         {
