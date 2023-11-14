@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.AggregatedTimeSeriesResults;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 
 public class AggregatedTimeSeriesResult
 {
@@ -26,7 +25,7 @@ public class AggregatedTimeSeriesResult
         ProcessType processType)
     {
         if (timeSeriesPoints.Length == 0)
-            throw new ArgumentException("Time series points empty");
+            throw new ArgumentException($"{nameof(timeSeriesPoints)} are empty.");
 
         GridArea = gridArea;
         TimeSeriesPoints = timeSeriesPoints;
