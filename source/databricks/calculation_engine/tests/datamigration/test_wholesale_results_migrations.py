@@ -87,6 +87,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
             WholesaleResultColumnNames.energy_supplier_id,
             "neither-16-nor-13-digits-long",
         ),
+        (WholesaleResultColumnNames.quantity, None),
         (WholesaleResultColumnNames.quantity_unit, None),
         (WholesaleResultColumnNames.quantity_unit, "foo"),
         (WholesaleResultColumnNames.quantity_qualities, None),
