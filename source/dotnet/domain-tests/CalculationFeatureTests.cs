@@ -291,7 +291,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             {
                 var calculationTimeLimit = TimeSpan.FromMinutes(13);
                 var actualCalculationDuration =
-                    Fixture.Scenario.Batch!.PeriodEnd - Fixture.Scenario.Batch.PeriodEnd;
+                    Fixture.Scenario.Batch!.ExecutionTimeEnd - Fixture.Scenario.Batch.ExecutionTimeStart;
 
                 // Assert
                 actualCalculationDuration.Should().BeLessThanOrEqualTo(calculationTimeLimit);
