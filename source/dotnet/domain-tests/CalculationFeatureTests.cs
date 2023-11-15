@@ -320,19 +320,19 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             [DomainFact]
             public void AndThen_ReceivedIntegrationEventsCountIsEqualToExpected()
             {
-                var expectedIntegrationEventsPerTypeCount = 112;
+                var expected = 112;
 
                 // Assert
                 using var assertionScope = new AssertionScope();
-                Fixture.ScenarioState.ReceivedCalculationResultCompleted.Count.Should().Be(expectedIntegrationEventsPerTypeCount);
-                Fixture.ScenarioState.ReceivedEnergyResultProducedV2.Count.Should().Be(expectedIntegrationEventsPerTypeCount);
+                Fixture.ScenarioState.ReceivedCalculationResultCompleted.Count.Should().Be(expected);
+                Fixture.ScenarioState.ReceivedEnergyResultProducedV2.Count.Should().Be(expected);
             }
 
             [Priority(7)]
             [DomainFact]
             public void AndThen_ReceivedIntegrationEventsContainAllTimeSeriesTypes()
             {
-                var expectedTimeSeriesTypes = Enum.GetNames(typeof(TimeSeriesType)).ToList();
+                var expected = Enum.GetNames(typeof(TimeSeriesType)).ToList();
 
                 var actualTimeSeriesTypesForCalculationResultCompleted = Fixture.ScenarioState.ReceivedCalculationResultCompleted
                     .Select(x => Enum.GetName(x.TimeSeriesType))
@@ -345,7 +345,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
 
                 // Assert
                 using var assertionScope = new AssertionScope();
-                foreach (var timeSeriesType in expectedTimeSeriesTypes)
+                foreach (var timeSeriesType in expected)
                 {
                     actualTimeSeriesTypesForCalculationResultCompleted.Should().Contain(timeSeriesType);
                     actualTimeSeriesTypesForEnergyResultProducedV2.Should().Contain(timeSeriesType);
@@ -356,7 +356,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             [DomainFact]
             public void AndThen_ReceivedIntegrationEventsContainExpectedTuplesOfTimeSeriesTypeAndAggregationLevel()
             {
-                IEnumerable<(string TimeSeriesType, string AggregationLevel)> expectedTuplesOfTimeSeriesTypeAndAggregationLevel =
+                IEnumerable<(string TimeSeriesType, string AggregationLevel)> expected =
                     new List<(string, string)>
                     {
                         ("NonProfiledConsumption", "AggregationPerGridarea"),
@@ -393,7 +393,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
 
                 // Assert
                 using var assertionScope = new AssertionScope();
-                foreach (var tuple in expectedTuplesOfTimeSeriesTypeAndAggregationLevel)
+                foreach (var tuple in expected)
                 {
                     Fixture.ScenarioState.ReceivedCalculationResultCompleted
                         .Should()
