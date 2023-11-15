@@ -35,5 +35,11 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
         public IReadOnlyCollection<EnergyResultProducedV2> ReceivedEnergyResultProducedV2 { get; set; }
             = new List<EnergyResultProducedV2>();
+
+        public IReadOnlyCollection<AmountPerChargeResultProducedV1> ReceivedAmountPerChargeResultProducedV1 { get; set; }
+            = new List<AmountPerChargeResultProducedV1>();
+
+        public IReadOnlyCollection<MonthlyAmountPerChargeResultProducedV1> ReceivedMonthlyAmountPerChargeResultProducedV1 { get; set; }
+            = new List<MonthlyAmountPerChargeResultProducedV1>();
     }
 }
