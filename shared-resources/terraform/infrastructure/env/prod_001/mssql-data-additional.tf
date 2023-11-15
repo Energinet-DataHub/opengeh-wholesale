@@ -13,10 +13,6 @@ module "mssql_data_additional" { # Needs to be a new module as Terraform will NO
     resource_group_name = azurerm_resource_group.this.name
   }
 
-  administrator_login          = local.mssqlServerAdminName
-  administrator_login_password = random_password.mssql_administrator_login_password.result
-
-  ad_authentication_only    = false
   ad_group_directory_reader = var.ad_group_directory_reader
 
 

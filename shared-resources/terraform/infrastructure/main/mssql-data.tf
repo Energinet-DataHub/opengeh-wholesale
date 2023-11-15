@@ -1,7 +1,3 @@
-locals {
-  mssqlServerAdminName = "gehdbadmin"
-}
-
 module "mssql_data" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-server?ref=v12"
 
@@ -17,10 +13,6 @@ module "mssql_data" {
     resource_group_name = azurerm_resource_group.this.name
   }
 
-  administrator_login          = local.mssqlServerAdminName
-  administrator_login_password = random_password.mssql_administrator_login_password.result
-
-  ad_authentication_only    = false
   ad_group_directory_reader = var.ad_group_directory_reader
 
   private_endpoint_subnet_id = module.snet_private_endpoints.id
@@ -50,33 +42,11 @@ resource "azurerm_mssql_firewall_rule" "github_largerunner" {
   end_ip_address   = cidrhost(split(",", var.hosted_deployagent_public_ip_range)[count.index], -1) #Last IP in range
 }
 
-resource "random_password" "mssql_administrator_login_password" {
-  length           = 16
-  special          = true
-  override_special = "_%@"
-}
-
 module "kvs_mssql_data_elastic_pool_id" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
 
   name         = "mssql-data-elastic-pool-id"
   value        = module.mssql_data.elastic_pool_id
-  key_vault_id = module.kv_shared.id
-}
-
-module "kvs_mssql_data_admin_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
-
-  name         = "mssql-data-admin-user-name"
-  value        = local.mssqlServerAdminName
-  key_vault_id = module.kv_shared.id
-}
-
-module "kvs_mssql_data_admin_password" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
-
-  name         = "mssql-data-admin-user-password"
-  value        = random_password.mssql_administrator_login_password.result
   key_vault_id = module.kv_shared.id
 }
 
