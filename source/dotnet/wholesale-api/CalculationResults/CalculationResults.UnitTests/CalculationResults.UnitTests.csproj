@@ -39,7 +39,4 @@
     <ProjectReference Include="..\CalculationResults.Application\CalculationResults.Application.csproj" />
     <ProjectReference Include="..\CalculationResults.Infrastructure\CalculationResults.Infrastructure.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Interfaces" />
-  </ItemGroup>
 </Project>

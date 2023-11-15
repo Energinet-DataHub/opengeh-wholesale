@@ -26,46 +26,64 @@ namespace Energinet.DataHub.Wholesale.DomainTests
     /// </summary>
     public class SettlementFeatureTests
     {
-        /// <summary>
-        /// These tests uses an authorized Wholesale client to perform requests.
-        /// </summary>
-        public class Given_Calculated : DomainTestsBase<AuthorizedClientFixture>
+        [TestCaseOrderer(
+            ordererTypeName: "Energinet.DataHub.Wholesale.DomainTests.Fixtures.Orderers.PriorityOrderer",
+            ordererAssemblyName: "Energinet.DataHub.Wholesale.DomainTests")]
+        public class SettlementReportDownloadScenario : DomainTestsBase<SettlementReportScenarioFixture>
         {
-            private static readonly DateTimeOffset _existingBatchPeriodStart = DateTimeOffset.Parse("2020-01-28T23:00:00Z");
-            private static readonly DateTimeOffset _existingBatchPeriodEnd = DateTimeOffset.Parse("2020-01-29T23:00:00Z");
-            private static readonly string _existingGridAreaCode = "543";
-
-            public Given_Calculated(LazyFixtureFactory<AuthorizedClientFixture> lazyFixtureFactory)
+            public SettlementReportDownloadScenario(LazyFixtureFactory<SettlementReportScenarioFixture> lazyFixtureFactory)
                 : base(lazyFixtureFactory)
             {
             }
 
-            [DomainFact(Skip = "Test fails on cold runs with a timeout error - expected to be fixed when switching to Databricks Serverless warehouse")]
-            public async Task WhenDownloadingSettlementReport_ResponseIsCompressedFileWithData()
+            [Priority(0)]
+            [DomainFact]
+            public void Given_SettlementDownloadInput()
             {
-                // Arrange + Act
-                var fileResponse = await Fixture.WholesaleClient.DownloadAsync(
-                    new[] { _existingGridAreaCode },
-                    Clients.v3.ProcessType.BalanceFixing,
-                    _existingBatchPeriodStart,
-                    _existingBatchPeriodEnd);
+                Fixture.ScenarioState.SettlementDownloadInput.GridAreaCodes.Add("543");
+                Fixture.ScenarioState.SettlementDownloadInput.ProcessType = Clients.v3.ProcessType.BalanceFixing;
+                Fixture.ScenarioState.SettlementDownloadInput.CalculationPeriodStart = DateTimeOffset.Parse("2020-01-28T23:00:00Z");
+                Fixture.ScenarioState.SettlementDownloadInput.CalculationPeriodEnd = DateTimeOffset.Parse("2020-01-29T23:00:00Z");
+            }
+
+            [Priority(1)]
+            [DomainFact]
+            public async Task When_SettlementReportDownloadedIsStarted()
+            {
+                Fixture.ScenarioState.SettlementReportFile = await Fixture.StartDownloadingAsync(Fixture.ScenarioState.SettlementDownloadInput);
+            }
+
+            [Priority(2)]
+            [DomainFact]
+            public void Then_SettlementReportEntriesShouldNotBeEmpty()
+            {
+                Fixture.ScenarioState.CompressedSettlementReport = new ZipArchive(Fixture.ScenarioState.SettlementReportFile.Stream, ZipArchiveMode.Read);
 
                 // Assert
-                using var compressedSettlementReport = new ZipArchive(fileResponse.Stream, ZipArchiveMode.Read);
-                compressedSettlementReport.Entries.Should().NotBeEmpty();
+                Fixture.ScenarioState.CompressedSettlementReport.Entries.Should().NotBeEmpty();
+            }
 
-                var resultEntry = compressedSettlementReport.Entries.Single();
-                resultEntry.Name.Should().Be("Result.csv");
+            [Priority(3)]
+            [DomainFact]
+            public void AndThen_SingleEntryNameShouldBeResultCsv()
+            {
+                var expected = "Result.csv";
+                Fixture.ScenarioState.Entry = Fixture.ScenarioState.CompressedSettlementReport.Entries.Single();
 
-                using var stringReader = new StreamReader(resultEntry.Open());
-                var content = await stringReader.ReadToEndAsync();
+                // Assert
+                Fixture.ScenarioState.Entry.Name.Should().Be(expected);
+            }
 
-                var lines = content.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
-
-                foreach (var line in lines[1..])
+            [Priority(4)]
+            [DomainFact]
+            public async Task AndThen_SingleEntryShouldContainCorrectGridAreaCodesAndProcessType()
+            {
+                var expected = "543,D04,";
+                var lines = await Fixture.SplitEntryIntoLinesAsync(Fixture.ScenarioState.Entry);
+                foreach (var line in lines[1..]) //// The first line is the header.
                 {
-                    // Check that the line contains the expected grid area code and process type.
-                    Assert.StartsWith("543,D04,", line);
+                    // Assert
+                    line.Should().StartWith(expected);
                 }
             }
         }
