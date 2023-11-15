@@ -15,5 +15,6 @@ module "func_bff" {
   dotnet_framework_version                  = "v7.0"
   app_settings = {
     CONNECTION_STRING_DATABASE  = "Server=tcp:${data.azurerm_key_vault_secret.mssql_data_url.value},1433;Initial Catalog=${module.mssqldb.name};Persist Security Info=False;Authentication=Active Directory Managed Identity;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;"
+    GITHUB_TOKEN                = var.github_token
   }
 }
