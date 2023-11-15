@@ -21,7 +21,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
     public class CalculationScenarioState
     {
         public BatchRequestDto CalculationInput { get; set; }
-            = new BatchRequestDto();
+            = new();
 
         public IList<string> SubscribedIntegrationEventNames { get; }
             = new List<string>();
