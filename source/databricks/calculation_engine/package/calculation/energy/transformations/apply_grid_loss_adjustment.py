@@ -35,7 +35,6 @@ def adjust_production(
         negative_grid_loss_result_df,
         grid_loss_responsible_df,
         Colname.is_negative_grid_loss_responsible,
-        MeteringPointType.PRODUCTION.value,
     )
 
 
@@ -50,7 +49,6 @@ def adjust_flex_consumption(
         positive_grid_loss_result_df,
         grid_loss_responsible_df,
         Colname.is_positive_grid_loss_responsible,
-        MeteringPointType.CONSUMPTION.value,
     )
 
 
@@ -59,7 +57,6 @@ def _apply_grid_loss_adjustment(
     grid_loss_result: EnergyResults,
     grid_loss_responsible: GridLossResponsible,
     grid_loss_responsible_type_col: str,
-    metering_point_type: str,
 ) -> EnergyResults:
     # select columns from dataframe that contains information about metering points registered as negative or positive grid loss to use in join.
     glr_df = grid_loss_responsible.df.select(
@@ -137,7 +134,6 @@ def _apply_grid_loss_adjustment(
         Colname.time_window,
         Colname.sum_quantity,
         Colname.qualities,
-        lit(metering_point_type).alias(Colname.metering_point_type),
     ).orderBy(
         Colname.grid_area,
         Colname.balance_responsible_id,

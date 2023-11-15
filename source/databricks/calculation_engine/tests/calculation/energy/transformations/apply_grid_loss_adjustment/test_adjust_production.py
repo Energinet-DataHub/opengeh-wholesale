@@ -26,14 +26,15 @@ import tests.calculation.energy.energy_results_factories as energy_results_facto
 import tests.calculation.energy.grid_loss_responsible_factories as grid_loss_responsible_factories
 
 # This time should be within the time window of the grid loss responsible
-DEFAULT_OBSERVATION_TIME = "2020-01-01T00:00:00.000Z"
+DEFAULT_OBSERVATION_TIME = datetime.strptime(
+    "2020-01-01T00:00:00+0000", "%Y-%m-%dT%H:%M:%S%z"
+)
 
 
 class TestWhenValidInput:
     def test_returns_qualities_from_hourly_production_and_negative_grid_loss(
         self,
         spark: SparkSession,
-        timestamp_factory: Callable[[str], Optional[datetime]],
     ) -> None:
         # Arrange
         expected_qualities = [
@@ -42,18 +43,16 @@ class TestWhenValidInput:
         ]
 
         production_row = energy_results_factories.create_row(
-            observation_time=timestamp_factory(DEFAULT_OBSERVATION_TIME),
+            observation_time=DEFAULT_OBSERVATION_TIME,
             energy_supplier_id="energy_supplier_id",
             qualities=[QuantityQuality.CALCULATED],
-            metering_point_type=MeteringPointType.PRODUCTION,
             sum_quantity=10,
         )
         production = energy_results_factories.create(spark, [production_row])
 
         negative_grid_loss_row = energy_results_factories.create_row(
-            observation_time=timestamp_factory(DEFAULT_OBSERVATION_TIME),
+            observation_time=DEFAULT_OBSERVATION_TIME,
             qualities=[QuantityQuality.ESTIMATED],
-            metering_point_type=MeteringPointType.PRODUCTION,
             sum_quantity=20,
         )
         negative_grid_loss = energy_results_factories.create(
@@ -85,15 +84,13 @@ class TestWhenNoProduction:
     def test_returns_only_negative_grid_loss(
         self,
         spark: SparkSession,
-        timestamp_factory: Callable[[str], Optional[datetime]],
     ) -> None:
         # Arrange
         production = energy_results_factories.create(spark, [])
 
         negative_grid_loss_rows = [
             energy_results_factories.create_row(
-                observation_time=timestamp_factory(DEFAULT_OBSERVATION_TIME),
-                metering_point_type=MeteringPointType.PRODUCTION,
+                observation_time=DEFAULT_OBSERVATION_TIME,
                 sum_quantity=20,
             )
         ]
