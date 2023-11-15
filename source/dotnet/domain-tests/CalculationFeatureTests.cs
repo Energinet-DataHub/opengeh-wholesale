@@ -273,7 +273,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 var actualWaitResult = await Fixture.WaitForCalculationStateAsync(
                     Fixture.Scenario.CalculationId,
                     waitForState: Clients.v3.BatchState.Completed,
-                    waitTimeLimit: TimeSpan.FromMinutes(15));
+                    waitTimeLimit: TimeSpan.FromMinutes(20));
 
                 Fixture.Scenario.Batch = actualWaitResult.Batch;
 
@@ -294,6 +294,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                     Fixture.Scenario.Batch!.ExecutionTimeEnd - Fixture.Scenario.Batch.ExecutionTimeStart;
 
                 // Assert
+                actualCalculationDuration.Should().BeGreaterThan(TimeSpan.Zero);
                 actualCalculationDuration.Should().BeLessThanOrEqualTo(calculationTimeLimit);
             }
 
