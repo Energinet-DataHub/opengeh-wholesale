@@ -28,7 +28,7 @@ from package.calculation.energy.energy_results import (
     EnergyResults,
     energy_results_schema,
 )
-from package.codelists import MeteringPointType, QuantityQuality, SettlementMethod
+from package.codelists import QuantityQuality
 from package.constants import Colname
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
@@ -88,22 +88,6 @@ def agg_result_factory(spark: SparkSession) -> Callable[..., EnergyResults]:
                     [QuantityQuality.ESTIMATED.value],
                     [QuantityQuality.ESTIMATED.value],
                     [QuantityQuality.ESTIMATED.value],
-                ],
-                Colname.metering_point_type: [
-                    MeteringPointType.CONSUMPTION.value,
-                    MeteringPointType.CONSUMPTION.value,
-                    MeteringPointType.CONSUMPTION.value,
-                    MeteringPointType.CONSUMPTION.value,
-                    MeteringPointType.CONSUMPTION.value,
-                    MeteringPointType.CONSUMPTION.value,
-                ],
-                Colname.settlement_method: [
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
                 ],
             }
         )
