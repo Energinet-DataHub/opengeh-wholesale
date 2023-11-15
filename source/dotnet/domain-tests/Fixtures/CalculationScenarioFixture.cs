@@ -38,13 +38,13 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             Configuration = new WholesaleDomainConfiguration();
             ServiceBusAdministrationClient = new ServiceBusAdministrationClient(Configuration.ServiceBusFullyQualifiedNamespace, new DefaultAzureCredential());
             ServiceBusClient = new ServiceBusClient(Configuration.ServiceBusConnectionString);
-            Scenario = new CalculationScenario();
+            ScenarioState = new CalculationScenarioState();
         }
 
         /// <summary>
         /// Scenario state.
         /// </summary>
-        public CalculationScenario Scenario { get; }
+        public CalculationScenarioState ScenarioState { get; }
 
         /// <summary>
         /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.

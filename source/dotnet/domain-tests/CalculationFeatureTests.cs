@@ -245,25 +245,25 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                     EndDate = endDate,
                 };
 
-                Fixture.Scenario.CalculationInput = batchRequestDto;
+                Fixture.ScenarioState.CalculationInput = batchRequestDto;
             }
 
             [Priority(1)]
             [DomainFact]
             public void AndGiven_SubscribedIntegrationEvents()
             {
-                Fixture.Scenario.SubscribedIntegrationEventNames.Add(CalculationResultCompleted.EventName);
-                Fixture.Scenario.SubscribedIntegrationEventNames.Add(EnergyResultProducedV2.EventName);
+                Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(CalculationResultCompleted.EventName);
+                Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(EnergyResultProducedV2.EventName);
             }
 
             [Priority(2)]
             [DomainFact]
             public async Task When_CalculationIsStarted()
             {
-                Fixture.Scenario.CalculationId = await Fixture.StartCalculationAsync(Fixture.Scenario.CalculationInput);
+                Fixture.ScenarioState.CalculationId = await Fixture.StartCalculationAsync(Fixture.ScenarioState.CalculationInput);
 
                 // Assert
-                Fixture.Scenario.CalculationId.Should().NotBeEmpty();
+                Fixture.ScenarioState.CalculationId.Should().NotBeEmpty();
             }
 
             [Priority(3)]
@@ -271,11 +271,11 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             public async Task Then_CalculationIsCompletedWithinWaitTime()
             {
                 var actualWaitResult = await Fixture.WaitForCalculationStateAsync(
-                    Fixture.Scenario.CalculationId,
+                    Fixture.ScenarioState.CalculationId,
                     waitForState: Clients.v3.BatchState.Completed,
                     waitTimeLimit: TimeSpan.FromMinutes(20));
 
-                Fixture.Scenario.Batch = actualWaitResult.Batch;
+                Fixture.ScenarioState.Batch = actualWaitResult.Batch;
 
                 // Assert
                 using var assertionScope = new AssertionScope();
@@ -291,7 +291,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             {
                 var calculationTimeLimit = TimeSpan.FromMinutes(13);
                 var actualCalculationDuration =
-                    Fixture.Scenario.Batch!.ExecutionTimeEnd - Fixture.Scenario.Batch.ExecutionTimeStart;
+                    Fixture.ScenarioState.Batch!.ExecutionTimeEnd - Fixture.ScenarioState.Batch.ExecutionTimeStart;
 
                 // Assert
                 actualCalculationDuration.Should().BeGreaterThan(TimeSpan.Zero);
@@ -303,17 +303,17 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             public async Task AndThen_IntegrationEventsAreReceivedWithinWaitTime()
             {
                 var actualReceivedIntegrationEvents = await Fixture.WaitForIntegrationEventsAsync(
-                    Fixture.Scenario.CalculationId,
-                    Fixture.Scenario.SubscribedIntegrationEventNames.AsReadOnly(),
+                    Fixture.ScenarioState.CalculationId,
+                    Fixture.ScenarioState.SubscribedIntegrationEventNames.AsReadOnly(),
                     waitTimeLimit: TimeSpan.FromMinutes(8));
 
-                Fixture.Scenario.ReceivedCalculationResultCompleted = actualReceivedIntegrationEvents.OfType<CalculationResultCompleted>().ToList();
-                Fixture.Scenario.ReceivedEnergyResultProducedV2 = actualReceivedIntegrationEvents.OfType<EnergyResultProducedV2>().ToList();
+                Fixture.ScenarioState.ReceivedCalculationResultCompleted = actualReceivedIntegrationEvents.OfType<CalculationResultCompleted>().ToList();
+                Fixture.ScenarioState.ReceivedEnergyResultProducedV2 = actualReceivedIntegrationEvents.OfType<EnergyResultProducedV2>().ToList();
 
                 // Assert
                 using var assertionScope = new AssertionScope();
-                Fixture.Scenario.ReceivedCalculationResultCompleted.Should().NotBeEmpty();
-                Fixture.Scenario.ReceivedEnergyResultProducedV2.Should().NotBeEmpty();
+                Fixture.ScenarioState.ReceivedCalculationResultCompleted.Should().NotBeEmpty();
+                Fixture.ScenarioState.ReceivedEnergyResultProducedV2.Should().NotBeEmpty();
             }
 
             [Priority(6)]
@@ -324,8 +324,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests
 
                 // Assert
                 using var assertionScope = new AssertionScope();
-                Fixture.Scenario.ReceivedCalculationResultCompleted.Count.Should().Be(expectedIntegrationEventsPerTypeCount);
-                Fixture.Scenario.ReceivedEnergyResultProducedV2.Count.Should().Be(expectedIntegrationEventsPerTypeCount);
+                Fixture.ScenarioState.ReceivedCalculationResultCompleted.Count.Should().Be(expectedIntegrationEventsPerTypeCount);
+                Fixture.ScenarioState.ReceivedEnergyResultProducedV2.Count.Should().Be(expectedIntegrationEventsPerTypeCount);
             }
 
             [Priority(7)]
@@ -334,11 +334,11 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             {
                 var expectedTimeSeriesTypes = Enum.GetNames(typeof(TimeSeriesType)).ToList();
 
-                var actualTimeSeriesTypesForCalculationResultCompleted = Fixture.Scenario.ReceivedCalculationResultCompleted
+                var actualTimeSeriesTypesForCalculationResultCompleted = Fixture.ScenarioState.ReceivedCalculationResultCompleted
                     .Select(x => Enum.GetName(x.TimeSeriesType))
                     .Distinct()
                     .ToList();
-                var actualTimeSeriesTypesForEnergyResultProducedV2 = Fixture.Scenario.ReceivedEnergyResultProducedV2
+                var actualTimeSeriesTypesForEnergyResultProducedV2 = Fixture.ScenarioState.ReceivedEnergyResultProducedV2
                     .Select(x => Enum.GetName(x.TimeSeriesType))
                     .Distinct()
                     .ToList();

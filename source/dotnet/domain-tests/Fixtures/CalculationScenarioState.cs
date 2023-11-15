@@ -19,7 +19,7 @@ using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 {
-    public class CalculationScenario
+    public class CalculationScenarioState
     {
         public BatchRequestDto CalculationInput { get; set; }
             = new BatchRequestDto();
