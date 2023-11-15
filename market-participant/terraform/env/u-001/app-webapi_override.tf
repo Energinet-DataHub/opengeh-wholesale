@@ -1,9 +1,9 @@
 module "app_webapi" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=v13"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=v12"
 
   app_settings = {
     EXTERNAL_OPEN_ID_URL                       = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-open-id-url)"
-    INTERNAL_OPEN_ID_URL                       = "https://app-webapi-${var.domain_name_short}-${var.environment_short}-we-${var.environment_instance}.azurewebsites.net/.well-known/openid-configuration"
+    INTERNAL_OPEN_ID_URL                       = "https://app-webapi-${var.domain_name_short}-${var.environment_short}-${var.environment_instance}.azurewebsites.net/.well-known/openid-configuration"
     BACKEND_BFF_APP_ID                         = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-bff-app-id)"
     SQL_MP_DB_CONNECTION_STRING                = local.MS_MARKET_PARTICIPANT_CONNECTION_STRING
     SERVICE_BUS_CONNECTION_STRING              = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-send-connection-string)"
