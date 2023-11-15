@@ -158,7 +158,6 @@ actor_eic = "1234567890123456"
         (WholesaleResultColumnNames.grid_area, "007"),
         (WholesaleResultColumnNames.energy_supplier_id, actor_gln),
         (WholesaleResultColumnNames.energy_supplier_id, actor_eic),
-        (WholesaleResultColumnNames.quantity, None),
         (WholesaleResultColumnNames.quantity, max_18_3_decimal),
         (WholesaleResultColumnNames.quantity, min_18_3_decimal),
         (WholesaleResultColumnNames.quantity_unit, "kWh"),
