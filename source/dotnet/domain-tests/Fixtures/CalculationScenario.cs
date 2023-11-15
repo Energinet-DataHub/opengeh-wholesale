@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Contracts.Events;
+using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents;
 
@@ -19,14 +21,20 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 {
     public class CalculationScenario
     {
-        public BatchRequestDto CalculationInput { get; set; } = new BatchRequestDto();
+        public BatchRequestDto CalculationInput { get; set; }
+            = new BatchRequestDto();
 
-        public IList<string> SubscribedIntegrationEventNames { get; } = new List<string>();
+        public IList<string> SubscribedIntegrationEventNames { get; }
+            = new List<string>();
 
         public Guid CalculationId { get; set; }
 
         public BatchDto? Batch { get; set; }
 
-        public IReadOnlyCollection<IEventMessage>? ReceivedIntegrationEvents { get; set; }
+        public IReadOnlyCollection<CalculationResultCompleted> ReceivedCalculationResultCompleted { get; set; }
+            = new List<CalculationResultCompleted>();
+
+        public IReadOnlyCollection<EnergyResultProducedV2> ReceivedEnergyResultProducedV2 { get; set; }
+            = new List<EnergyResultProducedV2>();
     }
 }

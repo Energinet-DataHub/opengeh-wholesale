@@ -270,19 +270,19 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             [DomainFact]
             public async Task Then_CalculationIsCompletedWithinWaitTime()
             {
-                var actualResult = await Fixture.WaitForCalculationStateAsync(
+                var actualWaitResult = await Fixture.WaitForCalculationStateAsync(
                     Fixture.Scenario.CalculationId,
                     waitForState: Clients.v3.BatchState.Completed,
                     waitTimeLimit: TimeSpan.FromMinutes(15));
 
-                Fixture.Scenario.Batch = actualResult.Batch;
+                Fixture.Scenario.Batch = actualWaitResult.Batch;
 
                 // Assert
                 using var assertionScope = new AssertionScope();
-                actualResult.IsState.Should().BeTrue();
-                actualResult.Batch.Should().NotBeNull();
+                actualWaitResult.IsState.Should().BeTrue();
+                actualWaitResult.Batch.Should().NotBeNull();
 
-                actualResult.Batch!.ExecutionState.Should().Be(Clients.v3.BatchState.Completed);
+                actualWaitResult.Batch!.ExecutionState.Should().Be(Clients.v3.BatchState.Completed);
             }
 
             [Priority(4)]
@@ -301,25 +301,54 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             [DomainFact]
             public async Task AndThen_IntegrationEventsAreReceivedWithinWaitTime()
             {
-                Fixture.Scenario.ReceivedIntegrationEvents = await Fixture.WaitForIntegrationEventsAsync(
+                var actualReceivedIntegrationEvents = await Fixture.WaitForIntegrationEventsAsync(
                     Fixture.Scenario.CalculationId,
                     Fixture.Scenario.SubscribedIntegrationEventNames.AsReadOnly(),
                     waitTimeLimit: TimeSpan.FromMinutes(8));
 
+                Fixture.Scenario.ReceivedCalculationResultCompleted = actualReceivedIntegrationEvents.OfType<CalculationResultCompleted>().ToList();
+                Fixture.Scenario.ReceivedEnergyResultProducedV2 = actualReceivedIntegrationEvents.OfType<EnergyResultProducedV2>().ToList();
+
                 // Assert
-                Fixture.Scenario.ReceivedIntegrationEvents.Should().NotBeEmpty();
+                using var assertionScope = new AssertionScope();
+                Fixture.Scenario.ReceivedCalculationResultCompleted.Should().NotBeEmpty();
+                Fixture.Scenario.ReceivedEnergyResultProducedV2.Should().NotBeEmpty();
             }
 
             [Priority(6)]
             [DomainFact]
             public void AndThen_ReceivedIntegrationEventsCountIsEqualToExpected()
             {
-                var expectedIntegrationEventTypesCount = 2;
                 var expectedIntegrationEventsPerTypeCount = 112;
-                var expectedTotalIntegrationEventsCount = expectedIntegrationEventsPerTypeCount * expectedIntegrationEventTypesCount;
 
                 // Assert
-                Fixture.Scenario.ReceivedIntegrationEvents!.Count.Should().Be(expectedTotalIntegrationEventsCount);
+                using var assertionScope = new AssertionScope();
+                Fixture.Scenario.ReceivedCalculationResultCompleted.Count.Should().Be(expectedIntegrationEventsPerTypeCount);
+                Fixture.Scenario.ReceivedEnergyResultProducedV2.Count.Should().Be(expectedIntegrationEventsPerTypeCount);
+            }
+
+            [Priority(7)]
+            [DomainFact]
+            public void AndThen_ReceivedIntegrationEventsContainAllTimeSeriesTypes()
+            {
+                var expectedTimeSeriesTypes = Enum.GetNames(typeof(TimeSeriesType)).ToList();
+
+                var actualTimeSeriesTypesForCalculationResultCompleted = Fixture.Scenario.ReceivedCalculationResultCompleted
+                    .Select(x => Enum.GetName(x.TimeSeriesType))
+                    .Distinct()
+                    .ToList();
+                var actualTimeSeriesTypesForEnergyResultProducedV2 = Fixture.Scenario.ReceivedEnergyResultProducedV2
+                    .Select(x => Enum.GetName(x.TimeSeriesType))
+                    .Distinct()
+                    .ToList();
+
+                // Assert
+                using var assertionScope = new AssertionScope();
+                foreach (var timeSeriesType in expectedTimeSeriesTypes)
+                {
+                    actualTimeSeriesTypesForCalculationResultCompleted.Should().Contain(timeSeriesType);
+                    actualTimeSeriesTypesForEnergyResultProducedV2.Should().Contain(timeSeriesType);
+                }
             }
         }
     }
