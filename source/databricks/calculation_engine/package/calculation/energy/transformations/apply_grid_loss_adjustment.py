@@ -69,27 +69,29 @@ def _apply_grid_loss_adjustment(
         col(Colname.grid_area).alias(grid_loss_responsible_grid_area),
         grid_loss_responsible_type_col,
     )
-
+    grid_loss_result_df = grid_loss_result_df.df.drop(
+        Colname.energy_supplier_id, Colname.balance_responsible_id
+    )
     # join result dataframes from previous steps on time window and grid area.
-    df = grid_loss_result_df.df.join(
+    df = grid_loss_result_df.join(
         results.df, [Colname.time_window, Colname.grid_area], "left"
     ).select(
         Colname.grid_area,
-        results.df[Colname.balance_responsible_id],
-        results.df[Colname.energy_supplier_id],
+        Colname.balance_responsible_id,
+        Colname.energy_supplier_id,
         Colname.time_window,
         coalesce(results.df[Colname.sum_quantity], lit(0)).alias(Colname.sum_quantity),
         when(
             results.df[Colname.qualities].isNull(),
-            grid_loss_result_df.df[Colname.qualities],
+            grid_loss_result_df[Colname.qualities],
         )
         .otherwise(
             array_union(
-                results.df[Colname.qualities], grid_loss_result_df.df[Colname.qualities]
+                results.df[Colname.qualities], grid_loss_result_df[Colname.qualities]
             )
         )
         .alias(Colname.qualities),
-        grid_loss_result_df.df[Colname.sum_quantity].alias("grid_loss_sum_quantity"),
+        grid_loss_result_df[Colname.sum_quantity].alias("grid_loss_sum_quantity"),
     )
 
     # join information from negative or positive grid loss dataframe on to joined result dataframe with information about which energy supplier,
@@ -108,6 +110,12 @@ def _apply_grid_loss_adjustment(
         & (col(Colname.grid_area) == col(grid_loss_responsible_grid_area))
         & (col(grid_loss_responsible_type_col)),
         "left",
+    ).withColumn(
+        Colname.energy_supplier_id,
+        coalesce(
+            col(Colname.energy_supplier_id),
+            col(grid_loss_responsible_energy_supplier),
+        ),
     )
 
     # update function that selects the sum of two columns if condition is met, or selects data from a single column if condition is not met.
@@ -117,14 +125,7 @@ def _apply_grid_loss_adjustment(
     ).otherwise(col(Colname.sum_quantity))
 
     result_df = (
-        df.withColumn(
-            Colname.energy_supplier_id,
-            coalesce(
-                col(Colname.energy_supplier_id),
-                col(grid_loss_responsible_energy_supplier),
-            ),
-        )
-        .withColumn(adjusted_sum_quantity, update_func)
+        df.withColumn(adjusted_sum_quantity, update_func)
         .drop(Colname.sum_quantity)
         .withColumnRenamed(adjusted_sum_quantity, Colname.sum_quantity)
     )
