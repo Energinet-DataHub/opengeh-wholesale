@@ -56,7 +56,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Orderers
         {
             return dictionary.TryGetValue(key, out var result)
                 ? result
-                : (dictionary[key] = new TValue());
+                : dictionary[key] = new TValue();
         }
     }
 }
