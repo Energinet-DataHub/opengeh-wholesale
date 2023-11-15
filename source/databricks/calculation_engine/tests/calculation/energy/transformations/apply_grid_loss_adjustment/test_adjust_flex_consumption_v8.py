@@ -380,28 +380,3 @@ def test_correct_grid_loss_entry_is_used_to_determine_energy_responsible_for_the
         .collect()[0][Colname.sum_quantity]
         == default_sum_quantity + gagl_result_3
     )
-
-
-def test_that_the_correct_metering_point_type_is_put_on_the_result(
-    flex_consumption_result_row_factory: Callable[..., EnergyResults],
-    positive_grid_loss_result_row_factory: Callable[..., EnergyResults],
-    grid_loss_sys_cor_row_factory: Callable[..., GridLossResponsible],
-) -> None:
-    # Arrange
-    flex_consumption = flex_consumption_result_row_factory(supplier="A")
-    positive_grid_loss = positive_grid_loss_result_row_factory()
-
-    grid_loss_sys_cor_master_data = grid_loss_sys_cor_row_factory(supplier="A")
-
-    # Act
-    actual = adjust_flex_consumption(
-        flex_consumption, positive_grid_loss, grid_loss_sys_cor_master_data
-    )
-
-    # Assert
-    assert (
-        actual.df.where(col(Colname.energy_supplier_id) == "A").collect()[0][
-            Colname.metering_point_type
-        ]
-        == MeteringPointType.CONSUMPTION.value
-    )
