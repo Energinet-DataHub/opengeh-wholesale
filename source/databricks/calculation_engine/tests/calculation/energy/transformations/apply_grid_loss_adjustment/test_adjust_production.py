@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import Callable, Optional
 
 from pyspark.sql import SparkSession
 from datetime import datetime
@@ -30,7 +31,9 @@ DEFAULT_OBSERVATION_TIME = "2020-01-01T00:00:00.000Z"
 
 class TestWhenValidInput:
     def test_returns_qualities_from_hourly_production_and_negative_grid_loss(
-        self, spark: SparkSession, timestamp_factory
+        self,
+        spark: SparkSession,
+        timestamp_factory: Callable[[str], Optional[datetime]],
     ) -> None:
         # Arrange
         expected_qualities = [
@@ -80,7 +83,9 @@ class TestWhenValidInput:
 
 class TestWhenNoProduction:
     def test_returns_only_negative_grid_loss(
-        self, spark: SparkSession, timestamp_factory
+        self,
+        spark: SparkSession,
+        timestamp_factory: Callable[[str], Optional[datetime]],
     ) -> None:
         # Arrange
         production = energy_results_factories.create(spark, [])
