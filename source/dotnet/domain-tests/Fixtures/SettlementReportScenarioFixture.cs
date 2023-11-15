@@ -52,7 +52,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             return fileResponse;
         }
 
-        public async Task<string[]> SplitEntryIntoLines(ZipArchiveEntry entry)
+        public async Task<string[]> SplitEntryIntoLinesAsync(ZipArchiveEntry entry)
         {
             using var stringReader = new StreamReader(entry.Open());
             var content = await stringReader.ReadToEndAsync();
