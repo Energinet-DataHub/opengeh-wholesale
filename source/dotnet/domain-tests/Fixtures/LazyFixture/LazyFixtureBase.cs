@@ -15,7 +15,7 @@
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
+namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture
 {
     /// <summary>
     /// Base class for lazy fixtures which should be constructed using <see cref="LazyFixtureFactory{TFixture}"/>.

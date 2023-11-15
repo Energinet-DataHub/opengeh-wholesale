@@ -14,6 +14,8 @@
 
 using System.IO.Compression;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures;
+using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Attributes;
+using Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture;
 using FluentAssertions;
 using Xunit;
 

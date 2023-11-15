@@ -30,9 +30,7 @@ from package.calculation.energy.energy_results import (
     energy_results_schema,
 )
 from package.codelists import (
-    MeteringPointType,
     QuantityQuality,
-    SettlementMethod,
 )
 from package.constants import Colname
 
@@ -55,8 +53,6 @@ def test_data_factory(spark: SparkSession) -> Callable[..., EnergyResults]:
                 Colname.time_window: [],
                 Colname.sum_quantity: [],
                 Colname.qualities: [],
-                Colname.metering_point_type: [],
-                Colname.settlement_method: [],
             }
         )
         for i in range(3):
@@ -75,10 +71,6 @@ def test_data_factory(spark: SparkSession) -> Callable[..., EnergyResults]:
                             },
                             Colname.sum_quantity: Decimal(i + j + k),
                             Colname.qualities: [QuantityQuality.ESTIMATED.value],
-                            Colname.metering_point_type: [
-                                MeteringPointType.CONSUMPTION.value
-                            ],
-                            Colname.settlement_method: [None],
                         },
                         ignore_index=True,
                     )

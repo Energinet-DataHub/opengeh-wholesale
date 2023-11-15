@@ -15,7 +15,7 @@
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 
-namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
+namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Identity
 {
     /// <summary>
     /// Encapsulates REST call to ROPC flow for retrieving a user access token.
