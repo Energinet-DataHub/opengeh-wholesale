@@ -15,7 +15,6 @@
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 {

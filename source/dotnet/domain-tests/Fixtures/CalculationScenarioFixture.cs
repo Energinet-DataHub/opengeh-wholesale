@@ -41,9 +41,6 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             ScenarioState = new CalculationScenarioState();
         }
 
-        /// <summary>
-        /// Scenario state.
-        /// </summary>
         public CalculationScenarioState ScenarioState { get; }
 
         /// <summary>
