@@ -21,7 +21,7 @@ from package.calculation.energy.energy_results import (
     EnergyResults,
     energy_results_schema,
 )
-from package.codelists import MeteringPointType, QuantityQuality
+from package.codelists import MeteringPointType, QuantityQuality, SettlementMethod
 from package.constants import Colname
 
 DEFAULT_GRID_AREA = "100"
@@ -31,16 +31,20 @@ DEFAULT_OBSERVATION_TIME = datetime.datetime.now()
 DEFAULT_SUM_QUANTITY = Decimal("999.123456")
 DEFAULT_QUALITIES = [QuantityQuality.MEASURED]
 DEFAULT_METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
+DEFAULT_SETTLEMENT_METHOD = SettlementMethod.NON_PROFILED
+DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
+DEFAULT_BALANCE_RESPONSIBLE_ID = "9999999999999"
 
 
 def create_row(
     grid_area: str = DEFAULT_GRID_AREA,
-    from_grid_area: str = DEFAULT_FROM_GRID_AREA,
-    to_grid_area: str = DEFAULT_TO_GRID_AREA,
+    from_grid_area: str | None = DEFAULT_FROM_GRID_AREA,
+    to_grid_area: str | None = DEFAULT_TO_GRID_AREA,
     observation_time: datetime = DEFAULT_OBSERVATION_TIME,
     sum_quantity: int | Decimal = DEFAULT_SUM_QUANTITY,
     qualities: None | QuantityQuality | list[QuantityQuality] = None,
-    metering_point_type: MeteringPointType = DEFAULT_METERING_POINT_TYPE,
+    energy_supplier_id: str | None = DEFAULT_ENERGY_SUPPLIER_ID,
+    balance_responsible_id: str | None = DEFAULT_BALANCE_RESPONSIBLE_ID,
 ) -> Row:
     if isinstance(sum_quantity, int):
         sum_quantity = Decimal(sum_quantity)
@@ -55,16 +59,14 @@ def create_row(
         Colname.grid_area: grid_area,
         Colname.from_grid_area: from_grid_area,
         Colname.to_grid_area: to_grid_area,
-        Colname.balance_responsible_id: None,
-        Colname.energy_supplier_id: None,
+        Colname.balance_responsible_id: balance_responsible_id,
+        Colname.energy_supplier_id: energy_supplier_id,
         Colname.time_window: {
             Colname.start: observation_time,
             Colname.end: observation_time + datetime.timedelta(minutes=15),
         },
         Colname.sum_quantity: sum_quantity,
         Colname.qualities: qualities,
-        Colname.metering_point_type: metering_point_type.value,
-        Colname.settlement_method: None,
     }
 
     return Row(**row)

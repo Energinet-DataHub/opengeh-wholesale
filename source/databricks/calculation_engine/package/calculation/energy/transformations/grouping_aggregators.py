@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Union
-
 import pyspark.sql.functions as f
 
 from package.calculation.energy.energy_results import EnergyResults
@@ -33,8 +31,8 @@ from .aggregate_sum_and_quality import (
 
 def aggregate_per_ga_and_brp_and_es(
     quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
-    market_evaluation_point_type: MeteringPointType,
-    settlement_method: Union[SettlementMethod, None],
+    metering_point_type: MeteringPointType,
+    settlement_method: SettlementMethod | None,
 ) -> EnergyResults:
     """
     This function creates an intermediate energy result, which is subsequently used
@@ -43,13 +41,14 @@ def aggregate_per_ga_and_brp_and_es(
     The function is responsible for
     - Sum quantities across metering points per grid area, energy supplier, and balance responsible.
     - Assign quality when performing sum.
+    - Filter by metering point type
     - Filter by settlement method (consumption only).
 
     Each row in the output dataframe corresponds to a unique combination of: ga, brp, es, and quarter_time
     """
 
     result = quarterly_metering_point_time_series.df.where(
-        f.col(Colname.metering_point_type) == market_evaluation_point_type.value
+        f.col(Colname.metering_point_type) == metering_point_type.value
     )
 
     if settlement_method is not None:
@@ -62,52 +61,26 @@ def aggregate_per_ga_and_brp_and_es(
         Colname.balance_responsible_id,
         Colname.energy_supplier_id,
         Colname.time_window,
-        # Add the following columns to preserve them during the grouping
-        Colname.metering_point_type,
-        Colname.settlement_method,
     ]
     result = aggregate_quantity_and_quality(result, sum_group_by)
 
     return EnergyResults(result)
 
 
-def aggregate_per_ga_and_es(
-    df: EnergyResults, market_evaluation_point_type: MeteringPointType
-) -> EnergyResults:
+def aggregate_per_ga_and_es(df: EnergyResults) -> EnergyResults:
     group_by = [Colname.grid_area, Colname.energy_supplier_id, Colname.time_window]
     result = aggregate_sum_quantity_and_qualities(df.df, group_by)
-
-    result = result.withColumn(
-        Colname.metering_point_type, f.lit(market_evaluation_point_type.value)
-    )
-
     return EnergyResults(result)
 
 
-def aggregate_per_ga(
-    df: EnergyResults,
-    market_evaluation_point_type: MeteringPointType,
-) -> EnergyResults:
+def aggregate_per_ga(df: EnergyResults) -> EnergyResults:
     group_by = [Colname.grid_area, Colname.time_window]
     result = aggregate_sum_quantity_and_qualities(df.df, group_by)
-
-    result = result.withColumn(
-        Colname.metering_point_type, f.lit(market_evaluation_point_type.value)
-    )
-
     return EnergyResults(result)
 
 
-# Function to aggregate sum per grid area and balance responsible party
-def aggregate_per_ga_and_brp(
-    df: EnergyResults,
-    market_evaluation_point_type: MeteringPointType,
-) -> EnergyResults:
+def aggregate_per_ga_and_brp(df: EnergyResults) -> EnergyResults:
+    """Function to aggregate sum per grid area and balance responsible party."""
     group_by = [Colname.grid_area, Colname.balance_responsible_id, Colname.time_window]
     result = aggregate_sum_quantity_and_qualities(df.df, group_by)
-
-    result = result.withColumn(
-        Colname.metering_point_type, f.lit(market_evaluation_point_type.value)
-    )
-
     return EnergyResults(result)

@@ -12,4 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .configuration import balance_responsible_party_gln_a
+from .configuration import balance_responsible_id_a
