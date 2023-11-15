@@ -65,7 +65,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
 
             [Priority(3)]
             [DomainFact]
-            public void AndThen_FirstEntryNameShouldBeResultCsv()
+            public void AndThen_EntryNameShouldBeResultCsv()
             {
                 var expected = "Result.csv";
                 Fixture.ScenarioState.Entry = Fixture.ScenarioState.CompressedSettlementReport.Entries.Single();
@@ -76,10 +76,10 @@ namespace Energinet.DataHub.Wholesale.DomainTests
 
             [Priority(4)]
             [DomainFact]
-            public async Task AndThen_FirstEntryShouldContainCorrectGridAreaCodesAndProcessType()
+            public async Task AndThen_EntryShouldContainCorrectGridAreaCodesAndProcessType()
             {
                 var expected = "543,D04,";
-                var lines = await Fixture.SplitEntryIntoLines(Fixture.ScenarioState.Entry);
+                var lines = await Fixture.SplitEntryIntoLinesAsync(Fixture.ScenarioState.Entry);
                 foreach (var line in lines[1..]) //// The first line is the header.
                 {
                     // Assert
