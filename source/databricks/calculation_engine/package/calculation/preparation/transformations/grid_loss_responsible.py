@@ -17,12 +17,14 @@ defined in the geh_stream directory in our tests.
 """
 
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.types import StringType, StructType, StructField, TimestampType
 from package.constants import Colname
-from pyspark.sql.functions import col, when
+from pyspark.sql.functions import col
 from datetime import datetime
 from package.codelists import MeteringPointType
-from package.calculation.preparation.grid_loss_responsible import GridLossResponsible
+from package.calculation.preparation.grid_loss_responsible import (
+    GridLossResponsible,
+    grid_loss_responsible_schema,
+)
 
 
 DEFAULT_FROM_TIME = datetime.strptime("2000-01-01T23:00:00+0000", "%Y-%m-%dT%H:%M:%S%z")
@@ -52,20 +54,6 @@ GRID_AREA_RESPONSIBLE = [
 def get_grid_loss_responsible(grid_areas: list[str]) -> GridLossResponsible:
     grid_loss_responsible_df = _get_all_grid_loss_responsible()
 
-    grid_loss_responsible_df = grid_loss_responsible_df.withColumn(
-        Colname.is_positive_grid_loss_responsible,
-        when(
-            col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value,
-            True,
-        ).otherwise(False),
-    )
-    grid_loss_responsible_df = grid_loss_responsible_df.withColumn(
-        Colname.is_negative_grid_loss_responsible,
-        when(
-            col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value, True
-        ).otherwise(False),
-    )
-
     grid_loss_responsible_df = grid_loss_responsible_df.select(
         col(Colname.metering_point_id),
         col(Colname.grid_area),
@@ -73,8 +61,6 @@ def get_grid_loss_responsible(grid_areas: list[str]) -> GridLossResponsible:
         col(Colname.to_date),
         col(Colname.metering_point_type),
         col(Colname.energy_supplier_id),
-        col(Colname.is_negative_grid_loss_responsible),
-        col(Colname.is_positive_grid_loss_responsible),
     )
 
     _throw_if_no_grid_loss_responsible(grid_areas, grid_loss_responsible_df)
@@ -107,18 +93,6 @@ def _throw_if_no_grid_loss_responsible(
             raise ValueError(
                 f"No responsible for positive grid loss found for grid area {grid_area}"
             )
-
-
-grid_loss_responsible_schema = StructType(
-    [
-        StructField(Colname.metering_point_id, StringType(), nullable=False),
-        StructField(Colname.grid_area, StringType(), nullable=False),
-        StructField(Colname.from_date, TimestampType(), nullable=False),
-        StructField(Colname.to_date, TimestampType(), nullable=True),
-        StructField(Colname.metering_point_type, StringType(), nullable=False),
-        StructField(Colname.energy_supplier_id, StringType(), nullable=False),
-    ]
-)
 
 
 def _get_all_grid_loss_responsible() -> DataFrame:

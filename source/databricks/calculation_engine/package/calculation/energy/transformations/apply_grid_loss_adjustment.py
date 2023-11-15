@@ -28,7 +28,7 @@ def apply_grid_loss_adjustment(
     results: EnergyResults,
     grid_loss_result: EnergyResults,
     grid_loss_responsible: GridLossResponsible,
-    grid_loss_responsible_type_col: str,
+    metering_point_type: MeteringPointType,
 ) -> EnergyResults:
     # select columns from dataframe that contains information about metering points registered as negative or positive grid loss to use in join.
     glr_df = grid_loss_responsible.df.select(
@@ -36,7 +36,7 @@ def apply_grid_loss_adjustment(
         Colname.to_date,
         col(Colname.energy_supplier_id).alias(grid_loss_responsible_energy_supplier),
         col(Colname.grid_area).alias(grid_loss_responsible_grid_area),
-        grid_loss_responsible_type_col,
+        Colname.metering_point_type,
     )
     grid_loss_result_df = grid_loss_result.df.drop(
         Colname.energy_supplier_id, Colname.balance_responsible_id
@@ -77,7 +77,7 @@ def apply_grid_loss_adjustment(
             | (col(Colname.time_window_end) <= col(Colname.to_date))
         )
         & (col(Colname.grid_area) == col(grid_loss_responsible_grid_area))
-        & (col(grid_loss_responsible_type_col)),
+        & (col(Colname.metering_point_type) == metering_point_type.value),
         "left",
     ).withColumn(
         Colname.energy_supplier_id,

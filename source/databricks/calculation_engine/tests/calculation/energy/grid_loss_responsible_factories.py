@@ -38,8 +38,6 @@ def create_row(
     to_date: datetime | None = DEFAULT_TO_DATE,
     metering_point_type: MeteringPointType = DEFAULT_METERING_POINT_TYPE,
     energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
-    is_negative_grid_loss_responsible: bool = False,
-    is_positive_grid_loss_responsible: bool = False,
 ) -> Row:
     row = {
         Colname.metering_point_id: metering_point_id,
@@ -48,8 +46,6 @@ def create_row(
         Colname.to_date: to_date,
         Colname.metering_point_type: metering_point_type.value,
         Colname.energy_supplier_id: energy_supplier_id,
-        Colname.is_negative_grid_loss_responsible: is_negative_grid_loss_responsible,
-        Colname.is_positive_grid_loss_responsible: is_positive_grid_loss_responsible,
     }
 
     return Row(**row)

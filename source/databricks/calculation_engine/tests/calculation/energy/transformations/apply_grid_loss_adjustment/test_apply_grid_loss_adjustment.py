@@ -33,16 +33,15 @@ DEFAULT_OBSERVATION_TIME = datetime.strptime(
 
 class TestWhenValidInput:
     @pytest.mark.parametrize(
-        "grid_loss_type, metering_point_type",
+        "metering_point_type",
         [
-            (Colname.is_positive_grid_loss_responsible, MeteringPointType.CONSUMPTION),
-            (Colname.is_negative_grid_loss_responsible, MeteringPointType.PRODUCTION),
+            MeteringPointType.CONSUMPTION,
+            MeteringPointType.PRODUCTION,
         ],
     )
     def test_returns_qualities_from_result_and_grid_loss(
         self,
         spark: SparkSession,
-        grid_loss_type: str,
         metering_point_type: MeteringPointType,
     ) -> None:
         # Arrange
@@ -69,8 +68,6 @@ class TestWhenValidInput:
         grid_loss_responsible_row = grid_loss_responsible_factories.create_row(
             energy_supplier_id="energy_supplier_id",
             metering_point_type=metering_point_type,
-            is_negative_grid_loss_responsible=True,
-            is_positive_grid_loss_responsible=True,
         )
         grid_loss_responsible = grid_loss_responsible_factories.create(
             spark, [grid_loss_responsible_row]
@@ -81,7 +78,7 @@ class TestWhenValidInput:
             result,
             grid_loss,
             grid_loss_responsible,
-            grid_loss_type,
+            metering_point_type,
         )
 
         # Assert
@@ -93,16 +90,15 @@ class TestWhenValidInput:
 
 class TestWhenNoProduction:
     @pytest.mark.parametrize(
-        "grid_loss_type, metering_point_type",
+        "metering_point_type",
         [
-            (Colname.is_positive_grid_loss_responsible, MeteringPointType.CONSUMPTION),
-            (Colname.is_negative_grid_loss_responsible, MeteringPointType.PRODUCTION),
+            MeteringPointType.CONSUMPTION,
+            MeteringPointType.PRODUCTION,
         ],
     )
     def test_returns_only_grid_loss(
         self,
         spark: SparkSession,
-        grid_loss_type: str,
         metering_point_type: MeteringPointType,
     ) -> None:
         # Arrange
@@ -118,8 +114,6 @@ class TestWhenNoProduction:
 
         grid_loss_responsible_row = grid_loss_responsible_factories.create_row(
             metering_point_type=metering_point_type,
-            is_negative_grid_loss_responsible=True,
-            is_positive_grid_loss_responsible=True,
         )
         grid_loss_responsible = grid_loss_responsible_factories.create(
             spark, [grid_loss_responsible_row]
@@ -130,7 +124,7 @@ class TestWhenNoProduction:
             result,
             grid_loss,
             grid_loss_responsible,
-            grid_loss_type,
+            metering_point_type,
         )
 
         # Assert

@@ -197,7 +197,7 @@ def test_grid_area_negative_grid_loss_is_added_to_grid_loss_responsible_energy_s
         production,
         negative_grid_loss,
         grid_loss_sys_cor_master_data,
-        Colname.is_negative_grid_loss_responsible,
+        MeteringPointType.PRODUCTION,
     )
 
     # Assert
@@ -224,7 +224,7 @@ def test_grid_area_grid_loss_is_not_added_to_non_grid_loss_energy_responsible(
         production,
         negative_grid_loss,
         grid_loss_sys_cor_master_data,
-        Colname.is_negative_grid_loss_responsible,
+        MeteringPointType.PRODUCTION,
     )
 
     # Assert
@@ -255,7 +255,7 @@ def test_result_dataframe_contains_same_number_of_results_with_same_energy_suppl
         production,
         negative_grid_loss,
         grid_loss_sys_cor_master_data,
-        Colname.is_negative_grid_loss_responsible,
+        MeteringPointType.PRODUCTION,
     )
 
     # Assert
@@ -334,7 +334,7 @@ def test_correct_negative_grid_loss_entry_is_used_to_determine_energy_responsibl
         production,
         negative_grid_loss,
         grid_loss_sys_cor_master_data,
-        Colname.is_negative_grid_loss_responsible,
+        MeteringPointType.PRODUCTION,
     )
 
     # Assert

@@ -23,7 +23,12 @@ from package.calculation.energy.energy_results import EnergyResults
 from package.calculation.preparation.quarterly_metering_point_time_series import (
     QuarterlyMeteringPointTimeSeries,
 )
-from package.codelists import TimeSeriesType, AggregationLevel, ProcessType
+from package.codelists import (
+    TimeSeriesType,
+    AggregationLevel,
+    ProcessType,
+    MeteringPointType,
+)
 from package.calculation_output.energy_calculation_result_writer import (
     EnergyCalculationResultWriter,
 )
@@ -250,7 +255,7 @@ def _calculate_adjust_production_per_ga_and_brp_and_es(
         temporary_production_per_ga_and_brp_and_es,
         negative_grid_loss,
         grid_loss_responsible_df,
-        "is_negative_grid_loss_responsible",
+        MeteringPointType.PRODUCTION,
     )
 
     return production_per_ga_and_brp_and_es
@@ -265,7 +270,7 @@ def _calculate_adjust_flex_consumption_per_ga_and_brp_and_es(
         temporary_flex_consumption_per_ga_and_brp_and_es,
         positive_grid_loss,
         grid_loss_responsible_df,
-        "is_positive_grid_loss_responsible",
+        MeteringPointType.CONSUMPTION,
     )
 
     return flex_consumption_per_ga_and_brp_and_es

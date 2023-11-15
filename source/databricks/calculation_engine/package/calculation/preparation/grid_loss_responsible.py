@@ -40,7 +40,5 @@ grid_loss_responsible_schema = t.StructType(
         t.StructField(Colname.to_date, t.TimestampType(), True),
         t.StructField(Colname.metering_point_type, t.StringType(), False),
         t.StructField(Colname.energy_supplier_id, t.StringType(), False),
-        t.StructField(Colname.is_negative_grid_loss_responsible, t.BooleanType(), True),
-        t.StructField(Colname.is_positive_grid_loss_responsible, t.BooleanType(), True),
     ]
 )
