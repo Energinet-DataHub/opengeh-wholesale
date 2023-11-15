@@ -14,5 +14,5 @@
 
 from .aggregate_sum_and_quality import aggregate_quantity_and_quality
 from .aggregate_sum_and_quality import aggregate_sum_quantity_and_qualities
-from .apply_grid_loss_adjustment import adjust_production, adjust_flex_consumption
+from .apply_grid_loss_adjustment import apply_grid_loss_adjustment
 from .hour_to_quarter import transform_hour_to_quarter

@@ -16,7 +16,7 @@ from typing import Callable, Optional
 from pyspark.sql import SparkSession
 from datetime import datetime
 
-from package.calculation.energy.transformations import adjust_production
+from package.calculation.energy.transformations import apply_grid_loss_adjustment
 from package.codelists import (
     MeteringPointType,
     QuantityQuality,
@@ -69,8 +69,11 @@ class TestWhenValidInput:
         )
 
         # Act
-        actual = adjust_production(
-            production, negative_grid_loss, grid_loss_responsible
+        actual = apply_grid_loss_adjustment(
+            production,
+            negative_grid_loss,
+            grid_loss_responsible,
+            Colname.is_negative_grid_loss_responsible,
         )
 
         # Assert
@@ -107,8 +110,11 @@ class TestWhenNoProduction:
         )
 
         # Act
-        actual = adjust_production(
-            production, negative_grid_loss, grid_loss_responsible
+        actual = apply_grid_loss_adjustment(
+            production,
+            negative_grid_loss,
+            grid_loss_responsible,
+            Colname.is_negative_grid_loss_responsible,
         )
 
         # Assert

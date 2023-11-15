@@ -16,7 +16,7 @@ from typing import Callable, Optional
 from pyspark.sql import SparkSession
 from datetime import datetime
 
-from package.calculation.energy.transformations import adjust_flex_consumption
+from package.calculation.energy.transformations import apply_grid_loss_adjustment
 from package.codelists import (
     MeteringPointType,
     QuantityQuality,
@@ -71,8 +71,11 @@ class TestWhenValidInput:
         )
 
         # Act
-        actual = adjust_flex_consumption(
-            flex_consumption, positive_grid_loss, grid_loss_responsible
+        actual = apply_grid_loss_adjustment(
+            flex_consumption,
+            positive_grid_loss,
+            grid_loss_responsible,
+            Colname.is_positive_grid_loss_responsible,
         )
 
         # Assert
@@ -110,8 +113,11 @@ class TestWhenNoFlexConsumption:
         )
 
         # Act
-        actual = adjust_flex_consumption(
-            flex_consumption, positive_grid_loss, grid_loss_responsible
+        actual = apply_grid_loss_adjustment(
+            flex_consumption,
+            positive_grid_loss,
+            grid_loss_responsible,
+            Colname.is_positive_grid_loss_responsible,
         )
 
         # Assert

@@ -33,7 +33,7 @@ from package.calculation.energy.energy_results import (
     EnergyResults,
     energy_results_schema,
 )
-from package.calculation.energy.transformations import adjust_production
+from package.calculation.energy.transformations import apply_grid_loss_adjustment
 from package.codelists import (
     MeteringPointType,
     QuantityQuality,
@@ -214,8 +214,11 @@ def test_grid_area_negative_grid_loss_is_added_to_grid_loss_responsible_energy_s
     grid_loss_sys_cor_master_data = sys_cor_row_factory(supplier="A")
 
     # Act
-    actual = adjust_production(
-        production, negative_grid_loss, grid_loss_sys_cor_master_data
+    actual = apply_grid_loss_adjustment(
+        production,
+        negative_grid_loss,
+        grid_loss_sys_cor_master_data,
+        Colname.is_negative_grid_loss_responsible,
     )
 
     # Assert
@@ -238,8 +241,11 @@ def test_grid_area_grid_loss_is_not_added_to_non_grid_loss_energy_responsible(
     grid_loss_sys_cor_master_data = sys_cor_row_factory(supplier="B")
 
     # Act
-    actual = adjust_production(
-        production, negative_grid_loss, grid_loss_sys_cor_master_data
+    actual = apply_grid_loss_adjustment(
+        production,
+        negative_grid_loss,
+        grid_loss_sys_cor_master_data,
+        Colname.is_negative_grid_loss_responsible,
     )
 
     # Assert
@@ -266,8 +272,11 @@ def test_result_dataframe_contains_same_number_of_results_with_same_energy_suppl
     grid_loss_sys_cor_master_data = sys_cor_row_factory(supplier="C")
 
     # Act
-    actual = adjust_production(
-        production, negative_grid_loss, grid_loss_sys_cor_master_data
+    actual = apply_grid_loss_adjustment(
+        production,
+        negative_grid_loss,
+        grid_loss_sys_cor_master_data,
+        Colname.is_negative_grid_loss_responsible,
     )
 
     # Assert
@@ -342,8 +351,11 @@ def test_correct_negative_grid_loss_entry_is_used_to_determine_energy_responsibl
     )
 
     # Act
-    actual = adjust_production(
-        production, negative_grid_loss, grid_loss_sys_cor_master_data
+    actual = apply_grid_loss_adjustment(
+        production,
+        negative_grid_loss,
+        grid_loss_sys_cor_master_data,
+        Colname.is_negative_grid_loss_responsible,
     )
 
     # Assert

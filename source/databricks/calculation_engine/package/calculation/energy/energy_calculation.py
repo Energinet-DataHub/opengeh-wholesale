@@ -246,10 +246,11 @@ def _calculate_adjust_production_per_ga_and_brp_and_es(
     negative_grid_loss: EnergyResults,
     grid_loss_responsible_df: GridLossResponsible,
 ) -> EnergyResults:
-    production_per_ga_and_brp_and_es = transformations.adjust_production(
+    production_per_ga_and_brp_and_es = transformations.apply_grid_loss_adjustment(
         temporary_production_per_ga_and_brp_and_es,
         negative_grid_loss,
         grid_loss_responsible_df,
+        "is_negative_grid_loss_responsible",
     )
 
     return production_per_ga_and_brp_and_es
@@ -260,10 +261,11 @@ def _calculate_adjust_flex_consumption_per_ga_and_brp_and_es(
     positive_grid_loss: EnergyResults,
     grid_loss_responsible_df: GridLossResponsible,
 ) -> EnergyResults:
-    flex_consumption_per_ga_and_brp_and_es = transformations.adjust_flex_consumption(
+    flex_consumption_per_ga_and_brp_and_es = transformations.apply_grid_loss_adjustment(
         temporary_flex_consumption_per_ga_and_brp_and_es,
         positive_grid_loss,
         grid_loss_responsible_df,
+        "is_positive_grid_loss_responsible",
     )
 
     return flex_consumption_per_ga_and_brp_and_es

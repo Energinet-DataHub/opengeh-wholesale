@@ -24,35 +24,7 @@ grid_loss_responsible_grid_area = "GridLossResponsible_GridArea"
 adjusted_sum_quantity = "adjusted_sum_quantity"
 
 
-# step 11
-def adjust_production(
-    production_result_df: EnergyResults,
-    negative_grid_loss_result_df: EnergyResults,
-    grid_loss_responsible_df: GridLossResponsible,
-) -> EnergyResults:
-    return _apply_grid_loss_adjustment(
-        production_result_df,
-        negative_grid_loss_result_df,
-        grid_loss_responsible_df,
-        Colname.is_negative_grid_loss_responsible,
-    )
-
-
-# step 10
-def adjust_flex_consumption(
-    flex_consumption_result_df: EnergyResults,
-    positive_grid_loss_result_df: EnergyResults,
-    grid_loss_responsible_df: GridLossResponsible,
-) -> EnergyResults:
-    return _apply_grid_loss_adjustment(
-        flex_consumption_result_df,
-        positive_grid_loss_result_df,
-        grid_loss_responsible_df,
-        Colname.is_positive_grid_loss_responsible,
-    )
-
-
-def _apply_grid_loss_adjustment(
+def apply_grid_loss_adjustment(
     results: EnergyResults,
     grid_loss_result: EnergyResults,
     grid_loss_responsible: GridLossResponsible,
