@@ -55,7 +55,7 @@ def adjust_flex_consumption(
 
 
 def _apply_grid_loss_adjustment(
-    results: EnergyResults,  # balance_responsible_id and energy_supplier_id has values
+    results: EnergyResults,
     grid_loss_result_df: EnergyResults,
     grid_loss_responsible: GridLossResponsible,
     grid_loss_responsible_type_col: str,
