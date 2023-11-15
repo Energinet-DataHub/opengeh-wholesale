@@ -30,6 +30,9 @@ def apply_grid_loss_adjustment(
     grid_loss_responsible: GridLossResponsible,
     metering_point_type: MeteringPointType,
 ) -> EnergyResults:
+    """
+    metering_poit_type: MeteringPointType.CONSUMPTION (positive grid loss) or MeteringPointType.PRODUCTION (negative grid loss)
+    """
     # select columns from dataframe that contains information about metering points registered as negative or positive grid loss to use in join.
     glr_df = grid_loss_responsible.df.select(
         Colname.from_date,
