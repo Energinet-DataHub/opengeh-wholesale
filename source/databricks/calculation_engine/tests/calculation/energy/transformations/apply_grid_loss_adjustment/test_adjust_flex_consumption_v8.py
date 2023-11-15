@@ -123,7 +123,6 @@ def flex_consumption_result_row_factory(
         sum_quantity: Decimal = default_sum_quantity,
         time_window=None,
         aggregated_quality: str = default_aggregated_quality,
-        metering_point_type: str = default_metering_point_type,
     ) -> EnergyResults:
         if time_window is None:
             time_window = default_time_window
@@ -137,8 +136,6 @@ def flex_consumption_result_row_factory(
                 Colname.time_window: [time_window],
                 Colname.sum_quantity: [sum_quantity],
                 Colname.qualities: [[aggregated_quality]],
-                Colname.metering_point_type: [metering_point_type],
-                Colname.settlement_method: [None],
             }
         )
         df = spark.createDataFrame(pandas_df, schema=energy_results_schema)
@@ -160,7 +157,6 @@ def positive_grid_loss_result_row_factory(
         time_window=None,
         positive_grid_loss: Decimal = default_positive_grid_loss,
         aggregated_quality: str = default_aggregated_quality,
-        metering_point_type: str = default_metering_point_type,
     ) -> EnergyResults:
         if time_window is None:
             time_window = default_time_window
@@ -174,8 +170,6 @@ def positive_grid_loss_result_row_factory(
                 Colname.time_window: [time_window],
                 Colname.sum_quantity: [positive_grid_loss],
                 Colname.qualities: [[aggregated_quality]],
-                Colname.metering_point_type: [metering_point_type],
-                Colname.settlement_method: [None],
             }
         )
         df = spark.createDataFrame(pandas_df, schema=energy_results_schema)
