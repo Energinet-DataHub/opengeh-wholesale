@@ -65,27 +65,6 @@ default_valid_to = datetime.strptime(
 
 
 @pytest.fixture(scope="module")
-def negative_grid_loss_result_schema() -> StructType:
-    """
-    Input system correction result schema
-    """
-    return (
-        StructType()
-        .add(Colname.grid_area, StringType(), False)
-        .add(
-            Colname.time_window,
-            StructType()
-            .add(Colname.start, TimestampType())
-            .add(Colname.end, TimestampType()),
-            False,
-        )
-        .add(Colname.sum_quantity, DecimalType())
-        .add(Colname.qualities, ArrayType(StringType(), False), False)
-        .add(Colname.metering_point_type, StringType())
-    )
-
-
-@pytest.fixture(scope="module")
 def sys_cor_schema() -> StructType:
     """
     Input system correction data frame schema

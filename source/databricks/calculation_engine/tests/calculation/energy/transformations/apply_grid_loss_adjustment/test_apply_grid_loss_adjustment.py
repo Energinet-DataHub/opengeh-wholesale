@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Callable, Optional
+import pytest
 
 from pyspark.sql import SparkSession
 from datetime import datetime
@@ -32,9 +32,18 @@ DEFAULT_OBSERVATION_TIME = datetime.strptime(
 
 
 class TestWhenValidInput:
-    def test_returns_qualities_from_flex_consumption_and_positive_grid_loss(
+    @pytest.mark.parametrize(
+        "grid_loss_type, metering_point_type",
+        [
+            (Colname.is_positive_grid_loss_responsible, MeteringPointType.CONSUMPTION),
+            (Colname.is_negative_grid_loss_responsible, MeteringPointType.PRODUCTION),
+        ],
+    )
+    def test_returns_qualities_from_result_and_grid_loss(
         self,
         spark: SparkSession,
+        grid_loss_type: str,
+        metering_point_type: MeteringPointType,
     ) -> None:
         # Arrange
         expected_qualities = [
@@ -42,28 +51,25 @@ class TestWhenValidInput:
             QuantityQuality.ESTIMATED.value,
         ]
 
-        flex_consumption_row = energy_results_factories.create_row(
+        result_row = energy_results_factories.create_row(
             observation_time=DEFAULT_OBSERVATION_TIME,
             energy_supplier_id="energy_supplier_id",
             qualities=[QuantityQuality.CALCULATED],
             sum_quantity=10,
         )
-        flex_consumption = energy_results_factories.create(
-            spark, [flex_consumption_row]
-        )
+        result = energy_results_factories.create(spark, [result_row])
 
-        positive_grid_loss_row = energy_results_factories.create_row(
+        grid_loss_row = energy_results_factories.create_row(
             observation_time=DEFAULT_OBSERVATION_TIME,
             qualities=[QuantityQuality.ESTIMATED],
             sum_quantity=20,
         )
-        positive_grid_loss = energy_results_factories.create(
-            spark, [positive_grid_loss_row]
-        )
+        grid_loss = energy_results_factories.create(spark, [grid_loss_row])
 
         grid_loss_responsible_row = grid_loss_responsible_factories.create_row(
             energy_supplier_id="energy_supplier_id",
-            metering_point_type=MeteringPointType.CONSUMPTION,
+            metering_point_type=metering_point_type,
+            is_negative_grid_loss_responsible=True,
             is_positive_grid_loss_responsible=True,
         )
         grid_loss_responsible = grid_loss_responsible_factories.create(
@@ -72,10 +78,10 @@ class TestWhenValidInput:
 
         # Act
         actual = apply_grid_loss_adjustment(
-            flex_consumption,
-            positive_grid_loss,
+            result,
+            grid_loss,
             grid_loss_responsible,
-            Colname.is_positive_grid_loss_responsible,
+            grid_loss_type,
         )
 
         # Assert
@@ -85,27 +91,34 @@ class TestWhenValidInput:
         assert actual_row[Colname.sum_quantity] == 30
 
 
-class TestWhenNoFlexConsumption:
-    def test_returns_only_positive_grid_loss(
+class TestWhenNoProduction:
+    @pytest.mark.parametrize(
+        "grid_loss_type, metering_point_type",
+        [
+            (Colname.is_positive_grid_loss_responsible, MeteringPointType.CONSUMPTION),
+            (Colname.is_negative_grid_loss_responsible, MeteringPointType.PRODUCTION),
+        ],
+    )
+    def test_returns_only_grid_loss(
         self,
         spark: SparkSession,
-        timestamp_factory: Callable[[str], Optional[datetime]],
+        grid_loss_type: str,
+        metering_point_type: MeteringPointType,
     ) -> None:
         # Arrange
-        flex_consumption = energy_results_factories.create(spark, [])
+        result = energy_results_factories.create(spark, [])
 
-        positive_grid_loss_rows = [
+        grid_loss_rows = [
             energy_results_factories.create_row(
                 observation_time=DEFAULT_OBSERVATION_TIME,
                 sum_quantity=20,
             )
         ]
-        positive_grid_loss = energy_results_factories.create(
-            spark, positive_grid_loss_rows
-        )
+        grid_loss = energy_results_factories.create(spark, grid_loss_rows)
 
         grid_loss_responsible_row = grid_loss_responsible_factories.create_row(
-            metering_point_type=MeteringPointType.CONSUMPTION,
+            metering_point_type=metering_point_type,
+            is_negative_grid_loss_responsible=True,
             is_positive_grid_loss_responsible=True,
         )
         grid_loss_responsible = grid_loss_responsible_factories.create(
@@ -114,10 +127,10 @@ class TestWhenNoFlexConsumption:
 
         # Act
         actual = apply_grid_loss_adjustment(
-            flex_consumption,
-            positive_grid_loss,
+            result,
+            grid_loss,
             grid_loss_responsible,
-            Colname.is_positive_grid_loss_responsible,
+            grid_loss_type,
         )
 
         # Assert

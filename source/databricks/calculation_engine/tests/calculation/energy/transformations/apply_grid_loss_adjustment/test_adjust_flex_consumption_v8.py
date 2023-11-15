@@ -82,33 +82,6 @@ def grid_loss_sys_cor_schema() -> StructType:
 
 
 @pytest.fixture(scope="module")
-def expected_schema() -> StructType:
-    """
-    Expected aggregation schema
-    NOTE: Spark seems to add 10 to the precision of the decimal type on summations.
-    Thus, the expected schema should be precision of 20, 10 more than the default of 10.
-    If this is an issue we can always cast back to the original decimal precision in the aggregate
-    function.
-    https://stackoverflow.com/questions/57203383/spark-sum-and-decimaltype-precision
-    """
-    return (
-        StructType()
-        .add(Colname.grid_area, StringType(), False)
-        .add(Colname.balance_responsible_id, StringType())
-        .add(Colname.energy_supplier_id, StringType())
-        .add(
-            Colname.time_window,
-            StructType()
-            .add(Colname.start, TimestampType())
-            .add(Colname.end, TimestampType()),
-            False,
-        )
-        .add(Colname.sum_quantity, DecimalType())
-        .add(Colname.qualities, ArrayType(StringType(), False), False)
-    )
-
-
-@pytest.fixture(scope="module")
 def flex_consumption_result_row_factory(
     spark: SparkSession,
 ) -> Callable[..., EnergyResults]:
