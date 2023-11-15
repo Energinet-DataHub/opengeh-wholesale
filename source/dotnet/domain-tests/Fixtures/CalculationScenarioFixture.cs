@@ -123,10 +123,6 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
             stopwatch.Stop();
             DiagnosticMessageSink.WriteDiagnosticMessage($"Message receiver loop took '{stopwatch.Elapsed}' to complete. It handled a total of '{receivedIntegrationEvents.Count}' messages spanning various event types.");
-            if (stopwatch.Elapsed >= waitTimeLimit)
-            {
-                DiagnosticMessageSink.WriteDiagnosticMessage($"No messages received within the time limit of '{waitTimeLimit}'. The loop was stopped.");
-            }
 
             return receivedIntegrationEvents;
         }
