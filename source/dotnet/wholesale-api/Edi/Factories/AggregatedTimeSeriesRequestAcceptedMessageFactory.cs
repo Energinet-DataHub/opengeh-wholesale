@@ -24,9 +24,9 @@ namespace Energinet.DataHub.Wholesale.EDI.Factories;
 
 public class AggregatedTimeSeriesRequestAcceptedMessageFactory
 {
-    public static ServiceBusMessage Create(AggregatedTimeSeries timeSeries, string referenceId)
+    public static ServiceBusMessage Create(AggregatedTimeSeries aggregatedTimeSeries, string referenceId)
     {
-        var body = CreateAcceptedResponse(timeSeries);
+        var body = CreateAcceptedResponse(aggregatedTimeSeries);
 
         var message = new ServiceBusMessage()
         {
@@ -38,25 +38,25 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
         return message;
     }
 
-    private static AggregatedTimeSeriesRequestAccepted CreateAcceptedResponse(AggregatedTimeSeries timeSeries)
+    private static AggregatedTimeSeriesRequestAccepted CreateAcceptedResponse(AggregatedTimeSeries aggregatedTimeSeries)
     {
-        var points = CreateTimeSeriesPoints(timeSeries);
+        var points = CreateTimeSeriesPoints(aggregatedTimeSeries);
 
         return new AggregatedTimeSeriesRequestAccepted()
         {
-            GridArea = timeSeries.GridArea,
+            GridArea = aggregatedTimeSeries.GridArea,
             QuantityUnit = QuantityUnit.Kwh,
             TimeSeriesPoints = { points },
-            TimeSeriesType = CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromCalculationsResult(timeSeries.TimeSeriesType),
+            TimeSeriesType = CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromCalculationsResult(aggregatedTimeSeries.TimeSeriesType),
             Resolution = Resolution.Pt15M,
         };
     }
 
-    private static IReadOnlyCollection<TimeSeriesPoint> CreateTimeSeriesPoints(AggregatedTimeSeries timeSeries)
+    private static IReadOnlyCollection<TimeSeriesPoint> CreateTimeSeriesPoints(AggregatedTimeSeries aggregatedTimeSeries)
     {
         const decimal nanoFactor = 1_000_000_000;
         var points = new List<TimeSeriesPoint>();
-        foreach (var timeSeriesPoint in timeSeries.TimeSeriesPoints)
+        foreach (var timeSeriesPoint in aggregatedTimeSeries.TimeSeriesPoints)
         {
             var units = decimal.ToInt64(timeSeriesPoint.Quantity);
             var nanos = decimal.ToInt32((timeSeriesPoint.Quantity - units) * nanoFactor);
