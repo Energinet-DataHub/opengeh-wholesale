@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.energy_results
     calculation_id STRING NOT NULL,
     calculation_type STRING NOT NULL,
     calculation_execution_time_start TIMESTAMP NOT NULL,
-    out_grid_area STRING
+    out_grid_area STRING,
     calculation_result_id STRING NOT NULL
 )
 USING DELTA

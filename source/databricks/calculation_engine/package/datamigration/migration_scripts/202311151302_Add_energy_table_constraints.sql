@@ -1,4 +1,4 @@
-ALTER TABLE {OUTPUT_DATABASE_NAME}.result
+ALTER TABLE {OUTPUT_DATABASE_NAME}.energy_results
     ADD CONSTRAINT calculation_type_chk CHECK (calculation_type IN ('BalanceFixing', 'Aggregation', 'WholesaleFixing', 'FirstCorrectionSettlement', 'SecondCorrectionSettlement', 'ThirdCorrectionSettlement'))
 GO
 

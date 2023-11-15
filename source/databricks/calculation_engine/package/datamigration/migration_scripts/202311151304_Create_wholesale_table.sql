@@ -35,9 +35,8 @@ CREATE TABLE IF NOT EXISTS {OUTPUT_DATABASE_NAME}.wholesale_results
     -- Null when total sum.
     charge_type STRING,
     -- Null when total sum.
-    charge_owner_id STRING
+    charge_owner_id STRING,
     amount_type STRING NOT NULL
-GO
 )
 USING DELTA
 -- In the test environment the TEST keyword is set to "--" (commented out) and the default location is used. 

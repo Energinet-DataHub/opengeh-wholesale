@@ -14,10 +14,6 @@ ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
     ADD CONSTRAINT grid_area_chk CHECK (LENGTH(grid_area) = 3)
 GO
 
-ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
-    ADD CONSTRAINT energy_supplier_id_chk CHECK (energy_supplier_id IS NOT NULL AND LENGTH(energy_supplier_id) = 13 OR LENGTH(energy_supplier_id) = 16)
-GO
-
 -- Length is 16 when EIC and 13 when GLN
 ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
     ADD CONSTRAINT energy_supplier_id_chk CHECK (energy_supplier_id IS NULL OR LENGTH(energy_supplier_id) = 13 OR LENGTH(energy_supplier_id) = 16)
@@ -29,7 +25,9 @@ ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
 GO
 
 ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
-    ADD CONSTRAINT quantity_quality_chk CHECK (quantity_quality IN ('missing', 'calculated', 'incomplete'))
+    ADD CONSTRAINT quantity_qualities_chk
+    CHECK (array_size(array_except(quantity_qualities, array('missing', 'calculated', 'measured', 'estimated'))) = 0
+           AND array_size(quantity_qualities) > 0)
 GO
 
 ALTER TABLE {OUTPUT_DATABASE_NAME}.wholesale_results
