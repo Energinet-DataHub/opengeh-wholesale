@@ -77,7 +77,7 @@ def _throw_if_no_grid_loss_responsible(
         )
         if (
             current_grid_area_responsible.filter(
-                col(Colname.is_negative_grid_loss_responsible)
+                col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value
             ).count()
             == 0
         ):
@@ -86,7 +86,7 @@ def _throw_if_no_grid_loss_responsible(
             )
         if (
             current_grid_area_responsible.filter(
-                col(Colname.is_positive_grid_loss_responsible)
+                col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value
             ).count()
             == 0
         ):
