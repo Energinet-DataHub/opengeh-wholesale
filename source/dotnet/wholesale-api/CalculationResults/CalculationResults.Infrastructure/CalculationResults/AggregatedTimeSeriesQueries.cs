@@ -14,8 +14,8 @@
 
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
-using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.RequestCalculationResult.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
@@ -23,7 +23,7 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Microsoft.Extensions.Options;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.RequestCalculationResult;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 
 public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
 {
@@ -38,7 +38,7 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
         _deltaTableOptions = deltaTableOptions.Value;
     }
 
-    public async Task<AggregatedTimeSeriesResult?> GetAsync(AggregatedTimeSeriesQueryParameters parameters)
+    public async Task<AggregatedTimeSeries?> GetAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
         var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
         DatabricksSqlRow? firstRow = null;
@@ -56,10 +56,10 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
         if (firstRow is null)
             return null;
 
-        return AggregatedTimeSeriesResultFactory.CreateEnergyResult(firstRow, timeSeriesPoints);
+        return AggregatedTimeSeriesFactory.Create(firstRow, timeSeriesPoints);
     }
 
-    public async Task<AggregatedTimeSeriesResult?> GetLatestCorrectionAsync(AggregatedTimeSeriesQueryParameters parameters)
+    public async Task<AggregatedTimeSeries?> GetLatestCorrectionAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
         if (parameters.ProcessType != null)
         {

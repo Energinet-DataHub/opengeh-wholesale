@@ -20,14 +20,14 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.RequestCalculationResult.Statements;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
-public class QuerySingleAggregatedTimeSeriesStatement : DatabricksStatement
+public class QueryAggregatedTimeSeriesStatement : DatabricksStatement
 {
     private readonly AggregatedTimeSeriesQueryParameters _parameters;
     private readonly DeltaTableOptions _deltaTableOptions;
 
-    public QuerySingleAggregatedTimeSeriesStatement(AggregatedTimeSeriesQueryParameters parameters, DeltaTableOptions deltaTableOptions)
+    public QueryAggregatedTimeSeriesStatement(AggregatedTimeSeriesQueryParameters parameters, DeltaTableOptions deltaTableOptions)
     {
         _parameters = parameters;
         _deltaTableOptions = deltaTableOptions;
@@ -35,10 +35,22 @@ public class QuerySingleAggregatedTimeSeriesStatement : DatabricksStatement
 
     protected override string GetSqlStatement()
     {
-        return $@"
-            SELECT 1
+        var sql = $@"
+            SELECT {string.Join(", ", SqlColumnNames.Select(columnName => $"t1.{columnName}"))}
             FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} t1
-            WHERE {CreateSqlQueryFilters(_parameters)}";
+            LEFT JOIN {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME} t2
+                ON t1.{EnergyResultColumnNames.Time} = t2.{EnergyResultColumnNames.Time}
+                    AND t1.{EnergyResultColumnNames.BatchExecutionTimeStart} < t2.{EnergyResultColumnNames.BatchExecutionTimeStart}
+                    AND t1.{EnergyResultColumnNames.GridArea} = t2.{EnergyResultColumnNames.GridArea}
+                    AND COALESCE(t1.{EnergyResultColumnNames.FromGridArea}, 'N/A') = COALESCE(t2.{EnergyResultColumnNames.FromGridArea}, 'N/A')
+                    AND t1.{EnergyResultColumnNames.TimeSeriesType} = t2.{EnergyResultColumnNames.TimeSeriesType}
+                    AND t1.{EnergyResultColumnNames.BatchProcessType} = t2.{EnergyResultColumnNames.BatchProcessType}
+                    AND t1.{EnergyResultColumnNames.AggregationLevel} = t2.{EnergyResultColumnNames.AggregationLevel}
+            WHERE t2.time IS NULL
+                AND {CreateSqlQueryFilters(_parameters)}";
+
+        sql += $@"ORDER BY t1.time";
+        return sql;
     }
 
     private static string CreateSqlQueryFilters(AggregatedTimeSeriesQueryParameters parameters)
@@ -67,4 +79,19 @@ public class QuerySingleAggregatedTimeSeriesStatement : DatabricksStatement
 
         return whereClausesSql;
     }
+
+    private static string[] SqlColumnNames { get; } =
+    {
+        EnergyResultColumnNames.BatchId,
+        EnergyResultColumnNames.GridArea,
+        EnergyResultColumnNames.FromGridArea,
+        EnergyResultColumnNames.TimeSeriesType,
+        EnergyResultColumnNames.EnergySupplierId,
+        EnergyResultColumnNames.BalanceResponsibleId,
+        EnergyResultColumnNames.Time,
+        EnergyResultColumnNames.Quantity,
+        EnergyResultColumnNames.QuantityQualities,
+        EnergyResultColumnNames.CalculationResultId,
+        EnergyResultColumnNames.BatchProcessType,
+    };
 }

@@ -16,9 +16,9 @@ using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 
-public class AggregatedTimeSeriesResult
+public class AggregatedTimeSeries
 {
-    public AggregatedTimeSeriesResult(
+    public AggregatedTimeSeries(
         string gridArea,
         EnergyTimeSeriesPoint[] timeSeriesPoints,
         TimeSeriesType timeSeriesType,

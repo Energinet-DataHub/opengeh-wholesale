@@ -75,7 +75,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
     }
 
-    private Task<AggregatedTimeSeriesResult?> GetCalculationResultsAsync(
+    private Task<AggregatedTimeSeries?> GetCalculationResultsAsync(
         AggregatedTimeSeriesRequest request)
     {
         var parameters = new AggregatedTimeSeriesQueryParameters(

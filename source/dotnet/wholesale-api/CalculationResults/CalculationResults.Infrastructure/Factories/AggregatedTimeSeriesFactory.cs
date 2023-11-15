@@ -19,17 +19,17 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 
-public class AggregatedTimeSeriesResultFactory
+public class AggregatedTimeSeriesFactory
 {
-    public static AggregatedTimeSeriesResult CreateEnergyResult(
+    public static AggregatedTimeSeries Create(
         DatabricksSqlRow databricksSqlRow,
-        List<EnergyTimeSeriesPoint> timeSeriesPoints)
+        IReadOnlyCollection<EnergyTimeSeriesPoint> timeSeriesPoints)
     {
         var gridArea = databricksSqlRow[EnergyResultColumnNames.GridArea];
         var timeSeriesType = databricksSqlRow[EnergyResultColumnNames.TimeSeriesType];
         var processType = databricksSqlRow[EnergyResultColumnNames.BatchProcessType];
 
-        return new AggregatedTimeSeriesResult(
+        return new AggregatedTimeSeries(
             gridArea: gridArea!,
             timeSeriesPoints: timeSeriesPoints.ToArray()!,
             timeSeriesType: SqlResultValueConverters.ToTimeSeriesType(timeSeriesType!),

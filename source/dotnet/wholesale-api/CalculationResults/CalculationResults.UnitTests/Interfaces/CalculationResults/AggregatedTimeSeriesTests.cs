@@ -20,7 +20,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Interfaces.CalculationResults;
 
-public class AggregatedTimeSeriesResultTests
+public class AggregatedTimeSeriesTests
 {
     [Theory]
     [InlineAutoMoqData]
@@ -29,13 +29,17 @@ public class AggregatedTimeSeriesResultTests
         TimeSeriesType anyTimeSeriesType,
         ProcessType anyProcessType)
     {
+        // Arrange
         var emptyTimeSeriesPoints = Array.Empty<EnergyTimeSeriesPoint>();
-        var exception = Assert.Throws<ArgumentException>(() =>
-            new AggregatedTimeSeriesResult(
-                gridArea: anyGridArea,
-                timeSeriesType: anyTimeSeriesType,
-                timeSeriesPoints: emptyTimeSeriesPoints,
-                processType: anyProcessType));
-        exception.Message.Should().Contain("empty");
+
+        // Act
+        var act = () => new AggregatedTimeSeries(
+            gridArea: anyGridArea,
+            timeSeriesType: anyTimeSeriesType,
+            timeSeriesPoints: emptyTimeSeriesPoints,
+            processType: anyProcessType);
+
+        // Assert
+        act.Should().Throw<ArgumentException>().WithMessage("*empty*");
     }
 }

@@ -17,7 +17,7 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 
-public sealed class EnergyResult : AggregatedTimeSeriesResult
+public sealed class EnergyResult : AggregatedTimeSeries
 {
     public EnergyResult(
         Guid id,

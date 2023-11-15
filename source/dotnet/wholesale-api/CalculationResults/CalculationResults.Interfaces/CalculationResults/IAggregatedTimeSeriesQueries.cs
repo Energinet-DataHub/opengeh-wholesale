@@ -22,11 +22,11 @@ public interface IAggregatedTimeSeriesQueries
     /// Get the latest aggregated time series
     /// </summary>
     /// <returns>Returns null if the aggregated time series does not contain any points.</returns>
-    Task<AggregatedTimeSeriesResult?> GetAsync(AggregatedTimeSeriesQueryParameters parameters);
+    Task<AggregatedTimeSeries?> GetAsync(AggregatedTimeSeriesQueryParameters parameters);
 
     /// <summary>
     /// Get the most recent aggregated time series for the last correction settlements.
     /// </summary>
     /// <returns>Returns null if the aggregated time series does not contain any points.</returns>
-    Task<AggregatedTimeSeriesResult?> GetLatestCorrectionAsync(AggregatedTimeSeriesQueryParameters parameters);
+    Task<AggregatedTimeSeries?> GetLatestCorrectionAsync(AggregatedTimeSeriesQueryParameters parameters);
 }

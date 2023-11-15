@@ -56,10 +56,10 @@ public class AggregatedTimeSeriesRequestHandlerTests
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(request.ToByteArray()));
 
-        var calculationResult = CreateAggregatedTimeSeriesResult();
+        var aggregatedTimeSeries = CreateAggregatedTimeSeries();
         aggregatedTimeSeriesQueries
             .Setup(parameters => parameters.GetAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
-            .ReturnsAsync(() => calculationResult);
+            .ReturnsAsync(() => aggregatedTimeSeries);
 
         validator.Setup(vali => vali.Validate(
                 It.IsAny<AggregatedTimeSeriesRequest>()))
@@ -189,9 +189,9 @@ public class AggregatedTimeSeriesRequestHandlerTests
             Times.Once);
     }
 
-    private AggregatedTimeSeriesResult CreateAggregatedTimeSeriesResult()
+    private AggregatedTimeSeries CreateAggregatedTimeSeries()
     {
-        return new AggregatedTimeSeriesResult(
+        return new AggregatedTimeSeries(
             gridArea: "543",
             timeSeriesPoints: new EnergyTimeSeriesPoint[] { new(DateTime.Now, 0, new List<QuantityQuality> { QuantityQuality.Measured }) },
             timeSeriesType: TimeSeriesType.Production,

@@ -38,10 +38,10 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
         // Arrange
         var expectedAcceptedSubject = nameof(AggregatedTimeSeriesRequestAccepted);
         var expectedReferenceId = "123456789";
-        var energyResult = CreateAggregatedTimeSeriesResult();
+        var aggregatedTimeSeries = CreateAggregatedTimeSeries();
 
         // Act
-        var response = AggregatedTimeSeriesRequestAcceptedMessageFactory.Create(energyResult, expectedReferenceId);
+        var response = AggregatedTimeSeriesRequestAcceptedMessageFactory.Create(aggregatedTimeSeries, expectedReferenceId);
 
         // Assert
         response.Should().NotBeNull();
@@ -64,14 +64,14 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
         latestTimestamp.Time.Should().BeLessThan(periodEndTimestamp)
             .And.BeGreaterOrEqualTo(earliestTimestamp.Time);
 
-        responseBody.TimeSeriesPoints.Count.Should().Be(energyResult.TimeSeriesPoints.Length);
+        responseBody.TimeSeriesPoints.Count.Should().Be(aggregatedTimeSeries.TimeSeriesPoints.Length);
     }
 
-    private AggregatedTimeSeriesResult CreateAggregatedTimeSeriesResult()
+    private AggregatedTimeSeries CreateAggregatedTimeSeries()
     {
         var quantityQualities = new List<QuantityQuality> { QuantityQuality.Estimated };
 
-        return new AggregatedTimeSeriesResult(
+        return new AggregatedTimeSeries(
             _gridArea,
             new EnergyTimeSeriesPoint[]
             {
