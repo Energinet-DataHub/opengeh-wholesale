@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration;
 using Microsoft.Extensions.Configuration;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
+namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Attributes
 {
     /// <summary>
     /// Use this to mark domain tests (facts).
@@ -30,15 +31,13 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         public DomainFactAttribute()
         {
             if (_shouldSkip.Value)
-            {
                 Skip = "Domain fact was configured to be skipped.";
-            }
         }
 
         private static bool ShouldSkip()
         {
             var configuration = new DomainTestConfiguration();
-            return configuration.Root.GetValue<bool>("DOMAINFACT_SKIP", defaultValue: true);
+            return configuration.Root.GetValue("DOMAINFACT_SKIP", defaultValue: true);
         }
     }
 }

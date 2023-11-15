@@ -15,7 +15,7 @@
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Microsoft.Extensions.Configuration;
 
-namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
+namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Identity
 {
     /// <summary>
     /// Responsible for extracting secrets for authorization needed for performing tests using B2C 'user' access tokens.
