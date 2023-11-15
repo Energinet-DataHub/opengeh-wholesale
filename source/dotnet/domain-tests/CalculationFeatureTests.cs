@@ -351,6 +351,63 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                     actualTimeSeriesTypesForEnergyResultProducedV2.Should().Contain(timeSeriesType);
                 }
             }
+
+            [Priority(8)]
+            [DomainFact]
+            public void AndThen_ReceivedIntegrationEventsContainExpectedTuplesOfTimeSeriesTypeAndAggregationLevel()
+            {
+                IEnumerable<(string TimeSeriesType, string AggregationLevel)> expectedTuplesOfTimeSeriesTypeAndAggregationLevel =
+                    new List<(string, string)>
+                    {
+                        ("NonProfiledConsumption", "AggregationPerGridarea"),
+                        ("NonProfiledConsumption", "AggregationPerEnergysupplierPerGridarea"),
+                        ("NonProfiledConsumption", "AggregationPerBalanceresponsiblepartyPerGridarea"),
+                        ("NonProfiledConsumption", "AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea"),
+
+                        ("Production", "AggregationPerGridarea"),
+                        ("Production", "AggregationPerEnergysupplierPerGridarea"),
+                        ("Production", "AggregationPerBalanceresponsiblepartyPerGridarea"),
+                        ("Production", "AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea"),
+
+                        ("FlexConsumption", "AggregationPerGridarea"),
+                        ("FlexConsumption", "AggregationPerEnergysupplierPerGridarea"),
+                        ("FlexConsumption", "AggregationPerBalanceresponsiblepartyPerGridarea"),
+                        ("FlexConsumption", "AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea"),
+
+                        ("NetExchangePerGa", "AggregationPerGridarea"),
+
+                        ("NetExchangePerNeighboringGa", "AggregationPerGridarea"),
+
+                        ("GridLoss", "AggregationPerGridarea"),
+
+                        ("NegativeGridLoss", "AggregationPerGridarea"),
+
+                        ("PositiveGridLoss", "AggregationPerGridarea"),
+
+                        ("TotalConsumption", "AggregationPerGridarea"),
+
+                        ("TempFlexConsumption", "AggregationPerGridarea"),
+
+                        ("TempProduction", "AggregationPerGridarea"),
+                    };
+
+                // Assert
+                using var assertionScope = new AssertionScope();
+                foreach (var tuple in expectedTuplesOfTimeSeriesTypeAndAggregationLevel)
+                {
+                    Fixture.ScenarioState.ReceivedCalculationResultCompleted
+                        .Should()
+                        .Contain(item =>
+                            Enum.GetName(item.TimeSeriesType) == tuple.TimeSeriesType
+                            && Enum.GetName(item.AggregationLevelCase) == tuple.AggregationLevel);
+
+                    Fixture.ScenarioState.ReceivedEnergyResultProducedV2
+                        .Should()
+                        .Contain(item =>
+                            Enum.GetName(item.TimeSeriesType) == tuple.TimeSeriesType
+                            && Enum.GetName(item.AggregationLevelCase) == tuple.AggregationLevel);
+                }
+            }
         }
     }
 }
