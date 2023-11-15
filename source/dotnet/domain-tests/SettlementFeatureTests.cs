@@ -65,7 +65,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
 
             [Priority(3)]
             [DomainFact]
-            public void AndThen_EntryNameShouldBeResultCsv()
+            public void AndThen_SingleEntryNameShouldBeResultCsv()
             {
                 var expected = "Result.csv";
                 Fixture.ScenarioState.Entry = Fixture.ScenarioState.CompressedSettlementReport.Entries.Single();
@@ -76,7 +76,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
 
             [Priority(4)]
             [DomainFact]
-            public async Task AndThen_EntryShouldContainCorrectGridAreaCodesAndProcessType()
+            public async Task AndThen_SingleEntryShouldContainCorrectGridAreaCodesAndProcessType()
             {
                 var expected = "543,D04,";
                 var lines = await Fixture.SplitEntryIntoLinesAsync(Fixture.ScenarioState.Entry);
