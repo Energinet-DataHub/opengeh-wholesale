@@ -24,8 +24,6 @@ using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Extensions;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents;
-using Microsoft.Azure.Amqp.Framing;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures

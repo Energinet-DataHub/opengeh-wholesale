@@ -14,7 +14,6 @@
 
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
