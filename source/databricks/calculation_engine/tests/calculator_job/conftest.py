@@ -20,7 +20,7 @@ import pyspark.sql.functions as F
 import pytest
 from unittest.mock import patch
 
-from package.calculation.preparation.transformations.grid_loss_responsible import (
+from package.calculation.preparation.grid_loss_responsible import (
     grid_loss_responsible_schema,
 )
 from . import configuration as C
