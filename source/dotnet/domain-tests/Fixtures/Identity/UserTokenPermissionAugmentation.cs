@@ -14,7 +14,7 @@
 
 using System.Net.Http.Json;
 
-namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
+namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Identity
 {
     /// <summary>
     /// Encapsulates REST call to augment an external token with permissions.
@@ -50,12 +50,9 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
             var actors = await response.Content.ReadFromJsonAsync<GetAssociatedUserActorsResponseDto>();
             var chosenActor = actors?.ActorIds.FirstOrDefault();
-            if (chosenActor == null)
-            {
-                throw new InvalidOperationException("The user requested for the domain test does not have actors assigned.");
-            }
-
-            return chosenActor.Value;
+            return chosenActor == null
+                ? throw new InvalidOperationException("The user requested for the domain test does not have actors assigned.")
+                : chosenActor.Value;
         }
 
         private async Task<string> AugmentTokenAsync(string externalToken, Guid actorId)

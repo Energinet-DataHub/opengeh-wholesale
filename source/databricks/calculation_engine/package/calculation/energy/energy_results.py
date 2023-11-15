@@ -22,6 +22,8 @@ from package.constants import Colname
 class EnergyResults(DataFrameWrapper):
     """
     Time series of energy results.
+
+    Only exchange energy results have to- and from- grid area values.
     """
 
     def __init__(self, df: DataFrame):
@@ -62,9 +64,7 @@ energy_results_schema = t.StructType(
             ),
             False,
         ),
-        t.StructField(Colname.sum_quantity, t.DecimalType(18, 3), False),
+        t.StructField(Colname.sum_quantity, t.DecimalType(18, 6), False),
         t.StructField(Colname.qualities, t.ArrayType(t.StringType(), False), False),
-        t.StructField(Colname.metering_point_type, t.StringType(), False),
-        t.StructField(Colname.settlement_method, t.StringType(), True),
     ]
 )
