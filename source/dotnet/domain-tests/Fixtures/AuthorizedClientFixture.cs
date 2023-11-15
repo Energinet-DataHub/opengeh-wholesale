@@ -13,7 +13,8 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
-using Moq;
+using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration;
+using Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
@@ -26,8 +27,6 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         public AuthorizedClientFixture(IMessageSink diagnosticMessageSink)
             : base(diagnosticMessageSink)
         {
-            Configuration = new WholesaleDomainConfiguration();
-            UserAuthenticationClient = new B2CUserTokenAuthenticationClient(Configuration.UserTokenConfiguration);
         }
 
         /// <summary>
@@ -35,39 +34,15 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         /// </summary>
         public WholesaleClient_V3 WholesaleClient { get; private set; } = null!;
 
-        private WholesaleDomainConfiguration Configuration { get; }
-
-        private B2CUserTokenAuthenticationClient UserAuthenticationClient { get; }
-
         protected override async Task OnInitializeAsync()
         {
-            WholesaleClient = await CreateWholesaleClientAsync();
+            var configuration = new WholesaleDomainConfiguration();
+            WholesaleClient = await WholesaleClientFactory.CreateWholesaleClientAsync(configuration, useAuthentication: true);
         }
 
         protected override Task OnDisposeAsync()
         {
-            UserAuthenticationClient.Dispose();
-
             return Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// The current implementation of <see cref="WholesaleClient"/> is favored to
-        /// a usage scenario where the access token has already been retrieved or can
-        /// be retrieved synchronously.
-        /// However, in current tests we need to retrieve it asynchronously.
-        /// </summary>
-        private async Task<WholesaleClient_V3> CreateWholesaleClientAsync()
-        {
-            var accessToken = await UserAuthenticationClient.AcquireAccessTokenAsync();
-
-            var httpClient = new HttpClient();
-            httpClient.BaseAddress = Configuration.WebApiBaseAddress;
-            httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken}");
-
-            return new WholesaleClient_V3(
-                Configuration.WebApiBaseAddress.ToString(),
-                httpClient);
         }
     }
 }

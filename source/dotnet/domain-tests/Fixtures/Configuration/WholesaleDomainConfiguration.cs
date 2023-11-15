@@ -13,9 +13,10 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
+using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Identity;
 using Microsoft.Extensions.Configuration;
 
-namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
+namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration
 {
     /// <summary>
     /// Responsible for retrieving settings necessary for performing domain tests of 'Wholesale'.

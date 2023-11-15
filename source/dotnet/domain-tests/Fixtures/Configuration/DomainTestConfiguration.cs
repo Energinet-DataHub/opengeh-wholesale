@@ -14,7 +14,7 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
+namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration
 {
     /// <summary>
     /// Responsible for building the configuration root used for extracting domain test values.
