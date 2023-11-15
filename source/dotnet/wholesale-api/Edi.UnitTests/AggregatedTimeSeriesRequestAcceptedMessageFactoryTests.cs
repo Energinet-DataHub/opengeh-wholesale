@@ -27,12 +27,7 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests;
 
 public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
 {
-    private readonly Guid _batchId = Guid.NewGuid();
-    private readonly Guid _id = Guid.NewGuid();
     private readonly string _gridArea = "543";
-    private readonly string _energySupplierId = "es_id";
-    private readonly string _balanceResponsibleId = "br_id";
-    private readonly string _fromGridArea = "123";
     private readonly Instant _periodStart = Instant.FromUtc(2020, 12, 31, 23, 0);
     private readonly Instant _periodEnd = Instant.FromUtc(2021, 1, 1, 23, 0);
     private readonly TimeSeriesType _timeSeriesType = TimeSeriesType.Production;
@@ -43,10 +38,10 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
         // Arrange
         var expectedAcceptedSubject = nameof(AggregatedTimeSeriesRequestAccepted);
         var expectedReferenceId = "123456789";
-        var energyResult = CreateEnergyResult();
+        var aggregatedTimeSeries = CreateAggregatedTimeSeries();
 
         // Act
-        var response = AggregatedTimeSeriesRequestAcceptedMessageFactory.Create(energyResult, expectedReferenceId);
+        var response = AggregatedTimeSeriesRequestAcceptedMessageFactory.Create(aggregatedTimeSeries, expectedReferenceId);
 
         // Assert
         response.Should().NotBeNull();
@@ -69,29 +64,22 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
         latestTimestamp.Time.Should().BeLessThan(periodEndTimestamp)
             .And.BeGreaterOrEqualTo(earliestTimestamp.Time);
 
-        responseBody.TimeSeriesPoints.Count.Should().Be(energyResult.TimeSeriesPoints.Length);
+        responseBody.TimeSeriesPoints.Count.Should().Be(aggregatedTimeSeries.TimeSeriesPoints.Length);
     }
 
-    private EnergyResult CreateEnergyResult()
+    private AggregatedTimeSeries CreateAggregatedTimeSeries()
     {
         var quantityQualities = new List<QuantityQuality> { QuantityQuality.Estimated };
 
-        return new EnergyResult(
-            _id,
-            _batchId,
+        return new AggregatedTimeSeries(
             _gridArea,
-            _timeSeriesType,
-            _energySupplierId,
-            _balanceResponsibleId,
             new EnergyTimeSeriesPoint[]
             {
                 new(new DateTime(2021, 1, 1), 1, quantityQualities),
                 new(new DateTime(2021, 1, 1), 2, quantityQualities),
                 new(new DateTime(2021, 1, 1), 3, quantityQualities),
             },
-            ProcessType.Aggregation,
-            _periodStart,
-            _periodEnd,
-            _fromGridArea);
+            _timeSeriesType,
+            ProcessType.Aggregation);
     }
 }
