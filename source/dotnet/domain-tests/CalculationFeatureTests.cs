@@ -15,8 +15,11 @@
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures;
+using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Attributes;
+using Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using Xunit;
 using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType;
 
 namespace Energinet.DataHub.Wholesale.DomainTests
@@ -29,9 +32,9 @@ namespace Energinet.DataHub.Wholesale.DomainTests
         /// <summary>
         /// These tests uses an authorized Wholesale client to perform requests.
         /// </summary>
-        public class Given_CalculatedCompleted : DomainTestsBase<CalculationFixture>
+        public class Given_CalculationCompleted : DomainTestsBase<CalculationFixture>
         {
-            public Given_CalculatedCompleted(LazyFixtureFactory<CalculationFixture> lazyFixtureFactory)
+            public Given_CalculationCompleted(LazyFixtureFactory<CalculationFixture> lazyFixtureFactory)
                 : base(lazyFixtureFactory)
             {
             }
@@ -215,6 +218,138 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                     ("TempFlexConsumption", "AggregationPerGridarea"),
                     ("TempProduction", "AggregationPerGridarea"),
                 };
+            }
+        }
+
+        [TestCaseOrderer(
+            ordererTypeName: "Energinet.DataHub.Wholesale.DomainTests.Fixtures.Orderers.PriorityOrderer",
+            ordererAssemblyName: "Energinet.DataHub.Wholesale.DomainTests")]
+        public class BalanceFixingCalculationScenario : DomainTestsBase<CalculationScenarioFixture>
+        {
+            public BalanceFixingCalculationScenario(LazyFixtureFactory<CalculationScenarioFixture> lazyFixtureFactory)
+                : base(lazyFixtureFactory)
+            {
+            }
+
+            [Priority(0)]
+            [DomainFact]
+            public void Given_CalculationInput()
+            {
+                var startDate = new DateTimeOffset(2022, 1, 11, 23, 0, 0, TimeSpan.Zero);
+                var endDate = new DateTimeOffset(2022, 1, 12, 23, 0, 0, TimeSpan.Zero);
+                var batchRequestDto = new Clients.v3.BatchRequestDto
+                {
+                    ProcessType = Clients.v3.ProcessType.BalanceFixing,
+                    GridAreaCodes = new List<string> { "543" },
+                    StartDate = startDate,
+                    EndDate = endDate,
+                };
+
+                Fixture.Scenario.CalculationInput = batchRequestDto;
+            }
+
+            [Priority(1)]
+            [DomainFact]
+            public void AndGiven_SubscribedIntegrationEvents()
+            {
+                Fixture.Scenario.SubscribedIntegrationEventNames.Add(CalculationResultCompleted.EventName);
+                Fixture.Scenario.SubscribedIntegrationEventNames.Add(EnergyResultProducedV2.EventName);
+            }
+
+            [Priority(2)]
+            [DomainFact]
+            public async Task When_CalculationIsStarted()
+            {
+                Fixture.Scenario.CalculationId = await Fixture.StartCalculationAsync(Fixture.Scenario.CalculationInput);
+
+                // Assert
+                Fixture.Scenario.CalculationId.Should().NotBeEmpty();
+            }
+
+            [Priority(3)]
+            [DomainFact]
+            public async Task Then_CalculationIsCompletedWithinWaitTime()
+            {
+                var actualWaitResult = await Fixture.WaitForCalculationStateAsync(
+                    Fixture.Scenario.CalculationId,
+                    waitForState: Clients.v3.BatchState.Completed,
+                    waitTimeLimit: TimeSpan.FromMinutes(20));
+
+                Fixture.Scenario.Batch = actualWaitResult.Batch;
+
+                // Assert
+                using var assertionScope = new AssertionScope();
+                actualWaitResult.IsState.Should().BeTrue();
+                actualWaitResult.Batch.Should().NotBeNull();
+
+                actualWaitResult.Batch!.ExecutionState.Should().Be(Clients.v3.BatchState.Completed);
+            }
+
+            [Priority(4)]
+            [DomainFact]
+            public void AndThen_CalculationDurationIsLessThanOrEqualToTimeLimit()
+            {
+                var calculationTimeLimit = TimeSpan.FromMinutes(13);
+                var actualCalculationDuration =
+                    Fixture.Scenario.Batch!.ExecutionTimeEnd - Fixture.Scenario.Batch.ExecutionTimeStart;
+
+                // Assert
+                actualCalculationDuration.Should().BeGreaterThan(TimeSpan.Zero);
+                actualCalculationDuration.Should().BeLessThanOrEqualTo(calculationTimeLimit);
+            }
+
+            [Priority(5)]
+            [DomainFact]
+            public async Task AndThen_IntegrationEventsAreReceivedWithinWaitTime()
+            {
+                var actualReceivedIntegrationEvents = await Fixture.WaitForIntegrationEventsAsync(
+                    Fixture.Scenario.CalculationId,
+                    Fixture.Scenario.SubscribedIntegrationEventNames.AsReadOnly(),
+                    waitTimeLimit: TimeSpan.FromMinutes(8));
+
+                Fixture.Scenario.ReceivedCalculationResultCompleted = actualReceivedIntegrationEvents.OfType<CalculationResultCompleted>().ToList();
+                Fixture.Scenario.ReceivedEnergyResultProducedV2 = actualReceivedIntegrationEvents.OfType<EnergyResultProducedV2>().ToList();
+
+                // Assert
+                using var assertionScope = new AssertionScope();
+                Fixture.Scenario.ReceivedCalculationResultCompleted.Should().NotBeEmpty();
+                Fixture.Scenario.ReceivedEnergyResultProducedV2.Should().NotBeEmpty();
+            }
+
+            [Priority(6)]
+            [DomainFact]
+            public void AndThen_ReceivedIntegrationEventsCountIsEqualToExpected()
+            {
+                var expectedIntegrationEventsPerTypeCount = 112;
+
+                // Assert
+                using var assertionScope = new AssertionScope();
+                Fixture.Scenario.ReceivedCalculationResultCompleted.Count.Should().Be(expectedIntegrationEventsPerTypeCount);
+                Fixture.Scenario.ReceivedEnergyResultProducedV2.Count.Should().Be(expectedIntegrationEventsPerTypeCount);
+            }
+
+            [Priority(7)]
+            [DomainFact]
+            public void AndThen_ReceivedIntegrationEventsContainAllTimeSeriesTypes()
+            {
+                var expectedTimeSeriesTypes = Enum.GetNames(typeof(TimeSeriesType)).ToList();
+
+                var actualTimeSeriesTypesForCalculationResultCompleted = Fixture.Scenario.ReceivedCalculationResultCompleted
+                    .Select(x => Enum.GetName(x.TimeSeriesType))
+                    .Distinct()
+                    .ToList();
+                var actualTimeSeriesTypesForEnergyResultProducedV2 = Fixture.Scenario.ReceivedEnergyResultProducedV2
+                    .Select(x => Enum.GetName(x.TimeSeriesType))
+                    .Distinct()
+                    .ToList();
+
+                // Assert
+                using var assertionScope = new AssertionScope();
+                foreach (var timeSeriesType in expectedTimeSeriesTypes)
+                {
+                    actualTimeSeriesTypesForCalculationResultCompleted.Should().Contain(timeSeriesType);
+                    actualTimeSeriesTypesForEnergyResultProducedV2.Should().Contain(timeSeriesType);
+                }
             }
         }
     }
