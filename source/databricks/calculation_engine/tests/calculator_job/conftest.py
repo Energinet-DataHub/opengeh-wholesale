@@ -110,7 +110,7 @@ def price_input_data_written_to_delta(
         file_name=f"{test_files_folder_path}/ChargeMasterDataPeriods.csv",
         table_name=paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME,
         schema=charge_master_data_periods_schema,
-        table_location=f"{calculation_input_path}/charge_master_data_periods",
+        table_location=f"{calculation_input_path}/charge_masterdata_periods",
     )
 
     # Charge link periods
