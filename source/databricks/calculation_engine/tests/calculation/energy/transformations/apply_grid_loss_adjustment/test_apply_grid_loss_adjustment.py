@@ -96,7 +96,7 @@ class TestWhenNoResultToAdjust:
             MeteringPointType.PRODUCTION,
         ],
     )
-    def test_returns_result_equal_to_the_grid_loss(
+    def test_returns_result_sum_quantity_equal_to_only_the_grid_loss(
         self,
         spark: SparkSession,
         metering_point_type: MeteringPointType,
