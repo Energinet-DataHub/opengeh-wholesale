@@ -63,6 +63,5 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration
                 secretsConfiguration.GetValue<string>("sb-domain-relay-listen-connection-string")!,
                 secretsConfiguration.GetValue<string>("sbt-shres-integrationevent-received-name")!);
         }
-
     }
 }

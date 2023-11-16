@@ -36,8 +36,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             : base(diagnosticMessageSink)
         {
             Configuration = new WholesaleDomainConfiguration();
-            ServiceBusAdministrationClient = new ServiceBusAdministrationClient(Configuration.ServiceBusFullyQualifiedNamespace, new DefaultAzureCredential());
-            ServiceBusClient = new ServiceBusClient(Configuration.ServiceBusConnectionString);
+            ServiceBusAdministrationClient = new ServiceBusAdministrationClient(Configuration.ServiceBus.FullyQualifiedNamespace, new DefaultAzureCredential());
+            ServiceBusClient = new ServiceBusClient(Configuration.ServiceBus.ConnectionString);
             ScenarioState = new CalculationScenarioState();
         }
 
@@ -132,23 +132,23 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             await DatabricksWorkspaceManager.StartDatabrickWarehouseAsync(Configuration.DatabricksWorkspace);
             WholesaleClient = await WholesaleClientFactory.CreateAsync(Configuration, useAuthentication: true);
             await CreateTopicSubscriptionAsync();
-            Receiver = ServiceBusClient.CreateReceiver(Configuration.DomainRelayTopicName, _subscriptionName);
+            Receiver = ServiceBusClient.CreateReceiver(Configuration.ServiceBus.DomainRelayTopicName, _subscriptionName);
         }
 
         protected override async Task OnDisposeAsync()
         {
-            await ServiceBusAdministrationClient.DeleteSubscriptionAsync(Configuration.DomainRelayTopicName, _subscriptionName);
+            await ServiceBusAdministrationClient.DeleteSubscriptionAsync(Configuration.ServiceBus.DomainRelayTopicName, _subscriptionName);
             await ServiceBusClient.DisposeAsync();
         }
 
         private async Task CreateTopicSubscriptionAsync()
         {
-            if (await ServiceBusAdministrationClient.SubscriptionExistsAsync(Configuration.DomainRelayTopicName, _subscriptionName))
+            if (await ServiceBusAdministrationClient.SubscriptionExistsAsync(Configuration.ServiceBus.DomainRelayTopicName, _subscriptionName))
             {
-                await ServiceBusAdministrationClient.DeleteSubscriptionAsync(Configuration.DomainRelayTopicName, _subscriptionName);
+                await ServiceBusAdministrationClient.DeleteSubscriptionAsync(Configuration.ServiceBus.DomainRelayTopicName, _subscriptionName);
             }
 
-            var options = new CreateSubscriptionOptions(Configuration.DomainRelayTopicName, _subscriptionName)
+            var options = new CreateSubscriptionOptions(Configuration.ServiceBus.DomainRelayTopicName, _subscriptionName)
             {
                 AutoDeleteOnIdle = TimeSpan.FromHours(1),
             };
