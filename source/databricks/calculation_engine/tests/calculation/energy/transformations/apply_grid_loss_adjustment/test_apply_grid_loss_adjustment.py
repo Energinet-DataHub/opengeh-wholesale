@@ -85,7 +85,7 @@ class TestWhenValidInput:
         assert set(actual_qualities) == set(expected_qualities)
 
 
-class TestWhenNoResultToAdjust:
+class TestWhenEnergySupplierIdIsNotGridLossResponsible:
     @pytest.mark.parametrize(
         "metering_point_type",
         [
@@ -93,27 +93,57 @@ class TestWhenNoResultToAdjust:
             MeteringPointType.PRODUCTION,
         ],
     )
-    def test_returns_result_sum_quantity_equal_to_only_the_grid_loss(
+    def test_returns_result_sum_quantity_equal_to_correct_adjusted_grid_loss(
         self,
         spark: SparkSession,
         metering_point_type: MeteringPointType,
     ) -> None:
         # Arrange
-        result = energy_results_factories.create(spark, [])
+        result_rows = [
+            energy_results_factories.create_row(
+                grid_area="1",
+                energy_supplier_id="not_grid_loss_responsible",
+                observation_time=DEFAULT_OBSERVATION_TIME,
+                sum_quantity=10,
+            ),
+            energy_results_factories.create_row(
+                grid_area="2",
+                energy_supplier_id="grid_loss_responsible_2",
+                observation_time=DEFAULT_OBSERVATION_TIME,
+                sum_quantity=5,
+                qualities=[QuantityQuality.CALCULATED],
+            ),
+        ]
+        result = energy_results_factories.create(spark, result_rows)
 
         grid_loss_rows = [
             energy_results_factories.create_row(
+                grid_area="1",
                 observation_time=DEFAULT_OBSERVATION_TIME,
                 sum_quantity=20,
-            )
+            ),
+            energy_results_factories.create_row(
+                grid_area="2",
+                observation_time=DEFAULT_OBSERVATION_TIME,
+                sum_quantity=20,
+            ),
         ]
         grid_loss = energy_results_factories.create(spark, grid_loss_rows)
 
-        grid_loss_responsible_row = grid_loss_responsible_factories.create_row(
-            metering_point_type=metering_point_type,
-        )
+        grid_loss_responsible_rows = [
+            grid_loss_responsible_factories.create_row(
+                grid_area="1",
+                metering_point_type=metering_point_type,
+                energy_supplier_id="grid_loss_responsible_1",
+            ),
+            grid_loss_responsible_factories.create_row(
+                grid_area="2",
+                metering_point_type=metering_point_type,
+                energy_supplier_id="grid_loss_responsible_2",
+            ),
+        ]
         grid_loss_responsible = grid_loss_responsible_factories.create(
-            spark, [grid_loss_responsible_row]
+            spark, grid_loss_responsible_rows
         )
 
         # Act
@@ -125,5 +155,7 @@ class TestWhenNoResultToAdjust:
         )
 
         # Assert
-        assert actual.df.count() == 1
+        assert actual.df.count() == 3
         assert actual.df.collect()[0][Colname.sum_quantity] == 20
+        assert actual.df.collect()[1][Colname.sum_quantity] == 10
+        assert actual.df.collect()[2][Colname.sum_quantity] == 25

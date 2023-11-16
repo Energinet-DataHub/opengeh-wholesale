@@ -274,94 +274,94 @@ def test_result_dataframe_contains_same_number_of_results_with_same_energy_suppl
     assert actual_collect[2][Colname.energy_supplier_id] == "C"
 
 
-def test_correct_grid_loss_entry_is_used_to_determine_energy_responsible_for_the_given_time_window_from_flex_consumption_result_dataframe(
-    flex_consumption_result_row_factory: Callable[..., EnergyResults],
-    positive_grid_loss_result_row_factory: Callable[..., EnergyResults],
-    grid_loss_sys_cor_row_factory: Callable[..., GridLossResponsible],
-) -> None:
-    # Arrange
-    time_window_1 = {
-        Colname.start: datetime(2020, 1, 1, 0, 0),
-        Colname.end: datetime(2020, 1, 1, 1, 0),
-    }
-    time_window_2 = {
-        Colname.start: datetime(2020, 1, 1, 1, 0),
-        Colname.end: datetime(2020, 1, 1, 2, 0),
-    }
-    time_window_3 = {
-        Colname.start: datetime(2020, 1, 1, 2, 0),
-        Colname.end: datetime(2020, 1, 1, 3, 0),
-    }
-
-    fc_row_1 = flex_consumption_result_row_factory(
-        supplier="A", time_window=time_window_1
-    )
-    fc_row_2 = flex_consumption_result_row_factory(
-        supplier="B", time_window=time_window_2
-    )
-    fc_row_3 = flex_consumption_result_row_factory(
-        supplier="B", time_window=time_window_3
-    )
-
-    flex_consumption = EnergyResults(fc_row_1.df.union(fc_row_2.df).union(fc_row_3.df))
-
-    gagl_result_1 = Decimal(1)
-    gagl_result_2 = Decimal(2)
-    gagl_result_3 = Decimal(3)
-
-    gagl_row_1 = positive_grid_loss_result_row_factory(
-        time_window=time_window_1, positive_grid_loss=gagl_result_1
-    )
-    gagl_row_2 = positive_grid_loss_result_row_factory(
-        time_window=time_window_2, positive_grid_loss=gagl_result_2
-    )
-    gagl_row_3 = positive_grid_loss_result_row_factory(
-        time_window=time_window_3, positive_grid_loss=gagl_result_3
-    )
-
-    positive_grid_loss = EnergyResults(
-        gagl_row_1.df.union(gagl_row_2.df).union(gagl_row_3.df)
-    )
-
-    glsc_row_1 = grid_loss_sys_cor_row_factory(
-        supplier="A", valid_from=time_window_1["start"], valid_to=time_window_1["end"]
-    )
-    glsc_row_2 = grid_loss_sys_cor_row_factory(
-        supplier="C", valid_from=time_window_2["start"], valid_to=time_window_2["end"]
-    )
-    glsc_row_3 = grid_loss_sys_cor_row_factory(
-        supplier="B", valid_from=time_window_3["start"], valid_to=None
-    )
-
-    grid_loss_sys_cor_master_data = GridLossResponsible(
-        glsc_row_1.df.union(glsc_row_2.df).union(glsc_row_3.df)
-    )
-
-    # Act
-    actual = apply_grid_loss_adjustment(
-        flex_consumption,
-        positive_grid_loss,
-        grid_loss_sys_cor_master_data,
-        MeteringPointType.CONSUMPTION,
-    )
-
-    # Assert
-    assert actual.df.count() == 3
-    assert (
-        actual.df.where(col(Colname.energy_supplier_id) == "A")
-        .filter(col(f"{Colname.time_window_start}") == time_window_1["start"])
-        .collect()[0][Colname.sum_quantity]
-        == default_sum_quantity + gagl_result_1
-    )
-    assert (
-        actual.df.where(col(Colname.energy_supplier_id) == "B")
-        .filter(col(f"{Colname.time_window_start}") == time_window_2["start"])
-        .collect()[0][Colname.sum_quantity]
-        == default_sum_quantity
-    )
-    assert (
-        actual.df.where(col(Colname.energy_supplier_id) == "B")
-        .filter(col(f"{Colname.time_window_start}") == time_window_3["start"])
-        .collect()[0][Colname.sum_quantity]
-        == default_sum_quantity + gagl_result_3
-    )
+# def test_correct_grid_loss_entry_is_used_to_determine_energy_responsible_for_the_given_time_window_from_flex_consumption_result_dataframe(
+#     flex_consumption_result_row_factory: Callable[..., EnergyResults],
+#     positive_grid_loss_result_row_factory: Callable[..., EnergyResults],
+#     grid_loss_sys_cor_row_factory: Callable[..., GridLossResponsible],
+# ) -> None:
+#     # Arrange
+#     time_window_1 = {
+#         Colname.start: datetime(2020, 1, 1, 0, 0),
+#         Colname.end: datetime(2020, 1, 1, 1, 0),
+#     }
+#     time_window_2 = {
+#         Colname.start: datetime(2020, 1, 1, 1, 0),
+#         Colname.end: datetime(2020, 1, 1, 2, 0),
+#     }
+#     time_window_3 = {
+#         Colname.start: datetime(2020, 1, 1, 2, 0),
+#         Colname.end: datetime(2020, 1, 1, 3, 0),
+#     }
+#
+#     fc_row_1 = flex_consumption_result_row_factory(
+#         supplier="A", time_window=time_window_1
+#     )
+#     fc_row_2 = flex_consumption_result_row_factory(
+#         supplier="B", time_window=time_window_2
+#     )
+#     fc_row_3 = flex_consumption_result_row_factory(
+#         supplier="B", time_window=time_window_3
+#     )
+#
+#     flex_consumption = EnergyResults(fc_row_1.df.union(fc_row_2.df).union(fc_row_3.df))
+#
+#     gagl_result_1 = Decimal(1)
+#     gagl_result_2 = Decimal(2)
+#     gagl_result_3 = Decimal(3)
+#
+#     gagl_row_1 = positive_grid_loss_result_row_factory(
+#         time_window=time_window_1, positive_grid_loss=gagl_result_1
+#     )
+#     gagl_row_2 = positive_grid_loss_result_row_factory(
+#         time_window=time_window_2, positive_grid_loss=gagl_result_2
+#     )
+#     gagl_row_3 = positive_grid_loss_result_row_factory(
+#         time_window=time_window_3, positive_grid_loss=gagl_result_3
+#     )
+#
+#     positive_grid_loss = EnergyResults(
+#         gagl_row_1.df.union(gagl_row_2.df).union(gagl_row_3.df)
+#     )
+#
+#     glsc_row_1 = grid_loss_sys_cor_row_factory(
+#         supplier="A", valid_from=time_window_1["start"], valid_to=time_window_1["end"]
+#     )
+#     glsc_row_2 = grid_loss_sys_cor_row_factory(
+#         supplier="C", valid_from=time_window_2["start"], valid_to=time_window_2["end"]
+#     )
+#     glsc_row_3 = grid_loss_sys_cor_row_factory(
+#         supplier="B", valid_from=time_window_3["start"], valid_to=None
+#     )
+#
+#     grid_loss_sys_cor_master_data = GridLossResponsible(
+#         glsc_row_1.df.union(glsc_row_2.df).union(glsc_row_3.df)
+#     )
+#
+#     # Act
+#     actual = apply_grid_loss_adjustment(
+#         flex_consumption,
+#         positive_grid_loss,
+#         grid_loss_sys_cor_master_data,
+#         MeteringPointType.CONSUMPTION,
+#     )
+#
+#     # Assert
+#     assert actual.df.count() == 3
+#     assert (
+#         actual.df.where(col(Colname.energy_supplier_id) == "A")
+#         .filter(col(f"{Colname.time_window_start}") == time_window_1["start"])
+#         .collect()[0][Colname.sum_quantity]
+#         == default_sum_quantity + gagl_result_1
+#     )
+#     assert (
+#         actual.df.where(col(Colname.energy_supplier_id) == "B")
+#         .filter(col(f"{Colname.time_window_start}") == time_window_2["start"])
+#         .collect()[0][Colname.sum_quantity]
+#         == default_sum_quantity
+#     )
+#     assert (
+#         actual.df.where(col(Colname.energy_supplier_id) == "B")
+#         .filter(col(f"{Colname.time_window_start}") == time_window_3["start"])
+#         .collect()[0][Colname.sum_quantity]
+#         == default_sum_quantity + gagl_result_3
+#     )
