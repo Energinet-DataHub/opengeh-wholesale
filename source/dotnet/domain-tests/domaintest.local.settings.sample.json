@@ -20,7 +20,7 @@
   "WEBAPI_BASEADDRESS": "<Wholesale Web API base address in live environment>",
   "EXISTING_BATCHID": "<An existing batch id in live environment>",
   "EXISTING_GRIDAREACODE": "<An existing grid area code in live environment>",
-  
+
   // Share key vault name on u001 environment
   "SHARED_KEYVAULT_NAME": "<key vault name>"
 }

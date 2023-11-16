@@ -20,7 +20,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 {
     public static class WholesaleClientFactory
     {
-        public static async Task<WholesaleClient_V3> CreateWholesaleClientAsync(WholesaleDomainConfiguration configuration, bool useAuthentication)
+        public static async Task<WholesaleClient_V3> CreateAsync(WholesaleDomainConfiguration configuration, bool useAuthentication)
         {
             var httpClient = new HttpClient();
             httpClient.BaseAddress = configuration.WebApiBaseAddress;

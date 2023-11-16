@@ -36,6 +36,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration
             ServiceBusFullyQualifiedNamespace = $"{serviceBusNamespace}.servicebus.windows.net";
             ServiceBusConnectionString = secretsConfiguration.GetValue<string>("sb-domain-relay-listen-connection-string")!;
             DomainRelayTopicName = secretsConfiguration.GetValue<string>("sbt-shres-integrationevent-received-name")!;
+
+            DatabricksWorkspace = DatabricksWorkspaceConfiguration.CreateFromConfiguration(Root);
         }
 
         /// <summary>
@@ -62,6 +64,11 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration
         /// Service bus topic name for the domain relay messages.
         /// </summary>
         public string DomainRelayTopicName { get; internal set; }
+
+        /// <summary>
+        /// Settings necessary to start the Databricks workspace SQL warehouse.
+        /// </summary>
+        public DatabricksWorkspaceConfiguration DatabricksWorkspace { get; }
 
         /// <summary>
         /// Load settings from key vault secrets.

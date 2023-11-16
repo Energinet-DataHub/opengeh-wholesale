@@ -129,7 +129,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
         protected override async Task OnInitializeAsync()
         {
-            WholesaleClient = await WholesaleClientFactory.CreateWholesaleClientAsync(Configuration, useAuthentication: true);
+            await DatabricksWorkspaceManager.StartDatabrickWarehouseAsync(Configuration.DatabricksWorkspace);
+            WholesaleClient = await WholesaleClientFactory.CreateAsync(Configuration, useAuthentication: true);
             await CreateTopicSubscriptionAsync();
             Receiver = ServiceBusClient.CreateReceiver(Configuration.DomainRelayTopicName, _subscriptionName);
         }
