@@ -17,7 +17,7 @@ from package.codelists import (
     QuantityQuality,
 )
 import pyspark.sql.functions as f
-from package.calculation.energy.aggregators import transformations as t
+import package.calculation.energy.aggregators.transformations as t
 from package.constants import Colname
 from package.calculation.energy.energy_results import EnergyResults
 
