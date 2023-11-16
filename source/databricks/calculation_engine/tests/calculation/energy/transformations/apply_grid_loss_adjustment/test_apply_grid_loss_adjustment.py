@@ -96,7 +96,7 @@ class TestWhenNoProduction:
             MeteringPointType.PRODUCTION,
         ],
     )
-    def test_returns_only_grid_loss(
+    def test_returns_result_equal_to_the_grid_loss(
         self,
         spark: SparkSession,
         metering_point_type: MeteringPointType,
