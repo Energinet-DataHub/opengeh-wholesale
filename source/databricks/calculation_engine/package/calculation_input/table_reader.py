@@ -37,13 +37,13 @@ class TableReader:
     def __init__(
         self,
         spark: SparkSession,
+        storage_account_name: str,
     ) -> None:
         self.__spark = spark
+        self.__storage_account_name = storage_account_name
 
     def read_metering_point_periods(self) -> DataFrame:
-        df = self._read_table(
-            f"{paths.INPUT_DATABASE_NAME}.{paths.METERING_POINT_PERIODS_TABLE_NAME}"
-        )
+        df = self._read_table("metering_point_periods")
 
         assert_schema(df.schema, metering_point_period_schema)
 
@@ -54,18 +54,14 @@ class TableReader:
         return df
 
     def read_time_series_points(self) -> DataFrame:
-        df = self._read_table(
-            f"{paths.INPUT_DATABASE_NAME}.{paths.TIME_SERIES_POINTS_TABLE_NAME}"
-        )
+        df = self._read_table("time_series_points")
 
         assert_schema(df.schema, time_series_point_schema)
 
         return df
 
     def read_charge_links_periods(self) -> DataFrame:
-        df = self._read_table(
-            f"{paths.INPUT_DATABASE_NAME}.{paths.CHARGE_LINK_PERIODS_TABLE_NAME}"
-        )
+        df = self._read_table("charge_link_periods")
 
         assert_schema(df.schema, charge_link_periods_schema)
 
@@ -73,9 +69,7 @@ class TableReader:
         return df
 
     def read_charge_master_data_periods(self) -> DataFrame:
-        df = self._read_table(
-            f"{paths.INPUT_DATABASE_NAME}.{paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}"
-        )
+        df = self._read_table("charge_masterdata_periods")
 
         assert_schema(df.schema, charge_master_data_periods_schema)
 
@@ -83,17 +77,16 @@ class TableReader:
         return df
 
     def read_charge_price_points(self) -> DataFrame:
-        df = self._read_table(
-            f"{paths.INPUT_DATABASE_NAME}.{paths.CHARGE_PRICE_POINTS_TABLE_NAME}"
-        )
+        df = self._read_table("charge_price_points")
 
         assert_schema(df.schema, charge_price_points_schema)
 
         df = self._add_charge_key_column(df)
         return df
 
-    def _read_table(self, table_name: str) -> DataFrame:
-        return self.__spark.read.table(table_name)
+    def _read_table(self, folder_name: str) -> DataFrame:
+        path = f"{paths.get_container_root_path(self.__storage_account_name)}/calculation_input/{folder_name}"
+        return self.__spark.read.format("delta").load(path)
 
     def _add_charge_key_column(self, charge_df: DataFrame) -> DataFrame:
         return charge_df.withColumn(
