@@ -50,10 +50,12 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
         response.Subject.Should().Be(expectedAcceptedSubject);
 
         var responseBody = AggregatedTimeSeriesRequestAccepted.Parser.ParseFrom(response.Body);
-        responseBody.GridArea.Should().Be(_gridArea);
-        responseBody.TimeSeriesType.Should().Be(Energinet.DataHub.Edi.Responses.TimeSeriesType.Production);
+        var serie = responseBody?.Series.FirstOrDefault();
+        serie.Should().NotBeNull();
+        serie!.GridArea.Should().Be(_gridArea);
+        serie.TimeSeriesType.Should().Be(Energinet.DataHub.Edi.Responses.TimeSeriesType.Production);
 
-        var timeSeriesOrdered = responseBody.TimeSeriesPoints.OrderBy(ts => ts.Time).ToList();
+        var timeSeriesOrdered = serie.TimeSeriesPoints.OrderBy(ts => ts.Time).ToList();
         var earliestTimestamp = timeSeriesOrdered.First();
         var latestTimestamp = timeSeriesOrdered.Last();
 
@@ -64,14 +66,14 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
         latestTimestamp.Time.Should().BeLessThan(periodEndTimestamp)
             .And.BeGreaterOrEqualTo(earliestTimestamp.Time);
 
-        responseBody.TimeSeriesPoints.Count.Should().Be(aggregatedTimeSeries.TimeSeriesPoints.Length);
+        serie.TimeSeriesPoints.Count.Should().Be(aggregatedTimeSeries.First().TimeSeriesPoints.Length);
     }
 
-    private AggregatedTimeSeries CreateAggregatedTimeSeries()
+    private List<AggregatedTimeSeries> CreateAggregatedTimeSeries()
     {
         var quantityQualities = new List<QuantityQuality> { QuantityQuality.Estimated };
 
-        return new AggregatedTimeSeries(
+        var aggregatedTimeSerie = new AggregatedTimeSeries(
             _gridArea,
             new EnergyTimeSeriesPoint[]
             {
@@ -81,5 +83,10 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
             },
             _timeSeriesType,
             ProcessType.Aggregation);
+
+        return new List<AggregatedTimeSeries>()
+        {
+            aggregatedTimeSerie,
+        };
     }
 }

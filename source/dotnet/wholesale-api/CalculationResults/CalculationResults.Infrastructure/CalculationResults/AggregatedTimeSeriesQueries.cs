@@ -17,6 +17,7 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
@@ -38,28 +39,7 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
         _deltaTableOptions = deltaTableOptions.Value;
     }
 
-    public async Task<AggregatedTimeSeries?> GetAsync(AggregatedTimeSeriesQueryParameters parameters)
-    {
-        var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
-        DatabricksSqlRow? firstRow = null;
-        await foreach (var currentRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(new QueryAggregatedTimeSeriesStatement(parameters, _deltaTableOptions), Format.JsonArray).ConfigureAwait(false))
-        {
-            var databricksCurrentRow = new DatabricksSqlRow(currentRow);
-            if (firstRow is null)
-                firstRow = databricksCurrentRow;
-
-            var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(databricksCurrentRow);
-
-            timeSeriesPoints.Add(timeSeriesPoint);
-        }
-
-        if (firstRow is null)
-            return null;
-
-        return AggregatedTimeSeriesFactory.Create(firstRow, timeSeriesPoints);
-    }
-
-    public async Task<AggregatedTimeSeries?> GetLatestCorrectionAsync(AggregatedTimeSeriesQueryParameters parameters)
+    public async IAsyncEnumerable<AggregatedTimeSeries> GetLatestCorrectionAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
         if (parameters.ProcessType != null)
         {
@@ -68,8 +48,15 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
 
         var processType = await GetProcessTypeOfLatestCorrectionAsync(parameters).ConfigureAwait(false);
 
-        return await GetAsync(
-            parameters with { ProcessType = processType }).ConfigureAwait(false);
+        await foreach (var aggregatedTimeSeries in GetAsync(parameters with { ProcessType = processType }))
+            yield return aggregatedTimeSeries;
+    }
+
+    public async IAsyncEnumerable<AggregatedTimeSeries> GetAsync(AggregatedTimeSeriesQueryParameters parameters)
+    {
+        var sqlStatement = new QueryAggregatedTimeSeriesStatement(parameters, _deltaTableOptions);
+        await foreach (var aggregatedTimeSeries in GetInternalAsync(sqlStatement))
+            yield return aggregatedTimeSeries;
     }
 
     public async Task<ProcessType> GetProcessTypeOfLatestCorrectionAsync(AggregatedTimeSeriesQueryParameters parameters)
@@ -88,9 +75,37 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
         return ProcessType.FirstCorrectionSettlement;
     }
 
+    private async IAsyncEnumerable<AggregatedTimeSeries> GetInternalAsync(QueryAggregatedTimeSeriesStatement sqlStatement)
+    {
+        var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
+        DatabricksSqlRow? previousRow = null;
+        await foreach (var databricksCurrentRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(sqlStatement, Format.JsonArray).ConfigureAwait(false))
+        {
+            var currentRow = new DatabricksSqlRow(databricksCurrentRow);
+            var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(currentRow);
+
+            if (previousRow != null && BelongsToDifferentGridArea(currentRow, previousRow))
+            {
+                yield return AggregatedTimeSeriesFactory.Create(previousRow, timeSeriesPoints);
+                timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
+            }
+
+            timeSeriesPoints.Add(timeSeriesPoint);
+            previousRow = currentRow;
+        }
+
+        if (previousRow != null)
+            yield return AggregatedTimeSeriesFactory.Create(previousRow, timeSeriesPoints);
+    }
+
     private async Task<bool> PerformCorrectionVersionExistsQueryAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
         return await _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(
             new QuerySingleAggregatedTimeSeriesStatement(parameters, _deltaTableOptions)).AnyAsync().ConfigureAwait(false);
+    }
+
+    private static bool BelongsToDifferentGridArea(DatabricksSqlRow row, DatabricksSqlRow otherRow)
+    {
+        return row[EnergyResultColumnNames.GridArea] != otherRow[EnergyResultColumnNames.GridArea];
     }
 }

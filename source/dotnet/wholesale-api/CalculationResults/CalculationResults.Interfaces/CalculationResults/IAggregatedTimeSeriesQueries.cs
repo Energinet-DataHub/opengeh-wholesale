@@ -19,14 +19,14 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationR
 public interface IAggregatedTimeSeriesQueries
 {
     /// <summary>
-    /// Get the latest aggregated time series
+    /// Gets the latest aggregated time series
     /// </summary>
-    /// <returns>Returns null if the aggregated time series does not contain any points.</returns>
-    Task<AggregatedTimeSeries?> GetAsync(AggregatedTimeSeriesQueryParameters parameters);
+    /// <returns>Returns an empty list if the aggregated time series does not contain any points.</returns>
+    IAsyncEnumerable<AggregatedTimeSeries> GetAsync(AggregatedTimeSeriesQueryParameters parameters);
 
     /// <summary>
-    /// Get the most recent aggregated time series for the last correction settlements.
+    /// Gets the most recent aggregated time series for the last correction settlements.
     /// </summary>
-    /// <returns>Returns null if the aggregated time series does not contain any points.</returns>
-    Task<AggregatedTimeSeries?> GetLatestCorrectionAsync(AggregatedTimeSeriesQueryParameters parameters);
+    /// <returns>Returns an empty list if the aggregated time series does not contain any points.</returns>
+    IAsyncEnumerable<AggregatedTimeSeries> GetLatestCorrectionAsync(AggregatedTimeSeriesQueryParameters parameters);
 }
