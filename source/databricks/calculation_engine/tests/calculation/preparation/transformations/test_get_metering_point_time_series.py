@@ -19,7 +19,7 @@ from datetime import datetime
 from pyspark.sql import SparkSession
 from pyspark.sql.types import Row
 
-from package.calculation.energy.schemas import metering_point_time_series_schema
+from package.calculation.energy.hour_to_quarter import metering_point_time_series_schema
 from package.calculation.preparation.transformations import (
     get_metering_point_time_series,
 )
