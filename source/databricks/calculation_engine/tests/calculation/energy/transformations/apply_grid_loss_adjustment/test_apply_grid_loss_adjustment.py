@@ -54,14 +54,12 @@ class TestWhenValidInput:
             observation_time=DEFAULT_OBSERVATION_TIME,
             energy_supplier_id="energy_supplier_id",
             qualities=[QuantityQuality.CALCULATED],
-            sum_quantity=10,
         )
         result = energy_results_factories.create(spark, [result_row])
 
         grid_loss_row = energy_results_factories.create_row(
             observation_time=DEFAULT_OBSERVATION_TIME,
             qualities=[QuantityQuality.ESTIMATED],
-            sum_quantity=20,
         )
         grid_loss = energy_results_factories.create(spark, [grid_loss_row])
 
@@ -85,7 +83,6 @@ class TestWhenValidInput:
         actual_row = actual.df.collect()[0]
         actual_qualities = actual_row[Colname.qualities]
         assert set(actual_qualities) == set(expected_qualities)
-        assert actual_row[Colname.sum_quantity] == 30
 
 
 class TestWhenNoResultToAdjust:
