@@ -20,16 +20,16 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration
     /// Configuration necessary to use the Databricks REST API and mange
     /// a SQL warehouse within a Databricks workspace.
     /// </summary>
-    public class DatabricksWorkspaceConfiguration
+    public sealed class DatabricksWorkspaceConfiguration
     {
-        public DatabricksWorkspaceConfiguration(string baseUrl, string token, string warehouseId)
+        private DatabricksWorkspaceConfiguration(string baseUrl, string token, string warehouseId)
         {
             if (string.IsNullOrWhiteSpace(baseUrl))
-                throw new ArgumentException($"Cannot be null or whitespace.", nameof(baseUrl));
+                throw new ArgumentException("Cannot be null or whitespace.", nameof(baseUrl));
             if (string.IsNullOrWhiteSpace(token))
-                throw new ArgumentException($"Cannot be null or whitespace.", nameof(token));
+                throw new ArgumentException("Cannot be null or whitespace.", nameof(token));
             if (string.IsNullOrWhiteSpace(warehouseId))
-                throw new ArgumentException($"Cannot be null or whitespace.", nameof(warehouseId));
+                throw new ArgumentException("Cannot be null or whitespace.", nameof(warehouseId));
 
             BaseUrl = baseUrl;
             Token = token;
@@ -46,14 +46,21 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration
         /// </summary>
         public string Token { get; }
 
+        /// <summary>
+        /// SQL Warehouse id.
+        /// </summary>
         public string WarehouseId { get; }
 
-        internal static DatabricksWorkspaceConfiguration CreateFromConfiguration(IConfigurationRoot root)
+        /// <summary>
+        /// Retrieve secrets from Key Vaults and create configuration.
+        /// </summary>
+        /// <param name="secretsConfiguration">A configuration that has been builded so it can retrieve secrets from both the shared and the internal key vault.</param>
+        public static DatabricksWorkspaceConfiguration CreateFromConfiguration(IConfigurationRoot secretsConfiguration)
         {
             return new DatabricksWorkspaceConfiguration(
-                root.GetValue<string>("WorkspaceUrl")!,
-                root.GetValue<string>("WorkspaceToken")!,
-                root.GetValue<string>("WarehouseId")!);
+                secretsConfiguration.GetValue<string>("dbw-shared-workspace-url")!,
+                secretsConfiguration.GetValue<string>("dbw-shared-workspace-token")!,
+                secretsConfiguration.GetValue<string>("dbw-databricks-sql-endpoint-id")!);
         }
     }
 }
