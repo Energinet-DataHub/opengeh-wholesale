@@ -142,7 +142,7 @@ def test___read_metering_point_periods__returns_df_with_correct_metering_point_t
     # Arrange
     row = _create_metering_point_period_row(metering_point_type=metering_point_type)
     df = spark.createDataFrame(data=[row], schema=metering_point_period_schema)
-    sut = TableReader(spark)
+    sut = TableReader(spark, "dummy_calculation_input_path")
 
     # Act
     with mock.patch.object(sut, TableReader._read_table.__name__, return_value=df):
@@ -166,7 +166,7 @@ def test___read_metering_point_periods__returns_df_with_correct_settlement_metho
 ) -> None:
     row = _create_metering_point_period_row(settlement_method=settlement_method)
     df = spark.createDataFrame(data=[row], schema=metering_point_period_schema)
-    sut = TableReader(spark)
+    sut = TableReader(spark, "dummy_calculation_input_path")
 
     # Act
     with mock.patch.object(sut, TableReader._read_table.__name__, return_value=df):
@@ -211,7 +211,7 @@ def test__read_data__returns_df(
 ) -> None:
     # Arrange
     row = create_row()
-    reader = TableReader(spark)
+    reader = TableReader(spark, "dummy_calculation_input_path")
     df = spark.createDataFrame(data=[row], schema=expected_schema)
     sut = getattr(reader, method_name.__name__)
 
@@ -258,7 +258,7 @@ def test__read_data__when_schema_mismatch__raises_assertion_error(
 ) -> None:
     # Arrange
     row = create_row()
-    reader = TableReader(spark)
+    reader = TableReader(spark, "dummy_calculation_input_path")
     df = spark.createDataFrame(data=[row], schema=expected_schema)
     df = df.withColumn("test", lit("test"))
     sut = getattr(reader, str(method_name.__name__))

@@ -37,10 +37,10 @@ class TableReader:
     def __init__(
         self,
         spark: SparkSession,
-        storage_account_name: str,
+        calculation_input_path: str,
     ) -> None:
         self.__spark = spark
-        self.__storage_account_name = storage_account_name
+        self.__calculation_input_path = calculation_input_path
 
     def read_metering_point_periods(self) -> DataFrame:
         df = self._read_table("metering_point_periods")
@@ -85,7 +85,7 @@ class TableReader:
         return df
 
     def _read_table(self, folder_name: str) -> DataFrame:
-        path = f"{paths.get_container_root_path(self.__storage_account_name)}/calculation_input/{folder_name}"
+        path = f"{self.__calculation_input_path}/{folder_name}"
         return self.__spark.read.format("delta").load(path)
 
     def _add_charge_key_column(self, charge_df: DataFrame) -> DataFrame:

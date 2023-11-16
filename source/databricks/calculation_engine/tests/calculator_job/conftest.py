@@ -39,11 +39,14 @@ from package.calculation_input.schemas import (
 
 
 @pytest.fixture(scope="session")
-def calculator_args_balance_fixing(data_lake_path: str) -> CalculatorArgs:
+def calculator_args_balance_fixing(
+    data_lake_path: str, calculation_input_path: str
+) -> CalculatorArgs:
     return CalculatorArgs(
         data_storage_account_name="foo",
         data_storage_account_credentials=ClientSecretCredential("foo", "foo", "foo"),
-        wholesale_container_path=f"{data_lake_path}",
+        wholesale_container_path=data_lake_path,
+        calculation_input_path=calculation_input_path,
         batch_id=C.executed_balance_fixing_batch_id,
         batch_process_type=ProcessType.BALANCE_FIXING,
         batch_grid_areas=["805", "806"],
@@ -136,11 +139,12 @@ def executed_balance_fixing(
     migrations_executed: None,
     energy_input_data_written_to_delta: None,
     grid_loss_responsible_test_data: DataFrame,
+    calculation_input_path: str,
 ) -> None:
     """Execute the calculator job.
     This is the act part of a test in the arrange-act-assert paradigm.
     This act is made as a session-scoped fixture because it is a slow process
-    and because lots of assertions can be made and split into seperate tests
+    and because lots of assertions can be made and split into separate tests
     without awaiting the execution in each test."""
 
     with patch.object(
@@ -148,7 +152,10 @@ def executed_balance_fixing(
         grid_loss_responsible._get_all_grid_loss_responsible.__name__,
         return_value=grid_loss_responsible_test_data,
     ):
-        table_reader = TableReader(spark)
+        table_reader = TableReader(
+            spark,
+            calculation_input_path,
+        )
         prepared_data_reader = PreparedDataReader(table_reader)
         calculation.execute(calculator_args_balance_fixing, prepared_data_reader)
 
@@ -161,6 +168,7 @@ def executed_wholesale_fixing(
     energy_input_data_written_to_delta: None,
     price_input_data_written_to_delta: None,
     grid_loss_responsible_test_data: DataFrame,
+    calculation_input_path: str,
 ) -> None:
     """Execute the calculator job.
     This is the act part of a test in the arrange-act-assert paradigm.
@@ -173,7 +181,7 @@ def executed_wholesale_fixing(
         grid_loss_responsible._get_all_grid_loss_responsible.__name__,
         return_value=grid_loss_responsible_test_data,
     ):
-        table_reader = TableReader(spark)
+        table_reader = TableReader(spark, calculation_input_path)
         prepared_data_reader = PreparedDataReader(table_reader)
         calculation.execute(calculator_args_wholesale_fixing, prepared_data_reader)
 
