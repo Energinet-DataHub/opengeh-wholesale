@@ -15,14 +15,13 @@
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 {
-    public class CalculationScenario
+    public class CalculationScenarioState
     {
         public BatchRequestDto CalculationInput { get; set; }
-            = new BatchRequestDto();
+            = new();
 
         public IList<string> SubscribedIntegrationEventNames { get; }
             = new List<string>();
@@ -36,5 +35,11 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
         public IReadOnlyCollection<EnergyResultProducedV2> ReceivedEnergyResultProducedV2 { get; set; }
             = new List<EnergyResultProducedV2>();
+
+        public IReadOnlyCollection<AmountPerChargeResultProducedV1> ReceivedAmountPerChargeResultProducedV1 { get; set; }
+            = new List<AmountPerChargeResultProducedV1>();
+
+        public IReadOnlyCollection<MonthlyAmountPerChargeResultProducedV1> ReceivedMonthlyAmountPerChargeResultProducedV1 { get; set; }
+            = new List<MonthlyAmountPerChargeResultProducedV1>();
     }
 }
