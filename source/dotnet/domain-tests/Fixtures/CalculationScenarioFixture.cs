@@ -38,13 +38,10 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             Configuration = new WholesaleDomainConfiguration();
             ServiceBusAdministrationClient = new ServiceBusAdministrationClient(Configuration.ServiceBusFullyQualifiedNamespace, new DefaultAzureCredential());
             ServiceBusClient = new ServiceBusClient(Configuration.ServiceBusConnectionString);
-            Scenario = new CalculationScenario();
+            ScenarioState = new CalculationScenarioState();
         }
 
-        /// <summary>
-        /// Scenario state.
-        /// </summary>
-        public CalculationScenario Scenario { get; }
+        public CalculationScenarioState ScenarioState { get; }
 
         /// <summary>
         /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.
@@ -125,11 +122,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             }
 
             stopwatch.Stop();
-            DiagnosticMessageSink.WriteDiagnosticMessage($"Message receiver loop took '{stopwatch.Elapsed}' to complete. It handled a total of '{receivedIntegrationEvents.Count}' messages spanning various event types.");
-            if (stopwatch.Elapsed >= waitTimeLimit)
-            {
-                DiagnosticMessageSink.WriteDiagnosticMessage($"No messages received within the time limit of '{waitTimeLimit}'. The loop was stopped.");
-            }
+            DiagnosticMessageSink.WriteDiagnosticMessage($"Message receiver loop for calculation with id '{calculationId}' took '{stopwatch.Elapsed}' to complete. It handled a total of '{receivedIntegrationEvents.Count}' messages spanning various event types.");
 
             return receivedIntegrationEvents;
         }
