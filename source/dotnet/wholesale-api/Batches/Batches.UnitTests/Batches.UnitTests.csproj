@@ -32,7 +32,7 @@
     <ProjectReference Include="..\Batches.Infrastructure\Batches.Infrastructure.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\..\..\..\databricks\calculation_engine\contracts\calculation-job-parameters-reference.txt">
+    <EmbeddedResource Include="..\..\..\..\common\contracts\calculation-job-parameters-reference.txt">
       <Link>Infrastructure\Calculations\calculation-job-parameters-reference.txt</Link>
     </EmbeddedResource>
   </ItemGroup>
