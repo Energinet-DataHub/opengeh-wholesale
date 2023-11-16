@@ -88,7 +88,7 @@ class TestWhenValidInput:
         assert actual_row[Colname.sum_quantity] == 30
 
 
-class TestWhenNoProduction:
+class TestWhenNoResultToAdjust:
     @pytest.mark.parametrize(
         "metering_point_type",
         [
