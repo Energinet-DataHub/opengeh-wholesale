@@ -299,7 +299,7 @@ def test__read_metering_point_periods__returns_expected_df(
         spark,
         df,
         "test_database",
-        "my_metering_point_periods",
+        "metering_point_periods",
         table_location,
         metering_point_period_schema,
     )
@@ -313,7 +313,33 @@ def test__read_metering_point_periods__returns_expected_df(
     assert_dataframes_equal(actual, expected)
 
 
-# method that asserts that two dataframe are identical
+def test__read_time_series_points__returns_expected_df(
+    spark: SparkSession,
+    tmp_path: pathlib.Path,
+) -> None:
+    # Arrange
+    calculation_input_path = f"{str(tmp_path)}/calculation_input"
+    table_location = f"{calculation_input_path}/time_series_points"
+    row = _create_time_series_point_row()
+    df = spark.createDataFrame(data=[row], schema=time_series_point_schema)
+    write_dataframe_to_table(
+        spark,
+        df,
+        "test_database",
+        "time_series_points",
+        table_location,
+        time_series_point_schema,
+    )
+    expected = df
+    reader = TableReader(spark, calculation_input_path)
+
+    # Act
+    actual = reader.read_time_series_points()
+
+    # Assert
+    assert_dataframes_equal(actual, expected)
+
+
 def assert_dataframes_equal(actual: DataFrame, expected: DataFrame) -> None:
     assert actual.subtract(expected).count() == 0
     assert expected.subtract(actual).count() == 0
