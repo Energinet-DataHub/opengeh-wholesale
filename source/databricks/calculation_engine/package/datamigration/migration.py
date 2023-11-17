@@ -14,7 +14,6 @@
 
 import importlib
 from azure.identity import ClientSecretCredential
-from typing import Any
 
 from package.infrastructure import paths, initialize_spark
 import package.infrastructure.environment_variables as env_vars
@@ -39,7 +38,7 @@ def split_string_by_go(string: str) -> list[str]:
     current_section: list[str] = []
 
     for line in lines:
-        if "go" in line.lower():
+        if line.lower().strip().startswith("go"):
             if current_section:
                 sections.append("\n".join(current_section))
                 current_section = []
