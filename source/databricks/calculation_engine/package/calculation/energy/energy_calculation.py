@@ -15,11 +15,13 @@
 from datetime import datetime
 from pyspark.sql import DataFrame
 
-import package.calculation.energy.aggregators as aggregators
-import package.calculation.energy.exchange_aggregators as exchange_aggr
-import package.calculation.energy.grid_loss_calculator as grid_loss_aggr
-import package.calculation.energy.transformations as transformations
+import package.calculation.energy.aggregators.metering_point_time_series_aggregators as mp_aggr
+import package.calculation.energy.aggregators.grouping_aggregators as grouping_aggr
+import package.calculation.energy.aggregators.exchange_aggregators as exchange_aggr
+import package.calculation.energy.aggregators.grid_loss_aggregators as grid_loss_aggr
+import package.calculation.energy.aggregators.apply_grid_loss_adjustment as grid_loss_aggr_to_be_renamed
 from package.calculation.energy.energy_results import EnergyResults
+from package.calculation.energy.hour_to_quarter import transform_hour_to_quarter
 from package.calculation.preparation.quarterly_metering_point_time_series import (
     QuarterlyMeteringPointTimeSeries,
 )
@@ -42,7 +44,7 @@ def execute(
         batch_execution_time_start,
     )
 
-    quarterly_metering_point_time_series = transformations.transform_hour_to_quarter(
+    quarterly_metering_point_time_series = transform_hour_to_quarter(
         metering_point_time_series
     )
 
@@ -154,7 +156,7 @@ def _calculate_consumption_per_ga_and_brp_and_es(
 ) -> EnergyResults:
     # Non-profiled consumption per balance responsible party and energy supplier
     consumption_per_ga_and_brp_and_es = (
-        aggregators.aggregate_non_profiled_consumption_ga_brp_es(
+        mp_aggr.aggregate_non_profiled_consumption_ga_brp_es(
             quarterly_metering_point_time_series
         )
     )
@@ -166,10 +168,10 @@ def _calculate_temporary_production_per_per_ga_and_brp_and_es(
     quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
 ) -> EnergyResults:
     temporary_production_per_per_ga_and_brp_and_es = (
-        aggregators.aggregate_production_ga_brp_es(quarterly_metering_point_time_series)
+        mp_aggr.aggregate_production_ga_brp_es(quarterly_metering_point_time_series)
     )
     # temp production per grid area - used as control result for grid loss
-    temporary_production_per_ga = aggregators.aggregate_production_ga(
+    temporary_production_per_ga = grouping_aggr.aggregate_per_ga(
         temporary_production_per_per_ga_and_brp_and_es
     )
     result_writer.write(
@@ -185,12 +187,12 @@ def _calculate_temporary_flex_consumption_per_per_ga_and_brp_and_es(
     quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
 ) -> EnergyResults:
     temporary_flex_consumption_per_ga_and_brp_and_es = (
-        aggregators.aggregate_flex_consumption_ga_brp_es(
+        mp_aggr.aggregate_flex_consumption_ga_brp_es(
             quarterly_metering_point_time_series
         )
     )
     # temp flex consumption per grid area - used as control result for grid loss
-    temporary_flex_consumption_per_ga = aggregators.aggregate_flex_consumption_ga(
+    temporary_flex_consumption_per_ga = grouping_aggr.aggregate_per_ga(
         temporary_flex_consumption_per_ga_and_brp_and_es
     )
     result_writer.write(
@@ -245,7 +247,7 @@ def _calculate_adjust_production_per_ga_and_brp_and_es(
     negative_grid_loss: EnergyResults,
     grid_loss_responsible_df: DataFrame,
 ) -> EnergyResults:
-    production_per_ga_and_brp_and_es = transformations.adjust_production(
+    production_per_ga_and_brp_and_es = grid_loss_aggr_to_be_renamed.adjust_production(
         temporary_production_per_ga_and_brp_and_es,
         negative_grid_loss,
         grid_loss_responsible_df,
@@ -259,10 +261,12 @@ def _calculate_adjust_flex_consumption_per_ga_and_brp_and_es(
     positive_grid_loss: EnergyResults,
     grid_loss_responsible_df: DataFrame,
 ) -> EnergyResults:
-    flex_consumption_per_ga_and_brp_and_es = transformations.adjust_flex_consumption(
-        temporary_flex_consumption_per_ga_and_brp_and_es,
-        positive_grid_loss,
-        grid_loss_responsible_df,
+    flex_consumption_per_ga_and_brp_and_es = (
+        grid_loss_aggr_to_be_renamed.adjust_flex_consumption(
+            temporary_flex_consumption_per_ga_and_brp_and_es,
+            positive_grid_loss,
+            grid_loss_responsible_df,
+        )
     )
 
     return flex_consumption_per_ga_and_brp_and_es
@@ -281,7 +285,7 @@ def _calculate_production(
             AggregationLevel.ES_PER_BRP_PER_GA,
         )
 
-        production_per_ga_and_brp = aggregators.aggregate_production_ga_brp(
+        production_per_ga_and_brp = grouping_aggr.aggregate_per_ga_and_brp(
             production_per_ga_and_brp_and_es
         )
 
@@ -292,7 +296,7 @@ def _calculate_production(
         )
 
     # production per energy supplier
-    production_per_ga_and_es = aggregators.aggregate_production_ga_es(
+    production_per_ga_and_es = grouping_aggr.aggregate_per_ga_and_es(
         production_per_ga_and_brp_and_es
     )
 
@@ -303,9 +307,7 @@ def _calculate_production(
     )
 
     # production per grid area
-    production_per_ga = aggregators.aggregate_production_ga(
-        production_per_ga_and_brp_and_es
-    )
+    production_per_ga = grouping_aggr.aggregate_per_ga(production_per_ga_and_brp_and_es)
 
     result_writer.write(
         production_per_ga, TimeSeriesType.PRODUCTION, AggregationLevel.TOTAL_GA
@@ -320,7 +322,7 @@ def _calculate_flex_consumption(
     flex_consumption_per_ga_and_brp_and_es: EnergyResults,
 ) -> None:
     # flex consumption per grid area
-    flex_consumption_per_ga = aggregators.aggregate_flex_consumption_ga(
+    flex_consumption_per_ga = grouping_aggr.aggregate_per_ga(
         flex_consumption_per_ga_and_brp_and_es
     )
 
@@ -331,7 +333,7 @@ def _calculate_flex_consumption(
     )
 
     # flex consumption per energy supplier
-    flex_consumption_per_ga_and_es = aggregators.aggregate_flex_consumption_ga_es(
+    flex_consumption_per_ga_and_es = grouping_aggr.aggregate_per_ga_and_es(
         flex_consumption_per_ga_and_brp_and_es
     )
 
@@ -349,7 +351,7 @@ def _calculate_flex_consumption(
             AggregationLevel.ES_PER_BRP_PER_GA,
         )
 
-        flex_consumption_per_ga_and_brp = aggregators.aggregate_flex_consumption_ga_brp(
+        flex_consumption_per_ga_and_brp = grouping_aggr.aggregate_per_ga_and_brp(
             flex_consumption_per_ga_and_brp_and_es
         )
 
@@ -367,10 +369,8 @@ def _calculate_non_profiled_consumption(
 ) -> None:
     # Non-profiled consumption per balance responsible
     if _is_aggregation_or_balance_fixing(process_type):
-        consumption_per_ga_and_brp = (
-            aggregators.aggregate_non_profiled_consumption_ga_brp(
-                consumption_per_ga_and_brp_and_es
-            )
+        consumption_per_ga_and_brp = grouping_aggr.aggregate_per_ga_and_brp(
+            consumption_per_ga_and_brp_and_es
         )
 
         result_writer.write(
@@ -386,7 +386,7 @@ def _calculate_non_profiled_consumption(
         )
 
     # Non-profiled consumption per energy supplier
-    consumption_per_ga_and_es = aggregators.aggregate_non_profiled_consumption_ga_es(
+    consumption_per_ga_and_es = grouping_aggr.aggregate_per_ga_and_es(
         consumption_per_ga_and_brp_and_es
     )
 
@@ -397,7 +397,7 @@ def _calculate_non_profiled_consumption(
     )
 
     # Non-profiled consumption per grid area
-    consumption_per_ga = aggregators.aggregate_non_profiled_consumption_ga(
+    consumption_per_ga = grouping_aggr.aggregate_per_ga(
         consumption_per_ga_and_brp_and_es
     )
 
