@@ -16,7 +16,7 @@ import pytest
 from pyspark.sql import SparkSession
 from datetime import datetime
 
-from package.calculation.energy.aggregators.apply_grid_loss_adjustment import (
+from package.calculation.energy.aggregators.grid_loss_aggregators import (
     apply_grid_loss_adjustment,
 )
 from package.codelists import (
