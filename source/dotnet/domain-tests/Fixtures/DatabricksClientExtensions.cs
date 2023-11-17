@@ -17,13 +17,16 @@ using Microsoft.Azure.Databricks.Client;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 {
-    public static class DatabricksWorkspaceManager
+    /// <summary>
+    /// Convinient methods for using the <see cref="DatabricksClient"/>.
+    /// </summary>
+    public static class DatabricksClientExtensions
     {
         /// <summary>
         /// Start Databricks SQL warehouse.
         /// It can be used to "warm up" the warehouse for tests to reduce timeouts.
         /// </summary>
-        public static async Task StartDatabrickWarehouseAsync(DatabricksWorkspaceConfiguration configuration)
+        public static async Task StartkWarehouseAsync(DatabricksWorkspaceConfiguration configuration)
         {
             using var client = DatabricksClient.CreateClient(configuration.BaseUrl, configuration.Token);
             await client.SQL.Warehouse.Start(configuration.WarehouseId);
