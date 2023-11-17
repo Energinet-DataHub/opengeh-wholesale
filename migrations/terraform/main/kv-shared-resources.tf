@@ -97,3 +97,33 @@ data "azurerm_key_vault_secret" "apim_oauth_server_name" {
   name         = "apim-oauth-server-name"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+data "azurerm_key_vault_secret" "main_virtual_network_id" {
+  name         = "vnet-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "main_virtual_network_name" {
+  name         = "vnet-name"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "main_virtual_network_resource_group_name" {
+  name         = "vnet-resource-group-name"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "private_dns_zone_resource_group_name" {
+  name         = "private-dns-zone-resource-group-name"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "st_data_lake_blob_private_ip_address" {
+  name         = "st-data-lake-blob-private-ip-address"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "st_data_lake_dfs_private_ip_address" {
+  name         = "st-data-lake-dfs-private-ip-address"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}

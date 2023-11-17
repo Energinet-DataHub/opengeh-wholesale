@@ -21,6 +21,13 @@ provider "databricks" {
   token     = data.azurerm_key_vault_secret.dbw_databricks_workspace_token.value
 }
 
+provider "databricks" {
+  alias     = "dbw"
+  auth_type = "pat"
+  host      = "https://${module.dbw.workspace_url}"
+  token     = module.dbw.databricks_token
+}
+
 provider "azurerm" {
   use_oidc            = true
   storage_use_azuread = true

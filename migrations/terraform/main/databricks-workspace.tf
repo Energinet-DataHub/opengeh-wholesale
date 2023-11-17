@@ -1,0 +1,75 @@
+module "dbw" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-workspace?ref=v13"
+
+  name                                     = "dbw"
+  project_name                             = var.domain_name_short
+  environment_short                        = var.environment_short
+  environment_instance                     = var.environment_instance
+  resource_group_name                      = azurerm_resource_group.this.name
+  location                                 = azurerm_resource_group.this.location
+  sku                                      = "premium"
+  main_virtual_network_id                  = data.azurerm_key_vault_secret.main_virtual_network_id.value
+  main_virtual_network_name                = data.azurerm_key_vault_secret.main_virtual_network_name.value
+  main_virtual_network_resource_group_name = data.azurerm_key_vault_secret.main_virtual_network_resource_group_name.value
+  databricks_virtual_network_address_space = var.databricks_vnet_address_space
+  private_subnet_address_prefix            = var.databricks_private_subnet_address_prefix
+  public_subnet_address_prefix             = var.databricks_public_subnet_address_prefix
+  user_access_security_group_object_id     = var.developers_security_group_object_id
+
+  public_network_service_endpoints = [
+    "Microsoft.EventHub"
+  ]
+}
+
+resource "databricks_git_credential" "ado" {
+  git_username          = var.github_username
+  git_provider          = "gitHub"
+  personal_access_token = var.github_personal_access_token
+  depends_on            = [module.dbw]
+}
+
+module "kvs_databricks_workspace_id" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
+
+  name         = "dbw-workspace-id"
+  value        = module.dbw.id
+  key_vault_id = module.kv_internal.id
+  depends_on   = [module.dbw]
+}
+
+module "kvs_databricks_workspace_url" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
+
+  name         = "dbw-workspace-url"
+  value        = module.dbw.workspace_url
+  key_vault_id = module.kv_internal.id
+  depends_on   = [module.dbw]
+}
+
+module "kvs_databricks_public_network_id" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
+
+  name         = "dbw-public-network-id"
+  value        = module.dbw.public_network_id
+  key_vault_id = module.kv_internal.id
+  depends_on   = [module.dbw]
+}
+
+module "kvs_databricks_private_dns_resource_group_name" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
+
+  name         = "databricks-private-dns-resource-group-name"
+  value        = module.dbw.private_dns_zone_resource_group_name
+  key_vault_id = module.kv_internal.id
+  depends_on   = [module.dbw]
+}
+
+module "kvs_databricks_dbw_workspace_token" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
+
+  name         = "dbw-workspace-token"
+  value        = module.dbw.databricks_token
+  key_vault_id = module.kv_internal.id
+  depends_on   = [module.dbw]
+}
+
