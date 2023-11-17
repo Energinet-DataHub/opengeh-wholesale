@@ -11,13 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import pathlib
 from datetime import datetime
 from decimal import Decimal
 from unittest import mock
 import pytest
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import lit
+from pyspark.sql.types import StructType
+from pyspark.sql.functions import col, when, lit
 
 from package.codelists import (
     InputMeteringPointType,
@@ -34,11 +35,7 @@ from package.calculation_input.schemas import (
     charge_master_data_periods_schema,
 )
 from package.constants import Colname
-from pyspark.sql.types import StructType
-
-
-# These tests seem incomplete. No tests seem to test the part of the table reader, which actually reads from the table.
-#       Consider adding such tests next time when refactoring this file.
+from tests.helpers.delta_table_utils import write_dataframe_to_table
 
 
 def _create_metering_point_period_row(
@@ -103,6 +100,27 @@ def _create_charge_master_period_row() -> dict:
         Colname.from_date: datetime(2022, 6, 8, 22, 0, 0),
         Colname.to_date: datetime(2022, 6, 8, 22, 0, 0),
     }
+
+
+def _map_metering_point_type_and_settlement_method(df: DataFrame) -> DataFrame:
+    """
+    Maps metering point type and settlement method to the correct values
+    Only supports consumption and flex
+    """
+    return df.withColumn(
+        Colname.metering_point_type,
+        when(
+            col(Colname.metering_point_type)
+            == InputMeteringPointType.CONSUMPTION.value,
+            MeteringPointType.CONSUMPTION.value,
+        ).otherwise(col(Colname.metering_point_type)),
+    ).withColumn(
+        Colname.settlement_method,
+        when(
+            col(Colname.settlement_method) == InputSettlementMethod.FLEX.value,
+            SettlementMethod.FLEX.value,
+        ).otherwise(col(Colname.metering_point_type)),
+    )
 
 
 @pytest.mark.parametrize(
@@ -266,3 +284,37 @@ def test__read_data__when_schema_mismatch__raises_assertion_error(
     with mock.patch.object(reader, TableReader._read_table.__name__, return_value=df):
         with pytest.raises(AssertionError):
             sut()
+
+
+def test__read_metering_point_periods__returns_expected_df(
+    spark: SparkSession,
+    tmp_path: pathlib.Path,
+) -> None:
+    # Arrange
+    calculation_input_path = f"{str(tmp_path)}/calculation_input"
+    table_location = f"{calculation_input_path}/metering_point_periods"
+    row = _create_metering_point_period_row()
+    df = spark.createDataFrame(data=[row], schema=metering_point_period_schema)
+    write_dataframe_to_table(
+        spark,
+        df,
+        "test_database",
+        "my_metering_point_periods",
+        table_location,
+        metering_point_period_schema,
+    )
+    expected = _map_metering_point_type_and_settlement_method(df)
+    reader = TableReader(spark, calculation_input_path)
+
+    # Act
+    actual = reader.read_metering_point_periods()
+
+    # Assert
+    assert_dataframes_equal(actual, expected)
+
+
+# method that asserts that two dataframe are identical
+def assert_dataframes_equal(actual: DataFrame, expected: DataFrame) -> None:
+    assert actual.subtract(expected).count() == 0
+    assert expected.subtract(actual).count() == 0
+    assert actual.subtract(expected).count() == 0
