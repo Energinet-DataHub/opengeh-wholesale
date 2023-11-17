@@ -29,16 +29,16 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Identity
         /// <summary>
         /// Ensure secrets are retrieved and ready for use.
         /// </summary>
-        public B2CUserTokenConfiguration(string b2cKeyVaultUrl, string environment, string user, string tokenBaseAddress)
+        private B2CUserTokenConfiguration(string b2cKeyVaultUrl, string environment, string user, string tokenBaseAddress)
         {
             if (string.IsNullOrWhiteSpace(b2cKeyVaultUrl))
-                throw new ArgumentException($"'{nameof(b2cKeyVaultUrl)}' cannot be null or whitespace.", nameof(b2cKeyVaultUrl));
+                throw new ArgumentException($"Cannot be null or whitespace.", nameof(b2cKeyVaultUrl));
             if (string.IsNullOrEmpty(environment))
-                throw new ArgumentException($"'{nameof(environment)}' cannot be null or empty.", nameof(environment));
+                throw new ArgumentException($"Cannot be null or empty.", nameof(environment));
             if (string.IsNullOrEmpty(user))
-                throw new ArgumentException($"'{nameof(user)}' cannot be null or empty.", nameof(user));
+                throw new ArgumentException($"Cannot be null or empty.", nameof(user));
             if (string.IsNullOrEmpty(tokenBaseAddress))
-                throw new ArgumentException($"'{nameof(tokenBaseAddress)}' cannot be null or empty.", nameof(tokenBaseAddress));
+                throw new ArgumentException($"Cannot be null or empty.", nameof(tokenBaseAddress));
 
             var secretsConfiguration = BuildSecretsConfiguration(b2cKeyVaultUrl);
 
