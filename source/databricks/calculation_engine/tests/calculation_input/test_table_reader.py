@@ -124,6 +124,10 @@ def _map_metering_point_type_and_settlement_method(df: DataFrame) -> DataFrame:
     )
 
 
+def _add_charge_key(df: DataFrame) -> DataFrame:
+    return df.withColumn(Colname.charge_key, lit("foo-foo-foo"))
+
+
 @pytest.mark.parametrize(
     "metering_point_type,expected",
     [
@@ -225,53 +229,6 @@ def test___read_metering_point_periods__returns_df_with_correct_settlement_metho
         ),
     ],
 )
-def test__read_data__returns_df(
-    spark: SparkSession, expected_schema: StructType, method_name: str, create_row: any
-) -> None:
-    # Arrange
-    row = create_row()
-    reader = TableReader(spark, "dummy_calculation_input_path")
-    df = spark.createDataFrame(data=[row], schema=expected_schema)
-    sut = getattr(reader, method_name.__name__)
-
-    # Act
-    with mock.patch.object(reader, TableReader._read_table.__name__, return_value=df):
-        actual = sut()
-
-    # Assert
-    assert isinstance(actual, DataFrame)
-
-
-@pytest.mark.parametrize(
-    "expected_schema, method_name, create_row",
-    [
-        (
-            metering_point_period_schema,
-            TableReader.read_metering_point_periods,
-            _create_metering_point_period_row,
-        ),
-        (
-            time_series_point_schema,
-            TableReader.read_time_series_points,
-            _create_time_series_point_row,
-        ),
-        (
-            charge_master_data_periods_schema,
-            TableReader.read_charge_master_data_periods,
-            _create_charge_master_period_row,
-        ),
-        (
-            charge_link_periods_schema,
-            TableReader.read_charge_links_periods,
-            _create_charge_link_period_row,
-        ),
-        (
-            charge_price_points_schema,
-            TableReader.read_charge_price_points,
-            _create_change_price_point_row,
-        ),
-    ],
-)
 def test__read_data__when_schema_mismatch__raises_assertion_error(
     spark: SparkSession, expected_schema: StructType, method_name: str, create_row: any
 ) -> None:
@@ -336,6 +293,87 @@ def test__read_time_series_points__returns_expected_df(
 
     # Act
     actual = reader.read_time_series_points()
+
+    # Assert
+    assert_dataframes_equal(actual, expected)
+
+
+def test__read_charge_price_points__returns_expected_df(
+    spark: SparkSession,
+    tmp_path: pathlib.Path,
+) -> None:
+    # Arrange
+    calculation_input_path = f"{str(tmp_path)}/calculation_input"
+    table_location = f"{calculation_input_path}/charge_price_points"
+    row = _create_change_price_point_row()
+    df = spark.createDataFrame(data=[row], schema=charge_price_points_schema)
+    write_dataframe_to_table(
+        spark,
+        df,
+        "test_database",
+        "charge_price_points",
+        table_location,
+        charge_price_points_schema,
+    )
+    expected = _add_charge_key(df)
+    reader = TableReader(spark, calculation_input_path)
+
+    # Act
+    actual = reader.read_charge_price_points()
+
+    # Assert
+    assert_dataframes_equal(actual, expected)
+
+
+def test__read_charge_master_data_periods__returns_expected_df(
+    spark: SparkSession,
+    tmp_path: pathlib.Path,
+) -> None:
+    # Arrange
+    calculation_input_path = f"{str(tmp_path)}/calculation_input"
+    table_location = f"{calculation_input_path}/charge_masterdata_periods"
+    row = _create_charge_master_period_row()
+    df = spark.createDataFrame(data=[row], schema=charge_master_data_periods_schema)
+    write_dataframe_to_table(
+        spark,
+        df,
+        "test_database",
+        "charge_master_data_periods",
+        table_location,
+        charge_master_data_periods_schema,
+    )
+    expected = _add_charge_key(df)
+    reader = TableReader(spark, calculation_input_path)
+
+    # Act
+    actual = reader.read_charge_master_data_periods()
+
+    # Assert
+    assert_dataframes_equal(actual, expected)
+
+
+def test__read_charge_links_periods__returns_expected_df(
+    spark: SparkSession,
+    tmp_path: pathlib.Path,
+) -> None:
+    # Arrange
+    calculation_input_path = f"{str(tmp_path)}/calculation_input"
+    table_location = f"{calculation_input_path}/charge_link_periods"
+    row = _create_charge_link_period_row()
+    df = spark.createDataFrame(data=[row], schema=charge_link_periods_schema)
+    write_dataframe_to_table(
+        spark,
+        df,
+        "test_database",
+        "charge_link_periods",
+        table_location,
+        charge_link_periods_schema,
+    )
+    expected = _add_charge_key(df)
+    reader = TableReader(spark, calculation_input_path)
+
+    # Act
+    actual = reader.read_charge_links_periods()
 
     # Assert
     assert_dataframes_equal(actual, expected)
