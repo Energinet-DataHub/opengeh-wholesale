@@ -19,9 +19,12 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 {
     /// <summary>
     /// Convenient methods for using the <see cref="DatabricksClient"/>.
+    ///
     /// If we need to make several calls using the <see cref="DatabricksClient"/>,
     /// we should not use these extensions but instead create and maintain an
     /// instance of the client in the class where we use it.
+    ///
+    /// Client documentation: https://github.com/Azure/azure-databricks-client
     /// </summary>
     public static class DatabricksClientExtensions
     {
