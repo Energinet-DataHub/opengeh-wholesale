@@ -58,7 +58,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration
         public static DatabricksWorkspaceConfiguration CreateFromConfiguration(IConfigurationRoot secretsConfiguration)
         {
             return new DatabricksWorkspaceConfiguration(
-                secretsConfiguration.GetValue<string>("dbw-shared-workspace-url")!,
+                $"https://{secretsConfiguration.GetValue<string>("dbw-shared-workspace-url")!}",
                 secretsConfiguration.GetValue<string>("dbw-shared-workspace-token")!,
                 secretsConfiguration.GetValue<string>("dbw-databricks-sql-endpoint-id")!);
         }
