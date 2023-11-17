@@ -33,6 +33,6 @@ module "func_entrypoint_grid_loss_event_receiver" {
     "ConsumeServiceBusSettings:ConnectionString"            = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-listen-connection-string)"
     "ConsumeServiceBusSettings:HealthCheckConnectionString" = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-manage-connection-string)"
     "ConsumeServiceBusSettings:SharedIntegrationEventTopic" = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbt-shres-integrationevent-received-name)"
-    "ConsumeServiceBusSettings:EsettExchangeSubscription"   = module.sbtsub_dh2_bridge_event_listener.name
+    "ConsumeServiceBusSettings:GridLossSubscription"   = module.sbtsub_dh2_bridge_event_listener.name
   }
 }
