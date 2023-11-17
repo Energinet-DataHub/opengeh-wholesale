@@ -14,12 +14,13 @@
 
 using System.IO.Compression;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
+using Energinet.DataHub.Wholesale.DomainTests.Fixtures;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Extensions;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
+namespace Energinet.DataHub.Wholesale.DomainTests.SettlementReportFeatures.Fixtures
 {
     public sealed class SettlementReportScenarioFixture : LazyFixtureBase
     {
@@ -60,6 +61,32 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             return lines;
         }
 
+        public Tuple<int, int, int> CountTimeSeriesTypes(string[] lines)
+        {
+            var productionLines = 0;
+            var exchangeLines = 0;
+            var consumptionLines = 0;
+
+            foreach (var line in lines[1..]) //// The first line is the header.
+            {
+                var timeSeriesType = line.Split(",")[4];
+                switch (timeSeriesType)
+                {
+                    case "E17":
+                        consumptionLines++;
+                        break;
+                    case "E18":
+                        productionLines++;
+                        break;
+                    case "E20":
+                        exchangeLines++;
+                        break;
+                }
+            }
+
+            return new Tuple<int, int, int>(consumptionLines, productionLines, exchangeLines);
+        }
+
         protected override async Task OnInitializeAsync()
         {
             WholesaleClient = await WholesaleClientFactory.CreateWholesaleClientAsync(Configuration, useAuthentication: true);
@@ -69,5 +96,5 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         {
             return Task.CompletedTask;
         }
- }
+    }
 }

@@ -15,6 +15,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
+using Energinet.DataHub.Wholesale.DomainTests.SettlementReportFeatures;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures;
 
