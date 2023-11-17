@@ -27,3 +27,9 @@ def set_column(
     if isinstance(column_value, list):
         return df.withColumn(column_name, f.array(*map(f.lit, column_value)))
     return df.withColumn(column_name, f.lit(column_value))
+
+
+def assert_dataframes_equal(actual: DataFrame, expected: DataFrame) -> None:
+    assert actual.subtract(expected).count() == 0
+    assert expected.subtract(actual).count() == 0
+    assert actual.subtract(expected).count() == 0

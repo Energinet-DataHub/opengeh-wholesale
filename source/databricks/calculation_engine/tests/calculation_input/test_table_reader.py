@@ -36,6 +36,7 @@ from package.calculation_input.schemas import (
 )
 from package.constants import Colname
 from tests.helpers.delta_table_utils import write_dataframe_to_table
+from tests.helpers.data_frame_utils import assert_dataframes_equal
 
 
 def _create_metering_point_period_row(
@@ -338,9 +339,3 @@ def test__read_time_series_points__returns_expected_df(
 
     # Assert
     assert_dataframes_equal(actual, expected)
-
-
-def assert_dataframes_equal(actual: DataFrame, expected: DataFrame) -> None:
-    assert actual.subtract(expected).count() == 0
-    assert expected.subtract(actual).count() == 0
-    assert actual.subtract(expected).count() == 0
