@@ -32,7 +32,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         /// Start Databricks SQL warehouse.
         /// It can be used to "warm up" the warehouse for tests to reduce timeouts.
         /// </summary>
-        public static async Task StartkWarehouseAsync(DatabricksWorkspaceConfiguration configuration)
+        public static async Task StartWarehouseAsync(DatabricksWorkspaceConfiguration configuration)
         {
             using var client = DatabricksClient.CreateClient(configuration.BaseUrl, configuration.Token);
             await client.SQL.Warehouse.Start(configuration.WarehouseId);
