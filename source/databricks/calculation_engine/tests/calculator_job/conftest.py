@@ -36,6 +36,7 @@ from package.calculation_input.schemas import (
     charge_price_points_schema,
     charge_link_periods_schema,
 )
+from tests.helpers.delta_table_utils import write_dataframe_to_table
 
 
 @pytest.fixture(scope="session")
@@ -234,30 +235,7 @@ def _write_input_test_data_to_table(
     table_location: str,
     schema: StructType,
 ) -> None:
-    spark.sql(f"CREATE DATABASE IF NOT EXISTS {paths.INPUT_DATABASE_NAME}")
-
-    sql_schema = struct_type_to_sql_schema(schema)
-    spark.sql(
-        f"CREATE TABLE IF NOT EXISTS {paths.INPUT_DATABASE_NAME}.{table_name} ({sql_schema}) USING DELTA LOCATION '{table_location}'"
-    )
-
     df = spark.read.csv(file_name, header=True, schema=schema)
-    df.write.format("delta").mode("overwrite").saveAsTable(
-        f"{paths.INPUT_DATABASE_NAME}.{table_name}"
+    write_dataframe_to_table(
+        spark, df, paths.INPUT_DATABASE_NAME, table_name, table_location, schema
     )
-
-
-def struct_type_to_sql_schema(schema: StructType) -> str:
-    schema_string = ""
-    for field in schema.fields:
-        field_name = field.name
-        field_type = field.dataType.simpleString()
-
-        if not field.nullable:
-            field_type += " NOT NULL"
-
-        schema_string += f"{field_name} {field_type}, "
-
-    # Remove the trailing comma and space
-    schema_string = schema_string.rstrip(", ")
-    return schema_string
