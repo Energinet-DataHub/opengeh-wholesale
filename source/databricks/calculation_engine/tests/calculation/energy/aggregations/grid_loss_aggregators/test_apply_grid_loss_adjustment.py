@@ -86,6 +86,53 @@ class TestWhenValidInput:
         actual_qualities = actual_row[Colname.qualities]
         assert set(actual_qualities) == set(expected_qualities)
 
+    @pytest.mark.parametrize(
+        "metering_point_type",
+        [
+            MeteringPointType.CONSUMPTION,
+            MeteringPointType.PRODUCTION,
+        ],
+    )
+    def test_returns_sum_quantity_from_result_and_grid_loss(
+        self,
+        spark: SparkSession,
+        metering_point_type: MeteringPointType,
+    ) -> None:
+        # Arrange
+        result_row = energy_results_factories.create_row(
+            observation_time=DEFAULT_OBSERVATION_TIME,
+            energy_supplier_id="energy_supplier_id",
+            sum_quantity=20,
+        )
+        result = energy_results_factories.create(spark, [result_row])
+
+        grid_loss_row = energy_results_factories.create_row(
+            observation_time=DEFAULT_OBSERVATION_TIME,
+            sum_quantity=10,
+        )
+        grid_loss = energy_results_factories.create(spark, [grid_loss_row])
+
+        grid_loss_responsible_row = grid_loss_responsible_factories.create_row(
+            energy_supplier_id="energy_supplier_id",
+            metering_point_type=metering_point_type,
+        )
+        grid_loss_responsible = grid_loss_responsible_factories.create(
+            spark, [grid_loss_responsible_row]
+        )
+
+        # Act
+        actual = apply_grid_loss_adjustment(
+            result,
+            grid_loss,
+            grid_loss_responsible,
+            metering_point_type,
+        )
+
+        # Assert
+        actual_row = actual.df.collect()[0]
+        actual_sum_quantity = actual_row[Colname.sum_quantity]
+        assert actual_sum_quantity == 30
+
 
 class TestWhenEnergySupplierIdIsNotGridLossResponsible:
     @pytest.mark.parametrize(

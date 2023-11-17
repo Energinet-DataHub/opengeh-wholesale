@@ -184,31 +184,31 @@ def sys_cor_row_factory(
     return factory
 
 
-def test_grid_area_negative_grid_loss_is_added_to_grid_loss_responsible_energy_supplier(
-    hourly_production_result_row_factory: Callable[..., EnergyResults],
-    negative_grid_loss_result_row_factory: Callable[..., EnergyResults],
-    sys_cor_row_factory: Callable[..., GridLossResponsible],
-) -> None:
-    # Arrange
-    production = hourly_production_result_row_factory(supplier="A")
-    negative_grid_loss = negative_grid_loss_result_row_factory()
-    grid_loss_sys_cor_master_data = sys_cor_row_factory(supplier="A")
-
-    # Act
-    actual = apply_grid_loss_adjustment(
-        production,
-        negative_grid_loss,
-        grid_loss_sys_cor_master_data,
-        MeteringPointType.PRODUCTION,
-    )
-
-    # Assert
-    assert (
-        actual.df.where(col(Colname.energy_supplier_id) == "A").collect()[0][
-            Colname.sum_quantity
-        ]
-        == default_negative_grid_loss + default_sum_quantity
-    )
+# def test_grid_area_negative_grid_loss_is_added_to_grid_loss_responsible_energy_supplier(
+#     hourly_production_result_row_factory: Callable[..., EnergyResults],
+#     negative_grid_loss_result_row_factory: Callable[..., EnergyResults],
+#     sys_cor_row_factory: Callable[..., GridLossResponsible],
+# ) -> None:
+#     # Arrange
+#     production = hourly_production_result_row_factory(supplier="A")
+#     negative_grid_loss = negative_grid_loss_result_row_factory()
+#     grid_loss_sys_cor_master_data = sys_cor_row_factory(supplier="A")
+#
+#     # Act
+#     actual = apply_grid_loss_adjustment(
+#         production,
+#         negative_grid_loss,
+#         grid_loss_sys_cor_master_data,
+#         MeteringPointType.PRODUCTION,
+#     )
+#
+#     # Assert
+#     assert (
+#         actual.df.where(col(Colname.energy_supplier_id) == "A").collect()[0][
+#             Colname.sum_quantity
+#         ]
+#         == default_negative_grid_loss + default_sum_quantity
+#     )
 
 
 def test_grid_area_grid_loss_is_not_added_to_non_grid_loss_energy_responsible(
