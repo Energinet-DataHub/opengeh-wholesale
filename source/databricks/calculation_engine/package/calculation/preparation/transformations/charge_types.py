@@ -16,7 +16,7 @@ from pyspark.sql.dataframe import DataFrame
 import pyspark.sql.functions as f
 from pyspark.sql.types import DecimalType, StringType, ArrayType
 
-import package.calculation.energy.transformations as t
+import package.calculation.energy.aggregators.transformations as t
 from package.codelists import ChargeType, ChargeResolution
 from package.constants import Colname
 
