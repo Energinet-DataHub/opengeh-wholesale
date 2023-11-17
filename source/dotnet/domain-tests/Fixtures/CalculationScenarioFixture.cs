@@ -125,7 +125,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             stopwatch.Stop();
             DiagnosticMessageSink.WriteDiagnosticMessage($"""
                 Message receiver loop for calculation with id '{calculationId}' took '{stopwatch.Elapsed}' to complete.
-                 It was listening for messages on entity path '{Receiver.EntityPath}', and handled '{receivedIntegrationEvents.Count}' messages spanning various event types.
+                It was listening for messages on entity path '{Receiver.EntityPath}', and handled '{receivedIntegrationEvents.Count}' messages spanning various event types.
                 """);
 
             return receivedIntegrationEvents;
