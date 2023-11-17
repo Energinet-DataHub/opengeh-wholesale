@@ -97,22 +97,22 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             using var cts = new CancellationTokenSource(waitTimeLimit);
             var stopwatch = Stopwatch.StartNew();
 
-            var receivedIntegrationEvents = new List<IEventMessage>();
+            var collectedIntegrationEvents = new List<IEventMessage>();
             while (!cts.Token.IsCancellationRequested)
             {
                 var messageOrNull = await Receiver.ReceiveMessageAsync(maxWaitTime: TimeSpan.FromMinutes(1));
                 if (messageOrNull?.Body == null)
                 {
-                    if (receivedIntegrationEvents.Count > 0)
+                    if (collectedIntegrationEvents.Count > 0)
                         break;
                 }
                 else
                 {
-                    var result = ShouldHandleMessage(messageOrNull, calculationId, integrationEventNames);
-                    if (result.ShouldHandle)
+                    var result = ShouldCollectMessage(messageOrNull, calculationId, integrationEventNames);
+                    if (result.ShouldCollect)
                     {
+                        collectedIntegrationEvents.Add(result.EventMessage!);
                         await Receiver.CompleteMessageAsync(messageOrNull);
-                        receivedIntegrationEvents.Add(result.EventMessage!);
                     }
                     else
                     {
@@ -125,10 +125,10 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
             stopwatch.Stop();
             DiagnosticMessageSink.WriteDiagnosticMessage($"""
                 Message receiver loop for calculation with id '{calculationId}' took '{stopwatch.Elapsed}' to complete.
-                It was listening for messages on entity path '{Receiver.EntityPath}', and handled '{receivedIntegrationEvents.Count}' messages spanning various event types.
+                It was listening for messages on entity path '{Receiver.EntityPath}', and collected '{collectedIntegrationEvents.Count}' messages spanning various event types.
                 """);
 
-            return receivedIntegrationEvents;
+            return collectedIntegrationEvents;
         }
 
         protected override async Task OnInitializeAsync()
@@ -161,11 +161,11 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         }
 
         /// <summary>
-        /// Returns <see langword="true"/> if we should handle the message type; otherwise <see langword="false"/> .
+        /// Returns <see langword="true"/> if we should collect the message type; otherwise <see langword="false"/> .
         /// </summary>
-        private static (bool ShouldHandle, IEventMessage? EventMessage) ShouldHandleMessage(ServiceBusReceivedMessage message, Guid calculationId, IReadOnlyCollection<string> integrationEventNames)
+        private static (bool ShouldCollect, IEventMessage? EventMessage) ShouldCollectMessage(ServiceBusReceivedMessage message, Guid calculationId, IReadOnlyCollection<string> integrationEventNames)
         {
-            var shouldHandle = false;
+            var shouldCollect = false;
             IEventMessage? eventMessage = null;
 
             if (integrationEventNames.Contains(message.Subject))
@@ -179,7 +179,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                         if (calculationResultCompleted.BatchId == calculationId.ToString())
                         {
                             eventMessage = calculationResultCompleted;
-                            shouldHandle = true;
+                            shouldCollect = true;
                         }
 
                         break;
@@ -188,7 +188,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                         if (energyResultProduced.CalculationId == calculationId.ToString())
                         {
                             eventMessage = energyResultProduced;
-                            shouldHandle = true;
+                            shouldCollect = true;
                         }
 
                         break;
@@ -197,7 +197,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                         if (amountPerChargeResultProduced.CalculationId == calculationId.ToString())
                         {
                             eventMessage = amountPerChargeResultProduced;
-                            shouldHandle = true;
+                            shouldCollect = true;
                         }
 
                         break;
@@ -206,14 +206,14 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                         if (monthlyAmountPerChargeResultProduced.CalculationId == calculationId.ToString())
                         {
                             eventMessage = monthlyAmountPerChargeResultProduced;
-                            shouldHandle = true;
+                            shouldCollect = true;
                         }
 
                         break;
                 }
             }
 
-            return (shouldHandle, eventMessage);
+            return (shouldCollect, eventMessage);
         }
     }
 }
