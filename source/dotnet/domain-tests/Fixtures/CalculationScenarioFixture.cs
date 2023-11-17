@@ -116,13 +116,16 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                     }
                     else
                     {
-                        await Receiver.AbandonMessageAsync(messageOrNull);
+                        await Receiver.CompleteMessageAsync(messageOrNull);
                     }
                 }
             }
 
             stopwatch.Stop();
-            DiagnosticMessageSink.WriteDiagnosticMessage($"Message receiver loop for calculation with id '{calculationId}' took '{stopwatch.Elapsed}' to complete. It handled a total of '{receivedIntegrationEvents.Count}' messages spanning various event types.");
+            DiagnosticMessageSink.WriteDiagnosticMessage($"""
+                Message receiver loop for calculation with id '{calculationId}' took '{stopwatch.Elapsed}' to complete.
+                 It was listening for messages on entity path '{Receiver.EntityPath}', and handled '{receivedIntegrationEvents.Count}' messages spanning various event types.
+                """);
 
             return receivedIntegrationEvents;
         }
