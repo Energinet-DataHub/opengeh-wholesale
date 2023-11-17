@@ -116,6 +116,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                     }
                     else
                     {
+                        // Even though we don't want to keep the message, we complete it so its removed from the subscription.
                         await Receiver.CompleteMessageAsync(messageOrNull);
                     }
                 }
