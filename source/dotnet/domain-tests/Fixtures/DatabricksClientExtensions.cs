@@ -18,7 +18,7 @@ using Microsoft.Azure.Databricks.Client;
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 {
     /// <summary>
-    /// Convinient methods for using the <see cref="DatabricksClient"/>.
+    /// Convenient methods for using the <see cref="DatabricksClient"/>.
     /// </summary>
     public static class DatabricksClientExtensions
     {
