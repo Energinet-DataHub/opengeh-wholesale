@@ -112,13 +112,12 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
                     if (result.ShouldCollect)
                     {
                         collectedIntegrationEvents.Add(result.EventMessage!);
-                        await Receiver.CompleteMessageAsync(messageOrNull);
                     }
-                    else
-                    {
-                        // Even though we don't want to keep the message, we complete it so its removed from the subscription.
-                        await Receiver.CompleteMessageAsync(messageOrNull);
-                    }
+
+                    // We should always complete (delete) messages since we use a subscription
+                    // and no other receiver is using the same, so we will never by mistake
+                    // interfere with other scenarios or message receivers in the live environment.
+                    await Receiver.CompleteMessageAsync(messageOrNull);
                 }
             }
 
