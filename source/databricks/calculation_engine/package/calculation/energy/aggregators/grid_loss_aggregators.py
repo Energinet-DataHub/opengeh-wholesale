@@ -206,7 +206,6 @@ def apply_grid_loss_adjustment(
         Colname.time_window,
         Colname.sum_quantity,
         Colname.qualities,
-        Colname.metering_point_type,
     )
 
     df = (
