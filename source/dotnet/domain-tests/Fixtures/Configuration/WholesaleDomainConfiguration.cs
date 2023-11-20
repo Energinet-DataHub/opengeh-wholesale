@@ -24,24 +24,17 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration
     /// On developer machines we use the 'domaintest.local.settings.json' to set values.
     /// On hosted agents we must set these using environment variables.
     /// </summary>
-    public class WholesaleDomainConfiguration : DomainTestConfiguration
+    public sealed class WholesaleDomainConfiguration : DomainTestConfiguration
     {
         public WholesaleDomainConfiguration()
         {
-            UserTokenConfiguration = B2CUserTokenConfiguration.CreateFromConfiguration(Root);
             WebApiBaseAddress = new Uri(Root.GetValue<string>("WEBAPI_BASEADDRESS")!);
+            UserTokenConfiguration = B2CUserTokenConfiguration.CreateFromConfiguration(Root);
 
             var secretsConfiguration = BuildSecretsConfiguration(Root);
-            var serviceBusNamespace = secretsConfiguration.GetValue<string>("sb-domain-relay-namespace-name")!;
-            ServiceBusFullyQualifiedNamespace = $"{serviceBusNamespace}.servicebus.windows.net";
-            ServiceBusConnectionString = secretsConfiguration.GetValue<string>("sb-domain-relay-listen-connection-string")!;
-            DomainRelayTopicName = secretsConfiguration.GetValue<string>("sbt-shres-integrationevent-received-name")!;
+            ServiceBus = ServiceBusConfiguration.CreateFromConfiguration(secretsConfiguration);
+            DatabricksWorkspace = DatabricksWorkspaceConfiguration.CreateFromConfiguration(secretsConfiguration);
         }
-
-        /// <summary>
-        /// Settings necessary to retrieve a user token for authentication with Wholesale Web API in live environment.
-        /// </summary>
-        public B2CUserTokenConfiguration UserTokenConfiguration { get; }
 
         /// <summary>
         /// Base address setting for Wholesale Web API in live environment.
@@ -49,30 +42,34 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration
         public Uri WebApiBaseAddress { get; }
 
         /// <summary>
-        /// Fully qualified namespace for the service bus used for domain relay.
+        /// Settings necessary to retrieve a user token for authentication with Wholesale Web API in live environment.
         /// </summary>
-        public string ServiceBusFullyQualifiedNamespace { get; }
+        public B2CUserTokenConfiguration UserTokenConfiguration { get; }
 
         /// <summary>
-        /// Connection string for the service bus used for domain relay.
+        /// Settings necessary to use the shared Service Bus.
         /// </summary>
-        public string ServiceBusConnectionString { get; }
+        public ServiceBusConfiguration ServiceBus { get; }
 
         /// <summary>
-        /// Service bus topic name for the domain relay messages.
+        /// Settings necessary to start the Databricks workspace SQL warehouse.
         /// </summary>
-        public string DomainRelayTopicName { get; internal set; }
+        public DatabricksWorkspaceConfiguration DatabricksWorkspace { get; }
 
         /// <summary>
-        /// Load settings from key vault secrets.
+        /// Build configuration for loading settings from key vault secrets.
         /// </summary>
         private static IConfigurationRoot BuildSecretsConfiguration(IConfigurationRoot root)
         {
             var sharedKeyVaultName = root.GetValue<string>("SHARED_KEYVAULT_NAME");
             var sharedKeyVaultUrl = $"https://{sharedKeyVaultName}.vault.azure.net/";
 
+            var internalKeyVaultName = root.GetValue<string>("INTERNAL_KEYVAULT_NAME");
+            var internalKeyVaultUrl = $"https://{internalKeyVaultName}.vault.azure.net/";
+
             return new ConfigurationBuilder()
                 .AddAuthenticatedAzureKeyVault(sharedKeyVaultUrl)
+                .AddAuthenticatedAzureKeyVault(internalKeyVaultUrl)
                 .Build();
         }
     }
