@@ -30,7 +30,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
     public class CalculationFeatureTests
     {
         [TestCaseOrderer(
-            ordererTypeName: "Energinet.DataHub.Wholesale.DomainTests.Fixtures.Orderers.PriorityOrderer",
+            ordererTypeName: "Energinet.DataHub.Wholesale.DomainTests.Fixtures.Orderers.ScenarioStepOrderer",
             ordererAssemblyName: "Energinet.DataHub.Wholesale.DomainTests")]
         public class BalanceFixingCalculationScenario : DomainTestsBase<CalculationScenarioFixture>
         {
@@ -39,7 +39,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             {
             }
 
-            [Priority(0)]
+            [ScenarioStep(0)]
             [DomainFact]
             public void Given_CalculationInput()
             {
@@ -52,7 +52,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 };
             }
 
-            [Priority(1)]
+            [ScenarioStep(1)]
             [DomainFact]
             public void AndGiven_SubscribedIntegrationEvents()
             {
@@ -60,7 +60,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(EnergyResultProducedV2.EventName);
             }
 
-            [Priority(2)]
+            [ScenarioStep(2)]
             [DomainFact]
             public async Task When_CalculationIsStarted()
             {
@@ -70,7 +70,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 Fixture.ScenarioState.CalculationId.Should().NotBeEmpty();
             }
 
-            [Priority(3)]
+            [ScenarioStep(3)]
             [DomainFact]
             public async Task Then_CalculationIsCompletedWithinWaitTime()
             {
@@ -89,7 +89,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 actualWaitResult.Batch!.ExecutionState.Should().Be(Clients.v3.BatchState.Completed);
             }
 
-            [Priority(4)]
+            [ScenarioStep(4)]
             [DomainFact]
             public void AndThen_CalculationDurationIsLessThanOrEqualToTimeLimit()
             {
@@ -102,7 +102,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 actualCalculationDuration.Should().BeLessThanOrEqualTo(calculationTimeLimit);
             }
 
-            [Priority(5)]
+            [ScenarioStep(5)]
             [DomainFact]
             public async Task AndThen_IntegrationEventsAreReceivedWithinWaitTime()
             {
@@ -126,7 +126,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1.Should().BeEmpty();
             }
 
-            [Priority(6)]
+            [ScenarioStep(6)]
             [DomainFact]
             public void AndThen_ReceivedEnergyResultProducedEventsCountIsEqualToExpected()
             {
@@ -138,7 +138,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 Fixture.ScenarioState.ReceivedEnergyResultProducedV2.Count.Should().Be(expected);
             }
 
-            [Priority(7)]
+            [ScenarioStep(7)]
             [DomainFact]
             public void AndThen_ReceivedEnergyResultProducedEventsContainAllTimeSeriesTypes()
             {
@@ -162,7 +162,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 }
             }
 
-            [Priority(8)]
+            [ScenarioStep(8)]
             [DomainFact]
             public void AndThen_ReceivedEnergyResultProducedEventsContainExpectedTuplesOfTimeSeriesTypeAndAggregationLevel()
             {
@@ -221,7 +221,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
         }
 
         [TestCaseOrderer(
-            ordererTypeName: "Energinet.DataHub.Wholesale.DomainTests.Fixtures.Orderers.PriorityOrderer",
+            ordererTypeName: "Energinet.DataHub.Wholesale.DomainTests.Fixtures.Orderers.ScenarioStepOrderer",
             ordererAssemblyName: "Energinet.DataHub.Wholesale.DomainTests")]
         public class WholesaleFixingCalculationScenario : DomainTestsBase<CalculationScenarioFixture>
         {
@@ -230,7 +230,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             {
             }
 
-            [Priority(0)]
+            [ScenarioStep(0)]
             [DomainFact]
             public void Given_CalculationInput()
             {
@@ -243,7 +243,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 };
             }
 
-            [Priority(1)]
+            [ScenarioStep(1)]
             [DomainFact]
             public void AndGiven_SubscribedIntegrationEvents()
             {
@@ -253,7 +253,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(MonthlyAmountPerChargeResultProducedV1.EventName);
             }
 
-            [Priority(2)]
+            [ScenarioStep(2)]
             [DomainFact]
             public async Task When_CalculationIsStarted()
             {
@@ -263,7 +263,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 Fixture.ScenarioState.CalculationId.Should().NotBeEmpty();
             }
 
-            [Priority(3)]
+            [ScenarioStep(3)]
             [DomainFact]
             public async Task Then_CalculationIsCompletedWithinWaitTime()
             {
@@ -282,7 +282,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 actualWaitResult.Batch!.ExecutionState.Should().Be(Clients.v3.BatchState.Completed);
             }
 
-            [Priority(4)]
+            [ScenarioStep(4)]
             [DomainFact]
             public void AndThen_CalculationDurationIsLessThanOrEqualToTimeLimit()
             {
@@ -295,7 +295,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 actualCalculationDuration.Should().BeLessThanOrEqualTo(calculationTimeLimit);
             }
 
-            [Priority(5)]
+            [ScenarioStep(5)]
             [DomainFact]
             public async Task AndThen_IntegrationEventsAreReceivedWithinWaitTime()
             {
@@ -317,7 +317,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1.Should().NotBeEmpty();
             }
 
-            [Priority(6)]
+            [ScenarioStep(6)]
             [DomainFact]
             public void AndThen_ReceivedEnergyResultProducedEventsCountIsEqualToExpected()
             {
@@ -329,7 +329,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 Fixture.ScenarioState.ReceivedEnergyResultProducedV2.Count.Should().Be(expected);
             }
 
-            [Priority(7)]
+            [ScenarioStep(7)]
             [DomainFact]
             public void AndThen_ReceivedEnergyResultProducedEventsContainExpectedTimeSeriesTypes()
             {
@@ -356,7 +356,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 }
             }
 
-            [Priority(8)]
+            [ScenarioStep(8)]
             [DomainFact]
             public void AndThen_ReceivedEnergyResultProducedEventsContainExpectedTuplesOfTimeSeriesTypeAndAggregationLevel()
             {
@@ -405,7 +405,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 }
             }
 
-            [Priority(9)]
+            [ScenarioStep(9)]
             [DomainFact]
             public void AndThen_ReceivedAmountPerChargeResultProducedEventsCountIsEqualToExpected()
             {
@@ -415,7 +415,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 Fixture.ScenarioState.ReceivedAmountPerChargeResultProducedV1.Count.Should().Be(expected);
             }
 
-            [Priority(10)]
+            [ScenarioStep(10)]
             [DomainFact]
             public void AndThen_ReceivedMonthlyAmountPerChargeResultProducedEventsCountIsEqualToExpected()
             {
