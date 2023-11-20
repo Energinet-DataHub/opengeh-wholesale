@@ -171,23 +171,52 @@ def apply_grid_loss_adjustment(
     grid_loss_responsible: GridLossResponsible,
     metering_point_type: MeteringPointType,
 ) -> EnergyResults:
+    """
+    metering_poit_type: MeteringPointType.CONSUMPTION (positive grid loss) or MeteringPointType.PRODUCTION (negative grid loss)
+    """
     grid_loss_responsible_energy_supplier = "GridLossResponsible_EnergySupplier"
     grid_loss_responsible_grid_area = "GridLossResponsible_GridArea"
     adjusted_sum_quantity = "adjusted_sum_quantity"
 
-    result_df = results.df
-    grid_loss_result_df = grid_loss_result.df
-
-    grid_loss_responsible_df = grid_loss_responsible.df.select(
+    # select columns from dataframe that contains information about metering points registered as negative or positive grid loss to use in join.
+    glr_df = grid_loss_responsible.df.select(
         Colname.from_date,
         Colname.to_date,
         f.col(Colname.energy_supplier_id).alias(grid_loss_responsible_energy_supplier),
         f.col(Colname.grid_area).alias(grid_loss_responsible_grid_area),
         Colname.metering_point_type,
     )
+    grid_loss_result_df = grid_loss_result.df.drop(
+        Colname.energy_supplier_id, Colname.balance_responsible_id
+    )
+    # join result dataframes from previous steps on time window and grid area.
+    df = grid_loss_result_df.join(
+        results.df, [Colname.time_window, Colname.grid_area], "left"
+    ).select(
+        Colname.grid_area,
+        Colname.balance_responsible_id,
+        Colname.energy_supplier_id,
+        Colname.time_window,
+        f.coalesce(results.df[Colname.sum_quantity], f.lit(0)).alias(
+            Colname.sum_quantity
+        ),
+        f.when(
+            results.df[Colname.qualities].isNull(),
+            grid_loss_result_df[Colname.qualities],
+        )
+        .otherwise(
+            f.array_union(
+                results.df[Colname.qualities], grid_loss_result_df[Colname.qualities]
+            )
+        )
+        .alias(Colname.qualities),
+        grid_loss_result_df[Colname.sum_quantity].alias("grid_loss_sum_quantity"),
+    )
 
-    joined_grid_loss_result_and_responsible = grid_loss_result_df.join(
-        grid_loss_responsible_df,
+    # join information from negative or positive grid loss dataframe on to joined result dataframe with information about which energy supplier,
+    # that is responsible for grid loss in the given time window from the joined result dataframe.
+    df = df.join(
+        glr_df,
         f.when(
             f.col(Colname.to_date).isNotNull(),
             f.col(Colname.time_window_start) <= f.col(Colname.to_date),
@@ -200,53 +229,25 @@ def apply_grid_loss_adjustment(
         & (f.col(Colname.grid_area) == f.col(grid_loss_responsible_grid_area))
         & (f.col(Colname.metering_point_type) == metering_point_type.value),
         "left",
-    ).select(
-        Colname.grid_area,
-        f.col(grid_loss_responsible_energy_supplier).alias(Colname.energy_supplier_id),
-        Colname.time_window,
-        Colname.sum_quantity,
-        Colname.qualities,
+    ).withColumn(
+        Colname.energy_supplier_id,
+        f.coalesce(
+            f.col(Colname.energy_supplier_id),
+            f.col(grid_loss_responsible_energy_supplier),
+        ),
     )
 
-    df = (
-        result_df.join(
-            joined_grid_loss_result_and_responsible,
-            [Colname.time_window, Colname.grid_area, Colname.energy_supplier_id],
-            "outer",
-        )
-        .select(
-            Colname.grid_area,
-            result_df[Colname.balance_responsible_id],
-            f.coalesce(
-                result_df[Colname.energy_supplier_id],
-                joined_grid_loss_result_and_responsible[Colname.energy_supplier_id],
-            ).alias(Colname.energy_supplier_id),
-            Colname.time_window,
-            result_df[Colname.sum_quantity],
-            f.when(
-                result_df[Colname.qualities].isNull(),
-                joined_grid_loss_result_and_responsible[Colname.qualities],
-            )
-            .when(
-                joined_grid_loss_result_and_responsible[Colname.qualities].isNull(),
-                result_df[Colname.qualities],
-            )
-            .otherwise(
-                f.array_union(
-                    result_df[Colname.qualities], grid_loss_result_df[Colname.qualities]
-                )
-            )
-            .alias(Colname.qualities),
-            joined_grid_loss_result_and_responsible[Colname.sum_quantity].alias(
-                "grid_loss_sum_quantity"
-            ),
-        )
-        .na.fill(0, subset=["grid_loss_sum_quantity", Colname.sum_quantity])
-    )
-
-    result_df = df.withColumn(
-        adjusted_sum_quantity,
+    # update function that selects the sum of two columns if condition is met, or selects data from a single column if condition is not met.
+    update_func = f.when(
+        f.col(Colname.energy_supplier_id)
+        == f.col(grid_loss_responsible_energy_supplier),
         f.col(Colname.sum_quantity) + f.col("grid_loss_sum_quantity"),
+    ).otherwise(f.col(Colname.sum_quantity))
+
+    result_df = (
+        df.withColumn(adjusted_sum_quantity, update_func)
+        .drop(Colname.sum_quantity)
+        .withColumnRenamed(adjusted_sum_quantity, Colname.sum_quantity)
     )
 
     result = result_df.select(
@@ -254,7 +255,7 @@ def apply_grid_loss_adjustment(
         Colname.balance_responsible_id,
         Colname.energy_supplier_id,
         Colname.time_window,
-        f.col(adjusted_sum_quantity).alias(Colname.sum_quantity),
+        Colname.sum_quantity,
         Colname.qualities,
     ).orderBy(
         Colname.grid_area,
@@ -264,3 +265,104 @@ def apply_grid_loss_adjustment(
     )
 
     return EnergyResults(result)
+
+
+# def apply_grid_loss_adjustment(
+#     results: EnergyResults,
+#     grid_loss_result: EnergyResults,
+#     grid_loss_responsible: GridLossResponsible,
+#     metering_point_type: MeteringPointType,
+# ) -> EnergyResults:
+#     grid_loss_responsible_energy_supplier = "GridLossResponsible_EnergySupplier"
+#     grid_loss_responsible_grid_area = "GridLossResponsible_GridArea"
+#     adjusted_sum_quantity = "adjusted_sum_quantity"
+#
+#     result_df = results.df
+#     grid_loss_result_df = grid_loss_result.df
+#
+#     grid_loss_responsible_df = grid_loss_responsible.df.select(
+#         Colname.from_date,
+#         Colname.to_date,
+#         f.col(Colname.energy_supplier_id).alias(grid_loss_responsible_energy_supplier),
+#         f.col(Colname.grid_area).alias(grid_loss_responsible_grid_area),
+#         Colname.metering_point_type,
+#     )
+#
+#     joined_grid_loss_result_and_responsible = grid_loss_result_df.join(
+#         grid_loss_responsible_df,
+#         f.when(
+#             f.col(Colname.to_date).isNotNull(),
+#             f.col(Colname.time_window_start) <= f.col(Colname.to_date),
+#         ).otherwise(True)
+#         & (f.col(Colname.time_window_start) >= f.col(Colname.from_date))
+#         & (
+#             f.col(Colname.to_date).isNull()
+#             | (f.col(Colname.time_window_end) <= f.col(Colname.to_date))
+#         )
+#         & (f.col(Colname.grid_area) == f.col(grid_loss_responsible_grid_area))
+#         & (f.col(Colname.metering_point_type) == metering_point_type.value),
+#         "left",
+#     ).select(
+#         Colname.grid_area,
+#         f.col(grid_loss_responsible_energy_supplier).alias(Colname.energy_supplier_id),
+#         Colname.time_window,
+#         Colname.sum_quantity,
+#         Colname.qualities,
+#     )
+#
+#     df = (
+#         result_df.join(
+#             joined_grid_loss_result_and_responsible,
+#             [Colname.time_window, Colname.grid_area, Colname.energy_supplier_id],
+#             "outer",
+#         )
+#         .select(
+#             Colname.grid_area,
+#             result_df[Colname.balance_responsible_id],
+#             f.coalesce(
+#                 result_df[Colname.energy_supplier_id],
+#                 joined_grid_loss_result_and_responsible[Colname.energy_supplier_id],
+#             ).alias(Colname.energy_supplier_id),
+#             Colname.time_window,
+#             result_df[Colname.sum_quantity],
+#             f.when(
+#                 result_df[Colname.qualities].isNull(),
+#                 joined_grid_loss_result_and_responsible[Colname.qualities],
+#             )
+#             .when(
+#                 joined_grid_loss_result_and_responsible[Colname.qualities].isNull(),
+#                 result_df[Colname.qualities],
+#             )
+#             .otherwise(
+#                 f.array_union(
+#                     result_df[Colname.qualities], grid_loss_result_df[Colname.qualities]
+#                 )
+#             )
+#             .alias(Colname.qualities),
+#             joined_grid_loss_result_and_responsible[Colname.sum_quantity].alias(
+#                 "grid_loss_sum_quantity"
+#             ),
+#         )
+#         .na.fill(0, subset=["grid_loss_sum_quantity", Colname.sum_quantity])
+#     )
+#
+#     result_df = df.withColumn(
+#         adjusted_sum_quantity,
+#         f.col(Colname.sum_quantity) + f.col("grid_loss_sum_quantity"),
+#     )
+#
+#     result = result_df.select(
+#         Colname.grid_area,
+#         Colname.balance_responsible_id,
+#         Colname.energy_supplier_id,
+#         Colname.time_window,
+#         f.col(adjusted_sum_quantity).alias(Colname.sum_quantity),
+#         Colname.qualities,
+#     ).orderBy(
+#         Colname.grid_area,
+#         Colname.balance_responsible_id,
+#         Colname.energy_supplier_id,
+#         Colname.time_window,
+#     )
+#
+#     return EnergyResults(result)
