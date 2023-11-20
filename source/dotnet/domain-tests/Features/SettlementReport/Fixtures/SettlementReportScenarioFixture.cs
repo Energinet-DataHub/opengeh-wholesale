@@ -20,7 +20,7 @@ using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Extensions;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.DomainTests.SettlementReportFeatures.Fixtures
+namespace Energinet.DataHub.Wholesale.DomainTests.Features.SettlementReport.Fixtures
 {
     public sealed class SettlementReportScenarioFixture : LazyFixtureBase
     {
@@ -58,16 +58,16 @@ namespace Energinet.DataHub.Wholesale.DomainTests.SettlementReportFeatures.Fixtu
             using var stringReader = new StreamReader(entry.Open());
             var content = await stringReader.ReadToEndAsync();
             var lines = content.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
-            return lines;
+            return lines[1..];  //// The first line is the header.
         }
 
-        public Tuple<int, int, int> CountTimeSeriesTypes(string[] lines)
+        public Tuple<int, int, int> CountTimeSeriesTypes(IEnumerable<string> lines)
         {
             var productionLines = 0;
             var exchangeLines = 0;
             var consumptionLines = 0;
 
-            foreach (var line in lines[1..]) //// The first line is the header.
+            foreach (var line in lines)
             {
                 var timeSeriesType = line.Split(",")[4];
                 switch (timeSeriesType)

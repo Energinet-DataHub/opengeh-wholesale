@@ -14,14 +14,13 @@
 
 using System.IO.Compression;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
+using Energinet.DataHub.Wholesale.DomainTests.Features.SettlementReport.Fixtures;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Attributes;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture;
-using Energinet.DataHub.Wholesale.DomainTests.SettlementReportFeatures.Fixtures;
 using FluentAssertions;
 using Xunit;
-using Xunit.Sdk;
 
-namespace Energinet.DataHub.Wholesale.DomainTests.SettlementReportFeatures;
+namespace Energinet.DataHub.Wholesale.DomainTests.Features.SettlementReport;
 
 [TestCaseOrderer(
     "Energinet.DataHub.Wholesale.DomainTests.Fixtures.Orderers.PriorityOrderer",

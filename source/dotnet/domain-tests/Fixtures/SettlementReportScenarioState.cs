@@ -15,7 +15,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
-using Energinet.DataHub.Wholesale.DomainTests.SettlementReportFeatures;
+using Energinet.DataHub.Wholesale.DomainTests.Features.SettlementReport.Fixtures;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures;
 
@@ -31,4 +31,6 @@ public class SettlementReportScenarioState
 
     [NotNull]
     public ZipArchiveEntry? Entry { get; set; }
+
+    public string[] Lines { get; set; } = Array.Empty<string>();
 }

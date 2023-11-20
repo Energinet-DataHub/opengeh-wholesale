@@ -14,26 +14,26 @@
 
 using System.IO.Compression;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
+using Energinet.DataHub.Wholesale.DomainTests.Features.SettlementReport.Fixtures;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Attributes;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture;
-using Energinet.DataHub.Wholesale.DomainTests.SettlementReportFeatures.Fixtures;
 using FluentAssertions;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.DomainTests.SettlementReportFeatures;
+namespace Energinet.DataHub.Wholesale.DomainTests.Features.SettlementReport;
 
 [TestCaseOrderer(
     "Energinet.DataHub.Wholesale.DomainTests.Fixtures.Orderers.PriorityOrderer",
     "Energinet.DataHub.Wholesale.DomainTests")]
-public class SettlementReportLinesScenario : DomainTestsBase<SettlementReportScenarioFixture>
+public class SettlementReportScenario : DomainTestsBase<SettlementReportScenarioFixture>
 {
-    public SettlementReportLinesScenario(LazyFixtureFactory<SettlementReportScenarioFixture> lazyFixtureFactory)
+    public SettlementReportScenario(LazyFixtureFactory<SettlementReportScenarioFixture> lazyFixtureFactory)
         : base(lazyFixtureFactory)
     {
     }
 
     [Priority(0)]
-    [DomainFact(Skip = "AJW: The Web Api must be updated first.")]
+    [DomainFact]
     public void Given_SettlementDownloadInput()
     {
         Fixture.ScenarioState.SettlementDownloadInput.GridAreaCodes.Add("804");
@@ -43,7 +43,7 @@ public class SettlementReportLinesScenario : DomainTestsBase<SettlementReportSce
     }
 
     [Priority(1)]
-    [DomainFact(Skip = "AJW: The Web Api must be updated first.")]
+    [DomainFact]
     public async Task When_SettlementReportDownloadedIsStarted()
     {
         Fixture.ScenarioState.SettlementReportFile =
@@ -51,7 +51,7 @@ public class SettlementReportLinesScenario : DomainTestsBase<SettlementReportSce
     }
 
     [Priority(2)]
-    [DomainFact(Skip = "AJW: The Web Api must be updated first.")]
+    [DomainFact]
     public void Then_SettlementReportEntriesShouldNotBeEmpty()
     {
         Fixture.ScenarioState.CompressedSettlementReport =
@@ -62,21 +62,32 @@ public class SettlementReportLinesScenario : DomainTestsBase<SettlementReportSce
     }
 
     [Priority(3)]
-    [DomainFact(Skip = "AJW: The Web Api must be updated first.")]
-    public async Task AndThen_NumberOfEntriesShouldBeCorrect()
+    [DomainFact]
+    public async Task AndThen_NumberOfLinesPrTimeSeriesTypesShouldBeCorrect()
     {
         Fixture.ScenarioState.Entry = Fixture.ScenarioState.CompressedSettlementReport.Entries.Single();
-        var lines = await Fixture.SplitEntryIntoLinesAsync(Fixture.ScenarioState.Entry);
-        var (consumptionLines, productionLines, exchangeLines) = Fixture.CountTimeSeriesTypes(lines);
+        Fixture.ScenarioState.Lines = await Fixture.SplitEntryIntoLinesAsync(Fixture.ScenarioState.Entry);
+        var (consumptionLines, productionLines, exchangeLines) = Fixture.CountTimeSeriesTypes(Fixture.ScenarioState.Lines);
 
         // Assert
-        productionLines.Should().Be(96);
+        productionLines.Should().Be(96); //// 4 x 15 minutes x 24 hours = 96
         exchangeLines.Should().Be(96);
-        consumptionLines.Should().Be(288);
+        consumptionLines.Should().Be(288); //// 4 x 15 minutes x 24 hours x 3 types of consumption = 288
+    }
 
-        var firstEntryTime = lines[1].Split(",")[2];
-        var lastEntryTime = lines.Last().Split(",")[2];
-        firstEntryTime.Should().Be("2023-01-31T23:00:00Z");
-        lastEntryTime.Should().Be("2023-02-01T22:45:00Z");
+    [Priority(4)]
+    [DomainFact]
+    public void AndThen_TheUtcDateOfTheFirstLineShouldBeCorrect()
+    {
+        // Assert
+        Fixture.ScenarioState.Lines.First().Split(",")[2].Should().Be("2023-01-31T23:00:00Z");
+    }
+
+    [Priority(5)]
+    [DomainFact]
+    public void AndThen_TheUtcDateOfTheLastLineShouldBeCorrect()
+    {
+        // Assert
+        Fixture.ScenarioState.Lines.Last().Split(",")[2].Should().Be("2023-02-01T22:45:00Z");
     }
 }
