@@ -13,9 +13,6 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             # A domain-to-domain relationship should be specified in the "client" of a "client->server" dependency, and
             # hence domains that doesn't depend on others, should be listed first.
 
-            # Include platform tools
-            !include ./platform-tools.dsl
-
             # Include Market Participant model
             !include https://raw.githubusercontent.com/Energinet-DataHub/geh-market-participant/main/docs/diagrams/c4-model/model.dsl
 
@@ -27,13 +24,18 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
 
             # Include Frontend model
             !include https://raw.githubusercontent.com/Energinet-DataHub/greenforce-frontend/main/docs/diagrams/c4-model/model.dsl
-            
-            # Include Esett Exchange model
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-esett-exchange/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACDNGUTLTLMQNYWNAOUI2TCQZIR4JDQ
+
+            # Include Esett Exchange model - requires a token because its located in a private repository
+            # Token is automatically appended in "Raw" view of the file
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-esett-exchange/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACIBG65SVFZHZQ3CHQZ3QBTYZK3DY2Q
 
             # Include Migration model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACDNGUTK25CO5XOJZU4Q5EDMZIR4JOA
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACIBG65SF3K6CZUETJDXMO52ZK3DYJQ
+
+            # Include platform tools - requires a token because its located in a private repository
+            # Token is automatically appended in "Raw" view of the file
+            !include https://raw.githubusercontent.com/Energinet-DataHub/dh3-operations/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACIBG65T37D4Q4FYZDH6MOUEZK3DZEQ
         }
 
         # Deployment model
@@ -43,12 +45,20 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
                 description ""
                 technology "Microsoft Windows or Apple macOS"
 
-                deploymentNode "Web Browser" {
+                deploymentNode "Web Browser for DataHub UI" {
                     description ""
                     technology "Chrome, Firefox, Safari, or Edge"
                     tags "Microsoft Azure - Browser"
 
                     frontendSinglePageApplicationInstance = containerInstance frontendSinglePageApplication
+                }
+
+                deploymentNode "Web Browser for Platform Tools UI" {
+                    description ""
+                    technology "Chrome, Firefox, Safari, or Edge"
+                    tags "Microsoft Azure - Browser"
+
+                    platformFrontendSinglePageApplicationInstance = containerInstance platformFrontendSinglePageApplication
                 }
             }
 
@@ -144,6 +154,20 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
 
                         hcAppInstance = containerInstance hcApp
                     }
+                    deploymentNode "GitHub API" {
+                        description ""
+                        technology "App Service"
+                        tags "Microsoft Azure - Function Apps"
+
+                        gitHubStatusApiInstance = containerInstance gitHubStatusApi
+                    }
+                    deploymentNode "Platform Tools BFF" {
+                        description ""
+                        technology "App Service"
+                        tags "Microsoft Azure - Function Apps"
+
+                        platformToolsBffAppInstance = containerInstance platformToolsBffApp
+                    }
                     deploymentNode "BFF Web API" {
                         description ""
                         technology "App Service"
@@ -206,12 +230,12 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
                         technology "SQL Elastic Pool"
                         tags "Microsoft Azure - SQL Elastic Pools"
 
-                        deploymentNode "Health Checks DB" {
+                        deploymentNode "Platform Tools DB" {
                             description ""
                             technology "SQL Database"
                             tags "Microsoft Azure - SQL Database"
 
-                            hcDbInstance = containerInstance hcDb
+                            platformDbInstance = containerInstance platformDb
                         }
                         deploymentNode "Wholesale DB" {
                             description ""
@@ -283,9 +307,9 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             exclude "element.tag==Intermediate Technology"
         }
 
-        container dh3 "Tools" {
+        container dh3 "PlatformTools" {
             title "[Container] DataHub 3.0 - Platform Tools (Detailed with OAuth)"
-            include ->toolDomain->
+            include ->platformToolsDomain->
             exclude "relationship.tag==Deployment Diagram"
             exclude "relationship.tag==Simple View"
         }

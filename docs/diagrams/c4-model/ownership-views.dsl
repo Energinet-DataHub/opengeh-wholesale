@@ -17,9 +17,6 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             # A domain-to-domain relationship should be specified in the "client" of a "client->server" dependency, and
             # hence domains that doesn't depend on others, should be listed first.
 
-            # Include platform tools
-            !include ./platform-tools.dsl
-
             # Include Market Participant model
             !include https://raw.githubusercontent.com/Energinet-DataHub/geh-market-participant/main/docs/diagrams/c4-model/model.dsl
 
@@ -32,8 +29,17 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             # Include Frontend model
             !include https://raw.githubusercontent.com/Energinet-DataHub/greenforce-frontend/main/docs/diagrams/c4-model/model.dsl
 
+            # Include Esett Exchange model - requires a token because its located in a private repository
+            # Token is automatically appended in "Raw" view of the file
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-esett-exchange/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACIBG65SDJSYCBIOHJXLR6RAZKXGYMQ
+
             # Include Migration model - requires a token because its located in a private repository
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACFOVCSKVICTKNZNHHH7QTS2ZIJWBVQ
+            # Token is automatically appended in "Raw" view of the file
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACIBG65TLE2ZKXTY6OGZUTD4ZKXGYEA
+
+            # Include platform tools - requires a token because its located in a private repository
+            # Token is automatically appended in "Raw" view of the file
+            !include https://raw.githubusercontent.com/Energinet-DataHub/dh3-operations/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACIBG65TMZNGUC55Z2NFSET4ZKXGWOA
         }
     }
 
