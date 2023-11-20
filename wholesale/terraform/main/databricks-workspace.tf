@@ -45,6 +45,7 @@ module "kvs_databricks_dbw_workspace_token" {
 }
 
 resource "databricks_git_credential" "ado" {
+  provider              = databricks.dbw
   git_username          = var.github_username
   git_provider          = "gitHub"
   personal_access_token = var.github_personal_access_token
