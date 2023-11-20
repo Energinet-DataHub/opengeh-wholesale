@@ -56,8 +56,4 @@
     <ProjectReference Include="..\wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\" />
-  </ItemGroup>
-
 </Project>

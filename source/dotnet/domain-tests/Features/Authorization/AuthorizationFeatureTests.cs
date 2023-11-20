@@ -13,12 +13,12 @@
 // limitations under the License.
 
 using System.Net;
-using Energinet.DataHub.Wholesale.DomainTests.Fixtures;
+using Energinet.DataHub.Wholesale.DomainTests.Features.Authorization.Fixtures;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Attributes;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture;
 using FluentAssertions;
 
-namespace Energinet.DataHub.Wholesale.DomainTests
+namespace Energinet.DataHub.Wholesale.DomainTests.Features.Authorization
 {
     /// <summary>
     /// Contains tests with focus on verifying authorization in the Web API running in a live environment.

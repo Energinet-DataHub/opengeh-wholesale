@@ -23,7 +23,7 @@ using Xunit;
 namespace Energinet.DataHub.Wholesale.DomainTests.Features.SettlementReport;
 
 [TestCaseOrderer(
-    "Energinet.DataHub.Wholesale.DomainTests.Fixtures.Orderers.PriorityOrderer",
+    "Energinet.DataHub.Wholesale.DomainTests.Fixtures.Orderers.ScenarioStepOrderer",
     "Energinet.DataHub.Wholesale.DomainTests")]
 public class SettlementReportDownloadScenario : DomainTestsBase<SettlementReportScenarioFixture>
 {
@@ -32,7 +32,7 @@ public class SettlementReportDownloadScenario : DomainTestsBase<SettlementReport
     {
     }
 
-    [Priority(0)]
+    [ScenarioStep(0)]
     [DomainFact]
     public void Given_SettlementDownloadInput()
     {
@@ -42,7 +42,7 @@ public class SettlementReportDownloadScenario : DomainTestsBase<SettlementReport
         Fixture.ScenarioState.SettlementDownloadInput.CalculationPeriodEnd = DateTimeOffset.Parse("2020-01-29T23:00:00Z");
     }
 
-    [Priority(1)]
+    [ScenarioStep(1)]
     [DomainFact]
     public async Task When_SettlementReportDownloadedIsStarted()
     {
@@ -50,7 +50,7 @@ public class SettlementReportDownloadScenario : DomainTestsBase<SettlementReport
             await Fixture.StartDownloadingAsync(Fixture.ScenarioState.SettlementDownloadInput);
     }
 
-    [Priority(2)]
+    [ScenarioStep(2)]
     [DomainFact]
     public void Then_SettlementReportEntriesShouldNotBeEmpty()
     {
@@ -61,7 +61,7 @@ public class SettlementReportDownloadScenario : DomainTestsBase<SettlementReport
         Fixture.ScenarioState.CompressedSettlementReport.Entries.Should().NotBeEmpty();
     }
 
-    [Priority(3)]
+    [ScenarioStep(3)]
     [DomainFact]
     public void AndThen_SingleEntryNameShouldBeResultCsv()
     {
@@ -72,7 +72,7 @@ public class SettlementReportDownloadScenario : DomainTestsBase<SettlementReport
         Fixture.ScenarioState.Entry.Name.Should().Be(expected);
     }
 
-    [Priority(4)]
+    [ScenarioStep(4)]
     [DomainFact]
     public async Task AndThen_SingleEntryShouldContainCorrectGridAreaCodesAndProcessType()
     {
