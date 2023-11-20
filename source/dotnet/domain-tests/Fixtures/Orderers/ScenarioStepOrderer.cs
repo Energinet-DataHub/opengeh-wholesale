@@ -19,24 +19,24 @@ using Xunit.Sdk;
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Orderers
 {
     /// <summary>
-    /// A custom xUnit test case orderer that executes tests in order according to the attribute <see cref="PriorityAttribute"/>.
+    /// A custom xUnit test case orderer that executes tests in order according to the attribute <see cref="ScenarioStepAttribute"/>.
     /// Use the <see cref="Xunit.TestCaseOrdererAttribute"/> on a test class to enable the orderer.
     ///
     /// Inspired by: https://learn.microsoft.com/en-us/dotnet/core/testing/order-unit-tests?pivots=xunit#order-by-custom-attribute
     /// </summary>
-    public class PriorityOrderer : ITestCaseOrderer
+    public class ScenarioStepOrderer : ITestCaseOrderer
     {
         public IEnumerable<TTestCase> OrderTestCases<TTestCase>(IEnumerable<TTestCase> testCases)
             where TTestCase : ITestCase
         {
-            var assemblyName = typeof(PriorityAttribute).AssemblyQualifiedName!;
+            var assemblyName = typeof(ScenarioStepAttribute).AssemblyQualifiedName!;
             var sortedMethods = new SortedDictionary<int, List<TTestCase>>();
             foreach (var testCase in testCases)
             {
                 var priority = testCase.TestMethod.Method
                     .GetCustomAttributes(assemblyName)
                     .FirstOrDefault()
-                    ?.GetNamedArgument<int>(nameof(PriorityAttribute.Priority)) ?? 0;
+                    ?.GetNamedArgument<int>(nameof(ScenarioStepAttribute.Number)) ?? 0;
 
                 GetOrCreate(sortedMethods, priority).Add(testCase);
             }
