@@ -53,3 +53,18 @@ data "azurerm_key_vault_secret" "sb_domain_relay_namespace_id" {
   name         = "sb-domain-relay-namespace-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+data "azurerm_key_vault_secret" "private_dns_zone_resource_group_name" {
+  name         = "private-dns-zone-resource-group-name"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "st_data_lake_blob_private_ip_address" {
+  name         = "st-data-lake-blob-private-ip-address"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "st_data_lake_dfs_private_ip_address" {
+  name         = "st-data-lake-dfs-private-ip-address"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}

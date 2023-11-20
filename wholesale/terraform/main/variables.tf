@@ -60,3 +60,28 @@ variable "developers_security_group_object_id" {
   description = "(Optional) The Object ID of the Azure AD security group containing DataHub developers."
   default     = null
 }
+
+variable "databricks_vnet_address_space" {
+  type        = string
+  description = "Address space of the Virtual network where the Databricks Workspace is deployed."
+}
+
+variable "databricks_private_subnet_address_prefix" {
+  type        = string
+  description = "The address prefix of the private subnet used by Databricks."
+}
+
+variable "databricks_public_subnet_address_prefix" {
+  type        = string
+  description = "The address prefix of the public subnet used by Databricks."
+}
+
+variable "github_username" {
+  type        = string
+  description = "Username used to access Github from Databricks jobs."
+}
+
+variable "github_personal_access_token" {
+  type        = string
+  description = "Personal access token for Github access"
+}
