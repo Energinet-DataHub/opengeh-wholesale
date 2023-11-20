@@ -83,7 +83,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
 
         if (request.RequestedProcessType == RequestedProcessType.LatestCorrection)
         {
-            return await _aggregatedTimeSeriesQueries.GetLatestCorrectionAsync(parameters).ToListAsync(cancellationToken).ConfigureAwait(false);
+            return await _aggregatedTimeSeriesQueries.GetLatestCorrectionForGridAreaAsync(parameters).ToListAsync(cancellationToken).ConfigureAwait(false);
         }
 
         return await _aggregatedTimeSeriesQueries.GetAsync(

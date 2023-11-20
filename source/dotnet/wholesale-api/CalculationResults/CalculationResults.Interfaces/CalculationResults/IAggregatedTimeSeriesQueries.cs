@@ -19,7 +19,7 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationR
 public interface IAggregatedTimeSeriesQueries
 {
     /// <summary>
-    /// Gets the latest aggregated time series
+    /// Gets the latest aggregated time series per grid area
     /// </summary>
     /// <returns>Returns an empty list if the aggregated time series does not contain any points.</returns>
     IAsyncEnumerable<AggregatedTimeSeries> GetAsync(AggregatedTimeSeriesQueryParameters parameters);
@@ -28,5 +28,5 @@ public interface IAggregatedTimeSeriesQueries
     /// Gets the most recent aggregated time series for the last correction settlements.
     /// </summary>
     /// <returns>Returns an empty list if the aggregated time series does not contain any points.</returns>
-    IAsyncEnumerable<AggregatedTimeSeries> GetLatestCorrectionAsync(AggregatedTimeSeriesQueryParameters parameters);
+    IAsyncEnumerable<AggregatedTimeSeries> GetLatestCorrectionForGridAreaAsync(AggregatedTimeSeriesQueryParameters parameters);
 }

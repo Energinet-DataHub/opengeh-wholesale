@@ -442,7 +442,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             gridAreaFilter);
 
         // Act
-        var result = await Sut.GetLatestCorrectionAsync(parameters).ToListAsync(CancellationToken.None);
+        var result = await Sut.GetLatestCorrectionForGridAreaAsync(parameters).ToListAsync(CancellationToken.None);
         var actual = result.First();
 
         // Assert
@@ -466,7 +466,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             gridAreaFilter);
 
         // Act
-        var result = await Sut.GetLatestCorrectionAsync(parameters).ToListAsync(CancellationToken.None);
+        var result = await Sut.GetLatestCorrectionForGridAreaAsync(parameters).ToListAsync(CancellationToken.None);
         var actual = result.First();
 
         // Assert
@@ -490,7 +490,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             gridAreaFilter);
 
         // Act
-        var result = await Sut.GetLatestCorrectionAsync(parameters).ToListAsync(CancellationToken.None);
+        var result = await Sut.GetLatestCorrectionForGridAreaAsync(parameters).ToListAsync(CancellationToken.None);
         var actual = result.First();
 
         // Assert
@@ -514,7 +514,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             gridAreaFilter);
 
         // Act
-        var actual = await Sut.GetLatestCorrectionAsync(parameters).ToListAsync(CancellationToken.None);
+        var actual = await Sut.GetLatestCorrectionForGridAreaAsync(parameters).ToListAsync(CancellationToken.None);
 
         // Assert
         actual.Should().HaveCount(0);
@@ -536,7 +536,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             processType: ProcessType.BalanceFixing);
 
         // Act
-        var act = async () => await Sut.GetLatestCorrectionAsync(parameters).ToListAsync();
+        var act = async () => await Sut.GetLatestCorrectionForGridAreaAsync(parameters).ToListAsync();
 
         // Assert
         await act.Should().ThrowAsync<ArgumentException>(

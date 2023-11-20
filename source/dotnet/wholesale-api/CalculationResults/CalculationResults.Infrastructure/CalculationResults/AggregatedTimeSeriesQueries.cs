@@ -39,16 +39,19 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
         _deltaTableOptions = deltaTableOptions.Value;
     }
 
-    public async IAsyncEnumerable<AggregatedTimeSeries> GetLatestCorrectionAsync(AggregatedTimeSeriesQueryParameters parameters)
+    public async IAsyncEnumerable<AggregatedTimeSeries> GetLatestCorrectionForGridAreaAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
         if (parameters.ProcessType != null)
         {
             throw new ArgumentException($"{nameof(parameters.ProcessType)} must be null, it will be overwritten.", nameof(parameters));
         }
 
-        var processType = await GetProcessTypeOfLatestCorrectionAsync(parameters).ConfigureAwait(false);
+        if (parameters.GridArea == null)
+        {
+            throw new ArgumentNullException($"{nameof(parameters.GridArea)} may not be null.", nameof(parameters));
+        }
 
-        await foreach (var aggregatedTimeSeries in GetAsync(parameters with { ProcessType = processType }))
+        await foreach (var aggregatedTimeSeries in GetAggregatedTimeSeriesForLatestCorrectionAsync(parameters))
             yield return aggregatedTimeSeries;
     }
 
@@ -59,20 +62,16 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
             yield return aggregatedTimeSeries;
     }
 
-    public async Task<ProcessType> GetProcessTypeOfLatestCorrectionAsync(AggregatedTimeSeriesQueryParameters parameters)
+    private async IAsyncEnumerable<AggregatedTimeSeries> GetAggregatedTimeSeriesForLatestCorrectionAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
-        var thirdCorrectionExists = await PerformCorrectionVersionExistsQueryAsync(
-            parameters with { ProcessType = ProcessType.ThirdCorrectionSettlement }).ConfigureAwait(false);
-        if (thirdCorrectionExists)
-            return ProcessType.ThirdCorrectionSettlement;
+        await foreach (var aggregatedTimeSeries in GetAsync(parameters with { ProcessType = ProcessType.ThirdCorrectionSettlement }))
+            yield return aggregatedTimeSeries;
 
-        var secondCorrectionExists = await PerformCorrectionVersionExistsQueryAsync(
-            parameters with { ProcessType = ProcessType.SecondCorrectionSettlement }).ConfigureAwait(false);
+        await foreach (var aggregatedTimeSeries in GetAsync(parameters with { ProcessType = ProcessType.SecondCorrectionSettlement }))
+            yield return aggregatedTimeSeries;
 
-        if (secondCorrectionExists)
-            return ProcessType.SecondCorrectionSettlement;
-
-        return ProcessType.FirstCorrectionSettlement;
+        await foreach (var aggregatedTimeSeries in GetAsync(parameters with { ProcessType = ProcessType.FirstCorrectionSettlement }))
+            yield return aggregatedTimeSeries;
     }
 
     private async IAsyncEnumerable<AggregatedTimeSeries> GetInternalAsync(QueryAggregatedTimeSeriesStatement sqlStatement)
@@ -96,12 +95,6 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
 
         if (previousRow != null)
             yield return AggregatedTimeSeriesFactory.Create(previousRow, timeSeriesPoints);
-    }
-
-    private async Task<bool> PerformCorrectionVersionExistsQueryAsync(AggregatedTimeSeriesQueryParameters parameters)
-    {
-        return await _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(
-            new QuerySingleAggregatedTimeSeriesStatement(parameters, _deltaTableOptions)).AnyAsync().ConfigureAwait(false);
     }
 
     private static bool BelongsToDifferentGridArea(DatabricksSqlRow row, DatabricksSqlRow otherRow)
