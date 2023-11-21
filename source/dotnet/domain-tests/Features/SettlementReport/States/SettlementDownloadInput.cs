@@ -12,22 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Diagnostics.CodeAnalysis;
-using System.IO.Compression;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
 
-namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures;
+namespace Energinet.DataHub.Wholesale.DomainTests.Features.SettlementReport.States;
 
-public class SettlementReportScenarioState
+public class SettlementDownloadInput
 {
-    public SettlementDownloadInput SettlementDownloadInput { get; } = new();
+    public IList<string> GridAreaCodes { get; } = new List<string>();
 
-    [NotNull]
-    public FileResponse? SettlementReportFile { get; set; }
+    public ProcessType ProcessType { get; set; }
 
-    [NotNull]
-    public ZipArchive? CompressedSettlementReport { get; set; }
+    public DateTimeOffset CalculationPeriodStart { get; set; }
 
-    [NotNull]
-    public ZipArchiveEntry? Entry { get; set; }
+    public DateTimeOffset CalculationPeriodEnd { get; set; }
 }
