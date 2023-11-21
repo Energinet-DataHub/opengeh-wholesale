@@ -16,12 +16,12 @@ USING delta
 AS (
     SELECT *
     FROM {OUTPUT_DATABASE_NAME}.energy_results
-    WHERE calculation_execution_time_start > '2023-11-01 10:00:00'
+    WHERE calculation_execution_time_start > {TIME:'2023-11-01 10:00:00'}
 )
 GO
 
 -- Step 2: Restore the delta table to the state before the bad migration
-RESTORE {OUTPUT_DATABASE_NAME}.energy_results TO TIMESTAMP AS OF '2023-11-01 10:00:00'
+RESTORE {OUTPUT_DATABASE_NAME}.energy_results TO TIMESTAMP AS OF {TIME:'2023-11-01 10:00:00'}
 GO
 
 -- Step 3: Re-add the backed-up data to the restored table

@@ -11,8 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from dataclasses import dataclass
+from unittest.mock import ANY, patch, call, Mock, PropertyMock
 
-from unittest.mock import ANY, patch, call, Mock
 import pytest
 
 from package.datamigration import migration
@@ -23,8 +24,33 @@ from package.datamigration.migration import (
     get_uncommitted_migrations,
     upload_committed_migration,
     _apply_migration,
+    _substitute_placeholders,
 )
+from package.datamigration.migration_script_args import MigrationScriptArgs
 from package.datamigration.uncommitted_migrations import _get_all_migrations
+from package.infrastructure import paths
+
+DEFAULT_CONTAINER_PATH = "container-path"
+
+
+def create_migration_script_args() -> MigrationScriptArgs:
+    @dataclass
+    class Foo:
+        storage_container_path = DEFAULT_CONTAINER_PATH
+
+    return Foo()
+
+    # TODO BJM: Use mock instead of hack above
+    mock_instance = Mock(spec=MigrationScriptArgs)
+
+    with patch.object(
+        mock_instance,
+        MigrationScriptArgs.storage_container_path.fget.__name__,
+        new_callable=PropertyMock,
+    ) as mock_property:
+        mock_property.return_value = DEFAULT_CONTAINER_PATH
+
+    return mock_instance
 
 
 @patch.object(migration, initialize_spark.__name__)
@@ -70,3 +96,21 @@ def test__migrate_datalake__upload_called_with_correct_name(
 
     # Assert
     mock_upload_committed_migration.assert_has_calls(calls)
+
+
+@pytest.mark.parametrize(
+    "statement, expected",
+    [
+        ("{CONTAINER_PATH}", DEFAULT_CONTAINER_PATH),
+        ("{OUTPUT_DATABASE_NAME}", paths.OUTPUT_DATABASE_NAME),
+        ("{OUTPUT_FOLDER}", paths.OUTPUT_FOLDER),
+        ("{TEST}", paths.TEST),
+        ("{TIME:'2023-11-01 10:00:00'}", "'2023-11-01 10:00:00'"),
+        ("{FOO:1}", "1"),
+        ('{FOO:""}', '""'),
+    ],
+)
+def test_substitute_placeholders(statement: str, expected: str):
+    args = create_migration_script_args()
+    actual = _substitute_placeholders(statement, args)
+    assert actual == expected
