@@ -64,6 +64,7 @@ jobs:
               - '.github/workflows/ci-dotnet.yml'
               - '.github/actions/dotnet-*/**'
               - 'source/dotnet/!(Packages/**)/**'
+              - 'source/databricks/calculation_engine/package/datamigration/migration_scripts/**'
             packages:
               - 'source/dotnet/wholesale-integration-events-package/**'
               - 'source/dotnet/wholesale-api/Events/Events.Infrastructure/IntegrationEvents/**'
