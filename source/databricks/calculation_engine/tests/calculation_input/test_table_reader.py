@@ -120,7 +120,7 @@ def _map_metering_point_type_and_settlement_method(df: DataFrame) -> DataFrame:
         f.when(
             f.col(Colname.settlement_method) == InputSettlementMethod.FLEX.value,
             SettlementMethod.FLEX.value,
-        ).otherwise(col(Colname.settlement_method)),
+        ).otherwise(f.col(Colname.settlement_method)),
     )
 
 
