@@ -18,11 +18,3 @@ resource "azuread_service_principal" "spn_powerbi" {
 resource "azuread_service_principal_password" "secret" {
   service_principal_id = azuread_service_principal.spn_powerbi.object_id
 }
-
-module "kvs_spn_powerbi_secret" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
-
-  name         = "spn-powerbi-secret"
-  value        = azuread_service_principal_password.secret.value
-  key_vault_id = module.kv_esett.id
-}
