@@ -108,6 +108,7 @@ def test__migrate_datalake__upload_called_with_correct_name(
         ("{TIME:'2023-11-01 10:00:00'}", "'2023-11-01 10:00:00'"),
         ("{FOO:1}", "1"),
         ('{FOO:""}', '""'),
+        ("{FOO:foo} {FOO:foo} {BAR:bar}", "foo foo bar"),
     ],
 )
 def test_substitute_placeholders(statement: str, expected: str):
