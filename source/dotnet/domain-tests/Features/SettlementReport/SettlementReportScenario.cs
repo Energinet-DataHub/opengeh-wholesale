@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.IO.Compression;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
 using Energinet.DataHub.Wholesale.DomainTests.Features.SettlementReport.Fixtures;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Attributes;
@@ -51,9 +52,29 @@ public class SettlementReportScenario : DomainTestsBase<SettlementReportScenario
 
     [ScenarioStep(2)]
     [DomainFact]
+    public void Then_SettlementReportEntriesShouldNotBeEmpty()
+    {
+        Fixture.ScenarioState.CompressedSettlementReport = new ZipArchive(Fixture.ScenarioState.SettlementReportFile.Stream, ZipArchiveMode.Read);
+
+        // Assert
+        Fixture.ScenarioState.CompressedSettlementReport.Entries.Should().NotBeEmpty();
+    }
+
+    [ScenarioStep(3)]
+    [DomainFact]
+    public void AndThen_SingleEntryNameShouldBeResultCsv()
+    {
+        var expected = "Result.csv";
+        Fixture.ScenarioState.Entry = Fixture.ScenarioState.CompressedSettlementReport.Entries.Single();
+
+        // Assert
+        Fixture.ScenarioState.Entry.Name.Should().Be(expected);
+    }
+
+    [ScenarioStep(4)]
+    [DomainFact]
     public async Task AndThen_NumberOfLinesPrTimeSeriesTypesShouldBeCorrect()
     {
-        Fixture.ScenarioState.Entry = Fixture.ScenarioState.CompressedSettlementReport.Entries.Single();
         Fixture.ScenarioState.Lines = await Fixture.SplitEntryIntoLinesAsync(Fixture.ScenarioState.Entry);
         var (consumptionLines, productionLines, exchangeLines) = Fixture.CountTimeSeriesTypes(Fixture.ScenarioState.Lines);
 
@@ -63,19 +84,38 @@ public class SettlementReportScenario : DomainTestsBase<SettlementReportScenario
         consumptionLines.Should().Be(288); //// 4 x 15 minutes x 24 hours x 3 types of consumption = 288
     }
 
-    [ScenarioStep(3)]
+    [ScenarioStep(5)]
+    [DomainFact]
+    public void AndThen_SingleEntryShouldContainCorrectGridAreaCodesAndProcessType()
+    {
+        var expected = "543,D04,";
+        if (Fixture.ScenarioState.Lines.Length == 0)
+        {
+            throw new Exception("The entry is empty.");
+        }
+
+        foreach (var line in Fixture.ScenarioState.Lines)
+            // Assert
+            line.Should().StartWith(expected);
+    }
+
+    [ScenarioStep(6)]
     [DomainFact]
     public void AndThen_TheUtcDateOfTheFirstLineShouldBeCorrect()
     {
         // Assert
-        Fixture.ScenarioState.Lines.First().Split(",")[2].Should().Be("2023-01-31T23:00:00Z");
+        Fixture.GetUtcDate(Fixture.ScenarioState.Lines.First())
+            .Should()
+            .Be("2023-01-31T23:00:00Z");
     }
 
-    [ScenarioStep(4)]
+    [ScenarioStep(7)]
     [DomainFact]
     public void AndThen_TheUtcDateOfTheLastLineShouldBeCorrect()
     {
         // Assert
-        Fixture.ScenarioState.Lines.Last().Split(",")[2].Should().Be("2023-02-01T22:45:00Z");
+        Fixture.GetUtcDate(Fixture.ScenarioState.Lines.Last())
+            .Should()
+            .Be("2023-02-01T22:45:00Z");
     }
 }

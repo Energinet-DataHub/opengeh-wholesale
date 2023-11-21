@@ -14,6 +14,7 @@
 
 using System.IO.Compression;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
+using Energinet.DataHub.Wholesale.DomainTests.Features.SettlementReport.States;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Extensions;
@@ -85,6 +86,11 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.SettlementReport.Fixt
             }
 
             return new Tuple<int, int, int>(consumptionLines, productionLines, exchangeLines);
+        }
+
+        public string GetUtcDate(string line)
+        {
+            return line.Split(",")[2];
         }
 
         protected override async Task OnInitializeAsync()
