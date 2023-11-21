@@ -269,7 +269,7 @@ csharp_preserve_single_line_blocks = true
 # .NET Analyzers              #
 ###############################
 
-# See rules here (.NET 7): https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/overview?tabs=net-7#enabled-rules
+# See full list of rules here: https://github.com/dotnet/roslyn-analyzers/blob/main/src/NetAnalyzers/Core/AnalyzerReleases.Shipped.md
 
 dotnet_diagnostic.CA1303.severity = suggestion
 dotnet_diagnostic.CA1715.severity = error
@@ -535,7 +535,7 @@ dotnet_diagnostic.SX1309.severity = error
 # .NET Analyzers              #
 ###############################
 
-# See rules here (.NET 7): https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/overview?tabs=net-7#enabled-rules
+# See full list of rules here: https://github.com/dotnet/roslyn-analyzers/blob/main/src/NetAnalyzers/Core/AnalyzerReleases.Shipped.md
 
 dotnet_diagnostic.CA1707.severity = none
 dotnet_diagnostic.CA2007.severity = none        # CA2007: Consider calling ConfigureAwait on the awaited task
