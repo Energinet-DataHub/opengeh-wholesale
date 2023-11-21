@@ -73,8 +73,8 @@ public class SettlementReportScenario : DomainTestsBase<SettlementReportScenario
     [DomainFact]
     public async Task AndThen_NumberOfLinesPrTimeSeriesTypesShouldBeCorrect()
     {
-        Fixture.ScenarioState.Lines = await Fixture.SplitEntryIntoDataLinesAsync(Fixture.ScenarioState.Entry);
-        var typeSeriesTypeLines = Fixture.CountLinesPerTimeSeriesTypes(Fixture.ScenarioState.Lines);
+        Fixture.ScenarioState.EntryDataLines = await Fixture.SplitEntryIntoDataLinesAsync(Fixture.ScenarioState.Entry);
+        var typeSeriesTypeLines = Fixture.CountLinesPerTimeSeriesTypes(Fixture.ScenarioState.EntryDataLines);
 
         // Assert
         typeSeriesTypeLines.ProductionLines.Should().Be(96); //// 4 x 15 minutes x 24 hours = 96
@@ -90,7 +90,7 @@ public class SettlementReportScenario : DomainTestsBase<SettlementReportScenario
 
         // Assert
         using var assertionScope = new AssertionScope();
-        foreach (var line in Fixture.ScenarioState.Lines)
+        foreach (var line in Fixture.ScenarioState.EntryDataLines)
             line.Should().StartWith(expected);
     }
 
@@ -99,7 +99,7 @@ public class SettlementReportScenario : DomainTestsBase<SettlementReportScenario
     public void AndThen_TheUtcDateOfTheFirstLineShouldBeCorrect()
     {
         // Assert
-        Fixture.GetUtcDate(Fixture.ScenarioState.Lines.First())
+        Fixture.GetUtcDate(Fixture.ScenarioState.EntryDataLines.First())
             .Should()
             .Be("2023-01-31T23:00:00Z");
     }
@@ -109,7 +109,7 @@ public class SettlementReportScenario : DomainTestsBase<SettlementReportScenario
     public void AndThen_TheUtcDateOfTheLastLineShouldBeCorrect()
     {
         // Assert
-        Fixture.GetUtcDate(Fixture.ScenarioState.Lines.Last())
+        Fixture.GetUtcDate(Fixture.ScenarioState.EntryDataLines.Last())
             .Should()
             .Be("2023-02-01T22:45:00Z");
     }
