@@ -48,6 +48,8 @@ module "app_health_checks_ui" {
     "HealthChecksUI__HealthChecks__019__Uri"  = "https://func-certificatesynchronization-markpart-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/ready"
     "HealthChecksUI__HealthChecks__020__Name" = "dh2-bridge:::Send Grid loss Function"
     "HealthChecksUI__HealthChecks__020__Uri"  = "https://func-grid-loss-sender-dh2brdg-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/ready"
+    "HealthChecksUI__HealthChecks__021__Name" = "dh2-bridge:::Peek Grid loss Function"
+    "HealthChecksUI__HealthChecks__021__Uri"  = "https://func-grid-loss-peek-dh2brdg-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/ready"
     # Live - prefix with 2xx
     "HealthChecksUI__HealthChecks__200__Name" = "health-checks-ui:::Health Check UI - live"
     "HealthChecksUI__HealthChecks__200__Uri"  = "https://app-healthchecksui-health-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/live"
@@ -93,6 +95,8 @@ module "app_health_checks_ui" {
     "HealthChecksUI__HealthChecks__219__Uri"  = "https://func-certificatesynchronization-markpart-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
     "HealthChecksUI__HealthChecks__220__Name" = "dh2-bridge:::Send Grid loss Function - live"
     "HealthChecksUI__HealthChecks__220__Uri"  = "https://func-grid-loss-sender-dh2brdg-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
+    "HealthChecksUI__HealthChecks__221__Name" = "dh2-bridge:::Peek Grid loss Function - live"
+    "HealthChecksUI__HealthChecks__221__Uri"  = "https://func-grid-loss-peek-dh2brdg-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
 
     # Polling Interval
     "HealthChecksUI__EvaluationTimeinSeconds" = 60
