@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
+namespace Energinet.DataHub.Wholesale.DomainTests.Features.Authorization.Fixtures
 {
     public sealed class UnauthorizedClientFixture : LazyFixtureBase
     {
