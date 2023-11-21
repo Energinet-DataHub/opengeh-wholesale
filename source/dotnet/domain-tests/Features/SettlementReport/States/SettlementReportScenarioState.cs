@@ -27,5 +27,5 @@ public class SettlementReportScenarioState
     [NotNull]
     public ZipArchiveEntry? Entry { get; set; }
 
-    public string[] Lines { get; set; } = Array.Empty<string>();
+    public string[] EntryDataLines { get; set; } = Array.Empty<string>();
 }
