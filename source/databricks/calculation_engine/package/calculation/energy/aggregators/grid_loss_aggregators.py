@@ -273,17 +273,18 @@ def apply_grid_loss_adjustment(
     grid_loss_responsible: GridLossResponsible,
     metering_point_type: MeteringPointType,
 ) -> EnergyResults:
-    grid_loss_responsible_energy_supplier = "GridLossResponsible_EnergySupplier"
     grid_loss_responsible_grid_area = "GridLossResponsible_GridArea"
     adjusted_sum_quantity = "adjusted_sum_quantity"
 
     result_df = results.df
     grid_loss_result_df = grid_loss_result.df
 
-    grid_loss_responsible_df = grid_loss_responsible.df.select(
+    grid_loss_responsible_df = grid_loss_responsible.df.where(
+        f.col(Colname.metering_point_type) == metering_point_type.value
+    ).select(
         Colname.from_date,
         Colname.to_date,
-        f.col(Colname.energy_supplier_id).alias(grid_loss_responsible_energy_supplier),
+        Colname.energy_supplier_id,
         f.col(Colname.grid_area).alias(grid_loss_responsible_grid_area),
         Colname.metering_point_type,
     )
@@ -299,59 +300,49 @@ def apply_grid_loss_adjustment(
             f.col(Colname.to_date).isNull()
             | (f.col(Colname.time_window_end) <= f.col(Colname.to_date))
         )
-        & (f.col(Colname.grid_area) == f.col(grid_loss_responsible_grid_area))
-        & (f.col(Colname.metering_point_type) == metering_point_type.value),
+        & (f.col(Colname.grid_area) == f.col(grid_loss_responsible_grid_area)),
         "left",
     ).select(
         Colname.grid_area,
-        Colname.energy_supplier_id,
-        grid_loss_responsible_energy_supplier,
+        # grid_loss_result_df's energy supplier is always null
+        grid_loss_responsible_df[Colname.energy_supplier_id],
         Colname.time_window,
         Colname.sum_quantity,
         Colname.qualities,
     )
     joined_grid_loss_result_and_responsible.show(100, False)
-    joined_grid_loss_result_and_responsible = (
-        joined_grid_loss_result_and_responsible.withColumn(
-            Colname.energy_supplier_id, f.col(grid_loss_responsible_energy_supplier)
+    df = result_df.join(
+        joined_grid_loss_result_and_responsible,
+        [Colname.time_window, Colname.grid_area, Colname.energy_supplier_id],
+        "outer",
+    ).select(
+        Colname.grid_area,
+        result_df[Colname.balance_responsible_id],
+        f.coalesce(
+            result_df[Colname.energy_supplier_id],
+            joined_grid_loss_result_and_responsible[Colname.energy_supplier_id],
+        ).alias(Colname.energy_supplier_id),
+        Colname.time_window,
+        result_df[Colname.sum_quantity],
+        f.when(
+            result_df[Colname.qualities].isNull(),
+            joined_grid_loss_result_and_responsible[Colname.qualities],
         )
+        .when(
+            joined_grid_loss_result_and_responsible[Colname.qualities].isNull(),
+            result_df[Colname.qualities],
+        )
+        .otherwise(
+            f.array_union(
+                result_df[Colname.qualities], grid_loss_result_df[Colname.qualities]
+            )
+        )
+        .alias(Colname.qualities),
+        joined_grid_loss_result_and_responsible[Colname.sum_quantity].alias(
+            "grid_loss_sum_quantity"
+        ),
     )
-
-    df = (
-        result_df.join(
-            joined_grid_loss_result_and_responsible,
-            [Colname.time_window, Colname.grid_area, Colname.energy_supplier_id],
-            "outer",
-        )
-        .select(
-            Colname.grid_area,
-            result_df[Colname.balance_responsible_id],
-            f.coalesce(
-                result_df[Colname.energy_supplier_id],
-                joined_grid_loss_result_and_responsible[Colname.energy_supplier_id],
-            ).alias(Colname.energy_supplier_id),
-            Colname.time_window,
-            result_df[Colname.sum_quantity],
-            f.when(
-                result_df[Colname.qualities].isNull(),
-                joined_grid_loss_result_and_responsible[Colname.qualities],
-            )
-            .when(
-                joined_grid_loss_result_and_responsible[Colname.qualities].isNull(),
-                result_df[Colname.qualities],
-            )
-            .otherwise(
-                f.array_union(
-                    result_df[Colname.qualities], grid_loss_result_df[Colname.qualities]
-                )
-            )
-            .alias(Colname.qualities),
-            joined_grid_loss_result_and_responsible[Colname.sum_quantity].alias(
-                "grid_loss_sum_quantity"
-            ),
-        )
-        .na.fill(0, subset=["grid_loss_sum_quantity", Colname.sum_quantity])
-    )
+    df = df.na.fill(0, subset=["grid_loss_sum_quantity", Colname.sum_quantity])
     df.show(100, False)
 
     result_df = df.withColumn(

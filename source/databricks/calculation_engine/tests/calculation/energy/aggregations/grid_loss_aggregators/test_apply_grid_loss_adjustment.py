@@ -161,8 +161,13 @@ class TestWhenEnergySupplierIdIsNotGridLossResponsible:
         grid_loss_rows = [
             energy_results_factories.create_row(
                 grid_area="1",
+                from_grid_area=None,
+                to_grid_area=None,
+                balance_responsible_id=None,
+                energy_supplier_id=None,
                 observation_time=DEFAULT_OBSERVATION_TIME,
                 sum_quantity=20,
+                qualities=[QuantityQuality.MEASURED],
             )
         ]
         grid_loss = energy_results_factories.create(spark, grid_loss_rows)
