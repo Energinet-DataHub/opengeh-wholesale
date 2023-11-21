@@ -241,8 +241,10 @@ def test__read_data__when_schema_mismatch__raises_assertion_error(
 
     # Act & Assert
     with mock.patch.object(reader, TableReader._read_table.__name__, return_value=df):
-        with pytest.raises(AssertionError):
+        with pytest.raises(AssertionError) as exc_info:
             sut()
+
+        assert "Schema mismatch" in str(exc_info.value)
 
 
 def test__read_metering_point_periods__returns_expected_df(
