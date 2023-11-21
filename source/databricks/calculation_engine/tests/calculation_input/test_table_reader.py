@@ -238,6 +238,7 @@ def test__read_data__when_schema_mismatch__raises_assertion_error(
     df = spark.createDataFrame(data=[row], schema=expected_schema)
     df = df.withColumn("test", lit("test"))
     sut = getattr(reader, str(method_name.__name__))
+
     # Act & Assert
     with mock.patch.object(reader, TableReader._read_table.__name__, return_value=df):
         with pytest.raises(AssertionError):
