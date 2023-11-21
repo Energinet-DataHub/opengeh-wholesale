@@ -20,13 +20,15 @@ using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
+using Energinet.DataHub.Wholesale.DomainTests.Features.Calculations.States;
+using Energinet.DataHub.Wholesale.DomainTests.Fixtures;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Extensions;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
+namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations.Fixtures
 {
     public sealed class CalculationScenarioFixture : LazyFixtureBase
     {

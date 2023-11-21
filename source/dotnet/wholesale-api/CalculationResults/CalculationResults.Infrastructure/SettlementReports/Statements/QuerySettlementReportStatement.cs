@@ -84,7 +84,8 @@ WHERE t2.time IS NULL
     AND t1.{EnergyResultColumnNames.GridArea} IN ({gridAreas})
     AND t1.{EnergyResultColumnNames.TimeSeriesType} IN ({timeSeriesTypesString})
     AND t1.{EnergyResultColumnNames.BatchProcessType} = '{processTypeString}'
-    AND t1.{EnergyResultColumnNames.Time} BETWEEN '{startTimeString}' AND '{endTimeString}'
+    AND t1.{EnergyResultColumnNames.Time} >= '{startTimeString}'
+    AND t1.{EnergyResultColumnNames.Time} < '{endTimeString}'
     AND t1.{EnergyResultColumnNames.AggregationLevel} = '{aggregationLevel}'";
         if (_energySupplier != null)
         {
