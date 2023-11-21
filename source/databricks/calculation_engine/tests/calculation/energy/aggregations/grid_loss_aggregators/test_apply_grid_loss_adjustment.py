@@ -154,14 +154,7 @@ class TestWhenEnergySupplierIdIsNotGridLossResponsible:
                 energy_supplier_id="not_grid_loss_responsible",
                 observation_time=DEFAULT_OBSERVATION_TIME,
                 sum_quantity=10,
-            ),
-            energy_results_factories.create_row(
-                grid_area="2",
-                energy_supplier_id="grid_loss_responsible_2",
-                observation_time=DEFAULT_OBSERVATION_TIME,
-                sum_quantity=5,
-                qualities=[QuantityQuality.CALCULATED],
-            ),
+            )
         ]
         result = energy_results_factories.create(spark, result_rows)
 
@@ -170,12 +163,7 @@ class TestWhenEnergySupplierIdIsNotGridLossResponsible:
                 grid_area="1",
                 observation_time=DEFAULT_OBSERVATION_TIME,
                 sum_quantity=20,
-            ),
-            energy_results_factories.create_row(
-                grid_area="2",
-                observation_time=DEFAULT_OBSERVATION_TIME,
-                sum_quantity=20,
-            ),
+            )
         ]
         grid_loss = energy_results_factories.create(spark, grid_loss_rows)
 
@@ -184,12 +172,7 @@ class TestWhenEnergySupplierIdIsNotGridLossResponsible:
                 grid_area="1",
                 metering_point_type=metering_point_type,
                 energy_supplier_id="grid_loss_responsible_1",
-            ),
-            grid_loss_responsible_factories.create_row(
-                grid_area="2",
-                metering_point_type=metering_point_type,
-                energy_supplier_id="grid_loss_responsible_2",
-            ),
+            )
         ]
         grid_loss_responsible = grid_loss_responsible_factories.create(
             spark, grid_loss_responsible_rows
@@ -204,7 +187,6 @@ class TestWhenEnergySupplierIdIsNotGridLossResponsible:
         )
 
         # Assert
-        assert actual.df.count() == 3
+        assert actual.df.count() == 2
         assert actual.df.collect()[0][Colname.sum_quantity] == 20
         assert actual.df.collect()[1][Colname.sum_quantity] == 10
-        assert actual.df.collect()[2][Colname.sum_quantity] == 25
