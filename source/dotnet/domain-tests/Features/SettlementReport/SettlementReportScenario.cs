@@ -86,7 +86,7 @@ public class SettlementReportScenario : DomainTestsBase<SettlementReportScenario
     [DomainFact]
     public void AndThen_SingleEntryShouldContainCorrectGridAreaCodesAndProcessType()
     {
-        var expected = "543,D04,";
+        var expected = "804,D04,";
 
         // Assert
         using var assertionScope = new AssertionScope();

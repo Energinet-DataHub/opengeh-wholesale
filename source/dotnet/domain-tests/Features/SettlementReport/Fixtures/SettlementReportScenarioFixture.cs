@@ -98,6 +98,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.SettlementReport.Fixt
 
         protected override async Task OnInitializeAsync()
         {
+            await DatabricksClientExtensions.StartWarehouseAsync(Configuration.DatabricksWorkspace);
             WholesaleClient = await WholesaleClientFactory.CreateAsync(Configuration, useAuthentication: true);
         }
 
