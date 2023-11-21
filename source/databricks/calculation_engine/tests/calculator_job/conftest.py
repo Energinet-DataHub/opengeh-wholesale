@@ -36,14 +36,18 @@ from package.calculation_input.schemas import (
     charge_price_points_schema,
     charge_link_periods_schema,
 )
+from tests.helpers.delta_table_utils import write_dataframe_to_table
 
 
 @pytest.fixture(scope="session")
-def calculator_args_balance_fixing(data_lake_path: str) -> CalculatorArgs:
+def calculator_args_balance_fixing(
+    data_lake_path: str, calculation_input_path: str
+) -> CalculatorArgs:
     return CalculatorArgs(
         data_storage_account_name="foo",
         data_storage_account_credentials=ClientSecretCredential("foo", "foo", "foo"),
-        wholesale_container_path=f"{data_lake_path}",
+        wholesale_container_path=data_lake_path,
+        calculation_input_path=calculation_input_path,
         batch_id=C.executed_balance_fixing_batch_id,
         batch_process_type=ProcessType.BALANCE_FIXING,
         batch_grid_areas=["805", "806"],
@@ -107,7 +111,7 @@ def price_input_data_written_to_delta(
         file_name=f"{test_files_folder_path}/ChargeMasterDataPeriods.csv",
         table_name=paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME,
         schema=charge_master_data_periods_schema,
-        table_location=f"{calculation_input_path}/charge_master_data_periods",
+        table_location=f"{calculation_input_path}/charge_masterdata_periods",
     )
 
     # Charge link periods
@@ -136,11 +140,12 @@ def executed_balance_fixing(
     migrations_executed: None,
     energy_input_data_written_to_delta: None,
     grid_loss_responsible_test_data: DataFrame,
+    calculation_input_path: str,
 ) -> None:
     """Execute the calculator job.
     This is the act part of a test in the arrange-act-assert paradigm.
     This act is made as a session-scoped fixture because it is a slow process
-    and because lots of assertions can be made and split into seperate tests
+    and because lots of assertions can be made and split into separate tests
     without awaiting the execution in each test."""
 
     with patch.object(
@@ -148,7 +153,10 @@ def executed_balance_fixing(
         grid_loss_responsible._get_all_grid_loss_responsible.__name__,
         return_value=grid_loss_responsible_test_data,
     ):
-        table_reader = TableReader(spark)
+        table_reader = TableReader(
+            spark,
+            calculation_input_path,
+        )
         prepared_data_reader = PreparedDataReader(table_reader)
         calculation.execute(calculator_args_balance_fixing, prepared_data_reader)
 
@@ -161,6 +169,7 @@ def executed_wholesale_fixing(
     energy_input_data_written_to_delta: None,
     price_input_data_written_to_delta: None,
     grid_loss_responsible_test_data: DataFrame,
+    calculation_input_path: str,
 ) -> None:
     """Execute the calculator job.
     This is the act part of a test in the arrange-act-assert paradigm.
@@ -173,7 +182,7 @@ def executed_wholesale_fixing(
         grid_loss_responsible._get_all_grid_loss_responsible.__name__,
         return_value=grid_loss_responsible_test_data,
     ):
-        table_reader = TableReader(spark)
+        table_reader = TableReader(spark, calculation_input_path)
         prepared_data_reader = PreparedDataReader(table_reader)
         calculation.execute(calculator_args_wholesale_fixing, prepared_data_reader)
 
@@ -226,30 +235,7 @@ def _write_input_test_data_to_table(
     table_location: str,
     schema: StructType,
 ) -> None:
-    spark.sql(f"CREATE DATABASE IF NOT EXISTS {paths.INPUT_DATABASE_NAME}")
-
-    sql_schema = struct_type_to_sql_schema(schema)
-    spark.sql(
-        f"CREATE TABLE IF NOT EXISTS {paths.INPUT_DATABASE_NAME}.{table_name} ({sql_schema}) USING DELTA LOCATION '{table_location}'"
-    )
-
     df = spark.read.csv(file_name, header=True, schema=schema)
-    df.write.format("delta").mode("overwrite").saveAsTable(
-        f"{paths.INPUT_DATABASE_NAME}.{table_name}"
+    write_dataframe_to_table(
+        spark, df, paths.INPUT_DATABASE_NAME, table_name, table_location, schema
     )
-
-
-def struct_type_to_sql_schema(schema: StructType) -> str:
-    schema_string = ""
-    for field in schema.fields:
-        field_name = field.name
-        field_type = field.dataType.simpleString()
-
-        if not field.nullable:
-            field_type += " NOT NULL"
-
-        schema_string += f"{field_name} {field_type}, "
-
-    # Remove the trailing comma and space
-    schema_string = schema_string.rstrip(", ")
-    return schema_string
