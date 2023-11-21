@@ -12,8 +12,9 @@ module "kvs_sbq_wholesale_inbox_messagequeue_name" {
 }
 
 resource "azurerm_servicebus_queue" "edi_inbox_messagequeue" {
-  name                         = "sbq-${lower(var.domain_name_short)}-edi-inbox"
-  namespace_id                 = module.sb_domain_relay.id
+  name                          = "sbq-${lower(var.domain_name_short)}-edi-inbox"
+  namespace_id                  = module.sb_domain_relay.id
+  max_message_size_in_kilobytes = 102400
 }
 
 module "kvs_sbq_edi_inbox_messagequeue" {
