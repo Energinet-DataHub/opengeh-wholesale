@@ -542,5 +542,5 @@ dotnet_diagnostic.CA2007.severity = none        # CA2007: Consider calling Confi
 
 # See rules here: https://github.com/microsoft/vs-threading/blob/main/doc/analyzers/index.md
 
-dotnet_diagnostic.VSTHRD111.severity = error	# VSTHRD111: [Similar to CA2007] Use ConfigureAwait(bool)
+dotnet_diagnostic.VSTHRD111.severity = none	    # VSTHRD111: [Similar to CA2007] Use ConfigureAwait(bool)
 dotnet_diagnostic.VSTHRD200.severity = none     # VSTHRD200: Use "Async" suffix for async methods
