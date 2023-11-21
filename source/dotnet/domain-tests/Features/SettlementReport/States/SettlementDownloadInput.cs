@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
 
-namespace Energinet.DataHub.Wholesale.DomainTests.Features.SettlementReport.Fixtures;
+namespace Energinet.DataHub.Wholesale.DomainTests.Features.SettlementReport.States;
 
 public class SettlementDownloadInput
 {

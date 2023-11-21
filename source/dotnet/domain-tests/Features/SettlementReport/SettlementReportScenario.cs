@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.IO.Compression;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
 using Energinet.DataHub.Wholesale.DomainTests.Features.SettlementReport.Fixtures;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Attributes;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Features.SettlementReport;
@@ -46,7 +46,7 @@ public class SettlementReportScenario : DomainTestsBase<SettlementReportScenario
     [DomainFact]
     public async Task When_SettlementReportDownloadedIsStarted()
     {
-        Fixture.ScenarioState.SettlementReportFile =
+        Fixture.ScenarioState.CompressedSettlementReport =
             await Fixture.StartDownloadingAsync(Fixture.ScenarioState.SettlementDownloadInput);
     }
 
@@ -54,8 +54,6 @@ public class SettlementReportScenario : DomainTestsBase<SettlementReportScenario
     [DomainFact]
     public void Then_SettlementReportEntriesShouldNotBeEmpty()
     {
-        Fixture.ScenarioState.CompressedSettlementReport = new ZipArchive(Fixture.ScenarioState.SettlementReportFile.Stream, ZipArchiveMode.Read);
-
         // Assert
         Fixture.ScenarioState.CompressedSettlementReport.Entries.Should().NotBeEmpty();
     }
@@ -75,13 +73,13 @@ public class SettlementReportScenario : DomainTestsBase<SettlementReportScenario
     [DomainFact]
     public async Task AndThen_NumberOfLinesPrTimeSeriesTypesShouldBeCorrect()
     {
-        Fixture.ScenarioState.Lines = await Fixture.SplitEntryIntoLinesAsync(Fixture.ScenarioState.Entry);
-        var (consumptionLines, productionLines, exchangeLines) = Fixture.CountTimeSeriesTypes(Fixture.ScenarioState.Lines);
+        Fixture.ScenarioState.Lines = await Fixture.SplitEntryIntoDataLinesAsync(Fixture.ScenarioState.Entry);
+        var typeSeriesTypeLines = Fixture.CountLinesPerTimeSeriesTypes(Fixture.ScenarioState.Lines);
 
         // Assert
-        productionLines.Should().Be(96); //// 4 x 15 minutes x 24 hours = 96
-        exchangeLines.Should().Be(96);
-        consumptionLines.Should().Be(288); //// 4 x 15 minutes x 24 hours x 3 types of consumption = 288
+        typeSeriesTypeLines.ProductionLines.Should().Be(96); //// 4 x 15 minutes x 24 hours = 96
+        typeSeriesTypeLines.ExchangeLines.Should().Be(96);
+        typeSeriesTypeLines.ConsumptionLines.Should().Be(288); //// 4 x 15 minutes x 24 hours x 3 types of consumption = 288
     }
 
     [ScenarioStep(5)]
@@ -89,13 +87,10 @@ public class SettlementReportScenario : DomainTestsBase<SettlementReportScenario
     public void AndThen_SingleEntryShouldContainCorrectGridAreaCodesAndProcessType()
     {
         var expected = "543,D04,";
-        if (Fixture.ScenarioState.Lines.Length == 0)
-        {
-            throw new Exception("The entry is empty.");
-        }
 
+        // Assert
+        using var assertionScope = new AssertionScope();
         foreach (var line in Fixture.ScenarioState.Lines)
-            // Assert
             line.Should().StartWith(expected);
     }
 

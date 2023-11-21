@@ -41,7 +41,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.SettlementReport.Fixt
 
         private WholesaleDomainConfiguration Configuration { get; }
 
-        public async Task<FileResponse> StartDownloadingAsync(SettlementDownloadInput settlementDownloadInput)
+        public async Task<ZipArchive> StartDownloadingAsync(SettlementDownloadInput settlementDownloadInput)
         {
             var fileResponse = await WholesaleClient.DownloadAsync(
                 settlementDownloadInput.GridAreaCodes,
@@ -51,10 +51,11 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.SettlementReport.Fixt
             DiagnosticMessageSink.WriteDiagnosticMessage($"Downloading settlement report for " +
                                                          $"grid area codes {string.Join(", ", settlementDownloadInput.GridAreaCodes.ToArray())} and" +
                                                          $" process type {settlementDownloadInput.ProcessType} started.");
-            return fileResponse;
+
+            return new ZipArchive(fileResponse.Stream, ZipArchiveMode.Read);
         }
 
-        public async Task<string[]> SplitEntryIntoLinesAsync(ZipArchiveEntry entry)
+        public async Task<string[]> SplitEntryIntoDataLinesAsync(ZipArchiveEntry entry)
         {
             using var stringReader = new StreamReader(entry.Open());
             var content = await stringReader.ReadToEndAsync();
@@ -62,7 +63,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.SettlementReport.Fixt
             return lines[1..];  //// The first line is the header.
         }
 
-        public Tuple<int, int, int> CountTimeSeriesTypes(IEnumerable<string> lines)
+        public (int ConsumptionLines, int ProductionLines, int ExchangeLines) CountLinesPerTimeSeriesTypes(IEnumerable<string> lines)
         {
             var productionLines = 0;
             var exchangeLines = 0;
@@ -85,7 +86,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.SettlementReport.Fixt
                 }
             }
 
-            return new Tuple<int, int, int>(consumptionLines, productionLines, exchangeLines);
+            return (ConsumptionLines: consumptionLines, ProductionLines: productionLines, ExchangeLines: exchangeLines);
         }
 
         public string GetUtcDate(string line)

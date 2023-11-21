@@ -14,17 +14,12 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
-using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
-using Energinet.DataHub.Wholesale.DomainTests.Features.SettlementReport.Fixtures;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Features.SettlementReport.States;
 
 public class SettlementReportScenarioState
 {
     public SettlementDownloadInput SettlementDownloadInput { get; } = new();
-
-    [NotNull]
-    public FileResponse? SettlementReportFile { get; set; }
 
     [NotNull]
     public ZipArchive? CompressedSettlementReport { get; set; }
