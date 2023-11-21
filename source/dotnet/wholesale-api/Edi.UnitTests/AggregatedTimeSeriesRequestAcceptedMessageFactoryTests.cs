@@ -42,16 +42,16 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
         var aggregatedTimeSeries = CreateAggregatedTimeSeries();
 
         // Act
-        var response = AggregatedTimeSeriesRequestAcceptedMessageFactory.Create(aggregatedTimeSeries, expectedReferenceId);
+        var actual = AggregatedTimeSeriesRequestAcceptedMessageFactory.Create(aggregatedTimeSeries, expectedReferenceId);
 
         // Assert
         using var assertionScope = new AssertionScope();
-        response.Should().NotBeNull();
-        response.ApplicationProperties.ContainsKey("ReferenceId").Should().BeTrue();
-        response.ApplicationProperties["ReferenceId"].ToString().Should().Be(expectedReferenceId);
-        response.Subject.Should().Be(expectedAcceptedSubject);
+        actual.Should().NotBeNull();
+        actual.ApplicationProperties.ContainsKey("ReferenceId").Should().BeTrue();
+        actual.ApplicationProperties["ReferenceId"].ToString().Should().Be(expectedReferenceId);
+        actual.Subject.Should().Be(expectedAcceptedSubject);
 
-        var responseBody = AggregatedTimeSeriesRequestAccepted.Parser.ParseFrom(response.Body);
+        var responseBody = AggregatedTimeSeriesRequestAccepted.Parser.ParseFrom(actual.Body);
         var series = responseBody?.Series.FirstOrDefault();
         series.Should().NotBeNull();
         series!.GridArea.Should().Be(_gridArea);

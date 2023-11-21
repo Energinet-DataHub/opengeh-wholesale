@@ -69,7 +69,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
         await SendAcceptedMessageAsync(results, referenceId, cancellationToken).ConfigureAwait(false);
     }
 
-    private async Task<List<AggregatedTimeSeries>> GetAggregatedTimeSeriesAsync(
+    private async Task<IReadOnlyCollection<AggregatedTimeSeries>> GetAggregatedTimeSeriesAsync(
         AggregatedTimeSeriesRequest request,
         CancellationToken cancellationToken)
     {
@@ -93,13 +93,13 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
             }).ToListAsync(cancellationToken).ConfigureAwait(false);
     }
 
-    private async Task SendRejectedMessageAsync(List<ValidationError> validationErrors, string referenceId, CancellationToken cancellationToken)
+    private async Task SendRejectedMessageAsync(IReadOnlyCollection<ValidationError> validationErrors, string referenceId, CancellationToken cancellationToken)
     {
         var message = AggregatedTimeSeriesRequestRejectedMessageFactory.Create(validationErrors, referenceId);
         await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
     }
 
-    private async Task SendAcceptedMessageAsync(List<AggregatedTimeSeries> results, string referenceId, CancellationToken cancellationToken)
+    private async Task SendAcceptedMessageAsync(IReadOnlyCollection<AggregatedTimeSeries> results, string referenceId, CancellationToken cancellationToken)
     {
        var message = AggregatedTimeSeriesRequestAcceptedMessageFactory.Create(results, referenceId);
        await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);

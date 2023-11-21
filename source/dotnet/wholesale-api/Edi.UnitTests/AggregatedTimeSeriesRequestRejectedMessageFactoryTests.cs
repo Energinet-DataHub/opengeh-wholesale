@@ -33,16 +33,16 @@ public class AggregatedTimeSeriesRequestRejectedMessageFactoryTests
         var expectedReferenceId = "123456789";
 
         // Act
-        var response = AggregatedTimeSeriesRequestRejectedMessageFactory.Create(new[] { _noDataAvailable }, expectedReferenceId);
+        var actual = AggregatedTimeSeriesRequestRejectedMessageFactory.Create(new[] { _noDataAvailable }, expectedReferenceId);
 
         // Assert
         using var assertionScope = new AssertionScope();
-        response.Should().NotBeNull();
-        response.ApplicationProperties.ContainsKey("ReferenceId").Should().BeTrue();
-        response.ApplicationProperties["ReferenceId"].ToString().Should().Be(expectedReferenceId);
-        response.Subject.Should().Be(expectedAcceptedSubject);
+        actual.Should().NotBeNull();
+        actual.ApplicationProperties.ContainsKey("ReferenceId").Should().BeTrue();
+        actual.ApplicationProperties["ReferenceId"].ToString().Should().Be(expectedReferenceId);
+        actual.Subject.Should().Be(expectedAcceptedSubject);
 
-        var responseBody = AggregatedTimeSeriesRequestRejected.Parser.ParseFrom(response.Body);
+        var responseBody = AggregatedTimeSeriesRequestRejected.Parser.ParseFrom(actual.Body);
         responseBody.RejectReasons.Should().ContainSingle();
         responseBody.RejectReasons[0].ErrorCode.Should().Be(_noDataAvailable.ErrorCode);
     }
