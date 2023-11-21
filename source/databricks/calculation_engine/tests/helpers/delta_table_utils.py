@@ -26,7 +26,7 @@ def write_dataframe_to_table(
 ) -> None:
     spark.sql(f"CREATE DATABASE IF NOT EXISTS {database_name}")
 
-    sql_schema = struct_type_to_sql_schema(schema)
+    sql_schema = _struct_type_to_sql_schema(schema)
     spark.sql(
         f"CREATE TABLE IF NOT EXISTS {database_name}.{table_name} ({sql_schema}) USING DELTA LOCATION '{table_location}'"
     )
@@ -36,7 +36,7 @@ def write_dataframe_to_table(
     )
 
 
-def struct_type_to_sql_schema(schema: StructType) -> str:
+def _struct_type_to_sql_schema(schema: StructType) -> str:
     schema_string = ""
     for field in schema.fields:
         field_name = field.name
