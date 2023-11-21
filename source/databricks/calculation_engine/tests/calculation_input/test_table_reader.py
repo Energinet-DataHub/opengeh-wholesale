@@ -18,7 +18,7 @@ from unittest import mock
 import pytest
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.types import StructType
-from pyspark.sql.functions import col, when, lit
+import pyspark.sql.functions as f
 
 from package.codelists import (
     InputMeteringPointType,
@@ -110,22 +110,22 @@ def _map_metering_point_type_and_settlement_method(df: DataFrame) -> DataFrame:
     """
     return df.withColumn(
         Colname.metering_point_type,
-        when(
-            col(Colname.metering_point_type)
+        f.when(
+            f.col(Colname.metering_point_type)
             == InputMeteringPointType.CONSUMPTION.value,
             MeteringPointType.CONSUMPTION.value,
-        ).otherwise(col(Colname.metering_point_type)),
+        ).otherwise(f.col(Colname.metering_point_type)),
     ).withColumn(
         Colname.settlement_method,
-        when(
-            col(Colname.settlement_method) == InputSettlementMethod.FLEX.value,
+        f.when(
+            f.col(Colname.settlement_method) == InputSettlementMethod.FLEX.value,
             SettlementMethod.FLEX.value,
         ).otherwise(col(Colname.settlement_method)),
     )
 
 
 def _add_charge_key(df: DataFrame) -> DataFrame:
-    return df.withColumn(Colname.charge_key, lit("foo-foo-foo"))
+    return df.withColumn(Colname.charge_key, f.lit("foo-foo-foo"))
 
 
 @pytest.mark.parametrize(
@@ -236,7 +236,7 @@ def test__read_data__when_schema_mismatch__raises_assertion_error(
     row = create_row()
     reader = TableReader(spark, "dummy_calculation_input_path")
     df = spark.createDataFrame(data=[row], schema=expected_schema)
-    df = df.withColumn("test", lit("test"))
+    df = df.withColumn("test", f.lit("test"))
     sut = getattr(reader, str(method_name.__name__))
 
     # Act & Assert
