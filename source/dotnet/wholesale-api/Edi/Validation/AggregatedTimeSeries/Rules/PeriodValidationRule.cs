@@ -16,7 +16,7 @@ using Energinet.DataHub.Edi.Requests;
 using NodaTime;
 using NodaTime.Text;
 
-namespace Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
+namespace Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSeries.Rules;
 
 public class PeriodValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
 {

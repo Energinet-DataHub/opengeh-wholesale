@@ -17,6 +17,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.EDI.Factories;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Google.Protobuf.WellKnownTypes;
 using NodaTime;
 using Xunit;
@@ -44,18 +45,19 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
         var response = AggregatedTimeSeriesRequestAcceptedMessageFactory.Create(aggregatedTimeSeries, expectedReferenceId);
 
         // Assert
+        using var assertionScope = new AssertionScope();
         response.Should().NotBeNull();
         response.ApplicationProperties.ContainsKey("ReferenceId").Should().BeTrue();
         response.ApplicationProperties["ReferenceId"].ToString().Should().Be(expectedReferenceId);
         response.Subject.Should().Be(expectedAcceptedSubject);
 
         var responseBody = AggregatedTimeSeriesRequestAccepted.Parser.ParseFrom(response.Body);
-        var serie = responseBody?.Series.FirstOrDefault();
-        serie.Should().NotBeNull();
-        serie!.GridArea.Should().Be(_gridArea);
-        serie.TimeSeriesType.Should().Be(Energinet.DataHub.Edi.Responses.TimeSeriesType.Production);
+        var series = responseBody?.Series.FirstOrDefault();
+        series.Should().NotBeNull();
+        series!.GridArea.Should().Be(_gridArea);
+        series.TimeSeriesType.Should().Be(Energinet.DataHub.Edi.Responses.TimeSeriesType.Production);
 
-        var timeSeriesOrdered = serie.TimeSeriesPoints.OrderBy(ts => ts.Time).ToList();
+        var timeSeriesOrdered = series.TimeSeriesPoints.OrderBy(ts => ts.Time).ToList();
         var earliestTimestamp = timeSeriesOrdered.First();
         var latestTimestamp = timeSeriesOrdered.Last();
 
@@ -66,14 +68,14 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
         latestTimestamp.Time.Should().BeLessThan(periodEndTimestamp)
             .And.BeGreaterOrEqualTo(earliestTimestamp.Time);
 
-        serie.TimeSeriesPoints.Count.Should().Be(aggregatedTimeSeries.First().TimeSeriesPoints.Length);
+        series.TimeSeriesPoints.Count.Should().Be(aggregatedTimeSeries.First().TimeSeriesPoints.Length);
     }
 
     private List<AggregatedTimeSeries> CreateAggregatedTimeSeries()
     {
         var quantityQualities = new List<QuantityQuality> { QuantityQuality.Estimated };
 
-        var aggregatedTimeSerie = new AggregatedTimeSeries(
+        var aggregatedTimeSeries = new AggregatedTimeSeries(
             _gridArea,
             new EnergyTimeSeriesPoint[]
             {
@@ -86,7 +88,7 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
 
         return new List<AggregatedTimeSeries>()
         {
-            aggregatedTimeSerie,
+            aggregatedTimeSeries,
         };
     }
 }

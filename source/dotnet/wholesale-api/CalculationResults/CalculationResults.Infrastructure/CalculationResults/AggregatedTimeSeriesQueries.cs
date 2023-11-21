@@ -48,33 +48,33 @@ public class AggregatedTimeSeriesQueries : IAggregatedTimeSeriesQueries
 
         if (parameters.GridArea == null)
         {
-            throw new ArgumentNullException($"{nameof(parameters.GridArea)} may not be null.", nameof(parameters));
+            throw new ArgumentNullException(nameof(parameters), $"{nameof(parameters.GridArea)} may not be null.");
         }
 
-        await foreach (var aggregatedTimeSeries in GetAggregatedTimeSeriesForLatestCorrectionAsync(parameters))
+        await foreach (var aggregatedTimeSeries in GetAggregatedTimeSeriesForLatestCorrectionAsync(parameters).ConfigureAwait(false))
             yield return aggregatedTimeSeries;
     }
 
     public async IAsyncEnumerable<AggregatedTimeSeries> GetAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
-        var sqlStatement = new QueryAggregatedTimeSeriesStatement(parameters, _deltaTableOptions);
-        await foreach (var aggregatedTimeSeries in GetInternalAsync(sqlStatement))
+        var sqlStatement = new AggregatedTimeSeriesQueryStatement(parameters, _deltaTableOptions);
+        await foreach (var aggregatedTimeSeries in GetInternalAsync(sqlStatement).ConfigureAwait(false))
             yield return aggregatedTimeSeries;
     }
 
     private async IAsyncEnumerable<AggregatedTimeSeries> GetAggregatedTimeSeriesForLatestCorrectionAsync(AggregatedTimeSeriesQueryParameters parameters)
     {
-        await foreach (var aggregatedTimeSeries in GetAsync(parameters with { ProcessType = ProcessType.ThirdCorrectionSettlement }))
+        await foreach (var aggregatedTimeSeries in GetAsync(parameters with { ProcessType = ProcessType.ThirdCorrectionSettlement }).ConfigureAwait(false))
             yield return aggregatedTimeSeries;
 
-        await foreach (var aggregatedTimeSeries in GetAsync(parameters with { ProcessType = ProcessType.SecondCorrectionSettlement }))
+        await foreach (var aggregatedTimeSeries in GetAsync(parameters with { ProcessType = ProcessType.SecondCorrectionSettlement }).ConfigureAwait(false))
             yield return aggregatedTimeSeries;
 
-        await foreach (var aggregatedTimeSeries in GetAsync(parameters with { ProcessType = ProcessType.FirstCorrectionSettlement }))
+        await foreach (var aggregatedTimeSeries in GetAsync(parameters with { ProcessType = ProcessType.FirstCorrectionSettlement }).ConfigureAwait(false))
             yield return aggregatedTimeSeries;
     }
 
-    private async IAsyncEnumerable<AggregatedTimeSeries> GetInternalAsync(QueryAggregatedTimeSeriesStatement sqlStatement)
+    private async IAsyncEnumerable<AggregatedTimeSeries> GetInternalAsync(AggregatedTimeSeriesQueryStatement sqlStatement)
     {
         var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
         DatabricksSqlRow? previousRow = null;

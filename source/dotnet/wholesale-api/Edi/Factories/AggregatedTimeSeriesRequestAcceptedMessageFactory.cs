@@ -24,7 +24,7 @@ namespace Energinet.DataHub.Wholesale.EDI.Factories;
 
 public class AggregatedTimeSeriesRequestAcceptedMessageFactory
 {
-    public static ServiceBusMessage Create(List<AggregatedTimeSeries> aggregatedTimeSeries, string referenceId)
+    public static ServiceBusMessage Create(IReadOnlyCollection<AggregatedTimeSeries> aggregatedTimeSeries, string referenceId)
     {
         var body = CreateAcceptedResponse(aggregatedTimeSeries);
 
@@ -38,18 +38,18 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
         return message;
     }
 
-    private static AggregatedTimeSeriesRequestAccepted CreateAcceptedResponse(List<AggregatedTimeSeries> aggregatedTimeSeries)
+    private static AggregatedTimeSeriesRequestAccepted CreateAcceptedResponse(IReadOnlyCollection<AggregatedTimeSeries> aggregatedTimeSeries)
     {
         var response = new AggregatedTimeSeriesRequestAccepted();
-        foreach (var aggregatedTimeSerie in aggregatedTimeSeries)
+        foreach (var series in aggregatedTimeSeries)
         {
-            var points = CreateTimeSeriesPoints(aggregatedTimeSerie);
-            response.Series.Add(new Serie()
+            var points = CreateTimeSeriesPoints(series);
+            response.Series.Add(new Series()
             {
-                GridArea = aggregatedTimeSerie.GridArea,
+                GridArea = series.GridArea,
                 QuantityUnit = QuantityUnit.Kwh,
                 TimeSeriesPoints = { points },
-                TimeSeriesType = CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromCalculationsResult(aggregatedTimeSerie.TimeSeriesType),
+                TimeSeriesType = CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromCalculationsResult(series.TimeSeriesType),
                 Resolution = Resolution.Pt15M,
             });
         }

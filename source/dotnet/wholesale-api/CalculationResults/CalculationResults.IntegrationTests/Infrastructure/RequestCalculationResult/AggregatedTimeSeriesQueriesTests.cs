@@ -69,15 +69,15 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             endOfPeriod: endOfPeriodFilter);
 
         // Act
-        var result = await Sut.GetAsync(parameters).ToListAsync(CancellationToken.None);
-        var actual = result.First();
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
 
         // Assert
         using var assertionScope = new AssertionScope();
-        result.Should().HaveCount(1);
-        actual!.GridArea.Should().Be(gridAreaFilter);
-        actual.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
-        actual.TimeSeriesPoints
+        actual.Should().HaveCount(1);
+        var aggregatedTimeSeries = actual.First();
+        aggregatedTimeSeries!.GridArea.Should().Be(gridAreaFilter);
+        aggregatedTimeSeries.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
+        aggregatedTimeSeries.TimeSeriesPoints
             .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
             .ToArray()
             .Should()
@@ -95,10 +95,10 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             endOfPeriod: Instant.FromUtc(2021, 1, 2, 1, 1));
 
         // Act
-        var result = await Sut.GetAsync(parameters).ToListAsync(CancellationToken.None);
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
 
         // Assert
-        result.Should().HaveCount(0);
+        actual.Should().HaveCount(0);
     }
 
     [Fact]
@@ -119,20 +119,20 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             energySupplierId: energySupplierIdFilter);
 
         // Act
-        var result = await Sut.GetAsync(parameters).ToListAsync(CancellationToken.None);
-        var actual = result.First();
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
 
         // Assert
         using var assertionScope = new AssertionScope();
-        result.Should().HaveCount(1);
-        actual!.GridArea.Should().Be(gridAreaFilter);
-        actual.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
-        actual.TimeSeriesPoints
+        actual.Should().HaveCount(1);
+        var aggregatedTimeSeries = actual.First();
+        aggregatedTimeSeries!.GridArea.Should().Be(gridAreaFilter);
+        aggregatedTimeSeries.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
+        aggregatedTimeSeries.TimeSeriesPoints
             .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
             .ToArray()
             .Should()
             .Equal(FirstQuantity);
-        actual.TimeSeriesPoints.Select(p => p.Time)
+        aggregatedTimeSeries.TimeSeriesPoints.Select(p => p.Time)
             .ToArray()
             .Should()
             .AllSatisfy(p =>
@@ -160,10 +160,10 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             energySupplierId: energySupplierId);
 
         // Act
-        var result = await Sut.GetAsync(parameters).ToListAsync(CancellationToken.None);
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
 
         // Assert
-        result.Should().HaveCount(0);
+        actual.Should().HaveCount(0);
     }
 
     [Fact]
@@ -185,15 +185,15 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             processType: ProcessType.BalanceFixing);
 
         // Act
-        var result = await Sut.GetAsync(parameters).ToListAsync(CancellationToken.None);
-        var actual = result.First();
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
 
         // Assert
         using var assertionScope = new AssertionScope();
-        result.Should().HaveCount(1);
-        actual!.GridArea.Should().Be(gridAreaFilter);
-        actual.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
-        actual.TimeSeriesPoints
+        actual.Should().HaveCount(1);
+        var aggregatedTimeSeries = actual.First();
+        aggregatedTimeSeries!.GridArea.Should().Be(gridAreaFilter);
+        aggregatedTimeSeries.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
+        aggregatedTimeSeries.TimeSeriesPoints
             .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
             .ToArray()
             .Should()
@@ -220,15 +220,15 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             balanceResponsibleId: balanceResponsibleIdFilter);
 
         // Act
-        var result = await Sut.GetAsync(parameters).ToListAsync(CancellationToken.None);
-        var actual = result.First();
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
 
         // Assert
         using var assertionScope = new AssertionScope();
-        result.Should().HaveCount(1);
-        actual!.GridArea.Should().Be(gridAreaFilter);
-        actual.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
-        actual.TimeSeriesPoints
+        actual.Should().HaveCount(1);
+        var aggregatedTimeSeries = actual.First();
+        aggregatedTimeSeries!.GridArea.Should().Be(gridAreaFilter);
+        aggregatedTimeSeries.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
+        aggregatedTimeSeries.TimeSeriesPoints
             .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
             .ToArray()
             .Should()
@@ -254,16 +254,16 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             processType: processTypeFilter);
 
         // Act
-        var result = await Sut.GetAsync(parameters).ToListAsync(CancellationToken.None);
-        var actual = result.First();
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
 
         // Assert
         using var assertionScope = new AssertionScope();
-        result.Should().HaveCount(1);
-        actual!.GridArea.Should().Be(gridAreaFilter);
-        actual.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
-        actual.ProcessType.Should().Be(ProcessType.FirstCorrectionSettlement);
-        actual.TimeSeriesPoints
+        actual.Should().HaveCount(1);
+        var aggregatedTimeSeries = actual.First();
+        aggregatedTimeSeries!.GridArea.Should().Be(gridAreaFilter);
+        aggregatedTimeSeries.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
+        aggregatedTimeSeries.ProcessType.Should().Be(ProcessType.FirstCorrectionSettlement);
+        aggregatedTimeSeries.TimeSeriesPoints
             .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
             .ToArray()
             .Should()
@@ -290,16 +290,16 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             processType: processTypeFilter);
 
         // Act
-        var result = await Sut.GetAsync(parameters).ToListAsync(CancellationToken.None);
-        var actual = result.First();
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
 
         // Assert
         using var assertionScope = new AssertionScope();
-        result.Should().HaveCount(1);
-        actual!.GridArea.Should().Be(gridAreaFilter);
-        actual.ProcessType.Should().Be(ProcessType.SecondCorrectionSettlement);
-        actual.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
-        actual.TimeSeriesPoints
+        actual.Should().HaveCount(1);
+        var aggregatedTimeSeries = actual.First();
+        aggregatedTimeSeries!.GridArea.Should().Be(gridAreaFilter);
+        aggregatedTimeSeries.ProcessType.Should().Be(ProcessType.SecondCorrectionSettlement);
+        aggregatedTimeSeries.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
+        aggregatedTimeSeries.TimeSeriesPoints
             .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
             .ToArray()
             .Should()
@@ -326,16 +326,16 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             processType: processTypeFilter);
 
         // Act
-        var result = await Sut.GetAsync(parameters).ToListAsync(CancellationToken.None);
-        var actual = result.First();
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
 
         // Assert
         using var assertionScope = new AssertionScope();
-        result.Should().HaveCount(1);
-        actual!.GridArea.Should().Be(gridAreaFilter);
-        actual.ProcessType.Should().Be(ProcessType.ThirdCorrectionSettlement);
-        actual.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
-        actual.TimeSeriesPoints
+        actual.Should().HaveCount(1);
+        var aggregatedTimeSeries = actual.First();
+        aggregatedTimeSeries!.GridArea.Should().Be(gridAreaFilter);
+        aggregatedTimeSeries.ProcessType.Should().Be(ProcessType.ThirdCorrectionSettlement);
+        aggregatedTimeSeries.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
+        aggregatedTimeSeries.TimeSeriesPoints
             .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
             .ToArray()
             .Should()
@@ -360,15 +360,15 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             endOfPeriod: endOfPeriodFilter);
 
         // Act
-        var result = await Sut.GetAsync(parameters).ToListAsync(CancellationToken.None);
-        var actual = result.First();
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
 
         // Assert
         using var assertionScope = new AssertionScope();
-        result.Should().HaveCount(1);
-        actual!.GridArea.Should().Be(gridAreaFilter);
-        actual.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
-        actual.TimeSeriesPoints
+        actual.Should().HaveCount(1);
+        var aggregatedTimeSeries = actual.First();
+        aggregatedTimeSeries!.GridArea.Should().Be(gridAreaFilter);
+        aggregatedTimeSeries.TimeSeriesType.Should().Be(timeSeriesTypeFilter);
+        aggregatedTimeSeries.TimeSeriesPoints
             .Select(p => p.Quantity.ToString(CultureInfo.InvariantCulture))
             .ToArray()
             .Should()
@@ -395,10 +395,10 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             processType: ProcessType.BalanceFixing);
 
         // Act
-        var result = await Sut.GetAsync(parameters).ToListAsync(CancellationToken.None);
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
 
         // Assert
-        result.Should().HaveCount(0);
+        actual.Should().HaveCount(0);
     }
 
     [Fact]
@@ -419,12 +419,13 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             processType: ProcessType.BalanceFixing);
 
         // Act
-        var results = await Sut.GetAsync(parameters).ToListAsync(CancellationToken.None);
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
 
         // Assert
-        results.Should().HaveCount(2);
-        results.Select(result => result.GridArea).Should().Equal(GridAreaCodeC, GridAreaCodeB);
-        results.Should().AllSatisfy(aggregatedTimeSeries => aggregatedTimeSeries.TimeSeriesType.Should().Be(timeSeriesTypeFilter));
+        using var assertionScope = new AssertionScope();
+        actual.Should().HaveCount(2);
+        actual.Select(result => result.GridArea).Should().Equal(GridAreaCodeC, GridAreaCodeB);
+        actual.Should().AllSatisfy(aggregatedTimeSeries => aggregatedTimeSeries.TimeSeriesType.Should().Be(timeSeriesTypeFilter));
     }
 
     [Fact]
@@ -442,13 +443,12 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             gridAreaFilter);
 
         // Act
-        var result = await Sut.GetLatestCorrectionForGridAreaAsync(parameters).ToListAsync(CancellationToken.None);
-        var actual = result.First();
+        var actual = await Sut.GetLatestCorrectionForGridAreaAsync(parameters).ToListAsync();
 
         // Assert
         using var assertionScope = new AssertionScope();
-        result.Should().HaveCount(1);
-        actual!.ProcessType.Should().Be(ProcessType.ThirdCorrectionSettlement);
+        actual.Should().HaveCount(1);
+        actual.First()!.ProcessType.Should().Be(ProcessType.ThirdCorrectionSettlement);
     }
 
     [Fact]
@@ -466,13 +466,12 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             gridAreaFilter);
 
         // Act
-        var result = await Sut.GetLatestCorrectionForGridAreaAsync(parameters).ToListAsync(CancellationToken.None);
-        var actual = result.First();
+        var actual = await Sut.GetLatestCorrectionForGridAreaAsync(parameters).ToListAsync();
 
         // Assert
         using var assertionScope = new AssertionScope();
-        result.Should().HaveCount(1);
-        actual!.ProcessType.Should().Be(ProcessType.SecondCorrectionSettlement);
+        actual.Should().HaveCount(1);
+        actual.First()!.ProcessType.Should().Be(ProcessType.SecondCorrectionSettlement);
     }
 
     [Fact]
@@ -490,13 +489,12 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             gridAreaFilter);
 
         // Act
-        var result = await Sut.GetLatestCorrectionForGridAreaAsync(parameters).ToListAsync(CancellationToken.None);
-        var actual = result.First();
+        var actual = await Sut.GetLatestCorrectionForGridAreaAsync(parameters).ToListAsync();
 
         // Assert
         using var assertionScope = new AssertionScope();
-        result.Should().HaveCount(1);
-        actual!.ProcessType.Should().Be(ProcessType.FirstCorrectionSettlement);
+        actual.Should().HaveCount(1);
+        actual.First()!.ProcessType.Should().Be(ProcessType.FirstCorrectionSettlement);
     }
 
     [Fact]
@@ -514,7 +512,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             gridAreaFilter);
 
         // Act
-        var actual = await Sut.GetLatestCorrectionForGridAreaAsync(parameters).ToListAsync(CancellationToken.None);
+        var actual = await Sut.GetLatestCorrectionForGridAreaAsync(parameters).ToListAsync();
 
         // Assert
         actual.Should().HaveCount(0);

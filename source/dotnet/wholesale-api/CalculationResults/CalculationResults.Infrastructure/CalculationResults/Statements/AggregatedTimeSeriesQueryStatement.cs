@@ -22,12 +22,12 @@ using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
-public class QueryAggregatedTimeSeriesStatement : DatabricksStatement
+public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
 {
     private readonly AggregatedTimeSeriesQueryParameters _parameters;
     private readonly DeltaTableOptions _deltaTableOptions;
 
-    public QueryAggregatedTimeSeriesStatement(AggregatedTimeSeriesQueryParameters parameters, DeltaTableOptions deltaTableOptions)
+    public AggregatedTimeSeriesQueryStatement(AggregatedTimeSeriesQueryParameters parameters, DeltaTableOptions deltaTableOptions)
     {
         _parameters = parameters;
         _deltaTableOptions = deltaTableOptions;

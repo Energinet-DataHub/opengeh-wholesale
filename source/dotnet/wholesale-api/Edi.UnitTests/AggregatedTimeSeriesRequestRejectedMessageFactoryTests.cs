@@ -16,6 +16,7 @@ using Energinet.DataHub.Edi.Responses;
 using Energinet.DataHub.Wholesale.EDI.Factories;
 using Energinet.DataHub.Wholesale.EDI.Validation;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests;
@@ -35,6 +36,7 @@ public class AggregatedTimeSeriesRequestRejectedMessageFactoryTests
         var response = AggregatedTimeSeriesRequestRejectedMessageFactory.Create(new[] { _noDataAvailable }, expectedReferenceId);
 
         // Assert
+        using var assertionScope = new AssertionScope();
         response.Should().NotBeNull();
         response.ApplicationProperties.ContainsKey("ReferenceId").Should().BeTrue();
         response.ApplicationProperties["ReferenceId"].ToString().Should().Be(expectedReferenceId);
