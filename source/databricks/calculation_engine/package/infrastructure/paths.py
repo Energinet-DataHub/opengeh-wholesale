@@ -46,6 +46,10 @@ def get_container_root_path(storage_account_name: str) -> str:
     return f"abfss://{WHOLESALE_CONTAINER_NAME}@{storage_account_name}.dfs.core.windows.net/"
 
 
+def get_calculation_input_path(storage_account_name: str) -> str:
+    return f"{get_container_root_path(storage_account_name)}/calculation_input/"
+
+
 def get_basis_data_root_path(basis_data_type: BasisDataType, batch_id: str) -> str:
     batch_path = get_batch_relative_path(batch_id)
     return f"{batch_path}/{BASIS_DATA_FOLDER}/{_get_basis_data_folder_name(basis_data_type)}"
