@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration;
 using Microsoft.Azure.Databricks.Client;
+using Microsoft.Azure.Databricks.Client.Models;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 {
@@ -35,7 +36,36 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         public static async Task StartWarehouseAsync(DatabricksWorkspaceConfiguration configuration)
         {
             using var client = DatabricksClient.CreateClient(configuration.BaseUrl, configuration.Token);
-            await client.SQL.Warehouse.Start(configuration.WarehouseId);
+            await TryStartingDatabricksWithRetry(configuration.WarehouseId, client, 5);
+        }
+
+        private static async Task TryStartingDatabricksWithRetry(string warehouseId, DatabricksClient client, int retries)
+        {
+            var retryDelayMilliseconds = 1000;
+            var exception = new Exception("Unable to start Databricks SQL warehouse. Reason unknown.");
+
+            for (var retryCount = 0; retryCount < retries; retryCount++)
+            {
+                try
+                {
+                    var warehouseInfo = await client.SQL.Warehouse.Get(warehouseId);
+
+                    if (warehouseInfo.State == WarehouseState.RUNNING)
+                    {
+                        return;
+                    }
+
+                    await client.SQL.Warehouse.Start(warehouseId);
+                }
+                catch (Exception e)
+                {
+                    exception = e;
+                    retryDelayMilliseconds *= 2;
+                    await Task.Delay(retryDelayMilliseconds);
+                }
+            }
+
+            throw exception;
         }
     }
 }
