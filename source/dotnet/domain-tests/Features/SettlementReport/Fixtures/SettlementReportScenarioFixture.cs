@@ -14,12 +14,14 @@
 
 using System.IO.Compression;
 using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
+using Energinet.DataHub.Wholesale.DomainTests.Features.SettlementReport.States;
+using Energinet.DataHub.Wholesale.DomainTests.Fixtures;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Extensions;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
+namespace Energinet.DataHub.Wholesale.DomainTests.Features.SettlementReport.Fixtures
 {
     public sealed class SettlementReportScenarioFixture : LazyFixtureBase
     {
@@ -39,29 +41,64 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
         private WholesaleDomainConfiguration Configuration { get; }
 
-        public async Task<FileResponse> StartDownloadingAsync(SettlementDownloadInput settlementDownloadInput)
+        public async Task<ZipArchive> StartDownloadingAsync(SettlementDownloadInput settlementDownloadInput)
         {
-            var fileResponse = await WholesaleClient.DownloadAsync(
+            using var fileResponse = await WholesaleClient.DownloadAsync(
                 settlementDownloadInput.GridAreaCodes,
                 settlementDownloadInput.ProcessType,
                 settlementDownloadInput.CalculationPeriodStart,
                 settlementDownloadInput.CalculationPeriodEnd);
-            DiagnosticMessageSink.WriteDiagnosticMessage($"Downloading settlement report for " +
-                                                         $"grid area codes {string.Join(", ", settlementDownloadInput.GridAreaCodes.ToArray())} and" +
-                                                         $" process type {settlementDownloadInput.ProcessType} started.");
-            return fileResponse;
+            DiagnosticMessageSink.WriteDiagnosticMessage($"""
+                Downloading settlement report for
+                grid area codes {string.Join(", ", settlementDownloadInput.GridAreaCodes.ToArray())} and
+                process type {settlementDownloadInput.ProcessType} started.
+                """);
+
+            return new ZipArchive(fileResponse.Stream, ZipArchiveMode.Read);
         }
 
-        public async Task<string[]> SplitEntryIntoLinesAsync(ZipArchiveEntry entry)
+        public async Task<string[]> SplitEntryIntoDataLinesAsync(ZipArchiveEntry entry)
         {
             using var stringReader = new StreamReader(entry.Open());
             var content = await stringReader.ReadToEndAsync();
             var lines = content.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
-            return lines;
+            return lines[1..];  //// The first line is the header.
+        }
+
+        public (int ConsumptionLines, int ProductionLines, int ExchangeLines) CountLinesPerTimeSeriesTypes(IEnumerable<string> lines)
+        {
+            var productionLines = 0;
+            var exchangeLines = 0;
+            var consumptionLines = 0;
+
+            foreach (var line in lines)
+            {
+                var timeSeriesType = line.Split(",")[4];
+                switch (timeSeriesType)
+                {
+                    case "E17":
+                        consumptionLines++;
+                        break;
+                    case "E18":
+                        productionLines++;
+                        break;
+                    case "E20":
+                        exchangeLines++;
+                        break;
+                }
+            }
+
+            return (ConsumptionLines: consumptionLines, ProductionLines: productionLines, ExchangeLines: exchangeLines);
+        }
+
+        public string GetUtcDate(string line)
+        {
+            return line.Split(",")[2];
         }
 
         protected override async Task OnInitializeAsync()
         {
+            await DatabricksClientExtensions.StartWarehouseAsync(Configuration.DatabricksWorkspace);
             WholesaleClient = await WholesaleClientFactory.CreateAsync(Configuration, useAuthentication: true);
         }
 
@@ -69,5 +106,5 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         {
             return Task.CompletedTask;
         }
- }
+    }
 }
