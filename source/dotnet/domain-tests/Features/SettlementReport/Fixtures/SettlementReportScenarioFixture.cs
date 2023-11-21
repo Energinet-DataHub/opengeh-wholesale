@@ -43,14 +43,16 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.SettlementReport.Fixt
 
         public async Task<ZipArchive> StartDownloadingAsync(SettlementDownloadInput settlementDownloadInput)
         {
-            var fileResponse = await WholesaleClient.DownloadAsync(
+            using var fileResponse = await WholesaleClient.DownloadAsync(
                 settlementDownloadInput.GridAreaCodes,
                 settlementDownloadInput.ProcessType,
                 settlementDownloadInput.CalculationPeriodStart,
                 settlementDownloadInput.CalculationPeriodEnd);
-            DiagnosticMessageSink.WriteDiagnosticMessage($"Downloading settlement report for " +
-                                                         $"grid area codes {string.Join(", ", settlementDownloadInput.GridAreaCodes.ToArray())} and" +
-                                                         $" process type {settlementDownloadInput.ProcessType} started.");
+            DiagnosticMessageSink.WriteDiagnosticMessage($"""
+                Downloading settlement report for
+                grid area codes {string.Join(", ", settlementDownloadInput.GridAreaCodes.ToArray())} and
+                process type {settlementDownloadInput.ProcessType} started.
+                """);
 
             return new ZipArchive(fileResponse.Stream, ZipArchiveMode.Read);
         }
