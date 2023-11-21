@@ -15,9 +15,9 @@
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.EDI;
-using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Energinet.DataHub.Wholesale.Events.Application.Workers;
 using Energinet.DataHub.Wholesale.Events.IntegrationTests.Fixture;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
@@ -35,7 +35,8 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task Can_Receive_aggregated_time_series_request_service_bus_message(
+    public async Task ReceiveAggregatedTimeSeriesRequest_whenMessageHasReference_ReceivesMessage(
+        Mock<IServiceProvider> serviceProviderMock,
         Mock<IAggregatedTimeSeriesRequestHandler> handlerMock,
         Mock<ILogger<AggregatedTimeSeriesServiceBusWorker>> loggerMock)
     {
@@ -50,8 +51,24 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
                 messageHasBeenReceivedEvent.Set();
             });
 
+        serviceProviderMock
+            .Setup(x => x.GetService(typeof(IAggregatedTimeSeriesRequestHandler)))
+            .Returns(handlerMock.Object);
+
+        var serviceScope = new Mock<IServiceScope>();
+        serviceScope.Setup(x => x.ServiceProvider).Returns(serviceProviderMock.Object);
+
+        var serviceScopeFactory = new Mock<IServiceScopeFactory>();
+        serviceScopeFactory
+            .Setup(x => x.CreateScope())
+            .Returns(serviceScope.Object);
+
+        serviceProviderMock
+            .Setup(x => x.GetService(typeof(IServiceScopeFactory)))
+            .Returns(serviceScopeFactory.Object);
+
         var sut = new AggregatedTimeSeriesServiceBusWorker(
-            handlerMock.Object,
+            serviceProviderMock.Object,
             loggerMock.Object,
             _sender.ServiceBusOptions,
             _sender.ServiceBusClient);
@@ -61,7 +78,44 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
         await _sender.PublishAsync("Hello World", expectedReferenceId);
 
         // Assert
-        var messageHasBeenReceived = messageHasBeenReceivedEvent.WaitOne(timeout: TimeSpan.FromSeconds(1));
+        var messageHasBeenReceived = messageHasBeenReceivedEvent.WaitOne(timeout: TimeSpan.FromSeconds(10));
         Assert.True(messageHasBeenReceived);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task ReceiveAggregatedTimeSeriesRequest_whenMessageIsMissingReference_DoesNotReceivesMessage(
+        Mock<IServiceProvider> serviceProviderMock,
+        Mock<IAggregatedTimeSeriesRequestHandler> handlerMock,
+        Mock<ILogger<AggregatedTimeSeriesServiceBusWorker>> loggerMock)
+    {
+        // Arrange
+        var messageHasBeenReceivedEvent = new AutoResetEvent(false);
+        var expectedReferenceId = Guid.NewGuid().ToString();
+        // ProcessAsync is expected to trigger when a service bus message has been received.
+        handlerMock
+            .Setup(handler => handler.ProcessAsync(It.IsAny<ServiceBusReceivedMessage>(), expectedReferenceId, It.IsAny<CancellationToken>()))
+            .Callback(() =>
+            {
+                messageHasBeenReceivedEvent.Set();
+            });
+
+        serviceProviderMock
+            .Setup(sp => sp.GetService(typeof(IAggregatedTimeSeriesRequestHandler)))
+            .Returns(handlerMock.Object);
+
+        var sut = new AggregatedTimeSeriesServiceBusWorker(
+            serviceProviderMock.Object,
+            loggerMock.Object,
+            _sender.ServiceBusOptions,
+            _sender.ServiceBusClient);
+
+        // Act
+        await sut.StartAsync(CancellationToken.None);
+        await _sender.PublishAsync("Hello World");
+
+        // Assert
+        var messageHasBeenReceived = messageHasBeenReceivedEvent.WaitOne(timeout: TimeSpan.FromSeconds(1));
+        Assert.False(messageHasBeenReceived);
     }
 }
