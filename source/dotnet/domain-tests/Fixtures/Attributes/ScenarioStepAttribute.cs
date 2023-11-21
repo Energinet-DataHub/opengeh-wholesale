@@ -15,19 +15,19 @@
 namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Attributes
 {
     /// <summary>
-    /// Use this in combination with <see cref="Orderers.PriorityOrderer"/> to execute xUnit test cases in
-    /// order according to priority. Lowest numbers are executed first.
+    /// Use this in combination with <see cref="Orderers.ScenarioStepOrderer"/> to execute xUnit test cases in
+    /// order according to step number. Lowest numbers are executed first.
     ///
     /// Inspired by: https://learn.microsoft.com/en-us/dotnet/core/testing/order-unit-tests?pivots=xunit#order-by-custom-attribute
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public class PriorityAttribute : Attribute
+    public class ScenarioStepAttribute : Attribute
     {
-        public PriorityAttribute(int priority)
+        public ScenarioStepAttribute(int number)
         {
-            Priority = priority;
+            Number = number;
         }
 
-        public int Priority { get; }
+        public int Number { get; }
     }
 }

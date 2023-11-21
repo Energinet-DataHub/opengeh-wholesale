@@ -27,7 +27,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
     public class SettlementFeatureTests
     {
         [TestCaseOrderer(
-            ordererTypeName: "Energinet.DataHub.Wholesale.DomainTests.Fixtures.Orderers.PriorityOrderer",
+            ordererTypeName: "Energinet.DataHub.Wholesale.DomainTests.Fixtures.Orderers.ScenarioStepOrderer",
             ordererAssemblyName: "Energinet.DataHub.Wholesale.DomainTests")]
         public class SettlementReportDownloadScenario : DomainTestsBase<SettlementReportScenarioFixture>
         {
@@ -36,7 +36,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
             {
             }
 
-            [Priority(0)]
+            [ScenarioStep(0)]
             [DomainFact]
             public void Given_SettlementDownloadInput()
             {
@@ -46,14 +46,14 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 Fixture.ScenarioState.SettlementDownloadInput.CalculationPeriodEnd = DateTimeOffset.Parse("2020-01-29T23:00:00Z");
             }
 
-            [Priority(1)]
+            [ScenarioStep(1)]
             [DomainFact]
             public async Task When_SettlementReportDownloadedIsStarted()
             {
                 Fixture.ScenarioState.SettlementReportFile = await Fixture.StartDownloadingAsync(Fixture.ScenarioState.SettlementDownloadInput);
             }
 
-            [Priority(2)]
+            [ScenarioStep(2)]
             [DomainFact]
             public void Then_SettlementReportEntriesShouldNotBeEmpty()
             {
@@ -63,7 +63,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 Fixture.ScenarioState.CompressedSettlementReport.Entries.Should().NotBeEmpty();
             }
 
-            [Priority(3)]
+            [ScenarioStep(3)]
             [DomainFact]
             public void AndThen_SingleEntryNameShouldBeResultCsv()
             {
@@ -74,7 +74,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests
                 Fixture.ScenarioState.Entry.Name.Should().Be(expected);
             }
 
-            [Priority(4)]
+            [ScenarioStep(4)]
             [DomainFact]
             public async Task AndThen_SingleEntryShouldContainCorrectGridAreaCodesAndProcessType()
             {
