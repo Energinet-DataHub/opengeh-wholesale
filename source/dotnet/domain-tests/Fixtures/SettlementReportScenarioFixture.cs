@@ -62,7 +62,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
         protected override async Task OnInitializeAsync()
         {
-            WholesaleClient = await WholesaleClientFactory.CreateWholesaleClientAsync(Configuration, useAuthentication: true);
+            WholesaleClient = await WholesaleClientFactory.CreateAsync(Configuration, useAuthentication: true);
         }
 
         protected override Task OnDisposeAsync()
