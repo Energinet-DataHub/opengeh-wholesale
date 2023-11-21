@@ -522,4 +522,5 @@ dotnet_diagnostic.SX1309.severity = error
 
 dotnet_diagnostic.VSTHRD200.severity = none
 dotnet_diagnostic.CA1707.severity = none
+# CA2007: Consider calling ConfigureAwait on the awaited task
 dotnet_diagnostic.CA2007.severity = none
