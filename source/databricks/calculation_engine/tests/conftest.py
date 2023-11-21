@@ -17,6 +17,8 @@ defined in the geh_stream directory in our tests.
 """
 
 from datetime import datetime
+
+from azure.identity import ClientSecretCredential
 from delta import configure_spark_with_delta_pip
 import os
 from pyspark.sql import SparkSession
@@ -123,7 +125,7 @@ def contracts_path(calculation_engine_path: str) -> str:
 
 @pytest.fixture(scope="session")
 def timestamp_factory() -> Callable[[str], Optional[datetime]]:
-    "Creates timestamp from utc string in correct format yyyy-mm-ddThh:mm:ss.nnnZ"
+    """Creates timestamp from utc string in correct format yyyy-mm-ddThh:mm:ss.nnnZ"""
 
     def factory(date_time_string: str) -> Optional[datetime]:
         date_time_formatting_string = "%Y-%m-%dT%H:%M:%S.%fZ"
@@ -169,7 +171,7 @@ def execute_migrations(spark: SparkSession, data_lake_path: str) -> None:
         data_storage_account_url="foo",
         data_storage_account_name="foo",
         data_storage_container_name="foo",
-        data_storage_credential="foo",
+        data_storage_credential=ClientSecretCredential("foo", "foo", "foo"),
         spark=spark,
     )
     # Overwrite in test

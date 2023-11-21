@@ -13,8 +13,9 @@
 # limitations under the License.
 
 import importlib
+import re
+
 from azure.identity import ClientSecretCredential
-from typing import Any
 
 from package.infrastructure import paths, initialize_spark
 import package.infrastructure.environment_variables as env_vars
@@ -29,50 +30,14 @@ from package.infrastructure.paths import OUTPUT_DATABASE_NAME, TEST
 import package.datamigration.constants as c
 
 
-def split_string_by_go(string: str) -> list[str]:
+def execute() -> None:
     """
-    Databricks doesn't support multi-statement queries.
-    So this emulates the "GO" used with SQL Server T-SQL.
+    Execute all Delta table migrations.
+    The method must remain parameterless because it will be called from the entry point when deployed.
     """
-    lines = string.replace("\r\n", "\n").split("\n")
-    sections = []
-    current_section: list[str] = []
-
-    for line in lines:
-        if "go" in line.lower():
-            if current_section:
-                sections.append("\n".join(current_section))
-                current_section = []
-        else:
-            current_section.append(line)
-
-    if current_section:
-        sections.append("\n".join(current_section))
-
-    return [s for s in sections if s and not s.isspace()]
-
-
-def _substitute_placeholders(
-    statement: str, migration_args: MigrationScriptArgs
-) -> str:
-    return (
-        statement.replace(
-            "{CONTAINER_PATH}", migration_args.storage_container_path
-        )  # abfss://...
-        .replace("{OUTPUT_DATABASE_NAME}", OUTPUT_DATABASE_NAME)  # "wholesale_output"
-        .replace("{OUTPUT_FOLDER}", OUTPUT_FOLDER)  # "calculation-output"
-        .replace("{TEST}", TEST)
-    )  # ""
-
-
-def _apply_migration(migration_name: str, migration_args: MigrationScriptArgs) -> None:
-    sql_content = importlib.resources.read_text(
-        f"{c.WHEEL_NAME}.{c.MIGRATION_SCRIPTS_FOLDER_PATH}", f"{migration_name}.sql"
-    )
-
-    for statement_template in split_string_by_go(sql_content):
-        statement = _substitute_placeholders(statement_template, migration_args)
-        migration_args.spark.sql(statement)
+    storage_account_name = env_vars.get_storage_account_name()
+    credential = env_vars.get_storage_account_credential()
+    _migrate_data_lake(storage_account_name, credential)
 
 
 def _migrate_data_lake(
@@ -104,8 +69,59 @@ def _migrate_data_lake(
         upload_committed_migration(file_manager, name)
 
 
-# This method must remain parameterless because it will be called from the entry point when deployed.
-def migrate_data_lake() -> None:
-    storage_account_name = env_vars.get_storage_account_name()
-    credential = env_vars.get_storage_account_credential()
-    _migrate_data_lake(storage_account_name, credential)
+def _apply_migration(migration_name: str, migration_args: MigrationScriptArgs) -> None:
+    sql_content = importlib.resources.read_text(
+        f"{c.WHEEL_NAME}.{c.MIGRATION_SCRIPTS_FOLDER_PATH}", f"{migration_name}.sql"
+    )
+
+    for statement_template in _split_string_by_go(sql_content):
+        statement = _substitute_placeholders(statement_template, migration_args)
+        migration_args.spark.sql(statement)
+
+
+def _split_string_by_go(string: str) -> list[str]:
+    """
+    Databricks doesn't support multi-statement queries.
+    So this emulates the "GO" used with SQL Server T-SQL.
+    """
+    lines = string.replace("\r\n", "\n").split("\n")
+    sections = []
+    current_section: list[str] = []
+
+    for line in lines:
+        if line.lower().strip().startswith("go"):
+            if current_section:
+                sections.append("\n".join(current_section))
+                current_section = []
+        else:
+            current_section.append(line)
+
+    if current_section:
+        sections.append("\n".join(current_section))
+
+    return [s for s in sections if s and not s.isspace()]
+
+
+def _substitute_placeholders(
+    statement: str, migration_args: MigrationScriptArgs
+) -> str:
+    """
+    Replace specific placeholders and general placeholders.
+    General placeholders must be in the form {FOO:value} and will be replaced by value.
+    General placeholders are added to be able to support unit tests.
+    """
+    statement = (
+        statement.replace(
+            "{CONTAINER_PATH}", migration_args.storage_container_path
+        )  # abfss://...
+        .replace("{OUTPUT_DATABASE_NAME}", OUTPUT_DATABASE_NAME)  # "wholesale_output"
+        .replace("{OUTPUT_FOLDER}", OUTPUT_FOLDER)  # "calculation-output"
+        .replace("{TEST}", TEST)
+    )
+
+    # Example: Replace
+    #  {TIME:'2023-11-01 10:00:00'}
+    # with
+    #   '2023-11-01 10:00:00'
+    statement = re.sub(r"\{\w+:([^}]+)}", r"\1", statement)
+    return statement

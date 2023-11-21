@@ -34,6 +34,10 @@ class MigrationScriptArgs:
     ) -> None:
         self.storage_account_url = data_storage_account_url
         self.storage_account_name = data_storage_account_name
-        self.storage_container_path = f"abfss://{data_storage_container_name}@{self.storage_account_name}.dfs.core.windows.net"
+        self._storage_container_path = f"abfss://{data_storage_container_name}@{self.storage_account_name}.dfs.core.windows.net"
         self.storage_credential = data_storage_credential
         self.spark = spark
+
+    @property
+    def storage_container_path(self):
+        return self._storage_container_path
