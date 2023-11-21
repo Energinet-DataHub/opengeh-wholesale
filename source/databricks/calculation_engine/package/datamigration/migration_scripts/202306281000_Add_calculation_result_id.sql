@@ -1,3 +1,0 @@
-ALTER TABLE {OUTPUT_DATABASE_NAME}.result
-    ADD COLUMN calculation_result_id STRING
-GO
