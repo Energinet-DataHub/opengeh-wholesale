@@ -106,7 +106,7 @@ def _create_charge_master_period_row() -> dict:
 def _map_metering_point_type_and_settlement_method(df: DataFrame) -> DataFrame:
     """
     Maps metering point type and settlement method to the correct values
-    Only supports consumption and flex
+    Currently only supports consumption and flex
     """
     return df.withColumn(
         Colname.metering_point_type,
