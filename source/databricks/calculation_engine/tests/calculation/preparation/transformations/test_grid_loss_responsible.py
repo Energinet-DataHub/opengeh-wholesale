@@ -26,7 +26,7 @@ def test__get_grid_loss_responsible__returns_returns_non_empty_list() -> None:
     grid_loss_responsible = get_grid_loss_responsible(grid_areas)
 
     # Assert
-    assert grid_loss_responsible.count() > 0
+    assert grid_loss_responsible.df.count() > 0
 
 
 @pytest.mark.acceptance_test
