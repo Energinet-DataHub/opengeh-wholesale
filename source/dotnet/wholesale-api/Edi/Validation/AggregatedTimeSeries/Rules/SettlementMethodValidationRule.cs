@@ -15,7 +15,7 @@
 using Energinet.DataHub.Wholesale.EDI.Models;
 using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 
-namespace Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
+namespace Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSeries.Rules;
 
 public class SettlementMethodValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
 {

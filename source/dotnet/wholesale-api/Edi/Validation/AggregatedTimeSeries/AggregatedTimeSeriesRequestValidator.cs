@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Edi.Requests;
 
-namespace Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie;
+namespace Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSeries;
 
 public class AggregatedTimeSeriesRequestValidator : IValidator<AggregatedTimeSeriesRequest>
 {

@@ -21,7 +21,7 @@ namespace Energinet.DataHub.Wholesale.EDI.Factories;
 
 public static class AggregatedTimeSeriesRequestRejectedMessageFactory
 {
-    public static ServiceBusMessage Create(IReadOnlyList<ValidationError> errors, string referenceId)
+    public static ServiceBusMessage Create(IReadOnlyCollection<ValidationError> errors, string referenceId)
     {
         var body = CreateRejectedMessage(errors);
 
@@ -35,7 +35,7 @@ public static class AggregatedTimeSeriesRequestRejectedMessageFactory
         return message;
     }
 
-    private static IMessage CreateRejectedMessage(IReadOnlyList<ValidationError> errors)
+    private static IMessage CreateRejectedMessage(IReadOnlyCollection<ValidationError> errors)
     {
         var response = new AggregatedTimeSeriesRequestRejected();
         response.RejectReasons.AddRange(errors.Select(CreateRejectReason));
