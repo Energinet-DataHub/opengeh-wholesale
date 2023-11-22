@@ -526,25 +526,29 @@ dotnet_diagnostic.SX1101.severity = error
 dotnet_diagnostic.SX1309.severity = error
 
 ##############################################################
-# C# Test Conventions                                        #
+# C# Test Conventions (overrides default configuration)       #
 ##############################################################
 
-[**{Tests,tests}**.cs]
-
-###############################
-# .NET Analyzers              #
-###############################
-
+# .NET Analyzers (CAxxxx)
 # See full list of rules here: https://github.com/dotnet/roslyn-analyzers/blob/main/src/NetAnalyzers/Core/AnalyzerReleases.Shipped.md
-
-dotnet_diagnostic.CA1707.severity = none
-dotnet_diagnostic.CA2007.severity = none        # CA2007: Consider calling ConfigureAwait on the awaited task
-
-###############################
-# VS Threading Analyzers      #
-###############################
-
+#
+# VS Threading Analyzers (VSTHRDxxx)
 # See rules here: https://github.com/microsoft/vs-threading/blob/main/doc/analyzers/index.md
 
+#
+# The intention of this section is to match c# code files
+# that is part of a test project. This includes fixtures and
+# code that supports tests.
+#
+[**{Test,test}**.cs]
+
+dotnet_diagnostic.CA2007.severity = none        # CA2007: Consider calling ConfigureAwait on the awaited task
 dotnet_diagnostic.VSTHRD111.severity = none	    # VSTHRD111: [Similar to CA2007] Use ConfigureAwait(bool)
+
+#
+# The intention of this section is to match c# code files
+# that is part of a class that contains tests or scenarios.
+#
+[*{Tests,Scenario}*.cs]
+
 dotnet_diagnostic.VSTHRD200.severity = none     # VSTHRD200: Use "Async" suffix for async methods
