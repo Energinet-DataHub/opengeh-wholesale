@@ -135,7 +135,7 @@ def _calculate_net_exchange(
         # Could the exchange_per_neighbour_ga be re-used for NET_EXCHANGE_PER_GA?
         exchange_per_neighbour_ga = (
             exchange_aggr.aggregate_net_exchange_per_neighbour_ga(
-                quarterly_metering_point_time_series
+                quarterly_metering_point_time_series, batch_grid_areas
             )
         )
 

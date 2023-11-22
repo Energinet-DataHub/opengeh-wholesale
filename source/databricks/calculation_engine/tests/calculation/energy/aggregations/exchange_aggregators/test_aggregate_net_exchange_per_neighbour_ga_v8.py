@@ -168,9 +168,9 @@ def add_row_of_data(pandas_df, domain, in_domain, out_domain, timestamp, quantit
 
 
 def test_aggregate_net_exchange_per_neighbour_ga_single_hour(single_quarter_test_data):
-    df = aggregate_net_exchange_per_neighbour_ga(single_quarter_test_data).df.orderBy(
-        Colname.to_grid_area, Colname.from_grid_area, Colname.time_window
-    )
+    df = aggregate_net_exchange_per_neighbour_ga(
+        single_quarter_test_data, []
+    ).df.orderBy(Colname.to_grid_area, Colname.from_grid_area, Colname.time_window)
     values = df.collect()
     assert df.count() == 4
     assert values[0][Colname.to_grid_area] == "A"
@@ -183,9 +183,9 @@ def test_aggregate_net_exchange_per_neighbour_ga_single_hour(single_quarter_test
 
 
 def test_aggregate_net_exchange_per_neighbour_ga_multi_hour(multi_quarter_test_data):
-    df = aggregate_net_exchange_per_neighbour_ga(multi_quarter_test_data).df.orderBy(
-        Colname.to_grid_area, Colname.from_grid_area, Colname.time_window
-    )
+    df = aggregate_net_exchange_per_neighbour_ga(
+        multi_quarter_test_data, []
+    ).df.orderBy(Colname.to_grid_area, Colname.from_grid_area, Colname.time_window)
     values = df.collect()
     assert df.count() == 384
     assert values[0][Colname.to_grid_area] == "A"
