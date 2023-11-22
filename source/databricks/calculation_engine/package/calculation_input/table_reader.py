@@ -23,7 +23,6 @@ from package.codelists import (
 )
 from package.common import assert_schema
 from package.constants import Colname
-from package.infrastructure import paths
 from .schemas import (
     charge_link_periods_schema,
     charge_master_data_periods_schema,

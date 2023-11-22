@@ -13,20 +13,23 @@
 # limitations under the License.
 
 import importlib
-from azure.identity import ClientSecretCredential
-from typing import Any
 
-from package.infrastructure import paths, initialize_spark
+from azure.identity import ClientSecretCredential
+from dependency_injector.wiring import Provide
+from pyspark.sql import SparkSession
+
+import package.datamigration.constants as c
 import package.infrastructure.environment_variables as env_vars
-from .committed_migrations import upload_committed_migration
+from package.infrastructure import paths
+from package.infrastructure.paths import OUTPUT_DATABASE_NAME, TEST
 from package.infrastructure.paths import WHOLESALE_CONTAINER_NAME, OUTPUT_FOLDER
 from package.infrastructure.storage_account_access.data_lake_file_manager import (
     DataLakeFileManager,
 )
+from .committed_migrations import upload_committed_migration
 from .migration_script_args import MigrationScriptArgs
 from .uncommitted_migrations import get_uncommitted_migrations
-from package.infrastructure.paths import OUTPUT_DATABASE_NAME, TEST
-import package.datamigration.constants as c
+from ..container import Container
 
 
 def split_string_by_go(string: str) -> list[str]:
@@ -76,13 +79,13 @@ def _apply_migration(migration_name: str, migration_args: MigrationScriptArgs) -
 
 
 def _migrate_data_lake(
-    storage_account_name: str, storage_account_credential: ClientSecretCredential
+    storage_account_name: str,
+    storage_account_credential: ClientSecretCredential,
+    spark: SparkSession = Provide[Container.spark],
 ) -> None:
     file_manager = DataLakeFileManager(
         storage_account_name, storage_account_credential, WHOLESALE_CONTAINER_NAME
     )
-
-    spark = initialize_spark()
 
     uncommitted_migrations = get_uncommitted_migrations(file_manager)
     uncommitted_migrations.sort()

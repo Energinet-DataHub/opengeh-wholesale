@@ -14,12 +14,14 @@
 
 from azure.identity import ClientSecretCredential
 from datetime import datetime
+
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.types import StructType
 import pyspark.sql.functions as F
 import pytest
 from unittest.mock import patch
 
+from package.container import Container
 from . import configuration as C
 import package.calculation as calculation
 from package.calculation.preparation.transformations import grid_loss_responsible
@@ -27,8 +29,6 @@ from package.calculation.calculator_args import CalculatorArgs
 from package.codelists.process_type import ProcessType
 from package.constants import EnergyResultColumnNames, WholesaleResultColumnNames
 from package.infrastructure import paths
-from package.calculation_input import TableReader
-from package.calculation.preparation import PreparedDataReader
 from package.calculation_input.schemas import (
     time_series_point_schema,
     metering_point_period_schema,
@@ -47,7 +47,6 @@ def calculator_args_balance_fixing(
         data_storage_account_name="foo",
         data_storage_account_credentials=ClientSecretCredential("foo", "foo", "foo"),
         wholesale_container_path=data_lake_path,
-        calculation_input_path=calculation_input_path,
         batch_id=C.executed_balance_fixing_batch_id,
         batch_process_type=ProcessType.BALANCE_FIXING,
         batch_grid_areas=["805", "806"],
@@ -140,7 +139,7 @@ def executed_balance_fixing(
     migrations_executed: None,
     energy_input_data_written_to_delta: None,
     grid_loss_responsible_test_data: DataFrame,
-    calculation_input_path: str,
+    container: Container,
 ) -> None:
     """Execute the calculator job.
     This is the act part of a test in the arrange-act-assert paradigm.
@@ -153,12 +152,7 @@ def executed_balance_fixing(
         grid_loss_responsible._get_all_grid_loss_responsible.__name__,
         return_value=grid_loss_responsible_test_data,
     ):
-        table_reader = TableReader(
-            spark,
-            calculation_input_path,
-        )
-        prepared_data_reader = PreparedDataReader(table_reader)
-        calculation.execute(calculator_args_balance_fixing, prepared_data_reader)
+        calculation.execute(calculator_args_balance_fixing)
 
 
 @pytest.fixture(scope="session")
@@ -169,7 +163,7 @@ def executed_wholesale_fixing(
     energy_input_data_written_to_delta: None,
     price_input_data_written_to_delta: None,
     grid_loss_responsible_test_data: DataFrame,
-    calculation_input_path: str,
+    container: Container,
 ) -> None:
     """Execute the calculator job.
     This is the act part of a test in the arrange-act-assert paradigm.
@@ -182,9 +176,7 @@ def executed_wholesale_fixing(
         grid_loss_responsible._get_all_grid_loss_responsible.__name__,
         return_value=grid_loss_responsible_test_data,
     ):
-        table_reader = TableReader(spark, calculation_input_path)
-        prepared_data_reader = PreparedDataReader(table_reader)
-        calculation.execute(calculator_args_wholesale_fixing, prepared_data_reader)
+        calculation.execute(calculator_args_wholesale_fixing)
 
 
 @pytest.fixture(scope="session")

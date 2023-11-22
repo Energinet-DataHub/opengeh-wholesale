@@ -16,19 +16,47 @@ By having a conftest.py in this directory, we are able to add all packages
 defined in the geh_stream directory in our tests.
 """
 
-from datetime import datetime
-from delta import configure_spark_with_delta_pip
 import os
-from pyspark.sql import SparkSession
-import pytest
 import shutil
 import subprocess
+from datetime import datetime
 from typing import Generator, Callable, Optional
 
+import pytest
+from azure.identity import ClientSecretCredential
+from delta import configure_spark_with_delta_pip
+from pyspark.sql import SparkSession
+
+import package
+from package.container import Container
 from package.datamigration.migration import _apply_migration
-from package.datamigration.uncommitted_migrations import _get_all_migrations
 from package.datamigration.migration_script_args import MigrationScriptArgs
+from package.datamigration.uncommitted_migrations import _get_all_migrations
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME
+
+
+@pytest.fixture(scope="session", autouse=False)
+def container(spark: SparkSession, calculation_input_path: str) -> Container:
+    """
+    This fixture does the following:
+    - Enables dependency injection for all production code when used in tests
+      This is particular useful for integration tests not testing a single
+      unit but relying on all dependencies in the tree to be injected
+    - Enables tests and fixtures to get access to the container and thus
+      to override selected providers.
+    """
+
+    container = Container()
+
+    container.calculation_input_path.override(calculation_input_path)
+
+    # Use the spark session configured for testing
+    container.spark.override(spark)
+
+    # Enable injection in functions and methods
+    container.wire(packages=[package])
+
+    return container
 
 
 @pytest.fixture(scope="session")
@@ -169,7 +197,7 @@ def execute_migrations(spark: SparkSession, data_lake_path: str) -> None:
         data_storage_account_url="foo",
         data_storage_account_name="foo",
         data_storage_container_name="foo",
-        data_storage_credential="foo",
+        data_storage_credential=ClientSecretCredential("foo", "foo", "foo"),
         spark=spark,
     )
     # Overwrite in test
