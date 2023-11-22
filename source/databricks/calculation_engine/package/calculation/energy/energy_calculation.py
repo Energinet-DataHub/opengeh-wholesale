@@ -35,6 +35,7 @@ def execute(
     batch_id: str,
     batch_process_type: ProcessType,
     batch_execution_time_start: datetime,
+    batch_grid_areas: list[str],
     metering_point_time_series: DataFrame,
     grid_loss_responsible_df: DataFrame,
 ) -> None:
@@ -50,6 +51,7 @@ def execute(
 
     _calculate(
         batch_process_type,
+        batch_grid_areas,
         calculation_result_writer,
         quarterly_metering_point_time_series,
         grid_loss_responsible_df,
@@ -58,12 +60,16 @@ def execute(
 
 def _calculate(
     process_type: ProcessType,
+    batch_grid_areas: list[str],
     result_writer: EnergyCalculationResultWriter,
     quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
     grid_loss_responsible_df: DataFrame,
 ) -> None:
     net_exchange_per_ga = _calculate_net_exchange(
-        process_type, result_writer, quarterly_metering_point_time_series
+        process_type,
+        batch_grid_areas,
+        result_writer,
+        quarterly_metering_point_time_series,
     )
 
     temporary_production_per_ga_and_brp_and_es = (
@@ -121,6 +127,7 @@ def _calculate(
 
 def _calculate_net_exchange(
     process_type: ProcessType,
+    batch_grid_areas: list[str],
     result_writer: EnergyCalculationResultWriter,
     quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
 ) -> EnergyResults:
@@ -139,7 +146,7 @@ def _calculate_net_exchange(
         )
 
     exchange_per_grid_area = exchange_aggr.aggregate_net_exchange_per_ga(
-        quarterly_metering_point_time_series
+        quarterly_metering_point_time_series, batch_grid_areas
     )
 
     result_writer.write(
