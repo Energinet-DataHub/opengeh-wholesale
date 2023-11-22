@@ -216,7 +216,7 @@ def add_row_of_data(
 @pytest.fixture(scope="module")
 def aggregated_data_frame(quarterly_metering_point_time_series):
     """Perform aggregation"""
-    return aggregate_net_exchange_per_ga(quarterly_metering_point_time_series)
+    return aggregate_net_exchange_per_ga(quarterly_metering_point_time_series, [])
 
 
 def test_test_data_has_correct_row_count(quarterly_metering_point_time_series):
