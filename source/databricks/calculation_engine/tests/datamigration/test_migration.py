@@ -19,7 +19,6 @@ from package.datamigration import migration
 from package.datamigration.migration import (
     _migrate_data_lake,
     DataLakeFileManager,
-    initialize_spark,
     get_uncommitted_migrations,
     upload_committed_migration,
     _apply_migration,
@@ -27,13 +26,11 @@ from package.datamigration.migration import (
 from package.datamigration.uncommitted_migrations import _get_all_migrations
 
 
-@patch.object(migration, initialize_spark.__name__)
 @patch.object(migration, get_uncommitted_migrations.__name__)
 @patch.object(migration, upload_committed_migration.__name__)
 def test__migrate_datalake__when_script_not_found__raise_exception(
     mock_upload_committed_migration,
     mock_uncommitted_migrations,
-    mock_spark,
 ):
     # Arrange
     mock_uncommitted_migrations.return_value = ["not_a_module"]
@@ -44,7 +41,6 @@ def test__migrate_datalake__when_script_not_found__raise_exception(
         _migrate_data_lake("dummy_storage_name", mock_credential)
 
 
-@patch.object(migration, initialize_spark.__name__)
 @patch.object(migration, DataLakeFileManager.__name__)
 @patch.object(migration, get_uncommitted_migrations.__name__)
 @patch.object(migration, upload_committed_migration.__name__)
@@ -54,7 +50,6 @@ def test__migrate_datalake__upload_called_with_correct_name(
     mock_upload_committed_migration: Mock,
     mock_uncommitted_migrations: Mock,
     mock_file_manager: Mock,
-    mock_spark: Mock,
 ) -> None:
     # Arrange
     mock_credential = Mock()

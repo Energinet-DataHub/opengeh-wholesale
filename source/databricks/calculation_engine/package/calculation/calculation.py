@@ -11,8 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-
+from dependency_injector.wiring import Provide, inject
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as F
 
@@ -27,9 +26,14 @@ from .preparation import PreparedDataReader
 from .calculator_args import CalculatorArgs
 from .energy import energy_calculation
 from .wholesale import wholesale_calculation
+from ..container import Container
 
 
-def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> None:
+@inject
+def execute(
+    args: CalculatorArgs,
+    prepared_data_reader: PreparedDataReader = Provide[Container.prepared_data_reader],
+) -> None:
     metering_point_periods_df = prepared_data_reader.get_metering_point_periods_df(
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,

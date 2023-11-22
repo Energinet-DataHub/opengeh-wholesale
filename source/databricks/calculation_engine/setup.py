@@ -24,15 +24,16 @@ setup(
     packages=find_packages(exclude=["tests*"]),
     # Make sure these packages are added to the docker container and pinned to the same versions
     install_requires=[
-        "ConfigArgParse==1.5.3",
-        "pyspark==3.3.*",
         "azure-identity==1.12.0",
         "azure-storage-file-datalake==12.11.0",
+        "ConfigArgParse==1.5.3",
         "databricks-cli==0.17.6",
-        "urllib3==1.26.11",
-        # urllib3 needs to be specific version because of bug https://community.databricks.com/s/topic/0TO8Y000000mOi5WAE/method-whitelist
         "delta-spark==2.2.0",
+        "dependency_injector==4.41.0",
+        "pyspark==3.3.*",
         "python-dateutil==2.8.2",
+        # urllib3 needs to be specific version because of bug https://community.databricks.com/s/topic/0TO8Y000000mOi5WAE/method-whitelist
+        "urllib3==1.26.11",
     ],
     entry_points={
         "console_scripts": [

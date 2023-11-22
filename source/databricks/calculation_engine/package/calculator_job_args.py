@@ -33,7 +33,6 @@ def get_calculator_args() -> CalculatorArgs:
         data_storage_account_name=storage_account_name,
         data_storage_account_credentials=credential,
         wholesale_container_path=paths.get_container_root_path(storage_account_name),
-        calculation_input_path=paths.get_calculation_input_path(storage_account_name),
         batch_id=job_args.batch_id,
         batch_grid_areas=job_args.batch_grid_areas,
         batch_period_start_datetime=job_args.batch_period_start_datetime,

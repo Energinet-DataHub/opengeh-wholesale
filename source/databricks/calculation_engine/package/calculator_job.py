@@ -11,37 +11,33 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-
 import sys
+
+from package import calculation
+from package.calculator_job_args import get_calculator_args
+from package.container import create_and_configure_container
 from package.infrastructure import (
     db_logging,
-    initialize_spark,
     log,
 )
-from package.calculator_job_args import get_calculator_args
 from package.infrastructure.storage_account_access import islocked
-from package import calculation_input
-from package import calculation
 
 
-# The start() method should only have its name updated in correspondence with the
-# wheels entry point for it. Further the method must remain parameterless because
-# it will be called from the entry point when deployed.
 def start() -> None:
+    """
+    The start() method should only have its name updated in correspondence with the
+    wheels entry point for it. Further the method must remain parameterless because
+    it will be called from the entry point when deployed.
+    """
+    # Enable dependency injection
+    create_and_configure_container()
+
     args = get_calculator_args()
 
     db_logging.loglevel = "information"
+
     if islocked(args.data_storage_account_name, args.data_storage_account_credentials):
         log("Exiting because storage is locked due to data migrations running.")
         sys.exit(3)
 
-    # Create calculation execution dependencies
-    spark = initialize_spark()
-    delta_table_reader = calculation_input.TableReader(
-        spark, args.calculation_input_path
-    )
-    prepared_data_reader = calculation.PreparedDataReader(delta_table_reader)
-
-    # Execute calculation
-    calculation.execute(args, prepared_data_reader)
+    calculation.execute(args)

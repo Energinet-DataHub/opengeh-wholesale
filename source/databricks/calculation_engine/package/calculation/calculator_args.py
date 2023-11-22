@@ -18,12 +18,12 @@ from datetime import datetime
 from package.codelists.process_type import ProcessType
 
 
+# TODO BJM: We should split calculation args and infra args
 @dataclass
 class CalculatorArgs:
     data_storage_account_name: str
     data_storage_account_credentials: ClientSecretCredential
     wholesale_container_path: str
-    calculation_input_path: str
     batch_id: str
     batch_grid_areas: list[str]
     batch_period_start_datetime: datetime
