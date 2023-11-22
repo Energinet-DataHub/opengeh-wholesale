@@ -18,6 +18,7 @@ from datetime import datetime
 from package.codelists.process_type import ProcessType
 
 
+# TODO BJM: We should split calculation args and infra args
 @dataclass
 class CalculatorArgs:
     data_storage_account_name: str
