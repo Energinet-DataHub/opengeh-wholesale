@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration;
 using Microsoft.Azure.Databricks.Client;
 using Microsoft.Azure.Databricks.Client.Models;
@@ -36,36 +37,31 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         public static async Task StartWarehouseAsync(DatabricksWorkspaceConfiguration configuration)
         {
             using var client = DatabricksClient.CreateClient(configuration.BaseUrl, configuration.Token);
-            await TryStartingDatabricksWithRetry(configuration.WarehouseId, client, 5);
+            await client.SQL.Warehouse.Start(configuration.WarehouseId);
         }
 
-        private static async Task TryStartingDatabricksWithRetry(string warehouseId, DatabricksClient client, int retries)
+        /// <summary>
+        /// Start Databricks SQL warehouse and wait for it to be in the specified state.
+        /// </summary>
+        public static async Task<bool> StartWarehouseAndWaitForWarehouseStateAsync(
+            DatabricksWorkspaceConfiguration configuration,
+            WarehouseState waitForState = WarehouseState.RUNNING,
+            int waitTimeInMinutes = 5)
         {
-            var retryDelayMilliseconds = 1000;
-            var exception = new Exception("Unable to start Databricks SQL warehouse. Reason unknown.");
+            var delay = TimeSpan.FromSeconds(15);
+            var waitTimeLimit = TimeSpan.FromMinutes(waitTimeInMinutes);
+            using var databricksClient = DatabricksClient.CreateClient(configuration.BaseUrl, configuration.Token);
 
-            for (var retryCount = 0; retryCount < retries; retryCount++)
-            {
-                try
+            var isState = await Awaiter.TryWaitUntilConditionAsync(
+                async () =>
                 {
-                    var warehouseInfo = await client.SQL.Warehouse.Get(warehouseId);
+                    var warehouseInfo = await databricksClient.SQL.Warehouse.Get(configuration.WarehouseId);
+                    return warehouseInfo.State == waitForState;
+                },
+                waitTimeLimit,
+                delay);
 
-                    if (warehouseInfo.State == WarehouseState.RUNNING)
-                    {
-                        return;
-                    }
-
-                    await client.SQL.Warehouse.Start(warehouseId);
-                }
-                catch (Exception e)
-                {
-                    exception = e;
-                    retryDelayMilliseconds *= 2;
-                    await Task.Delay(retryDelayMilliseconds);
-                }
-            }
-
-            throw exception;
+            return isState;
         }
     }
 }

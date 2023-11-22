@@ -98,7 +98,12 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.SettlementReport.Fixt
 
         protected override async Task OnInitializeAsync()
         {
-            await DatabricksClientExtensions.StartWarehouseAsync(Configuration.DatabricksWorkspace);
+            var isState = await DatabricksClientExtensions.StartWarehouseAndWaitForWarehouseStateAsync(Configuration.DatabricksWorkspace);
+            if (!isState)
+            {
+                throw new Exception("Unable to start Databricks SQL warehouse. Reason unknown.");
+            }
+
             WholesaleClient = await WholesaleClientFactory.CreateAsync(Configuration, useAuthentication: true);
         }
 
