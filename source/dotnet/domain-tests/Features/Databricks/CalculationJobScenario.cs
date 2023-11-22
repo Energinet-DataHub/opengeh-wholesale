@@ -52,7 +52,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Databricks
                 createdByUserId: createdByUserId);
         }
 
-        [ScenarioStep(2)]
+        [ScenarioStep(1)]
         [DomainFact]
         public async Task When_CalculationJobIsStarted()
         {
@@ -62,7 +62,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Databricks
             Fixture.ScenarioState.CalculationId.Should().NotBeNull();
         }
 
-        [ScenarioStep(3)]
+        [ScenarioStep(2)]
         [DomainFact]
         public async Task Then_CalculationJobIsCompletedWithinWaitTime()
         {
@@ -79,7 +79,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Databricks
             actualWaitResult.Run.Should().NotBeNull();
         }
 
-        [ScenarioStep(4)]
+        [ScenarioStep(3)]
         [DomainFact]
         public void AndThen_CalculationJobDurationIsLessThanOrEqualToTimeLimit()
         {
