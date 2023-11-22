@@ -79,7 +79,7 @@ class TestWhenValidInput:
         assert sorted(actual_rows[0][Colname.qualities]) == expected_qualities
         assert sorted(actual_rows[1][Colname.qualities]) == expected_qualities
 
-    def test_returns_result_only_for_relevant_grid_areas(
+    def test_returns_result_only_for_selected_grid_areas(
         self,
         spark: SparkSession,
     ) -> None:
