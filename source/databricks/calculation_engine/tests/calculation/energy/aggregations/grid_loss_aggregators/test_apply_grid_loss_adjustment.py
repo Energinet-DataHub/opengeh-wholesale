@@ -31,6 +31,8 @@ import tests.calculation.energy.grid_loss_responsible_factories as grid_loss_res
 DEFAULT_OBSERVATION_TIME = datetime.strptime(
     "2020-01-01T00:00:00+0000", "%Y-%m-%dT%H:%M:%S%z"
 )
+DEFAULT_FROM_DATE = datetime.strptime("2020-01-01T00:00:00+0000", "%Y-%m-%dT%H:%M:%S%z")
+DEFAULT_TO_DATE = datetime.strptime("2020-01-02T00:00:00+0000", "%Y-%m-%dT%H:%M:%S%z")
 
 
 class TestWhenValidInput:
@@ -177,6 +179,8 @@ class TestWhenEnergySupplierIdIsNotGridLossResponsible:
                 grid_area="1",
                 metering_point_type=metering_point_type,
                 energy_supplier_id="grid_loss_responsible_1",
+                from_date=DEFAULT_FROM_DATE,
+                to_date=DEFAULT_TO_DATE,
             )
         ]
         grid_loss_responsible = grid_loss_responsible_factories.create(
@@ -211,10 +215,8 @@ class TestWhenGridLossResponsibleIsChangedWithinPeriod:
         metering_point_type: MeteringPointType,
     ) -> None:
         # Arrange
-        from_date_1 = datetime.strptime(
-            "2020-01-01T00:00:00+0000", "%Y-%m-%dT%H:%M:%S%z"
-        )
-        to_date_1 = datetime.strptime("2020-01-02T00:00:00+0000", "%Y-%m-%dT%H:%M:%S%z")
+        from_date_1 = DEFAULT_FROM_DATE
+        to_date_1 = DEFAULT_TO_DATE
         from_date_2 = from_date_1 + timedelta(days=1)
         to_date_2 = to_date_1 + timedelta(days=1)
 
