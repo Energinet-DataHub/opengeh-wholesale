@@ -13,11 +13,9 @@
 # limitations under the License.
 import sys
 
-from dependency_injector.wiring import inject, Provide
-
 from package import calculation
-from package.calculation.calculator_args import CalculatorArgs
-from package.container import Container, create_and_configure_container
+from package.calculator_job_args import get_calculator_args
+from package.container import create_and_configure_container
 from package.infrastructure import (
     db_logging,
     log,
@@ -31,12 +29,11 @@ def start() -> None:
     wheels entry point for it. Further the method must remain parameterless because
     it will be called from the entry point when deployed.
     """
+    # Enable dependency injection
     create_and_configure_container()
-    _start()
 
+    args = get_calculator_args()
 
-@inject
-def _start(args: CalculatorArgs = Provide[Container.calculator_args]) -> None:
     db_logging.loglevel = "information"
 
     if islocked(args.data_storage_account_name, args.data_storage_account_credentials):
