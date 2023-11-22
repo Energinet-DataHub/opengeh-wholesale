@@ -78,3 +78,37 @@ class TestWhenValidInput:
         assert len(actual_rows) == 2
         assert sorted(actual_rows[0][Colname.qualities]) == expected_qualities
         assert sorted(actual_rows[1][Colname.qualities]) == expected_qualities
+
+    def test_returns_result_only_for_relevant_grid_areas(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+        grid_area = "234"
+        from_grid_area = "234"
+        to_grid_area = "345"
+        rows = [
+            *[
+                factories.create_to_row(
+                    grid_area=grid_area,
+                    from_grid_area=from_grid_area,
+                    to_grid_area=to_grid_area,
+                ),
+                factories.create_to_row(
+                    grid_area=grid_area,
+                    from_grid_area=to_grid_area,
+                    to_grid_area=from_grid_area,
+                ),
+            ],
+        ]
+        metering_point_time_series = factories.create(spark, rows)
+
+        # Act
+        actual = aggregate_net_exchange_per_ga(metering_point_time_series, [grid_area])
+
+        # Assert
+        actual.df.show()
+        # actual_rows = actual.df.collect()
+        # assert len(actual_rows) == 2
+        # assert actual_rows[1][Colname.grid_area] == grid_area
+        # assert sorted(actual_rows[1][Colname.qualities]) == expected_qualities

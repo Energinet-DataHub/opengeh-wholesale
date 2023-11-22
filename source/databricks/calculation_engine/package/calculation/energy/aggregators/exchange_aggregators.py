@@ -125,7 +125,7 @@ def aggregate_net_exchange_per_neighbour_ga(
 
 # Function to aggregate net exchange per grid area
 def aggregate_net_exchange_per_ga(
-    data: QuarterlyMeteringPointTimeSeries,
+    data: QuarterlyMeteringPointTimeSeries, grid_areas: list[str]
 ) -> EnergyResults:
     exchange_to = data.df.where(
         F.col(Colname.metering_point_type) == MeteringPointType.EXCHANGE.value
@@ -211,5 +211,7 @@ def aggregate_net_exchange_per_ga(
             F.lit(MeteringPointType.EXCHANGE.value).alias(Colname.metering_point_type),
         )
     )
+
+    result_df = result_df.filter(F.col(Colname.grid_area).isin(grid_areas))
 
     return EnergyResults(result_df)
