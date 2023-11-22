@@ -107,8 +107,6 @@ class TestWhenValidInput:
         actual = aggregate_net_exchange_per_ga(metering_point_time_series, [grid_area])
 
         # Assert
-        actual.df.show()
-        # actual_rows = actual.df.collect()
-        # assert len(actual_rows) == 2
-        # assert actual_rows[1][Colname.grid_area] == grid_area
-        # assert sorted(actual_rows[1][Colname.qualities]) == expected_qualities
+        actual_rows = actual.df.collect()
+        assert len(actual_rows) == 1
+        assert actual_rows[0][Colname.grid_area] == grid_area
