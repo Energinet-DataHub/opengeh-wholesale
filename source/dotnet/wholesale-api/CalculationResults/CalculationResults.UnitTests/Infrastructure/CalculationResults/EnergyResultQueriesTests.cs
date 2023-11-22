@@ -64,7 +64,7 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>
         var rows = new List<string[]> { row0, row1, };
 
         // Using the columns from the EnergyResultQueries class to ensure that the test is not broken if the columns are changed
-        _tableChunk = new TableChunk(QueryEnergyResultStatement.SqlColumnNames, rows);
+        _tableChunk = new TableChunk(EnergyResultQueryStatement.SqlColumnNames, rows);
 
         // Mocks Setup - This is another way to setup mocks used in tests. The reasons for this are:
         // 1. Because DatabricksSqlWarehouseQueryExecutor doesn't implement an interface and the constructor is protected

@@ -47,7 +47,7 @@ public class EnergyResultQueries : IEnergyResultQueries
     public async IAsyncEnumerable<EnergyResult> GetAsync(Guid batchId)
     {
         var batch = await _batchesClient.GetAsync(batchId).ConfigureAwait(false);
-        var statement = new QueryEnergyResultStatement(batchId, _deltaTableOptions);
+        var statement = new EnergyResultQueryStatement(batchId, _deltaTableOptions);
         await foreach (var calculationResult in GetInternalAsync(statement, batch.PeriodStart.ToInstant(), batch.PeriodEnd.ToInstant()))
             yield return calculationResult;
         _logger.LogDebug("Fetched all energy results for batch {BatchId}", batchId);
@@ -58,7 +58,7 @@ public class EnergyResultQueries : IEnergyResultQueries
         return !row[EnergyResultColumnNames.CalculationResultId]!.Equals(otherRow[EnergyResultColumnNames.CalculationResultId]);
     }
 
-    private async IAsyncEnumerable<EnergyResult> GetInternalAsync(QueryEnergyResultStatement statement, Instant periodStart, Instant periodEnd)
+    private async IAsyncEnumerable<EnergyResult> GetInternalAsync(EnergyResultQueryStatement statement, Instant periodStart, Instant periodEnd)
     {
         var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
         DatabricksSqlRow? currentRow = null;
