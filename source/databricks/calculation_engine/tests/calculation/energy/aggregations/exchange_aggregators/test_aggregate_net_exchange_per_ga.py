@@ -80,8 +80,8 @@ class TestWhenValidInput:
         assert sorted(actual_rows[1][Colname.qualities]) == expected_qualities
 
 
-class TestWhenExchangingWithGridAreaThatIsNotSelected:
-    def test_returns_result_only_for_selected_grid_areas(
+class TestWhenInputHasDataNotBelongingToSelectedGridArea:
+    def test_returns_result_only_for_selected_grid_area(
         self,
         spark: SparkSession,
     ) -> None:
@@ -113,3 +113,37 @@ class TestWhenExchangingWithGridAreaThatIsNotSelected:
         actual_rows = actual.df.collect()
         assert len(actual_rows) == 1
         assert actual_rows[0][Colname.grid_area] == selected_grid_area
+
+
+class TestWhenNoGridAreasSelected:
+    def test_returns_result_from_all_grid_areas(
+        self,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+        grid_area_1 = "234"
+        grid_area_2 = "345"
+        rows = [
+            *[
+                factories.create_to_row(
+                    grid_area=grid_area_1,
+                    from_grid_area=grid_area_2,
+                    to_grid_area=grid_area_1,
+                ),
+                factories.create_to_row(
+                    grid_area=grid_area_2,
+                    from_grid_area=grid_area_1,
+                    to_grid_area=grid_area_2,
+                ),
+            ],
+        ]
+        metering_point_time_series = factories.create(spark, rows)
+
+        # Act
+        actual = aggregate_net_exchange_per_ga(metering_point_time_series, [])
+
+        # Assert
+        actual_rows = actual.df.collect()
+        assert len(actual_rows) == 2
+        assert actual_rows[0][Colname.grid_area] == grid_area_1
+        assert actual_rows[1][Colname.grid_area] == grid_area_2
