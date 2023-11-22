@@ -15,10 +15,9 @@
 using Energinet.DataHub.Wholesale.EDI.Models;
 using Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.EDI.Validation;
-using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
+using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSeries.Rules;
 using FluentAssertions;
 using Xunit;
-using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 
