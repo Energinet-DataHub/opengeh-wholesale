@@ -35,7 +35,7 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task ReceiveAggregatedTimeSeriesRequest_whenMessageHasReference_ReceivesMessage(
+    public async Task ReceiveAggregatedTimeSeriesRequest_WhenMessageHasReference_ReceivesMessage(
         Mock<IServiceProvider> serviceProviderMock,
         Mock<IAggregatedTimeSeriesRequestHandler> handlerMock,
         Mock<ILogger<AggregatedTimeSeriesServiceBusWorker>> loggerMock)
@@ -84,7 +84,7 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task ReceiveAggregatedTimeSeriesRequest_whenMessageIsMissingReference_DoesNotReceivesMessage(
+    public async Task ReceiveAggregatedTimeSeriesRequest_WhenMessageIsMissingReference_DoesNotReceivesMessage(
         Mock<IServiceProvider> serviceProviderMock,
         Mock<IAggregatedTimeSeriesRequestHandler> handlerMock,
         Mock<ILogger<AggregatedTimeSeriesServiceBusWorker>> loggerMock)

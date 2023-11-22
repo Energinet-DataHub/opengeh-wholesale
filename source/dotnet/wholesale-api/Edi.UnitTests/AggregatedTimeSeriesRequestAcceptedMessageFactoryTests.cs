@@ -71,7 +71,7 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
         series.TimeSeriesPoints.Count.Should().Be(aggregatedTimeSeries.First().TimeSeriesPoints.Length);
     }
 
-    private List<AggregatedTimeSeries> CreateAggregatedTimeSeries()
+    private IReadOnlyCollection<AggregatedTimeSeries> CreateAggregatedTimeSeries()
     {
         var quantityQualities = new List<QuantityQuality> { QuantityQuality.Estimated };
 

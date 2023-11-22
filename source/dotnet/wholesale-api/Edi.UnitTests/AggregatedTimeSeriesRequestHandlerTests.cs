@@ -189,7 +189,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
             Times.Once);
     }
 
-    private List<AggregatedTimeSeries> CreateAggregatedTimeSeries()
+    private IReadOnlyCollection<AggregatedTimeSeries> CreateAggregatedTimeSeries()
     {
         return new List<AggregatedTimeSeries>
         {
