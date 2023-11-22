@@ -27,7 +27,7 @@ module "apimao_ebix_peekmessage" {
                 </required-claims>
             </validate-jwt>
             <set-backend-service backend-id="${azurerm_api_management_backend.edi.name}" />
-            <rewrite-uri template="/api/peek" copy-unmatched-params="false" />
+            <rewrite-uri template="/api/peek/none" copy-unmatched-params="false" />
             <set-method>GET</set-method>
           </inbound>
           <backend>
