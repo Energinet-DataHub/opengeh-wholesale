@@ -60,26 +60,31 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Databricks.Fixtures
             return new CalculationId(runId);
         }
 
-        public async Task<(bool IsState, Run? Run)> WaitForCalculationJobStateAsync(
+        public async Task<(bool IsCompleted, Run? Run)> WaitForCalculationJobCompletedAsync(
             CalculationId calculationId,
-            CalculationState waitForState,
             TimeSpan waitTimeLimit)
         {
             var delay = TimeSpan.FromMinutes(5);
 
             (Run, RepairHistory) runState = default;
-            var isState = await Awaiter.TryWaitUntilConditionAsync(
+            CalculationState? calculationState = CalculationState.Pending;
+            var isCondition = await Awaiter.TryWaitUntilConditionAsync(
                 async () =>
                 {
                     runState = await DatabricksClient.Jobs.RunsGet(calculationId.Id);
-                    return ConvertToCalculationState(runState.Item1) == waitForState;
+                    calculationState = ConvertToCalculationState(runState.Item1);
+
+                    return
+                        calculationState == CalculationState.Completed
+                        || calculationState == CalculationState.Failed
+                        || calculationState == CalculationState.Canceled;
                 },
                 waitTimeLimit,
                 delay);
 
-            DiagnosticMessageSink.WriteDiagnosticMessage($"Wait for 'CalculatorJob' with id '{calculationId.Id}' completed with '{nameof(isState)}={isState}'.");
+            DiagnosticMessageSink.WriteDiagnosticMessage($"Wait for 'CalculatorJob' with id '{calculationId.Id}' completed with '{nameof(isCondition)}={isCondition}' and '{nameof(calculationState)}={calculationState}'.");
 
-            return (isState, runState.Item1);
+            return (calculationState == CalculationState.Completed, runState.Item1);
         }
 
         protected override Task OnInitializeAsync()

@@ -66,16 +66,15 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Databricks
         [DomainFact]
         public async Task Then_CalculationJobIsCompletedWithinWaitTime()
         {
-            var actualWaitResult = await Fixture.WaitForCalculationJobStateAsync(
+            var actualWaitResult = await Fixture.WaitForCalculationJobCompletedAsync(
                 Fixture.ScenarioState.CalculationId,
-                waitForState: CalculationState.Completed,
                 waitTimeLimit: TimeSpan.FromHours(5));
 
             Fixture.ScenarioState.Run = actualWaitResult.Run;
 
             // Assert
             using var assertionScope = new AssertionScope();
-            actualWaitResult.IsState.Should().BeTrue();
+            actualWaitResult.IsCompleted.Should().BeTrue();
             actualWaitResult.Run.Should().NotBeNull();
         }
 
