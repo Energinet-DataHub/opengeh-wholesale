@@ -14,7 +14,7 @@
 import pytest
 
 from pyspark.sql import SparkSession
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from package.calculation.energy.aggregators.grid_loss_aggregators import (
     apply_grid_loss_adjustment,
@@ -195,3 +195,105 @@ class TestWhenEnergySupplierIdIsNotGridLossResponsible:
         assert actual.df.count() == 2
         assert actual.df.collect()[0][Colname.sum_quantity] == 20
         assert actual.df.collect()[1][Colname.sum_quantity] == 10
+
+
+class TestWhenGridLossResponsibleIsChangedWithinPeriod:
+    @pytest.mark.parametrize(
+        "metering_point_type",
+        [
+            MeteringPointType.CONSUMPTION,
+            MeteringPointType.PRODUCTION,
+        ],
+    )
+    def test_returns_correct_energy_supplier_within_grid_loss_responsible_period(
+        self,
+        spark: SparkSession,
+        metering_point_type: MeteringPointType,
+    ) -> None:
+        # Arrange
+        from_date_1 = datetime.strptime(
+            "2020-01-01T00:00:00+0000", "%Y-%m-%dT%H:%M:%S%z"
+        )
+        to_date_1 = datetime.strptime("2020-01-02T00:00:00+0000", "%Y-%m-%dT%H:%M:%S%z")
+        from_date_2 = from_date_1 + timedelta(days=1)
+        to_date_2 = to_date_1 + timedelta(days=1)
+
+        result_rows = [
+            energy_results_factories.create_row(
+                grid_area="1",
+                energy_supplier_id="grid_loss_responsible_2",
+                observation_time=DEFAULT_OBSERVATION_TIME,
+                sum_quantity=10,
+            )
+        ]
+        result = energy_results_factories.create(spark, result_rows)
+
+        grid_loss_rows = [
+            energy_results_factories.create_row(
+                grid_area="1",
+                from_grid_area=None,
+                to_grid_area=None,
+                balance_responsible_id=None,
+                energy_supplier_id=None,
+                observation_time=DEFAULT_OBSERVATION_TIME,
+                sum_quantity=20,
+                qualities=[QuantityQuality.MEASURED],
+            ),
+            energy_results_factories.create_row(
+                grid_area="1",
+                from_grid_area=None,
+                to_grid_area=None,
+                balance_responsible_id=None,
+                energy_supplier_id=None,
+                observation_time=from_date_2,
+                sum_quantity=30,
+                qualities=[QuantityQuality.MEASURED],
+            ),
+        ]
+        grid_loss = energy_results_factories.create(spark, grid_loss_rows)
+
+        grid_loss_responsible_rows = [
+            grid_loss_responsible_factories.create_row(
+                grid_area="1",
+                metering_point_type=metering_point_type,
+                energy_supplier_id="grid_loss_responsible_1",
+                from_date=from_date_1,
+                to_date=to_date_1,
+            ),
+            grid_loss_responsible_factories.create_row(
+                grid_area="1",
+                metering_point_type=metering_point_type,
+                energy_supplier_id="grid_loss_responsible_2",
+                from_date=from_date_2,
+                to_date=to_date_2,
+            ),
+        ]
+        grid_loss_responsible = grid_loss_responsible_factories.create(
+            spark, grid_loss_responsible_rows
+        )
+
+        # Act
+        actual = apply_grid_loss_adjustment(
+            result,
+            grid_loss,
+            grid_loss_responsible,
+            metering_point_type,
+        )
+
+        # Assert
+        assert actual.df.count() == 3
+        assert actual.df.collect()[0][Colname.sum_quantity] == 20
+        assert (
+            actual.df.collect()[0][Colname.energy_supplier_id]
+            == "grid_loss_responsible_1"
+        )
+        assert actual.df.collect()[1][Colname.sum_quantity] == 30
+        assert (
+            actual.df.collect()[1][Colname.energy_supplier_id]
+            == "grid_loss_responsible_2"
+        )
+        assert actual.df.collect()[2][Colname.sum_quantity] == 10
+        assert (
+            actual.df.collect()[2][Colname.energy_supplier_id]
+            == "grid_loss_responsible_2"
+        )
