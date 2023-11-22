@@ -36,7 +36,7 @@ def start() -> None:
 
 
 @inject
-def _start(args: CalculatorArgs = Provide[Container.calculator_args]):
+def _start(args: CalculatorArgs = Provide[Container.calculator_args]) -> None:
     db_logging.loglevel = "information"
 
     if islocked(args.data_storage_account_name, args.data_storage_account_credentials):
