@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.EDI.Validation;
-using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
+using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSeries.Rules;
 using FluentAssertions;
 using Xunit;
 

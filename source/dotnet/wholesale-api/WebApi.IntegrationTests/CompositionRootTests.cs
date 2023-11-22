@@ -23,7 +23,17 @@ namespace Energinet.DataHub.Wholesale.WebApi.IntegrationTests;
 public class CompositionRootTests
 {
     /// <summary>
-    /// The test is composed from the ideas and examples at https://stackoverflow.com/questions/49149065/how-do-i-validate-the-di-container-in-asp-net-core
+    /// The test is composed from the ideas and examples at
+    /// https://stackoverflow.com/questions/49149065/how-do-i-validate-the-di-container-in-asp-net-core
+    ///
+    /// However it is not guranteed to find all issues, as can be learned by reading this article:
+    /// https://andrewlock.net/new-in-asp-net-core-3-service-provider-validation/#detecting-unregistered-dependencies-on-startup
+    ///
+    /// To summarize it won't find:
+    ///  - [FromServices] injected dependencies
+    ///  - Service sourced directly from IServiceProvider
+    ///  - Services registered using factory functions
+    ///  - Open generic types
     /// </summary>
     [Fact]
     public void AllServicesConstructSuccessfully()
@@ -34,10 +44,13 @@ public class CompositionRootTests
                 webBuilder
                     .UseDefaultServiceProvider((_, options) =>
                     {
+                        // See https://learn.microsoft.com/en-us/aspnet/core/fundamentals/host/web-host?view=aspnetcore-7.0#scope-validation
+                        options.ValidateScopes = true;
                         // Validate the service provider during build
                         options.ValidateOnBuild = true;
                     })
                     // Add controllers as services to enable validation of controller dependencies
+                    // See https://andrewlock.net/new-in-asp-net-core-3-service-provider-validation/#1-controller-constructor-dependencies-aren-t-checked
                     .ConfigureServices(collection => collection.AddControllers().AddControllersAsServices())
                     .UseStartup<Startup>();
             }).Build();

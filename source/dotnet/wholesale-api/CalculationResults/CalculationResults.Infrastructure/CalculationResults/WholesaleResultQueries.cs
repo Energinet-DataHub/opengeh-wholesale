@@ -47,7 +47,7 @@ public class WholesaleResultQueries : IWholesaleResultQueries
     public async IAsyncEnumerable<WholesaleResult> GetAsync(Guid calculationId)
     {
         var calculation = await _batchesClient.GetAsync(calculationId).ConfigureAwait(false);
-        var statement = new QueryWholesaleResultStatement(calculationId, _deltaTableOptions);
+        var statement = new WholesaleResultQueryStatement(calculationId, _deltaTableOptions);
         await foreach (var calculationResult in GetInternalAsync(statement, calculation.PeriodStart.ToInstant(), calculation.PeriodEnd.ToInstant()).ConfigureAwait(false))
             yield return calculationResult;
         _logger.LogDebug("Fetched all wholesale calculation results for calculation {CalculationId}", calculationId);

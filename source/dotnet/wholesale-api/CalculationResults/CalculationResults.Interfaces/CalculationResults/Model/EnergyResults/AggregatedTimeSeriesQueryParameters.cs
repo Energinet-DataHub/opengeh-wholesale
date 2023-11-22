@@ -21,7 +21,7 @@ public record AggregatedTimeSeriesQueryParameters(
     TimeSeriesType TimeSeriesType,
     Instant StartOfPeriod,
     Instant EndOfPeriod,
-    string GridArea,
+    string? GridArea,
     string? EnergySupplierId,
     string? BalanceResponsibleId,
     ProcessType? ProcessType = null);

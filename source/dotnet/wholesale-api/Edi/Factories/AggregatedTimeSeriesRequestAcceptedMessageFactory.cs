@@ -24,7 +24,7 @@ namespace Energinet.DataHub.Wholesale.EDI.Factories;
 
 public class AggregatedTimeSeriesRequestAcceptedMessageFactory
 {
-    public static ServiceBusMessage Create(AggregatedTimeSeries aggregatedTimeSeries, string referenceId)
+    public static ServiceBusMessage Create(IReadOnlyCollection<AggregatedTimeSeries> aggregatedTimeSeries, string referenceId)
     {
         var body = CreateAcceptedResponse(aggregatedTimeSeries);
 
@@ -38,18 +38,23 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
         return message;
     }
 
-    private static AggregatedTimeSeriesRequestAccepted CreateAcceptedResponse(AggregatedTimeSeries aggregatedTimeSeries)
+    private static AggregatedTimeSeriesRequestAccepted CreateAcceptedResponse(IReadOnlyCollection<AggregatedTimeSeries> aggregatedTimeSeries)
     {
-        var points = CreateTimeSeriesPoints(aggregatedTimeSeries);
-
-        return new AggregatedTimeSeriesRequestAccepted()
+        var response = new AggregatedTimeSeriesRequestAccepted();
+        foreach (var series in aggregatedTimeSeries)
         {
-            GridArea = aggregatedTimeSeries.GridArea,
-            QuantityUnit = QuantityUnit.Kwh,
-            TimeSeriesPoints = { points },
-            TimeSeriesType = CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromCalculationsResult(aggregatedTimeSeries.TimeSeriesType),
-            Resolution = Resolution.Pt15M,
-        };
+            var points = CreateTimeSeriesPoints(series);
+            response.Series.Add(new Series()
+            {
+                GridArea = series.GridArea,
+                QuantityUnit = QuantityUnit.Kwh,
+                TimeSeriesPoints = { points },
+                TimeSeriesType = CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromCalculationsResult(series.TimeSeriesType),
+                Resolution = Resolution.Pt15M,
+            });
+        }
+
+        return response;
     }
 
     private static IReadOnlyCollection<TimeSeriesPoint> CreateTimeSeriesPoints(AggregatedTimeSeries aggregatedTimeSeries)
