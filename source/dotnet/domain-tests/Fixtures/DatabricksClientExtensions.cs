@@ -46,11 +46,12 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         public static async Task<bool> StartWarehouseAndWaitForWarehouseStateAsync(
             DatabricksWorkspaceConfiguration configuration,
             WarehouseState waitForState = WarehouseState.RUNNING,
-            int waitTimeInMinutes = 5)
+            int waitTimeInMinutes = 10)
         {
             var delay = TimeSpan.FromSeconds(15);
             var waitTimeLimit = TimeSpan.FromMinutes(waitTimeInMinutes);
             using var databricksClient = DatabricksClient.CreateClient(configuration.BaseUrl, configuration.Token);
+            await databricksClient.SQL.Warehouse.Start(configuration.WarehouseId);
 
             var isState = await Awaiter.TryWaitUntilConditionAsync(
                 async () =>

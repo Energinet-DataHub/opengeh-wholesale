@@ -99,6 +99,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.SettlementReport.Fixt
         protected override async Task OnInitializeAsync()
         {
             var isState = await DatabricksClientExtensions.StartWarehouseAndWaitForWarehouseStateAsync(Configuration.DatabricksWorkspace);
+            DiagnosticMessageSink.WriteDiagnosticMessage($"Starting Databricks warehouse succeed: {isState}");
             if (!isState)
             {
                 throw new Exception("Unable to start Databricks SQL warehouse. Reason unknown.");
