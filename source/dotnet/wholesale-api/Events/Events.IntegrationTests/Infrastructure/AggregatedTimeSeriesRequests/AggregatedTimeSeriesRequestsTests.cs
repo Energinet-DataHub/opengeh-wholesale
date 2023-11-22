@@ -17,6 +17,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.EDI;
 using Energinet.DataHub.Wholesale.Events.Application.Workers;
 using Energinet.DataHub.Wholesale.Events.IntegrationTests.Fixture;
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -79,7 +80,7 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
 
         // Assert
         var messageHasBeenReceived = messageHasBeenReceivedEvent.WaitOne(timeout: TimeSpan.FromSeconds(1));
-        Assert.True(messageHasBeenReceived);
+        messageHasBeenReceived.Should().BeTrue();
     }
 
     [Theory]
@@ -116,6 +117,6 @@ public class AggregatedTimeSeriesRequestsTests : IClassFixture<ServiceBusSenderF
 
         // Assert
         var messageHasBeenReceived = messageHasBeenReceivedEvent.WaitOne(timeout: TimeSpan.FromSeconds(1));
-        Assert.False(messageHasBeenReceived);
+        messageHasBeenReceived.Should().BeFalse();
     }
 }
