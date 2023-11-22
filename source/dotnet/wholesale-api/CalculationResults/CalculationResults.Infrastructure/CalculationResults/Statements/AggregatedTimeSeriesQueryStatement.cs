@@ -22,12 +22,12 @@ using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
-public class QueryAggregatedTimeSeriesStatement : DatabricksStatement
+public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
 {
     private readonly AggregatedTimeSeriesQueryParameters _parameters;
     private readonly DeltaTableOptions _deltaTableOptions;
 
-    public QueryAggregatedTimeSeriesStatement(AggregatedTimeSeriesQueryParameters parameters, DeltaTableOptions deltaTableOptions)
+    public AggregatedTimeSeriesQueryStatement(AggregatedTimeSeriesQueryParameters parameters, DeltaTableOptions deltaTableOptions)
     {
         _parameters = parameters;
         _deltaTableOptions = deltaTableOptions;
@@ -55,26 +55,31 @@ public class QueryAggregatedTimeSeriesStatement : DatabricksStatement
 
     private static string CreateSqlQueryFilters(AggregatedTimeSeriesQueryParameters parameters)
     {
-        var whereClausesSql = $@"t1.{EnergyResultColumnNames.GridArea} IN ({parameters.GridArea})
-            AND t1.{EnergyResultColumnNames.TimeSeriesType} IN ('{TimeSeriesTypeMapper.ToDeltaTableValue(parameters.TimeSeriesType)}')
+        var whereClausesSql = $@"
+                t1.{EnergyResultColumnNames.TimeSeriesType} IN ('{TimeSeriesTypeMapper.ToDeltaTableValue(parameters.TimeSeriesType)}')
             AND t1.{EnergyResultColumnNames.Time} >= '{parameters.StartOfPeriod.ToString()}'
             AND t1.{EnergyResultColumnNames.Time} < '{parameters.EndOfPeriod.ToString()}'
             AND t1.{EnergyResultColumnNames.AggregationLevel} = '{AggregationLevelMapper.ToDeltaTableValue(parameters.TimeSeriesType, parameters.EnergySupplierId, parameters.BalanceResponsibleId)}'
             ";
+        if (parameters.GridArea != null)
+        {
+            whereClausesSql += $"AND t1.{EnergyResultColumnNames.GridArea} IN ({parameters.GridArea})";
+        }
+
         if (parameters.ProcessType != null)
         {
             whereClausesSql +=
-                $@"AND t1.{EnergyResultColumnNames.BatchProcessType} = '{ProcessTypeMapper.ToDeltaTableValue((ProcessType)parameters.ProcessType)}'";
+                $"AND t1.{EnergyResultColumnNames.BatchProcessType} = '{ProcessTypeMapper.ToDeltaTableValue((ProcessType)parameters.ProcessType)}'";
         }
 
         if (parameters.EnergySupplierId != null)
         {
-            whereClausesSql += $@"AND t1.{EnergyResultColumnNames.EnergySupplierId} = '{parameters.EnergySupplierId}'";
+            whereClausesSql += $"AND t1.{EnergyResultColumnNames.EnergySupplierId} = '{parameters.EnergySupplierId}'";
         }
 
         if (parameters.BalanceResponsibleId != null)
         {
-            whereClausesSql += $@"AND t1.{EnergyResultColumnNames.BalanceResponsibleId} = '{parameters.BalanceResponsibleId}'";
+            whereClausesSql += $"AND t1.{EnergyResultColumnNames.BalanceResponsibleId} = '{parameters.BalanceResponsibleId}'";
         }
 
         return whereClausesSql;

@@ -55,7 +55,7 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
         var rows = new List<string[]> { row0, row1, };
 
         // Using the columns from the WholesaleResultQueries class to ensure that the test is not broken if the columns are changed
-        _tableChunk = new TableChunk(QueryWholesaleResultStatement.SqlColumnNames, rows);
+        _tableChunk = new TableChunk(WholesaleResultQueryStatement.SqlColumnNames, rows);
 
         // Mocks Setup - This is another way to setup mocks used in tests. The reason for this are:
         // 1. Because DatabricksSqlWarehouseQueryExecutor doesn't implement an interface and the constructor is protected

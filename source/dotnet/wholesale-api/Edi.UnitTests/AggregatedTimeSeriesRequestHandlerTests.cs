@@ -59,7 +59,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
         var aggregatedTimeSeries = CreateAggregatedTimeSeries();
         aggregatedTimeSeriesQueries
             .Setup(parameters => parameters.GetAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
-            .ReturnsAsync(() => aggregatedTimeSeries);
+            .Returns(() => aggregatedTimeSeries.ToAsyncEnumerable());
 
         validator.Setup(vali => vali.Validate(
                 It.IsAny<AggregatedTimeSeriesRequest>()))
@@ -112,7 +112,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
 
         aggregatedTimeSeriesQueries
             .Setup(parameters => parameters.GetAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
-            .ReturnsAsync(() => null);
+            .Returns(() => new List<AggregatedTimeSeries>().ToAsyncEnumerable());
 
         var sut = new AggregatedTimeSeriesRequestHandler(
             senderMock.Object,
@@ -139,7 +139,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task ProcessAsync_WhenNoCalculationResult_SendsRejectedEdiMessage(
+    public async Task ProcessAsync_WhenNoAggregatedTimeSeries_SendsRejectedEdiMessage(
         [Frozen] Mock<IAggregatedTimeSeriesQueries> aggregatedTimeSeriesQueries,
         [Frozen] Mock<IEdiClient> senderMock,
         [Frozen] Mock<AggregatedTimeSeriesRequestFactory> aggregatedTimeSeriesRequestMessageParseMock,
@@ -163,7 +163,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
             .Setup(parameters =>
                 parameters.GetAsync(
                     It.IsAny<AggregatedTimeSeriesQueryParameters>()))
-            .ReturnsAsync(() => null);
+            .Returns(() => new List<AggregatedTimeSeries>().ToAsyncEnumerable());
 
         var sut = new AggregatedTimeSeriesRequestHandler(
             senderMock.Object,
@@ -189,12 +189,18 @@ public class AggregatedTimeSeriesRequestHandlerTests
             Times.Once);
     }
 
-    private AggregatedTimeSeries CreateAggregatedTimeSeries()
+    private IReadOnlyCollection<AggregatedTimeSeries> CreateAggregatedTimeSeries()
     {
-        return new AggregatedTimeSeries(
-            gridArea: "543",
-            timeSeriesPoints: new EnergyTimeSeriesPoint[] { new(DateTime.Now, 0, new List<QuantityQuality> { QuantityQuality.Measured }) },
-            timeSeriesType: TimeSeriesType.Production,
-            processType: ProcessType.Aggregation);
+        return new List<AggregatedTimeSeries>
+        {
+            new AggregatedTimeSeries(
+                gridArea: "543",
+                timeSeriesPoints: new EnergyTimeSeriesPoint[]
+                {
+                    new(DateTime.Now, 0, new List<QuantityQuality> { QuantityQuality.Measured }),
+                },
+                timeSeriesType: TimeSeriesType.Production,
+                processType: ProcessType.Aggregation),
+        };
     }
 }

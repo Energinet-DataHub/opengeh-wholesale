@@ -18,12 +18,12 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 
-public class QueryWholesaleResultStatement : DatabricksStatement
+public class EnergyResultQueryStatement : DatabricksStatement
 {
     private readonly DeltaTableOptions _deltaTableOptions;
     private readonly Guid _calculationId;
 
-    public QueryWholesaleResultStatement(Guid calculationId, DeltaTableOptions deltaTableOptions)
+    public EnergyResultQueryStatement(Guid calculationId, DeltaTableOptions deltaTableOptions)
     {
         _deltaTableOptions = deltaTableOptions;
         _calculationId = calculationId;
@@ -33,32 +33,24 @@ public class QueryWholesaleResultStatement : DatabricksStatement
     {
         return $@"
 SELECT {string.Join(", ", SqlColumnNames)}
-FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.WHOLESALE_RESULTS_TABLE_NAME}
-WHERE {WholesaleResultColumnNames.CalculationId} = '{_calculationId}'
-ORDER BY {WholesaleResultColumnNames.CalculationResultId}, {WholesaleResultColumnNames.Time}
+FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME}
+WHERE {EnergyResultColumnNames.BatchId} = '{_calculationId}'
+ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames.Time}
 ";
     }
 
     public static string[] SqlColumnNames { get; } =
     {
-        WholesaleResultColumnNames.CalculationId,
-        WholesaleResultColumnNames.CalculationResultId,
-        WholesaleResultColumnNames.CalculationType,
-        WholesaleResultColumnNames.GridArea,
-        WholesaleResultColumnNames.EnergySupplierId,
-        WholesaleResultColumnNames.AmountType,
-        WholesaleResultColumnNames.MeteringPointType,
-        WholesaleResultColumnNames.SettlementMethod,
-        WholesaleResultColumnNames.ChargeType,
-        WholesaleResultColumnNames.ChargeCode,
-        WholesaleResultColumnNames.ChargeOwnerId,
-        WholesaleResultColumnNames.Resolution,
-        WholesaleResultColumnNames.IsTax,
-        WholesaleResultColumnNames.QuantityUnit,
-        WholesaleResultColumnNames.Time,
-        WholesaleResultColumnNames.Quantity,
-        WholesaleResultColumnNames.QuantityQualities,
-        WholesaleResultColumnNames.Price,
-        WholesaleResultColumnNames.Amount,
+        EnergyResultColumnNames.BatchId,
+        EnergyResultColumnNames.GridArea,
+        EnergyResultColumnNames.FromGridArea,
+        EnergyResultColumnNames.TimeSeriesType,
+        EnergyResultColumnNames.EnergySupplierId,
+        EnergyResultColumnNames.BalanceResponsibleId,
+        EnergyResultColumnNames.Time,
+        EnergyResultColumnNames.Quantity,
+        EnergyResultColumnNames.QuantityQualities,
+        EnergyResultColumnNames.CalculationResultId,
+        EnergyResultColumnNames.BatchProcessType,
     };
 }
