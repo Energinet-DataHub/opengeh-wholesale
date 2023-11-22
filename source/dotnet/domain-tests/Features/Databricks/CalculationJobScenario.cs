@@ -38,15 +38,15 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Databricks
         [DomainFact]
         public void Given_CalculationJobInput()
         {
-            // TODO: Validate input
+            // TODO: Validate input (especially date)
             var createdTime = SystemClock.Instance.GetCurrentInstant();
             var createdByUserId = Guid.Parse("DED7734B-DD56-43AD-9EE8-0D7EFDA6C783");
             Fixture.ScenarioState.CalculationJobInput = new Batch(
                 createdTime: createdTime,
                 processType: Common.Interfaces.Models.ProcessType.Aggregation,
                 gridAreaCodes: new List<GridAreaCode> { new GridAreaCode("791") },
-                periodStart: Instant.FromDateTimeOffset(new DateTimeOffset(2022, 1, 12, 23, 0, 0, TimeSpan.Zero)),
-                periodEnd: Instant.FromDateTimeOffset(new DateTimeOffset(2022, 1, 11, 23, 0, 0, TimeSpan.Zero)),
+                periodStart: Instant.FromDateTimeOffset(new DateTimeOffset(2022, 12, 1, 23, 0, 0, TimeSpan.Zero)),
+                periodEnd: Instant.FromDateTimeOffset(new DateTimeOffset(2022, 12, 11, 23, 0, 0, TimeSpan.Zero)),
                 executionTimeStart: createdTime, // As long as scheduling is not implemented, execution time start is the same as created time
                 DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
                 createdByUserId: createdByUserId);
