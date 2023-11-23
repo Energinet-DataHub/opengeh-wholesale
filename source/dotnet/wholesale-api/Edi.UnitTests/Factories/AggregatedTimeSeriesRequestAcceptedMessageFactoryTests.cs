@@ -24,7 +24,7 @@ using Xunit;
 using QuantityQuality = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.QuantityQuality;
 using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType;
 
-namespace Energinet.DataHub.Wholesale.EDI.UnitTests;
+namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Factories;
 
 public class AggregatedTimeSeriesRequestAcceptedMessageFactoryTests
 {
