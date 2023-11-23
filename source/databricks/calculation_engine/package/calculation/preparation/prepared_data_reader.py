@@ -17,6 +17,7 @@ from pyspark.sql import DataFrame
 
 from package.calculation_input import TableReader
 from package.codelists import ChargeResolution
+from package.calculation.preparation.grid_loss_responsible import GridLossResponsible
 
 from . import transformations as T
 
@@ -38,7 +39,7 @@ class PreparedDataReader:
             grid_areas,
         )
 
-    def get_grid_loss_responsible(self, grid_areas: list[str]) -> DataFrame:
+    def get_grid_loss_responsible(self, grid_areas: list[str]) -> GridLossResponsible:
         return T.get_grid_loss_responsible(grid_areas)
 
     def get_charges(self) -> DataFrame:

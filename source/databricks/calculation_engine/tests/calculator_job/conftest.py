@@ -20,6 +20,9 @@ import pyspark.sql.functions as F
 import pytest
 from unittest.mock import patch
 
+from package.calculation.preparation.grid_loss_responsible import (
+    grid_loss_responsible_schema,
+)
 from . import configuration as C
 import package.calculation as calculation
 from package.calculation.preparation.transformations import grid_loss_responsible
@@ -74,7 +77,9 @@ def grid_loss_responsible_test_data(
     test_files_folder_path: str,
 ) -> DataFrame:
     return spark.read.csv(
-        f"{test_files_folder_path}/GridLossResponsible.csv", header=True
+        f"{test_files_folder_path}/GridLossResponsible.csv",
+        header=True,
+        schema=grid_loss_responsible_schema,
     )
 
 
