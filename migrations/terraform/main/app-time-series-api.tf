@@ -30,7 +30,7 @@ module "app_time_series_api" {
     # Databricks
     "DatabricksOptions__WorkspaceToken"       = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=dbw-shared-workspace-token)"
     "DatabricksOptions__WorkspaceUrl"         = "https://${data.azurerm_key_vault_secret.dbw_databricks_workspace_url.value}"
-    "DatabricksOptions__WarehouseId"          = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=dbw-databricks-sql-endpoint-id)"
+    "DatabricksOptions__WarehouseId"          = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-databricks-sql-endpoint-id)"
     "DatabricksOptions__HealthCheckStartHour" = 5
     "DatabricksOptions__HealthCheckEndHour"   = 16
 
