@@ -64,5 +64,16 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
 
             return isState;
         }
+
+        /// <summary>
+        /// Retrieve calculator job id from databricks.
+        /// </summary>
+        public static async Task<long> GetCalculatorJobIdAsync(this DatabricksClient databricksClient)
+        {
+            var jobs = await databricksClient.Jobs.List();
+            return jobs.Jobs
+                .Single(j => j.Settings.Name == "CalculatorJob")
+                .JobId;
+        }
     }
 }
