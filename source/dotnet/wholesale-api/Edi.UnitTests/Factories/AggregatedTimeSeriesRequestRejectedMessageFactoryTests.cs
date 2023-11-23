@@ -19,7 +19,7 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.EDI.UnitTests;
+namespace Energinet.DataHub.Wholesale.Edi.UnitTests.Factories;
 
 public class AggregatedTimeSeriesRequestRejectedMessageFactoryTests
 {
