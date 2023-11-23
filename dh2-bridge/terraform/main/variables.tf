@@ -56,3 +56,18 @@ variable "hosted_deployagent_public_ip_range" {
   description = "(Optional) Comma-delimited string with IPs / CIDR block with deployagent's public IPs, so it can access network-protected resources (Keyvaults, Function apps etc)"
   default     = null
 }
+
+variable "sendgrid_api_key" {
+  type        = string
+  description = "Sendgrid API Key"
+}
+
+variable "sendgrid_to_email" {
+  type        = string
+  description = "Specify the to email address for email"
+}
+
+variable "sendgrid_from_email" {
+  type        = string
+  description = "Specify the sender which the emails originates from"
+}
