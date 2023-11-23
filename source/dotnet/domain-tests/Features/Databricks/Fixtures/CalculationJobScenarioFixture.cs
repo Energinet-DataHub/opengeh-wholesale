@@ -18,7 +18,6 @@ using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.DomainTests.Features.Databricks.States;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures;
-using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Extensions;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture;
 using Microsoft.Azure.Databricks.Client;
@@ -32,13 +31,13 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Databricks.Fixtures
         public CalculationJobScenarioFixture(IMessageSink diagnosticMessageSink)
             : base(diagnosticMessageSink)
         {
-            Configuration = new WholesaleDomainConfiguration();
+            Configuration = new CalculationJobScenarioConfiguration();
             ScenarioState = new CalculationJobScenarioState();
         }
 
         public CalculationJobScenarioState ScenarioState { get; }
 
-        private WholesaleDomainConfiguration Configuration { get; }
+        private CalculationJobScenarioConfiguration Configuration { get; }
 
         /// <summary>
         /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.

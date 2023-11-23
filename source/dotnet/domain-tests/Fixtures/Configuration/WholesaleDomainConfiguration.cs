@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
+using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Extensions;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Identity;
 using Microsoft.Extensions.Configuration;
 
@@ -31,7 +31,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration
             WebApiBaseAddress = new Uri(Root.GetValue<string>("WEBAPI_BASEADDRESS")!);
             UserTokenConfiguration = B2CUserTokenConfiguration.CreateFromConfiguration(Root);
 
-            var secretsConfiguration = BuildSecretsConfiguration(Root);
+            var secretsConfiguration = Root.BuildSecretsConfiguration();
             ServiceBus = ServiceBusConfiguration.CreateFromConfiguration(secretsConfiguration);
             DatabricksWorkspace = DatabricksWorkspaceConfiguration.CreateFromConfiguration(secretsConfiguration);
         }
@@ -55,22 +55,5 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration
         /// Settings necessary to start the Databricks workspace SQL warehouse.
         /// </summary>
         public DatabricksWorkspaceConfiguration DatabricksWorkspace { get; }
-
-        /// <summary>
-        /// Build configuration for loading settings from key vault secrets.
-        /// </summary>
-        private static IConfigurationRoot BuildSecretsConfiguration(IConfigurationRoot root)
-        {
-            var sharedKeyVaultName = root.GetValue<string>("SHARED_KEYVAULT_NAME");
-            var sharedKeyVaultUrl = $"https://{sharedKeyVaultName}.vault.azure.net/";
-
-            var internalKeyVaultName = root.GetValue<string>("INTERNAL_KEYVAULT_NAME");
-            var internalKeyVaultUrl = $"https://{internalKeyVaultName}.vault.azure.net/";
-
-            return new ConfigurationBuilder()
-                .AddAuthenticatedAzureKeyVault(sharedKeyVaultUrl)
-                .AddAuthenticatedAzureKeyVault(internalKeyVaultUrl)
-                .Build();
-        }
     }
 }
