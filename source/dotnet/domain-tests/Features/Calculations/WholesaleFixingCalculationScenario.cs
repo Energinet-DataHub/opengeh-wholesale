@@ -225,5 +225,25 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations
             // Assert
             Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1.Count.Should().Be(expected);
         }
+
+        [ScenarioStep(11)]
+        [DomainFact]
+        public void AndThen_OneSpecificAmountPerChargeResultProducedContainsExpectedValues()
+        {
+            var expectedEnergySupplierId = "5790001687137";
+            var expectedChargeCode = "40000";
+            var expectedSettlementMethod = AmountPerChargeResultProducedV1.Types.SettlementMethod.NonProfiled;
+
+            // Assert
+            var actualEvents = Fixture.ScenarioState.ReceivedAmountPerChargeResultProducedV1.Where(item =>
+                item.EnergySupplierId == expectedEnergySupplierId
+                && item.ChargeCode == expectedChargeCode
+                && item.SettlementMethod == expectedSettlementMethod);
+
+            using var assertionScope = new AssertionScope();
+            actualEvents.Should().HaveCount(1);
+            var actualEvent = actualEvents.First();
+            // TODO: Compare with certain value from CSV file
+        }
     }
 }
