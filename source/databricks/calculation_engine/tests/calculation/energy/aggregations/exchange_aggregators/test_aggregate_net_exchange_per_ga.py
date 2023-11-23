@@ -19,7 +19,7 @@ from package.calculation.energy.aggregators.exchange_aggregators import (
     aggregate_net_exchange_per_ga,
 )
 import tests.calculation.energy.quarterly_metering_point_time_series_factories as factories
-from package.codelists import QuantityQuality
+from package.codelists import QuantityQuality, MeteringPointType
 from package.constants import Colname
 
 
@@ -109,11 +109,13 @@ class TestWhenMeteringPointIsNeitherInToOrFromGridArea:
         rows = [
             *[
                 factories.create_row(
+                    metering_point_type=MeteringPointType.EXCHANGE,
                     grid_area=grid_area_1,
                     from_grid_area=grid_area_3,
                     to_grid_area=grid_area_2,
                 ),
                 factories.create_row(
+                    metering_point_type=MeteringPointType.EXCHANGE,
                     grid_area=grid_area_1,
                     from_grid_area=grid_area_2,
                     to_grid_area=grid_area_3,
