@@ -61,6 +61,11 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Databricks
             Fixture.ScenarioState.CalculationId.Should().NotBeNull();
         }
 
+        /// <summary>
+        /// In this step focus on completing the calculation with a certain 'wait time'.
+        /// This is not an exact time for how long it took to perform the calculation,
+        /// but the time it took for our retry loop to determine that the calculation has completed.
+        /// </summary>
         [ScenarioStep(2)]
         [DomainFact]
         public async Task Then_CalculationJobIsCompletedWithinWaitTime()
@@ -77,6 +82,10 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Databricks
             actualWaitResult.Run.Should().NotBeNull();
         }
 
+        /// <summary>
+        /// In this step we verify the 'duration' of the calculation job is within our 'performance goal'.
+        /// This 'duration' is the time we want to reduce during our performance workshop.
+        /// </summary>
         [ScenarioStep(3)]
         [DomainFact]
         public void AndThen_CalculationJobDurationIsLessThanOrEqualToTimeLimit()
