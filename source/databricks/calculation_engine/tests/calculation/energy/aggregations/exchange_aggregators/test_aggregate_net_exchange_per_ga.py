@@ -80,13 +80,13 @@ class TestWhenValidInput:
         assert sorted(actual_rows[1][Colname.qualities]) == expected_qualities
 
 
-class TestWhenGridAreaIsNotPartOfNeitherToOrFrom:
+class TestWhenMeteringPointIsNeitherInToOrFromGridArea:
     def test_returns_result_with_only_to_and_from_grid_area(
         self,
         spark: SparkSession,
     ) -> None:
         # Arrange
-        grid_area_1 = "123"
+        grid_area_1 = "123"  # this is the grid area of the metering point
         grid_area_2 = "234"
         grid_area_3 = "345"
         rows = [

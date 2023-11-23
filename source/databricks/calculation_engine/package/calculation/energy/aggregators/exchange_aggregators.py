@@ -38,7 +38,7 @@ def aggregate_net_exchange_per_neighbour_ga(
     Function to aggregate net exchange per neighbouring grid areas.
 
     The result will only include exchange to/from grid areas specified in `selected_grid_areas`
-    If no grid area are specified (empty list) all grid areas are included.
+    If no grid areas are specified (empty list) all grid areas are included.
     """
 
     df = quarterly_metering_point_time_series.df.where(
@@ -139,7 +139,7 @@ def aggregate_net_exchange_per_ga(
     Function to aggregate net exchange per grid area.
 
     The result will only include exchange to/from grid areas specified in `selected_grid_areas`
-    If no grid area are specified (empty list) all grid areas are included.
+    If no grid areas are specified (empty list) all grid areas are included.
     """
 
     exchange_to = data.df.where(
