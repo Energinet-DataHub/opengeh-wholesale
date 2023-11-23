@@ -98,7 +98,6 @@ def create_from_row(
 def create_to_row(
     grid_area: str = DEFAULT_GRID_AREA,
     from_grid_area: str = DEFAULT_NEIGHBOUR_GRID_AREA,
-    to_grid_area: str = DEFAULT_GRID_AREA,
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
     observation_time: datetime = DEFAULT_OBSERVATION_TIME,
     quantity: int | Decimal = DEFAULT_QUANTITY,
@@ -107,7 +106,7 @@ def create_to_row(
     """Create a row representing exchange entering the grid area."""
     return create_row(
         grid_area=grid_area,
-        to_grid_area=to_grid_area,
+        to_grid_area=grid_area,
         from_grid_area=from_grid_area,
         metering_point_id=metering_point_id,
         metering_point_type=MeteringPointType.EXCHANGE,

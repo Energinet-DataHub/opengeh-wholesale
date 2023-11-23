@@ -32,13 +32,11 @@ exchange_out_from_grid_area = "ExOut_FromGridArea"
 
 def aggregate_net_exchange_per_neighbour_ga(
     quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
-    selected_grid_areas: list[str],
+    calculation_grid_areas: list[str],
 ) -> EnergyResults:
     """
     Function to aggregate net exchange per neighbouring grid areas.
-
-    The result will only include exchange to/from grid areas specified in `selected_grid_areas`
-    If no grid areas are specified (empty list) all grid areas are included.
+    The result will only include exchange to/from grid areas specified in `calculation_grid_areas`
     """
 
     df = quarterly_metering_point_time_series.df.where(
@@ -126,19 +124,17 @@ def aggregate_net_exchange_per_neighbour_ga(
         )
     )
 
-    exchange = exchange.filter(F.col(Colname.grid_area).isin(selected_grid_areas))
+    exchange = exchange.filter(F.col(Colname.grid_area).isin(calculation_grid_areas))
 
     return EnergyResults(exchange)
 
 
 def aggregate_net_exchange_per_ga(
-    data: QuarterlyMeteringPointTimeSeries, selected_grid_areas: list[str]
+    data: QuarterlyMeteringPointTimeSeries, calculation_grid_areas: list[str]
 ) -> EnergyResults:
     """
     Function to aggregate net exchange per grid area.
-
-    The result will only include exchange to/from grid areas specified in `selected_grid_areas`
-    If no grid areas are specified (empty list) all grid areas are included.
+    The result will only include exchange to/from grid areas specified in `calculation_grid_areas`
     """
 
     exchange_to = data.df.where(
@@ -225,6 +221,6 @@ def aggregate_net_exchange_per_ga(
         )
     )
 
-    result_df = result_df.filter(F.col(Colname.grid_area).isin(selected_grid_areas))
+    result_df = result_df.filter(F.col(Colname.grid_area).isin(calculation_grid_areas))
 
     return EnergyResults(result_df)

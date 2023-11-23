@@ -60,14 +60,23 @@ class TestWhenValidInput:
         expected_qualities: list[QuantityQuality],
     ) -> None:
         # Arrange
-        default_grid_area = "111"
+        from_grid_area = "111"
+        to_grid_area = "222"
         rows = [
             *[
-                factories.create_to_row(quality=quality, grid_area=default_grid_area)
+                factories.create_to_row(
+                    quality=quality,
+                    grid_area=to_grid_area,
+                    from_grid_area=from_grid_area,
+                )
                 for quality in to_ga_qualities
             ],
             *[
-                factories.create_from_row(quality=quality, grid_area=default_grid_area)
+                factories.create_from_row(
+                    quality=quality,
+                    grid_area=from_grid_area,
+                    to_grid_area=to_grid_area,
+                )
                 for quality in from_ga_qualities
             ],
         ]
@@ -76,8 +85,9 @@ class TestWhenValidInput:
 
         # Act
         actual = aggregate_net_exchange_per_ga(
-            metering_point_time_series, [default_grid_area]
+            metering_point_time_series, [from_grid_area, to_grid_area]
         )
+        actual.df.show()
 
         # Assert
         actual_rows = actual.df.collect()
@@ -98,12 +108,12 @@ class TestWhenMeteringPointIsNeitherInToOrFromGridArea:
         all_grid_areas = [grid_area_1, grid_area_2, grid_area_3]
         rows = [
             *[
-                factories.create_to_row(
+                factories.create_row(
                     grid_area=grid_area_1,
                     from_grid_area=grid_area_3,
                     to_grid_area=grid_area_2,
                 ),
-                factories.create_to_row(
+                factories.create_row(
                     grid_area=grid_area_1,
                     from_grid_area=grid_area_2,
                     to_grid_area=grid_area_3,
@@ -136,13 +146,11 @@ class TestWhenInputHasDataNotBelongingToSelectedGridArea:
             *[
                 factories.create_to_row(
                     grid_area=selected_grid_area,
-                    from_grid_area=selected_grid_area,
-                    to_grid_area=not_selected_grid_area,
+                    from_grid_area=not_selected_grid_area,
                 ),
                 factories.create_to_row(
-                    grid_area=selected_grid_area,
-                    from_grid_area=not_selected_grid_area,
-                    to_grid_area=selected_grid_area,
+                    grid_area=not_selected_grid_area,
+                    from_grid_area=selected_grid_area,
                 ),
             ],
         ]
