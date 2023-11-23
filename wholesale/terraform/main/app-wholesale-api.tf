@@ -25,7 +25,24 @@ module "app_wholesale_api" {
   # Ensure that IHostedServices are not terminated due to unloading of the application in periods with no traffic
   always_on = true
 
-  app_settings = {
+  app_settings = merge(local.default_app_wholesale_api_app_settings, {
+    # Databricks
+    WorkspaceToken = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=dbw-shared-workspace-token)"
+    WorkspaceUrl   = "https://${data.azurerm_key_vault_secret.dbw_databricks_workspace_url.value}"
+    WarehouseId    = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-databricks-sql-endpoint-id)"
+  })
+
+  connection_strings = [
+    {
+      name  = "DB_CONNECTION_STRING"
+      type  = "SQLAzure"
+      value = local.DB_CONNECTION_STRING
+    }
+  ]
+}
+
+locals {
+  default_app_wholesale_api_app_settings = {
     TIME_ZONE            = local.TIME_ZONE
     EXTERNAL_OPEN_ID_URL = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-open-id-url)"
     INTERNAL_OPEN_ID_URL = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-open-id-url)"
@@ -43,24 +60,11 @@ module "app_wholesale_api" {
     EDI_INBOX_MESSAGE_QUEUE_NAME         = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbq-edi-inbox-messagequeue-name)"
     WHOLESALE_INBOX_MESSAGE_QUEUE_NAME   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbq-wholesale-inbox-messagequeue-name)"
 
-    # Databricks
-    WorkspaceToken = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=dbw-shared-workspace-token)"
-    WorkspaceUrl   = "https://${data.azurerm_key_vault_secret.dbw_databricks_workspace_url.value}"
-    WarehouseId    = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-databricks-sql-endpoint-id)"
-
     # Logging
     "Logging__ApplicationInsights__LogLevel__Default"                     = local.LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT
     "Logging__ApplicationInsights__LogLevel__Energinet.Datahub.Wholesale" = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_WHOLESALE
     "Logging__ApplicationInsights__LogLevel__Energinet.Datahub.Core"      = local.LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE
   }
-
-  connection_strings = [
-    {
-      name  = "DB_CONNECTION_STRING"
-      type  = "SQLAzure"
-      value = local.DB_CONNECTION_STRING
-    }
-  ]
 }
 
 module "kvs_app_wholesale_api_base_url" {
