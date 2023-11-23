@@ -14,4 +14,4 @@
 
 namespace Energinet.DataHub.Wholesale.EDI.Models;
 
-public record AggregationPerRoleAndGridArea(string GridAreaCode, string? EnergySupplierId = null, string? BalanceResponsibleId = null);
+public record AggregationPerRoleAndGridArea(string? GridAreaCode, string? EnergySupplierId = null, string? BalanceResponsibleId = null);

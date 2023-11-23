@@ -19,9 +19,9 @@ using Period = Energinet.DataHub.Wholesale.EDI.Models.Period;
 
 namespace Energinet.DataHub.Wholesale.EDI.Factories;
 
-public class AggregatedTimeSeriesRequestFactory : IAggregatedTimeSeriesRequestFactory
+public class AggregatedTimeSeriesRequestFactory
 {
-    public AggregatedTimeSeriesRequest Parse(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request)
+    public static AggregatedTimeSeriesRequest Parse(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request)
     {
         return new AggregatedTimeSeriesRequest(
             MapPeriod(request.Period),
@@ -30,30 +30,15 @@ public class AggregatedTimeSeriesRequestFactory : IAggregatedTimeSeriesRequestFa
             RequestedProcessTypeMapper.ToRequestedProcessType(request.BusinessReason, request.HasSettlementSeriesVersion ? request.SettlementSeriesVersion : null));
     }
 
-    private AggregationPerRoleAndGridArea MapAggregationPerRoleAndGridArea(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request)
+    private static AggregationPerRoleAndGridArea MapAggregationPerRoleAndGridArea(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request)
     {
-        return request.AggregationLevelCase switch
-        {
-            Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerGridarea =>
-                new AggregationPerRoleAndGridArea(GridAreaCode: request.AggregationPerGridarea.GridAreaCode),
-            Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerEnergysupplierPerGridarea =>
-                new AggregationPerRoleAndGridArea(
-                    GridAreaCode: request.AggregationPerEnergysupplierPerGridarea.GridAreaCode,
-                    EnergySupplierId: request.AggregationPerEnergysupplierPerGridarea.EnergySupplierId),
-            Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerBalanceresponsiblepartyPerGridarea =>
-                new AggregationPerRoleAndGridArea(
-                    GridAreaCode: request.AggregationPerBalanceresponsiblepartyPerGridarea.GridAreaCode,
-                    BalanceResponsibleId: request.AggregationPerBalanceresponsiblepartyPerGridarea.BalanceResponsiblePartyId),
-            Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest.AggregationLevelOneofCase.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea =>
-                new AggregationPerRoleAndGridArea(
-                    GridAreaCode: request.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.GridAreaCode,
-                    EnergySupplierId: request.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.EnergySupplierId,
-                    BalanceResponsibleId: request.AggregationPerEnergysupplierPerBalanceresponsiblepartyPerGridarea.BalanceResponsiblePartyId),
-            _ => throw new InvalidOperationException("Unknown aggregation level"),
-        };
+        return new AggregationPerRoleAndGridArea(
+            GridAreaCode: request.HasGridAreaCode ? request.GridAreaCode : null,
+            EnergySupplierId: request.HasEnergySupplierId ? request.EnergySupplierId : null,
+            BalanceResponsibleId: request.HasBalanceResponsibleId ? request.BalanceResponsibleId : null);
     }
 
-    private Period MapPeriod(Energinet.DataHub.Edi.Requests.Period period)
+    private static Period MapPeriod(Energinet.DataHub.Edi.Requests.Period period)
     {
         return new Period(
         InstantPattern.General.Parse(period.Start).Value,
