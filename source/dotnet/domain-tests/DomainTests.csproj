@@ -54,6 +54,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" />
+    <ProjectReference Include="..\wholesale-api\Test.Core\Test.Core.csproj" />
   </ItemGroup>
 
 </Project>
