@@ -70,12 +70,22 @@ def _filter_by_grid_area(
 
     check_all_grid_areas_have_metering_points(grid_area_df, metering_points_periods_df)
 
-    grid_area_df = grid_area_df.withColumnRenamed(Colname.grid_area, "ga_GridAreaCode")
+    selected_grid_areas = "selected_grid_areas"
+
+    grid_area_df = grid_area_df.withColumnRenamed(
+        Colname.grid_area, selected_grid_areas
+    )
     metering_points_periods_df = metering_points_periods_df.join(
         grid_area_df,
-        metering_points_periods_df[Colname.grid_area]
-        == grid_area_df["ga_GridAreaCode"],
-        "inner",
+        on=[
+            metering_points_periods_df[Colname.grid_area]
+            == grid_area_df[selected_grid_areas],
+            metering_points_periods_df[Colname.from_grid_area]
+            == grid_area_df[selected_grid_areas],
+            metering_points_periods_df[Colname.to_grid_area]
+            == grid_area_df[selected_grid_areas],
+        ],
+        how="inner",
     )
 
     return metering_points_periods_df

@@ -47,8 +47,6 @@ class TableReader:
 
         assert_schema(df.schema, metering_point_period_schema)
 
-        df = df.withColumnRenamed("grid_area_code", Colname.grid_area)
-        df = df.withColumnRenamed("from_grid_area_code", Colname.from_grid_area)
         df = self._fix_settlement_method(df)
         df = self._fix_metering_point_type(df)
         return df
