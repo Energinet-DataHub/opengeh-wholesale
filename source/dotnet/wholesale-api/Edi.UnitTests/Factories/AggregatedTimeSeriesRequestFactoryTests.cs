@@ -38,7 +38,6 @@ public class AggregatedTimeSeriesRequestFactoryTests
         var actual = AggregatedTimeSeriesRequestFactory.Parse(request);
 
         // Assert
-        actual.Should().NotBeNull();
         using var assertionScope = new AssertionScope();
         var aggregationLevel = actual.AggregationPerRoleAndGridArea;
         aggregationLevel.BalanceResponsibleId.Should().Be(balanceResponsibleId);
@@ -62,7 +61,6 @@ public class AggregatedTimeSeriesRequestFactoryTests
         var actual = AggregatedTimeSeriesRequestFactory.Parse(request);
 
         // Assert
-        actual.Should().NotBeNull();
         using var assertionScope = new AssertionScope();
         var aggregationLevel = actual.AggregationPerRoleAndGridArea;
         aggregationLevel.BalanceResponsibleId.Should().Be(balanceResponsibleId);
@@ -86,7 +84,6 @@ public class AggregatedTimeSeriesRequestFactoryTests
         var actual = AggregatedTimeSeriesRequestFactory.Parse(request);
 
         // Assert
-        actual.Should().NotBeNull();
         using var assertionScope = new AssertionScope();
         var aggregationLevel = actual.AggregationPerRoleAndGridArea;
         aggregationLevel.BalanceResponsibleId.Should().BeNull();

@@ -36,8 +36,8 @@ namespace Energinet.DataHub.Wholesale.EDI.UnitTests;
 public class AggregatedTimeSeriesRequestHandlerTests
 {
     private static readonly ValidationError _noDataAvailable = new("Ingen data tilgængelig / No data available", "E0H");
-
     private static readonly ValidationError _noDataForRequestedGridArea = new("Forkert netområde / invalid grid area", "D46");
+    private static readonly ValidationError _invalidEnergySupplierField = new("Feltet EnergySupplier skal være udfyldt med et valid GLN/EIC nummer når en elleverandør anmoder om data / EnergySupplier must be submitted with a valid GLN/EIC number when an energy supplier requests data", "E16");
 
     [Theory]
     [InlineAutoMoqData]
@@ -90,6 +90,56 @@ public class AggregatedTimeSeriesRequestHandlerTests
 
     [Theory]
     [InlineAutoMoqData]
+    public async Task ProcessAsync_WithRequestIsLatestCorrection_SendsAcceptedEdiMessage(
+        [Frozen] Mock<IAggregatedTimeSeriesQueries> aggregatedTimeSeriesQueries,
+        [Frozen] Mock<IEdiClient> senderMock,
+        [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator)
+    {
+        // Arrange
+        const string expectedAcceptedSubject = nameof(AggregatedTimeSeriesRequestAccepted);
+        var expectedReferenceId = Guid.NewGuid().ToString();
+        var request = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithBusinessReason("D32")
+            .Build();
+
+        var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
+            properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
+            body: new BinaryData(request.ToByteArray()));
+
+        var aggregatedTimeSeries = CreateAggregatedTimeSeries();
+        aggregatedTimeSeriesQueries
+            .Setup(parameters => parameters.GetLatestCorrectionForGridAreaAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
+            .Returns(() => aggregatedTimeSeries.ToAsyncEnumerable());
+
+        validator.Setup(vali => vali.Validate(
+                It.IsAny<AggregatedTimeSeriesRequest>()))
+            .Returns(() => new List<ValidationError>());
+
+        var sut = new AggregatedTimeSeriesRequestHandler(
+            senderMock.Object,
+            validator.Object,
+            aggregatedTimeSeriesQueries.Object);
+
+        // Act
+        await sut.ProcessAsync(
+            serviceBusReceivedMessage,
+            expectedReferenceId,
+            CancellationToken.None);
+
+        // Assert
+        senderMock.Verify(
+            bus => bus.SendAsync(
+            It.Is<ServiceBusMessage>(message =>
+                message.Subject.Equals(expectedAcceptedSubject)
+                && message.ApplicationProperties.ContainsKey("ReferenceId")
+                && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
+            It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
     public async Task ProcessAsync_WhenNoAggregatedTimeSeries_SendsRejectedEdiMessage(
         [Frozen] Mock<IAggregatedTimeSeriesQueries> aggregatedTimeSeriesQueries,
         [Frozen] Mock<IEdiClient> senderMock,
@@ -100,6 +150,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
         var expectedReferenceId = Guid.NewGuid().ToString();
         var request = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
+            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
             .Build();
         var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
@@ -155,8 +206,6 @@ public class AggregatedTimeSeriesRequestHandlerTests
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(request.ToByteArray()));
 
-        var aggregatedTimeSeries = CreateAggregatedTimeSeries();
-
         validator.Setup(vali => vali.Validate(
                 It.IsAny<AggregatedTimeSeriesRequest>()))
             .Returns(() => new List<ValidationError>());
@@ -167,6 +216,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
                     It.IsAny<AggregatedTimeSeriesQueryParameters>()))
             .Returns(() => new List<AggregatedTimeSeries>().ToAsyncEnumerable());
 
+        var aggregatedTimeSeries = CreateAggregatedTimeSeries();
         aggregatedTimeSeriesQueries
             .Setup(parameters =>
                 parameters.GetAsync(
@@ -190,6 +240,52 @@ public class AggregatedTimeSeriesRequestHandlerTests
             It.Is<ServiceBusMessage>(message =>
                 message.Subject.Equals(expectedRejectedSubject)
                 && message.WithErrorCode(_noDataForRequestedGridArea.ErrorCode)
+                && message.ApplicationProperties.ContainsKey("ReferenceId")
+                && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
+            It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task ProcessAsync_WhenRequestHasValidationErrors_SendsRejectedEdiMessage(
+        [Frozen] Mock<IAggregatedTimeSeriesQueries> aggregatedTimeSeriesQueries,
+        [Frozen] Mock<IEdiClient> senderMock,
+        [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator)
+    {
+        // Arrange
+        const string expectedRejectedSubject = nameof(AggregatedTimeSeriesRequestRejected);
+        var expectedReferenceId = Guid.NewGuid().ToString();
+        var request = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
+            .WithGridArea("303")
+            .Build();
+        var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
+            properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
+            body: new BinaryData(request.ToByteArray()));
+
+        validator.Setup(vali => vali.Validate(
+                It.IsAny<AggregatedTimeSeriesRequest>()))
+            .Returns(() => new List<ValidationError> { _invalidEnergySupplierField });
+
+        var sut = new AggregatedTimeSeriesRequestHandler(
+            senderMock.Object,
+            validator.Object,
+            aggregatedTimeSeriesQueries.Object);
+
+        // Act
+        await sut.ProcessAsync(
+            serviceBusReceivedMessage,
+            expectedReferenceId,
+            CancellationToken.None);
+
+        // Assert
+        senderMock.Verify(
+            bus => bus.SendAsync(
+            It.Is<ServiceBusMessage>(message =>
+                message.Subject.Equals(expectedRejectedSubject)
+                && message.WithErrorCode(_invalidEnergySupplierField.ErrorCode)
                 && message.ApplicationProperties.ContainsKey("ReferenceId")
                 && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
             It.IsAny<CancellationToken>()),
