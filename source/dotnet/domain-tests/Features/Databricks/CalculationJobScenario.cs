@@ -38,7 +38,6 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Databricks
         [DomainFact]
         public void Given_CalculationJobInput()
         {
-            // TODO: Validate input (especially date)
             var createdTime = SystemClock.Instance.GetCurrentInstant();
             var createdByUserId = Guid.Parse("DED7734B-DD56-43AD-9EE8-0D7EFDA6C783");
             Fixture.ScenarioState.CalculationJobInput = new Batch(
