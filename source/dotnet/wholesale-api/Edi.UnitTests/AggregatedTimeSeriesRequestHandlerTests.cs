@@ -248,6 +248,65 @@ public class AggregatedTimeSeriesRequestHandlerTests
 
     [Theory]
     [InlineAutoMoqData]
+    public async Task ProcessAsync_WhenNoAggregatedTimeSeriesForAnyGridArea_SendsRejectedEdiMessage(
+        [Frozen] Mock<IAggregatedTimeSeriesQueries> aggregatedTimeSeriesQueries,
+        [Frozen] Mock<IEdiClient> senderMock,
+        [Frozen] Mock<IValidator<AggregatedTimeSeriesRequest>> validator)
+    {
+        // Arrange
+        const string expectedRejectedSubject = nameof(AggregatedTimeSeriesRequestRejected);
+        var expectedReferenceId = Guid.NewGuid().ToString();
+        var request = AggregatedTimeSeriesRequestBuilder
+            .AggregatedTimeSeriesRequest()
+            .WithRequestedByActorRole(ActorRoleCode.EnergySupplier)
+            .WithGridArea("303")
+            .Build();
+        var serviceBusReceivedMessage = ServiceBusModelFactory.ServiceBusReceivedMessage(
+            properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
+            body: new BinaryData(request.ToByteArray()));
+
+        validator.Setup(vali => vali.Validate(
+                It.IsAny<AggregatedTimeSeriesRequest>()))
+            .Returns(() => new List<ValidationError>());
+
+        aggregatedTimeSeriesQueries
+            .Setup(parameters =>
+                parameters.GetAsync(
+                    It.IsAny<AggregatedTimeSeriesQueryParameters>()))
+            .Returns(() => new List<AggregatedTimeSeries>().ToAsyncEnumerable());
+
+        var aggregatedTimeSeries = CreateAggregatedTimeSeries();
+        aggregatedTimeSeriesQueries
+            .Setup(parameters =>
+                parameters.GetAsync(
+                    It.Is<AggregatedTimeSeriesQueryParameters>(x => x.GridArea == null)))
+            .Returns(() => new List<AggregatedTimeSeries>().ToAsyncEnumerable());
+
+        var sut = new AggregatedTimeSeriesRequestHandler(
+            senderMock.Object,
+            validator.Object,
+            aggregatedTimeSeriesQueries.Object);
+
+        // Act
+        await sut.ProcessAsync(
+            serviceBusReceivedMessage,
+            expectedReferenceId,
+            CancellationToken.None);
+
+        // Assert
+        senderMock.Verify(
+            bus => bus.SendAsync(
+            It.Is<ServiceBusMessage>(message =>
+                message.Subject.Equals(expectedRejectedSubject)
+                && message.WithErrorCode(_noDataAvailable.ErrorCode)
+                && message.ApplicationProperties.ContainsKey("ReferenceId")
+                && message.ApplicationProperties["ReferenceId"].Equals(expectedReferenceId)),
+            It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
     public async Task ProcessAsync_WhenRequestHasValidationErrors_SendsRejectedEdiMessage(
         [Frozen] Mock<IAggregatedTimeSeriesQueries> aggregatedTimeSeriesQueries,
         [Frozen] Mock<IEdiClient> senderMock,
