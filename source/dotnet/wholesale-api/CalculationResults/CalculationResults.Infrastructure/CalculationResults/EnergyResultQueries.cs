@@ -12,14 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults.Statements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.Common.Databricks.Options;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NodaTime;
@@ -29,14 +31,14 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 
 public class EnergyResultQueries : IEnergyResultQueries
 {
-    private readonly IDatabricksSqlStatementClient _sqlStatementClient;
+    private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor;
     private readonly IBatchesClient _batchesClient;
     private readonly DeltaTableOptions _deltaTableOptions;
     private readonly ILogger<EnergyResultQueries> _logger;
 
-    public EnergyResultQueries(IDatabricksSqlStatementClient sqlStatementClient, IBatchesClient batchesClient, IOptions<DeltaTableOptions> deltaTableOptions, ILogger<EnergyResultQueries> logger)
+    public EnergyResultQueries(DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor, IBatchesClient batchesClient, IOptions<DeltaTableOptions> deltaTableOptions, ILogger<EnergyResultQueries> logger)
     {
-        _sqlStatementClient = sqlStatementClient;
+        _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
         _batchesClient = batchesClient;
         _deltaTableOptions = deltaTableOptions.Value;
         _logger = logger;
@@ -45,31 +47,37 @@ public class EnergyResultQueries : IEnergyResultQueries
     public async IAsyncEnumerable<EnergyResult> GetAsync(Guid batchId)
     {
         var batch = await _batchesClient.GetAsync(batchId).ConfigureAwait(false);
-        var sql = CreateBatchResultsSql(batchId);
-        await foreach (var calculationResult in GetInternalAsync(sql, batch.PeriodStart.ToInstant(), batch.PeriodEnd.ToInstant()))
+        var statement = new EnergyResultQueryStatement(batchId, _deltaTableOptions);
+        await foreach (var calculationResult in GetInternalAsync(statement, batch.PeriodStart.ToInstant(), batch.PeriodEnd.ToInstant()))
             yield return calculationResult;
         _logger.LogDebug("Fetched all energy results for batch {BatchId}", batchId);
     }
 
-    private async IAsyncEnumerable<EnergyResult> GetInternalAsync(string sql, Instant periodStart, Instant periodEnd)
+    public static bool BelongsToDifferentResults(DatabricksSqlRow row, DatabricksSqlRow otherRow)
+    {
+        return !row[EnergyResultColumnNames.CalculationResultId]!.Equals(otherRow[EnergyResultColumnNames.CalculationResultId]);
+    }
+
+    private async IAsyncEnumerable<EnergyResult> GetInternalAsync(EnergyResultQueryStatement statement, Instant periodStart, Instant periodEnd)
     {
         var timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
-        SqlResultRow? currentRow = null;
+        DatabricksSqlRow? currentRow = null;
         var resultCount = 0;
 
-        await foreach (var nextRow in _sqlStatementClient.ExecuteAsync(sql, sqlStatementParameters: null).ConfigureAwait(false))
+        await foreach (var nextRow in _databricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement, Format.JsonArray).ConfigureAwait(false))
         {
-            var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(nextRow);
+            var databricksSqlNextRow = new DatabricksSqlRow(nextRow);
+            var timeSeriesPoint = EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint(databricksSqlNextRow);
 
-            if (currentRow != null && BelongsToDifferentResults(currentRow, nextRow))
+            if (currentRow != null && BelongsToDifferentResults(currentRow, databricksSqlNextRow))
             {
-                yield return EnergyResultFactory.CreateEnergyResult(currentRow, timeSeriesPoints, periodStart, periodEnd);
+                yield return EnergyResultFactory.CreateEnergyResult(currentRow!, timeSeriesPoints, periodStart, periodEnd);
                 resultCount++;
                 timeSeriesPoints = new List<EnergyTimeSeriesPoint>();
             }
 
             timeSeriesPoints.Add(timeSeriesPoint);
-            currentRow = nextRow;
+            currentRow = databricksSqlNextRow;
         }
 
         if (currentRow != null)
@@ -79,35 +87,5 @@ public class EnergyResultQueries : IEnergyResultQueries
         }
 
         _logger.LogDebug("Fetched {ResultCount} calculation results", resultCount);
-    }
-
-    private string CreateBatchResultsSql(Guid batchId)
-    {
-        return $@"
-SELECT {string.Join(", ", SqlColumnNames)}
-FROM {_deltaTableOptions.SCHEMA_NAME}.{_deltaTableOptions.ENERGY_RESULTS_TABLE_NAME}
-WHERE {EnergyResultColumnNames.BatchId} = '{batchId}'
-ORDER BY {EnergyResultColumnNames.CalculationResultId}, {EnergyResultColumnNames.Time}
-";
-    }
-
-    public static string[] SqlColumnNames { get; } =
-    {
-        EnergyResultColumnNames.BatchId,
-        EnergyResultColumnNames.GridArea,
-        EnergyResultColumnNames.FromGridArea,
-        EnergyResultColumnNames.TimeSeriesType,
-        EnergyResultColumnNames.EnergySupplierId,
-        EnergyResultColumnNames.BalanceResponsibleId,
-        EnergyResultColumnNames.Time,
-        EnergyResultColumnNames.Quantity,
-        EnergyResultColumnNames.QuantityQualities,
-        EnergyResultColumnNames.CalculationResultId,
-        EnergyResultColumnNames.BatchProcessType,
-    };
-
-    public static bool BelongsToDifferentResults(SqlResultRow row, SqlResultRow otherRow)
-    {
-        return row[EnergyResultColumnNames.CalculationResultId] != otherRow[EnergyResultColumnNames.CalculationResultId];
     }
 }

@@ -16,7 +16,7 @@ from pyspark.sql.dataframe import DataFrame
 import pyspark.sql.functions as f
 from pyspark.sql.types import DecimalType, StringType, ArrayType
 
-import package.calculation.energy.transformations as t
+import package.calculation.energy.aggregators.transformations as t
 from package.codelists import ChargeType, ChargeResolution
 from package.constants import Colname
 
@@ -25,10 +25,10 @@ def get_tariff_charges(
     metering_points: DataFrame,
     time_series: DataFrame,
     charges_df: DataFrame,
-    resolution_duration: ChargeResolution,
+    resolution: ChargeResolution,
 ) -> DataFrame:
     # filter on resolution
-    charges_df = _get_charges_based_on_resolution(charges_df, resolution_duration)
+    charges_df = charges_df.filter(f.col(Colname.resolution) == resolution.value)
 
     df = _join_properties_on_charges_with_given_charge_type(
         charges_df,
@@ -75,14 +75,6 @@ def get_subscription_charges(
     )
 
 
-def _get_charges_based_on_resolution(
-    charges_df: DataFrame, resolution_duration: ChargeResolution
-) -> DataFrame:
-    return charges_df.filter(
-        f.col(Colname.charge_resolution) == resolution_duration.value
-    )
-
-
 def _get_charges_based_on_charge_type(
     charges_df: DataFrame, charge_type: ChargeType
 ) -> DataFrame:
@@ -109,7 +101,7 @@ def _explode_subscription(charges_df: DataFrame) -> DataFrame:
             Colname.charge_type,
             Colname.charge_owner,
             Colname.charge_tax,
-            Colname.charge_resolution,
+            Colname.resolution,
             Colname.charge_time,
             Colname.charge_price,
             Colname.metering_point_id,
@@ -133,7 +125,7 @@ def _join_with_metering_points(df: DataFrame, metering_points: DataFrame) -> Dat
         df[Colname.charge_type],
         df[Colname.charge_owner],
         df[Colname.charge_tax],
-        df[Colname.charge_resolution],
+        df[Colname.resolution],
         df[Colname.charge_time],
         df[Colname.charge_price],
         df[Colname.metering_point_id],
@@ -191,7 +183,7 @@ def _join_with_grouped_time_series(
         df[Colname.charge_type],
         df[Colname.charge_owner],
         df[Colname.charge_tax],
-        df[Colname.charge_resolution],
+        df[Colname.resolution],
         df[Colname.charge_time],
         df[Colname.charge_price],
         df[Colname.metering_point_id],
@@ -203,20 +195,6 @@ def _join_with_grouped_time_series(
         grouped_time_series[Colname.qualities],
     )
     return df
-
-
-def _get_window_duration_string_based_on_resolution(
-    resolution_duration: ChargeResolution,
-) -> str:
-    window_duration_string = "1 hour"
-
-    if resolution_duration == ChargeResolution.DAY:
-        window_duration_string = "1 day"
-
-    if resolution_duration == ChargeResolution.MONTH:
-        raise NotImplementedError("Month not yet implemented")
-
-    return window_duration_string
 
 
 # Join charge_master_data, charge prices, charge links, and metering points together.

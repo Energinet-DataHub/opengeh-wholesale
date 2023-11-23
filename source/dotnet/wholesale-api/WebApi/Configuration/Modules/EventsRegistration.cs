@@ -13,10 +13,10 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
-using Energinet.DataHub.Core.JsonSerialization;
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 using Energinet.DataHub.Wholesale.Contracts.Events;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Energinet.DataHub.Wholesale.Events.Application.GridArea;
@@ -26,8 +26,11 @@ using Energinet.DataHub.Wholesale.Events.Application.Options;
 using Energinet.DataHub.Wholesale.Events.Application.Triggers;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Energinet.DataHub.Wholesale.Events.Application.Workers;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.AmountPerChargeResultProducedV1.Factories;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.CalculationResultCompleted.Factories;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProducedV2.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedBatches;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.GridArea;
@@ -88,11 +91,10 @@ public static class EventsRegistration
     {
         serviceCollection
             .AddScoped<ICalculationResultCompletedFactory, CalculationResultCompletedFactory>()
-            .AddScoped<IEnergyResultProducedV1Factory, EnergyResultProducedV1Factory>()
+            .AddScoped<IEnergyResultProducedV2Factory, EnergyResultProducedV2Factory>()
             .AddScoped<IAmountPerChargeResultProducedV1Factory, AmountPerChargeResultProducedV1Factory>()
             .AddScoped<IMonthlyAmountPerChargeResultProducedV1Factory, MonthlyAmountPerChargeResultProducedV1Factory>()
-            .AddScoped<IEventsDatabaseContext, EventsDatabaseContext>()
-            .AddSingleton<IJsonSerializer, JsonSerializer>();
+            .AddScoped<IEventsDatabaseContext, EventsDatabaseContext>();
     }
 
     private static void AddIntegrationEventPublisher(this IServiceCollection serviceCollection, ServiceBusOptions serviceBusOptions)

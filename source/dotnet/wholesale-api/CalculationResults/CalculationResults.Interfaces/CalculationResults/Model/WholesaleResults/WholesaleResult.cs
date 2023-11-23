@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Common.Models;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
@@ -33,7 +33,7 @@ public sealed class WholesaleResult
         string chargeOwnerId,
         bool isTax,
         QuantityUnit quantityUnit,
-        ChargeResolution chargeResolution,
+        Resolution resolution,
         MeteringPointType? meteringPointType,
         SettlementMethod? settlementMethod,
         IReadOnlyCollection<WholesaleTimeSeriesPoint> timeSeriesPoints)
@@ -54,7 +54,7 @@ public sealed class WholesaleResult
         ChargeType = chargeType;
         ChargeOwnerId = chargeOwnerId;
         QuantityUnit = quantityUnit;
-        ChargeResolution = chargeResolution;
+        Resolution = resolution;
         MeteringPointType = meteringPointType;
         SettlementMethod = settlementMethod;
 
@@ -87,7 +87,7 @@ public sealed class WholesaleResult
 
     public QuantityUnit QuantityUnit { get; }
 
-    public ChargeResolution ChargeResolution { get; }
+    public Resolution Resolution { get; }
 
     public MeteringPointType? MeteringPointType { get; }
 

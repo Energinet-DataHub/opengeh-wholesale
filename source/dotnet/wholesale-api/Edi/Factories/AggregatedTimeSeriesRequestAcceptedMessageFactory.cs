@@ -24,9 +24,9 @@ namespace Energinet.DataHub.Wholesale.EDI.Factories;
 
 public class AggregatedTimeSeriesRequestAcceptedMessageFactory
 {
-    public static ServiceBusMessage Create(EnergyResult calculationResult, string referenceId)
+    public static ServiceBusMessage Create(IReadOnlyCollection<AggregatedTimeSeries> aggregatedTimeSeries, string referenceId)
     {
-        var body = CreateAcceptedResponse(calculationResult);
+        var body = CreateAcceptedResponse(aggregatedTimeSeries);
 
         var message = new ServiceBusMessage()
         {
@@ -38,25 +38,30 @@ public class AggregatedTimeSeriesRequestAcceptedMessageFactory
         return message;
     }
 
-    private static AggregatedTimeSeriesRequestAccepted CreateAcceptedResponse(EnergyResult energyResult)
+    private static AggregatedTimeSeriesRequestAccepted CreateAcceptedResponse(IReadOnlyCollection<AggregatedTimeSeries> aggregatedTimeSeries)
     {
-        var points = CreateTimeSeriesPoints(energyResult);
-
-        return new AggregatedTimeSeriesRequestAccepted()
+        var response = new AggregatedTimeSeriesRequestAccepted();
+        foreach (var series in aggregatedTimeSeries)
         {
-            GridArea = energyResult.GridArea,
-            QuantityUnit = QuantityUnit.Kwh,
-            TimeSeriesPoints = { points },
-            TimeSeriesType = CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromCalculationsResult(energyResult.TimeSeriesType),
-            Resolution = Resolution.Pt15M,
-        };
+            var points = CreateTimeSeriesPoints(series);
+            response.Series.Add(new Series()
+            {
+                GridArea = series.GridArea,
+                QuantityUnit = QuantityUnit.Kwh,
+                TimeSeriesPoints = { points },
+                TimeSeriesType = CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromCalculationsResult(series.TimeSeriesType),
+                Resolution = Resolution.Pt15M,
+            });
+        }
+
+        return response;
     }
 
-    private static IReadOnlyCollection<TimeSeriesPoint> CreateTimeSeriesPoints(EnergyResult energyResult)
+    private static IReadOnlyCollection<TimeSeriesPoint> CreateTimeSeriesPoints(AggregatedTimeSeries aggregatedTimeSeries)
     {
         const decimal nanoFactor = 1_000_000_000;
         var points = new List<TimeSeriesPoint>();
-        foreach (var timeSeriesPoint in energyResult.TimeSeriesPoints)
+        foreach (var timeSeriesPoint in aggregatedTimeSeries.TimeSeriesPoints)
         {
             var units = decimal.ToInt64(timeSeriesPoint.Quantity);
             var nanos = decimal.ToInt32((timeSeriesPoint.Quantity - units) * nanoFactor);

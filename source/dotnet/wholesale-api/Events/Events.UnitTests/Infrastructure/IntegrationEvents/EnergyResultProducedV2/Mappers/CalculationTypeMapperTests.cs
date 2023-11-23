@@ -17,7 +17,7 @@ using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Energy
 using FluentAssertions;
 using Xunit;
 using EnergyResultProduced = Energinet.DataHub.Wholesale.Contracts.IntegrationEvents.EnergyResultProducedV2;
-using ProcessType = Energinet.DataHub.Wholesale.Common.Models.ProcessType;
+using ProcessType = Energinet.DataHub.Wholesale.Common.Interfaces.Models.ProcessType;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.IntegrationEvents.EnergyResultProducedV2.Mappers;
 

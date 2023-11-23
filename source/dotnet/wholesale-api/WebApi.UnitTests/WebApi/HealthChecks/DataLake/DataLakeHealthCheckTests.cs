@@ -15,7 +15,7 @@
 using Azure;
 using Azure.Storage.Files.DataLake;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.WebApi.HealthChecks.DataLake;
 using FluentAssertions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;

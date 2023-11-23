@@ -17,8 +17,9 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.CalculationResultCompleted.Factories;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProducedV2.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Factories;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -34,7 +35,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
             EnergyResult[] energyResults,
 #pragma warning disable xUnit1026 // Theory methods should use all of their parameters
             [Frozen(Matching.ImplementedInterfaces)] CalculationResultCompletedFactory calculationResultCompletedFactory,
-            [Frozen(Matching.ImplementedInterfaces)] EnergyResultProducedV1Factory energyResultProducedV1Factory,
+            [Frozen(Matching.ImplementedInterfaces)] EnergyResultProducedV2Factory energyResultProducedV2Factory,
 #pragma warning restore xUnit1026 // Theory methods should use all of their parameters
             [Frozen] Mock<IEnergyResultQueries> energyResultQueriesMock,
             EnergyResultEventProvider sut)

@@ -13,24 +13,24 @@
 // limitations under the License.
 
 using System.Globalization;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
+using AutoFixture;
+using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
-using Energinet.DataHub.Wholesale.Common.Databricks.Options;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.CalculationResults;
 
-public class EnergyResultQueriesTests : IClassFixture<DatabricksSqlStatementApiFixture>
+public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>, IClassFixture<DatabricksSqlStatementApiFixture>
 {
     private const string BatchId = "019703e7-98ee-45c1-b343-0cbf185a47d9";
     private const string FirstQuantity = "1.111";
@@ -39,36 +39,36 @@ public class EnergyResultQueriesTests : IClassFixture<DatabricksSqlStatementApiF
     private const string FourthQuantity = "4.444";
     private const string FifthQuantity = "5.555";
     private const string SixthQuantity = "6.666";
+
     private readonly DatabricksSqlStatementApiFixture _fixture;
+    private readonly Mock<IBatchesClient> _batchesClientMock;
 
     public EnergyResultQueriesTests(DatabricksSqlStatementApiFixture fixture)
     {
         _fixture = fixture;
+
+        // Mocks Setup - This is another way to setup mocks used in tests. The reason for this are:
+        // 1. Because DatabricksSqlWarehouseQueryExecutor doesn't implement an interface and the constructor is protected
+        // AutoFixture combined with inline is unable to create an instance of it.
+        // 2. The many mock parameters are avoided in tests
+        _batchesClientMock = Fixture.Freeze<Mock<IBatchesClient>>();
+        Fixture.Inject(_fixture.DatabricksSchemaManager.DeltaTableOptions);
+        Fixture.Inject(_fixture.GetDatabricksExecutor());
     }
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_ReturnsExpectedEnergyResult(
-        Mock<IHttpClientFactory> httpClientFactoryMock,
-        Mock<ILogger<SqlStatusResponseParser>> loggerMock,
-        Mock<IBatchesClient> batchesClientMock,
-        BatchDto batch,
-        Mock<ILogger<EnergyResultQueries>> energyResultQueriesLoggerMock)
+    public async Task GetAsync_ReturnsExpectedEnergyResult(BatchDto batch)
     {
         // Arrange
         const int expectedResultCount = 3;
         var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
         await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
         batch = batch with { BatchId = Guid.Parse(BatchId) };
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(
-            httpClientFactoryMock,
-            loggerMock,
-            new Mock<ILogger<DatabricksSqlStatementClient>>());
-        batchesClientMock.Setup(b => b.GetAsync(It.IsAny<Guid>())).ReturnsAsync(batch);
-        var sut = new EnergyResultQueries(sqlStatementClient, batchesClientMock.Object, deltaTableOptions, energyResultQueriesLoggerMock.Object);
+        _batchesClientMock.Setup(b => b.GetAsync(It.IsAny<Guid>())).ReturnsAsync(batch);
 
         // Act
-        var actual = await sut.GetAsync(batch.BatchId).ToListAsync();
+        var actual = await Sut.GetAsync(batch.BatchId).ToListAsync();
 
         // Assert
         using var assertionScope = new AssertionScope();

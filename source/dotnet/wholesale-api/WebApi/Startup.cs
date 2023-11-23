@@ -14,24 +14,22 @@
 
 using System.Reflection;
 using System.Text.Json.Serialization;
+using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
 using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
-using Energinet.DataHub.Core.App.FunctionApp.Middleware.CorrelationId;
 using Energinet.DataHub.Core.App.WebApp.Authentication;
 using Energinet.DataHub.Core.App.WebApp.Authorization;
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.Databricks.Jobs.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.Logging.LoggingMiddleware;
-using Energinet.DataHub.Wholesale.Common.Databricks.Options;
-using Energinet.DataHub.Wholesale.Common.Security;
-using Energinet.DataHub.Wholesale.Events.Application.Options;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.WebApi.Configuration;
 using Energinet.DataHub.Wholesale.WebApi.Configuration.Options;
 using Energinet.DataHub.Wholesale.WebApi.HealthChecks;
 using Energinet.DataHub.Wholesale.WebApi.HealthChecks.DataLake;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Azure;
 using Microsoft.OpenApi.Models;
 
@@ -87,14 +85,13 @@ public class Startup
             config.AddSecurityRequirement(securityRequirement);
         });
 
-        serviceCollection.AddApiVersioning(config =>
+        var apiVersioningBuilder = serviceCollection.AddApiVersioning(config =>
         {
             config.DefaultApiVersion = new ApiVersion(3, 0);
             config.AssumeDefaultVersionWhenUnspecified = true;
             config.ReportApiVersions = true;
         });
-
-        serviceCollection.AddVersionedApiExplorer(setup =>
+        apiVersioningBuilder.AddApiExplorer(setup =>
         {
             setup.GroupNameFormat = "'v'VVV";
             setup.SubstituteApiVersionInUrl = true;
@@ -117,7 +114,6 @@ public class Startup
         AddJwtTokenSecurity(serviceCollection);
         AddHealthCheck(serviceCollection);
         serviceCollection.AddApplicationInsightsTelemetry(options => options.EnableAdaptiveSampling = false);
-        AddCorrelationContext(serviceCollection);
 
         serviceCollection.AddUserAuthentication<FrontendUser, FrontendUserProvider>();
         serviceCollection.AddHttpLoggingScope(DomainName);
@@ -203,22 +199,5 @@ public class Startup
                 serviceBusOptions.SERVICE_BUS_MANAGE_CONNECTION_STRING,
                 serviceBusOptions.EDI_INBOX_MESSAGE_QUEUE_NAME,
                 name: HealthCheckNames.EdiInboxEventsQueue);
-    }
-
-    /// <summary>
-    /// The middleware to handle properly set a CorrelationContext is only supported for Functions.
-    /// This registry will ensure a new CorrelationContext (with a new Id) is set for each session
-    /// </summary>
-    private static void AddCorrelationContext(IServiceCollection serviceCollection)
-    {
-        var serviceDescriptor =
-            serviceCollection.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(ICorrelationContext));
-        serviceCollection.Remove(serviceDescriptor!);
-        serviceCollection.AddScoped<ICorrelationContext>(_ =>
-        {
-            var correlationContext = new CorrelationContext();
-            correlationContext.SetId(Guid.NewGuid().ToString());
-            return correlationContext;
-        });
     }
 }

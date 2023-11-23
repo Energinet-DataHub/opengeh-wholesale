@@ -12,11 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Abstractions;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Formats;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports.Statements;
+using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
-using Energinet.DataHub.Wholesale.Common.Databricks.Options;
-using Energinet.DataHub.Wholesale.Common.Models;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Microsoft.Extensions.Options;
 using NodaTime;
 
@@ -24,12 +27,12 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Settleme
 
 public class SettlementReportResultQueries : ISettlementReportResultQueries
 {
-    private readonly IDatabricksSqlStatementClient _sqlStatementClient;
+    private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor;
     private readonly DeltaTableOptions _deltaTableOptions;
 
-    public SettlementReportResultQueries(IDatabricksSqlStatementClient sqlStatementClient, IOptions<DeltaTableOptions> deltaTableOptions)
+    public SettlementReportResultQueries(DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor, IOptions<DeltaTableOptions> deltaTableOptions)
     {
-        _sqlStatementClient = sqlStatementClient;
+        _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
         _deltaTableOptions = deltaTableOptions.Value;
     }
 
@@ -40,8 +43,13 @@ public class SettlementReportResultQueries : ISettlementReportResultQueries
         Instant periodEnd,
         string? energySupplier)
     {
-        var sql = SettlementReportSqlStatementFactory.Create(_deltaTableOptions.SCHEMA_NAME, _deltaTableOptions.ENERGY_RESULTS_TABLE_NAME, gridAreaCodes, processType, periodStart, periodEnd, energySupplier);
-        var rows = await _sqlStatementClient.ExecuteAsync(sql, sqlStatementParameters: null).ToListAsync().ConfigureAwait(false);
-        return SettlementReportDataFactory.Create(rows);
+        var statement = new QuerySettlementReportStatement(_deltaTableOptions.SCHEMA_NAME, _deltaTableOptions.ENERGY_RESULTS_TABLE_NAME, gridAreaCodes, processType, periodStart, periodEnd, energySupplier);
+        var rows = await _databricksSqlWarehouseQueryExecutor
+            .ExecuteStatementAsync(statement, Format.JsonArray)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        var databricksSqlRows = rows.Select(x => new DatabricksSqlRow(x));
+        return SettlementReportDataFactory.Create(databricksSqlRows);
     }
 }

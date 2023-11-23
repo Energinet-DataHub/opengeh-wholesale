@@ -16,7 +16,7 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Configuration;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ResourceProvider;
 using Energinet.DataHub.Core.TestCommon.Diagnostics;
-using Energinet.DataHub.Wholesale.Events.Application.Options;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using Xunit;
 
@@ -62,7 +62,8 @@ public class ServiceBusSenderFixture : IAsyncLifetime, IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         await _serviceBusResourceProvider.DisposeAsync();
-        if (_sender != null) await _sender.DisposeAsync();
+        if (_sender != null)
+            await _sender.DisposeAsync();
         await ServiceBusClient.DisposeAsync();
         GC.SuppressFinalize(this);
     }
@@ -73,9 +74,18 @@ public class ServiceBusSenderFixture : IAsyncLifetime, IAsyncDisposable
         await Task.CompletedTask.ConfigureAwait(false);
     }
 
-    internal async Task PublishAsync(string message, string referenceId)
+    internal async Task PublishAsync(string message, string? referenceId = null)
     {
-        if (_sender != null) await _sender.SendMessageAsync(CreateAggregatedTimeSeriesRequestMessage(message, referenceId));
+        if (_sender == null)
+            return;
+
+        if (referenceId != null)
+        {
+            await _sender.SendMessageAsync(CreateAggregatedTimeSeriesRequestMessage(message, referenceId));
+            return;
+        }
+
+        await _sender.SendMessageAsync(new ServiceBusMessage(message));
     }
 
     private ServiceBusMessage CreateAggregatedTimeSeriesRequestMessage(string body, string referenceId)

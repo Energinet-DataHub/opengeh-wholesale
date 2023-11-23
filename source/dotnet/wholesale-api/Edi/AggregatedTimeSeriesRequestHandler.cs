@@ -15,37 +15,30 @@
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.Common.Logging;
 using Energinet.DataHub.Wholesale.EDI.Client;
 using Energinet.DataHub.Wholesale.EDI.Factories;
 using Energinet.DataHub.Wholesale.EDI.Mappers;
 using Energinet.DataHub.Wholesale.EDI.Models;
 using Energinet.DataHub.Wholesale.EDI.Validation;
-using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.EDI;
 
 public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHandler
 {
-    private readonly IRequestCalculationResultQueries _requestCalculationResultQueries;
     private readonly IEdiClient _ediClient;
     private readonly IValidator<Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest> _validator;
-    private readonly ILogger<AggregatedTimeSeriesRequestHandler> _logger;
-    private readonly IAggregatedTimeSeriesRequestFactory _aggregatedTimeSeriesRequestFactory;
+    private readonly IAggregatedTimeSeriesQueries _aggregatedTimeSeriesQueries;
     private static readonly ValidationError _noDataAvailable = new("Ingen data tilgængelig / No data available", "E0H");
+    private static readonly ValidationError _noDataForRequestedGridArea = new("Forkert netområde / invalid grid area", "D46");
 
     public AggregatedTimeSeriesRequestHandler(
-        IRequestCalculationResultQueries requestCalculationResultQueries,
         IEdiClient ediClient,
-        IAggregatedTimeSeriesRequestFactory aggregatedTimeSeriesRequestFactory,
         IValidator<Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest> validator,
-        ILogger<AggregatedTimeSeriesRequestHandler> logger)
+        IAggregatedTimeSeriesQueries aggregatedTimeSeriesQueries)
     {
-        _requestCalculationResultQueries = requestCalculationResultQueries;
         _ediClient = ediClient;
-        _aggregatedTimeSeriesRequestFactory = aggregatedTimeSeriesRequestFactory;
         _validator = validator;
-        _logger = logger;
+        _aggregatedTimeSeriesQueries = aggregatedTimeSeriesQueries;
     }
 
     public async Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken)
@@ -54,50 +47,99 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
 
         var validationErrors = _validator.Validate(aggregatedTimeSeriesRequest);
 
-        ServiceBusMessage message;
-        if (!validationErrors.Any())
+        if (validationErrors.Any())
         {
-            var aggregatedTimeSeriesRequestMessage = _aggregatedTimeSeriesRequestFactory.Parse(aggregatedTimeSeriesRequest);
-            var result = await GetCalculationResultsAsync(
-                aggregatedTimeSeriesRequestMessage,
-                cancellationToken).ConfigureAwait(false);
-
-            if (result is not null)
-            {
-                message = AggregatedTimeSeriesRequestAcceptedMessageFactory.Create(
-                    result,
-                    referenceId);
-            }
-            else
-            {
-                message = AggregatedTimeSeriesRequestRejectedMessageFactory.Create(new[] { _noDataAvailable }, referenceId);
-            }
-        }
-        else
-        {
-            message = AggregatedTimeSeriesRequestRejectedMessageFactory.Create(validationErrors.ToList(), referenceId);
+            await SendRejectedMessageAsync(validationErrors.ToList(), referenceId, cancellationToken).ConfigureAwait(false);
+            return;
         }
 
+        var aggregatedTimeSeriesRequestMessage = AggregatedTimeSeriesRequestFactory.Parse(aggregatedTimeSeriesRequest);
+        var results = await GetAggregatedTimeSeriesAsync(
+            aggregatedTimeSeriesRequestMessage,
+            cancellationToken).ConfigureAwait(false);
+
+        if (!results.Any())
+        {
+            var error = new List<ValidationError> { _noDataAvailable };
+            if (await EnergySupplierOrBalanceResponsibleHaveAggregatedTimeSeriesForAnotherGridAreasAsync(aggregatedTimeSeriesRequest, aggregatedTimeSeriesRequestMessage).ConfigureAwait(false))
+            {
+                error = new List<ValidationError> { _noDataForRequestedGridArea };
+            }
+
+            await SendRejectedMessageAsync(error, referenceId, cancellationToken).ConfigureAwait(false);
+            return;
+        }
+
+        await SendAcceptedMessageAsync(results, referenceId, cancellationToken).ConfigureAwait(false);
+    }
+
+    private async Task<IReadOnlyCollection<AggregatedTimeSeries>> GetAggregatedTimeSeriesAsync(
+        AggregatedTimeSeriesRequest request,
+        CancellationToken cancellationToken)
+    {
+        var parameters = CreateAggregatedTimeSeriesQueryParametersWithoutProcessType(request);
+
+        if (request.RequestedProcessType == RequestedProcessType.LatestCorrection)
+        {
+            return await _aggregatedTimeSeriesQueries.GetLatestCorrectionForGridAreaAsync(parameters).ToListAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        return await _aggregatedTimeSeriesQueries.GetAsync(
+            parameters with
+            {
+                ProcessType = ProcessTypeMapper.FromRequestedProcessType(request.RequestedProcessType),
+            }).ToListAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    private async Task<bool> EnergySupplierOrBalanceResponsibleHaveAggregatedTimeSeriesForAnotherGridAreasAsync(
+        Edi.Requests.AggregatedTimeSeriesRequest aggregatedTimeSeriesRequest,
+        AggregatedTimeSeriesRequest aggregatedTimeSeriesRequestMessage)
+    {
+        if (aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea.GridAreaCode == null)
+            return false;
+
+        var actorRole = aggregatedTimeSeriesRequest.RequestedByActorRole;
+        if (actorRole == ActorRoleCode.EnergySupplier || actorRole == ActorRoleCode.BalanceResponsibleParty)
+        {
+            var newAggregationLevel = aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea with { GridAreaCode = null };
+            var newRequest = aggregatedTimeSeriesRequestMessage with { AggregationPerRoleAndGridArea = newAggregationLevel };
+            var parameters = CreateAggregatedTimeSeriesQueryParametersWithoutProcessType(newRequest);
+
+            var results = _aggregatedTimeSeriesQueries.GetAsync(
+                    parameters with { ProcessType = ProcessTypeMapper.FromRequestedProcessType(newRequest.RequestedProcessType), })
+                .ConfigureAwait(false);
+
+            await foreach (var result in results)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static AggregatedTimeSeriesQueryParameters CreateAggregatedTimeSeriesQueryParametersWithoutProcessType(
+        AggregatedTimeSeriesRequest request)
+    {
+        var parameters = new AggregatedTimeSeriesQueryParameters(
+            CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromEdi(request.TimeSeriesType),
+            request.Period.Start,
+            request.Period.End,
+            request.AggregationPerRoleAndGridArea.GridAreaCode,
+            request.AggregationPerRoleAndGridArea.EnergySupplierId,
+            request.AggregationPerRoleAndGridArea.BalanceResponsibleId);
+        return parameters;
+    }
+
+    private async Task SendRejectedMessageAsync(IReadOnlyCollection<ValidationError> validationErrors, string referenceId, CancellationToken cancellationToken)
+    {
+        var message = AggregatedTimeSeriesRequestRejectedMessageFactory.Create(validationErrors, referenceId);
         await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
     }
 
-    private async Task<EnergyResult?> GetCalculationResultsAsync(
-        AggregatedTimeSeriesRequest aggregatedTimeSeriesRequestMessage,
-        CancellationToken cancellationToken)
+    private async Task SendAcceptedMessageAsync(IReadOnlyCollection<AggregatedTimeSeries> results, string referenceId, CancellationToken cancellationToken)
     {
-        var query = new EnergyResultQuery(
-            CalculationTimeSeriesTypeMapper.MapTimeSeriesTypeFromEdi(aggregatedTimeSeriesRequestMessage.TimeSeriesType),
-            aggregatedTimeSeriesRequestMessage.Period.Start,
-            aggregatedTimeSeriesRequestMessage.Period.End,
-            aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea.GridAreaCode,
-            aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea.EnergySupplierId,
-            aggregatedTimeSeriesRequestMessage.AggregationPerRoleAndGridArea.BalanceResponsibleId,
-            aggregatedTimeSeriesRequestMessage.ProcessType);
-
-        var calculationResult = await _requestCalculationResultQueries.GetAsync(query)
-            .ConfigureAwait(false);
-
-        _logger.LogDebug("Found {CalculationResult} calculation results based on {Query} query.", calculationResult?.ToJsonString(), query.ToJsonString());
-        return calculationResult;
+       var message = AggregatedTimeSeriesRequestAcceptedMessageFactory.Create(results, referenceId);
+       await _ediClient.SendAsync(message, cancellationToken).ConfigureAwait(false);
     }
 }

@@ -1,5 +1,21 @@
 # Wholesale Contracts Release notes
 
+## Version 6.0.0
+
+- Use `Common.DecimalValue` for `AmountPerChargeResultProducedV1` and `MonthlyAmountPerChargeResultProducedV1`. This is a breaking change because the namespace has changes in these two events.
+
+## Version 5.4.0
+
+- Added `EnergyResultProducedV2` with `EventMinorVersion=0`. We also deleted `EnergyResultProducedV1`, but as it was never used by anyone we only bump our minor version of the package.
+
+## Version 5.3.0
+
+- Updated `AmountPerChargeResultProducedV1`: `quantity` is not nullable. Bumped `EventMinorVersion` to `3`.
+
+## Version 5.2.0
+
+- Bump versions of NuGet package dependencies.
+
 ## Version 5.1.0
 
 Added 'Currency' to 'AmountPerChargeResultProducedV1' and 'MonthlyAmountPerChargeResultProducedV1

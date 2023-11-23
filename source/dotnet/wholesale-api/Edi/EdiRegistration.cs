@@ -16,8 +16,8 @@ using Energinet.DataHub.Edi.Requests;
 using Energinet.DataHub.Wholesale.EDI.Client;
 using Energinet.DataHub.Wholesale.EDI.Factories;
 using Energinet.DataHub.Wholesale.EDI.Validation;
-using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie;
-using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSerie.Rules;
+using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSeries;
+using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSeries.Rules;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Energinet.DataHub.Wholesale.EDI;
@@ -31,14 +31,13 @@ public static class EdiRegistration
     {
         serviceCollection.AddScoped<IAggregatedTimeSeriesRequestHandler, AggregatedTimeSeriesRequestHandler>();
         serviceCollection.AddSingleton<IEdiClient, EdiClient>();
-        serviceCollection.AddScoped<IAggregatedTimeSeriesRequestFactory, AggregatedTimeSeriesRequestFactory>();
         AddAggregatedTimeSeriesRequestValidation(serviceCollection);
     }
 
     public static void AddAggregatedTimeSeriesRequestValidation(IServiceCollection serviceCollection)
     {
-        serviceCollection.AddSingleton<IValidator<AggregatedTimeSeriesRequest>, AggregatedTimeSeriesRequestValidator>();
-        serviceCollection.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, PeriodValidationRule>();
+        serviceCollection.AddScoped<IValidator<AggregatedTimeSeriesRequest>, AggregatedTimeSeriesRequestValidator>();
+        serviceCollection.AddScoped<IValidationRule<AggregatedTimeSeriesRequest>, PeriodValidationRule>();
         serviceCollection.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, MeteringPointTypeValidationRule>();
         serviceCollection.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, EnergySupplierValidationRule>();
         serviceCollection.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, SettlementMethodValidationRule>();

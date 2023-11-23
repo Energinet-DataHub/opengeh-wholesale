@@ -13,7 +13,8 @@
 // limitations under the License.
 
 using System.Globalization;
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
+using AutoFixture;
+using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
@@ -21,17 +22,14 @@ using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.CalculationR
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
-using Energinet.DataHub.Wholesale.Common.Databricks.Options;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.CalculationResults;
 
-public class WholesaleResultQueriesTests : IClassFixture<DatabricksSqlStatementApiFixture>
+public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>, IClassFixture<DatabricksSqlStatementApiFixture>
 {
     private const string CalculationId = "019703e7-98ee-45c1-b343-0cbf185a47d9";
     private const string HourlyTariffCalculationResultId = "12345678-98ee-45c1-b343-0cbf185a47d9";
@@ -40,51 +38,40 @@ public class WholesaleResultQueriesTests : IClassFixture<DatabricksSqlStatementA
     private const string DefaultMonthlyAmount = "1.123456";
 
     private readonly DatabricksSqlStatementApiFixture _fixture;
+    private readonly Mock<IBatchesClient> _batchesClientMock;
 
     public WholesaleResultQueriesTests(DatabricksSqlStatementApiFixture fixture)
     {
         _fixture = fixture;
+        _batchesClientMock = Fixture.Freeze<Mock<IBatchesClient>>();
+        Fixture.Inject(_fixture.DatabricksSchemaManager.DeltaTableOptions);
+        Fixture.Inject(_fixture.GetDatabricksExecutor());
     }
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_WhenCalculationHasHourlyAndMonthlyTariff_ReturnsExpectedWholesaleResult(
-        Mock<IHttpClientFactory> httpClientFactoryMock,
-        Mock<ILogger<SqlStatusResponseParser>> sqlStatusResponseParserLoggerMock,
-        Mock<ILogger<DatabricksSqlStatementClient>> databricksSqlStatementClientLoggerMock,
-        Mock<IBatchesClient> batchesClientMock,
-        BatchDto batch,
-        Mock<ILogger<WholesaleResultQueries>> wholesaleResultQueriesLoggerMock)
+    public async Task GetAsync_WhenCalculationHasHourlyAndMonthlyTariff_ReturnsExpectedWholesaleResult(BatchDto batch)
     {
         // Arrange
         await InsertHourlyTariffAndMonthlyAmountTariffRowsAsync();
         batch = batch with { BatchId = Guid.Parse(CalculationId) };
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(
-            httpClientFactoryMock,
-            sqlStatusResponseParserLoggerMock,
-            databricksSqlStatementClientLoggerMock);
-        batchesClientMock
+        _batchesClientMock
             .Setup(b => b.GetAsync(It.IsAny<Guid>()))
             .ReturnsAsync(batch);
-        var sut = new WholesaleResultQueries(
-            sqlStatementClient,
-            batchesClientMock.Object,
-            _fixture.DatabricksSchemaManager.DeltaTableOptions,
-            wholesaleResultQueriesLoggerMock.Object);
 
         // Act
-        var actual = await sut.GetAsync(batch.BatchId).ToListAsync();
+        var actual = await Sut.GetAsync(batch.BatchId).ToListAsync();
 
         // Assert
         using var assertionScope = new AssertionScope();
         var actualHourlyAmount = actual.Single(row => row.Id.ToString() == HourlyTariffCalculationResultId);
         actualHourlyAmount.AmountType.Should().Be(AmountType.AmountPerCharge);
-        actualHourlyAmount.ChargeResolution.Should().Be(ChargeResolution.Hour);
+        actualHourlyAmount.Resolution.Should().Be(Resolution.Hour);
         actualHourlyAmount.TimeSeriesPoints.First().Amount.Should().Be(decimal.Parse(DefaultHourlyAmount, CultureInfo.InvariantCulture));
 
         var actualMonthlyAmount = actual.Single(row => row.Id.ToString() == MonthlyAmountTariffCalculationResultId);
         actualMonthlyAmount.AmountType.Should().Be(AmountType.MonthlyAmountPerCharge);
-        actualMonthlyAmount.ChargeResolution.Should().Be(ChargeResolution.Month);
+        actualMonthlyAmount.Resolution.Should().Be(Resolution.Month);
         actualMonthlyAmount.TimeSeriesPoints.First().Amount.Should().Be(decimal.Parse(DefaultMonthlyAmount, CultureInfo.InvariantCulture));
     }
 
@@ -94,7 +81,7 @@ public class WholesaleResultQueriesTests : IClassFixture<DatabricksSqlStatementA
             calculationId: CalculationId,
             calculationResultId: HourlyTariffCalculationResultId,
             chargeType: "tariff",
-            chargeResolution: "PT1H",
+            resolution: "PT1H",
             amountType: "amount_per_charge",
             meteringPointType: "production",
             settlementMethod: null,
@@ -104,7 +91,7 @@ public class WholesaleResultQueriesTests : IClassFixture<DatabricksSqlStatementA
             calculationId: CalculationId,
             calculationResultId: MonthlyAmountTariffCalculationResultId,
             chargeType: "tariff",
-            chargeResolution: "P1M",
+            resolution: "P1M",
             amountType: "monthly_amount_per_charge",
             meteringPointType: null,
             settlementMethod: null,

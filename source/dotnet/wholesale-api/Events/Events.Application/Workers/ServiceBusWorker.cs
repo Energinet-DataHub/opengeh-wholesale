@@ -12,19 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.ObjectModel;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.Logging;
-using Energinet.DataHub.Core.Messaging.Communication;
-using Energinet.DataHub.Core.Messaging.Communication.Subscriber;
-using Energinet.DataHub.Wholesale.Events.Application.Options;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.Workers;
-using Microsoft.Extensions.Hosting;
 
 public abstract class ServiceBusWorker<TWorkerType> : BackgroundService, IAsyncDisposable
 {
@@ -63,6 +56,7 @@ public abstract class ServiceBusWorker<TWorkerType> : BackgroundService, IAsyncD
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         if (_serviceBusProcessor == null) throw new ArgumentNullException();
+
         using (_logger.BeginScope(_loggingScope))
         {
             _logger.LogInformation("{Worker} started", _serviceName);

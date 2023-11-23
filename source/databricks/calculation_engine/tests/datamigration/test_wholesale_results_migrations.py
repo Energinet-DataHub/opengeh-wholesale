@@ -22,13 +22,14 @@ import uuid
 
 from helpers.data_frame_utils import set_column
 from package.codelists import (
+    AmountType,
     ChargeQuality,
-    ChargeResolution,
     ChargeType,
     ChargeUnit,
     MeteringPointType,
     ProcessType,
     SettlementMethod,
+    WholesaleResultResolution,
 )
 from package.constants import WholesaleResultColumnNames
 from package.infrastructure.paths import (
@@ -86,6 +87,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
             WholesaleResultColumnNames.energy_supplier_id,
             "neither-16-nor-13-digits-long",
         ),
+        (WholesaleResultColumnNames.quantity, None),
         (WholesaleResultColumnNames.quantity_unit, None),
         (WholesaleResultColumnNames.quantity_unit, "foo"),
         (WholesaleResultColumnNames.quantity_qualities, None),
@@ -157,7 +159,6 @@ actor_eic = "1234567890123456"
         (WholesaleResultColumnNames.grid_area, "007"),
         (WholesaleResultColumnNames.energy_supplier_id, actor_gln),
         (WholesaleResultColumnNames.energy_supplier_id, actor_eic),
-        (WholesaleResultColumnNames.quantity, None),
         (WholesaleResultColumnNames.quantity, max_18_3_decimal),
         (WholesaleResultColumnNames.quantity, min_18_3_decimal),
         (WholesaleResultColumnNames.quantity_unit, "kWh"),
@@ -213,7 +214,10 @@ def test__migrated_table_accepts_valid_data(
             (WholesaleResultColumnNames.quantity_qualities, [x.value])
             for x in ChargeQuality
         ],
-        *[(WholesaleResultColumnNames.resolution, x.value) for x in ChargeResolution],
+        *[
+            (WholesaleResultColumnNames.resolution, x.value)
+            for x in WholesaleResultResolution
+        ],
         *[
             (WholesaleResultColumnNames.metering_point_type, x.value)
             for x in MeteringPointType
@@ -223,6 +227,7 @@ def test__migrated_table_accepts_valid_data(
             for x in SettlementMethod
         ],
         *[(WholesaleResultColumnNames.charge_type, x.value) for x in ChargeType],
+        *[(WholesaleResultColumnNames.amount_type, x.value) for x in AmountType],
     ],
 )
 def test__migrated_table_accepts_enum_value(

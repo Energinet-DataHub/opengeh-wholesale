@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Models;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.Mappers;
@@ -22,18 +21,18 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factorie
 
 public static class WholesaleTimeSeriesPointFactory
 {
-    public static WholesaleTimeSeriesPoint Create(SqlResultRow row)
+    public static WholesaleTimeSeriesPoint Create(DatabricksSqlRow databricksSqlRow)
     {
-        var time = row[WholesaleResultColumnNames.Time];
-        var quantity = row[WholesaleResultColumnNames.Quantity];
-        var qualities = row[WholesaleResultColumnNames.QuantityQualities];
-        var price = row[WholesaleResultColumnNames.Price];
-        var amount = row[WholesaleResultColumnNames.Amount];
+        var time = databricksSqlRow[WholesaleResultColumnNames.Time];
+        var quantity = databricksSqlRow[WholesaleResultColumnNames.Quantity];
+        var qualities = databricksSqlRow[WholesaleResultColumnNames.QuantityQualities];
+        var price = databricksSqlRow[WholesaleResultColumnNames.Price];
+        var amount = databricksSqlRow[WholesaleResultColumnNames.Amount];
 
         return new WholesaleTimeSeriesPoint(
             SqlResultValueConverters.ToDateTimeOffset(time)!.Value,
             SqlResultValueConverters.ToDecimal(quantity),
-            QuantityQualitiesMapper.FromDeltaTableValue(qualities),
+            QuantityQualitiesMapper.FromDeltaTableValue(qualities!),
             SqlResultValueConverters.ToDecimal(price),
             SqlResultValueConverters.ToDecimal(amount));
     }

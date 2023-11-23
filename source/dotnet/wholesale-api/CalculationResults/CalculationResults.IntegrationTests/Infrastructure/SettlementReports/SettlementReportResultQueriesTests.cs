@@ -12,26 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Databricks.SqlStatementExecution.Internal;
-using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using AutoFixture;
+using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SettlementReports;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements;
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlStatements.DeltaTableConstants;
 using Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Fixtures;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports.Model;
-using Energinet.DataHub.Wholesale.Common.Databricks.Options;
-using Energinet.DataHub.Wholesale.Common.Models;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Moq;
 using NodaTime;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.Infrastructure.SettlementReports;
 
-public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlStatementApiFixture>
+public class SettlementReportResultQueriesTests : TestBase<SettlementReportResultQueries>, IClassFixture<DatabricksSqlStatementApiFixture>
 {
     private const ProcessType DefaultProcessType = ProcessType.BalanceFixing;
     private const string GridAreaA = "805";
@@ -44,25 +42,19 @@ public class SettlementReportResultQueriesTests : IClassFixture<DatabricksSqlSta
     public SettlementReportResultQueriesTests(DatabricksSqlStatementApiFixture fixture)
     {
         _fixture = fixture;
+        Fixture.Inject(_fixture.DatabricksSchemaManager.DeltaTableOptions);
+        Fixture.Inject(_fixture.GetDatabricksExecutor());
     }
 
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task GetRowsAsync_ReturnsExpectedReportRows(
-        Mock<IHttpClientFactory> httpClientFactoryMock,
-        Mock<ILogger<SqlStatusResponseParser>> loggerMock)
+    [Fact]
+    public async Task GetRowsAsync_ReturnsExpectedReportRows()
     {
         // Arrange
         var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
         var expectedSettlementReportRow = await InsertRowsFromMultipleBatches(deltaTableOptions);
-        var sqlStatementClient = _fixture.CreateSqlStatementClient(
-            httpClientFactoryMock,
-            loggerMock,
-            new Mock<ILogger<DatabricksSqlStatementClient>>());
-        var sut = new SettlementReportResultQueries(sqlStatementClient, deltaTableOptions);
 
         // Act
-        var actual = await sut.GetRowsAsync(_gridAreaCodes, DefaultProcessType, _january1St, _january5Th, null);
+        var actual = await Sut.GetRowsAsync(_gridAreaCodes, DefaultProcessType, _january1St, _january5Th, null);
 
         // Assert
         actual.Should().BeEquivalentTo(expectedSettlementReportRow);

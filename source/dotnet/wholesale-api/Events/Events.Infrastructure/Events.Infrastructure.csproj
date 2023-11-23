@@ -4,20 +4,15 @@
     <RootNamespace>Energinet.DataHub.Wholesale.Events.Infrastructure</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.16.1" />
+    <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.16.2" />
     <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.16.0" />
-    <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="8.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.13" />
     <PackageReference Include="NodaTime.Serialization.Protobuf" Version="2.0.1" />
-    <PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" Version="7.0.0" />
-    <PackageReference Include="Google.Protobuf" Version="3.23.4" />
-    <PackageReference Include="Grpc.Tools" Version="2.57.0" PrivateAssets="All" />
+    <PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" Version="7.1.0" />
+    <PackageReference Include="Google.Protobuf" Version="3.25.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.59.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
-    <PackageReference Update="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.4">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.7.30">
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.7.30">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -29,18 +24,49 @@
       <ProtoCompile>True</ProtoCompile>
       <ProtoRoot>IntegrationEvents/Protos/</ProtoRoot>
       <CompileOutputs>True</CompileOutputs>
-      <OutputDir>obj\contracts</OutputDir>
       <Generator>MSBuild:Compile</Generator>
     </Protobuf>
     <Protobuf Include="IntegrationEvents/Common/Protos/*.proto">
       <GrpcServices>None</GrpcServices>
       <Access>Public</Access>
       <ProtoCompile>True</ProtoCompile>
-      <ProtoRoot>IntegrationEvents/Common/Protos/</ProtoRoot>
       <CompileOutputs>True</CompileOutputs>
+      <OutputDir>obj\common</OutputDir>
       <Generator>MSBuild:Compile</Generator>
     </Protobuf>
     <Protobuf Include="IntegrationEvents/EnergyResultProducedV2/Protos/*.proto">
+      <GrpcServices>None</GrpcServices>
+      <Access>Public</Access>
+      <ProtoCompile>True</ProtoCompile>
+      <ProtoRoot>IntegrationEvents</ProtoRoot>
+      <CompileOutputs>True</CompileOutputs>
+      <Generator>MSBuild:Compile</Generator>
+    </Protobuf>
+    <Protobuf Include="IntegrationEvents/AmountPerChargeResultProducedV1/Protos/*.proto">
+      <GrpcServices>None</GrpcServices>
+      <Access>Public</Access>
+      <ProtoCompile>True</ProtoCompile>
+      <ProtoRoot>IntegrationEvents</ProtoRoot>
+      <CompileOutputs>True</CompileOutputs>
+      <Generator>MSBuild:Compile</Generator>
+    </Protobuf>
+    <Protobuf Include="IntegrationEvents/MonthlyAmountPerChargeResultProducedV1/Protos/*.proto">
+      <GrpcServices>None</GrpcServices>
+      <Access>Public</Access>
+      <ProtoCompile>True</ProtoCompile>
+      <ProtoRoot>IntegrationEvents</ProtoRoot>
+      <CompileOutputs>True</CompileOutputs>
+      <Generator>MSBuild:Compile</Generator>
+    </Protobuf>
+    <Protobuf Include="IntegrationEvents/TotalMonthlyAmountResultProducedV1/Protos/*.proto">
+      <GrpcServices>None</GrpcServices>
+      <Access>Public</Access>
+      <ProtoCompile>True</ProtoCompile>
+      <ProtoRoot>IntegrationEvents</ProtoRoot>
+      <CompileOutputs>True</CompileOutputs>
+      <Generator>MSBuild:Compile</Generator>
+    </Protobuf>
+    <Protobuf Include="IntegrationEvents\CalculationResultCompleted\Protos\*.proto">
       <GrpcServices>None</GrpcServices>
       <Access>Public</Access>
       <ProtoCompile>True</ProtoCompile>
