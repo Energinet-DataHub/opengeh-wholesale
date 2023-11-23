@@ -60,10 +60,14 @@ class TestWhenValidInput:
         expected_qualities: list[QuantityQuality],
     ) -> None:
         # Arrange
+        default_grid_area = "111"
         rows = [
-            *[factories.create_to_row(quality=quality) for quality in to_ga_qualities],
             *[
-                factories.create_from_row(quality=quality)
+                factories.create_to_row(quality=quality, grid_area=default_grid_area)
+                for quality in to_ga_qualities
+            ],
+            *[
+                factories.create_from_row(quality=quality, grid_area=default_grid_area)
                 for quality in from_ga_qualities
             ],
         ]
@@ -71,7 +75,9 @@ class TestWhenValidInput:
         expected_qualities = sorted([q.value for q in expected_qualities])
 
         # Act
-        actual = aggregate_net_exchange_per_ga(metering_point_time_series, [])
+        actual = aggregate_net_exchange_per_ga(
+            metering_point_time_series, [default_grid_area]
+        )
 
         # Assert
         actual_rows = actual.df.collect()
@@ -89,6 +95,7 @@ class TestWhenMeteringPointIsNeitherInToOrFromGridArea:
         grid_area_1 = "123"  # this is the grid area of the metering point
         grid_area_2 = "234"
         grid_area_3 = "345"
+        all_grid_areas = [grid_area_1, grid_area_2, grid_area_3]
         rows = [
             *[
                 factories.create_to_row(
@@ -106,7 +113,9 @@ class TestWhenMeteringPointIsNeitherInToOrFromGridArea:
         metering_point_time_series = factories.create(spark, rows)
 
         # Act
-        actual = aggregate_net_exchange_per_ga(metering_point_time_series, [])
+        actual = aggregate_net_exchange_per_ga(
+            metering_point_time_series, all_grid_areas
+        )
 
         # Assert
         actual_rows = actual.df.collect()
@@ -148,37 +157,3 @@ class TestWhenInputHasDataNotBelongingToSelectedGridArea:
         actual_rows = actual.df.collect()
         assert len(actual_rows) == 1
         assert actual_rows[0][Colname.grid_area] == selected_grid_area
-
-
-class TestWhenNoGridAreasSelected:
-    def test_returns_result_from_all_grid_areas(
-        self,
-        spark: SparkSession,
-    ) -> None:
-        # Arrange
-        grid_area_1 = "234"
-        grid_area_2 = "345"
-        rows = [
-            *[
-                factories.create_to_row(
-                    grid_area=grid_area_1,
-                    from_grid_area=grid_area_2,
-                    to_grid_area=grid_area_1,
-                ),
-                factories.create_to_row(
-                    grid_area=grid_area_2,
-                    from_grid_area=grid_area_1,
-                    to_grid_area=grid_area_2,
-                ),
-            ],
-        ]
-        metering_point_time_series = factories.create(spark, rows)
-
-        # Act
-        actual = aggregate_net_exchange_per_ga(metering_point_time_series, [])
-
-        # Assert
-        actual_rows = actual.df.collect()
-        assert len(actual_rows) == 2
-        assert actual_rows[0][Colname.grid_area] == grid_area_1
-        assert actual_rows[1][Colname.grid_area] == grid_area_2

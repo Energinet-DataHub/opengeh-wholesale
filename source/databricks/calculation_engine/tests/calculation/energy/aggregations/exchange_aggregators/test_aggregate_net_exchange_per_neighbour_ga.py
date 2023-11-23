@@ -59,10 +59,14 @@ class TestWhenValidInput:
         expected_qualities: list[QuantityQuality],
     ) -> None:
         # Arrange
+        default_grid_area = "111"
         rows = [
-            *[factories.create_to_row(quality=quality) for quality in to_ga_qualities],
             *[
-                factories.create_from_row(quality=quality)
+                factories.create_to_row(quality=quality, grid_area=default_grid_area)
+                for quality in to_ga_qualities
+            ],
+            *[
+                factories.create_from_row(quality=quality, grid_area=default_grid_area)
                 for quality in from_ga_qualities
             ],
         ]
@@ -70,7 +74,9 @@ class TestWhenValidInput:
         expected_qualities = sorted([q.value for q in expected_qualities])
 
         # Act
-        actual = aggregate_net_exchange_per_neighbour_ga(metering_point_time_series, [])
+        actual = aggregate_net_exchange_per_neighbour_ga(
+            metering_point_time_series, [default_grid_area]
+        )
 
         # Assert
         actual_rows = actual.df.collect()

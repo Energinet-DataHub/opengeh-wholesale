@@ -39,6 +39,8 @@ default_obs_time = datetime.strptime(
 numberOfTestQuarters = 96
 estimated_quality = QuantityQuality.ESTIMATED.value
 
+ALL_GRID_AREAS = ["A", "B", "C"]
+
 df_template = {
     Colname.grid_area: [],
     Colname.to_grid_area: [],
@@ -169,7 +171,7 @@ def add_row_of_data(pandas_df, domain, in_domain, out_domain, timestamp, quantit
 
 def test_aggregate_net_exchange_per_neighbour_ga_single_hour(single_quarter_test_data):
     df = aggregate_net_exchange_per_neighbour_ga(
-        single_quarter_test_data, []
+        single_quarter_test_data, ALL_GRID_AREAS
     ).df.orderBy(Colname.to_grid_area, Colname.from_grid_area, Colname.time_window)
     values = df.collect()
     assert df.count() == 4
@@ -184,7 +186,7 @@ def test_aggregate_net_exchange_per_neighbour_ga_single_hour(single_quarter_test
 
 def test_aggregate_net_exchange_per_neighbour_ga_multi_hour(multi_quarter_test_data):
     df = aggregate_net_exchange_per_neighbour_ga(
-        multi_quarter_test_data, []
+        multi_quarter_test_data, ALL_GRID_AREAS
     ).df.orderBy(Colname.to_grid_area, Colname.from_grid_area, Colname.time_window)
     values = df.collect()
     assert df.count() == 384

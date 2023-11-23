@@ -126,8 +126,7 @@ def aggregate_net_exchange_per_neighbour_ga(
         )
     )
 
-    if selected_grid_areas:
-        exchange = exchange.filter(F.col(Colname.grid_area).isin(selected_grid_areas))
+    exchange = exchange.filter(F.col(Colname.grid_area).isin(selected_grid_areas))
 
     return EnergyResults(exchange)
 
@@ -226,7 +225,6 @@ def aggregate_net_exchange_per_ga(
         )
     )
 
-    if selected_grid_areas:
-        result_df = result_df.filter(F.col(Colname.grid_area).isin(selected_grid_areas))
+    result_df = result_df.filter(F.col(Colname.grid_area).isin(selected_grid_areas))
 
     return EnergyResults(result_df)
