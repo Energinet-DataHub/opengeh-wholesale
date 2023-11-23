@@ -122,7 +122,6 @@ class TestWhenInputHasDataNotBelongingToSelectedGridArea:
         )
 
         # Assert
-        actual.df.show()
         actual_rows = actual.df.collect()
         assert len(actual_rows) == 1
         assert actual_rows[0][Colname.grid_area] == selected_grid_area

@@ -87,7 +87,6 @@ class TestWhenValidInput:
         actual = aggregate_net_exchange_per_ga(
             metering_point_time_series, [from_grid_area, to_grid_area]
         )
-        actual.df.show()
 
         # Assert
         actual_rows = actual.df.collect()
