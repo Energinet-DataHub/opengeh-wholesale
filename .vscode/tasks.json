@@ -4,6 +4,31 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "PlantUML: Start PlantUML server",
+            "type": "docker-run",
+            "dockerRun": {
+                "image": "plantuml/plantuml-server:jetty",
+                "ports": [
+                    {
+                        "containerPort": 8080,
+                        "hostPort": 8081
+                    }
+                ],
+                "volumes": [
+                    {
+                        "localPath": "${workspaceFolder}/docs/diagrams/network",
+                        "containerPath": "/usr/local/plantuml-server"
+                    }
+                ],
+                "remove": true
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
             "label": "Structurizr Lite: Load 'deployment'",
             "type": "docker-run",
             "dockerRun": {

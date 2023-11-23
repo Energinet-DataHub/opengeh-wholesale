@@ -1,0 +1,136 @@
+' 1. Install PlantUML extension in VS Code, see https://marketplace.visualstudio.com/items?itemName=jebbs.plantuml
+' 2. Run task: "PlantUML: Start PlantUML server".
+' This will start a PlantUML server in Docker on localhost:8081 used to render this diagram.
+' Once container is running, press Ctrl-Shift-P and select "PlantUML: Preview Current Diagram" - enjoy!
+
+@startuml
+nwdiag {
+
+  legend top left
+  Red = Cloud Architecture
+  Green = The Outlaws
+  Black = Energinet team
+  endlegend
+
+
+  title CCP network diagram for Datahub 3.0, region West Europe (WE)
+  dh3_user [shape = actor]
+  dh3_user -- dh3_inet_browser
+
+  b2b_actor [shape = actor]
+  b2b_actor -- b2b_channel
+
+  network internet {
+    width = full
+    dh3_inet_browser
+    b2b_channel
+    api_management [address = "13.81.42.254, tcp/443"]
+  }
+
+  'CAs VNET, outside subscription
+  network vnet_platformhub_prod_we_001 {
+    width = full
+    color = "red"
+    vnet_shres_peering [shape = interface]
+    vnet_datahub_online_peering [shape = interface]
+  }
+
+  'VNET delivered by CA on subscription, peered to vnet_platformhub_prod_we_001
+  network vnet_datahub_online_prod_we_001 {
+    color = "red"
+    vnet_datahub_online_peering
+    nsg_vnetintegrations_shres
+    nsg_privateendpoint_shres
+    nsg_bastion_shres
+    nsg_apim_shres
+    vnet_wholsal_peering [shape = interface]
+    vnet_mig_peering [shape = interface]
+    width = full
+  }
+
+
+  network snet_vnetintegrations_shres {
+    color = "red"
+    nsg_vnetintegrations_shres
+    width = full
+  }
+
+  network snet_privateendpoint {
+    color = "red"
+    functionapps [shape = node]
+    sqlserver [shape = node]
+    storageaccounts [shape = node]
+    keyvault [shape = node]
+    eventhub [shape = node]
+    webapps [shape = node]
+    nsg_privateendpoint_shres
+    width = full
+  }
+
+  network snet_bastion_shres {
+    color = "red"
+    nsg_bastion_shres
+    bastion_vm [shape = node]
+    width = full
+  }
+
+  network snet_apim_shres {
+    color = "red"
+    nsg_apim_shres
+    api_management [shape = node]
+    width = full
+  }
+
+  network snet_private_shres {
+    color = "red"
+    vnet_shres_peering
+    width = full
+  }
+
+  network snet_public_shres {
+    color = "red"
+    vnet_shres_peering
+    width = full
+  }
+
+
+  'Wholesale
+  network vnet_wholsal_p_we_001 {
+    color = "green"
+    vnet_wholsal_peering
+    nsg_dbw_wholsal_p_we_001
+    width = full
+  }
+
+  network snet_private_wholsal {
+    color = "green"
+    nsg_dbw_wholsal_p_we_001
+    dbx_wholsal_p_we_001
+  }
+
+  network snet_public_wholsal {
+    color = "green"
+    nsg_dbw_wholsal_p_we_001
+  }
+
+  'Migration
+  network vnet_mig_p_we_001 {
+    color = "green"
+      vnet_mig_peering
+      nsg_dbw_mig_p_we_001
+      width = full
+  }
+
+  network snet_private_mig {
+    color = "green"
+    nsg_dbw_mig_p_we_001
+    dbx_mig_p_we_001
+  }
+
+  network snet_public_mig {
+    color = "green"
+    nsg_dbw_mig_p_we_001
+  }
+}
+
+@enduml

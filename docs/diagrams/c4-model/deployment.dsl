@@ -27,15 +27,14 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
 
             # Include Esett Exchange model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-esett-exchange/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACIBG65SVFZHZQ3CHQZ3QBTYZK3DY2Q
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-esett-exchange/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACJAEQ6GPS6MCKCH24B6MZWOZK3NMRA
 
             # Include Migration model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACIBG65SF3K6CZUETJDXMO52ZK3DYJQ
-
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACJAEQ6HPQL4WT5VV3ENWLCIZK3NKFA
             # Include platform tools - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/dh3-operations/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACIBG65T37D4Q4FYZDH6MOUEZK3DZEQ
+            !include https://raw.githubusercontent.com/Energinet-DataHub/dh3-operations/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACJAEQ6HK6ZGQTKJAGP6X4HUZK3NNMQ
         }
 
         # Deployment model
