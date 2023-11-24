@@ -23,6 +23,12 @@ resource "azurerm_role_assignment" "ra_dh2dropzone_contributor" {
   principal_id         = azuread_service_principal.spn_databricks.id
 }
 
+resource "azurerm_role_assignment" "ra_dh2_migration_dh2dropzone_contributor" {
+  scope                = module.st_dh2dropzone.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = azuread_service_principal.spn_cgi_dh2_data_migration.id
+}
+
 resource "azurerm_role_assignment" "ra_ehdropzone_sender" {
   scope                = azurerm_eventhub_namespace.eventhub_namespace_dropzone.id
   role_definition_name = "Azure Event Hubs Data Sender"
