@@ -242,7 +242,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations.Fixtures
                         if (amountPerChargeResultProduced.CalculationId == calculationId.ToString())
                         {
                             DiagnosticMessageSink.WriteDiagnosticMessage($"""
-                                AmountPerChargeResultProducedV1 received with values:
+                                {nameof(AmountPerChargeResultProducedV1)} received with values:
                                     {nameof(amountPerChargeResultProduced.CalculationId)}={amountPerChargeResultProduced.CalculationId}
                                     {nameof(amountPerChargeResultProduced.GridAreaCode)}={amountPerChargeResultProduced.GridAreaCode}
                                     {nameof(amountPerChargeResultProduced.EnergySupplierId)}={amountPerChargeResultProduced.EnergySupplierId}
@@ -260,6 +260,16 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations.Fixtures
                         var monthlyAmountPerChargeResultProduced = MonthlyAmountPerChargeResultProducedV1.Parser.ParseFrom(data);
                         if (monthlyAmountPerChargeResultProduced.CalculationId == calculationId.ToString())
                         {
+                            DiagnosticMessageSink.WriteDiagnosticMessage($"""
+                                {nameof(MonthlyAmountPerChargeResultProducedV1)} received with values:
+                                    {nameof(monthlyAmountPerChargeResultProduced.CalculationId)}={monthlyAmountPerChargeResultProduced.CalculationId}
+                                    {nameof(monthlyAmountPerChargeResultProduced.GridAreaCode)}={monthlyAmountPerChargeResultProduced.GridAreaCode}
+                                    {nameof(monthlyAmountPerChargeResultProduced.EnergySupplierId)}={monthlyAmountPerChargeResultProduced.EnergySupplierId}
+                                    {nameof(monthlyAmountPerChargeResultProduced.ChargeCode)}={monthlyAmountPerChargeResultProduced.ChargeCode}
+                                    {nameof(monthlyAmountPerChargeResultProduced.ChargeType)}={monthlyAmountPerChargeResultProduced.ChargeType}
+                                    {nameof(monthlyAmountPerChargeResultProduced.ChargeOwnerId)}={monthlyAmountPerChargeResultProduced.ChargeOwnerId}
+                                    {nameof(monthlyAmountPerChargeResultProduced.Amount)}={monthlyAmountPerChargeResultProduced.Amount}
+                                """);
                             eventMessage = monthlyAmountPerChargeResultProduced;
                             shouldCollect = true;
                         }

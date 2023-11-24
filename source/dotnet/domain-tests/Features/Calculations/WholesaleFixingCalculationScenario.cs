@@ -281,7 +281,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations
                 && item.ChargeCode == expectedChargeCode
                 && item.ChargeType == expectedChargeType
                 && item.ChargeOwnerId == expectedChargeOwnerId
-                && item.Amount == expectedAmount);
+                && object.Equals(item.Amount, expectedAmount));
 
             using var assertionScope = new AssertionScope();
             actualEvents.Should().HaveCount(1);
