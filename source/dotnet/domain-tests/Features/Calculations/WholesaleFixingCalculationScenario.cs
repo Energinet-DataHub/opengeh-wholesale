@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Globalization;
 using System.Linq;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
@@ -20,6 +21,7 @@ using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Attributes;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using Google.Protobuf.WellKnownTypes;
 using Xunit;
 using TimeSeriesType = Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults.TimeSeriesType;
 
@@ -232,10 +234,12 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations
         /// </summary>
         [ScenarioStep(11)]
         [DomainFact]
-        public async Task AndThen_OneSpecificAmountPerChargeResultProducedContainsExpectedTimeSeriesPoints()
+        public async Task AndThen_OneSpecificAmountPerChargeResultProducedEventContainsExpectedTimeSeriesPoints()
         {
             var expectedEnergySupplierId = "5790001687137";
             var expectedChargeCode = "40000";
+            var expectedChargeType = AmountPerChargeResultProducedV1.Types.ChargeType.Tariff;
+            var expectedChargeOwnerId = "?????"; // TODO: Get value?
             var expectedSettlementMethod = AmountPerChargeResultProducedV1.Types.SettlementMethod.NonProfiled;
             var expectedTimeSeriesPoints = await Fixture.ParseTimeSeriesPointsFromCsvAsync("amount_for_es_for_hourly_tarif_40000_for_e17_e02.csv");
 
@@ -243,6 +247,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations
             var actualEvents = Fixture.ScenarioState.ReceivedAmountPerChargeResultProducedV1.Where(item =>
                 item.EnergySupplierId == expectedEnergySupplierId
                 && item.ChargeCode == expectedChargeCode
+                && item.ChargeType == expectedChargeType
+                && item.ChargeOwnerId == expectedChargeOwnerId
                 && item.SettlementMethod == expectedSettlementMethod);
 
             using var assertionScope = new AssertionScope();
@@ -259,6 +265,28 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations
                     return item;
                 })
                 .Should().BeEquivalentTo(expectedTimeSeriesPoints);
+        }
+
+        [ScenarioStep(11)]
+        [DomainFact]
+        public void AndThen_OneSpecificMonthlyAmountPerChargeResultProducedEventContainsExpectedMonthlyAmount()
+        {
+            var expectedEnergySupplierId = "5790001687137";
+            var expectedChargeCode = "40000";
+            var expectedChargeType = MonthlyAmountPerChargeResultProducedV1.Types.ChargeType.Tariff;
+            var expectedChargeOwnerId = "?????"; // TODO: Get value?
+            var expectedAmount = new Contracts.IntegrationEvents.Common.DecimalValue(decimal.Parse("95738.23956", CultureInfo.InvariantCulture));
+
+            // Assert
+            var actualEvents = Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1.Where(item =>
+                item.EnergySupplierId == expectedEnergySupplierId
+                && item.ChargeCode == expectedChargeCode
+                && item.ChargeType == expectedChargeType
+                && item.ChargeOwnerId == expectedChargeOwnerId
+                && item.Amount == expectedAmount);
+
+            using var assertionScope = new AssertionScope();
+            actualEvents.Should().HaveCount(1);
         }
     }
 }
