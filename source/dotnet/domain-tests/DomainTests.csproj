@@ -11,13 +11,8 @@
   </Target>
 
   <ItemGroup>
-    <None Remove="Features\Calculations\TestData\amount_for_es_for_hourly_tarif_40000_for_e17_e02.csv" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="Features\Calculations\TestData\amount_for_es_for_hourly_tarif_40000_for_e17_e02.csv" />
   </ItemGroup>
-
 
   <ItemGroup>
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.16.2" />
