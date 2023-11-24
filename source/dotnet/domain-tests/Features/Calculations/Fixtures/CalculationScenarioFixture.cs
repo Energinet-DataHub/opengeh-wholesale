@@ -208,7 +208,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations.Fixtures
         /// <summary>
         /// Returns <see langword="true"/> if we should collect the message type; otherwise <see langword="false"/> .
         /// </summary>
-        private static (bool ShouldCollect, IEventMessage? EventMessage) ShouldCollectMessage(ServiceBusReceivedMessage message, Guid calculationId, IReadOnlyCollection<string> integrationEventNames)
+        private (bool ShouldCollect, IEventMessage? EventMessage) ShouldCollectMessage(ServiceBusReceivedMessage message, Guid calculationId, IReadOnlyCollection<string> integrationEventNames)
         {
             var shouldCollect = false;
             IEventMessage? eventMessage = null;
@@ -241,6 +241,16 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations.Fixtures
                         var amountPerChargeResultProduced = AmountPerChargeResultProducedV1.Parser.ParseFrom(data);
                         if (amountPerChargeResultProduced.CalculationId == calculationId.ToString())
                         {
+                            DiagnosticMessageSink.WriteDiagnosticMessage($"""
+                                AmountPerChargeResultProducedV1 received with values:
+                                    {nameof(amountPerChargeResultProduced.CalculationId)}={amountPerChargeResultProduced.CalculationId}
+                                    {nameof(amountPerChargeResultProduced.GridAreaCode)}={amountPerChargeResultProduced.GridAreaCode}
+                                    {nameof(amountPerChargeResultProduced.EnergySupplierId)}={amountPerChargeResultProduced.EnergySupplierId}
+                                    {nameof(amountPerChargeResultProduced.ChargeCode)}={amountPerChargeResultProduced.ChargeCode}
+                                    {nameof(amountPerChargeResultProduced.ChargeType)}={amountPerChargeResultProduced.ChargeType}
+                                    {nameof(amountPerChargeResultProduced.ChargeOwnerId)}={amountPerChargeResultProduced.ChargeOwnerId}
+                                    {nameof(amountPerChargeResultProduced.CalculationId)}={amountPerChargeResultProduced.SettlementMethod}
+                                """);
                             eventMessage = amountPerChargeResultProduced;
                             shouldCollect = true;
                         }
