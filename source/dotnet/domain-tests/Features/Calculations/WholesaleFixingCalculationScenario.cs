@@ -256,7 +256,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations
             actualEvent.TimeSeriesPoints.Should().HaveCount(expectedTimeSeriesPoints.Count);
 
             // We clear incomming 'QuantityQualities' before comparing with test data, because we don't have them in our test data file.
-            var x = actualEvent.TimeSeriesPoints
+            actualEvent.TimeSeriesPoints
                 .Select(item =>
                 {
                     item.QuantityQualities.Clear();
