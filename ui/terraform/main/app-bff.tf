@@ -18,7 +18,6 @@ module "bff" {
   dotnet_framework_version                 = "v6.0"
 
   app_settings = {
-    ApiClientSettings__MessageArchiveBaseUrl    = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=func-edi-api-base-url)"
     ApiClientSettings__MeteringPointBaseUrl     = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=app-metering-point-webapi-base-url)"
     ApiClientSettings__ChargesBaseUrl           = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=app-charges-webapi-base-url)"
     ApiClientSettings__MarketParticipantBaseUrl = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=app-markpart-webapi-base-url)"

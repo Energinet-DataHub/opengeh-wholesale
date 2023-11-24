@@ -18,11 +18,12 @@ module "b2c_web_api" {
   ip_restriction_allow_ip_range            = var.hosted_deployagent_public_ip_range
 
   app_settings = {
-    EXTERNAL_OPEN_ID_URL = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-open-id-url)"
-    INTERNAL_OPEN_ID_URL = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-open-id-url)"
-    BACKEND_BFF_APP_ID   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-bff-app-id)"
-    EDI_BASE_URL         = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=func-edi-api-base-url)"
-    TIME_ZONE            = local.TIME_ZONE
+    EXTERNAL_OPEN_ID_URL                   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-open-id-url)"
+    INTERNAL_OPEN_ID_URL                   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-open-id-url)"
+    BACKEND_BFF_APP_ID                     = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-bff-app-id)"
+    EDI_BASE_URL                           = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=func-edi-api-base-url)"
+    EDI_DATABASE_CONNECTION_STRING         = local.CONNECTION_STRING
+    TIME_ZONE                              = local.TIME_ZONE
   }
 }
 
