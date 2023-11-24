@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Linq;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.DomainTests.Features.Calculations.Fixtures;
@@ -226,6 +227,9 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations
             Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1.Count.Should().Be(expected);
         }
 
+        /// <summary>
+        /// Notice we don't verify 'TimeSeriesPoints.QuantityQualities' in this scenario.
+        /// </summary>
         [ScenarioStep(11)]
         [DomainFact]
         public async Task AndThen_OneSpecificAmountPerChargeResultProducedContainsExpectedTimeSeriesPoints()
@@ -242,12 +246,19 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations
                 && item.SettlementMethod == expectedSettlementMethod);
 
             using var assertionScope = new AssertionScope();
-
             actualEvents.Should().HaveCount(1);
 
             var actualEvent = actualEvents.First();
             actualEvent.TimeSeriesPoints.Should().HaveCount(expectedTimeSeriesPoints.Count);
-            actualEvent.TimeSeriesPoints.Should().BeEquivalentTo(expectedTimeSeriesPoints);
+
+            // We clear incomming 'QuantityQualities' before comparing with test data, because we don't have them in our test data file.
+            var x = actualEvent.TimeSeriesPoints
+                .Select(item =>
+                {
+                    item.QuantityQualities.Clear();
+                    return item;
+                })
+                .Should().BeEquivalentTo(expectedTimeSeriesPoints);
         }
     }
 }
