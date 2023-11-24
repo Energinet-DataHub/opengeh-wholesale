@@ -101,23 +101,21 @@ class TestWhenMeteringPointIsNeitherInToOrFromGridArea:
         spark: SparkSession,
     ) -> None:
         # Arrange
-        grid_area_1 = "123"  # this is the grid area of the metering point
-        grid_area_2 = "234"
-        grid_area_3 = "345"
-        all_grid_areas = [grid_area_1, grid_area_2, grid_area_3]
+        other_grid_area = "123"  # this is the grid area of the metering point
+        exchange_grid_area_1 = "234"
+        exchange_grid_area_2 = "345"
+        all_grid_areas = [other_grid_area, exchange_grid_area_1, exchange_grid_area_2]
         rows = [
             *[
-                factories.create_row(
-                    metering_point_type=MeteringPointType.EXCHANGE,
-                    grid_area=grid_area_1,
-                    from_grid_area=grid_area_3,
-                    to_grid_area=grid_area_2,
+                factories.create_exchange_row(
+                    grid_area=other_grid_area,
+                    from_grid_area=exchange_grid_area_2,
+                    to_grid_area=exchange_grid_area_1,
                 ),
-                factories.create_row(
-                    metering_point_type=MeteringPointType.EXCHANGE,
-                    grid_area=grid_area_1,
-                    from_grid_area=grid_area_2,
-                    to_grid_area=grid_area_3,
+                factories.create_exchange_row(
+                    grid_area=other_grid_area,
+                    from_grid_area=exchange_grid_area_1,
+                    to_grid_area=exchange_grid_area_2,
                 ),
             ],
         ]
@@ -131,8 +129,8 @@ class TestWhenMeteringPointIsNeitherInToOrFromGridArea:
         # Assert
         actual_rows = actual.df.collect()
         assert len(actual_rows) == 2
-        assert actual_rows[0][Colname.grid_area] == grid_area_2
-        assert actual_rows[1][Colname.grid_area] == grid_area_3
+        assert actual_rows[0][Colname.grid_area] == exchange_grid_area_1
+        assert actual_rows[1][Colname.grid_area] == exchange_grid_area_2
 
 
 class TestWhenInputHasDataNotBelongingToSelectedGridArea:
