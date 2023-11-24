@@ -134,7 +134,7 @@ def aggregate_net_exchange_per_ga(
 ) -> EnergyResults:
     """
     Function to aggregate net exchange per grid area.
-    The result will only include exchange to/from grid areas specified in `calculation_grid_areas`
+    The result will only include exchange to/from grid areas specified in `calculation_grid_areas`.
     """
 
     exchange_to = data.df.where(
