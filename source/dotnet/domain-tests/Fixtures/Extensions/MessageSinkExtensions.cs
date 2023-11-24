@@ -25,7 +25,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Extensions
 
         private static Xunit.Sdk.DiagnosticMessage CreateDiagnosticMessage(string message)
         {
-            return new Xunit.Sdk.DiagnosticMessage($"LOOK AT ME: {message}");
+            return new Xunit.Sdk.DiagnosticMessage($"Mandalorian: {message}");
         }
     }
 }

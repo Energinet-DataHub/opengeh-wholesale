@@ -12,8 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Test.Core.Attributes;
+using System.Diagnostics.CodeAnalysis;
+using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
+using Microsoft.Azure.Databricks.Client.Models;
 
-public class AcceptanceTest : Attribute
+namespace Energinet.DataHub.Wholesale.DomainTests.Features.Databricks.States
 {
+    public class CalculationJobScenarioState
+    {
+        [NotNull]
+        public Batch? CalculationJobInput { get; set; }
+
+        [NotNull]
+        public CalculationId? CalculationId { get; set; }
+
+        [NotNull]
+        public Run? Run { get; set; }
+    }
 }
