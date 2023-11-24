@@ -53,8 +53,8 @@ GRID_AREA_RESPONSIBLE = [
     ('571313180300014979', "803", _utc(DEFAULT_FROM_TIME), None, MeteringPointType.PRODUCTION.value, '8100000000108'),
     ('571313180400100657', "804", _utc(DEFAULT_FROM_TIME), None, MeteringPointType.CONSUMPTION.value, '8100000000115'),
     ('578030000000000012', "803", _utc(DEFAULT_FROM_TIME), None, MeteringPointType.CONSUMPTION.value, '8100000000108'),
-    #('571313154312753911', "543", d(DEFAULT_FROM_TIME), None, MeteringPointType.CONSUMPTION.value, '5790001103095'),  # Use data from b-001
-    #('571313153308031507', "533", d(DEFAULT_FROM_TIME), None, MeteringPointType.CONSUMPTION.value, '5790001102357'),  # Obs: differs from b-001
+    # ('571313154312753911', "543", d(DEFAULT_FROM_TIME), None, MeteringPointType.CONSUMPTION.value, '5790001103095'),  # Use data from b-001
+    # ('571313153308031507', "533", d(DEFAULT_FROM_TIME), None, MeteringPointType.CONSUMPTION.value, '5790001102357'),  # Obs: differs from b-001
     ('571313158410300060', "584", _utc(DEFAULT_FROM_TIME), None, MeteringPointType.CONSUMPTION.value, '5790001103095'),
 
     # b-001 grid loss
