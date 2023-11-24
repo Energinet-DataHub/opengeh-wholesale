@@ -127,10 +127,11 @@ class TestWhenMeteringPointIsNeitherInToOrFromGridArea:
         )
 
         # Assert
-        actual_rows = actual.df.collect()
-        assert len(actual_rows) == 2
-        assert actual_rows[0][Colname.grid_area] == exchange_grid_area_1
-        assert actual_rows[1][Colname.grid_area] == exchange_grid_area_2
+        actual_grid_areas = [row[Colname.grid_area] for row in actual.df.collect()]
+
+        assert sorted(actual_grid_areas) == sorted(
+            [exchange_grid_area_1, exchange_grid_area_2]
+        )
 
 
 class TestWhenInputHasDataNotBelongingToSelectedGridArea:
