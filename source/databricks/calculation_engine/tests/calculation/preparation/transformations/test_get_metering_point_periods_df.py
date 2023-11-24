@@ -16,9 +16,8 @@ from datetime import datetime, timedelta
 from typing import Callable
 
 from pyspark.sql.functions import col
-from pyspark.sql import DataFrame
-from pyspark.sql.types import StructType, StructField, StringType, TimestampType
-import pytest
+from pyspark.sql import DataFrame, SparkSession
+
 from unittest.mock import patch, Mock
 
 from package import calculation_input
@@ -32,9 +31,7 @@ from package.codelists import (
     MeteringPointResolution,
 )
 from package.constants import Colname
-from package.calculation_input.schemas import (
-    metering_point_period_schema,
-)
+import tests.calculation.preparation.transformations.metering_point_periods_factory as factory
 
 # Factory defaults
 grid_area_code = "805"
@@ -59,104 +56,19 @@ june_10th = june_1th + timedelta(days=9)
 balance_responsible_id = "someBalanceResponsibleId"
 
 
-@pytest.fixture(scope="module")
-def metering_points_periods_df_factory(spark) -> Callable[..., DataFrame]:
-    def factory(
-        MeteringPointId=metering_point_id,
-        MeteringPointType=metering_point_type,
-        CalculationType="some-calculation-type",
-        SettlementMethod=settlement_method,
-        GridAreaCode=grid_area_code,
-        Resolution=resolution,
-        FromGridArea="some-to-grid-area",
-        ToGridArea="some-from-grid-area",
-        ParentMeteringPointId="some-parent-metering-point-id",
-        EnergySupplierId=energy_supplier_id,
-        BalanceResponsibleId=balance_responsible_id,
-        FromDate=june_1th,
-        ToDate=june_3th,
-        periods=None,
-    ) -> DataFrame:
-        df_array = []
-        if periods:
-            for period in periods:
-                df_array.append(
-                    {
-                        Colname.balance_responsible_id: period[
-                            Colname.balance_responsible_id
-                        ]
-                        if (Colname.balance_responsible_id in period)
-                        else BalanceResponsibleId,
-                        Colname.metering_point_id: period[Colname.metering_point_id]
-                        if (Colname.metering_point_id in period)
-                        else MeteringPointId,
-                        Colname.metering_point_type: period[Colname.metering_point_type]
-                        if (Colname.metering_point_type in period)
-                        else MeteringPointType,
-                        Colname.settlement_method: period[Colname.settlement_method]
-                        if (Colname.settlement_method in period)
-                        else SettlementMethod,
-                        Colname.grid_area: period[Colname.grid_area]
-                        if (Colname.grid_area in period)
-                        else GridAreaCode,
-                        Colname.resolution: period[Colname.resolution]
-                        if (Colname.resolution in period)
-                        else Resolution,
-                        Colname.to_grid_area: period[Colname.to_grid_area]
-                        if (Colname.to_grid_area in period)
-                        else FromGridArea,
-                        Colname.from_grid_area: period[Colname.from_grid_area]
-                        if (Colname.from_grid_area in period)
-                        else ToGridArea,
-                        Colname.parent_metering_point_id: period[
-                            Colname.parent_metering_point_id
-                        ]
-                        if (Colname.parent_metering_point_id in period)
-                        else ParentMeteringPointId,
-                        Colname.from_date: period[Colname.from_date]
-                        if (Colname.from_date in period)
-                        else FromDate,
-                        Colname.to_date: period[Colname.to_date]
-                        if (Colname.to_date in period)
-                        else ToDate,
-                    }
-                )
-        else:
-            df_array.append(
-                {
-                    Colname.metering_point_id: MeteringPointId,
-                    Colname.metering_point_type: MeteringPointType,
-                    Colname.calculation_type: CalculationType,
-                    Colname.settlement_method: SettlementMethod,
-                    Colname.grid_area: GridAreaCode,
-                    Colname.resolution: Resolution,
-                    Colname.from_grid_area: ToGridArea,
-                    Colname.to_grid_area: FromGridArea,
-                    Colname.parent_metering_point_id: ParentMeteringPointId,
-                    Colname.energy_supplier_id: EnergySupplierId,
-                    Colname.balance_responsible_id: BalanceResponsibleId,
-                    Colname.from_date: FromDate,
-                    Colname.to_date: ToDate,
-                }
-            )
-
-        return spark.createDataFrame(df_array, schema=metering_point_period_schema)
-
-    return factory
-
-
 @patch.object(calculation_input, TableReader.__name__)
 def test__when_metering_point_period_is_in_grid_areas__returns_metering_point_period(
     mock_calculation_input_reader: Mock,
-    metering_points_periods_df_factory: Callable[..., DataFrame],
+    spark: SparkSession,
 ) -> None:
     # Arrange
+    row = factory.create_row()
     mock_calculation_input_reader.read_metering_point_periods.return_value = (
-        metering_points_periods_df_factory()
+        factory.create(spark, row)
     )
 
     # Act
-    raw_master_basis_data = get_metering_point_periods_df(
+    metering_point_periods = get_metering_point_periods_df(
         mock_calculation_input_reader,
         june_1th,
         june_2th,
@@ -164,7 +76,7 @@ def test__when_metering_point_period_is_in_grid_areas__returns_metering_point_pe
     )
 
     # Assert
-    assert raw_master_basis_data.count() == 1
+    assert metering_point_periods.count() == 1
 
 
 @patch.object(calculation_input, TableReader.__name__)
@@ -181,7 +93,7 @@ def test__when_type_is_production__returns_metering_point_period(
     )
 
     # Act
-    raw_master_basis_data = get_metering_point_periods_df(
+    metering_point_periods = get_metering_point_periods_df(
         mock_calculation_input_reader,
         june_1th,
         june_2th,
@@ -189,7 +101,7 @@ def test__when_type_is_production__returns_metering_point_period(
     )
 
     # Assert
-    assert raw_master_basis_data.count() == 1
+    assert metering_point_periods.count() == 1
 
 
 @patch.object(calculation_input, TableReader.__name__)
