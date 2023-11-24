@@ -18,7 +18,7 @@ from package.calculation.preparation.transformations.grid_loss_responsible impor
 )
 
 
-def test__get_grid_loss_responsible__returns_returns_non_empty_list() -> None:
+def test__get_grid_loss_responsible__returns_non_empty_list() -> None:
     # Arrange
     grid_areas = ["804"]
 
