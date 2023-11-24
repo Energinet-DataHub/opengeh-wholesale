@@ -239,7 +239,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations
             var expectedEnergySupplierId = "5790001687137";
             var expectedChargeCode = "40000";
             var expectedChargeType = AmountPerChargeResultProducedV1.Types.ChargeType.Tariff;
-            var expectedChargeOwnerId = "?????"; // TODO: Get value?
+            var expectedChargeOwnerId = "5790001330552";
             var expectedSettlementMethod = AmountPerChargeResultProducedV1.Types.SettlementMethod.NonProfiled;
             var expectedTimeSeriesPoints = await Fixture.ParseTimeSeriesPointsFromCsvAsync("amount_for_es_for_hourly_tarif_40000_for_e17_e02.csv");
 
@@ -274,7 +274,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations
             var expectedEnergySupplierId = "5790001687137";
             var expectedChargeCode = "40000";
             var expectedChargeType = MonthlyAmountPerChargeResultProducedV1.Types.ChargeType.Tariff;
-            var expectedChargeOwnerId = "?????"; // TODO: Get value?
+            var expectedChargeOwnerId = "5790001330552";
             var expectedAmount = new Contracts.IntegrationEvents.Common.DecimalValue(decimal.Parse("95738.23956", CultureInfo.InvariantCulture));
 
             // Assert
