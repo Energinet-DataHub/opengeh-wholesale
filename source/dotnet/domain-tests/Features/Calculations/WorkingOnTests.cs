@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using System.Globalization;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model;
-using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
+using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
+using Google.Protobuf.WellKnownTypes;
 using Test.Core;
 using Xunit;
 
@@ -35,7 +35,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations
             using var reader = new StreamReader(stream);
 
             var hasVerifiedHeader = false;
-            var parsedTimeSeriesPoints = new List<WholesaleTimeSeriesPoint>();
+            var parsedTimeSeriesPoints = new List<AmountPerChargeResultProducedV1.Types.TimeSeriesPoint>();
             while (!reader.EndOfStream)
             {
                 var line = await reader.ReadLineAsync();
@@ -51,13 +51,24 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations
                 }
 
                 var columns = line!.Split(';');
-                parsedTimeSeriesPoints.Add(new WholesaleTimeSeriesPoint(
-                    Time: DateTimeOffset.Parse(columns[3], null, DateTimeStyles.AssumeUniversal),
-                    Quantity: decimal.Parse(columns[2], CultureInfo.InvariantCulture),
-                    Qualities: new List<QuantityQuality>(),
-                    Price: decimal.Parse(columns[4], CultureInfo.InvariantCulture),
-                    Amount: decimal.Parse(columns[5], CultureInfo.InvariantCulture)));
+                parsedTimeSeriesPoints.Add(new()
+                {
+                    Time = ParseTimestamp(columns[3]),
+                    Quantity = ParseDecimalValue(columns[2]),
+                    Price = ParseDecimalValue(columns[4]),
+                    Amount = ParseDecimalValue(columns[5]),
+                });
             }
+        }
+
+        private static Timestamp ParseTimestamp(string value)
+        {
+            return DateTimeOffset.Parse(value, null, DateTimeStyles.AssumeUniversal).ToTimestamp();
+        }
+
+        private static Contracts.IntegrationEvents.Common.DecimalValue ParseDecimalValue(string value)
+        {
+            return new Contracts.IntegrationEvents.Common.DecimalValue(decimal.Parse(value, CultureInfo.InvariantCulture));
         }
     }
 }
