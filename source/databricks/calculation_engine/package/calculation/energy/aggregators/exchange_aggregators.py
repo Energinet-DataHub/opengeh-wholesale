@@ -36,7 +36,7 @@ def aggregate_net_exchange_per_neighbour_ga(
 ) -> EnergyResults:
     """
     Function to aggregate net exchange per neighbouring grid areas.
-    The result will only include exchange to/from grid areas specified in `calculation_grid_areas`
+    The result will only include exchange to/from grid areas specified in `calculation_grid_areas`.
     """
 
     df = quarterly_metering_point_time_series.df.where(
