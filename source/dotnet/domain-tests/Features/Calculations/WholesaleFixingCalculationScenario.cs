@@ -265,7 +265,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations
                 .Should().BeEquivalentTo(expectedTimeSeriesPoints);
         }
 
-        [ScenarioStep(11)]
+        [ScenarioStep(12)]
         [DomainFact]
         public void AndThen_OneSpecificMonthlyAmountPerChargeResultProducedEventContainsExpectedMonthlyAmount()
         {
