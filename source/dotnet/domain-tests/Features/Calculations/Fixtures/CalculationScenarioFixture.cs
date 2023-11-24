@@ -249,7 +249,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations.Fixtures
                                     {nameof(amountPerChargeResultProduced.ChargeCode)}={amountPerChargeResultProduced.ChargeCode}
                                     {nameof(amountPerChargeResultProduced.ChargeType)}={amountPerChargeResultProduced.ChargeType}
                                     {nameof(amountPerChargeResultProduced.ChargeOwnerId)}={amountPerChargeResultProduced.ChargeOwnerId}
-                                    {nameof(amountPerChargeResultProduced.CalculationId)}={amountPerChargeResultProduced.SettlementMethod}
+                                    {nameof(amountPerChargeResultProduced.SettlementMethod)}={amountPerChargeResultProduced.SettlementMethod}
                                 """);
                             eventMessage = amountPerChargeResultProduced;
                             shouldCollect = true;
