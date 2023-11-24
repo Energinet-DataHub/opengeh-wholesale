@@ -549,6 +549,6 @@ dotnet_diagnostic.VSTHRD111.severity = none	    # VSTHRD111: [Similar to CA2007]
 # The intention of this section is to match c# code files
 # that is part of a class that contains tests or scenarios.
 #
-[*{Tests,Scenario}*.cs]
+[*{Tests,Scenario}.cs]
 
 dotnet_diagnostic.VSTHRD200.severity = none     # VSTHRD200: Use "Async" suffix for async methods

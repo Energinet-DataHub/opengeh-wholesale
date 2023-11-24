@@ -10,6 +10,9 @@
     <Exec WorkingDirectory="$(ProjectDir)" EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" Command="if not exist Clients/Wholesale/V3/swagger.json $(NSwagExe_Net60) run Clients/Wholesale/V3/nswag.json /variables:Configuration=$(Configuration)" Condition="!Exists('Clients/Wholesale/V3/swagger.json')" />
   </Target>
 
+  <ItemGroup>
+    <EmbeddedResource Include="Features\Calculations\TestData\amount_for_es_for_hourly_tarif_40000_for_e17_e02.csv" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.16.2" />
@@ -56,6 +59,7 @@
     <ProjectReference Include="..\wholesale-api\Batches\Batches.Application\Batches.Application.csproj" />
     <ProjectReference Include="..\wholesale-api\Batches\Batches.Infrastructure\Batches.Infrastructure.csproj" />
     <ProjectReference Include="..\wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" />
+    <ProjectReference Include="..\wholesale-api\Test.Core\Test.Core.csproj" />
   </ItemGroup>
 
 </Project>
