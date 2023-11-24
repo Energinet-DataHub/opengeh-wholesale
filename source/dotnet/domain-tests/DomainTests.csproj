@@ -53,6 +53,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\wholesale-api\Batches\Batches.Application\Batches.Application.csproj" />
+    <ProjectReference Include="..\wholesale-api\Batches\Batches.Infrastructure\Batches.Infrastructure.csproj" />
     <ProjectReference Include="..\wholesale-api\Events\Events.Infrastructure\Events.Infrastructure.csproj" />
   </ItemGroup>
 
