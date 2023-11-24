@@ -233,6 +233,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations
             var expectedEnergySupplierId = "5790001687137";
             var expectedChargeCode = "40000";
             var expectedSettlementMethod = AmountPerChargeResultProducedV1.Types.SettlementMethod.NonProfiled;
+            // var expectedTimeSeries = Fixture.ParseTimeSeriesFromCsv("amount_for_es_for_hourly_tarif_40000_for_e17_e02.csv");
 
             // Assert
             var actualEvents = Fixture.ScenarioState.ReceivedAmountPerChargeResultProducedV1.Where(item =>
@@ -244,6 +245,11 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations
             actualEvents.Should().HaveCount(1);
             var actualEvent = actualEvents.First();
             // TODO: Compare with certain value from CSV file
+            actualEvent.TimeSeriesPoints.Should().HaveCount(1);
+            ////actualEvent.TimeSeriesPoints.First().Quantity.Should().Be(expectedEnergySupplierId);
+            ////actualEvent.TimeSeriesPoints.First().Time.Should().Be(expectedEnergySupplierId);
+            ////actualEvent.TimeSeriesPoints.First().Price.Should().Be(expectedEnergySupplierId);
+            ////actualEvent.TimeSeriesPoints.First().Amount.Should().Be(expectedEnergySupplierId);
         }
     }
 }
