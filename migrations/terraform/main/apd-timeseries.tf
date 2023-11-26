@@ -4,8 +4,8 @@ resource "azurerm_portal_dashboard" "timeseriesapi" {
   location            = azurerm_resource_group.this.location
   dashboard_properties = templatefile("dashboard-templates/timeseriesapi_dashboard.tpl",
     {
-      timeseriesapi_subscription_id     = data.azurerm_subscription.this.subscription_id,
-      timeseriesapi_resource_group_name = azurerm_resource_group.this.name,
-      timeseriesapi_name                = module.app_time_series_api.name,
+      timeseriesapi_id   = module.app_time_series_api.id,
+      timeseriesapi_name = module.app_time_series_api.name,
+      appi_sharedres_id  = data.azurerm_key_vault_secret.appi_id.value,
   })
 }
