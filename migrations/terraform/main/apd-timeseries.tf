@@ -1,4 +1,4 @@
-resource "azurerm_portal_dashboard" "apd-timeseriesapi" {
+resource "azurerm_portal_dashboard" "timeseriesapi" {
   name                = "apd-timeseriesapi-${local.resources_suffix}"
   resource_group_name = azurerm_resource_group.this.name
   location            = azurerm_resource_group.this.location
