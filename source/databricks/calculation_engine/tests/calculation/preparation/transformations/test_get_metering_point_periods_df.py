@@ -194,6 +194,52 @@ class TestWhenValidInput:
         assert actual_rows[0][Colname.to_date] == expected_to_date
 
 
+class TestWhenThreeGridAreasExchangingWithEachOther:
+    @patch.object(calculation_input, TableReader.__name__)
+    def test_returns_expected(
+        self,
+        mock_calculation_input_reader: Mock,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+        rows = [
+            factory.create_row(
+                grid_area="111", from_grid_area="111", to_grid_area="222"
+            ),
+            factory.create_row(
+                grid_area="222", from_grid_area="222", to_grid_area="111"
+            ),
+            factory.create_row(
+                grid_area="333", from_grid_area="111", to_grid_area="222"
+            ),
+        ]
+
+        mock_calculation_input_reader.read_metering_point_periods.return_value = (
+            factory.create(spark, rows)
+        )
+
+        # Act
+        actual = get_metering_point_periods_df(
+            mock_calculation_input_reader,
+            factory.DEFAULT_FROM_DATE,
+            factory.DEFAULT_TO_DATE,
+            ["111", "222"],
+        )
+
+        # Assert
+        actual_rows = sorted(actual.collect(), key=lambda x: x[Colname.grid_area])
+        assert len(actual_rows) == 3
+        assert actual_rows[0][Colname.grid_area] == "111"
+        assert actual_rows[0][Colname.from_grid_area] == "111"
+        assert actual_rows[0][Colname.to_grid_area] == "222"
+        assert actual_rows[1][Colname.grid_area] == "222"
+        assert actual_rows[1][Colname.from_grid_area] == "222"
+        assert actual_rows[1][Colname.to_grid_area] == "111"
+        assert actual_rows[2][Colname.grid_area] == "333"
+        assert actual_rows[2][Colname.from_grid_area] == "111"
+        assert actual_rows[2][Colname.to_grid_area] == "222"
+
+
 class TestWhenExchangeMeteringPoint:
     @pytest.mark.parametrize(
         "grid_area, from_grid_area, to_grid_area, calculation_grid_area, expected",

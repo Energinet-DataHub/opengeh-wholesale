@@ -21,7 +21,6 @@ from pyspark.sql.functions import (
 from package.constants import Colname
 from datetime import datetime
 from package.calculation_input import TableReader
-from .batch_grid_areas import get_batch_grid_areas_df
 
 
 def get_metering_point_periods_df(
@@ -32,8 +31,10 @@ def get_metering_point_periods_df(
 ) -> DataFrame:
     metering_point_periods_df = calculation_input_reader.read_metering_point_periods()
 
-    metering_point_periods_df = _filter_by_grid_area(
-        metering_point_periods_df, batch_grid_areas
+    metering_point_periods_df = metering_point_periods_df.where(
+        col(Colname.grid_area).isin(batch_grid_areas)
+        | col(Colname.from_grid_area).isin(batch_grid_areas)
+        | col(Colname.to_grid_area).isin(batch_grid_areas)
     )
 
     metering_point_periods_df = _filter_by_period(
@@ -57,29 +58,6 @@ def get_metering_point_periods_df(
     )
 
     return metering_point_periods_df
-
-
-def _filter_by_grid_area(
-    metering_points_periods_df: DataFrame, batch_grid_areas: list[str]
-) -> DataFrame:
-    spark = SparkSession.builder.getOrCreate()
-    grid_area_df = get_batch_grid_areas_df(batch_grid_areas, spark)
-
-    calculation_grid_areas = "calculation_grid_areas"
-
-    grid_area_df = grid_area_df.withColumnRenamed(
-        Colname.grid_area, calculation_grid_areas
-    )
-
-    metering_points_periods_df = metering_points_periods_df.join(
-        grid_area_df,
-        on=col(Colname.grid_area).isin(col(calculation_grid_areas))
-        | col(Colname.from_grid_area).isin(col(calculation_grid_areas))
-        | col(Colname.to_grid_area).isin(col(calculation_grid_areas)),
-        how="inner",
-    )
-
-    return metering_points_periods_df
 
 
 def _filter_by_period(
