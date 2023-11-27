@@ -75,16 +75,12 @@ def _filter_by_grid_area(
     grid_area_df = grid_area_df.withColumnRenamed(
         Colname.grid_area, calculation_grid_areas
     )
+
     metering_points_periods_df = metering_points_periods_df.join(
         grid_area_df,
-        on=[
-            metering_points_periods_df[Colname.grid_area]
-            == grid_area_df[calculation_grid_areas],
-            metering_points_periods_df[Colname.from_grid_area]
-            == grid_area_df[calculation_grid_areas],
-            metering_points_periods_df[Colname.to_grid_area]
-            == grid_area_df[calculation_grid_areas],
-        ],
+        on=col(Colname.grid_area).isin(col(calculation_grid_areas))
+        | col(Colname.from_grid_area).isin(col(calculation_grid_areas))
+        | col(Colname.to_grid_area).isin(col(calculation_grid_areas)),
         how="inner",
     )
 

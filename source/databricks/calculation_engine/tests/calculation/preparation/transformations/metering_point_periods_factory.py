@@ -12,85 +12,71 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import datetime
-from decimal import Decimal
 
-from pyspark.sql import Row, SparkSession
+from datetime import datetime
+
+from pyspark.sql import DataFrame, Row, SparkSession
 
 from package.calculation_input.schemas import (
     metering_point_period_schema,
 )
-from package.codelists import MeteringPointType, QuantityQuality, SettlementMethod, MeteringPointResolution
+from package.codelists import (
+    MeteringPointType,
+    SettlementMethod,
+    MeteringPointResolution,
+)
 from package.constants import Colname
 
+DEFAULT_METERING_POINT_ID = "123456789012345678901234567"
+DEFAULT_METERING_POINT_TYPE = MeteringPointType.PRODUCTION
+DEFAULT_SETTLEMENT_METHOD = SettlementMethod.FLEX
 DEFAULT_GRID_AREA = "805"
-DEFAULT_METERING_POINT_ID = "the-metering-point-id"
+DEFAULT_RESOLUTION = MeteringPointResolution.HOUR
+DEFAULT_FROM_GRID_AREA = None
+DEFAULT_TO_GRID_AREA = None
+DEFAULT_PARENT_METERING_POINT_ID = None
 DEFAULT_ENERGY_SUPPLIER_ID = "9999999999999"
-DEFAULT_METERING_POINT_TYPE = MeteringPointType.PRODUCTION.value
-DEFAULT_SETTLEMENT_METHOD = SettlementMethod.FLEX.value
-resolution = MeteringPointResolution.HOUR.value
-DEFAULT_FROM_GRID_AREA = "200"
-DEFAULT_TO_GRID_AREA = "300"
-
-
-
-DEFAULT_OBSERVATION_TIME = datetime.datetime.now()
-DEFAULT_SUM_QUANTITY = Decimal("999.123456")
-DEFAULT_QUALITIES = [QuantityQuality.MEASURED]
-
+DEFAULT_BALANCE_RESPONSIBLE_ID = "1234567890123"
+DEFAULT_FROM_DATE = datetime(2020, 1, 1, 0, 0)
+DEFAULT_TO_DATE = datetime(2020, 2, 1, 0, 0)
 
 
 def create_row(
-    metering_point_id=metering_point_id,
-    metering_point_type=metering_point_type,
-    CalculationType="some-calculation-type",
-    SettlementMethod=settlement_method,
-    GridAreaCode=grid_area_code,
-    Resolution=resolution,
-    FromGridArea="some-to-grid-area",
-    ToGridArea="some-from-grid-area",
-    ParentMeteringPointId="some-parent-metering-point-id",
-    EnergySupplierId=energy_supplier_id,
-    BalanceResponsibleId=balance_responsible_id,
-    FromDate=june_1th,
-    ToDate=june_3th,
-    periods=None,
+    metering_point_id: str = DEFAULT_METERING_POINT_ID,
+    metering_point_type: MeteringPointType = DEFAULT_METERING_POINT_TYPE,
+    settlement_method: SettlementMethod = DEFAULT_SETTLEMENT_METHOD,
     grid_area: str = DEFAULT_GRID_AREA,
+    resolution: MeteringPointResolution = DEFAULT_RESOLUTION,
     from_grid_area: str | None = DEFAULT_FROM_GRID_AREA,
     to_grid_area: str | None = DEFAULT_TO_GRID_AREA,
-    observation_time: datetime = DEFAULT_OBSERVATION_TIME,
-    sum_quantity: int | Decimal = DEFAULT_SUM_QUANTITY,
-    qualities: None | QuantityQuality | list[QuantityQuality] = None,
+    parent_metering_point_id: str | None = DEFAULT_PARENT_METERING_POINT_ID,
     energy_supplier_id: str | None = DEFAULT_ENERGY_SUPPLIER_ID,
     balance_responsible_id: str | None = DEFAULT_BALANCE_RESPONSIBLE_ID,
+    from_date: datetime = DEFAULT_FROM_DATE,
+    to_date: datetime = DEFAULT_TO_DATE,
 ) -> Row:
-    if isinstance(sum_quantity, int):
-        sum_quantity = Decimal(sum_quantity)
-
-    if qualities is None:
-        qualities = DEFAULT_QUALITIES
-    elif isinstance(qualities, QuantityQuality):
-        qualities = [qualities]
-    qualities = [q.value for q in qualities]
+    calculation_type = None
 
     row = {
+        Colname.metering_point_id: metering_point_id,
+        Colname.metering_point_type: metering_point_type.value,
+        Colname.calculation_type: calculation_type,
+        Colname.settlement_method: settlement_method.value,
         Colname.grid_area: grid_area,
+        Colname.resolution: resolution.value,
         Colname.from_grid_area: from_grid_area,
         Colname.to_grid_area: to_grid_area,
-        Colname.balance_responsible_id: balance_responsible_id,
+        Colname.parent_metering_point_id: parent_metering_point_id,
         Colname.energy_supplier_id: energy_supplier_id,
-        Colname.time_window: {
-            Colname.start: observation_time,
-            Colname.end: observation_time + datetime.timedelta(minutes=15),
-        },
-        Colname.sum_quantity: sum_quantity,
-        Colname.qualities: qualities,
+        Colname.balance_responsible_id: balance_responsible_id,
+        Colname.from_date: from_date,
+        Colname.to_date: to_date,
     }
 
     return Row(**row)
 
 
-def create(spark: SparkSession, data: None | Row | list[Row] = None) -> DataFrame
+def create(spark: SparkSession, data: None | Row | list[Row] = None) -> DataFrame:
     if data is None:
         data = [create_row()]
     elif isinstance(data, Row):

@@ -18,6 +18,7 @@ from typing import Callable
 from pyspark.sql.functions import col
 from pyspark.sql import DataFrame, SparkSession
 
+import pytest
 from unittest.mock import patch, Mock
 
 from package import calculation_input
@@ -34,11 +35,11 @@ from package.constants import Colname
 import tests.calculation.preparation.transformations.metering_point_periods_factory as factory
 
 # Factory defaults
-grid_area_code = "805"
+grid_area = "805"
 grid_area_link_id = "the-grid-area-link-id"
 metering_point_id = "the-metering-point-id"
 energy_supplier_id = "the-energy-supplier-id"
-metering_point_type = MeteringPointType.PRODUCTION.value
+# metering_point_type = MeteringPointType.PRODUCTION.value
 settlement_method = SettlementMethod.FLEX.value
 resolution = MeteringPointResolution.HOUR.value
 date_time_formatting_string = "%Y-%m-%dT%H:%M"
@@ -56,52 +57,38 @@ june_10th = june_1th + timedelta(days=9)
 balance_responsible_id = "someBalanceResponsibleId"
 
 
-@patch.object(calculation_input, TableReader.__name__)
-def test__when_metering_point_period_is_in_grid_areas__returns_metering_point_period(
-    mock_calculation_input_reader: Mock,
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    row = factory.create_row()
-    mock_calculation_input_reader.read_metering_point_periods.return_value = (
-        factory.create(spark, row)
-    )
+class TestWhenValidInput:
+    @pytest.mark.parametrize("metering_point_type", list(MeteringPointType))
+    @patch.object(calculation_input, TableReader.__name__)
+    def test__returns_metering_point_period_for_(
+        self,
+        mock_calculation_input_reader: Mock,
+        spark: SparkSession,
+        metering_point_type: MeteringPointType,
+    ) -> None:
+        # Arrange
+        row = factory.create_row(
+            grid_area=grid_area,
+            from_date=june_1th,
+            to_date=june_3th,
+            metering_point_type=metering_point_type,
+        )
+        mock_calculation_input_reader.read_metering_point_periods.return_value = (
+            factory.create(spark, row)
+        )
 
-    # Act
-    metering_point_periods = get_metering_point_periods_df(
-        mock_calculation_input_reader,
-        june_1th,
-        june_2th,
-        [grid_area_code],
-    )
+        # Act
+        actual = get_metering_point_periods_df(
+            mock_calculation_input_reader,
+            june_1th,
+            june_2th,
+            [grid_area],
+        )
 
-    # Assert
-    assert metering_point_periods.count() == 1
-
-
-@patch.object(calculation_input, TableReader.__name__)
-def test__when_type_is_production__returns_metering_point_period(
-    mock_calculation_input_reader: Mock,
-    metering_points_periods_df_factory: Callable[..., DataFrame],
-) -> None:
-    # Arrange
-    metering_points_periods_df = metering_points_periods_df_factory(
-        MeteringPointType=MeteringPointType.PRODUCTION.value
-    )
-    mock_calculation_input_reader.read_metering_point_periods.return_value = (
-        metering_points_periods_df
-    )
-
-    # Act
-    metering_point_periods = get_metering_point_periods_df(
-        mock_calculation_input_reader,
-        june_1th,
-        june_2th,
-        [grid_area_code],
-    )
-
-    # Assert
-    assert metering_point_periods.count() == 1
+        # Assert
+        actual_rows = actual.collect()
+        assert len(actual_rows) == 1
+        assert actual_rows[0][Colname.metering_point_type] == metering_point_type.value
 
 
 @patch.object(calculation_input, TableReader.__name__)
@@ -110,24 +97,20 @@ def test__metering_points_have_expected_columns(
     metering_points_periods_df_factory: Callable[..., DataFrame],
 ) -> None:
     # Arrange
-    metering_points_periods_df = metering_points_periods_df_factory()
-    mock_calculation_input_reader.read_metering_point_periods.return_value = (
-        metering_points_periods_df
-    )
 
     # Act
-    raw_master_basis_data = get_metering_point_periods_df(
+    metering_points_periods = get_metering_point_periods_df(
         mock_calculation_input_reader,
         june_1th,
         june_2th,
-        [grid_area_code],
+        [grid_area],
     )
 
     # Assert
     assert (
-        raw_master_basis_data.where(
+        metering_points_periods.where(
             (col(Colname.metering_point_id) == metering_point_id)
-            & (col(Colname.grid_area) == grid_area_code)
+            & (col(Colname.grid_area) == grid_area)
             & (col(Colname.from_date) == june_1th)
             & (col(Colname.to_date) == june_2th)
             & (col(Colname.metering_point_type) == metering_point_type)
@@ -158,7 +141,7 @@ def test__when_period_to_date_is_null__returns_metering_point_period_with_to_dat
         mock_calculation_input_reader,
         june_1th,
         period_end,
-        [grid_area_code],
+        [grid_area],
     )
 
     # Assert
@@ -186,7 +169,7 @@ def test__get_metering_point_periods_df__from_date_must_not_be_earlier_than_peri
         mock_calculation_input_reader,
         period_start,
         period_end,
-        [grid_area_code],
+        [grid_area],
     )
 
     # Assert
@@ -213,7 +196,7 @@ def test__get_metering_point_periods_df__to_date_must_not_be_after_period_end(
         mock_calculation_input_reader,
         period_start,
         period_end,
-        [grid_area_code],
+        [grid_area],
     )
 
     # Assert
