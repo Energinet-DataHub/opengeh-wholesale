@@ -56,6 +56,7 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
         args.batch_id,
         args.batch_process_type,
         args.batch_execution_time_start,
+        args.batch_grid_areas,
         metering_point_time_series,
         grid_loss_responsible_df,
     )
