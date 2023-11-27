@@ -46,8 +46,6 @@ runs:
       run: |
         dotnet publish \
           '.\source\dotnet\wholesale-api\WebApi.UnitTests\WebApi.UnitTests.csproj' \
-          --no-build \
-          --no-restore \
           --configuration Debug \
           --output '.\source\dotnet\wholesale-api\WebApi.UnitTests\bin\Debug\net7.0'
 
