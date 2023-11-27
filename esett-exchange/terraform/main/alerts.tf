@@ -5,12 +5,13 @@ resource "azurerm_monitor_action_group" "esett_exchange" {
 
   email_receiver {
     name                    = "alerts-eSettExchange-${local.name_suffix}"
-    email_address           = "aiu@energinet.dk"
+    email_address           = "it-dh-support@energinet.dk"
     use_common_alert_schema = true
   }
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "esett_exchange_deadline_alert" {
+  # NOTE: The name prefix 'alert-eSettExchangeDeadline' is used by ServiceNow to detect the alert and create an incident.
   name                    = "alert-eSettExchangeDeadline-${local.name_suffix}"
   location                = azurerm_resource_group.this.location
   resource_group_name     = var.shared_resources_resource_group_name
@@ -49,5 +50,5 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "esett_exchange_deadli
   }
 
   description    = "eSett Exchange alert for when no messages are sent before daily deadline."
-  enabled        = true
+  enabled        = false
 }
