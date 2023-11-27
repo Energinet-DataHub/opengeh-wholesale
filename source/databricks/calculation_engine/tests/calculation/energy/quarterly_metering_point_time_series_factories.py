@@ -74,6 +74,27 @@ def create_row(
     return Row(**row)
 
 
+def create_exchange_row(
+    grid_area: str = DEFAULT_GRID_AREA,
+    to_grid_area: str | None = None,
+    from_grid_area: str | None = None,
+    metering_point_id: str = DEFAULT_METERING_POINT_ID,
+    observation_time: datetime = DEFAULT_OBSERVATION_TIME,
+    quantity: int | Decimal = DEFAULT_QUANTITY,
+    quality: QuantityQuality = DEFAULT_QUALITY,
+) -> Row:
+    return create_row(
+        grid_area=grid_area,
+        to_grid_area=to_grid_area,
+        from_grid_area=from_grid_area,
+        metering_point_id=metering_point_id,
+        metering_point_type=MeteringPointType.EXCHANGE,
+        observation_time=observation_time,
+        quantity=quantity,
+        quality=quality,
+    )
+
+
 def create_from_row(
     grid_area: str = DEFAULT_GRID_AREA,
     to_grid_area: str = DEFAULT_NEIGHBOUR_GRID_AREA,
@@ -83,12 +104,11 @@ def create_from_row(
     quality: QuantityQuality = DEFAULT_QUALITY,
 ) -> Row:
     """Create a row representing exchange leaving the (default) grid area."""
-    return create_row(
+    return create_exchange_row(
         grid_area=grid_area,
         to_grid_area=to_grid_area,
         from_grid_area=grid_area,
         metering_point_id=metering_point_id,
-        metering_point_type=MeteringPointType.EXCHANGE,
         observation_time=observation_time,
         quantity=quantity,
         quality=quality,
@@ -104,12 +124,11 @@ def create_to_row(
     quality: QuantityQuality = DEFAULT_QUALITY,
 ) -> Row:
     """Create a row representing exchange entering the grid area."""
-    return create_row(
+    return create_exchange_row(
         grid_area=grid_area,
         to_grid_area=grid_area,
         from_grid_area=from_grid_area,
         metering_point_id=metering_point_id,
-        metering_point_type=MeteringPointType.EXCHANGE,
         observation_time=observation_time,
         quantity=quantity,
         quality=quality,

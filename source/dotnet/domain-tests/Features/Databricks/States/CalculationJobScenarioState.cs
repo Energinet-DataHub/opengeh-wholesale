@@ -12,20 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Xunit.Abstractions;
+using System.Diagnostics.CodeAnalysis;
+using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
+using Microsoft.Azure.Databricks.Client.Models;
 
-namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Extensions
+namespace Energinet.DataHub.Wholesale.DomainTests.Features.Databricks.States
 {
-    public static class MessageSinkExtensions
+    public class CalculationJobScenarioState
     {
-        public static void WriteDiagnosticMessage(this IMessageSink messageSink, string message)
-        {
-            messageSink.OnMessage(CreateDiagnosticMessage(message));
-        }
+        [NotNull]
+        public Batch? CalculationJobInput { get; set; }
 
-        private static Xunit.Sdk.DiagnosticMessage CreateDiagnosticMessage(string message)
-        {
-            return new Xunit.Sdk.DiagnosticMessage($"Mandalorian: {message}");
-        }
+        [NotNull]
+        public CalculationId? CalculationId { get; set; }
+
+        [NotNull]
+        public Run? Run { get; set; }
     }
 }
