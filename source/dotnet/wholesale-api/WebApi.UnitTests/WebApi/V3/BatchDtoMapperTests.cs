@@ -15,6 +15,7 @@
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.WebApi.V3;
@@ -43,5 +44,18 @@ public static class BatchDtoMapperTests
         actual.BatchId.Should().Be(source.BatchId);
         actual.BatchId.Should().Be(source.BatchId);
         actual.CreatedByUserId.Should().Be(source.CreatedByUserId);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public static void VerifyTestOutputWhenFailing(Batches.Interfaces.Models.BatchDto source)
+    {
+        // Act
+        var actual = BatchDtoMapper.Map(source);
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        actual.BatchId.Should().Be(Guid.Empty);
+        actual.AreSettlementReportsCreated.Should().BeTrue();
     }
 }
