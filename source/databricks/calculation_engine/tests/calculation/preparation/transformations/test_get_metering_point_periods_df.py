@@ -87,114 +87,130 @@ class TestWhenValidInput:
         assert len(actual_rows) == 1
         assert actual_rows[0][Colname.metering_point_type] == metering_point_type.value
 
+    @patch.object(calculation_input, TableReader.__name__)
+    def test__returns_dataframe_with_expected_columns(
+        self,
+        mock_calculation_input_reader: Mock,
+        spark: SparkSession,
+    ) -> None:
+        # Arrange
+        row = factory.create_row()
+        mock_calculation_input_reader.read_metering_point_periods.return_value = (
+            factory.create(spark, row)
+        )
 
-@patch.object(calculation_input, TableReader.__name__)
-def test__metering_points_have_expected_columns(
-    mock_calculation_input_reader: Mock,
-    metering_points_periods_df_factory: Callable[..., DataFrame],
-) -> None:
-    # Arrange
+        # Act
+        actual = get_metering_point_periods_df(
+            mock_calculation_input_reader,
+            factory.DEFAULT_FROM_DATE,
+            factory.DEFAULT_TO_DATE,
+            [factory.DEFAULT_GRID_AREA],
+        )
 
-    # Act
-    metering_points_periods = get_metering_point_periods_df(
-        mock_calculation_input_reader,
-        june_1th,
-        june_2th,
-        [grid_area],
+        # Assert
+        actual_rows = actual.collect()
+        assert len(actual_rows) == 1
+        actual_row = actual_rows[0]
+        assert (
+            actual_row[Colname.metering_point_id] == factory.DEFAULT_METERING_POINT_ID
+        )
+        assert (
+            actual_row[Colname.metering_point_type]
+            == factory.DEFAULT_METERING_POINT_TYPE.value
+        )
+        assert (
+            actual_row[Colname.settlement_method]
+            == factory.DEFAULT_SETTLEMENT_METHOD.value
+        )
+        assert actual_row[Colname.grid_area] == factory.DEFAULT_GRID_AREA
+        assert actual_row[Colname.resolution] == factory.DEFAULT_RESOLUTION.value
+        assert actual_row[Colname.from_grid_area] == factory.DEFAULT_FROM_GRID_AREA
+        assert actual_row[Colname.to_grid_area] == factory.DEFAULT_TO_GRID_AREA
+        assert (
+            actual_row[Colname.parent_metering_point_id]
+            == factory.DEFAULT_PARENT_METERING_POINT_ID
+        )
+        assert (
+            actual_row[Colname.energy_supplier_id] == factory.DEFAULT_ENERGY_SUPPLIER_ID
+        )
+        assert (
+            actual_row[Colname.balance_responsible_id]
+            == factory.DEFAULT_BALANCE_RESPONSIBLE_ID
+        )
+
+    @pytest.mark.parametrize(
+        "from_date, to_date, period_start, period_end, expected_from_date, expected_to_date",
+        [
+            (
+                june_1th,
+                june_4th,
+                june_2th,
+                june_3th,
+                june_2th,
+                june_3th,
+            ),  # period is within metering point from/to dates
+            (
+                june_2th,
+                june_4th,
+                june_1th,
+                june_3th,
+                june_2th,
+                june_3th,
+            ),  # period starts before metering point from date
+            (
+                june_1th,
+                june_3th,
+                june_1th,
+                june_4th,
+                june_1th,
+                june_3th,
+            ),  # period ends after metering point from/to dates
+            (
+                june_1th,
+                june_3th,
+                june_1th,
+                june_3th,
+                june_1th,
+                june_3th,
+            ),  # period matches from/to dates
+            (
+                june_1th,
+                None,
+                june_1th,
+                june_4th,
+                june_1th,
+                june_4th,
+            ),  # period starts at metering point from date and has no end date
+        ],
     )
+    @patch.object(calculation_input, TableReader.__name__)
+    def test_returns_dataframe_with_expect_from_and_to_date(
+        self,
+        mock_calculation_input_reader: Mock,
+        spark: SparkSession,
+        from_date: datetime,
+        to_date: datetime,
+        period_start: datetime,
+        period_end: datetime,
+        expected_from_date: datetime,
+        expected_to_date: datetime,
+    ) -> None:
+        # Arrange
+        row = factory.create_row(from_date=from_date, to_date=to_date)
+        mock_calculation_input_reader.read_metering_point_periods.return_value = (
+            factory.create(spark, row)
+        )
 
-    # Assert
-    assert (
-        metering_points_periods.where(
-            (col(Colname.metering_point_id) == metering_point_id)
-            & (col(Colname.grid_area) == grid_area)
-            & (col(Colname.from_date) == june_1th)
-            & (col(Colname.to_date) == june_2th)
-            & (col(Colname.metering_point_type) == metering_point_type)
-            & (col(Colname.settlement_method) == settlement_method)
-            & (col(Colname.to_grid_area) == "some-to-grid-area")
-            & (col(Colname.from_grid_area) == "some-from-grid-area")
-            & (col(Colname.resolution) == MeteringPointResolution.HOUR.value)
-            & (col(Colname.energy_supplier_id) == energy_supplier_id)
-        ).count()
-        == 1
-    )
+        # Act
+        actual = get_metering_point_periods_df(
+            mock_calculation_input_reader,
+            period_start,
+            period_end,
+            [grid_area],
+        )
 
-
-@patch.object(calculation_input, TableReader.__name__)
-def test__when_period_to_date_is_null__returns_metering_point_period_with_to_date_equal_to_period_end(
-    mock_calculation_input_reader: Mock,
-    metering_points_periods_df_factory: Callable[..., DataFrame],
-) -> None:
-    # Arrange
-    metering_points_periods_df = metering_points_periods_df_factory(ToDate=None)
-    mock_calculation_input_reader.read_metering_point_periods.return_value = (
-        metering_points_periods_df
-    )
-    period_end = june_2th
-
-    # Act
-    raw_master_basis_data = get_metering_point_periods_df(
-        mock_calculation_input_reader,
-        june_1th,
-        period_end,
-        [grid_area],
-    )
-
-    # Assert
-    assert raw_master_basis_data.count() == 1
-    assert raw_master_basis_data.where(col(Colname.to_date) == period_end).count() == 1
-
-
-@patch.object(calculation_input, TableReader.__name__)
-def test__get_metering_point_periods_df__from_date_must_not_be_earlier_than_period_start(
-    mock_calculation_input_reader: Mock,
-    metering_points_periods_df_factory: Callable[..., DataFrame],
-) -> None:
-    # Arrange
-    period_start = june_4th
-    period_end = june_6th
-    metering_point_period_df = metering_points_periods_df_factory(
-        FromDate=june_1th, ToDate=june_10th
-    )
-    mock_calculation_input_reader.read_metering_point_periods.return_value = (
-        metering_point_period_df
-    )
-
-    # Act
-    master_basis_data = get_metering_point_periods_df(
-        mock_calculation_input_reader,
-        period_start,
-        period_end,
-        [grid_area],
-    )
-
-    # Assert
-    assert master_basis_data.collect()[0][Colname.from_date] == period_start
-
-
-@patch.object(calculation_input, TableReader.__name__)
-def test__get_metering_point_periods_df__to_date_must_not_be_after_period_end(
-    mock_calculation_input_reader: Mock,
-    metering_points_periods_df_factory: Callable[..., DataFrame],
-) -> None:
-    # Arrange
-    period_start = june_4th
-    period_end = june_6th
-    metering_point_period_df = metering_points_periods_df_factory(
-        FromDate=june_1th, ToDate=june_10th
-    )
-    mock_calculation_input_reader.read_metering_point_periods.return_value = (
-        metering_point_period_df
-    )
-
-    # Act
-    master_basis_data = get_metering_point_periods_df(
-        mock_calculation_input_reader,
-        period_start,
-        period_end,
-        [grid_area],
-    )
-
-    # Assert
-    assert master_basis_data.collect()[0][Colname.to_date] == period_end
+        # Assert
+        actual_rows = actual.collect()
+        assert len(actual_rows) == 1
+        assert actual_rows[0][Colname.from_date] == expected_from_date
+        assert actual_rows[0][Colname.to_date] == expected_to_date

@@ -53,7 +53,7 @@ def create_row(
     energy_supplier_id: str | None = DEFAULT_ENERGY_SUPPLIER_ID,
     balance_responsible_id: str | None = DEFAULT_BALANCE_RESPONSIBLE_ID,
     from_date: datetime = DEFAULT_FROM_DATE,
-    to_date: datetime = DEFAULT_TO_DATE,
+    to_date: datetime | None = DEFAULT_TO_DATE,
 ) -> Row:
     calculation_type = None
 
