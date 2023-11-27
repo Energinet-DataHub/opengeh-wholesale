@@ -22,7 +22,7 @@ from package.infrastructure.environment_variables import EnvironmentVariable
 DEFAULT_BATCH_ID = "the-batch-id"
 
 
-def _get_job_parameters(filename: str) -> list[str]:
+def _get_contract_parameters(filename: str) -> list[str]:
     """Get the parameters as they are expected to be received from the process manager."""
     with open(filename) as file:
         text = file.read()
@@ -34,8 +34,8 @@ def _get_job_parameters(filename: str) -> list[str]:
 
 
 @pytest.fixture(scope="session")
-def dummy_job_parameters(contracts_path: str) -> list[str]:
-    job_parameters = _get_job_parameters(
+def contract_parameters(contracts_path: str) -> list[str]:
+    job_parameters = _get_contract_parameters(
         f"{contracts_path}/calculation-job-parameters-reference.txt"
     )
 
@@ -43,12 +43,12 @@ def dummy_job_parameters(contracts_path: str) -> list[str]:
 
 
 @pytest.fixture(scope="session")
-def dummy_job_command_line_args(dummy_job_parameters: list[str]) -> list[str]:
-    return ["dummy_script_name"] + dummy_job_parameters
+def sys_argv_from_contract(contract_parameters) -> list[str]:
+    return ["dummy_script_name"] + contract_parameters
 
 
 @pytest.fixture(scope="session")
-def dummy_environment_variables() -> dict:
+def job_environment_variables() -> dict:
     return {
         EnvironmentVariable.TIME_ZONE.value: "Europe/Copenhagen",
         EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME.value: "some_storage_account_name",
@@ -61,12 +61,13 @@ def dummy_environment_variables() -> dict:
 class TestWhenInvokedWithIncorrectParameters:
     def test_fails(
         self,
-        dummy_environment_variables: dict,
+        job_environment_variables: dict,
     ) -> None:
-        # Act
+        # Arrange
         with pytest.raises(SystemExit) as excinfo:
             with patch("sys.argv", ["dummy_script", "--unexpected-arg"]):
-                with patch.dict("os.environ", dummy_environment_variables):
+                with patch.dict("os.environ", job_environment_variables):
+                    # Act
                     get_calculator_args()
 
         # Assert
@@ -76,19 +77,17 @@ class TestWhenInvokedWithIncorrectParameters:
 class TestWhenInvokedWithValidParameters:
     def test_parses_parameters_from_contract(
         self,
-        dummy_environment_variables: dict,
-        dummy_job_command_line_args: list[str],
+        job_environment_variables: dict,
+        sys_argv_from_contract,
     ) -> None:
         """
         This test works in tandem with a .NET test ensuring that the calculator job accepts
         the arguments that are provided by the client.
         """
-
         # Arrange
-
-        # Act
-        with patch("sys.argv", dummy_job_command_line_args):
-            with patch.dict("os.environ", dummy_environment_variables):
+        with patch("sys.argv", sys_argv_from_contract):
+            with patch.dict("os.environ", job_environment_variables):
+                # Act
                 actual = get_calculator_args()
 
         # Assert
@@ -101,9 +100,6 @@ class TestWhenInvokedWithValidParameters:
         assert actual.batch_process_type == ProcessType.BALANCE_FIXING
         assert actual.batch_execution_time_start == datetime.datetime(2022, 6, 4, 22)
 
-        # TODO BJM: Add test of optional parameter time_series_periods_table_name
-
-        # TODO BJM: Separate test
         # From infrastructure
         assert (
             actual.calculation_input_path
@@ -115,26 +111,59 @@ class TestWhenInvokedWithValidParameters:
         )
         assert actual.time_zone == "Europe/Copenhagen"
 
+    def test_parses_optional_time_series_periods_table_name(
+        self,
+        job_environment_variables: dict,
+        sys_argv_from_contract,
+    ) -> None:
+        # Arrange
+        expected = "the_time_series_periods_table_name"
+        sys_argv_from_contract = sys_argv_from_contract + [
+            f"--time_series_periods_table_name={expected}"
+        ]
+
+        with patch("sys.argv", sys_argv_from_contract):
+            with patch.dict("os.environ", job_environment_variables):
+                # Act
+                actual = get_calculator_args()
+
+        # Assert
+        assert actual.time_series_periods_table_name == expected
+
+    def test_returns_none_when_time_series_periods_table_name_absent(
+        self,
+        job_environment_variables: dict,
+        sys_argv_from_contract,
+    ) -> None:
+        # Arrange
+        with patch("sys.argv", sys_argv_from_contract):
+            with patch.dict("os.environ", job_environment_variables):
+                # Act
+                actual = get_calculator_args()
+
+        # Assert
+        assert actual.time_series_periods_table_name is None
+
 
 class TestWhenUnknownProcessType:
     def test_raise_system_exit_with_non_zero_code(
-        self, dummy_environment_variables: dict, dummy_job_command_line_args: list[str]
+        self, job_environment_variables: dict, sys_argv_from_contract
     ) -> None:
         # Arrange
         unknown_process_type = "unknown_process_type"
         pattern = r"--batch-process-type=(\w+)"
 
-        for i, item in enumerate(dummy_job_command_line_args):
+        for i, item in enumerate(sys_argv_from_contract):
             if re.search(pattern, item):
-                dummy_job_command_line_args[i] = re.sub(
+                sys_argv_from_contract[i] = re.sub(
                     pattern, f"--batch-process-type={unknown_process_type}", item
                 )
                 break
 
-        # Act
-        with patch("sys.argv", dummy_job_command_line_args):
-            with patch.dict("os.environ", dummy_environment_variables):
+        with patch("sys.argv", sys_argv_from_contract):
+            with patch.dict("os.environ", job_environment_variables):
                 with pytest.raises(SystemExit) as error:
+                    # Act
                     get_calculator_args()
 
         # Assert
@@ -143,19 +172,19 @@ class TestWhenUnknownProcessType:
 
 class TestWhenMissingEnvVariables:
     def test_raise_system_exit_with_non_zero_code(
-        self, dummy_environment_variables: dict, dummy_job_command_line_args: list[str]
+        self, job_environment_variables: dict, sys_argv_from_contract
     ) -> None:
         # Arrange
-        with patch("sys.argv", dummy_job_command_line_args):
-            for excluded_env_var in dummy_environment_variables.keys():
+        with patch("sys.argv", sys_argv_from_contract):
+            for excluded_env_var in job_environment_variables.keys():
                 env_variabes_with_one_missing = {
                     key: value
-                    for key, value in dummy_environment_variables.items()
+                    for key, value in job_environment_variables.items()
                     if key != excluded_env_var
                 }
                 with patch.dict("os.environ", env_variabes_with_one_missing):
-                    # Act
                     with pytest.raises(SystemExit) as error:
+                        # Act
                         get_calculator_args()
 
         # Assert
