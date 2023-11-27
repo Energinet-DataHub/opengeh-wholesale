@@ -68,9 +68,6 @@ class TestWhenValidInput:
     ) -> None:
         # Arrange
         row = factory.create_row(
-            grid_area=grid_area,
-            from_date=june_1th,
-            to_date=june_3th,
             metering_point_type=metering_point_type,
         )
         mock_calculation_input_reader.read_metering_point_periods.return_value = (
@@ -80,9 +77,9 @@ class TestWhenValidInput:
         # Act
         actual = get_metering_point_periods_df(
             mock_calculation_input_reader,
-            june_1th,
-            june_2th,
-            [grid_area],
+            factory.DEFAULT_FROM_DATE,
+            factory.DEFAULT_TO_DATE,
+            [factory.DEFAULT_GRID_AREA],
         )
 
         # Assert
