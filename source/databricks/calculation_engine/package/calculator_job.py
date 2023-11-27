@@ -14,16 +14,16 @@
 
 
 import sys
+
+from package import calculation
+from package import calculation_input
+from package.calculator_job_args import get_calculator_args
 from package.infrastructure import (
     db_logging,
     initialize_spark,
     log,
-    paths,
 )
-from package.calculator_job_args import get_calculator_args
 from package.infrastructure.storage_account_access import islocked
-from package import calculation_input
-from package import calculation
 
 
 # The start() method should only have its name updated in correspondence with the
@@ -31,8 +31,6 @@ from package import calculation
 # it will be called from the entry point when deployed.
 def start() -> None:
     args = get_calculator_args()
-    if args.time_series_periods_table_name is None:
-        args.time_series_periods_table_name = paths.TIME_SERIES_POINTS_TABLE_NAME
 
     db_logging.loglevel = "information"
     if islocked(args.data_storage_account_name, args.data_storage_account_credentials):

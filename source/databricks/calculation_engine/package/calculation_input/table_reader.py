@@ -38,10 +38,14 @@ class TableReader:
         self,
         spark: SparkSession,
         calculation_input_path: str,
-        time_series_points_table_name: str,
+        time_series_points_table_name: str | None,
     ) -> None:
         self._spark = spark
         self._calculation_input_path = calculation_input_path
+        if time_series_points_table_name is None:
+            self._time_series_points_table_name = paths.TIME_SERIES_POINTS_TABLE_NAME
+        else:
+            self._time_series_points_table_name = time_series_points_table_name
         self._time_series_points_table_name = time_series_points_table_name
 
     def read_metering_point_periods(self) -> DataFrame:
