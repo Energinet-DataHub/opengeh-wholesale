@@ -193,6 +193,8 @@ class TestWhenValidInput:
         assert actual_rows[0][Colname.from_date] == expected_from_date
         assert actual_rows[0][Colname.to_date] == expected_to_date
 
+
+class TestWhenExchangeMeteringPoint:
     @pytest.mark.parametrize(
         "grid_area, from_grid_area, to_grid_area, calculation_grid_area, expected",
         [
@@ -205,7 +207,7 @@ class TestWhenValidInput:
         ],
     )
     @patch.object(calculation_input, TableReader.__name__)
-    def test_returns_dataframe_with_expect_from_and_to_date(
+    def test_returns_metering_point_if_it_associates_to_relevant_grid_area(
         self,
         mock_calculation_input_reader: Mock,
         spark: SparkSession,
