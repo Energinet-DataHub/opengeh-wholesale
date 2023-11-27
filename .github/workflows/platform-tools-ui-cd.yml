@@ -1,0 +1,57 @@
+name: Platform Tools UI CD
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - platform-tools-ui/**
+      - .github/workflows/platform-tools-ui-cd.yml
+      - .github/workflows/infrastructure-build-prerelease.yml
+      - .github/workflows/infrastructure-validate.yml
+
+jobs:
+  #
+  # CD Infrastructure
+  #
+
+  infrastructure_promote_prerelease:
+    uses: Energinet-DataHub/.github/.github/workflows/promote-prerelease.yml@v12
+    with:
+      release_name_prefix: platform_tools_ui_infrastructure
+
+  #
+  # Dispatch deployment request
+  #
+
+  dispatch_deployment_event:
+    runs-on: ubuntu-latest
+    needs: infrastructure_promote_prerelease
+    steps:
+      - name: Find associated pull request
+        uses: Energinet-DataHub/.github/.github/actions/find-related-pr-number@v12
+        id: find_pull_request
+
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.internal_github_pat }}
+          repository: ${{ vars.environment_repository_path }}
+          event-type: platform-tools-ui-deployment-request-infrastructure
+          # yamllint disable-line rule:quoted-strings
+          client-payload: '{"infrastructure_pr": "${{ steps.find_pull_request.outputs.pull_request_number }}"}'
+
+  #
+  # Send notification to teams channel if deployment dispatch failed
+  #
+
+  dispatch_failed:
+    needs: [infrastructure_promote_prerelease, dispatch_deployment_event]
+    if: |
+      always() &&
+      contains(needs.*.result, 'failure')
+    uses: Energinet-DataHub/.github/.github/workflows/notify-team.yml@v12
+    with:
+      team_name: TheOutlaws
+      subject: "Deployment dispatch failed: Infrastructure - Platform Tools"
+    secrets: inherit
