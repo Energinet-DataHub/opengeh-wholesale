@@ -43,6 +43,8 @@ default_obs_time = datetime.strptime(
 )
 numberOfQuarters = 5  # Not too many as it has a massive impact on test performance
 
+ALL_GRID_AREAS = ["A", "B", "C", "D", "E", "F", "X", "Y"]
+
 
 @pytest.fixture(scope="module")
 def quarterly_metering_point_time_series(
@@ -198,7 +200,7 @@ def add_row_of_data(
     Helper method to create a new row in the dataframe to improve readability and maintainability
     """
     new_row = {
-        Colname.grid_area: "grid-area",
+        Colname.grid_area: ALL_GRID_AREAS,
         Colname.to_grid_area: to_grid_area,
         Colname.from_grid_area: from_grid_area,
         Colname.metering_point_id: "metering-point-id",
@@ -216,7 +218,9 @@ def add_row_of_data(
 @pytest.fixture(scope="module")
 def aggregated_data_frame(quarterly_metering_point_time_series):
     """Perform aggregation"""
-    return aggregate_net_exchange_per_ga(quarterly_metering_point_time_series)
+    return aggregate_net_exchange_per_ga(
+        quarterly_metering_point_time_series, ALL_GRID_AREAS
+    )
 
 
 def test_test_data_has_correct_row_count(quarterly_metering_point_time_series):

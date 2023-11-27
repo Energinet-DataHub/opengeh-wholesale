@@ -130,7 +130,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations
         [DomainFact]
         public void AndThen_ReceivedEnergyResultProducedEventsCountIsEqualToExpected()
         {
-            var expected = 130;
+            var expected = 102;
 
             // Assert
             using var assertionScope = new AssertionScope();
