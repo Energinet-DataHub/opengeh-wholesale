@@ -14,15 +14,16 @@
 
 
 import sys
+
+from package import calculation
+from package import calculation_input
+from package.calculator_job_args import get_calculator_args
 from package.infrastructure import (
     db_logging,
     initialize_spark,
     log,
 )
-from package.calculator_job_args import get_calculator_args
 from package.infrastructure.storage_account_access import islocked
-from package import calculation_input
-from package import calculation
 
 
 # The start() method should only have its name updated in correspondence with the
@@ -39,7 +40,7 @@ def start() -> None:
     # Create calculation execution dependencies
     spark = initialize_spark()
     delta_table_reader = calculation_input.TableReader(
-        spark, args.calculation_input_path
+        spark, args.calculation_input_path, args.time_series_periods_table_name
     )
     prepared_data_reader = calculation.PreparedDataReader(delta_table_reader)
 

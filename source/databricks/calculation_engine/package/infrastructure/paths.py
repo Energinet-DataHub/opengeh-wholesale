@@ -47,7 +47,7 @@ def get_container_root_path(storage_account_name: str) -> str:
 
 
 def get_calculation_input_path(storage_account_name: str) -> str:
-    return f"{get_container_root_path(storage_account_name)}/calculation_input/"
+    return f"{get_container_root_path(storage_account_name)}calculation_input/"
 
 
 def get_basis_data_root_path(basis_data_type: BasisDataType, batch_id: str) -> str:
