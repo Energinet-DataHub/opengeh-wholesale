@@ -16,15 +16,16 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using Microsoft.Azure.Amqp.Framing;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.WebApi.UnitTests.WebApi.V3;
 
-public static class BatchDtoMapperTests
+public class BatchDtoMapperTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public static void MapDto_Returns_correct(Batches.Interfaces.Models.BatchDto source)
+    public void MapDto_Returns_correct(Batches.Interfaces.Models.BatchDto source)
     {
         // Act
         var actual = BatchDtoMapper.Map(source);
@@ -48,7 +49,7 @@ public static class BatchDtoMapperTests
 
     [Theory]
     [InlineAutoMoqData]
-    public static void VerifyTestOutputWhenFailing(Batches.Interfaces.Models.BatchDto source)
+    public void VerifyTestOutputWhenFailing(Batches.Interfaces.Models.BatchDto source)
     {
         // Act
         var actual = BatchDtoMapper.Map(source);
@@ -58,4 +59,17 @@ public static class BatchDtoMapperTests
         actual.BatchId.Should().Be(Guid.Empty);
         actual.AreSettlementReportsCreated.Should().BeTrue();
     }
+
+    [Theory]
+    [MemberData(nameof(Data))]
+    public void VerifyTestOutputShowInputDataWhenUsingTheory(TimeSpan waitTimeLimit)
+    {
+        waitTimeLimit.Should().BeLessThan(TimeSpan.FromHours(1));
+    }
+
+    public static IEnumerable<object[]> Data =>
+        new List<object[]>
+        {
+            new object[] { TimeSpan.FromHours(5) },
+        };
 }
