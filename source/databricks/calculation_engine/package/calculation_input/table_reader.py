@@ -46,7 +46,6 @@ class TableReader:
             self._time_series_points_table_name = paths.TIME_SERIES_POINTS_TABLE_NAME
         else:
             self._time_series_points_table_name = time_series_points_table_name
-        self._time_series_points_table_name = time_series_points_table_name
 
     def read_metering_point_periods(self) -> DataFrame:
         df = self._read_table("metering_point_periods")
