@@ -21,10 +21,7 @@ from pyspark.sql.functions import (
 from package.constants import Colname
 from datetime import datetime
 from package.calculation_input import TableReader
-from .batch_grid_areas import (
-    get_batch_grid_areas_df,
-    check_all_grid_areas_have_metering_points,
-)
+from .batch_grid_areas import get_batch_grid_areas_df
 
 
 def get_metering_point_periods_df(
@@ -67,8 +64,6 @@ def _filter_by_grid_area(
 ) -> DataFrame:
     spark = SparkSession.builder.getOrCreate()
     grid_area_df = get_batch_grid_areas_df(batch_grid_areas, spark)
-
-    check_all_grid_areas_have_metering_points(grid_area_df, metering_points_periods_df)
 
     calculation_grid_areas = "calculation_grid_areas"
 

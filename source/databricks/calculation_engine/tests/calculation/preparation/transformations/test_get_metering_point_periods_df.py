@@ -13,10 +13,8 @@
 # limitations under the License.
 
 from datetime import datetime, timedelta
-from typing import Callable
 
-from pyspark.sql.functions import col
-from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql import SparkSession
 
 import pytest
 from unittest.mock import patch, Mock
@@ -26,41 +24,21 @@ from package.calculation_input.table_reader import TableReader
 from package.calculation.preparation.transformations import (
     get_metering_point_periods_df,
 )
-from package.codelists import (
-    MeteringPointType,
-    SettlementMethod,
-    MeteringPointResolution,
-)
+from package.codelists import MeteringPointType
 from package.constants import Colname
 import tests.calculation.preparation.transformations.metering_point_periods_factory as factory
 
-# Factory defaults
-grid_area = "805"
-grid_area_link_id = "the-grid-area-link-id"
-metering_point_id = "the-metering-point-id"
-energy_supplier_id = "the-energy-supplier-id"
-# metering_point_type = MeteringPointType.PRODUCTION.value
-settlement_method = SettlementMethod.FLEX.value
-resolution = MeteringPointResolution.HOUR.value
-date_time_formatting_string = "%Y-%m-%dT%H:%M"
-# +02:00 dates (e.g. danish DST)
-june_1th = datetime.strptime("2022-05-31T22:00", date_time_formatting_string)
+
+june_1th = datetime(2022, 5, 31, 22, 0)
 june_2th = june_1th + timedelta(days=1)
 june_3th = june_1th + timedelta(days=2)
 june_4th = june_1th + timedelta(days=3)
-june_5th = june_1th + timedelta(days=4)
-june_6th = june_1th + timedelta(days=5)
-june_7th = june_1th + timedelta(days=6)
-june_8th = june_1th + timedelta(days=7)
-june_9th = june_1th + timedelta(days=8)
-june_10th = june_1th + timedelta(days=9)
-balance_responsible_id = "someBalanceResponsibleId"
 
 
 class TestWhenValidInput:
     @pytest.mark.parametrize("metering_point_type", list(MeteringPointType))
     @patch.object(calculation_input, TableReader.__name__)
-    def test__returns_metering_point_period_for_(
+    def test_returns_metering_point_period_for_(
         self,
         mock_calculation_input_reader: Mock,
         spark: SparkSession,
@@ -88,7 +66,7 @@ class TestWhenValidInput:
         assert actual_rows[0][Colname.metering_point_type] == metering_point_type.value
 
     @patch.object(calculation_input, TableReader.__name__)
-    def test__returns_dataframe_with_expected_columns(
+    def test_returns_dataframe_with_expected_columns(
         self,
         mock_calculation_input_reader: Mock,
         spark: SparkSession,
@@ -206,7 +184,7 @@ class TestWhenValidInput:
             mock_calculation_input_reader,
             period_start,
             period_end,
-            [grid_area],
+            [factory.DEFAULT_GRID_AREA],
         )
 
         # Assert
@@ -214,3 +192,46 @@ class TestWhenValidInput:
         assert len(actual_rows) == 1
         assert actual_rows[0][Colname.from_date] == expected_from_date
         assert actual_rows[0][Colname.to_date] == expected_to_date
+
+    @pytest.mark.parametrize(
+        "grid_area, from_grid_area, to_grid_area, calculation_grid_area, expected",
+        [
+            ("111", "222", "333", "111", 1),
+            ("111", "222", "333", "222", 1),
+            ("111", "222", "333", "333", 1),
+            ("111", "222", "333", "444", 0),
+            ("111", "111", "333", "111", 1),
+            ("111", "222", "111", "111", 1),
+        ],
+    )
+    @patch.object(calculation_input, TableReader.__name__)
+    def test_returns_dataframe_with_expect_from_and_to_date(
+        self,
+        mock_calculation_input_reader: Mock,
+        spark: SparkSession,
+        grid_area: str,
+        from_grid_area: str,
+        to_grid_area: str,
+        calculation_grid_area: str,
+        expected: bool,
+    ) -> None:
+        # Arrange
+        row = factory.create_row(
+            grid_area=grid_area,
+            from_grid_area=from_grid_area,
+            to_grid_area=to_grid_area,
+        )
+        mock_calculation_input_reader.read_metering_point_periods.return_value = (
+            factory.create(spark, row)
+        )
+
+        # Act
+        actual = get_metering_point_periods_df(
+            mock_calculation_input_reader,
+            factory.DEFAULT_FROM_DATE,
+            factory.DEFAULT_TO_DATE,
+            [calculation_grid_area],
+        )
+
+        # Assert
+        assert len(actual.collect()) == expected
