@@ -38,7 +38,7 @@ class TableReader:
         self,
         spark: SparkSession,
         calculation_input_path: str,
-        time_series_points_table_name: str | None = paths.TIME_SERIES_POINTS_TABLE_NAME,
+        time_series_points_table_name: str,
     ) -> None:
         self._spark = spark
         self._calculation_input_path = calculation_input_path
