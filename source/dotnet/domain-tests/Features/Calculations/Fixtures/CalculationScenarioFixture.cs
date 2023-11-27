@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Diagnostics;
+using System.Globalization;
 using Azure.Identity;
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
@@ -26,6 +27,8 @@ using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Extensions;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents;
+using Google.Protobuf.WellKnownTypes;
+using Test.Core;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations.Fixtures
@@ -132,6 +135,47 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations.Fixtures
             return collectedIntegrationEvents;
         }
 
+        /// <summary>
+        /// Load CSV file and parse each data row into <see cref="AmountPerChargeResultProducedV1.Types.TimeSeriesPoint"/>.
+        /// Expects the first row to be a specific header to ensure we read data from the correct columns.
+        /// </summary>
+        /// <param name="testFileName">Filename of file located in 'TestData' folder.</param>
+        public async Task<IReadOnlyCollection<AmountPerChargeResultProducedV1.Types.TimeSeriesPoint>> ParseTimeSeriesPointsFromCsvAsync(string testFileName)
+        {
+            const string ExpectedHeader = "grid_area;energy_supplier_id;quantity;time;price;amount;charge_code;";
+
+            using var stream = EmbeddedResources.GetStream<Root>("Features.Calculations.TestData.amount_for_es_for_hourly_tarif_40000_for_e17_e02.csv");
+            using var reader = new StreamReader(stream);
+
+            var hasVerifiedHeader = false;
+            var parsedTimeSeriesPoints = new List<AmountPerChargeResultProducedV1.Types.TimeSeriesPoint>();
+            while (!reader.EndOfStream)
+            {
+                var line = await reader.ReadLineAsync();
+                if (!hasVerifiedHeader)
+                {
+                    if (line != ExpectedHeader)
+                    {
+                        throw new Exception($"Cannot parse CSV file. Header is '{line}', expected '{ExpectedHeader}'.");
+                    }
+
+                    hasVerifiedHeader = true;
+                    continue;
+                }
+
+                var columns = line!.Split(';');
+                parsedTimeSeriesPoints.Add(new()
+                {
+                    Time = ParseTimestamp(columns[3]),
+                    Quantity = ParseDecimalValue(columns[2]),
+                    Price = ParseDecimalValue(columns[4]),
+                    Amount = ParseDecimalValue(columns[5]),
+                });
+            }
+
+            return parsedTimeSeriesPoints;
+        }
+
         protected override async Task OnInitializeAsync()
         {
             await DatabricksClientExtensions.StartWarehouseAsync(Configuration.DatabricksWorkspace);
@@ -164,7 +208,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations.Fixtures
         /// <summary>
         /// Returns <see langword="true"/> if we should collect the message type; otherwise <see langword="false"/> .
         /// </summary>
-        private static (bool ShouldCollect, IEventMessage? EventMessage) ShouldCollectMessage(ServiceBusReceivedMessage message, Guid calculationId, IReadOnlyCollection<string> integrationEventNames)
+        private (bool ShouldCollect, IEventMessage? EventMessage) ShouldCollectMessage(ServiceBusReceivedMessage message, Guid calculationId, IReadOnlyCollection<string> integrationEventNames)
         {
             var shouldCollect = false;
             IEventMessage? eventMessage = null;
@@ -197,6 +241,16 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations.Fixtures
                         var amountPerChargeResultProduced = AmountPerChargeResultProducedV1.Parser.ParseFrom(data);
                         if (amountPerChargeResultProduced.CalculationId == calculationId.ToString())
                         {
+                            DiagnosticMessageSink.WriteDiagnosticMessage($"""
+                                {nameof(AmountPerChargeResultProducedV1)} received with values:
+                                    {nameof(amountPerChargeResultProduced.CalculationId)}={amountPerChargeResultProduced.CalculationId}
+                                    {nameof(amountPerChargeResultProduced.GridAreaCode)}={amountPerChargeResultProduced.GridAreaCode}
+                                    {nameof(amountPerChargeResultProduced.EnergySupplierId)}={amountPerChargeResultProduced.EnergySupplierId}
+                                    {nameof(amountPerChargeResultProduced.ChargeCode)}={amountPerChargeResultProduced.ChargeCode}
+                                    {nameof(amountPerChargeResultProduced.ChargeType)}={amountPerChargeResultProduced.ChargeType}
+                                    {nameof(amountPerChargeResultProduced.ChargeOwnerId)}={amountPerChargeResultProduced.ChargeOwnerId}
+                                    {nameof(amountPerChargeResultProduced.SettlementMethod)}={amountPerChargeResultProduced.SettlementMethod}
+                                """);
                             eventMessage = amountPerChargeResultProduced;
                             shouldCollect = true;
                         }
@@ -206,6 +260,16 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations.Fixtures
                         var monthlyAmountPerChargeResultProduced = MonthlyAmountPerChargeResultProducedV1.Parser.ParseFrom(data);
                         if (monthlyAmountPerChargeResultProduced.CalculationId == calculationId.ToString())
                         {
+                            DiagnosticMessageSink.WriteDiagnosticMessage($"""
+                                {nameof(MonthlyAmountPerChargeResultProducedV1)} received with values:
+                                    {nameof(monthlyAmountPerChargeResultProduced.CalculationId)}={monthlyAmountPerChargeResultProduced.CalculationId}
+                                    {nameof(monthlyAmountPerChargeResultProduced.GridAreaCode)}={monthlyAmountPerChargeResultProduced.GridAreaCode}
+                                    {nameof(monthlyAmountPerChargeResultProduced.EnergySupplierId)}={monthlyAmountPerChargeResultProduced.EnergySupplierId}
+                                    {nameof(monthlyAmountPerChargeResultProduced.ChargeCode)}={monthlyAmountPerChargeResultProduced.ChargeCode}
+                                    {nameof(monthlyAmountPerChargeResultProduced.ChargeType)}={monthlyAmountPerChargeResultProduced.ChargeType}
+                                    {nameof(monthlyAmountPerChargeResultProduced.ChargeOwnerId)}={monthlyAmountPerChargeResultProduced.ChargeOwnerId}
+                                    {nameof(monthlyAmountPerChargeResultProduced.Amount)}={monthlyAmountPerChargeResultProduced.Amount}
+                                """);
                             eventMessage = monthlyAmountPerChargeResultProduced;
                             shouldCollect = true;
                         }
@@ -215,6 +279,16 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations.Fixtures
             }
 
             return (shouldCollect, eventMessage);
+        }
+
+        private static Timestamp ParseTimestamp(string value)
+        {
+            return DateTimeOffset.Parse(value, null, DateTimeStyles.AssumeUniversal).ToTimestamp();
+        }
+
+        private static Contracts.IntegrationEvents.Common.DecimalValue ParseDecimalValue(string value)
+        {
+            return new Contracts.IntegrationEvents.Common.DecimalValue(decimal.Parse(value, CultureInfo.InvariantCulture));
         }
     }
 }
