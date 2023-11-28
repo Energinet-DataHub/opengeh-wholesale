@@ -28,6 +28,9 @@ resource "databricks_job" "calculator_job" {
         "SPN_APP_SECRET" = databricks_secret.spn_app_secret.config_reference
         "DATA_STORAGE_ACCOUNT_NAME" = data.azurerm_key_vault_secret.st_shared_data_lake_name.value
         "TIME_ZONE" = local.TIME_ZONE
+        # Using the name 'APPLICATIONINSIGHTS_CONNECTION_STRING' ensures the logging module is configured automatically
+        "APPLICATIONINSIGHTS_CONNECTION_STRING" = data.azurerm_key_vault_secret.appi_shared_connection_string.value
+        "LOGGING_LOGLEVEL" = "INFO"
       }
     }
 
