@@ -32,8 +32,12 @@ exchange_out_from_grid_area = "ExOut_FromGridArea"
 
 def aggregate_net_exchange_per_neighbour_ga(
     quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
+    calculation_grid_areas: list[str],
 ) -> EnergyResults:
-    """Function to aggregate net exchange per neighbouring grid areas."""
+    """
+    Function to aggregate net exchange per neighbouring grid areas.
+    The result will only include exchange to/from grid areas specified in `calculation_grid_areas`.
+    """
 
     df = quarterly_metering_point_time_series.df.where(
         F.col(Colname.metering_point_type) == MeteringPointType.EXCHANGE.value
@@ -117,16 +121,22 @@ def aggregate_net_exchange_per_neighbour_ga(
             F.array_union(Colname.qualities, from_qualities).alias(Colname.qualities),
             Colname.sum_quantity,
             F.col(Colname.to_grid_area).alias(Colname.grid_area),
-            F.lit(MeteringPointType.EXCHANGE.value).alias(Colname.metering_point_type),
         )
     )
+
+    exchange = exchange.filter(F.col(Colname.grid_area).isin(calculation_grid_areas))
+
     return EnergyResults(exchange)
 
 
-# Function to aggregate net exchange per grid area
 def aggregate_net_exchange_per_ga(
-    data: QuarterlyMeteringPointTimeSeries,
+    data: QuarterlyMeteringPointTimeSeries, calculation_grid_areas: list[str]
 ) -> EnergyResults:
+    """
+    Function to aggregate net exchange per grid area.
+    The result will only include exchange to/from grid areas specified in `calculation_grid_areas`.
+    """
+
     exchange_to = data.df.where(
         F.col(Colname.metering_point_type) == MeteringPointType.EXCHANGE.value
     )
@@ -208,8 +218,9 @@ def aggregate_net_exchange_per_ga(
             Colname.sum_quantity,
             # Include qualities from all to- and from- metering point time series
             F.array_union(to_qualities, from_qualities).alias(Colname.qualities),
-            F.lit(MeteringPointType.EXCHANGE.value).alias(Colname.metering_point_type),
         )
     )
+
+    result_df = result_df.filter(F.col(Colname.grid_area).isin(calculation_grid_areas))
 
     return EnergyResults(result_df)

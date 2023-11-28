@@ -43,7 +43,7 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
         metering_point_periods_df,
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
-    )
+    ).cache()
 
     basis_data_writer = BasisDataWriter(args.wholesale_container_path, args.batch_id)
     basis_data_writer.write(
@@ -56,6 +56,7 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
         args.batch_id,
         args.batch_process_type,
         args.batch_execution_time_start,
+        args.batch_grid_areas,
         metering_point_time_series,
         grid_loss_responsible_df,
     )

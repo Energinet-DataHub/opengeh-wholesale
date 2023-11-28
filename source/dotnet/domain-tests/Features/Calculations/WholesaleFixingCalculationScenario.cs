@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Globalization;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.DomainTests.Features.Calculations.Fixtures;
@@ -130,7 +131,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations
         [DomainFact]
         public void AndThen_ReceivedEnergyResultProducedEventsCountIsEqualToExpected()
         {
-            var expected = 157;
+            var expected = 121;
 
             // Assert
             using var assertionScope = new AssertionScope();
@@ -224,6 +225,66 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations
 
             // Assert
             Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1.Count.Should().Be(expected);
+        }
+
+        /// <summary>
+        /// Notice we don't verify 'TimeSeriesPoints.QuantityQualities' in this scenario.
+        /// </summary>
+        [ScenarioStep(11)]
+        [DomainFact]
+        public async Task AndThen_OneSpecificAmountPerChargeResultProducedEventContainsExpectedTimeSeriesPoints()
+        {
+            var expectedEnergySupplierId = "5790001687137";
+            var expectedChargeCode = "40000";
+            var expectedChargeType = AmountPerChargeResultProducedV1.Types.ChargeType.Tariff;
+            var expectedChargeOwnerId = "5790001330552";
+            var expectedSettlementMethod = AmountPerChargeResultProducedV1.Types.SettlementMethod.NonProfiled;
+            var expectedTimeSeriesPoints = await Fixture.ParseTimeSeriesPointsFromCsvAsync("amount_for_es_for_hourly_tarif_40000_for_e17_e02.csv");
+
+            // Assert
+            var actualEvents = Fixture.ScenarioState.ReceivedAmountPerChargeResultProducedV1.Where(item =>
+                item.EnergySupplierId == expectedEnergySupplierId
+                && item.ChargeCode == expectedChargeCode
+                && item.ChargeType == expectedChargeType
+                && item.ChargeOwnerId == expectedChargeOwnerId
+                && item.SettlementMethod == expectedSettlementMethod);
+
+            using var assertionScope = new AssertionScope();
+            actualEvents.Should().HaveCount(1);
+
+            var actualEvent = actualEvents.First();
+            actualEvent.TimeSeriesPoints.Should().HaveCount(expectedTimeSeriesPoints.Count);
+
+            // We clear incomming 'QuantityQualities' before comparing with test data, because we don't have them in our test data file.
+            actualEvent.TimeSeriesPoints
+                .Select(item =>
+                {
+                    item.QuantityQualities.Clear();
+                    return item;
+                })
+                .Should().BeEquivalentTo(expectedTimeSeriesPoints);
+        }
+
+        [ScenarioStep(12)]
+        [DomainFact]
+        public void AndThen_OneSpecificMonthlyAmountPerChargeResultProducedEventContainsExpectedMonthlyAmount()
+        {
+            var expectedEnergySupplierId = "5790001687137";
+            var expectedChargeCode = "40000";
+            var expectedChargeType = MonthlyAmountPerChargeResultProducedV1.Types.ChargeType.Tariff;
+            var expectedChargeOwnerId = "5790001330552";
+            var expectedAmount = new Contracts.IntegrationEvents.Common.DecimalValue(decimal.Parse("95738.23956", CultureInfo.InvariantCulture));
+
+            // Assert
+            var actualEvents = Fixture.ScenarioState.ReceivedMonthlyAmountPerChargeResultProducedV1.Where(item =>
+                item.EnergySupplierId == expectedEnergySupplierId
+                && item.ChargeCode == expectedChargeCode
+                && item.ChargeType == expectedChargeType
+                && item.ChargeOwnerId == expectedChargeOwnerId
+                && object.Equals(item.Amount, expectedAmount));
+
+            using var assertionScope = new AssertionScope();
+            actualEvents.Should().HaveCount(1);
         }
     }
 }

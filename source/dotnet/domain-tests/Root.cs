@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Test.Core.Attributes;
+namespace Energinet.DataHub.Wholesale.DomainTests;
 
-public class AcceptanceTest : Attribute
+/// <summary>
+/// Used when loading a test data file from the assembly.
+/// </summary>
+internal class Root
 {
 }

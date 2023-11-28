@@ -21,7 +21,6 @@ using FluentAssertions;
 using Moq;
 using NodaTime;
 using NodaTime.Extensions;
-using Test.Core.Attributes;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchAggregate;
@@ -61,7 +60,6 @@ public class BatchTests
     }
 
     [Theory]
-    [AcceptanceTest]
     [InlineAutoMoqData(ProcessType.WholesaleFixing)]
     [InlineAutoMoqData(ProcessType.FirstCorrectionSettlement)]
     [InlineAutoMoqData(ProcessType.SecondCorrectionSettlement)]
@@ -79,7 +77,6 @@ public class BatchTests
     }
 
     [Theory]
-    [AcceptanceTest]
     [InlineAutoMoqData(ProcessType.WholesaleFixing, 30, false)]
     [InlineAutoMoqData(ProcessType.WholesaleFixing, 31, true)]
     [InlineAutoMoqData(ProcessType.WholesaleFixing, 32, false)]
@@ -109,7 +106,6 @@ public class BatchTests
     }
 
     [Theory]
-    [AcceptanceTest]
     [InlineData("2022-12-31T23:00Z", "2022-01-30T23:00Z", false)] // Does not include last day of the month
     [InlineData("2022-01-01T23:00Z", "2022-01-31T23:00Z", false)] // Does not include first day of the month
     [InlineData("2022-11-30T23:00Z", "2022-01-31T23:00Z", false)] // Two months

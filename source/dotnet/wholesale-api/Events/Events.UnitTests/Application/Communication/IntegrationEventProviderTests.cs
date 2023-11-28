@@ -26,7 +26,6 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using Moq;
 using NodaTime;
-using Test.Core.Attributes;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Application.Communication;
@@ -279,7 +278,6 @@ public class IntegrationEventProviderTests
     }
 
     [Fact]
-    [AcceptanceTest]
     public void AProvider_MustImplement_IIntegrationEventProvider()
     {
         // Arrange
