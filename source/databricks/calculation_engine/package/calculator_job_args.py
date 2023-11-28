@@ -20,10 +20,14 @@ from package.infrastructure import valid_date, valid_list, log, paths
 import package.infrastructure.environment_variables as env_vars
 from package.codelists.process_type import ProcessType
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 def get_calculator_args() -> CalculatorArgs:
     job_args = _get_valid_args_or_throw(sys.argv[1:])
-    log(f"Job arguments: {str(job_args)}")
+    logger.info(f"Job arguments: {str(job_args)}")
 
     time_zone = env_vars.get_time_zone()
     storage_account_name = env_vars.get_storage_account_name()

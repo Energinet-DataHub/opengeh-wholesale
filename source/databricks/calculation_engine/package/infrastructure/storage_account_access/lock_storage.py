@@ -20,6 +20,10 @@ import package.infrastructure.environment_variables as env_vars
 from package.infrastructure import log
 from package.infrastructure.paths import WHOLESALE_CONTAINER_NAME
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 _LOCK_FILE_NAME = "DATALAKE_IS_LOCKED"
 
 
@@ -30,7 +34,7 @@ def _lock(
         storage_account_name, storage_account_credential, WHOLESALE_CONTAINER_NAME
     )
     file_manager.create_file(_LOCK_FILE_NAME)
-    log(f"created lock file: {_LOCK_FILE_NAME}")
+    logger.info(f"created lock file: {_LOCK_FILE_NAME}")
 
 
 def _unlock(
@@ -40,7 +44,7 @@ def _unlock(
         storage_account_name, storage_account_credential, WHOLESALE_CONTAINER_NAME
     )
     file_manager.delete_file(_LOCK_FILE_NAME)
-    log(f"deleted lock file: {_LOCK_FILE_NAME}")
+    logger.info(f"deleted lock file: {_LOCK_FILE_NAME}")
 
 
 def islocked(

@@ -33,6 +33,7 @@ setup(
         # urllib3 needs to be specific version because of bug https://community.databricks.com/s/topic/0TO8Y000000mOi5WAE/method-whitelist
         "delta-spark==2.2.0",
         "python-dateutil==2.8.2",
+        "azure-monitor-opentelemetry==1.0.0",
     ],
     entry_points={
         "console_scripts": [
