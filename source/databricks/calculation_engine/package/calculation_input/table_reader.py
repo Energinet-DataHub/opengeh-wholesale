@@ -76,7 +76,8 @@ class TableReader:
         return df
 
     def read_charge_links_periods(self) -> DataFrame:
-        df = self._read_table(paths.CHARGE_LINK_PERIODS_TABLE_NAME)
+        path = f"{self._calculation_input_path}/{paths.CHARGE_LINK_PERIODS_TABLE_NAME}"
+        df = self._spark.read.format("delta").load(path)
 
         assert_schema(df.schema, charge_link_periods_schema)
 
@@ -84,7 +85,8 @@ class TableReader:
         return df
 
     def read_charge_master_data_periods(self) -> DataFrame:
-        df = self._read_table(paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME)
+        path = f"{self._calculation_input_path}/{paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}"
+        df = self._spark.read.format("delta").load(path)
 
         assert_schema(df.schema, charge_master_data_periods_schema)
 
@@ -92,16 +94,13 @@ class TableReader:
         return df
 
     def read_charge_price_points(self) -> DataFrame:
-        df = self._read_table(paths.CHARGE_PRICE_POINTS_TABLE_NAME)
+        path = f"{self._calculation_input_path}/{paths.CHARGE_PRICE_POINTS_TABLE_NAME}"
+        df = self._spark.read.format("delta").load(path)
 
         assert_schema(df.schema, charge_price_points_schema)
 
         df = self._add_charge_key_column(df)
         return df
-
-    def _read_table(self, folder_name: str) -> DataFrame:
-        path = f"{self._calculation_input_path}/{folder_name}"
-        return self._spark.read.format("delta").load(path)
 
     def _add_charge_key_column(self, charge_df: DataFrame) -> DataFrame:
         return charge_df.withColumn(

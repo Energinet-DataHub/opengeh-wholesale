@@ -172,7 +172,7 @@ def test___read_metering_point_periods__returns_df_with_correct_metering_point_t
     sut = TableReader(spark, "dummy_calculation_input_path")
 
     # Act
-    with mock.patch.object(sut, TableReader._read_table.__name__, return_value=df):
+    with mock.patch.object(sut._spark.read.format("delta"), "load", return_value=df):
         actual = sut.read_metering_point_periods()
 
     # Assert
@@ -213,7 +213,7 @@ def test___read_metering_point_periods__returns_df_with_correct_settlement_metho
         ),
         (
             time_series_point_schema,
-            TableReader.read_time_series_points,
+            TableReader.read_time_series_points(TableReader.in, DEFAULT_FROM_DATE, DEFAULT_TO_DATE),
             _create_time_series_point_row,
         ),
         (
@@ -238,18 +238,15 @@ def test__read_data__when_schema_mismatch__raises_assertion_error(
 ) -> None:
     # Arrange
     row = create_row()
-    reader = TableReader(spark, "dummy_calculation_input_path")
+    reader = TableReader(mock.Mock(), "dummy_calculation_input_path")
     df = spark.createDataFrame(data=[row], schema=expected_schema)
     df = df.withColumn("test", f.lit("test"))
     sut = getattr(reader, str(method_name.__name__))
 
     # Act & Assert
-    with mock.patch.object(
-        reader._spark.read, "format", return_value=reader._spark.read
-    ):
-        with mock.patch.object(reader._spark.read, "load", return_value=df):
-            with pytest.raises(AssertionError) as exc_info:
-                sut()
+    with mock.patch.object(reader._spark.read.format("delta"), "load", return_value=df):
+        with pytest.raises(AssertionError) as exc_info:
+            sut()
 
         assert "Schema mismatch" in str(exc_info.value)
 
