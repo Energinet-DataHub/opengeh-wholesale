@@ -6,6 +6,11 @@ module "apim_biztalkreceiver" {
                     <inbound>
                         <base />
                         <set-backend-service backend-id="biztalkreceiver" />
+                        <ip-filter action="allow">
+                            <address>10.154.7.149</address>
+                            <address>10.178.7.149</address>
+                            <address>10.154.7.150</address>
+                        </ip-filter>
                     </inbound>
                     <backend>
                         <base />
