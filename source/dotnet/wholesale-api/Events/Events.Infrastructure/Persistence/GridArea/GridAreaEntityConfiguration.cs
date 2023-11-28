@@ -17,11 +17,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.GridArea;
 
-public class GridAreaEntityConfiguration : IEntityTypeConfiguration<Application.GridArea.GridArea>
+public class GridAreaEntityConfiguration : IEntityTypeConfiguration<Application.GridArea.GridAreaOwner>
 {
-    public void Configure(EntityTypeBuilder<Application.GridArea.GridArea> builder)
+    public void Configure(EntityTypeBuilder<Application.GridArea.GridAreaOwner> builder)
     {
-        builder.ToTable(nameof(Application.GridArea.GridArea));
+        builder.ToTable(nameof(Application.GridArea.GridAreaOwner));
 
         builder.HasKey(ga => ga.Id);
         builder.Property(b => b.Id)
@@ -30,5 +30,6 @@ public class GridAreaEntityConfiguration : IEntityTypeConfiguration<Application.
         builder.Property(ga => ga.Code);
         builder.Property(ga => ga.OwnerActorNumber);
         builder.Property(ga => ga.ValidFrom);
+        builder.Property(ga => ga.SequenceNumber);
     }
 }

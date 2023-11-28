@@ -28,7 +28,7 @@ public class RepeatingTriggerRegistrationTests
     [InlineAutoData(typeof(RegisterCompletedBatchesTrigger))]
     [InlineAutoData(typeof(StartCalculationTrigger))]
     [InlineAutoData(typeof(UpdateBatchExecutionStateTrigger))]
-    public void Repeating_Trigger_Is_Registered_In_Ioc(Type type,  ServiceBusOptions options, ServiceCollection serviceCollection)
+    public void Repeating_Trigger_Is_Registered_In_Ioc(Type type, ServiceBusOptions options, ServiceCollection serviceCollection)
     {
         // Arrange
         serviceCollection.AddEventsModule(options);

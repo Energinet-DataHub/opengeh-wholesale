@@ -15,8 +15,8 @@
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Publisher;
+using Energinet.DataHub.MarketParticipant.Infrastructure.Model.Contracts;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
-using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Energinet.DataHub.Wholesale.Events.Application.GridArea;
@@ -82,7 +82,7 @@ public static class EventsRegistration
             .AddScoped<IEnergyResultEventProvider, EnergyResultEventProvider>()
             .AddScoped<IWholesaleResultEventProvider, WholesaleResultEventProvider>();
 
-        serviceCollection.AddScoped<IGridAreaRepository, GridAreaRepository>();
+        serviceCollection.AddScoped<IGridAreaOwnerRepository, GridAreaOwnerRepository>();
         serviceCollection.AddScoped<IReceivedIntegrationEventRepository, ReceivedIntegrationEventRepository>();
     }
 

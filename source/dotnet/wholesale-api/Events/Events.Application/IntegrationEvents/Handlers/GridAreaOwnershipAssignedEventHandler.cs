@@ -13,24 +13,32 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Messaging.Communication;
+using Energinet.DataHub.MarketParticipant.Infrastructure.Model.Contracts;
 using Energinet.DataHub.Wholesale.Events.Application.GridArea;
+using NodaTime.Serialization.Protobuf;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.IntegrationEvents.Handlers;
 
 public class GridAreaOwnershipAssignedEventHandler : IIntegrationEventHandler
 {
-    private readonly IGridAreaRepository _gridAreaRepository;
+    private readonly IGridAreaOwnerRepository _gridAreaOwnerRepository;
 
+    // TODO: Remove this hard coded string.
     public string EventTypeToHandle => "GridAreaOwnershipAssigned";
 
-    public GridAreaOwnershipAssignedEventHandler(IGridAreaRepository gridAreaRepository)
+    public GridAreaOwnershipAssignedEventHandler(IGridAreaOwnerRepository gridAreaOwnerRepository)
     {
-        _gridAreaRepository = gridAreaRepository;
+        _gridAreaOwnerRepository = gridAreaOwnerRepository;
     }
 
-    public Task HandleAsync(IntegrationEvent integrationEvent)
+    public async Task HandleAsync(IntegrationEvent integrationEvent)
     {
-        // var message = (GridAreaOwnershipAssigned) integrationEvent.Message;
-        return Task.CompletedTask;
+        var message = (GridAreaOwnershipAssigned)integrationEvent.Message;
+
+        await _gridAreaOwnerRepository.AddAsync(
+            message.GridAreaCode,
+            message.ActorNumber,
+            message.ValidFrom.ToInstant(),
+            message.SequenceNumber).ConfigureAwait(false);
     }
 }

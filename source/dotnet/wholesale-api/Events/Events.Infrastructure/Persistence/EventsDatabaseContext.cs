@@ -38,7 +38,7 @@ public class EventsDatabaseContext : DbContext, IEventsDatabaseContext
 
     public virtual DbSet<CompletedBatch> CompletedBatches { get; private set; } = null!;
 
-    public virtual DbSet<Application.GridArea.GridArea> GridAreas { get; private set; } = null!;
+    public virtual DbSet<Application.GridArea.GridAreaOwner> GridAreaOwners { get; private set; } = null!;
 
     public virtual DbSet<Application.IntegrationEvents.ReceivedIntegrationEvent> ReceivedIntegrationEvents { get; private set; } = null!;
 

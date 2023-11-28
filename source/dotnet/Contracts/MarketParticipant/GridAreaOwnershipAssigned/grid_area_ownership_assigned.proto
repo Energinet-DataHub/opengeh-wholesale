@@ -16,7 +16,7 @@
 syntax = "proto3";
 import "google/protobuf/timestamp.proto";
 
-option csharp_namespace = "Energinet.DataHub.Wholesale.Contracts.Events";
+option csharp_namespace = "Energinet.DataHub.MarketParticipant.Infrastructure.Model.Contracts";
 
 /*
  * GridAreaOwnershipAssigned Integration Event.
@@ -42,8 +42,15 @@ message GridAreaOwnershipAssigned {
 
     /*
      * A timestamp from when the ownership is valid.
+     * The ownership always starts at midnight in "Europe/Copenhagen" time zone.
      */
     google.protobuf.Timestamp valid_from = 4;
+
+    /*
+     * The sequence number of the event. The number is always increasing, but may no be continuous.
+     * Used to distinguish between events with identical valid_from timestamps.
+     */
+    int32 sequence_number = 5;
 }
 
 enum EicFunction {

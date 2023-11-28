@@ -18,34 +18,32 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.GridArea;
 
-public class GridAreaRepository : IGridAreaRepository
+public class GridAreaOwnerRepository : IGridAreaOwnerRepository
 {
     private readonly IEventsDatabaseContext _context;
 
-    public GridAreaRepository(IEventsDatabaseContext context)
+    public GridAreaOwnerRepository(IEventsDatabaseContext context)
     {
         _context = context;
     }
 
-    public Task CreateAsync(string code, string ownerActorNumber, Instant validFrom)
+    public Task AddAsync(string code, string ownerActorNumber, Instant validFrom, int sequenceNumber)
     {
-        var task = _context.GridAreas.AddAsync(new Application.GridArea.GridArea(
+        var task = _context.GridAreaOwners.AddAsync(new Application.GridArea.GridAreaOwner(
             Guid.NewGuid(),
             code,
             ownerActorNumber,
-            validFrom));
-
+            validFrom,
+            sequenceNumber));
         return task.AsTask();
     }
 
-    public Task UpdateAsync(string code, string ownerActorNumber, Instant validFrom)
+    public async Task<Application.GridArea.GridAreaOwner> GetCurrentOwnerAsync(string code, string ownerActorNumber, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
-    }
-
-    public Task<Application.GridArea.GridArea> GetAsync(string code, string ownerActorNumber)
-    {
-        return _context.GridAreas
-            .SingleAsync(ga => ga.Code.Equals(code) && ga.OwnerActorNumber.Equals(ownerActorNumber));
+        var now = SystemClock.Instance.GetCurrentInstant();
+        return await _context.GridAreaOwners
+            .Where(ga => ga.Code.Equals(code) && ga.ValidFrom <= now)
+            .OrderByDescending(ga => ga.SequenceNumber)
+            .FirstAsync(cancellationToken).ConfigureAwait(false);
     }
 }

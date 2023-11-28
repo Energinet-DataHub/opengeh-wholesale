@@ -42,7 +42,6 @@ public class AggregatedTimeSeriesServiceBusWorker : ServiceBusWorker<AggregatedT
     {
         var scope = _serviceProvider.CreateScope();
         var requestHandler = scope.ServiceProvider.GetRequiredService<IAggregatedTimeSeriesRequestHandler>();
-
         return requestHandler.ProcessAsync(arg.Message, referenceId, arg.CancellationToken);
     }
 }

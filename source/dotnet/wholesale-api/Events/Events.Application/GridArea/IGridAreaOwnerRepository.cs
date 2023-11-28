@@ -16,9 +16,9 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.GridArea;
 
-public interface IGridAreaRepository
+public interface IGridAreaOwnerRepository
 {
-    Task UpdateAsync(string code, string ownerActorNumber, Instant validFrom);
+    Task AddAsync(string code, string ownerActorNumber, Instant validFrom, int sequenceNumber);
 
-    Task<GridArea> GetAsync(string code, string ownerActorNumber);
+    Task<GridAreaOwner> GetCurrentOwnerAsync(string code, string ownerActorNumber, CancellationToken cancellationToken);
 }

@@ -16,8 +16,9 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.GridArea;
 
-public record GridArea(
+public record GridAreaOwner(
     Guid Id,
     string Code,
     string OwnerActorNumber,
-    Instant ValidFrom);
+    Instant ValidFrom,
+    int SequenceNumber);
