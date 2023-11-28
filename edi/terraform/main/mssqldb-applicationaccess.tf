@@ -5,8 +5,10 @@ module "mssql_database_application_access" {
   database_name   = module.mssqldb_edi.name
   application_hosts_names = [
     module.func_receiver.name,
+    module.b2c_web_api.name,
   ]
   depends_on = [
     module.func_receiver.name,
+    module.b2c_web_api.name,
   ]
 }
