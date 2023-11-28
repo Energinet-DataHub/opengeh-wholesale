@@ -16,10 +16,6 @@ import logging
 from azure.monitor.opentelemetry import configure_azure_monitor
 
 
-# Configure OpenTelemetry to use Azure Monitor with the specified connection
-# string.
-
-
 def initialize_logging() -> None:
     """
     Configure logging to use OpenTelemetry and Azure Monitor.
