@@ -17,13 +17,35 @@ from package.infrastructure import initialize_logging
 
 
 class TestWhenInvoked:
-    def test_succeeds(self) -> None:
+    # def test_succeeds(self) -> None:
+    #     initialize_logging()
+
+    def test_can_log_debug(self, capfd) -> None:
         initialize_logging()
 
-    def test_can_log_debug(self) -> None:
+        logger = logging.getLogger(__name__)
+        logger.setLevel(logging.DEBUG)
+
+        stderr_handler = logging.StreamHandler()
+        stderr_handler.setLevel(logging.DEBUG)
+        formatter = logging.Formatter("%(levelname)s - %(message)s - %(Domain)s")
+        stderr_handler.setFormatter(formatter)
+
+        logger.addHandler(stderr_handler)
+
+        logger.debug("test info message")
+        out, err = capfd.readouterr()
+        print(out)
+        print(err)
+        assert out == ""
+        assert err == "DEBUG - test info message - wholesale\n"
+
+    def test_can_log_debug_with_all_args(self) -> None:
         initialize_logging()
         logger = logging.getLogger(__name__)
-        logger.debug("test info message")
+        logger.debug(
+            "test info message", foo="bar", baz="qux", quux={"corge": "grault"}
+        )
 
     def test_can_log_info(self) -> None:
         initialize_logging()

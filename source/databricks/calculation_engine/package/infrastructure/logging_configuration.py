@@ -43,9 +43,17 @@ def initialize_logging() -> None:
 
 
 def _create_interceptor(level: int) -> callable:
-    def _interceptor(self, msg, *args, **kwargs):
-        kwargs = _add_extra(**kwargs)
-        return self._log(level, msg, args, kwargs)
+    def _interceptor(
+        self: logging.Logger,
+        msg,
+        *args,
+        exc_info=None,
+        extra=None,
+        stack_info=False,
+        stacklevel=1
+    ):
+        extra = _add_extra(extra)
+        return self._log(level, msg, args, exc_info, extra, stack_info, stacklevel)
 
     return _interceptor
 
@@ -66,7 +74,8 @@ def _create_log_interceptor():
     return _interceptor
 
 
-def _add_extra(**kwargs) -> dict[str, Any]:
+def _add_extra(extra) -> dict[str, Any]:
     """Add extra structured logging to enable filtering on domain in Azure Monitor."""
-    kwargs["extra"] = {"Domain": "wholesale"}
-    return kwargs
+    extra = extra or {}
+    extra["Domain"] = "wholesale"
+    return extra
