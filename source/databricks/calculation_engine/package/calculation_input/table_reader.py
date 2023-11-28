@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from datetime import datetime
+
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import concat_ws, col, when, lit
 
@@ -56,8 +58,14 @@ class TableReader:
         df = self._fix_metering_point_type(df)
         return df
 
-    def read_time_series_points(self) -> DataFrame:
-        df = self._read_table(self._time_series_points_table_name)
+    def read_time_series_points(
+        self, period_start_datetime: datetime, period_end_datetime: datetime
+    ) -> DataFrame:
+        df = (
+            self._read_table(self._time_series_points_table_name)
+            .where(col(Colname.observation_time) >= period_start_datetime)
+            .where(col(Colname.observation_time) < period_end_datetime)
+        )
 
         assert_schema(df.schema, time_series_point_schema)
 
@@ -184,7 +192,8 @@ class TableReader:
             # The otherwise is to avoid changing the nullability of the column.
         )
 
-    def _fix_settlement_method(self, df: DataFrame) -> DataFrame:
+    @staticmethod
+    def _fix_settlement_method(df: DataFrame) -> DataFrame:
         return df.withColumn(
             Colname.settlement_method,
             when(

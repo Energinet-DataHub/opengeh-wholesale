@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from datetime import datetime
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
 from pyspark.sql.types import DecimalType
@@ -30,8 +29,6 @@ from package.calculation_input.schemas import (
 def get_metering_point_time_series(
     raw_time_series_points_df: DataFrame,
     metering_point_periods_df: DataFrame,
-    period_start_datetime: datetime,
-    period_end_datetime: datetime,
 ) -> DataFrame:
     """
     Get metering point time-series points - both for metering points with hourly and quarterly resolution.
@@ -41,10 +38,6 @@ def get_metering_point_time_series(
     """
     assert_schema(raw_time_series_points_df.schema, time_series_point_schema)
     assert_schema(metering_point_periods_df.schema, metering_point_period_schema)
-
-    raw_time_series_points_df = raw_time_series_points_df.where(
-        f.col(Colname.observation_time) >= period_start_datetime
-    ).where(f.col(Colname.observation_time) < period_end_datetime)
 
     quarterly_mp_df = metering_point_periods_df.where(
         f.col(Colname.resolution) == MeteringPointResolution.QUARTER.value
