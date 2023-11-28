@@ -1,7 +1,23 @@
+' How to render this diagram:
 ' 1. Install PlantUML extension in VS Code, see https://marketplace.visualstudio.com/items?itemName=jebbs.plantuml
 ' 2. Run task: "PlantUML: Start PlantUML server".
 ' This will start a PlantUML server in Docker on localhost:8081 used to render this diagram.
 ' Once container is running, press Ctrl-Shift-P and select "PlantUML: Preview Current Diagram" - enjoy!
+
+' *** AUTOMATIC RENDERING TO PNG IS NOT IMPLEMENTED ***
+' It is possible to render PlantUML diagrams to PNG by using a local PlantUML server, like Structurizr DSL files are rendered to PNG
+' and pushed to dh3-infrastructure as part of a PR changing our diagrams.
+' However, we have opted out of implementing automatic rendering of PlantUML diagrams as we only have this one diagram right now.
+'
+' If one should feel inclined to implement this feature in our CI pipeline, AVOID attempting to render diagrams using the Base64 encoded
+' URL, as the encoding/decoding algorithm is a clusterf*ck of a proprietary implementation meaning that you cannot Base64-encode a diagram and
+' attempt to render it using a PlantUML server unless you implement the PlantUML project's proprietary encoding algorithm in your own code first :o/
+' See this issue thread for details: https://github.com/plantuml/plantuml/issues/117
+' If you dare, follow this code trail to see the proprietary encode/decode implementation: https://github.com/plantuml/plantuml/blob/master/src/net/sourceforge/plantuml/code/TranscoderSmart.java#L54
+
+' The right way to go for rendering diagrams to PNGs in our case would be to follow the "Command-line" approach for rendering diagrams, see https://plantuml.com/command-line
+' Feel free to do so when there is a bit more ROI (i.e. more diagrams than just this one)
+
 
 @startuml
 nwdiag {
@@ -41,13 +57,11 @@ nwdiag {
     vnet_datahub_online_peering
     nsg_vnetintegrations_shres
     nsg_privateendpoint_shres
-    nsg_bastion_shres
     nsg_apim_shres
     vnet_wholsal_peering [shape = interface]
     vnet_mig_peering [shape = interface]
     width = full
   }
-
 
   network snet_vnetintegrations_shres {
     color = "red"
@@ -64,13 +78,6 @@ nwdiag {
     eventhub [shape = node]
     webapps [shape = node]
     nsg_privateendpoint_shres
-    width = full
-  }
-
-  network snet_bastion_shres {
-    color = "red"
-    nsg_bastion_shres
-    bastion_vm [shape = node]
     width = full
   }
 
@@ -134,3 +141,4 @@ nwdiag {
 }
 
 @enduml
+
