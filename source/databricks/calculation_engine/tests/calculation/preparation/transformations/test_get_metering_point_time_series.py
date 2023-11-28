@@ -84,14 +84,6 @@ def metering_point_period_df_factory(spark, timestamp_factory):
     return factory
 
 
-point_1_quantity = Decimal("1.100")
-point_2_quantity = Decimal("2.200")
-
-
-time_1 = "2022-06-10T12:15:00.000Z"
-time_2 = "2022-06-10T13:15:00.000Z"
-
-
 def test__when_success__returns_dataframe_with_expected_schema(
     raw_time_series_points_factory, metering_point_period_df_factory, timestamp_factory
 ):
