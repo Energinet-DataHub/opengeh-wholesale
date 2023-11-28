@@ -35,14 +35,12 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
         args.batch_period_end_datetime,
         args.batch_grid_areas,
     ).cache()
-    raw_time_series_points = prepared_data_reader.get_raw_time_series_points().cache()
     grid_loss_responsible_df = prepared_data_reader.get_grid_loss_responsible(
         args.batch_grid_areas
     )
 
     metering_point_time_series = prepared_data_reader.get_metering_point_time_series(
         metering_point_periods_df,
-        raw_time_series_points,
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
     ).cache()
@@ -77,6 +75,7 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
         metering_points_periods_df = _get_production_and_consumption_metering_points(
             metering_point_periods_df
         )
+        raw_time_series_points = prepared_data_reader.get_raw_time_series_points()
 
         tariffs_hourly_df = prepared_data_reader.get_tariff_charges(
             metering_points_periods_df,
