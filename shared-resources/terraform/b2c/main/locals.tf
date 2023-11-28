@@ -56,6 +56,10 @@ locals {
       role         = "serialenergytrader"
       display_name = "Serial Energy Trader"
     }
+    meteroperator = {
+      role         = "meteroperator"
+      display_name = "Serial Energy Trader"
+    }
   }
 
   timeseriesapi_app_roles = {
