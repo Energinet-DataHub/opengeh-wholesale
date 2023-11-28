@@ -30,5 +30,6 @@ module "func_entrypoint_grid_loss_sender" {
     "BlobStorageSettings:AccountUri"    = local.DH2_BRIDGE_DOCUMENT_STORAGE_ACCOUNT_URI
     "BlobStorageSettings:ContainerName" = local.DH2_BRIDGE_DOCUMENT_STORAGE_CONTAINER_NAME
     "DatabaseSettings:ConnectionString" = local.MS_DH2_BRIDGE_CONNECTION_STRING
+    "DataHub2Settings:DataHub2Endpoint" = local.DH2_ENDPOINT
   }
 }
