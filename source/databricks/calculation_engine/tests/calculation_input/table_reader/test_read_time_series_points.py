@@ -16,24 +16,11 @@ from datetime import datetime
 from decimal import Decimal
 from unittest import mock
 import pytest
-from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.types import StructType
+from pyspark.sql import SparkSession
 import pyspark.sql.functions as f
 
-from package.codelists import (
-    InputMeteringPointType,
-    InputSettlementMethod,
-    MeteringPointType,
-    SettlementMethod,
-)
 from package.calculation_input.table_reader import TableReader
-from package.calculation_input.schemas import (
-    metering_point_period_schema,
-    charge_price_points_schema,
-    time_series_point_schema,
-    charge_link_periods_schema,
-    charge_master_data_periods_schema,
-)
+from package.calculation_input.schemas import time_series_point_schema
 from package.constants import Colname
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.helpers.data_frame_utils import assert_dataframes_equal
