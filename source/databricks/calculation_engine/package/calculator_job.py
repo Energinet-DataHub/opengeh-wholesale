@@ -13,18 +13,15 @@
 # limitations under the License.
 
 
+import logging
 import sys
 
 from package import calculation
 from package import calculation_input
 from package.calculator_job_args import get_calculator_args
-from package.infrastructure import (
-    initialize_spark,
-)
+from package.infrastructure import initialize_spark
 from package.infrastructure.logging_configuration import initialize_logging
 from package.infrastructure.storage_account_access import islocked
-
-import logging
 
 logger = logging.getLogger(__name__)
 

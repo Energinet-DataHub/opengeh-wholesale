@@ -41,19 +41,28 @@ def initialize_logging() -> None:
     logging.basicConfig(level=logging.INFO)
 
 
-def _create_interceptor(level: int, msg, *args, **kwargs):
-    _add_extra(**kwargs)
-    return lambda self: self._log(level, msg, args, **kwargs)
+def _create_interceptor(level: int):
+    def _interceptor(self, msg, *args, **kwargs):
+        _add_extra(**kwargs)
+        return self._log(level, msg, *args, **kwargs)
+
+    return _interceptor
 
 
-def _create_exception_interceptor(msg, *args, exc_info=True, **kwargs):
-    _add_extra(**kwargs)
-    return lambda self: self._log(logging.ERROR, msg, args, exc_info=exc_info, **kwargs)
+def _create_exception_interceptor():
+    def _interceptor(self, msg, *args, exc_info=True, **kwargs):
+        _add_extra(**kwargs)
+        return self._log(logging.ERROR, msg, args, exc_info=exc_info, **kwargs)
+
+    return _interceptor
 
 
-def _create_log_interceptor(level: int, msg, *args, **kwargs):
-    _add_extra(**kwargs)
-    return lambda self: self._log(level, msg, args, **kwargs)
+def _create_log_interceptor():
+    def _interceptor(self, level, msg, *args, **kwargs):
+        _add_extra(**kwargs)
+        return self._log(level, msg, *args, **kwargs)
+
+    return _interceptor
 
 
 def _add_extra(**kwargs):

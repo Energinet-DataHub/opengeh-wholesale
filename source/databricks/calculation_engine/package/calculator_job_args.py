@@ -12,15 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
+import sys
+
 import configargparse
 from configargparse import argparse
-import sys
-from package.calculation.calculator_args import CalculatorArgs
-from package.infrastructure import valid_date, valid_list, log, paths
-import package.infrastructure.environment_variables as env_vars
-from package.codelists.process_type import ProcessType
 
-import logging
+import package.infrastructure.environment_variables as env_vars
+from package.calculation.calculator_args import CalculatorArgs
+from package.codelists.process_type import ProcessType
+from package.infrastructure import valid_date, valid_list, paths
 
 logger = logging.getLogger(__name__)
 

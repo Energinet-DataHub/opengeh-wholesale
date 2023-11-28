@@ -12,15 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
+
 from azure.identity import ClientSecretCredential
+
+import package.infrastructure.environment_variables as env_vars
+from package.infrastructure.paths import WHOLESALE_CONTAINER_NAME
 from package.infrastructure.storage_account_access import (
     DataLakeFileManager,
 )
-import package.infrastructure.environment_variables as env_vars
-from package.infrastructure import log
-from package.infrastructure.paths import WHOLESALE_CONTAINER_NAME
-
-import logging
 
 logger = logging.getLogger(__name__)
 
