@@ -38,6 +38,10 @@ from package.constants import Colname
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.helpers.data_frame_utils import assert_dataframes_equal
 
+DEFAULT_OBSERVATION_TIME = datetime(2022, 6, 8, 22, 0, 0)
+DEFAULT_FROM_DATE = datetime(2022, 6, 8, 22, 0, 0)
+DEFAULT_TO_DATE = datetime(2022, 6, 8, 22, 0, 0)
+
 
 def _create_metering_point_period_row(
     metering_point_type: InputMeteringPointType = InputMeteringPointType.CONSUMPTION,
@@ -55,8 +59,8 @@ def _create_metering_point_period_row(
         Colname.parent_metering_point_id: "foo",
         Colname.energy_supplier_id: "foo",
         Colname.balance_responsible_id: "foo",
-        Colname.from_date: datetime(2022, 6, 8, 22, 0, 0),
-        Colname.to_date: datetime(2022, 6, 8, 22, 0, 0),
+        Colname.from_date: DEFAULT_FROM_DATE,
+        Colname.to_date: DEFAULT_TO_DATE,
     }
 
 
@@ -66,7 +70,7 @@ def _create_change_price_point_row() -> dict:
         Colname.charge_type: "foo",
         Colname.charge_owner: "foo",
         Colname.charge_price: Decimal("1.123456"),
-        Colname.charge_time: datetime(2022, 6, 8, 22, 0, 0),
+        Colname.charge_time: DEFAULT_OBSERVATION_TIME,
     }
 
 
@@ -75,7 +79,7 @@ def _create_time_series_point_row() -> dict:
         Colname.metering_point_id: "foo",
         Colname.quantity: Decimal("1.123456"),
         Colname.quality: "foo",
-        Colname.observation_time: datetime(2022, 6, 8, 22, 0, 0),
+        Colname.observation_time: DEFAULT_OBSERVATION_TIME,
     }
 
 
@@ -86,8 +90,8 @@ def _create_charge_link_period_row() -> dict:
         Colname.charge_owner: "foo",
         Colname.metering_point_id: "foo",
         Colname.quantity: 1,
-        Colname.from_date: datetime(2022, 6, 8, 22, 0, 0),
-        Colname.to_date: datetime(2022, 6, 8, 22, 0, 0),
+        Colname.from_date: DEFAULT_FROM_DATE,
+        Colname.to_date: DEFAULT_TO_DATE,
     }
 
 
@@ -98,8 +102,8 @@ def _create_charge_master_period_row() -> dict:
         Colname.charge_owner: "foo",
         Colname.resolution: "foo",
         Colname.charge_tax: False,
-        Colname.from_date: datetime(2022, 6, 8, 22, 0, 0),
-        Colname.to_date: datetime(2022, 6, 8, 22, 0, 0),
+        Colname.from_date: DEFAULT_FROM_DATE,
+        Colname.to_date: DEFAULT_TO_DATE,
     }
 
 
@@ -189,10 +193,10 @@ def test___read_metering_point_periods__returns_df_with_correct_settlement_metho
 ) -> None:
     row = _create_metering_point_period_row(settlement_method=settlement_method)
     df = spark.createDataFrame(data=[row], schema=metering_point_period_schema)
-    sut = TableReader(spark, "dummy_calculation_input_path")
+    sut = TableReader(mock.Mock(), "dummy_calculation_input_path")
 
     # Act
-    with mock.patch.object(sut, TableReader._read_table.__name__, return_value=df):
+    with mock.patch.object(sut._spark.read.format("delta"), "load", return_value=df):
         actual = sut.read_metering_point_periods()
 
     # Assert
@@ -240,9 +244,12 @@ def test__read_data__when_schema_mismatch__raises_assertion_error(
     sut = getattr(reader, str(method_name.__name__))
 
     # Act & Assert
-    with mock.patch.object(reader, TableReader._read_table.__name__, return_value=df):
-        with pytest.raises(AssertionError) as exc_info:
-            sut()
+    with mock.patch.object(
+        reader._spark.read, "format", return_value=reader._spark.read
+    ):
+        with mock.patch.object(reader._spark.read, "load", return_value=df):
+            with pytest.raises(AssertionError) as exc_info:
+                sut()
 
         assert "Schema mismatch" in str(exc_info.value)
 
@@ -295,7 +302,7 @@ def test__read_time_series_points__returns_expected_df(
     reader = TableReader(spark, calculation_input_path)
 
     # Act
-    actual = reader.read_time_series_points()
+    actual = reader.read_time_series_points(DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
 
     # Assert
     assert_dataframes_equal(actual, expected)

@@ -50,7 +50,8 @@ class TableReader:
             self._time_series_points_table_name = time_series_points_table_name
 
     def read_metering_point_periods(self) -> DataFrame:
-        df = self._read_table("metering_point_periods")
+        path = f"{self._calculation_input_path}/metering_point_periods"
+        df = self._spark.read.format("delta").load(path)
 
         assert_schema(df.schema, metering_point_period_schema)
 
@@ -62,7 +63,10 @@ class TableReader:
         self, period_start_datetime: datetime, period_end_datetime: datetime
     ) -> DataFrame:
         df = (
-            self._read_table(self._time_series_points_table_name)
+            self._spark.read.format("delta")
+            .load(
+                f"{self._calculation_input_path}/{self._time_series_points_table_name}"
+            )
             .where(col(Colname.observation_time) >= period_start_datetime)
             .where(col(Colname.observation_time) < period_end_datetime)
         )
