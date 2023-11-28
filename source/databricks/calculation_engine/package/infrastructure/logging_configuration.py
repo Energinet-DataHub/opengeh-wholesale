@@ -30,8 +30,8 @@ def initialize_logging() -> None:
 
     logging.Logger.debug = _create_interceptor(logging.DEBUG)
     logging.Logger.info = _create_interceptor(logging.INFO)
-    logging.Logger.warn = _create_interceptor(logging.WARN)
     logging.Logger.warning = _create_interceptor(logging.WARNING)
+    logging.Logger.warn = logging.Logger.warning
     logging.Logger.error = _create_interceptor(logging.ERROR)
     logging.Logger.exception = _create_exception_interceptor()
     logging.Logger.critical = _create_interceptor(logging.CRITICAL)
@@ -44,7 +44,7 @@ def initialize_logging() -> None:
 def _create_interceptor(level: int):
     def _interceptor(self, msg, *args, **kwargs):
         _add_extra(**kwargs)
-        return self._log(level, msg, *args, **kwargs)
+        return self._log(level, msg, args, kwargs)
 
     return _interceptor
 
@@ -60,11 +60,12 @@ def _create_exception_interceptor():
 def _create_log_interceptor():
     def _interceptor(self, level, msg, *args, **kwargs):
         _add_extra(**kwargs)
-        return self._log(level, msg, *args, **kwargs)
+        return self._log(level, msg, args, kwargs)
 
     return _interceptor
 
 
 def _add_extra(**kwargs):
+    """Add extra structured logging to enable filtering on domain in Azure Monitor."""
     kwargs["extra"] = {"Domain": "wholesale"}
     return kwargs
