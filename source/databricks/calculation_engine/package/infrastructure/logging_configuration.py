@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import logging
+from typing import Any
 
 from azure.monitor.opentelemetry import configure_azure_monitor
 
@@ -41,17 +42,17 @@ def initialize_logging() -> None:
     logging.basicConfig(level=logging.INFO)
 
 
-def _create_interceptor(level: int):
+def _create_interceptor(level: int) -> callable:
     def _interceptor(self, msg, *args, **kwargs):
-        _add_extra(**kwargs)
+        kwargs = _add_extra(**kwargs)
         return self._log(level, msg, args, kwargs)
 
     return _interceptor
 
 
-def _create_exception_interceptor():
+def _create_exception_interceptor() -> callable:
     def _interceptor(self, msg, *args, exc_info=True, **kwargs):
-        _add_extra(**kwargs)
+        kwargs = _add_extra(**kwargs)
         return self._log(logging.ERROR, msg, args, exc_info=exc_info, **kwargs)
 
     return _interceptor
@@ -59,13 +60,13 @@ def _create_exception_interceptor():
 
 def _create_log_interceptor():
     def _interceptor(self, level, msg, *args, **kwargs):
-        _add_extra(**kwargs)
+        kwargs = _add_extra(**kwargs)
         return self._log(level, msg, args, kwargs)
 
     return _interceptor
 
 
-def _add_extra(**kwargs):
+def _add_extra(**kwargs) -> dict[str, Any]:
     """Add extra structured logging to enable filtering on domain in Azure Monitor."""
     kwargs["extra"] = {"Domain": "wholesale"}
     return kwargs
