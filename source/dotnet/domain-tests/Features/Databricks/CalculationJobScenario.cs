@@ -44,7 +44,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Databricks
                 createdTime: createdTime,
                 processType: Common.Interfaces.Models.ProcessType.Aggregation,
                 gridAreaCodes: new List<GridAreaCode> { new GridAreaCode("791") },
-                periodStart: Instant.FromDateTimeOffset(new DateTimeOffset(2022, 12, 1, 23, 0, 0, TimeSpan.Zero)),
+                periodStart: Instant.FromDateTimeOffset(new DateTimeOffset(2022, 11, 30, 23, 0, 0, TimeSpan.Zero)),
                 periodEnd: Instant.FromDateTimeOffset(new DateTimeOffset(2022, 12, 11, 23, 0, 0, TimeSpan.Zero)),
                 executionTimeStart: createdTime, // As long as scheduling is not implemented, execution time start is the same as created time
                 DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
