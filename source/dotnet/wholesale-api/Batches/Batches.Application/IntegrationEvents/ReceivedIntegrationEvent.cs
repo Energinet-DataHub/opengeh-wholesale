@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using NodaTime;
+
 namespace Energinet.DataHub.Wholesale.Batches.Application.IntegrationEvents;
 
 public record ReceivedIntegrationEvent(
     Guid Id,
-    string EventType);
+    string EventType,
+    Instant OccurredOn);

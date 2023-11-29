@@ -26,5 +26,6 @@ public class ReceivedIntegrationEventEntityConfiguration : IEntityTypeConfigurat
         builder.Property(e => e.Id)
             .ValueGeneratedNever();
         builder.Property(e => e.EventType);
+        builder.Property(e => e.OccurredOn);
     }
 }

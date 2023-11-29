@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Batches.Application.IntegrationEvents;
 using Microsoft.EntityFrameworkCore;
+using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.ReceivedIntegrationEvent;
 
@@ -30,7 +31,8 @@ public class ReceivedIntegrationEventRepository : IReceivedIntegrationEventRepos
     {
         var task = _context.ReceivedIntegrationEvents.AddAsync(new Application.IntegrationEvents.ReceivedIntegrationEvent(
             id,
-            eventType));
+            eventType,
+            SystemClock.Instance.GetCurrentInstant()));
 
         return task.AsTask();
     }

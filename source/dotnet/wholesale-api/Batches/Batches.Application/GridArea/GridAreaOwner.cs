@@ -18,7 +18,7 @@ namespace Energinet.DataHub.Wholesale.Batches.Application.GridArea;
 
 public record GridAreaOwner(
     Guid Id,
-    string Code,
+    string GridAreaCode,
     string OwnerActorNumber,
     Instant ValidFrom,
     int SequenceNumber);

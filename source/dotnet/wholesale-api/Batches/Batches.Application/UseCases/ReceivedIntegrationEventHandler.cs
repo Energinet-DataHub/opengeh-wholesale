@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Transactions;
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Wholesale.Batches.Application.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Batches.Application.IntegrationEvents.Handlers;
@@ -41,13 +42,12 @@ public class ReceivedIntegrationEventHandler : IIntegrationEventHandler
         if (eventAlreadyHandled)
             return;
 
-        await _receivedIntegrationEventRepository.CreateAsync(integrationEvent.EventIdentification, integrationEvent.EventName).ConfigureAwait(false);
+        await _receivedIntegrationEventRepository
+            .CreateAsync(integrationEvent.EventIdentification, integrationEvent.EventName).ConfigureAwait(false);
 
-        // Commit immediately to ensure that the event is registered, so we don't handle the same event twice.
-        await _unitOfWork.CommitAsync().ConfigureAwait(false);
-
+        // WARNING: If you are sending to external parts eg. servicebus, HTTPS you may do this more than once.
+        // So you may want to make use of a database to achieve idempotency if you have such needs.
         var handler = _integrationEventHandlerFactory.GetHandler(integrationEvent.EventName);
-
         await handler.HandleAsync(integrationEvent).ConfigureAwait(false);
 
         await _unitOfWork.CommitAsync().ConfigureAwait(false);

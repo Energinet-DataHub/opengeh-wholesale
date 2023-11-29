@@ -24,13 +24,13 @@ public class GridAreaEntityConfiguration : IEntityTypeConfiguration<GridAreaOwne
     {
         builder.ToTable(nameof(GridAreaOwner));
 
-        builder.HasKey(ga => ga.Id);
+        builder.HasKey(gao => gao.Id);
         builder.Property(b => b.Id)
             .ValueGeneratedNever();
 
-        builder.Property(ga => ga.Code);
-        builder.Property(ga => ga.OwnerActorNumber);
-        builder.Property(ga => ga.ValidFrom);
-        builder.Property(ga => ga.SequenceNumber);
+        builder.Property(gao => gao.GridAreaCode);
+        builder.Property(gao => gao.OwnerActorNumber);
+        builder.Property(gao => gao.ValidFrom);
+        builder.Property(gao => gao.SequenceNumber);
     }
 }

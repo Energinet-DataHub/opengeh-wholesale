@@ -23,8 +23,7 @@ public class GridAreaOwnershipAssignedEventHandler : IIntegrationEventHandler
 {
     private readonly IGridAreaOwnerRepository _gridAreaOwnerRepository;
 
-    // TODO: Remove this hard coded string.
-    public string EventTypeToHandle => "GridAreaOwnershipAssigned";
+    public string EventTypeToHandle => nameof(GridAreaOwnershipAssigned);
 
     public GridAreaOwnershipAssignedEventHandler(IGridAreaOwnerRepository gridAreaOwnerRepository)
     {
