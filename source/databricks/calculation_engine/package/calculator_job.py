@@ -13,28 +13,31 @@
 # limitations under the License.
 
 
+import logging
 import sys
 
 from package import calculation
 from package import calculation_input
 from package.calculator_job_args import get_calculator_args
-from package.infrastructure import (
-    db_logging,
-    initialize_spark,
-    log,
-)
+from package.infrastructure import initialize_spark
+from package.infrastructure.logging_configuration import initialize_logging
 from package.infrastructure.storage_account_access import islocked
+
+logger = logging.getLogger(__name__)
 
 
 # The start() method should only have its name updated in correspondence with the
 # wheels entry point for it. Further the method must remain parameterless because
 # it will be called from the entry point when deployed.
 def start() -> None:
+    initialize_logging()
+
     args = get_calculator_args()
 
-    db_logging.loglevel = "information"
     if islocked(args.data_storage_account_name, args.data_storage_account_credentials):
-        log("Exiting because storage is locked due to data migrations running.")
+        logger.error(
+            "Exiting because storage is locked due to data migrations running."
+        )
         sys.exit(3)
 
     # Create calculation execution dependencies
@@ -44,5 +47,9 @@ def start() -> None:
     )
     prepared_data_reader = calculation.PreparedDataReader(delta_table_reader)
 
+    logger.info("Starting calculation")
+
     # Execute calculation
     calculation.execute(args, prepared_data_reader)
+
+    logger.info("Calculation completed successfully")
