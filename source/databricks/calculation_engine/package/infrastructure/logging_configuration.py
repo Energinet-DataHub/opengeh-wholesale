@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import Any
+
 import intercepts
 import logging
 
@@ -52,7 +54,7 @@ def initialize_logging() -> None:
     intercepts.register(logging.getLogger, _set_default_log_level)
 
 
-def _add_extra(self: logging.Logger, msg: str, *args, **kwargs) -> None:
+def _add_extra(self: logging.Logger, msg: str, *args: object, **kwargs: Any) -> None:
     """Add extra structured logging to enable filtering on e.g. "Domain" in Azure Monitor."""
     kwargs["extra"] = kwargs.get("extra", {})
     kwargs["extra"]["Domain"] = "wholesale"
