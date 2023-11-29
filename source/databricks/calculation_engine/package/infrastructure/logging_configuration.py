@@ -60,13 +60,11 @@ def _add_extra(self: logging.Logger, msg: str, *args: object, **kwargs: Any) -> 
     kwargs["extra"] = kwargs.get("extra", {})
     kwargs["extra"]["Domain"] = "wholesale"
 
-    # noinspection PyUnresolvedReferences
-    _(self, msg, *args, **kwargs)  # noqa: F821
+    _(self, msg, *args, **kwargs)  # type: ignore # noqa: F821 (mypy and flake8)
 
 
 def _set_default_log_level(name: str | None) -> logging.Logger:
     """Set default log level for all loggers on create."""
-    # noinspection PyUnresolvedReferences
-    _logger: logging.Logger = _(name)  # noqa: F821
+    _logger: logging.Logger = _(name)  # type: ignore # noqa: F821 (mypy and flake8)
     _logger.setLevel(DEFAULT_LOG_LEVEL)
     return _logger
