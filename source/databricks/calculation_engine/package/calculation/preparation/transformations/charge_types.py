@@ -23,7 +23,7 @@ from package.constants import Colname
 
 def get_tariff_charges(
     metering_points: DataFrame,
-    time_series: DataFrame,
+    metering_point_time_series: DataFrame,
     charges_df: DataFrame,
     resolution: ChargeResolution,
 ) -> DataFrame:
@@ -39,7 +39,7 @@ def get_tariff_charges(
     # group by time series on metering point id and resolution and sum quantity
     grouped_time_series = (
         _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
-            time_series
+            metering_point_time_series
         )
     )
 
@@ -138,10 +138,10 @@ def _join_with_metering_points(df: DataFrame, metering_points: DataFrame) -> Dat
 
 
 def _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
-    time_series: DataFrame,
+    metering_point_time_series: DataFrame,
 ) -> DataFrame:
     grouped_time_series = t.aggregate_quantity_and_quality(
-        time_series,
+        metering_point_time_series,
         [
             Colname.metering_point_id,
             Colname.observation_time,
