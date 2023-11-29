@@ -52,7 +52,7 @@ def execute(
 
     quarterly_metering_point_time_series = transform_hour_to_quarter(
         metering_point_time_series
-    )
+    ).cache()
 
     _calculate(
         batch_process_type,

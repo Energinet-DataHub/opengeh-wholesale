@@ -34,7 +34,7 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
         args.batch_grid_areas,
-    ).cache()
+    )
     grid_loss_responsible_df = prepared_data_reader.get_grid_loss_responsible(
         args.batch_grid_areas
     )
