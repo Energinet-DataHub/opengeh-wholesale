@@ -208,10 +208,11 @@ resource "azurerm_linux_virtual_machine" "agent" {
     destination = "setup-agent.sh"
   }
 
+  # We install some software but not the GitHub runner. Volt will run scripts using their own user so we don't need the runner.
   provisioner "remote-exec" {
     inline = [
       "chmod +x ./setup-agent.sh",
-      "./setup-agent.sh ${var.github_runner_token} migrateagent${count.index}-${lower(var.environment_short)}-${lower(var.environment_instance)} migrateagent-${lower(var.environment_short)}-${lower(var.environment_instance)}",
+      "./setup-agent.sh",
     ]
   }
 }

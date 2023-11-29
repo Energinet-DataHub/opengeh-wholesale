@@ -1,8 +1,3 @@
-variable "github_runner_token" {
-  type        = string
-  description = "Registration token for GitHub self-hosted runner."
-}
-
 variable "virtual_network_resource_group_name" {
   type        = string
   description = "Resource group name of the virtual network"
