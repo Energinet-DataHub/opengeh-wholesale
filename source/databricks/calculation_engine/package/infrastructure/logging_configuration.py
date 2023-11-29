@@ -62,7 +62,7 @@ def _create_interceptor(level: int) -> callable:
 
 
 def _create_exception_interceptor() -> callable:
-    def _interceptor(self, msg, *args, exc_info=True, **kwargs):
+    def _interceptor(self, msg, *args, exc_info=True, **kwargs) -> callable:
         kwargs = _add_extra(**kwargs)
         if self.isEnabledFor(logging.ERROR):
             return self._log(logging.ERROR, msg, args, exc_info=exc_info, **kwargs)
@@ -70,8 +70,8 @@ def _create_exception_interceptor() -> callable:
     return _interceptor
 
 
-def _create_log_interceptor():
-    def _interceptor(self, level, msg, *args, **kwargs):
+def _create_log_interceptor() -> callable:
+    def _interceptor(self, level, msg, *args, **kwargs) -> callable:
         kwargs = _add_extra(**kwargs)
         if self.isEnabledFor(level):
             return self._log(level, msg, args, kwargs)
