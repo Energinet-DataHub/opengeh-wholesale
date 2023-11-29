@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Self
 
 import pyspark.sql.functions as f
 import pyspark.sql.types as t
@@ -77,6 +76,5 @@ class DataFrameWrapper:
 
         return df
 
-    def cache(self) -> Self:
+    def cache_internal(self) -> None:
         self._df = self._df.cache()
-        return self
