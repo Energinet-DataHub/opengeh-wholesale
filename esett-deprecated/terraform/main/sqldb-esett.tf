@@ -25,8 +25,8 @@ module "mssql_database_application_access" {
   database_name   = module.mssqldb_esett.name
 
   application_hosts_names = [
-    module.app_biztalkshipper.name,
     module.app_importer.name,
+    module.func_biztalkshipper.name,
     module.func_biztalkreceiver.name,
     module.func_changeobserver.name,
     module.func_converter.name,

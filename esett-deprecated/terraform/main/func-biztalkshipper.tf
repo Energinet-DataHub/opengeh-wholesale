@@ -1,5 +1,5 @@
-module "app_biztalkshipper" {
-  source                                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=v13"
+module "func_biztalkshipper" {
+  source                                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=v13"
 
   name                                      = "biztalkshipper"
   project_name                              = var.domain_name_short
@@ -16,30 +16,17 @@ module "app_biztalkshipper" {
   dotnet_framework_version                  = "v7.0"
   app_settings                              = merge({
     "biztalk:RootUrl"                       = "https://datahub.dev01.biztalk.test.endk.local"
-  }, local.default_biztalkshipper_app_settings)
-  connection_strings = [
-    {
-      name = "CONNECTION_STRING_SHARED_BLOB"
-      type = "Custom"
-      value = module.stor_esett.primary_connection_string
-    },
-    {
-      name = "CONNECTION_STRING_DATABASE"
-      type = "Custom"
-      value = local.connection_string_database
-    }
-  ]
+  }, local.default_biztalkshipper_settings)
 }
 
 locals {
-  default_biztalkshipper_app_settings = {
+  default_biztalkshipper_settings = {
     STORAGE_ACCOUNT_URL                                                   = "https://${module.stor_esett.name}.blob.core.windows.net"
     WEBSITE_LOAD_CERTIFICATES                                             = resource.azurerm_key_vault_certificate.biztalk_certificate.thumbprint
     BLOB_FILES_ERROR_CONTAINER_NAME                                       = local.blob_files_error_container_name
     BLOB_FILES_SENT_CONTAINER_NAME                                        = local.blob_files_sent_container_name
     BLOB_FILES_CONVERTED_CONTAINER_NAME                                   = local.blob_files_converted_container_name
     BLOB_FILES_ACK_CONTAINER_NAME                                         = local.blob_files_ack_container_name
-    "RunIntervalSeconds"                                                  = "20"
     "biztalk:Endpoint"                                                    = "/EL_DataHubService/IntegrationService.svc"
     "biztalk:businessTypeConsumption"                                     = "NBS-RECI"
     "biztalk:businessTypeProduction"                                      = "NBS-MEPI"
@@ -49,5 +36,7 @@ locals {
     "Logging__ApplicationInsights__LogLevel__Default"                     = "Information"
     "Logging__ApplicationInsights__LogLevel__Microsoft"                   = "Warning"
     "Logging__ApplicationInsights__LogLevel__Microsoft.Hosting.Lifetime"  = "Information"
+    CONNECTION_STRING_SHARED_BLOB                                         = module.stor_esett.primary_connection_string
+    CONNECTION_STRING_DATABASE                                            = local.connection_string_database
   }
 }

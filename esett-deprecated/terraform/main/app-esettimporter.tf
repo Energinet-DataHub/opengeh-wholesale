@@ -34,7 +34,6 @@ locals {
     WEBSITE_LOAD_CERTIFICATES                                             = resource.azurerm_key_vault_certificate.dh2_certificate.thumbprint
     BLOB_FILES_ERROR_CONTAINER_NAME                                       = local.blob_files_error_container_name
     BLOB_FILES_RAW_CONTAINER_NAME                                         = local.blob_files_raw_container_name
-    RunIntervalSeconds                                                    = "20"
     NamespacePrefix                                                       = "ns0"
     NamespaceUri                                                          = "un:unece:260:data:EEM-DK_AggregatedMeteredDataTimeSeriesForNBS:v3"
     ResponseNamespaceUri                                                  = "urn:www:datahub:dk:b2b:v01"
