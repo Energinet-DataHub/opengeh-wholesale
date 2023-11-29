@@ -40,9 +40,9 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
     )
 
     metering_point_time_series = prepared_data_reader.get_metering_point_time_series(
-        metering_point_periods_df,
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
+        metering_point_periods_df,
     ).cache()
 
     basis_data_writer = BasisDataWriter(args.wholesale_container_path, args.batch_id)
@@ -75,11 +75,10 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
         metering_points_periods_df = _get_production_and_consumption_metering_points(
             metering_point_periods_df
         )
-        raw_time_series_points = prepared_data_reader.get_raw_time_series_points()
 
         tariffs_hourly_df = prepared_data_reader.get_tariff_charges(
             metering_points_periods_df,
-            raw_time_series_points,
+            metering_point_time_series,
             charges_df,
             ChargeResolution.HOUR,
         )
