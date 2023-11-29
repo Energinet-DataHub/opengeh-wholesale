@@ -12,8 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Events.Application.IntegrationEvents;
+using NodaTime;
 
-public record ReceivedIntegrationEvent(
-    Guid Id,
-    string EventType);
+namespace Energinet.DataHub.Wholesale.Batches.Application.GridArea;
+
+public interface IGridAreaOwnerRepository
+{
+    Task AddAsync(string code, string ownerActorNumber, Instant validFrom, int sequenceNumber);
+
+    Task<GridAreaOwner> GetCurrentOwnerAsync(string code, CancellationToken cancellationToken);
+}

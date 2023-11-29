@@ -13,41 +13,40 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.ReceivedIntegrationEvent;
 using Energinet.DataHub.Wholesale.Batches.IntegrationTests.Fixture.Database;
-using Energinet.DataHub.Wholesale.Events.Application.GridArea;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.GridArea;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Events.IntegrationTests.Infrastructure.Persistence.GridArea;
+namespace Energinet.DataHub.Wholesale.Batches.IntegrationTests.Infrastructure.Persistence.ReceivedIntegrationEvent;
 
-public class GridAreaOwnerRepositoryTests
+public class ReceivedIntegrationEventTests
 {
-    private readonly WholesaleDatabaseManager<EventsDatabaseContext> _databaseManager;
+    private readonly WholesaleDatabaseManager<DatabaseContext> _databaseManager;
 
-    public GridAreaOwnerRepositoryTests(WholesaleDatabaseFixture<EventsDatabaseContext> fixture)
+    public ReceivedIntegrationEventTests(WholesaleDatabaseFixture<DatabaseContext> fixture)
     {
         _databaseManager = fixture.DatabaseManager;
     }
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task AddAsync_AddsGridAreaOwners(GridAreaOwner expectedGridAreaOwner)
+    public async Task AddAsync_AddsGridAreaOwners(Batches.Application.IntegrationEvents.ReceivedIntegrationEvent expectedIntegrationEvent)
     {
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
-        var sut = new GridAreaOwnerRepository(writeContext);
+        var sut = new ReceivedIntegrationEventRepository(writeContext);
 
         // Act
-        await sut.AddAsync(expectedGridAreaOwner.Code, expectedGridAreaOwner.OwnerActorNumber, expectedGridAreaOwner.ValidFrom, expectedGridAreaOwner.SequenceNumber);
+        await sut.CreateAsync(expectedIntegrationEvent.Id, expectedIntegrationEvent.EventType);
         await writeContext.SaveChangesAsync();
 
         // Assert
         await using var readContext = _databaseManager.CreateDbContext();
-        var actual = await readContext.GridAreaOwners.SingleAsync(b => b.Code.Equals(expectedGridAreaOwner.Code));
+        var actual = await readContext.ReceivedIntegrationEvents.SingleAsync(b => b.Id.Equals(expectedIntegrationEvent.Id));
 
-        actual.Should().BeEquivalentTo(expectedGridAreaOwner);
+        actual.Should().BeEquivalentTo(expectedIntegrationEvent);
     }
 }

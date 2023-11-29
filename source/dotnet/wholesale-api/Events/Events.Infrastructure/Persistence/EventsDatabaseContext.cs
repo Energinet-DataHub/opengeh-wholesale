@@ -15,8 +15,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedBatches;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.GridArea;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.ReceivedIntegrationEvent;
 using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
@@ -38,20 +36,12 @@ public class EventsDatabaseContext : DbContext, IEventsDatabaseContext
 
     public virtual DbSet<CompletedBatch> CompletedBatches { get; private set; } = null!;
 
-    public virtual DbSet<Application.GridArea.GridAreaOwner> GridAreaOwners { get; private set; } = null!;
-
-    public virtual DbSet<Application.IntegrationEvents.ReceivedIntegrationEvent> ReceivedIntegrationEvents { get; private set; } = null!;
-
     public Task<int> SaveChangesAsync() => base.SaveChangesAsync();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema(Schema);
-
         modelBuilder.ApplyConfiguration(new CompletedBatchEntityConfiguration());
-        modelBuilder.ApplyConfiguration(new GridAreaEntityConfiguration());
-        modelBuilder.ApplyConfiguration(new ReceivedIntegrationEventEntityConfiguration());
-
         base.OnModelCreating(modelBuilder);
     }
 }

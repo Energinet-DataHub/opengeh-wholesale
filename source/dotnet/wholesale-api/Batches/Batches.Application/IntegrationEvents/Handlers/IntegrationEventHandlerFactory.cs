@@ -14,7 +14,7 @@
 
 using System.Collections.ObjectModel;
 
-namespace Energinet.DataHub.Wholesale.Events.Application.IntegrationEvents.Handlers;
+namespace Energinet.DataHub.Wholesale.Batches.Application.IntegrationEvents.Handlers;
 
 public class IntegrationEventHandlerFactory
 {

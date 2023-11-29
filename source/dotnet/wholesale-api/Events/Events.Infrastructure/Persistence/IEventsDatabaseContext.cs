@@ -21,10 +21,6 @@ public interface IEventsDatabaseContext
 {
     DbSet<CompletedBatch> CompletedBatches { get; }
 
-    DbSet<Application.GridArea.GridAreaOwner> GridAreaOwners { get; }
-
-    DbSet<Application.IntegrationEvents.ReceivedIntegrationEvent> ReceivedIntegrationEvents { get; }
-
     /// <summary>
     /// Saves changes to the database.
     /// </summary>

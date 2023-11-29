@@ -13,11 +13,11 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Messaging.Communication;
-using Energinet.DataHub.Wholesale.Events.Application.IntegrationEvents;
-using Energinet.DataHub.Wholesale.Events.Application.IntegrationEvents.Handlers;
+using Energinet.DataHub.Wholesale.Batches.Application.IntegrationEvents;
+using Energinet.DataHub.Wholesale.Batches.Application.IntegrationEvents.Handlers;
 using IIntegrationEventHandler = Energinet.DataHub.Core.Messaging.Communication.Subscriber.IIntegrationEventHandler;
 
-namespace Energinet.DataHub.Wholesale.Events.Application.UseCases;
+namespace Energinet.DataHub.Wholesale.Batches.Application.UseCases;
 
 // ReSharper disable once ClassNeverInstantiated.Global - instantiated by DI container
 public class ReceivedIntegrationEventHandler : IIntegrationEventHandler

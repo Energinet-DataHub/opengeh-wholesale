@@ -15,21 +15,16 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.GridArea;
+namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.ReceivedIntegrationEvent;
 
-public class GridAreaEntityConfiguration : IEntityTypeConfiguration<Application.GridArea.GridAreaOwner>
+public class ReceivedIntegrationEventEntityConfiguration : IEntityTypeConfiguration<Application.IntegrationEvents.ReceivedIntegrationEvent>
 {
-    public void Configure(EntityTypeBuilder<Application.GridArea.GridAreaOwner> builder)
+    public void Configure(EntityTypeBuilder<Application.IntegrationEvents.ReceivedIntegrationEvent> builder)
     {
-        builder.ToTable(nameof(Application.GridArea.GridAreaOwner));
-
-        builder.HasKey(ga => ga.Id);
-        builder.Property(b => b.Id)
+        builder.ToTable(nameof(Application.IntegrationEvents.ReceivedIntegrationEvent));
+        builder.HasKey(e => e.Id);
+        builder.Property(e => e.Id)
             .ValueGeneratedNever();
-
-        builder.Property(ga => ga.Code);
-        builder.Property(ga => ga.OwnerActorNumber);
-        builder.Property(ga => ga.ValidFrom);
-        builder.Property(ga => ga.SequenceNumber);
+        builder.Property(e => e.EventType);
     }
 }

@@ -12,24 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Events.Application.GridArea;
+using Energinet.DataHub.Wholesale.Batches.Application.GridArea;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.GridArea;
+namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.GridArea;
 
 public class GridAreaOwnerRepository : IGridAreaOwnerRepository
 {
-    private readonly IEventsDatabaseContext _context;
+    private readonly IDatabaseContext _context;
 
-    public GridAreaOwnerRepository(IEventsDatabaseContext context)
+    public GridAreaOwnerRepository(IDatabaseContext context)
     {
         _context = context;
     }
 
     public Task AddAsync(string code, string ownerActorNumber, Instant validFrom, int sequenceNumber)
     {
-        var task = _context.GridAreaOwners.AddAsync(new Application.GridArea.GridAreaOwner(
+        var task = _context.GridAreaOwners.AddAsync(new GridAreaOwner(
             Guid.NewGuid(),
             code,
             ownerActorNumber,
@@ -38,7 +38,7 @@ public class GridAreaOwnerRepository : IGridAreaOwnerRepository
         return task.AsTask();
     }
 
-    public async Task<Application.GridArea.GridAreaOwner> GetCurrentOwnerAsync(string code, string ownerActorNumber, CancellationToken cancellationToken)
+    public async Task<GridAreaOwner> GetCurrentOwnerAsync(string code, CancellationToken cancellationToken)
     {
         var now = SystemClock.Instance.GetCurrentInstant();
         return await _context.GridAreaOwners

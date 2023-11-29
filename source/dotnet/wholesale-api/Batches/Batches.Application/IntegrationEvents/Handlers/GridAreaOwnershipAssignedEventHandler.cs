@@ -14,10 +14,10 @@
 
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.MarketParticipant.Infrastructure.Model.Contracts;
-using Energinet.DataHub.Wholesale.Events.Application.GridArea;
+using Energinet.DataHub.Wholesale.Batches.Application.GridArea;
 using NodaTime.Serialization.Protobuf;
 
-namespace Energinet.DataHub.Wholesale.Events.Application.IntegrationEvents.Handlers;
+namespace Energinet.DataHub.Wholesale.Batches.Application.IntegrationEvents.Handlers;
 
 public class GridAreaOwnershipAssignedEventHandler : IIntegrationEventHandler
 {

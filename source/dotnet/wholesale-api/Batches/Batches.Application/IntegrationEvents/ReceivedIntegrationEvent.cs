@@ -12,13 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using NodaTime;
+namespace Energinet.DataHub.Wholesale.Batches.Application.IntegrationEvents;
 
-namespace Energinet.DataHub.Wholesale.Events.Application.GridArea;
-
-public record GridAreaOwner(
+public record ReceivedIntegrationEvent(
     Guid Id,
-    string Code,
-    string OwnerActorNumber,
-    Instant ValidFrom,
-    int SequenceNumber);
+    string EventType);

@@ -12,19 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Batches.Application.GridArea;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.ReceivedIntegrationEvent;
+namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.GridArea;
 
-public class ReceivedIntegrationEventEntityConfiguration : IEntityTypeConfiguration<Application.IntegrationEvents.ReceivedIntegrationEvent>
+public class GridAreaEntityConfiguration : IEntityTypeConfiguration<GridAreaOwner>
 {
-    public void Configure(EntityTypeBuilder<Application.IntegrationEvents.ReceivedIntegrationEvent> builder)
+    public void Configure(EntityTypeBuilder<GridAreaOwner> builder)
     {
-        builder.ToTable(nameof(Application.IntegrationEvents.ReceivedIntegrationEvent));
-        builder.HasKey(e => e.Id);
-        builder.Property(e => e.Id)
+        builder.ToTable(nameof(GridAreaOwner));
+
+        builder.HasKey(ga => ga.Id);
+        builder.Property(b => b.Id)
             .ValueGeneratedNever();
-        builder.Property(e => e.EventType);
+
+        builder.Property(ga => ga.Code);
+        builder.Property(ga => ga.OwnerActorNumber);
+        builder.Property(ga => ga.ValidFrom);
+        builder.Property(ga => ga.SequenceNumber);
     }
 }

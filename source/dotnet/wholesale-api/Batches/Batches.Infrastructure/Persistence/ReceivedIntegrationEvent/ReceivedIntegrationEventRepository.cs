@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Events.Application.IntegrationEvents;
+using Energinet.DataHub.Wholesale.Batches.Application.IntegrationEvents;
 using Microsoft.EntityFrameworkCore;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.ReceivedIntegrationEvent;
+namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.ReceivedIntegrationEvent;
 
 public class ReceivedIntegrationEventRepository : IReceivedIntegrationEventRepository
 {
-    private readonly IEventsDatabaseContext _context;
+    private readonly IDatabaseContext _context;
 
-    public ReceivedIntegrationEventRepository(IEventsDatabaseContext context)
+    public ReceivedIntegrationEventRepository(IDatabaseContext context)
     {
         _context = context;
     }
