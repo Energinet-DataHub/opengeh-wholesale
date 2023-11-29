@@ -11,10 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import intercepts
 import logging
-from typing import Any
 
 from azure.monitor.opentelemetry import configure_azure_monitor
+
+
+DEFAULT_LOG_LEVEL = logging.INFO
 
 
 def initialize_logging() -> None:
@@ -29,58 +32,38 @@ def initialize_logging() -> None:
     # as it is not provided explicitly.
     configure_azure_monitor()
 
-    logging.Logger.debug = _create_interceptor(logging.DEBUG)
-    logging.Logger.info = _create_interceptor(logging.INFO)
-    logging.Logger.warning = _create_interceptor(logging.WARNING)
-    logging.Logger.warn = logging.Logger.warning
-    logging.Logger.error = _create_interceptor(logging.ERROR)
-    logging.Logger.exception = _create_exception_interceptor()
-    logging.Logger.critical = _create_interceptor(logging.CRITICAL)
-    logging.Logger.fatal = _create_interceptor(logging.FATAL)
-    logging.Logger.log = _create_log_interceptor()
+    # Intercept all logging functions in order to add structured logging.
+    intercepts.register(logging.Logger.debug, _add_extra)
+    intercepts.register(logging.Logger.info, _add_extra)
+    intercepts.register(logging.Logger.warning, _add_extra)
+    # noinspection PyDeprecation
+    intercepts.register(logging.Logger.warn, _add_extra)
+    intercepts.register(logging.Logger.error, _add_extra)
+    intercepts.register(logging.Logger.exception, _add_extra)
+    intercepts.register(logging.Logger.critical, _add_extra)
+    intercepts.register(logging.Logger.fatal, _add_extra)
+    intercepts.register(logging.Logger.log, _add_extra)
 
     # Suppress Py4J logging to only show errors and above.
     # py4j logs a lot of information.
     logging.getLogger("py4j").setLevel(logging.ERROR)
 
-
-def _create_interceptor(level: int) -> callable:
-    def _interceptor(
-        self: logging.Logger,
-        msg,
-        *args,
-        exc_info=None,
-        extra=None,
-        stack_info=False,
-        stacklevel=1
-    ):
-        extra = _add_extra(extra)
-        if self.isEnabledFor(level):
-            return self._log(level, msg, args, exc_info, extra, stack_info, stacklevel)
-
-    return _interceptor
+    # Set default log level for all module loggers being created.
+    intercepts.register(logging.getLogger, _set_default_log_level)
 
 
-def _create_exception_interceptor() -> callable:
-    def _interceptor(self, msg, *args, exc_info=True, **kwargs) -> callable:
-        kwargs = _add_extra(**kwargs)
-        if self.isEnabledFor(logging.ERROR):
-            return self._log(logging.ERROR, msg, args, exc_info=exc_info, **kwargs)
+def _add_extra(self: logging.Logger, msg: str, *args, **kwargs) -> None:
+    """Add extra structured logging to enable filtering on e.g. "Domain" in Azure Monitor."""
+    kwargs["extra"] = kwargs.get("extra", {})
+    kwargs["extra"]["Domain"] = "wholesale"
 
-    return _interceptor
-
-
-def _create_log_interceptor() -> callable:
-    def _interceptor(self, level, msg, *args, **kwargs) -> callable:
-        kwargs = _add_extra(**kwargs)
-        if self.isEnabledFor(level):
-            return self._log(level, msg, args, kwargs)
-
-    return _interceptor
+    # noinspection PyUnresolvedReferences
+    _(self, msg, *args, **kwargs)
 
 
-def _add_extra(extra) -> dict[str, Any]:
-    """Add extra structured logging to enable filtering on domain in Azure Monitor."""
-    extra = extra or {}
-    extra["Domain"] = "wholesale"
-    return extra
+def _set_default_log_level(name: str | None) -> logging.Logger:
+    """Set default log level for all loggers on create."""
+    # noinspection PyUnresolvedReferences
+    _logger: logging.Logger = _(name)
+    _logger.setLevel(DEFAULT_LOG_LEVEL)
+    return _logger
