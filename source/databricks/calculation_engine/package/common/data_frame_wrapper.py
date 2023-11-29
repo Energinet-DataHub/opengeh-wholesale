@@ -75,3 +75,6 @@ class DataFrameWrapper:
                 )
 
         return df
+
+    def cache_internal(self) -> None:
+        self._df = self._df.cache()
