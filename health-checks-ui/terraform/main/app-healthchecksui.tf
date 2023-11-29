@@ -57,6 +57,8 @@ module "app_health_checks_ui" {
     "HealthChecksUI__HealthChecks__015__Uri"  = "https://func-grid-loss-sender-dh2brdg-${lower(var.environment_short)}-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/ready"
     "HealthChecksUI__HealthChecks__016__Name" = "dh2-bridge:::Peek Grid loss Function"
     "HealthChecksUI__HealthChecks__016__Uri"  = "https://func-grid-loss-peek-dh2brdg-${lower(var.environment_short)}-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/ready"
+    "HealthChecksUI__HealthChecks__017__Name" = "dh2-bridge:::Event Receiver Grid loss Function"
+    "HealthChecksUI__HealthChecks__017__Uri"  = "https://func-grid-loss-event-receiver-dh2brdg-${lower(var.environment_short)}-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/ready"
     # Live - prefix with 2xx
     "HealthChecksUI__HealthChecks__200__Name" = "health-checks-ui:::Health Check UI - live"
     "HealthChecksUI__HealthChecks__200__Uri"  = "https://app-healthchecksui-health-${lower(var.environment_short)}-${lower(var.environment_instance)}.azurewebsites.net/monitor/live"
@@ -92,6 +94,8 @@ module "app_health_checks_ui" {
     "HealthChecksUI__HealthChecks__215__Uri"  = "https://func-grid-loss-sender-dh2brdg-${lower(var.environment_short)}-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
     "HealthChecksUI__HealthChecks__216__Name" = "dh2-bridge:::Peek Grid loss Function - live"
     "HealthChecksUI__HealthChecks__216__Uri"  = "https://func-grid-loss-peek-dh2brdg-${lower(var.environment_short)}-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
+    "HealthChecksUI__HealthChecks__217__Name" = "dh2-bridge:::Event Receiver Grid loss Function - live"
+    "HealthChecksUI__HealthChecks__217__Uri"  = "https://func-grid-loss-event-receiver-dh2brdg-${lower(var.environment_short)}-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
 
     # Polling Interval
     "HealthChecksUI__EvaluationTimeinSeconds" = 60
