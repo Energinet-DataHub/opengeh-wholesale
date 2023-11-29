@@ -11,13 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from __future__ import annotations
+
 from typing import Any
 
 import intercepts
 import logging
 
 from azure.monitor.opentelemetry import configure_azure_monitor
-
 
 DEFAULT_LOG_LEVEL = logging.INFO
 
