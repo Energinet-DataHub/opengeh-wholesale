@@ -39,7 +39,7 @@ def initialize_logging() -> None:
     logging.Logger.fatal = _create_interceptor(logging.FATAL)
     logging.Logger.log = _create_log_interceptor()
 
-    logging.basicConfig(level=logging.INFO)
+    logging.getLogger("py4j").setLevel(logging.ERROR)
 
 
 def _create_interceptor(level: int) -> callable:
@@ -53,7 +53,8 @@ def _create_interceptor(level: int) -> callable:
         stacklevel=1
     ):
         extra = _add_extra(extra)
-        return self._log(level, msg, args, exc_info, extra, stack_info, stacklevel)
+        if self.isEnabledFor(level):
+            return self._log(level, msg, args, exc_info, extra, stack_info, stacklevel)
 
     return _interceptor
 
@@ -61,7 +62,8 @@ def _create_interceptor(level: int) -> callable:
 def _create_exception_interceptor() -> callable:
     def _interceptor(self, msg, *args, exc_info=True, **kwargs):
         kwargs = _add_extra(**kwargs)
-        return self._log(logging.ERROR, msg, args, exc_info=exc_info, **kwargs)
+        if self.isEnabledFor(logging.ERROR):
+            return self._log(logging.ERROR, msg, args, exc_info=exc_info, **kwargs)
 
     return _interceptor
 
@@ -69,7 +71,8 @@ def _create_exception_interceptor() -> callable:
 def _create_log_interceptor():
     def _interceptor(self, level, msg, *args, **kwargs):
         kwargs = _add_extra(**kwargs)
-        return self._log(level, msg, args, kwargs)
+        if self.isEnabledFor(level):
+            return self._log(level, msg, args, kwargs)
 
     return _interceptor
 
