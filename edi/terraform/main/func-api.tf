@@ -16,6 +16,7 @@ module "func_receiver" {
   use_dotnet_isolated_runtime              = true
   health_check_path                        = "/api/monitor/ready"
   ip_restriction_allow_ip_range            = var.hosted_deployagent_public_ip_range
+  client_certificate_mode                  = "Optional"
 
   app_settings = {
     # Shared resources logging

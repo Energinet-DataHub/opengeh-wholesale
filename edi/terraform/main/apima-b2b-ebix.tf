@@ -289,15 +289,24 @@ module "apima_b2b_ebix" {
                 }</message>
                 <metadata name="CorrelationId" value="@($"{context.RequestId}")" />
             </trace>
-            <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Failed policy requirements, or token is invalid or missing.">
-                <openid-config url="https://login.microsoftonline.com/${data.azurerm_key_vault_secret.apim_b2c_tenant_id.value}/v2.0/.well-known/openid-configuration" />
-                <required-claims>
-                    <claim name="aud" match="any">
-                        <value>${data.azurerm_key_vault_secret.apim_b2b_app_id.value}</value>
-                    </claim>
-                </required-claims>
-            </validate-jwt>
             <base />
+            <choose>
+                <when condition="@(context.Request.Certificate == null)">
+                    <return-response>
+                        <set-status code="403" reason="Certificate rejected. 1" />
+                    </return-response>
+                </when>
+                <when condition="@(!context.Request.Certificate.Verify())">
+                    <return-response>
+                        <set-status code="403" reason="Certificate rejected. 2" />
+                    </return-response>
+                </when>
+                <when condition="@(!context.Deployment.Certificates.Any(c => c.Value.Thumbprint == context.Request.Certificate.Thumbprint))">
+                    <return-response>
+                        <set-status code="403" reason="Certificate rejected. 3" />
+                    </return-response>
+                </when>
+            </choose>
             <choose>
                 <when condition="@(context.Request.Method == "POST")">
                     <check-header name="Content-Type" failed-check-httpcode="415" failed-check-error-message="Content-Type must be either application/ebix, text/xml or application/xml" ignore-case="true">
@@ -321,6 +330,9 @@ module "apima_b2b_ebix" {
                     </choose>
                 </when>
             </choose>
+            <set-header name="ClientCert" exists-action="override">
+                <value>@(context.Request.Certificate.GetRawCertDataString())</value>
+            </set-header>
             <set-header name="CorrelationId" exists-action="override">
                 <value>@($"{context.RequestId}")</value>
             </set-header>

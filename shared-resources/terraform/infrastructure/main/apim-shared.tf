@@ -51,6 +51,13 @@ module "apim_shared" {
       XML
     }
   ]
+
+  certificates = [
+    {
+      encoded_certificate    = filebase64("./certificates/oces-ca-root-certificate-public.cer")
+      store_name             = "CertificateAuthority"
+    }
+  ]
 }
 
 resource "azurerm_api_management_authorization_server" "oauth_server" {

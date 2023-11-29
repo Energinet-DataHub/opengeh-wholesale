@@ -16,16 +16,6 @@ module "apimao_ebix_peekmessage" {
         <policies>
           <inbound>
             <base />
-            <validate-jwt header-name="Authorization" failed-validation-httpcode="403" failed-validation-error-message="Unauthorized to access this endpoint.">
-                <openid-config url="https://login.microsoftonline.com/${data.azurerm_key_vault_secret.apim_b2c_tenant_id.value}/v2.0/.well-known/openid-configuration" />
-                <required-claims>
-                    <claim name="roles" match="any">
-                        <value>metereddataresponsible</value>
-                        <value>energysupplier</value>
-                        <value>balanceresponsibleparty</value>
-                    </claim>
-                </required-claims>
-            </validate-jwt>
             <set-backend-service backend-id="${azurerm_api_management_backend.edi.name}" />
             <rewrite-uri template="/api/peek/none" copy-unmatched-params="false" />
             <set-method>GET</set-method>
@@ -36,15 +26,19 @@ module "apimao_ebix_peekmessage" {
           <outbound>
             <base />
             <set-variable name="responseBody" value="@(context.Response.Body.As<string>().Replace("<?xml version=\"1.0\" encoding=\"utf-8\"?>", ""))" />
-            <set-body template="liquid">
-              <soap-env:Envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/">
-                <soap-env:Body>
-                  <PeekMessageResponse xmlns="urn:www:datahub:dk:b2b:v01" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-                    {{context.Variables["responseBody"]}}
-                  </PeekMessageResponse>
-                </soap-env:Body>
-              </soap-env:Envelope>
-            </set-body>
+            <choose>
+              <when condition="@(context.Response.StatusCode >= 200 && context.Response.StatusCode < 300)">
+                <set-body template="liquid">
+                  <soap-env:Envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/">
+                    <soap-env:Body>
+                      <PeekMessageResponse xmlns="urn:www:datahub:dk:b2b:v01" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                        {{context.Variables["responseBody"]}}
+                      </PeekMessageResponse>
+                    </soap-env:Body>
+                  </soap-env:Envelope>
+                </set-body>
+              </when>
+            </choose>
           </outbound>
           <on-error>
             <base />
