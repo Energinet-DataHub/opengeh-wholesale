@@ -39,6 +39,8 @@ def initialize_logging() -> None:
     logging.Logger.fatal = _create_interceptor(logging.FATAL)
     logging.Logger.log = _create_log_interceptor()
 
+    # Suppress Py4J logging to only show errors and above.
+    # py4j logs a lot of information.
     logging.getLogger("py4j").setLevel(logging.ERROR)
 
 
