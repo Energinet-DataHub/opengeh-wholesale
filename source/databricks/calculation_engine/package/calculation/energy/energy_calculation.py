@@ -77,6 +77,7 @@ def _calculate(
         result_writer,
         quarterly_metering_point_time_series,
     )
+    net_exchange_per_ga.cache_internal()
 
     temporary_production_per_ga_and_brp_and_es = (
         _calculate_temporary_production_per_per_ga_and_brp_and_es(
