@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
 from typing import Any, Union
 
 import intercepts
@@ -31,7 +32,9 @@ def initialize_logging() -> None:
     # Configure OpenTelemetry to use Azure Monitor.
     # The connection string is read from the environment variable APPLICATIONINSIGHTS_CONNECTION_STRING
     # as it is not provided explicitly.
-    configure_azure_monitor()
+    configure_azure_monitor(
+        connection_string=os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING")
+    )
 
     # Intercept all logging functions in order to add structured logging.
     intercepts.register(logging.Logger.debug, _add_extra)
