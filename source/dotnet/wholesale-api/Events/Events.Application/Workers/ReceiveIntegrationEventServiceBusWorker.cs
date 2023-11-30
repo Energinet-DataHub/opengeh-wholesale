@@ -35,7 +35,9 @@ public class ReceiveIntegrationEventServiceBusWorker : ServiceBusWorker<ReceiveI
         IServiceProvider serviceProvider)
         : base(
             logger,
-            serviceBusClient.CreateProcessor(options.Value.INTEGRATIONEVENTS_TOPIC_NAME, "TODO: Subscription name"))
+            serviceBusClient.CreateProcessor(
+                options.Value.INTEGRATIONEVENTS_TOPIC_NAME,
+                options.Value.INTEGRATIONEVENTS_SUBSCRIPTION_NAME))
     {
         _serviceProvider = serviceProvider;
     }
