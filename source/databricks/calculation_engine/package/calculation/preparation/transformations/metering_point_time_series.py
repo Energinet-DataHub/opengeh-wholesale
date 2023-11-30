@@ -18,7 +18,6 @@ from pyspark.sql.types import DecimalType
 
 from package.constants import Colname
 from package.codelists import MeteringPointResolution, QuantityQuality
-from package.infrastructure.db_logging import debug
 from package.common import assert_schema
 from package.calculation_input.schemas import (
     time_series_point_schema,
@@ -102,13 +101,6 @@ def get_metering_point_time_series(
     )
 
     empty_points_for_each_metering_point_df = quarterly_times_df.union(hourly_times_df)
-
-    debug(
-        "Time series points where time is within period",
-        raw_time_series_points_df.orderBy(
-            Colname.metering_point_id, f.col(Colname.observation_time)
-        ),
-    )
 
     # Quality of metering point time series are mandatory. This result has, however, been padded with
     # time series points that haven't been provided by the market actors. These added points must have
