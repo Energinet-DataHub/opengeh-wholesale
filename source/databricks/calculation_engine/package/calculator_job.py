@@ -23,14 +23,13 @@ from package.infrastructure import initialize_spark
 from package.infrastructure.logging_configuration import initialize_logging
 from package.infrastructure.storage_account_access import islocked
 
-logger = logging.getLogger(__name__)
-
 
 # The start() method should only have its name updated in correspondence with the
 # wheels entry point for it. Further the method must remain parameterless because
 # it will be called from the entry point when deployed.
 def start() -> None:
     initialize_logging()
+    logger = logging.getLogger(__name__)
 
     args = get_calculator_args()
 
