@@ -286,9 +286,9 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations.Fixtures
             return DateTimeOffset.Parse(value, null, DateTimeStyles.AssumeUniversal).ToTimestamp();
         }
 
-        private static Contracts.IntegrationEvents.Common.DecimalValue ParseDecimalValue(string value)
+        private static Contracts.IntegrationEvents.Common.DecimalValue? ParseDecimalValue(string value)
         {
-            return new Contracts.IntegrationEvents.Common.DecimalValue(decimal.Parse(value, CultureInfo.InvariantCulture));
+            return string.IsNullOrEmpty(value) ? null : new Contracts.IntegrationEvents.Common.DecimalValue(decimal.Parse(value, CultureInfo.InvariantCulture));
         }
     }
 }
