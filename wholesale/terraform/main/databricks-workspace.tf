@@ -14,6 +14,7 @@ module "dbw" {
   databricks_virtual_network_address_space = var.databricks_vnet_address_space
   private_subnet_address_prefix            = var.databricks_private_subnet_address_prefix
   public_subnet_address_prefix             = var.databricks_public_subnet_address_prefix
+  private_endpoints_subnet_address_prefix  = var.databricks_private_endpoints_subnet_address_prefix
   user_access_security_group_object_id     = var.developers_security_group_object_id
   public_network_service_endpoints = [
     "Microsoft.EventHub"
