@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Any
+from typing import Any, Union
 
 import intercepts
 import logging
@@ -61,7 +61,7 @@ def _add_extra(self: logging.Logger, msg: str, *args: object, **kwargs: Any) -> 
     _(self, msg, *args, **kwargs)  # type: ignore # noqa: F821 (mypy and flake8)
 
 
-def _set_default_log_level(name: str | None) -> logging.Logger:
+def _set_default_log_level(name: Union[str, None]) -> logging.Logger:
     """Set default log level for all loggers on create."""
     _logger: logging.Logger = _(name)  # type: ignore # noqa: F821 (mypy and flake8)
     _logger.setLevel(DEFAULT_LOG_LEVEL)
