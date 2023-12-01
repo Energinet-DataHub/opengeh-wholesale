@@ -24,7 +24,7 @@ namespace Energinet.DataHub.Wholesale.Events.Application.Workers;
 /// <summary>
 /// Responsible for establishing the service bus connection on a background thread.
 /// </summary>
-public class AggregatedTimeSeriesServiceBusWorker : ServiceBusWorker<AggregatedTimeSeriesServiceBusWorker>
+public class AggregatedTimeSeriesServiceBusWorker : ServiceBusQueueWorker<AggregatedTimeSeriesServiceBusWorker>
 {
     private readonly IServiceProvider _serviceProvider;
 
@@ -33,13 +33,14 @@ public class AggregatedTimeSeriesServiceBusWorker : ServiceBusWorker<AggregatedT
         ILogger<AggregatedTimeSeriesServiceBusWorker> logger,
         IOptions<ServiceBusOptions> options,
         ServiceBusClient serviceBusClient)
-    : base(logger, serviceBusClient.CreateProcessor(options.Value.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME), isQueueListener: true)
+    : base(logger, serviceBusClient.CreateProcessor(options.Value.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME))
     {
         _serviceProvider = serviceProvider;
     }
 
-    protected override Task ProcessAsync(ProcessMessageEventArgs arg, string referenceId)
+    protected override Task ProcessAsync(ProcessMessageEventArgs arg, string? referenceId = null)
     {
+        if (referenceId == null) throw new ArgumentNullException(nameof(referenceId));
         var scope = _serviceProvider.CreateScope();
         var requestHandler = scope.ServiceProvider.GetRequiredService<IAggregatedTimeSeriesRequestHandler>();
         return requestHandler.ProcessAsync(arg.Message, referenceId, arg.CancellationToken);

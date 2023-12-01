@@ -35,13 +35,12 @@ public class ReceiveIntegrationEventServiceBusWorker : ServiceBusWorker<ReceiveI
             logger,
             serviceBusClient.CreateProcessor(
                 options.Value.INTEGRATIONEVENTS_TOPIC_NAME,
-                options.Value.INTEGRATIONEVENTS_SUBSCRIPTION_NAME),
-            isQueueListener: false)
+                options.Value.INTEGRATIONEVENTS_SUBSCRIPTION_NAME))
     {
         _serviceProvider = serviceProvider;
     }
 
-    protected override Task ProcessAsync(ProcessMessageEventArgs arg, string referenceId)
+    protected override Task ProcessAsync(ProcessMessageEventArgs arg, string? referenceId = null)
     {
         using var scope = _serviceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<ISubscriber>();

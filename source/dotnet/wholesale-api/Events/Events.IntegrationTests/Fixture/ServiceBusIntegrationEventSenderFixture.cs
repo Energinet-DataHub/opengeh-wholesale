@@ -30,6 +30,7 @@ public class ServiceBusIntegrationEventSenderFixture : IAsyncLifetime, IAsyncDis
 
     private readonly ServiceBusResourceProvider _serviceBusResourceProvider;
     private readonly string _topicName = "sbt-integration-event-topic";
+    private readonly string _subscriptionName = "sbs-integration-event-subscription";
     private ServiceBusSender? _sender;
 
     public ServiceBusIntegrationEventSenderFixture()
@@ -39,7 +40,7 @@ public class ServiceBusIntegrationEventSenderFixture : IAsyncLifetime, IAsyncDis
             new ServiceBusOptions
             {
                 SERVICE_BUS_MANAGE_CONNECTION_STRING = integrationTestConfiguration.ServiceBusConnectionString,
-                INTEGRATIONEVENTS_SUBSCRIPTION_NAME = "sbs-integration-event-subscription",
+                INTEGRATIONEVENTS_SUBSCRIPTION_NAME = _subscriptionName,
             });
 
         _serviceBusResourceProvider = new ServiceBusResourceProvider(
