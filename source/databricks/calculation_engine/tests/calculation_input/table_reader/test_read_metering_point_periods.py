@@ -31,7 +31,7 @@ from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.helpers.data_frame_utils import assert_dataframes_equal
 
 DEFAULT_FROM_DATE = datetime(2022, 6, 8, 22, 0, 0)
-DEFAULT_TO_DATE = datetime(2022, 6, 8, 22, 0, 0)
+DEFAULT_TO_DATE = datetime(2022, 6, 9, 22, 0, 0)
 DEFAULT_GRID_AREA = "805"
 
 
@@ -100,7 +100,11 @@ class TestWhenValidInput:
         reader = TableReader(spark, calculation_input_path)
 
         # Act
-        actual = reader.read_metering_point_periods()
+        actual = reader.read_metering_point_periods(
+            DEFAULT_FROM_DATE,
+            DEFAULT_TO_DATE,
+            [DEFAULT_GRID_AREA],
+        )
 
         # Assert
         assert_dataframes_equal(actual, expected)
@@ -155,7 +159,11 @@ class TestWhenValidInput:
         with mock.patch.object(
             sut._spark.read.format("delta"), "load", return_value=df
         ):
-            actual = sut.read_metering_point_periods()
+            actual = sut.read_metering_point_periods(
+                DEFAULT_FROM_DATE,
+                DEFAULT_TO_DATE,
+                [DEFAULT_GRID_AREA],
+            )
 
         # Assert
         assert actual.collect()[0][Colname.metering_point_type] == expected.value
@@ -167,7 +175,7 @@ class TestWhenValidInput:
             [InputSettlementMethod.NON_PROFILED, SettlementMethod.NON_PROFILED],
         ],
     )
-    def test___read_metering_point_periods__returns_df_with_correct_settlement_methods(
+    def test_returns_df_with_correct_settlement_methods(
         self,
         spark: SparkSession,
         settlement_method: InputSettlementMethod,
