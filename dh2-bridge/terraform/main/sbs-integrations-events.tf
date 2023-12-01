@@ -4,5 +4,5 @@ module "sbtsub_dh2_bridge_event_listener" {
   topic_id           = data.azurerm_key_vault_secret.sbt_domainrelay_integrationevent_received_id.value
   project_name       = var.domain_name_short
   max_delivery_count = 10
-  sql_filter         = { name = "integration-event-filter", filter = "sys.label = 'GridlossPositive' or sys.label= 'GridlossNegative'" }
+  sql_filter         = { name = "integration-event-filter", filter = "sys.label = 'EnergyResultProducedV2' or sys.label= 'EnergyResultProducedV2Titans'" }
 }
