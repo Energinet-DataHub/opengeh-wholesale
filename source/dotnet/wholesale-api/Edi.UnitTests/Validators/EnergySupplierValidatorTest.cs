@@ -32,7 +32,7 @@ public class EnergySupplierValidatorTest
     private readonly EnergySupplierValidationRule _sut = new();
 
     [Fact]
-    public void Validate_WhenEnergySupplierAndEnergySupplierIsValidGlnNumber_ReturnsNoValidationErrors()
+    public async Task Validate_WhenEnergySupplierAndEnergySupplierIsValidGlnNumber_ReturnsNoValidationErrorsAsync()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -43,14 +43,14 @@ public class EnergySupplierValidatorTest
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().BeEmpty();
     }
 
     [Fact]
-    public void Validate_WhenEnergySupplierAndEnergySupplierIsValidEicNumber_ReturnsNoValidationErrors()
+    public async Task Validate_WhenEnergySupplierAndEnergySupplierIsValidEicNumber_ReturnsNoValidationErrorsAsync()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -61,14 +61,14 @@ public class EnergySupplierValidatorTest
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().BeEmpty();
     }
 
     [Fact]
-    public void Validate_WhenEnergySupplierAndMissingEnergySupplier_ReturnsExpectedValidationError()
+    public async Task Validate_WhenEnergySupplierAndMissingEnergySupplier_ReturnsExpectedValidationErrorAsync()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -79,7 +79,7 @@ public class EnergySupplierValidatorTest
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().ContainSingle();
@@ -90,7 +90,7 @@ public class EnergySupplierValidatorTest
     }
 
     [Fact]
-    public void Validate_WhenEnergySupplierAndEnergySupplierNotEqualRequestedById_ReturnsExpectedValidationError()
+    public async Task Validate_WhenEnergySupplierAndEnergySupplierNotEqualRequestedById_ReturnsExpectedValidationErrorAsync()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -101,7 +101,7 @@ public class EnergySupplierValidatorTest
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().ContainSingle();
@@ -112,7 +112,7 @@ public class EnergySupplierValidatorTest
     }
 
     [Fact]
-    public void Validate_WhenEnergySupplierAndInvalidFormatEnergySupplier_ReturnsExpectedValidationError()
+    public async Task Validate_WhenEnergySupplierAndInvalidFormatEnergySupplier_ReturnsExpectedValidationErrorAsync()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -123,7 +123,7 @@ public class EnergySupplierValidatorTest
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().ContainSingle();
@@ -134,7 +134,7 @@ public class EnergySupplierValidatorTest
     }
 
     [Fact]
-    public void Validate_WhenNotEnergySupplierAndMissingEnergySupplier_ReturnsNoValidationError()
+    public async Task Validate_WhenNotEnergySupplierAndMissingEnergySupplier_ReturnsNoValidationErrorAsync()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -145,14 +145,14 @@ public class EnergySupplierValidatorTest
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().BeEmpty();
     }
 
     [Fact]
-    public void Validate_WhenNotEnergySupplierAndInvalidEnergySupplierFormat_ReturnsNoValidationError()
+    public async Task Validate_WhenNotEnergySupplierAndInvalidEnergySupplierFormat_ReturnsNoValidationErrorAsync()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -163,14 +163,14 @@ public class EnergySupplierValidatorTest
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().BeEmpty();
     }
 
     [Fact]
-    public void Validate_IsNotEnergySupplierAndEnergySupplierNotEqualRequestedById_ReturnsNoValidationError()
+    public async Task Validate_IsNotEnergySupplierAndEnergySupplierNotEqualRequestedById_ReturnsNoValidationErrorAsync()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -181,7 +181,7 @@ public class EnergySupplierValidatorTest
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().BeEmpty();

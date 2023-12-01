@@ -24,18 +24,18 @@ public class SettlementMethodValidationRule : IValidationRule<AggregatedTimeSeri
 
     private static readonly ValidationError _invalidSettlementMethod = new("SettlementMethod kan kun benyttes i kombination med E17 og skal være enten D01 og E02 / SettlementMethod can only be used in combination with E17 and must be either D01 or E02", "D15");
 
-    public IList<ValidationError> Validate(AggregatedTimeSeriesRequest subject)
+    public Task<IList<ValidationError>> ValidateAsync(AggregatedTimeSeriesRequest subject)
     {
         if (!subject.HasSettlementMethod)
-             return NoError;
+            return Task.FromResult(NoError);
 
         if (!IsValidSettlementMethod(subject.SettlementMethod))
-            return InvalidSettlementMethod;
+            return Task.FromResult(InvalidSettlementMethod);
 
         if (!IsMeteringPointTypeConsumption(subject.MeteringPointType))
-            return InvalidSettlementMethod;
+            return Task.FromResult(InvalidSettlementMethod);
 
-        return NoError;
+        return Task.FromResult(NoError);
     }
 
     private bool IsValidSettlementMethod(string settlementMethod)

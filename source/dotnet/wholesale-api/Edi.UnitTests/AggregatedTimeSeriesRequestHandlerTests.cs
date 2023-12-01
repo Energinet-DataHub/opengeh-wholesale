@@ -62,7 +62,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
             .Setup(parameters => parameters.GetAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
             .Returns(() => aggregatedTimeSeries.ToAsyncEnumerable());
 
-        validator.Setup(vali => vali.Validate(
+        validator.Setup(vali => vali.ValidateAsync(
                 It.IsAny<AggregatedTimeSeriesRequest>()))
             .Returns(() => new List<ValidationError>());
 
@@ -112,7 +112,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
             .Setup(parameters => parameters.GetLatestCorrectionForGridAreaAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
             .Returns(() => aggregatedTimeSeries.ToAsyncEnumerable());
 
-        validator.Setup(vali => vali.Validate(
+        validator.Setup(vali => vali.ValidateAsync(
                 It.IsAny<AggregatedTimeSeriesRequest>()))
             .Returns(() => new List<ValidationError>());
 
@@ -156,7 +156,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(request.ToByteArray()));
 
-        validator.Setup(vali => vali.Validate(
+        validator.Setup(vali => vali.ValidateAsync(
                 It.IsAny<AggregatedTimeSeriesRequest>()))
             .Returns(() => new List<ValidationError>());
 
@@ -206,7 +206,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(request.ToByteArray()));
 
-        validator.Setup(vali => vali.Validate(
+        validator.Setup(vali => vali.ValidateAsync(
                 It.IsAny<AggregatedTimeSeriesRequest>()))
             .Returns(() => new List<ValidationError>());
 
@@ -265,7 +265,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(request.ToByteArray()));
 
-        validator.Setup(vali => vali.Validate(
+        validator.Setup(vali => vali.ValidateAsync(
                 It.IsAny<AggregatedTimeSeriesRequest>()))
             .Returns(() => new List<ValidationError>());
 
@@ -324,7 +324,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
             properties: new Dictionary<string, object> { { "ReferenceId", expectedReferenceId } },
             body: new BinaryData(request.ToByteArray()));
 
-        validator.Setup(vali => vali.Validate(
+        validator.Setup(vali => vali.ValidateAsync(
                 It.IsAny<AggregatedTimeSeriesRequest>()))
             .Returns(() => new List<ValidationError> { _invalidEnergySupplierField });
 

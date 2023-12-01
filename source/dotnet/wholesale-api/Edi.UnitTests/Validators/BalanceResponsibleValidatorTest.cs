@@ -31,7 +31,7 @@ public class BalanceResponsibleValidatorTest
     private readonly BalanceResponsibleValidationRule _sut = new();
 
     [Fact]
-    public void Validate_WhenRequesterIsBalanceResponsibleAndBalanceResponsibleFieldIsValidGlnNumber_ReturnsNoValidationErrors()
+    public async Task Validate_WhenRequesterIsBalanceResponsibleAndBalanceResponsibleFieldIsValidGlnNumber_ReturnsNoValidationErrorsAsync()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -42,14 +42,14 @@ public class BalanceResponsibleValidatorTest
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().BeEmpty();
     }
 
     [Fact]
-    public void Validate_WhenRequesterIsBalanceResponsibleAndBalanceResponsibleFieldIsValidEicNumber_ReturnsNoValidationErrors()
+    public async Task Validate_WhenRequesterIsBalanceResponsibleAndBalanceResponsibleFieldIsValidEicNumber_ReturnsNoValidationErrorsAsync()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -60,14 +60,14 @@ public class BalanceResponsibleValidatorTest
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().BeEmpty();
     }
 
     [Fact]
-    public void Validate_WhenRequesterIsBalanceResponsibleAndMissingBalanceResponsibleField_ReturnsExpectedValidationError()
+    public async Task Validate_WhenRequesterIsBalanceResponsibleAndMissingBalanceResponsibleField_ReturnsExpectedValidationErrorAsync()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -77,7 +77,7 @@ public class BalanceResponsibleValidatorTest
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().ContainSingle();
@@ -88,7 +88,7 @@ public class BalanceResponsibleValidatorTest
     }
 
     [Fact]
-    public void Validate_WhenRequesterIsBalanceResponsibleAndBalanceResponsibleFieldNotEqualRequestedById_ReturnsExpectedValidationError()
+    public async Task Validate_WhenRequesterIsBalanceResponsibleAndBalanceResponsibleFieldNotEqualRequestedById_ReturnsExpectedValidationErrorAsync()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -99,7 +99,7 @@ public class BalanceResponsibleValidatorTest
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().ContainSingle();
@@ -110,7 +110,7 @@ public class BalanceResponsibleValidatorTest
     }
 
     [Fact]
-    public void Validate_WhenRequesterIsBalanceResponsibleAndInvalidBalanceResponsibleField_ReturnsExpectedValidationError()
+    public async Task Validate_WhenRequesterIsBalanceResponsibleAndInvalidBalanceResponsibleField_ReturnsExpectedValidationErrorAsync()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -121,7 +121,7 @@ public class BalanceResponsibleValidatorTest
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().ContainSingle();
@@ -132,7 +132,7 @@ public class BalanceResponsibleValidatorTest
     }
 
     [Fact]
-    public void Validate_WhenRequesterIsNotBalanceResponsibleAndMissingBalanceResponsibleField_ReturnsNoValidationError()
+    public async Task Validate_WhenRequesterIsNotBalanceResponsibleAndMissingBalanceResponsibleField_ReturnsNoValidationErrorAsync()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -141,7 +141,7 @@ public class BalanceResponsibleValidatorTest
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().BeEmpty();

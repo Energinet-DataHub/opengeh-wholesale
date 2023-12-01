@@ -30,7 +30,7 @@ public class SettlementMethodValidatorTest
     [Theory]
     [InlineData(SettlementMethod.Flex)]
     [InlineData(SettlementMethod.NonProfiled)]
-    public void Validate_WhenConsumptionAndSettlementMethodIsValid_ReturnsNoValidationErrors(string settlementMethod)
+    public async Task Validate_WhenConsumptionAndSettlementMethodIsValid_ReturnsNoValidationErrorsAsync(string settlementMethod)
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -40,7 +40,7 @@ public class SettlementMethodValidatorTest
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().BeEmpty();
@@ -50,7 +50,7 @@ public class SettlementMethodValidatorTest
     [InlineData(MeteringPointType.Production)]
     [InlineData(MeteringPointType.Exchange)]
     [InlineData("not-consumption")]
-    public void Validate_WhenMeteringPointTypeIsGivenAndSettlementMethodIsNull_ReturnsNoValidationErrors(string meteringPointType)
+    public async Task Validate_WhenMeteringPointTypeIsGivenAndSettlementMethodIsNull_ReturnsNoValidationErrorsAsync(string meteringPointType)
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -60,14 +60,14 @@ public class SettlementMethodValidatorTest
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().BeEmpty();
     }
 
     [Fact]
-    public void Validate_WhenConsumptionAndSettlementMethodIsInvalid_ReturnsExpectedValidationError()
+    public async Task Validate_WhenConsumptionAndSettlementMethodIsInvalid_ReturnsExpectedValidationErrorAsync()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -77,7 +77,7 @@ public class SettlementMethodValidatorTest
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().ContainSingle();
@@ -100,7 +100,7 @@ public class SettlementMethodValidatorTest
     [InlineData("", SettlementMethod.Flex)]
     [InlineData("", SettlementMethod.NonProfiled)]
     [InlineData("", "invalid-settlement-method")]
-    public void Validate_WhenNotConsumptionAndSettlementMethodIsGiven_ReturnsExpectedValidationError(string meteringPointType, string settlementMethod)
+    public async Task Validate_WhenNotConsumptionAndSettlementMethodIsGiven_ReturnsExpectedValidationErrorAsync(string meteringPointType, string settlementMethod)
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -110,7 +110,7 @@ public class SettlementMethodValidatorTest
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().ContainSingle();

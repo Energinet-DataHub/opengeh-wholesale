@@ -19,5 +19,5 @@ namespace Energinet.DataHub.Wholesale.EDI.Validation;
 /// </summary>
 public interface IValidationRule<in T>
 {
-    IList<ValidationError> Validate(T subject);
+    Task<IList<ValidationError>> ValidateAsync(T subject);
 }
