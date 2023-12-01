@@ -10,9 +10,9 @@ resource "azurerm_monitor_action_group" "esett_exchange" {
   }
 }
 
-resource "azurerm_monitor_scheduled_query_rules_alert_v2" "esett_exchange_deadline_alert" {
+resource "azurerm_monitor_scheduled_query_rules_alert_v2" "esett_exchange_aggregation_deadline_alert" {
   # NOTE: The name prefix 'alert-eSettExchangeDeadline' is used by ServiceNow to detect the alert and create an incident.
-  name                    = "alert-eSettExchangeDeadline-${local.name_suffix}"
+  name                    = "alert-eSettExchangeDeadline-aggregation-${local.name_suffix}"
   location                = azurerm_resource_group.this.location
   resource_group_name     = var.shared_resources_resource_group_name
   auto_mitigation_enabled = true
@@ -37,7 +37,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "esett_exchange_deadli
            timestamp < dkStartOfDayInUtc + 7h
        | where
            operation_Name == 'EcpOutboxTrigger' and
-           customDimensions.EventName == 'eSett Deadline Alert Tag'
+           customDimensions.EventName == 'eSett Deadline Alert Tag [Aggregation]'
        | count
        | project
          MessageCount = iff(isPastThresholdTime, Count, 1)
@@ -49,6 +49,49 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "esett_exchange_deadli
     threshold               = 1
   }
 
-  description    = "eSett Exchange alert for when no messages are sent before daily deadline."
+  description    = "eSett Exchange alert for when no messages (aggregation) are sent before daily deadline."
+  enabled        = false
+}
+
+resource "azurerm_monitor_scheduled_query_rules_alert_v2" "esett_exchange_balancefixing_deadline_alert" {
+  # NOTE: The name prefix 'alert-eSettExchangeDeadline' is used by ServiceNow to detect the alert and create an incident.
+  name                    = "alert-eSettExchangeDeadline-balancefixing-${local.name_suffix}"
+  location                = azurerm_resource_group.this.location
+  resource_group_name     = var.shared_resources_resource_group_name
+  auto_mitigation_enabled = true
+
+  evaluation_frequency = "PT10M"
+  window_duration      = "PT10M"
+  scopes               = [data.azurerm_key_vault_secret.appi_shared_id.value]
+  severity             = 1
+
+  action {
+    action_groups = [azurerm_monitor_action_group.esett_exchange.id]
+  }
+
+  criteria {
+    query = <<-QUERY
+       let nowInDk = datetime_utc_to_local(now(), 'Europe/Copenhagen');
+       let dkStartOfDayInUtc = datetime_local_to_utc(startofday(nowInDk), 'Europe/Copenhagen');
+       let isPastThresholdTime = hourofday(nowInDk) >= 23 and datetime_part('minute', nowInDk) >= 45 and dayofweek(nowInDk) <= 4d;
+       traces
+       | where
+           timestamp >= dkStartOfDayInUtc + 22h and
+           timestamp < dkStartOfDayInUtc + 23h + 45m
+       | where
+           operation_Name == 'EcpOutboxTrigger' and
+           customDimensions.EventName == 'eSett Deadline Alert Tag [BalanceFixing]'
+       | count
+       | project
+         MessageCount = iff(isPastThresholdTime, Count, 1)
+       QUERY
+
+    time_aggregation_method = "Minimum"
+    metric_measure_column   = "MessageCount"
+    operator                = "LessThan"
+    threshold               = 1
+  }
+
+  description    = "eSett Exchange alert for when no messages (balance fixing) are sent before daily deadline."
   enabled        = false
 }
