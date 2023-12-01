@@ -12,7 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .spark_initializor import initialize_spark
-from .logging_configuration import configure_logging
-from .args_helper import valid_date, valid_list, valid_log_level
-from .environment_variables import EnvironmentVariable
+import logging
+from typing import Any
+
+from package.infrastructure.logging_configuration import DEFAULT_LOG_LEVEL, get_extras
+
+
+class Logger:
+    def __init__(self, name: str, extras: dict[str, Any] = None) -> None:
+        self.logger = logging.getLogger(name)
+        self.logger.setLevel(DEFAULT_LOG_LEVEL)
+        x = get_extras()
+        self.extras = (extras or {}) | get_extras()
+        print(self.extras)
+
+    def info(self, message: str, extras: dict[str, Any] = None) -> None:
+        extras = (extras or {}) | self.extras
+        self.logger.info(message, extra=extras)
