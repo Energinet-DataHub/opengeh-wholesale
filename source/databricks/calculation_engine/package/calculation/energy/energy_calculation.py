@@ -53,6 +53,7 @@ def execute(
     quarterly_metering_point_time_series = transform_hour_to_quarter(
         metering_point_time_series
     )
+    quarterly_metering_point_time_series.cache_internal()
 
     _calculate(
         batch_process_type,
@@ -70,6 +71,7 @@ def _calculate(
     quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
     grid_loss_responsible_df: GridLossResponsible,
 ) -> None:
+    # cache of net exchange per grid area did not improve performance (01/12/2023)
     net_exchange_per_ga = _calculate_net_exchange(
         process_type,
         batch_grid_areas,
@@ -82,16 +84,19 @@ def _calculate(
             result_writer, quarterly_metering_point_time_series
         )
     )
+    temporary_production_per_ga_and_brp_and_es.cache_internal()
 
     temporary_flex_consumption_per_ga_and_brp_and_es = (
         _calculate_temporary_flex_consumption_per_per_ga_and_brp_and_es(
             result_writer, quarterly_metering_point_time_series
         )
     )
+    temporary_flex_consumption_per_ga_and_brp_and_es.cache_internal()
 
     consumption_per_ga_and_brp_and_es = _calculate_consumption_per_ga_and_brp_and_es(
         quarterly_metering_point_time_series
     )
+    consumption_per_ga_and_brp_and_es.cache_internal()
 
     positive_grid_loss, negative_grid_loss = _calculate_grid_loss(
         result_writer,
