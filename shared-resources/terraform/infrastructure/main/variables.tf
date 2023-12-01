@@ -19,6 +19,12 @@ variable "environment_instance" {
   description = "Enviroment instance that the infrastructure code is deployed into."
 }
 
+variable "region_short" {
+  type        = string
+  description = "Azure region that the infrastructure code is deployed into."
+  default     = "we"
+}
+
 variable "domain_name_short" {
   type        = string
   description = "Shortest possible edition of the domain name."
