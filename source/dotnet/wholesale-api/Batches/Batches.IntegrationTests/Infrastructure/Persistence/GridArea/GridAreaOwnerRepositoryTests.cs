@@ -205,4 +205,106 @@ public class GridAreaOwnerRepositoryTests : IClassFixture<WholesaleDatabaseFixtu
         // Assert
         await act.Should().ThrowAsync<InvalidOperationException>();
     }
+
+    [Fact]
+    public async Task GetCurrentOwner_WhenNewGridAreaEventWithExistingGridAreaCodeAndHigherSequenceNumber_ReturnsNewOwner()
+    {
+        // Arrange
+        var gridAreaCode = "307";
+        var existingGridAreaOwner = new GridAreaOwner(
+            Id: Guid.NewGuid(),
+            OwnerActorNumber: "1234567891239",
+            GridAreaCode: gridAreaCode,
+            ValidFrom: DateTime.UtcNow.ToInstant(),
+            SequenceNumber: 1);
+        var newGridAreaOwnerFromThePast = new GridAreaOwner(
+            Id: Guid.NewGuid(),
+            OwnerActorNumber: "1234567891240",
+            GridAreaCode: gridAreaCode,
+            ValidFrom: DateTime.UtcNow.AddDays(-1).ToInstant(),
+            SequenceNumber: 2);
+
+        await using var writeContext = _databaseManager.CreateDbContext();
+        await writeContext.GridAreaOwners.AddAsync(existingGridAreaOwner);
+        await writeContext.GridAreaOwners.AddAsync(newGridAreaOwnerFromThePast);
+        await writeContext.SaveChangesAsync();
+
+        await using var readContext = _databaseManager.CreateDbContext();
+        var sut = new GridAreaOwnerRepository(readContext);
+
+        // Act
+        var actual = await sut.GetCurrentOwnerAsync(gridAreaCode, CancellationToken.None);
+
+        // Assert
+        actual.Should().NotBeNull();
+        actual.OwnerActorNumber.Should().Be(newGridAreaOwnerFromThePast.OwnerActorNumber);
+    }
+
+    [Fact]
+    public async Task GetCurrentOwner_WhenNewGridAreaEventWithExistingGridAreaCodeAndLowerSequenceNumberValidFromTheFuture_ReturnsExistingOwner()
+    {
+        // Arrange
+        var gridAreaCode = "307";
+        var existingGridAreaOwner = new GridAreaOwner(
+            Id: Guid.NewGuid(),
+            OwnerActorNumber: "1234567891239",
+            GridAreaCode: gridAreaCode,
+            ValidFrom: DateTime.UtcNow.ToInstant(),
+            SequenceNumber: 1);
+        var newGridAreaOwnerFromThePast = new GridAreaOwner(
+            Id: Guid.NewGuid(),
+            OwnerActorNumber: "1234567891240",
+            GridAreaCode: gridAreaCode,
+            ValidFrom: DateTime.UtcNow.AddDays(1).ToInstant(),
+            SequenceNumber: 0);
+
+        await using var writeContext = _databaseManager.CreateDbContext();
+        await writeContext.GridAreaOwners.AddAsync(existingGridAreaOwner);
+        await writeContext.GridAreaOwners.AddAsync(newGridAreaOwnerFromThePast);
+        await writeContext.SaveChangesAsync();
+
+        await using var readContext = _databaseManager.CreateDbContext();
+        var sut = new GridAreaOwnerRepository(readContext);
+
+        // Act
+        var actual = await sut.GetCurrentOwnerAsync(gridAreaCode, CancellationToken.None);
+
+        // Assert
+        actual.Should().NotBeNull();
+        actual.OwnerActorNumber.Should().Be(existingGridAreaOwner.OwnerActorNumber);
+    }
+
+    [Fact]
+    public async Task GetCurrentOwner_WhenNewGridAreaEventWithExistingGridAreaCodeAndExistingSequenceNumber_ReturnsExistingOwner()
+    {
+        // Arrange
+        var gridAreaCode = "307";
+        var existingGridAreaOwner = new GridAreaOwner(
+            Id: Guid.NewGuid(),
+            OwnerActorNumber: "1234567891239",
+            GridAreaCode: gridAreaCode,
+            ValidFrom: DateTime.UtcNow.ToInstant(),
+            SequenceNumber: 1);
+        var newGridAreaOwnerFromThePast = new GridAreaOwner(
+            Id: Guid.NewGuid(),
+            OwnerActorNumber: "1234567891240",
+            GridAreaCode: gridAreaCode,
+            ValidFrom: DateTime.UtcNow.AddDays(1).ToInstant(),
+            SequenceNumber: 1);
+
+        await using var writeContext = _databaseManager.CreateDbContext();
+        await writeContext.GridAreaOwners.AddAsync(existingGridAreaOwner);
+        await writeContext.GridAreaOwners.AddAsync(newGridAreaOwnerFromThePast);
+        await writeContext.SaveChangesAsync();
+
+        await using var readContext = _databaseManager.CreateDbContext();
+        var sut = new GridAreaOwnerRepository(readContext);
+
+        // Act
+        var actual = await sut.GetCurrentOwnerAsync(gridAreaCode, CancellationToken.None);
+
+        // Assert
+        actual.Should().NotBeNull();
+        actual.OwnerActorNumber.Should().Be(existingGridAreaOwner.OwnerActorNumber);
+    }
 }
