@@ -42,7 +42,7 @@ public class ReceivedIntegrationEventHandler : IIntegrationEventHandler
             return;
 
         await _receivedIntegrationEventRepository
-            .CreateAsync(integrationEvent.EventIdentification, integrationEvent.EventName).ConfigureAwait(false);
+            .AddAsync(integrationEvent.EventIdentification, integrationEvent.EventName).ConfigureAwait(false);
 
         // WARNING: If you are sending to external parts eg. servicebus, HTTPS you may do this more than once.
         // So you may want to make use of a database to achieve idempotency if you have such needs.

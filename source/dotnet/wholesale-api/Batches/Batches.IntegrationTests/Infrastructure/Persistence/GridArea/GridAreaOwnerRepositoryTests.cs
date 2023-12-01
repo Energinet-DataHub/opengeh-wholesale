@@ -64,7 +64,7 @@ public class GridAreaOwnerRepositoryTests : IClassFixture<WholesaleDatabaseFixtu
     }
 
     [Fact]
-    public async Task AddAsync_AddTheSameGridAreaOwnerTwice_ThrowsException()
+    public async Task AddAsync_WhenAddingTheSameGridAreaOwnerTwice_ThrowsException()
     {
         // Arrange
         var writeContext = _databaseManager.CreateDbContext();

@@ -43,7 +43,7 @@ public class ReceivedIntegrationEventTests : IClassFixture<WholesaleDatabaseFixt
         var sut = new ReceivedIntegrationEventRepository(writeContext);
 
         // Act
-        await sut.CreateAsync(id, eventType);
+        await sut.AddAsync(id, eventType);
         await writeContext.SaveChangesAsync();
 
         // Assert
@@ -67,9 +67,9 @@ public class ReceivedIntegrationEventTests : IClassFixture<WholesaleDatabaseFixt
         var sut = new ReceivedIntegrationEventRepository(writeContext);
 
         // Act
-        await sut.CreateAsync(id, eventType);
+        await sut.AddAsync(id, eventType);
         await writeContext.SaveChangesAsync();
-        var act = () => sut.CreateAsync(id, eventType);
+        var act = () => sut.AddAsync(id, eventType);
 
         // Assert
         await act.Should().ThrowAsync<InvalidOperationException>();
@@ -86,15 +86,51 @@ public class ReceivedIntegrationEventTests : IClassFixture<WholesaleDatabaseFixt
         var sut = new ReceivedIntegrationEventRepository(writeContext);
 
         // Act
-        await sut.CreateAsync(id, eventType);
+        await sut.AddAsync(id, eventType);
         await writeContext.SaveChangesAsync();
 
         writeContext = _databaseManager.CreateDbContext();
         sut = new ReceivedIntegrationEventRepository(writeContext);
-        await sut.CreateAsync(id, eventType);
+        await sut.AddAsync(id, eventType);
         var act = () => writeContext.SaveChangesAsync();
 
         // Assert
         await act.Should().ThrowAsync<DbUpdateException>();
+    }
+
+    [Fact]
+    public async Task ExistsAsync_WhenEventDoesNotExist_ReturnsFalse()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+
+        await using var writeContext = _databaseManager.CreateDbContext();
+        var sut = new ReceivedIntegrationEventRepository(writeContext);
+
+        // Act
+        var actual = await sut.ExistsAsync(id);
+
+        // Assert
+        actual.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task ExistsAsync_WhenEventDoExist_ReturnsTrue()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+
+        await using var writeContext = _databaseManager.CreateDbContext();
+        writeContext.ReceivedIntegrationEvents.Add(new Application.IntegrationEvents.ReceivedIntegrationEvent(id, "Test", SystemClock.Instance.GetCurrentInstant()));
+        await writeContext.SaveChangesAsync();
+
+        await using var readContext = _databaseManager.CreateDbContext();
+        var sut = new ReceivedIntegrationEventRepository(readContext);
+
+        // Act
+        var actual = await sut.ExistsAsync(id);
+
+        // Assert
+        actual.Should().BeTrue();
     }
 }
