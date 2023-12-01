@@ -15,4 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Batches.Application\Batches.Application.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="IntegrationEvents\" />
+  </ItemGroup>
 </Project>

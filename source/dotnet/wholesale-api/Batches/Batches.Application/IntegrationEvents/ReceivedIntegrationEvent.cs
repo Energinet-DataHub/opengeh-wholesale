@@ -12,21 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
-using Microsoft.EntityFrameworkCore;
+using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
+namespace Energinet.DataHub.Wholesale.Batches.Application.IntegrationEvents;
 
-public interface IDatabaseContext
-{
-    DbSet<Batch> Batches { get; }
-
-    DbSet<Application.GridArea.GridAreaOwner> GridAreaOwners { get; }
-
-    DbSet<Application.IntegrationEvents.ReceivedIntegrationEvent> ReceivedIntegrationEvents { get; }
-
-    /// <summary>
-    /// Saves changes to the database.
-    /// </summary>
-    Task<int> SaveChangesAsync();
-}
+public record ReceivedIntegrationEvent(
+    Guid Id,
+    string EventType,
+    Instant OccurredOn);

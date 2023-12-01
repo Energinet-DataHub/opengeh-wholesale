@@ -67,9 +67,9 @@ public abstract class ServiceBusWorker<TWorkerType> : BackgroundService, IAsyncD
         }
     }
 
-    protected abstract Task ProcessAsync(ProcessMessageEventArgs arg, string referenceId);
+    protected abstract Task ProcessAsync(ProcessMessageEventArgs arg, string? referenceId = null);
 
-    private async Task ProcessMessageAsync(ProcessMessageEventArgs arg)
+    protected virtual async Task ProcessMessageAsync(ProcessMessageEventArgs arg)
     {
         var loggingScope = new LoggingScope
         {
@@ -84,16 +84,7 @@ public abstract class ServiceBusWorker<TWorkerType> : BackgroundService, IAsyncD
 
         using (_logger.BeginScope(loggingScope))
         {
-            if (
-                arg.Message.ApplicationProperties.TryGetValue("ReferenceId", out var referenceIdPropertyValue)
-                && referenceIdPropertyValue is string referenceId)
-            {
-                await ProcessAsync(arg, referenceId).ConfigureAwait(false);
-            }
-            else
-            {
-                _logger.LogError("Missing reference id for Service Bus Message");
-            }
+            await ProcessAsync(arg).ConfigureAwait(false);
         }
 
         await arg.CompleteMessageAsync(arg.Message).ConfigureAwait(false);

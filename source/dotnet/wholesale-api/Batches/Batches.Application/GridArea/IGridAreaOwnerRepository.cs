@@ -12,15 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.EDI.Models;
+using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.EDI.Factories;
+namespace Energinet.DataHub.Wholesale.Batches.Application.GridArea;
 
-public interface IAggregatedTimeSeriesRequestFactory
+public interface IGridAreaOwnerRepository
 {
-    /// <summary>
-    /// Responsible for parsing the received message.
-    /// </summary>
-    /// <param name="request"></param>
-    public AggregatedTimeSeriesRequest Parse(Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest request);
+    Task AddAsync(string code, string ownerActorNumber, Instant validFrom, int sequenceNumber);
+
+    Task<GridAreaOwner> GetCurrentOwnerAsync(string code, CancellationToken cancellationToken);
 }

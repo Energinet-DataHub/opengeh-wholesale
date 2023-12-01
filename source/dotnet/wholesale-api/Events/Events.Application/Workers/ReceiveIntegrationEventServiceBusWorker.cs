@@ -13,36 +13,40 @@
 // limitations under the License.
 
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Core.Messaging.Communication;
+using Energinet.DataHub.Core.Messaging.Communication.Subscriber;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
-using Energinet.DataHub.Wholesale.EDI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.Workers;
 
-/// <summary>
-/// Responsible for establishing the service bus connection on a background thread.
-/// </summary>
-public class AggregatedTimeSeriesServiceBusWorker : ServiceBusQueueWorker<AggregatedTimeSeriesServiceBusWorker>
+public class ReceiveIntegrationEventServiceBusWorker : ServiceBusWorker<ReceiveIntegrationEventServiceBusWorker>
 {
     private readonly IServiceProvider _serviceProvider;
 
-    public AggregatedTimeSeriesServiceBusWorker(
-        IServiceProvider serviceProvider,
-        ILogger<AggregatedTimeSeriesServiceBusWorker> logger,
+    public ReceiveIntegrationEventServiceBusWorker(
+        ILogger<ReceiveIntegrationEventServiceBusWorker> logger,
         IOptions<ServiceBusOptions> options,
-        ServiceBusClient serviceBusClient)
-    : base(logger, serviceBusClient.CreateProcessor(options.Value.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME))
+        ServiceBusClient serviceBusClient,
+        IServiceProvider serviceProvider)
+        : base(
+            logger,
+            serviceBusClient.CreateProcessor(
+                options.Value.INTEGRATIONEVENTS_TOPIC_NAME,
+                options.Value.INTEGRATIONEVENTS_SUBSCRIPTION_NAME))
     {
         _serviceProvider = serviceProvider;
     }
 
     protected override Task ProcessAsync(ProcessMessageEventArgs arg, string? referenceId = null)
     {
-        if (referenceId == null) throw new ArgumentNullException(nameof(referenceId));
-        var scope = _serviceProvider.CreateScope();
-        var requestHandler = scope.ServiceProvider.GetRequiredService<IAggregatedTimeSeriesRequestHandler>();
-        return requestHandler.ProcessAsync(arg.Message, referenceId, arg.CancellationToken);
+        using var scope = _serviceProvider.CreateScope();
+        var handler = scope.ServiceProvider.GetRequiredService<ISubscriber>();
+
+        var integrationEventMessage = IntegrationEventServiceBusMessage.Create(arg.Message);
+
+        return handler.HandleAsync(integrationEventMessage);
     }
 }
