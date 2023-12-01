@@ -32,6 +32,7 @@ from tests.helpers.data_frame_utils import assert_dataframes_equal
 
 DEFAULT_FROM_DATE = datetime(2022, 6, 8, 22, 0, 0)
 DEFAULT_TO_DATE = datetime(2022, 6, 8, 22, 0, 0)
+DEFAULT_GRID_AREA = "805"
 
 
 def _create_metering_point_period_row(
@@ -43,7 +44,7 @@ def _create_metering_point_period_row(
         Colname.metering_point_type: metering_point_type.value,
         Colname.calculation_type: "foo",
         Colname.settlement_method: settlement_method.value,
-        Colname.grid_area: "foo",
+        Colname.grid_area: DEFAULT_GRID_AREA,
         Colname.resolution: "foo",
         Colname.from_grid_area: "foo",
         Colname.to_grid_area: "foo",
@@ -180,7 +181,11 @@ class TestWhenValidInput:
         with mock.patch.object(
             sut._spark.read.format("delta"), "load", return_value=df
         ):
-            actual = sut.read_metering_point_periods()
+            actual = sut.read_metering_point_periods(
+                DEFAULT_FROM_DATE,
+                DEFAULT_TO_DATE,
+                [DEFAULT_GRID_AREA],
+            )
 
         # Assert
         assert actual.collect()[0][Colname.settlement_method] == expected.value
@@ -199,6 +204,10 @@ class TestWhenSchemaMismatch:
             reader._spark.read.format("delta"), "load", return_value=df
         ):
             with pytest.raises(AssertionError) as exc_info:
-                reader.read_metering_point_periods()
+                reader.read_metering_point_periods(
+                    DEFAULT_FROM_DATE,
+                    DEFAULT_TO_DATE,
+                    [DEFAULT_GRID_AREA],
+                )
 
             assert "Schema mismatch" in str(exc_info.value)
