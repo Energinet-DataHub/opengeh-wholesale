@@ -39,6 +39,7 @@ public class ServiceBusIntegrationEventSenderFixture : IAsyncLifetime, IAsyncDis
             new ServiceBusOptions
             {
                 SERVICE_BUS_MANAGE_CONNECTION_STRING = integrationTestConfiguration.ServiceBusConnectionString,
+                INTEGRATIONEVENTS_SUBSCRIPTION_NAME = "sbs-integration-event-subscription",
             });
 
         _serviceBusResourceProvider = new ServiceBusResourceProvider(
@@ -56,8 +57,8 @@ public class ServiceBusIntegrationEventSenderFixture : IAsyncLifetime, IAsyncDis
             .Do(topicProperties =>
             {
                 ServiceBusOptions.Value.INTEGRATIONEVENTS_TOPIC_NAME = topicProperties.Name;
-                ServiceBusOptions.Value.INTEGRATIONEVENTS_SUBSCRIPTION_NAME = "sbs-integration-event-subscription";
-            });
+            })
+            .AddSubscription(ServiceBusOptions.Value.INTEGRATIONEVENTS_SUBSCRIPTION_NAME);
         await builder
             .CreateAsync();
         _sender = ServiceBusClient.CreateSender(ServiceBusOptions.Value.INTEGRATIONEVENTS_TOPIC_NAME);

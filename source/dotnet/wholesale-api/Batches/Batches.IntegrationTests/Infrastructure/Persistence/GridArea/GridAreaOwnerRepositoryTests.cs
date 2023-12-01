@@ -43,7 +43,7 @@ public class GridAreaOwnerRepositoryTests : IClassFixture<WholesaleDatabaseFixtu
         var expectedGridAreaOwner = new GridAreaOwner(
             Id: Guid.NewGuid(),
             OwnerActorNumber: "1234567891234",
-            GridAreaCode: "303",
+            GridAreaCode: "304",
             ValidFrom: Instant.FromUtc(2023, 10, 1, 0, 0, 0),
             SequenceNumber: 1);
 
@@ -71,7 +71,7 @@ public class GridAreaOwnerRepositoryTests : IClassFixture<WholesaleDatabaseFixtu
         var sut = new GridAreaOwnerRepository(writeContext);
         var gridAreaOwner = new GridAreaOwner(
             Id: Guid.NewGuid(),
-            OwnerActorNumber: "1234567891234",
+            OwnerActorNumber: "1234567891235",
             GridAreaCode: "303",
             ValidFrom: Instant.FromUtc(2023, 10, 1, 0, 0, 0),
             SequenceNumber: 1);
@@ -93,7 +93,7 @@ public class GridAreaOwnerRepositoryTests : IClassFixture<WholesaleDatabaseFixtu
         await using var writeContext = _databaseManager.CreateDbContext();
         var expectedGridAreaOwner = new GridAreaOwner(
             Id: Guid.NewGuid(),
-            OwnerActorNumber: "1234567891234",
+            OwnerActorNumber: "1234567891236",
             GridAreaCode: "303",
             ValidFrom: Instant.FromUtc(2023, 10, 1, 0, 0, 0),
             SequenceNumber: 1);
@@ -116,10 +116,10 @@ public class GridAreaOwnerRepositoryTests : IClassFixture<WholesaleDatabaseFixtu
     public async Task GetCurrentOwner_WhenOneOwnerIsValidTomorrow_ReturnsExpectedOwner()
     {
         // Arrange
-        var gridAreaCode = "303";
+        var gridAreaCode = "305";
         var expectedOwner = new GridAreaOwner(
             Id: Guid.NewGuid(),
-            OwnerActorNumber: "1234567891234",
+            OwnerActorNumber: "1234567891237",
             GridAreaCode: gridAreaCode,
             ValidFrom: Instant.FromUtc(2023, 10, 1, 0, 0, 0),
             SequenceNumber: 1);
@@ -154,7 +154,7 @@ public class GridAreaOwnerRepositoryTests : IClassFixture<WholesaleDatabaseFixtu
         var gridAreaCode = "303";
         var validGridAreaOwner = new GridAreaOwner(
             Id: Guid.NewGuid(),
-            OwnerActorNumber: "1234567891234",
+            OwnerActorNumber: "1234567891238",
             GridAreaCode: gridAreaCode,
             ValidFrom: Instant.FromUtc(2023, 10, 1, 0, 0, 0),
             SequenceNumber: 1);
@@ -187,8 +187,8 @@ public class GridAreaOwnerRepositoryTests : IClassFixture<WholesaleDatabaseFixtu
         // Arrange
         var invalidGridAreaOwner = new GridAreaOwner(
             Id: Guid.NewGuid(),
-            OwnerActorNumber: "1234567891234",
-            GridAreaCode: "303",
+            OwnerActorNumber: "1234567891239",
+            GridAreaCode: "306",
             ValidFrom: DateTime.UtcNow.AddDays(1).ToInstant(),
             SequenceNumber: 1);
 

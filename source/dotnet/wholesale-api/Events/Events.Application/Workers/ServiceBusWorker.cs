@@ -22,15 +22,18 @@ namespace Energinet.DataHub.Wholesale.Events.Application.Workers;
 public abstract class ServiceBusWorker<TWorkerType> : BackgroundService, IAsyncDisposable
 {
     private readonly ServiceBusProcessor _serviceBusProcessor;
+    private readonly bool _isQueueListener;
     private readonly ILogger<TWorkerType> _logger;
     private readonly string _serviceName;
     private readonly LoggingScope _loggingScope;
 
     protected ServiceBusWorker(
         ILogger<TWorkerType> logger,
-        ServiceBusProcessor serviceBusProcessor)
+        ServiceBusProcessor serviceBusProcessor,
+        bool isQueueListener)
     {
         _serviceBusProcessor = serviceBusProcessor;
+        _isQueueListener = isQueueListener;
         _logger = logger;
         _serviceName = typeof(TWorkerType).Name;
 
@@ -84,11 +87,14 @@ public abstract class ServiceBusWorker<TWorkerType> : BackgroundService, IAsyncD
 
         using (_logger.BeginScope(loggingScope))
         {
-            if (
-                arg.Message.ApplicationProperties.TryGetValue("ReferenceId", out var referenceIdPropertyValue)
+            if (_isQueueListener && arg.Message.ApplicationProperties.TryGetValue("ReferenceId", out var referenceIdPropertyValue)
                 && referenceIdPropertyValue is string referenceId)
             {
                 await ProcessAsync(arg, referenceId).ConfigureAwait(false);
+            }
+            else if (!_isQueueListener)
+            {
+                await ProcessAsync(arg, string.Empty).ConfigureAwait(false);
             }
             else
             {

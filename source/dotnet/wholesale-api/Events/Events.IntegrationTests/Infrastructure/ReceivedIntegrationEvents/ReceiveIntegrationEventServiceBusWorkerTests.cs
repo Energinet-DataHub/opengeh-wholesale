@@ -46,11 +46,11 @@ public class ReceiveIntegrationEventServiceBusWorkerTests : IClassFixture<Servic
         var expectedSubject = "Subject";
         var messageHasBeenReceivedEvent = new AutoResetEvent(false);
 
-        var handler = new Subscriber(messageHasBeenReceivedEvent);
+        var subscriber = new Subscriber(messageHasBeenReceivedEvent);
 
         serviceProviderMock
             .Setup(x => x.GetService(typeof(ISubscriber)))
-            .Returns(handler);
+            .Returns(subscriber);
 
         var serviceScope = new Mock<IServiceScope>();
         serviceScope.Setup(x => x.ServiceProvider).Returns(serviceProviderMock.Object);
@@ -76,10 +76,10 @@ public class ReceiveIntegrationEventServiceBusWorkerTests : IClassFixture<Servic
 
         // Assert
         using var assertionScope = new AssertionScope();
-        var messageHasBeenReceived = handler.MessageHasBeenReceivedEvent.WaitOne(timeout: TimeSpan.FromSeconds(1));
+        var messageHasBeenReceived = subscriber.MessageHasBeenReceivedEvent.WaitOne(timeout: TimeSpan.FromSeconds(1));
         messageHasBeenReceived.Should().BeTrue();
-        handler.ActualSubject.Should().Be(expectedSubject);
-        handler.ActualMessageId.Should().Be(expectedMessageId);
+        subscriber.ActualSubject.Should().Be(expectedSubject);
+        subscriber.ActualMessageId.Should().Be(expectedMessageId);
     }
 }
 

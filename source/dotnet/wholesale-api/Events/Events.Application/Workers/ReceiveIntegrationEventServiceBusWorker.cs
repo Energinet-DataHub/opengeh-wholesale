@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.ObjectModel;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Subscriber;
@@ -20,7 +19,6 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.Workers;
 
@@ -37,7 +35,8 @@ public class ReceiveIntegrationEventServiceBusWorker : ServiceBusWorker<ReceiveI
             logger,
             serviceBusClient.CreateProcessor(
                 options.Value.INTEGRATIONEVENTS_TOPIC_NAME,
-                options.Value.INTEGRATIONEVENTS_SUBSCRIPTION_NAME))
+                options.Value.INTEGRATIONEVENTS_SUBSCRIPTION_NAME),
+            isQueueListener: false)
     {
         _serviceProvider = serviceProvider;
     }
@@ -47,15 +46,7 @@ public class ReceiveIntegrationEventServiceBusWorker : ServiceBusWorker<ReceiveI
         using var scope = _serviceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<ISubscriber>();
 
-        var servicebusMessageBytes = arg.Message.Body.ToArray();
-        var bindingData = new ReadOnlyDictionary<string, object>(new Dictionary<string, object>
-        {
-            { "MessageId", arg.Message.MessageId },
-            { "Subject", arg.Message.Subject },
-            { "ApplicationProperties", JsonConvert.ToString(arg.Message.ApplicationProperties) },
-        });
-
-        var integrationEventMessage = IntegrationEventServiceBusMessage.Create(servicebusMessageBytes, bindingData);
+        var integrationEventMessage = IntegrationEventServiceBusMessage.Create(arg.Message);
 
         return handler.HandleAsync(integrationEventMessage);
     }

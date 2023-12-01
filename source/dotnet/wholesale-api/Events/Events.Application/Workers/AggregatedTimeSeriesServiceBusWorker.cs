@@ -33,7 +33,7 @@ public class AggregatedTimeSeriesServiceBusWorker : ServiceBusWorker<AggregatedT
         ILogger<AggregatedTimeSeriesServiceBusWorker> logger,
         IOptions<ServiceBusOptions> options,
         ServiceBusClient serviceBusClient)
-    : base(logger, serviceBusClient.CreateProcessor(options.Value.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME))
+    : base(logger, serviceBusClient.CreateProcessor(options.Value.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME), isQueueListener: true)
     {
         _serviceProvider = serviceProvider;
     }
