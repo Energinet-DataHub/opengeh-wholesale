@@ -1,3 +1,3 @@
 module "st_migrations" {
-  prevent_deletion = null
+  prevent_deletion = false
 }
