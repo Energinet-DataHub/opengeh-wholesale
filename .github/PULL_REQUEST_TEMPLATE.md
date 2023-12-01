@@ -4,8 +4,14 @@ Add context to understand the usecase for this PR
 
 ## PR checklist
 
-Note: See this list as a conversation starter with teams
+Before the review process can begin, the following needs to be checked
 
-- [ ] I have modified existing C4 diagrams to reflect these code changes
+### Always
+
+- [ ] I have modified existing C4 diagrams to reflect these code changes if needed
+- [ ] I am using the new terraform.tfvars convention documented [here](https://energinet.atlassian.net/wiki/spaces/D3/pages/349798403/Terraform+Guidelines#Defining-variable-values)
+
+## When adding NEW infrastructure
+
 - [ ] I have added any new function apps / web apps to Healthcheck UI
-- [ ] I have checked and modified override files to the best of my knowledge
+- [ ] I am using the geh-terraform-modules V13 branch
