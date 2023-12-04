@@ -49,9 +49,9 @@ public class GridAreaOwnerRepositoryTests : IClassFixture<WholesaleDatabaseFixtu
 
         // Act
         sut.Add(
-            expectedGridAreaOwner.GridAreaCode, 
-            expectedGridAreaOwner.OwnerActorNumber, 
-            expectedGridAreaOwner.ValidFrom, 
+            expectedGridAreaOwner.GridAreaCode,
+            expectedGridAreaOwner.OwnerActorNumber,
+            expectedGridAreaOwner.ValidFrom,
             expectedGridAreaOwner.SequenceNumber);
         await writeContext.SaveChangesAsync();
 
