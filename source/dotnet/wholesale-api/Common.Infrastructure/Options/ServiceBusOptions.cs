@@ -29,6 +29,11 @@ public class ServiceBusOptions
     public string INTEGRATIONEVENTS_TOPIC_NAME { get; set; } = string.Empty;
 
     /// <summary>
+    /// Subscription name for wholesales subscription on "INTEGRATIONEVENTS_TOPIC_NAME"
+    /// </summary>
+    public string INTEGRATIONEVENTS_SUBSCRIPTION_NAME { get; set; } = string.Empty;
+
+    /// <summary>
     /// The inbox to receive instructions to be processed by this domain.
     /// </summary>
     public string WHOLESALE_INBOX_MESSAGE_QUEUE_NAME { get; set; } = string.Empty;

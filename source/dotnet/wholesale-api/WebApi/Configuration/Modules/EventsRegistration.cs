@@ -15,6 +15,13 @@
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Publisher;
+using Energinet.DataHub.MarketParticipant.Infrastructure.Model.Contracts;
+using Energinet.DataHub.Wholesale.Batches.Application.GridArea;
+using Energinet.DataHub.Wholesale.Batches.Application.IntegrationEvents;
+using Energinet.DataHub.Wholesale.Batches.Application.IntegrationEvents.Handlers;
+using Energinet.DataHub.Wholesale.Batches.Application.UseCases;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.GridArea;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.ReceivedIntegrationEvent;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
@@ -28,6 +35,7 @@ using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventP
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedBatches;
+using Google.Protobuf.Reflection;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
 
@@ -45,7 +53,21 @@ public static class EventsRegistration
 
         serviceCollection.AddIntegrationEventPublisher(serviceBusOptions);
 
+        RegisterIntegrationEvents(serviceCollection);
+
         RegisterHostedServices(serviceCollection);
+    }
+
+    private static void RegisterIntegrationEvents(IServiceCollection serviceCollection)
+    {
+        var integrationEventDescriptors = new List<MessageDescriptor>
+        {
+            GridAreaOwnershipAssigned.Descriptor,
+        };
+        serviceCollection.AddSubscriber<ReceivedIntegrationEventHandler>(integrationEventDescriptors);
+        serviceCollection.AddScoped<IIntegrationEventHandler, GridAreaOwnershipAssignedEventHandler>();
+
+        serviceCollection.AddScoped<IntegrationEventHandlerFactory>();
     }
 
     private static void AddApplication(this IServiceCollection serviceCollection)
@@ -61,6 +83,10 @@ public static class EventsRegistration
         serviceCollection
             .AddScoped<IEnergyResultEventProvider, EnergyResultEventProvider>()
             .AddScoped<IWholesaleResultEventProvider, WholesaleResultEventProvider>();
+
+        serviceCollection
+            .AddScoped<IGridAreaOwnerRepository, GridAreaOwnerRepository>()
+            .AddScoped<IReceivedIntegrationEventRepository, ReceivedIntegrationEventRepository>();
     }
 
     private static void AddInfrastructure(this IServiceCollection serviceCollection)
@@ -92,7 +118,8 @@ public static class EventsRegistration
     {
         serviceCollection
             .AddHostedService<AggregatedTimeSeriesServiceBusWorker>()
-            .AddHostedService<RegisterCompletedBatchesTrigger>();
+            .AddHostedService<RegisterCompletedBatchesTrigger>()
+            .AddHostedService<ReceiveIntegrationEventServiceBusWorker>();
 
         serviceCollection
             .AddHealthChecks()
