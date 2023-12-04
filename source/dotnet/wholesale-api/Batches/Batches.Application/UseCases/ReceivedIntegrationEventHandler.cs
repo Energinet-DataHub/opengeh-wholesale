@@ -27,8 +27,8 @@ public class ReceivedIntegrationEventHandler : IIntegrationEventHandler
     private readonly IntegrationEventHandlerFactory _integrationEventHandlerFactory;
 
     public ReceivedIntegrationEventHandler(
-        IUnitOfWork unitOfWork, 
-        IReceivedIntegrationEventRepository receivedIntegrationEventRepository, 
+        IUnitOfWork unitOfWork,
+        IReceivedIntegrationEventRepository receivedIntegrationEventRepository,
         IntegrationEventHandlerFactory integrationEventHandlerFactory)
     {
         _unitOfWork = unitOfWork;

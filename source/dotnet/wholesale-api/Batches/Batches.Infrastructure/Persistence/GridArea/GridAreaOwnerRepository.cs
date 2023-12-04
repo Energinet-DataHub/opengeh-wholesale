@@ -42,8 +42,8 @@ public class GridAreaOwnerRepository : IGridAreaOwnerRepository
     {
         var now = SystemClock.Instance.GetCurrentInstant();
         return _context.GridAreaOwners
-            .Where(gao => 
-                gao.GridAreaCode.Equals(code) 
+            .Where(gao =>
+                gao.GridAreaCode.Equals(code)
                 && gao.ValidFrom <= now)
             .OrderByDescending(gao => gao.SequenceNumber)
             .FirstAsync(cancellationToken);
