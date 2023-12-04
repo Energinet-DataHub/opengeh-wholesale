@@ -41,7 +41,7 @@ public class GridAreaValidatorTest
     {
         // Arrange
         var gridAreaCode = "123";
-        await _gridAreaOwnerRepository.AddAsync(gridAreaCode, ValidGlnNumber, Instant.MinValue, 0);
+        _gridAreaOwnerRepository.Add(gridAreaCode, ValidGlnNumber, Instant.MinValue, 0);
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
             .WithRequestedByActorId(ValidGlnNumber)
@@ -62,7 +62,7 @@ public class GridAreaValidatorTest
         // Arrange
         var gridAreaCode = "123";
         var gridAreaOwner = "qwertyuiopash";
-        await _gridAreaOwnerRepository.AddAsync(gridAreaCode, gridAreaOwner, Instant.MinValue, 0);
+        _gridAreaOwnerRepository.Add(gridAreaCode, gridAreaOwner, Instant.MinValue, 0);
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
             .WithRequestedByActorId(ValidGlnNumber)

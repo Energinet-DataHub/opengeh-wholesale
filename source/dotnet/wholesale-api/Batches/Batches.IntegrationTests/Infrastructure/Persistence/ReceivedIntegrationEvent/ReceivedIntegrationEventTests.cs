@@ -57,18 +57,18 @@ public class ReceivedIntegrationEventTests : IClassFixture<WholesaleDatabaseFixt
     }
 
     [Fact]
-    public async Task AddAsync_WhenReceivingTheSameEventTwice_ThrowsExceptionOnSecondEventRegistration()
+    public async Task AddAsync_WhenAddingSameEventTwice_ThrowsException()
     {
         // Arrange
         var eventType = "Test";
         var id = Guid.NewGuid();
 
-        var writeContext = _databaseManager.CreateDbContext();
+        await using var writeContext = _databaseManager.CreateDbContext();
         var sut = new ReceivedIntegrationEventRepository(writeContext);
-
-        // Act
         await sut.AddAsync(id, eventType);
         await writeContext.SaveChangesAsync();
+
+        // Act
         var act = () => sut.AddAsync(id, eventType);
 
         // Assert
@@ -76,23 +76,19 @@ public class ReceivedIntegrationEventTests : IClassFixture<WholesaleDatabaseFixt
     }
 
     [Fact]
-    public async Task AddAsync_WhenReceivingTheSameEventTwiceOnDifferentContexts_ThrowsExceptionOnSecondEventRegistration()
+    public async Task AddAsync_WhenAddingTheSameEventTwiceOnDifferentContexts_ThrowsException()
     {
         // Arrange
         var eventType = "Test";
         var id = Guid.NewGuid();
 
-        var writeContext = _databaseManager.CreateDbContext();
-        var sut = new ReceivedIntegrationEventRepository(writeContext);
+        await AddReceivedIntegrationEvent(id, eventType);
 
         // Act
-        await sut.AddAsync(id, eventType);
-        await writeContext.SaveChangesAsync();
-
-        writeContext = _databaseManager.CreateDbContext();
-        sut = new ReceivedIntegrationEventRepository(writeContext);
-        await sut.AddAsync(id, eventType);
-        var act = () => writeContext.SaveChangesAsync();
+        var act = async () =>
+        {
+            await AddReceivedIntegrationEvent(id, eventType);
+        };
 
         // Assert
         await act.Should().ThrowAsync<DbUpdateException>();
@@ -120,9 +116,7 @@ public class ReceivedIntegrationEventTests : IClassFixture<WholesaleDatabaseFixt
         // Arrange
         var id = Guid.NewGuid();
 
-        await using var writeContext = _databaseManager.CreateDbContext();
-        writeContext.ReceivedIntegrationEvents.Add(new Application.IntegrationEvents.ReceivedIntegrationEvent(id, "Test", SystemClock.Instance.GetCurrentInstant()));
-        await writeContext.SaveChangesAsync();
+        await AddReceivedIntegrationEvent(id, "Test");
 
         await using var readContext = _databaseManager.CreateDbContext();
         var sut = new ReceivedIntegrationEventRepository(readContext);
@@ -132,5 +126,13 @@ public class ReceivedIntegrationEventTests : IClassFixture<WholesaleDatabaseFixt
 
         // Assert
         actual.Should().BeTrue();
+    }
+
+    private async Task AddReceivedIntegrationEvent(Guid id, string eventType)
+    {
+        await using var writeContext = _databaseManager.CreateDbContext();
+        var repository = new ReceivedIntegrationEventRepository(writeContext);
+        await repository.AddAsync(id, eventType);
+        await writeContext.SaveChangesAsync();
     }
 }

@@ -21,10 +21,9 @@ public class GridAreaOwnerRepositoryInMemory : IGridAreaOwnerRepository
 {
     private IList<GridAreaOwner> _gridAreaOwnersInMemory = new List<GridAreaOwner>();
 
-    public Task AddAsync(string code, string ownerActorNumber, Instant validFrom, int sequenceNumber)
+    public void Add(string code, string ownerActorNumber, Instant validFrom, int sequenceNumber)
     {
         _gridAreaOwnersInMemory.Add(new GridAreaOwner(Guid.NewGuid(), code, ownerActorNumber, validFrom, sequenceNumber));
-        return Task.CompletedTask;
     }
 
     public Task<GridAreaOwner> GetCurrentOwnerAsync(string code, CancellationToken cancellationToken)
