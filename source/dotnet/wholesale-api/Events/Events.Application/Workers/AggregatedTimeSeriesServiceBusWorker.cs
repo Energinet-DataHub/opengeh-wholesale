@@ -48,7 +48,7 @@ public class AggregatedTimeSeriesServiceBusWorker : ServiceBusWorker<AggregatedT
         if (arg.Message.ApplicationProperties.TryGetValue("ReferenceId", out var referenceIdPropertyValue)
             && referenceIdPropertyValue is string referenceId)
         {
-            var scope = _serviceProvider.CreateScope();
+            using var scope = _serviceProvider.CreateScope();
             var requestHandler = scope.ServiceProvider.GetRequiredService<IAggregatedTimeSeriesRequestHandler>();
             await requestHandler.ProcessAsync(arg.Message, referenceId, arg.CancellationToken).ConfigureAwait(true);
         }

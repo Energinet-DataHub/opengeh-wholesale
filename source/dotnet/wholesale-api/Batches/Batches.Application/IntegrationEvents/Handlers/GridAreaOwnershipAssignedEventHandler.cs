@@ -30,14 +30,14 @@ public class GridAreaOwnershipAssignedEventHandler : IIntegrationEventHandler
         _gridAreaOwnerRepository = gridAreaOwnerRepository;
     }
 
-    public async Task HandleAsync(IntegrationEvent integrationEvent)
+    public void Handle(IntegrationEvent integrationEvent)
     {
         var message = (GridAreaOwnershipAssigned)integrationEvent.Message;
 
-        await _gridAreaOwnerRepository.AddAsync(
+        _gridAreaOwnerRepository.Add(
             message.GridAreaCode,
             message.ActorNumber,
             message.ValidFrom.ToInstant(),
-            message.SequenceNumber).ConfigureAwait(false);
+            message.SequenceNumber);
     }
 }

@@ -27,15 +27,14 @@ public class GridAreaOwnerRepository : IGridAreaOwnerRepository
         _context = context;
     }
 
-    public Task AddAsync(string code, string ownerActorNumber, Instant validFrom, int sequenceNumber)
+    public void Add(string code, string ownerActorNumber, Instant validFrom, int sequenceNumber)
     {
-        var task = _context.GridAreaOwners.AddAsync(new GridAreaOwner(
+        _context.GridAreaOwners.Add(new GridAreaOwner(
             Guid.NewGuid(),
             code,
             ownerActorNumber,
             validFrom,
             sequenceNumber));
-        return task.AsTask();
     }
 
     public Task<GridAreaOwner> GetCurrentOwnerAsync(string code, CancellationToken cancellationToken)

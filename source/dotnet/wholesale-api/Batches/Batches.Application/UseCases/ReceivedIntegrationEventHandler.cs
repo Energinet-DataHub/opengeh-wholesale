@@ -50,7 +50,7 @@ public class ReceivedIntegrationEventHandler : IIntegrationEventHandler
         // WARNING: If you are sending to external parts eg. servicebus, HTTPS you may do this more than once.
         // So you may want to make use of a database to achieve idempotency if you have such needs.
         var handler = _integrationEventHandlerFactory.GetHandler(integrationEvent.EventName);
-        await handler.HandleAsync(integrationEvent).ConfigureAwait(false);
+        handler.Handle(integrationEvent);
 
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
