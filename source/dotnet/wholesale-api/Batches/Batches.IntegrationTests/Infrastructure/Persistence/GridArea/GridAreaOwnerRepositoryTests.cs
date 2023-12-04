@@ -35,7 +35,7 @@ public class GridAreaOwnerRepositoryTests : IClassFixture<WholesaleDatabaseFixtu
     }
 
     [Fact]
-    public async Task AddAsync_AddsGridAreaOwner()
+    public async Task Add_AddsGridAreaOwner()
     {
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
