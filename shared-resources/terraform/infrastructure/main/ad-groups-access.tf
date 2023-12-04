@@ -17,9 +17,9 @@ resource "azurerm_role_assignment" "developers_subscription_reader" {
 
 resource "azurerm_role_definition" "deny_dataplane_access_to_tfs_rg" {
   count = 1
-  name        = "deny-dataplace-access-to-tfs-rg"
+  name        = "datahub-deny-dataplane-access-to-tfs-rg-${var.environment_short}-${var.region_short}-${var.environment_instance}"
   scope       = data.azurerm_resource_group.rg_tfstate[0].id
-  description = "Deny dataplane access to Terraform state"
+  description = "Denies dataplane access to Terraform state"
 
   permissions {
     not_data_actions = ["Microsoft.Storage/*"]
