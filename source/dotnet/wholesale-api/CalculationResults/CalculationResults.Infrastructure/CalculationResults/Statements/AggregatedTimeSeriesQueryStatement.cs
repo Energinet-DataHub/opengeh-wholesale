@@ -49,7 +49,7 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
             WHERE t2.time IS NULL
                 AND {CreateSqlQueryFilters(_parameters)}";
 
-        sql += $@"ORDER BY t1.time";
+        sql += $@"ORDER BY t1.{EnergyResultColumnNames.GridArea}, t1.{EnergyResultColumnNames.Time}";
         return sql;
     }
 
