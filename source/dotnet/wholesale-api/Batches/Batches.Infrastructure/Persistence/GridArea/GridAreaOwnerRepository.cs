@@ -38,12 +38,12 @@ public class GridAreaOwnerRepository : IGridAreaOwnerRepository
         return task.AsTask();
     }
 
-    public async Task<GridAreaOwner> GetCurrentOwnerAsync(string code, CancellationToken cancellationToken)
+    public Task<GridAreaOwner> GetCurrentOwnerAsync(string code, CancellationToken cancellationToken)
     {
         var now = SystemClock.Instance.GetCurrentInstant();
-        return await _context.GridAreaOwners
+        return _context.GridAreaOwners
             .Where(gao => gao.GridAreaCode.Equals(code) && gao.ValidFrom <= now)
             .OrderByDescending(gao => gao.SequenceNumber)
-            .FirstAsync(cancellationToken).ConfigureAwait(false);
+            .FirstAsync(cancellationToken);
     }
 }
