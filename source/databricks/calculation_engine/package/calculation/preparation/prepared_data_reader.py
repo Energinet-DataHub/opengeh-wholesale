@@ -70,13 +70,6 @@ class PreparedDataReader:
             metering_points, time_series, charges_df, resolution
         )
 
-    def get_raw_time_series_points(
-        self, period_start_datetime: datetime, period_end_datetime: datetime
-    ) -> DataFrame:
-        return self._table_reader.read_time_series_points(
-            period_start_datetime, period_end_datetime
-        )
-
     def get_metering_point_time_series(
         self,
         period_start_datetime: datetime,
