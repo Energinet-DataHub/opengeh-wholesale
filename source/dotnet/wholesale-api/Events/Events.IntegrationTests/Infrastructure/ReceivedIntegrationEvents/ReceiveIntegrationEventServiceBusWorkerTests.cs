@@ -28,17 +28,17 @@ namespace Energinet.DataHub.Wholesale.Events.IntegrationTests.Infrastructure.Rec
 
 public class ReceiveIntegrationEventServiceBusWorkerTests : IClassFixture<ServiceBusIntegrationEventSenderFixture>
 {
-    private readonly ServiceBusIntegrationEventSenderFixture _sender;
+    private readonly ServiceBusIntegrationEventSenderFixture _fixture;
 
     public ReceiveIntegrationEventServiceBusWorkerTests(ServiceBusIntegrationEventSenderFixture fixture)
     {
-        _sender = fixture;
+        _fixture = fixture;
     }
 
     [Theory]
     [InlineAutoData]
     public async Task ProcessAsync_WhenAnIntegrationEventIsReceived_HandlerProccessesIt(
-        Mock<IServiceProvider> serviceProviderMock,
+        ServiceCollection services,
         Mock<ILogger<ReceiveIntegrationEventServiceBusWorker>> loggerMock)
     {
         // Arrange
@@ -46,63 +46,48 @@ public class ReceiveIntegrationEventServiceBusWorkerTests : IClassFixture<Servic
         var expectedSubject = "Subject";
         var messageHasBeenReceivedEvent = new AutoResetEvent(false);
 
-        var subscriber = new Subscriber(messageHasBeenReceivedEvent);
-
-        serviceProviderMock
-            .Setup(x => x.GetService(typeof(ISubscriber)))
-            .Returns(subscriber);
-
-        var serviceScope = new Mock<IServiceScope>();
-        serviceScope.Setup(x => x.ServiceProvider).Returns(serviceProviderMock.Object);
-
-        var serviceScopeFactory = new Mock<IServiceScopeFactory>();
-        serviceScopeFactory
-            .Setup(x => x.CreateScope())
-            .Returns(serviceScope.Object);
-
-        serviceProviderMock
-            .Setup(x => x.GetService(typeof(IServiceScopeFactory)))
-            .Returns(serviceScopeFactory.Object);
+        var subscriberSpy = new SubscriberSpy(messageHasBeenReceivedEvent);
+        services.AddScoped<ISubscriber>(_ => subscriberSpy);
 
         var sut = new ReceiveIntegrationEventServiceBusWorker(
             loggerMock.Object,
-            _sender.ServiceBusOptions,
-            _sender.ServiceBusClient,
-            serviceProviderMock.Object);
+            _fixture.ServiceBusOptions,
+            _fixture.ServiceBusClient,
+            services.BuildServiceProvider());
 
         // Act
         await sut.StartAsync(CancellationToken.None);
-        await _sender.PublishAsync("test message", expectedMessageId.ToString(), expectedSubject);
+        await _fixture.PublishAsync("test message", expectedMessageId.ToString(), expectedSubject);
 
         // Assert
         using var assertionScope = new AssertionScope();
-        var messageHasBeenReceived = subscriber.MessageHasBeenReceivedEvent.WaitOne(timeout: TimeSpan.FromSeconds(1));
+        var messageHasBeenReceived = subscriberSpy.MessageHasBeenReceivedEvent.WaitOne(timeout: TimeSpan.FromSeconds(1));
         messageHasBeenReceived.Should().BeTrue();
-        subscriber.ActualSubject.Should().Be(expectedSubject);
-        subscriber.ActualMessageId.Should().Be(expectedMessageId);
+        subscriberSpy.ActualSubject.Should().Be(expectedSubject);
+        subscriberSpy.ActualMessageId.Should().Be(expectedMessageId);
     }
-}
 
-#pragma warning disable SA1402
-public class Subscriber : ISubscriber
-#pragma warning restore SA1402
-{
-    public Subscriber(AutoResetEvent messageHasBeenReceivedEvent)
+    public class SubscriberSpy : ISubscriber
     {
-        MessageHasBeenReceivedEvent = messageHasBeenReceivedEvent;
+        public SubscriberSpy(AutoResetEvent messageHasBeenReceivedEvent)
+        {
+            MessageHasBeenReceivedEvent = messageHasBeenReceivedEvent;
+        }
+
+        public AutoResetEvent MessageHasBeenReceivedEvent { get; }
+
+        public Guid ActualMessageId { get; private set; }
+
+        public string? ActualSubject { get; private set; }
+
+        public Task HandleAsync(IntegrationEventServiceBusMessage message)
+        {
+            ActualMessageId = message.MessageId;
+            ActualSubject = message.Subject;
+
+            MessageHasBeenReceivedEvent.Set();
+
+            return Task.CompletedTask;
+        }
     }
-
-    public Task HandleAsync(IntegrationEventServiceBusMessage message)
-    {
-        ActualMessageId = message.MessageId;
-        ActualSubject = message.Subject;
-        MessageHasBeenReceivedEvent.Set();
-        return Task.CompletedTask;
-    }
-
-    public Guid ActualMessageId { get; set; }
-
-    public string? ActualSubject { get; set; }
-
-    public AutoResetEvent MessageHasBeenReceivedEvent { get; set; }
 }

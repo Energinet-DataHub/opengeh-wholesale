@@ -22,73 +22,66 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Events.IntegrationTests.Fixture;
 
-public class ServiceBusIntegrationEventSenderFixture : IAsyncLifetime, IAsyncDisposable
+#pragma warning disable CA1001 // Types that own disposable fields should be disposable
+public class ServiceBusIntegrationEventSenderFixture : IAsyncLifetime
+#pragma warning restore CA1001 // Types that own disposable fields should be disposable
 {
-    public IOptions<ServiceBusOptions> ServiceBusOptions { get; }
-
-    public ServiceBusClient ServiceBusClient { get; }
+    private const string TopicNamePrefix = "sbt-integration-event-topic";
+    private const string SubscriptionName = "sbs-integration-event-subscription";
 
     private readonly ServiceBusResourceProvider _serviceBusResourceProvider;
-    private readonly string _topicName = "sbt-integration-event-topic";
-    private readonly string _subscriptionName = "sbs-integration-event-subscription";
     private ServiceBusSender? _sender;
 
     public ServiceBusIntegrationEventSenderFixture()
     {
         var integrationTestConfiguration = new IntegrationTestConfiguration();
+        _serviceBusResourceProvider = new ServiceBusResourceProvider(
+            integrationTestConfiguration.ServiceBusConnectionString,
+            new TestDiagnosticsLogger());
+
+        ServiceBusClient = new ServiceBusClient(integrationTestConfiguration.ServiceBusConnectionString);
+
         ServiceBusOptions = Options.Create(
             new ServiceBusOptions
             {
                 SERVICE_BUS_MANAGE_CONNECTION_STRING = integrationTestConfiguration.ServiceBusConnectionString,
-                INTEGRATIONEVENTS_SUBSCRIPTION_NAME = _subscriptionName,
+                INTEGRATIONEVENTS_SUBSCRIPTION_NAME = SubscriptionName,
             });
-
-        _serviceBusResourceProvider = new ServiceBusResourceProvider(
-            ServiceBusOptions.Value.SERVICE_BUS_MANAGE_CONNECTION_STRING,
-            new TestDiagnosticsLogger());
-
-        ServiceBusClient = new ServiceBusClient(ServiceBusOptions.Value.SERVICE_BUS_MANAGE_CONNECTION_STRING);
     }
+
+    public IOptions<ServiceBusOptions> ServiceBusOptions { get; }
+
+    public ServiceBusClient ServiceBusClient { get; }
 
     public async Task InitializeAsync()
     {
-        var builder = _serviceBusResourceProvider
-            .BuildTopic(_topicName);
-        builder
+        await _serviceBusResourceProvider
+            .BuildTopic(TopicNamePrefix)
             .Do(topicProperties =>
             {
                 ServiceBusOptions.Value.INTEGRATIONEVENTS_TOPIC_NAME = topicProperties.Name;
             })
-            .AddSubscription(ServiceBusOptions.Value.INTEGRATIONEVENTS_SUBSCRIPTION_NAME);
-        await builder
+            .AddSubscription(ServiceBusOptions.Value.INTEGRATIONEVENTS_SUBSCRIPTION_NAME)
             .CreateAsync();
+
         _sender = ServiceBusClient.CreateSender(ServiceBusOptions.Value.INTEGRATIONEVENTS_TOPIC_NAME);
     }
 
-    public async ValueTask DisposeAsync()
+    public async Task DisposeAsync()
     {
-        await _serviceBusResourceProvider.DisposeAsync();
-        if (_sender != null)
-            await _sender.DisposeAsync();
         await ServiceBusClient.DisposeAsync();
-        GC.SuppressFinalize(this);
+        await _serviceBusResourceProvider.DisposeAsync();
     }
 
-    async Task IAsyncLifetime.DisposeAsync()
-    {
-        await DisposeAsync();
-        await Task.CompletedTask.ConfigureAwait(false);
-    }
-
-    internal async Task PublishAsync(string message, string messageId, string subject)
+    public async Task PublishAsync(string message, string messageId, string subject)
     {
         if (_sender == null)
-            return;
+            throw new InvalidOperationException($"Call '{nameof(InitializeAsync)}' before calling this method.");
 
         await _sender.SendMessageAsync(CreateReceivedIntegrationEvent(message, messageId, subject));
     }
 
-    private ServiceBusMessage CreateReceivedIntegrationEvent(string body, string messageId, string subject)
+    private static ServiceBusMessage CreateReceivedIntegrationEvent(string body, string messageId, string subject)
     {
         var message = new ServiceBusMessage(body);
         message.MessageId = messageId;
