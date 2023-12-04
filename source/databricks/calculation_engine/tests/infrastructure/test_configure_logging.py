@@ -15,6 +15,7 @@ import logging
 
 import pytest
 from opentelemetry import trace
+from opentelemetry.trace import Status, StatusCode
 
 from package.common.logger import Logger
 from package.infrastructure import configure_logging
@@ -23,31 +24,49 @@ from package.infrastructure.logging_configuration import get_extras
 # Logging format to enable testing of structured logging data (e.g. "Domain").
 LOGGING_FORMAT = "%(levelname)s - %(message)s - %(Domain)s"
 
-# Acquire a tracer
-tracer = trace.get_tracer("test.tracer")
-
 
 def simulate_calculation_execute():
     logger = Logger("calculation", extras={"some-logger-value": "Hello, world!"})
+
+    tracer = trace.get_tracer(__name__)
+    with tracer.start_as_current_span("calculation", attributes=get_extras()) as span:
+        logger.info(
+            "calculation executing in nested span...",
+            extras={"custom-log-value": "Hey, there!"},
+        )
     logger.info("calculation executing...", extras={"custom-log-value": "Hey, there!"})
 
 
 class TestWhenInvoked:
     def test_tracer_poc_2(self) -> None:
         configure_logging(
-            cloud_role_name="calculation-engine-6",
+            cloud_role_name="calculation-engine-15",
             applicationinsights_connection_string="",
             extras={"Domain": "wholesale"},
         )
 
-        # Create a logger
-        logger = Logger(__name__, extras={"calculation_id": 42})
+        # Get the tracer for the current module.
+        tracer = trace.get_tracer(__name__)
 
         # Use tracer and span to set operation ID and thus decouple from all other logs without operation ID
-        with tracer.start_as_current_span("root", attributes=get_extras()):
-            logger.info("Calculator job started")
-            simulate_calculation_execute()
-            logger.info("Calculator job ended")
+        with tracer.start_as_current_span(
+            "calculation-engine",
+            attributes=get_extras(),
+        ) as span:
+            try:
+                # Create a logger
+                logger = Logger(__name__, extras={"calculation_id": 42})
+
+                logger.info("Calculator job started")
+                simulate_calculation_execute()
+                logger.info("Calculator job ended")
+
+                raise Exception("This is an exception")
+            except Exception as e:
+                # TODO BJM: Add extras
+                span.set_status(Status(StatusCode.ERROR))
+                span.record_exception(e, attributes=get_extras())
+                # TODO BJM: Skip re-raising to keep test green, but probably add in start()
 
     # def test_succeeds(self) -> None:
     #     initialize_logging()

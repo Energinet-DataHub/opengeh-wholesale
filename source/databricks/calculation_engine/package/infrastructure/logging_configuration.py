@@ -11,10 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
-from typing import Union
 
 import logging
+import os
+from typing import Union
 
 from azure.monitor.opentelemetry import configure_azure_monitor
 
@@ -31,6 +31,11 @@ def configure_logging(
     """
     Configure logging to use OpenTelemetry and Azure Monitor.
 
+    :param cloud_role_name:
+    :param applicationinsights_connection_string:
+    :param extras: Custom structured logging data to be included in every log message.
+    :return:
+
     If connection string is None, then logging will not be sent to Azure Monitor.
     This is useful for unit testing.
     """
@@ -40,9 +45,6 @@ def configure_logging(
         global _EXTRAS
         _EXTRAS = extras.copy()
 
-    # ???
-    os.environ["OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED"] = "true"
-
     # Add cloud role name when logging
     os.environ["OTEL_SERVICE_NAME"] = cloud_role_name
 
@@ -50,9 +52,8 @@ def configure_logging(
     if applicationinsights_connection_string is not None:
         configure_azure_monitor(connection_string=applicationinsights_connection_string)
 
-    # Suppress Py4J logging to only show errors and above.
-    # py4j logs a lot of information.
-    logging.getLogger("py4j").setLevel(logging.ERROR)
+    # Reduce Py4J logging. py4j logs a lot of information.
+    logging.getLogger("py4j").setLevel(logging.WARNING)
 
 
 def get_extras() -> dict[str, str]:
