@@ -35,7 +35,7 @@ public class GridAreaOwnerRepositoryTests : IClassFixture<WholesaleDatabaseFixtu
     }
 
     [Fact]
-    public async Task AddAsync_AddsGridAreaOwner()
+    public async Task Add_AddsGridAreaOwner()
     {
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
@@ -48,7 +48,11 @@ public class GridAreaOwnerRepositoryTests : IClassFixture<WholesaleDatabaseFixtu
             SequenceNumber: 1);
 
         // Act
-        sut.Add(expectedGridAreaOwner.GridAreaCode, expectedGridAreaOwner.OwnerActorNumber, expectedGridAreaOwner.ValidFrom, expectedGridAreaOwner.SequenceNumber);
+        sut.Add(
+            expectedGridAreaOwner.GridAreaCode, 
+            expectedGridAreaOwner.OwnerActorNumber, 
+            expectedGridAreaOwner.ValidFrom, 
+            expectedGridAreaOwner.SequenceNumber);
         await writeContext.SaveChangesAsync();
 
         // Assert
@@ -64,7 +68,7 @@ public class GridAreaOwnerRepositoryTests : IClassFixture<WholesaleDatabaseFixtu
     }
 
     [Fact]
-    public async Task AddAsync_WhenAddingTheSameGridAreaOwnerTwice_ThrowsException()
+    public async Task Add_WhenAddingTheSameGridAreaOwnerTwice_ThrowsException()
     {
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
