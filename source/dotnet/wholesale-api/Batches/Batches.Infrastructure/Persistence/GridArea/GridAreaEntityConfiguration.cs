@@ -25,7 +25,7 @@ public class GridAreaEntityConfiguration : IEntityTypeConfiguration<GridAreaOwne
         builder.ToTable(nameof(GridAreaOwner));
 
         builder.HasKey(gao => gao.Id);
-        builder.Property(b => b.Id)
+        builder.Property(gao => gao.Id)
             .ValueGeneratedNever();
 
         builder.Property(gao => gao.GridAreaCode);
