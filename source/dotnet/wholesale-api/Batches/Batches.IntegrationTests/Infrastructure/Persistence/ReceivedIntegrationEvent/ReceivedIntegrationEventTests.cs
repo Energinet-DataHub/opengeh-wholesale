@@ -57,7 +57,7 @@ public class ReceivedIntegrationEventTests : IClassFixture<WholesaleDatabaseFixt
     }
 
     [Fact]
-    public async Task AddAsync_WhenReceivingTheSameEventTwice_ThrowsExceptionOnSecondEventRegistration()
+    public async Task AddAsync_WhenAddingSameEventTwice_ThrowsException()
     {
         // Arrange
         var eventType = "Test";
