@@ -32,21 +32,20 @@ public class ReceiveIntegrationEventServiceBusWorker : ServiceBusWorker<ReceiveI
         ServiceBusClient serviceBusClient,
         IServiceProvider serviceProvider)
         : base(
-            logger,
-            serviceBusClient.CreateProcessor(
-                options.Value.INTEGRATIONEVENTS_TOPIC_NAME,
-                options.Value.INTEGRATIONEVENTS_SUBSCRIPTION_NAME))
+            serviceBusClient,
+            options,
+            logger)
     {
         _serviceProvider = serviceProvider;
     }
 
-    protected override Task ProcessAsync(ProcessMessageEventArgs arg, string? referenceId = null)
+    protected override async Task ProcessAsync(ProcessMessageEventArgs arg)
     {
         using var scope = _serviceProvider.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<ISubscriber>();
 
         var integrationEventMessage = IntegrationEventServiceBusMessage.Create(arg.Message);
 
-        return handler.HandleAsync(integrationEventMessage);
+        await handler.HandleAsync(integrationEventMessage).ConfigureAwait(true);
     }
 }

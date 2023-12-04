@@ -14,8 +14,10 @@
 
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.Logging;
+using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.Workers;
 
@@ -27,13 +29,14 @@ public abstract class ServiceBusWorker<TWorkerType> : BackgroundService, IAsyncD
     private readonly LoggingScope _loggingScope;
 
     protected ServiceBusWorker(
-        ILogger<TWorkerType> logger,
-        ServiceBusProcessor serviceBusProcessor)
+        ServiceBusClient serviceBusClient,
+        IOptions<ServiceBusOptions> options,
+        ILogger<TWorkerType> logger)
     {
-        _serviceBusProcessor = serviceBusProcessor;
+        _serviceBusProcessor = CreateServiceBusProcessor(serviceBusClient, options);
+
         _logger = logger;
         _serviceName = typeof(TWorkerType).Name;
-
         _loggingScope = new LoggingScope { ["HostedService"] = _serviceName };
     }
 
@@ -67,9 +70,21 @@ public abstract class ServiceBusWorker<TWorkerType> : BackgroundService, IAsyncD
         }
     }
 
-    protected abstract Task ProcessAsync(ProcessMessageEventArgs arg, string? referenceId = null);
+    protected abstract Task ProcessAsync(ProcessMessageEventArgs arg);
 
-    protected virtual async Task ProcessMessageAsync(ProcessMessageEventArgs arg)
+    private static ServiceBusProcessor CreateServiceBusProcessor(ServiceBusClient serviceBusClient, IOptions<ServiceBusOptions> options)
+    {
+        if (!string.IsNullOrWhiteSpace(options.Value.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME))
+        {
+            return serviceBusClient.CreateProcessor(options.Value.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME);
+        }
+
+        return serviceBusClient.CreateProcessor(
+            options.Value.INTEGRATIONEVENTS_TOPIC_NAME,
+            options.Value.INTEGRATIONEVENTS_SUBSCRIPTION_NAME);
+    }
+
+    private async Task ProcessMessageAsync(ProcessMessageEventArgs arg)
     {
         var loggingScope = new LoggingScope
         {

@@ -26,7 +26,10 @@ public class ReceivedIntegrationEventHandler : IIntegrationEventHandler
     private readonly IReceivedIntegrationEventRepository _receivedIntegrationEventRepository;
     private readonly IntegrationEventHandlerFactory _integrationEventHandlerFactory;
 
-    public ReceivedIntegrationEventHandler(IUnitOfWork unitOfWork, IReceivedIntegrationEventRepository receivedIntegrationEventRepository, IntegrationEventHandlerFactory integrationEventHandlerFactory)
+    public ReceivedIntegrationEventHandler(
+        IUnitOfWork unitOfWork,
+        IReceivedIntegrationEventRepository receivedIntegrationEventRepository,
+        IntegrationEventHandlerFactory integrationEventHandlerFactory)
     {
         _unitOfWork = unitOfWork;
         _receivedIntegrationEventRepository = receivedIntegrationEventRepository;
@@ -42,12 +45,12 @@ public class ReceivedIntegrationEventHandler : IIntegrationEventHandler
             return;
 
         await _receivedIntegrationEventRepository
-            .CreateAsync(integrationEvent.EventIdentification, integrationEvent.EventName).ConfigureAwait(false);
+            .AddAsync(integrationEvent.EventIdentification, integrationEvent.EventName).ConfigureAwait(false);
 
         // WARNING: If you are sending to external parts eg. servicebus, HTTPS you may do this more than once.
         // So you may want to make use of a database to achieve idempotency if you have such needs.
         var handler = _integrationEventHandlerFactory.GetHandler(integrationEvent.EventName);
-        await handler.HandleAsync(integrationEvent).ConfigureAwait(false);
+        handler.Handle(integrationEvent);
 
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }

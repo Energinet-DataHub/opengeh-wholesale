@@ -27,23 +27,24 @@ public class GridAreaOwnerRepository : IGridAreaOwnerRepository
         _context = context;
     }
 
-    public Task AddAsync(string code, string ownerActorNumber, Instant validFrom, int sequenceNumber)
+    public void Add(string code, string ownerActorNumber, Instant validFrom, int sequenceNumber)
     {
-        var task = _context.GridAreaOwners.AddAsync(new GridAreaOwner(
+        _context.GridAreaOwners.Add(new GridAreaOwner(
             Guid.NewGuid(),
             code,
             ownerActorNumber,
             validFrom,
             sequenceNumber));
-        return task.AsTask();
     }
 
-    public async Task<GridAreaOwner> GetCurrentOwnerAsync(string code, CancellationToken cancellationToken)
+    public Task<GridAreaOwner> GetCurrentOwnerAsync(string code, CancellationToken cancellationToken)
     {
         var now = SystemClock.Instance.GetCurrentInstant();
-        return await _context.GridAreaOwners
-            .Where(gao => gao.GridAreaCode.Equals(code) && gao.ValidFrom <= now)
+        return _context.GridAreaOwners
+            .Where(gao =>
+                gao.GridAreaCode.Equals(code)
+                && gao.ValidFrom <= now)
             .OrderByDescending(gao => gao.SequenceNumber)
-            .FirstAsync(cancellationToken).ConfigureAwait(false);
+            .FirstAsync(cancellationToken);
     }
 }

@@ -24,25 +24,37 @@ namespace Energinet.DataHub.Wholesale.Events.Application.Workers;
 /// <summary>
 /// Responsible for establishing the service bus connection on a background thread.
 /// </summary>
-public class AggregatedTimeSeriesServiceBusWorker : ServiceBusQueueWorker<AggregatedTimeSeriesServiceBusWorker>
+public class AggregatedTimeSeriesServiceBusWorker : ServiceBusWorker<AggregatedTimeSeriesServiceBusWorker>
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger<AggregatedTimeSeriesServiceBusWorker> _logger;
 
     public AggregatedTimeSeriesServiceBusWorker(
         IServiceProvider serviceProvider,
         ILogger<AggregatedTimeSeriesServiceBusWorker> logger,
         IOptions<ServiceBusOptions> options,
         ServiceBusClient serviceBusClient)
-    : base(logger, serviceBusClient.CreateProcessor(options.Value.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME))
+    : base(
+        serviceBusClient,
+        options,
+        logger)
     {
         _serviceProvider = serviceProvider;
+        _logger = logger;
     }
 
-    protected override Task ProcessAsync(ProcessMessageEventArgs arg, string? referenceId = null)
+    protected override async Task ProcessAsync(ProcessMessageEventArgs arg)
     {
-        if (referenceId == null) throw new ArgumentNullException(nameof(referenceId));
-        var scope = _serviceProvider.CreateScope();
-        var requestHandler = scope.ServiceProvider.GetRequiredService<IAggregatedTimeSeriesRequestHandler>();
-        return requestHandler.ProcessAsync(arg.Message, referenceId, arg.CancellationToken);
+        if (arg.Message.ApplicationProperties.TryGetValue("ReferenceId", out var referenceIdPropertyValue)
+            && referenceIdPropertyValue is string referenceId)
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var requestHandler = scope.ServiceProvider.GetRequiredService<IAggregatedTimeSeriesRequestHandler>();
+            await requestHandler.ProcessAsync(arg.Message, referenceId, arg.CancellationToken).ConfigureAwait(true);
+        }
+        else
+        {
+            _logger.LogError("Missing reference id for Service Bus Message");
+        }
     }
 }

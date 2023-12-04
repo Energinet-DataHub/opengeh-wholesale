@@ -48,7 +48,7 @@ public class GridAreaOwnerRepositoryTests : IClassFixture<WholesaleDatabaseFixtu
             SequenceNumber: 1);
 
         // Act
-        await sut.AddAsync(expectedGridAreaOwner.GridAreaCode, expectedGridAreaOwner.OwnerActorNumber, expectedGridAreaOwner.ValidFrom, expectedGridAreaOwner.SequenceNumber);
+        sut.Add(expectedGridAreaOwner.GridAreaCode, expectedGridAreaOwner.OwnerActorNumber, expectedGridAreaOwner.ValidFrom, expectedGridAreaOwner.SequenceNumber);
         await writeContext.SaveChangesAsync();
 
         // Assert
@@ -64,7 +64,7 @@ public class GridAreaOwnerRepositoryTests : IClassFixture<WholesaleDatabaseFixtu
     }
 
     [Fact]
-    public async Task AddAsync_AddTheSameGridAreaOwnerTwice_ThrowsException()
+    public async Task AddAsync_WhenAddingTheSameGridAreaOwnerTwice_ThrowsException()
     {
         // Arrange
         var writeContext = _databaseManager.CreateDbContext();
@@ -75,11 +75,11 @@ public class GridAreaOwnerRepositoryTests : IClassFixture<WholesaleDatabaseFixtu
             GridAreaCode: "303",
             ValidFrom: Instant.FromUtc(2023, 10, 1, 0, 0, 0),
             SequenceNumber: 1);
-        await sut.AddAsync(gridAreaOwner.GridAreaCode, gridAreaOwner.OwnerActorNumber, gridAreaOwner.ValidFrom, gridAreaOwner.SequenceNumber);
+        sut.Add(gridAreaOwner.GridAreaCode, gridAreaOwner.OwnerActorNumber, gridAreaOwner.ValidFrom, gridAreaOwner.SequenceNumber);
         await writeContext.SaveChangesAsync();
 
         // Act
-        await sut.AddAsync(gridAreaOwner.GridAreaCode, gridAreaOwner.OwnerActorNumber, gridAreaOwner.ValidFrom, gridAreaOwner.SequenceNumber);
+        sut.Add(gridAreaOwner.GridAreaCode, gridAreaOwner.OwnerActorNumber, gridAreaOwner.ValidFrom, gridAreaOwner.SequenceNumber);
         var act = async () => await writeContext.SaveChangesAsync();
 
         // Assert

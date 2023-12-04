@@ -16,7 +16,7 @@ namespace Energinet.DataHub.Wholesale.Batches.Application.IntegrationEvents;
 
 public interface IReceivedIntegrationEventRepository
 {
-    Task CreateAsync(Guid id, string eventType);
+    Task AddAsync(Guid id, string eventType);
 
     Task<bool> ExistsAsync(Guid id);
 }

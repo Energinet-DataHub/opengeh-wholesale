@@ -20,5 +20,5 @@ public interface IIntegrationEventHandler
 {
     string EventTypeToHandle { get; }
 
-    Task HandleAsync(IntegrationEvent integrationEvent);
+    void Handle(IntegrationEvent integrationEvent);
 }

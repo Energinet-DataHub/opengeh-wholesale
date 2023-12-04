@@ -27,7 +27,7 @@ public class ReceivedIntegrationEventRepository : IReceivedIntegrationEventRepos
         _context = context;
     }
 
-    public Task CreateAsync(Guid id, string eventType)
+    public Task AddAsync(Guid id, string eventType)
     {
         var task = _context.ReceivedIntegrationEvents.AddAsync(new Application.IntegrationEvents.ReceivedIntegrationEvent(
             id,

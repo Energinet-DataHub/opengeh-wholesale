@@ -18,7 +18,7 @@ namespace Energinet.DataHub.Wholesale.Batches.Application.GridArea;
 
 public interface IGridAreaOwnerRepository
 {
-    Task AddAsync(string code, string ownerActorNumber, Instant validFrom, int sequenceNumber);
+    void Add(string code, string ownerActorNumber, Instant validFrom, int sequenceNumber);
 
     Task<GridAreaOwner> GetCurrentOwnerAsync(string code, CancellationToken cancellationToken);
 }

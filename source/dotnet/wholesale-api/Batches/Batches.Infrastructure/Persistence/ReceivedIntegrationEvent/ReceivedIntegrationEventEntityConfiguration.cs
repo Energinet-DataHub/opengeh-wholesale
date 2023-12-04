@@ -22,9 +22,11 @@ public class ReceivedIntegrationEventEntityConfiguration : IEntityTypeConfigurat
     public void Configure(EntityTypeBuilder<Application.IntegrationEvents.ReceivedIntegrationEvent> builder)
     {
         builder.ToTable(nameof(Application.IntegrationEvents.ReceivedIntegrationEvent));
+
         builder.HasKey(e => e.Id);
         builder.Property(e => e.Id)
             .ValueGeneratedNever();
+
         builder.Property(e => e.EventType);
         builder.Property(e => e.OccurredOn);
     }

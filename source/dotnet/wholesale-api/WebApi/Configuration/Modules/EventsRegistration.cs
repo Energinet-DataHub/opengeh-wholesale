@@ -84,8 +84,9 @@ public static class EventsRegistration
             .AddScoped<IEnergyResultEventProvider, EnergyResultEventProvider>()
             .AddScoped<IWholesaleResultEventProvider, WholesaleResultEventProvider>();
 
-        serviceCollection.AddScoped<IGridAreaOwnerRepository, GridAreaOwnerRepository>();
-        serviceCollection.AddScoped<IReceivedIntegrationEventRepository, ReceivedIntegrationEventRepository>();
+        serviceCollection
+            .AddScoped<IGridAreaOwnerRepository, GridAreaOwnerRepository>()
+            .AddScoped<IReceivedIntegrationEventRepository, ReceivedIntegrationEventRepository>();
     }
 
     private static void AddInfrastructure(this IServiceCollection serviceCollection)
