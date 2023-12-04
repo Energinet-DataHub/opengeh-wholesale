@@ -15,17 +15,23 @@
 import logging
 from typing import Any
 
-from package.infrastructure.logging_configuration import DEFAULT_LOG_LEVEL, get_extras
+import package.infrastructure.logging_configuration as config
 
 
 class Logger:
     def __init__(self, name: str, extras: dict[str, Any] = None) -> None:
         self.logger = logging.getLogger(name)
-        self.logger.setLevel(DEFAULT_LOG_LEVEL)
-        x = get_extras()
-        self.extras = (extras or {}) | get_extras()
-        print(self.extras)
+        self.logger.setLevel(config.DEFAULT_LOG_LEVEL)
+        self.extras = (extras or {}) | config.get_extras()
+
+    def debug(self, message: str, extras: dict[str, Any] = None) -> None:
+        extras = (extras or {}) | self.extras
+        self.logger.debug(message, extra=extras)
 
     def info(self, message: str, extras: dict[str, Any] = None) -> None:
         extras = (extras or {}) | self.extras
         self.logger.info(message, extra=extras)
+
+    def warning(self, message: str, extras: dict[str, Any] = None) -> None:
+        extras = (extras or {}) | self.extras
+        self.logger.warning(message, extra=extras)

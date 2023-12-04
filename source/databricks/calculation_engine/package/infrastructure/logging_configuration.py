@@ -14,19 +14,19 @@
 
 import logging
 import os
-from typing import Union
+from typing import Union, Any
 
 from azure.monitor.opentelemetry import configure_azure_monitor
 
 DEFAULT_LOG_LEVEL: int = logging.INFO
-_EXTRAS: dict[str, str] = {}
+_EXTRAS: dict[str, Any] = {}
 
 
 def configure_logging(
     *,
     cloud_role_name: str,
     applicationinsights_connection_string: Union[str, None] = None,
-    extras: dict[str, str] = None,
+    extras: dict[str, Any] = None,
 ) -> None:
     """
     Configure logging to use OpenTelemetry and Azure Monitor.
@@ -48,7 +48,7 @@ def configure_logging(
     # Add cloud role name when logging
     os.environ["OTEL_SERVICE_NAME"] = cloud_role_name
 
-    # Configure OpenTelemetry to use Azure Monitor.
+    # Configure OpenTelemetry to log to Azure Monitor.
     if applicationinsights_connection_string is not None:
         configure_azure_monitor(connection_string=applicationinsights_connection_string)
 
@@ -56,5 +56,10 @@ def configure_logging(
     logging.getLogger("py4j").setLevel(logging.WARNING)
 
 
-def get_extras() -> dict[str, str]:
+def get_extras() -> dict[str, Any]:
     return _EXTRAS.copy()
+
+
+def add_extras(extras: dict[str, Any]) -> None:
+    global _EXTRAS
+    _EXTRAS = _EXTRAS | extras
