@@ -120,3 +120,9 @@ variable "datahub2_ip_whitelist" {
   description = "Comma-delimited string with IPs / CIDR block with IPs that should be whitelisted for DataHub2"
   default     = ""
 }
+
+variable "developer_object_ids" {
+  type        = list(string)
+  description = "List of developer IDs to give access"
+  default     = []
+}
