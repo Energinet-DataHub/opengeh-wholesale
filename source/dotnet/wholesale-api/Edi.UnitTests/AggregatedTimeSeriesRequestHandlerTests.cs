@@ -64,7 +64,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
 
         validator.Setup(vali => vali.ValidateAsync(
                 It.IsAny<AggregatedTimeSeriesRequest>()))
-            .Returns(() => new List<ValidationError>());
+            .ReturnsAsync(() => new List<ValidationError>());
 
         var sut = new AggregatedTimeSeriesRequestHandler(
             senderMock.Object,
@@ -114,7 +114,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
 
         validator.Setup(vali => vali.ValidateAsync(
                 It.IsAny<AggregatedTimeSeriesRequest>()))
-            .Returns(() => new List<ValidationError>());
+            .ReturnsAsync(() => new List<ValidationError>());
 
         var sut = new AggregatedTimeSeriesRequestHandler(
             senderMock.Object,
@@ -158,7 +158,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
 
         validator.Setup(vali => vali.ValidateAsync(
                 It.IsAny<AggregatedTimeSeriesRequest>()))
-            .Returns(() => new List<ValidationError>());
+            .ReturnsAsync(() => new List<ValidationError>());
 
         aggregatedTimeSeriesQueries
             .Setup(parameters => parameters.GetAsync(It.IsAny<AggregatedTimeSeriesQueryParameters>()))
@@ -208,7 +208,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
 
         validator.Setup(vali => vali.ValidateAsync(
                 It.IsAny<AggregatedTimeSeriesRequest>()))
-            .Returns(() => new List<ValidationError>());
+            .ReturnsAsync(() => new List<ValidationError>());
 
         aggregatedTimeSeriesQueries
             .Setup(parameters =>
@@ -267,7 +267,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
 
         validator.Setup(vali => vali.ValidateAsync(
                 It.IsAny<AggregatedTimeSeriesRequest>()))
-            .Returns(() => new List<ValidationError>());
+            .ReturnsAsync(() => new List<ValidationError>());
 
         aggregatedTimeSeriesQueries
             .Setup(parameters =>
@@ -275,7 +275,6 @@ public class AggregatedTimeSeriesRequestHandlerTests
                     It.IsAny<AggregatedTimeSeriesQueryParameters>()))
             .Returns(() => new List<AggregatedTimeSeries>().ToAsyncEnumerable());
 
-        var aggregatedTimeSeries = CreateAggregatedTimeSeries();
         aggregatedTimeSeriesQueries
             .Setup(parameters =>
                 parameters.GetAsync(
@@ -326,7 +325,7 @@ public class AggregatedTimeSeriesRequestHandlerTests
 
         validator.Setup(vali => vali.ValidateAsync(
                 It.IsAny<AggregatedTimeSeriesRequest>()))
-            .Returns(() => new List<ValidationError> { _invalidEnergySupplierField });
+            .ReturnsAsync(() => new List<ValidationError> { _invalidEnergySupplierField });
 
         var sut = new AggregatedTimeSeriesRequestHandler(
             senderMock.Object,
