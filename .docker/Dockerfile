@@ -29,7 +29,7 @@ RUN apt-get update; \
 
 # Install spark packages with mamba (packages has to be updated according to spark version)
 RUN mamba install --quiet --yes --satisfied-skip-solve \
-    'pyarrow=9.0.*' 'rope=1.6.*' 'pytest=7.2.*' 'configargparse=1.5.3'  \
+    'rope=1.6.*' 'pytest=7.2.*' 'configargparse=1.5.3'  \
     'coverage=7.0.*' 'azure-storage-blob=12.14.*' 'pytest-mock=3.10.*' \
     'virtualenv=20.*'
 
