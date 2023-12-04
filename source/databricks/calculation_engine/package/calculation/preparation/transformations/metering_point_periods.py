@@ -12,8 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame, SparkSession
-
+from pyspark.sql import DataFrame
 from pyspark.sql.functions import (
     col,
     when,
@@ -27,18 +26,24 @@ def get_metering_point_periods_df(
     calculation_input_reader: TableReader,
     period_start_datetime: datetime,
     period_end_datetime: datetime,
-    batch_grid_areas: list[str],
+    calculation_grid_areas: list[str],
 ) -> DataFrame:
-    metering_point_periods_df = calculation_input_reader.read_metering_point_periods()
-
-    metering_point_periods_df = metering_point_periods_df.where(
-        col(Colname.grid_area).isin(batch_grid_areas)
-        | col(Colname.from_grid_area).isin(batch_grid_areas)
-        | col(Colname.to_grid_area).isin(batch_grid_areas)
+    metering_point_periods_df = calculation_input_reader.read_metering_point_periods(
+        period_start_datetime, period_end_datetime, calculation_grid_areas
     )
 
-    metering_point_periods_df = _filter_by_period(
-        metering_point_periods_df, period_start_datetime, period_end_datetime
+    metering_point_periods_df = metering_point_periods_df.withColumn(
+        Colname.from_date,
+        when(
+            col(Colname.from_date) < period_start_datetime, period_start_datetime
+        ).otherwise(col(Colname.from_date)),
+    ).withColumn(
+        Colname.to_date,
+        when(
+            col(Colname.to_date).isNull()
+            | (col(Colname.to_date) > period_end_datetime),
+            period_end_datetime,
+        ).otherwise(col(Colname.to_date)),
     )
 
     metering_point_periods_df = metering_point_periods_df.select(
@@ -55,34 +60,6 @@ def get_metering_point_periods_df(
         Colname.balance_responsible_id,
         Colname.from_date,
         Colname.to_date,
-    )
-
-    return metering_point_periods_df
-
-
-def _filter_by_period(
-    metering_points_periods_df: DataFrame,
-    period_start_datetime: datetime,
-    period_end_datetime: datetime,
-) -> DataFrame:
-    metering_point_periods_df = metering_points_periods_df.where(
-        col(Colname.from_date) < period_end_datetime
-    ).where(
-        col(Colname.to_date).isNull() | (col(Colname.to_date) > period_start_datetime)
-    )
-
-    metering_point_periods_df = metering_point_periods_df.withColumn(
-        Colname.from_date,
-        when(
-            col(Colname.from_date) < period_start_datetime, period_start_datetime
-        ).otherwise(col(Colname.from_date)),
-    ).withColumn(
-        Colname.to_date,
-        when(
-            col(Colname.to_date).isNull()
-            | (col(Colname.to_date) > period_end_datetime),
-            period_end_datetime,
-        ).otherwise(col(Colname.to_date)),
     )
 
     return metering_point_periods_df
