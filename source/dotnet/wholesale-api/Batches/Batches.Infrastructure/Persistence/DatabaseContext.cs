@@ -15,6 +15,8 @@
 using System.Diagnostics.CodeAnalysis;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.GridArea;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.ReceivedIntegrationEvent;
 using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
@@ -36,12 +38,19 @@ public class DatabaseContext : DbContext, IDatabaseContext
 
     public virtual DbSet<Batch> Batches { get; private set; } = null!;
 
+    public virtual DbSet<Application.GridArea.GridAreaOwner> GridAreaOwners { get; private set; } = null!;
+
+    public virtual DbSet<Application.IntegrationEvents.ReceivedIntegrationEvent> ReceivedIntegrationEvents { get; private set; } = null!;
+
     public Task<int> SaveChangesAsync() => base.SaveChangesAsync();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema(Schema);
+
         modelBuilder.ApplyConfiguration(new BatchEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new GridAreaEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new ReceivedIntegrationEventEntityConfiguration());
         base.OnModelCreating(modelBuilder);
     }
 }

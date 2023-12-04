@@ -29,10 +29,11 @@ public class OptionsTests
     [InlineAutoMoqData(typeof(AppInsightOptions), 1, "APPINSIGHTS_INSTRUMENTATIONKEY")]
     [InlineAutoMoqData(
         typeof(ServiceBusOptions),
-        5,
+        6,
         "SERVICE_BUS_SEND_CONNECTION_STRING",
         "SERVICE_BUS_MANAGE_CONNECTION_STRING",
         "INTEGRATIONEVENTS_TOPIC_NAME",
+        "INTEGRATIONEVENTS_SUBSCRIPTION_NAME",
         "WHOLESALE_INBOX_MESSAGE_QUEUE_NAME",
         "EDI_INBOX_MESSAGE_QUEUE_NAME")]
     [InlineAutoMoqData(typeof(DateTimeOptions), 1, "TIME_ZONE")]
