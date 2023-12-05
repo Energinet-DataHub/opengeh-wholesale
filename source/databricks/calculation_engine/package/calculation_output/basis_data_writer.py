@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
+from datetime import datetime
+
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
 
@@ -19,6 +22,8 @@ import package.calculation.preparation.transformations.basis_data as basis_data
 from package.infrastructure import paths
 from package.constants import PartitionKeyName, BasisDataColname
 from package.codelists import AggregationLevel, BasisDataType
+
+logger = logging.getLogger(__name__)
 
 
 class BasisDataWriter:
@@ -52,16 +57,25 @@ class BasisDataWriter:
         timeseries_quarter_df: DataFrame,
         timeseries_hour_df: DataFrame,
     ) -> None:
+        logger.info(f"Start writing basis data per grid area to csv: {datetime.now()}")
+
         self._write_ga_basis_data(
             master_basis_data_df,
             timeseries_quarter_df,
             timeseries_hour_df,
         )
+
+        logger.info(
+            f"Start writing basis data per energy supplier to csv: {datetime.now()}"
+        )
+
         self._write_es_basis_data(
             master_basis_data_df,
             timeseries_quarter_df,
             timeseries_hour_df,
         )
+
+        logger.info(f"Done writing basis data to csv: {datetime.now()}")
 
     def _write_ga_basis_data(
         self,
@@ -129,17 +143,24 @@ class BasisDataWriter:
         grouping_folder_name: str,
         partition_keys: list[str],
     ) -> None:
+        logger.info(f"Start writing timeseries_quarter_df to csv: {datetime.now()}")
+
         self._write_df_to_csv(
             f"{self.__time_series_quarter_path}/{grouping_folder_name}",
             timeseries_quarter_df,
             partition_keys,
         )
 
+        logger.info(f"Start writing timeseries_hour_df to csv: {datetime.now()}")
+
         self._write_df_to_csv(
             f"{self.__time_series_hour_path}/{grouping_folder_name}",
             timeseries_hour_df,
             partition_keys,
         )
+
+        logger.info(f"Start writing master_basis_data_df to csv: {datetime.now()}")
+
         self._write_df_to_csv(
             f"{self.__master_basis_data_path}/{grouping_folder_name}",
             master_basis_data_df,
