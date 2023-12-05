@@ -18,7 +18,7 @@ description: This action allows you to execute code, written for Spark, Databric
 runs:
   using: composite
   steps:
-    # TODO: Write App Insights to file (//workspaces/opengeh-wholesale/source/databricks/calculation_engine/tests/calculator_job/integrationtest.local.settings.json)
+    # TODO: Mount .azure folder so token can be used from within docker
     - name: Write integration test setting file
       shell: pwsh
       run: |
