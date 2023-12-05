@@ -33,6 +33,8 @@ from package.calculation_input.schemas import (
 )
 from package.infrastructure import paths
 
+# TODO BJM: These tests are not calculator_job tests
+
 
 def test__input_time_series_point_schema__matches_published_contract(
     spark: SparkSession, energy_input_data_written_to_delta: None
