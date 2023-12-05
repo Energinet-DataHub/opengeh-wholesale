@@ -46,7 +46,7 @@ public class GridAreaValidationRule : IValidationRule<AggregatedTimeSeriesReques
     {
         var gridAreaOwner = await _gridAreaOwnerRepository
             .GetCurrentOwnerAsync(gridAreaCode, CancellationToken.None).ConfigureAwait(false);
-        return gridAreaOwner.OwnerActorNumber.Equals(actorId, StringComparison.OrdinalIgnoreCase);
+        return gridAreaOwner != null && gridAreaOwner.OwnerActorNumber.Equals(actorId, StringComparison.OrdinalIgnoreCase);
     }
 
     private static IList<ValidationError> NoError => new List<ValidationError>();
