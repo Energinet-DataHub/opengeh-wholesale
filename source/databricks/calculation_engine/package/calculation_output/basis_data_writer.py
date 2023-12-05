@@ -23,14 +23,13 @@ from package.infrastructure import paths
 from package.constants import PartitionKeyName, BasisDataColname
 from package.codelists import AggregationLevel, BasisDataType
 
-logger = logging.getLogger(__name__)
-
 
 class BasisDataWriter:
     def __init__(self, container_path: str, batch_id: str):
         self.__master_basis_data_path = f"{container_path}/{paths.get_basis_data_root_path(BasisDataType.MASTER_BASIS_DATA, batch_id)}"
         self.__time_series_quarter_path = f"{container_path}/{paths.get_basis_data_root_path(BasisDataType.TIME_SERIES_QUARTER, batch_id)}"
         self.__time_series_hour_path = f"{container_path}/{paths.get_basis_data_root_path(BasisDataType.TIME_SERIES_HOUR, batch_id)}"
+        self.logger = logging.getLogger(__name__)
 
     def write(
         self,
@@ -57,7 +56,9 @@ class BasisDataWriter:
         timeseries_quarter_df: DataFrame,
         timeseries_hour_df: DataFrame,
     ) -> None:
-        logger.info(f"Start writing basis data per grid area to csv: {datetime.now()}")
+        self.logger.info(
+            f"Start writing basis data per grid area to csv: {datetime.now()}"
+        )
 
         self._write_ga_basis_data(
             master_basis_data_df,
@@ -65,7 +66,7 @@ class BasisDataWriter:
             timeseries_hour_df,
         )
 
-        logger.info(
+        self.logger.info(
             f"Start writing basis data per energy supplier to csv: {datetime.now()}"
         )
 
@@ -75,7 +76,7 @@ class BasisDataWriter:
             timeseries_hour_df,
         )
 
-        logger.info(f"Done writing basis data to csv: {datetime.now()}")
+        self.logger.info(f"Done writing basis data to csv: {datetime.now()}")
 
     def _write_ga_basis_data(
         self,
@@ -143,7 +144,9 @@ class BasisDataWriter:
         grouping_folder_name: str,
         partition_keys: list[str],
     ) -> None:
-        logger.info(f"Start writing timeseries_quarter_df to csv: {datetime.now()}")
+        self.logger.info(
+            f"Start writing timeseries_quarter_df to csv: {datetime.now()}"
+        )
 
         self._write_df_to_csv(
             f"{self.__time_series_quarter_path}/{grouping_folder_name}",
@@ -151,7 +154,7 @@ class BasisDataWriter:
             partition_keys,
         )
 
-        logger.info(f"Start writing timeseries_hour_df to csv: {datetime.now()}")
+        self.logger.info(f"Start writing timeseries_hour_df to csv: {datetime.now()}")
 
         self._write_df_to_csv(
             f"{self.__time_series_hour_path}/{grouping_folder_name}",
@@ -159,7 +162,7 @@ class BasisDataWriter:
             partition_keys,
         )
 
-        logger.info(f"Start writing master_basis_data_df to csv: {datetime.now()}")
+        self.logger.info(f"Start writing master_basis_data_df to csv: {datetime.now()}")
 
         self._write_df_to_csv(
             f"{self.__master_basis_data_path}/{grouping_folder_name}",
