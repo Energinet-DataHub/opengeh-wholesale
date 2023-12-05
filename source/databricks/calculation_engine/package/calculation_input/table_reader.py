@@ -40,26 +40,26 @@ class TableReader:
         self,
         spark: SparkSession,
         calculation_input_path: str,
-        time_series_points_path: str | None = None,
+        time_series_points_location: str | None = None,
     ) -> None:
         self._spark = spark
-        self.metering_point_periods_path = (
+        self.metering_point_periods_location = (
             f"{calculation_input_path}/{paths.METERING_POINT_PERIODS_TABLE_NAME}"
         )
-        if time_series_points_path is None:
-            self.time_series_points_path = (
+        if time_series_points_location is None:
+            self.time_series_points_location = (
                 f"{calculation_input_path}/{paths.TIME_SERIES_POINTS_TABLE_NAME}"
             )
         else:
-            self.time_series_points_path = time_series_points_path
+            self.time_series_points_location = time_series_points_location
 
-        self.charge_price_points_path = (
+        self.charge_price_points_location = (
             f"{calculation_input_path}/{paths.CHARGE_PRICE_POINTS_TABLE_NAME}"
         )
-        self.charge_master_data_periods_path = (
+        self.charge_master_data_periods_location = (
             f"{calculation_input_path}/{paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}"
         )
-        self.charge_link_periods_path = (
+        self.charge_link_periods_location = (
             f"{calculation_input_path}/{paths.CHARGE_LINK_PERIODS_TABLE_NAME}"
         )
 
@@ -71,7 +71,7 @@ class TableReader:
     ) -> DataFrame:
         df = (
             self._spark.read.format("delta")
-            .load(self.metering_point_periods_path)
+            .load(self.metering_point_periods_location)
             .where(
                 col(Colname.grid_area).isin(calculation_grid_areas)
                 | col(Colname.from_grid_area).isin(calculation_grid_areas)
@@ -100,7 +100,7 @@ class TableReader:
     def read_time_series_points(
         self, period_start_datetime: datetime, period_end_datetime: datetime
     ) -> DataFrame:
-        if "_partitioned_by_year_and_month" in self.time_series_points_path:
+        if "_partitioned_by_year_and_month" in self.time_series_points_location:
             # TEMPORARY: This is for experimenting with a table that is partitioned by year and month.
             # TODO: Cleanup when/if the table is time_series_points  table is partitioned by year and month.
 
@@ -116,7 +116,7 @@ class TableReader:
             month = period_start_datetime.month
             df = (
                 self._spark.read.format("delta")
-                .load(self.time_series_points_path)
+                .load(self.time_series_points_location)
                 .where(col("observation_year") == year)
                 .where(col("observation_month") == month)
                 .where(col(Colname.observation_time) >= period_start_datetime)
@@ -125,7 +125,7 @@ class TableReader:
         else:
             df = (
                 self._spark.read.format("delta")
-                .load(self.time_series_points_path)
+                .load(self.time_series_points_location)
                 .where(col(Colname.observation_time) >= period_start_datetime)
                 .where(col(Colname.observation_time) < period_end_datetime)
             )
@@ -135,7 +135,7 @@ class TableReader:
         return df
 
     def read_charge_links_periods(self) -> DataFrame:
-        df = self._spark.read.format("delta").load(self.charge_link_periods_path)
+        df = self._spark.read.format("delta").load(self.charge_link_periods_location)
 
         assert_schema(df.schema, charge_link_periods_schema)
 
@@ -143,7 +143,7 @@ class TableReader:
         return df
 
     def read_charge_master_data_periods(self) -> DataFrame:
-        df = self._spark.read.format("delta").load(self.charge_master_data_periods_path)
+        df = self._spark.read.format("delta").load(self.charge_master_data_periods_location)
 
         assert_schema(df.schema, charge_master_data_periods_schema)
 
@@ -151,7 +151,7 @@ class TableReader:
         return df
 
     def read_charge_price_points(self) -> DataFrame:
-        df = self._spark.read.format("delta").load(self.charge_price_points_path)
+        df = self._spark.read.format("delta").load(self.charge_price_points_location)
 
         assert_schema(df.schema, charge_price_points_schema)
 
