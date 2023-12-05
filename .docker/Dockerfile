@@ -23,11 +23,18 @@ USER root
 COPY spark-defaults.conf $SPARK_HOME/conf/spark-defaults.conf
 
 # Install Azure CLI, see https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt
-RUN curl -sL https://aka.ms/InstallAzureCLIDeb
+#   Install curl to be able to download install script
+RUN apt-get update; \
+    apt-get install -y curl
+#   Download and execute install script
+RUN curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
 # Install Azurite (support wasb-protocol storage for Delta tables in integration tests)
 RUN apt-get update; \
     apt-get install -y npm && npm install -g n && n lts && hash -r && npm install -g azurite
+
+# Cleanup apt cache to reduce image size
+RUN rm -rf /var/lib/apt/lists/*
 
 # Install spark packages with mamba (packages has to be updated according to spark version)
 RUN mamba install --quiet --yes --satisfied-skip-solve \
