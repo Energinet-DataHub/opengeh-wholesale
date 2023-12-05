@@ -186,7 +186,7 @@ public class GridAreaOwnerRepositoryTests : IClassFixture<WholesaleDatabaseFixtu
     }
 
     [Fact]
-    public async Task GetCurrentOwner_WhenNoValidOwners_ThrowException()
+    public async Task GetCurrentOwner_WhenNoValidOwnersForGridArea_ReturnsNull()
     {
         // Arrange
         var invalidGridAreaOwner = new GridAreaOwner(
@@ -204,10 +204,10 @@ public class GridAreaOwnerRepositoryTests : IClassFixture<WholesaleDatabaseFixtu
         var sut = new GridAreaOwnerRepository(readContext);
 
         // Act
-        var act = async () => await sut.GetCurrentOwnerAsync(invalidGridAreaOwner.GridAreaCode, CancellationToken.None);
+        var actual = await sut.GetCurrentOwnerAsync(invalidGridAreaOwner.GridAreaCode, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<InvalidOperationException>();
+        actual.Should().BeNull();
     }
 
     [Fact]
@@ -241,7 +241,7 @@ public class GridAreaOwnerRepositoryTests : IClassFixture<WholesaleDatabaseFixtu
 
         // Assert
         actual.Should().NotBeNull();
-        actual.OwnerActorNumber.Should().Be(newGridAreaOwnerFromThePast.OwnerActorNumber);
+        actual!.OwnerActorNumber.Should().Be(newGridAreaOwnerFromThePast.OwnerActorNumber);
     }
 
     [Fact]
@@ -275,7 +275,7 @@ public class GridAreaOwnerRepositoryTests : IClassFixture<WholesaleDatabaseFixtu
 
         // Assert
         actual.Should().NotBeNull();
-        actual.OwnerActorNumber.Should().Be(existingGridAreaOwner.OwnerActorNumber);
+        actual!.OwnerActorNumber.Should().Be(existingGridAreaOwner.OwnerActorNumber);
     }
 
     [Fact]
@@ -309,6 +309,6 @@ public class GridAreaOwnerRepositoryTests : IClassFixture<WholesaleDatabaseFixtu
 
         // Assert
         actual.Should().NotBeNull();
-        actual.OwnerActorNumber.Should().Be(existingGridAreaOwner.OwnerActorNumber);
+        actual!.OwnerActorNumber.Should().Be(existingGridAreaOwner.OwnerActorNumber);
     }
 }
