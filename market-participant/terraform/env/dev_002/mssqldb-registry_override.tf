@@ -2,4 +2,5 @@ module "mssqldb_market_participant" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=v13"
 
   developer_ad_group_name = var.developer_ad_group_name
+  datawriter_access       = true
 }
