@@ -57,3 +57,19 @@ resource "azurerm_key_vault_secret" "kvs_appi_instrumentation_key" {
     azurerm_key_vault_access_policy.kv_selfpermission
   ]
 }
+
+resource "azurerm_key_vault_secret" "kvs_appi_connection_string" {
+  name         = "AZURE-APPINSIGHTS-CONNECTIONSTRING"
+  value        = azurerm_application_insights.this.connection_string
+  key_vault_id = azurerm_key_vault.this.id
+
+  lifecycle {
+    ignore_changes = [
+      tags,
+    ]
+  }
+
+  depends_on = [
+    azurerm_key_vault_access_policy.kv_selfpermission
+  ]
+}
