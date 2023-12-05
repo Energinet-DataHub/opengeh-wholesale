@@ -19,22 +19,16 @@ runs:
   using: composite
   steps:
     # TODO: Mount .azure folder so token can be used from within docker
-    - name: Write integration test setting file
-      shell: pwsh
-      run: |
-        # Verify we are logged in
-        az account show
-
-    # - name: Execute entrypoint.sh (with retry)
-    #   uses: nick-fields/retry@v2
-    #   with:
-    #     timeout_minutes: 15
-    #     # Disabled retry after merge of PR-1048, as this retry might not be needed anymore.
-    #     # Will keep it now, if pipeline is still unstable periodically, reverting will be much easier
-    #     # Note: Dont forget to remove logic regarding exit codes in the entrypoint.sh script if removing retry logic at some point
-    #     max_attempts: 1
-    #     retry_on_exit_code: 2 # In our script we return exit code 2 if we detect a scenario for which to retry
-    #     shell: bash
-    #     command: |
-    #       chmod +x ./.docker/entrypoint.sh
-    #       docker-compose -f .devcontainer/docker-compose.yml run --rm -u root -w //workspaces/opengeh-wholesale wholesale ./.docker/entrypoint.sh
+    - name: Execute entrypoint.sh (with retry)
+      uses: nick-fields/retry@v2
+      with:
+        timeout_minutes: 15
+        # Disabled retry after merge of PR-1048, as this retry might not be needed anymore.
+        # Will keep it now, if pipeline is still unstable periodically, reverting will be much easier
+        # Note: Dont forget to remove logic regarding exit codes in the entrypoint.sh script if removing retry logic at some point
+        max_attempts: 1
+        retry_on_exit_code: 2 # In our script we return exit code 2 if we detect a scenario for which to retry
+        shell: bash
+        command: |
+          chmod +x ./.docker/entrypoint.sh
+          docker-compose -f .devcontainer/docker-compose.yml run --rm -u root -w //workspaces/opengeh-wholesale wholesale ./.docker/entrypoint.sh
