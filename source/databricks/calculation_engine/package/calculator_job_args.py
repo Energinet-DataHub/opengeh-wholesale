@@ -20,14 +20,15 @@ from configargparse import argparse
 import package.infrastructure.environment_variables as env_vars
 from package.calculation.calculator_args import CalculatorArgs
 from package.codelists.process_type import ProcessType
+from package.common.logger import Logger
 from package.infrastructure import valid_date, valid_list, paths
 
 
 def get_calculator_args() -> CalculatorArgs:
     job_args = _get_valid_args_or_throw(sys.argv[1:])
 
-    logger = logging.getLogger(__name__)
-    logger.info(f"Job arguments: {str(job_args)}")
+    logger = Logger(__name__)
+    logger.info(f"Job arguments: {repr(job_args)}")
 
     time_zone = env_vars.get_time_zone()
     storage_account_name = env_vars.get_storage_account_name()
