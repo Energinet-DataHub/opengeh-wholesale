@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import logging
-from datetime import datetime
 
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
