@@ -40,18 +40,18 @@ class TableReader:
         self,
         spark: SparkSession,
         calculation_input_path: str,
-        time_series_points_table_name: str | None = None,
+        time_series_points_path: str | None = None,
     ) -> None:
         self._spark = spark
         self.metering_point_periods_path = (
             f"{calculation_input_path}/{paths.METERING_POINT_PERIODS_TABLE_NAME}"
         )
-        if time_series_points_table_name is None:
+        if time_series_points_path is None:
             self.time_series_points_path = (
                 f"{calculation_input_path}/{paths.TIME_SERIES_POINTS_TABLE_NAME}"
             )
         else:
-            self.time_series_points_path = time_series_points_table_name
+            self.time_series_points_path = time_series_points_path
 
         self.charge_price_points_path = (
             f"{calculation_input_path}/{paths.CHARGE_PRICE_POINTS_TABLE_NAME}"
