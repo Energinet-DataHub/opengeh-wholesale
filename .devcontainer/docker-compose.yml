@@ -1,9 +1,12 @@
 version: "3.9"
 services:
   wholesale:
-    image: ghcr.io/energinet-datahub/opengeh-wholesale/databricks-unit-test:latest
+    # TODO: Revert basck to using latest version
+    image: ghcr.io/energinet-datahub/opengeh-wholesale/databricks-unit-test:pre-release-pr1708
     volumes:
       # Forwards the local Docker socket to the container.
       - /var/run/docker.sock:/var/run/docker-host.sock
       # Update this to wherever you want VS Code to mount the folder of your project
       - ..:/workspaces/opengeh-wholesale:cached
+      # Map to Azure CLI token cache location
+      - "${USERPROFILE}/.azure:/root/.azure"
