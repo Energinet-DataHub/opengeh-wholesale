@@ -30,8 +30,6 @@ from .calculator_args import CalculatorArgs
 from .energy import energy_calculation
 from .wholesale import wholesale_calculation
 
-logger = logging.getLogger(__name__)
-
 
 def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> None:
     # cache of metering_point_time_series had no effect on performance (01-12-2023)
@@ -50,6 +48,7 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
         metering_point_periods_df,
     ).cache()
 
+    logger = logging.getLogger(__name__)
     logger.info(f"Done getting metering_point_time_series: {datetime.now()}")
 
     basis_data_writer = BasisDataWriter(args.wholesale_container_path, args.batch_id)
