@@ -69,6 +69,13 @@ class TableReader:
                 col(Colname.to_date).isNull()
                 | (col(Colname.to_date) > period_start_datetime)
             )
+            # temporary solution to avoid duplicates, this should be fixed in the source data
+            .dropDuplicates(
+                [
+                    Colname.metering_point_id,
+                    Colname.from_date,
+                ]
+            )
         )
 
         assert_schema(df.schema, metering_point_period_schema)
