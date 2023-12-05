@@ -119,7 +119,7 @@ class TestWhenInvokedWithValidParameters:
         # Arrange
         expected = "the_time_series_points_table_location"
         sys_argv_from_contract = sys_argv_from_contract + [
-            f"--time_series_periods_table_location={expected}"
+            f"--time_series_points_table_location={expected}"
         ]
 
         with patch("sys.argv", sys_argv_from_contract):
