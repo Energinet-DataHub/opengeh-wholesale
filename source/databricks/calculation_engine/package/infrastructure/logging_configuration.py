@@ -26,7 +26,7 @@ def configure_logging(
     *,
     cloud_role_name: str,
     applicationinsights_connection_string: Union[str, None] = None,
-    extras: dict[str, Any] = None,
+    extras: Union[dict[str, Any], None] = None,
 ) -> None:
     """
     Configure logging to use OpenTelemetry and Azure Monitor.

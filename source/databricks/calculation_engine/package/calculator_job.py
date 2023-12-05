@@ -88,7 +88,7 @@ def start_with_deps(
             sys.exit(4)
 
 
-def create_prepared_data_reader(args: CalculatorArgs):
+def create_prepared_data_reader(args: CalculatorArgs) -> calculation.PreparedDataReader:
     """Create calculation execution dependencies."""
     spark = initialize_spark()
     delta_table_reader = calculation_input.TableReader(
@@ -100,7 +100,7 @@ def create_prepared_data_reader(args: CalculatorArgs):
 
 def raise_if_storage_is_locked(
     is_storage_locked_checker: Callable[..., bool], args: CalculatorArgs
-):
+) -> None:
     if is_storage_locked_checker(
         args.data_storage_account_name, args.data_storage_account_credentials
     ):
