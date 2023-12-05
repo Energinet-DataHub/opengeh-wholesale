@@ -128,9 +128,9 @@ class TestWhenInvokedWithValidParameters:
                 actual = get_calculator_args()
 
         # Assert
-        assert actual.time_series_periods_table_location == expected
+        assert actual.time_series_points_table_location == expected
 
-    def test_returns_none_when_time_series_periods_table_location_absent(
+    def test_returns_none_when_time_series_points_table_location_absent(
         self,
         job_environment_variables: dict,
         sys_argv_from_contract,
@@ -142,7 +142,7 @@ class TestWhenInvokedWithValidParameters:
                 actual = get_calculator_args()
 
         # Assert
-        assert actual.time_series_periods_table_location is None
+        assert actual.time_series_points_table_location is None
 
 
 class TestWhenUnknownProcessType:
