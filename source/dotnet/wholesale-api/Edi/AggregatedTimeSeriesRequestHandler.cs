@@ -20,6 +20,7 @@ using Energinet.DataHub.Wholesale.EDI.Factories;
 using Energinet.DataHub.Wholesale.EDI.Mappers;
 using Energinet.DataHub.Wholesale.EDI.Models;
 using Energinet.DataHub.Wholesale.EDI.Validation;
+using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.EDI;
 
@@ -28,27 +29,31 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
     private readonly IEdiClient _ediClient;
     private readonly IValidator<Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest> _validator;
     private readonly IAggregatedTimeSeriesQueries _aggregatedTimeSeriesQueries;
+    private readonly ILogger<AggregatedTimeSeriesRequestHandler> _logger;
     private static readonly ValidationError _noDataAvailable = new("Ingen data tilgængelig / No data available", "E0H");
     private static readonly ValidationError _noDataForRequestedGridArea = new("Forkert netområde / invalid grid area", "D46");
 
     public AggregatedTimeSeriesRequestHandler(
         IEdiClient ediClient,
         IValidator<Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest> validator,
-        IAggregatedTimeSeriesQueries aggregatedTimeSeriesQueries)
+        IAggregatedTimeSeriesQueries aggregatedTimeSeriesQueries,
+        ILogger<AggregatedTimeSeriesRequestHandler> logger)
     {
         _ediClient = ediClient;
         _validator = validator;
         _aggregatedTimeSeriesQueries = aggregatedTimeSeriesQueries;
+        _logger = logger;
     }
 
     public async Task ProcessAsync(ServiceBusReceivedMessage receivedMessage, string referenceId, CancellationToken cancellationToken)
     {
-        var aggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest.Parser.ParseFrom(receivedMessage.Body);
+        var aggregatedTimeSeriesRequest = Edi.Requests.AggregatedTimeSeriesRequest.Parser.ParseFrom(receivedMessage.Body);
 
         var validationErrors = _validator.Validate(aggregatedTimeSeriesRequest);
 
         if (validationErrors.Any())
         {
+            _logger.LogWarning("Validation errors for message with reference id {ReferenceId}", referenceId);
             await SendRejectedMessageAsync(validationErrors.ToList(), referenceId, cancellationToken).ConfigureAwait(false);
             return;
         }
@@ -66,10 +71,12 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
                 error = new List<ValidationError> { _noDataForRequestedGridArea };
             }
 
+            _logger.LogInformation("No data available for message with reference id {ReferenceId}", referenceId);
             await SendRejectedMessageAsync(error, referenceId, cancellationToken).ConfigureAwait(false);
             return;
         }
 
+        _logger.LogInformation("Sending message with reference id {ReferenceId}", referenceId);
         await SendAcceptedMessageAsync(results, referenceId, cancellationToken).ConfigureAwait(false);
     }
 

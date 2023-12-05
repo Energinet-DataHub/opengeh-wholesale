@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Diagnostics;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.Logging;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
@@ -97,9 +98,13 @@ public abstract class ServiceBusWorker<TWorkerType> : BackgroundService, IAsyncD
             loggingScope[key] = value;
         }
 
+        var stopWatch = new Stopwatch();
         using (_logger.BeginScope(loggingScope))
         {
+            stopWatch.Start();
             await ProcessAsync(arg).ConfigureAwait(false);
+            stopWatch.Stop();
+            _logger.LogInformation("Processed message with id {MessageId} in {ElapsedMilliseconds} ms", arg.Message.MessageId, stopWatch.ElapsedMilliseconds);
         }
 
         await arg.CompleteMessageAsync(arg.Message).ConfigureAwait(false);
