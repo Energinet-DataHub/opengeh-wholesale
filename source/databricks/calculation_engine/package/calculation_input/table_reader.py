@@ -143,7 +143,9 @@ class TableReader:
         return df
 
     def read_charge_master_data_periods(self) -> DataFrame:
-        df = self._spark.read.format("delta").load(self.charge_master_data_periods_location)
+        df = self._spark.read.format("delta").load(
+            self.charge_master_data_periods_location
+        )
 
         assert_schema(df.schema, charge_master_data_periods_schema)
 
