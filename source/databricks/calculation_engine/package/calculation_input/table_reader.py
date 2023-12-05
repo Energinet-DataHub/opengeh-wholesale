@@ -72,11 +72,7 @@ class TableReader:
             .dropDuplicates(
                 [
                     Colname.metering_point_id,
-                    Colname.metering_point_type,
-                    Colname.resolution,
-                    Colname.grid_area,
                     Colname.from_date,
-                    Colname.to_date,
                 ]
             )
         )
