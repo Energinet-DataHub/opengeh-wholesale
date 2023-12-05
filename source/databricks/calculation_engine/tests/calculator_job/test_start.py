@@ -25,21 +25,10 @@ class TestWhenInvokedWithInvalidArguments:
         assert system_exit.value.code == 2
 
 
-@pytest.fixture()
-def setup_env_variables():
-    with open():
-        os.environ["APPLICATIONINSIGHTS_CONNECTION_STRING"] = XXX
-
-
 class TestWhenInvokedWithValidArguments:
-    @pytest.mark.usefixtures(setup_env_variables.__name__)
     def test_does_not_raise(self, any_calculator_args):
         start_with_deps(
             cmd_line_args_reader=lambda: any_calculator_args,
             calculation_executor=lambda args, reader: None,
             is_storage_locked_checker=lambda name, cred: False,
-            applicationinsights_connection_string=XXX,
         )
-
-        logs = get_logs(xxx)  # log analytics query
-        assert logs[0].message == "Calculator job started"
