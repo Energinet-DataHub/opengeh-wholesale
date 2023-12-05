@@ -43,11 +43,25 @@ class TableReader:
         time_series_points_table_name: str | None = None,
     ) -> None:
         self._spark = spark
-        self._calculation_input_path = calculation_input_path
+        self.metering_point_periods_path = (
+            f"{calculation_input_path}/{paths.METERING_POINT_PERIODS_TABLE_NAME}"
+        )
         if time_series_points_table_name is None:
-            self._time_series_points_table_name = paths.TIME_SERIES_POINTS_TABLE_NAME
+            self.time_series_points_path = (
+                f"{calculation_input_path}/{paths.TIME_SERIES_POINTS_TABLE_NAME}"
+            )
         else:
-            self._time_series_points_table_name = time_series_points_table_name
+            self.time_series_points_path = time_series_points_table_name
+
+        self.charge_price_points_path = (
+            f"{calculation_input_path}/{paths.CHARGE_PRICE_POINTS_TABLE_NAME}"
+        )
+        self.charge_master_data_periods_path = (
+            f"{calculation_input_path}/{paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}"
+        )
+        self.charge_link_periods_path = (
+            f"{calculation_input_path}/{paths.CHARGE_LINK_PERIODS_TABLE_NAME}"
+        )
 
     def read_metering_point_periods(
         self,
@@ -55,10 +69,9 @@ class TableReader:
         period_end_datetime: datetime,
         calculation_grid_areas: list[str],
     ) -> DataFrame:
-        path = f"{self._calculation_input_path}/metering_point_periods"
         df = (
             self._spark.read.format("delta")
-            .load(path)
+            .load(self.metering_point_periods_path)
             .where(
                 col(Colname.grid_area).isin(calculation_grid_areas)
                 | col(Colname.from_grid_area).isin(calculation_grid_areas)
@@ -82,9 +95,7 @@ class TableReader:
     ) -> DataFrame:
         df = (
             self._spark.read.format("delta")
-            .load(
-                f"{self._calculation_input_path}/{self._time_series_points_table_name}"
-            )
+            .load(self.time_series_points_path)
             .where(col(Colname.observation_time) >= period_start_datetime)
             .where(col(Colname.observation_time) < period_end_datetime)
         )
@@ -94,8 +105,7 @@ class TableReader:
         return df
 
     def read_charge_links_periods(self) -> DataFrame:
-        path = f"{self._calculation_input_path}/{paths.CHARGE_LINK_PERIODS_TABLE_NAME}"
-        df = self._spark.read.format("delta").load(path)
+        df = self._spark.read.format("delta").load(self.charge_link_periods_path)
 
         assert_schema(df.schema, charge_link_periods_schema)
 
@@ -103,8 +113,7 @@ class TableReader:
         return df
 
     def read_charge_master_data_periods(self) -> DataFrame:
-        path = f"{self._calculation_input_path}/{paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}"
-        df = self._spark.read.format("delta").load(path)
+        df = self._spark.read.format("delta").load(self.charge_master_data_periods_path)
 
         assert_schema(df.schema, charge_master_data_periods_schema)
 
@@ -112,8 +121,7 @@ class TableReader:
         return df
 
     def read_charge_price_points(self) -> DataFrame:
-        path = f"{self._calculation_input_path}/{paths.CHARGE_PRICE_POINTS_TABLE_NAME}"
-        df = self._spark.read.format("delta").load(path)
+        df = self._spark.read.format("delta").load(self.charge_price_points_path)
 
         assert_schema(df.schema, charge_price_points_schema)
 
