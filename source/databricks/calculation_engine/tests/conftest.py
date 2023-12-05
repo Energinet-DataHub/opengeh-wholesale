@@ -15,19 +15,22 @@
 By having a conftest.py in this directory, we are able to add all packages
 defined in the geh_stream directory in our tests.
 """
-
-from datetime import datetime
-from delta import configure_spark_with_delta_pip
 import os
-from pyspark.sql import SparkSession
-import pytest
 import shutil
 import subprocess
+from datetime import datetime
 from typing import Generator, Callable, Optional
 
+import pytest
+import yaml
+from azure.identity import ClientSecretCredential
+from delta import configure_spark_with_delta_pip
+from pyspark.sql import SparkSession
+
+from integration_test_configuration import IntegrationTestConfiguration
 from package.datamigration.migration import _apply_migration
-from package.datamigration.uncommitted_migrations import _get_all_migrations
 from package.datamigration.migration_script_args import MigrationScriptArgs
+from package.datamigration.uncommitted_migrations import _get_all_migrations
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME
 
 
@@ -169,7 +172,7 @@ def execute_migrations(spark: SparkSession, data_lake_path: str) -> None:
         data_storage_account_url="foo",
         data_storage_account_name="foo",
         data_storage_container_name="foo",
-        data_storage_credential="foo",
+        data_storage_credential=ClientSecretCredential("foo", "foo", "foo"),
         spark=spark,
     )
     # Overwrite in test
@@ -223,3 +226,17 @@ def installed_package(
         shell=True,
         executable="/bin/bash",
     )
+
+
+@pytest.fixture()
+def integration_test_configuration() -> IntegrationTestConfiguration:
+    """Load settings and sets the properties as environment variables."""
+    with open("integrationtest.local.settings.yml") as stream:
+        settings = yaml.safe_load(stream)
+
+        connection_string = settings["APPLICATIONINSIGHTS_CONNECTION_STRING"]
+        os.environ["APPLICATIONINSIGHTS_CONNECTION_STRING"] = connection_string
+
+        return IntegrationTestConfiguration(
+            applicationinsights_connection_string=connection_string
+        )
