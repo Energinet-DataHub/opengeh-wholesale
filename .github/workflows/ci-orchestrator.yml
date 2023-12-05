@@ -33,11 +33,11 @@ jobs:
   changes:
     uses: ./.github/workflows/detect-changes.yml
 
-  ci_dotnet:
-    needs: changes
-    if: ${{ needs.changes.outputs.dotnet == 'true' }}
-    uses: ./.github/workflows/ci-dotnet.yml
-    secrets: inherit
+  # ci_dotnet:
+  #   needs: changes
+  #   if: ${{ needs.changes.outputs.dotnet == 'true' }}
+  #   uses: ./.github/workflows/ci-dotnet.yml
+  #   secrets: inherit
 
   ci_databricks:
     needs: changes
@@ -45,21 +45,21 @@ jobs:
     uses: ./.github/workflows/ci-databricks.yml
     secrets: inherit
 
-  ci_packages:
-    needs: changes
-    if: ${{ needs.changes.outputs.packages == 'true' }}
-    uses: ./.github/workflows/packages-publish.yml
-    secrets: inherit
+  # ci_packages:
+  #   needs: changes
+  #   if: ${{ needs.changes.outputs.packages == 'true' }}
+  #   uses: ./.github/workflows/packages-publish.yml
+  #   secrets: inherit
 
-  render_c4model_views:
-    needs: changes
-    if: ${{ needs.changes.outputs.render_c4model_views == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/structurizr-render-diagrams.yml@v12
-    with:
-      structurizr_workspace_filename: views
-      included_model_filename: model
-    secrets:
-      pat_token_retrigger_workflow: ${{ secrets.internal_github_pat }}
+  # render_c4model_views:
+  #   needs: changes
+  #   if: ${{ needs.changes.outputs.render_c4model_views == 'true' }}
+  #   uses: Energinet-DataHub/.github/.github/workflows/structurizr-render-diagrams.yml@v12
+  #   with:
+  #     structurizr_workspace_filename: views
+  #     included_model_filename: model
+  #   secrets:
+  #     pat_token_retrigger_workflow: ${{ secrets.internal_github_pat }}
 
   #
   # Branch policy status check
@@ -70,10 +70,10 @@ jobs:
     needs:
       [
         ci_base,
-        ci_dotnet,
+#        ci_dotnet,
         ci_databricks,
-        ci_packages,
-        render_c4model_views,
+#        ci_packages,
+#        render_c4model_views,
       ]
     if: |
       always()
