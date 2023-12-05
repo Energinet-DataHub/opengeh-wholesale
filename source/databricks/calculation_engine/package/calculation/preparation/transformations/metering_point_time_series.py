@@ -59,7 +59,6 @@ def get_metering_point_time_series(
             Colname.from_date,
             Colname.to_date,
         )
-        .distinct()
         .withColumn(
             "quarter_times",
             f.expr(
@@ -84,7 +83,6 @@ def get_metering_point_time_series(
             Colname.from_date,
             Colname.to_date,
         )
-        .distinct()
         .withColumn(
             "times",
             f.expr(
