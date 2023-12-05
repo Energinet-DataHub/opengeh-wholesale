@@ -37,7 +37,7 @@ public class GridAreaOwnerRepository : IGridAreaOwnerRepository
             sequenceNumber));
     }
 
-    public Task<GridAreaOwner> GetCurrentOwnerAsync(string code, CancellationToken cancellationToken)
+    public Task<GridAreaOwner?> GetCurrentOwnerAsync(string code, CancellationToken cancellationToken)
     {
         var now = SystemClock.Instance.GetCurrentInstant();
         return _context.GridAreaOwners
@@ -45,6 +45,6 @@ public class GridAreaOwnerRepository : IGridAreaOwnerRepository
                 gao.GridAreaCode.Equals(code)
                 && gao.ValidFrom <= now)
             .OrderByDescending(gao => gao.SequenceNumber)
-            .FirstAsync(cancellationToken);
+            .FirstOrDefaultAsync(cancellationToken);
     }
 }
