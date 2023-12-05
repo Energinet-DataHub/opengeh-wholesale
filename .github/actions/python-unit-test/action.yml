@@ -23,6 +23,8 @@ runs:
       with:
         timeout_minutes: 15
 
+        # TODO: Write App Insights OR Key Vault URL to file (//workspaces/opengeh-wholesale/source/databricks/calculation_engine/tests/calculator_job/integrationtest.local.settings.json)
+
         # Disabled retry after merge of PR-1048, as this retry might not be needed anymore.
         # Will keep it now, if pipeline is still unstable periodically, reverting will be much easier
         # Note: Dont forget to remove logic regarding exit codes in the entrypoint.sh script if removing retry logic at some point
