@@ -18,11 +18,11 @@ description: This action allows you to execute code, written for Spark, Databric
 runs:
   using: composite
   steps:
-    # TODO: Mount .azure folder so token can be used from within docker
     - name: Execute entrypoint.sh (with retry)
       uses: nick-fields/retry@v2
       with:
         timeout_minutes: 15
+
         # Disabled retry after merge of PR-1048, as this retry might not be needed anymore.
         # Will keep it now, if pipeline is still unstable periodically, reverting will be much easier
         # Note: Dont forget to remove logic regarding exit codes in the entrypoint.sh script if removing retry logic at some point

@@ -14,10 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# TODO: Remove when done testing
-echo LOOK AT ME
-az version
-
 cd source/databricks/calculation_engine/tests/
 
 # There env vars are important to ensure that the driver and worker nodes in spark are alligned
