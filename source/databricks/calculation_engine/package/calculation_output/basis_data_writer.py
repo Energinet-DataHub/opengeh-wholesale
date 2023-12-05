@@ -38,6 +38,8 @@ class BasisDataWriter:
         metering_point_time_series: DataFrame,
         time_zone: str,
     ) -> None:
+        self._log_message("Entering basis_data_writer.write()")
+
         (
             timeseries_quarter_df,
             timeseries_hour_df,
@@ -50,6 +52,8 @@ class BasisDataWriter:
         )
 
         self._write(master_basis_data_df, timeseries_quarter_df, timeseries_hour_df)
+
+        self._log_message("Leaving basis_data_writer.write()")
 
     def _write(
         self,
@@ -173,6 +177,4 @@ class BasisDataWriter:
         ).option("header", True).csv(path)
 
     def _log_message(self, message: str) -> None:
-        self.logger.info(
-            f"{message}, calc. id:{self.calculation_id}, time: {datetime.now()}"
-        )
+        self.logger.info(f"{message}, calc. id:{self.calculation_id}")

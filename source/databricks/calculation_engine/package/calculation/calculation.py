@@ -12,9 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
-from datetime import datetime
-
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as F
 
@@ -47,11 +44,6 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
         args.batch_period_end_datetime,
         metering_point_periods_df,
     ).cache()
-
-    logger = logging.getLogger(__name__)
-    logger.info(
-        f"Done getting metering_point_time_series, calc. id:{args.batch_id}, time: {datetime.now()}"
-    )
 
     energy_calculation.execute(
         args.batch_id,
