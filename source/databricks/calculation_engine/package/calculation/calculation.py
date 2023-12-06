@@ -26,9 +26,14 @@ from .preparation import PreparedDataReader
 from .calculator_args import CalculatorArgs
 from .energy import energy_calculation
 from .wholesale import wholesale_calculation
+from ..common.logger import Logger
+
+logger = Logger(__name__)
 
 
 def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> None:
+    logger.info("Starting calculation")
+
     # cache of metering_point_time_series had no effect on performance (01-12-2023)
     metering_point_periods_df = prepared_data_reader.get_metering_point_periods_df(
         args.batch_period_start_datetime,
