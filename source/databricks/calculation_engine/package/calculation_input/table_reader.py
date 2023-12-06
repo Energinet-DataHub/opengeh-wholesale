@@ -45,17 +45,12 @@ class TableReader:
     ) -> None:
         self._spark = spark
         self._calculation_input_path = calculation_input_path
-        if time_series_points_table_name is None:
-            self._time_series_points_table_name = paths.TIME_SERIES_POINTS_TABLE_NAME
-        else:
-            self._time_series_points_table_name = time_series_points_table_name
-
-        if metering_point_periods_table_name is None:
-            self._metering_point_periods_table_name = (
-                paths.METERING_POINT_PERIODS_TABLE_NAME
-            )
-        else:
-            self._metering_point_periods_table_name = metering_point_periods_table_name
+        self._time_series_points_table_name = (
+            time_series_points_table_name or paths.TIME_SERIES_POINTS_TABLE_NAME
+        )
+        self._metering_point_periods_table_name = (
+            metering_point_periods_table_name or paths.METERING_POINT_PERIODS_TABLE_NAME
+        )
 
     def read_metering_point_periods(
         self,
