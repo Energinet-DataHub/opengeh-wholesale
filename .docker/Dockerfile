@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# The spark version should should follow the spark version in databricks.
+# The spark version should follow the spark version in databricks.
 # The databricks version of spark is controlled from dh3-infrastructure and uses latest LTS (ATTOW - Spark v3.3.0)
 FROM jupyter/pyspark-notebook:spark-3.3.0
 
@@ -22,10 +22,19 @@ USER root
 # This replaces the default spark configuration in the docker image with the ones defined in the sibling file
 COPY spark-defaults.conf $SPARK_HOME/conf/spark-defaults.conf
 
+# Install Azure CLI, see https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt
+#   Install curl to be able to download Azure CLI install script
+RUN apt-get update; \
+    apt-get install -y curl
+#   Download and execute install script
+RUN curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
 # Install Azurite (support wasb-protocol storage for Delta tables in integration tests)
 RUN apt-get update; \
     apt-get install -y npm && npm install -g n && n lts && hash -r && npm install -g azurite
+
+# Cleanup apt cache to reduce image size
+RUN rm -rf /var/lib/apt/lists/*
 
 # Install spark packages with mamba (packages has to be updated according to spark version)
 RUN mamba install --quiet --yes --satisfied-skip-solve \
@@ -45,7 +54,7 @@ RUN pip --no-cache-dir install pyspelling azure-eventhub azure-identity==1.12.0 
 # Below will make everything in the directory owned by the group ${NB_GID}
 RUN fix-permissions "${CONDA_DIR}"
 
-# Set misc environment variables required for properly run spark 
+# Set misc environment variables required for properly run spark
 # note the amount of memory used on the driver is adjusted here
 ENV PATH=$SPARK_HOME/bin:$HADOOP_HOME/bin:$PATH \
     PYTHONPATH="${SPARK_HOME}/python:${SPARK_HOME}/python/lib/py4j-0.10.9-src.zip" \
