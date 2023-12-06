@@ -74,14 +74,19 @@ public abstract class ServiceBusWorker<TWorkerType> : BackgroundService, IAsyncD
 
     private static ServiceBusProcessor CreateServiceBusProcessor(ServiceBusClient serviceBusClient, IOptions<ServiceBusOptions> options)
     {
+        var serviceBusProcessorOptions = new ServiceBusProcessorOptions()
+        {
+            AutoCompleteMessages = false, // Default is true
+        };
         if (!string.IsNullOrWhiteSpace(options.Value.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME))
         {
-            return serviceBusClient.CreateProcessor(options.Value.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME);
+            return serviceBusClient.CreateProcessor(options.Value.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME, serviceBusProcessorOptions);
         }
 
         return serviceBusClient.CreateProcessor(
             options.Value.INTEGRATIONEVENTS_TOPIC_NAME,
-            options.Value.INTEGRATIONEVENTS_SUBSCRIPTION_NAME);
+            options.Value.INTEGRATIONEVENTS_SUBSCRIPTION_NAME,
+            serviceBusProcessorOptions);
     }
 
     private async Task ProcessMessageAsync(ProcessMessageEventArgs arg)
