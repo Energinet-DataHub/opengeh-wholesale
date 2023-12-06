@@ -20,7 +20,7 @@
       }
     },
     "IIS Express": {
-      "commandName": "IISExpress", 
+      "commandName": "IISExpress",
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
