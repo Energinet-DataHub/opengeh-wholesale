@@ -113,6 +113,10 @@ jobs:
       # documented here: https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
       ignore_errors_and_warning_flake8: E501,F401,E402,E203,W503
       test_report_path: ./source/databricks/calculation_engine/tests
+      use_integrationtest_environment: true
+      azure_integrationtest_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
+      azure_integrationtest_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
+      azure_integrationtest_spn_id: ${{ vars.integration_test_azure_spn_id_oidc }}
 
   mypy_check:
     runs-on: ubuntu-latest
