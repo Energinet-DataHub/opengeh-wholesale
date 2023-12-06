@@ -14,6 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Configure Azure CLI to use token cache which must be mapped as volume from host machine
+export AZURE_CONFIG_DIR=/root/.azure
+
 cd source/databricks/calculation_engine/tests/
 
 # There env vars are important to ensure that the driver and worker nodes in spark are alligned
