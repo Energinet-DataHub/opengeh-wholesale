@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.MarketParticipant.Infrastructure.Model.Contracts;
-using Energinet.DataHub.Wholesale.Batches.Application.GridArea;
+using Energinet.DataHub.Wholesale.Batches.Interfaces.GridArea;
 using NodaTime.Serialization.Protobuf;
 
 namespace Energinet.DataHub.Wholesale.Batches.Application.IntegrationEvents.Handlers;

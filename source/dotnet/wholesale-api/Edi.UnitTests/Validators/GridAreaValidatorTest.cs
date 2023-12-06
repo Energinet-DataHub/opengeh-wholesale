@@ -12,19 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Diagnostics.CodeAnalysis;
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Batches.Application.GridArea;
+using Energinet.DataHub.Wholesale.Batches.Interfaces.GridArea;
 using Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.EDI.Validation;
 using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSeries.Rules;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Moq;
 using NodaTime;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 
+[SuppressMessage("Style", "VSTHRD200:Use \"Async\" suffix for async methods", Justification = "Async suffix is not needed for test methods")]
 public class GridAreaValidatorTest
 {
     private const string MeteredDataResponsible = "MDR";
@@ -34,7 +37,7 @@ public class GridAreaValidatorTest
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task Validate_WhenRequesterIsGridOwnerOfRequestedGridArea_ReturnsNoValidationErrorsAsync(
+    public async Task Validate_WhenRequesterIsGridOwnerOfRequestedGridArea_ReturnsNoValidationErrors(
         [Frozen] Mock<IGridAreaOwnerRepository> gridAreaOwnerRepository,
         GridAreaValidationRule sut)
     {
@@ -65,7 +68,7 @@ public class GridAreaValidatorTest
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task Validate_WhenRequesterIsNotGridOwnerOfRequestedGridArea_ReturnsExpectedValidationErrorAsync(
+    public async Task Validate_WhenRequesterIsNotGridOwnerOfRequestedGridArea_ReturnsExpectedValidationError(
         [Frozen] Mock<IGridAreaOwnerRepository> gridAreaOwnerRepository,
         GridAreaValidationRule sut)
     {
@@ -94,14 +97,15 @@ public class GridAreaValidatorTest
         // Assert
         errors.Should().ContainSingle();
 
-        var error = errors.First();
+        using var assertionScope = new AssertionScope();
+        var error = errors.Single();
         error.Message.Should().Be(_invalidGridArea.Message);
         error.ErrorCode.Should().Be(_invalidGridArea.ErrorCode);
     }
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task Validate_WhenGridAreaCodeIsEmpty_ReturnsExpectedValidationErrorAsync(
+    public async Task Validate_WhenGridAreaCodeIsEmpty_ReturnsExpectedValidationError(
         GridAreaValidationRule sut)
     {
         // Arrange
@@ -118,14 +122,15 @@ public class GridAreaValidatorTest
         // Assert
         errors.Should().ContainSingle();
 
-        var error = errors.First();
+        using var assertionScope = new AssertionScope();
+        var error = errors.Single();
         error.Message.Should().Be(_missingGridAreaCode.Message);
         error.ErrorCode.Should().Be(_missingGridAreaCode.ErrorCode);
     }
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task Validate_WhenGridAreaCodeDoesNotExist_ReturnsExpectedValidationErrorAsync(
+    public async Task Validate_WhenGridAreaCodeDoesNotExist_ReturnsExpectedValidationError(
         [Frozen] Mock<IGridAreaOwnerRepository> gridAreaOwnerRepository,
         GridAreaValidationRule sut)
     {
@@ -148,7 +153,8 @@ public class GridAreaValidatorTest
         // Assert
         errors.Should().ContainSingle();
 
-        var error = errors.First();
+        using var assertionScope = new AssertionScope();
+        var error = errors.Single();
         error.Message.Should().Be(_invalidGridArea.Message);
         error.ErrorCode.Should().Be(_invalidGridArea.ErrorCode);
     }

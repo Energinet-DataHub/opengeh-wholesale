@@ -12,14 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Diagnostics.CodeAnalysis;
 using Energinet.DataHub.Wholesale.EDI.UnitTests.Builders;
 using Energinet.DataHub.Wholesale.EDI.Validation;
 using Energinet.DataHub.Wholesale.EDI.Validation.AggregatedTimeSeries.Rules;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.EDI.UnitTests.Validators;
 
+[SuppressMessage("Style", "VSTHRD200:Use \"Async\" suffix for async methods", Justification = "Async suffix is not needed for test methods")]
 public class BalanceResponsibleValidatorTest
 {
     private const string BalanceResponsibleRole = "DDK";
@@ -31,7 +34,7 @@ public class BalanceResponsibleValidatorTest
     private readonly BalanceResponsibleValidationRule _sut = new();
 
     [Fact]
-    public async Task Validate_WhenRequesterIsBalanceResponsibleAndBalanceResponsibleFieldIsValidGlnNumber_ReturnsNoValidationErrorsAsync()
+    public async Task Validate_WhenRequesterIsBalanceResponsibleAndBalanceResponsibleFieldIsValidGlnNumber_ReturnsNoValidationErrors()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -49,7 +52,7 @@ public class BalanceResponsibleValidatorTest
     }
 
     [Fact]
-    public async Task Validate_WhenRequesterIsBalanceResponsibleAndBalanceResponsibleFieldIsValidEicNumber_ReturnsNoValidationErrorsAsync()
+    public async Task Validate_WhenRequesterIsBalanceResponsibleAndBalanceResponsibleFieldIsValidEicNumber_ReturnsNoValidationErrors()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -67,7 +70,7 @@ public class BalanceResponsibleValidatorTest
     }
 
     [Fact]
-    public async Task Validate_WhenRequesterIsBalanceResponsibleAndMissingBalanceResponsibleField_ReturnsExpectedValidationErrorAsync()
+    public async Task Validate_WhenRequesterIsBalanceResponsibleAndMissingBalanceResponsibleField_ReturnsExpectedValidationError()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -82,13 +85,14 @@ public class BalanceResponsibleValidatorTest
         // Assert
         errors.Should().ContainSingle();
 
-        var error = errors.First();
+        using var assertionScope = new AssertionScope();
+        var error = errors.Single();
         error.Message.Should().Be(_invalidBalanceResponsible.Message);
         error.ErrorCode.Should().Be(_invalidBalanceResponsible.ErrorCode);
     }
 
     [Fact]
-    public async Task Validate_WhenRequesterIsBalanceResponsibleAndBalanceResponsibleFieldNotEqualRequestedById_ReturnsExpectedValidationErrorAsync()
+    public async Task Validate_WhenRequesterIsBalanceResponsibleAndBalanceResponsibleFieldNotEqualRequestedById_ReturnsExpectedValidationError()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -104,13 +108,13 @@ public class BalanceResponsibleValidatorTest
         // Assert
         errors.Should().ContainSingle();
 
-        var error = errors.First();
+        var error = errors.Single();
         error.Message.Should().Be(_mismatchedBalanceResponsibleInHeaderAndMessage.Message);
         error.ErrorCode.Should().Be(_mismatchedBalanceResponsibleInHeaderAndMessage.ErrorCode);
     }
 
     [Fact]
-    public async Task Validate_WhenRequesterIsBalanceResponsibleAndInvalidBalanceResponsibleField_ReturnsExpectedValidationErrorAsync()
+    public async Task Validate_WhenRequesterIsBalanceResponsibleAndInvalidBalanceResponsibleField_ReturnsExpectedValidationError()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -126,13 +130,14 @@ public class BalanceResponsibleValidatorTest
         // Assert
         errors.Should().ContainSingle();
 
-        var error = errors.First();
+        using var assertionScope = new AssertionScope();
+        var error = errors.Single();
         error.Message.Should().Be(_invalidBalanceResponsible.Message);
         error.ErrorCode.Should().Be(_invalidBalanceResponsible.ErrorCode);
     }
 
     [Fact]
-    public async Task Validate_WhenRequesterIsNotBalanceResponsibleAndMissingBalanceResponsibleField_ReturnsNoValidationErrorAsync()
+    public async Task Validate_WhenRequesterIsNotBalanceResponsibleAndMissingBalanceResponsibleField_ReturnsNoValidationError()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder

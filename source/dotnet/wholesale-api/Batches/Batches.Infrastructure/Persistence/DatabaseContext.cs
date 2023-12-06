@@ -38,7 +38,7 @@ public class DatabaseContext : DbContext, IDatabaseContext
 
     public virtual DbSet<Batch> Batches { get; private set; } = null!;
 
-    public virtual DbSet<Application.GridArea.GridAreaOwner> GridAreaOwners { get; private set; } = null!;
+    public virtual DbSet<Interfaces.GridArea.GridAreaOwner> GridAreaOwners { get; private set; } = null!;
 
     public virtual DbSet<Application.IntegrationEvents.ReceivedIntegrationEvent> ReceivedIntegrationEvents { get; private set; } = null!;
 

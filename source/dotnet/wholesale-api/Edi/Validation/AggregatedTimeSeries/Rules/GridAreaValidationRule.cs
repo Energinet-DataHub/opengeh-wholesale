@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Application.GridArea;
+using Energinet.DataHub.Wholesale.Batches.Interfaces.GridArea;
 using Energinet.DataHub.Wholesale.EDI.Models;
 using AggregatedTimeSeriesRequest = Energinet.DataHub.Edi.Requests.AggregatedTimeSeriesRequest;
 
@@ -22,7 +22,7 @@ public class GridAreaValidationRule : IValidationRule<AggregatedTimeSeriesReques
 {
     private readonly IGridAreaOwnerRepository _gridAreaOwnerRepository;
     private static readonly ValidationError _missingGridAreaCode = new("Netområde er obligatorisk for rollen MDR / Grid area is mandatory for the role MDR.", "D64");
-    private static readonly ValidationError _invalidGridArea = new("ugyldig netområde / invalid gridarea", "E86");
+    private static readonly ValidationError _invalidGridArea = new("Ugyldig netområde / Invalid gridarea", "E86");
 
     public GridAreaValidationRule(IGridAreaOwnerRepository gridAreaOwnerRepository)
     {
