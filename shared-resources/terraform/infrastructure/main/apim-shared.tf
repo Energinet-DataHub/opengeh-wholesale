@@ -54,8 +54,8 @@ module "apim_shared" {
 
   certificates = [
     {
-      encoded_certificate    = filebase64("./certificates/oces-ca-root-certificate-public.cer")
-      store_name             = "CertificateAuthority"
+      encoded_certificate    = filebase64("./certificates/DH3-test-mosaik-1-OCES-root-CA-binary.cer")
+      store_name             = "Root"
     }
   ]
 }
