@@ -34,7 +34,6 @@ setup(
         "delta-spark==2.2.0",
         "python-dateutil==2.8.2",
         "azure-monitor-opentelemetry==1.0.0",
-        "intercepts==0.4.0",
     ],
     entry_points={
         "console_scripts": [
