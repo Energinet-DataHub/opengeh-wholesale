@@ -13,17 +13,21 @@
 # limitations under the License.
 
 from datetime import datetime
-import logging
+
 from pyspark.sql import DataFrame
 
-import package.calculation.energy.aggregators.metering_point_time_series_aggregators as mp_aggr
-import package.calculation.energy.aggregators.grouping_aggregators as grouping_aggr
 import package.calculation.energy.aggregators.exchange_aggregators as exchange_aggr
 import package.calculation.energy.aggregators.grid_loss_aggregators as grid_loss_aggr
+import package.calculation.energy.aggregators.grouping_aggregators as grouping_aggr
+import package.calculation.energy.aggregators.metering_point_time_series_aggregators as mp_aggr
 from package.calculation.energy.energy_results import EnergyResults
 from package.calculation.energy.hour_to_quarter import transform_hour_to_quarter
+from package.calculation.preparation.grid_loss_responsible import GridLossResponsible
 from package.calculation.preparation.quarterly_metering_point_time_series import (
     QuarterlyMeteringPointTimeSeries,
+)
+from package.calculation_output.energy_calculation_result_writer import (
+    EnergyCalculationResultWriter,
 )
 from package.codelists import (
     TimeSeriesType,
@@ -31,10 +35,7 @@ from package.codelists import (
     ProcessType,
     MeteringPointType,
 )
-from package.calculation_output.energy_calculation_result_writer import (
-    EnergyCalculationResultWriter,
-)
-from package.calculation.preparation.grid_loss_responsible import GridLossResponsible
+from package.common.logger import Logger
 
 
 def execute(
@@ -81,7 +82,7 @@ def _calculate(
         result_writer,
         quarterly_metering_point_time_series,
     )
-    logger = logging.getLogger(__name__)
+    logger = Logger(__name__)
     logger.info(f"Finalized exchange calculation, calc. id:{batch_id}")
 
     temporary_production_per_ga_and_brp_and_es = (

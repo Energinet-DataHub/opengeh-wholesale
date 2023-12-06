@@ -11,58 +11,55 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Any, Union
 
-import intercepts
 import logging
+import os
+from typing import Union, Any
 
 from azure.monitor.opentelemetry import configure_azure_monitor
 
-DEFAULT_LOG_LEVEL = logging.INFO
+DEFAULT_LOG_LEVEL: int = logging.INFO
+_EXTRAS: dict[str, Any] = {}
 
 
-def initialize_logging() -> None:
+def configure_logging(
+    *,
+    cloud_role_name: str,
+    applicationinsights_connection_string: Union[str, None] = None,
+    extras: Union[dict[str, Any], None] = None,
+) -> None:
     """
     Configure logging to use OpenTelemetry and Azure Monitor.
 
-    The logging is configured to add "Domain"="wholesale" as structured logging.
-    This enables us to filter on the domain in Azure Monitor.
+    :param cloud_role_name:
+    :param applicationinsights_connection_string:
+    :param extras: Custom structured logging data to be included in every log message.
+    :return:
+
+    If connection string is None, then logging will not be sent to Azure Monitor.
+    This is useful for unit testing.
     """
-    # Configure OpenTelemetry to use Azure Monitor.
-    # The connection string is read from the environment variable APPLICATIONINSIGHTS_CONNECTION_STRING
-    # as it is not provided explicitly.
-    configure_azure_monitor()
 
-    # Intercept all logging functions in order to add structured logging.
-    intercepts.register(logging.Logger.debug, _add_extra)
-    intercepts.register(logging.Logger.info, _add_extra)
-    intercepts.register(logging.Logger.warning, _add_extra)
-    # noinspection PyDeprecation
-    intercepts.register(logging.Logger.warn, _add_extra)
-    intercepts.register(logging.Logger.error, _add_extra)
-    intercepts.register(logging.Logger.exception, _add_extra)
-    intercepts.register(logging.Logger.critical, _add_extra)
-    intercepts.register(logging.Logger.fatal, _add_extra)
-    intercepts.register(logging.Logger.log, _add_extra)
+    # Configure structured logging data to be included in every log message.
+    if extras is not None:
+        global _EXTRAS
+        _EXTRAS = extras.copy()
 
-    # Suppress Py4J logging to only show errors and above.
-    # py4j logs a lot of information.
-    logging.getLogger("py4j").setLevel(logging.ERROR)
+    # Add cloud role name when logging
+    os.environ["OTEL_SERVICE_NAME"] = cloud_role_name
 
-    # Set default log level for all module loggers being created.
-    intercepts.register(logging.getLogger, _set_default_log_level)
+    # Configure OpenTelemetry to log to Azure Monitor.
+    if applicationinsights_connection_string is not None:
+        configure_azure_monitor(connection_string=applicationinsights_connection_string)
+
+    # Reduce Py4J logging. py4j logs a lot of information.
+    logging.getLogger("py4j").setLevel(logging.WARNING)
 
 
-def _add_extra(self: logging.Logger, msg: str, *args: object, **kwargs: Any) -> None:
-    """Add extra structured logging to enable filtering on e.g. "Domain" in Azure Monitor."""
-    kwargs["extra"] = kwargs.get("extra", {})
-    kwargs["extra"]["Domain"] = "wholesale"
-
-    _(self, msg, *args, **kwargs)  # type: ignore # noqa: F821 (mypy and flake8)
+def get_extras() -> dict[str, Any]:
+    return _EXTRAS.copy()
 
 
-def _set_default_log_level(name: Union[str, None]) -> logging.Logger:
-    """Set default log level for all loggers on create."""
-    _logger: logging.Logger = _(name)  # type: ignore # noqa: F821 (mypy and flake8)
-    _logger.setLevel(DEFAULT_LOG_LEVEL)
-    return _logger
+def add_extras(extras: dict[str, Any]) -> None:
+    global _EXTRAS
+    _EXTRAS = _EXTRAS | extras

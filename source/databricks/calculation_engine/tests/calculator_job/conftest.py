@@ -73,6 +73,13 @@ def calculator_args_wholesale_fixing(
 
 
 @pytest.fixture(scope="session")
+def any_calculator_args(
+    calculator_args_balance_fixing: CalculatorArgs,
+) -> CalculatorArgs:
+    return calculator_args_balance_fixing
+
+
+@pytest.fixture(scope="session")
 def grid_loss_responsible_test_data(
     spark: SparkSession,
     test_files_folder_path: str,
