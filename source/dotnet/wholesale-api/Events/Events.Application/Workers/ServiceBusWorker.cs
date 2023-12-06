@@ -25,7 +25,6 @@ namespace Energinet.DataHub.Wholesale.Events.Application.Workers;
 public abstract class ServiceBusWorker<TWorkerType> : BackgroundService, IAsyncDisposable
 {
     private readonly ServiceBusProcessor _serviceBusProcessor;
-    private readonly ILogger<TWorkerType> _logger;
     private readonly string _serviceName;
     private readonly LoggingScope _loggingScope;
 
@@ -36,10 +35,12 @@ public abstract class ServiceBusWorker<TWorkerType> : BackgroundService, IAsyncD
     {
         _serviceBusProcessor = CreateServiceBusProcessor(serviceBusClient, options);
 
-        _logger = logger;
+        Logger = logger;
         _serviceName = typeof(TWorkerType).Name;
         _loggingScope = new LoggingScope { ["HostedService"] = _serviceName };
     }
+
+    protected ILogger<TWorkerType> Logger { get; }
 
     public async ValueTask DisposeAsync()
     {
@@ -49,11 +50,11 @@ public abstract class ServiceBusWorker<TWorkerType> : BackgroundService, IAsyncD
 
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        using (_logger.BeginScope(_loggingScope))
+        using (Logger.BeginScope(_loggingScope))
         {
             await _serviceBusProcessor.StopProcessingAsync(cancellationToken).ConfigureAwait(false);
             await base.StopAsync(cancellationToken).ConfigureAwait(false);
-            _logger.LogWarning("{Worker} has stopped", _serviceName);
+            Logger.LogWarning("{Worker} has stopped", _serviceName);
         }
     }
 
@@ -61,9 +62,9 @@ public abstract class ServiceBusWorker<TWorkerType> : BackgroundService, IAsyncD
     {
         if (_serviceBusProcessor == null) throw new ArgumentNullException();
 
-        using (_logger.BeginScope(_loggingScope))
+        using (Logger.BeginScope(_loggingScope))
         {
-            _logger.LogInformation("{Worker} started", _serviceName);
+            Logger.LogInformation("{Worker} started", _serviceName);
             _serviceBusProcessor.ProcessMessageAsync += ProcessMessageAsync;
             _serviceBusProcessor.ProcessErrorAsync += ProcessErrorAsync;
         }
@@ -104,12 +105,12 @@ public abstract class ServiceBusWorker<TWorkerType> : BackgroundService, IAsyncD
         }
 
         var stopWatch = new Stopwatch();
-        using (_logger.BeginScope(loggingScope))
+        using (Logger.BeginScope(loggingScope))
         {
             stopWatch.Start();
             await ProcessAsync(arg).ConfigureAwait(false);
             stopWatch.Stop();
-            _logger.LogInformation("Processed message with id {MessageId} in {ElapsedMilliseconds} ms", arg.Message.MessageId, stopWatch.ElapsedMilliseconds);
+            Logger.LogInformation("Processed message with id {MessageId} in {ElapsedMilliseconds} ms", arg.Message.MessageId, stopWatch.ElapsedMilliseconds);
         }
 
         await arg.CompleteMessageAsync(arg.Message).ConfigureAwait(false);
@@ -117,9 +118,9 @@ public abstract class ServiceBusWorker<TWorkerType> : BackgroundService, IAsyncD
 
     private Task ProcessErrorAsync(ProcessErrorEventArgs arg)
     {
-        using (_logger.BeginScope(_loggingScope))
+        using (Logger.BeginScope(_loggingScope))
         {
-            _logger.LogError(
+            Logger.LogError(
                 arg.Exception,
                 "Process message encountered an exception. ErrorSource: {ErrorSource}, Entity Path: {EntityPath}",
                 arg.ErrorSource, // Source of the error. For example, a Message completion operation failed.
