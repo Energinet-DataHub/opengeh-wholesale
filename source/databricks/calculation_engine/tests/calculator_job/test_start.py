@@ -12,7 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pytest
+from azure.identity import DefaultAzureCredential
+from azure.monitor.query import LogsQueryClient
 
+from integration_test_configuration import IntegrationTestConfiguration
 from package.calculator_job import start, start_with_deps
 
 
@@ -32,3 +35,23 @@ class TestWhenInvokedWithValidArguments:
             calculation_executor=lambda args, reader: None,
             is_storage_locked_checker=lambda name, cred: False,
         )
+
+    def test_logs_to_azure_monitor(
+        self,
+        any_calculator_args,
+        integration_test_configuration: IntegrationTestConfiguration,
+    ):
+        # Act
+        start_with_deps(
+            cmd_line_args_reader=lambda: any_calculator_args,
+            calculation_executor=lambda args, reader: None,
+            is_storage_locked_checker=lambda name, cred: False,
+            applicationinsights_connection_string=integration_test_configuration.applicationinsights_connection_string,
+        )
+
+        # Assert
+        credential = DefaultAzureCredential()
+        logs_client = LogsQueryClient(credential)
+
+        actual = logs_client.query_batch()
+        # assert logs[0].message == "Calculator job started"
