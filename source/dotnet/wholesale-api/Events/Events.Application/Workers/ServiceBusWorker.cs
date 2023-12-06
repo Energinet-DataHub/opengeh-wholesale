@@ -61,9 +61,12 @@ public abstract class ServiceBusWorker<TWorkerType> : BackgroundService, IAsyncD
     {
         if (_serviceBusProcessor == null) throw new ArgumentNullException();
 
-        _logger.LogInformation("{Worker} started", _serviceName);
-        _serviceBusProcessor.ProcessMessageAsync += ProcessMessageAsync;
-        _serviceBusProcessor.ProcessErrorAsync += ProcessErrorAsync;
+        using (_logger.BeginScope(_loggingScope))
+        {
+            _logger.LogInformation("{Worker} started", _serviceName);
+            _serviceBusProcessor.ProcessMessageAsync += ProcessMessageAsync;
+            _serviceBusProcessor.ProcessErrorAsync += ProcessErrorAsync;
+        }
 
         await _serviceBusProcessor.StartProcessingAsync(stoppingToken).ConfigureAwait(false);
     }
