@@ -41,6 +41,7 @@ class TableReader:
         spark: SparkSession,
         calculation_input_path: str,
         time_series_points_table_name: str | None = None,
+        metering_point_periods_table_name: str | None = None,
     ) -> None:
         self._spark = spark
         self._calculation_input_path = calculation_input_path
@@ -49,13 +50,22 @@ class TableReader:
         else:
             self._time_series_points_table_name = time_series_points_table_name
 
+        if metering_point_periods_table_name is None:
+            self._metering_point_periods_table_name = (
+                paths.METERING_POINT_PERIODS_TABLE_NAME
+            )
+        else:
+            self._metering_point_periods_table_name = metering_point_periods_table_name
+
     def read_metering_point_periods(
         self,
         period_start_datetime: datetime,
         period_end_datetime: datetime,
         calculation_grid_areas: list[str],
     ) -> DataFrame:
-        path = f"{self._calculation_input_path}/metering_point_periods"
+        path = (
+            f"{self._calculation_input_path}/{self._metering_point_periods_table_name}"
+        )
         df = (
             self._spark.read.format("delta")
             .load(path)

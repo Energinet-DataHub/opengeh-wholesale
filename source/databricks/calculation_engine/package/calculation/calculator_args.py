@@ -25,6 +25,7 @@ class CalculatorArgs:
     wholesale_container_path: str
     calculation_input_path: str
     time_series_periods_table_name: str | None
+    metering_point_periods_table_name: str | None
     batch_id: str
     batch_grid_areas: list[str]
     batch_period_start_datetime: datetime
