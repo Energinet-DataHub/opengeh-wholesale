@@ -26,7 +26,6 @@ public abstract class ServiceBusWorker<TWorkerType> : BackgroundService, IAsyncD
 {
     private readonly ServiceBusProcessor _serviceBusProcessor;
     private readonly string _serviceName;
-    private readonly LoggingScope _loggingScope;
 
     protected ServiceBusWorker(
         ServiceBusClient serviceBusClient,
@@ -37,7 +36,6 @@ public abstract class ServiceBusWorker<TWorkerType> : BackgroundService, IAsyncD
 
         Logger = logger;
         _serviceName = typeof(TWorkerType).Name;
-        _loggingScope = new LoggingScope { ["HostedService"] = _serviceName };
     }
 
     protected ILogger<TWorkerType> Logger { get; }
@@ -50,24 +48,19 @@ public abstract class ServiceBusWorker<TWorkerType> : BackgroundService, IAsyncD
 
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        using (Logger.BeginScope(_loggingScope))
-        {
-            await _serviceBusProcessor.StopProcessingAsync(cancellationToken).ConfigureAwait(false);
-            await base.StopAsync(cancellationToken).ConfigureAwait(false);
-            Logger.LogWarning("{Worker} has stopped", _serviceName);
-        }
+        await _serviceBusProcessor.StopProcessingAsync(cancellationToken).ConfigureAwait(false);
+        await base.StopAsync(cancellationToken).ConfigureAwait(false);
+        Logger.LogWarning("{Worker} has stopped", _serviceName);
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        if (_serviceBusProcessor == null) throw new ArgumentNullException();
+        if (_serviceBusProcessor == null)
+            throw new ArgumentNullException();
 
-        using (Logger.BeginScope(_loggingScope))
-        {
-            Logger.LogInformation("{Worker} started", _serviceName);
-            _serviceBusProcessor.ProcessMessageAsync += ProcessMessageAsync;
-            _serviceBusProcessor.ProcessErrorAsync += ProcessErrorAsync;
-        }
+        Logger.LogInformation("{Worker} started", _serviceName);
+        _serviceBusProcessor.ProcessMessageAsync += ProcessMessageAsync;
+        _serviceBusProcessor.ProcessErrorAsync += ProcessErrorAsync;
 
         await _serviceBusProcessor.StartProcessingAsync(stoppingToken).ConfigureAwait(false);
     }
@@ -93,39 +86,21 @@ public abstract class ServiceBusWorker<TWorkerType> : BackgroundService, IAsyncD
 
     private async Task ProcessMessageAsync(ProcessMessageEventArgs arg)
     {
-        var loggingScope = new LoggingScope
-        {
-            ["MessageId"] = arg.Message.MessageId,
-            ["Subject"] = arg.Message.Subject,
-        };
-
-        foreach (var (key, value) in _loggingScope)
-        {
-            loggingScope[key] = value;
-        }
-
-        var stopWatch = new Stopwatch();
-        using (Logger.BeginScope(loggingScope))
-        {
-            stopWatch.Start();
-            await ProcessAsync(arg).ConfigureAwait(false);
-            stopWatch.Stop();
-            Logger.LogInformation("Processed message with id {MessageId} in {ElapsedMilliseconds} ms", arg.Message.MessageId, stopWatch.ElapsedMilliseconds);
-        }
+        var stopWatch = Stopwatch.StartNew();
+        await ProcessAsync(arg).ConfigureAwait(false);
+        stopWatch.Stop();
+        Logger.LogInformation("Processed message with id {MessageId} in {ElapsedMilliseconds} ms", arg.Message.MessageId, stopWatch.ElapsedMilliseconds);
 
         await arg.CompleteMessageAsync(arg.Message).ConfigureAwait(false);
     }
 
     private Task ProcessErrorAsync(ProcessErrorEventArgs arg)
     {
-        using (Logger.BeginScope(_loggingScope))
-        {
-            Logger.LogError(
-                arg.Exception,
-                "Process message encountered an exception. ErrorSource: {ErrorSource}, Entity Path: {EntityPath}",
-                arg.ErrorSource, // Source of the error. For example, a Message completion operation failed.
-                arg.EntityPath); // The entity path for which the exception occurred. For example, the entity path of the queue.
-        }
+        Logger.LogError(
+            arg.Exception,
+            "Process message encountered an exception. ErrorSource: {ErrorSource}, Entity Path: {EntityPath}",
+            arg.ErrorSource, // Source of the error. For example, a Message completion operation failed.
+            arg.EntityPath); // The entity path for which the exception occurred. For example, the entity path of the queue.
 
         return Task.CompletedTask;
     }
