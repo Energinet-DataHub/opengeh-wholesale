@@ -41,13 +41,16 @@ class TableReader:
         spark: SparkSession,
         calculation_input_path: str,
         time_series_points_table_name: str | None = None,
+        metering_point_periods_table_name: str | None = None,
     ) -> None:
         self._spark = spark
         self._calculation_input_path = calculation_input_path
-        if time_series_points_table_name is None:
-            self._time_series_points_table_name = paths.TIME_SERIES_POINTS_TABLE_NAME
-        else:
-            self._time_series_points_table_name = time_series_points_table_name
+        self._time_series_points_table_name = (
+            time_series_points_table_name or paths.TIME_SERIES_POINTS_TABLE_NAME
+        )
+        self._metering_point_periods_table_name = (
+            metering_point_periods_table_name or paths.METERING_POINT_PERIODS_TABLE_NAME
+        )
 
     def read_metering_point_periods(
         self,
@@ -55,7 +58,9 @@ class TableReader:
         period_end_datetime: datetime,
         calculation_grid_areas: list[str],
     ) -> DataFrame:
-        path = f"{self._calculation_input_path}/metering_point_periods"
+        path = (
+            f"{self._calculation_input_path}/{self._metering_point_periods_table_name}"
+        )
         df = (
             self._spark.read.format("delta")
             .load(path)
@@ -80,14 +85,37 @@ class TableReader:
     def read_time_series_points(
         self, period_start_datetime: datetime, period_end_datetime: datetime
     ) -> DataFrame:
-        df = (
-            self._spark.read.format("delta")
-            .load(
-                f"{self._calculation_input_path}/{self._time_series_points_table_name}"
+        path = f"{self._calculation_input_path}/{self._time_series_points_table_name}"
+
+        if "_partitioned_by_year_and_month" in path:
+            # TEMPORARY: This is for experimenting with a table that is partitioned by year and month.
+            # TODO: Cleanup when/if the table is time_series_points  table is partitioned by year and month.
+
+            if period_start_datetime.year != period_end_datetime.year:
+                raise ValueError(
+                    "The period start and end datetimes must be within the same year"
+                )
+            if period_start_datetime.month != period_end_datetime.month:
+                raise ValueError(
+                    "The period start and end datetimes must be within the same month"
+                )
+            year = period_start_datetime.year
+            month = period_start_datetime.month
+            df = (
+                self._spark.read.format("delta")
+                .load(path)
+                .where(col("observation_year") == year)
+                .where(col("observation_month") == month)
+                .where(col(Colname.observation_time) >= period_start_datetime)
+                .where(col(Colname.observation_time) < period_end_datetime)
             )
-            .where(col(Colname.observation_time) >= period_start_datetime)
-            .where(col(Colname.observation_time) < period_end_datetime)
-        )
+        else:
+            df = (
+                self._spark.read.format("delta")
+                .load(path)
+                .where(col(Colname.observation_time) >= period_start_datetime)
+                .where(col(Colname.observation_time) < period_end_datetime)
+            )
 
         assert_schema(df.schema, time_series_point_schema)
 
