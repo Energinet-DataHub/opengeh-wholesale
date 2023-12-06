@@ -23,7 +23,7 @@ USER root
 COPY spark-defaults.conf $SPARK_HOME/conf/spark-defaults.conf
 
 # Install Azure CLI, see https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt
-#   Install curl to be able to download install script
+#   Install curl to be able to download Azure CLI install script
 RUN apt-get update; \
     apt-get install -y curl
 #   Download and execute install script
