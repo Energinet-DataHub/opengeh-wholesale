@@ -32,8 +32,9 @@ public class ReceiveIntegrationEventServiceBusWorker : ServiceBusWorker<ReceiveI
         ServiceBusClient serviceBusClient,
         IServiceProvider serviceProvider)
         : base(
-            serviceBusClient,
-            options,
+            serviceBusClient.CreateProcessor(
+                options.Value.INTEGRATIONEVENTS_TOPIC_NAME,
+                options.Value.INTEGRATIONEVENTS_SUBSCRIPTION_NAME),
             logger)
     {
         _serviceProvider = serviceProvider;

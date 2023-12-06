@@ -14,11 +14,8 @@
 
 using System.Diagnostics;
 using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.Core.Logging;
-using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.Workers;
 
@@ -28,12 +25,10 @@ public abstract class ServiceBusWorker<TWorkerType> : BackgroundService, IAsyncD
     private readonly string _serviceName;
 
     protected ServiceBusWorker(
-        ServiceBusClient serviceBusClient,
-        IOptions<ServiceBusOptions> options,
+        ServiceBusProcessor serviceBusProcessor,
         ILogger<TWorkerType> logger)
     {
-        _serviceBusProcessor = CreateServiceBusProcessor(serviceBusClient, options);
-
+        _serviceBusProcessor = serviceBusProcessor;
         Logger = logger;
         _serviceName = typeof(TWorkerType).Name;
     }
@@ -66,23 +61,6 @@ public abstract class ServiceBusWorker<TWorkerType> : BackgroundService, IAsyncD
     }
 
     protected abstract Task ProcessAsync(ProcessMessageEventArgs arg);
-
-    private static ServiceBusProcessor CreateServiceBusProcessor(ServiceBusClient serviceBusClient, IOptions<ServiceBusOptions> options)
-    {
-        var serviceBusProcessorOptions = new ServiceBusProcessorOptions()
-        {
-            AutoCompleteMessages = false, // Default is true
-        };
-        if (!string.IsNullOrWhiteSpace(options.Value.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME))
-        {
-            return serviceBusClient.CreateProcessor(options.Value.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME, serviceBusProcessorOptions);
-        }
-
-        return serviceBusClient.CreateProcessor(
-            options.Value.INTEGRATIONEVENTS_TOPIC_NAME,
-            options.Value.INTEGRATIONEVENTS_SUBSCRIPTION_NAME,
-            serviceBusProcessorOptions);
-    }
 
     private async Task ProcessMessageAsync(ProcessMessageEventArgs arg)
     {
