@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from datetime import datetime
+import logging
 from pyspark.sql import DataFrame
 
 import package.calculation.energy.aggregators.metering_point_time_series_aggregators as mp_aggr
@@ -56,6 +57,7 @@ def execute(
     quarterly_metering_point_time_series.cache_internal()
 
     _calculate(
+        batch_id,
         batch_process_type,
         batch_grid_areas,
         calculation_result_writer,
@@ -65,6 +67,7 @@ def execute(
 
 
 def _calculate(
+    batch_id: str,
     process_type: ProcessType,
     batch_grid_areas: list[str],
     result_writer: EnergyCalculationResultWriter,
@@ -78,6 +81,8 @@ def _calculate(
         result_writer,
         quarterly_metering_point_time_series,
     )
+    logger = logging.getLogger(__name__)
+    logger.info(f"Finalized exchange calculation, calc. id:{batch_id}")
 
     temporary_production_per_ga_and_brp_and_es = (
         _calculate_temporary_production_per_per_ga_and_brp_and_es(
