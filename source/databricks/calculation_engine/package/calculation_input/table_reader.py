@@ -109,6 +109,9 @@ class TableReader:
                 .where(col(Colname.observation_time) >= period_start_datetime)
                 .where(col(Colname.observation_time) < period_end_datetime)
             )
+            df = df.drop(
+                "observation_year", "observation_month"
+            )  # Drop partition columns
         else:
             df = (
                 self._spark.read.format("delta")
