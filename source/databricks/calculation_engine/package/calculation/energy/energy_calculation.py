@@ -13,16 +13,21 @@
 # limitations under the License.
 
 from datetime import datetime
+
 from pyspark.sql import DataFrame
 
-import package.calculation.energy.aggregators.metering_point_time_series_aggregators as mp_aggr
-import package.calculation.energy.aggregators.grouping_aggregators as grouping_aggr
 import package.calculation.energy.aggregators.exchange_aggregators as exchange_aggr
 import package.calculation.energy.aggregators.grid_loss_aggregators as grid_loss_aggr
+import package.calculation.energy.aggregators.grouping_aggregators as grouping_aggr
+import package.calculation.energy.aggregators.metering_point_time_series_aggregators as mp_aggr
 from package.calculation.energy.energy_results import EnergyResults
 from package.calculation.energy.hour_to_quarter import transform_hour_to_quarter
+from package.calculation.preparation.grid_loss_responsible import GridLossResponsible
 from package.calculation.preparation.quarterly_metering_point_time_series import (
     QuarterlyMeteringPointTimeSeries,
+)
+from package.calculation_output.energy_calculation_result_writer import (
+    EnergyCalculationResultWriter,
 )
 from package.codelists import (
     TimeSeriesType,
@@ -30,10 +35,7 @@ from package.codelists import (
     ProcessType,
     MeteringPointType,
 )
-from package.calculation_output.energy_calculation_result_writer import (
-    EnergyCalculationResultWriter,
-)
-from package.calculation.preparation.grid_loss_responsible import GridLossResponsible
+from package.common.logger import Logger
 
 
 def execute(
@@ -56,6 +58,7 @@ def execute(
     quarterly_metering_point_time_series.cache_internal()
 
     _calculate(
+        batch_id,
         batch_process_type,
         batch_grid_areas,
         calculation_result_writer,
@@ -65,6 +68,7 @@ def execute(
 
 
 def _calculate(
+    batch_id: str,
     process_type: ProcessType,
     batch_grid_areas: list[str],
     result_writer: EnergyCalculationResultWriter,
@@ -78,6 +82,8 @@ def _calculate(
         result_writer,
         quarterly_metering_point_time_series,
     )
+    logger = Logger(__name__)
+    logger.info(f"Finalized exchange calculation, calc. id:{batch_id}")
 
     temporary_production_per_ga_and_brp_and_es = (
         _calculate_temporary_production_per_per_ga_and_brp_and_es(

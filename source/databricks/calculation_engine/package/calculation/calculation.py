@@ -12,9 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
-from datetime import datetime
-
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as F
 
@@ -29,9 +26,14 @@ from .preparation import PreparedDataReader
 from .calculator_args import CalculatorArgs
 from .energy import energy_calculation
 from .wholesale import wholesale_calculation
+from ..common.logger import Logger
+
+logger = Logger(__name__)
 
 
 def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> None:
+    logger.info("Starting calculation")
+
     # cache of metering_point_time_series had no effect on performance (01-12-2023)
     metering_point_periods_df = prepared_data_reader.get_metering_point_periods_df(
         args.batch_period_start_datetime,
@@ -47,16 +49,6 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
         args.batch_period_end_datetime,
         metering_point_periods_df,
     ).cache()
-
-    logger = logging.getLogger(__name__)
-    logger.info(f"Done getting metering_point_time_series: {datetime.now()}")
-
-    basis_data_writer = BasisDataWriter(args.wholesale_container_path, args.batch_id)
-    basis_data_writer.write(
-        metering_point_periods_df,
-        metering_point_time_series,
-        args.time_zone,
-    )
 
     energy_calculation.execute(
         args.batch_id,
@@ -94,6 +86,13 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
             tariffs_hourly_df,
             args.batch_period_start_datetime,
         )
+
+    basis_data_writer = BasisDataWriter(args.wholesale_container_path, args.batch_id)
+    basis_data_writer.write(
+        metering_point_periods_df,
+        metering_point_time_series,
+        args.time_zone,
+    )
 
 
 def _get_production_and_consumption_metering_points(
