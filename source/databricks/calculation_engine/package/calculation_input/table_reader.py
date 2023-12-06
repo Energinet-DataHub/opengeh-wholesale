@@ -63,7 +63,7 @@ class TableReader:
         )
         df = (
             self._spark.read.format("delta")
-            .load(self.metering_point_periods_location)
+            .load(path)
             .where(
                 col(Colname.grid_area).isin(calculation_grid_areas)
                 | col(Colname.from_grid_area).isin(calculation_grid_areas)
@@ -85,7 +85,9 @@ class TableReader:
     def read_time_series_points(
         self, period_start_datetime: datetime, period_end_datetime: datetime
     ) -> DataFrame:
-        if "_partitioned_by_year_and_month" in self.time_series_points_location:
+        path = f"{self._calculation_input_path}/{self._time_series_points_table_name}"
+
+        if "_partitioned_by_year_and_month" in path:
             # TEMPORARY: This is for experimenting with a table that is partitioned by year and month.
             # TODO: Cleanup when/if the table is time_series_points  table is partitioned by year and month.
 
@@ -101,7 +103,7 @@ class TableReader:
             month = period_start_datetime.month
             df = (
                 self._spark.read.format("delta")
-                .load(self.time_series_points_location)
+                .load(path)
                 .where(col("observation_year") == year)
                 .where(col("observation_month") == month)
                 .where(col(Colname.observation_time) >= period_start_datetime)
@@ -110,7 +112,7 @@ class TableReader:
         else:
             df = (
                 self._spark.read.format("delta")
-                .load(self.time_series_points_location)
+                .load(path)
                 .where(col(Colname.observation_time) >= period_start_datetime)
                 .where(col(Colname.observation_time) < period_end_datetime)
             )

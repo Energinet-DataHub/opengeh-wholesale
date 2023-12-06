@@ -111,15 +111,15 @@ class TestWhenInvokedWithValidParameters:
         )
         assert actual.time_zone == "Europe/Copenhagen"
 
-    def test_parses_optional_time_series_points_table_location(
+    def test_parses_optional_time_series_periods_table_name(
         self,
         job_environment_variables: dict,
         sys_argv_from_contract,
     ) -> None:
         # Arrange
-        expected = "the_time_series_points_table_location"
+        expected = "the_time_series_periods_table_name"
         sys_argv_from_contract = sys_argv_from_contract + [
-            f"--time_series_points_table_location={expected}"
+            f"--time_series_periods_table_name={expected}"
         ]
 
         with patch("sys.argv", sys_argv_from_contract):
@@ -128,9 +128,9 @@ class TestWhenInvokedWithValidParameters:
                 actual = get_calculator_args()
 
         # Assert
-        assert actual.time_series_points_table_location == expected
+        assert actual.time_series_periods_table_name == expected
 
-    def test_returns_none_when_time_series_points_table_location_absent(
+    def test_returns_none_when_time_series_periods_table_name_absent(
         self,
         job_environment_variables: dict,
         sys_argv_from_contract,
@@ -142,7 +142,7 @@ class TestWhenInvokedWithValidParameters:
                 actual = get_calculator_args()
 
         # Assert
-        assert actual.time_series_points_table_location is None
+        assert actual.time_series_periods_table_name is None
 
 
 class TestWhenUnknownProcessType:
