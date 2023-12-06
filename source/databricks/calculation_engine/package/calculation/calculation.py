@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as F
 
@@ -45,13 +44,6 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
         args.batch_period_end_datetime,
         metering_point_periods_df,
     ).cache()
-
-    basis_data_writer = BasisDataWriter(args.wholesale_container_path, args.batch_id)
-    basis_data_writer.write(
-        metering_point_periods_df,
-        metering_point_time_series,
-        args.time_zone,
-    )
 
     energy_calculation.execute(
         args.batch_id,
@@ -89,6 +81,13 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
             tariffs_hourly_df,
             args.batch_period_start_datetime,
         )
+
+    basis_data_writer = BasisDataWriter(args.wholesale_container_path, args.batch_id)
+    basis_data_writer.write(
+        metering_point_periods_df,
+        metering_point_time_series,
+        args.time_zone,
+    )
 
 
 def _get_production_and_consumption_metering_points(
