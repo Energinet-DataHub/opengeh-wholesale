@@ -40,27 +40,16 @@ class TableReader:
         self,
         spark: SparkSession,
         calculation_input_path: str,
-        time_series_points_location: str | None = None,
+        time_series_points_table_name: str | None = None,
+        metering_point_periods_table_name: str | None = None,
     ) -> None:
         self._spark = spark
-        self.metering_point_periods_location = (
-            f"{calculation_input_path}/{paths.METERING_POINT_PERIODS_TABLE_NAME}"
+        self._calculation_input_path = calculation_input_path
+        self._time_series_points_table_name = (
+            time_series_points_table_name or paths.TIME_SERIES_POINTS_TABLE_NAME
         )
-        if time_series_points_location is None:
-            self.time_series_points_location = (
-                f"{calculation_input_path}/{paths.TIME_SERIES_POINTS_TABLE_NAME}"
-            )
-        else:
-            self.time_series_points_location = time_series_points_location
-
-        self.charge_price_points_location = (
-            f"{calculation_input_path}/{paths.CHARGE_PRICE_POINTS_TABLE_NAME}"
-        )
-        self.charge_master_data_periods_location = (
-            f"{calculation_input_path}/{paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}"
-        )
-        self.charge_link_periods_location = (
-            f"{calculation_input_path}/{paths.CHARGE_LINK_PERIODS_TABLE_NAME}"
+        self._metering_point_periods_table_name = (
+            metering_point_periods_table_name or paths.METERING_POINT_PERIODS_TABLE_NAME
         )
 
     def read_metering_point_periods(
@@ -69,6 +58,9 @@ class TableReader:
         period_end_datetime: datetime,
         calculation_grid_areas: list[str],
     ) -> DataFrame:
+        path = (
+            f"{self._calculation_input_path}/{self._metering_point_periods_table_name}"
+        )
         df = (
             self._spark.read.format("delta")
             .load(self.metering_point_periods_location)
@@ -128,7 +120,8 @@ class TableReader:
         return df
 
     def read_charge_links_periods(self) -> DataFrame:
-        df = self._spark.read.format("delta").load(self.charge_link_periods_location)
+        path = f"{self._calculation_input_path}/{paths.CHARGE_LINK_PERIODS_TABLE_NAME}"
+        df = self._spark.read.format("delta").load(path)
 
         assert_schema(df.schema, charge_link_periods_schema)
 
@@ -136,9 +129,8 @@ class TableReader:
         return df
 
     def read_charge_master_data_periods(self) -> DataFrame:
-        df = self._spark.read.format("delta").load(
-            self.charge_master_data_periods_location
-        )
+        path = f"{self._calculation_input_path}/{paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME}"
+        df = self._spark.read.format("delta").load(path)
 
         assert_schema(df.schema, charge_master_data_periods_schema)
 
@@ -146,7 +138,8 @@ class TableReader:
         return df
 
     def read_charge_price_points(self) -> DataFrame:
-        df = self._spark.read.format("delta").load(self.charge_price_points_location)
+        path = f"{self._calculation_input_path}/{paths.CHARGE_PRICE_POINTS_TABLE_NAME}"
+        df = self._spark.read.format("delta").load(path)
 
         assert_schema(df.schema, charge_price_points_schema)
 

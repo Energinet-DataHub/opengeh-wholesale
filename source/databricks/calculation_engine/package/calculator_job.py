@@ -92,7 +92,10 @@ def create_prepared_data_reader(args: CalculatorArgs) -> calculation.PreparedDat
     """Create calculation execution dependencies."""
     spark = initialize_spark()
     delta_table_reader = calculation_input.TableReader(
-        spark, args.calculation_input_path, args.time_series_points_table_location
+        spark,
+        args.calculation_input_path,
+        args.time_series_periods_table_name,
+        args.metering_point_periods_table_name,
     )
     prepared_data_reader = calculation.PreparedDataReader(delta_table_reader)
     return prepared_data_reader
