@@ -117,9 +117,6 @@ class TableReader:
             df = df.drop(
                 "observation_year", "observation_month"
             )  # Drop partition columns
-            assert_schema(
-                df.schema, time_series_point_schema, ignore_nullability=True
-            )  # In this experiment we need to ignore nullability because nullability is 'True' for all columns
         else:
             df = (
                 self._spark.read.format("delta")
@@ -128,7 +125,7 @@ class TableReader:
                 .where(col(Colname.observation_time) < period_end_datetime)
             )
 
-            assert_schema(df.schema, time_series_point_schema)
+        assert_schema(df.schema, time_series_point_schema)
 
         return df
 
