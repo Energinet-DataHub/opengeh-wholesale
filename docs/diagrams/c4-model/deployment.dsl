@@ -27,14 +27,19 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
 
             # Include Esett Exchange model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-esett-exchange/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACJAEQ6GPS6MCKCH24B6MZWOZK3NMRA
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-esett-exchange/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACIBG65SGLN4ZJS47RUPEPCQZLR7HKA
 
             # Include Migration model - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACJAEQ6HPQL4WT5VV3ENWLCIZK3NKFA
-            # Include platform tools - requires a token because its located in a private repository
+            !include https://raw.githubusercontent.com/Energinet-DataHub/opengeh-migration/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACIBG65S63A2TRJL3KHMGBBKZLR7HBQ
+
+            # Include Sauron - requires a token because its located in a private repository
             # Token is automatically appended in "Raw" view of the file
-            !include https://raw.githubusercontent.com/Energinet-DataHub/dh3-operations/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACJAEQ6HK6ZGQTKJAGP6X4HUZK3NNMQ
+            !include https://raw.githubusercontent.com/Energinet-DataHub/dh3-operations/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACIBG65TTAAFODDYR454LHUAZLR7GUA
+
+            # Include DH2 Bridge model - requires a token because its located in a private repository
+            # Token is automatically appended in "Raw" view of the file
+            !include https://raw.githubusercontent.com/Energinet-DataHub/dh2-bridge/main/docs/diagrams/c4-model/model.dsl?token=GHSAT0AAAAAACIBG65TGNAFH75MXIUZVOXCZLR7GMQ
         }
 
         # Deployment model
@@ -52,12 +57,12 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
                     frontendSinglePageApplicationInstance = containerInstance frontendSinglePageApplication
                 }
 
-                deploymentNode "Web Browser for Platform Tools UI" {
+                deploymentNode "Web Browser for Sauron" {
                     description ""
                     technology "Chrome, Firefox, Safari, or Edge"
                     tags "Microsoft Azure - Browser"
 
-                    platformFrontendSinglePageApplicationInstance = containerInstance platformFrontendSinglePageApplication
+                    sauronSPAInstance = containerInstance sauronSPA
                 }
             }
 
@@ -160,12 +165,12 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
 
                         gitHubStatusApiInstance = containerInstance gitHubStatusApi
                     }
-                    deploymentNode "Platform Tools BFF" {
+                    deploymentNode "Sauron BFF" {
                         description ""
                         technology "App Service"
                         tags "Microsoft Azure - Function Apps"
 
-                        platformToolsBffAppInstance = containerInstance platformToolsBffApp
+                        sauronBffAppInstance = containerInstance sauronBffApp
                     }
                     deploymentNode "BFF Web API" {
                         description ""
@@ -229,12 +234,12 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
                         technology "SQL Elastic Pool"
                         tags "Microsoft Azure - SQL Elastic Pools"
 
-                        deploymentNode "Platform Tools DB" {
+                        deploymentNode "Sauron DB" {
                             description ""
                             technology "SQL Database"
                             tags "Microsoft Azure - SQL Database"
 
-                            platformDbInstance = containerInstance platformDb
+                            sauronDbInstance = containerInstance sauronDb
                         }
                         deploymentNode "Wholesale DB" {
                             description ""
@@ -306,9 +311,9 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
             exclude "element.tag==Intermediate Technology"
         }
 
-        container dh3 "PlatformTools" {
-            title "[Container] DataHub 3.0 - Platform Tools (Detailed with OAuth)"
-            include ->platformToolsDomain->
+        container dh3 "Sauron" {
+            title "[Container] DataHub 3.0 - Sauron (Detailed with OAuth)"
+            include ->sauronDomain->
             exclude "relationship.tag==Deployment Diagram"
             exclude "relationship.tag==Simple View"
         }
@@ -351,6 +356,13 @@ workspace extends https://raw.githubusercontent.com/Energinet-DataHub/opengeh-ar
         container dh3 "Esett_Exchange" {
             title "[Container] DataHub 3.0 - Esett Exchange (Detailed with OAuth)"
             include ->eSettDomain->
+            exclude "relationship.tag==Deployment Diagram"
+            exclude "relationship.tag==Simple View"
+        }
+
+        container dh3 "DH2_Bridge" {
+            title "[Container] DataHub 3.0 - DH2 Bridge (Detailed with OAuth)"
+            include ->dh2BridgeDomain->
             exclude "relationship.tag==Deployment Diagram"
             exclude "relationship.tag==Simple View"
         }
