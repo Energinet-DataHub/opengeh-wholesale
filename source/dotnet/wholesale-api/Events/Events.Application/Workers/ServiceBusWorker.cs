@@ -50,9 +50,6 @@ public abstract class ServiceBusWorker<TWorkerType> : BackgroundService, IAsyncD
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        if (_serviceBusProcessor == null)
-            throw new ArgumentNullException();
-
         Logger.LogInformation("{Worker} started", _serviceName);
         _serviceBusProcessor.ProcessMessageAsync += ProcessMessageAsync;
         _serviceBusProcessor.ProcessErrorAsync += ProcessErrorAsync;
