@@ -18,14 +18,14 @@ public interface IValidator<T>
 {
     public IReadOnlyList<IValidationRule<T>> Rules { get; }
 
-    public IList<ValidationError> Validate(T subject)
+    public async Task<IList<ValidationError>> ValidateAsync(T subject)
     {
         if (subject == null) throw new ArgumentNullException(nameof(subject));
 
         var errors = new List<ValidationError>();
         foreach (var rule in Rules)
         {
-            errors.AddRange(rule.Validate(subject));
+            errors.AddRange(await rule.ValidateAsync(subject).ConfigureAwait(false));
         }
 
         return errors;

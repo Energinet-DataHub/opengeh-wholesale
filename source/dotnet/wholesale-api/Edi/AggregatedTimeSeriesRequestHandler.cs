@@ -49,7 +49,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
     {
         var aggregatedTimeSeriesRequest = Edi.Requests.AggregatedTimeSeriesRequest.Parser.ParseFrom(receivedMessage.Body);
 
-        var validationErrors = _validator.Validate(aggregatedTimeSeriesRequest);
+        var validationErrors = await _validator.ValidateAsync(aggregatedTimeSeriesRequest).ConfigureAwait(false);
 
         if (validationErrors.Any())
         {

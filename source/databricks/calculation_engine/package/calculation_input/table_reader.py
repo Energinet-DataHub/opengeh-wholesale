@@ -24,6 +24,7 @@ from package.codelists import (
     SettlementMethod,
 )
 from package.common import assert_schema
+from package.common.logger import Logger
 from package.constants import Colname
 from package.infrastructure import paths
 from .schemas import (
@@ -90,6 +91,10 @@ class TableReader:
         if "_partitioned_by_year_and_month" in path:
             # TEMPORARY: This is for experimenting with a table that is partitioned by year and month.
             # TODO: Cleanup when/if the table is time_series_points  table is partitioned by year and month.
+            logger = Logger(__name__)
+            logger.info(
+                "EXPERIMENT: Reading from time_series_points_partitioned_by_year_and_month"
+            )
 
             if period_start_datetime.year != period_end_datetime.year:
                 raise ValueError(
@@ -109,6 +114,9 @@ class TableReader:
                 .where(col(Colname.observation_time) >= period_start_datetime)
                 .where(col(Colname.observation_time) < period_end_datetime)
             )
+            df = df.drop(
+                "observation_year", "observation_month"
+            )  # Drop partition columns
         else:
             df = (
                 self._spark.read.format("delta")

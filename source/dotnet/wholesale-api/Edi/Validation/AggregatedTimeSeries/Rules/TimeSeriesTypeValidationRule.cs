@@ -21,18 +21,18 @@ public class TimeSeriesTypeValidationRule : IValidationRule<AggregatedTimeSeries
 {
     private static readonly ValidationError _invalidTimeSeriesTypeForActor = new("Den forespurgte tidsserie type kan ikke forespørges som en {PropertyName} / The requested time series type can not be requested as a {PropertyName}", "D11");
 
-    public IList<ValidationError> Validate(AggregatedTimeSeriesRequest subject)
+    public Task<IList<ValidationError>> ValidateAsync(AggregatedTimeSeriesRequest subject)
     {
         if (subject.RequestedByActorRole == ActorRoleCode.MeteredDataResponsible)
-            return NoError;
+            return Task.FromResult(NoError);
 
         if (subject.MeteringPointType == MeteringPointType.Exchange)
-            return InvalidTimeSeriesTypeForActor(subject.RequestedByActorRole);
+            return Task.FromResult(InvalidTimeSeriesTypeForActor(subject.RequestedByActorRole));
 
         if (subject.MeteringPointType == MeteringPointType.Consumption && !subject.HasSettlementMethod)
-            return InvalidTimeSeriesTypeForActor(subject.RequestedByActorRole);
+            return Task.FromResult(InvalidTimeSeriesTypeForActor(subject.RequestedByActorRole));
 
-        return NoError;
+        return Task.FromResult(NoError);
     }
 
     private IList<ValidationError> InvalidTimeSeriesTypeForActor(string actorRole)

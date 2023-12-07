@@ -28,11 +28,11 @@ public class MeteringPointTypeValidationRule : IValidationRule<AggregatedTimeSer
 
     private static readonly ValidationError _invalidMeteringPointType = new("Metering point type skal være en af følgende: {PropertyName} / Metering point type has to be one of the following: {PropertyName}", "D18");
 
-    public IList<ValidationError> Validate(AggregatedTimeSeriesRequest subject)
+    public Task<IList<ValidationError>> ValidateAsync(AggregatedTimeSeriesRequest subject)
     {
-        if (IsValidMeteringPointType(subject.MeteringPointType)) return NoError;
+        if (IsValidMeteringPointType(subject.MeteringPointType)) return Task.FromResult(NoError);
 
-        return InvalidMeteringPointType;
+        return Task.FromResult(InvalidMeteringPointType);
     }
 
     private static bool IsValidMeteringPointType(string meteringPointType)
