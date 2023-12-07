@@ -40,7 +40,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
     }
 
     [Fact]
-    public void Validate_WhenAggregatedTimeSeriesRequestIsValid_ReturnsSuccessValidation()
+    public async Task Validate_WhenAggregatedTimeSeriesRequestIsValid_ReturnsSuccessValidation()
     {
         // Arrange
         var request = AggregatedTimeSeriesRequestBuilder
@@ -48,14 +48,14 @@ public class AggregatedTimeSeriesRequestValidatorTests
             .Build();
 
         // Act
-        var validationErrors = _sut.Validate(request);
+        var validationErrors = await _sut.ValidateAsync(request);
 
         // Assert
         validationErrors.Should().BeEmpty();
     }
 
     [Fact]
-    public void Validate_WhenPeriodSizeIsInvalid_ReturnsUnsuccessfulValidation()
+    public async Task Validate_WhenPeriodSizeIsInvalid_ReturnsUnsuccessfulValidation()
     {
         // Arrange
         var request = AggregatedTimeSeriesRequestBuilder
@@ -65,7 +65,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
             .Build();
 
         // Act
-        var validationErrors = _sut.Validate(request);
+        var validationErrors = await _sut.ValidateAsync(request);
 
         // Assert
         validationErrors.Should().ContainSingle()
@@ -73,7 +73,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
     }
 
     [Fact]
-    public void Validate_WhenMeteringPointTypeIsInvalid_ReturnsUnsuccessfulValidation()
+    public async Task Validate_WhenMeteringPointTypeIsInvalid_ReturnsUnsuccessfulValidation()
     {
         // Arrange
         var request = AggregatedTimeSeriesRequestBuilder
@@ -82,7 +82,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
             .Build();
 
         // Act
-        var validationErrors = _sut.Validate(request);
+        var validationErrors = await _sut.ValidateAsync(request);
 
         // Assert
         validationErrors.Should().ContainSingle()
@@ -90,7 +90,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
     }
 
     [Fact]
-    public void Validate_WhenEnergySupplierIdIsInvalid_ReturnsUnsuccessfulValidation()
+    public async Task Validate_WhenEnergySupplierIdIsInvalid_ReturnsUnsuccessfulValidation()
     {
         // Arrange
         var request = AggregatedTimeSeriesRequestBuilder
@@ -101,7 +101,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
             .Build();
 
         // Act
-        var validationErrors = _sut.Validate(request);
+        var validationErrors = await _sut.ValidateAsync(request);
 
         // Assert
         validationErrors.Should().ContainSingle()
@@ -109,7 +109,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
     }
 
     [Fact]
-    public void Validate_WhenSettlementMethodIsInvalid_ReturnsUnsuccessfulValidation()
+    public async Task Validate_WhenSettlementMethodIsInvalid_ReturnsUnsuccessfulValidation()
     {
         // Arrange
         var request = AggregatedTimeSeriesRequestBuilder
@@ -118,7 +118,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
             .Build();
 
         // Act
-        var validationErrors = _sut.Validate(request);
+        var validationErrors = await _sut.ValidateAsync(request);
 
         // Assert
         validationErrors.Should().ContainSingle()
@@ -126,7 +126,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
     }
 
     [Fact]
-    public void Validate_WhenSettlementSeriesVersionIsInvalid_ReturnsUnsuccessfulValidation()
+    public async Task Validate_WhenSettlementSeriesVersionIsInvalid_ReturnsUnsuccessfulValidation()
     {
         // Arrange
         var request = AggregatedTimeSeriesRequestBuilder
@@ -136,7 +136,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
             .Build();
 
         // Act
-        var validationErrors = _sut.Validate(request);
+        var validationErrors = await _sut.ValidateAsync(request);
 
         // Assert
         validationErrors.Should().ContainSingle()
@@ -144,7 +144,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
     }
 
     [Fact]
-    public void Validate_WhenConsumptionAndNoSettlementMethod_ReturnsUnsuccessfulValidation()
+    public async Task Validate_WhenConsumptionAndNoSettlementMethod_ReturnsUnsuccessfulValidation()
     {
         // Arrange
         var request = AggregatedTimeSeriesRequestBuilder
@@ -157,7 +157,7 @@ public class AggregatedTimeSeriesRequestValidatorTests
             .Build();
 
         // Act
-        var validationErrors = _sut.Validate(request);
+        var validationErrors = await _sut.ValidateAsync(request);
 
         // Assert
         validationErrors.Should().ContainSingle()

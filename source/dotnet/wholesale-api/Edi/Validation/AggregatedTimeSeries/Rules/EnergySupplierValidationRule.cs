@@ -22,21 +22,21 @@ public class EnergySupplierValidationRule : IValidationRule<AggregatedTimeSeries
     private static readonly ValidationError _invalidEnergySupplierField = new("Feltet EnergySupplier skal være udfyldt med et valid GLN/EIC nummer når en elleverandør anmoder om data / EnergySupplier must be submitted with a valid GLN/EIC number when an energy supplier requests data", "E16");
     private static readonly ValidationError _notEqualToRequestedBy = new("Elleverandør i besked stemmer ikke overenes med elleverandør i header / Energy supplier in message does not correspond with energy supplier in header", "E16");
 
-    public IList<ValidationError> Validate(AggregatedTimeSeriesRequest subject)
+    public Task<IList<ValidationError>> ValidateAsync(AggregatedTimeSeriesRequest subject)
     {
         if (subject.RequestedByActorRole != ActorRoleCode.EnergySupplier)
-             return NoError;
+             return Task.FromResult(NoError);
 
         if (string.IsNullOrEmpty(subject.EnergySupplierId))
-            return InvalidEnergySupplierError;
+            return Task.FromResult(InvalidEnergySupplierError);
 
         if (!IsValidEnergySupplierIdFormat(subject.EnergySupplierId))
-            return InvalidEnergySupplierError;
+            return Task.FromResult(InvalidEnergySupplierError);
 
         if (!RequestedByIdEqualsEnergySupplier(subject.RequestedByActorId, subject.EnergySupplierId))
-            return NotEqualToRequestedByError;
+            return Task.FromResult(NotEqualToRequestedByError);
 
-        return NoError;
+        return Task.FromResult(NoError);
     }
 
     private static bool IsValidEnergySupplierIdFormat(string energySupplierId)
