@@ -22,20 +22,20 @@ public class BalanceResponsibleValidationRule : IValidationRule<AggregatedTimeSe
     private static readonly ValidationError _invalidBalanceResponsible = new("Feltet BalanceResponsibleParty skal være udfyldt med et valid GLN/EIC når en balanceansvarlig anmoder om data / BalanceResponsibleParty must be submitted with a valid GLN/EIC when a balance responsible requests data", "E18");
     private static readonly ValidationError _notEqualToRequestedBy = new("BalanceResponsibleParty i besked stemmer ikke overenes med balanceansvarlig anmoder i header / BalanceResponsibleParty in message does not correspond with balance responsible in header", "E18");
 
-    public IList<ValidationError> Validate(AggregatedTimeSeriesRequest subject)
+    public Task<IList<ValidationError>> ValidateAsync(AggregatedTimeSeriesRequest subject)
     {
-        if (subject.RequestedByActorRole != ActorRoleCode.BalanceResponsibleParty) return NoError;
+        if (subject.RequestedByActorRole != ActorRoleCode.BalanceResponsibleParty) return Task.FromResult(NoError);
 
         if (string.IsNullOrWhiteSpace(subject.BalanceResponsibleId))
-            return InvalidBalanceResponsibleError;
+            return Task.FromResult(InvalidBalanceResponsibleError);
 
         if (!IsValidBalanceResponsibleIdFormat(subject.BalanceResponsibleId))
-            return InvalidBalanceResponsibleError;
+            return Task.FromResult(InvalidBalanceResponsibleError);
 
         if (!subject.RequestedByActorId.Equals(subject.BalanceResponsibleId, StringComparison.OrdinalIgnoreCase))
-            return NotEqualToRequestedByError;
+            return Task.FromResult(NotEqualToRequestedByError);
 
-        return NoError;
+        return Task.FromResult(NoError);
     }
 
     private static bool IsValidBalanceResponsibleIdFormat(string balanceResponsibleId)

@@ -33,7 +33,7 @@ public class TimeSeriesTypeValidatorTests
     [InlineData(MeteringPointType.Consumption, null)]
     [InlineData(MeteringPointType.Consumption, SettlementMethod.NonProfiled)]
     [InlineData(MeteringPointType.Consumption, SettlementMethod.Flex)]
-    public void Validate_AsMeteredDataResponsible_ReturnsNoValidationErrors(string meteringPointType, string? settlementMethod)
+    public async Task Validate_AsMeteredDataResponsible_ReturnsNoValidationErrors(string meteringPointType, string? settlementMethod)
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -45,7 +45,7 @@ public class TimeSeriesTypeValidatorTests
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().BeEmpty();
@@ -55,7 +55,7 @@ public class TimeSeriesTypeValidatorTests
     [InlineData(MeteringPointType.Production, null)]
     [InlineData(MeteringPointType.Consumption, SettlementMethod.NonProfiled)]
     [InlineData(MeteringPointType.Consumption, SettlementMethod.Flex)]
-    public void Validate_AsEnergySupplier_ReturnsNoValidationErrors(string meteringPointType, string? settlementMethod)
+    public async Task Validate_AsEnergySupplier_ReturnsNoValidationErrors(string meteringPointType, string? settlementMethod)
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -67,7 +67,7 @@ public class TimeSeriesTypeValidatorTests
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().BeEmpty();
@@ -77,7 +77,7 @@ public class TimeSeriesTypeValidatorTests
     [InlineData(MeteringPointType.Production, null)]
     [InlineData(MeteringPointType.Consumption, SettlementMethod.NonProfiled)]
     [InlineData(MeteringPointType.Consumption, SettlementMethod.Flex)]
-    public void Validate_AsBalanceResponsible_ReturnsNoValidationErrors(string meteringPointType, string? settlementMethod)
+    public async Task Validate_AsBalanceResponsible_ReturnsNoValidationErrors(string meteringPointType, string? settlementMethod)
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -89,7 +89,7 @@ public class TimeSeriesTypeValidatorTests
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().BeEmpty();
@@ -98,7 +98,7 @@ public class TimeSeriesTypeValidatorTests
     [Theory]
     [InlineData(MeteringPointType.Exchange)]
     [InlineData(MeteringPointType.Consumption)]
-    public void Validate_AsEnergySupplierAndNoSettlementMethod_ReturnsExceptedValidationErrors(string meteringPointType)
+    public async Task Validate_AsEnergySupplierAndNoSettlementMethod_ReturnsExceptedValidationErrors(string meteringPointType)
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -110,7 +110,7 @@ public class TimeSeriesTypeValidatorTests
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().ContainSingle();
@@ -123,7 +123,7 @@ public class TimeSeriesTypeValidatorTests
     [Theory]
     [InlineData(MeteringPointType.Exchange)]
     [InlineData(MeteringPointType.Consumption)]
-    public void Validate_AsBalanceResponsibleAndNoSettlementMethod_ValidationErrors(string meteringPointType)
+    public async Task Validate_AsBalanceResponsibleAndNoSettlementMethod_ValidationErrors(string meteringPointType)
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -135,7 +135,7 @@ public class TimeSeriesTypeValidatorTests
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().ContainSingle();

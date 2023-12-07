@@ -38,19 +38,19 @@ public class PeriodValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
         _clock = clock;
     }
 
-    public IList<ValidationError> Validate(AggregatedTimeSeriesRequest subject)
+    public Task<IList<ValidationError>> ValidateAsync(AggregatedTimeSeriesRequest subject)
     {
         if (subject == null) throw new ArgumentNullException(nameof(subject));
         var period = subject.Period;
         if (period == null) throw new ArgumentNullException(nameof(period));
-        var errors = new List<ValidationError>();
+        IList<ValidationError> errors = new List<ValidationError>();
 
-        if (MissingDates(period.Start, period.End, errors)) return errors;
+        if (MissingDates(period.Start, period.End, errors)) return Task.FromResult(errors);
 
         var startInstant = ParseToInstant(period.Start, "Start date", errors);
         var endInstant = ParseToInstant(period.End, "End date", errors);
 
-        if (startInstant == null || endInstant == null) return errors;
+        if (startInstant == null || endInstant == null) return Task.FromResult(errors);
 
         MustBeMidnight(startInstant.Value, "Start date", errors);
         MustBeMidnight(endInstant.Value, "End date", errors);
@@ -58,10 +58,10 @@ public class PeriodValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
         StartDateMustBeGreaterThenAllowedYears(startInstant.Value, errors);
         IntervalMustBeWithinAllowedPeriodSize(startInstant.Value, endInstant.Value, errors);
 
-        return errors;
+        return Task.FromResult(errors);
     }
 
-    private bool MissingDates(string start, string end, List<ValidationError> errors)
+    private bool MissingDates(string start, string end, IList<ValidationError> errors)
     {
         if (string.IsNullOrWhiteSpace(start) || string.IsNullOrWhiteSpace(end))
         {
@@ -72,7 +72,7 @@ public class PeriodValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
         return false;
     }
 
-    private void IntervalMustBeWithinAllowedPeriodSize(Instant start, Instant end, List<ValidationError> errors)
+    private void IntervalMustBeWithinAllowedPeriodSize(Instant start, Instant end, IList<ValidationError> errors)
     {
         var zonedStartDateTime = new ZonedDateTime(start, _dateTimeZone);
         var zonedEndDateTime = new ZonedDateTime(end, _dateTimeZone);
@@ -81,7 +81,7 @@ public class PeriodValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
             errors.Add(_periodIsGreaterThenAllowedPeriodSize);
     }
 
-    private void StartDateMustBeGreaterThenAllowedYears(Instant start, List<ValidationError> errors)
+    private void StartDateMustBeGreaterThenAllowedYears(Instant start, IList<ValidationError> errors)
     {
         var zonedStartDateTime = new ZonedDateTime(start, _dateTimeZone);
         var zonedCurrentDateTime = new ZonedDateTime(_clock.GetCurrentInstant(), _dateTimeZone);
@@ -91,7 +91,7 @@ public class PeriodValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
             errors.Add(_startDateMustBeLessThen3Years);
     }
 
-    private Instant? ParseToInstant(string dateTimeString, string propertyName, List<ValidationError> errors)
+    private Instant? ParseToInstant(string dateTimeString, string propertyName, IList<ValidationError> errors)
     {
         var parseResult = InstantPattern.General.Parse(dateTimeString);
         if (parseResult.Success)
@@ -101,7 +101,7 @@ public class PeriodValidationRule : IValidationRule<AggregatedTimeSeriesRequest>
         return null;
     }
 
-    private void MustBeMidnight(Instant instant, string propertyName, List<ValidationError> errors)
+    private void MustBeMidnight(Instant instant, string propertyName, IList<ValidationError> errors)
     {
         var zonedDateTime = new ZonedDateTime(instant, _dateTimeZone);
 
