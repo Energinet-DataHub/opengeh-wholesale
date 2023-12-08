@@ -44,5 +44,6 @@ public static class EdiRegistration
         serviceCollection.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, TimeSeriesTypeValidationRule>();
         serviceCollection.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, BalanceResponsibleValidationRule>();
         serviceCollection.AddSingleton<IValidationRule<AggregatedTimeSeriesRequest>, SettlementSeriesVersionValidationRule>();
+        serviceCollection.AddScoped<IValidationRule<AggregatedTimeSeriesRequest>, GridAreaValidationRule>();
     }
 }
