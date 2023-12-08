@@ -27,7 +27,6 @@ namespace Energinet.DataHub.Wholesale.Events.Application.Workers;
 public class AggregatedTimeSeriesServiceBusWorker : ServiceBusWorker<AggregatedTimeSeriesServiceBusWorker>
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger<AggregatedTimeSeriesServiceBusWorker> _logger;
 
     public AggregatedTimeSeriesServiceBusWorker(
         IServiceProvider serviceProvider,
@@ -39,7 +38,6 @@ public class AggregatedTimeSeriesServiceBusWorker : ServiceBusWorker<AggregatedT
         logger)
     {
         _serviceProvider = serviceProvider;
-        _logger = logger;
     }
 
     protected override async Task ProcessAsync(ProcessMessageEventArgs arg)
@@ -47,13 +45,14 @@ public class AggregatedTimeSeriesServiceBusWorker : ServiceBusWorker<AggregatedT
         if (arg.Message.ApplicationProperties.TryGetValue("ReferenceId", out var referenceIdPropertyValue)
             && referenceIdPropertyValue is string referenceId)
         {
+            Logger.LogInformation("Processing message with reference id {ReferenceId}", referenceId);
             using var scope = _serviceProvider.CreateScope();
             var requestHandler = scope.ServiceProvider.GetRequiredService<IAggregatedTimeSeriesRequestHandler>();
             await requestHandler.ProcessAsync(arg.Message, referenceId, arg.CancellationToken).ConfigureAwait(true);
         }
         else
         {
-            _logger.LogError("Missing reference id for Service Bus Message");
+            Logger.LogError("Missing reference id for Service Bus Message");
         }
     }
 }

@@ -22,7 +22,9 @@ public class EdiClient : IEdiClient, IAsyncDisposable
 {
     private readonly ServiceBusSender _sender;
 
-    public EdiClient(IOptions<ServiceBusOptions> serviceBusOptions, ServiceBusClient serviceBusClient)
+    public EdiClient(
+        IOptions<ServiceBusOptions> serviceBusOptions,
+        ServiceBusClient serviceBusClient)
     {
         _sender = serviceBusClient.CreateSender(serviceBusOptions.Value.EDI_INBOX_MESSAGE_QUEUE_NAME);
     }
