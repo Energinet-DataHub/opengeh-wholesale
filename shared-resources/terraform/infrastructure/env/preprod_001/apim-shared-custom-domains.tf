@@ -29,7 +29,7 @@ resource "azurerm_api_management_custom_domain" "b2b_custom_domain" {
   api_management_id = module.apim_shared.id
 
   gateway {
-    host_name    = "preprod.b2b.energinet.dk"
+    host_name    = "preprod.b2b.datahub3.dk"
     key_vault_id = azurerm_key_vault_certificate.b2b_datahub3_certificate.versionless_secret_id
   }
 }
