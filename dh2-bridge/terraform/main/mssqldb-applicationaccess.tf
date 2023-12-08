@@ -12,5 +12,7 @@ module "mssql_database_application_access" {
 
   depends_on = [
     module.func_entrypoint_grid_loss_event_receiver.name,
+    module.func_entrypoint_grid_loss_sender.name,
+    module.func_entrypoint_grid_loss_peek.name,
   ]
 }
