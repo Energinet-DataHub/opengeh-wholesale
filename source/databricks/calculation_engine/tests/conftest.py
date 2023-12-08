@@ -45,7 +45,6 @@ def test_files_folder_path(tests_path: str) -> str:
 def spark() -> SparkSession:
     return configure_spark_with_delta_pip(  # see https://docs.delta.io/latest/quick-start.html#python
         SparkSession.builder.config("spark.sql.streaming.schemaInference", True)
-        .config("spark.log.level", "WARN")
         .config("spark.ui.showConsoleProgress", "false")
         .config("spark.ui.enabled", "false")
         .config("spark.ui.dagGraph.retainedRootRDDs", "1")
