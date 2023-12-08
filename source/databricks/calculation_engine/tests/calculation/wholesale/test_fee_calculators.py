@@ -11,8 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
 from decimal import Decimal
 from datetime import datetime
+
+from azure.keyvault.secrets import SecretClient
+from azure.identity import DefaultAzureCredential
+
 from tests.helpers.test_schemas import (
     charges_flex_consumption_schema,
 )
@@ -316,3 +321,16 @@ def test__get_count_of_charges_and_total_daily_charge_price__counts_and_sums_up_
         result.collect()[0][Colname.total_daily_charge_price]
         == expected_total_daily_charge_price
     )
+
+
+def test_stuff():
+    keyVaultName = "kvintgratwe002"
+    KVUri = f"https://{keyVaultName}.vault.azure.net"
+
+    credential = DefaultAzureCredential()
+    client = SecretClient(vault_url=KVUri, credential=credential)
+
+    secretName = "AZURE-SHARED-TENANTID"
+
+    retrieved_secret = client.get_secret(secretName)
+    print(retrieved_secret.value)
