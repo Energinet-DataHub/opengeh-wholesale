@@ -1,1 +1,1 @@
-APPLICATIONINSIGHTS_CONNECTION_STRING: <Integration test Application Insights connection string>
+AZURE_KEYVAULT_URL: "https://kvintgratwe002.vault.azure.net"

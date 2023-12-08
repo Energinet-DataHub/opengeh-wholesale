@@ -45,6 +45,7 @@ def test_files_folder_path(tests_path: str) -> str:
 def spark() -> SparkSession:
     return configure_spark_with_delta_pip(  # see https://docs.delta.io/latest/quick-start.html#python
         SparkSession.builder.config("spark.sql.streaming.schemaInference", True)
+        .config("spark.log.level", "WARN")
         .config("spark.ui.showConsoleProgress", "false")
         .config("spark.ui.enabled", "false")
         .config("spark.ui.dagGraph.retainedRootRDDs", "1")
@@ -231,14 +232,11 @@ def installed_package(
 
 
 @pytest.fixture()
-def integration_test_configuration() -> IntegrationTestConfiguration:
+def integration_test_configuration(tests_path: str) -> IntegrationTestConfiguration:
     """Load settings and sets the properties as environment variables."""
-    with open("integrationtest.local.settings.yml") as stream:
+    with open(f"{tests_path}/integrationtest.local.settings.yml") as stream:
         settings = yaml.safe_load(stream)
 
-        connection_string = settings["APPLICATIONINSIGHTS_CONNECTION_STRING"]
-        os.environ["APPLICATIONINSIGHTS_CONNECTION_STRING"] = connection_string
+        azure_keyvault_url = settings["AZURE_KEYVAULT_URL"]
 
-        return IntegrationTestConfiguration(
-            applicationinsights_connection_string=connection_string
-        )
+        return IntegrationTestConfiguration(azure_keyvault_url=azure_keyvault_url)
