@@ -35,7 +35,6 @@ from package.codelists import (
     ProcessType,
     MeteringPointType,
 )
-from package.common.logger import Logger
 
 
 def execute(
@@ -82,8 +81,6 @@ def _calculate(
         result_writer,
         quarterly_metering_point_time_series,
     )
-    logger = Logger(__name__)
-    logger.info(f"Finalized exchange calculation")
 
     temporary_production_per_ga_and_brp_and_es = (
         _calculate_temporary_production_per_per_ga_and_brp_and_es(
