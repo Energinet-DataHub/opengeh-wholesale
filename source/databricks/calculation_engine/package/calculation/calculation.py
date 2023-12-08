@@ -51,6 +51,7 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
     ).cache()
 
     if args.basis_data_write_only:
+        logger.info("Starting basis data writer")
         basis_data_writer = BasisDataWriter(args.wholesale_container_path, args.batch_id)
         basis_data_writer.write(
             metering_point_periods_df,
@@ -59,6 +60,7 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
         )
         
     else:
+        logger.info("Starting energy calculation")
         energy_calculation.execute(
             args.batch_id,
             args.batch_process_type,
