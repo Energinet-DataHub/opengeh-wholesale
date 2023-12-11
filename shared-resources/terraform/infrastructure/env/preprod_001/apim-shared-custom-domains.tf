@@ -25,7 +25,7 @@ resource "azurerm_key_vault_certificate" "b2b_datahub3_certificate" {
   }
 }
 
-resource "azurerm_api_management_custom_domain" "b2b_custom_domain" {
+resource "azurerm_api_management_custom_domain" "b2b_datahub3_custom_domain" {
   api_management_id = module.apim_shared.id
 
   gateway {
