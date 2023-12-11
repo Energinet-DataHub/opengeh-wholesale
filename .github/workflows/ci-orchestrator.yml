@@ -124,13 +124,13 @@ jobs:
       infrastructure_path: ./esett-deprecated/terraform
     secrets: inherit
 
-  platform_tools_ui_ci:
+  sauron_ci:
     needs: changes
-    if: ${{ needs.changes.outputs.platform_tools_ui_ci == 'true' }}
+    if: ${{ needs.changes.outputs.sauron_ci == 'true' }}
     uses: ./.github/workflows/infrastructure-build-prerelease.yml
     with:
-      release_name_prefix: platform_tools_ui_infrastructure
-      infrastructure_path: ./platform-tools-ui/terraform
+      release_name_prefix: sauron_infrastructure
+      infrastructure_path: ./sauron/terraform
     secrets: inherit
 
   # If we have multiple Structurizr DSL files in the same repository, we can support rendering them by:
@@ -146,7 +146,6 @@ jobs:
     uses: Energinet-DataHub/.github/.github/workflows/structurizr-render-diagrams.yml@v12
     with:
       structurizr_workspace_filename: deployment
-      included_model_filename: platform-tools
     secrets:
       pat_token_retrigger_workflow: ${{ secrets.internal_github_pat }}
   render_c4model_ownership_views:
@@ -177,6 +176,7 @@ jobs:
         wholesale_ci,
         integration_test_ci,
         health_checks_ui_ci,
+        sauron_ci,
         render_c4model_deployment,
         render_c4model_ownership_views,
         esett_deprecated_ci

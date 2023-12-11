@@ -3,7 +3,7 @@ terraform {
     resource_group_name  = "@resource_group_name"
     storage_account_name = "@storage_account_name"
     container_name       = "tfs"
-    key                  = "platform_tools_ui.tfs"
+    key                  = "sauron.tfs"
     use_oidc             = true
     use_azuread_auth     = true
     subscription_id      = "@azure_subscription_id"

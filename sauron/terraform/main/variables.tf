@@ -6,7 +6,6 @@ variable "subscription_id" {
 variable "resource_group_name" {
   type        = string
   description = "Resource Group that the infrastructure code is deployed into."
-  default = ""
 }
 
 variable "environment_short" {
