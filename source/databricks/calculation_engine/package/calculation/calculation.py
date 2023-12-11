@@ -85,7 +85,7 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
             charges_df = prepared_data_reader.get_charges()
             metering_points_periods_df = (
                 _get_production_and_consumption_metering_points(
-                   metering_point_periods_df
+                    metering_point_periods_df
                 )
             )
 
