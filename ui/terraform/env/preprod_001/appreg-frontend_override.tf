@@ -1,6 +1,6 @@
 resource "azuread_application" "frontend_app" {
   single_page_application {
-    redirect_uris = ["https://${azurerm_static_site.ui.default_host_name}/", "https://localhost/"]
+    redirect_uris = ["https://${local.frontend_url}/", "https://localhost/"]
   }
 
   # Implicit flow enabled to allow for acceptance tests in certain environments.
