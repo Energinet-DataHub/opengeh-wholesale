@@ -95,7 +95,7 @@ class TableReader:
             .where(col(Colname.observation_time) < period_end_datetime)
             )
 
-        if self._time_series_points_table_name != 'time_series_points'
+        if self._time_series_points_table_name != 'time_series_points':
             df = df.drop(
                 "observation_year", "observation_month"
             )  # Drop partition columns
