@@ -19,3 +19,11 @@ module "kvs_plan_services_id" {
   value        = module.plan_services.id
   key_vault_id = module.kv_shared.id
 }
+
+module "kvs_plan_services_name" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
+
+  name         = "plan-services-name"
+  value        = module.plan_services.name
+  key_vault_id = module.kv_shared.id
+}

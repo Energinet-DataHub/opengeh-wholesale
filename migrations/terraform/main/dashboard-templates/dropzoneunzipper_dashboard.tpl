@@ -2166,6 +2166,155 @@
               }
             }
           }
+        },
+        "21": {
+          "position": {
+            "x": 0,
+            "y": 15,
+            "colSpan": 3,
+            "rowSpan": 3
+          },
+          "metadata": {
+            "inputs": [],
+            "type": "Extension/HubsExtension/PartType/MarkdownPart",
+            "settings": {
+              "content": {
+                "content": "### App Service Plan",
+                "title": "",
+                "subtitle": "",
+                "markdownSource": 1,
+                "markdownUri": ""
+              }
+            }
+          }
+        },
+        "22": {
+          "position": {
+            "x": 3,
+            "y": 15,
+            "colSpan": 6,
+            "rowSpan": 3
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "options",
+                "isOptional": true
+              },
+              {
+                "name": "sharedTimeRange",
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+            "settings": {
+              "content": {
+                "options": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "resourceMetadata": {
+                          "id": "${plan_services_id}"
+                        },
+                        "name": "CpuPercentage",
+                        "aggregationType": 4,
+                        "namespace": "microsoft.web/serverfarms",
+                        "metricVisualization": {
+                          "displayName": "CPU Percentage",
+                          "resourceDisplayName": "${plan_services_name}"
+                        }
+                      }
+                    ],
+                    "title": "Avg CPU Percentage for ${plan_services_name}",
+                    "titleKind": 1,
+                    "visualization": {
+                      "chartType": 2,
+                      "legendVisualization": {
+                        "isVisible": true,
+                        "position": 2,
+                        "hideSubtitle": false
+                      },
+                      "axisVisualization": {
+                        "x": {
+                          "isVisible": true,
+                          "axisType": 2
+                        },
+                        "y": {
+                          "isVisible": true,
+                          "axisType": 1
+                        }
+                      },
+                      "disablePinning": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "23": {
+          "position": {
+            "x": 9,
+            "y": 15,
+            "colSpan": 6,
+            "rowSpan": 3
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "options",
+                "isOptional": true
+              },
+              {
+                "name": "sharedTimeRange",
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+            "settings": {
+              "content": {
+                "options": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "resourceMetadata": {
+                          "id": "${plan_services_id}"
+                        },
+                        "name": "MemoryPercentage",
+                        "aggregationType": 4,
+                        "namespace": "microsoft.web/serverfarms",
+                        "metricVisualization": {
+                          "displayName": "Memory Percentage",
+                          "resourceDisplayName": "${plan_services_name}"
+                        }
+                      }
+                    ],
+                    "title": "Avg Memory Percentage for ${plan_services_name}",
+                    "titleKind": 1,
+                    "visualization": {
+                      "chartType": 2,
+                      "legendVisualization": {
+                        "isVisible": true,
+                        "position": 2,
+                        "hideSubtitle": false
+                      },
+                      "axisVisualization": {
+                        "x": {
+                          "isVisible": true,
+                          "axisType": 2
+                        },
+                        "y": {
+                          "isVisible": true,
+                          "axisType": 1
+                        }
+                      },
+                      "disablePinning": true
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -2197,21 +2346,23 @@
               "value": "Past 24 hours"
             },
             "filteredPartIds": [
-              "StartboardPart-MonitorChartPart-ba572c19-156b-4aa9-9aab-ce73cb5563cb",
-              "StartboardPart-MonitorChartPart-ba572c19-156b-4aa9-9aab-ce73cb5563cd",
-              "StartboardPart-MonitorChartPart-ba572c19-156b-4aa9-9aab-ce73cb5563cf",
-              "StartboardPart-MonitorChartPart-ba572c19-156b-4aa9-9aab-ce73cb5563d1",
-              "StartboardPart-MonitorChartPart-ba572c19-156b-4aa9-9aab-ce73cb5563d3",
-              "StartboardPart-MonitorChartPart-ba572c19-156b-4aa9-9aab-ce73cb5563d7",
-              "StartboardPart-MonitorChartPart-ba572c19-156b-4aa9-9aab-ce73cb5563d9",
-              "StartboardPart-MonitorChartPart-ba572c19-156b-4aa9-9aab-ce73cb5563dd",
-              "StartboardPart-MonitorChartPart-ba572c19-156b-4aa9-9aab-ce73cb5563e1",
-              "StartboardPart-MonitorChartPart-ba572c19-156b-4aa9-9aab-ce73cb5563e3",
-              "StartboardPart-MonitorChartPart-ba572c19-156b-4aa9-9aab-ce73cb5563e5",
-              "StartboardPart-MonitorChartPart-ba572c19-156b-4aa9-9aab-ce73cb5563e9",
-              "StartboardPart-MonitorChartPart-ba572c19-156b-4aa9-9aab-ce73cb5563eb",
-              "StartboardPart-MonitorChartPart-ba572c19-156b-4aa9-9aab-ce73cb5563ed",
-              "StartboardPart-MonitorChartPart-ba572c19-156b-4aa9-9aab-ce73cb5563f1"
+              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f117",
+              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f119",
+              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f11b",
+              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f11d",
+              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f11f",
+              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f123",
+              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f125",
+              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f129",
+              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f12d",
+              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f12f",
+              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f131",
+              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f135",
+              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f137",
+              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f139",
+              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f13d",
+              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f213",
+              "StartboardPart-MonitorChartPart-c4666c67-09cc-4437-9e62-29829d05f62e"
             ]
           }
         }

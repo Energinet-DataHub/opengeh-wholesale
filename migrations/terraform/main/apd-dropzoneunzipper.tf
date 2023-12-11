@@ -10,5 +10,7 @@ resource "azurerm_portal_dashboard" "dropzoneunzipper" {
       evhns_dropzone_name                = azurerm_eventhub_namespace.eventhub_namespace_dropzone.name,
       evh_dropzone_name                  = azurerm_eventhub.eventhub_dropzone_zipped.name,
       appi_sharedres_id                  = data.azurerm_key_vault_secret.appi_id.value,
+      plan_services_id                   = data.azurerm_key_vault_secret.plan_shared_id.value,
+      plan_services_name                 = data.azurerm_key_vault_secret.plan_shared_name.value,
   })
 }
