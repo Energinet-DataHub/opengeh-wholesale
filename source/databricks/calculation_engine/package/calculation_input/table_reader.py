@@ -93,7 +93,7 @@ class TableReader:
             .load(path)
             .where(col(Colname.observation_time) >= period_start_datetime)
             .where(col(Colname.observation_time) < period_end_datetime)
-            )
+        )
 
         if self._time_series_points_table_name != 'time_series_points':
             df = df.drop(
