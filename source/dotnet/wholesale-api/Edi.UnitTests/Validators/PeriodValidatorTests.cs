@@ -33,7 +33,7 @@ public class PeriodValidatorTests
     private readonly PeriodValidationRule _sut = new(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!, SystemClock.Instance);
 
     [Fact]
-    public void Validate_WhenRequestIsValid_ReturnsNoValidationErrors()
+    public async Task Validate_WhenRequestIsValid_ReturnsNoValidationErrors()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -41,14 +41,14 @@ public class PeriodValidatorTests
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().BeEmpty();
     }
 
     [Fact]
-    public void Validate_WhenEndDateIsUnspecified_ReturnsExpectedValidationError()
+    public async Task Validate_WhenEndDateIsUnspecified_ReturnsExpectedValidationError()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -57,7 +57,7 @@ public class PeriodValidatorTests
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().ContainSingle();
@@ -67,7 +67,7 @@ public class PeriodValidatorTests
     }
 
     [Fact]
-    public void Validate_WhenStartHourIsWrong_ReturnsExpectedValidationError()
+    public async Task Validate_WhenStartHourIsWrong_ReturnsExpectedValidationError()
     {
         // Arrange
         var now = SystemClock.Instance.GetCurrentInstant();
@@ -78,7 +78,7 @@ public class PeriodValidatorTests
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().ContainSingle();
@@ -88,7 +88,7 @@ public class PeriodValidatorTests
     }
 
     [Fact]
-    public void Validate_WhenEndHourIsWrong_ReturnsExpectedValidationError()
+    public async Task Validate_WhenEndHourIsWrong_ReturnsExpectedValidationError()
     {
         // Arrange
         var now = SystemClock.Instance.GetCurrentInstant();
@@ -100,7 +100,7 @@ public class PeriodValidatorTests
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().ContainSingle();
@@ -110,7 +110,7 @@ public class PeriodValidatorTests
     }
 
     [Fact]
-    public void Validate_WhenStartIsUnspecified_ReturnsExpectedValidationError()
+    public async Task Validate_WhenStartIsUnspecified_ReturnsExpectedValidationError()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -119,7 +119,7 @@ public class PeriodValidatorTests
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().ContainSingle();
@@ -129,7 +129,7 @@ public class PeriodValidatorTests
     }
 
     [Fact]
-    public void Validate_WhenStartAndEndDateAreInvalid_ReturnsExpectedValidationErrors()
+    public async Task Validate_WhenStartAndEndDateAreInvalid_ReturnsExpectedValidationErrors()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -139,7 +139,7 @@ public class PeriodValidatorTests
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Count.Should().Be(2);
@@ -150,7 +150,7 @@ public class PeriodValidatorTests
     }
 
     [Fact]
-    public void Validate_WhenPeriodSizeIsGreaterThenAllowed_ReturnsExpectedValidationError()
+    public async Task Validate_WhenPeriodSizeIsGreaterThenAllowed_ReturnsExpectedValidationError()
     {
         // Arrange
         var now = SystemClock.Instance.GetCurrentInstant();
@@ -162,7 +162,7 @@ public class PeriodValidatorTests
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().ContainSingle();
@@ -172,7 +172,7 @@ public class PeriodValidatorTests
     }
 
     [Fact]
-    public void Validate_WhenPeriodIsOlderThenAllowed_ReturnsExpectedValidationError()
+    public async Task Validate_WhenPeriodIsOlderThenAllowed_ReturnsExpectedValidationError()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -182,7 +182,7 @@ public class PeriodValidatorTests
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().ContainSingle();
@@ -192,7 +192,7 @@ public class PeriodValidatorTests
     }
 
     [Fact]
-    public void Validate_WhenPeriodOverlapSummerDaylightSavingTime_ReturnsNoValidationErrors()
+    public async Task Validate_WhenPeriodOverlapSummerDaylightSavingTime_ReturnsNoValidationErrors()
     {
         // Arrange
         var now = SystemClock.Instance.GetCurrentInstant();
@@ -205,14 +205,14 @@ public class PeriodValidatorTests
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().BeEmpty();
     }
 
     [Fact]
-    public void Validate_WhenPeriodOverlapWinterDaylightSavingTime_ReturnsNoValidationErrors()
+    public async Task Validate_WhenPeriodOverlapWinterDaylightSavingTime_ReturnsNoValidationErrors()
     {
         // Arrange
         var now = SystemClock.Instance.GetCurrentInstant();
@@ -225,7 +225,7 @@ public class PeriodValidatorTests
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().BeEmpty();

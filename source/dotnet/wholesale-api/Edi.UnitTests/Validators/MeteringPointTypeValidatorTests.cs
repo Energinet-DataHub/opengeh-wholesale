@@ -31,7 +31,7 @@ public class MeteringPointTypeValidatorTests
     [InlineData(MeteringPointType.Consumption)]
     [InlineData(MeteringPointType.Production)]
     [InlineData(MeteringPointType.Exchange)]
-    public void Validate_WhenMeteringPointIsValid_ReturnsExpectedNoValidationErrors(string meteringPointType)
+    public async Task Validate_WhenMeteringPointIsValid_ReturnsExpectedNoValidationErrors(string meteringPointType)
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -40,14 +40,14 @@ public class MeteringPointTypeValidatorTests
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().BeEmpty();
     }
 
     [Fact]
-    public void Validate_WhenMeteringPointTypeIsInvalid_ReturnsExpectedValidationError()
+    public async Task Validate_WhenMeteringPointTypeIsInvalid_ReturnsExpectedValidationError()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -56,7 +56,7 @@ public class MeteringPointTypeValidatorTests
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().ContainSingle();
