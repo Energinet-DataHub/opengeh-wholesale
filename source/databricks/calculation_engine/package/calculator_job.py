@@ -141,7 +141,6 @@ def start_basis_data_writer_with_deps(
             span.record_exception(e, attributes=config.get_extras())
             sys.exit(4)
 
-
 def create_prepared_data_reader(args: CalculatorArgs) -> calculation.PreparedDataReader:
     """Create calculation execution dependencies."""
     spark = initialize_spark()
@@ -153,7 +152,6 @@ def create_prepared_data_reader(args: CalculatorArgs) -> calculation.PreparedDat
     )
     prepared_data_reader = calculation.PreparedDataReader(delta_table_reader)
     return prepared_data_reader
-
 
 def raise_if_storage_is_locked(
     is_storage_locked_checker: Callable[..., bool], args: CalculatorArgs
