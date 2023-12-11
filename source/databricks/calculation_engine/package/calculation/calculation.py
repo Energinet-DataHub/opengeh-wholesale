@@ -31,7 +31,7 @@ from ..common.logger import Logger
 logger = Logger(__name__)
 
 
-def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader, basis_data_write_only: bool) -> None:
+def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> None:
     logger.info("Starting calculation")
 
     # cache of metering_point_time_series had no effect on performance (01-12-2023)
@@ -50,7 +50,7 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader, basi
         metering_point_periods_df,
     ).cache()
 
-    if basis_data_write_only:
+    if args.basis_data_write_only:
         logger.info("Starting basis data writer")
         basis_data_writer = BasisDataWriter(args.wholesale_container_path, args.batch_id)
         basis_data_writer.write(
