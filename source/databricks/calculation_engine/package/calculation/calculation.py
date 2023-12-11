@@ -32,7 +32,7 @@ logger = Logger(__name__)
 
 
 def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> None:
-    logger.info("Starting calculation")
+    logger.info(f"Starting calculation, batch_id: {args.batch_id}")
 
     # cache of metering_point_time_series had no effect on performance (01-12-2023)
     metering_point_periods_df = prepared_data_reader.get_metering_point_periods_df(
