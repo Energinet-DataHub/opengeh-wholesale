@@ -203,6 +203,33 @@ def executed_wholesale_fixing(
 
 
 @pytest.fixture(scope="session")
+def executed_basis_data_writer(
+    spark: SparkSession,
+    calculator_args_basis_data_writer: CalculatorArgs,
+    migrations_executed: None,
+    energy_input_data_written_to_delta: None,
+    price_input_data_written_to_delta: None,
+    grid_loss_responsible_test_data: DataFrame,
+    calculation_input_path: str,
+) -> None:
+    """Execute the calculator job.
+    This is the act part of a test in the arrange-act-assert paradigm.
+    This act is made as a session-scoped fixture because it is a slow process
+    and because lots of assertions can be made and split into seperate tests
+    without awaiting the execution in each test."""
+
+    with patch.object(
+        grid_loss_responsible,
+        grid_loss_responsible._get_all_grid_loss_responsible.__name__,
+        return_value=grid_loss_responsible_test_data,
+    ):
+        table_reader = TableReader(spark, calculation_input_path)
+        prepared_data_reader = PreparedDataReader(table_reader)
+        calculator_args_basis_data_writer.basis_data_write_only = True
+        calculation.execute(calculator_args_basis_data_writer, prepared_data_reader)
+
+
+@pytest.fixture(scope="session")
 def balance_fixing_results_df(
     spark: SparkSession,
     executed_balance_fixing: None,
