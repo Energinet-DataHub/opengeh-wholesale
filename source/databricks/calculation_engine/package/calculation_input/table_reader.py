@@ -88,42 +88,17 @@ class TableReader:
     ) -> DataFrame:
         path = f"{self._calculation_input_path}/{self._time_series_points_table_name}"
 
-        if "_partitioned_by_year_and_month" in path:
-            # TEMPORARY: This is for experimenting with a table that is partitioned by year and month.
-            # TODO: Cleanup when/if the table is time_series_points  table is partitioned by year and month.
-            logger = Logger(__name__)
-            logger.info(
-                "EXPERIMENT: Reading from time_series_points_partitioned_by_year_and_month"
+        df = (
+            self._spark.read.format("delta")
+            .load(path)
+            .where(col(Colname.observation_time) >= period_start_datetime)
+            .where(col(Colname.observation_time) < period_end_datetime)
             )
 
-            if period_start_datetime.year != period_end_datetime.year:
-                raise ValueError(
-                    "The period start and end datetimes must be within the same year"
-                )
-            if period_start_datetime.month != period_end_datetime.month:
-                raise ValueError(
-                    "The period start and end datetimes must be within the same month"
-                )
-            year = period_start_datetime.year
-            month = period_start_datetime.month
-            df = (
-                self._spark.read.format("delta")
-                .load(path)
-                .where(col("observation_year") == year)
-                .where(col("observation_month") == month)
-                .where(col(Colname.observation_time) >= period_start_datetime)
-                .where(col(Colname.observation_time) < period_end_datetime)
-            )
+        if self._time_series_points_table_name != 'time_series_points'
             df = df.drop(
                 "observation_year", "observation_month"
             )  # Drop partition columns
-        else:
-            df = (
-                self._spark.read.format("delta")
-                .load(path)
-                .where(col(Colname.observation_time) >= period_start_datetime)
-                .where(col(Colname.observation_time) < period_end_datetime)
-            )
 
         assert_schema(df.schema, time_series_point_schema)
 
