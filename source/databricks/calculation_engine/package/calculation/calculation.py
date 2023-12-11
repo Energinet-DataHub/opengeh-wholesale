@@ -52,7 +52,9 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
 
     if args.basis_data_write_only:
         logger.info("Starting basis data writer")
-        basis_data_writer = BasisDataWriter(args.wholesale_container_path, args.batch_id)
+        basis_data_writer = BasisDataWriter(
+            args.wholesale_container_path, args.batch_id
+        )
         basis_data_writer.write(
             metering_point_periods_df,
             metering_point_time_series,
@@ -81,8 +83,10 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
             )
 
             charges_df = prepared_data_reader.get_charges()
-            metering_points_periods_df = _get_production_and_consumption_metering_points(
-                metering_point_periods_df
+            metering_points_periods_df = (
+                _get_production_and_consumption_metering_points(
+                   metering_point_periods_df
+                )
             )
 
             tariffs_hourly_df = prepared_data_reader.get_tariff_charges(
