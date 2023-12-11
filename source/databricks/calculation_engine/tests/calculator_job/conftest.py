@@ -60,6 +60,7 @@ def calculator_args_balance_fixing(
         batch_period_end_datetime=datetime(2018, 1, 3, 23, 0, 0),
         batch_execution_time_start=datetime(2018, 1, 5, 23, 0, 0),
         time_zone="Europe/Copenhagen",
+        basis_data_write_only=False,
     )
 
 
