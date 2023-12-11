@@ -59,6 +59,11 @@ data "azurerm_key_vault_secret" "sb_domain_relay_namespace_id" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
+data "azurerm_key_vault_secret" "sbt_domainrelay_integrationevent_received_id" {
+  name         = "sbt-shres-integrationevent-received-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
 data "azurerm_key_vault_secret" "private_dns_zone_resource_group_name" {
   name         = "private-dns-zone-resource-group-name"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id

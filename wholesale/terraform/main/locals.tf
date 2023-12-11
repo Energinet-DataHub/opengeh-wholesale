@@ -12,4 +12,7 @@ locals {
   LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_WHOLESALE = "Information" # From opengeh-wholesale
   LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE      = "Information" # From geh-core
   LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT                     = "Warning"     # Everything else
+
+  # Service Bus
+  INTEGRATIONEVENTS_SUBSCRIPTION_NAME = "integration-event"
 }

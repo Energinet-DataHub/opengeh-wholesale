@@ -57,6 +57,7 @@ locals {
     SERVICE_BUS_LISTEN_CONNECTION_STRING = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-listen-connection-string)"
     SERVICE_BUS_MANAGE_CONNECTION_STRING = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-manage-connection-string)"
     INTEGRATIONEVENTS_TOPIC_NAME         = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbt-shres-integrationevent-received-name)"
+    INTEGRATIONEVENTS_SUBSCRIPTION_NAME  =  module.sbtsub_wholesale_integration_event_listener.name
     EDI_INBOX_MESSAGE_QUEUE_NAME         = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbq-edi-inbox-messagequeue-name)"
     WHOLESALE_INBOX_MESSAGE_QUEUE_NAME   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbq-wholesale-inbox-messagequeue-name)"
 
