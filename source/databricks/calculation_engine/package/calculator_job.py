@@ -46,7 +46,7 @@ def start_basis_data_writer() -> None:
         "APPLICATIONINSIGHTS_CONNECTION_STRING"
     )
 
-    start_basis_data_writer(
+    start_basis_data_writer_with_deps(
         applicationinsights_connection_string=applicationinsights_connection_string
     )
 
@@ -81,7 +81,6 @@ def start_with_deps(
             raise_if_storage_is_locked(is_storage_locked_checker, args)
 
             prepared_data_reader = create_prepared_data_reader(args)
-            args.basis_data_write_only = True
             calculation_executor(args, prepared_data_reader)
 
         # Added as ConfigArgParse uses sys.exit() rather than raising exceptions
@@ -96,7 +95,7 @@ def start_with_deps(
             span.record_exception(e, attributes=config.get_extras())
             sys.exit(4)
 
-def start_basis_data_writer(
+def start_basis_data_writer_with_deps(
     *,
     cloud_role_name: str = "dbr-calculation-engine",
     applicationinsights_connection_string: Union[str, None] = None,
@@ -125,7 +124,8 @@ def start_basis_data_writer(
             span.set_attributes(config.get_extras())
 
             raise_if_storage_is_locked(is_storage_locked_checker, args)
-
+            
+            args.basis_data_write_only = True
             prepared_data_reader = create_prepared_data_reader(args)
             calculation_executor(args, prepared_data_reader)
 
