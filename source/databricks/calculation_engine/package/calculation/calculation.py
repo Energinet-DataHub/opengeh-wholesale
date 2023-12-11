@@ -58,7 +58,7 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
             metering_point_time_series,
             args.time_zone,
         )
-        
+
     else:
         logger.info("Starting energy calculation")
         energy_calculation.execute(

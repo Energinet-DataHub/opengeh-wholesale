@@ -41,6 +41,7 @@ def start() -> None:
         applicationinsights_connection_string=applicationinsights_connection_string
     )
 
+
 def start_basis_data_writer() -> None:
     applicationinsights_connection_string = os.getenv(
         "APPLICATIONINSIGHTS_CONNECTION_STRING"
@@ -49,6 +50,7 @@ def start_basis_data_writer() -> None:
     start_basis_data_writer_with_deps(
         applicationinsights_connection_string=applicationinsights_connection_string
     )
+
 
 def start_with_deps(
     *,
@@ -95,6 +97,7 @@ def start_with_deps(
             span.record_exception(e, attributes=config.get_extras())
             sys.exit(4)
 
+
 def start_basis_data_writer_with_deps(
     *,
     cloud_role_name: str = "dbr-calculation-engine",
@@ -124,7 +127,7 @@ def start_basis_data_writer_with_deps(
             span.set_attributes(config.get_extras())
 
             raise_if_storage_is_locked(is_storage_locked_checker, args)
-            
+
             args.basis_data_write_only = True
             prepared_data_reader = create_prepared_data_reader(args)
             calculation_executor(args, prepared_data_reader)
@@ -141,6 +144,7 @@ def start_basis_data_writer_with_deps(
             span.record_exception(e, attributes=config.get_extras())
             sys.exit(4)
 
+
 def create_prepared_data_reader(args: CalculatorArgs) -> calculation.PreparedDataReader:
     """Create calculation execution dependencies."""
     spark = initialize_spark()
@@ -152,6 +156,7 @@ def create_prepared_data_reader(args: CalculatorArgs) -> calculation.PreparedDat
     )
     prepared_data_reader = calculation.PreparedDataReader(delta_table_reader)
     return prepared_data_reader
+
 
 def raise_if_storage_is_locked(
     is_storage_locked_checker: Callable[..., bool], args: CalculatorArgs
