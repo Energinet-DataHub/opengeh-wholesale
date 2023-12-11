@@ -38,6 +38,7 @@ setup(
     entry_points={
         "console_scripts": [
             "start_calculator = package.calculator_job:start",
+            "start_basis_data_writer = package.calculator_job:start_basis_data_writer"
             "lock_storage = package.infrastructure.storage_account_access.lock_storage:lock",
             "unlock_storage = package.infrastructure.storage_account_access.lock_storage:unlock",
             "migrate_data_lake = package.datamigration.migration:migrate_data_lake",
