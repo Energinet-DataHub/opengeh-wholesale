@@ -11,9 +11,41 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import sys
+import time
+import uuid
+from datetime import timedelta
+from typing import cast, Callable
+
 import pytest
+from azure.monitor.query import LogsQueryClient, LogsQueryResult
 
 from package.calculator_job import start, start_with_deps
+from tests.integration_test_configuration import IntegrationTestConfiguration
+
+
+def wait_for_condition(callback: Callable, *, timeout: timedelta, step: timedelta):
+    """
+    Wait for a condition to be met, or timeout.
+    The function keeps invoking the callback until it returns without raising an exception.
+    """
+    start_time = time.time()
+    while True:
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        # noinspection PyBroadException
+        try:
+            callback()
+            print(f"Condition met in {elapsed_ms} ms")
+            return
+        except Exception:
+            if elapsed_ms > timeout.total_seconds() * 1000:
+                print(
+                    f"Condition failed to be met before timeout. Timed out after {elapsed_ms} ms",
+                    file=sys.stderr,
+                )
+                raise
+            time.sleep(step.seconds)
+            print(f"Condition not met after {elapsed_ms} ms. Retrying...")
 
 
 class TestWhenInvokedWithInvalidArguments:
@@ -31,4 +63,62 @@ class TestWhenInvokedWithValidArguments:
             cmd_line_args_reader=lambda: any_calculator_args,
             calculation_executor=lambda args, reader: None,
             is_storage_locked_checker=lambda name, cred: False,
+        )
+
+    def test_logs_traces_to_azure_monitor_with_expected_settings(
+        self,
+        any_calculator_args,
+        integration_test_configuration: IntegrationTestConfiguration,
+    ):
+        """
+        Assert that the calculator job logs to Azure Monitor with the expected settings:
+        - cloud role name = "dbr-calculation-engine"
+        - severity level = "Informational"
+        - message "Calculator job started"
+        - custom field "Domain" = "wholesale"
+        - custom field "calculation_id" = <the calculation id>
+        """
+
+        # Arrange
+        any_calculator_args.batch_id = str(uuid.uuid4())  # Ensure unique calculation id
+
+        # Act
+        start_with_deps(
+            cmd_line_args_reader=lambda: any_calculator_args,
+            calculation_executor=lambda args, reader: None,
+            is_storage_locked_checker=lambda name, cred: False,
+            applicationinsights_connection_string=integration_test_configuration.get_applicationinsights_connection_string(),
+        )
+
+        # Assert
+        # noinspection PyTypeChecker
+        logs_client = LogsQueryClient(integration_test_configuration.credential)
+
+        query = f"""
+AppTraces
+| where AppRoleName == "dbr-calculation-engine"
+| where SeverityLevel == 1 // Informational
+| where Message == "Calculator job started"
+| where Properties.Domain == "wholesale"
+| where Properties.calculation_id == "{any_calculator_args.batch_id}"
+| count
+//| project message
+        """
+
+        workspace_id = integration_test_configuration.get_analytics_workspace_id()
+
+        def assert_logged():
+            actual = logs_client.query_workspace(
+                workspace_id, query, timespan=timedelta(minutes=5)
+            )
+            actual = cast(LogsQueryResult, actual)
+            table = actual.tables[0]
+            row = table.rows[0]
+            value = row["Count"]
+            count = cast(int, value)
+            assert count > 0
+
+        # Assert, but timeout after 2 minutes if not succeeded
+        wait_for_condition(
+            assert_logged, timeout=timedelta(minutes=3), step=timedelta(seconds=10)
         )
