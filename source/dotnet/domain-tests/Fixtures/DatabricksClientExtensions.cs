@@ -70,7 +70,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         /// </summary>
         public static async Task<long> GetCalculatorJobIdAsync(this DatabricksClient databricksClient)
         {
-            var jobs = await databricksClient.Jobs.List(limit: 100);
+            var jobs = await databricksClient.Jobs.List(name: "CalculatorJob");
             return jobs.Jobs
                 .Single(j => j.Settings.Name == "CalculatorJob")
                 .JobId;
