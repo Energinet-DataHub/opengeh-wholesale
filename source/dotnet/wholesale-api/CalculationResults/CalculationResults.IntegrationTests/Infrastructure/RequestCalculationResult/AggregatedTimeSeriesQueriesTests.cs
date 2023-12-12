@@ -569,6 +569,27 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             parameters.ProcessType);
     }
 
+    [Fact]
+    public async Task GetAsync_WhenRequestFromGridOperatorTotalProductionWithEmptyGridArea_ReturnsResult()
+    {
+        // Arrange
+        var emptyGridAreaFilter = string.Empty;
+        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
+        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+        await AddCreatedRowsInArbitraryOrderAsync();
+        var parameters = CreateQueryParameters(
+            gridArea: emptyGridAreaFilter,
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter);
+
+        // Act
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        actual.Should().HaveCount(1);
+    }
+
     private AggregatedTimeSeriesQueryParameters CreateQueryParameters(
         TimeSeriesType? timeSeriesType = null,
         Instant? startOfPeriod = null,
