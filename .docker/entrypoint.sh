@@ -30,11 +30,14 @@ coverage run --branch -m pytest --junitxml=pytest-results.xml . | tee pytest-res
 # Scenario: Test errors (exceptions) occured
 ################################################
 
-# EXAMPLE test summary which our regex can match:
+# EXAMPLE 1 test summary which our regex can match:
 # ================== 65 passed, 195 errors in 94.15s (0:01:34) ===================
 
+# EXAMPLE 2 test summary which our regex can match:
+# ================== 65 passed, 1 error in 94.15s (0:01:34) ===================
+
 # If test summary contains errors we return exit code 2 to signal we want to retry
-matchTestErrors=$(grep -Po '^=+.* [[:digit:]]+ errors.* in .*=+$' pytest-results.log)
+matchTestErrors=$(grep -Po '^=+.* [[:digit:]]+ error.* in .*=+$' pytest-results.log)
 if [ ! -z "$matchTestErrors" ]; then
   echo "Test errors occured, which is typically caused by network issues (download failure). We should retry."
   exit 2
