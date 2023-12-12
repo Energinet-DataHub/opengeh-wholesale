@@ -1,21 +1,22 @@
 module "func_biztalkshipper" {
-  source                                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=v13"
+  source                                        = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=v13"
 
-  name                                      = "biztalkshipper"
-  project_name                              = var.domain_name_short
-  environment_short                         = var.environment_short
-  environment_instance                      = var.environment_instance
-  resource_group_name                       = azurerm_resource_group.this.name
-  location                                  = azurerm_resource_group.this.location
-  vnet_integration_subnet_id                = data.azurerm_key_vault_secret.snet_vnet_integration_id.value
-  private_endpoint_subnet_id                = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
-  app_service_plan_id                       = data.azurerm_key_vault_secret.plan_shared_id.value
-  application_insights_instrumentation_key  = data.azurerm_key_vault_secret.appi_shared_instrumentation_key.value
-  ip_restriction_allow_ip_range             = var.hosted_deployagent_public_ip_range
-  always_on                                 = true
-  dotnet_framework_version                  = "v7.0"
-  app_settings                              = merge({
-    "biztalk:RootUrl"                       = "https://datahub.dev01.biztalk.test.endk.local"
+  name                                          = "biztalkshipper"
+  project_name                                  = var.domain_name_short
+  environment_short                             = var.environment_short
+  environment_instance                          = var.environment_instance
+  resource_group_name                           = azurerm_resource_group.this.name
+  location                                      = azurerm_resource_group.this.location
+  vnet_integration_subnet_id                    = data.azurerm_key_vault_secret.snet_vnet_integration_id.value
+  private_endpoint_subnet_id                    = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
+  app_service_plan_id                           = data.azurerm_key_vault_secret.plan_shared_id.value
+  application_insights_instrumentation_key      = data.azurerm_key_vault_secret.appi_shared_instrumentation_key.value
+  ip_restriction_allow_ip_range                 = var.hosted_deployagent_public_ip_range
+  always_on                                     = true
+  dotnet_framework_version                      = "v7.0"
+  app_settings                                  = merge({
+    "biztalk:RootUrl"                           = "https://datahub.dev01.biztalk.test.endk.local"
+    "FeatureManagement__EnableBizTalkShipper"   = false
   }, local.default_biztalkshipper_settings)
 }
 

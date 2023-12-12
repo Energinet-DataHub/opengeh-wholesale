@@ -19,8 +19,6 @@ module "apim_biztalkreceiver" {
                     <inbound>
                         <base />
                         <set-backend-service backend-id="biztalkreceiver" />
-                        <ip-filter action="allow">
-                        </ip-filter>
                     </inbound>
                     <backend>
                         <base />
