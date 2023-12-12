@@ -1,1 +1,5 @@
-AZURE_KEYVAULT_URL: "https://kvintgratwe002.vault.azure.net"
+# This file contains the configuration settings for the integration tests.
+# Create a copy of this file and remove the .sample extension and update the values.
+# Read more about integration testing in python in Confluence.
+
+AZURE_KEYVAULT_URL: <The url of the key vault>
