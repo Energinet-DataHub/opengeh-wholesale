@@ -26,9 +26,9 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "edi_alert" {
                   exceptions
                   | where timestamp > ago(10m)
                     and (cloud_RoleName == 'func-api-${lower(var.domain_name_short)}-${lower(var.environment_short)}-${lower(var.environment_instance)}'
-                      || cloud_RoleName == 'func-api-${lower(var.domain_name_short)}-${lower(var.environment_short)}-we-${lower(var.environment_instance)}'
-                      || cloud_RoleName == 'app-b2cwebapi-${lower(var.domain_name_short)}-${lower(var.environment_short)}-${lower(var.environment_instance)}'
-                      || cloud_RoleName == 'app-b2cwebapi-${lower(var.domain_name_short)}-${lower(var.environment_short)}-we-${lower(var.environment_instance)}')
+                      or cloud_RoleName == 'func-api-${lower(var.domain_name_short)}-${lower(var.environment_short)}-we-${lower(var.environment_instance)}'
+                      or cloud_RoleName == 'app-b2cwebapi-${lower(var.domain_name_short)}-${lower(var.environment_short)}-${lower(var.environment_instance)}'
+                      or cloud_RoleName == 'app-b2cwebapi-${lower(var.domain_name_short)}-${lower(var.environment_short)}-we-${lower(var.environment_instance)}')
                     and (type !has "Energinet.DataHub.EDI" and type !hasprefix "NotSupported")
                 QUERY
   severity       = 1
