@@ -63,7 +63,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Databricks.Fixtures
             CalculationId calculationId,
             TimeSpan waitTimeLimit)
         {
-            var delay = TimeSpan.FromMinutes(5);
+            var delay = TimeSpan.FromMinutes(2);
 
             (Run, RepairHistory) runState = default;
             CalculationState? calculationState = CalculationState.Pending;
