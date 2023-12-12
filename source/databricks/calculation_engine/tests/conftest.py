@@ -17,6 +17,9 @@ defined in the geh_stream directory in our tests.
 """
 
 from datetime import datetime
+
+import yaml
+from azure.identity import ClientSecretCredential
 from delta import configure_spark_with_delta_pip
 import os
 from pyspark.sql import SparkSession
@@ -29,6 +32,8 @@ from package.datamigration.migration import _apply_migration
 from package.datamigration.uncommitted_migrations import _get_all_migrations
 from package.datamigration.migration_script_args import MigrationScriptArgs
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME
+
+from tests.integration_test_configuration import IntegrationTestConfiguration
 
 
 @pytest.fixture(scope="session")
@@ -123,7 +128,7 @@ def contracts_path(calculation_engine_path: str) -> str:
 
 @pytest.fixture(scope="session")
 def timestamp_factory() -> Callable[[str], Optional[datetime]]:
-    "Creates timestamp from utc string in correct format yyyy-mm-ddThh:mm:ss.nnnZ"
+    """Creates timestamp from utc string in correct format yyyy-mm-ddThh:mm:ss.nnnZ"""
 
     def factory(date_time_string: str) -> Optional[datetime]:
         date_time_formatting_string = "%Y-%m-%dT%H:%M:%S.%fZ"
@@ -169,7 +174,7 @@ def execute_migrations(spark: SparkSession, data_lake_path: str) -> None:
         data_storage_account_url="foo",
         data_storage_account_name="foo",
         data_storage_container_name="foo",
-        data_storage_credential="foo",
+        data_storage_credential=ClientSecretCredential("foo", "foo", "foo"),
         spark=spark,
     )
     # Overwrite in test
@@ -203,7 +208,7 @@ def virtual_environment() -> Generator:
 def installed_package(
     virtual_environment: Generator, calculation_engine_path: str
 ) -> None:
-    "Ensures that the wholesale package is installed (after building it)."
+    """Ensures that the wholesale package is installed (after building it)."""
 
     # Build the package wheel
     os.chdir(calculation_engine_path)
@@ -222,4 +227,28 @@ def installed_package(
         f"pip install {calculation_engine_path}/dist/package-1.0-py3-none-any.whl",
         shell=True,
         executable="/bin/bash",
+    )
+
+
+@pytest.fixture()
+def integration_test_configuration(tests_path: str) -> IntegrationTestConfiguration:
+    """Load settings and sets the properties as environment variables."""
+
+    settings_file_path = f"{tests_path}/integrationtest.local.settings.yml"
+
+    # Read settings from settings file if it exists
+    if os.path.exists(settings_file_path):
+        with open(settings_file_path) as stream:
+            settings = yaml.safe_load(stream)
+            azure_keyvault_url = settings["AZURE_KEYVAULT_URL"]
+            return IntegrationTestConfiguration(azure_keyvault_url=azure_keyvault_url)
+
+    # Otherwise, read settings from environment variables
+    if "AZURE_KEYVAULT_URL" in os.environ:
+        azure_keyvault_url = os.getenv("AZURE_KEYVAULT_URL")
+        return IntegrationTestConfiguration(azure_keyvault_url=azure_keyvault_url)
+
+    # If neither settings file nor environment variables are found, raise exception
+    raise Exception(
+        f"Settings file not found at {settings_file_path} and no environment variables found neither"
     )

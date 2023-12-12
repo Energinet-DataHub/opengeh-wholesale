@@ -1,3 +1,5 @@
+integrationtest.local.settings.yml
+
 # Exclude test reports
 **/pytest-results.xml
 

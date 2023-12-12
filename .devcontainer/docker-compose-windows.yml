@@ -9,3 +9,8 @@ services:
       - ..:/workspaces/opengeh-wholesale:cached
       # Map to Azure CLI token cache location (on Windows)
       - "${USERPROFILE}/.azure:/root/.azure"
+    environment:
+      # Pass the environment variables from your shell straight through to your containers.
+      # No warning is issued if the variable in the shell environment is not set.
+      # See https://docs.docker.com/compose/environment-variables/set-environment-variables/#additional-information-1
+      - AZURE_KEYVAULT_URL
