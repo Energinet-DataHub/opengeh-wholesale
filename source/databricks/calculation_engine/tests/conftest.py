@@ -128,7 +128,7 @@ def contracts_path(calculation_engine_path: str) -> str:
 
 @pytest.fixture(scope="session")
 def timestamp_factory() -> Callable[[str], Optional[datetime]]:
-    "Creates timestamp from utc string in correct format yyyy-mm-ddThh:mm:ss.nnnZ"
+    """Creates timestamp from utc string in correct format yyyy-mm-ddThh:mm:ss.nnnZ"""
 
     def factory(date_time_string: str) -> Optional[datetime]:
         date_time_formatting_string = "%Y-%m-%dT%H:%M:%S.%fZ"
@@ -208,7 +208,7 @@ def virtual_environment() -> Generator:
 def installed_package(
     virtual_environment: Generator, calculation_engine_path: str
 ) -> None:
-    "Ensures that the wholesale package is installed (after building it)."
+    """Ensures that the wholesale package is installed (after building it)."""
 
     # Build the package wheel
     os.chdir(calculation_engine_path)
@@ -249,4 +249,6 @@ def integration_test_configuration(tests_path: str) -> IntegrationTestConfigurat
         return IntegrationTestConfiguration(azure_keyvault_url=azure_keyvault_url)
 
     # If neither settings file nor environment variables are found, raise exception
-    raise Exception(f"Settings file not found at {settings_file_path}")
+    raise Exception(
+        f"Settings file not found at {settings_file_path} and no environment variables found neither"
+    )
