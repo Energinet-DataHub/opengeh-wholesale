@@ -1528,6 +1528,155 @@
               }
             }
           }
+        },
+        "17": {
+          "position": {
+            "x": 0,
+            "y": 15,
+            "colSpan": 3,
+            "rowSpan": 3
+          },
+          "metadata": {
+            "inputs": [],
+            "type": "Extension/HubsExtension/PartType/MarkdownPart",
+            "settings": {
+              "content": {
+                "content": "### App Service Plan",
+                "title": "",
+                "subtitle": "",
+                "markdownSource": 1,
+                "markdownUri": ""
+              }
+            }
+          }
+        },
+        "18": {
+          "position": {
+            "x": 3,
+            "y": 15,
+            "colSpan": 6,
+            "rowSpan": 3
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "options",
+                "isOptional": true
+              },
+              {
+                "name": "sharedTimeRange",
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+            "settings": {
+              "content": {
+                "options": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "resourceMetadata": {
+                          "id": "${plan_services_id}"
+                        },
+                        "name": "CpuPercentage",
+                        "aggregationType": 4,
+                        "namespace": "microsoft.web/serverfarms",
+                        "metricVisualization": {
+                          "displayName": "CPU Percentage",
+                          "resourceDisplayName": "${plan_services_name}"
+                        }
+                      }
+                    ],
+                    "title": "Avg CPU Percentage for ${plan_services_name}",
+                    "titleKind": 1,
+                    "visualization": {
+                      "chartType": 2,
+                      "legendVisualization": {
+                        "isVisible": true,
+                        "position": 2,
+                        "hideSubtitle": false
+                      },
+                      "axisVisualization": {
+                        "x": {
+                          "isVisible": true,
+                          "axisType": 2
+                        },
+                        "y": {
+                          "isVisible": true,
+                          "axisType": 1
+                        }
+                      },
+                      "disablePinning": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "19": {
+          "position": {
+            "x": 9,
+            "y": 15,
+            "colSpan": 6,
+            "rowSpan": 3
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "options",
+                "isOptional": true
+              },
+              {
+                "name": "sharedTimeRange",
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+            "settings": {
+              "content": {
+                "options": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "resourceMetadata": {
+                          "id": "${plan_services_id}"
+                        },
+                        "name": "MemoryPercentage",
+                        "aggregationType": 4,
+                        "namespace": "microsoft.web/serverfarms",
+                        "metricVisualization": {
+                          "displayName": "Memory Percentage",
+                          "resourceDisplayName": "${plan_services_name}"
+                        }
+                      }
+                    ],
+                    "title": "Avg Memory Percentage for ${plan_services_name}",
+                    "titleKind": 1,
+                    "visualization": {
+                      "chartType": 2,
+                      "legendVisualization": {
+                        "isVisible": true,
+                        "position": 2,
+                        "hideSubtitle": false
+                      },
+                      "axisVisualization": {
+                        "x": {
+                          "isVisible": true,
+                          "axisType": 2
+                        },
+                        "y": {
+                          "isVisible": true,
+                          "axisType": 1
+                        }
+                      },
+                      "disablePinning": true
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -1570,7 +1719,9 @@
               "StartboardPart-MonitorChartPart-ba572c19-156b-4aa9-9aab-ce73cb556ad8",
               "StartboardPart-MonitorChartPart-ba572c19-156b-4aa9-9aab-ce73cb556adc",
               "StartboardPart-MonitorChartPart-ba572c19-156b-4aa9-9aab-ce73cb556ade",
-              "StartboardPart-MonitorChartPart-ba572c19-156b-4aa9-9aab-ce73cb556ae2"
+              "StartboardPart-MonitorChartPart-ba572c19-156b-4aa9-9aab-ce73cb556ae2",
+              "StartboardPart-MonitorChartPart-ba572c19-156b-4aa9-9aab-ce73cb556213",
+              "StartboardPart-MonitorChartPart-ba572c19-156b-4aa9-9aab-ce73cb55662e"
             ]
           }
         }
