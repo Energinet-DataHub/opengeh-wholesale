@@ -48,6 +48,7 @@ def get_calculator_args() -> CalculatorArgs:
         batch_execution_time_start=job_args.batch_execution_time_start,
         batch_process_type=job_args.batch_process_type,
         time_zone=time_zone,
+        basis_data_write_only=False,
     )
 
     return calculator_args

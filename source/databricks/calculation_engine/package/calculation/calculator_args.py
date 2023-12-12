@@ -33,3 +33,4 @@ class CalculatorArgs:
     batch_process_type: ProcessType
     batch_execution_time_start: datetime
     time_zone: str
+    basis_data_write_only: bool

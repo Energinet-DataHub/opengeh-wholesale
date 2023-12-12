@@ -43,6 +43,16 @@ def start() -> None:
     )
 
 
+def start_basis_data_writer() -> None:
+    applicationinsights_connection_string = os.getenv(
+        "APPLICATIONINSIGHTS_CONNECTION_STRING"
+    )
+
+    start_basis_data_writer_with_deps(
+        applicationinsights_connection_string=applicationinsights_connection_string
+    )
+
+
 def start_with_deps(
     *,
     cloud_role_name: str = "dbr-calculation-engine",
@@ -76,6 +86,53 @@ def start_with_deps(
 
             raise_if_storage_is_locked(is_storage_locked_checker, args)
 
+            prepared_data_reader = create_prepared_data_reader(args)
+            calculation_executor(args, prepared_data_reader)
+
+        # Added as ConfigArgParse uses sys.exit() rather than raising exceptions
+        except SystemExit as e:
+            if e.code != 0:
+                span.set_status(Status(StatusCode.ERROR))
+                span.record_exception(e, attributes=config.get_extras())
+            sys.exit(e.code)
+
+        except Exception as e:
+            span.set_status(Status(StatusCode.ERROR))
+            span.record_exception(e, attributes=config.get_extras())
+            sys.exit(4)
+
+
+def start_basis_data_writer_with_deps(
+    *,
+    cloud_role_name: str = "dbr-calculation-engine",
+    applicationinsights_connection_string: Union[str, None] = None,
+    cmd_line_args_reader: Callable[..., CalculatorArgs] = get_calculator_args,
+    calculation_executor: Callable[..., None] = calculation.execute,
+    is_storage_locked_checker: Callable[..., bool] = islocked,
+) -> None:
+    """Start overload with explicit dependencies for easier testing."""
+
+    config.configure_logging(
+        cloud_role_name=cloud_role_name,
+        applicationinsights_connection_string=applicationinsights_connection_string,
+        extras={"Domain": "wholesale"},
+    )
+
+    tracer = trace.get_tracer("calculation-engine.tracer")
+
+    with tracer.start_as_current_span(
+        "root",
+    ) as span:
+        try:
+            args = cmd_line_args_reader()
+
+            # Add calculation_id to structured logging data to be included in every log message.
+            config.add_extras({"calculation_id": args.batch_id})
+            span.set_attributes(config.get_extras())
+
+            raise_if_storage_is_locked(is_storage_locked_checker, args)
+
+            args.basis_data_write_only = True
             prepared_data_reader = create_prepared_data_reader(args)
             calculation_executor(args, prepared_data_reader)
 

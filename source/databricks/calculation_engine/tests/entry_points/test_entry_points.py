@@ -102,3 +102,13 @@ def test__entry_point__migrate_data_lake__can_load_entry_point(
 
     # Assert
     assert entry_point is not None
+
+
+def test__entry_point__start_basis_data_writer__can_load_entry_point(
+    installed_package: None,
+) -> None:
+    # Act
+    entry_point = _load_entry_point("start_basis_data_writer")
+
+    # Assert
+    assert entry_point is not None

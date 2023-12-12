@@ -60,6 +60,29 @@ def calculator_args_balance_fixing(
         batch_period_end_datetime=datetime(2018, 1, 3, 23, 0, 0),
         batch_execution_time_start=datetime(2018, 1, 5, 23, 0, 0),
         time_zone="Europe/Copenhagen",
+        basis_data_write_only=False,
+    )
+
+
+@pytest.fixture(scope="session")
+def calculator_args_basis_data_writer(
+    data_lake_path: str, calculation_input_path: str
+) -> CalculatorArgs:
+    return CalculatorArgs(
+        data_storage_account_name="foo",
+        data_storage_account_credentials=ClientSecretCredential("foo", "foo", "foo"),
+        wholesale_container_path=data_lake_path,
+        calculation_input_path=calculation_input_path,
+        time_series_points_table_name=None,
+        metering_point_periods_table_name=None,
+        batch_id=C.executed_balance_fixing_batch_id,
+        batch_process_type=ProcessType.BALANCE_FIXING,
+        batch_grid_areas=["805", "806"],
+        batch_period_start_datetime=datetime(2018, 1, 1, 23, 0, 0),
+        batch_period_end_datetime=datetime(2018, 1, 3, 23, 0, 0),
+        batch_execution_time_start=datetime(2018, 1, 5, 23, 0, 0),
+        time_zone="Europe/Copenhagen",
+        basis_data_write_only=True,
     )
 
 
@@ -199,6 +222,32 @@ def executed_wholesale_fixing(
         table_reader = TableReader(spark, calculation_input_path)
         prepared_data_reader = PreparedDataReader(table_reader)
         calculation.execute(calculator_args_wholesale_fixing, prepared_data_reader)
+
+
+@pytest.fixture(scope="session")
+def executed_basis_data_writer(
+    spark: SparkSession,
+    calculator_args_basis_data_writer: CalculatorArgs,
+    migrations_executed: None,
+    energy_input_data_written_to_delta: None,
+    price_input_data_written_to_delta: None,
+    grid_loss_responsible_test_data: DataFrame,
+    calculation_input_path: str,
+) -> None:
+    """Execute the calculator job.
+    This is the act part of a test in the arrange-act-assert paradigm.
+    This act is made as a session-scoped fixture because it is a slow process
+    and because lots of assertions can be made and split into seperate tests
+    without awaiting the execution in each test."""
+
+    with patch.object(
+        grid_loss_responsible,
+        grid_loss_responsible._get_all_grid_loss_responsible.__name__,
+        return_value=grid_loss_responsible_test_data,
+    ):
+        table_reader = TableReader(spark, calculation_input_path)
+        prepared_data_reader = PreparedDataReader(table_reader)
+        calculation.execute(calculator_args_basis_data_writer, prepared_data_reader)
 
 
 @pytest.fixture(scope="session")
