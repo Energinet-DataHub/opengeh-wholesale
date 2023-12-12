@@ -96,14 +96,10 @@ class TableReader:
         )
 
         if "observation_year" in df.columns:
-            df = df.drop(
-                "observation_year"
-            )  # Drop year partition column
+            df = df.drop("observation_year")  # Drop year partition column
     
         if "observation_month" in df.columns:
-            df = df.drop(
-                "observation_month"
-            )  # Drop month partition column
+            df = df.drop("observation_month")  # Drop month partition column
         
         assert_schema(df.schema, time_series_point_schema)
 
