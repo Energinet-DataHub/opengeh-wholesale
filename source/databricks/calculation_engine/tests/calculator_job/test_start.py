@@ -27,6 +27,7 @@ from tests.integration_test_configuration import IntegrationTestConfiguration
 def wait_for_condition(callback: Callable, *, timeout: timedelta, step: timedelta):
     """
     Wait for a condition to be met, or timeout.
+    The function keeps invoking the callback until it returns without raising an exception.
     """
     start_time = time.time()
     while True:
@@ -64,15 +65,22 @@ class TestWhenInvokedWithValidArguments:
             is_storage_locked_checker=lambda name, cred: False,
         )
 
-    # TODO BJM: Consider splitting into multiple tests
-    # TODO BJM: Add tests for traces and exceptions as well
-    def test_logs_to_azure_monitor(
+    def test_logs_traces_to_azure_monitor_with_expected_settings(
         self,
         any_calculator_args,
         integration_test_configuration: IntegrationTestConfiguration,
     ):
+        """
+        Assert that the calculator job logs to Azure Monitor with the expected settings:
+        - cloud role name = "dbr-calculation-engine"
+        - severity level = "Informational"
+        - message "Calculator job started"
+        - custom field "Domain" = "wholesale"
+        - custom field "calculation_id" = <the calculation id>
+        """
+
         # Arrange
-        any_calculator_args.batch_id = str(uuid.uuid4())
+        any_calculator_args.batch_id = str(uuid.uuid4())  # Ensure unique calculation id
 
         # Act
         start_with_deps(
@@ -84,30 +92,19 @@ class TestWhenInvokedWithValidArguments:
 
         # Assert
         # noinspection PyTypeChecker
-        # From https://youtrack.jetbrains.com/issue/PY-59279/Type-checking-detects-an-error-when-passing-an-instance-implicitly-conforming-to-a-Protocol-to-a-function-expecting-that:
-        #    DefaultAzureCredential does not conform to protocol TokenCredential, because its method get_token is missing
-        #    the arguments claims and tenant_id. Surely, they might appear among the arguments passed as **kwargs, but it's
-        #    not guaranteed. In other words, you can make a call to get_token which will typecheck fine for
-        #    DefaultAzureCredential, but not for TokenCredential.
         logs_client = LogsQueryClient(integration_test_configuration.credential)
 
-        # Kusto query to get logs with message "Calculator job started" and custom field "Domain" set to "wholesale" and cloud role name set to "dbr-calculation-engine" and severity level set to "Informational"
         query = f"""
 AppTraces
+| where AppRoleName == "dbr-calculation-engine"
+| where SeverityLevel == 1 // Informational
+| where Message == "Calculator job started"
 | where Properties.Domain == "wholesale"
 | where Properties.calculation_id == "{any_calculator_args.batch_id}"
-| where AppRoleName == "dbr-calculation-engine"
-| where Message == "Calculator job started"
-| where SeverityLevel == 1 // Informational
 | count
 //| project message
         """
 
-        # TODO BJM: Remove before merge
-        print(
-            "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% "
-            + repr(any_calculator_args.batch_id)
-        )
         workspace_id = integration_test_configuration.get_analytics_workspace_id()
 
         def assert_logged():
@@ -121,7 +118,7 @@ AppTraces
             count = cast(int, value)
             assert count > 0
 
-        # Assert, but timeout after 2 minutes
+        # Assert, but timeout after 2 minutes if not succeeded
         wait_for_condition(
             assert_logged, timeout=timedelta(minutes=3), step=timedelta(seconds=10)
         )
