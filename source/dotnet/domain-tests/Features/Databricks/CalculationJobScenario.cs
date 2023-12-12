@@ -72,7 +72,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Databricks
         {
             var actualWaitResult = await Fixture.WaitForCalculationJobCompletedAsync(
                 Fixture.ScenarioState.CalculationId,
-                waitTimeLimit: TimeSpan.FromHours(5));
+                waitTimeLimit: TimeSpan.FromMinutes(75));
 
             Fixture.ScenarioState.Run = actualWaitResult.Run;
 
@@ -90,7 +90,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Databricks
         [DomainFact]
         public void AndThen_CalculationJobDurationIsLessThanOrEqualToTimeLimit()
         {
-            var calculationJobTimeLimit = TimeSpan.FromHours(4);
+            var calculationJobTimeLimit = TimeSpan.FromMinutes(70);
 
             // TODO: Verify if this is the correct way to measure the duration. See https://docs.databricks.com/api/azure/workspace/jobs/getrun
             var actualCalculationJobDuration =
