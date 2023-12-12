@@ -72,7 +72,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures
         {
             var jobs = await databricksClient.Jobs.List(name: "CalculatorJob");
             return jobs.Jobs
-                .Single(j => j.Settings.Name == "CalculatorJob")
+                .Single()
                 .JobId;
         }
     }
