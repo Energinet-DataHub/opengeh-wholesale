@@ -237,7 +237,7 @@ def integration_test_configuration(tests_path: str) -> IntegrationTestConfigurat
     settings_file_path = f"{tests_path}/integrationtest.local.settings.yml"
 
     # Read settings from settings file if it exists
-    #if os.path.exists(settings_file_path):
+    # if os.path.exists(settings_file_path):
     with open(settings_file_path) as stream:
         settings = yaml.safe_load(stream)
         azure_keyvault_url = settings["AZURE_KEYVAULT_URL"]
