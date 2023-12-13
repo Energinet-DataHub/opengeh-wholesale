@@ -5,10 +5,10 @@ module "apimao_ebix_dequemessage" {
   api_management_name     = data.azurerm_key_vault_secret.apim_instance_name.value
   api_management_api_name = module.apima_b2b_ebix.name
 
-  operation_id            = "deque-message" // Taken from the imported WSDL, is this correct?
+  operation_id            = "dequeue-message"
   method                  = "POST"
   display_name            = "Deque message - ebIX"
-  url_template            = "/?soapAction=dequeMessage"
+  url_template            = "/?soapAction=dequeueMessage"
 
   policies = [
     {
@@ -17,11 +17,11 @@ module "apimao_ebix_dequemessage" {
           <inbound>
             <base />
             <set-variable name="messageId" value="@{
-              var body = context.Request.Body.As<XElement>();
-              return body.Element(XName.Get("MessageId", "urn:www:datahub:dk:b2b:v01")).Value;
-            }" />
+                  var body = context.Request.Body.As<XElement>();
+                  return body.Element(XName.Get("MessageId", "urn:www:datahub:dk:b2b:v01")).Value;
+                }" />
             <set-backend-service backend-id="${azurerm_api_management_backend.edi.name}" />
-            <rewrite-uri template="@("/api/dequeue/" + context.Variables.GetValueOrDefault<string>("messageId"))" copy-unmatched-params="false" />
+            <rewrite-uri template="@("/api/dequeue/" + context.Variables.GetValueOrDefault&#60;string&#62;(&#34;messageId&#34;))" copy-unmatched-params="false" />
             <set-method>DELETE</set-method>
           </inbound>
           <backend>
