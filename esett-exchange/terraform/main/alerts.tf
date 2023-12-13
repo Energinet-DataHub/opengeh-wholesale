@@ -1,10 +1,10 @@
 resource "azurerm_monitor_action_group" "esett_exchange" {
-  name                = "ag-${local.name_suffix}"
+  name                = "ag-${local.NAME_SUFFIX}"
   resource_group_name = azurerm_resource_group.this.name
   short_name          = "ag-esett"
 
   email_receiver {
-    name                    = "alerts-eSettExchange-${local.name_suffix}"
+    name                    = "alerts-eSettExchange-${local.NAME_SUFFIX}"
     email_address           = "it-dh-support@energinet.dk"
     use_common_alert_schema = true
   }
@@ -12,7 +12,7 @@ resource "azurerm_monitor_action_group" "esett_exchange" {
 
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "esett_exchange_aggregation_deadline_alert" {
   # NOTE: The name prefix 'alert-eSettExchangeDeadline' is used by ServiceNow to detect the alert and create an incident.
-  name                    = "alert-eSettExchangeDeadline-aggregation-${local.name_suffix}"
+  name                    = "alert-eSettExchangeDeadline-aggregation-${local.NAME_SUFFIX}"
   location                = azurerm_resource_group.this.location
   resource_group_name     = var.shared_resources_resource_group_name
   auto_mitigation_enabled = true
@@ -55,7 +55,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "esett_exchange_aggreg
 
 resource "azurerm_monitor_scheduled_query_rules_alert_v2" "esett_exchange_balancefixing_deadline_alert" {
   # NOTE: The name prefix 'alert-eSettExchangeDeadline' is used by ServiceNow to detect the alert and create an incident.
-  name                    = "alert-eSettExchangeDeadline-balancefixing-${local.name_suffix}"
+  name                    = "alert-eSettExchangeDeadline-balancefixing-${local.NAME_SUFFIX}"
   location                = azurerm_resource_group.this.location
   resource_group_name     = var.shared_resources_resource_group_name
   auto_mitigation_enabled = true
