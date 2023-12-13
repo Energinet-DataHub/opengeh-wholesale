@@ -29,7 +29,7 @@ from package.common.logger import Logger
         ("warning", logging.Logger.warning),
     ],
 )
-def test_log_method_when_called_with_custom_extras_passes_correct_extras(
+def test__log_method__when_called_with_custom_extras__passes_correct_extras(
     log_method, log_func
 ):
     # Arrange
