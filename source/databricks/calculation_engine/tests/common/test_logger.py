@@ -18,43 +18,41 @@ from unittest.mock import patch
 from package.common.logger import Logger
 
 
-def test__given_custom_extras__when_debug_called__then_correct_extras_passed():
-    # Arrange
-    logger = Logger("test_logger")
-    test_message = "Test debug message"
-    custom_extras = {"key": "value"}
-    expected_extras = custom_extras | logger.extras
-    with patch.object(logging.Logger, "debug") as mock_debug:
-        # Act
-        logger.debug(test_message, extras=custom_extras)
+class TestLogger:
+    def test__custom_extras__when_debug_called__then_correct_extras_passed(self):
+        # Arrange
+        logger = Logger("test_logger")
+        test_message = "Test debug message"
+        custom_extras = {"key": "value"}
+        expected_extras = custom_extras | logger.extras
+        with patch.object(logging.Logger, "debug") as mock_debug:
+            # Act
+            logger.debug(test_message, extras=custom_extras)
+            # Assert
+            mock_debug.assert_called_once_with(test_message, extra=expected_extras)
 
-        # Assert
-        mock_debug.assert_called_once_with(test_message, extra=expected_extras)
+    def test__custom_extras__when_info_called__then_correct_extras_passed(self):
+        # Arrange
+        logger = Logger("test_logger")
+        test_message = "Test info message"
+        custom_extras = {"key": "value"}
+        expected_extras = custom_extras | logger.extras
+        with patch.object(logging.Logger, "info") as mock_info:
+            # Act
+            logger.info(test_message, extras=custom_extras)
+            # Assert
+            mock_info.assert_called_once_with(test_message, extra=expected_extras)
 
-
-def test__given_custom_extras__when_info_called__then_correct_extras_passed():
-    # Arrange
-    logger = Logger("test_logger")
-    test_message = "Test info message"
-    custom_extras = {"key": "value"}
-    expected_extras = custom_extras | logger.extras
-    with patch.object(logging.Logger, "info") as mock_info:
-        # Act
-        logger.info(test_message, extras=custom_extras)
-
-        # Assert
-        mock_info.assert_called_once_with(test_message, extra=expected_extras)
-
-
-def test__given_custom_extras__when_warning_called__then_correct_extras_passed():
-    # Arrange
-    logger = Logger("test_logger")
-    test_message = "Test warning message"
-    custom_extras = {"key": "value"}
-    expected_extras = custom_extras | logger.extras
-    with patch.object(logging.Logger, "warning") as mock_warning:
-        # Act
-        logger.warning(test_message, extras=custom_extras)
-
-        # Assert
-        mock_warning.assert_called_once_with(test_message, extra=expected_extras)
+    def test__custom_extras__when_warning_called__then_correct_extras_passed(
+        self,
+    ):
+        # Arrange
+        logger = Logger("test_logger")
+        test_message = "Test warning message"
+        custom_extras = {"key": "value"}
+        expected_extras = custom_extras | logger.extras
+        with patch.object(logging.Logger, "warning") as mock_warning:
+            # Act
+            logger.warning(test_message, extras=custom_extras)
+            # Assert
+            mock_warning.assert_called_once_with(test_message, extra=expected_extras)
