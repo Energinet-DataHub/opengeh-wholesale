@@ -21,6 +21,7 @@ import pytest
 from azure.monitor.query import LogsQueryClient, LogsQueryResult
 
 from package.calculation.calculator_args import CalculatorArgs
+import package.calculator_job
 from package.calculator_job import start, start_with_deps
 from package.common.logger import Logger
 from tests.integration_test_configuration import IntegrationTestConfiguration
@@ -45,7 +46,7 @@ class TestWhenInvokedWithValidArguments:
 
     @pytest.mark.parametrize(
         "log_func, log_level",
-        [(Logger.debug, 0), (Logger.info, 1), (Logger.warning, 2)],
+        [(Logger.info, 1), (Logger.warning, 2)],
     )
     def test_logs_traces_to_azure_monitor_with_expected_settings(
         self,
@@ -59,18 +60,23 @@ class TestWhenInvokedWithValidArguments:
         - cloud role name = "dbr-calculation-engine"
         - severity level = <log_level>
         - message <the message>
+        - operation id has value
         - custom field "Domain" = "wholesale"
         - custom field "calculation_id" = <the calculation id>
+        - custom field "CategoryName" = "Energinet.DataHub." + <logger name>
+
+        Debug level is not tested as it is not intended to be logged by default.
         """
 
         # Arrange
         any_calculator_args.batch_id = str(uuid.uuid4())  # Ensure unique calculation id
+        test_message = f"Test message with log level {log_level}"
 
         def executor(args, reader):
             # A little hacking to invoke the function from the test parameters on a logger object
-            logger = Logger("test")
+            logger = Logger(__name__)
             f = getattr(logger, log_func.__name__)
-            f("Test message")
+            f(test_message)
 
         # Act
         start_with_deps(
@@ -88,9 +94,11 @@ class TestWhenInvokedWithValidArguments:
 AppTraces
 | where AppRoleName == "dbr-calculation-engine"
 | where SeverityLevel == {log_level}
-| where Message == "Test message"
+| where Message == "{test_message}"
+| where OperationId != "00000000000000000000000000000000"
 | where Properties.Domain == "wholesale"
 | where Properties.calculation_id == "{any_calculator_args.batch_id}"
+| where Properties.CategoryName == "Energinet.DataHub.{__name__}"
 | count
         """
 
@@ -115,17 +123,19 @@ AppTraces
         """
         Assert that the calculator job logs to Azure Monitor with the expected settings:
         - cloud role name = "dbr-calculation-engine"
-        - severity level = "Error"
-        - message <the message>
+        - exception type = <exception type name>
+        - outer message <exception message>
+        - operation id has value
         - custom field "Domain" = "wholesale"
         - custom field "calculation_id" = <the calculation id>
+        - custom field "CategoryName" = "Energinet.DataHub." + <logger name>
         """
 
         # Arrange
         any_calculator_args.batch_id = str(uuid.uuid4())
 
         def raise_exception():
-            raise Exception("Test exception")
+            raise ValueError("Test exception")
 
         with pytest.raises(SystemExit):
             # Act
@@ -141,12 +151,14 @@ AppTraces
         logs_client = LogsQueryClient(integration_test_configuration.credential)
 
         query = f"""
-AppTraces
+AppExceptions
 | where AppRoleName == "dbr-calculation-engine"
-| where SeverityLevel == 3 // Error
-| where Message == "Test exception"
+| where ExceptionType == "ValueError"
+| where OuterMessage == "Test exception"
+| where OperationId != "00000000000000000000000000000000"
 | where Properties.Domain == "wholesale"
 | where Properties.calculation_id == "{any_calculator_args.batch_id}"
+| where Properties.CategoryName == "Energinet.DataHub.{package.calculator_job.__name__}"
 | count
         """
 
