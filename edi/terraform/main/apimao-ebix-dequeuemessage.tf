@@ -1,4 +1,4 @@
-module "apimao_ebix_dequemessage" {
+module "apimao_ebix_dequeuemessage" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api-operation?ref=v13"
 
   resource_group_name     = data.azurerm_key_vault_secret.apim_instance_resource_group_name.value
@@ -7,7 +7,7 @@ module "apimao_ebix_dequemessage" {
 
   operation_id            = "dequeue-message"
   method                  = "POST"
-  display_name            = "Deque message - ebIX"
+  display_name            = "Dequeue message - ebIX"
   url_template            = "/?soapAction=dequeueMessage"
 
   policies = [
@@ -21,7 +21,7 @@ module "apimao_ebix_dequemessage" {
                   return body.Element(XName.Get("MessageId", "urn:www:datahub:dk:b2b:v01")).Value;
                 }" />
             <set-backend-service backend-id="${azurerm_api_management_backend.edi.name}" />
-            <rewrite-uri template="@("/api/dequeue/" + context.Variables.GetValueOrDefault&#60;string&#62;(&#34;messageId&#34;))" copy-unmatched-params="false" />
+            <rewrite-uri template="@("/api/dequeue/" + context.Variables.GetValueOrDefault<string>("messageId"))" copy-unmatched-params="false" />
             <set-method>DELETE</set-method>
           </inbound>
           <backend>
@@ -35,9 +35,20 @@ module "apimao_ebix_dequemessage" {
                 <set-body template="liquid">
                   <soap-env:Envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/">
                     <soap-env:Body>
-                      <DequeueMessageResponse xmlns:ns0="urn:www:datahub:dk:b2b:v01">
-                        {{context.Variables["responseBody"]}}
-                      </DequeueMessageResponse>
+                      <DequeueMessageResponse xmlns:ns0="urn:www:datahub:dk:b2b:v01" />
+                    </soap-env:Body>
+                  </soap-env:Envelope>
+                </set-body>
+              </when>
+              <when condition="@(context.Response.StatusCode == 400)">
+                <set-body template="liquid">
+                  <soap-env:Envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/">
+                    <soap-env:Body>
+                      <soap-env:Fault>
+                        <faultcode>soap-env:Client</faultcode>
+                        <faultstring>B2B-201:{{context.RequestId}}</faultstring>
+                        <faultactor />
+                      </soap-env:Fault>
                     </soap-env:Body>
                   </soap-env:Envelope>
                 </set-body>

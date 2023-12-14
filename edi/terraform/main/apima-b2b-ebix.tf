@@ -391,7 +391,7 @@ module "apima_b2b_ebix" {
                     <soap-env:Body>
                       <soap-env:Fault>
                         <faultcode>soap-env:Client</faultcode>
-                        <faultstring>B2B-900:{{context.LastError.Reason}}</faultstring>
+                        <faultstring>B2B-900:{{context.RequestId}}</faultstring>
                         <faultactor />
                       </soap-env:Fault>
                     </soap-env:Body>
