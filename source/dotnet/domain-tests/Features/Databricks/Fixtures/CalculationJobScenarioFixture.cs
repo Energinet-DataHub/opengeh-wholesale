@@ -50,6 +50,9 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Databricks.Fixtures
             var runParameters = new DatabricksCalculationParametersFactory()
                 .CreateParameters(calculationJobInput);
 
+            // TODO - Remove when fixed in migrations: temporary run on metering_point_periods_deduplicated_version_three
+            runParameters.PythonParams.Add("--metering_point_periods_table_name=metering_point_periods_deduplicated_version_three");
+
             var runId = await DatabricksClient
                 .Jobs
                 .RunNow(calculatorJobId, runParameters);
