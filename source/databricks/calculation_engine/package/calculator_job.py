@@ -18,7 +18,7 @@ import sys
 from typing import Union, Callable
 
 from opentelemetry import trace
-from opentelemetry.trace import Status, StatusCode
+from opentelemetry.trace import Status, StatusCode, Span
 
 import package.infrastructure.logging_configuration as config
 from package import calculation
@@ -82,14 +82,21 @@ def start_with_deps(
         # Added as ConfigArgParse uses sys.exit() rather than raising exceptions
         except SystemExit as e:
             if e.code != 0:
-                span.set_status(Status(StatusCode.ERROR))
-                span.record_exception(e, attributes=config.get_extras())
+                record_exception(e, span)
             sys.exit(e.code)
 
         except Exception as e:
-            span.set_status(Status(StatusCode.ERROR))
-            span.record_exception(e, attributes=config.get_extras())
+            record_exception(e, span)
             sys.exit(4)
+
+
+def record_exception(e: Union[SystemExit, Exception], span: Span) -> None:
+    span.set_status(Status(StatusCode.ERROR))
+    span.record_exception(
+        e,
+        attributes=config.get_extras()
+        | {"CategoryName": f"Energinet.DataHub.{__name__}"},
+    )
 
 
 def create_prepared_data_reader(args: CalculatorArgs) -> calculation.PreparedDataReader:
