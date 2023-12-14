@@ -18,7 +18,8 @@ module "apimao_ebix_dequeuemessage" {
             <base />
             <set-variable name="messageId" value="@{
                   var body = context.Request.Body.As<XElement>();
-                  return body.Element(XName.Get("MessageId", "urn:www:datahub:dk:b2b:v01")).Value;
+                  XNamespace ns = "urn:www:datahub:dk:b2b:v01";
+                  return body.Descendants(ns + "MessageId").First().Value;
                 }" />
             <set-backend-service backend-id="${azurerm_api_management_backend.edi.name}" />
             <rewrite-uri template="@("/api/dequeue/" + context.Variables.GetValueOrDefault<string>("messageId"))" copy-unmatched-params="false" />
