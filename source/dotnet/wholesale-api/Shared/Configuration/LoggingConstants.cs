@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+namespace Energinet.DataHub.Wholesale.Shared.Configuration;
 public static class LoggingConstants
 {
-    public const string BatchId = "{BatchId}";
+    public const string CalculationId = "{CalculationId}";
 }
