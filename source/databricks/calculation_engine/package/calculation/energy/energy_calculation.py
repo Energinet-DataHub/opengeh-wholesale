@@ -87,14 +87,12 @@ def _calculate(
             result_writer, quarterly_metering_point_time_series
         )
     )
-    temporary_production_per_ga_and_brp_and_es.cache_internal()
 
     temporary_flex_consumption_per_ga_and_brp_and_es = (
         _calculate_temporary_flex_consumption_per_per_ga_and_brp_and_es(
             result_writer, quarterly_metering_point_time_series
         )
     )
-    temporary_flex_consumption_per_ga_and_brp_and_es.cache_internal()
 
     consumption_per_ga_and_brp_and_es = _calculate_consumption_per_ga_and_brp_and_es(
         quarterly_metering_point_time_series
@@ -187,19 +185,20 @@ def _calculate_temporary_production_per_per_ga_and_brp_and_es(
     result_writer: EnergyCalculationResultWriter,
     quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
 ) -> EnergyResults:
-    temporary_production_per_per_ga_and_brp_and_es = (
-        mp_aggr.aggregate_production_ga_brp_es(quarterly_metering_point_time_series)
+    temporary_production_per_ga_and_brp_and_es = mp_aggr.aggregate_production_ga_brp_es(
+        quarterly_metering_point_time_series
     )
+    temporary_production_per_ga_and_brp_and_es.cache_internal()
     # temp production per grid area - used as control result for grid loss
     temporary_production_per_ga = grouping_aggr.aggregate_per_ga(
-        temporary_production_per_per_ga_and_brp_and_es
+        temporary_production_per_ga_and_brp_and_es
     )
     result_writer.write(
         temporary_production_per_ga,
         TimeSeriesType.TEMP_PRODUCTION,
         AggregationLevel.TOTAL_GA,
     )
-    return temporary_production_per_per_ga_and_brp_and_es
+    return temporary_production_per_ga_and_brp_and_es
 
 
 def _calculate_temporary_flex_consumption_per_per_ga_and_brp_and_es(
@@ -211,6 +210,7 @@ def _calculate_temporary_flex_consumption_per_per_ga_and_brp_and_es(
             quarterly_metering_point_time_series
         )
     )
+    temporary_flex_consumption_per_ga_and_brp_and_es.cache_internal()
     # temp flex consumption per grid area - used as control result for grid loss
     temporary_flex_consumption_per_ga = grouping_aggr.aggregate_per_ga(
         temporary_flex_consumption_per_ga_and_brp_and_es
