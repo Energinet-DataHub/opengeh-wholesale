@@ -43,7 +43,7 @@ public class CreateBatchHandler : ICreateBatchHandler
         await _batchRepository.AddAsync(batch).ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
-        _logger.LogInformation("Batch created with id {BatchId}", batch.Id);
+        _logger.LogInformation($"Batch created with id {LoggingConstants.BatchId}", batch.Id);
         return batch.Id;
     }
 }
