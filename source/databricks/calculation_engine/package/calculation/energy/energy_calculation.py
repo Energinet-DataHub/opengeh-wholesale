@@ -236,6 +236,7 @@ def _calculate_grid_loss(
         temporary_flex_consumption_per_ga_and_brp_and_es,
         temporary_production_per_ga_and_brp_and_es,
     )
+    grid_loss.cache_internal()
 
     result_writer.write(
         grid_loss,
