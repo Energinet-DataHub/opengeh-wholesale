@@ -1,8 +1,7 @@
 version: "3.9"
 services:
   wholesale:
-    # TODO: Revert to latest when image has been tested
-    image: ghcr.io/energinet-datahub/opengeh-wholesale/databricks-unit-test:pre-release-pr1747
+    image: ghcr.io/energinet-datahub/opengeh-wholesale/databricks-unit-test:latest
     volumes:
       # Forwards the local Docker socket to the container.
       - /var/run/docker.sock:/var/run/docker-host.sock
