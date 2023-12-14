@@ -5,6 +5,6 @@ locals {
   CONNECTION_STRING_DB_MIGRATIONS             = "Server=tcp:${data.azurerm_key_vault_secret.mssql_data_url.value},1433;Initial Catalog=${module.mssqldb_dh2_bridge.name};Persist Security Info=False;Authentication=Active Directory Default;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;"
   DH2_ENDPOINT                                = "https://${module.app_dh2_placeholder.default_hostname}"
   DH2BRIDGE_CERTIFICATE_THUMBPRINT            = "none"
-  DH2_BRIDGE_RECIPIENT_PARTY_GLN              = "5790001330583"
+  DH2_BRIDGE_RECIPIENT_PARTY_GLN              = "5790001330552"
   DH2_BRIDGE_SENDER_PARTY_GLN                 = "8200000008019"
 }
