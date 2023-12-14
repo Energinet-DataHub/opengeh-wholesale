@@ -45,12 +45,8 @@ RUN mamba install --quiet --yes --satisfied-skip-solve \
 # Install python packages used in pyspark development (keep spark dependent packages alligned)
 # delta-spark version has to have compatibility with spark version (https://docs.delta.io/latest/releases.html)
 # example (delta 2.2.x = spark 3.3.x)
-#  Install tools and development dependencies
-COPY pip_install_tools.txt pip_install_tools.txt
-RUN pip --no-cache-dir install -r pip_install_tools.txt
-#  Install code dependencies
-COPY pip_install_dependencies.txt pip_install_dependencies.txt
-RUN pip --no-cache-dir install -r pip_install_dependencies.txt
+COPY requirements.txt requirements.txt
+RUN pip --no-cache-dir install -r requirements.txt
 
 # Below will make everything in the directory owned by the group ${NB_GID}
 RUN fix-permissions "${CONDA_DIR}"

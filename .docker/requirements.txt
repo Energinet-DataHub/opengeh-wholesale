@@ -1,3 +1,22 @@
+# This is a pip 'requirements.txt' file
+# See https://pip.pypa.io/en/stable/reference/requirements-file-format/
+
+#
+# PYTHON TOOLS
+#
+black
+build
+coverage-threshold
+flake8
+mypy
+ptvsd
+pyspelling
+pytest-asyncio
+pytest-xdist
+
+#
+# CODE DEPENDENCIES
+#
 databricks-cli==0.17.6
 dataclasses-json
 delta-spark==2.2.0
