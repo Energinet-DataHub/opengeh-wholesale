@@ -36,7 +36,7 @@ def test__log_method__when_called_with_custom_extras__passes_correct_extras(
     logger = Logger("test_logger")
     test_message = f"Test {log_method} message"
     custom_extras = {"key": "value"}
-    expected_extras = custom_extras | logger.extras
+    expected_extras = custom_extras | logger._extras
 
     with patch.object(logging.Logger, log_method) as mock_log_method:
         # Act
