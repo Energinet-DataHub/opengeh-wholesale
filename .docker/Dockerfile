@@ -45,11 +45,12 @@ RUN mamba install --quiet --yes --satisfied-skip-solve \
 # Install python packages used in pyspark development (keep spark dependent packages alligned)
 # delta-spark version has to have compatibility with spark version (https://docs.delta.io/latest/releases.html)
 # example (delta 2.2.x = spark 3.3.x)
-RUN pip --no-cache-dir install pyspelling azure-eventhub azure-identity==1.12.0 azure-storage-file-datalake==12.11.0 coverage-threshold types-python-dateutil \
-    ptvsd azure-servicebus pytest-asyncio flake8 black dataclasses-json pytest-xdist databricks-cli==0.17.6 mypy delta-spark==2.2.0 \
-    python-dateutil==2.8.2 dependency_injector==4.41.0 azure-monitor-query==1.2.0\
-    azure-monitor-opentelemetry==1.0.0 azure-keyvault-secrets==4.7.0 \
-    build
+#  Install tools and development dependencies
+COPY pip_install_tools.txt pip_install_tools.txt
+RUN pip --no-cache-dir install -r pip_install_tools.txt
+#  Install code dependencies
+COPY pip_install_dependencies.txt pip_install_dependencies.txt
+RUN pip --no-cache-dir install -r pip_install_dependencies.txt
 
 # Below will make everything in the directory owned by the group ${NB_GID}
 RUN fix-permissions "${CONDA_DIR}"

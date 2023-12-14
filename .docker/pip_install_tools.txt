@@ -1,0 +1,9 @@
+black
+build
+coverage-threshold
+flake8
+mypy
+ptvsd
+pyspelling
+pytest-asyncio
+pytest-xdist
