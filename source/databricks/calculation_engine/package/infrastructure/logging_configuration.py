@@ -20,6 +20,7 @@ from azure.monitor.opentelemetry import configure_azure_monitor
 
 DEFAULT_LOG_LEVEL: int = logging.INFO
 _EXTRAS: dict[str, Any] = {}
+_IS_INSTRUMENTED: bool = False
 
 
 def configure_logging(
@@ -40,6 +41,11 @@ def configure_logging(
     This is useful for unit testing.
     """
 
+    # Only configure logging once.
+    global _IS_INSTRUMENTED
+    if _IS_INSTRUMENTED:
+        return
+
     # Configure structured logging data to be included in every log message.
     if extras is not None:
         global _EXTRAS
@@ -51,6 +57,7 @@ def configure_logging(
     # Configure OpenTelemetry to log to Azure Monitor.
     if applicationinsights_connection_string is not None:
         configure_azure_monitor(connection_string=applicationinsights_connection_string)
+        _IS_INSTRUMENTED = True
 
     # Reduce Py4J logging. py4j logs a lot of information.
     logging.getLogger("py4j").setLevel(logging.WARNING)
