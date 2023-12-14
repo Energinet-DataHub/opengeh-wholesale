@@ -90,7 +90,7 @@ def start_with_deps(
             sys.exit(4)
 
 
-def record_exception(e, span):
+def record_exception(e, span) -> None:
     span.set_status(Status(StatusCode.ERROR))
     span.record_exception(
         e,
