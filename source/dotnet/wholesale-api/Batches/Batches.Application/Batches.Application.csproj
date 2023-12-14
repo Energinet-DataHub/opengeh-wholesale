@@ -41,9 +41,4 @@
     <Compile Include="..\..\Shared\Configuration\LoggingConstants.cs" Link="Logging\LoggingConstants.cs" />
   </ItemGroup>
 
-
-  <ItemGroup>
-    <Folder Include="Logging\" />
-  </ItemGroup>
-
 </Project>
