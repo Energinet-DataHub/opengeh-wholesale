@@ -64,3 +64,9 @@ variable "hosted_deployagent_public_ip_range" {
   description = "(Optional) Comma-delimited string with IPs / CIDR block with deployagent's public IPs, so it can access network-protected resources (Keyvaults, Function apps etc)"
   default     = null
 }
+
+variable "frontend_url" {
+  description = "The URL of the frontend."
+  type        = string
+  default     = null
+}

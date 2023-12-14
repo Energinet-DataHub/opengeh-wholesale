@@ -10,14 +10,22 @@ resource "azuread_application" "frontend_app" {
 
   # NOTE: https://github.com/hashicorp/terraform-provider-azuread/issues/773
   # There is a third option missing, which is NULL. This needs to be flipped manually in manifest.
-  # fallback_public_client_enabled = false
+  fallback_public_client_enabled = true
+
+  # Implicit flow enabled to allow for acceptance tests in certain environments.
+  web {
+    implicit_grant {
+      access_token_issuance_enabled = true
+      id_token_issuance_enabled     = true
+    }
+  }
 
   api {
     requested_access_token_version = 2
   }
 
   single_page_application {
-    redirect_uris = ["https://${azurerm_static_site.ui.default_host_name}/"]
+    redirect_uris = ["https://${local.frontend_url}/", "https://localhost/"]
   }
 
   required_resource_access {
