@@ -18,7 +18,7 @@ import sys
 from typing import Union, Callable
 
 from opentelemetry import trace
-from opentelemetry.trace import Status, StatusCode
+from opentelemetry.trace import Status, StatusCode, Span
 
 import package.infrastructure.logging_configuration as config
 from package import calculation
@@ -90,7 +90,7 @@ def start_with_deps(
             sys.exit(4)
 
 
-def record_exception(e, span) -> None:
+def record_exception(e: Union[SystemExit, Exception], span: Span) -> None:
     span.set_status(Status(StatusCode.ERROR))
     span.record_exception(
         e,
