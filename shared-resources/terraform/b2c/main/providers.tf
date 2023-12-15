@@ -1,6 +1,6 @@
 terraform {
   required_providers {
-    azuread = "2.36.0"
+    azuread = "2.47.0"
   }
 }
 
