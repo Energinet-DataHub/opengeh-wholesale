@@ -54,8 +54,8 @@ module "apim_shared" {
 
   certificates = [
     {
-      encoded_certificate    = filebase64("./certificates/DH3-test-mosaik-1-OCES-root-CA-binary.cer")
-      store_name             = "Root"
+      encoded_certificate = filebase64("./certificates/DH3-test-mosaik-1-OCES-root-CA-binary.cer")
+      store_name          = "Root"
     }
   ]
 }
@@ -82,6 +82,23 @@ resource "azurerm_api_management_authorization_server" "oauth_server" {
   ]
   default_scope = "api://${var.backend_b2b_app_id}/.default"
   client_id     = var.backend_b2b_app_id
+}
+
+resource "azurerm_key_vault_access_policy" "certificate_permissions" {
+  key_vault_id = module.kv_shared.id
+
+  object_id = module.apim_shared.identity.0.principal_id
+  tenant_id = module.apim_shared.identity.0.tenant_id
+
+  certificate_permissions = [
+    "Get",
+    "List",
+    "Import"
+  ]
+
+  secret_permissions = [
+    "Get"
+  ]
 }
 
 resource "azurerm_api_management_logger" "apim_logger" {
