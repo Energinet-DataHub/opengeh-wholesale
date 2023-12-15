@@ -37,19 +37,14 @@ RUN apt-get update; \
 RUN rm -rf /var/lib/apt/lists/*
 
 # Install spark packages with mamba (packages has to be updated according to spark version)
-RUN mamba install --quiet --yes --satisfied-skip-solve \
-    'rope=1.6.*' 'pytest=7.2.*' 'configargparse=1.5.3'  \
-    'coverage=7.0.*' 'azure-storage-blob=12.14.*' 'pytest-mock=3.10.*' \
-    'virtualenv=20.*'
+COPY mamba_requirements.txt mamba_requirements.txt
+RUN mamba install --quiet --yes --satisfied-skip-solve --file mamba_requirements.txt
 
 # Install python packages used in pyspark development (keep spark dependent packages alligned)
 # delta-spark version has to have compatibility with spark version (https://docs.delta.io/latest/releases.html)
 # example (delta 2.2.x = spark 3.3.x)
-RUN pip --no-cache-dir install pyspelling azure-eventhub azure-identity==1.12.0 azure-storage-file-datalake==12.11.0 coverage-threshold types-python-dateutil \
-    ptvsd azure-servicebus pytest-asyncio flake8 black dataclasses-json pytest-xdist databricks-cli==0.17.6 mypy delta-spark==2.2.0 \
-    python-dateutil==2.8.2 dependency_injector==4.41.0 azure-monitor-query==1.2.0\
-    azure-monitor-opentelemetry==1.0.0 azure-keyvault-secrets==4.7.0 \
-    build
+COPY requirements.txt requirements.txt
+RUN pip --no-cache-dir install -r requirements.txt
 
 # Below will make everything in the directory owned by the group ${NB_GID}
 RUN fix-permissions "${CONDA_DIR}"

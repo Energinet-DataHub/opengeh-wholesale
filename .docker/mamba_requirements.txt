@@ -1,0 +1,10 @@
+# Dependencies must be listed using the format:
+# <package>=<version>
+# But notice wildcards are supported, like described here: https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-file-manually
+rope=1.6.*
+pytest=7.2.*
+configargparse=1.5.3
+coverage=7.0.*
+azure-storage-blob=12.14.*
+pytest-mock=3.10.*
+virtualenv=20.*
