@@ -44,7 +44,7 @@ public class StartCalculationHandler : IStartCalculationHandler
             await _calculationInfrastructureService.StartAsync(batch.Id).ConfigureAwait(false);
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
-            _logger.LogInformation("Calculation for batch {BatchId} started", batch.Id);
+            _logger.LogInformation("Calculation for calculation {LoggingConstants.CalculationId} started", batch.Id);
         }
     }
 }
