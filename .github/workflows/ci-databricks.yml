@@ -106,8 +106,7 @@ jobs:
           done
 
   python_tests_calculationjob:
-    # TODO: Revert to using v12
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@dstenroejl/python-ci-test-filter
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v12
     with:
       operating_system: dh3-ubuntu-20.04-4core
       path_static_checks: ./source/databricks/calculation_engine
@@ -122,8 +121,7 @@ jobs:
       azure_keyvault_url: ${{ vars.integration_test_azure_keyvault_url }}
 
   python_tests_other:
-    # TODO: Revert to using v12
-    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@dstenroejl/python-ci-test-filter
+    uses: Energinet-DataHub/.github/.github/workflows/python-ci.yml@v12
     with:
       operating_system: dh3-ubuntu-20.04-4core
       path_static_checks: ./source/databricks/calculation_engine
