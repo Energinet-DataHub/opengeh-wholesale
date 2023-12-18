@@ -12,11 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import os
 from typing import Union, Callable
-
-from opentelemetry.trace import Status, StatusCode, Span
 
 import package.infrastructure.logging_configuration as config
 from package import calculation
@@ -56,10 +53,7 @@ def start_with_deps(
         extras={"Domain": "wholesale"},
     )
 
-    with config.get_tracer().start_as_current_span(
-        "root",
-        record_exception=True,
-    ) as span:
+    with config.get_tracer().start_as_current_span(__name__) as span:
         args = cmd_line_args_reader()
 
         # Add calculation_id to structured logging data to be included in every log message.
@@ -70,15 +64,6 @@ def start_with_deps(
 
         prepared_data_reader = create_prepared_data_reader(args)
         calculation_executor(args, prepared_data_reader)
-
-
-def record_exception(e: Union[SystemExit, Exception], span: Span) -> None:
-    span.set_status(Status(StatusCode.ERROR))
-    span.record_exception(
-        e,
-        attributes=config.get_extras()
-        | {"CategoryName": f"Energinet.DataHub.{__name__}"},
-    )
 
 
 def create_prepared_data_reader(args: CalculatorArgs) -> calculation.PreparedDataReader:
