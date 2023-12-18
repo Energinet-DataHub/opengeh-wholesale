@@ -1,0 +1,63 @@
+﻿/* Copyright 2020 Energinet DataHub A/S
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License2");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "Energinet.DataHub.MarketParticipant.Infrastructure.Model.Contracts";
+
+/*
+ * GridAreaOwnershipAssigned Integration Event.
+ *
+ * Occurs when an actor is assigned ownership of a grid area through the specified market role.
+ */
+message GridAreaOwnershipAssigned {
+
+    /*
+     * The EIC or GLN identifier of the actor that got assigned ownership.
+     */
+    string actor_number = 1;
+
+    /*
+     * The code of the grid area that the actor got ownership of.
+     */
+    string grid_area_code = 2;
+
+    /*
+     * The market role for which the ownership is assigned.
+     */
+    EicFunction actor_role = 3;
+
+    /*
+     * A timestamp from when the ownership is valid.
+     * The ownership always starts at midnight in "Europe/Copenhagen" time zone.
+     */
+    google.protobuf.Timestamp valid_from = 4;
+
+    /*
+     * The sequence number of the event. The number is always increasing, but may no be continuous.
+     * Used to distinguish between events with identical valid_from timestamps.
+     */
+    int32 sequence_number = 5;
+}
+
+enum EicFunction {
+    /*
+     * Unspecified is unused but according to best practice.
+     * Read more at https://protobuf.dev/programming-guides/style/#enums.
+     */
+    EIC_FUNCTION_UNSPECIFIED = 0;
+    EIC_FUNCTION_GRID_ACCESS_PROVIDER = 1;
+}

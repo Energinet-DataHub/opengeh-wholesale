@@ -145,7 +145,7 @@ public class AggregatedTimeSeriesRequestBuilder
         return this;
     }
 
-    public AggregatedTimeSeriesRequestBuilder WithGridArea(string gridArea)
+    public AggregatedTimeSeriesRequestBuilder WithGridArea(string? gridArea)
     {
         _gridAreaCode = gridArea;
         return this;

@@ -31,7 +31,7 @@ public class SettlementSeriesVersionValidatorTest
     [InlineData("invalid-settlement-series-version")]
     [InlineData("D04")]
     [InlineData("")]
-    public void Validate_WhenCorrectionAndInvalidSeriesVersion_ReturnsValidationErrors(string invalidSettlementSeriesVersion)
+    public async Task Validate_WhenCorrectionAndInvalidSeriesVersion_ReturnsValidationErrorsAsync(string invalidSettlementSeriesVersion)
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -41,7 +41,7 @@ public class SettlementSeriesVersionValidatorTest
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().ContainSingle()
@@ -55,7 +55,7 @@ public class SettlementSeriesVersionValidatorTest
     [InlineData(SettlementSeriesVersion.FirstCorrection)]
     [InlineData(SettlementSeriesVersion.SecondCorrection)]
     [InlineData(SettlementSeriesVersion.ThirdCorrection)]
-    public void Validate_WhenNotCorrectionAndSettlementSeriesVersionExists_ReturnsValidationErrors(string settlementSeriesVersion)
+    public async Task Validate_WhenNotCorrectionAndSettlementSeriesVersionExists_ReturnsValidationErrorsAsync(string settlementSeriesVersion)
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -65,7 +65,7 @@ public class SettlementSeriesVersionValidatorTest
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().ContainSingle()
@@ -76,7 +76,7 @@ public class SettlementSeriesVersionValidatorTest
     [InlineData(SettlementSeriesVersion.FirstCorrection)]
     [InlineData(SettlementSeriesVersion.SecondCorrection)]
     [InlineData(SettlementSeriesVersion.ThirdCorrection)]
-    public void Validate_WhenCorrectionAndValidSettlementSeriesVersion_ReturnsNoValidationErrors(string validSettlementSeriesVersion)
+    public async Task Validate_WhenCorrectionAndValidSettlementSeriesVersion_ReturnsNoValidationErrorsAsync(string validSettlementSeriesVersion)
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -86,14 +86,14 @@ public class SettlementSeriesVersionValidatorTest
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().BeEmpty();
     }
 
     [Fact]
-    public void Validate_WhenCorrectionAndNoSettlementSeriesVersion_ReturnsNoValidationErrors()
+    public async Task Validate_WhenCorrectionAndNoSettlementSeriesVersion_ReturnsNoValidationErrorsAsync()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -103,14 +103,14 @@ public class SettlementSeriesVersionValidatorTest
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().BeEmpty();
     }
 
     [Fact]
-    public void Validate_WhenNotCorrectionAndNoSettlementSeriesVersion_ReturnsNoValidationErrors()
+    public async Task Validate_WhenNotCorrectionAndNoSettlementSeriesVersion_ReturnsNoValidationErrorsAsync()
     {
         // Arrange
         var message = AggregatedTimeSeriesRequestBuilder
@@ -120,7 +120,7 @@ public class SettlementSeriesVersionValidatorTest
             .Build();
 
         // Act
-        var errors = _sut.Validate(message);
+        var errors = await _sut.ValidateAsync(message);
 
         // Assert
         errors.Should().BeEmpty();

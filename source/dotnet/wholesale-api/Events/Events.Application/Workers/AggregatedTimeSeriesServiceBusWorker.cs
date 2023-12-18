@@ -33,15 +33,26 @@ public class AggregatedTimeSeriesServiceBusWorker : ServiceBusWorker<AggregatedT
         ILogger<AggregatedTimeSeriesServiceBusWorker> logger,
         IOptions<ServiceBusOptions> options,
         ServiceBusClient serviceBusClient)
-    : base(logger, serviceBusClient.CreateProcessor(options.Value.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME))
+    : base(
+        serviceBusClient.CreateProcessor(options.Value.WHOLESALE_INBOX_MESSAGE_QUEUE_NAME),
+        logger)
     {
         _serviceProvider = serviceProvider;
     }
 
-    protected override Task ProcessAsync(ProcessMessageEventArgs arg, string referenceId)
+    protected override async Task ProcessAsync(ProcessMessageEventArgs arg)
     {
-        var scope = _serviceProvider.CreateScope();
-        var requestHandler = scope.ServiceProvider.GetRequiredService<IAggregatedTimeSeriesRequestHandler>();
-        return requestHandler.ProcessAsync(arg.Message, referenceId, arg.CancellationToken);
+        if (arg.Message.ApplicationProperties.TryGetValue("ReferenceId", out var referenceIdPropertyValue)
+            && referenceIdPropertyValue is string referenceId)
+        {
+            Logger.LogInformation("Processing message with reference id {ReferenceId}", referenceId);
+            using var scope = _serviceProvider.CreateScope();
+            var requestHandler = scope.ServiceProvider.GetRequiredService<IAggregatedTimeSeriesRequestHandler>();
+            await requestHandler.ProcessAsync(arg.Message, referenceId, arg.CancellationToken).ConfigureAwait(true);
+        }
+        else
+        {
+            Logger.LogError("Missing reference id for Service Bus Message");
+        }
     }
 }

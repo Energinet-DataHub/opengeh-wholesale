@@ -28,24 +28,24 @@ public class SettlementSeriesVersionValidationRule : IValidationRule<AggregatedT
 
     private static readonly ValidationError _invalidSettlementSeriesVersionError = new("SettlementSeriesVersion kan kun benyttes i kombination med D32 og skal være enten D01, D02 eller D03 / SettlementSeriesVersion can only be used in combination with D32 and must be either D01, D02 or D03", "E86");
 
-    public IList<ValidationError> Validate(AggregatedTimeSeriesRequest subject)
+    public Task<IList<ValidationError>> ValidateAsync(AggregatedTimeSeriesRequest subject)
     {
         var isCorrection = subject.BusinessReason == BusinessReason.Correction;
         var hasSettlementVersion = subject.HasSettlementSeriesVersion;
 
         if (!isCorrection && hasSettlementVersion)
-            return InvalidSettlementVersionError;
+            return Task.FromResult(InvalidSettlementVersionError);
 
         if (!isCorrection)
-            return NoError;
+            return Task.FromResult(NoError);
 
         if (!hasSettlementVersion)
-            return NoError;
+            return Task.FromResult(NoError);
 
         if (!_validSettlementSeriesVersions.Contains(subject.SettlementSeriesVersion))
-            return InvalidSettlementVersionError;
+            return Task.FromResult(InvalidSettlementVersionError);
 
-        return NoError;
+        return Task.FromResult(NoError);
     }
 
     private static IList<ValidationError> NoError => new List<ValidationError>();

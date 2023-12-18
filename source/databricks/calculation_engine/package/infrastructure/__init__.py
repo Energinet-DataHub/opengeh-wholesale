@@ -13,6 +13,6 @@
 # limitations under the License.
 
 from .spark_initializor import initialize_spark
-from .db_logging import log, debug, loglevel
+from .logging_configuration import configure_logging
 from .args_helper import valid_date, valid_list, valid_log_level
 from .environment_variables import EnvironmentVariable

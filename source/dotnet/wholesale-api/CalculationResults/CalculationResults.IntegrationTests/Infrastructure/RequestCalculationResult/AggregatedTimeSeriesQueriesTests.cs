@@ -236,6 +236,33 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
     }
 
     [Fact]
+    public async Task GetAsync_WhenRequestFromEnergySupplierTotalProductionWithoutGridAreaFilter_ReturnsOneResultPerGridArea()
+    {
+        // Arrange
+        var energySupplierIdFilter = "4321987654321";
+        var timeSeriesTypeFilter = TimeSeriesType.Production;
+        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
+        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+        await AddCreatedRowsInArbitraryOrderAsync();
+        var parameters = CreateQueryParameters(
+            timeSeriesType: timeSeriesTypeFilter,
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter,
+            energySupplierId: energySupplierIdFilter);
+
+        // Act
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        // Assert
+        var resultsPerGridArea = actual.GroupBy(x => x.GridArea);
+        using var assertionScope = new AssertionScope();
+        foreach (var resultsInGridArea in resultsPerGridArea)
+        {
+            resultsInGridArea.Should().ContainSingle($"There should be only one result for grid area: {resultsInGridArea.Key}.");
+        }
+    }
+
+    [Fact]
     public async Task GetAsync_WhenRequestFromGridOperatorTotalProductionFirstCorrectionSettlement_ReturnsResult()
     {
         // Arrange
@@ -424,7 +451,7 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         // Assert
         using var assertionScope = new AssertionScope();
         actual.Should().HaveCount(2);
-        actual.Select(result => result.GridArea).Should().Equal(GridAreaCodeC, GridAreaCodeB);
+        actual.Select(result => result.GridArea).Should().Equal(GridAreaCodeB, GridAreaCodeC);
         actual.Should().AllSatisfy(aggregatedTimeSeries => aggregatedTimeSeries.TimeSeriesType.Should().Be(timeSeriesTypeFilter));
     }
 
@@ -542,6 +569,27 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             parameters.ProcessType);
     }
 
+    [Fact]
+    public async Task GetAsync_WhenRequestFromGridOperatorTotalProductionWithEmptyGridArea_ReturnsResult()
+    {
+        // Arrange
+        var emptyGridAreaFilter = string.Empty;
+        var startOfPeriodFilter = Instant.FromUtc(2022, 1, 1, 0, 0);
+        var endOfPeriodFilter = Instant.FromUtc(2022, 1, 2, 0, 0);
+        await AddCreatedRowsInArbitraryOrderAsync();
+        var parameters = CreateQueryParameters(
+            gridArea: emptyGridAreaFilter,
+            startOfPeriod: startOfPeriodFilter,
+            endOfPeriod: endOfPeriodFilter);
+
+        // Act
+        var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        actual.Should().HaveCount(1);
+    }
+
     private AggregatedTimeSeriesQueryParameters CreateQueryParameters(
         TimeSeriesType? timeSeriesType = null,
         Instant? startOfPeriod = null,
@@ -591,6 +639,9 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
         var row9 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: firstHour, gridArea: GridAreaCodeA, quantity: FirstQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea);
         var row10 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: thirdHour, gridArea: GridAreaCodeB, quantity: FourthQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndBalanceResponsibleAndGridArea, balanceResponsibleId: balanceResponsibleId, energySupplierId: energySupplier);
 
+        var row11 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: firstHour, gridArea: GridAreaCodeB, quantity: FirstQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndGridArea, energySupplierId: energySupplier);
+        var row12 = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, time: secondHour, gridArea: GridAreaCodeB, quantity: FirstQuantity, aggregationLevel: DeltaTableAggregationLevel.EnergySupplierAndGridArea, energySupplierId: energySupplier);
+
         var row1FirstCorrection = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, batchProcessType: DeltaTableProcessType.FirstCorrectionSettlement, time: firstHour, gridArea: GridAreaCodeC, quantity: FirstQuantityFirstCorrection);
         var row2FirstCorrection = EnergyResultDeltaTableHelper.CreateRowValues(batchId: BatchId, calculationResultId: firstCalculationResultId, batchProcessType: DeltaTableProcessType.FirstCorrectionSettlement, time: secondHour, gridArea: GridAreaCodeC, quantity: SecondQuantityFirstCorrection);
 
@@ -616,6 +667,8 @@ public class AggregatedTimeSeriesQueriesTests : TestBase<AggregatedTimeSeriesQue
             row8,
             row9,
             row10,
+            row11,
+            row12,
             row1SecondDay,
             row1ThirdDay,
         };

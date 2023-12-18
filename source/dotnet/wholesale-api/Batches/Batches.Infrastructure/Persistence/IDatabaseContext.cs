@@ -21,6 +21,10 @@ public interface IDatabaseContext
 {
     DbSet<Batch> Batches { get; }
 
+    DbSet<Interfaces.GridArea.GridAreaOwner> GridAreaOwners { get; }
+
+    DbSet<Application.IntegrationEvents.ReceivedIntegrationEvent> ReceivedIntegrationEvents { get; }
+
     /// <summary>
     /// Saves changes to the database.
     /// </summary>

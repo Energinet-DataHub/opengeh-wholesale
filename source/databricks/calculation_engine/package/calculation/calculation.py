@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as F
 
@@ -27,9 +26,15 @@ from .preparation import PreparedDataReader
 from .calculator_args import CalculatorArgs
 from .energy import energy_calculation
 from .wholesale import wholesale_calculation
+from ..common.logger import Logger
+
+logger = Logger(__name__)
 
 
 def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> None:
+    logger.info("Starting calculation")
+
+    # cache of metering_point_time_series had no effect on performance (01-12-2023)
     metering_point_periods_df = prepared_data_reader.get_metering_point_periods_df(
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
@@ -40,22 +45,16 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
     )
 
     metering_point_time_series = prepared_data_reader.get_metering_point_time_series(
-        metering_point_periods_df,
         args.batch_period_start_datetime,
         args.batch_period_end_datetime,
-    )
-
-    basis_data_writer = BasisDataWriter(args.wholesale_container_path, args.batch_id)
-    basis_data_writer.write(
         metering_point_periods_df,
-        metering_point_time_series,
-        args.time_zone,
-    )
+    ).cache()
 
     energy_calculation.execute(
         args.batch_id,
         args.batch_process_type,
         args.batch_execution_time_start,
+        args.batch_grid_areas,
         metering_point_time_series,
         grid_loss_responsible_df,
     )
@@ -74,11 +73,10 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
         metering_points_periods_df = _get_production_and_consumption_metering_points(
             metering_point_periods_df
         )
-        raw_time_series_points = prepared_data_reader.get_raw_time_series_points()
 
         tariffs_hourly_df = prepared_data_reader.get_tariff_charges(
             metering_points_periods_df,
-            raw_time_series_points,
+            metering_point_time_series,
             charges_df,
             ChargeResolution.HOUR,
         )
@@ -88,6 +86,13 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
             tariffs_hourly_df,
             args.batch_period_start_datetime,
         )
+
+    basis_data_writer = BasisDataWriter(args.wholesale_container_path, args.batch_id)
+    basis_data_writer.write(
+        metering_point_periods_df,
+        metering_point_time_series,
+        args.time_zone,
+    )
 
 
 def _get_production_and_consumption_metering_points(

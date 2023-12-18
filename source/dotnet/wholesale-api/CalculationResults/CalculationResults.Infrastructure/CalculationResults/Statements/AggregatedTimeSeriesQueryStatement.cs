@@ -49,7 +49,7 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
             WHERE t2.time IS NULL
                 AND {CreateSqlQueryFilters(_parameters)}";
 
-        sql += $@"ORDER BY t1.time";
+        sql += $@"ORDER BY t1.{EnergyResultColumnNames.GridArea}, t1.{EnergyResultColumnNames.Time}";
         return sql;
     }
 
@@ -61,7 +61,7 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
             AND t1.{EnergyResultColumnNames.Time} < '{parameters.EndOfPeriod.ToString()}'
             AND t1.{EnergyResultColumnNames.AggregationLevel} = '{AggregationLevelMapper.ToDeltaTableValue(parameters.TimeSeriesType, parameters.EnergySupplierId, parameters.BalanceResponsibleId)}'
             ";
-        if (parameters.GridArea != null)
+        if (!string.IsNullOrWhiteSpace(parameters.GridArea))
         {
             whereClausesSql += $"AND t1.{EnergyResultColumnNames.GridArea} IN ({parameters.GridArea})";
         }
@@ -72,12 +72,12 @@ public class AggregatedTimeSeriesQueryStatement : DatabricksStatement
                 $"AND t1.{EnergyResultColumnNames.BatchProcessType} = '{ProcessTypeMapper.ToDeltaTableValue((ProcessType)parameters.ProcessType)}'";
         }
 
-        if (parameters.EnergySupplierId != null)
+        if (!string.IsNullOrWhiteSpace(parameters.EnergySupplierId))
         {
             whereClausesSql += $"AND t1.{EnergyResultColumnNames.EnergySupplierId} = '{parameters.EnergySupplierId}'";
         }
 
-        if (parameters.BalanceResponsibleId != null)
+        if (!string.IsNullOrWhiteSpace(parameters.BalanceResponsibleId))
         {
             whereClausesSql += $"AND t1.{EnergyResultColumnNames.BalanceResponsibleId} = '{parameters.BalanceResponsibleId}'";
         }

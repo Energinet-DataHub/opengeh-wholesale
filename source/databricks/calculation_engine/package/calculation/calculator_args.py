@@ -24,6 +24,8 @@ class CalculatorArgs:
     data_storage_account_credentials: ClientSecretCredential
     wholesale_container_path: str
     calculation_input_path: str
+    time_series_points_table_name: str | None
+    metering_point_periods_table_name: str | None
     batch_id: str
     batch_grid_areas: list[str]
     batch_period_start_datetime: datetime

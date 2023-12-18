@@ -51,6 +51,8 @@ def calculator_args_balance_fixing(
         data_storage_account_credentials=ClientSecretCredential("foo", "foo", "foo"),
         wholesale_container_path=data_lake_path,
         calculation_input_path=calculation_input_path,
+        time_series_points_table_name=None,
+        metering_point_periods_table_name=None,
         batch_id=C.executed_balance_fixing_batch_id,
         batch_process_type=ProcessType.BALANCE_FIXING,
         batch_grid_areas=["805", "806"],
@@ -69,6 +71,13 @@ def calculator_args_wholesale_fixing(
     args.batch_id = C.executed_wholesale_batch_id
     args.batch_process_type = ProcessType.WHOLESALE_FIXING
     return args
+
+
+@pytest.fixture(scope="session")
+def any_calculator_args(
+    calculator_args_balance_fixing: CalculatorArgs,
+) -> CalculatorArgs:
+    return calculator_args_balance_fixing
 
 
 @pytest.fixture(scope="session")

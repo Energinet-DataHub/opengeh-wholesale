@@ -34,7 +34,7 @@ public class MeteringPointTypeMapperTests
     [InlineData("production", MeteringPointType.Production)]
     [InlineData("consumption", MeteringPointType.Consumption)]
     [InlineData(null, null)]
-    public void FromDeltaTableValue_WhenValidDeltaTableValue_ReturnsExpectedType(string deltaTableValue, MeteringPointType? expectedType)
+    public void FromDeltaTableValue_WhenValidDeltaTableValue_ReturnsExpectedType(string? deltaTableValue, MeteringPointType? expectedType)
     {
         // Act
         var actualType = MeteringPointTypeMapper.FromDeltaTableValue(deltaTableValue);

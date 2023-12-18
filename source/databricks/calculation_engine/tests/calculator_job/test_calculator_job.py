@@ -22,6 +22,7 @@ import package.calculator_job
 import package.infrastructure.storage_account_access
 from package.infrastructure.storage_account_access import islocked
 from package.calculator_job_args import get_calculator_args
+from package.infrastructure.logging_configuration import configure_logging
 from package.calculator_job import start
 from package.calculation_input.schemas import (
     time_series_point_schema,
@@ -31,6 +32,8 @@ from package.calculation_input.schemas import (
     charge_price_points_schema,
 )
 from package.infrastructure import paths
+
+# TODO BJM: These tests are not calculator_job tests
 
 
 def test__input_time_series_point_schema__matches_published_contract(
@@ -105,20 +108,3 @@ def _assert_is_equal(actual_schema: StructType, expected_schema: StructType) -> 
         (a.name, a.dataType) == (b.name, b.dataType)
         for a, b in zip(actual_schema, expected_schema)
     )
-
-
-@patch.object(package.calculator_job, get_calculator_args.__name__)
-@patch.object(package.calculator_job, islocked.__name__)
-def test__when_data_lake_is_locked__return_exit_code_3(
-    mock_islocked: Mock,
-    mock_get_calculator_args: Mock,
-) -> None:
-    # Arrange
-    mock_islocked.return_value = True
-
-    # Act
-    with pytest.raises(SystemExit) as excinfo:
-        start()
-
-    # Assert
-    assert excinfo.value.code == 3
