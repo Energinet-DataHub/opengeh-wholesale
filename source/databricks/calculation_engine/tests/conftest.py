@@ -166,7 +166,9 @@ def calculation_output_path(data_lake_path: str) -> str:
 
 
 @pytest.fixture(scope="session")
-def migrations_executed(spark: SparkSession, data_lake_path: str, calculation_output_path: str) -> None:
+def migrations_executed(
+    spark: SparkSession, data_lake_path: str, calculation_output_path: str
+) -> None:
     # Clean up to prevent problems from previous test runs
     shutil.rmtree(calculation_output_path, ignore_errors=True)
     spark.sql(f"DROP DATABASE IF EXISTS {OUTPUT_DATABASE_NAME} CASCADE")
