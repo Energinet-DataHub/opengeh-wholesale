@@ -25,14 +25,14 @@ module "apimao_ebix_peekmessage" {
           </backend>
           <outbound>
             <base />
-            <set-variable name="responseBody" value="@(context.Response.Body.As<string>().Replace("<?xml version=\"1.0\" encoding=\"utf-8\"?>", ""))" />
+            <set-variable name="ResponseBody" value="@(context.Response.Body.As<string>().Replace("<?xml version=\"1.0\" encoding=\"utf-8\"?>", ""))" />
             <choose>
               <when condition="@(context.Response.StatusCode >= 200 && context.Response.StatusCode < 300)">
                 <set-body template="liquid">
                   <soap-env:Envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/">
                     <soap-env:Body>
                       <PeekMessageResponse xmlns="urn:www:datahub:dk:b2b:v01" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-                        {{context.Variables["responseBody"]}}
+                        {{context.Variables.ResponseBody}}
                       </PeekMessageResponse>
                     </soap-env:Body>
                   </soap-env:Envelope>

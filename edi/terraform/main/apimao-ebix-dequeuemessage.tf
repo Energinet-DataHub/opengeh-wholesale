@@ -30,7 +30,7 @@ module "apimao_ebix_dequeuemessage" {
           </backend>
           <outbound>
             <base />
-            <set-variable name="responseBody" value="@(context.Response.Body.As<string>().Replace("<?xml version=\"1.0\" encoding=\"utf-8\"?>", ""))" />
+            <set-variable name="RequestId" value="@(context.RequestId)" />
             <choose>
               <when condition="@(context.Response.StatusCode >= 200 && context.Response.StatusCode < 300)">
                 <set-body template="liquid">
@@ -42,12 +42,13 @@ module "apimao_ebix_dequeuemessage" {
                 </set-body>
               </when>
               <when condition="@(context.Response.StatusCode == 400)">
+                <set-status code="500" />
                 <set-body template="liquid">
                   <soap-env:Envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/">
                     <soap-env:Body>
                       <soap-env:Fault>
                         <faultcode>soap-env:Client</faultcode>
-                        <faultstring>B2B-201:{{context.RequestId}}</faultstring>
+                        <faultstring>B2B-201:{{context.Variables.RequestId}}</faultstring>
                         <faultactor />
                       </soap-env:Fault>
                     </soap-env:Body>

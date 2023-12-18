@@ -384,6 +384,7 @@ module "apima_b2b_ebix" {
             <set-header name="Content-Type" exists-action="override">
               <value>text/xml</value>
             </set-header>
+            <set-variable name="RequestId" value="@(context.RequestId)" />
             <choose>
               <when condition="@(context.Response.StatusCode >= 500 && context.Response.StatusCode < 600)">
                 <set-body template="liquid">
@@ -391,7 +392,7 @@ module "apima_b2b_ebix" {
                     <soap-env:Body>
                       <soap-env:Fault>
                         <faultcode>soap-env:Client</faultcode>
-                        <faultstring>B2B-900:{{context.RequestId}}</faultstring>
+                        <faultstring>B2B-900:{{context.Variables.RequestId}}</faultstring>
                         <faultactor />
                       </soap-env:Fault>
                     </soap-env:Body>
