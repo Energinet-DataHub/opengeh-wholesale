@@ -3,12 +3,6 @@ variable "subscription_id" {
   description = "Subscription that the infrastructure code is deployed into."
 }
 
-variable "resource_group_name" {
-  type        = string
-  description = "Resource Group that the infrastructure code is deployed into."
-  default = ""
-}
-
 variable "environment_short" {
   type        = string
   description = "1 character name of the enviroment that the infrastructure code is deployed into."
