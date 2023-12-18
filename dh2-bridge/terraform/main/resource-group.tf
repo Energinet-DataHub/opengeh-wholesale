@@ -1,4 +1,4 @@
 resource "azurerm_resource_group" "this" {
-  name     = var.resource_group_name
+  name = "rg-${lower(var.domain_name_short)}-${lower(var.environment_short)}-we-${lower(var.environment_instance)}"
   location = "West Europe"
 }
