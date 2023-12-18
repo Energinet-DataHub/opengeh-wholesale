@@ -19,8 +19,10 @@ using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
 using Energinet.DataHub.Wholesale.Batches.Application.UseCases;
 using Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchAggregate;
 using Energinet.DataHub.Wholesale.Shared.Configuration;
+using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Test.Core;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Application.Batches;
@@ -70,23 +72,6 @@ public class StartCalculationHandlerTests
         await sut.StartAsync();
 
         // Assert
-        loggerMock.Verify(
-            x => x.Log(
-                LogLevel.Information,
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>(
-                    (state, t) =>
-                    CheckValue(state, expectedLogMessage, "{OriginalFormat}")),
-                It.IsAny<Exception>(),
-                ((Func<It.IsAnyType, Exception, string>)It.IsAny<object>())!));
-    }
-
-    private static bool CheckValue(object state, object expectedValue, string key)
-    {
-        var keyValuePairList = (IReadOnlyList<KeyValuePair<string, object>>)state;
-
-        var actualValue = keyValuePairList.First(kvp => string.Compare(kvp.Key, key, StringComparison.Ordinal) == 0).Value;
-
-        return expectedValue.Equals(actualValue);
+        loggerMock.VerifyCalledWith(LogLevel.Information, expectedLogMessage);
     }
 }
