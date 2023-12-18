@@ -17,6 +17,7 @@ using Energinet.DataHub.Wholesale.DomainTests.Features.Authorization.Fixtures;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Attributes;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture;
 using FluentAssertions;
+using Xunit;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Features.Authorization
 {
@@ -38,6 +39,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Authorization
             /// <summary>
             /// Perform a request that doesn't require authorization.
             /// </summary>
+            [Trait("Category", "Functional")]
             [DomainFact]
             public async Task WhenRequestReadinessStatus_ResponseIsOkAndHealthy()
             {
@@ -54,6 +56,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Authorization
             /// <summary>
             /// Perform a request that do require authorization.
             /// </summary>
+            [Trait("Category", "Functional")]
             [DomainFact]
             public async Task WhenRequestBatchId_ResponseIsUnauthorized()
             {
@@ -83,6 +86,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Authorization
             /// <summary>
             /// Perform a request that do require authorization.
             /// </summary>
+            [Trait("Category", "Functional")]
             [DomainFact]
             public async Task WhenRequestingExistingBatchId_ResponseIsOk()
             {

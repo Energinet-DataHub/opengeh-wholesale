@@ -46,10 +46,8 @@ runs:
       run: |
         dotnet publish \
           '.\source\dotnet\wholesale-api\WebApi.UnitTests\WebApi.UnitTests.csproj' \
-          --no-build \
-          --no-restore \
-          --configuration Release \
-          --output '.\source\dotnet\wholesale-api\WebApi.UnitTests\bin\Release\net7.0'
+          --configuration Debug \
+          --output '.\source\dotnet\wholesale-api\WebApi.UnitTests\bin\Debug\net7.0'
 
     - name: Copy all directories and files in source/dotnet except the obj-directories
       shell: bash
