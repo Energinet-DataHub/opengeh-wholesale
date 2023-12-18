@@ -156,9 +156,8 @@ class BasisDataWriter:
                 partition_keys,
             )
 
-def _write_df_to_csv(
-        path: str, df: DataFrame, partition_keys: list[str]
-) -> None:
+
+def _write_df_to_csv(path: str, df: DataFrame, partition_keys: list[str]) -> None:
     df.repartition(PartitionKeyName.GRID_AREA).write.mode("overwrite").partitionBy(
         partition_keys
     ).option("header", True).csv(path)
