@@ -130,7 +130,7 @@ jobs:
       # documented here: https://github.com/Energinet-DataHub/opengeh-wholesale/tree/main/source/databricks#styling-and-formatting
       ignore_errors_and_warning_flake8: E501,F401,E402,E203,W503
       test_report_path: ./source/databricks/calculation_engine/tests
-      tests_filter_expression: "not calculator_job"
+      tests_filter_expression: not calculator_job
 
   mypy_check:
     runs-on: ubuntu-latest
