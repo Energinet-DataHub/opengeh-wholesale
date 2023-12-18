@@ -1,5 +1,5 @@
 module "app_dh2_placeholder" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=v13"
 
   name                                     = "dh2-placeholder"
   project_name                             = var.domain_name_short

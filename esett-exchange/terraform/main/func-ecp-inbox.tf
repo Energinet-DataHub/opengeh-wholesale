@@ -1,5 +1,5 @@
 module "func_entrypoint_ecp_inbox" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=v13"
 
   name                                     = "ecp-inbox"
   project_name                             = var.domain_name_short
