@@ -54,7 +54,7 @@ public class StartCalculationHandlerTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task StartCalculationAsync_(
+    public async Task StartCalculationAsync_LogCalledWithExpectedAttributeName(
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         [Frozen] Mock<ILogger<StartCalculationHandler>> loggerMock,
         StartCalculationHandler sut)
