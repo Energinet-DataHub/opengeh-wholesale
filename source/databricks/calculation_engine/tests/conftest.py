@@ -31,7 +31,7 @@ from typing import Generator, Callable, Optional
 from package.datamigration.migration import _apply_migration
 from package.datamigration.uncommitted_migrations import _get_all_migrations
 from package.datamigration.migration_script_args import MigrationScriptArgs
-from package.infrastructure.paths import OUTPUT_DATABASE_NAME
+from package.infrastructure.paths import OUTPUT_DATABASE_NAME, OUTPUT_FOLDER
 
 from tests.integration_test_configuration import IntegrationTestConfiguration
 
@@ -162,7 +162,7 @@ def calculation_input_path(data_lake_path: str) -> str:
 
 @pytest.fixture(scope="session")
 def calculation_output_path(data_lake_path: str) -> str:
-    return f"{data_lake_path}/calculation-output"
+    return f"{data_lake_path}/{OUTPUT_FOLDER}"
 
 
 @pytest.fixture(scope="session")
