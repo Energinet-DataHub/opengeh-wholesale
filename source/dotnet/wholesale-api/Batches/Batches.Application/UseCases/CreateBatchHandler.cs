@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
+using Energinet.DataHub.Wholesale.Shared.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Batches.Application.UseCases;
@@ -43,7 +44,7 @@ public class CreateBatchHandler : ICreateBatchHandler
         await _batchRepository.AddAsync(batch).ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
-        _logger.LogInformation("Batch created with id {BatchId}", batch.Id);
+        _logger.LogInformation("Calculation created with id {calculation_id}", batch.Id);
         return batch.Id;
     }
 }
