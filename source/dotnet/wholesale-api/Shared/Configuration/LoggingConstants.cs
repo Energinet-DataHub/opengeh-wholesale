@@ -15,5 +15,5 @@
 namespace Energinet.DataHub.Wholesale.Shared.Configuration;
 public static class LoggingConstants
 {
-    public const string CalculationId = "{CalculationId}";
+    public const string CalculationId = "{calculation_id}";
 }
