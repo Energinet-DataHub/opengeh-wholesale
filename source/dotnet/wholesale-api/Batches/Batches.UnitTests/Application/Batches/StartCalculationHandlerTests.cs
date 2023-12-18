@@ -60,7 +60,7 @@ public class StartCalculationHandlerTests
         StartCalculationHandler sut)
     {
         // Arrange
-        var expectedLogMessage = "Calculation for calculation {calculation_id} started";
+        const string expectedLogMessage = "Calculation for calculation {calculation_id} started";
         var batches = new List<Batch> { new BatchBuilder().Build(), new BatchBuilder().Build() };
         batchRepositoryMock
             .Setup(repository => repository.GetCreatedAsync())
