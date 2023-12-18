@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import contextlib
 import logging
 import os
 from typing import Union, Any, Callable, Tuple, Dict, Iterator
@@ -89,5 +90,7 @@ def start_span_decorator(func: Callable[..., Any]) -> Callable[..., Any]:
     return wrapper
 
 
+@contextlib.contextmanager
 def start_span(name: str) -> Iterator[Span]:
-    return get_tracer().start_as_current_span(name, attributes=get_extras())
+    with get_tracer().start_as_current_span(name, attributes=get_extras()) as span:
+        yield span
