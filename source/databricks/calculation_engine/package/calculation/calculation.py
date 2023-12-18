@@ -11,29 +11,24 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
-import pyspark.sql.functions as F
 
-from package.codelists import ChargeResolution, MeteringPointType, ProcessType
+from package.infrastructure import logging_configuration
+from package.calculation_output.basis_data_writer import BasisDataWriter
 from package.calculation_output.wholesale_calculation_result_writer import (
     WholesaleCalculationResultWriter,
 )
+from package.codelists import ChargeResolution, MeteringPointType, ProcessType
 from package.constants import Colname
-from package.calculation_output.basis_data_writer import BasisDataWriter
-
-from .preparation import PreparedDataReader
 from .calculator_args import CalculatorArgs
 from .energy import energy_calculation
+from .preparation import PreparedDataReader
 from .wholesale import wholesale_calculation
-from ..common.logger import Logger
-
-logger = Logger(__name__)
 
 
+@logging_configuration.start_span_decorator
 def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> None:
-    logger.info("Starting calculation")
-
     # cache of metering_point_time_series had no effect on performance (01-12-2023)
     metering_point_periods_df = prepared_data_reader.get_metering_point_periods_df(
         args.batch_period_start_datetime,
@@ -99,6 +94,6 @@ def _get_production_and_consumption_metering_points(
     metering_points_periods_df: DataFrame,
 ) -> DataFrame:
     return metering_points_periods_df.filter(
-        (F.col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value)
-        | (F.col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value)
+        (f.col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value)
+        | (f.col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value)
     )

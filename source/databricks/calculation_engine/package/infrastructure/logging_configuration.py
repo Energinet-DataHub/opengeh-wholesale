@@ -17,6 +17,7 @@ import os
 from typing import Union, Any
 
 from azure.monitor.opentelemetry import configure_azure_monitor
+from opentelemetry import trace
 
 DEFAULT_LOG_LEVEL: int = logging.INFO
 _EXTRAS: dict[str, Any] = {}
@@ -70,3 +71,21 @@ def get_extras() -> dict[str, Any]:
 def add_extras(extras: dict[str, Any]) -> None:
     global _EXTRAS
     _EXTRAS = _EXTRAS | extras
+
+
+def get_tracer():
+    return trace.get_tracer("calculation-engine")
+
+def start_span_decorator(func):
+    """
+    Decorator for creating spans.
+    """
+    def wrapper(*args, **kwargs):
+        with get_tracer().start_as_current_span(func.__name__):
+            return func(*args, **kwargs)
+
+    return wrapper
+
+
+def start_span(name: str):
+    return get_tracer().start_as_current_span(name)
