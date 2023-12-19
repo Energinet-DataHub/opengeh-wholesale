@@ -18,30 +18,15 @@ variable "domain_name_short" {
   description = "Shortest possible edition of the domain name."
 }
 
-variable "shared_resources_keyvault_name" {
-  type        = string
-  description = "Name of the KeyVault, that contains the shared secrets"
-}
-
-variable "shared_resources_resource_group_name" {
-  type        = string
-  description = "Name of the Resource Group, that contains the shared resources."
-}
-
 variable "enable_health_check_alerts" {
   type        = bool
   description = "Specify if health check alerts for Azure Functions and App Services should be enabled."
+  default     = true
 }
 
 variable "developer_ad_group_name" {
   type        = string
   description = "(Optional) Name of the AD group containing developers to have read access to SQL database."
-  default     = ""
-}
-
-variable "developer_ad_group_object_id" {
-  type        = string
-  description = "(Optional) Id of the AD group containing developers to have read access to storage accounts."
   default     = ""
 }
 

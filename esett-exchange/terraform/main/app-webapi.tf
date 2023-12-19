@@ -17,9 +17,9 @@ module "app_webapi" {
   dotnet_framework_version                 = "v7.0"
   ip_restriction_allow_ip_range            = var.hosted_deployagent_public_ip_range
   app_settings = {
-    "JwtBearerSettings:ExternalOpenIdUrl" = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-open-id-url)"
-    "JwtBearerSettings:InternalOpenIdUrl" = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-open-id-url)"
-    "JwtBearerSettings:BackendBffAppId"   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-bff-app-id)"
+    "JwtBearerSettings:ExternalOpenIdUrl" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=frontend-open-id-url)"
+    "JwtBearerSettings:InternalOpenIdUrl" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-open-id-url)"
+    "JwtBearerSettings:BackendBffAppId"   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-bff-app-id)"
     "DatabaseSettings:ConnectionString"   = local.MS_ESETT_EXCHANGE_CONNECTION_STRING
     "BlobStorageSettings:AccountUri"      = local.ESETT_DOCUMENT_STORAGE_ACCOUNT_URI
     "BlobStorageSettings:ContainerName"   = local.ESETT_DOCUMENT_STORAGE_CONTAINER_NAME

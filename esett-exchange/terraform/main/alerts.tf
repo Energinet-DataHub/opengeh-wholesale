@@ -14,7 +14,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "esett_exchange_aggreg
   # NOTE: The name prefix 'alert-eSettExchangeDeadline' is used by ServiceNow to detect the alert and create an incident.
   name                    = "alert-eSettExchangeDeadline-aggregation-${local.NAME_SUFFIX}"
   location                = azurerm_resource_group.this.location
-  resource_group_name     = var.shared_resources_resource_group_name
+  resource_group_name     = data.azurerm_resource_group.shared.name
   auto_mitigation_enabled = true
 
   evaluation_frequency = "PT10M"
@@ -57,7 +57,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert_v2" "esett_exchange_balanc
   # NOTE: The name prefix 'alert-eSettExchangeDeadline' is used by ServiceNow to detect the alert and create an incident.
   name                    = "alert-eSettExchangeDeadline-balancefixing-${local.NAME_SUFFIX}"
   location                = azurerm_resource_group.this.location
-  resource_group_name     = var.shared_resources_resource_group_name
+  resource_group_name     = data.azurerm_resource_group.shared.name
   auto_mitigation_enabled = true
 
   evaluation_frequency = "PT10M"
