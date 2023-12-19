@@ -66,7 +66,7 @@ public class BatchExecutionStateInfrastructureService : IBatchExecutionStateInfr
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Exception caught while trying to update execution state for run ID {BatchRunId}", batch.CalculationId);
+                _logger.LogError(e, "Exception caught while trying to update execution state for run ID {calculation_id}", batch.CalculationId);
             }
         }
     }
