@@ -48,8 +48,12 @@ resource "azurerm_key_vault_access_policy" "kv_b2csecrets_developer_ad_group" {
   ]
 }
 
+locals {
+  b2c_key_vault_secrets = concat(var.b2c_kv_secrets, var.b2c_kv_variables)
+}
+
 resource "azurerm_key_vault_secret" "b2c_kv_secrets" {
-  for_each     = { for secret in var.b2c_kv_secrets : secret.name => secret }
+  for_each     = { for secret in local.b2c_key_vault_secrets : secret.name => secret }
   name         = each.value.name
   value        = each.value.value
   key_vault_id = azurerm_key_vault.b2c.id

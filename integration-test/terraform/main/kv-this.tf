@@ -70,8 +70,12 @@ resource "azurerm_key_vault_access_policy" "kv_developer_ad_group" {
   ]
 }
 
+locals {
+  key_vault_secrets = concat(var.kv_secrets, var.kv_variables)
+}
+
 resource "azurerm_key_vault_secret" "kv_secrets" {
-  for_each     = { for secret in var.kv_secrets : secret.name => secret }
+  for_each     = { for secret in local.key_vault_secrets : secret.name => secret }
   name         = each.value.name
   value        = each.value.value
   key_vault_id = azurerm_key_vault.this.id

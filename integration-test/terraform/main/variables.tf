@@ -34,6 +34,15 @@ variable "developers_security_group_object_id" {
   default     = null
 }
 
+variable "kv_variables" {
+  type = list(object({
+    name  = string
+    value = string
+  }))
+  description = "Variables that can be used to retrieve access tokens for certain scenarios"
+  default     = null
+}
+
 variable "kv_secrets" {
   type = list(object({
     name  = string
@@ -49,5 +58,14 @@ variable "b2c_kv_secrets" {
     value = string
   }))
   description = "(Optional) App IDs and Client Secrets that can be used to retrieve access tokens for certain scenarios"
+  default     = null
+}
+
+variable "b2c_kv_variables" {
+  type = list(object({
+    name  = string
+    value = string
+  }))
+  description = "Variables that can be used to retrieve access tokens for certain scenarios"
   default     = null
 }
