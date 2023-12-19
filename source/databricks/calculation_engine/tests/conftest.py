@@ -31,7 +31,7 @@ from typing import Generator, Callable, Optional
 from package.datamigration.migration import _apply_migration
 from package.datamigration.uncommitted_migrations import _get_all_migrations
 from package.datamigration.migration_script_args import MigrationScriptArgs
-from package.infrastructure.paths import OUTPUT_DATABASE_NAME
+from package.infrastructure.paths import OUTPUT_DATABASE_NAME, OUTPUT_FOLDER
 
 from tests.integration_test_configuration import IntegrationTestConfiguration
 
@@ -161,13 +161,16 @@ def calculation_input_path(data_lake_path: str) -> str:
 
 
 @pytest.fixture(scope="session")
-def migrations_executed(spark: SparkSession, data_lake_path: str) -> None:
-    execute_migrations(spark, data_lake_path)
+def calculation_output_path(data_lake_path: str) -> str:
+    return f"{data_lake_path}/{OUTPUT_FOLDER}"
 
 
-def execute_migrations(spark: SparkSession, data_lake_path: str) -> None:
+@pytest.fixture(scope="session")
+def migrations_executed(
+    spark: SparkSession, data_lake_path: str, calculation_output_path: str
+) -> None:
     # Clean up to prevent problems from previous test runs
-    shutil.rmtree(data_lake_path, ignore_errors=True)
+    shutil.rmtree(calculation_output_path, ignore_errors=True)
     spark.sql(f"DROP DATABASE IF EXISTS {OUTPUT_DATABASE_NAME} CASCADE")
 
     migration_args = MigrationScriptArgs(
