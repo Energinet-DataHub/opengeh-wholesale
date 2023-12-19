@@ -36,9 +36,4 @@
     </Protobuf>
   </ItemGroup>
 
-
-  <ItemGroup>
-    <Compile Include="..\..\Shared\Configuration\LoggingConstants.cs" Link="Logging\LoggingConstants.cs" />
-  </ItemGroup>
-
 </Project>

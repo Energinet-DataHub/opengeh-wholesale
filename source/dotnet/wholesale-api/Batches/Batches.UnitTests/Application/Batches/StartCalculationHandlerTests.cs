@@ -18,7 +18,6 @@ using Energinet.DataHub.Wholesale.Batches.Application;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
 using Energinet.DataHub.Wholesale.Batches.Application.UseCases;
 using Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchAggregate;
-using Energinet.DataHub.Wholesale.Shared.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Test.Core;
