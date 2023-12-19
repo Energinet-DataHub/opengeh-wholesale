@@ -66,7 +66,7 @@ class BasisDataWriter:
             timeseries_hour_df,
         )
 
-    @logging_configuration.use_span("basis-data.per-ga")
+    @logging_configuration.use_span("per-grid-area")
     def _write_ga_basis_data(
         self,
         master_basis_data_df: DataFrame,
@@ -94,7 +94,7 @@ class BasisDataWriter:
             partition_keys,
         )
 
-    @logging_configuration.use_span("basis-data.per_es")
+    @logging_configuration.use_span("per-energy-supplier")
     def _write_es_basis_data(
         self,
         master_basis_data_df: DataFrame,
@@ -134,25 +134,21 @@ class BasisDataWriter:
         grouping_folder_name: str,
         partition_keys: list[str],
     ) -> None:
-        with logging_configuration.start_span(
-            "write_timeseries_quarter_basis_data_to_csv"
-        ):
+        with logging_configuration.start_span("timeseries_quarter_to_csv"):
             _write_df_to_csv(
                 f"{self.__time_series_quarter_path}/{grouping_folder_name}",
                 timeseries_quarter_df,
                 partition_keys,
             )
 
-        with logging_configuration.start_span(
-            "write_timeseries_hour_basis_data_to_csv"
-        ):
+        with logging_configuration.start_span("timeseries_hour_to_csv"):
             _write_df_to_csv(
                 f"{self.__time_series_hour_path}/{grouping_folder_name}",
                 timeseries_hour_df,
                 partition_keys,
             )
 
-        with logging_configuration.start_span("write_metering_point_basis_data_to_csv"):
+        with logging_configuration.start_span("metering_point_to_csv"):
             _write_df_to_csv(
                 f"{self.__master_basis_data_path}/{grouping_folder_name}",
                 master_basis_data_df,
