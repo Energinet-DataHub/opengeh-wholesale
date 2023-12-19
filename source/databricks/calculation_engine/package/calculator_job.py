@@ -13,9 +13,10 @@
 # limitations under the License.
 
 import os
+import sys
 from typing import Union, Callable
 
-from opentelemetry.trace import SpanKind
+from opentelemetry.trace import SpanKind, Status, StatusCode, Span
 
 import package.infrastructure.logging_configuration as config
 from package import calculation
@@ -58,16 +59,38 @@ def start_with_deps(
     with config.get_tracer().start_as_current_span(
         __name__, kind=SpanKind.SERVER
     ) as span:
-        args = cmd_line_args_reader()
+        # Try/except added to enable adding custom fields to the exception as
+        # the span attributes do not appear to be included in the exception.
+        try:
+            args = cmd_line_args_reader()
 
-        # Add calculation_id to structured logging data to be included in every log message.
-        config.add_extras({"calculation_id": args.batch_id})
-        span.set_attributes(config.get_extras())
+            # Add calculation_id to structured logging data to be included in every log message.
+            config.add_extras({"calculation_id": args.batch_id})
+            span.set_attributes(config.get_extras())
 
-        raise_if_storage_is_locked(is_storage_locked_checker, args)
+            raise_if_storage_is_locked(is_storage_locked_checker, args)
 
-        prepared_data_reader = create_prepared_data_reader(args)
-        calculation_executor(args, prepared_data_reader)
+            prepared_data_reader = create_prepared_data_reader(args)
+            calculation_executor(args, prepared_data_reader)
+
+        # Added as ConfigArgParse uses sys.exit() rather than raising exceptions
+        except SystemExit as e:
+            if e.code != 0:
+                record_exception(e, span)
+            sys.exit(e.code)
+
+        except Exception as e:
+            record_exception(e, span)
+            sys.exit(4)
+
+
+def record_exception(exception: Union[SystemExit, Exception], span: Span) -> None:
+    span.set_status(Status(StatusCode.ERROR))
+    span.record_exception(
+        exception,
+        attributes=config.get_extras()
+        | {"CategoryName": f"Energinet.DataHub.{__name__}"},
+    )
 
 
 def create_prepared_data_reader(args: CalculatorArgs) -> calculation.PreparedDataReader:
