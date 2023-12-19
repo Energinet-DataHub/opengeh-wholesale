@@ -1,3 +1,4 @@
 module "mssqldb_dh2_bridge" {
-  datawriter_access = true
+  developer_ad_group_name = var.developer_ad_group_name
+  datawriter_access       = true
 }
