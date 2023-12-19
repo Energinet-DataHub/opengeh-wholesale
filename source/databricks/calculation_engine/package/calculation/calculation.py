@@ -29,21 +29,24 @@ from .wholesale import wholesale_calculation
 
 @logging_configuration.use_span("calculation")
 def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> None:
-    # cache of metering_point_time_series had no effect on performance (01-12-2023)
-    metering_point_periods_df = prepared_data_reader.get_metering_point_periods_df(
-        args.batch_period_start_datetime,
-        args.batch_period_end_datetime,
-        args.batch_grid_areas,
-    )
-    grid_loss_responsible_df = prepared_data_reader.get_grid_loss_responsible(
-        args.batch_grid_areas
-    )
+    with logging_configuration.start_span("calculation.prepare"):
+        # cache of metering_point_time_series had no effect on performance (01-12-2023)
+        metering_point_periods_df = prepared_data_reader.get_metering_point_periods_df(
+            args.batch_period_start_datetime,
+            args.batch_period_end_datetime,
+            args.batch_grid_areas,
+        )
+        grid_loss_responsible_df = prepared_data_reader.get_grid_loss_responsible(
+            args.batch_grid_areas
+        )
 
-    metering_point_time_series = prepared_data_reader.get_metering_point_time_series(
-        args.batch_period_start_datetime,
-        args.batch_period_end_datetime,
-        metering_point_periods_df,
-    ).cache()
+        metering_point_time_series = (
+            prepared_data_reader.get_metering_point_time_series(
+                args.batch_period_start_datetime,
+                args.batch_period_end_datetime,
+                metering_point_periods_df,
+            ).cache()
+        )
 
     energy_calculation.execute(
         args.batch_id,
