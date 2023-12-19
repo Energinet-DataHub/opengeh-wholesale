@@ -73,7 +73,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
                     {
                         hasResult = false;
                         hasFailed = true;
-                        _logger.LogError(ex, "Failed energy result event publishing for completed calculation {LoggingConstants.CalculationId}. Handled '{EnergyResultCount}' energy results before failing.", unpublishedBatch.Id, energyResultCount);
+                        _logger.LogError(ex, "Failed energy result event publishing for completed calculation {calculation_id}. Handled '{EnergyResultCount}' energy results before failing.", unpublishedBatch.Id, energyResultCount);
                     }
 
                     if (hasResult)
