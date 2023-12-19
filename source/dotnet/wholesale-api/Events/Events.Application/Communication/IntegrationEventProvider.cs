@@ -143,7 +143,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
             _logger.LogInformation("Handled {EnergyResultCount} energy results for completed calculation {LoggingConstants.CalculationId}.", energyResultCount, unpublishedBatch.Id);
             if (_wholesaleResultEventProvider.CanContainWholesaleResults(unpublishedBatch))
             {
-                _logger.LogInformation("Handled {WholesaleResultCount} wholesale results for completed calculation {LoggingConstants.CalculationId}.", wholesaleResultCount, unpublishedBatch.Id);
+                _logger.LogInformation("Handled {WholesaleResultCount} wholesale results for completed calculation {calculation_id}.", wholesaleResultCount, unpublishedBatch.Id);
             }
         }
         while (true);
