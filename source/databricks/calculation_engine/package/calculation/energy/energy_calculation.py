@@ -53,10 +53,11 @@ def execute(
         batch_execution_time_start,
     )
 
-    quarterly_metering_point_time_series = transform_hour_to_quarter(
-        metering_point_time_series
-    )
-    quarterly_metering_point_time_series.cache_internal()
+    with logging_configuration.start_span("quarterly_metering_point_time_series"):
+        quarterly_metering_point_time_series = transform_hour_to_quarter(
+            metering_point_time_series
+        )
+        quarterly_metering_point_time_series.cache_internal()
 
     _calculate(
         batch_process_type,

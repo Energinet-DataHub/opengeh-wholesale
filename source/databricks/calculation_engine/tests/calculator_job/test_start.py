@@ -110,7 +110,7 @@ AppTraces
             )
             assert_row_count(actual, 1)
 
-        # Assert, but timeout after 2 minutes if not succeeded
+        # Assert, but timeout if not succeeded
         wait_for_condition(
             assert_logged, timeout=timedelta(minutes=3), step=timedelta(seconds=10)
         )
@@ -170,7 +170,7 @@ AppExceptions
             )
             assert_row_count(actual, 1)
 
-        # Assert, but timeout after 2 minutes if not succeeded
+        # Assert, but timeout if not succeeded
         wait_for_condition(
             assert_logged, timeout=timedelta(minutes=3), step=timedelta(seconds=10)
         )
