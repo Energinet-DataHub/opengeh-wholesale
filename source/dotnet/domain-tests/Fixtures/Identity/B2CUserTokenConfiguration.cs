@@ -27,6 +27,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Identity
     public class B2CUserTokenConfiguration
     {
         /// <summary>
+        /// Constructor to be used for execution on the old Azure subscriptions (environments).
         /// Ensure secrets are retrieved and ready for use.
         /// </summary>
         private B2CUserTokenConfiguration(string b2cKeyVaultUrl, string environment, string user, string tokenBaseAddress)
@@ -50,6 +51,35 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Identity
 
             Username = secretsConfiguration.GetValue<string>(BuildB2CUserSecretName(environment, user, "username"))!;
             Password = secretsConfiguration.GetValue<string>(BuildB2CUserSecretName(environment, user, "password"))!;
+        }
+
+        /// <summary>
+        /// Constructor to be used for execution on the new Azure subscriptions (environments).
+        /// Ensure secrets are retrieved and ready for use.
+        /// </summary>
+        private B2CUserTokenConfiguration(string b2cKeyVaultUrl, string environment, string tokenBaseAddress, string username, string password)
+        {
+            if (string.IsNullOrWhiteSpace(b2cKeyVaultUrl))
+                throw new ArgumentException($"Cannot be null or whitespace.", nameof(b2cKeyVaultUrl));
+            if (string.IsNullOrEmpty(environment))
+                throw new ArgumentException($"Cannot be null or empty.", nameof(environment));
+            if (string.IsNullOrEmpty(tokenBaseAddress))
+                throw new ArgumentException($"Cannot be null or empty.", nameof(tokenBaseAddress));
+            if (string.IsNullOrEmpty(username))
+                throw new ArgumentException($"Cannot be null or empty.", nameof(username));
+            if (string.IsNullOrEmpty(password))
+                throw new ArgumentException($"Cannot be null or empty.", nameof(password));
+
+            var secretsConfiguration = BuildSecretsConfiguration(b2cKeyVaultUrl);
+
+            TokenBaseAddress = tokenBaseAddress;
+
+            RopcUrl = secretsConfiguration.GetValue<string>(BuildB2CEnvironmentSecretName(environment, "ropc-auth-url"))!;
+            FrontendAppId = secretsConfiguration.GetValue<string>(BuildB2CEnvironmentSecretName(environment, "frontend-app-id"))!;
+            BackendBffScope = secretsConfiguration.GetValue<string>(BuildB2CEnvironmentSecretName(environment, "backend-bff-app-scope"))!;
+
+            Username = username;
+            Password = password;
         }
 
         /// <summary>
@@ -90,15 +120,29 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Identity
         public static B2CUserTokenConfiguration CreateFromConfiguration(IConfigurationRoot root)
         {
             var b2cKeyVaultUrl = root.GetValue<string>("AZURE_B2CSECRETS_KEYVAULT_URL")!;
-            var environment =
-                root.GetValue<string>("ENVIRONMENT_SHORT")! +
-                root.GetValue<string>("ENVIRONMENT_INSTANCE");
-            var user =
-                root.GetValue<string>("USER")!;
-            var tokenBaseAddress =
-                root.GetValue<string>("TOKEN_BASEADDRESS")!;
+            var tokenBaseAddress = root.GetValue<string>("TOKEN_BASEADDRESS")!;
 
-            return new B2CUserTokenConfiguration(b2cKeyVaultUrl, environment, user, tokenBaseAddress);
+            var user = root.GetValue<string>("USER");
+
+            // If 'user' is not set we are executing on the new subscriptions
+            if (user == null)
+            {
+                var environment =
+                    root.GetValue<string>("ENVIRONMENT")! +
+                    root.GetValue<string>("ENVIRONMENT_INSTANCE");
+
+                var username = root.GetValue<string>("DH_E2E_USERNAME")!;
+                var password = root.GetValue<string>("DH_E2E_PASSWORD")!;
+                return new B2CUserTokenConfiguration(b2cKeyVaultUrl, environment, tokenBaseAddress, username, password);
+            }
+            else
+            {
+                var environment =
+                    root.GetValue<string>("ENVIRONMENT_SHORT")! +
+                    root.GetValue<string>("ENVIRONMENT_INSTANCE");
+
+                return new B2CUserTokenConfiguration(b2cKeyVaultUrl, environment, user, tokenBaseAddress);
+            }
         }
 
         private static string BuildB2CEnvironmentSecretName(string environment, string secret)
