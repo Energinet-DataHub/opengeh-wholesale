@@ -21,6 +21,7 @@ using Energinet.DataHub.Wholesale.Batches.Application.UseCases;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NodaTime;
 using NodaTime.Extensions;
@@ -31,6 +32,17 @@ namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Application.Batches;
 
 public class CreateBatchHandlerTests
 {
+    private readonly CreateBatchCommand _defaultCreateBatchCommand;
+
+    public CreateBatchHandlerTests()
+    {
+        var period = Periods.January_EuropeCopenhagen_Instant;
+        var periodStart = period.PeriodStart.ToDateTimeOffset();
+        var periodEnd = period.PeriodEnd.ToDateTimeOffset();
+        var gridAreaCodes = new List<string> { "805" };
+        _defaultCreateBatchCommand = CreateBatchCommand(ProcessType.Aggregation, periodStart, periodEnd, gridAreaCodes);
+    }
+
     [Theory]
     [InlineAutoMoqData(ProcessType.BalanceFixing)]
     [InlineAutoMoqData(ProcessType.Aggregation)]
@@ -45,11 +57,7 @@ public class CreateBatchHandlerTests
         CreateBatchHandler sut)
     {
         // Arrange
-        var period = Periods.January_EuropeCopenhagen_Instant;
-        var periodStart = period.PeriodStart.ToDateTimeOffset();
-        var periodEnd = period.PeriodEnd.ToDateTimeOffset();
-        var gridAreaCodes = new List<string> { "805" };
-        var batchCommand = CreateBatchCommand(processType, periodStart, periodEnd, gridAreaCodes);
+        var batchCommand = _defaultCreateBatchCommand with { ProcessType = processType };
         var batch = CreateBatchFromCommand(batchCommand);
         batchFactoryMock.Setup(x => x.Create(batch.ProcessType, batchCommand.GridAreaCodes, batchCommand.StartDate, batchCommand.EndDate, batchCommand.CreatedByUserId))
             .Returns(batch);
@@ -63,6 +71,26 @@ public class CreateBatchHandlerTests
     }
 
     [Theory]
+    [InlineAutoMoqData]
+    public async Task Handle_LogsExpectedMessage(
+        [Frozen] Mock<ILogger<CreateBatchHandler>> loggerMock,
+        [Frozen] Mock<IBatchFactory> batchFactoryMock,
+        CreateBatchHandler sut)
+    {
+        // Arrange
+        const string expectedLogMessage = $"Calculation created with id {LoggingConstants.CalculationId}";
+        var batch = CreateBatchFromCommand(_defaultCreateBatchCommand);
+        batchFactoryMock.Setup(x => x.Create(batch.ProcessType, _defaultCreateBatchCommand.GridAreaCodes, _defaultCreateBatchCommand.StartDate, _defaultCreateBatchCommand.EndDate, _defaultCreateBatchCommand.CreatedByUserId))
+            .Returns(batch);
+
+        // Act
+        await sut.HandleAsync(_defaultCreateBatchCommand);
+
+        // Assert
+        loggerMock.ShouldBeCalledWith(LogLevel.Information, expectedLogMessage);
+    }
+
+    [Theory]
     [InlineData(ProcessType.WholesaleFixing)]
     [InlineData(ProcessType.FirstCorrectionSettlement)]
     [InlineData(ProcessType.SecondCorrectionSettlement)]
@@ -72,8 +100,7 @@ public class CreateBatchHandlerTests
         // Arrange
         var periodStart = DateTimeOffset.Parse("2021-12-31T23:00Z");
         var periodEnd = DateTimeOffset.Parse("2022-01-30T23:00Z");
-        var gridAreaCodes = new List<string> { "805" };
-        var batchCommand = CreateBatchCommand(processType, periodStart, periodEnd, gridAreaCodes);
+        var batchCommand = _defaultCreateBatchCommand with { StartDate = periodStart, EndDate = periodEnd, ProcessType = processType };
 
         // Act
         var actual = () => CreateBatchFromCommand(batchCommand);
@@ -92,9 +119,7 @@ public class CreateBatchHandlerTests
         // Arrange
         var periodStart = DateTimeOffset.Parse(periodStartString);
         var periodEnd = DateTimeOffset.Parse(periodEndString);
-        var gridAreaCodes = new List<string> { "805" };
-        var processType = ProcessType.BalanceFixing;
-        var batchCommand = CreateBatchCommand(processType, periodStart, periodEnd, gridAreaCodes);
+        var batchCommand = _defaultCreateBatchCommand with { StartDate = periodStart, EndDate = periodEnd };
 
         // Act
         var actual = () => CreateBatchFromCommand(batchCommand);
@@ -109,9 +134,7 @@ public class CreateBatchHandlerTests
         // Arrange
         var periodStart = DateTimeOffset.Parse("2022-12-31T23:00Z");
         var periodEnd = DateTimeOffset.Parse("2022-01-31T23:00Z");
-        var gridAreaCodes = new List<string> { "805" };
-        var processType = ProcessType.BalanceFixing;
-        var batchCommand = CreateBatchCommand(processType, periodStart, periodEnd, gridAreaCodes);
+        var batchCommand = _defaultCreateBatchCommand with { StartDate = periodStart, EndDate = periodEnd };
 
         // Act
         var actual = () => CreateBatchFromCommand(batchCommand);
@@ -124,11 +147,7 @@ public class CreateBatchHandlerTests
     public void Handle_WhenNoGridAreaCodes_ThrowBusinessValidationException()
     {
         // Arrange
-        var periodStart = DateTimeOffset.Parse("2021-12-31T23:00Z");
-        var periodEnd = DateTimeOffset.Parse("2022-01-31T23:00Z");
-        var gridAreaCodes = new List<string> { };
-        var processType = ProcessType.BalanceFixing;
-        var batchCommand = CreateBatchCommand(processType, periodStart, periodEnd, gridAreaCodes);
+        var batchCommand = _defaultCreateBatchCommand with { GridAreaCodes = new List<string>() };
 
         // Act
         var actual = () => CreateBatchFromCommand(batchCommand);
