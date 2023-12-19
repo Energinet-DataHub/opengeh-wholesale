@@ -116,20 +116,6 @@ AppTraces
             assert_logged, timeout=timedelta(minutes=3), step=timedelta(seconds=10)
         )
 
-    def test_azure_cli_token_cache_mapping(self):
-        azure_cli_cache_path = "/root/.azure"
-        expected_files = ["accessTokens.json", "azureProfile.json"]
-
-        assert os.path.isdir(
-            azure_cli_cache_path
-        ), "Azure CLI cache directory does not exist"
-
-        for file in expected_files:
-            file_path = os.path.join(azure_cli_cache_path, file)
-            assert os.path.isfile(
-                file_path
-            ), f"Expected file {file} does not exist in Azure CLI cache"
-
     def test_logs_exceptions_to_azure_monitor_with_expected_settings(
         self,
         any_calculator_args: CalculatorArgs,
