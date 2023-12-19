@@ -307,6 +307,35 @@ public class IntegrationEventProviderTests
         loggerMock.ShouldBeCalledWith(LogLevel.Error, expectedLogMessage);
     }
 
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetAsync_WhenUnitOfWorkCommitted_LogsExpectedMessages(
+        CompletedBatch completedBatch,
+        IntegrationEvent[] anyIntegrationEvents,
+        [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
+        [Frozen] Mock<IEnergyResultEventProvider> energyResultEventProviderMock,
+        [Frozen] Mock<ILogger<IntegrationEventProvider>> loggerMock,
+        IntegrationEventProvider sut)
+    {
+        // Arrange
+        const string expectedLogMessage =
+            $"Handled {LoggingConstants.EnergyResultCount} energy results for completed calculation {LoggingConstants.CalculationId}.";
+        completedBatchRepositoryMock
+            .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
+            .ReturnsAsync(completedBatch)
+            .ReturnsAsync((CompletedBatch)null!);
+
+        energyResultEventProviderMock
+            .Setup(mock => mock.GetAsync(completedBatch))
+            .Returns(anyIntegrationEvents.ToAsyncEnumerable());
+
+        // Act
+        await sut.GetAsync().ToListAsync();
+
+        // Assert
+        loggerMock.ShouldBeCalledWith(LogLevel.Information, expectedLogMessage);
+    }
+
     [Fact]
     public void AProvider_MustImplement_IIntegrationEventProvider()
     {

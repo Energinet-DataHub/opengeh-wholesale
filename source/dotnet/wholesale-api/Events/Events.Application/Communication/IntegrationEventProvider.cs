@@ -73,7 +73,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
                     {
                         hasResult = false;
                         hasFailed = true;
-                        _logger.LogError(ex, "Failed energy result event publishing for completed calculation {calculation_id}. Handled '{EnergyResultCount}' energy results before failing.", unpublishedBatch.Id, energyResultCount);
+                        _logger.LogError(ex, "Failed energy result event publishing for completed calculation {calculation_id}. Handled '{energy_result_count}' energy results before failing.", unpublishedBatch.Id, energyResultCount);
                     }
 
                     if (hasResult)
@@ -140,10 +140,10 @@ public class IntegrationEventProvider : IIntegrationEventProvider
 
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
-            _logger.LogInformation("Handled {EnergyResultCount} energy results for completed calculation {calculation_id}.", energyResultCount, unpublishedBatch.Id);
+            _logger.LogInformation("Handled {energy_result_count} energy results for completed calculation {calculation_id}.", energyResultCount, unpublishedBatch.Id);
             if (_wholesaleResultEventProvider.CanContainWholesaleResults(unpublishedBatch))
             {
-                _logger.LogInformation("Handled {WholesaleResultCount} wholesale results for completed calculation {calculation_id}.", wholesaleResultCount, unpublishedBatch.Id);
+                _logger.LogInformation("Handled {wholesale_result_count} wholesale results for completed calculation {calculation_id}.", wholesaleResultCount, unpublishedBatch.Id);
             }
         }
         while (true);
