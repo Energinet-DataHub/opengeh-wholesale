@@ -140,7 +140,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
 
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
-            _logger.LogInformation("Handled {EnergyResultCount} energy results for completed calculation {LoggingConstants.CalculationId}.", energyResultCount, unpublishedBatch.Id);
+            _logger.LogInformation("Handled {EnergyResultCount} energy results for completed calculation {calculation_id}.", energyResultCount, unpublishedBatch.Id);
             if (_wholesaleResultEventProvider.CanContainWholesaleResults(unpublishedBatch))
             {
                 _logger.LogInformation("Handled {WholesaleResultCount} wholesale results for completed calculation {calculation_id}.", wholesaleResultCount, unpublishedBatch.Id);
