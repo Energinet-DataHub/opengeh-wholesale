@@ -19,7 +19,7 @@ namespace Test.Core;
 
 public static class MockILoggerExtensions
 {
-    public static void VerifyCalledWith<T>(this Mock<ILogger<T>> logger, LogLevel logLevel, string expectedMessage)
+    public static void ShouldBeCalledWith<T>(this Mock<ILogger<T>> logger, LogLevel logLevel, string expectedMessage)
     {
         logger.Verify(
             x => x.Log(

@@ -72,6 +72,6 @@ public class StartCalculationHandlerTests
         await sut.StartAsync();
 
         // Assert
-        loggerMock.VerifyCalledWith(LogLevel.Information, expectedLogMessage);
+        loggerMock.ShouldBeCalledWith(LogLevel.Information, expectedLogMessage);
     }
 }
