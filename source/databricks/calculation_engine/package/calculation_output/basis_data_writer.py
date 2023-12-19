@@ -35,12 +35,13 @@ class BasisDataWriter:
         metering_point_time_series: DataFrame,
         time_zone: str,
     ) -> None:
-        (
-            timeseries_quarter_df,
-            timeseries_hour_df,
-        ) = basis_data.get_metering_point_time_series_basis_data_dfs(
-            metering_point_time_series, time_zone
-        )
+        with logging_configuration.start_span("prepare"):
+            (
+                timeseries_quarter_df,
+                timeseries_hour_df,
+            ) = basis_data.get_metering_point_time_series_basis_data_dfs(
+                metering_point_time_series, time_zone
+            )
 
         master_basis_data_df = basis_data.get_master_basis_data_df(
             metering_points_periods_df
