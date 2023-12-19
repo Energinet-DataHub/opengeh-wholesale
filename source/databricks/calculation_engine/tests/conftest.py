@@ -244,6 +244,10 @@ def integration_test_configuration(tests_path: str) -> IntegrationTestConfigurat
         with open(settings_file_path) as stream:
             settings = yaml.safe_load(stream)
             azure_keyvault_url = settings["AZURE_KEYVAULT_URL"]
+            os.environ["AZURE_CLIENT_ID"] = settings["AZURE_CLIENT_ID"]
+            os.environ["AZURE_CLIENT_SECRET"] = settings["AZURE_CLIENT_SECRET"]
+            os.environ["AZURE_TENANT_ID"] = settings["AZURE_TENANT_ID"]
+            os.environ["AZURE_SUBSCRIPTION_ID"] = settings["AZURE_SUBSCRIPTION_ID"]
             return IntegrationTestConfiguration(azure_keyvault_url=azure_keyvault_url)
 
     # Otherwise, read settings from environment variables
