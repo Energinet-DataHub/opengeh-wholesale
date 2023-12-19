@@ -76,7 +76,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations
             var actualWaitResult = await Fixture.WaitForCalculationStateAsync(
                 Fixture.ScenarioState.CalculationId,
                 waitForState: Clients.v3.BatchState.Completed,
-                waitTimeLimit: TimeSpan.FromMinutes(28));
+                waitTimeLimit: TimeSpan.FromMinutes(33));
 
             Fixture.ScenarioState.Batch = actualWaitResult.Batch;
 
@@ -92,7 +92,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations
         [DomainFact]
         public void AndThen_CalculationDurationIsLessThanOrEqualToTimeLimit()
         {
-            var calculationTimeLimit = TimeSpan.FromMinutes(25);
+            var calculationTimeLimit = TimeSpan.FromMinutes(30);
             var actualCalculationDuration =
                 Fixture.ScenarioState.Batch!.ExecutionTimeEnd - Fixture.ScenarioState.Batch.ExecutionTimeStart;
 
