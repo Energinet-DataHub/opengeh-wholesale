@@ -55,7 +55,9 @@ def start_with_deps(
         extras={"Domain": "wholesale"},
     )
 
-    with config.get_tracer().start_as_current_span(__name__, kind=SpanKind.SERVER) as span:
+    with config.get_tracer().start_as_current_span(
+        __name__, kind=SpanKind.SERVER
+    ) as span:
         args = cmd_line_args_reader()
 
         # Add calculation_id to structured logging data to be included in every log message.
