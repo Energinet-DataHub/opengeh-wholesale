@@ -26,7 +26,7 @@ from package.codelists.amount_type import AmountType
 from ...infrastructure import logging_configuration
 
 
-@logging_configuration.use_span("wholesale_calculation")
+@logging_configuration.use_span("calculation.wholesale")
 def execute(
     wholesale_calculation_result_writer: WholesaleCalculationResultWriter,
     tariffs_hourly_df: DataFrame,

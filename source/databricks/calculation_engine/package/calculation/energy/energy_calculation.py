@@ -38,7 +38,7 @@ from package.codelists import (
 from package.infrastructure import logging_configuration
 
 
-@logging_configuration.use_span("energy_calculation")
+@logging_configuration.use_span("calculation.energy")
 def execute(
     batch_id: str,
     batch_process_type: ProcessType,
