@@ -135,14 +135,18 @@ class BasisDataWriter:
         grouping_folder_name: str,
         partition_keys: list[str],
     ) -> None:
-        with logging_configuration.start_span("write_timeseries_quarter_basis_data_to_csv"):
+        with logging_configuration.start_span(
+            "write_timeseries_quarter_basis_data_to_csv"
+        ):
             _write_df_to_csv(
                 f"{self.__time_series_quarter_path}/{grouping_folder_name}",
                 timeseries_quarter_df,
                 partition_keys,
             )
 
-        with logging_configuration.start_span("write_timeseries_hour_basis_data_to_csv"):
+        with logging_configuration.start_span(
+            "write_timeseries_hour_basis_data_to_csv"
+        ):
             _write_df_to_csv(
                 f"{self.__time_series_hour_path}/{grouping_folder_name}",
                 timeseries_hour_df,
