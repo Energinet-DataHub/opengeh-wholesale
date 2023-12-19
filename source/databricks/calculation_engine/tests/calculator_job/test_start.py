@@ -137,7 +137,7 @@ AppTraces
         def raise_exception():
             raise ValueError("Test exception")
 
-        with pytest.raises(SystemExit):
+        with pytest.raises(ValueError):
             # Act
             start_with_deps(
                 cmd_line_args_reader=lambda: any_calculator_args,
