@@ -17,4 +17,5 @@ namespace Test.Core;
 public static class LoggingConstants
 {
     public const string CalculationId = "{calculation_id}";
+    public const string EnergyResultCount = "{energy_result_count}";
 }

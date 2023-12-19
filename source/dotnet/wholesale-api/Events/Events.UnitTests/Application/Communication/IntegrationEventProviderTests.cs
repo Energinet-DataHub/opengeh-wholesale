@@ -24,8 +24,10 @@ using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NodaTime;
+using Test.Core;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Application.Communication;
@@ -275,6 +277,34 @@ public class IntegrationEventProviderTests
 
         // Assert
         actualEvents.Should().HaveCount(expectedEventCount);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task GetAsync_WhenRetrievalOfEnergyResultEventsFails_LogsExpectedMessage(
+        CompletedBatch completedBatch,
+        IntegrationEvent[] anyIntegrationEvents,
+        [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
+        [Frozen] Mock<IEnergyResultEventProvider> energyResultEventProviderMock,
+        [Frozen] Mock<ILogger<IntegrationEventProvider>> loggerMock,
+        IntegrationEventProvider sut)
+    {
+        // Arrange
+        const string expectedLogMessage = $"Failed energy result event publishing for completed calculation {LoggingConstants.CalculationId}. Handled '{LoggingConstants.EnergyResultCount}' energy results before failing.";
+        completedBatchRepositoryMock
+            .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
+            .ReturnsAsync(completedBatch)
+            .ReturnsAsync((CompletedBatch)null!);
+
+        energyResultEventProviderMock
+            .Setup(mock => mock.GetAsync(completedBatch))
+            .Returns(ThrowsExceptionAfterAllItems(anyIntegrationEvents));
+
+        // Act
+        await sut.GetAsync().ToListAsync();
+
+        // Assert
+        loggerMock.ShouldBeCalledWith(LogLevel.Error, expectedLogMessage);
     }
 
     [Fact]
