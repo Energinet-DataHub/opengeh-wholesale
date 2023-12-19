@@ -18,7 +18,9 @@ using Energinet.DataHub.Wholesale.Batches.Application;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
 using Energinet.DataHub.Wholesale.Batches.Application.UseCases;
 using Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchAggregate;
+using Microsoft.Extensions.Logging;
 using Moq;
+using Test.Core;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Application.Batches;
@@ -48,5 +50,26 @@ public class StartCalculationHandlerTests
         {
             calculationDomainServiceMock.Verify(x => x.StartAsync(batch.Id));
         }
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task StartCalculationAsync_LogsExpectedMessage(
+        [Frozen] Mock<IBatchRepository> batchRepositoryMock,
+        [Frozen] Mock<ILogger<StartCalculationHandler>> loggerMock,
+        StartCalculationHandler sut)
+    {
+        // Arrange
+        const string expectedLogMessage = $"Calculation with id {LoggingConstants.CalculationId} started.";
+        var batches = new List<Batch> { new BatchBuilder().Build(), new BatchBuilder().Build() };
+        batchRepositoryMock
+            .Setup(repository => repository.GetCreatedAsync())
+            .ReturnsAsync(batches);
+
+        // Act
+        await sut.StartAsync();
+
+        // Assert
+        loggerMock.ShouldBeCalledWith(LogLevel.Information, expectedLogMessage);
     }
 }

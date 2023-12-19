@@ -50,7 +50,7 @@ public class EnergyResultQueries : IEnergyResultQueries
         var statement = new EnergyResultQueryStatement(batchId, _deltaTableOptions);
         await foreach (var calculationResult in GetInternalAsync(statement, batch.PeriodStart.ToInstant(), batch.PeriodEnd.ToInstant()))
             yield return calculationResult;
-        _logger.LogDebug("Fetched all energy results for batch {BatchId}", batchId);
+        _logger.LogDebug("Fetched all energy results for calculation {calculation_id}", batchId);
     }
 
     public static bool BelongsToDifferentResults(DatabricksSqlRow row, DatabricksSqlRow otherRow)
