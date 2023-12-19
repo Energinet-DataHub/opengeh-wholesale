@@ -15,6 +15,8 @@
 import os
 from typing import Union, Callable
 
+from opentelemetry.trace import SpanKind
+
 import package.infrastructure.logging_configuration as config
 from package import calculation
 from package import calculation_input
@@ -53,7 +55,7 @@ def start_with_deps(
         extras={"Domain": "wholesale"},
     )
 
-    with config.get_tracer().start_as_current_span(__name__) as span:
+    with config.get_tracer().start_as_current_span(__name__, kind=SpanKind.SERVER) as span:
         args = cmd_line_args_reader()
 
         # Add calculation_id to structured logging data to be included in every log message.

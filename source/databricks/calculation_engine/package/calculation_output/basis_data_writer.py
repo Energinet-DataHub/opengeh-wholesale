@@ -28,7 +28,7 @@ class BasisDataWriter:
         self.__time_series_hour_path = f"{container_path}/{paths.get_basis_data_root_path(BasisDataType.TIME_SERIES_HOUR, batch_id)}"
         self.calculation_id = batch_id
 
-    @logging_configuration.start_span_decorator
+    @logging_configuration.use_span()
     def write(
         self,
         metering_points_periods_df: DataFrame,
@@ -66,7 +66,7 @@ class BasisDataWriter:
             timeseries_hour_df,
         )
 
-    @logging_configuration.start_span_decorator
+    @logging_configuration.use_span("write_ga_basis_data")
     def _write_ga_basis_data(
         self,
         master_basis_data_df: DataFrame,
@@ -94,7 +94,7 @@ class BasisDataWriter:
             partition_keys,
         )
 
-    @logging_configuration.start_span_decorator
+    @logging_configuration.use_span("write_es_basis_data")
     def _write_es_basis_data(
         self,
         master_basis_data_df: DataFrame,
@@ -126,7 +126,7 @@ class BasisDataWriter:
             partition_keys,
         )
 
-    @logging_configuration.start_span_decorator
+    @logging_configuration.use_span("write_basis_data_to_csv")
     def _write_basis_data_to_csv(
         self,
         master_basis_data_df: DataFrame,

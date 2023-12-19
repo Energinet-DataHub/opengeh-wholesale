@@ -23,6 +23,7 @@ from opentelemetry.trace import Span, Tracer
 DEFAULT_LOG_LEVEL: int = logging.INFO
 _EXTRAS: dict[str, Any] = {}
 _IS_INSTRUMENTED: bool = False
+_TRACER: Union[Tracer, None] = None
 
 
 def configure_logging(
@@ -75,19 +76,25 @@ def add_extras(extras: dict[str, Any]) -> None:
 
 
 def get_tracer() -> Tracer:
-    return trace.get_tracer("calculation-engine")
+    global _TRACER
+    if _TRACER is None:
+        _TRACER = trace.get_tracer("calculation-engine")
+    return _TRACER
 
 
-def start_span_decorator(func: Callable[..., Any]) -> Callable[..., Any]:
+def use_span(name: Union[str, None] = None) -> Callable[..., Any]:
     """
     Decorator for creating spans.
     """
 
-    def wrapper(*args: Tuple[Any], **kwargs: Dict[str, Any]) -> Any:
-        with start_span(func.__name__):
-            return func(*args, **kwargs)
+    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
+        def wrapper(*args: Tuple[Any], **kwargs: Dict[str, Any]) -> Any:
+            with start_span(name or func.__name__):
+                return func(*args, **kwargs)
 
-    return wrapper
+        return wrapper
+
+    return decorator
 
 
 @contextlib.contextmanager
