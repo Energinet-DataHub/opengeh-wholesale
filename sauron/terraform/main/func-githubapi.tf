@@ -15,5 +15,27 @@ module "func_githubapi" {
   dotnet_framework_version                  = "v7.0"
   app_settings = {
     CONNECTION_STRING_DATABASE  = "Server=tcp:${data.azurerm_key_vault_secret.mssql_data_url.value},1433;Initial Catalog=${module.mssqldb.name};Persist Security Info=False;Authentication=Active Directory Managed Identity;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;"
+    SHARED_KEYVAULT_NAME = "${var.shared_resources_keyvault_name}"
+    SHARED_DATALAKE_NAME = data.azurerm_key_vault_secret.st_data_lake_name.value
   }
+}
+
+// Access policy to allow checking access to Shared Resources keyvault
+module "kv_shared_access_policy_func_entrypoint_marketparticipant" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-access-policy?ref=v13"
+
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+  app_identity = module.func_githubapi.identity.0
+}
+
+// Access policy to allow checking access to Shared Resources storage account
+data "azurerm_storage_account" "st_data_lake" {
+  name                = data.azurerm_key_vault_secret.st_data_lake_name.value
+  resource_group_name = var.shared_resources_resource_group_name
+}
+
+resource "azurerm_role_assignment" "func_githubapi_read_access_to_stdatalake" {
+  scope                = data.azurerm_storage_account.st_data_lake.id
+  role_definition_name = "Reader"
+  principal_id         = module.func_githubapi.identity.0.principal_id
 }

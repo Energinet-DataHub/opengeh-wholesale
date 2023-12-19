@@ -13,5 +13,5 @@ Before the review process can begin, the following needs to be checked
 
 ## When adding NEW infrastructure
 
-- [ ] I have added any new function apps / web apps to Healthcheck UI
+- [ ] I have added any new function apps / web apps to Sauron (link?)
 - [ ] I am using the geh-terraform-modules V13 branch

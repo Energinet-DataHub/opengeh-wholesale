@@ -106,6 +106,7 @@ module "app_health_checks_ui" {
     "HealthChecksUI__HealthChecks__223__Name" = "dh2-bridge:::Grid loss event Simulator - live"
     "HealthChecksUI__HealthChecks__223__Uri"  = "https://func-grid-loss-simulator-dh2brdg-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
 
+
     # Polling Interval
     "HealthChecksUI__EvaluationTimeinSeconds" = 60
     # Max. health status history entries returned to UI
