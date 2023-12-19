@@ -13,7 +13,6 @@
 # limitations under the License.
 
 from datetime import datetime
-from package.common.logger import Logger
 
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
@@ -56,12 +55,6 @@ class EnergyCalculationResultWriter:
         results_df = self._map_to_storage_dataframe(results_df)
 
         self._write_to_storage(results_df)
-
-        logger = Logger(__name__)
-        logger.info(
-            f"Leaving ´energy_calculation_result_writer::write´. Time series type: {time_series_type.value}. "
-            f"Aggregation level: {aggregation_level.value}"
-        )
 
     @staticmethod
     def _add_aggregation_level_and_time_series_type(
