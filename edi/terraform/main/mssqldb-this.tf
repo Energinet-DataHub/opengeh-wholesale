@@ -22,3 +22,11 @@ module "mssqldb_edi" {
   monitor_alerts_action_group_id     = data.azurerm_key_vault_secret.primary_action_group_id.value
   monitor_alerts_resource_group_name = azurerm_resource_group.this.name
 }
+
+module "kvs_sql_ms_market_participant_database_name" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
+
+  name         = "mssql-edi-database-name"
+  value        = module.mssqldb_edi.name
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
