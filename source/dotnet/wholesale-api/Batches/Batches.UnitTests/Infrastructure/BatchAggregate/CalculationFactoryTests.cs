@@ -23,7 +23,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchAggregate;
 
-public class BatchFactoryTests
+public class CalculationFactoryTests
 {
     private readonly DateTimeOffset _startDate = DateTimeOffset.Parse("2021-12-31T23:00Z");
     private readonly DateTimeOffset _endDate = DateTimeOffset.Parse("2022-01-31T23:00Z");
@@ -34,7 +34,7 @@ public class BatchFactoryTests
     public void Create_ReturnsBatchWithCorrectPeriod()
     {
         // Arrange
-        var sut = new BatchFactory(SystemClock.Instance, _timeZone);
+        var sut = new CalculationFactory(SystemClock.Instance, _timeZone);
 
         // Act
         var batch = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid());
@@ -48,7 +48,7 @@ public class BatchFactoryTests
     public void Create_ReturnsBatchWithCorrectGridAreas()
     {
         // Arrange
-        var sut = new BatchFactory(SystemClock.Instance, _timeZone);
+        var sut = new CalculationFactory(SystemClock.Instance, _timeZone);
 
         // Act
         var batch = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid());
@@ -65,7 +65,7 @@ public class BatchFactoryTests
         // Arrange
         var expected = SystemClock.Instance.GetCurrentInstant();
         clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(expected);
-        var sut = new BatchFactory(clockMock.Object, _timeZone);
+        var sut = new CalculationFactory(clockMock.Object, _timeZone);
 
         // Act
         var batch = sut.Create(ProcessType.BalanceFixing, _someGridAreasIds, _startDate, _endDate, Guid.NewGuid());

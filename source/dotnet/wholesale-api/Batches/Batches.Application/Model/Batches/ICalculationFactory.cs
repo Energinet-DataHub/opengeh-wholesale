@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
 
-public interface IBatchFactory
+public interface ICalculationFactory
 {
     Calculation Create(ProcessType processType, IEnumerable<string> gridAreaCodes, DateTimeOffset startDate, DateTimeOffset endDate, Guid createdByUserId);
 }

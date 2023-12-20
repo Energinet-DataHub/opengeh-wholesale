@@ -20,18 +20,18 @@ namespace Energinet.DataHub.Wholesale.Batches.Application.UseCases;
 
 public class CreateBatchHandler : ICreateBatchHandler
 {
-    private readonly IBatchFactory _batchFactory;
+    private readonly ICalculationFactory _calculationFactory;
     private readonly IBatchRepository _batchRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger _logger;
 
     public CreateBatchHandler(
-        IBatchFactory batchFactory,
+        ICalculationFactory calculationFactory,
         IBatchRepository batchRepository,
         IUnitOfWork unitOfWork,
         ILogger<CreateBatchHandler> logger)
     {
-        _batchFactory = batchFactory;
+        _calculationFactory = calculationFactory;
         _batchRepository = batchRepository;
         _unitOfWork = unitOfWork;
         _logger = logger;
@@ -39,7 +39,7 @@ public class CreateBatchHandler : ICreateBatchHandler
 
     public async Task<Guid> HandleAsync(CreateBatchCommand command)
     {
-        var batch = _batchFactory.Create(command.ProcessType, command.GridAreaCodes, command.StartDate, command.EndDate, command.CreatedByUserId);
+        var batch = _calculationFactory.Create(command.ProcessType, command.GridAreaCodes, command.StartDate, command.EndDate, command.CreatedByUserId);
         await _batchRepository.AddAsync(batch).ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
 

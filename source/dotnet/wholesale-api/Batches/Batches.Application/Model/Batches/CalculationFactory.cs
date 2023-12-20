@@ -17,12 +17,12 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
 
-public class BatchFactory : IBatchFactory
+public class CalculationFactory : ICalculationFactory
 {
     private readonly IClock _clock;
     private readonly DateTimeZone _dateTimeZone;
 
-    public BatchFactory(IClock clock, DateTimeZone dateTimeZone)
+    public CalculationFactory(IClock clock, DateTimeZone dateTimeZone)
     {
         _clock = clock;
         _dateTimeZone = dateTimeZone;

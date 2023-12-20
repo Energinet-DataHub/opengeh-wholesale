@@ -40,7 +40,7 @@ public class CreateBatchHandlerTests
     [InlineAutoMoqData(ProcessType.ThirdCorrectionSettlement)]
     public async Task Handle_AddsBatchToRepository(
         ProcessType processType,
-        [Frozen] Mock<IBatchFactory> batchFactoryMock,
+        [Frozen] Mock<ICalculationFactory> batchFactoryMock,
         [Frozen] Mock<IBatchRepository> batchRepositoryMock,
         CreateBatchHandler sut)
     {

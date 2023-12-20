@@ -38,7 +38,7 @@ public static class BatchesRegistration
         serviceCollection.AddScoped<ICalculationsClient, CalculationsClient>();
         serviceCollection.AddScoped<IBatchExecutionStateInfrastructureService, BatchExecutionStateInfrastructureService>();
         serviceCollection.AddScoped<ICalculationInfrastructureService, CalculationInfrastructureService>();
-        serviceCollection.AddScoped<IBatchFactory, BatchFactory>();
+        serviceCollection.AddScoped<ICalculationFactory, CalculationFactory>();
         serviceCollection.AddScoped<IBatchRepository, BatchRepository>();
         serviceCollection.AddSingleton(new BatchStateMapper());
 
