@@ -24,7 +24,6 @@ using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NodaTime;
@@ -73,7 +72,7 @@ public class IntegrationEventProviderTests
         await sut.GetAsync().ToListAsync();
 
         // Assert
-        unitOfWorkMock.Verify(u => u.CommitAsync());
+        unitOfWorkMock.Verify(mock => mock.CommitAsync(), Times.Exactly(2));
     }
 
     [Theory]
