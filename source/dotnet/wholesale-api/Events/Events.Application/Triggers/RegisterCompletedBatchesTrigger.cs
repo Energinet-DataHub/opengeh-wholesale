@@ -21,7 +21,7 @@ namespace Energinet.DataHub.Wholesale.Events.Application.Triggers;
 /// <summary>
 /// Worker invoking fetching completed batches from the batches module and registering them in the module.
 /// </summary>
-public class RegisterCompletedBatchesTrigger : RepeatingTrigger<IRegisterCompletedBatchesHandler>
+public class RegisterCompletedBatchesTrigger : RepeatingTrigger<IRegisterCompletedCalculationsHandler>
 {
     private const int DelayInSecondsBeforeNextExecution = 10;
 
@@ -33,10 +33,10 @@ public class RegisterCompletedBatchesTrigger : RepeatingTrigger<IRegisterComplet
     }
 
     protected override async Task ExecuteAsync(
-        IRegisterCompletedBatchesHandler instance,
+        IRegisterCompletedCalculationsHandler instance,
         CancellationToken cancellationToken,
         Action isAliveCallback)
     {
-        await instance.RegisterCompletedBatchesAsync().ConfigureAwait(false);
+        await instance.RegisterCompletedCalculationsAsync().ConfigureAwait(false);
     }
 }

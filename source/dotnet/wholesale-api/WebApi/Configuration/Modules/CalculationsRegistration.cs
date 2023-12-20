@@ -60,9 +60,9 @@ public static class CalculationsRegistration
         serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
         serviceCollection.AddScoped<ICalculationDtoMapper, CalculationDtoMapper>();
 
-        serviceCollection.AddScoped<ICreateBatchHandler, CreateBatchHandler>();
+        serviceCollection.AddScoped<ICreateCalculationHandler, CreateCalculationHandler>();
         serviceCollection.AddScoped<IStartCalculationHandler, StartCalculationHandler>();
-        serviceCollection.AddScoped<IUpdateBatchExecutionStateHandler, UpdateBatchExecutionStateHandler>();
+        serviceCollection.AddScoped<IUpdateCalculationExecutionStateHandler, UpdateCalculationExecutionStateHandler>();
 
         RegisterHostedServices(serviceCollection);
     }

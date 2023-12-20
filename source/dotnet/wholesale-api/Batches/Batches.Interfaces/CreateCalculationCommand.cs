@@ -12,9 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+
 namespace Energinet.DataHub.Wholesale.Batches.Interfaces;
 
-public interface ICreateBatchHandler
-{
-    Task<Guid> HandleAsync(CreateBatchCommand command);
-}
+/// <summary>
+/// An immutable command to create a batch.
+/// </summary>
+public sealed record CreateCalculationCommand(
+    ProcessType ProcessType,
+    IEnumerable<string> GridAreaCodes,
+    DateTimeOffset StartDate,
+    DateTimeOffset EndDate,
+    Guid CreatedByUserId);

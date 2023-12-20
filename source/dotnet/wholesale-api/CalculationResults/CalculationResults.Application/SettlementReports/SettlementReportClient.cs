@@ -96,9 +96,9 @@ public class SettlementReportClient : ISettlementReportClient
             .ConfigureAwait(false);
     }
 
-    private BatchInfo Map(CalculationDto calculation)
+    private CalculationInfo Map(CalculationDto calculation)
     {
-        return new BatchInfo
+        return new CalculationInfo
         {
             Id = calculation.BatchId,
             PeriodStart = Instant.FromDateTimeOffset(calculation.PeriodStart),

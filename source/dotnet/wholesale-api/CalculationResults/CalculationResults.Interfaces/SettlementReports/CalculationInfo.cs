@@ -12,16 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Batches.Interfaces;
+namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
 
-/// <summary>
-/// An immutable command to create a batch.
-/// </summary>
-public sealed record CreateBatchCommand(
-    ProcessType ProcessType,
-    IEnumerable<string> GridAreaCodes,
-    DateTimeOffset StartDate,
-    DateTimeOffset EndDate,
-    Guid CreatedByUserId);
+public class CalculationInfo
+{
+    public CalculationInfo()
+    {
+        GridAreaCodes = new List<string>();
+    }
+
+    public Guid Id { get; set; }
+
+    public Instant PeriodStart { get; set; }
+
+    public Instant PeriodEnd { get; set; }
+
+    public List<string> GridAreaCodes { get; set; }
+}

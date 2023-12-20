@@ -18,18 +18,18 @@ using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.Wholesale.Batches.Application.UseCases;
 
-public class CreateBatchHandler : ICreateBatchHandler
+public class CreateCalculationHandler : ICreateCalculationHandler
 {
     private readonly ICalculationFactory _calculationFactory;
     private readonly ICalculationRepository _calculationRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger _logger;
 
-    public CreateBatchHandler(
+    public CreateCalculationHandler(
         ICalculationFactory calculationFactory,
         ICalculationRepository calculationRepository,
         IUnitOfWork unitOfWork,
-        ILogger<CreateBatchHandler> logger)
+        ILogger<CreateCalculationHandler> logger)
     {
         _calculationFactory = calculationFactory;
         _calculationRepository = calculationRepository;
@@ -37,7 +37,7 @@ public class CreateBatchHandler : ICreateBatchHandler
         _logger = logger;
     }
 
-    public async Task<Guid> HandleAsync(CreateBatchCommand command)
+    public async Task<Guid> HandleAsync(CreateCalculationCommand command)
     {
         var batch = _calculationFactory.Create(command.ProcessType, command.GridAreaCodes, command.StartDate, command.EndDate, command.CreatedByUserId);
         await _calculationRepository.AddAsync(batch).ConfigureAwait(false);

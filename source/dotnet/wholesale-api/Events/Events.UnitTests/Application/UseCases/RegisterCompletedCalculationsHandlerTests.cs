@@ -24,7 +24,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Events.UnitTests.Application.UseCases;
 
-public class RegisterCompletedBatchesHandlerTests
+public class RegisterCompletedCalculationsHandlerTests
 {
     [Theory]
     [InlineAutoMoqData]
@@ -38,7 +38,7 @@ public class RegisterCompletedBatchesHandlerTests
         [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         [Frozen] Mock<ICompletedBatchFactory> completedBatchFactoryMock,
-        RegisterCompletedBatchesHandler sut)
+        RegisterCompletedCalculationsHandler sut)
     {
         // Arrange
         completedBatchRepositoryMock
@@ -52,7 +52,7 @@ public class RegisterCompletedBatchesHandlerTests
             .Returns(new[] { newCompletedBatch1, newCompletedBatch2 });
 
         // Act
-        await sut.RegisterCompletedBatchesAsync();
+        await sut.RegisterCompletedCalculationsAsync();
 
         // Assert
 

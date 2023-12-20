@@ -78,7 +78,7 @@ public static class EventsRegistration
         serviceCollection
             .AddScoped<ICompletedBatchRepository, CompletedBatchRepository>()
             .AddScoped<ICompletedBatchFactory, CompletedBatchFactory>()
-            .AddScoped<IRegisterCompletedBatchesHandler, RegisterCompletedBatchesHandler>();
+            .AddScoped<IRegisterCompletedCalculationsHandler, RegisterCompletedCalculationsHandler>();
 
         serviceCollection
             .AddScoped<IEnergyResultEventProvider, EnergyResultEventProvider>()

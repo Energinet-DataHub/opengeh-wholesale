@@ -21,7 +21,7 @@ namespace Energinet.DataHub.Wholesale.Batches.Application.Workers;
 /// <summary>
 /// Worker invoking updating batch execution states.
 /// </summary>
-public class UpdateBatchExecutionStateTrigger : RepeatingTrigger<IUpdateBatchExecutionStateHandler>
+public class UpdateBatchExecutionStateTrigger : RepeatingTrigger<IUpdateCalculationExecutionStateHandler>
 {
     private const int DelayInSecondsBeforeNextExecution = 20;
 
@@ -33,7 +33,7 @@ public class UpdateBatchExecutionStateTrigger : RepeatingTrigger<IUpdateBatchExe
     }
 
     protected override async Task ExecuteAsync(
-        IUpdateBatchExecutionStateHandler scopedService,
+        IUpdateCalculationExecutionStateHandler scopedService,
         CancellationToken cancellationToken,
         Action isAliveCallback)
     {

@@ -17,14 +17,14 @@ using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.UseCases;
 
-public class RegisterCompletedBatchesHandler : IRegisterCompletedBatchesHandler
+public class RegisterCompletedCalculationsHandler : IRegisterCompletedCalculationsHandler
 {
     private readonly ICalculationsClient _calculationsClient;
     private readonly ICompletedBatchRepository _completedBatchRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICompletedBatchFactory _completedBatchFactory;
 
-    public RegisterCompletedBatchesHandler(
+    public RegisterCompletedCalculationsHandler(
         ICalculationsClient calculationsClient,
         ICompletedBatchRepository completedBatchRepository,
         IUnitOfWork unitOfWork,
@@ -36,7 +36,7 @@ public class RegisterCompletedBatchesHandler : IRegisterCompletedBatchesHandler
         _completedBatchFactory = completedBatchFactory;
     }
 
-    public async Task RegisterCompletedBatchesAsync()
+    public async Task RegisterCompletedCalculationsAsync()
     {
         var newCompletedBatches = await GetNewCompletedBatchesAsync().ConfigureAwait(false);
         await _completedBatchRepository.AddAsync(newCompletedBatches).ConfigureAwait(false);

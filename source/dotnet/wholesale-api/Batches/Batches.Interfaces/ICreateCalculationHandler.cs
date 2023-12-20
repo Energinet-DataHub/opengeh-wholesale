@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.Events.Application.UseCases;
+namespace Energinet.DataHub.Wholesale.Batches.Interfaces;
 
-public interface IRegisterCompletedBatchesHandler
+public interface ICreateCalculationHandler
 {
-    Task RegisterCompletedBatchesAsync();
+    Task<Guid> HandleAsync(CreateCalculationCommand command);
 }

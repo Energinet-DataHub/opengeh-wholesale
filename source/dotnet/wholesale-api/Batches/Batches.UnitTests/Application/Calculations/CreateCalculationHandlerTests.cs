@@ -29,7 +29,7 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Application.Calculations;
 
-public class CreateBatchHandlerTests
+public class CreateCalculationHandlerTests
 {
     [Theory]
     [InlineAutoMoqData(ProcessType.BalanceFixing)]
@@ -42,15 +42,15 @@ public class CreateBatchHandlerTests
         ProcessType processType,
         [Frozen] Mock<ICalculationFactory> batchFactoryMock,
         [Frozen] Mock<ICalculationRepository> batchRepositoryMock,
-        CreateBatchHandler sut)
+        CreateCalculationHandler sut)
     {
         // Arrange
         var period = Periods.January_EuropeCopenhagen_Instant;
         var periodStart = period.PeriodStart.ToDateTimeOffset();
         var periodEnd = period.PeriodEnd.ToDateTimeOffset();
         var gridAreaCodes = new List<string> { "805" };
-        var batchCommand = CreateBatchCommand(processType, periodStart, periodEnd, gridAreaCodes);
-        var batch = CreateBatchFromCommand(batchCommand);
+        var batchCommand = CreateCalculationCommand(processType, periodStart, periodEnd, gridAreaCodes);
+        var batch = CreateCalculationFromCommand(batchCommand);
         batchFactoryMock.Setup(x => x.Create(batch.ProcessType, batchCommand.GridAreaCodes, batchCommand.StartDate, batchCommand.EndDate, batchCommand.CreatedByUserId))
             .Returns(batch);
 
@@ -73,10 +73,10 @@ public class CreateBatchHandlerTests
         var periodStart = DateTimeOffset.Parse("2021-12-31T23:00Z");
         var periodEnd = DateTimeOffset.Parse("2022-01-30T23:00Z");
         var gridAreaCodes = new List<string> { "805" };
-        var batchCommand = CreateBatchCommand(processType, periodStart, periodEnd, gridAreaCodes);
+        var batchCommand = CreateCalculationCommand(processType, periodStart, periodEnd, gridAreaCodes);
 
         // Act
-        var actual = () => CreateBatchFromCommand(batchCommand);
+        var actual = () => CreateCalculationFromCommand(batchCommand);
 
         // Assert
         actual.Should().Throw<BusinessValidationException>();
@@ -94,10 +94,10 @@ public class CreateBatchHandlerTests
         var periodEnd = DateTimeOffset.Parse(periodEndString);
         var gridAreaCodes = new List<string> { "805" };
         var processType = ProcessType.BalanceFixing;
-        var batchCommand = CreateBatchCommand(processType, periodStart, periodEnd, gridAreaCodes);
+        var batchCommand = CreateCalculationCommand(processType, periodStart, periodEnd, gridAreaCodes);
 
         // Act
-        var actual = () => CreateBatchFromCommand(batchCommand);
+        var actual = () => CreateCalculationFromCommand(batchCommand);
 
         // Assert
         actual.Should().Throw<BusinessValidationException>();
@@ -111,10 +111,10 @@ public class CreateBatchHandlerTests
         var periodEnd = DateTimeOffset.Parse("2022-01-31T23:00Z");
         var gridAreaCodes = new List<string> { "805" };
         var processType = ProcessType.BalanceFixing;
-        var batchCommand = CreateBatchCommand(processType, periodStart, periodEnd, gridAreaCodes);
+        var batchCommand = CreateCalculationCommand(processType, periodStart, periodEnd, gridAreaCodes);
 
         // Act
-        var actual = () => CreateBatchFromCommand(batchCommand);
+        var actual = () => CreateCalculationFromCommand(batchCommand);
 
         // Assert
         actual.Should().Throw<BusinessValidationException>();
@@ -128,18 +128,18 @@ public class CreateBatchHandlerTests
         var periodEnd = DateTimeOffset.Parse("2022-01-31T23:00Z");
         var gridAreaCodes = new List<string> { };
         var processType = ProcessType.BalanceFixing;
-        var batchCommand = CreateBatchCommand(processType, periodStart, periodEnd, gridAreaCodes);
+        var batchCommand = CreateCalculationCommand(processType, periodStart, periodEnd, gridAreaCodes);
 
         // Act
-        var actual = () => CreateBatchFromCommand(batchCommand);
+        var actual = () => CreateCalculationFromCommand(batchCommand);
 
         // Assert
         actual.Should().Throw<BusinessValidationException>();
     }
 
-    private static CreateBatchCommand CreateBatchCommand(ProcessType processType, DateTimeOffset periodStart, DateTimeOffset periodEnd, IEnumerable<string> gridAreaCodes)
+    private static CreateCalculationCommand CreateCalculationCommand(ProcessType processType, DateTimeOffset periodStart, DateTimeOffset periodEnd, IEnumerable<string> gridAreaCodes)
     {
-        return new CreateBatchCommand(
+        return new CreateCalculationCommand(
             processType,
             gridAreaCodes,
             periodStart,
@@ -147,7 +147,7 @@ public class CreateBatchHandlerTests
             Guid.NewGuid());
     }
 
-    private static Calculation CreateBatchFromCommand(CreateBatchCommand command)
+    private static Calculation CreateCalculationFromCommand(CreateCalculationCommand command)
     {
         var period = Periods.January_EuropeCopenhagen_Instant;
         return new Calculation(

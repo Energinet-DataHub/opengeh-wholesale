@@ -16,12 +16,12 @@ using Energinet.DataHub.Wholesale.Batches.Interfaces;
 
 namespace Energinet.DataHub.Wholesale.Batches.Application.UseCases;
 
-public class UpdateBatchExecutionStateHandler : IUpdateBatchExecutionStateHandler
+public class UpdateCalculationExecutionStateHandler : IUpdateCalculationExecutionStateHandler
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICalculationExecutionStateInfrastructureService _calculationExecutionStateInfrastructureService;
 
-    public UpdateBatchExecutionStateHandler(IUnitOfWork unitOfWork, ICalculationExecutionStateInfrastructureService calculationExecutionStateInfrastructureService)
+    public UpdateCalculationExecutionStateHandler(IUnitOfWork unitOfWork, ICalculationExecutionStateInfrastructureService calculationExecutionStateInfrastructureService)
     {
         _unitOfWork = unitOfWork;
         _calculationExecutionStateInfrastructureService = calculationExecutionStateInfrastructureService;

@@ -12,22 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using NodaTime;
+namespace Energinet.DataHub.Wholesale.Batches.Interfaces;
 
-namespace Energinet.DataHub.Wholesale.CalculationResults.Interfaces.SettlementReports;
-
-public class BatchInfo
+public interface IUpdateCalculationExecutionStateHandler
 {
-    public BatchInfo()
-    {
-        GridAreaCodes = new List<string>();
-    }
-
-    public Guid Id { get; set; }
-
-    public Instant PeriodStart { get; set; }
-
-    public Instant PeriodEnd { get; set; }
-
-    public List<string> GridAreaCodes { get; set; }
+    Task UpdateAsync();
 }

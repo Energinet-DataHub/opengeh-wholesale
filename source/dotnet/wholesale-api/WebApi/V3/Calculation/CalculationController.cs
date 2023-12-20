@@ -29,16 +29,16 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 public class CalculationController : V3ControllerBase
 {
     private readonly ICalculationsClient _calculationsClient;
-    private readonly ICreateBatchHandler _createBatchHandler;
+    private readonly ICreateCalculationHandler _createCalculationHandler;
     private readonly IUserContext<FrontendUser> _userContext;
 
     public CalculationController(
         ICalculationsClient calculationsClient,
-        ICreateBatchHandler createBatchHandler,
+        ICreateCalculationHandler createCalculationHandler,
         IUserContext<FrontendUser> userContext)
     {
         _calculationsClient = calculationsClient;
-        _createBatchHandler = createBatchHandler;
+        _createCalculationHandler = createCalculationHandler;
         _userContext = userContext;
     }
 
@@ -52,7 +52,7 @@ public class CalculationController : V3ControllerBase
     [Authorize(Roles = Permissions.CalculationsManage)]
     public async Task<Guid> CreateAsync([FromBody][Required] BatchRequestDto batchRequestDto)
     {
-        return await _createBatchHandler.HandleAsync(new CreateBatchCommand(
+        return await _createCalculationHandler.HandleAsync(new CreateCalculationCommand(
             ProcessTypeMapper.Map(batchRequestDto.ProcessType),
             batchRequestDto.GridAreaCodes,
             batchRequestDto.StartDate,
