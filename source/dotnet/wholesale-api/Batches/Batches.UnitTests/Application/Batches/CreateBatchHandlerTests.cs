@@ -147,10 +147,10 @@ public class CreateBatchHandlerTests
             Guid.NewGuid());
     }
 
-    private static Batch CreateBatchFromCommand(CreateBatchCommand command)
+    private static Calculation CreateBatchFromCommand(CreateBatchCommand command)
     {
         var period = Periods.January_EuropeCopenhagen_Instant;
-        return new Batch(
+        return new Calculation(
             SystemClock.Instance.GetCurrentInstant(),
             command.ProcessType,
             command.GridAreaCodes.Select(x => new GridAreaCode(x)).ToList(),

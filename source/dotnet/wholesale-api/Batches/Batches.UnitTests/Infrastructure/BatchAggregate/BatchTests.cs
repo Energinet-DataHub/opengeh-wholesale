@@ -47,7 +47,7 @@ public class BatchTests
     {
         // ReSharper disable once CollectionNeverUpdated.Local
         var emptyGridAreaCodes = new List<GridAreaCode>();
-        var actual = Assert.Throws<BusinessValidationException>(() => new Batch(
+        var actual = Assert.Throws<BusinessValidationException>(() => new Calculation(
             SystemClock.Instance.GetCurrentInstant(),
             ProcessType.BalanceFixing,
             emptyGridAreaCodes,
@@ -127,7 +127,7 @@ public class BatchTests
         var someGridAreas = new List<GridAreaCode> { new("004"), new("805") };
 
         // Act
-        Action createBatch = () => new Batch(
+        Action createBatch = () => new Calculation(
             SystemClock.Instance.GetCurrentInstant(),
             ProcessType.WholesaleFixing,
             someGridAreas,
@@ -245,7 +245,7 @@ public class BatchTests
         var gridAreaCode = new GridAreaCode("113");
 
         // Act
-        var actual = Assert.Throws<BusinessValidationException>(() => new Batch(
+        var actual = Assert.Throws<BusinessValidationException>(() => new Calculation(
             SystemClock.Instance.GetCurrentInstant(),
             ProcessType.BalanceFixing,
             new List<GridAreaCode> { gridAreaCode },
@@ -270,7 +270,7 @@ public class BatchTests
         var gridAreaCode = new GridAreaCode("113");
 
         // Act
-        var actual = Assert.Throws<BusinessValidationException>(() => new Batch(
+        var actual = Assert.Throws<BusinessValidationException>(() => new Calculation(
             SystemClock.Instance.GetCurrentInstant(),
             ProcessType.BalanceFixing,
             new List<GridAreaCode> { gridAreaCode },

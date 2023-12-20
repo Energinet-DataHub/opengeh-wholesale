@@ -28,7 +28,7 @@ public class BatchFactory : IBatchFactory
         _dateTimeZone = dateTimeZone;
     }
 
-    public Batch Create(
+    public Calculation Create(
         ProcessType processType,
         IEnumerable<string> gridAreaCodes,
         DateTimeOffset startDate,
@@ -41,6 +41,6 @@ public class BatchFactory : IBatchFactory
         var periodEnd = Instant.FromDateTimeOffset(endDate);
         // As long as scheduling is not implemented, execution time start is the same as created time
         var executionTimeStart = createdTime;
-        return new Batch(createdTime, processType, gridAreas, periodStart, periodEnd, executionTimeStart, _dateTimeZone, createdByUserId);
+        return new Calculation(createdTime, processType, gridAreas, periodStart, periodEnd, executionTimeStart, _dateTimeZone, createdByUserId);
     }
 }

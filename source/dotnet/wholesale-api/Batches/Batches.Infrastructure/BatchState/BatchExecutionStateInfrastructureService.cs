@@ -44,7 +44,7 @@ public class BatchExecutionStateInfrastructureService : IBatchExecutionStateInfr
     /// <returns>Batches that have been completed</returns>
     public async Task UpdateExecutionStateAsync()
     {
-        var completedBatches = new List<Batch>();
+        var completedBatches = new List<Calculation>();
         var states = new List<BatchExecutionState>
         {
             BatchExecutionState.Submitted, BatchExecutionState.Pending, BatchExecutionState.Executing,
@@ -71,27 +71,27 @@ public class BatchExecutionStateInfrastructureService : IBatchExecutionStateInfr
         }
     }
 
-    private void HandleNewState(BatchExecutionState state, Batch batch, ICollection<Batch> completedBatches)
+    private void HandleNewState(BatchExecutionState state, Calculation calculation, ICollection<Calculation> completedBatches)
     {
         switch (state)
         {
             case BatchExecutionState.Pending:
-                batch.MarkAsPending();
+                calculation.MarkAsPending();
                 break;
             case BatchExecutionState.Executing:
-                batch.MarkAsExecuting();
+                calculation.MarkAsExecuting();
                 break;
             case BatchExecutionState.Completed:
-                batch.MarkAsCompleted(_clock.GetCurrentInstant());
-                completedBatches.Add(batch);
+                calculation.MarkAsCompleted(_clock.GetCurrentInstant());
+                completedBatches.Add(calculation);
                 break;
             case BatchExecutionState.Failed:
-                batch.MarkAsFailed();
+                calculation.MarkAsFailed();
                 break;
             case BatchExecutionState.Canceled:
                 // Jobs may be cancelled in Databricks for various reasons. For example they can be cancelled due to migrations in CD
                 // Setting batch state back to "created" ensure they will be picked up and started again
-                batch.Reset();
+                calculation.Reset();
                 break;
             default:
                 throw new ArgumentOutOfRangeException($"Unexpected execution state: {state.ToString()}.");

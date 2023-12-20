@@ -35,9 +35,9 @@ public sealed class CalculationEngineClient : ICalculationEngineClient
         _calculationParametersFactory = calculationParametersFactory;
     }
 
-    public async Task<CalculationId> StartAsync(Batch batch)
+    public async Task<CalculationId> StartAsync(Calculation calculation)
     {
-        var runParameters = _calculationParametersFactory.CreateParameters(batch);
+        var runParameters = _calculationParametersFactory.CreateParameters(calculation);
 
         var calculatorJob = await _databricksCalculatorJobSelector
             .GetAsync()

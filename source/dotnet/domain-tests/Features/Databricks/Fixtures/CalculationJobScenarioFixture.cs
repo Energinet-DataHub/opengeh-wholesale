@@ -44,7 +44,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Databricks.Fixtures
         /// </summary>
         private DatabricksClient DatabricksClient { get; set; } = null!;
 
-        public async Task<CalculationId> StartCalculationJobAsync(Batch calculationJobInput)
+        public async Task<CalculationId> StartCalculationJobAsync(Calculation calculationJobInput)
         {
             var calculatorJobId = await DatabricksClient.GetCalculatorJobIdAsync();
             var runParameters = new DatabricksCalculationParametersFactory()

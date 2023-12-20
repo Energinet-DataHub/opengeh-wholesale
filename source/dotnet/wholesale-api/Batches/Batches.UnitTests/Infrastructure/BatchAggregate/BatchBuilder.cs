@@ -93,9 +93,9 @@ public class BatchBuilder
         return this;
     }
 
-    public Batch Build()
+    public Calculation Build()
     {
-        var batch = new Batch(
+        var batch = new Calculation(
             SystemClock.Instance.GetCurrentInstant(),
             _processType,
             _gridAreaCodes,

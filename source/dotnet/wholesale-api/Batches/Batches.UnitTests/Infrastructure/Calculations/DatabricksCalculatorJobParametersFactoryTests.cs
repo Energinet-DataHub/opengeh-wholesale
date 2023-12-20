@@ -34,7 +34,7 @@ public class DatabricksCalculatorJobParametersFactoryTests
         DatabricksCalculationParametersFactory sut)
     {
         // Arrange
-        var batch = new Batch(
+        var batch = new Calculation(
             SystemClock.Instance.GetCurrentInstant(),
             ProcessType.BalanceFixing,
             new List<GridAreaCode> { new("805"), new("806"), new("033") },

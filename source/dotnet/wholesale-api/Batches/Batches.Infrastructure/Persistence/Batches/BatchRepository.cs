@@ -29,19 +29,19 @@ public class BatchRepository : IBatchRepository
         _context = context;
     }
 
-    public async Task AddAsync(Batch batch)
+    public async Task AddAsync(Calculation calculation)
     {
-        await _context.Batches.AddAsync(batch).ConfigureAwait(false);
+        await _context.Batches.AddAsync(calculation).ConfigureAwait(false);
     }
 
-    public async Task<Batch> GetAsync(Guid batchId)
+    public async Task<Calculation> GetAsync(Guid batchId)
     {
         return await _context.Batches.FirstAsync(x => x.Id == batchId).ConfigureAwait(false);
     }
 
-    public Task<List<Batch>> GetCreatedAsync() => GetByStateAsync(BatchExecutionState.Created);
+    public Task<List<Calculation>> GetCreatedAsync() => GetByStateAsync(BatchExecutionState.Created);
 
-    public async Task<List<Batch>> GetByStatesAsync(IEnumerable<BatchExecutionState> states)
+    public async Task<List<Calculation>> GetByStatesAsync(IEnumerable<BatchExecutionState> states)
     {
         return await _context
             .Batches
@@ -50,7 +50,7 @@ public class BatchRepository : IBatchRepository
             .ConfigureAwait(false);
     }
 
-    public async Task<List<Batch>> GetCompletedAfterAsync(Instant? completedTime)
+    public async Task<List<Calculation>> GetCompletedAfterAsync(Instant? completedTime)
     {
         return await _context
             .Batches
@@ -60,7 +60,7 @@ public class BatchRepository : IBatchRepository
             .ConfigureAwait(false);
     }
 
-    public async Task<IReadOnlyCollection<Batch>> SearchAsync(
+    public async Task<IReadOnlyCollection<Calculation>> SearchAsync(
         IReadOnlyCollection<GridAreaCode> filterByGridAreaCode,
         IReadOnlyCollection<BatchExecutionState> filterByExecutionState,
         Instant? minExecutionTimeStart,
@@ -83,7 +83,7 @@ public class BatchRepository : IBatchRepository
             .ToList();
     }
 
-    private async Task<List<Batch>> GetByStateAsync(BatchExecutionState state)
+    private async Task<List<Calculation>> GetByStateAsync(BatchExecutionState state)
     {
         return await _context
             .Batches

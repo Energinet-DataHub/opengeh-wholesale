@@ -37,7 +37,7 @@ public class BatchExecutionStateDomainServiceTests
     {
         // Arrange
         var batch = new BatchBuilder().WithStatePending().Build();
-        var pendingBatches = new List<Batch>() { batch };
+        var pendingBatches = new List<Calculation>() { batch };
         batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>()))
             .ReturnsAsync(pendingBatches);
         calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch.CalculationId!)).ReturnsAsync(CalculationState.Running);
@@ -61,7 +61,7 @@ public class BatchExecutionStateDomainServiceTests
         var batch = new BatchBuilder().WithStateExecuting().Build();
         var executionTimeEndGreaterThanStart = batch.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2));
         clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(executionTimeEndGreaterThanStart);
-        var executingBatches = new List<Batch>() { batch };
+        var executingBatches = new List<Calculation>() { batch };
         batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>()))
             .ReturnsAsync(executingBatches);
         calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch.CalculationId!)).ReturnsAsync(CalculationState.Completed);
@@ -86,7 +86,7 @@ public class BatchExecutionStateDomainServiceTests
     {
         // Arrange
         var batch = new BatchBuilder().WithStateExecuting().Build();
-        var executingBatches = new List<Batch>() { batch };
+        var executingBatches = new List<Calculation>() { batch };
         batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>()))
             .ReturnsAsync(executingBatches);
         calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch.CalculationId!)).ReturnsAsync(CalculationState.Canceled);
@@ -109,7 +109,7 @@ public class BatchExecutionStateDomainServiceTests
         // Arrange
         var batch1 = new BatchBuilder().WithStatePending().Build();
         var batch2 = new BatchBuilder().WithStateExecuting().Build();
-        var batches = new List<Batch>() { batch1, batch2 };
+        var batches = new List<Calculation>() { batch1, batch2 };
         var executionTimeEndGreaterThanStart = batch1.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2));
         clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(executionTimeEndGreaterThanStart);
 
@@ -139,7 +139,7 @@ public class BatchExecutionStateDomainServiceTests
         // Arrange
         var batch1 = new BatchBuilder().WithStatePending().Build();
         var batch2 = new BatchBuilder().WithStateExecuting().Build();
-        var batches = new List<Batch>() { batch1, batch2 };
+        var batches = new List<Calculation>() { batch1, batch2 };
         var executionTimeEndGreaterThanStart = batch1.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2));
         clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(executionTimeEndGreaterThanStart);
         batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>()))
@@ -166,7 +166,7 @@ public class BatchExecutionStateDomainServiceTests
         var batch1 = new BatchBuilder().WithStateSubmitted().Build();
         var batch2 = new BatchBuilder().WithStateSubmitted().Build();
         var batch3 = new BatchBuilder().WithStateSubmitted().Build();
-        var batches = new List<Batch>() { batch1, batch2, batch3 };
+        var batches = new List<Calculation>() { batch1, batch2, batch3 };
 
         var executionTimeEndGreaterThanStart = batch1.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2));
         clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(executionTimeEndGreaterThanStart);

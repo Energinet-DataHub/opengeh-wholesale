@@ -36,7 +36,7 @@ public class StartCalculationHandlerTests
         StartCalculationHandler sut)
     {
         // Arrange
-        var batches = new List<Batch> { new BatchBuilder().Build(), new BatchBuilder().Build() };
+        var batches = new List<Calculation> { new BatchBuilder().Build(), new BatchBuilder().Build() };
         batchRepositoryMock
             .Setup(repository => repository.GetCreatedAsync())
             .ReturnsAsync(batches);
@@ -61,7 +61,7 @@ public class StartCalculationHandlerTests
     {
         // Arrange
         const string expectedLogMessage = $"Calculation with id {LoggingConstants.CalculationId} started.";
-        var batches = new List<Batch> { new BatchBuilder().Build(), new BatchBuilder().Build() };
+        var batches = new List<Calculation> { new BatchBuilder().Build(), new BatchBuilder().Build() };
         batchRepositoryMock
             .Setup(repository => repository.GetCreatedAsync())
             .ReturnsAsync(batches);

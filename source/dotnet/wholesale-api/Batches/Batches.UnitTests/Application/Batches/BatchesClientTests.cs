@@ -33,7 +33,7 @@ public class BatchesClientTests
        BatchesClient sut)
     {
         // Arrange
-        var noBatches = new List<Batch>();
+        var noBatches = new List<Calculation>();
         batchRepositoryMock
             .Setup(x => x.SearchAsync(
                 Array.Empty<GridAreaCode>(),
@@ -65,7 +65,7 @@ public class BatchesClientTests
     {
         // Arrange
         const int numberOfBatches = 3;
-        var batches = new List<Batch>()
+        var batches = new List<Calculation>()
         {
             new BatchBuilder().Build(),
             new BatchBuilder().Build(),

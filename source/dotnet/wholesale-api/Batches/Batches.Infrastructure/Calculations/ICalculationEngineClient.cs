@@ -20,7 +20,7 @@ namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
 
 public interface ICalculationEngineClient
 {
-    Task<CalculationId> StartAsync(Batch batch);
+    Task<CalculationId> StartAsync(Calculation calculation);
 
     Task<CalculationState> GetStatusAsync(CalculationId calculationId);
 }

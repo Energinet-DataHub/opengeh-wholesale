@@ -21,7 +21,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Databricks.States
     public class CalculationJobScenarioState
     {
         [NotNull]
-        public Batch? CalculationJobInput { get; set; }
+        public Calculation? CalculationJobInput { get; set; }
 
         [NotNull]
         public CalculationId? CalculationId { get; set; }

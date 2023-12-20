@@ -20,17 +20,17 @@ namespace Energinet.DataHub.Wholesale.Batches.Application;
 
 public interface IBatchRepository
 {
-    Task AddAsync(Batch batch);
+    Task AddAsync(Calculation calculation);
 
-    Task<Batch> GetAsync(Guid batchId);
+    Task<Calculation> GetAsync(Guid batchId);
 
-    Task<List<Batch>> GetCreatedAsync();
+    Task<List<Calculation>> GetCreatedAsync();
 
-    Task<List<Batch>> GetByStatesAsync(IEnumerable<BatchExecutionState> states);
+    Task<List<Calculation>> GetByStatesAsync(IEnumerable<BatchExecutionState> states);
 
-    Task<List<Batch>> GetCompletedAfterAsync(Instant? completedTime);
+    Task<List<Calculation>> GetCompletedAfterAsync(Instant? completedTime);
 
-    Task<IReadOnlyCollection<Batch>> SearchAsync(
+    Task<IReadOnlyCollection<Calculation>> SearchAsync(
         IReadOnlyCollection<GridAreaCode> filterByGridAreaCode,
         IReadOnlyCollection<BatchExecutionState> filterByExecutionState,
         Instant? minExecutionTimeStart,

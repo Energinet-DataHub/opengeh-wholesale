@@ -40,7 +40,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Databricks
         {
             var createdTime = SystemClock.Instance.GetCurrentInstant();
             var createdByUserId = Guid.Parse("DED7734B-DD56-43AD-9EE8-0D7EFDA6C783");
-            Fixture.ScenarioState.CalculationJobInput = new Batch(
+            Fixture.ScenarioState.CalculationJobInput = new Calculation(
                 createdTime: createdTime,
                 processType: Common.Interfaces.Models.ProcessType.Aggregation,
                 gridAreaCodes: new List<GridAreaCode> { new GridAreaCode("791") },

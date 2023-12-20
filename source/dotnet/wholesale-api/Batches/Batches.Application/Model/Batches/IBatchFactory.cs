@@ -18,5 +18,5 @@ namespace Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
 
 public interface IBatchFactory
 {
-    Batch Create(ProcessType processType, IEnumerable<string> gridAreaCodes, DateTimeOffset startDate, DateTimeOffset endDate, Guid createdByUserId);
+    Calculation Create(ProcessType processType, IEnumerable<string> gridAreaCodes, DateTimeOffset startDate, DateTimeOffset endDate, Guid createdByUserId);
 }

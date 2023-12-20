@@ -18,11 +18,11 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
 
-public class Batch
+public class Calculation
 {
     private readonly List<GridAreaCode> _gridAreaCodes;
 
-    public Batch(
+    public Calculation(
         Instant createdTime,
         ProcessType processType,
         IEnumerable<GridAreaCode> gridAreaCodes,
@@ -108,7 +108,7 @@ public class Batch
     /// Required by Entity Framework
     /// </summary>
     // ReSharper disable once UnusedMember.Local
-    private Batch()
+    private Calculation()
     {
         Id = Guid.NewGuid();
         _gridAreaCodes = new List<GridAreaCode>();

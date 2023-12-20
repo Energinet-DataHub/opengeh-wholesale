@@ -20,11 +20,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
 
-public class BatchEntityConfiguration : IEntityTypeConfiguration<Batch>
+public class BatchEntityConfiguration : IEntityTypeConfiguration<Calculation>
 {
-    public void Configure(EntityTypeBuilder<Batch> builder)
+    public void Configure(EntityTypeBuilder<Calculation> builder)
     {
-        builder.ToTable(nameof(Batch));
+        builder.ToTable(nameof(Calculation));
 
         builder.HasKey(b => b.Id);
         builder
@@ -46,7 +46,7 @@ public class BatchEntityConfiguration : IEntityTypeConfiguration<Batch>
 
         // Grid area IDs are stored as a JSON array
         var gridAreaCodes = builder.Metadata
-            .FindNavigation(nameof(Batch.GridAreaCodes))!;
+            .FindNavigation(nameof(Calculation.GridAreaCodes))!;
         gridAreaCodes.SetPropertyAccessMode(PropertyAccessMode.Field);
         builder
             .Property(b => b.GridAreaCodes)

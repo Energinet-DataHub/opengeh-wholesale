@@ -18,22 +18,22 @@ namespace Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
 
 public class BatchDtoMapper : IBatchDtoMapper
 {
-    public BatchDto Map(Batch batch)
+    public BatchDto Map(Calculation calculation)
     {
         return new BatchDto(
-            batch.CalculationId?.Id,
-            batch.Id,
-            batch.PeriodStart.ToDateTimeOffset(),
-            batch.PeriodEnd.ToDateTimeOffset(),
-            batch.GetResolution(),
-            batch.GetQuantityUnit().ToString(),
-            batch.ExecutionTimeStart?.ToDateTimeOffset(),
-            batch.ExecutionTimeEnd?.ToDateTimeOffset() ?? null,
-            MapState(batch.ExecutionState),
-            batch.AreSettlementReportsCreated,
-            MapGridAreaCodes(batch.GridAreaCodes),
-            batch.ProcessType,
-            batch.CreatedByUserId);
+            calculation.CalculationId?.Id,
+            calculation.Id,
+            calculation.PeriodStart.ToDateTimeOffset(),
+            calculation.PeriodEnd.ToDateTimeOffset(),
+            calculation.GetResolution(),
+            calculation.GetQuantityUnit().ToString(),
+            calculation.ExecutionTimeStart?.ToDateTimeOffset(),
+            calculation.ExecutionTimeEnd?.ToDateTimeOffset() ?? null,
+            MapState(calculation.ExecutionState),
+            calculation.AreSettlementReportsCreated,
+            MapGridAreaCodes(calculation.GridAreaCodes),
+            calculation.ProcessType,
+            calculation.CreatedByUserId);
     }
 
     private static BatchState MapState(BatchExecutionState state)

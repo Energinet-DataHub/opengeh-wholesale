@@ -20,5 +20,5 @@ namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
 
 public interface ICalculationParametersFactory
 {
-    RunParameters CreateParameters(Batch batch);
+    RunParameters CreateParameters(Calculation calculation);
 }

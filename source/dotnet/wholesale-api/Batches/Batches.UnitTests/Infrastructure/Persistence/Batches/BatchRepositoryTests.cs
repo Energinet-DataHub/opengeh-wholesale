@@ -35,8 +35,8 @@ public class BatchRepositoryTests
     {
         // Arrange
         databaseContextMock
-            .Setup<DbSet<Batch>>(context => context.Batches)
-            .ReturnsDbSet(new List<Batch>());
+            .Setup<DbSet<Calculation>>(context => context.Batches)
+            .ReturnsDbSet(new List<Calculation>());
         var sut = new BatchRepository(databaseContextMock.Object);
 
         // Act
@@ -54,8 +54,8 @@ public class BatchRepositoryTests
     {
         // Arrange
         databaseContextMock
-            .Setup<DbSet<Batch>>(context => context.Batches)
-            .ReturnsDbSet(new List<Batch>());
+            .Setup<DbSet<Calculation>>(context => context.Batches)
+            .ReturnsDbSet(new List<Calculation>());
         var sut = new BatchRepository(databaseContextMock.Object);
 
         // Act
@@ -74,8 +74,8 @@ public class BatchRepositoryTests
         var batch1 = new BatchBuilder().WithStateCompleted().Build();
         var batch2 = new BatchBuilder().WithStateCompleted().Build();
         databaseContextMock
-            .Setup<DbSet<Batch>>(context => context.Batches)
-            .ReturnsDbSet(new List<Batch> { batch1, batch2 });
+            .Setup<DbSet<Calculation>>(context => context.Batches)
+            .ReturnsDbSet(new List<Calculation> { batch1, batch2 });
 
         var sut = new BatchRepository(databaseContextMock.Object);
 
@@ -95,8 +95,8 @@ public class BatchRepositoryTests
         // Arrange
         var batch = new BatchBuilder().WithStateCompleted().Build();
         databaseContextMock
-            .Setup<DbSet<Batch>>(context => context.Batches)
-            .ReturnsDbSet(new List<Batch> { batch });
+            .Setup<DbSet<Calculation>>(context => context.Batches)
+            .ReturnsDbSet(new List<Calculation> { batch });
         var futureCompletedTime = batch.ExecutionTimeEnd!.Value.Plus(Duration.FromMinutes(1));
 
         var sut = new BatchRepository(databaseContextMock.Object);
@@ -116,8 +116,8 @@ public class BatchRepositoryTests
         // Arrange
         var nonCompletedBatch = new BatchBuilder().Build();
         databaseContextMock
-            .Setup<DbSet<Batch>>(context => context.Batches)
-            .ReturnsDbSet(new List<Batch> { nonCompletedBatch });
+            .Setup<DbSet<Calculation>>(context => context.Batches)
+            .ReturnsDbSet(new List<Calculation> { nonCompletedBatch });
 
         var sut = new BatchRepository(databaseContextMock.Object);
 

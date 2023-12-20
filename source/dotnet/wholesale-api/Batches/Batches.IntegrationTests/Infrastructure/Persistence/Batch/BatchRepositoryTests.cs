@@ -199,7 +199,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture<Datab
         await using var writeContext = _databaseManager.CreateDbContext();
 
         var period = Periods.January_EuropeCopenhagen_Instant;
-        var batch = new Application.Model.Batches.Batch(
+        var batch = new Application.Model.Batches.Calculation(
             SystemClock.Instance.GetCurrentInstant(),
             ProcessType.BalanceFixing,
             new List<GridAreaCode> { new("004") },
@@ -229,15 +229,15 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture<Datab
             actual.Should().NotContain(batch);
     }
 
-    private static Application.Model.Batches.Batch CreateBatch(List<GridAreaCode> someGridAreasIds)
+    private static Application.Model.Batches.Calculation CreateBatch(List<GridAreaCode> someGridAreasIds)
     {
         return CreateBatch(ProcessType.BalanceFixing, someGridAreasIds);
     }
 
-    private static Application.Model.Batches.Batch CreateBatch(ProcessType processType, List<GridAreaCode> someGridAreasIds)
+    private static Application.Model.Batches.Calculation CreateBatch(ProcessType processType, List<GridAreaCode> someGridAreasIds)
     {
         var period = Periods.January_EuropeCopenhagen_Instant;
-        return new Application.Model.Batches.Batch(
+        return new Application.Model.Batches.Calculation(
             SystemClock.Instance.GetCurrentInstant(),
             processType,
             someGridAreasIds,
