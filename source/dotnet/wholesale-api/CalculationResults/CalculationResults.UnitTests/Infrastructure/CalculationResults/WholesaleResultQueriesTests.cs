@@ -41,7 +41,7 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
     private readonly string _row0CalculationId;
     private readonly string _calculationResultId0;
 
-    private readonly Mock<IBatchesClient> _batchesClientMock;
+    private readonly Mock<ICalculationsClient> _batchesClientMock;
     private readonly Mock<DatabricksSqlWarehouseQueryExecutor> _databricksSqlWarehouseQueryExecutorMock;
 
     public WholesaleResultQueriesTests()
@@ -61,7 +61,7 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
         // 1. Because DatabricksSqlWarehouseQueryExecutor doesn't implement an interface and the constructor is protected
         // AutoFixture combined with inline is unable to create an instance of it.
         // 2. The many mock parameters are avoided in tests
-        _batchesClientMock = Fixture.Freeze<Mock<IBatchesClient>>();
+        _batchesClientMock = Fixture.Freeze<Mock<ICalculationsClient>>();
         _databricksSqlWarehouseQueryExecutorMock = Fixture.Freeze<Mock<DatabricksSqlWarehouseQueryExecutor>>();
         Fixture.Inject(_batchesClientMock.Object);
         Fixture.Inject(_databricksSqlWarehouseQueryExecutorMock.Object);
@@ -69,18 +69,18 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_WhenNoRows_ReturnsNoResults(BatchDto batch)
+    public async Task GetAsync_WhenNoRows_ReturnsNoResults(CalculationDto calculation)
     {
         // Arrange
         _batchesClientMock
-            .Setup(client => client.GetAsync(batch.BatchId))
-            .ReturnsAsync(batch);
+            .Setup(client => client.GetAsync(calculation.BatchId))
+            .ReturnsAsync(calculation);
         _databricksSqlWarehouseQueryExecutorMock
             .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
             .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 0));
 
         // Act
-        var actual = await Sut.GetAsync(batch.BatchId).ToListAsync();
+        var actual = await Sut.GetAsync(calculation.BatchId).ToListAsync();
 
         // Assert
         actual.Should().BeEmpty();
@@ -88,17 +88,17 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_WhenOneRow_ReturnsSingleResultWithOneTimeSeriesPoint(BatchDto batch)
+    public async Task GetAsync_WhenOneRow_ReturnsSingleResultWithOneTimeSeriesPoint(CalculationDto calculation)
     {
         // Arrange
         _batchesClientMock
-            .Setup(client => client.GetAsync(batch.BatchId))
-            .ReturnsAsync(batch);
+            .Setup(client => client.GetAsync(calculation.BatchId))
+            .ReturnsAsync(calculation);
         _databricksSqlWarehouseQueryExecutorMock.Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
             .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 1));
 
         // Act
-        var actual = await Sut.GetAsync(batch.BatchId).ToListAsync();
+        var actual = await Sut.GetAsync(calculation.BatchId).ToListAsync();
 
         // Assert
         actual.Single().TimeSeriesPoints.Count.Should().Be(1);
@@ -106,19 +106,19 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_WhenCalculationHasOneResult_ReturnsResultRowWithExpectedValues(BatchDto batch)
+    public async Task GetAsync_WhenCalculationHasOneResult_ReturnsResultRowWithExpectedValues(CalculationDto calculation)
     {
         // Arrange
-        batch = batch with { BatchId = Guid.Parse(_row0CalculationId), ProcessType = ProcessType.WholesaleFixing };
+        calculation = calculation with { BatchId = Guid.Parse(_row0CalculationId), ProcessType = ProcessType.WholesaleFixing };
         _batchesClientMock
-            .Setup(client => client.GetAsync(batch.BatchId))
-            .ReturnsAsync(batch);
+            .Setup(client => client.GetAsync(calculation.BatchId))
+            .ReturnsAsync(calculation);
         _databricksSqlWarehouseQueryExecutorMock
             .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
             .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 1));
 
         // Act
-        var actual = await Sut.GetAsync(batch.BatchId).ToListAsync();
+        var actual = await Sut.GetAsync(calculation.BatchId).ToListAsync();
 
         // Assert
         using var assertionScope = new AssertionScope();
@@ -127,9 +127,9 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
         actual.Single().GridArea.Should().Be(_tableChunk[0, WholesaleResultColumnNames.GridArea]);
         actual.Single().EnergySupplierId.Should().Be(_tableChunk[0, WholesaleResultColumnNames.EnergySupplierId]);
         actual.Single().CalculationId.Should().Be(_tableChunk[0, WholesaleResultColumnNames.CalculationId]);
-        actual.Single().CalculationType.Should().Be(batch.ProcessType);
-        actual.Single().PeriodStart.Should().Be(batch.PeriodStart.ToInstant());
-        actual.Single().PeriodEnd.Should().Be(batch.PeriodEnd.ToInstant());
+        actual.Single().CalculationType.Should().Be(calculation.ProcessType);
+        actual.Single().PeriodStart.Should().Be(calculation.PeriodStart.ToInstant());
+        actual.Single().PeriodEnd.Should().Be(calculation.PeriodEnd.ToInstant());
         var actualPoint = actual.Single().TimeSeriesPoints.Single();
         actualPoint.Time.Should().Be(new DateTimeOffset(2022, 5, 16, 22, 0, 0, TimeSpan.Zero));
         actualPoint.Quantity.Should().Be(1.111m);
@@ -141,18 +141,18 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_WhenRowsBelongsToDifferentResults_ReturnsMultipleResults(BatchDto batch)
+    public async Task GetAsync_WhenRowsBelongsToDifferentResults_ReturnsMultipleResults(CalculationDto calculation)
     {
         // Arrange
         _batchesClientMock
-            .Setup(client => client.GetAsync(batch.BatchId))
-            .ReturnsAsync(batch);
+            .Setup(client => client.GetAsync(calculation.BatchId))
+            .ReturnsAsync(calculation);
         _databricksSqlWarehouseQueryExecutorMock
             .Setup(o => o.ExecuteStatementAsync(It.IsAny<DatabricksStatement>(), It.IsAny<Format>()))
             .Returns(DatabricksTestHelper.GetRowsAsync(_tableChunk, 2));
 
         // Act
-        var actual = await Sut.GetAsync(batch.BatchId).ToListAsync();
+        var actual = await Sut.GetAsync(calculation.BatchId).ToListAsync();
 
         // Assert
         actual.Count.Should().Be(2);

@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Core.Messaging.Communication.Publisher;
-using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Microsoft.Extensions.Logging;
 using NodaTime;
@@ -25,7 +25,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
 {
     private readonly IEnergyResultEventProvider _energyResultEventProvider;
     private readonly IWholesaleResultEventProvider _wholesaleResultEventProvider;
-    private readonly ICompletedBatchRepository _completedBatchRepository;
+    private readonly ICompletedCalculationRepository _completedCalculationRepository;
     private readonly IClock _clock;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<IntegrationEventProvider> _logger;
@@ -33,14 +33,14 @@ public class IntegrationEventProvider : IIntegrationEventProvider
     public IntegrationEventProvider(
         IEnergyResultEventProvider energyResultEventProvider,
         IWholesaleResultEventProvider wholesaleResultEventProvider,
-        ICompletedBatchRepository completedBatchRepository,
+        ICompletedCalculationRepository completedCalculationRepository,
         IClock clock,
         IUnitOfWork unitOfWork,
         ILogger<IntegrationEventProvider> logger)
     {
         _energyResultEventProvider = energyResultEventProvider;
         _wholesaleResultEventProvider = wholesaleResultEventProvider;
-        _completedBatchRepository = completedBatchRepository;
+        _completedCalculationRepository = completedCalculationRepository;
         _clock = clock;
         _unitOfWork = unitOfWork;
         _logger = logger;
@@ -51,7 +51,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
         do
         {
             var hasFailed = false;
-            var unpublishedBatch = await _completedBatchRepository.GetNextUnpublishedOrNullAsync().ConfigureAwait(false);
+            var unpublishedBatch = await _completedCalculationRepository.GetNextUnpublishedOrNullAsync().ConfigureAwait(false);
             if (unpublishedBatch == null)
             {
                 break;

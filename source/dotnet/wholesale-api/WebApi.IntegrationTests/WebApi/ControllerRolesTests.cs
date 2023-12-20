@@ -16,7 +16,7 @@ using System.Reflection;
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi.TestControllers;
 using Energinet.DataHub.Wholesale.WebApi.V3;
-using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
+using Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 using Energinet.DataHub.Wholesale.WebApi.V3.SettlementReport;
 using FluentAssertions;
 using Microsoft.AspNetCore.Authorization;
@@ -74,9 +74,9 @@ public class ControllerRolesTests
     }
 
     [Theory]
-    [InlineAutoData(typeof(BatchController), "CreateBatch", Permissions.CalculationsManage)]
-    [InlineAutoData(typeof(BatchController), "GetBatch", Permissions.CalculationsManage)]
-    [InlineAutoData(typeof(BatchController), "SearchBatches", Permissions.CalculationsManage)]
+    [InlineAutoData(typeof(CalculationController), "CreateBatch", Permissions.CalculationsManage)]
+    [InlineAutoData(typeof(CalculationController), "GetBatch", Permissions.CalculationsManage)]
+    [InlineAutoData(typeof(CalculationController), "SearchBatches", Permissions.CalculationsManage)]
     [InlineAutoData(typeof(SettlementReportController), "Download", Permissions.SettlementReportsManage)]
     [InlineAutoData(typeof(SettlementReportController), "GetSettlementReportAsStreamAsync", Permissions.SettlementReportsManage)]
     [InlineAutoData(typeof(SettlementReportController), "ZippedBasisDataStream", Permissions.SettlementReportsManage)]
@@ -115,7 +115,7 @@ public class ControllerRolesTests
 
     private static ICollection<Type>? GetAllControllerTypes()
     {
-        var controllers = Assembly.GetAssembly(typeof(BatchController))?
+        var controllers = Assembly.GetAssembly(typeof(CalculationController))?
             .GetTypes()
             .Where(type => typeof(V3ControllerBase).IsAssignableFrom(type) && !type.IsAbstract)
             .ToList();

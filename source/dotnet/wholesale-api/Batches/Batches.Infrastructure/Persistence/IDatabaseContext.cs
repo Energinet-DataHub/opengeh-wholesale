@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
+using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
 
 public interface IDatabaseContext
 {
-    DbSet<Batch> Batches { get; }
+    DbSet<Calculation> Batches { get; }
 
     DbSet<Interfaces.GridArea.GridAreaOwner> GridAreaOwners { get; }
 

@@ -19,7 +19,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
-using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.AmountPerChargeResultProducedV1.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders;
@@ -174,7 +174,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
             // Arrange
             var fixture = new Fixture();
             var batch = fixture
-                .Build<CompletedBatch>()
+                .Build<CompletedCalculation>()
                 .With(p => p.ProcessType, processType)
                 .Create();
 
@@ -192,11 +192,11 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
             actualResult.Should().Be(canContainWholesaleResults);
         }
 
-        private static CompletedBatch CreateWholesaleFixingBatch()
+        private static CompletedCalculation CreateWholesaleFixingBatch()
         {
             var fixture = new Fixture();
             var wholesaleFixingBatch = fixture
-                .Build<CompletedBatch>()
+                .Build<CompletedCalculation>()
                 .With(p => p.ProcessType, ProcessType.WholesaleFixing)
                 .Create();
             return wholesaleFixingBatch;
