@@ -1,4 +1,5 @@
 resource "databricks_cluster" "shared_all_purpose" {
+  provider                = databricks.dbw
   cluster_name            = "Shared all-purpose"
   spark_version           = data.databricks_spark_version.latest_lts.id
   node_type_id            = "Standard_DS5_v2"

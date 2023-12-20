@@ -8,6 +8,7 @@ adding a job to schedule the alert
 
 # query for duplicates in silver.time_series
 resource "databricks_sql_query" "duplicates_time_series_silver" {
+  provider       = databricks.dbw
   data_source_id = databricks_sql_endpoint.migration_sql_endpoint.data_source_id
   name           = "QCTS07-01_duplicates_in_time_series_silver"
   query          = <<EOT
@@ -22,6 +23,7 @@ resource "databricks_sql_query" "duplicates_time_series_silver" {
 
 # alert for duplicates in silver.time_series
 resource "databricks_sql_alert" "duplicates_time_series_silver" {
+  provider = databricks.dbw
   name     = "Duplicates found in time series silver (QCTS07-01)"
   query_id = databricks_sql_query.duplicates_time_series_silver.id
   rearm    = 1
@@ -36,7 +38,8 @@ resource "databricks_sql_alert" "duplicates_time_series_silver" {
 
 # job for duplicates in silver.time_series
 resource "databricks_job" "duplicates_time_series_silver" {
-  name = "Duplicates_time_series_silver"
+  provider = databricks.dbw
+  name     = "Duplicates_time_series_silver"
 
   schedule {
     quartz_cron_expression = local.alert_trigger_cron
@@ -61,6 +64,7 @@ resource "databricks_job" "duplicates_time_series_silver" {
 
 # query for duplicates in gold.time_series_points
 resource "databricks_sql_query" "duplicates_time_series_gold" {
+  provider       = databricks.dbw
   data_source_id = databricks_sql_endpoint.migration_sql_endpoint.data_source_id
   name           = "QCTS15-02_duplicates_in_time_series_gold"
   query          = <<EOT
@@ -75,6 +79,7 @@ resource "databricks_sql_query" "duplicates_time_series_gold" {
 
 # alert for duplicates in gold.time_series_points
 resource "databricks_sql_alert" "duplicates_time_series_gold" {
+  provider = databricks.dbw
   name     = "Duplicates found in time series gold (QCTS15-02)"
   query_id = databricks_sql_query.duplicates_time_series_gold.id
   rearm    = 1
@@ -89,7 +94,8 @@ resource "databricks_sql_alert" "duplicates_time_series_gold" {
 
 # job for duplicates in wholesale.time_series_points
 resource "databricks_job" "duplicates_time_series_gold" {
-  name = "Duplicates_time_series_gold"
+  provider = databricks.dbw
+  name     = "Duplicates_time_series_gold"
 
   schedule {
     quartz_cron_expression = local.alert_trigger_cron
@@ -114,6 +120,7 @@ resource "databricks_job" "duplicates_time_series_gold" {
 
 # query for duplicates in wholesale.time_series_points
 resource "databricks_sql_query" "duplicates_time_series_wholesale" {
+  provider       = databricks.dbw
   data_source_id = databricks_sql_endpoint.migration_sql_endpoint.data_source_id
   name           = "QCTS23-01_duplicates_in_time_series_wholesale"
   query          = <<EOT
@@ -128,6 +135,7 @@ resource "databricks_sql_query" "duplicates_time_series_wholesale" {
 
 # alert for duplicates in wholesale.time_series_points
 resource "databricks_sql_alert" "duplicates_time_series_wholesale" {
+  provider = databricks.dbw
   name     = "Duplicates found in time series wholesale (QCTS23-01)"
   query_id = databricks_sql_query.duplicates_time_series_wholesale.id
   rearm    = 1
@@ -142,7 +150,8 @@ resource "databricks_sql_alert" "duplicates_time_series_wholesale" {
 
 # job for duplicates in wholesale.time_series_points
 resource "databricks_job" "duplicates_time_series_wholesale" {
-  name = "Duplicates_time_series_wholesale"
+  provider = databricks.dbw
+  name     = "Duplicates_time_series_wholesale"
 
   schedule {
     quartz_cron_expression = local.alert_trigger_cron
@@ -167,6 +176,7 @@ resource "databricks_job" "duplicates_time_series_wholesale" {
 
 # query for duplicates in eloverblik.time_series_points
 resource "databricks_sql_query" "duplicates_time_series_eloverblik" {
+  provider       = databricks.dbw
   data_source_id = databricks_sql_endpoint.migration_sql_endpoint.data_source_id
   name           = "QCTS31-01_duplicates_in_time_series_eloverblik"
   query          = <<EOT
@@ -181,6 +191,7 @@ resource "databricks_sql_query" "duplicates_time_series_eloverblik" {
 
 # alert for duplicates in eloverblik.time_series_points
 resource "databricks_sql_alert" "duplicates_time_series_eloverblik" {
+  provider = databricks.dbw
   name     = "Duplicates found in time series eloverblik (QCTS31-01)"
   query_id = databricks_sql_query.duplicates_time_series_eloverblik.id
   rearm    = 1
@@ -195,7 +206,8 @@ resource "databricks_sql_alert" "duplicates_time_series_eloverblik" {
 
 # job for duplicates in eloverblik.time_series_points
 resource "databricks_job" "duplicates_time_series_eloverblik" {
-  name = "Duplicates_time_series_eloverblik"
+  provider = databricks.dbw
+  name     = "Duplicates_time_series_eloverblik"
 
   schedule {
     quartz_cron_expression = local.alert_trigger_cron
@@ -220,6 +232,7 @@ resource "databricks_job" "duplicates_time_series_eloverblik" {
 
 # query for duplicates in gold.metering_points
 resource "databricks_sql_query" "duplicates_metering_points_gold" {
+  provider       = databricks.dbw
   data_source_id = databricks_sql_endpoint.migration_sql_endpoint.data_source_id
   name           = "QCMP16-01_duplicates_in_metering_points_gold"
   query          = <<EOT
@@ -235,6 +248,7 @@ resource "databricks_sql_query" "duplicates_metering_points_gold" {
 
 # alert for duplicates in gold.metering_points
 resource "databricks_sql_alert" "duplicates_metering_points_gold" {
+  provider = databricks.dbw
   name     = "Duplicates found in metering points gold (QCMP16-01)"
   query_id = databricks_sql_query.duplicates_metering_points_gold.id
   rearm    = 1
@@ -249,7 +263,8 @@ resource "databricks_sql_alert" "duplicates_metering_points_gold" {
 
 # job for duplicates in gold.metering_points
 resource "databricks_job" "duplicates_metering_points_gold" {
-  name = "Duplicates_metering_points_gold"
+  provider = databricks.dbw
+  name     = "Duplicates_metering_points_gold"
 
   schedule {
     quartz_cron_expression = local.alert_trigger_cron
@@ -274,6 +289,7 @@ resource "databricks_job" "duplicates_metering_points_gold" {
 
 # query for duplicates in wholesale.metering_point_periods
 resource "databricks_sql_query" "duplicates_metering_point_periods_wholesale" {
+  provider       = databricks.dbw
   data_source_id = databricks_sql_endpoint.migration_sql_endpoint.data_source_id
   name           = "QCMP24-01_duplicates_in_metering_point_periods_wholesale"
   query          = <<EOT
@@ -288,6 +304,7 @@ resource "databricks_sql_query" "duplicates_metering_point_periods_wholesale" {
 
 # alert for duplicates in wholesale.metering_point_periods
 resource "databricks_sql_alert" "duplicates_metering_point_periods_wholesale" {
+  provider = databricks.dbw
   name     = "Duplicates found in metering point periods wholesale (QCMP24-01)"
   query_id = databricks_sql_query.duplicates_metering_point_periods_wholesale.id
   rearm    = 1
@@ -302,7 +319,8 @@ resource "databricks_sql_alert" "duplicates_metering_point_periods_wholesale" {
 
 # job for duplicates in wholesale.metering_point_periods
 resource "databricks_job" "duplicates_metering_point_periods_wholesale" {
-  name = "Duplicates_metering_point_periods_wholesale"
+  provider = databricks.dbw
+  name     = "Duplicates_metering_point_periods_wholesale"
 
   schedule {
     quartz_cron_expression = local.alert_trigger_cron

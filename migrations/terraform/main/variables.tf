@@ -8,12 +8,6 @@ variable "tenant_id" {
   description = "Azure Tenant that the infrastructure is deployed into."
 }
 
-variable "resource_group_name" {
-  type        = string
-  description = "Resource Group that the infrastructure code is deployed into."
-  default     = ""
-}
-
 variable "enable_health_check_alerts" {
   type        = bool
   description = "Specify if health check alerts for Azure Functions and App Services should be enabled."

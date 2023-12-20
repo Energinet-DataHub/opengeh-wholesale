@@ -1,11 +1,14 @@
 resource "databricks_directory" "shared_alerts_dir" {
-  path = "/Shared/Alerts"
+  provider = databricks.dbw
+  path     = "/Shared/Alerts"
 }
 
 resource "databricks_directory" "shared_queries_dir" {
-  path = "/Shared/Queries"
+  provider = databricks.dbw
+  path     = "/Shared/Queries"
 }
 
 resource "databricks_directory" "shared_dashboards_dir" {
-  path = "/Shared/Dashboards"
+  provider = databricks.dbw
+  path     = "/Shared/Dashboards"
 }

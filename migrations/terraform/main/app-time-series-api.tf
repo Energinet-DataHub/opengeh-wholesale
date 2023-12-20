@@ -1,5 +1,5 @@
 module "app_time_series_api" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=v13"
 
   name                                     = "timeseriesapi"
   project_name                             = var.domain_name_short
@@ -28,9 +28,9 @@ module "app_time_series_api" {
     "AzureAd__ResourceId" = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-timeseriesapi-app-id)"
 
     # Databricks
-    "DatabricksOptions__WorkspaceToken"       = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=dbw-shared-workspace-token)"
-    "DatabricksOptions__WorkspaceUrl"         = "https://${data.azurerm_key_vault_secret.dbw_databricks_workspace_url.value}"
+    "DatabricksOptions__WorkspaceToken"       = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-workspace-token)"
     "DatabricksOptions__WarehouseId"          = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-databricks-sql-endpoint-id)"
+    "DatabricksOptions__WorkspaceUrl"         = "https://${module.dbw.workspace_url}"
     "DatabricksOptions__HealthCheckStartHour" = 5
     "DatabricksOptions__HealthCheckEndHour"   = 16
 
@@ -39,7 +39,6 @@ module "app_time_series_api" {
     "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Migrations" = "Information"
     "Logging__ApplicationInsights__LogLevel__Energinet.Datahub.Core"       = "Information"
   }
-
   role_assignments = [
     {
       resource_id          = data.azurerm_key_vault_secret.st_data_lake_id.value

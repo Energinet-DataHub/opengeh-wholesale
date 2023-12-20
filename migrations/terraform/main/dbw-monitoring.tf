@@ -8,6 +8,7 @@ adding a job to schedule the query
 
 # query for monitor_wholesale_time_series
 resource "databricks_sql_query" "monitor_wholesale_time_series" {
+  provider       = databricks.dbw
   data_source_id = databricks_sql_endpoint.migration_sql_endpoint.data_source_id
   name           = "Monitor_wholesale_time_series"
   query          = <<EOT
@@ -18,6 +19,7 @@ resource "databricks_sql_query" "monitor_wholesale_time_series" {
 
 # query for monitor_wholesale_metering_points
 resource "databricks_sql_query" "monitor_wholesale_metering_points" {
+  provider       = databricks.dbw
   data_source_id = databricks_sql_endpoint.migration_sql_endpoint.data_source_id
   name           = "Monitor_wholesale_metering_point"
   query          = <<EOT
@@ -28,6 +30,7 @@ resource "databricks_sql_query" "monitor_wholesale_metering_points" {
 
 # query for monitor_eloverblik_time_series
 resource "databricks_sql_query" "monitor_eloverblik_time_series" {
+  provider       = databricks.dbw
   data_source_id = databricks_sql_endpoint.migration_sql_endpoint.data_source_id
   name           = "Monitor_eloverblik_time_series"
   query          = <<EOT
@@ -38,6 +41,7 @@ resource "databricks_sql_query" "monitor_eloverblik_time_series" {
 
 # job for monitor_wholesale_time_series
 resource "databricks_job" "monitor_wholesale_time_series" {
+  provider            = databricks.dbw
   name                = "Monitor_wholesale_time_series"
   max_concurrent_runs = 2
 
@@ -61,6 +65,7 @@ resource "databricks_job" "monitor_wholesale_time_series" {
 
 # job for monitor_wholesale_metering_points
 resource "databricks_job" "monitor_wholesale_metering_points" {
+  provider            = databricks.dbw
   name                = "Monitor_wholesale_metering_points"
   max_concurrent_runs = 2
 
@@ -83,6 +88,7 @@ resource "databricks_job" "monitor_wholesale_metering_points" {
 
 # job for monitor_eloverblik_time_series
 resource "databricks_job" "monitor_eloverblik_time_series" {
+  provider            = databricks.dbw
   name                = "Monitor_eloverblik_time_series"
   max_concurrent_runs = 2
 

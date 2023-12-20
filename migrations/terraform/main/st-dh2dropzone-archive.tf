@@ -1,7 +1,7 @@
 module "st_dh2dropzone_archive" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=v13"
 
-  name                            = "dh2dropzonearch"
+  name                            = "dh2dropznarch"
   project_name                    = var.domain_name_short
   environment_short               = var.environment_short
   environment_instance            = var.environment_instance
