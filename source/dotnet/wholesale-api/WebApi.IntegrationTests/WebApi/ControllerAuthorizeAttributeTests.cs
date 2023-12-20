@@ -65,7 +65,7 @@ public class ControllerAuthorizeAttributeTests
 
     private static IEnumerable<Type>? GetControllersWithoutAuthorizeAttribute()
     {
-        var controllers = Assembly.GetAssembly(typeof(BatchController))?
+        var controllers = Assembly.GetAssembly(typeof(CalculationController))?
             .GetTypes()
             .Where(type => typeof(V3ControllerBase).IsAssignableFrom(type) && !type.IsAbstract)
             .Where(t => t.GetCustomAttribute<AuthorizeAttribute>() == null)

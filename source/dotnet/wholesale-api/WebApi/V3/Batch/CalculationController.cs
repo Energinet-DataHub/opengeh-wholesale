@@ -26,13 +26,13 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 /// Energy suppliers for which batch results have been calculated.
 /// </summary>
 [Route("/v3/batches")]
-public class BatchController : V3ControllerBase
+public class CalculationController : V3ControllerBase
 {
     private readonly IBatchesClient _batchesClient;
     private readonly ICreateBatchHandler _createBatchHandler;
     private readonly IUserContext<FrontendUser> _userContext;
 
-    public BatchController(
+    public CalculationController(
         IBatchesClient batchesClient,
         ICreateBatchHandler createBatchHandler,
         IUserContext<FrontendUser> userContext)
