@@ -130,7 +130,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Identity
             var user = root.GetValue<string>("USER");
 
             // If 'user' is not set we are executing on the new subscriptions
-            if (user == null)
+            if (string.IsNullOrEmpty(user))
             {
                 // On the new subsctiptions we don't get the values from a key vault, but instead as environment variables
                 var username = root.GetValue<string>("DH_E2E_USERNAME")!;
