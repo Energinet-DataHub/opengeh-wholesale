@@ -136,9 +136,9 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Identity
                 var username = root.GetValue<string>("DH_E2E_USERNAME")!;
                 var password = root.GetValue<string>("DH_E2E_PASSWORD")!;
 
-                var ropcAuthUrl = root.GetValue<string>("DH_E2E_USERNAME")!;
-                var frontendAppId = root.GetValue<string>("DH_E2E_PASSWORD")!;
-                var backendBffAppScope = root.GetValue<string>("DH_E2E_USERNAME")!;
+                var ropcAuthUrl = root.GetValue<string>("B2C_ROPC_AUTH_URL")!;
+                var frontendAppId = root.GetValue<string>("B2C_FRONTEND_APP_ID")!;
+                var backendBffAppScope = root.GetValue<string>("B2C_BACKEND_BFF_APP_SCOPE")!;
                 return new B2CUserTokenConfiguration(tokenBaseAddress, username, password, ropcAuthUrl, frontendAppId, backendBffAppScope);
             }
             else
