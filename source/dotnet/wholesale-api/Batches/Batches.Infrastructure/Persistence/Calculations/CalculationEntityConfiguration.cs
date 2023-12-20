@@ -24,7 +24,8 @@ public class CalculationEntityConfiguration : IEntityTypeConfiguration<Calculati
 {
     public void Configure(EntityTypeBuilder<Calculation> builder)
     {
-        builder.ToTable(nameof(Calculation));
+        // TODO: Change to nameof(Calculation) when updating table name in database
+        builder.ToTable("Batch");
 
         builder.HasKey(b => b.Id);
         builder

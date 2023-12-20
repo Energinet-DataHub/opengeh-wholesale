@@ -23,7 +23,8 @@ public class CompletedCalculationEntityConfiguration : IEntityTypeConfiguration<
 {
     public void Configure(EntityTypeBuilder<CompletedCalculation> builder)
     {
-        builder.ToTable(nameof(CompletedCalculation));
+        // TODO: Change to nameof(CompletedCalculation) when updating table name in database
+        builder.ToTable("CompletedBatch");
 
         builder.HasKey(b => b.Id);
         builder
