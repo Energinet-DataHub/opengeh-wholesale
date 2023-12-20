@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+namespace Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 
-namespace Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
-
-/// <summary>
-/// An immutable request to create a batch.
-/// </summary>
-public sealed record BatchRequestDto(ProcessType ProcessType, IEnumerable<string> GridAreaCodes, DateTimeOffset StartDate, DateTimeOffset EndDate);
+public enum BatchState
+{
+    Pending,
+    Executing,
+    Completed,
+    Failed,
+}

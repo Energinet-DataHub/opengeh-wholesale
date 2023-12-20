@@ -20,7 +20,7 @@ using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
+namespace Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 
 /// <summary>
 /// Energy suppliers for which batch results have been calculated.
@@ -97,7 +97,7 @@ public class CalculationController : V3ControllerBase
     {
         var batches = await _calculationsClient.SearchAsync(
             gridAreaCodes ?? Array.Empty<string>(),
-            BatchStateMapper.MapState(executionState),
+            CalculationStateMapper.MapState(executionState),
             minExecutionTime,
             maxExecutionTime,
             periodStart,

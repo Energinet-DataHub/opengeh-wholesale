@@ -18,5 +18,5 @@ namespace Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 
 public interface ICompletedBatchFactory
 {
-    IEnumerable<CompletedBatch> CreateFromBatches(IEnumerable<BatchDto> completedBatchDtos);
+    IEnumerable<CompletedBatch> CreateFromBatches(IEnumerable<CalculationDto> completedBatchDtos);
 }

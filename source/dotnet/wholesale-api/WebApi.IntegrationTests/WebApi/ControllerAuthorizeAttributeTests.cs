@@ -14,7 +14,7 @@
 
 using System.Reflection;
 using Energinet.DataHub.Wholesale.WebApi.V3;
-using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
+using Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.IdentityModel.Tokens;

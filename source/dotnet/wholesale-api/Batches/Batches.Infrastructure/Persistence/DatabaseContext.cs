@@ -14,7 +14,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Calculations;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.GridArea;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.ReceivedIntegrationEvent;
 using Microsoft.EntityFrameworkCore;
@@ -48,7 +48,7 @@ public class DatabaseContext : DbContext, IDatabaseContext
     {
         modelBuilder.HasDefaultSchema(Schema);
 
-        modelBuilder.ApplyConfiguration(new BatchEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new CalculationEntityConfiguration());
         modelBuilder.ApplyConfiguration(new GridAreaEntityConfiguration());
         modelBuilder.ApplyConfiguration(new ReceivedIntegrationEventEntityConfiguration());
         base.OnModelCreating(modelBuilder);

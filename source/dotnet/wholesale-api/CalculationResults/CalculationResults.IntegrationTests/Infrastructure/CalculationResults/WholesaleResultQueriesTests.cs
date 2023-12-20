@@ -50,17 +50,17 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>, ICl
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_WhenCalculationHasHourlyAndMonthlyTariff_ReturnsExpectedWholesaleResult(BatchDto batch)
+    public async Task GetAsync_WhenCalculationHasHourlyAndMonthlyTariff_ReturnsExpectedWholesaleResult(CalculationDto calculation)
     {
         // Arrange
         await InsertHourlyTariffAndMonthlyAmountTariffRowsAsync();
-        batch = batch with { BatchId = Guid.Parse(CalculationId) };
+        calculation = calculation with { BatchId = Guid.Parse(CalculationId) };
         _batchesClientMock
             .Setup(b => b.GetAsync(It.IsAny<Guid>()))
-            .ReturnsAsync(batch);
+            .ReturnsAsync(calculation);
 
         // Act
-        var actual = await Sut.GetAsync(batch.BatchId).ToListAsync();
+        var actual = await Sut.GetAsync(calculation.BatchId).ToListAsync();
 
         // Assert
         using var assertionScope = new AssertionScope();

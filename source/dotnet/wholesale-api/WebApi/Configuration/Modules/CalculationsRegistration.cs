@@ -20,7 +20,7 @@ using Energinet.DataHub.Wholesale.Batches.Application.Workers;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationState;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Calculations;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Microsoft.EntityFrameworkCore;
 

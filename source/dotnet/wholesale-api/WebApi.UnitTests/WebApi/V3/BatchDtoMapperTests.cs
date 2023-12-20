@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
+using Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 using FluentAssertions;
 using Xunit;
 
@@ -23,14 +23,14 @@ public static class BatchDtoMapperTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public static void MapDto_Returns_correct(Batches.Interfaces.Models.BatchDto source)
+    public static void MapDto_Returns_correct(Batches.Interfaces.Models.CalculationDto source)
     {
         // Act
-        var actual = BatchDtoMapper.Map(source);
+        var actual = CalculationDtoMapper.Map(source);
 
         // Assert
         actual.ProcessType.Should().Be(ProcessTypeMapper.Map(source.ProcessType));
-        actual.ExecutionState.Should().Be(BatchStateMapper.MapState(source.ExecutionState));
+        actual.ExecutionState.Should().Be(CalculationStateMapper.MapState(source.ExecutionState));
         actual.Resolution.Should().Be(source.Resolution);
         actual.RunId.Should().Be(source.RunId);
         actual.Unit.Should().Be(source.Unit.ToString());

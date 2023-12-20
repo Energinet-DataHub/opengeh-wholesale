@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.Jobs.Abstractions;
-using Energinet.DataHub.Wholesale.Batches.Application.Model;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using Microsoft.Azure.Databricks.Client.Models;
+using CalculationState=Energinet.DataHub.Wholesale.Batches.Application.Model.CalculationState;
 
 namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
 

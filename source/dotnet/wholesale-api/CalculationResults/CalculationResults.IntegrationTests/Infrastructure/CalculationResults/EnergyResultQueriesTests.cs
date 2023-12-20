@@ -58,17 +58,17 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>, IClassFix
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_ReturnsExpectedEnergyResult(BatchDto batch)
+    public async Task GetAsync_ReturnsExpectedEnergyResult(CalculationDto calculation)
     {
         // Arrange
         const int expectedResultCount = 3;
         var deltaTableOptions = _fixture.DatabricksSchemaManager.DeltaTableOptions;
         await AddCreatedRowsInArbitraryOrderAsync(deltaTableOptions);
-        batch = batch with { BatchId = Guid.Parse(BatchId) };
-        _batchesClientMock.Setup(b => b.GetAsync(It.IsAny<Guid>())).ReturnsAsync(batch);
+        calculation = calculation with { BatchId = Guid.Parse(BatchId) };
+        _batchesClientMock.Setup(b => b.GetAsync(It.IsAny<Guid>())).ReturnsAsync(calculation);
 
         // Act
-        var actual = await Sut.GetAsync(batch.BatchId).ToListAsync();
+        var actual = await Sut.GetAsync(calculation.BatchId).ToListAsync();
 
         // Assert
         using var assertionScope = new AssertionScope();

@@ -16,7 +16,7 @@ using System.Reflection;
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Wholesale.WebApi.IntegrationTests.WebApi.TestControllers;
 using Energinet.DataHub.Wholesale.WebApi.V3;
-using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
+using Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 using Energinet.DataHub.Wholesale.WebApi.V3.SettlementReport;
 using FluentAssertions;
 using Microsoft.AspNetCore.Authorization;

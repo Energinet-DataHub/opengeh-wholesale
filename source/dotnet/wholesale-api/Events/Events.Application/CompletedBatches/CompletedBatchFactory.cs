@@ -19,22 +19,22 @@ namespace Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
 
 public class CompletedBatchFactory : ICompletedBatchFactory
 {
-    public IEnumerable<CompletedBatch> CreateFromBatches(IEnumerable<BatchDto> completedBatchDtos)
+    public IEnumerable<CompletedBatch> CreateFromBatches(IEnumerable<CalculationDto> completedBatchDtos)
     {
         return completedBatchDtos.Select(CreateFromBatch);
     }
 
-    public CompletedBatch CreateFromBatch(BatchDto completedBatchDto)
+    public CompletedBatch CreateFromBatch(CalculationDto completedCalculationDto)
     {
-        if (completedBatchDto.ExecutionTimeEnd == null)
-            throw new ArgumentNullException($"{nameof(BatchDto.ExecutionTimeEnd)} should not be null for a completed batch.");
+        if (completedCalculationDto.ExecutionTimeEnd == null)
+            throw new ArgumentNullException($"{nameof(CalculationDto.ExecutionTimeEnd)} should not be null for a completed batch.");
 
         return new CompletedBatch(
-            completedBatchDto.BatchId,
-            completedBatchDto.GridAreaCodes.ToList(),
-            completedBatchDto.ProcessType,
-            completedBatchDto.PeriodStart.ToInstant(),
-            completedBatchDto.PeriodEnd.ToInstant(),
-            completedTime: completedBatchDto.ExecutionTimeEnd.Value.ToInstant());
+            completedCalculationDto.BatchId,
+            completedCalculationDto.GridAreaCodes.ToList(),
+            completedCalculationDto.ProcessType,
+            completedCalculationDto.PeriodStart.ToInstant(),
+            completedCalculationDto.PeriodEnd.ToInstant(),
+            completedTime: completedCalculationDto.ExecutionTimeEnd.Value.ToInstant());
     }
 }

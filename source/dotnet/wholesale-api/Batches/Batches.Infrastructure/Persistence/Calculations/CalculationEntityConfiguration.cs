@@ -18,9 +18,9 @@ using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
+namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Calculations;
 
-public class BatchEntityConfiguration : IEntityTypeConfiguration<Calculation>
+public class CalculationEntityConfiguration : IEntityTypeConfiguration<Calculation>
 {
     public void Configure(EntityTypeBuilder<Calculation> builder)
     {

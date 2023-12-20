@@ -15,7 +15,7 @@
 using Energinet.DataHub.Wholesale.Batches.Application.Model;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Calculations;
 using Energinet.DataHub.Wholesale.Batches.IntegrationTests.Fixture.Database;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using FluentAssertions;

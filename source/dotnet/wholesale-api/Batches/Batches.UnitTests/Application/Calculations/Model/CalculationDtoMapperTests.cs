@@ -36,7 +36,7 @@ public class CalculationDtoMapperTests
         var batchDto = sut.Map(batch);
 
         // Assert
-        batchDto.ExecutionState.Should().Be(BatchState.Executing);
+        batchDto.ExecutionState.Should().Be(CalculationState.Executing);
     }
 
     [Theory]

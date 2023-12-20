@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Application;
-using Energinet.DataHub.Wholesale.Batches.Application.Model;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 
 namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
@@ -22,5 +20,5 @@ public interface ICalculationEngineClient
 {
     Task<CalculationId> StartAsync(Calculation calculation);
 
-    Task<CalculationState> GetStatusAsync(CalculationId calculationId);
+    Task<Application.Model.CalculationState> GetStatusAsync(CalculationId calculationId);
 }

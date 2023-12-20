@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Batches.Application;
-using Energinet.DataHub.Wholesale.Batches.Application.Model;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 
 namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
@@ -31,7 +30,7 @@ public class CalculationInfrastructureService : ICalculationInfrastructureServic
         _calculationEngineClient = calculationEngineClient;
     }
 
-    public async Task<CalculationState> GetStatusAsync(CalculationId calculationId)
+    public async Task<Application.Model.CalculationState> GetStatusAsync(CalculationId calculationId)
     {
         return await _calculationEngineClient.GetStatusAsync(calculationId).ConfigureAwait(false);
     }

@@ -18,7 +18,7 @@ using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using Microsoft.EntityFrameworkCore;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
+namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Calculations;
 
 public class CalculationRepository : ICalculationRepository
 {

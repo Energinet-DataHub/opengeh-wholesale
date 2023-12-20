@@ -18,9 +18,9 @@ namespace Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 
 public class CalculationDtoMapper : ICalculationDtoMapper
 {
-    public BatchDto Map(Calculation calculation)
+    public CalculationDto Map(Calculation calculation)
     {
-        return new BatchDto(
+        return new CalculationDto(
             calculation.CalculationId?.Id,
             calculation.Id,
             calculation.PeriodStart.ToDateTimeOffset(),
@@ -36,16 +36,16 @@ public class CalculationDtoMapper : ICalculationDtoMapper
             calculation.CreatedByUserId);
     }
 
-    private static BatchState MapState(CalculationExecutionState state)
+    private static Interfaces.Models.CalculationState MapState(CalculationExecutionState state)
     {
         return state switch
         {
-            CalculationExecutionState.Created => BatchState.Pending,
-            CalculationExecutionState.Submitted => BatchState.Pending,
-            CalculationExecutionState.Pending => BatchState.Pending,
-            CalculationExecutionState.Executing => BatchState.Executing,
-            CalculationExecutionState.Completed => BatchState.Completed,
-            CalculationExecutionState.Failed => BatchState.Failed,
+            CalculationExecutionState.Created => Interfaces.Models.CalculationState.Pending,
+            CalculationExecutionState.Submitted => Interfaces.Models.CalculationState.Pending,
+            CalculationExecutionState.Pending => Interfaces.Models.CalculationState.Pending,
+            CalculationExecutionState.Executing => Interfaces.Models.CalculationState.Executing,
+            CalculationExecutionState.Completed => Interfaces.Models.CalculationState.Completed,
+            CalculationExecutionState.Failed => Interfaces.Models.CalculationState.Failed,
 
             _ => throw new ArgumentOutOfRangeException(
                 nameof(state),

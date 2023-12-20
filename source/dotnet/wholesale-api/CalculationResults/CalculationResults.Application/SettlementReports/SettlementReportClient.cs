@@ -96,14 +96,14 @@ public class SettlementReportClient : ISettlementReportClient
             .ConfigureAwait(false);
     }
 
-    private BatchInfo Map(BatchDto batch)
+    private BatchInfo Map(CalculationDto calculation)
     {
         return new BatchInfo
         {
-            Id = batch.BatchId,
-            PeriodStart = Instant.FromDateTimeOffset(batch.PeriodStart),
-            PeriodEnd = Instant.FromDateTimeOffset(batch.PeriodEnd),
-            GridAreaCodes = batch.GridAreaCodes.ToList(),
+            Id = calculation.BatchId,
+            PeriodStart = Instant.FromDateTimeOffset(calculation.PeriodStart),
+            PeriodEnd = Instant.FromDateTimeOffset(calculation.PeriodEnd),
+            GridAreaCodes = calculation.GridAreaCodes.ToList(),
         };
     }
 }
