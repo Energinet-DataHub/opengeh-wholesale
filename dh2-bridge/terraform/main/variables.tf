@@ -65,3 +65,15 @@ variable "sendgrid_from_email" {
   type        = string
   description = "Specify the sender which the emails originates from"
 }
+
+variable "pim_sql_reader_ad_group_name" {
+  type        = string
+  description = "Name of the AD group with db_datareader permissions on the SQL database."
+  default     = null
+}
+
+variable "pim_sql_writer_ad_group_name" {
+  type        = string
+  description = "Name of the AD group with db_datawriter permissions on the SQL database."
+  default     = null
+}

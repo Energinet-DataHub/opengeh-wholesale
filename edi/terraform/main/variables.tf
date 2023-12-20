@@ -51,3 +51,15 @@ variable "hosted_deployagent_public_ip_range" {
   description = "(Optional) Comma-delimited string with IPs / CIDR block with deployagent's public IPs, so it can access network-protected resources (Keyvaults, Function apps etc)"
   default     = null
 }
+
+variable "pim_sql_reader_ad_group_name" {
+  type        = string
+  description = "Name of the AD group with db_datareader permissions on the SQL database."
+  default     = null
+}
+
+variable "pim_sql_writer_ad_group_name" {
+  type        = string
+  description = "Name of the AD group with db_datawriter permissions on the SQL database."
+  default     = null
+}

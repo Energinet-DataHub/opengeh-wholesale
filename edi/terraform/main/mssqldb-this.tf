@@ -21,6 +21,9 @@ module "mssqldb_edi" {
 
   monitor_alerts_action_group_id     = data.azurerm_key_vault_secret.primary_action_group_id.value
   monitor_alerts_resource_group_name = azurerm_resource_group.this.name
+
+  pim_reader_ad_group_name = var.pim_sql_reader_ad_group_name
+  pim_writer_ad_group_name = var.pim_sql_writer_ad_group_name
 }
 
 module "kvs_sql_ms_market_participant_database_name" {

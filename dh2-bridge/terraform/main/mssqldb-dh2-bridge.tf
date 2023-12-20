@@ -16,6 +16,8 @@ module "mssqldb_dh2_bridge" {
   elastic_pool_id                    = data.azurerm_key_vault_secret.mssql_data_elastic_pool_id.value
   monitor_alerts_action_group_id     = data.azurerm_key_vault_secret.primary_action_group_id.value
   monitor_alerts_resource_group_name = azurerm_resource_group.this.name
+  pim_reader_ad_group_name           = var.pim_sql_reader_ad_group_name
+  pim_writer_ad_group_name           = var.pim_sql_writer_ad_group_name
 }
 
 module "kvs_sql_ms_dh2_bridge_database_name" {

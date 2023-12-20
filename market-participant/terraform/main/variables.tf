@@ -80,3 +80,15 @@ variable "sendgrid_bcc_email" {
   type        = string
   description = "Specify the bcc email address for email copies"
 }
+
+variable "pim_sql_reader_ad_group_name" {
+  type        = string
+  description = "Name of the AD group with db_datareader permissions on the SQL database."
+  default     = null
+}
+
+variable "pim_sql_writer_ad_group_name" {
+  type        = string
+  description = "Name of the AD group with db_datawriter permissions on the SQL database."
+  default     = null
+}

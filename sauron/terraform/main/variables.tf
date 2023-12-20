@@ -34,6 +34,18 @@ variable "hosted_deployagent_public_ip_range" {
   default     = null
 }
 
+variable "pim_sql_reader_ad_group_name" {
+  type        = string
+  description = "Name of the AD group with db_datareader permissions on the SQL database."
+  default     = null
+}
+
+variable "pim_sql_writer_ad_group_name" {
+  type        = string
+  description = "Name of the AD group with db_datawriter permissions on the SQL database."
+  default     = null
+}
+  
 variable "developer_ad_group_name" {
   type        = string
   description = "(Optional) Name of the AD group containing developers to have read access to SQL database."
