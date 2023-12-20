@@ -73,8 +73,6 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Authorization
         /// </summary>
         public class Given_Authorized : DomainTestsBase<AuthorizedClientFixture>
         {
-            private static readonly Guid _existingBatchId = new("ed39dbc5-bdc5-41b9-922a-08d3b12d4538");
-
             public Given_Authorized(LazyFixtureFactory<AuthorizedClientFixture> lazyFixtureFactory)
                 : base(lazyFixtureFactory)
             {
@@ -89,11 +87,11 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Authorization
                 // Arrange
 
                 // Act
-                var batchResult = await Fixture.WholesaleClient.GetBatchAsync(_existingBatchId);
+                var batchResult = await Fixture.WholesaleClient.GetBatchAsync(Fixture.ExistingBatchId);
 
                 // Assert
                 batchResult.Should().NotBeNull();
-                batchResult!.BatchId.Should().Be(_existingBatchId);
+                batchResult!.BatchId.Should().Be(Fixture.ExistingBatchId);
             }
         }
     }
