@@ -57,26 +57,32 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Identity
         /// Constructor to be used for execution on the new Azure subscriptions (environments).
         /// Ensure secrets are retrieved and ready for use.
         /// </summary>
-        private B2CUserTokenConfiguration(string b2cKeyVaultUrl, string environment, string tokenBaseAddress, string username, string password)
+        private B2CUserTokenConfiguration(
+            string tokenBaseAddress,
+            string username,
+            string password,
+            string ropcAuthUrl,
+            string frontendAppId,
+            string backendBffAppScope)
         {
-            if (string.IsNullOrWhiteSpace(b2cKeyVaultUrl))
-                throw new ArgumentException($"Cannot be null or whitespace.", nameof(b2cKeyVaultUrl));
-            if (string.IsNullOrEmpty(environment))
-                throw new ArgumentException($"Cannot be null or empty.", nameof(environment));
             if (string.IsNullOrEmpty(tokenBaseAddress))
                 throw new ArgumentException($"Cannot be null or empty.", nameof(tokenBaseAddress));
             if (string.IsNullOrEmpty(username))
                 throw new ArgumentException($"Cannot be null or empty.", nameof(username));
             if (string.IsNullOrEmpty(password))
                 throw new ArgumentException($"Cannot be null or empty.", nameof(password));
-
-            var secretsConfiguration = BuildSecretsConfiguration(b2cKeyVaultUrl);
+            if (string.IsNullOrEmpty(ropcAuthUrl))
+                throw new ArgumentException($"Cannot be null or empty.", nameof(ropcAuthUrl));
+            if (string.IsNullOrEmpty(frontendAppId))
+                throw new ArgumentException($"Cannot be null or empty.", nameof(frontendAppId));
+            if (string.IsNullOrEmpty(backendBffAppScope))
+                throw new ArgumentException($"Cannot be null or empty.", nameof(backendBffAppScope));
 
             TokenBaseAddress = tokenBaseAddress;
 
-            RopcUrl = secretsConfiguration.GetValue<string>(BuildB2CEnvironmentSecretName(environment, "ropc-auth-url"))!;
-            FrontendAppId = secretsConfiguration.GetValue<string>(BuildB2CEnvironmentSecretName(environment, "frontend-app-id"))!;
-            BackendBffScope = secretsConfiguration.GetValue<string>(BuildB2CEnvironmentSecretName(environment, "backend-bff-app-scope"))!;
+            RopcUrl = ropcAuthUrl;
+            FrontendAppId = frontendAppId;
+            BackendBffScope = backendBffAppScope;
 
             Username = username;
             Password = password;
@@ -119,7 +125,6 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Identity
         /// </summary>
         public static B2CUserTokenConfiguration CreateFromConfiguration(IConfigurationRoot root)
         {
-            var b2cKeyVaultUrl = root.GetValue<string>("AZURE_B2CSECRETS_KEYVAULT_URL")!;
             var tokenBaseAddress = root.GetValue<string>("TOKEN_BASEADDRESS")!;
 
             var user = root.GetValue<string>("USER");
@@ -127,16 +132,19 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Identity
             // If 'user' is not set we are executing on the new subscriptions
             if (user == null)
             {
-                var environment =
-                    root.GetValue<string>("ENVIRONMENT")! +
-                    root.GetValue<string>("ENVIRONMENT_INSTANCE");
-
+                // On the new subsctiptions we don't get the values from a key vault, but instead as environment variables
                 var username = root.GetValue<string>("DH_E2E_USERNAME")!;
                 var password = root.GetValue<string>("DH_E2E_PASSWORD")!;
-                return new B2CUserTokenConfiguration(b2cKeyVaultUrl, environment, tokenBaseAddress, username, password);
+
+                var ropcAuthUrl = root.GetValue<string>("DH_E2E_USERNAME")!;
+                var frontendAppId = root.GetValue<string>("DH_E2E_PASSWORD")!;
+                var backendBffAppScope = root.GetValue<string>("DH_E2E_USERNAME")!;
+                return new B2CUserTokenConfiguration(tokenBaseAddress, username, password, ropcAuthUrl, frontendAppId, backendBffAppScope);
             }
             else
             {
+                var b2cKeyVaultUrl = root.GetValue<string>("AZURE_B2CSECRETS_KEYVAULT_URL")!;
+
                 var environment =
                     root.GetValue<string>("ENVIRONMENT_SHORT")! +
                     root.GetValue<string>("ENVIRONMENT_INSTANCE");
