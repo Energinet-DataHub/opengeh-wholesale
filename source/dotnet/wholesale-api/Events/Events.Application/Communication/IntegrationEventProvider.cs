@@ -109,7 +109,7 @@ public class IntegrationEventProvider : IIntegrationEventProvider
                         {
                             hasResult = false;
                             hasFailed = true;
-                            _logger.LogError(ex, "Failed wholesale result event publishing for completed calculation {calculation_id}. Handled '{WholesaleResultCount}' wholesale results before failing.", unpublishedBatch.Id, wholesaleResultCount);
+                            _logger.LogError(ex, "Failed wholesale result event publishing for completed calculation {calculation_id}. Handled '{wholesale_result_count}' wholesale results before failing.", unpublishedBatch.Id, wholesaleResultCount);
                         }
 
                         if (hasResult)
