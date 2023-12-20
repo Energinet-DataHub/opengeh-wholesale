@@ -127,10 +127,10 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Identity
         {
             var tokenBaseAddress = root.GetValue<string>("TOKEN_BASEADDRESS")!;
 
-            var user = root.GetValue<string>("USER");
+            var b2cKeyVaultUrl = root.GetValue<string>("AZURE_B2CSECRETS_KEYVAULT_URL");
 
-            // If 'user' is not set we are executing on the new subscriptions
-            if (string.IsNullOrEmpty(user))
+            // If 'b2cKeyVaultUrl' is not set we are executing on the new subscriptions
+            if (string.IsNullOrEmpty(b2cKeyVaultUrl))
             {
                 // On the new subsctiptions we don't get the values from a key vault, but instead as environment variables
                 var username = root.GetValue<string>("DH_E2E_USERNAME")!;
@@ -143,7 +143,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Identity
             }
             else
             {
-                var b2cKeyVaultUrl = root.GetValue<string>("AZURE_B2CSECRETS_KEYVAULT_URL")!;
+                var user = root.GetValue<string>("USER")!;
 
                 var environment =
                     root.GetValue<string>("ENVIRONMENT_SHORT")! +
