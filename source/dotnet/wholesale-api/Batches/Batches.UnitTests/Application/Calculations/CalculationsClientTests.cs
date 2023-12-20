@@ -17,7 +17,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Application;
 using Energinet.DataHub.Wholesale.Batches.Application.Model;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
-using Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchAggregate;
+using Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.CalculationAggregate;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -67,9 +67,9 @@ public class CalculationsClientTests
         const int numberOfBatches = 3;
         var batches = new List<Calculation>()
         {
-            new BatchBuilder().Build(),
-            new BatchBuilder().Build(),
-            new BatchBuilder().Build(),
+            new CalculationBuilder().Build(),
+            new CalculationBuilder().Build(),
+            new CalculationBuilder().Build(),
         };
 
         batchRepositoryMock

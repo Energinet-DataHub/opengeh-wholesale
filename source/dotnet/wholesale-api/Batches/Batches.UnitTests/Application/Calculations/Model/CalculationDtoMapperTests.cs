@@ -15,7 +15,7 @@
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
-using Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchAggregate;
+using Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.CalculationAggregate;
 using FluentAssertions;
 using NodaTime;
 using Xunit;
@@ -30,7 +30,7 @@ public class CalculationDtoMapperTests
         CalculationDtoMapper sut)
     {
         // Arrange
-        var batch = new BatchBuilder().WithStateExecuting().Build();
+        var batch = new CalculationBuilder().WithStateExecuting().Build();
 
         // Act
         var batchDto = sut.Map(batch);
@@ -45,7 +45,7 @@ public class CalculationDtoMapperTests
         CalculationDtoMapper sut)
     {
         // Arrange
-        var batch = new BatchBuilder().Build();
+        var batch = new CalculationBuilder().Build();
 
         // Act
         var batchDto = sut.Map(batch);
@@ -61,7 +61,7 @@ public class CalculationDtoMapperTests
         CalculationDtoMapper sut)
     {
         // Arrange
-        var batch = new BatchBuilder().Build();
+        var batch = new CalculationBuilder().Build();
         batch.MarkAsExecuting(); // this sets ExecutionTimeStart
         batch.MarkAsCompleted(batch.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2))); // this sets ExecutionTimeEnd
 
@@ -79,7 +79,7 @@ public class CalculationDtoMapperTests
         CalculationDtoMapper sut)
     {
         // Arrange
-        var batch = new BatchBuilder().Build();
+        var batch = new CalculationBuilder().Build();
         var expectedRunId = new CalculationId(111);
         batch.MarkAsSubmitted(expectedRunId);
 
@@ -96,7 +96,7 @@ public class CalculationDtoMapperTests
         CalculationDtoMapper sut)
     {
         // Arrange
-        var batch = new BatchBuilder().Build();
+        var batch = new CalculationBuilder().Build();
 
         // Act
         var batchDto = sut.Map(batch);

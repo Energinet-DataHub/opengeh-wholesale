@@ -18,7 +18,7 @@ using Energinet.DataHub.Wholesale.Batches.Application;
 using Energinet.DataHub.Wholesale.Batches.Application.Model;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchState;
-using Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchAggregate;
+using Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.CalculationAggregate;
 using FluentAssertions;
 using Moq;
 using NodaTime;
@@ -36,7 +36,7 @@ public class BatchExecutionStateDomainServiceTests
         BatchExecutionStateInfrastructureService sut)
     {
         // Arrange
-        var batch = new BatchBuilder().WithStatePending().Build();
+        var batch = new CalculationBuilder().WithStatePending().Build();
         var pendingBatches = new List<Calculation>() { batch };
         batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<CalculationExecutionState>>()))
             .ReturnsAsync(pendingBatches);
@@ -58,7 +58,7 @@ public class BatchExecutionStateDomainServiceTests
         BatchExecutionStateInfrastructureService sut)
     {
         // Arrange
-        var batch = new BatchBuilder().WithStateExecuting().Build();
+        var batch = new CalculationBuilder().WithStateExecuting().Build();
         var executionTimeEndGreaterThanStart = batch.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2));
         clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(executionTimeEndGreaterThanStart);
         var executingBatches = new List<Calculation>() { batch };
@@ -85,7 +85,7 @@ public class BatchExecutionStateDomainServiceTests
         BatchExecutionStateInfrastructureService sut)
     {
         // Arrange
-        var batch = new BatchBuilder().WithStateExecuting().Build();
+        var batch = new CalculationBuilder().WithStateExecuting().Build();
         var executingBatches = new List<Calculation>() { batch };
         batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<CalculationExecutionState>>()))
             .ReturnsAsync(executingBatches);
@@ -107,8 +107,8 @@ public class BatchExecutionStateDomainServiceTests
         BatchExecutionStateInfrastructureService sut)
     {
         // Arrange
-        var batch1 = new BatchBuilder().WithStatePending().Build();
-        var batch2 = new BatchBuilder().WithStateExecuting().Build();
+        var batch1 = new CalculationBuilder().WithStatePending().Build();
+        var batch2 = new CalculationBuilder().WithStateExecuting().Build();
         var batches = new List<Calculation>() { batch1, batch2 };
         var executionTimeEndGreaterThanStart = batch1.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2));
         clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(executionTimeEndGreaterThanStart);
@@ -137,8 +137,8 @@ public class BatchExecutionStateDomainServiceTests
         BatchExecutionStateInfrastructureService sut)
     {
         // Arrange
-        var batch1 = new BatchBuilder().WithStatePending().Build();
-        var batch2 = new BatchBuilder().WithStateExecuting().Build();
+        var batch1 = new CalculationBuilder().WithStatePending().Build();
+        var batch2 = new CalculationBuilder().WithStateExecuting().Build();
         var batches = new List<Calculation>() { batch1, batch2 };
         var executionTimeEndGreaterThanStart = batch1.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2));
         clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(executionTimeEndGreaterThanStart);
@@ -163,9 +163,9 @@ public class BatchExecutionStateDomainServiceTests
         BatchExecutionStateInfrastructureService sut)
     {
         // Arrange
-        var batch1 = new BatchBuilder().WithStateSubmitted().Build();
-        var batch2 = new BatchBuilder().WithStateSubmitted().Build();
-        var batch3 = new BatchBuilder().WithStateSubmitted().Build();
+        var batch1 = new CalculationBuilder().WithStateSubmitted().Build();
+        var batch2 = new CalculationBuilder().WithStateSubmitted().Build();
+        var batch3 = new CalculationBuilder().WithStateSubmitted().Build();
         var batches = new List<Calculation>() { batch1, batch2, batch3 };
 
         var executionTimeEndGreaterThanStart = batch1.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2));

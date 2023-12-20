@@ -23,16 +23,16 @@ using NodaTime;
 using NodaTime.Extensions;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchAggregate;
+namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.CalculationAggregate;
 
-public class BatchTests
+public class CalculationTests
 {
     [Fact]
     public void Ctor_CreatesImmutableGridAreaCodes()
     {
         // Arrange
         var someGridAreaCodes = new List<GridAreaCode> { new("004"), new("805") };
-        var sut = new BatchBuilder().WithGridAreaCodes(someGridAreaCodes).Build();
+        var sut = new CalculationBuilder().WithGridAreaCodes(someGridAreaCodes).Build();
 
         // Act
         var unexpectedGridAreaCode = new GridAreaCode("777");
@@ -67,9 +67,9 @@ public class BatchTests
     public void Ctor_WhenWholesaleAndCorrectionProcessTypesAndPeriodIsMoreThanAMonth_ThrowsBusinessValidationException(ProcessType processType)
     {
         // Arrange & Act
-        var actual = Assert.Throws<BusinessValidationException>(() => new BatchBuilder()
+        var actual = Assert.Throws<BusinessValidationException>(() => new CalculationBuilder()
             .WithProcessType(processType)
-            .WithPeriodEnd(Instant.FromDateTimeOffset(BatchBuilder.FirstOfJanuary2022.AddDays(32)))
+            .WithPeriodEnd(Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022.AddDays(32)))
             .Build());
 
         // Assert
@@ -94,9 +94,9 @@ public class BatchTests
     public void Ctor_PeriodsCombinedWithProcessTypes_AreValidOrInvalid(ProcessType processType, int days, bool isValid)
     {
         // Arrange & Act
-        var batchBuilder = new BatchBuilder()
+        var batchBuilder = new CalculationBuilder()
             .WithProcessType(processType)
-            .WithPeriodEnd(Instant.FromDateTimeOffset(BatchBuilder.FirstOfJanuary2022.AddDays(days)));
+            .WithPeriodEnd(Instant.FromDateTimeOffset(CalculationBuilder.FirstOfJanuary2022.AddDays(days)));
 
         // Act
         var actual = Record.Exception(() => batchBuilder.Build());
@@ -151,14 +151,14 @@ public class BatchTests
     [Fact]
     public void Ctor_SetsExecutionTimeEndToNull()
     {
-        var sut = new BatchBuilder().WithStatePending().Build();
+        var sut = new CalculationBuilder().WithStatePending().Build();
         sut.ExecutionTimeEnd.Should().BeNull();
     }
 
     [Fact]
     public void Ctor_ExecutionTimeStartNotNull()
     {
-        var sut = new BatchBuilder().WithStatePending().Build();
+        var sut = new CalculationBuilder().WithStatePending().Build();
         sut.ExecutionTimeStart.Should().NotBeNull();
     }
 
@@ -168,7 +168,7 @@ public class BatchTests
         // Arrange
         foreach (var processType in Enum.GetValues(typeof(ProcessType)))
         {
-            var sut = new BatchBuilder().WithProcessType((ProcessType)processType).Build();
+            var sut = new CalculationBuilder().WithProcessType((ProcessType)processType).Build();
 
             // Act & Assert
             sut.GetResolution();
@@ -181,7 +181,7 @@ public class BatchTests
         // Arrange
         foreach (var processType in Enum.GetValues(typeof(ProcessType)))
         {
-            var sut = new BatchBuilder().WithProcessType((ProcessType)processType).Build();
+            var sut = new CalculationBuilder().WithProcessType((ProcessType)processType).Build();
 
             // Act & Assert - Remember to add new [InlineAutoMoqData (...,...)] for new process types in other tests
             sut.GetQuantityUnit();
@@ -198,7 +198,7 @@ public class BatchTests
     public void GetResolution_ReturnsExpectedIso8601Duration(ProcessType processType, string expectedIso8601Duration)
     {
         // Arrange
-        var sut = new BatchBuilder().WithProcessType(processType).Build();
+        var sut = new CalculationBuilder().WithProcessType(processType).Build();
 
         // Act
         var actual = sut.GetResolution();
@@ -217,7 +217,7 @@ public class BatchTests
     public void GetQuantityUnit_ReturnsExpectedIso8601Duration(ProcessType processType, QuantityUnit expectedQuantityUnit)
     {
         // Arrange
-        var sut = new BatchBuilder().WithProcessType(processType).Build();
+        var sut = new CalculationBuilder().WithProcessType(processType).Build();
 
         // Act
         var actual = sut.GetQuantityUnit();
@@ -229,7 +229,7 @@ public class BatchTests
     [Fact]
     public void MarkAsCompleted_WhenComplete_ThrowsBusinessValidationException()
     {
-        var sut = new BatchBuilder().WithStateCompleted().Build();
+        var sut = new CalculationBuilder().WithStateCompleted().Build();
         Assert.Throws<BusinessValidationException>(() => sut.MarkAsCompleted(It.IsAny<Instant>()));
     }
 
@@ -288,7 +288,7 @@ public class BatchTests
     public void MarkAsCompleted_WhenExecuting_CompletesBatch()
     {
         // Arrange
-        var sut = new BatchBuilder().WithStateExecuting().Build();
+        var sut = new CalculationBuilder().WithStateExecuting().Build();
         var executionTimeEndGreaterThanStart = sut.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2));
 
         // Act
@@ -302,7 +302,7 @@ public class BatchTests
     public void MarkAsCompleted_SetsExecutionTimeEnd()
     {
         // Arrange
-        var sut = new BatchBuilder().WithStateExecuting().Build();
+        var sut = new CalculationBuilder().WithStateExecuting().Build();
         var executionTimeEndGreaterThanStart = sut.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2));
 
         // Act
@@ -316,7 +316,7 @@ public class BatchTests
     public void MarkAsCompleted_WhenExecutionTimeEndLessThanStart_ThrowsBusinessValidationException()
     {
         // Arrange
-        var sut = new BatchBuilder().WithStateExecuting().Build();
+        var sut = new CalculationBuilder().WithStateExecuting().Build();
         var executionTimeEndLessThanStart = sut.ExecutionTimeStart!.Value.Minus(Duration.FromDays(2));
 
         // Act
@@ -330,21 +330,21 @@ public class BatchTests
     [Fact]
     public void MarkAsExecuting_WhenExecuting_ThrowsBusinessValidationException()
     {
-        var sut = new BatchBuilder().WithStateExecuting().Build();
+        var sut = new CalculationBuilder().WithStateExecuting().Build();
         Assert.Throws<BusinessValidationException>(() => sut.MarkAsExecuting());
     }
 
     [Fact]
     public void MarkAsExecuting_WhenComplete_ThrowsBusinessValidationException()
     {
-        var sut = new BatchBuilder().WithStateCompleted().Build();
+        var sut = new CalculationBuilder().WithStateCompleted().Build();
         Assert.Throws<BusinessValidationException>(() => sut.MarkAsExecuting());
     }
 
     [Fact]
     public void MarkAsExecuting_WhenPending_ExecutesBatch()
     {
-        var sut = new BatchBuilder().WithStatePending().Build();
+        var sut = new CalculationBuilder().WithStatePending().Build();
         sut.MarkAsExecuting();
         sut.ExecutionState.Should().Be(CalculationExecutionState.Executing);
     }
@@ -352,7 +352,7 @@ public class BatchTests
     [Fact]
     public void MarkAsExecuting_ExecutionTimeIsSetToNull()
     {
-        var sut = new BatchBuilder().WithStatePending().Build();
+        var sut = new CalculationBuilder().WithStatePending().Build();
         sut.MarkAsExecuting();
         sut.ExecutionTimeEnd.Should().BeNull();
     }
@@ -360,7 +360,7 @@ public class BatchTests
     [Fact]
     public void Reset_WhenSubmitted_SetsStateCreated()
     {
-        var sut = new BatchBuilder().WithStateSubmitted().Build();
+        var sut = new CalculationBuilder().WithStateSubmitted().Build();
         sut.Reset();
         sut.ExecutionState.Should().Be(CalculationExecutionState.Created);
     }
@@ -368,7 +368,7 @@ public class BatchTests
     [Fact]
     public void Reset_WhenPending_SetsStateCreated()
     {
-        var sut = new BatchBuilder().WithStatePending().Build();
+        var sut = new CalculationBuilder().WithStatePending().Build();
         sut.Reset();
         sut.ExecutionState.Should().Be(CalculationExecutionState.Created);
     }
@@ -376,7 +376,7 @@ public class BatchTests
     [Fact]
     public void Reset_WhenExecuting_SetsStateCreated()
     {
-        var sut = new BatchBuilder().WithStateExecuting().Build();
+        var sut = new CalculationBuilder().WithStateExecuting().Build();
         sut.Reset();
         sut.ExecutionState.Should().Be(CalculationExecutionState.Created);
     }
@@ -384,7 +384,7 @@ public class BatchTests
     [Fact]
     public void Reset_WhenCompleted_ThrowsBusinessValidationException()
     {
-        var sut = new BatchBuilder().WithStateCompleted().Build();
+        var sut = new CalculationBuilder().WithStateCompleted().Build();
         Assert.Throws<BusinessValidationException>(() => sut.Reset());
     }
 }

@@ -17,7 +17,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Application;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Batches.Application.UseCases;
-using Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchAggregate;
+using Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.CalculationAggregate;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Test.Core;
@@ -36,7 +36,7 @@ public class StartCalculationHandlerTests
         StartCalculationHandler sut)
     {
         // Arrange
-        var batches = new List<Calculation> { new BatchBuilder().Build(), new BatchBuilder().Build() };
+        var batches = new List<Calculation> { new CalculationBuilder().Build(), new CalculationBuilder().Build() };
         batchRepositoryMock
             .Setup(repository => repository.GetCreatedAsync())
             .ReturnsAsync(batches);
@@ -61,7 +61,7 @@ public class StartCalculationHandlerTests
     {
         // Arrange
         const string expectedLogMessage = $"Calculation with id {LoggingConstants.CalculationId} started.";
-        var batches = new List<Calculation> { new BatchBuilder().Build(), new BatchBuilder().Build() };
+        var batches = new List<Calculation> { new CalculationBuilder().Build(), new CalculationBuilder().Build() };
         batchRepositoryMock
             .Setup(repository => repository.GetCreatedAsync())
             .ReturnsAsync(batches);

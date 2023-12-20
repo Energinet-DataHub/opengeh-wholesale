@@ -16,7 +16,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
-using Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchAggregate;
+using Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.CalculationAggregate;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -24,9 +24,9 @@ using Moq.EntityFrameworkCore;
 using NodaTime;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.Persistence.Batches;
+namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.Persistence.Calculations;
 
-public class BatchRepositoryTests
+public class CalculationRepositoryTests
 {
     [Theory]
     [InlineAutoMoqData]
@@ -71,8 +71,8 @@ public class BatchRepositoryTests
         Mock<DatabaseContext> databaseContextMock)
     {
         // Arrange
-        var batch1 = new BatchBuilder().WithStateCompleted().Build();
-        var batch2 = new BatchBuilder().WithStateCompleted().Build();
+        var batch1 = new CalculationBuilder().WithStateCompleted().Build();
+        var batch2 = new CalculationBuilder().WithStateCompleted().Build();
         databaseContextMock
             .Setup<DbSet<Calculation>>(context => context.Batches)
             .ReturnsDbSet(new List<Calculation> { batch1, batch2 });
@@ -93,7 +93,7 @@ public class BatchRepositoryTests
         Mock<DatabaseContext> databaseContextMock)
     {
         // Arrange
-        var batch = new BatchBuilder().WithStateCompleted().Build();
+        var batch = new CalculationBuilder().WithStateCompleted().Build();
         databaseContextMock
             .Setup<DbSet<Calculation>>(context => context.Batches)
             .ReturnsDbSet(new List<Calculation> { batch });
@@ -114,7 +114,7 @@ public class BatchRepositoryTests
         Mock<DatabaseContext> databaseContextMock)
     {
         // Arrange
-        var nonCompletedBatch = new BatchBuilder().Build();
+        var nonCompletedBatch = new CalculationBuilder().Build();
         databaseContextMock
             .Setup<DbSet<Calculation>>(context => context.Batches)
             .ReturnsDbSet(new List<Calculation> { nonCompletedBatch });

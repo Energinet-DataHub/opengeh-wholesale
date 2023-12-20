@@ -18,9 +18,9 @@ using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using NodaTime;
 using Test.Core;
 
-namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchAggregate;
+namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.CalculationAggregate;
 
-public class BatchBuilder
+public class CalculationBuilder
 {
     public static readonly DateTimeOffset FirstOfJanuary2022 = DateTimeOffset.Parse("2021-12-31T23:00Z");
 
@@ -31,7 +31,7 @@ public class BatchBuilder
     private List<GridAreaCode> _gridAreaCodes = new() { new("805") };
     private ProcessType _processType = ProcessType.BalanceFixing;
 
-    public BatchBuilder()
+    public CalculationBuilder()
     {
         // Create a valid period representing January in a +01:00 offset (e.g. time zone "Europe/Copenhagen")
         // In order to be valid the last millisecond must be omitted
@@ -39,55 +39,55 @@ public class BatchBuilder
         _periodEnd = Instant.FromDateTimeOffset(FirstOfJanuary2022.AddMonths(1));
     }
 
-    public BatchBuilder WithStateSubmitted()
+    public CalculationBuilder WithStateSubmitted()
     {
         _state = CalculationExecutionState.Submitted;
         return this;
     }
 
-    public BatchBuilder WithStatePending()
+    public CalculationBuilder WithStatePending()
     {
         _state = CalculationExecutionState.Pending;
         return this;
     }
 
-    public BatchBuilder WithStateExecuting()
+    public CalculationBuilder WithStateExecuting()
     {
         _state = CalculationExecutionState.Executing;
         return this;
     }
 
-    public BatchBuilder WithStateCompleted()
+    public CalculationBuilder WithStateCompleted()
     {
         _state = CalculationExecutionState.Completed;
         return this;
     }
 
-    public BatchBuilder WithGridAreaCode(string gridAreaCode)
+    public CalculationBuilder WithGridAreaCode(string gridAreaCode)
     {
         _gridAreaCodes = new GridAreaCode(gridAreaCode).InList();
         return this;
     }
 
-    public BatchBuilder WithGridAreaCodes(List<GridAreaCode> gridAreaCodes)
+    public CalculationBuilder WithGridAreaCodes(List<GridAreaCode> gridAreaCodes)
     {
         _gridAreaCodes = gridAreaCodes;
         return this;
     }
 
-    public BatchBuilder WithProcessType(ProcessType processType)
+    public CalculationBuilder WithProcessType(ProcessType processType)
     {
         _processType = processType;
         return this;
     }
 
-    public BatchBuilder WithPeriodStart(Instant periodStart)
+    public CalculationBuilder WithPeriodStart(Instant periodStart)
     {
         _periodStart = periodStart;
         return this;
     }
 
-    public BatchBuilder WithPeriodEnd(Instant periodEnd)
+    public CalculationBuilder WithPeriodEnd(Instant periodEnd)
     {
         _periodEnd = periodEnd;
         return this;

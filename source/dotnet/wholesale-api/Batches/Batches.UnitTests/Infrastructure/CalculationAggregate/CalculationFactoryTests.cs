@@ -21,7 +21,7 @@ using Moq;
 using NodaTime;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchAggregate;
+namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.CalculationAggregate;
 
 public class CalculationFactoryTests
 {
