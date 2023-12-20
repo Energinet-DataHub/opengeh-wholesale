@@ -17,7 +17,7 @@ namespace Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
 /// <summary>
 /// IMPORTANT: Do not change numeric values as it'll affect persistence or communication.
 /// </summary>
-public enum BatchExecutionState
+public enum CalculationExecutionState
 {
     /// <summary>
     /// The batch is created.

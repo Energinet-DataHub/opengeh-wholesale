@@ -25,18 +25,18 @@ namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchExec
 public class BatchStateMapperTests
 {
     [Theory]
-    [InlineAutoMoqData(CalculationState.Pending, BatchExecutionState.Pending)]
-    [InlineAutoMoqData(CalculationState.Running, BatchExecutionState.Executing)]
-    [InlineAutoMoqData(CalculationState.Completed, BatchExecutionState.Completed)]
-    [InlineAutoMoqData(CalculationState.Canceled, BatchExecutionState.Canceled)]
-    [InlineAutoMoqData(CalculationState.Failed, BatchExecutionState.Failed)]
-    public void MapState_CalledWithACalculationStateItCanMap_ExpectedBatchExecutionState(CalculationState calculationState, BatchExecutionState expectedBatchExecutionState)
+    [InlineAutoMoqData(CalculationState.Pending, CalculationExecutionState.Pending)]
+    [InlineAutoMoqData(CalculationState.Running, CalculationExecutionState.Executing)]
+    [InlineAutoMoqData(CalculationState.Completed, CalculationExecutionState.Completed)]
+    [InlineAutoMoqData(CalculationState.Canceled, CalculationExecutionState.Canceled)]
+    [InlineAutoMoqData(CalculationState.Failed, CalculationExecutionState.Failed)]
+    public void MapState_CalledWithACalculationStateItCanMap_ExpectedBatchExecutionState(CalculationState calculationState, CalculationExecutionState expectedCalculationExecutionState)
     {
         // Act
         var actualBatchExecutionState = BatchStateMapper.MapState(calculationState);
 
         // Assert
-        actualBatchExecutionState.Should().Be(expectedBatchExecutionState);
+        actualBatchExecutionState.Should().Be(expectedCalculationExecutionState);
     }
 
     [Fact]

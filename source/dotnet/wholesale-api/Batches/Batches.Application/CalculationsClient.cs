@@ -53,11 +53,11 @@ public class CalculationsClient : ICalculationsClient
     {
         var executionStateFilter = filterByExecutionState switch
         {
-            null => Array.Empty<BatchExecutionState>(),
-            BatchState.Pending => new[] { BatchExecutionState.Created, BatchExecutionState.Submitted, BatchExecutionState.Pending },
-            BatchState.Executing => new[] { BatchExecutionState.Executing },
-            BatchState.Completed => new[] { BatchExecutionState.Completed },
-            BatchState.Failed => new[] { BatchExecutionState.Failed },
+            null => Array.Empty<CalculationExecutionState>(),
+            BatchState.Pending => new[] { CalculationExecutionState.Created, CalculationExecutionState.Submitted, CalculationExecutionState.Pending },
+            BatchState.Executing => new[] { CalculationExecutionState.Executing },
+            BatchState.Completed => new[] { CalculationExecutionState.Completed },
+            BatchState.Failed => new[] { CalculationExecutionState.Failed },
             _ => throw new ArgumentOutOfRangeException(nameof(filterByExecutionState)),
         };
 

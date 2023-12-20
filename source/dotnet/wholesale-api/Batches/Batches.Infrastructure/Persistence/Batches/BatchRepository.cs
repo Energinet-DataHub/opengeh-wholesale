@@ -39,9 +39,9 @@ public class BatchRepository : IBatchRepository
         return await _context.Batches.FirstAsync(x => x.Id == batchId).ConfigureAwait(false);
     }
 
-    public Task<List<Calculation>> GetCreatedAsync() => GetByStateAsync(BatchExecutionState.Created);
+    public Task<List<Calculation>> GetCreatedAsync() => GetByStateAsync(CalculationExecutionState.Created);
 
-    public async Task<List<Calculation>> GetByStatesAsync(IEnumerable<BatchExecutionState> states)
+    public async Task<List<Calculation>> GetByStatesAsync(IEnumerable<CalculationExecutionState> states)
     {
         return await _context
             .Batches
@@ -54,7 +54,7 @@ public class BatchRepository : IBatchRepository
     {
         return await _context
             .Batches
-            .Where(b => b.ExecutionState == BatchExecutionState.Completed)
+            .Where(b => b.ExecutionState == CalculationExecutionState.Completed)
             .Where(b => completedTime == null || b.ExecutionTimeEnd > completedTime)
             .ToListAsync()
             .ConfigureAwait(false);
@@ -62,7 +62,7 @@ public class BatchRepository : IBatchRepository
 
     public async Task<IReadOnlyCollection<Calculation>> SearchAsync(
         IReadOnlyCollection<GridAreaCode> filterByGridAreaCode,
-        IReadOnlyCollection<BatchExecutionState> filterByExecutionState,
+        IReadOnlyCollection<CalculationExecutionState> filterByExecutionState,
         Instant? minExecutionTimeStart,
         Instant? maxExecutionTimeStart,
         Instant? periodStart,
@@ -83,7 +83,7 @@ public class BatchRepository : IBatchRepository
             .ToList();
     }
 
-    private async Task<List<Calculation>> GetByStateAsync(BatchExecutionState state)
+    private async Task<List<Calculation>> GetByStateAsync(CalculationExecutionState state)
     {
         return await _context
             .Batches

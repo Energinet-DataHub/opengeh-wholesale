@@ -45,9 +45,9 @@ public class BatchExecutionStateInfrastructureService : IBatchExecutionStateInfr
     public async Task UpdateExecutionStateAsync()
     {
         var completedBatches = new List<Calculation>();
-        var states = new List<BatchExecutionState>
+        var states = new List<CalculationExecutionState>
         {
-            BatchExecutionState.Submitted, BatchExecutionState.Pending, BatchExecutionState.Executing,
+            CalculationExecutionState.Submitted, CalculationExecutionState.Pending, CalculationExecutionState.Executing,
         };
         var activeBatches = await _batchRepository.GetByStatesAsync(states).ConfigureAwait(false);
         foreach (var batch in activeBatches)
@@ -71,24 +71,24 @@ public class BatchExecutionStateInfrastructureService : IBatchExecutionStateInfr
         }
     }
 
-    private void HandleNewState(BatchExecutionState state, Calculation calculation, ICollection<Calculation> completedBatches)
+    private void HandleNewState(CalculationExecutionState state, Calculation calculation, ICollection<Calculation> completedBatches)
     {
         switch (state)
         {
-            case BatchExecutionState.Pending:
+            case CalculationExecutionState.Pending:
                 calculation.MarkAsPending();
                 break;
-            case BatchExecutionState.Executing:
+            case CalculationExecutionState.Executing:
                 calculation.MarkAsExecuting();
                 break;
-            case BatchExecutionState.Completed:
+            case CalculationExecutionState.Completed:
                 calculation.MarkAsCompleted(_clock.GetCurrentInstant());
                 completedBatches.Add(calculation);
                 break;
-            case BatchExecutionState.Failed:
+            case CalculationExecutionState.Failed:
                 calculation.MarkAsFailed();
                 break;
-            case BatchExecutionState.Canceled:
+            case CalculationExecutionState.Canceled:
                 // Jobs may be cancelled in Databricks for various reasons. For example they can be cancelled due to migrations in CD
                 // Setting batch state back to "created" ensure they will be picked up and started again
                 calculation.Reset();

@@ -38,7 +38,7 @@ public class BatchExecutionStateDomainServiceTests
         // Arrange
         var batch = new BatchBuilder().WithStatePending().Build();
         var pendingBatches = new List<Calculation>() { batch };
-        batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>()))
+        batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<CalculationExecutionState>>()))
             .ReturnsAsync(pendingBatches);
         calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch.CalculationId!)).ReturnsAsync(CalculationState.Running);
 
@@ -46,7 +46,7 @@ public class BatchExecutionStateDomainServiceTests
         await sut.UpdateExecutionStateAsync();
 
         // Assert
-        batch.ExecutionState.Should().Be(BatchExecutionState.Executing);
+        batch.ExecutionState.Should().Be(CalculationExecutionState.Executing);
     }
 
     [Theory]
@@ -62,7 +62,7 @@ public class BatchExecutionStateDomainServiceTests
         var executionTimeEndGreaterThanStart = batch.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2));
         clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(executionTimeEndGreaterThanStart);
         var executingBatches = new List<Calculation>() { batch };
-        batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>()))
+        batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<CalculationExecutionState>>()))
             .ReturnsAsync(executingBatches);
         calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch.CalculationId!)).ReturnsAsync(CalculationState.Completed);
 
@@ -70,7 +70,7 @@ public class BatchExecutionStateDomainServiceTests
         await sut.UpdateExecutionStateAsync();
 
         // Assert
-        batch.ExecutionState.Should().Be(BatchExecutionState.Completed);
+        batch.ExecutionState.Should().Be(CalculationExecutionState.Completed);
     }
 
     /// <summary>
@@ -87,7 +87,7 @@ public class BatchExecutionStateDomainServiceTests
         // Arrange
         var batch = new BatchBuilder().WithStateExecuting().Build();
         var executingBatches = new List<Calculation>() { batch };
-        batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>()))
+        batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<CalculationExecutionState>>()))
             .ReturnsAsync(executingBatches);
         calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch.CalculationId!)).ReturnsAsync(CalculationState.Canceled);
 
@@ -95,7 +95,7 @@ public class BatchExecutionStateDomainServiceTests
         await sut.UpdateExecutionStateAsync();
 
         // Assert
-        batch.ExecutionState.Should().Be(BatchExecutionState.Created);
+        batch.ExecutionState.Should().Be(CalculationExecutionState.Created);
     }
 
     [Theory]
@@ -113,7 +113,7 @@ public class BatchExecutionStateDomainServiceTests
         var executionTimeEndGreaterThanStart = batch1.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2));
         clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(executionTimeEndGreaterThanStart);
 
-        batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>()))
+        batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<CalculationExecutionState>>()))
             .ReturnsAsync(batches);
         calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch1.CalculationId!))
             .ReturnsAsync(CalculationState.Pending); // Unchanged
@@ -124,8 +124,8 @@ public class BatchExecutionStateDomainServiceTests
         await sut.UpdateExecutionStateAsync();
 
         // Assert
-        batch2.ExecutionState.Should().Be(BatchExecutionState.Completed);
-        batch1.ExecutionState.Should().Be(BatchExecutionState.Pending); // Unchanged
+        batch2.ExecutionState.Should().Be(CalculationExecutionState.Completed);
+        batch1.ExecutionState.Should().Be(CalculationExecutionState.Pending); // Unchanged
     }
 
     [Theory]
@@ -142,7 +142,7 @@ public class BatchExecutionStateDomainServiceTests
         var batches = new List<Calculation>() { batch1, batch2 };
         var executionTimeEndGreaterThanStart = batch1.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2));
         clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(executionTimeEndGreaterThanStart);
-        batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>()))
+        batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<CalculationExecutionState>>()))
             .ReturnsAsync(batches);
         calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch2.CalculationId!))
             .ReturnsAsync(CalculationState.Completed);
@@ -151,7 +151,7 @@ public class BatchExecutionStateDomainServiceTests
         await sut.UpdateExecutionStateAsync();
 
         // Assert
-        batch2.ExecutionState.Should().Be(BatchExecutionState.Completed);
+        batch2.ExecutionState.Should().Be(CalculationExecutionState.Completed);
     }
 
     [Theory]
@@ -170,7 +170,7 @@ public class BatchExecutionStateDomainServiceTests
 
         var executionTimeEndGreaterThanStart = batch1.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2));
         clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(executionTimeEndGreaterThanStart);
-        batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>()))
+        batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<CalculationExecutionState>>()))
             .ReturnsAsync(batches);
         calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(batch1.CalculationId!))
             .ReturnsAsync(CalculationState.Completed);
@@ -182,8 +182,8 @@ public class BatchExecutionStateDomainServiceTests
         await sut.UpdateExecutionStateAsync();
 
         // Assert: Events was published for batch1 and batch3, but not for batch2
-        batch1.ExecutionState.Should().Be(BatchExecutionState.Completed);
-        batch2.ExecutionState.Should().Be(BatchExecutionState.Submitted);
-        batch3.ExecutionState.Should().Be(BatchExecutionState.Completed);
+        batch1.ExecutionState.Should().Be(CalculationExecutionState.Completed);
+        batch2.ExecutionState.Should().Be(CalculationExecutionState.Submitted);
+        batch3.ExecutionState.Should().Be(CalculationExecutionState.Completed);
     }
 }

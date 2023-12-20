@@ -20,15 +20,15 @@ namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchState;
 
 public class BatchStateMapper
 {
-    public static BatchExecutionState MapState(CalculationState calculationState)
+    public static CalculationExecutionState MapState(CalculationState calculationState)
     {
         return calculationState switch
         {
-            CalculationState.Pending => BatchExecutionState.Pending,
-            CalculationState.Running => BatchExecutionState.Executing,
-            CalculationState.Completed => BatchExecutionState.Completed,
-            CalculationState.Canceled => BatchExecutionState.Canceled,
-            CalculationState.Failed => BatchExecutionState.Failed,
+            CalculationState.Pending => CalculationExecutionState.Pending,
+            CalculationState.Running => CalculationExecutionState.Executing,
+            CalculationState.Completed => CalculationExecutionState.Completed,
+            CalculationState.Canceled => CalculationExecutionState.Canceled,
+            CalculationState.Failed => CalculationExecutionState.Failed,
 
             _ => throw new ArgumentOutOfRangeException(
                 nameof(calculationState),

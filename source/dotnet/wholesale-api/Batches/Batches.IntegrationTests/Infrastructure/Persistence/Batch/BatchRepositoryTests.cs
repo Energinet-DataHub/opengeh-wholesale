@@ -120,7 +120,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture<Datab
         // Act
         var actual = await sut.SearchAsync(
             new[] { new GridAreaCode("004") },
-            Array.Empty<BatchExecutionState>(),
+            Array.Empty<CalculationExecutionState>(),
             null,
             null,
             null,
@@ -144,7 +144,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture<Datab
         // Act
         var actual = await sut.SearchAsync(
             Array.Empty<GridAreaCode>(),
-            new[] { BatchExecutionState.Created },
+            new[] { CalculationExecutionState.Created },
             null,
             null,
             null,
@@ -176,7 +176,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture<Datab
         // Act
         var actual = await sut.SearchAsync(
             Array.Empty<GridAreaCode>(),
-            Array.Empty<BatchExecutionState>(),
+            Array.Empty<CalculationExecutionState>(),
             null,
             null,
             Instant.FromDateTimeOffset(start),
@@ -216,7 +216,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture<Datab
         // Act
         var actual = await sut.SearchAsync(
             Array.Empty<GridAreaCode>(),
-            Array.Empty<BatchExecutionState>(),
+            Array.Empty<CalculationExecutionState>(),
             Instant.FromDateTimeOffset(start),
             Instant.FromDateTimeOffset(end),
             null,

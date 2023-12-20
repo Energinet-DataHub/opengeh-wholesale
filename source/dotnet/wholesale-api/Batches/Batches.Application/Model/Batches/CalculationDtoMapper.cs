@@ -36,16 +36,16 @@ public class CalculationDtoMapper : ICalculationDtoMapper
             calculation.CreatedByUserId);
     }
 
-    private static BatchState MapState(BatchExecutionState state)
+    private static BatchState MapState(CalculationExecutionState state)
     {
         return state switch
         {
-            BatchExecutionState.Created => BatchState.Pending,
-            BatchExecutionState.Submitted => BatchState.Pending,
-            BatchExecutionState.Pending => BatchState.Pending,
-            BatchExecutionState.Executing => BatchState.Executing,
-            BatchExecutionState.Completed => BatchState.Completed,
-            BatchExecutionState.Failed => BatchState.Failed,
+            CalculationExecutionState.Created => BatchState.Pending,
+            CalculationExecutionState.Submitted => BatchState.Pending,
+            CalculationExecutionState.Pending => BatchState.Pending,
+            CalculationExecutionState.Executing => BatchState.Executing,
+            CalculationExecutionState.Completed => BatchState.Completed,
+            CalculationExecutionState.Failed => BatchState.Failed,
 
             _ => throw new ArgumentOutOfRangeException(
                 nameof(state),

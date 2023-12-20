@@ -26,13 +26,13 @@ public interface IBatchRepository
 
     Task<List<Calculation>> GetCreatedAsync();
 
-    Task<List<Calculation>> GetByStatesAsync(IEnumerable<BatchExecutionState> states);
+    Task<List<Calculation>> GetByStatesAsync(IEnumerable<CalculationExecutionState> states);
 
     Task<List<Calculation>> GetCompletedAfterAsync(Instant? completedTime);
 
     Task<IReadOnlyCollection<Calculation>> SearchAsync(
         IReadOnlyCollection<GridAreaCode> filterByGridAreaCode,
-        IReadOnlyCollection<BatchExecutionState> filterByExecutionState,
+        IReadOnlyCollection<CalculationExecutionState> filterByExecutionState,
         Instant? minExecutionTimeStart,
         Instant? maxExecutionTimeStart,
         Instant? periodStart,

@@ -37,7 +37,7 @@ public class CalculationsClientTests
         batchRepositoryMock
             .Setup(x => x.SearchAsync(
                 Array.Empty<GridAreaCode>(),
-                Array.Empty<BatchExecutionState>(),
+                Array.Empty<CalculationExecutionState>(),
                 null,
                 null,
                 null,
@@ -75,7 +75,7 @@ public class CalculationsClientTests
         batchRepositoryMock
             .Setup(x => x.SearchAsync(
                 It.IsAny<List<GridAreaCode>>(),
-                Array.Empty<BatchExecutionState>(),
+                Array.Empty<CalculationExecutionState>(),
                 null,
                 null,
                 null,

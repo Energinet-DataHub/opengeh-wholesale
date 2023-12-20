@@ -295,7 +295,7 @@ public class BatchTests
         sut.MarkAsCompleted(executionTimeEndGreaterThanStart);
 
         // Assert
-        sut.ExecutionState.Should().Be(BatchExecutionState.Completed);
+        sut.ExecutionState.Should().Be(CalculationExecutionState.Completed);
     }
 
     [Fact]
@@ -346,7 +346,7 @@ public class BatchTests
     {
         var sut = new BatchBuilder().WithStatePending().Build();
         sut.MarkAsExecuting();
-        sut.ExecutionState.Should().Be(BatchExecutionState.Executing);
+        sut.ExecutionState.Should().Be(CalculationExecutionState.Executing);
     }
 
     [Fact]
@@ -362,7 +362,7 @@ public class BatchTests
     {
         var sut = new BatchBuilder().WithStateSubmitted().Build();
         sut.Reset();
-        sut.ExecutionState.Should().Be(BatchExecutionState.Created);
+        sut.ExecutionState.Should().Be(CalculationExecutionState.Created);
     }
 
     [Fact]
@@ -370,7 +370,7 @@ public class BatchTests
     {
         var sut = new BatchBuilder().WithStatePending().Build();
         sut.Reset();
-        sut.ExecutionState.Should().Be(BatchExecutionState.Created);
+        sut.ExecutionState.Should().Be(CalculationExecutionState.Created);
     }
 
     [Fact]
@@ -378,7 +378,7 @@ public class BatchTests
     {
         var sut = new BatchBuilder().WithStateExecuting().Build();
         sut.Reset();
-        sut.ExecutionState.Should().Be(BatchExecutionState.Created);
+        sut.ExecutionState.Should().Be(CalculationExecutionState.Created);
     }
 
     [Fact]

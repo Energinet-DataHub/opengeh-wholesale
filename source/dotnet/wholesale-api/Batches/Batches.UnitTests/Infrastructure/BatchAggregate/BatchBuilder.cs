@@ -27,7 +27,7 @@ public class BatchBuilder
     private Instant _periodStart;
     private Instant _periodEnd;
 
-    private BatchExecutionState? _state;
+    private CalculationExecutionState? _state;
     private List<GridAreaCode> _gridAreaCodes = new() { new("805") };
     private ProcessType _processType = ProcessType.BalanceFixing;
 
@@ -41,25 +41,25 @@ public class BatchBuilder
 
     public BatchBuilder WithStateSubmitted()
     {
-        _state = BatchExecutionState.Submitted;
+        _state = CalculationExecutionState.Submitted;
         return this;
     }
 
     public BatchBuilder WithStatePending()
     {
-        _state = BatchExecutionState.Pending;
+        _state = CalculationExecutionState.Pending;
         return this;
     }
 
     public BatchBuilder WithStateExecuting()
     {
-        _state = BatchExecutionState.Executing;
+        _state = CalculationExecutionState.Executing;
         return this;
     }
 
     public BatchBuilder WithStateCompleted()
     {
-        _state = BatchExecutionState.Completed;
+        _state = CalculationExecutionState.Completed;
         return this;
     }
 
@@ -106,22 +106,22 @@ public class BatchBuilder
             Guid.NewGuid());
         var jobRunId = new CalculationId(new Random().Next(1, 1000));
 
-        if (_state == BatchExecutionState.Submitted)
+        if (_state == CalculationExecutionState.Submitted)
         {
             batch.MarkAsSubmitted(jobRunId);
         }
-        else if (_state == BatchExecutionState.Pending)
+        else if (_state == CalculationExecutionState.Pending)
         {
             batch.MarkAsSubmitted(jobRunId);
             batch.MarkAsPending();
         }
-        else if (_state == BatchExecutionState.Executing)
+        else if (_state == CalculationExecutionState.Executing)
         {
             batch.MarkAsSubmitted(jobRunId);
             batch.MarkAsPending();
             batch.MarkAsExecuting();
         }
-        else if (_state == BatchExecutionState.Completed)
+        else if (_state == CalculationExecutionState.Completed)
         {
             batch.MarkAsSubmitted(jobRunId);
             batch.MarkAsPending();
