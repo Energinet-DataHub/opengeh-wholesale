@@ -70,11 +70,11 @@ public static class CalculationsRegistration
     private static void RegisterHostedServices(IServiceCollection serviceCollection)
     {
         serviceCollection.AddHostedService<StartCalculationTrigger>();
-        serviceCollection.AddHostedService<UpdateBatchExecutionStateTrigger>();
+        serviceCollection.AddHostedService<UpdateCalculationExecutionStateTrigger>();
 
         serviceCollection
             .AddHealthChecks()
             .AddRepeatingTriggerHealthCheck<StartCalculationTrigger>(TimeSpan.FromMinutes(1))
-            .AddRepeatingTriggerHealthCheck<UpdateBatchExecutionStateTrigger>(TimeSpan.FromMinutes(1));
+            .AddRepeatingTriggerHealthCheck<UpdateCalculationExecutionStateTrigger>(TimeSpan.FromMinutes(1));
     }
 }

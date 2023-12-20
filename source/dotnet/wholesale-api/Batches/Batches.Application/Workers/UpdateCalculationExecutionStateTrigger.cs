@@ -21,13 +21,13 @@ namespace Energinet.DataHub.Wholesale.Batches.Application.Workers;
 /// <summary>
 /// Worker invoking updating batch execution states.
 /// </summary>
-public class UpdateBatchExecutionStateTrigger : RepeatingTrigger<IUpdateCalculationExecutionStateHandler>
+public class UpdateCalculationExecutionStateTrigger : RepeatingTrigger<IUpdateCalculationExecutionStateHandler>
 {
     private const int DelayInSecondsBeforeNextExecution = 20;
 
-    public UpdateBatchExecutionStateTrigger(
+    public UpdateCalculationExecutionStateTrigger(
         IServiceProvider serviceProvider,
-        ILogger<UpdateBatchExecutionStateTrigger> logger)
+        ILogger<UpdateCalculationExecutionStateTrigger> logger)
         : base(serviceProvider, logger, TimeSpan.FromSeconds(DelayInSecondsBeforeNextExecution))
     {
     }
