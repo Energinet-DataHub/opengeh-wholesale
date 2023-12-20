@@ -2,8 +2,11 @@
 # Create a copy of this file and remove the .sample extension and update the values.
 # Read more about integration testing in python in Confluence.
 
+# Required
 AZURE_KEYVAULT_URL: <The url of the key vault>
-# Use to log in with service principal
+
+# Optional - only required if you want to run the integration tests in PyCharm
+# Service Principal Credentials
 AZURE_CLIENT_ID: <The client id of the service principal>
 AZURE_TENANT_ID: <The tenant id of the service principal>
 AZURE_CLIENT_SECRET: <The client secret of the service principal>
