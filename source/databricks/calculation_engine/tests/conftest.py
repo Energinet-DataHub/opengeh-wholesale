@@ -259,7 +259,8 @@ def integration_test_configuration(tests_path: str) -> IntegrationTestConfigurat
                 "AZURE_CLIENT_ID",
                 "AZURE_CLIENT_SECRET",
                 "AZURE_TENANT_ID",
-                "AZURE_SUBSCRIPTION_ID"]
+                "AZURE_SUBSCRIPTION_ID",
+            ]
             if os.getenv(key) is not None
         }
 
@@ -272,10 +273,12 @@ def integration_test_configuration(tests_path: str) -> IntegrationTestConfigurat
 
     if "AZURE_KEYVAULT_URL" in settings:
         return IntegrationTestConfiguration(
-            azure_keyvault_url=settings["AZURE_KEYVAULT_URL"])
+            azure_keyvault_url=settings["AZURE_KEYVAULT_URL"]
+        )
 
     logging.error(
-        f"Integration test configuration could not be loaded from {settings_file_path} or environment variables.")
+        f"Integration test configuration could not be loaded from {settings_file_path} or environment variables."
+    )
     raise Exception(
         "Failed to load integration test settings. Ensure that the Azure Key Vault URL is provided in the settings file or as an environment variable."
     )
