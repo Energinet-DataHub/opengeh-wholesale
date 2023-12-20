@@ -19,17 +19,17 @@ namespace Energinet.DataHub.Wholesale.Batches.Application.UseCases;
 public class UpdateBatchExecutionStateHandler : IUpdateBatchExecutionStateHandler
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IBatchExecutionStateInfrastructureService _batchExecutionStateInfrastructureService;
+    private readonly ICalculationExecutionStateInfrastructureService _calculationExecutionStateInfrastructureService;
 
-    public UpdateBatchExecutionStateHandler(IUnitOfWork unitOfWork, IBatchExecutionStateInfrastructureService batchExecutionStateInfrastructureService)
+    public UpdateBatchExecutionStateHandler(IUnitOfWork unitOfWork, ICalculationExecutionStateInfrastructureService calculationExecutionStateInfrastructureService)
     {
         _unitOfWork = unitOfWork;
-        _batchExecutionStateInfrastructureService = batchExecutionStateInfrastructureService;
+        _calculationExecutionStateInfrastructureService = calculationExecutionStateInfrastructureService;
     }
 
     public async Task UpdateAsync()
     {
-        await _batchExecutionStateInfrastructureService.UpdateExecutionStateAsync().ConfigureAwait(false);
+        await _calculationExecutionStateInfrastructureService.UpdateExecutionStateAsync().ConfigureAwait(false);
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 }

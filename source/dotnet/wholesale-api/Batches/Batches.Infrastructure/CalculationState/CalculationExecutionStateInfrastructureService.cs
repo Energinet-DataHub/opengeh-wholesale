@@ -17,19 +17,19 @@ using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchState;
+namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationState;
 
-public class BatchExecutionStateInfrastructureService : IBatchExecutionStateInfrastructureService
+public class CalculationExecutionStateInfrastructureService : ICalculationExecutionStateInfrastructureService
 {
     private readonly ICalculationRepository _calculationRepository;
     private readonly ICalculationInfrastructureService _calculationInfrastructureService;
     private readonly IClock _clock;
     private readonly ILogger _logger;
 
-    public BatchExecutionStateInfrastructureService(
+    public CalculationExecutionStateInfrastructureService(
         ICalculationRepository calculationRepository,
         ICalculationInfrastructureService calculationInfrastructureService,
-        ILogger<BatchExecutionStateInfrastructureService> logger,
+        ILogger<CalculationExecutionStateInfrastructureService> logger,
         IClock clock)
     {
         _calculationRepository = calculationRepository;

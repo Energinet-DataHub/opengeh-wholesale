@@ -17,8 +17,8 @@ using Energinet.DataHub.Wholesale.Batches.Application;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Batches.Application.UseCases;
 using Energinet.DataHub.Wholesale.Batches.Application.Workers;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchState;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationState;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
@@ -36,7 +36,7 @@ public static class CalculationsRegistration
         Func<string> databaseConnectionStringProvider)
     {
         serviceCollection.AddScoped<ICalculationsClient, CalculationsClient>();
-        serviceCollection.AddScoped<IBatchExecutionStateInfrastructureService, BatchExecutionStateInfrastructureService>();
+        serviceCollection.AddScoped<ICalculationExecutionStateInfrastructureService, CalculationExecutionStateInfrastructureService>();
         serviceCollection.AddScoped<ICalculationInfrastructureService, CalculationInfrastructureService>();
         serviceCollection.AddScoped<ICalculationFactory, CalculationFactory>();
         serviceCollection.AddScoped<ICalculationRepository, CalculationRepository>();

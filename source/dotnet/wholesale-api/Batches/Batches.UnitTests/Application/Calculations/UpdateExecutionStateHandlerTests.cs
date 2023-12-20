@@ -27,7 +27,7 @@ public class UpdateExecutionStateHandlerTests
     [InlineAutoMoqData]
     public async Task UpdateExecutionStateAsync_ActivatesDomainServiceAndCommits(
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
-        [Frozen] Mock<IBatchExecutionStateInfrastructureService> calculationDomainServiceMock,
+        [Frozen] Mock<ICalculationExecutionStateInfrastructureService> calculationDomainServiceMock,
         UpdateBatchExecutionStateHandler sut)
     {
         // Arrange & Act

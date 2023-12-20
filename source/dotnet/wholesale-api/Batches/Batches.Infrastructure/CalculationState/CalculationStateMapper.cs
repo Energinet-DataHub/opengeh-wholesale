@@ -12,23 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Application;
-using Energinet.DataHub.Wholesale.Batches.Application.Model;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 
-namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchState;
+namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationState;
 
 public class CalculationStateMapper
 {
-    public static CalculationExecutionState MapState(CalculationState calculationState)
+    public static CalculationExecutionState MapState(Application.Model.CalculationState calculationState)
     {
         return calculationState switch
         {
-            CalculationState.Pending => CalculationExecutionState.Pending,
-            CalculationState.Running => CalculationExecutionState.Executing,
-            CalculationState.Completed => CalculationExecutionState.Completed,
-            CalculationState.Canceled => CalculationExecutionState.Canceled,
-            CalculationState.Failed => CalculationExecutionState.Failed,
+            Application.Model.CalculationState.Pending => CalculationExecutionState.Pending,
+            Application.Model.CalculationState.Running => CalculationExecutionState.Executing,
+            Application.Model.CalculationState.Completed => CalculationExecutionState.Completed,
+            Application.Model.CalculationState.Canceled => CalculationExecutionState.Canceled,
+            Application.Model.CalculationState.Failed => CalculationExecutionState.Failed,
 
             _ => throw new ArgumentOutOfRangeException(
                 nameof(calculationState),

@@ -17,7 +17,7 @@ using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Application;
 using Energinet.DataHub.Wholesale.Batches.Application.Model;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
-using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchState;
+using Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationState;
 using Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.CalculationAggregate;
 using FluentAssertions;
 using Moq;
@@ -33,7 +33,7 @@ public class CalculationExecutionStateDomainServiceTests
     public async Task UpdateExecutionState_WhenJobStateIsRunning_UpdateBatchToExecuting(
         [Frozen] Mock<ICalculationRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationInfrastructureService> calculatorJobRunnerMock,
-        BatchExecutionStateInfrastructureService sut)
+        CalculationExecutionStateInfrastructureService sut)
     {
         // Arrange
         var batch = new CalculationBuilder().WithStatePending().Build();
@@ -55,7 +55,7 @@ public class CalculationExecutionStateDomainServiceTests
         [Frozen] Mock<IClock> clockMock,
         [Frozen] Mock<ICalculationRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationInfrastructureService> calculatorJobRunnerMock,
-        BatchExecutionStateInfrastructureService sut)
+        CalculationExecutionStateInfrastructureService sut)
     {
         // Arrange
         var batch = new CalculationBuilder().WithStateExecuting().Build();
@@ -82,7 +82,7 @@ public class CalculationExecutionStateDomainServiceTests
     public async Task UpdateExecutionState_WhenJobStateIsCancelled_UpdateBatchToCreated(
         [Frozen] Mock<ICalculationRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationInfrastructureService> calculatorJobRunnerMock,
-        BatchExecutionStateInfrastructureService sut)
+        CalculationExecutionStateInfrastructureService sut)
     {
         // Arrange
         var batch = new CalculationBuilder().WithStateExecuting().Build();
@@ -104,7 +104,7 @@ public class CalculationExecutionStateDomainServiceTests
         [Frozen] Mock<IClock> clockMock,
         [Frozen] Mock<ICalculationRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationInfrastructureService> calculatorJobRunnerMock,
-        BatchExecutionStateInfrastructureService sut)
+        CalculationExecutionStateInfrastructureService sut)
     {
         // Arrange
         var batch1 = new CalculationBuilder().WithStatePending().Build();
@@ -134,7 +134,7 @@ public class CalculationExecutionStateDomainServiceTests
         [Frozen] Mock<IClock> clockMock,
         [Frozen] Mock<ICalculationRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationInfrastructureService> calculatorJobRunnerMock,
-        BatchExecutionStateInfrastructureService sut)
+        CalculationExecutionStateInfrastructureService sut)
     {
         // Arrange
         var batch1 = new CalculationBuilder().WithStatePending().Build();
@@ -160,7 +160,7 @@ public class CalculationExecutionStateDomainServiceTests
         [Frozen] Mock<IClock> clockMock,
         [Frozen] Mock<ICalculationRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationInfrastructureService> calculatorJobRunnerMock,
-        BatchExecutionStateInfrastructureService sut)
+        CalculationExecutionStateInfrastructureService sut)
     {
         // Arrange
         var batch1 = new CalculationBuilder().WithStateSubmitted().Build();

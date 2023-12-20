@@ -14,7 +14,7 @@
 
 namespace Energinet.DataHub.Wholesale.Batches.Application;
 
-public interface IBatchExecutionStateInfrastructureService
+public interface ICalculationExecutionStateInfrastructureService
 {
     Task UpdateExecutionStateAsync();
 }
