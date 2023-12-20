@@ -91,7 +91,6 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Fixtures.Identity
         /// </summary>
         public string BackendBffScope { get; }
 
-
         /// <summary>
         /// Encapsulates creation using a configuration root.
         /// </summary>
