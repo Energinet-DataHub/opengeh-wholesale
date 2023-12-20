@@ -29,7 +29,7 @@ public class CalculationsClientTests
     [Theory]
     [InlineAutoMoqData]
     public async Task SearchAsync_NoMatchingBatches_ReturnsZeroBatches(
-       [Frozen] Mock<IBatchRepository> batchRepositoryMock,
+       [Frozen] Mock<ICalculationRepository> batchRepositoryMock,
        CalculationsClient sut)
     {
         // Arrange
@@ -60,7 +60,7 @@ public class CalculationsClientTests
     [Theory]
     [InlineAutoMoqData]
     public async Task SearchAsync_ReturnsCorrectNumberOfBatches(
-        [Frozen] Mock<IBatchRepository> batchRepositoryMock,
+        [Frozen] Mock<ICalculationRepository> batchRepositoryMock,
         CalculationsClient sut)
     {
         // Arrange

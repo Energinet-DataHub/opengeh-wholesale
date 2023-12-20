@@ -41,7 +41,7 @@ public class CreateBatchHandlerTests
     public async Task Handle_AddsBatchToRepository(
         ProcessType processType,
         [Frozen] Mock<ICalculationFactory> batchFactoryMock,
-        [Frozen] Mock<IBatchRepository> batchRepositoryMock,
+        [Frozen] Mock<ICalculationRepository> batchRepositoryMock,
         CreateBatchHandler sut)
     {
         // Arrange

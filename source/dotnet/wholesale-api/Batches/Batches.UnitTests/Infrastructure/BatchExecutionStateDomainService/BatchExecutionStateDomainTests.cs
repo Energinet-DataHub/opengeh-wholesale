@@ -31,7 +31,7 @@ public class BatchExecutionStateDomainServiceTests
     [Theory]
     [InlineAutoMoqData]
     public async Task UpdateExecutionState_WhenJobStateIsRunning_UpdateBatchToExecuting(
-        [Frozen] Mock<IBatchRepository> batchRepositoryMock,
+        [Frozen] Mock<ICalculationRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationInfrastructureService> calculatorJobRunnerMock,
         BatchExecutionStateInfrastructureService sut)
     {
@@ -53,7 +53,7 @@ public class BatchExecutionStateDomainServiceTests
     [InlineAutoMoqData]
     public async Task UpdateExecutionState_WhenJobStateIsCompleted_UpdateBatchToCompleted(
         [Frozen] Mock<IClock> clockMock,
-        [Frozen] Mock<IBatchRepository> batchRepositoryMock,
+        [Frozen] Mock<ICalculationRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationInfrastructureService> calculatorJobRunnerMock,
         BatchExecutionStateInfrastructureService sut)
     {
@@ -80,7 +80,7 @@ public class BatchExecutionStateDomainServiceTests
     [Theory]
     [InlineAutoMoqData]
     public async Task UpdateExecutionState_WhenJobStateIsCancelled_UpdateBatchToCreated(
-        [Frozen] Mock<IBatchRepository> batchRepositoryMock,
+        [Frozen] Mock<ICalculationRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationInfrastructureService> calculatorJobRunnerMock,
         BatchExecutionStateInfrastructureService sut)
     {
@@ -102,7 +102,7 @@ public class BatchExecutionStateDomainServiceTests
     [InlineAutoMoqData]
     public async Task UpdateExecutionState_ToCompleted(
         [Frozen] Mock<IClock> clockMock,
-        [Frozen] Mock<IBatchRepository> batchRepositoryMock,
+        [Frozen] Mock<ICalculationRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationInfrastructureService> calculatorJobRunnerMock,
         BatchExecutionStateInfrastructureService sut)
     {
@@ -132,7 +132,7 @@ public class BatchExecutionStateDomainServiceTests
     [InlineAutoMoqData]
     public async Task UpdateExecutionState_WhenCompleting_CompletedBatch(
         [Frozen] Mock<IClock> clockMock,
-        [Frozen] Mock<IBatchRepository> batchRepositoryMock,
+        [Frozen] Mock<ICalculationRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationInfrastructureService> calculatorJobRunnerMock,
         BatchExecutionStateInfrastructureService sut)
     {
@@ -158,7 +158,7 @@ public class BatchExecutionStateDomainServiceTests
     [InlineAutoMoqData]
     public async Task UpdateExecutionState_When_JobRunnerThrowsException_Then_SkipBatch(
         [Frozen] Mock<IClock> clockMock,
-        [Frozen] Mock<IBatchRepository> batchRepositoryMock,
+        [Frozen] Mock<ICalculationRepository> batchRepositoryMock,
         [Frozen] Mock<ICalculationInfrastructureService> calculatorJobRunnerMock,
         BatchExecutionStateInfrastructureService sut)
     {

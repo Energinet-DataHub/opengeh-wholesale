@@ -37,7 +37,7 @@ public class CalculationRepositoryTests
         databaseContextMock
             .Setup<DbSet<Calculation>>(context => context.Batches)
             .ReturnsDbSet(new List<Calculation>());
-        var sut = new BatchRepository(databaseContextMock.Object);
+        var sut = new CalculationRepository(databaseContextMock.Object);
 
         // Act
         var actual = await sut.GetCompletedAfterAsync(null);
@@ -56,7 +56,7 @@ public class CalculationRepositoryTests
         databaseContextMock
             .Setup<DbSet<Calculation>>(context => context.Batches)
             .ReturnsDbSet(new List<Calculation>());
-        var sut = new BatchRepository(databaseContextMock.Object);
+        var sut = new CalculationRepository(databaseContextMock.Object);
 
         // Act
         var actual = await sut.GetCompletedAfterAsync(completedTime);
@@ -77,7 +77,7 @@ public class CalculationRepositoryTests
             .Setup<DbSet<Calculation>>(context => context.Batches)
             .ReturnsDbSet(new List<Calculation> { batch1, batch2 });
 
-        var sut = new BatchRepository(databaseContextMock.Object);
+        var sut = new CalculationRepository(databaseContextMock.Object);
 
         // Act
         var actual = await sut.GetCompletedAfterAsync(null);
@@ -99,7 +99,7 @@ public class CalculationRepositoryTests
             .ReturnsDbSet(new List<Calculation> { batch });
         var futureCompletedTime = batch.ExecutionTimeEnd!.Value.Plus(Duration.FromMinutes(1));
 
-        var sut = new BatchRepository(databaseContextMock.Object);
+        var sut = new CalculationRepository(databaseContextMock.Object);
 
         // Act
         var actual = await sut.GetCompletedAfterAsync(futureCompletedTime);
@@ -119,7 +119,7 @@ public class CalculationRepositoryTests
             .Setup<DbSet<Calculation>>(context => context.Batches)
             .ReturnsDbSet(new List<Calculation> { nonCompletedBatch });
 
-        var sut = new BatchRepository(databaseContextMock.Object);
+        var sut = new CalculationRepository(databaseContextMock.Object);
 
         // Act
         var actual = await sut.GetCompletedAfterAsync(null);

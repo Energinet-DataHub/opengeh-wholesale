@@ -18,7 +18,7 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Batches.Application;
 
-public interface IBatchRepository
+public interface ICalculationRepository
 {
     Task AddAsync(Calculation calculation);
 

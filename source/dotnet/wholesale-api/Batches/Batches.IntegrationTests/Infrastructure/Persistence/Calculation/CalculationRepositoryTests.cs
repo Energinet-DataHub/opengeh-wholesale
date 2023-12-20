@@ -24,13 +24,13 @@ using NodaTime;
 using Test.Core;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Batches.IntegrationTests.Infrastructure.Persistence.Batch;
+namespace Energinet.DataHub.Wholesale.Batches.IntegrationTests.Infrastructure.Persistence.Calculation;
 
-public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture<DatabaseContext>>
+public class CalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture<DatabaseContext>>
 {
     private readonly WholesaleDatabaseManager<DatabaseContext> _databaseManager;
 
-    public BatchRepositoryTests(WholesaleDatabaseFixture<DatabaseContext> fixture)
+    public CalculationRepositoryTests(WholesaleDatabaseFixture<DatabaseContext> fixture)
     {
         _databaseManager = fixture.DatabaseManager;
     }
@@ -42,7 +42,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture<Datab
         await using var writeContext = _databaseManager.CreateDbContext();
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
         var expectedBatch = CreateBatch(ProcessType.Aggregation, someGridAreasIds);
-        var sut = new BatchRepository(writeContext);
+        var sut = new CalculationRepository(writeContext);
 
         // Act
         await sut.AddAsync(expectedBatch);
@@ -64,7 +64,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture<Datab
         await using var writeContext = _databaseManager.CreateDbContext();
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
         var batch = CreateBatch(someGridAreasIds);
-        var sut = new BatchRepository(writeContext);
+        var sut = new CalculationRepository(writeContext);
         batch.MarkAsExecuting(); // This call will ensure ExecutionTimeStart is set
         batch.MarkAsCompleted(
             batch.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2))); // This call will ensure ExecutionTimeEnd is set
@@ -90,7 +90,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture<Datab
         await using var writeContext = _databaseManager.CreateDbContext();
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
         var batch = CreateBatch(someGridAreasIds);
-        var sut = new BatchRepository(writeContext);
+        var sut = new CalculationRepository(writeContext);
 
         // Act
         await sut.AddAsync(batch);
@@ -113,7 +113,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture<Datab
         await using var writeContext = _databaseManager.CreateDbContext();
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
         var batch = CreateBatch(someGridAreasIds);
-        var sut = new BatchRepository(writeContext);
+        var sut = new CalculationRepository(writeContext);
         await sut.AddAsync(batch);
         await writeContext.SaveChangesAsync();
 
@@ -137,7 +137,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture<Datab
         await using var writeContext = _databaseManager.CreateDbContext();
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
         var batch = CreateBatch(someGridAreasIds);
-        var sut = new BatchRepository(writeContext);
+        var sut = new CalculationRepository(writeContext);
         await sut.AddAsync(batch);
         await writeContext.SaveChangesAsync();
 
@@ -169,7 +169,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture<Datab
         await using var writeContext = _databaseManager.CreateDbContext();
         var someGridAreasIds = new List<GridAreaCode> { new("004"), new("805") };
         var batch = CreateBatch(someGridAreasIds);
-        var sut = new BatchRepository(writeContext);
+        var sut = new CalculationRepository(writeContext);
         await sut.AddAsync(batch);
         await writeContext.SaveChangesAsync();
 
@@ -199,7 +199,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture<Datab
         await using var writeContext = _databaseManager.CreateDbContext();
 
         var period = Periods.January_EuropeCopenhagen_Instant;
-        var batch = new Calculation(
+        var batch = new Application.Model.Calculations.Calculation(
             SystemClock.Instance.GetCurrentInstant(),
             ProcessType.BalanceFixing,
             new List<GridAreaCode> { new("004") },
@@ -209,7 +209,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture<Datab
             period.DateTimeZone,
             Guid.NewGuid());
 
-        var sut = new BatchRepository(writeContext);
+        var sut = new CalculationRepository(writeContext);
         await sut.AddAsync(batch);
         await writeContext.SaveChangesAsync();
 
@@ -229,15 +229,15 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture<Datab
             actual.Should().NotContain(batch);
     }
 
-    private static Calculation CreateBatch(List<GridAreaCode> someGridAreasIds)
+    private static Application.Model.Calculations.Calculation CreateBatch(List<GridAreaCode> someGridAreasIds)
     {
         return CreateBatch(ProcessType.BalanceFixing, someGridAreasIds);
     }
 
-    private static Calculation CreateBatch(ProcessType processType, List<GridAreaCode> someGridAreasIds)
+    private static Application.Model.Calculations.Calculation CreateBatch(ProcessType processType, List<GridAreaCode> someGridAreasIds)
     {
         var period = Periods.January_EuropeCopenhagen_Instant;
-        return new Calculation(
+        return new Application.Model.Calculations.Calculation(
             SystemClock.Instance.GetCurrentInstant(),
             processType,
             someGridAreasIds,

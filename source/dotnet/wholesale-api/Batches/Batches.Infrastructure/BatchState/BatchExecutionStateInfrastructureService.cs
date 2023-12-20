@@ -21,18 +21,18 @@ namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchState;
 
 public class BatchExecutionStateInfrastructureService : IBatchExecutionStateInfrastructureService
 {
-    private readonly IBatchRepository _batchRepository;
+    private readonly ICalculationRepository _calculationRepository;
     private readonly ICalculationInfrastructureService _calculationInfrastructureService;
     private readonly IClock _clock;
     private readonly ILogger _logger;
 
     public BatchExecutionStateInfrastructureService(
-        IBatchRepository batchRepository,
+        ICalculationRepository calculationRepository,
         ICalculationInfrastructureService calculationInfrastructureService,
         ILogger<BatchExecutionStateInfrastructureService> logger,
         IClock clock)
     {
-        _batchRepository = batchRepository;
+        _calculationRepository = calculationRepository;
         _calculationInfrastructureService = calculationInfrastructureService;
         _logger = logger;
         _clock = clock;
@@ -49,7 +49,7 @@ public class BatchExecutionStateInfrastructureService : IBatchExecutionStateInfr
         {
             CalculationExecutionState.Submitted, CalculationExecutionState.Pending, CalculationExecutionState.Executing,
         };
-        var activeBatches = await _batchRepository.GetByStatesAsync(states).ConfigureAwait(false);
+        var activeBatches = await _calculationRepository.GetByStatesAsync(states).ConfigureAwait(false);
         foreach (var batch in activeBatches)
         {
             try

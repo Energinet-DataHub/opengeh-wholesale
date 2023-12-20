@@ -30,7 +30,7 @@ public class StartCalculationHandlerTests
     [Theory]
     [InlineAutoMoqData]
     public async Task StartCalculationAsync_ActivatesDomainServiceAndCommits(
-        [Frozen] Mock<IBatchRepository> batchRepositoryMock,
+        [Frozen] Mock<ICalculationRepository> batchRepositoryMock,
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         [Frozen] Mock<ICalculationInfrastructureService> calculationDomainServiceMock,
         StartCalculationHandler sut)
@@ -55,7 +55,7 @@ public class StartCalculationHandlerTests
     [Theory]
     [InlineAutoMoqData]
     public async Task StartCalculationAsync_LogsExpectedMessage(
-        [Frozen] Mock<IBatchRepository> batchRepositoryMock,
+        [Frozen] Mock<ICalculationRepository> batchRepositoryMock,
         [Frozen] Mock<ILogger<StartCalculationHandler>> loggerMock,
         StartCalculationHandler sut)
     {

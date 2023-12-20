@@ -20,14 +20,14 @@ namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
 
 public class CalculationInfrastructureService : ICalculationInfrastructureService
 {
-    private readonly IBatchRepository _batchRepository;
+    private readonly ICalculationRepository _calculationRepository;
     private readonly ICalculationEngineClient _calculationEngineClient;
 
     public CalculationInfrastructureService(
-        IBatchRepository batchRepository,
+        ICalculationRepository calculationRepository,
         ICalculationEngineClient calculationEngineClient)
     {
-        _batchRepository = batchRepository;
+        _calculationRepository = calculationRepository;
         _calculationEngineClient = calculationEngineClient;
     }
 
@@ -38,7 +38,7 @@ public class CalculationInfrastructureService : ICalculationInfrastructureServic
 
     public async Task StartAsync(Guid batchId)
     {
-        var batch = await _batchRepository.GetAsync(batchId).ConfigureAwait(false);
+        var batch = await _calculationRepository.GetAsync(batchId).ConfigureAwait(false);
         var calculationId = await _calculationEngineClient.StartAsync(batch).ConfigureAwait(false);
         batch.MarkAsSubmitted(calculationId);
     }

@@ -22,24 +22,24 @@ namespace Energinet.DataHub.Wholesale.Batches.Application;
 
 public class CalculationsClient : ICalculationsClient
 {
-    private readonly IBatchRepository _batchRepository;
+    private readonly ICalculationRepository _calculationRepository;
     private readonly ICalculationDtoMapper _calculationDtoMapper;
 
-    public CalculationsClient(IBatchRepository batchRepository, ICalculationDtoMapper calculationDtoMapper)
+    public CalculationsClient(ICalculationRepository calculationRepository, ICalculationDtoMapper calculationDtoMapper)
     {
-        _batchRepository = batchRepository;
+        _calculationRepository = calculationRepository;
         _calculationDtoMapper = calculationDtoMapper;
     }
 
     public async Task<IEnumerable<BatchDto>> GetBatchesCompletedAfterAsync(Instant? completedTime)
     {
-        var batches = await _batchRepository.GetCompletedAfterAsync(completedTime).ConfigureAwait(false);
+        var batches = await _calculationRepository.GetCompletedAfterAsync(completedTime).ConfigureAwait(false);
         return batches.Select(_calculationDtoMapper.Map);
     }
 
     public async Task<BatchDto> GetAsync(Guid batchId)
     {
-        var batch = await _batchRepository.GetAsync(batchId).ConfigureAwait(false);
+        var batch = await _calculationRepository.GetAsync(batchId).ConfigureAwait(false);
         return _calculationDtoMapper.Map(batch);
     }
 
@@ -70,7 +70,7 @@ public class CalculationsClient : ICalculationsClient
         var periodStartInstant = ConvertToInstant(periodStart);
         var periodEndInstant = ConvertToInstant(periodEnd);
 
-        var batches = await _batchRepository
+        var batches = await _calculationRepository
             .SearchAsync(
                 gridAreaFilter,
                 executionStateFilter,

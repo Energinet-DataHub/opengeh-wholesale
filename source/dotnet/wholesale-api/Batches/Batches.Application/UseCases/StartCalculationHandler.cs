@@ -19,7 +19,7 @@ namespace Energinet.DataHub.Wholesale.Batches.Application.UseCases;
 
 public class StartCalculationHandler : IStartCalculationHandler
 {
-    private readonly IBatchRepository _batchRepository;
+    private readonly ICalculationRepository _calculationRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICalculationInfrastructureService _calculationInfrastructureService;
     private readonly ILogger _logger;
@@ -27,18 +27,18 @@ public class StartCalculationHandler : IStartCalculationHandler
     public StartCalculationHandler(
         ICalculationInfrastructureService calculationInfrastructureService,
         IUnitOfWork unitOfWork,
-        IBatchRepository batchRepository,
+        ICalculationRepository calculationRepository,
         ILogger<StartCalculationHandler> logger)
     {
         _calculationInfrastructureService = calculationInfrastructureService;
         _unitOfWork = unitOfWork;
-        _batchRepository = batchRepository;
+        _calculationRepository = calculationRepository;
         _logger = logger;
     }
 
     public async Task StartAsync()
     {
-        var batches = await _batchRepository.GetCreatedAsync().ConfigureAwait(false);
+        var batches = await _calculationRepository.GetCreatedAsync().ConfigureAwait(false);
         foreach (var batch in batches)
         {
             await _calculationInfrastructureService.StartAsync(batch.Id).ConfigureAwait(false);

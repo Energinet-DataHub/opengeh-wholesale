@@ -20,11 +20,11 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
 
-public class BatchRepository : IBatchRepository
+public class CalculationRepository : ICalculationRepository
 {
     private readonly IDatabaseContext _context;
 
-    public BatchRepository(IDatabaseContext context)
+    public CalculationRepository(IDatabaseContext context)
     {
         _context = context;
     }
