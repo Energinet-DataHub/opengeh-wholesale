@@ -5,6 +5,8 @@
 		"args": {}
 	},
 	"extensions": [
+		"mypy",
+		"flake8",
 		"ms-dotnettools.dotnet-interactive-vscode",
 		"ms-python.python",
 		"ms-python.black-formatter",
@@ -23,13 +25,6 @@
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
 		"terminal.integrated.shell.linux": "/bin/bash",
-		"python.linting.enabled": true,
-		"python.linting.flake8Enabled": true,
-		"python.linting.mypyEnabled": true,
-		"python.linting.mypyArgs": [
-			"--disallow-untyped-defs",
-			"--ignore-missing-imports"
-		],
 		"editor.formatOnSave": false,
 		"[python]": {
 			"editor.formatOnSave": true
