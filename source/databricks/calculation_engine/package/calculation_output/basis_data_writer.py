@@ -17,9 +17,8 @@ from pyspark.sql.functions import col
 
 import package.calculation.preparation.transformations.basis_data as basis_data
 from package.codelists import AggregationLevel, BasisDataType
-from package.common.logger import Logger
 from package.constants import PartitionKeyName, BasisDataColname
-from package.infrastructure import paths
+from package.infrastructure import paths, logging_configuration
 
 
 class BasisDataWriter:
@@ -28,22 +27,21 @@ class BasisDataWriter:
         self.__time_series_quarter_path = f"{container_path}/{paths.get_basis_data_root_path(BasisDataType.TIME_SERIES_QUARTER, batch_id)}"
         self.__time_series_hour_path = f"{container_path}/{paths.get_basis_data_root_path(BasisDataType.TIME_SERIES_HOUR, batch_id)}"
         self.calculation_id = batch_id
-        self.logger = Logger(__name__)
 
+    @logging_configuration.use_span("calculation.basis_data")
     def write(
         self,
         metering_points_periods_df: DataFrame,
         metering_point_time_series: DataFrame,
         time_zone: str,
     ) -> None:
-        self.logger.info("Entering basis_data_writer.write()")
-
-        (
-            timeseries_quarter_df,
-            timeseries_hour_df,
-        ) = basis_data.get_metering_point_time_series_basis_data_dfs(
-            metering_point_time_series, time_zone
-        )
+        with logging_configuration.start_span("prepare"):
+            (
+                timeseries_quarter_df,
+                timeseries_hour_df,
+            ) = basis_data.get_metering_point_time_series_basis_data_dfs(
+                metering_point_time_series, time_zone
+            )
 
         master_basis_data_df = basis_data.get_master_basis_data_df(
             metering_points_periods_df
@@ -51,23 +49,17 @@ class BasisDataWriter:
 
         self._write(master_basis_data_df, timeseries_quarter_df, timeseries_hour_df)
 
-        self.logger.info("Leaving basis_data_writer.write()")
-
     def _write(
         self,
         master_basis_data_df: DataFrame,
         timeseries_quarter_df: DataFrame,
         timeseries_hour_df: DataFrame,
     ) -> None:
-        self.logger.info("Start writing basis data per grid area to csv")
-
         self._write_ga_basis_data(
             master_basis_data_df,
             timeseries_quarter_df,
             timeseries_hour_df,
         )
-
-        self.logger.info("Start writing basis data per energy supplier to csv")
 
         self._write_es_basis_data(
             master_basis_data_df,
@@ -75,8 +67,7 @@ class BasisDataWriter:
             timeseries_hour_df,
         )
 
-        self.logger.info("one writing basis data to csv")
-
+    @logging_configuration.use_span("per_grid_area")
     def _write_ga_basis_data(
         self,
         master_basis_data_df: DataFrame,
@@ -104,6 +95,7 @@ class BasisDataWriter:
             partition_keys,
         )
 
+    @logging_configuration.use_span("per_energy_supplier")
     def _write_es_basis_data(
         self,
         master_basis_data_df: DataFrame,
@@ -143,33 +135,29 @@ class BasisDataWriter:
         grouping_folder_name: str,
         partition_keys: list[str],
     ) -> None:
-        self.logger.info("Start writing timeseries_quarter_df to csv")
+        with logging_configuration.start_span("timeseries_quarter_to_csv"):
+            _write_df_to_csv(
+                f"{self.__time_series_quarter_path}/{grouping_folder_name}",
+                timeseries_quarter_df,
+                partition_keys,
+            )
 
-        self._write_df_to_csv(
-            f"{self.__time_series_quarter_path}/{grouping_folder_name}",
-            timeseries_quarter_df,
-            partition_keys,
-        )
+        with logging_configuration.start_span("timeseries_hour_to_csv"):
+            _write_df_to_csv(
+                f"{self.__time_series_hour_path}/{grouping_folder_name}",
+                timeseries_hour_df,
+                partition_keys,
+            )
 
-        self.logger.info("Start writing timeseries_hour_df to csv")
+        with logging_configuration.start_span("metering_point_to_csv"):
+            _write_df_to_csv(
+                f"{self.__master_basis_data_path}/{grouping_folder_name}",
+                master_basis_data_df,
+                partition_keys,
+            )
 
-        self._write_df_to_csv(
-            f"{self.__time_series_hour_path}/{grouping_folder_name}",
-            timeseries_hour_df,
-            partition_keys,
-        )
 
-        self.logger.info("Start writing master_basis_data_df to csv")
-
-        self._write_df_to_csv(
-            f"{self.__master_basis_data_path}/{grouping_folder_name}",
-            master_basis_data_df,
-            partition_keys,
-        )
-
-    def _write_df_to_csv(
-        self, path: str, df: DataFrame, partition_keys: list[str]
-    ) -> None:
-        df.repartition(PartitionKeyName.GRID_AREA).write.mode("overwrite").partitionBy(
-            partition_keys
-        ).option("header", True).csv(path)
+def _write_df_to_csv(path: str, df: DataFrame, partition_keys: list[str]) -> None:
+    df.repartition(PartitionKeyName.GRID_AREA).write.mode("overwrite").partitionBy(
+        partition_keys
+    ).option("header", True).csv(path)

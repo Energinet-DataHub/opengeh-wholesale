@@ -12,20 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import os
 import sys
 from typing import Union, Callable
 
-from opentelemetry import trace
-from opentelemetry.trace import Status, StatusCode, Span
+from opentelemetry.trace import SpanKind, Status, StatusCode, Span
 
 import package.infrastructure.logging_configuration as config
 from package import calculation
 from package import calculation_input
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculator_job_args import get_calculator_args
-from package.common.logger import Logger
 from package.infrastructure import initialize_spark
 from package.infrastructure.storage_account_access import islocked
 
@@ -59,20 +56,17 @@ def start_with_deps(
         extras={"Domain": "wholesale"},
     )
 
-    tracer = trace.get_tracer("calculation-engine.tracer")
-
-    with tracer.start_as_current_span(
-        "root",
+    with config.get_tracer().start_as_current_span(
+        __name__, kind=SpanKind.SERVER
     ) as span:
+        # Try/except added to enable adding custom fields to the exception as
+        # the span attributes do not appear to be included in the exception.
         try:
             args = cmd_line_args_reader()
 
             # Add calculation_id to structured logging data to be included in every log message.
             config.add_extras({"calculation_id": args.batch_id})
             span.set_attributes(config.get_extras())
-
-            logger = Logger(__name__)
-            logger.info("Calculator job started")
 
             raise_if_storage_is_locked(is_storage_locked_checker, args)
 
@@ -90,10 +84,10 @@ def start_with_deps(
             sys.exit(4)
 
 
-def record_exception(e: Union[SystemExit, Exception], span: Span) -> None:
+def record_exception(exception: Union[SystemExit, Exception], span: Span) -> None:
     span.set_status(Status(StatusCode.ERROR))
     span.record_exception(
-        e,
+        exception,
         attributes=config.get_extras()
         | {"CategoryName": f"Energinet.DataHub.{__name__}"},
     )

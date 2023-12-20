@@ -11,16 +11,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import contextlib
 import logging
 import os
-from typing import Union, Any
+from typing import Union, Any, Callable, Tuple, Dict, Iterator
 
 from azure.monitor.opentelemetry import configure_azure_monitor
+from opentelemetry import trace
+from opentelemetry.trace import Span, Tracer
 
 DEFAULT_LOG_LEVEL: int = logging.INFO
 _EXTRAS: dict[str, Any] = {}
 _IS_INSTRUMENTED: bool = False
+_TRACER: Union[Tracer, None] = None
 
 
 def configure_logging(
@@ -70,3 +73,31 @@ def get_extras() -> dict[str, Any]:
 def add_extras(extras: dict[str, Any]) -> None:
     global _EXTRAS
     _EXTRAS = _EXTRAS | extras
+
+
+def get_tracer() -> Tracer:
+    global _TRACER
+    if _TRACER is None:
+        _TRACER = trace.get_tracer("calculation-engine")
+    return _TRACER
+
+
+def use_span(name: Union[str, None] = None) -> Callable[..., Any]:
+    """
+    Decorator for creating spans.
+    """
+
+    def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
+        def wrapper(*args: Tuple[Any], **kwargs: Dict[str, Any]) -> Any:
+            with start_span(name or func.__name__):
+                return func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
+
+
+@contextlib.contextmanager
+def start_span(name: str) -> Iterator[Span]:
+    with get_tracer().start_as_current_span(name, attributes=get_extras()) as span:
+        yield span
