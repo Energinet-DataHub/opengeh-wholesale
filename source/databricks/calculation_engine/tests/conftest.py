@@ -233,7 +233,7 @@ def installed_package(
     )
 
 
-@pytest.fixture()
+@pytest.fixture(scope="session")
 def integration_test_configuration(tests_path: str) -> IntegrationTestConfiguration:
     """Load settings and sets the properties as environment variables."""
 
