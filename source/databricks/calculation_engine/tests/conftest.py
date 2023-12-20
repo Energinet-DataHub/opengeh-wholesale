@@ -235,27 +235,50 @@ def installed_package(
 
 @pytest.fixture(scope="session")
 def integration_test_configuration(tests_path: str) -> IntegrationTestConfiguration:
-    """Load settings and sets the properties as environment variables."""
+    """
+    Load settings for integration tests either from a local YAML settings file or from environment variables.
+    Proceeds even if certain Azure-related keys are not present in the settings file.
+    """
+    from pathlib import Path
+    import logging
 
-    settings_file_path = f"{tests_path}/integrationtest.local.settings.yml"
+    settings_file_path = Path(tests_path) / "integrationtest.local.settings.yml"
 
-    # Read settings from settings file if it exists
-    if os.path.exists(settings_file_path):
-        with open(settings_file_path) as stream:
-            settings = yaml.safe_load(stream)
-            azure_keyvault_url = settings["AZURE_KEYVAULT_URL"]
-            os.environ["AZURE_CLIENT_ID"] = settings["AZURE_CLIENT_ID"]
-            os.environ["AZURE_CLIENT_SECRET"] = settings["AZURE_CLIENT_SECRET"]
-            os.environ["AZURE_TENANT_ID"] = settings["AZURE_TENANT_ID"]
-            os.environ["AZURE_SUBSCRIPTION_ID"] = settings["AZURE_SUBSCRIPTION_ID"]
-            return IntegrationTestConfiguration(azure_keyvault_url=azure_keyvault_url)
+    def load_settings_from_file(file_path: Path) -> dict:
+        if file_path.exists():
+            with file_path.open() as stream:
+                return yaml.safe_load(stream)
+        else:
+            return {}
 
-    # Otherwise, read settings from environment variables
-    if "AZURE_KEYVAULT_URL" in os.environ:
-        azure_keyvault_url = os.getenv("AZURE_KEYVAULT_URL")
-        return IntegrationTestConfiguration(azure_keyvault_url=azure_keyvault_url)
+    def load_settings_from_env() -> dict:
+        return {
+            key: os.getenv(key)
+            for key in [
+                "AZURE_KEYVAULT_URL",
+                "AZURE_CLIENT_ID",
+                "AZURE_CLIENT_SECRET",
+                "AZURE_TENANT_ID",
+                "AZURE_SUBSCRIPTION_ID",
+            ]
+            if os.getenv(key) is not None
+        }
 
-    # If neither settings file nor environment variables are found, raise exception
+    settings = load_settings_from_file(settings_file_path) or load_settings_from_env()
+
+    # Set environment variables from loaded settings
+    for key, value in settings.items():
+        if value is not None:
+            os.environ[key] = value
+
+    if "AZURE_KEYVAULT_URL" in settings:
+        return IntegrationTestConfiguration(
+            azure_keyvault_url=settings["AZURE_KEYVAULT_URL"]
+        )
+
+    logging.error(
+        f"Integration test configuration could not be loaded from {settings_file_path} or environment variables."
+    )
     raise Exception(
-        f"Settings file not found at {settings_file_path} and no environment variables found neither"
+        "Failed to load integration test settings. Ensure that the Azure Key Vault URL is provided in the settings file or as an environment variable."
     )
