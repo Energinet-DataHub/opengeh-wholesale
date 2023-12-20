@@ -14,9 +14,9 @@
 
 using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedCalculations;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer.NodaTime.Extensions;
@@ -25,9 +25,9 @@ using Moq.EntityFrameworkCore;
 using Test.Core;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Persistence.Batches;
+namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Persistence.Calculations;
 
-public class CompletedBatchRepositoryTests
+public class CompletedCalculationRepositoryTests
 {
     [Theory]
     [InlineAutoMoqData]
@@ -36,9 +36,9 @@ public class CompletedBatchRepositoryTests
     {
         // Arrange
         databaseContextMock
-            .Setup<DbSet<CompletedBatch>>(context => context.CompletedBatches)
-            .ReturnsDbSet(new List<CompletedBatch>());
-        var sut = new CompletedBatchRepository(databaseContextMock.Object);
+            .Setup<DbSet<CompletedCalculation>>(context => context.CompletedBatches)
+            .ReturnsDbSet(new List<CompletedCalculation>());
+        var sut = new CompletedCalculationRepository(databaseContextMock.Object);
 
         // Act
         var actual = await sut.GetLastCompletedOrNullAsync();
@@ -50,23 +50,23 @@ public class CompletedBatchRepositoryTests
     [Theory]
     [InlineAutoMoqData]
     public async Task GetLastCompletedOrNullAsync_WhenMore_ReturnsLastByCompletedTime(
-        CompletedBatch batchCompletedFirst,
-        CompletedBatch batchCompletedLast,
+        CompletedCalculation calculationCompletedFirst,
+        CompletedCalculation calculationCompletedLast,
         [Frozen] Mock<EventsDatabaseContext> databaseContextMock)
     {
         // Arrange
-        batchCompletedLast.SetPrivateProperty(b => b.CompletedTime, batchCompletedFirst.CompletedTime.PlusSeconds(1));
+        calculationCompletedLast.SetPrivateProperty(b => b.CompletedTime, calculationCompletedFirst.CompletedTime.PlusSeconds(1));
 
         databaseContextMock
-            .Setup<DbSet<CompletedBatch>>(context => context.CompletedBatches)
-            .ReturnsDbSet(new List<CompletedBatch> { batchCompletedFirst, batchCompletedLast });
-        var sut = new CompletedBatchRepository(databaseContextMock.Object);
+            .Setup<DbSet<CompletedCalculation>>(context => context.CompletedBatches)
+            .ReturnsDbSet(new List<CompletedCalculation> { calculationCompletedFirst, calculationCompletedLast });
+        var sut = new CompletedCalculationRepository(databaseContextMock.Object);
 
         // Act
         var actual = await sut.GetLastCompletedOrNullAsync();
 
         // Assert
-        actual.Should().Be(batchCompletedLast);
+        actual.Should().Be(calculationCompletedLast);
     }
 
     [Theory]
@@ -76,9 +76,9 @@ public class CompletedBatchRepositoryTests
     {
         // Arrange
         databaseContextMock
-            .Setup<DbSet<CompletedBatch>>(context => context.CompletedBatches)
-            .ReturnsDbSet(new List<CompletedBatch>());
-        var sut = new CompletedBatchRepository(databaseContextMock.Object);
+            .Setup<DbSet<CompletedCalculation>>(context => context.CompletedBatches)
+            .ReturnsDbSet(new List<CompletedCalculation>());
+        var sut = new CompletedCalculationRepository(databaseContextMock.Object);
 
         // Act
         var actual = await sut.GetNextUnpublishedOrNullAsync();
@@ -90,38 +90,38 @@ public class CompletedBatchRepositoryTests
     [Theory]
     [InlineAutoMoqData]
     public async Task GetNextUnpublishedOrNullAsync_WhenMore_ReturnsFirstByCompletedTime(
-        CompletedBatch batchCompletedFirst,
-        CompletedBatch batchCompletedLast,
+        CompletedCalculation calculationCompletedFirst,
+        CompletedCalculation calculationCompletedLast,
         [Frozen] Mock<EventsDatabaseContext> databaseContextMock)
     {
         // Arrange
-        batchCompletedFirst.PublishedTime = null;
-        batchCompletedLast.PublishedTime = null;
-        batchCompletedLast.SetPrivateProperty(b => b.CompletedTime, batchCompletedFirst.CompletedTime.PlusSeconds(1));
+        calculationCompletedFirst.PublishedTime = null;
+        calculationCompletedLast.PublishedTime = null;
+        calculationCompletedLast.SetPrivateProperty(b => b.CompletedTime, calculationCompletedFirst.CompletedTime.PlusSeconds(1));
 
         databaseContextMock
-            .Setup<DbSet<CompletedBatch>>(context => context.CompletedBatches)
-            .ReturnsDbSet(new List<CompletedBatch> { batchCompletedFirst, batchCompletedLast });
-        var sut = new CompletedBatchRepository(databaseContextMock.Object);
+            .Setup<DbSet<CompletedCalculation>>(context => context.CompletedBatches)
+            .ReturnsDbSet(new List<CompletedCalculation> { calculationCompletedFirst, calculationCompletedLast });
+        var sut = new CompletedCalculationRepository(databaseContextMock.Object);
 
         // Act
         var actual = await sut.GetNextUnpublishedOrNullAsync();
 
         // Assert
-        actual.Should().Be(batchCompletedFirst);
+        actual.Should().Be(calculationCompletedFirst);
     }
 
     [Theory]
     [InlineAutoMoqData]
     public async Task GetNextUnpublishedOrNullAsync_WhenAllAlreadyPublished_ReturnsNull(
-        CompletedBatch publishedBatch,
+        CompletedCalculation publishedCalculation,
         [Frozen] Mock<EventsDatabaseContext> databaseContextMock)
     {
         // Arrange
         databaseContextMock
-            .Setup<DbSet<CompletedBatch>>(context => context.CompletedBatches)
-            .ReturnsDbSet(new List<CompletedBatch> { publishedBatch });
-        var sut = new CompletedBatchRepository(databaseContextMock.Object);
+            .Setup<DbSet<CompletedCalculation>>(context => context.CompletedBatches)
+            .ReturnsDbSet(new List<CompletedCalculation> { publishedCalculation });
+        var sut = new CompletedCalculationRepository(databaseContextMock.Object);
 
         // Act
         var actual = await sut.GetNextUnpublishedOrNullAsync();

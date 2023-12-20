@@ -14,21 +14,21 @@
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
-using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using FluentAssertions;
 using NodaTime.Extensions;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Events.UnitTests.Application.CompletedBatches;
+namespace Energinet.DataHub.Wholesale.Events.UnitTests.Application.CompletedCalculations;
 
-public class CompletedBatchFactoryTests
+public class CompletedCalculationFactoryTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public void CreateFromBatch_ReturnsCompletedBatch(CalculationDto calculation, CompletedBatchFactory sut)
+    public void CreateFromBatch_ReturnsCompletedBatch(CalculationDto calculation, CompletedCalculationFactory sut)
     {
         // Arrange
-        var expectedCompletedBatch = new CompletedBatch(
+        var expectedCompletedBatch = new CompletedCalculation(
             calculation.BatchId,
             calculation.GridAreaCodes.ToList(),
             calculation.ProcessType,

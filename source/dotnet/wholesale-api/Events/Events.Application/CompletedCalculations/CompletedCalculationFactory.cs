@@ -15,21 +15,21 @@
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 using NodaTime.Extensions;
 
-namespace Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+namespace Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 
-public class CompletedBatchFactory : ICompletedBatchFactory
+public class CompletedCalculationFactory : ICompletedCalculationFactory
 {
-    public IEnumerable<CompletedBatch> CreateFromBatches(IEnumerable<CalculationDto> completedBatchDtos)
+    public IEnumerable<CompletedCalculation> CreateFromBatches(IEnumerable<CalculationDto> completedBatchDtos)
     {
         return completedBatchDtos.Select(CreateFromBatch);
     }
 
-    public CompletedBatch CreateFromBatch(CalculationDto completedCalculationDto)
+    public CompletedCalculation CreateFromBatch(CalculationDto completedCalculationDto)
     {
         if (completedCalculationDto.ExecutionTimeEnd == null)
             throw new ArgumentNullException($"{nameof(CalculationDto.ExecutionTimeEnd)} should not be null for a completed batch.");
 
-        return new CompletedBatch(
+        return new CompletedCalculation(
             completedCalculationDto.BatchId,
             completedCalculationDto.GridAreaCodes.ToList(),
             completedCalculationDto.ProcessType,

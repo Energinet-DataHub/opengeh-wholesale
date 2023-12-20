@@ -25,7 +25,7 @@ namespace Energinet.DataHub.Wholesale.WebApi.UnitTests;
 public class RepeatingTriggerRegistrationTests
 {
     [Theory]
-    [InlineAutoData(typeof(RegisterCompletedBatchesTrigger))]
+    [InlineAutoData(typeof(RegisterCompletedCalculationsTrigger))]
     [InlineAutoData(typeof(StartCalculationTrigger))]
     [InlineAutoData(typeof(UpdateBatchExecutionStateTrigger))]
     public void Repeating_Trigger_Is_Registered_In_Ioc(Type type, ServiceBusOptions options, ServiceCollection serviceCollection)

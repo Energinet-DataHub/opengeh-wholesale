@@ -21,13 +21,13 @@ namespace Energinet.DataHub.Wholesale.Events.Application.Triggers;
 /// <summary>
 /// Worker invoking fetching completed batches from the batches module and registering them in the module.
 /// </summary>
-public class RegisterCompletedBatchesTrigger : RepeatingTrigger<IRegisterCompletedCalculationsHandler>
+public class RegisterCompletedCalculationsTrigger : RepeatingTrigger<IRegisterCompletedCalculationsHandler>
 {
     private const int DelayInSecondsBeforeNextExecution = 10;
 
-    public RegisterCompletedBatchesTrigger(
+    public RegisterCompletedCalculationsTrigger(
         IServiceProvider serviceProvider,
-        ILogger<RegisterCompletedBatchesTrigger> logger)
+        ILogger<RegisterCompletedCalculationsTrigger> logger)
         : base(serviceProvider, logger, TimeSpan.FromSeconds(DelayInSecondsBeforeNextExecution))
     {
     }

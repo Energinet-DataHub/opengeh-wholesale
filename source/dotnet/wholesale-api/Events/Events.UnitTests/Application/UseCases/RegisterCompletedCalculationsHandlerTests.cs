@@ -16,7 +16,7 @@ using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.Interfaces;
 using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
-using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Moq;
 using NodaTime;
@@ -31,19 +31,19 @@ public class RegisterCompletedCalculationsHandlerTests
     public async Task RegisterCompletedBatchesAsync_WhenTwoNewBatchHasCompleted_RegistersThem(
         CalculationDto newBatch1,
         CalculationDto newBatch2,
-        CompletedBatch lastKnownCompletedBatch,
-        CompletedBatch newCompletedBatch1,
-        CompletedBatch newCompletedBatch2,
+        CompletedCalculation lastKnownCompletedCalculation,
+        CompletedCalculation newCompletedBatch1,
+        CompletedCalculation newCompletedBatch2,
         [Frozen] Mock<ICalculationsClient> batchesClientMock,
-        [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
+        [Frozen] Mock<ICompletedCalculationRepository> completedBatchRepositoryMock,
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
-        [Frozen] Mock<ICompletedBatchFactory> completedBatchFactoryMock,
+        [Frozen] Mock<ICompletedCalculationFactory> completedBatchFactoryMock,
         RegisterCompletedCalculationsHandler sut)
     {
         // Arrange
         completedBatchRepositoryMock
             .Setup(repository => repository.GetLastCompletedOrNullAsync())
-            .ReturnsAsync(lastKnownCompletedBatch);
+            .ReturnsAsync(lastKnownCompletedCalculation);
         batchesClientMock
             .Setup(client => client.GetBatchesCompletedAfterAsync(It.IsAny<Instant>()))
             .ReturnsAsync(new[] { newBatch1, newBatch2 });
@@ -59,7 +59,7 @@ public class RegisterCompletedCalculationsHandlerTests
         // The two batches has been registered
         completedBatchRepositoryMock
             .Verify(
-                x => x.AddAsync(It.Is<IEnumerable<CompletedBatch>>(
+                x => x.AddAsync(It.Is<IEnumerable<CompletedCalculation>>(
                     batches => batches.First().Id == newCompletedBatch1.Id && batches.Last().Id == newCompletedBatch2.Id)),
                 Times.Once);
 

@@ -14,40 +14,40 @@
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Batches.IntegrationTests.Fixture.Database;
-using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedCalculations;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Events.IntegrationTests.Infrastructure.Persistence.Batches;
 
-public class CompletedBatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture<EventsDatabaseContext>>
+public class CompletedCalculationRepositoryTests : IClassFixture<WholesaleDatabaseFixture<EventsDatabaseContext>>
 {
     private readonly WholesaleDatabaseManager<EventsDatabaseContext> _databaseManager;
 
-    public CompletedBatchRepositoryTests(WholesaleDatabaseFixture<EventsDatabaseContext> fixture)
+    public CompletedCalculationRepositoryTests(WholesaleDatabaseFixture<EventsDatabaseContext> fixture)
     {
         _databaseManager = fixture.DatabaseManager;
     }
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task AddAsync_AddsCompletedBatchWithExpectedData(CompletedBatch expectedBatch)
+    public async Task AddAsync_AddsCompletedBatchWithExpectedData(CompletedCalculation expectedCalculation)
     {
         // Arrange
         await using var writeContext = _databaseManager.CreateDbContext();
-        var sut = new CompletedBatchRepository(writeContext);
+        var sut = new CompletedCalculationRepository(writeContext);
 
         // Act
-        await sut.AddAsync(new[] { expectedBatch });
+        await sut.AddAsync(new[] { expectedCalculation });
         await writeContext.SaveChangesAsync();
 
         // Assert
         await using var readContext = _databaseManager.CreateDbContext();
-        var actual = await readContext.CompletedBatches.SingleAsync(b => b.Id == expectedBatch.Id);
+        var actual = await readContext.CompletedBatches.SingleAsync(b => b.Id == expectedCalculation.Id);
 
-        actual.Should().BeEquivalentTo(expectedBatch);
+        actual.Should().BeEquivalentTo(expectedCalculation);
     }
 }

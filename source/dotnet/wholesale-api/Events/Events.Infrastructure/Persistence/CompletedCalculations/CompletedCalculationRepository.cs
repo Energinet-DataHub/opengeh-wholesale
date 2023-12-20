@@ -12,26 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Microsoft.EntityFrameworkCore;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedBatches;
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedCalculations;
 
-public class CompletedBatchRepository : ICompletedBatchRepository
+public class CompletedCalculationRepository : ICompletedCalculationRepository
 {
     private readonly IEventsDatabaseContext _context;
 
-    public CompletedBatchRepository(IEventsDatabaseContext context)
+    public CompletedCalculationRepository(IEventsDatabaseContext context)
     {
         _context = context;
     }
 
-    public async Task AddAsync(IEnumerable<CompletedBatch> completedBatches)
+    public async Task AddAsync(IEnumerable<CompletedCalculation> completedBatches)
     {
         await _context.CompletedBatches.AddRangeAsync(completedBatches).ConfigureAwait(false);
     }
 
-    public async Task<CompletedBatch?> GetLastCompletedOrNullAsync()
+    public async Task<CompletedCalculation?> GetLastCompletedOrNullAsync()
     {
         return await _context.CompletedBatches
             .OrderByDescending(x => x.CompletedTime)
@@ -39,7 +39,7 @@ public class CompletedBatchRepository : ICompletedBatchRepository
             .ConfigureAwait(false);
     }
 
-    public async Task<CompletedBatch?> GetNextUnpublishedOrNullAsync()
+    public async Task<CompletedCalculation?> GetNextUnpublishedOrNullAsync()
     {
         return await _context.CompletedBatches
             .OrderBy(x => x.CompletedTime)

@@ -15,11 +15,11 @@
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+namespace Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 
-public sealed class CompletedBatch
+public sealed class CompletedCalculation
 {
-    public CompletedBatch(
+    public CompletedCalculation(
         Guid id,
         List<string> gridAreaCodes,
         ProcessType processType,

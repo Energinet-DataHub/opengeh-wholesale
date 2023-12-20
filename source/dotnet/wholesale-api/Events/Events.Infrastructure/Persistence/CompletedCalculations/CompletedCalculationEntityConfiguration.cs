@@ -13,17 +13,17 @@
 // limitations under the License.
 
 using System.Text.Json;
-using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedBatches;
+namespace Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedCalculations;
 
-public class CompletedBatchEntityConfiguration : IEntityTypeConfiguration<CompletedBatch>
+public class CompletedCalculationEntityConfiguration : IEntityTypeConfiguration<CompletedCalculation>
 {
-    public void Configure(EntityTypeBuilder<CompletedBatch> builder)
+    public void Configure(EntityTypeBuilder<CompletedCalculation> builder)
     {
-        builder.ToTable(nameof(CompletedBatch));
+        builder.ToTable(nameof(CompletedCalculation));
 
         builder.HasKey(b => b.Id);
         builder
@@ -38,7 +38,7 @@ public class CompletedBatchEntityConfiguration : IEntityTypeConfiguration<Comple
 
         // Grid area codes are stored as a JSON array
         var gridAreaCodes = builder.Metadata
-            .FindNavigation(nameof(CompletedBatch.GridAreaCodes))!;
+            .FindNavigation(nameof(CompletedCalculation.GridAreaCodes))!;
         gridAreaCodes.SetPropertyAccessMode(PropertyAccessMode.Field);
         builder
             .Property(b => b.GridAreaCodes)

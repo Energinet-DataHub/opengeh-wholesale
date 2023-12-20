@@ -24,7 +24,7 @@ using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.ReceivedInt
 using Energinet.DataHub.Wholesale.Batches.Interfaces.GridArea;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Options;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
-using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Application.Triggers;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using Energinet.DataHub.Wholesale.Events.Application.Workers;
@@ -34,7 +34,7 @@ using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Energy
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Infrastructure.Persistence.CompletedCalculations;
 using Google.Protobuf.Reflection;
 
 namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
@@ -76,8 +76,8 @@ public static class EventsRegistration
             .AddScoped<IUnitOfWork, UnitOfWork>();
 
         serviceCollection
-            .AddScoped<ICompletedBatchRepository, CompletedBatchRepository>()
-            .AddScoped<ICompletedBatchFactory, CompletedBatchFactory>()
+            .AddScoped<ICompletedCalculationRepository, CompletedCalculationRepository>()
+            .AddScoped<ICompletedCalculationFactory, CompletedCalculationFactory>()
             .AddScoped<IRegisterCompletedCalculationsHandler, RegisterCompletedCalculationsHandler>();
 
         serviceCollection
@@ -118,12 +118,12 @@ public static class EventsRegistration
     {
         serviceCollection
             .AddHostedService<AggregatedTimeSeriesServiceBusWorker>()
-            .AddHostedService<RegisterCompletedBatchesTrigger>()
+            .AddHostedService<RegisterCompletedCalculationsTrigger>()
             .AddHostedService<ReceiveIntegrationEventServiceBusWorker>()
             .AddApplicationInsightsTelemetryWorkerService();
 
         serviceCollection
             .AddHealthChecks()
-            .AddRepeatingTriggerHealthCheck<RegisterCompletedBatchesTrigger>(TimeSpan.FromMinutes(1));
+            .AddRepeatingTriggerHealthCheck<RegisterCompletedCalculationsTrigger>(TimeSpan.FromMinutes(1));
     }
 }

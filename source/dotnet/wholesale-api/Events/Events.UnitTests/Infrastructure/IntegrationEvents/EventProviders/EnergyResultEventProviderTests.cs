@@ -16,7 +16,7 @@ using AutoFixture.Xunit2;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.CalculationResultCompleted.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProducedV2.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EventProviders;
@@ -31,7 +31,7 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
         [Theory]
         [InlineAutoMoqData]
         public async Task GetAsync_WhenMultipleResults_ReturnsTwoEventsPerResult(
-            CompletedBatch completedBatch,
+            CompletedCalculation completedCalculation,
             EnergyResult[] energyResults,
 #pragma warning disable xUnit1026 // Theory methods should use all of their parameters
             [Frozen(Matching.ImplementedInterfaces)] CalculationResultCompletedFactory calculationResultCompletedFactory,
@@ -45,11 +45,11 @@ namespace Energinet.DataHub.Wholesale.Events.UnitTests.Infrastructure.Integratio
             var expectedEventsCount = energyResults.Length * expectedEventsPerResult;
 
             energyResultQueriesMock
-                .Setup(mock => mock.GetAsync(completedBatch.Id))
+                .Setup(mock => mock.GetAsync(completedCalculation.Id))
                 .Returns(energyResults.ToAsyncEnumerable());
 
             // Act
-            var actualIntegrationEvents = await sut.GetAsync(completedBatch).ToListAsync();
+            var actualIntegrationEvents = await sut.GetAsync(completedCalculation).ToListAsync();
 
             // Assert
             actualIntegrationEvents.Should().HaveCount(expectedEventsCount);
