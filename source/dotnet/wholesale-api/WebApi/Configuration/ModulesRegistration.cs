@@ -32,7 +32,7 @@ internal static class ServiceCollectionExtensions
         // Add modules
         var connectionStringOptions = configuration.GetSection(ConnectionStringsOptions.ConnectionStrings)
             .Get<ConnectionStringsOptions>();
-        serviceCollection.AddBatchesModule(() => connectionStringOptions!.DB_CONNECTION_STRING);
+        serviceCollection.AddCalculationsModule(() => connectionStringOptions!.DB_CONNECTION_STRING);
 
         serviceCollection.AddCalculationResultsModule(configuration);
 

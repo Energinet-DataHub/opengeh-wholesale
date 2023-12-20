@@ -32,7 +32,7 @@ public class RepeatingTriggerRegistrationTests
     {
         // Arrange
         serviceCollection.AddEventsModule(options);
-        serviceCollection.AddBatchesModule(() => string.Empty);
+        serviceCollection.AddCalculationsModule(() => string.Empty);
 
         // Act
         var actual = serviceCollection.Count(x => x.ImplementationType == type);

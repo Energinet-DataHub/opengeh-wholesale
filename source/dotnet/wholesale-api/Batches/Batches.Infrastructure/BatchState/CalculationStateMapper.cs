@@ -18,7 +18,7 @@ using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 
 namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchState;
 
-public class BatchStateMapper
+public class CalculationStateMapper
 {
     public static CalculationExecutionState MapState(CalculationState calculationState)
     {

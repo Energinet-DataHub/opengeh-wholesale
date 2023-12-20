@@ -58,7 +58,7 @@ public class BatchExecutionStateInfrastructureService : IBatchExecutionStateInfr
                     .GetStatusAsync(batch.CalculationId!)
                     .ConfigureAwait(false);
 
-                var executionState = BatchStateMapper.MapState(jobState);
+                var executionState = CalculationStateMapper.MapState(jobState);
                 if (executionState != batch.ExecutionState)
                 {
                     HandleNewState(executionState, batch, completedBatches);

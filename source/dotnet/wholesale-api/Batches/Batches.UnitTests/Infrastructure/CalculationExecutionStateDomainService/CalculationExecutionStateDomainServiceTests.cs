@@ -24,9 +24,9 @@ using Moq;
 using NodaTime;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchExecutionStateDomainService;
+namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.CalculationExecutionStateDomainService;
 
-public class BatchExecutionStateDomainServiceTests
+public class CalculationExecutionStateDomainServiceTests
 {
     [Theory]
     [InlineAutoMoqData]

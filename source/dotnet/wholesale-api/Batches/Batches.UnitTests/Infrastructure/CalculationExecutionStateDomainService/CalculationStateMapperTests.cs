@@ -13,16 +13,15 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.Batches.Application;
 using Energinet.DataHub.Wholesale.Batches.Application.Model;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchState;
 using FluentAssertions;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.BatchExecutionStateDomainService;
+namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.CalculationExecutionStateDomainService;
 
-public class BatchStateMapperTests
+public class CalculationStateMapperTests
 {
     [Theory]
     [InlineAutoMoqData(CalculationState.Pending, CalculationExecutionState.Pending)]
@@ -33,7 +32,7 @@ public class BatchStateMapperTests
     public void MapState_CalledWithACalculationStateItCanMap_ExpectedBatchExecutionState(CalculationState calculationState, CalculationExecutionState expectedCalculationExecutionState)
     {
         // Act
-        var actualBatchExecutionState = BatchStateMapper.MapState(calculationState);
+        var actualBatchExecutionState = CalculationStateMapper.MapState(calculationState);
 
         // Assert
         actualBatchExecutionState.Should().Be(expectedCalculationExecutionState);
@@ -46,7 +45,7 @@ public class BatchStateMapperTests
         const CalculationState unexpectedCalculationState = (CalculationState)99;
 
         // Act
-        var act = () => BatchStateMapper.MapState(unexpectedCalculationState);
+        var act = () => CalculationStateMapper.MapState(unexpectedCalculationState);
 
         // Assert
         act.Should().Throw<ArgumentOutOfRangeException>()

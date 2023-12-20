@@ -29,9 +29,9 @@ namespace Energinet.DataHub.Wholesale.WebApi.Configuration.Modules;
 /// <summary>
 /// Registration of services required for the Batches module.
 /// </summary>
-public static class BatchesRegistration
+public static class CalculationsRegistration
 {
-    public static void AddBatchesModule(
+    public static void AddCalculationsModule(
         this IServiceCollection serviceCollection,
         Func<string> databaseConnectionStringProvider)
     {
@@ -40,7 +40,7 @@ public static class BatchesRegistration
         serviceCollection.AddScoped<ICalculationInfrastructureService, CalculationInfrastructureService>();
         serviceCollection.AddScoped<ICalculationFactory, CalculationFactory>();
         serviceCollection.AddScoped<ICalculationRepository, CalculationRepository>();
-        serviceCollection.AddSingleton(new BatchStateMapper());
+        serviceCollection.AddSingleton(new CalculationStateMapper());
 
         serviceCollection.AddScoped<ICalculationEngineClient, CalculationEngineClient>();
 
