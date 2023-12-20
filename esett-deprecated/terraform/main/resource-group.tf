@@ -3,6 +3,10 @@ resource "azurerm_resource_group" "this" {
   location = "West Europe"
 }
 
+data "azurerm_resource_group" "shared" {
+  name = "rg-shres-${lower(var.environment_short)}-we-${lower(var.environment_instance)}"
+}
+
 resource "azurerm_role_assignment" "developer_access" {
   for_each = toset(var.developer_object_ids)
 

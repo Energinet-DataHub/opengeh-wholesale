@@ -28,16 +28,6 @@ variable "cert_pwd_esett_biztalk_authentication_key1" {
   description = "Password for the Biztalk certificate"
 }
 
-variable "shared_resources_keyvault_name" {
-  type        = string
-  description = "Name of the KeyVault, that contains the shared secrets"
-}
-
-variable "shared_resources_resource_group_name" {
-  type        = string
-  description = "Name of the Resource Group, that contains the shared resources."
-}
-
 variable "hosted_deployagent_public_ip_range" {
   type        = string
   description = "(Optional) Comma-delimited string with IPs / CIDR block with deployagent's public IPs, so it can access network-protected resources (Keyvaults, Function apps etc)"
