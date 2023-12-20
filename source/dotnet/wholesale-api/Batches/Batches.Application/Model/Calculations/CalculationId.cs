@@ -12,11 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+namespace Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 
-namespace Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
-
-public interface ICalculationFactory
-{
-    Calculation Create(ProcessType processType, IEnumerable<string> gridAreaCodes, DateTimeOffset startDate, DateTimeOffset endDate, Guid createdByUserId);
-}
+public sealed record CalculationId(long Id);

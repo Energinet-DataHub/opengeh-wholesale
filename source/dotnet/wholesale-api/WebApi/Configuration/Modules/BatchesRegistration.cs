@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Core.App.WebApp.Diagnostics.HealthChecks;
 using Energinet.DataHub.Wholesale.Batches.Application;
-using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
+using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Batches.Application.UseCases;
 using Energinet.DataHub.Wholesale.Batches.Application.Workers;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchState;

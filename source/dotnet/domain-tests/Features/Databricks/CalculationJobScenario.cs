@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Batches.Application.Model;
-using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
+using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.DomainTests.Features.Databricks.Fixtures;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Attributes;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture;

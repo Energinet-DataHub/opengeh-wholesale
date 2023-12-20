@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Batches.Application;
 using Energinet.DataHub.Wholesale.Batches.Application.Model;
-using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
+using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 
 namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.BatchState;
 

@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.Batches.Application.Model;
-using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
+using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.DomainTests.Features.Databricks.States;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures;

@@ -15,7 +15,7 @@
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using NodaTime;
 
-namespace Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
+namespace Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 
 public class CalculationFactory : ICalculationFactory
 {

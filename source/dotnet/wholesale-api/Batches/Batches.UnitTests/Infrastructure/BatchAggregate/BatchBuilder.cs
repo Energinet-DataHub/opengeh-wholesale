@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Batches.Application.Model;
-using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
+using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using NodaTime;
 using Test.Core;

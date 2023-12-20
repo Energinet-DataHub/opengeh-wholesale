@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Batches.Application.Model;
-using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
+using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Persistence.Batches;
 using Energinet.DataHub.Wholesale.Batches.IntegrationTests.Fixture.Database;
@@ -199,7 +199,7 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture<Datab
         await using var writeContext = _databaseManager.CreateDbContext();
 
         var period = Periods.January_EuropeCopenhagen_Instant;
-        var batch = new Application.Model.Batches.Calculation(
+        var batch = new Calculation(
             SystemClock.Instance.GetCurrentInstant(),
             ProcessType.BalanceFixing,
             new List<GridAreaCode> { new("004") },
@@ -229,15 +229,15 @@ public class BatchRepositoryTests : IClassFixture<WholesaleDatabaseFixture<Datab
             actual.Should().NotContain(batch);
     }
 
-    private static Application.Model.Batches.Calculation CreateBatch(List<GridAreaCode> someGridAreasIds)
+    private static Calculation CreateBatch(List<GridAreaCode> someGridAreasIds)
     {
         return CreateBatch(ProcessType.BalanceFixing, someGridAreasIds);
     }
 
-    private static Application.Model.Batches.Calculation CreateBatch(ProcessType processType, List<GridAreaCode> someGridAreasIds)
+    private static Calculation CreateBatch(ProcessType processType, List<GridAreaCode> someGridAreasIds)
     {
         var period = Periods.January_EuropeCopenhagen_Instant;
-        return new Application.Model.Batches.Calculation(
+        return new Calculation(
             SystemClock.Instance.GetCurrentInstant(),
             processType,
             someGridAreasIds,
