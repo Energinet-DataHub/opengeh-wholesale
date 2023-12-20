@@ -58,7 +58,7 @@ public static class BatchesRegistration
                 }));
 
         serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
-        serviceCollection.AddScoped<IBatchDtoMapper, BatchDtoMapper>();
+        serviceCollection.AddScoped<ICalculationDtoMapper, CalculationDtoMapper>();
 
         serviceCollection.AddScoped<ICreateBatchHandler, CreateBatchHandler>();
         serviceCollection.AddScoped<IStartCalculationHandler, StartCalculationHandler>();

@@ -16,7 +16,7 @@ using Energinet.DataHub.Wholesale.Batches.Interfaces.Models;
 
 namespace Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
 
-public interface IBatchDtoMapper
+public interface ICalculationDtoMapper
 {
     BatchDto Map(Calculation calculation);
 }

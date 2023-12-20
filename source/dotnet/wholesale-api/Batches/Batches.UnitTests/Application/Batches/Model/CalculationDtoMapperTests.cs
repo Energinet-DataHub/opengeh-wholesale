@@ -22,12 +22,12 @@ using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Application.Batches.Model;
 
-public class BatchDtoMapperTests
+public class CalculationDtoMapperTests
 {
     [Theory]
     [InlineAutoMoqData]
     public void Map_Returns_CorrectState(
-        BatchDtoMapper sut)
+        CalculationDtoMapper sut)
     {
         // Arrange
         var batch = new BatchBuilder().WithStateExecuting().Build();
@@ -42,7 +42,7 @@ public class BatchDtoMapperTests
     [Theory]
     [InlineAutoMoqData]
     public void Map_Returns_CorrectPeriod(
-        BatchDtoMapper sut)
+        CalculationDtoMapper sut)
     {
         // Arrange
         var batch = new BatchBuilder().Build();
@@ -58,7 +58,7 @@ public class BatchDtoMapperTests
     [Theory]
     [InlineAutoMoqData]
     public void Map_When_ExecutionTimeIsNotNull_Returns_CorrectExecutionTime(
-        BatchDtoMapper sut)
+        CalculationDtoMapper sut)
     {
         // Arrange
         var batch = new BatchBuilder().Build();
@@ -76,7 +76,7 @@ public class BatchDtoMapperTests
     [Theory]
     [InlineAutoMoqData]
     public void Map_BatchNumber_Equals_RunId(
-        BatchDtoMapper sut)
+        CalculationDtoMapper sut)
     {
         // Arrange
         var batch = new BatchBuilder().Build();
@@ -93,7 +93,7 @@ public class BatchDtoMapperTests
     [Theory]
     [InlineAutoMoqData]
     public void Map_When_NoRunIdIsNull_Then_BatchNumberIsNull(
-        BatchDtoMapper sut)
+        CalculationDtoMapper sut)
     {
         // Arrange
         var batch = new BatchBuilder().Build();

@@ -23,24 +23,24 @@ namespace Energinet.DataHub.Wholesale.Batches.Application;
 public class CalculationsClient : ICalculationsClient
 {
     private readonly IBatchRepository _batchRepository;
-    private readonly IBatchDtoMapper _batchDtoMapper;
+    private readonly ICalculationDtoMapper _calculationDtoMapper;
 
-    public CalculationsClient(IBatchRepository batchRepository, IBatchDtoMapper batchDtoMapper)
+    public CalculationsClient(IBatchRepository batchRepository, ICalculationDtoMapper calculationDtoMapper)
     {
         _batchRepository = batchRepository;
-        _batchDtoMapper = batchDtoMapper;
+        _calculationDtoMapper = calculationDtoMapper;
     }
 
     public async Task<IEnumerable<BatchDto>> GetBatchesCompletedAfterAsync(Instant? completedTime)
     {
         var batches = await _batchRepository.GetCompletedAfterAsync(completedTime).ConfigureAwait(false);
-        return batches.Select(_batchDtoMapper.Map);
+        return batches.Select(_calculationDtoMapper.Map);
     }
 
     public async Task<BatchDto> GetAsync(Guid batchId)
     {
         var batch = await _batchRepository.GetAsync(batchId).ConfigureAwait(false);
-        return _batchDtoMapper.Map(batch);
+        return _calculationDtoMapper.Map(batch);
     }
 
     public async Task<IEnumerable<BatchDto>> SearchAsync(
@@ -80,7 +80,7 @@ public class CalculationsClient : ICalculationsClient
                 periodEndInstant)
             .ConfigureAwait(false);
 
-        return batches.Select(_batchDtoMapper.Map);
+        return batches.Select(_calculationDtoMapper.Map);
     }
 
     private static Instant? ConvertToInstant(DateTimeOffset? dateTimeOffset)
