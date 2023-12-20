@@ -279,4 +279,3 @@ def integration_test_configuration(tests_path: str) -> IntegrationTestConfigurat
     raise Exception(
         "Failed to load integration test settings. Ensure that the Azure Key Vault URL is provided in the settings file or as an environment variable."
     )
-
