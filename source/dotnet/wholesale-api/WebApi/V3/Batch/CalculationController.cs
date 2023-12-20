@@ -28,16 +28,16 @@ namespace Energinet.DataHub.Wholesale.WebApi.V3.Batch;
 [Route("/v3/batches")]
 public class CalculationController : V3ControllerBase
 {
-    private readonly IBatchesClient _batchesClient;
+    private readonly ICalculationsClient _calculationsClient;
     private readonly ICreateBatchHandler _createBatchHandler;
     private readonly IUserContext<FrontendUser> _userContext;
 
     public CalculationController(
-        IBatchesClient batchesClient,
+        ICalculationsClient calculationsClient,
         ICreateBatchHandler createBatchHandler,
         IUserContext<FrontendUser> userContext)
     {
-        _batchesClient = batchesClient;
+        _calculationsClient = calculationsClient;
         _createBatchHandler = createBatchHandler;
         _userContext = userContext;
     }
@@ -70,7 +70,7 @@ public class CalculationController : V3ControllerBase
     [Authorize(Roles = Permissions.CalculationsManage)]
     public async Task<IActionResult> GetAsync([FromRoute] Guid batchId)
     {
-        return Ok(await _batchesClient.GetAsync(batchId).ConfigureAwait(false));
+        return Ok(await _calculationsClient.GetAsync(batchId).ConfigureAwait(false));
     }
 
     /// <summary>
@@ -95,7 +95,7 @@ public class CalculationController : V3ControllerBase
         [FromQuery] DateTimeOffset? periodStart,
         [FromQuery] DateTimeOffset? periodEnd)
     {
-        var batches = await _batchesClient.SearchAsync(
+        var batches = await _calculationsClient.SearchAsync(
             gridAreaCodes ?? Array.Empty<string>(),
             BatchStateMapper.MapState(executionState),
             minExecutionTime,

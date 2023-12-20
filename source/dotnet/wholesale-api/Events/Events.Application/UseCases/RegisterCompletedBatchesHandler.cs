@@ -19,18 +19,18 @@ namespace Energinet.DataHub.Wholesale.Events.Application.UseCases;
 
 public class RegisterCompletedBatchesHandler : IRegisterCompletedBatchesHandler
 {
-    private readonly IBatchesClient _batchesClient;
+    private readonly ICalculationsClient _calculationsClient;
     private readonly ICompletedBatchRepository _completedBatchRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICompletedBatchFactory _completedBatchFactory;
 
     public RegisterCompletedBatchesHandler(
-        IBatchesClient batchesClient,
+        ICalculationsClient calculationsClient,
         ICompletedBatchRepository completedBatchRepository,
         IUnitOfWork unitOfWork,
         ICompletedBatchFactory completedBatchFactory)
     {
-        _batchesClient = batchesClient;
+        _calculationsClient = calculationsClient;
         _completedBatchRepository = completedBatchRepository;
         _unitOfWork = unitOfWork;
         _completedBatchFactory = completedBatchFactory;
@@ -46,7 +46,7 @@ public class RegisterCompletedBatchesHandler : IRegisterCompletedBatchesHandler
     private async Task<IEnumerable<CompletedBatch>> GetNewCompletedBatchesAsync()
     {
         var lastKnownCompletedBatch = await _completedBatchRepository.GetLastCompletedOrNullAsync().ConfigureAwait(false);
-        var completedBatchDtos = await _batchesClient.GetBatchesCompletedAfterAsync(lastKnownCompletedBatch?.CompletedTime).ConfigureAwait(false);
+        var completedBatchDtos = await _calculationsClient.GetBatchesCompletedAfterAsync(lastKnownCompletedBatch?.CompletedTime).ConfigureAwait(false);
         return _completedBatchFactory.CreateFromBatches(completedBatchDtos);
     }
 }

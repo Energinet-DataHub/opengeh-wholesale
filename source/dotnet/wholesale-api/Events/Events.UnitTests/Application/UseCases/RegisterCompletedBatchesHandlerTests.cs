@@ -34,7 +34,7 @@ public class RegisterCompletedBatchesHandlerTests
         CompletedBatch lastKnownCompletedBatch,
         CompletedBatch newCompletedBatch1,
         CompletedBatch newCompletedBatch2,
-        [Frozen] Mock<IBatchesClient> batchesClientMock,
+        [Frozen] Mock<ICalculationsClient> batchesClientMock,
         [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         [Frozen] Mock<ICompletedBatchFactory> completedBatchFactoryMock,

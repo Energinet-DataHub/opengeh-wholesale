@@ -20,12 +20,12 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Batches.Application;
 
-public class BatchesClient : IBatchesClient
+public class CalculationsClient : ICalculationsClient
 {
     private readonly IBatchRepository _batchRepository;
     private readonly IBatchDtoMapper _batchDtoMapper;
 
-    public BatchesClient(IBatchRepository batchRepository, IBatchDtoMapper batchDtoMapper)
+    public CalculationsClient(IBatchRepository batchRepository, IBatchDtoMapper batchDtoMapper)
     {
         _batchRepository = batchRepository;
         _batchDtoMapper = batchDtoMapper;

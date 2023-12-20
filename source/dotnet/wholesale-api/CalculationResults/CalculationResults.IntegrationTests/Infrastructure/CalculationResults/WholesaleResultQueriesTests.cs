@@ -38,12 +38,12 @@ public class WholesaleResultQueriesTests : TestBase<WholesaleResultQueries>, ICl
     private const string DefaultMonthlyAmount = "1.123456";
 
     private readonly DatabricksSqlStatementApiFixture _fixture;
-    private readonly Mock<IBatchesClient> _batchesClientMock;
+    private readonly Mock<ICalculationsClient> _batchesClientMock;
 
     public WholesaleResultQueriesTests(DatabricksSqlStatementApiFixture fixture)
     {
         _fixture = fixture;
-        _batchesClientMock = Fixture.Freeze<Mock<IBatchesClient>>();
+        _batchesClientMock = Fixture.Freeze<Mock<ICalculationsClient>>();
         Fixture.Inject(_fixture.DatabricksSchemaManager.DeltaTableOptions);
         Fixture.Inject(_fixture.GetDatabricksExecutor());
     }

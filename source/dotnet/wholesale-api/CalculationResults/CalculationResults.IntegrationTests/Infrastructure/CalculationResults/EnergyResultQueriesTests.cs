@@ -41,7 +41,7 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>, IClassFix
     private const string SixthQuantity = "6.666";
 
     private readonly DatabricksSqlStatementApiFixture _fixture;
-    private readonly Mock<IBatchesClient> _batchesClientMock;
+    private readonly Mock<ICalculationsClient> _batchesClientMock;
 
     public EnergyResultQueriesTests(DatabricksSqlStatementApiFixture fixture)
     {
@@ -51,7 +51,7 @@ public class EnergyResultQueriesTests : TestBase<EnergyResultQueries>, IClassFix
         // 1. Because DatabricksSqlWarehouseQueryExecutor doesn't implement an interface and the constructor is protected
         // AutoFixture combined with inline is unable to create an instance of it.
         // 2. The many mock parameters are avoided in tests
-        _batchesClientMock = Fixture.Freeze<Mock<IBatchesClient>>();
+        _batchesClientMock = Fixture.Freeze<Mock<ICalculationsClient>>();
         Fixture.Inject(_fixture.DatabricksSchemaManager.DeltaTableOptions);
         Fixture.Inject(_fixture.GetDatabricksExecutor());
     }

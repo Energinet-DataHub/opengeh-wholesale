@@ -56,7 +56,7 @@ public class CalculationControllerTests : WebApiTestBase
     [Theory]
     [InlineAutoMoqData]
     public async Task HTTP_GET_V3_ReturnsHttpStatusCodeOkAtExpectedUrl(
-        Mock<IBatchesClient> mock,
+        Mock<ICalculationsClient> mock,
         BatchDto batchDto)
     {
         // Arrange

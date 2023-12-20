@@ -17,7 +17,7 @@ using NodaTime;
 
 namespace Energinet.DataHub.Wholesale.Batches.Interfaces;
 
-public interface IBatchesClient
+public interface ICalculationsClient
 {
     Task<IEnumerable<BatchDto>> GetBatchesCompletedAfterAsync(Instant? completedTime);
 
