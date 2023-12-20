@@ -23,7 +23,7 @@ using Moq;
 using Test.Core;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Application.Batches;
+namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Application.Calculations;
 
 public class StartCalculationHandlerTests
 {

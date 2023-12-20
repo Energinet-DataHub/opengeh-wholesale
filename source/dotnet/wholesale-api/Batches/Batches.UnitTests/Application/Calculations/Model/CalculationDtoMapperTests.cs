@@ -20,7 +20,7 @@ using FluentAssertions;
 using NodaTime;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Application.Batches.Model;
+namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Application.Calculations.Model;
 
 public class CalculationDtoMapperTests
 {
