@@ -67,7 +67,7 @@ public class BatchController : V3ControllerBase
     [HttpGet("{batchId}", Name = "GetBatch")]
     [MapToApiVersion(Version)]
     [Produces("application/json", Type = typeof(BatchDto))]
-    [Authorize(Roles = Permissions.CalculationsManage)]
+    ////[Authorize(Roles = Permissions.CalculationsManage)]
     public async Task<IActionResult> GetAsync([FromRoute] Guid batchId)
     {
         return Ok(await _batchesClient.GetAsync(batchId).ConfigureAwait(false));
