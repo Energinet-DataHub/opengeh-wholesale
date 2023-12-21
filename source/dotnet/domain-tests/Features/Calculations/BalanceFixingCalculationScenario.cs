@@ -38,12 +38,21 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Calculations
         [DomainFact]
         public void Given_CalculationInput()
         {
+            ////Fixture.ScenarioState.CalculationInput = new Clients.v3.BatchRequestDto
+            ////{
+            ////    ProcessType = Clients.v3.ProcessType.BalanceFixing,
+            ////    GridAreaCodes = new List<string> { "543" },
+            ////    StartDate = new DateTimeOffset(2022, 1, 11, 23, 0, 0, TimeSpan.Zero),
+            ////    EndDate = new DateTimeOffset(2022, 1, 12, 23, 0, 0, TimeSpan.Zero),
+            ////};
+
+            // Prepare data for settlement report test
             Fixture.ScenarioState.CalculationInput = new Clients.v3.BatchRequestDto
             {
                 ProcessType = Clients.v3.ProcessType.BalanceFixing,
-                GridAreaCodes = new List<string> { "543" },
-                StartDate = new DateTimeOffset(2022, 1, 11, 23, 0, 0, TimeSpan.Zero),
-                EndDate = new DateTimeOffset(2022, 1, 12, 23, 0, 0, TimeSpan.Zero),
+                GridAreaCodes = new List<string> { "804" },
+                StartDate = new DateTimeOffset(2023, 1, 31, 23, 0, 0, TimeSpan.Zero),
+                EndDate = new DateTimeOffset(2023, 2, 1, 23, 0, 0, TimeSpan.Zero),
             };
         }
 
