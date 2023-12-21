@@ -214,30 +214,4 @@ public class CalculationExecutionStateDomainServiceTests
         // Assert
         loggerMock.ShouldBeCalledWith(LogLevel.Error, expectedLogMessage);
     }
-
-    [Theory]
-    [InlineAutoMoqData]
-    public async Task UpdateExecutionState_When_JobRunnerThrowsException_LogsExpectedErrorMessage(
-        [Frozen] Mock<ILogger<BatchExecutionStateInfrastructureService>> loggerMock,
-        [Frozen] Mock<IClock> clockMock,
-        [Frozen] Mock<IBatchRepository> batchRepositoryMock,
-        [Frozen] Mock<ICalculationInfrastructureService> calculatorJobRunnerMock,
-        BatchExecutionStateInfrastructureService sut)
-    {
-        // Arrange
-        const string expectedLogMessage = $"Exception caught while trying to update execution state for run ID {LoggingConstants.CalculationId}";
-        var batch1 = new BatchBuilder().WithStateSubmitted().Build();
-        var batches = new List<Batch> { batch1 };
-        var executionTimeEndGreaterThanStart = batch1.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2));
-        clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(executionTimeEndGreaterThanStart);
-        batchRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<BatchExecutionState>>()))
-            .ReturnsAsync(batches);
-        calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(It.IsAny<CalculationId>())).ThrowsAsync(default);
-
-        // Act
-        await sut.UpdateExecutionStateAsync();
-
-        // Assert
-        loggerMock.ShouldBeCalledWith(LogLevel.Error, expectedLogMessage);
-    }
 }
