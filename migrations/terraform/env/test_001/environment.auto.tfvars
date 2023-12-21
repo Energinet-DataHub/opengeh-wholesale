@@ -6,3 +6,5 @@ developer_object_ids = [
     "c2f75d02-f64f-4111-aaea-6c43f5bc8d65",
     "b3e348db-659d-46a2-bee3-942ceb1dcba4"
 ]
+datahub2_ip_whitelist="86.106.96.1"
+feature_flag_datahub2_healthcheck=false

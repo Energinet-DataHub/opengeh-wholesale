@@ -7,3 +7,4 @@ developer_object_ids                               = [
     "618b5827-d17e-40cf-9cdd-e91ebb04c572",
     "c2f75d02-f64f-4111-aaea-6c43f5bc8d65"
 ]
+feature_flag_datahub2_healthcheck=false

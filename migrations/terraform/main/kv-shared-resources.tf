@@ -1,6 +1,6 @@
 data "azurerm_key_vault" "kv_shared_resources" {
-  name                = var.shared_resources_keyvault_name
-  resource_group_name = var.shared_resources_resource_group_name
+  name                = "kvshres${lower(var.environment_short)}we${lower(var.environment_instance)}"
+  resource_group_name = data.azurerm_resource_group.shared.name
 }
 
 data "azurerm_key_vault_secret" "primary_action_group_id" {

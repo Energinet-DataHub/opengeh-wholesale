@@ -11,6 +11,7 @@ variable "tenant_id" {
 variable "enable_health_check_alerts" {
   type        = bool
   description = "Specify if health check alerts for Azure Functions and App Services should be enabled."
+  default     = true
 }
 
 variable "environment_short" {
@@ -28,16 +29,6 @@ variable "domain_name_short" {
   description = "Shortest possible edition of the domain name."
 }
 
-variable "shared_resources_keyvault_name" {
-  type        = string
-  description = "Name of the Key Vault, that contains the shared secrets"
-}
-
-variable "shared_resources_resource_group_name" {
-  type        = string
-  description = "Name of the Resource Group, that contains the shared resources."
-}
-
 variable "alert_email_notification" {
   type        = string
   description = "Email address for the teams channel that the alerts are sent to."
@@ -52,12 +43,6 @@ variable "hosted_deployagent_public_ip_range" {
 variable "developers_security_group_object_id" {
   type        = string
   description = "(Optional) The Object ID of the Azure AD security group containing DataHub developers."
-  default     = null
-}
-
-variable "migration_team_security_group_object_id" {
-  type        = string
-  description = "(Optional) The Object ID of the Azure AD security group containing Migrations team members."
   default     = null
 }
 
@@ -112,7 +97,7 @@ variable "github_personal_access_token" {
 variable "datahub2_ip_whitelist" {
   type        = string
   description = "Comma-delimited string with IPs / CIDR block with IPs that should be whitelisted for DataHub2"
-  default     = ""
+  default     = null
 }
 
 variable "developer_object_ids" {

@@ -11,7 +11,7 @@ module "st_dh2dropzone_archive" {
   account_tier                    = "Standard"
   access_tier                     = "Cool"
   private_endpoint_subnet_id      = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
-  private_dns_resource_group_name = var.shared_resources_resource_group_name
+  private_dns_resource_group_name = data.azurerm_resource_group.shared.name
   ip_rules                        = var.hosted_deployagent_public_ip_range
   prevent_deletion                = true
 }
