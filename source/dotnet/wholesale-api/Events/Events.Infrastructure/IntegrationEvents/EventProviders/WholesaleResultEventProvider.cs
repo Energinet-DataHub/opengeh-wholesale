@@ -17,7 +17,7 @@ using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResul
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
-using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.AmountPerChargeResultProducedV1.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.MonthlyAmountPerChargeResultProducedV1.Factories;
 
@@ -39,18 +39,18 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Ev
             _monthlyAmountPerChargeResultProducedV1Factory = monthlyAmountPerChargeResultProducedV1Factory;
         }
 
-        public bool CanContainWholesaleResults(CompletedBatch batch)
+        public bool CanContainWholesaleResults(CompletedCalculation calculation)
         {
-            return batch.ProcessType
+            return calculation.ProcessType
                 is ProcessType.WholesaleFixing
                 or ProcessType.FirstCorrectionSettlement
                 or ProcessType.SecondCorrectionSettlement
                 or ProcessType.ThirdCorrectionSettlement;
         }
 
-        public async IAsyncEnumerable<IntegrationEvent> GetAsync(CompletedBatch batch)
+        public async IAsyncEnumerable<IntegrationEvent> GetAsync(CompletedCalculation calculation)
         {
-            await foreach (var wholesaleResult in _wholesaleResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
+            await foreach (var wholesaleResult in _wholesaleResultQueries.GetAsync(calculation.Id).ConfigureAwait(false))
             {
                 yield return CreateEventFromWholesaleResult(wholesaleResult);
             }

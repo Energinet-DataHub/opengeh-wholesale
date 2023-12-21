@@ -32,21 +32,21 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 public class EnergyResultQueries : IEnergyResultQueries
 {
     private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor;
-    private readonly IBatchesClient _batchesClient;
+    private readonly ICalculationsClient _calculationsClient;
     private readonly DeltaTableOptions _deltaTableOptions;
     private readonly ILogger<EnergyResultQueries> _logger;
 
-    public EnergyResultQueries(DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor, IBatchesClient batchesClient, IOptions<DeltaTableOptions> deltaTableOptions, ILogger<EnergyResultQueries> logger)
+    public EnergyResultQueries(DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor, ICalculationsClient calculationsClient, IOptions<DeltaTableOptions> deltaTableOptions, ILogger<EnergyResultQueries> logger)
     {
         _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
-        _batchesClient = batchesClient;
+        _calculationsClient = calculationsClient;
         _deltaTableOptions = deltaTableOptions.Value;
         _logger = logger;
     }
 
     public async IAsyncEnumerable<EnergyResult> GetAsync(Guid batchId)
     {
-        var batch = await _batchesClient.GetAsync(batchId).ConfigureAwait(false);
+        var batch = await _calculationsClient.GetAsync(batchId).ConfigureAwait(false);
         var statement = new EnergyResultQueryStatement(batchId, _deltaTableOptions);
         await foreach (var calculationResult in GetInternalAsync(statement, batch.PeriodStart.ToInstant(), batch.PeriodEnd.ToInstant()))
             yield return calculationResult;

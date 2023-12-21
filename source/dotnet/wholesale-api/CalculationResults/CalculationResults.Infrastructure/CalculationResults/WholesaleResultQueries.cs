@@ -32,21 +32,21 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Calculat
 public class WholesaleResultQueries : IWholesaleResultQueries
 {
     private readonly DatabricksSqlWarehouseQueryExecutor _databricksSqlWarehouseQueryExecutor;
-    private readonly IBatchesClient _batchesClient;
+    private readonly ICalculationsClient _calculationsClient;
     private readonly DeltaTableOptions _deltaTableOptions;
     private readonly ILogger<WholesaleResultQueries> _logger;
 
-    public WholesaleResultQueries(DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor, IBatchesClient batchesClient, IOptions<DeltaTableOptions> deltaTableOptions, ILogger<WholesaleResultQueries> logger)
+    public WholesaleResultQueries(DatabricksSqlWarehouseQueryExecutor databricksSqlWarehouseQueryExecutor, ICalculationsClient calculationsClient, IOptions<DeltaTableOptions> deltaTableOptions, ILogger<WholesaleResultQueries> logger)
     {
         _databricksSqlWarehouseQueryExecutor = databricksSqlWarehouseQueryExecutor;
-        _batchesClient = batchesClient;
+        _calculationsClient = calculationsClient;
         _deltaTableOptions = deltaTableOptions.Value;
         _logger = logger;
     }
 
     public async IAsyncEnumerable<WholesaleResult> GetAsync(Guid calculationId)
     {
-        var calculation = await _batchesClient.GetAsync(calculationId).ConfigureAwait(false);
+        var calculation = await _calculationsClient.GetAsync(calculationId).ConfigureAwait(false);
         var statement = new WholesaleResultQueryStatement(calculationId, _deltaTableOptions);
         await foreach (var calculationResult in GetInternalAsync(statement, calculation.PeriodStart.ToInstant(), calculation.PeriodEnd.ToInstant()).ConfigureAwait(false))
             yield return calculationResult;

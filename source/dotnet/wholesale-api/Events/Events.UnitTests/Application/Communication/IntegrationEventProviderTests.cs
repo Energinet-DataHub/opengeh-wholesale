@@ -20,11 +20,10 @@ using Energinet.DataHub.Core.Messaging.Communication.Publisher;
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
-using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Application.UseCases;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NodaTime;
@@ -37,15 +36,15 @@ public class IntegrationEventProviderTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_WhenNoUnpublishedBatches_DoesNotCommit(
-        [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
+    public async Task GetAsync_WhenNoUnpublishedCalculations_DoesNotCommit(
+        [Frozen] Mock<ICompletedCalculationRepository> completedCalculationRepositoryMock,
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         IntegrationEventProvider sut)
     {
         // Arrange
-        completedBatchRepositoryMock
+        completedCalculationRepositoryMock
             .Setup(mock => mock.GetNextUnpublishedOrNullAsync())
-            .ReturnsAsync((CompletedBatch)null!);
+            .ReturnsAsync((CompletedCalculation)null!);
 
         // Act
         await sut.GetAsync().ToListAsync();
@@ -56,40 +55,40 @@ public class IntegrationEventProviderTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_WhenMultipleUnpublishedBatches_CommitsOncePerBatch(
-        CompletedBatch completedBatch,
-        [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
+    public async Task GetAsync_WhenMultipleUnpublishedCalculations_CommitsOncePerCalculation(
+        CompletedCalculation completedCalculation,
+        [Frozen] Mock<ICompletedCalculationRepository> completedCalculationRepositoryMock,
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
         IntegrationEventProvider sut)
     {
         // Arrange
-        completedBatchRepositoryMock
+        completedCalculationRepositoryMock
             .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
-            .ReturnsAsync(completedBatch)
-            .ReturnsAsync(completedBatch)
-            .ReturnsAsync((CompletedBatch)null!);
+            .ReturnsAsync(completedCalculation)
+            .ReturnsAsync(completedCalculation)
+            .ReturnsAsync((CompletedCalculation)null!);
 
         // Act
         await sut.GetAsync().ToListAsync();
 
         // Assert
-        unitOfWorkMock.Verify(u => u.CommitAsync());
+        unitOfWorkMock.Verify(mock => mock.CommitAsync(), Times.Exactly(2));
     }
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_WhenUnpublishedBatch_SetsPublishedTimeOfBatch(
+    public async Task GetAsync_WhenUnpublishedCalculation_SetsPublishedTimeOfCalculation(
         Instant instant,
-        CompletedBatch completedBatch,
-        [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
+        CompletedCalculation completedCalculation,
+        [Frozen] Mock<ICompletedCalculationRepository> completedCalculationRepositoryMock,
         [Frozen] Mock<IClock> clockMock,
         IntegrationEventProvider sut)
     {
         // Arrange
-        completedBatchRepositoryMock
+        completedCalculationRepositoryMock
             .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
-            .ReturnsAsync(completedBatch)
-            .ReturnsAsync((CompletedBatch)null!);
+            .ReturnsAsync(completedCalculation)
+            .ReturnsAsync((CompletedCalculation)null!);
 
         clockMock
             .Setup(mock => mock.GetCurrentInstant())
@@ -99,26 +98,26 @@ public class IntegrationEventProviderTests
         await sut.GetAsync().ToListAsync();
 
         // Assert
-        completedBatch.PublishedTime.Should().Be(instant);
+        completedCalculation.PublishedTime.Should().Be(instant);
     }
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_WhenBatchWithMultipleEnergyResultEvents_ReturnsOneEventPerResult(
-        CompletedBatch completedBatch,
+    public async Task GetAsync_WhenCalculationWithMultipleEnergyResultEvents_ReturnsOneEventPerResult(
+        CompletedCalculation completedCalculation,
         IntegrationEvent[] anyIntegrationEvents,
-        [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
+        [Frozen] Mock<ICompletedCalculationRepository> completedCalculationRepositoryMock,
         [Frozen] Mock<IEnergyResultEventProvider> energyResultEventProviderMock,
         IntegrationEventProvider sut)
     {
         // Arrange
-        completedBatchRepositoryMock
+        completedCalculationRepositoryMock
             .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
-            .ReturnsAsync(completedBatch)
-            .ReturnsAsync((CompletedBatch)null!);
+            .ReturnsAsync(completedCalculation)
+            .ReturnsAsync((CompletedCalculation)null!);
 
         energyResultEventProviderMock
-            .Setup(mock => mock.GetAsync(completedBatch))
+            .Setup(mock => mock.GetAsync(completedCalculation))
             .Returns(anyIntegrationEvents.ToAsyncEnumerable());
 
         // Act
@@ -130,21 +129,21 @@ public class IntegrationEventProviderTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_WhenRetrievalOfEnergyResultEventsFails_ReturnsEventsUpUntilFailureAndSetsPublishedTimeOfBatchToUnixEpoch(
-        CompletedBatch completedBatch,
+    public async Task GetAsync_WhenRetrievalOfEnergyResultEventsFails_ReturnsEventsUpUntilFailureAndSetsPublishedTimeOfCalculationToUnixEpoch(
+        CompletedCalculation completedCalculation,
         IntegrationEvent[] anyIntegrationEvents,
-        [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
+        [Frozen] Mock<ICompletedCalculationRepository> completedCalculationRepositoryMock,
         [Frozen] Mock<IEnergyResultEventProvider> energyResultEventProviderMock,
         IntegrationEventProvider sut)
     {
         // Arrange
-        completedBatchRepositoryMock
+        completedCalculationRepositoryMock
             .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
-            .ReturnsAsync(completedBatch)
-            .ReturnsAsync((CompletedBatch)null!);
+            .ReturnsAsync(completedCalculation)
+            .ReturnsAsync((CompletedCalculation)null!);
 
         energyResultEventProviderMock
-            .Setup(mock => mock.GetAsync(completedBatch))
+            .Setup(mock => mock.GetAsync(completedCalculation))
             .Returns(ThrowsExceptionAfterAllItems(anyIntegrationEvents));
 
         // Act
@@ -152,35 +151,35 @@ public class IntegrationEventProviderTests
 
         // Assert
         using var assertionAcope = new AssertionScope();
-        completedBatch.PublishedTime.Should().Be(NodaConstants.UnixEpoch);
+        completedCalculation.PublishedTime.Should().Be(NodaConstants.UnixEpoch);
         actualEvents.Should().HaveCount(anyIntegrationEvents.Length);
     }
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_WhenBatchCanContainWholesaleResultsAndBatchWithMultipleWholesaleResultEvents_ReturnsOneEventPerResult(
+    public async Task GetAsync_WhenCalculationCanContainWholesaleResultsAndCalculationWithMultipleWholesaleResultEvents_ReturnsOneEventPerResult(
         IntegrationEvent[] anyIntegrationEvents,
-        [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
+        [Frozen] Mock<ICompletedCalculationRepository> completedCalculationRepositoryMock,
         [Frozen] Mock<IWholesaleResultEventProvider> wholesaleResultEventProviderMock,
         IntegrationEventProvider sut)
     {
         // Arrange
         var fixture = new Fixture();
-        var completedBatch = fixture
-            .Build<CompletedBatch>()
+        var completedCalculation = fixture
+            .Build<CompletedCalculation>()
             .With(p => p.ProcessType, ProcessType.WholesaleFixing)
             .Create();
 
-        completedBatchRepositoryMock
+        completedCalculationRepositoryMock
             .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
-            .ReturnsAsync(completedBatch)
-            .ReturnsAsync((CompletedBatch)null!);
+            .ReturnsAsync(completedCalculation)
+            .ReturnsAsync((CompletedCalculation)null!);
 
         wholesaleResultEventProviderMock
-            .Setup(mock => mock.CanContainWholesaleResults(completedBatch))
+            .Setup(mock => mock.CanContainWholesaleResults(completedCalculation))
             .Returns(true);
         wholesaleResultEventProviderMock
-            .Setup(mock => mock.GetAsync(completedBatch))
+            .Setup(mock => mock.GetAsync(completedCalculation))
             .Returns(anyIntegrationEvents.ToAsyncEnumerable());
 
         // Act
@@ -192,29 +191,29 @@ public class IntegrationEventProviderTests
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_WhenBatchCanContainWholesaleResultsAndRetrievalOfWholesaleResultEventsFails_ReturnsEventsUpUntilFailureAndSetsPublishedTimeOfBatchToUnixEpoch(
+    public async Task GetAsync_WhenCalculationCanContainWholesaleResultsAndRetrievalOfWholesaleResultEventsFails_ReturnsEventsUpUntilFailureAndSetsPublishedTimeOfCalculationToUnixEpoch(
         IntegrationEvent[] anyIntegrationEvents,
-        [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
+        [Frozen] Mock<ICompletedCalculationRepository> completedCalculationRepositoryMock,
         [Frozen] Mock<IWholesaleResultEventProvider> wholesaleResultEventProviderMock,
         IntegrationEventProvider sut)
     {
         // Arrange
         var fixture = new Fixture();
-        var completedBatch = fixture
-            .Build<CompletedBatch>()
+        var completedCalculation = fixture
+            .Build<CompletedCalculation>()
             .With(p => p.ProcessType, ProcessType.WholesaleFixing)
             .Create();
 
-        completedBatchRepositoryMock
+        completedCalculationRepositoryMock
             .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
-            .ReturnsAsync(completedBatch)
-            .ReturnsAsync((CompletedBatch)null!);
+            .ReturnsAsync(completedCalculation)
+            .ReturnsAsync((CompletedCalculation)null!);
 
         wholesaleResultEventProviderMock
-            .Setup(mock => mock.CanContainWholesaleResults(completedBatch))
+            .Setup(mock => mock.CanContainWholesaleResults(completedCalculation))
             .Returns(true);
         wholesaleResultEventProviderMock
-            .Setup(mock => mock.GetAsync(completedBatch))
+            .Setup(mock => mock.GetAsync(completedCalculation))
             .Returns(ThrowsExceptionAfterAllItems(anyIntegrationEvents));
 
         // Act
@@ -222,56 +221,56 @@ public class IntegrationEventProviderTests
 
         // Assert
         using var assertionAcope = new AssertionScope();
-        completedBatch.PublishedTime.Should().Be(NodaConstants.UnixEpoch);
+        completedCalculation.PublishedTime.Should().Be(NodaConstants.UnixEpoch);
         actualEvents.Should().HaveCount(anyIntegrationEvents.Length);
     }
 
     [Theory]
     [InlineAutoMoqData]
-    public async Task GetAsync_WhenTwoBatchesWithMultipleEventsCombined_ReturnsOneEventPerResult(
-        IntegrationEvent[] eventsFromEnergyResultsInAggregationBatch,
-        IntegrationEvent[] eventsFromEnergyResultsInWholesaleFixingBatch,
-        IntegrationEvent[] eventsFromWholesaleResultsInWholesaleFixingBatch,
-        [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
+    public async Task GetAsync_WhenTwoCalculationsWithMultipleEventsCombined_ReturnsOneEventPerResult(
+        IntegrationEvent[] eventsFromEnergyResultsInAggregationCalculation,
+        IntegrationEvent[] eventsFromEnergyResultsInWholesaleFixingCalculation,
+        IntegrationEvent[] eventsFromWholesaleResultsInWholesaleFixingCalculation,
+        [Frozen] Mock<ICompletedCalculationRepository> completedCalculationRepositoryMock,
         [Frozen] Mock<IEnergyResultEventProvider> energyResultEventProviderMock,
         [Frozen] Mock<IWholesaleResultEventProvider> wholesaleResultEventProviderMock,
         IntegrationEventProvider sut)
     {
         // Arrange
         var expectedEventCount =
-            eventsFromEnergyResultsInAggregationBatch.Length +
-            eventsFromEnergyResultsInWholesaleFixingBatch.Length +
-            eventsFromWholesaleResultsInWholesaleFixingBatch.Length;
+            eventsFromEnergyResultsInAggregationCalculation.Length +
+            eventsFromEnergyResultsInWholesaleFixingCalculation.Length +
+            eventsFromWholesaleResultsInWholesaleFixingCalculation.Length;
 
         var fixture = new Fixture();
-        var aggregationBatch = fixture
-            .Build<CompletedBatch>()
+        var aggregationCalculation = fixture
+            .Build<CompletedCalculation>()
             .With(p => p.ProcessType, ProcessType.Aggregation)
             .Create();
-        var wholesaleFixingBatch = fixture
-            .Build<CompletedBatch>()
+        var wholesaleFixingCalculation = fixture
+            .Build<CompletedCalculation>()
             .With(p => p.ProcessType, ProcessType.WholesaleFixing)
             .Create();
 
-        completedBatchRepositoryMock
+        completedCalculationRepositoryMock
             .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
-            .ReturnsAsync(aggregationBatch)
-            .ReturnsAsync(wholesaleFixingBatch)
-            .ReturnsAsync((CompletedBatch)null!);
+            .ReturnsAsync(aggregationCalculation)
+            .ReturnsAsync(wholesaleFixingCalculation)
+            .ReturnsAsync((CompletedCalculation)null!);
 
         energyResultEventProviderMock
-            .Setup(mock => mock.GetAsync(aggregationBatch))
-            .Returns(eventsFromEnergyResultsInAggregationBatch.ToAsyncEnumerable());
+            .Setup(mock => mock.GetAsync(aggregationCalculation))
+            .Returns(eventsFromEnergyResultsInAggregationCalculation.ToAsyncEnumerable());
 
         energyResultEventProviderMock
-            .Setup(mock => mock.GetAsync(wholesaleFixingBatch))
-            .Returns(eventsFromEnergyResultsInWholesaleFixingBatch.ToAsyncEnumerable());
+            .Setup(mock => mock.GetAsync(wholesaleFixingCalculation))
+            .Returns(eventsFromEnergyResultsInWholesaleFixingCalculation.ToAsyncEnumerable());
         wholesaleResultEventProviderMock
-            .Setup(mock => mock.CanContainWholesaleResults(wholesaleFixingBatch))
+            .Setup(mock => mock.CanContainWholesaleResults(wholesaleFixingCalculation))
             .Returns(true);
         wholesaleResultEventProviderMock
-            .Setup(mock => mock.GetAsync(wholesaleFixingBatch))
-            .Returns(eventsFromWholesaleResultsInWholesaleFixingBatch.ToAsyncEnumerable());
+            .Setup(mock => mock.GetAsync(wholesaleFixingCalculation))
+            .Returns(eventsFromWholesaleResultsInWholesaleFixingCalculation.ToAsyncEnumerable());
 
         // Act
         var actualEvents = await sut.GetAsync().ToListAsync();
@@ -283,22 +282,22 @@ public class IntegrationEventProviderTests
     [Theory]
     [InlineAutoMoqData]
     public async Task GetAsync_WhenRetrievalOfEnergyResultEventsFails_LogsExpectedMessage(
-        CompletedBatch completedBatch,
+        CompletedCalculation completedCalculation,
         IntegrationEvent[] anyIntegrationEvents,
-        [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
+        [Frozen] Mock<ICompletedCalculationRepository> completedCalculationRepositoryMock,
         [Frozen] Mock<IEnergyResultEventProvider> energyResultEventProviderMock,
         [Frozen] Mock<ILogger<IntegrationEventProvider>> loggerMock,
         IntegrationEventProvider sut)
     {
         // Arrange
         const string expectedLogMessage = $"Failed energy result event publishing for completed calculation {LoggingConstants.CalculationId}. Handled '{LoggingConstants.EnergyResultCount}' energy results before failing.";
-        completedBatchRepositoryMock
+        completedCalculationRepositoryMock
             .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
-            .ReturnsAsync(completedBatch)
-            .ReturnsAsync((CompletedBatch)null!);
+            .ReturnsAsync(completedCalculation)
+            .ReturnsAsync((CompletedCalculation)null!);
 
         energyResultEventProviderMock
-            .Setup(mock => mock.GetAsync(completedBatch))
+            .Setup(mock => mock.GetAsync(completedCalculation))
             .Returns(ThrowsExceptionAfterAllItems(anyIntegrationEvents));
 
         // Act
@@ -311,26 +310,26 @@ public class IntegrationEventProviderTests
     [Theory]
     [InlineAutoMoqData]
     public async Task GetAsync_WhenRetrievalOfWholesaleResultEventsFails_LogsExpectedMessage(
-        CompletedBatch completedBatch,
+        CompletedCalculation completedCalculation,
         IntegrationEvent[] anyIntegrationEvents,
-        [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
+        [Frozen] Mock<ICompletedCalculationRepository> completedCalculationRepositoryMock,
         [Frozen] Mock<IWholesaleResultEventProvider> wholesaleResultEventProviderMock,
         [Frozen] Mock<ILogger<IntegrationEventProvider>> loggerMock,
         IntegrationEventProvider sut)
     {
         // Arrange
         const string expectedLogMessage = $"Failed wholesale result event publishing for completed calculation {LoggingConstants.CalculationId}. Handled '{LoggingConstants.WholesaleResultCount}' wholesale results before failing.";
-        completedBatchRepositoryMock
+        completedCalculationRepositoryMock
             .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
-            .ReturnsAsync(completedBatch)
-            .ReturnsAsync((CompletedBatch)null!);
+            .ReturnsAsync(completedCalculation)
+            .ReturnsAsync((CompletedCalculation)null!);
 
         wholesaleResultEventProviderMock
-            .Setup(mock => mock.CanContainWholesaleResults(completedBatch))
+            .Setup(mock => mock.CanContainWholesaleResults(completedCalculation))
             .Returns(true);
 
         wholesaleResultEventProviderMock
-            .Setup(mock => mock.GetAsync(completedBatch))
+            .Setup(mock => mock.GetAsync(completedCalculation))
             .Returns(ThrowsExceptionAfterAllItems(anyIntegrationEvents));
 
         // Act
@@ -343,9 +342,9 @@ public class IntegrationEventProviderTests
     [Theory]
     [InlineAutoMoqData]
     public async Task GetAsync_WhenEnergyResultsEventsAreHandled_LogsExpectedMessages(
-        CompletedBatch completedBatch,
+        CompletedCalculation completedCalculation,
         IntegrationEvent[] anyIntegrationEvents,
-        [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
+        [Frozen] Mock<ICompletedCalculationRepository> completedCalculationRepositoryMock,
         [Frozen] Mock<IEnergyResultEventProvider> energyResultEventProviderMock,
         [Frozen] Mock<ILogger<IntegrationEventProvider>> loggerMock,
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
@@ -354,13 +353,13 @@ public class IntegrationEventProviderTests
         // Arrange
         const string expectedLogMessage =
             $"Handled {LoggingConstants.EnergyResultCount} energy results for completed calculation {LoggingConstants.CalculationId}.";
-        completedBatchRepositoryMock
+        completedCalculationRepositoryMock
             .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
-            .ReturnsAsync(completedBatch)
-            .ReturnsAsync((CompletedBatch)null!);
+            .ReturnsAsync(completedCalculation)
+            .ReturnsAsync((CompletedCalculation)null!);
 
         energyResultEventProviderMock
-            .Setup(mock => mock.GetAsync(completedBatch))
+            .Setup(mock => mock.GetAsync(completedCalculation))
             .Returns(anyIntegrationEvents.ToAsyncEnumerable());
 
         // Act
@@ -374,9 +373,9 @@ public class IntegrationEventProviderTests
     [Theory]
     [InlineAutoMoqData]
     public async Task GetAsync_WhenWholesaleResultsEventsAreHandled_LogsExpectedMessages(
-        CompletedBatch completedBatch,
+        CompletedCalculation completedCalculation,
         IntegrationEvent[] anyIntegrationEvents,
-        [Frozen] Mock<ICompletedBatchRepository> completedBatchRepositoryMock,
+        [Frozen] Mock<ICompletedCalculationRepository> completedCalculationRepositoryMock,
         [Frozen] Mock<IWholesaleResultEventProvider> wholesaleResultEventProviderMock,
         [Frozen] Mock<ILogger<IntegrationEventProvider>> loggerMock,
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
@@ -385,17 +384,17 @@ public class IntegrationEventProviderTests
         // Arrange
         const string expectedLogMessage =
             $"Handled {LoggingConstants.WholesaleResultCount} wholesale results for completed calculation {LoggingConstants.CalculationId}.";
-        completedBatchRepositoryMock
+        completedCalculationRepositoryMock
             .SetupSequence(mock => mock.GetNextUnpublishedOrNullAsync())
-            .ReturnsAsync(completedBatch)
-            .ReturnsAsync((CompletedBatch)null!);
+            .ReturnsAsync(completedCalculation)
+            .ReturnsAsync((CompletedCalculation)null!);
 
         wholesaleResultEventProviderMock
-            .Setup(mock => mock.GetAsync(completedBatch))
+            .Setup(mock => mock.GetAsync(completedCalculation))
             .Returns(anyIntegrationEvents.ToAsyncEnumerable());
 
         wholesaleResultEventProviderMock
-            .Setup(mock => mock.CanContainWholesaleResults(completedBatch))
+            .Setup(mock => mock.CanContainWholesaleResults(completedCalculation))
             .Returns(true);
 
         // Act

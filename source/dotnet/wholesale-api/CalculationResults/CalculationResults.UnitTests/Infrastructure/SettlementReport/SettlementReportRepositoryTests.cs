@@ -149,7 +149,7 @@ public class SettlementReportRepositoryTests
     [Theory]
     [AutoMoqData]
     public async Task GetSettlementReportAsync_WhenGivenBatch_ReturnCorrectStream(
-        BatchInfo batchInfo,
+        CalculationInfo calculationInfo,
         [Frozen] Mock<IStreamZipper> streamZipperMock,
         [Frozen] Mock<IDataLakeClient> dataLakeClientMock)
     {
@@ -166,7 +166,7 @@ public class SettlementReportRepositoryTests
             streamZipperMock.Object);
 
         // Act
-        var report = await sut.GetSettlementReportAsync(batchInfo);
+        var report = await sut.GetSettlementReportAsync(calculationInfo);
         var actual = await new StreamReader(report.Stream).ReadLineAsync();
 
         // Assert
@@ -176,7 +176,7 @@ public class SettlementReportRepositoryTests
     [Theory]
     [AutoMoqData]
     public async Task GetSettlementReportAsync_WhenGivenBatchAndGridAreaCode_WritesToOutputStream(
-        BatchInfo batchInfo,
+        CalculationInfo calculationInfo,
         [Frozen] Mock<IStreamZipper> streamZipperMock,
         [Frozen] Mock<IDataLakeClient> dataLakeClientMock)
     {
@@ -211,7 +211,7 @@ public class SettlementReportRepositoryTests
             streamZipperMock.Object);
 
         // Act
-        await sut.GetSettlementReportAsync(batchInfo, gridAreaCode, outputStream);
+        await sut.GetSettlementReportAsync(calculationInfo, gridAreaCode, outputStream);
 
         using var streamReader = new StreamReader(outputStream);
         var actual = await streamReader.ReadLineAsync();

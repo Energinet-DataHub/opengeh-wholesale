@@ -14,16 +14,16 @@
 
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.EnergyResults;
-using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.Communication
 {
     public interface IEnergyResultEventProvider
     {
         /// <summary>
-        /// Responsible for creating at least one <see cref="IntegrationEvent"/> for each <see cref="EnergyResult"/> available in <paramref name="batch"/>.
+        /// Responsible for creating at least one <see cref="IntegrationEvent"/> for each <see cref="EnergyResult"/> available in <paramref name="calculation"/>.
         /// If we currently support multiple versions of an event then each result will cause multiple events to be provided.
         /// </summary>
-        IAsyncEnumerable<IntegrationEvent> GetAsync(CompletedBatch batch);
+        IAsyncEnumerable<IntegrationEvent> GetAsync(CompletedCalculation calculation);
     }
 }
