@@ -19,14 +19,14 @@ from package.calculator_job_args import get_calculator_args
 from package.codelists import ProcessType
 from package.infrastructure.environment_variables import EnvironmentVariable
 
-DEFAULT_BATCH_ID = "the-batch-id"
+DEFAULT_CALCULATION_ID = "the-calculation-id"
 
 
 def _get_contract_parameters(filename: str) -> list[str]:
     """Get the parameters as they are expected to be received from the process manager."""
     with open(filename) as file:
         text = file.read()
-        text = text.replace("{batch-id}", DEFAULT_BATCH_ID)
+        text = text.replace("{calculation-id}", DEFAULT_CALCULATION_ID)
         lines = text.splitlines()
         return list(
             filter(lambda line: not line.startswith("#") and len(line) > 0, lines)
@@ -93,12 +93,18 @@ class TestWhenInvokedWithValidParameters:
         # Assert
 
         # From the contract
-        assert actual.batch_id == DEFAULT_BATCH_ID
-        assert actual.batch_grid_areas == ["805", "806", "033"]
-        assert actual.batch_period_start_datetime == datetime.datetime(2022, 5, 31, 22)
-        assert actual.batch_period_end_datetime == datetime.datetime(2022, 6, 1, 22)
-        assert actual.batch_process_type == ProcessType.BALANCE_FIXING
-        assert actual.batch_execution_time_start == datetime.datetime(2022, 6, 4, 22)
+        assert actual.calculation_id == DEFAULT_CALCULATION_ID
+        assert actual.calculation_grid_areas == ["805", "806", "033"]
+        assert actual.calculation_period_start_datetime == datetime.datetime(
+            2022, 5, 31, 22
+        )
+        assert actual.calculation_period_end_datetime == datetime.datetime(
+            2022, 6, 1, 22
+        )
+        assert actual.calculation_process_type == ProcessType.BALANCE_FIXING
+        assert actual.calculation_execution_time_start == datetime.datetime(
+            2022, 6, 4, 22
+        )
 
         # From infrastructure
         assert (
@@ -151,12 +157,12 @@ class TestWhenUnknownProcessType:
     ) -> None:
         # Arrange
         unknown_process_type = "unknown_process_type"
-        pattern = r"--batch-process-type=(\w+)"
+        pattern = r"--process-type=(\w+)"
 
         for i, item in enumerate(sys_argv_from_contract):
             if re.search(pattern, item):
                 sys_argv_from_contract[i] = re.sub(
-                    pattern, f"--batch-process-type={unknown_process_type}", item
+                    pattern, f"--process-type={unknown_process_type}", item
                 )
                 break
 
