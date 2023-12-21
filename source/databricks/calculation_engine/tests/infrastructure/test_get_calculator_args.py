@@ -26,7 +26,7 @@ def _get_contract_parameters(filename: str) -> list[str]:
     """Get the parameters as they are expected to be received from the process manager."""
     with open(filename) as file:
         text = file.read()
-        text = text.replace("{batch-id}", DEFAULT_BATCH_ID)
+        text = text.replace("{calculation-id}", DEFAULT_BATCH_ID)
         lines = text.splitlines()
         return list(
             filter(lambda line: not line.startswith("#") and len(line) > 0, lines)
