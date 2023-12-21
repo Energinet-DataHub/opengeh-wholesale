@@ -32,15 +32,15 @@ namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Application.Calculations
 
 public class CreateCalculationHandlerTests
 {
-    private readonly CreateBatchCommand _defaultCreateBatchCommand;
+    private readonly CreateCalculationCommand _defaultCreateCalculationCommand;
 
-    public CreateBatchHandlerTests()
+    public CreateCalculationHandlerTests()
     {
         var period = Periods.January_EuropeCopenhagen_Instant;
         var periodStart = period.PeriodStart.ToDateTimeOffset();
         var periodEnd = period.PeriodEnd.ToDateTimeOffset();
         var gridAreaCodes = new List<string> { "805" };
-        _defaultCreateBatchCommand = CreateBatchCommand(ProcessType.Aggregation, periodStart, periodEnd, gridAreaCodes);
+        _defaultCreateCalculationCommand = CreateCalculationCommand(ProcessType.Aggregation, periodStart, periodEnd, gridAreaCodes);
     }
 
     [Theory]
@@ -50,41 +50,41 @@ public class CreateCalculationHandlerTests
     [InlineAutoMoqData(ProcessType.FirstCorrectionSettlement)]
     [InlineAutoMoqData(ProcessType.SecondCorrectionSettlement)]
     [InlineAutoMoqData(ProcessType.ThirdCorrectionSettlement)]
-    public async Task Handle_AddsBatchToRepository(
+    public async Task Handle_AddsCalculationToRepository(
         ProcessType processType,
-        [Frozen] Mock<ICalculationFactory> batchFactoryMock,
-        [Frozen] Mock<ICalculationRepository> batchRepositoryMock,
+        [Frozen] Mock<ICalculationFactory> calculationFactoryMock,
+        [Frozen] Mock<ICalculationRepository> calculationRepositoryMock,
         CreateCalculationHandler sut)
     {
         // Arrange
-        var batchCommand = _defaultCreateBatchCommand with { ProcessType = processType };
-        var batch = CreateBatchFromCommand(batchCommand);
-        batchFactoryMock.Setup(x => x.Create(batch.ProcessType, batchCommand.GridAreaCodes, batchCommand.StartDate, batchCommand.EndDate, batchCommand.CreatedByUserId))
-            .Returns(batch);
+        var calculationCommand = _defaultCreateCalculationCommand with { ProcessType = processType };
+        var calculation = CreateCalculationFromCommand(calculationCommand);
+        calculationFactoryMock.Setup(x => x.Create(calculation.ProcessType, calculationCommand.GridAreaCodes, calculationCommand.StartDate, calculationCommand.EndDate, calculationCommand.CreatedByUserId))
+            .Returns(calculation);
 
         // Act
-        var actual = await sut.HandleAsync(batchCommand);
+        var actual = await sut.HandleAsync(calculationCommand);
 
         // Assert
-        batch.Id.Should().Be(actual);
-        batchRepositoryMock.Verify(x => x.AddAsync(batch));
+        calculation.Id.Should().Be(actual);
+        calculationRepositoryMock.Verify(x => x.AddAsync(calculation));
     }
 
     [Theory]
     [InlineAutoMoqData]
     public async Task Handle_LogsExpectedMessage(
-        [Frozen] Mock<ILogger<CreateBatchHandler>> loggerMock,
-        [Frozen] Mock<IBatchFactory> batchFactoryMock,
-        CreateBatchHandler sut)
+        [Frozen] Mock<ILogger<CreateCalculationHandler>> loggerMock,
+        [Frozen] Mock<ICalculationFactory> calculationFactoryMock,
+        CreateCalculationHandler sut)
     {
         // Arrange
         const string expectedLogMessage = $"Calculation created with id {LoggingConstants.CalculationId}";
-        var batch = CreateBatchFromCommand(_defaultCreateBatchCommand);
-        batchFactoryMock.Setup(x => x.Create(batch.ProcessType, _defaultCreateBatchCommand.GridAreaCodes, _defaultCreateBatchCommand.StartDate, _defaultCreateBatchCommand.EndDate, _defaultCreateBatchCommand.CreatedByUserId))
-            .Returns(batch);
+        var calculation = CreateCalculationFromCommand(_defaultCreateCalculationCommand);
+        calculationFactoryMock.Setup(x => x.Create(calculation.ProcessType, _defaultCreateCalculationCommand.GridAreaCodes, _defaultCreateCalculationCommand.StartDate, _defaultCreateCalculationCommand.EndDate, _defaultCreateCalculationCommand.CreatedByUserId))
+            .Returns(calculation);
 
         // Act
-        await sut.HandleAsync(_defaultCreateBatchCommand);
+        await sut.HandleAsync(_defaultCreateCalculationCommand);
 
         // Assert
         loggerMock.ShouldBeCalledWith(LogLevel.Information, expectedLogMessage);
@@ -100,10 +100,10 @@ public class CreateCalculationHandlerTests
         // Arrange
         var periodStart = DateTimeOffset.Parse("2021-12-31T23:00Z");
         var periodEnd = DateTimeOffset.Parse("2022-01-30T23:00Z");
-        var batchCommand = _defaultCreateBatchCommand with { StartDate = periodStart, EndDate = periodEnd, ProcessType = processType };
+        var calculationCommand = _defaultCreateCalculationCommand with { StartDate = periodStart, EndDate = periodEnd, ProcessType = processType };
 
         // Act
-        var actual = () => CreateCalculationFromCommand(batchCommand);
+        var actual = () => CreateCalculationFromCommand(calculationCommand);
 
         // Assert
         actual.Should().Throw<BusinessValidationException>();
@@ -119,10 +119,10 @@ public class CreateCalculationHandlerTests
         // Arrange
         var periodStart = DateTimeOffset.Parse(periodStartString);
         var periodEnd = DateTimeOffset.Parse(periodEndString);
-        var batchCommand = _defaultCreateBatchCommand with { StartDate = periodStart, EndDate = periodEnd };
+        var calculationCommand = _defaultCreateCalculationCommand with { StartDate = periodStart, EndDate = periodEnd };
 
         // Act
-        var actual = () => CreateCalculationFromCommand(batchCommand);
+        var actual = () => CreateCalculationFromCommand(calculationCommand);
 
         // Assert
         actual.Should().Throw<BusinessValidationException>();
@@ -134,10 +134,10 @@ public class CreateCalculationHandlerTests
         // Arrange
         var periodStart = DateTimeOffset.Parse("2022-12-31T23:00Z");
         var periodEnd = DateTimeOffset.Parse("2022-01-31T23:00Z");
-        var batchCommand = _defaultCreateBatchCommand with { StartDate = periodStart, EndDate = periodEnd };
+        var calculationCommand = _defaultCreateCalculationCommand with { StartDate = periodStart, EndDate = periodEnd };
 
         // Act
-        var actual = () => CreateCalculationFromCommand(batchCommand);
+        var actual = () => CreateCalculationFromCommand(calculationCommand);
 
         // Assert
         actual.Should().Throw<BusinessValidationException>();
@@ -147,10 +147,10 @@ public class CreateCalculationHandlerTests
     public void Handle_WhenNoGridAreaCodes_ThrowBusinessValidationException()
     {
         // Arrange
-        var batchCommand = _defaultCreateBatchCommand with { GridAreaCodes = new List<string>() };
+        var calculationCommand = _defaultCreateCalculationCommand with { GridAreaCodes = new List<string>() };
 
         // Act
-        var actual = () => CreateCalculationFromCommand(batchCommand);
+        var actual = () => CreateCalculationFromCommand(calculationCommand);
 
         // Assert
         actual.Should().Throw<BusinessValidationException>();
