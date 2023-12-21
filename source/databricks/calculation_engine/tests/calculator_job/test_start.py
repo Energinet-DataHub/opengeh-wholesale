@@ -69,7 +69,9 @@ class TestWhenInvokedWithValidArguments:
         """
 
         # Arrange
-        any_calculator_args.calculation_id = str(uuid.uuid4())  # Ensure unique calculation id
+        any_calculator_args.calculation_id = str(
+            uuid.uuid4()
+        )  # Ensure unique calculation id
         test_message = f"Test message with log level {log_level}"
 
         def executor(args, reader):

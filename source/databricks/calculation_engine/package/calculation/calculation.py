@@ -64,7 +64,9 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
         or args.calculation_process_type == ProcessType.THIRD_CORRECTION_SETTLEMENT
     ):
         wholesale_calculation_result_writer = WholesaleCalculationResultWriter(
-            args.calculation_id, args.calculation_process_type, args.calculation_execution_time_start
+            args.calculation_id,
+            args.calculation_process_type,
+            args.calculation_execution_time_start,
         )
 
         charges_df = prepared_data_reader.get_charges()
@@ -85,7 +87,9 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
             args.calculation_period_start_datetime,
         )
 
-    basis_data_writer = BasisDataWriter(args.wholesale_container_path, args.calculation_id)
+    basis_data_writer = BasisDataWriter(
+        args.wholesale_container_path, args.calculation_id
+    )
     basis_data_writer.write(
         metering_point_periods_df,
         metering_point_time_series,

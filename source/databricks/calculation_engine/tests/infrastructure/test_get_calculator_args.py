@@ -95,10 +95,16 @@ class TestWhenInvokedWithValidParameters:
         # From the contract
         assert actual.calculation_id == DEFAULT_BATCH_ID
         assert actual.calculation_grid_areas == ["805", "806", "033"]
-        assert actual.calculation_period_start_datetime == datetime.datetime(2022, 5, 31, 22)
-        assert actual.calculation_period_end_datetime == datetime.datetime(2022, 6, 1, 22)
+        assert actual.calculation_period_start_datetime == datetime.datetime(
+            2022, 5, 31, 22
+        )
+        assert actual.calculation_period_end_datetime == datetime.datetime(
+            2022, 6, 1, 22
+        )
         assert actual.calculation_process_type == ProcessType.BALANCE_FIXING
-        assert actual.calculation_execution_time_start == datetime.datetime(2022, 6, 4, 22)
+        assert actual.calculation_execution_time_start == datetime.datetime(
+            2022, 6, 4, 22
+        )
 
         # From infrastructure
         assert (
