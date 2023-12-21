@@ -53,12 +53,12 @@ def calculator_args_balance_fixing(
         calculation_input_path=calculation_input_path,
         time_series_points_table_name=None,
         metering_point_periods_table_name=None,
-        batch_id=C.executed_balance_fixing_batch_id,
-        batch_process_type=ProcessType.BALANCE_FIXING,
-        batch_grid_areas=["805", "806"],
-        batch_period_start_datetime=datetime(2018, 1, 1, 23, 0, 0),
-        batch_period_end_datetime=datetime(2018, 1, 3, 23, 0, 0),
-        batch_execution_time_start=datetime(2018, 1, 5, 23, 0, 0),
+        calculation_id=C.executed_balance_fixing_batch_id,
+        calculation_process_type=ProcessType.BALANCE_FIXING,
+        calculation_grid_areas=["805", "806"],
+        calculation_period_start_datetime=datetime(2018, 1, 1, 23, 0, 0),
+        calculation_period_end_datetime=datetime(2018, 1, 3, 23, 0, 0),
+        calculation_execution_time_start=datetime(2018, 1, 5, 23, 0, 0),
         time_zone="Europe/Copenhagen",
     )
 
@@ -68,8 +68,8 @@ def calculator_args_wholesale_fixing(
     calculator_args_balance_fixing: CalculatorArgs,
 ) -> CalculatorArgs:
     args = calculator_args_balance_fixing
-    args.batch_id = C.executed_wholesale_batch_id
-    args.batch_process_type = ProcessType.WHOLESALE_FIXING
+    args.calculation_id = C.executed_wholesale_batch_id
+    args.calculation_process_type = ProcessType.WHOLESALE_FIXING
     return args
 
 

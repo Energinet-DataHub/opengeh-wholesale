@@ -41,12 +41,12 @@ def get_calculator_args() -> CalculatorArgs:
         calculation_input_path=paths.get_calculation_input_path(storage_account_name),
         time_series_points_table_name=job_args.time_series_points_table_name,
         metering_point_periods_table_name=job_args.metering_point_periods_table_name,
-        batch_id=job_args.batch_id,
-        batch_grid_areas=job_args.batch_grid_areas,
-        batch_period_start_datetime=job_args.batch_period_start_datetime,
-        batch_period_end_datetime=job_args.batch_period_end_datetime,
-        batch_execution_time_start=job_args.batch_execution_time_start,
-        batch_process_type=job_args.batch_process_type,
+        calculation_id=job_args.batch_id,
+        calculation_grid_areas=job_args.batch_grid_areas,
+        calculation_period_start_datetime=job_args.batch_period_start_datetime,
+        calculation_period_end_datetime=job_args.batch_period_end_datetime,
+        calculation_execution_time_start=job_args.batch_execution_time_start,
+        calculation_process_type=job_args.batch_process_type,
         time_zone=time_zone,
     )
 
@@ -74,7 +74,7 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
         unknown_args_text = ", ".join(unknown_args)
         raise Exception(f"Unknown args: {unknown_args_text}")
 
-    if type(args.batch_grid_areas) is not list:
+    if type(args.calculation_grid_areas) is not list:
         raise Exception("Grid areas must be a list")
 
     return args

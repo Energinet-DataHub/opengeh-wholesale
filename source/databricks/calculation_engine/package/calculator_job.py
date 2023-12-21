@@ -65,7 +65,7 @@ def start_with_deps(
             args = cmd_line_args_reader()
 
             # Add calculation_id to structured logging data to be included in every log message.
-            config.add_extras({"calculation_id": args.batch_id})
+            config.add_extras({"calculation_id": args.calculation_id})
             span.set_attributes(config.get_extras())
 
             raise_if_storage_is_locked(is_storage_locked_checker, args)
