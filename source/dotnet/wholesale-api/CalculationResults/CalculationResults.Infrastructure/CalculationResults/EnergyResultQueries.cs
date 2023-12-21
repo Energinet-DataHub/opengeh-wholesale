@@ -86,6 +86,6 @@ public class EnergyResultQueries : IEnergyResultQueries
             resultCount++;
         }
 
-        _logger.LogDebug("Fetched {ResultCount} calculation results", resultCount);
+        _logger.LogDebug("Fetched {result_count} calculation results", resultCount);
     }
 }

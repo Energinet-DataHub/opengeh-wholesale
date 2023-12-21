@@ -45,12 +45,12 @@ public abstract class ServiceBusWorker<TWorkerType> : BackgroundService, IAsyncD
     {
         await _serviceBusProcessor.StopProcessingAsync(cancellationToken).ConfigureAwait(false);
         await base.StopAsync(cancellationToken).ConfigureAwait(false);
-        Logger.LogWarning("{Worker} has stopped", _serviceName);
+        Logger.LogWarning("{worker} has stopped", _serviceName);
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        Logger.LogInformation("{Worker} started", _serviceName);
+        Logger.LogInformation("{worker} started", _serviceName);
         _serviceBusProcessor.ProcessMessageAsync += ProcessMessageAsync;
         _serviceBusProcessor.ProcessErrorAsync += ProcessErrorAsync;
 
@@ -64,7 +64,7 @@ public abstract class ServiceBusWorker<TWorkerType> : BackgroundService, IAsyncD
         var stopWatch = Stopwatch.StartNew();
         await ProcessAsync(arg).ConfigureAwait(false);
         stopWatch.Stop();
-        Logger.LogInformation("Processed message with id {MessageId} in {ElapsedMilliseconds} ms", arg.Message.MessageId, stopWatch.ElapsedMilliseconds);
+        Logger.LogInformation("Processed message with id {message_id} in {elapsed_milliseconds} ms", arg.Message.MessageId, stopWatch.ElapsedMilliseconds);
 
         await arg.CompleteMessageAsync(arg.Message).ConfigureAwait(false);
     }
@@ -73,7 +73,7 @@ public abstract class ServiceBusWorker<TWorkerType> : BackgroundService, IAsyncD
     {
         Logger.LogError(
             arg.Exception,
-            "Process message encountered an exception. ErrorSource: {ErrorSource}, Entity Path: {EntityPath}",
+            "Process message encountered an exception. ErrorSource: {error_source}, Entity Path: {entity_path}",
             arg.ErrorSource, // Source of the error. For example, a Message completion operation failed.
             arg.EntityPath); // The entity path for which the exception occurred. For example, the entity path of the queue.
 

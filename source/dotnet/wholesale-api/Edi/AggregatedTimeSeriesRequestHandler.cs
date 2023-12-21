@@ -53,7 +53,7 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
 
         if (validationErrors.Any())
         {
-            _logger.LogWarning("Validation errors for message with reference id {ReferenceId}", referenceId);
+            _logger.LogWarning("Validation errors for message with reference id {reference_id}", referenceId);
             await SendRejectedMessageAsync(validationErrors.ToList(), referenceId, cancellationToken).ConfigureAwait(false);
             return;
         }
@@ -71,12 +71,12 @@ public class AggregatedTimeSeriesRequestHandler : IAggregatedTimeSeriesRequestHa
                 error = new List<ValidationError> { _noDataForRequestedGridArea };
             }
 
-            _logger.LogInformation("No data available for message with reference id {ReferenceId}", referenceId);
+            _logger.LogInformation("No data available for message with reference id {reference_id}", referenceId);
             await SendRejectedMessageAsync(error, referenceId, cancellationToken).ConfigureAwait(false);
             return;
         }
 
-        _logger.LogInformation("Sending message with reference id {ReferenceId}", referenceId);
+        _logger.LogInformation("Sending message with reference id {reference_id}", referenceId);
         await SendAcceptedMessageAsync(results, referenceId, cancellationToken).ConfigureAwait(false);
     }
 
