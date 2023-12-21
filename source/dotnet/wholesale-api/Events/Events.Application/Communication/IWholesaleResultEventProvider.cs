@@ -14,22 +14,22 @@
 
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
-using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 
 namespace Energinet.DataHub.Wholesale.Events.Application.Communication
 {
     public interface IWholesaleResultEventProvider
     {
         /// <summary>
-        /// Determines if <paramref name="batch"/> is in a state where it can contain <see cref="WholesaleResult"/>.
+        /// Determines if <paramref name="calculation"/> is in a state where it can contain <see cref="WholesaleResult"/>.
         /// </summary>
-        /// <returns><see langword="true"/> if <paramref name="batch"/> can contain <see cref="WholesaleResult"/>; otherwise <see langword="false"/>.</returns>
-        bool CanContainWholesaleResults(CompletedBatch batch);
+        /// <returns><see langword="true"/> if <paramref name="calculation"/> can contain <see cref="WholesaleResult"/>; otherwise <see langword="false"/>.</returns>
+        bool CanContainWholesaleResults(CompletedCalculation calculation);
 
         /// <summary>
-        /// Responsible for creating at least one <see cref="IntegrationEvent"/> for each <see cref="WholesaleResult"/> available in <paramref name="batch"/>.
+        /// Responsible for creating at least one <see cref="IntegrationEvent"/> for each <see cref="WholesaleResult"/> available in <paramref name="calculation"/>.
         /// If we currently support multiple versions of an event then each result will cause multiple events to be provided.
         /// </summary>
-        IAsyncEnumerable<IntegrationEvent> GetAsync(CompletedBatch batch);
+        IAsyncEnumerable<IntegrationEvent> GetAsync(CompletedCalculation calculation);
     }
 }

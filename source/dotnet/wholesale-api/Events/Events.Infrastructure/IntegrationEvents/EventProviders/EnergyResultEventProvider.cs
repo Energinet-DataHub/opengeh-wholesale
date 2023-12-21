@@ -15,7 +15,7 @@
 using Energinet.DataHub.Core.Messaging.Communication;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults;
 using Energinet.DataHub.Wholesale.Events.Application.Communication;
-using Energinet.DataHub.Wholesale.Events.Application.CompletedBatches;
+using Energinet.DataHub.Wholesale.Events.Application.CompletedCalculations;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.CalculationResultCompleted.Factories;
 using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.EnergyResultProducedV2.Factories;
 
@@ -37,9 +37,9 @@ namespace Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents.Ev
             _energyResultProducedV2Factory = energyResultProducedV2Factory;
         }
 
-        public async IAsyncEnumerable<IntegrationEvent> GetAsync(CompletedBatch batch)
+        public async IAsyncEnumerable<IntegrationEvent> GetAsync(CompletedCalculation calculation)
         {
-            await foreach (var energyResult in _energyResultQueries.GetAsync(batch.Id).ConfigureAwait(false))
+            await foreach (var energyResult in _energyResultQueries.GetAsync(calculation.Id).ConfigureAwait(false))
             {
                 yield return CreateIntegrationEvent(_calculationResultCompletedFactory.Create(energyResult)); // Deprecated
                 yield return CreateIntegrationEvent(_energyResultProducedV2Factory.Create(energyResult));

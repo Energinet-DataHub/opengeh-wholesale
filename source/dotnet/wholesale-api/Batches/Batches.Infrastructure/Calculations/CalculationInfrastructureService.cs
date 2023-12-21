@@ -13,32 +13,31 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Batches.Application;
-using Energinet.DataHub.Wholesale.Batches.Application.Model;
-using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
+using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 
 namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
 
 public class CalculationInfrastructureService : ICalculationInfrastructureService
 {
-    private readonly IBatchRepository _batchRepository;
+    private readonly ICalculationRepository _calculationRepository;
     private readonly ICalculationEngineClient _calculationEngineClient;
 
     public CalculationInfrastructureService(
-        IBatchRepository batchRepository,
+        ICalculationRepository calculationRepository,
         ICalculationEngineClient calculationEngineClient)
     {
-        _batchRepository = batchRepository;
+        _calculationRepository = calculationRepository;
         _calculationEngineClient = calculationEngineClient;
     }
 
-    public async Task<CalculationState> GetStatusAsync(CalculationId calculationId)
+    public async Task<Application.Model.CalculationState> GetStatusAsync(CalculationId calculationId)
     {
         return await _calculationEngineClient.GetStatusAsync(calculationId).ConfigureAwait(false);
     }
 
     public async Task StartAsync(Guid batchId)
     {
-        var batch = await _batchRepository.GetAsync(batchId).ConfigureAwait(false);
+        var batch = await _calculationRepository.GetAsync(batchId).ConfigureAwait(false);
         var calculationId = await _calculationEngineClient.StartAsync(batch).ConfigureAwait(false);
         batch.MarkAsSubmitted(calculationId);
     }
