@@ -20,8 +20,10 @@ using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.CalculationState;
 using Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.CalculationAggregate;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NodaTime;
+using Test.Core;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.Batches.UnitTests.Infrastructure.CalculationExecutionStateDomainService;
@@ -185,5 +187,31 @@ public class CalculationExecutionStateDomainServiceTests
         batch1.ExecutionState.Should().Be(CalculationExecutionState.Completed);
         batch2.ExecutionState.Should().Be(CalculationExecutionState.Submitted);
         batch3.ExecutionState.Should().Be(CalculationExecutionState.Completed);
+    }
+
+    [Theory]
+    [InlineAutoMoqData]
+    public async Task UpdateExecutionState_When_JobRunnerThrowsException_LogsExpectedErrorMessage(
+        [Frozen] Mock<ILogger<CalculationExecutionStateInfrastructureService>> loggerMock,
+        [Frozen] Mock<IClock> clockMock,
+        [Frozen] Mock<ICalculationRepository> calculationRepositoryMock,
+        [Frozen] Mock<ICalculationInfrastructureService> calculatorJobRunnerMock,
+        CalculationExecutionStateInfrastructureService sut)
+    {
+        // Arrange
+        const string expectedLogMessage = $"Exception caught while trying to update execution state for run ID {LoggingConstants.CalculationId}";
+        var batch1 = new CalculationBuilder().WithStateSubmitted().Build();
+        var batches = new List<Calculation> { batch1 };
+        var executionTimeEndGreaterThanStart = batch1.ExecutionTimeStart!.Value.Plus(Duration.FromDays(2));
+        clockMock.Setup(clock => clock.GetCurrentInstant()).Returns(executionTimeEndGreaterThanStart);
+        calculationRepositoryMock.Setup(repo => repo.GetByStatesAsync(It.IsAny<IEnumerable<CalculationExecutionState>>()))
+            .ReturnsAsync(batches);
+        calculatorJobRunnerMock.Setup(runner => runner.GetStatusAsync(It.IsAny<CalculationId>())).ThrowsAsync(default);
+
+        // Act
+        await sut.UpdateExecutionStateAsync();
+
+        // Assert
+        loggerMock.ShouldBeCalledWith(LogLevel.Error, expectedLogMessage);
     }
 }
