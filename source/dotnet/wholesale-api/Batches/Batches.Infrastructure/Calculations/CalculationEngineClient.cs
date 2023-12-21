@@ -13,8 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.Databricks.Jobs.Abstractions;
-using Energinet.DataHub.Wholesale.Batches.Application.Model;
-using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
+using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using Microsoft.Azure.Databricks.Client.Models;
 
 namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
@@ -35,9 +34,9 @@ public sealed class CalculationEngineClient : ICalculationEngineClient
         _calculationParametersFactory = calculationParametersFactory;
     }
 
-    public async Task<CalculationId> StartAsync(Batch batch)
+    public async Task<CalculationId> StartAsync(Calculation calculation)
     {
-        var runParameters = _calculationParametersFactory.CreateParameters(batch);
+        var runParameters = _calculationParametersFactory.CreateParameters(calculation);
 
         var calculatorJob = await _databricksCalculatorJobSelector
             .GetAsync()
@@ -51,7 +50,7 @@ public sealed class CalculationEngineClient : ICalculationEngineClient
         return new CalculationId(runId);
     }
 
-    public async Task<CalculationState> GetStatusAsync(CalculationId calculationId)
+    public async Task<Application.Model.CalculationState> GetStatusAsync(CalculationId calculationId)
     {
         var runState = await _client
             .Jobs
@@ -60,17 +59,17 @@ public sealed class CalculationEngineClient : ICalculationEngineClient
 
         return runState.Item1.State.LifeCycleState switch
         {
-            RunLifeCycleState.PENDING => CalculationState.Pending,
-            RunLifeCycleState.RUNNING => CalculationState.Running,
-            RunLifeCycleState.TERMINATING => CalculationState.Running,
-            RunLifeCycleState.SKIPPED => CalculationState.Canceled,
-            RunLifeCycleState.INTERNAL_ERROR => CalculationState.Failed,
+            RunLifeCycleState.PENDING => Application.Model.CalculationState.Pending,
+            RunLifeCycleState.RUNNING => Application.Model.CalculationState.Running,
+            RunLifeCycleState.TERMINATING => Application.Model.CalculationState.Running,
+            RunLifeCycleState.SKIPPED => Application.Model.CalculationState.Canceled,
+            RunLifeCycleState.INTERNAL_ERROR => Application.Model.CalculationState.Failed,
             RunLifeCycleState.TERMINATED => runState.Item1.State.ResultState switch
             {
-                RunResultState.SUCCESS => CalculationState.Completed,
-                RunResultState.FAILED => CalculationState.Failed,
-                RunResultState.CANCELED => CalculationState.Canceled,
-                RunResultState.TIMEDOUT => CalculationState.Canceled,
+                RunResultState.SUCCESS => Application.Model.CalculationState.Completed,
+                RunResultState.FAILED => Application.Model.CalculationState.Failed,
+                RunResultState.CANCELED => Application.Model.CalculationState.Canceled,
+                RunResultState.TIMEDOUT => Application.Model.CalculationState.Canceled,
                 _ => throw new ArgumentOutOfRangeException(nameof(runState.Item1.State)),
             },
             _ => throw new ArgumentOutOfRangeException(nameof(runState.Item1.State)),

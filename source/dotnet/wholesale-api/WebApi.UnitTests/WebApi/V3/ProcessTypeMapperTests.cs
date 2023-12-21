@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon.AutoFixture.Attributes;
-using Energinet.DataHub.Wholesale.WebApi.V3.Batch;
+using Energinet.DataHub.Wholesale.WebApi.V3.Calculation;
 using FluentAssertions;
 using Xunit;
 
@@ -57,7 +57,7 @@ public class ProcessTypeMapperTests
     public void Map_WhenInvalidEnumNumberForV3ProcessType_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
-        var invalidValue = (Energinet.DataHub.Wholesale.WebApi.V3.Batch.ProcessType)99;
+        var invalidValue = (ProcessType)99;
 
         // Act
         var act = () => ProcessTypeMapper.Map(invalidValue);

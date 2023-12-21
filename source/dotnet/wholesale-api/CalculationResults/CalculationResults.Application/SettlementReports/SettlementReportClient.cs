@@ -25,18 +25,18 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Application.SettlementR
 
 public class SettlementReportClient : ISettlementReportClient
 {
-    private readonly IBatchesClient _batchesClient;
+    private readonly ICalculationsClient _calculationsClient;
     private readonly ISettlementReportResultsCsvWriter _settlementReportResultsCsvWriter;
     private readonly ISettlementReportResultQueries _settlementReportResultQueries;
     private readonly ISettlementReportRepository _settlementReportRepository;
 
     public SettlementReportClient(
-        IBatchesClient batchesClient,
+        ICalculationsClient calculationsClient,
         ISettlementReportResultsCsvWriter settlementReportResultsCsvWriter,
         ISettlementReportRepository settlementReportRepository,
         ISettlementReportResultQueries settlementReportResultQueries)
     {
-        _batchesClient = batchesClient;
+        _calculationsClient = calculationsClient;
         _settlementReportResultQueries = settlementReportResultQueries;
         _settlementReportResultsCsvWriter = settlementReportResultsCsvWriter;
         _settlementReportRepository = settlementReportRepository;
@@ -44,7 +44,7 @@ public class SettlementReportClient : ISettlementReportClient
 
     public async Task<SettlementReportDto> GetSettlementReportAsync(Guid batchId)
     {
-        var batch = await _batchesClient.GetAsync(batchId).ConfigureAwait(false);
+        var batch = await _calculationsClient.GetAsync(batchId).ConfigureAwait(false);
         var report = await _settlementReportRepository.GetSettlementReportAsync(Map(batch)).ConfigureAwait(false);
         return new SettlementReportDto(report.Stream);
     }
@@ -90,20 +90,20 @@ public class SettlementReportClient : ISettlementReportClient
 
     public async Task GetSettlementReportAsync(Guid batchId, string gridAreaCode, Stream outputStream)
     {
-        var batch = await _batchesClient.GetAsync(batchId).ConfigureAwait(false);
+        var batch = await _calculationsClient.GetAsync(batchId).ConfigureAwait(false);
         await _settlementReportRepository
             .GetSettlementReportAsync(Map(batch), gridAreaCode, outputStream)
             .ConfigureAwait(false);
     }
 
-    private BatchInfo Map(BatchDto batch)
+    private CalculationInfo Map(CalculationDto calculation)
     {
-        return new BatchInfo
+        return new CalculationInfo
         {
-            Id = batch.BatchId,
-            PeriodStart = Instant.FromDateTimeOffset(batch.PeriodStart),
-            PeriodEnd = Instant.FromDateTimeOffset(batch.PeriodEnd),
-            GridAreaCodes = batch.GridAreaCodes.ToList(),
+            Id = calculation.BatchId,
+            PeriodStart = Instant.FromDateTimeOffset(calculation.PeriodStart),
+            PeriodEnd = Instant.FromDateTimeOffset(calculation.PeriodEnd),
+            GridAreaCodes = calculation.GridAreaCodes.ToList(),
         };
     }
 }
