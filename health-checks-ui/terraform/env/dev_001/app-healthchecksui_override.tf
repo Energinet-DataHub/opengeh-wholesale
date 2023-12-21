@@ -54,6 +54,8 @@ module "app_health_checks_ui" {
     "HealthChecksUI__HealthChecks__022__Uri"  = "https://func-grid-loss-event-receiver-dh2brdg-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/ready"
     "HealthChecksUI__HealthChecks__023__Name" = "dh2-bridge:::Grid loss event Simulator"
     "HealthChecksUI__HealthChecks__023__Uri"  = "https://func-grid-loss-simulator-dh2brdg-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/ready"
+    "HealthChecksUI__HealthChecks__024__Name" = "shared-resources:::func-healthcheck"
+    "HealthChecksUI__HealthChecks__024__Uri"  = "https://func-healthchecks-shres-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/ready"
     # Live - prefix with 2xx
     "HealthChecksUI__HealthChecks__200__Name" = "health-checks-ui:::Health Check UI - live"
     "HealthChecksUI__HealthChecks__200__Uri"  = "https://app-healthchecksui-health-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/live"
@@ -105,6 +107,8 @@ module "app_health_checks_ui" {
     "HealthChecksUI__HealthChecks__222__Uri"  = "https://func-grid-loss-event-receiver-dh2brdg-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
     "HealthChecksUI__HealthChecks__223__Name" = "dh2-bridge:::Grid loss event Simulator - live"
     "HealthChecksUI__HealthChecks__223__Uri"  = "https://func-grid-loss-simulator-dh2brdg-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
+    "HealthChecksUI__HealthChecks__224__Name" = "shared-resources:::func-healthcheck - live"
+    "HealthChecksUI__HealthChecks__224__Uri"  = "https://func-healthchecks-shres-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
 
     # Polling Interval
     "HealthChecksUI__EvaluationTimeinSeconds" = 60

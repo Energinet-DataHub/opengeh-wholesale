@@ -24,6 +24,9 @@ on:
       b2c_path:
         required: true
         type: string
+      healthcheckapp_path:
+        required: true
+        type: string
       operating_system:
         required: false
         default: ubuntu-22.04
@@ -72,6 +75,14 @@ jobs:
         shell: bash
         run: |
           cp -fR ${{ inputs.b2c_path }} ${{ env.RELEASE_FOLDER_PATH }} 2>/dev/null || :
+
+      - name: Publish healthcheckapp function
+        shell: bash
+        run: |
+          dotnet publish \
+            '${{ inputs.healthcheckapp_path }}\healthcheck-app.csproj' \
+            --configuration Release \
+            --output '${{ env.RELEASE_FOLDER_PATH }}\functions\healthcheck-app'
 
       - name: Zip files for prerelease
         uses: thedoctor0/zip-release@0.6.2

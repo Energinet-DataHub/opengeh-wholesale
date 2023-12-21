@@ -14,9 +14,8 @@ module "func_githubapi" {
   ip_restriction_allow_ip_range             = var.hosted_deployagent_public_ip_range
   dotnet_framework_version                  = "v7.0"
   app_settings = {
-    CONNECTION_STRING_DATABASE  = "Server=tcp:${data.azurerm_key_vault_secret.mssql_data_url.value},1433;Initial Catalog=${module.mssqldb.name};Persist Security Info=False;Authentication=Active Directory Managed Identity;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;"
-    SHARED_KEYVAULT_NAME = "${var.shared_resources_keyvault_name}"
-    SHARED_DATALAKE_NAME = data.azurerm_key_vault_secret.st_data_lake_name.value
+    CONNECTION_STRING_DATABASE    = "Server=tcp:${data.azurerm_key_vault_secret.mssql_data_url.value},1433;Initial Catalog=${module.mssqldb.name};Persist Security Info=False;Authentication=Active Directory Managed Identity;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;"
+    SHARED_KEYVAULT_NAME          = "${var.shared_resources_keyvault_name}"
   }
 }
 
