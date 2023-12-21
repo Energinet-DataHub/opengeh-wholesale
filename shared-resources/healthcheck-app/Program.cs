@@ -3,9 +3,6 @@ using Energinet.DataHub.Core.App.Common.Diagnostics.HealthChecks;
 using Energinet.DataHub.Core.App.FunctionApp.Diagnostics.HealthChecks;
 using Microsoft.Extensions.DependencyInjection;
 using Azure.Identity;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using HealthChecks.SqlServer;
-using Microsoft.Data.SqlClient;
 
 var startup = new Startup();
 var host = new HostBuilder()
