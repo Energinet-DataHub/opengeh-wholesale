@@ -26,10 +26,10 @@ class CalculatorArgs:
     calculation_input_path: str
     time_series_points_table_name: str | None
     metering_point_periods_table_name: str | None
-    batch_id: str
-    batch_grid_areas: list[str]
-    batch_period_start_datetime: datetime
-    batch_period_end_datetime: datetime
-    batch_process_type: ProcessType
-    batch_execution_time_start: datetime
+    calculation_id: str
+    calculation_grid_areas: list[str]
+    calculation_period_start_datetime: datetime
+    calculation_period_end_datetime: datetime
+    calculation_process_type: ProcessType
+    calculation_execution_time_start: datetime
     time_zone: str

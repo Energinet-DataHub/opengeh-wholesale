@@ -25,12 +25,12 @@ public class DatabricksCalculationParametersFactory : ICalculationParametersFact
 
         var jobParameters = new List<string>
         {
-            $"--batch-id={calculation.Id}",
-            $"--batch-grid-areas=[{gridAreas}]",
-            $"--batch-period-start-datetime={calculation.PeriodStart}",
-            $"--batch-period-end-datetime={calculation.PeriodEnd}",
-            $"--batch-process-type={calculation.ProcessType}",
-            $"--batch-execution-time-start={calculation.ExecutionTimeStart}",
+            $"--calculation-id={calculation.Id}",
+            $"--grid-areas=[{gridAreas}]",
+            $"--period-start-datetime={calculation.PeriodStart}",
+            $"--period-end-datetime={calculation.PeriodEnd}",
+            $"--process-type={calculation.ProcessType}",
+            $"--execution-time-start={calculation.ExecutionTimeStart}",
         };
 
         return RunParameters.CreatePythonParams(jobParameters);

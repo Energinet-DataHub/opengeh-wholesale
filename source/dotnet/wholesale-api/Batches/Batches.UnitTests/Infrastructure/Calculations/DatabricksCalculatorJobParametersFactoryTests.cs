@@ -49,7 +49,7 @@ public class DatabricksCalculatorJobParametersFactoryTests
 
         var pythonParams = reader
             .ReadToEnd()
-            .Replace("{batch-id}", batch.Id.ToString())
+            .Replace("{calculation-id}", batch.Id.ToString())
             .Replace("\r", string.Empty)
             .Split("\n") // Split lines
             .Where(l => !l.StartsWith("#") && l.Length > 0); // Remove empty and comment lines
