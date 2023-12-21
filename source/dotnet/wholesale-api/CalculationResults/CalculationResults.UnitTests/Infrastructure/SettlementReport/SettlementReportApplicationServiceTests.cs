@@ -32,7 +32,7 @@ public class SettlementReportApplicationServiceTests
     [Theory]
     [AutoMoqData]
     public static async Task CreateCompressedSettlementReportAsync_GivenRows_CreatesValidZipArchive(
-        [Frozen] Mock<IBatchesClient> batchesClientMock,
+        [Frozen] Mock<ICalculationsClient> batchesClientMock,
         [Frozen] Mock<ISettlementReportResultsCsvWriter> settlementReportResultsCsvWriterMock,
         [Frozen] Mock<ISettlementReportRepository> settlementReportRepositoryMock,
         [Frozen] Mock<ISettlementReportResultQueries> settlementReportResultRepositoryMock)
@@ -78,7 +78,7 @@ public class SettlementReportApplicationServiceTests
     [Theory]
     [AutoMoqData]
     public static async Task CreateCompressedSettlementReportAsync_GivenNoLanguage_DefaultsToEnUs(
-        [Frozen] Mock<IBatchesClient> batchesClientMock,
+        [Frozen] Mock<ICalculationsClient> batchesClientMock,
         [Frozen] Mock<ISettlementReportResultsCsvWriter> settlementReportResultsCsvWriterMock,
         [Frozen] Mock<ISettlementReportRepository> settlementReportRepositoryMock,
         [Frozen] Mock<ISettlementReportResultQueries> settlementReportResultRepositoryMock)
@@ -118,7 +118,7 @@ public class SettlementReportApplicationServiceTests
     [Theory]
     [AutoMoqData]
     public static async Task CreateCompressedSettlementReportAsync_GivenUnsupportedProcessType_ThrowValidationException(
-        [Frozen] Mock<IBatchesClient> batchesClientMock,
+        [Frozen] Mock<ICalculationsClient> batchesClientMock,
         [Frozen] Mock<ISettlementReportResultsCsvWriter> settlementReportResultsCsvWriterMock,
         [Frozen] Mock<ISettlementReportRepository> settlementReportRepositoryMock,
         [Frozen] Mock<ISettlementReportResultQueries> settlementReportResultRepositoryMock)

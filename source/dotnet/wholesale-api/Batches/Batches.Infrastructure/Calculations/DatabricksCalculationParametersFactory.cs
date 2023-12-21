@@ -12,25 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
+using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using Microsoft.Azure.Databricks.Client.Models;
 
 namespace Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
 
 public class DatabricksCalculationParametersFactory : ICalculationParametersFactory
 {
-    public RunParameters CreateParameters(Batch batch)
+    public RunParameters CreateParameters(Calculation calculation)
     {
-        var gridAreas = string.Join(", ", batch.GridAreaCodes.Select(c => c.Code));
+        var gridAreas = string.Join(", ", calculation.GridAreaCodes.Select(c => c.Code));
 
         var jobParameters = new List<string>
         {
-            $"--batch-id={batch.Id}",
+            $"--batch-id={calculation.Id}",
             $"--batch-grid-areas=[{gridAreas}]",
-            $"--batch-period-start-datetime={batch.PeriodStart}",
-            $"--batch-period-end-datetime={batch.PeriodEnd}",
-            $"--batch-process-type={batch.ProcessType}",
-            $"--batch-execution-time-start={batch.ExecutionTimeStart}",
+            $"--batch-period-start-datetime={calculation.PeriodStart}",
+            $"--batch-period-end-datetime={calculation.PeriodEnd}",
+            $"--batch-process-type={calculation.ProcessType}",
+            $"--batch-execution-time-start={calculation.ExecutionTimeStart}",
         };
 
         return RunParameters.CreatePythonParams(jobParameters);

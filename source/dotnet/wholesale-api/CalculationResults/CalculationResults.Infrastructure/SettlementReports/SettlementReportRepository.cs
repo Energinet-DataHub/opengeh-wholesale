@@ -40,26 +40,26 @@ public class SettlementReportRepository : ISettlementReportRepository
         };
     }
 
-    public async Task CreateSettlementReportsAsync(BatchInfo completedBatchInfo)
+    public async Task CreateSettlementReportsAsync(CalculationInfo completedCalculationInfo)
     {
-        var batchBasisFileStreams = await GetBatchBasisFileStreamsAsync(completedBatchInfo).ConfigureAwait(false);
+        var batchBasisFileStreams = await GetBatchBasisFileStreamsAsync(completedCalculationInfo).ConfigureAwait(false);
 
-        var zipFileName = GetZipFileName(completedBatchInfo);
+        var zipFileName = GetZipFileName(completedCalculationInfo);
         var zipStream = await _dataLakeClient.GetWriteableFileStreamAsync(zipFileName).ConfigureAwait(false);
         await using (zipStream)
             await _streamZipper.ZipAsync(batchBasisFileStreams, zipStream).ConfigureAwait(false);
     }
 
-    public async Task<SettlementReport> GetSettlementReportAsync(BatchInfo batchInfo)
+    public async Task<SettlementReport> GetSettlementReportAsync(CalculationInfo calculationInfo)
     {
-        var zipFileName = GetZipFileName(batchInfo);
+        var zipFileName = GetZipFileName(calculationInfo);
         var stream = await _dataLakeClient.GetReadableFileStreamAsync(zipFileName).ConfigureAwait(false);
         return new SettlementReport(stream);
     }
 
-    public async Task GetSettlementReportAsync(BatchInfo completedBatchInfo, string gridAreaCode, Stream outputStream)
+    public async Task GetSettlementReportAsync(CalculationInfo completedCalculationInfo, string gridAreaCode, Stream outputStream)
     {
-        var batchBasisFileStreams = await GetProcessBasisFileStreamsAsync(completedBatchInfo.Id, gridAreaCode)
+        var batchBasisFileStreams = await GetProcessBasisFileStreamsAsync(completedCalculationInfo.Id, gridAreaCode)
             .ConfigureAwait(false);
         await _streamZipper.ZipAsync(batchBasisFileStreams, outputStream).ConfigureAwait(false);
     }
@@ -94,15 +94,15 @@ public class SettlementReportRepository : ISettlementReportRepository
             ".csv",
             $"{gridAreaCode}/MeteringPointMasterData.csv");
 
-    public static string GetZipFileName(BatchInfo batchInfo) => $"calculation-output/batch_id={batchInfo.Id}/zip/gln=grid_area/batch_{batchInfo.Id}_{batchInfo.PeriodStart}_{batchInfo.PeriodEnd}.zip";
+    public static string GetZipFileName(CalculationInfo calculationInfo) => $"calculation-output/batch_id={calculationInfo.Id}/zip/gln=grid_area/batch_{calculationInfo.Id}_{calculationInfo.PeriodStart}_{calculationInfo.PeriodEnd}.zip";
 
-    private async Task<IEnumerable<(Stream FileStream, string EntryPath)>> GetBatchBasisFileStreamsAsync(BatchInfo batchInfo)
+    private async Task<IEnumerable<(Stream FileStream, string EntryPath)>> GetBatchBasisFileStreamsAsync(CalculationInfo calculationInfo)
     {
         var batchBasisFiles = new List<(Stream FileStream, string EntryPath)>();
 
-        foreach (var gridAreaCode in batchInfo.GridAreaCodes)
+        foreach (var gridAreaCode in calculationInfo.GridAreaCodes)
         {
-            var gridAreaFileUrls = await GetProcessBasisFileStreamsAsync(batchInfo.Id, gridAreaCode).ConfigureAwait(false);
+            var gridAreaFileUrls = await GetProcessBasisFileStreamsAsync(calculationInfo.Id, gridAreaCode).ConfigureAwait(false);
             batchBasisFiles.AddRange(gridAreaFileUrls);
         }
 

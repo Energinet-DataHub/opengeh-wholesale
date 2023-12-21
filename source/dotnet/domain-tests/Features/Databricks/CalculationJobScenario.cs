@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.Wholesale.Batches.Application.Model;
-using Energinet.DataHub.Wholesale.Batches.Application.Model.Batches;
+using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.DomainTests.Features.Databricks.Fixtures;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Attributes;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture;
@@ -40,7 +40,7 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Databricks
         {
             var createdTime = SystemClock.Instance.GetCurrentInstant();
             var createdByUserId = Guid.Parse("DED7734B-DD56-43AD-9EE8-0D7EFDA6C783");
-            Fixture.ScenarioState.CalculationJobInput = new Batch(
+            Fixture.ScenarioState.CalculationJobInput = new Calculation(
                 createdTime: createdTime,
                 processType: Common.Interfaces.Models.ProcessType.Aggregation,
                 gridAreaCodes: new List<GridAreaCode> { new GridAreaCode("791") },
