@@ -69,7 +69,9 @@ class TestWhenInvokedWithValidArguments:
         """
 
         # Arrange
-        any_calculator_args.batch_id = str(uuid.uuid4())  # Ensure unique calculation id
+        any_calculator_args.calculation_id = str(
+            uuid.uuid4()
+        )  # Ensure unique calculation id
         test_message = f"Test message with log level {log_level}"
 
         def executor(args, reader):
@@ -97,7 +99,7 @@ AppTraces
 | where Message == "{test_message}"
 | where OperationId != "00000000000000000000000000000000"
 | where Properties.Domain == "wholesale"
-| where Properties.calculation_id == "{any_calculator_args.batch_id}"
+| where Properties.calculation_id == "{any_calculator_args.calculation_id}"
 | where Properties.CategoryName == "Energinet.DataHub.{__name__}"
 | count
         """
@@ -132,7 +134,7 @@ AppTraces
         """
 
         # Arrange
-        any_calculator_args.batch_id = str(uuid.uuid4())
+        any_calculator_args.calculation_id = str(uuid.uuid4())
 
         def raise_exception():
             raise ValueError("Test exception")
@@ -157,7 +159,7 @@ AppExceptions
 | where OuterMessage == "Test exception"
 | where OperationId != "00000000000000000000000000000000"
 | where Properties.Domain == "wholesale"
-| where Properties.calculation_id == "{any_calculator_args.batch_id}"
+| where Properties.calculation_id == "{any_calculator_args.calculation_id}"
 | where Properties.CategoryName == "Energinet.DataHub.{package.calculator_job.__name__}"
 | count
         """
