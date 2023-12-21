@@ -82,7 +82,7 @@ jobs:
           dotnet publish \
             '${{ inputs.healthcheckapp_path }}\healthcheck-app.csproj' \
             --configuration Release \
-            --output '${{ env.RELEASE_FOLDER_PATH }}\functions\healthcheck-app'
+            --output '${{ env.RELEASE_FOLDER_PATH }}\functions\healthchecks'
 
       - name: Zip files for prerelease
         uses: thedoctor0/zip-release@0.6.2
