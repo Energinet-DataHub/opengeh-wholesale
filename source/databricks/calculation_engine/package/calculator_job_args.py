@@ -41,12 +41,12 @@ def get_calculator_args() -> CalculatorArgs:
         calculation_input_path=paths.get_calculation_input_path(storage_account_name),
         time_series_points_table_name=job_args.time_series_points_table_name,
         metering_point_periods_table_name=job_args.metering_point_periods_table_name,
-        calculation_id=job_args.batch_id,
-        calculation_grid_areas=job_args.batch_grid_areas,
-        calculation_period_start_datetime=job_args.batch_period_start_datetime,
-        calculation_period_end_datetime=job_args.batch_period_end_datetime,
-        calculation_execution_time_start=job_args.batch_execution_time_start,
-        calculation_process_type=job_args.batch_process_type,
+        calculation_id=job_args.calculation_id,
+        calculation_grid_areas=job_args.grid_areas,
+        calculation_period_start_datetime=job_args.period_start_datetime,
+        calculation_period_end_datetime=job_args.period_end_datetime,
+        calculation_execution_time_start=job_args.execution_time_start,
+        calculation_process_type=job_args.process_type,
         time_zone=time_zone,
     )
 
@@ -60,12 +60,12 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
     )
 
     # Run parameters
-    p.add("--batch-id", type=str, required=True)
-    p.add("--batch-grid-areas", type=valid_list, required=True)
-    p.add("--batch-period-start-datetime", type=valid_date, required=True)
-    p.add("--batch-period-end-datetime", type=valid_date, required=True)
-    p.add("--batch-process-type", type=ProcessType, required=True)
-    p.add("--batch-execution-time-start", type=valid_date, required=True)
+    p.add("--calculation-id", type=str, required=True)
+    p.add("--grid-areas", type=valid_list, required=True)
+    p.add("--period-start-datetime", type=valid_date, required=True)
+    p.add("--period-end-datetime", type=valid_date, required=True)
+    p.add("--process-type", type=ProcessType, required=True)
+    p.add("--execution-time-start", type=valid_date, required=True)
     p.add("--time_series_points_table_name", type=str, required=False)
     p.add("--metering_point_periods_table_name", type=str, required=False)
 
