@@ -16,6 +16,7 @@ using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.Configuration;
 using Energinet.DataHub.Wholesale.DomainTests.Fixtures.LazyFixture;
+using Microsoft.Extensions.Configuration;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.DomainTests.Features.Authorization.Fixtures
@@ -28,6 +29,8 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Authorization.Fixture
         public AuthorizedClientFixture(IMessageSink diagnosticMessageSink)
             : base(diagnosticMessageSink)
         {
+            Configuration = new WholesaleDomainConfiguration();
+            ExistingBatchId = Configuration.Root.GetValue<Guid>("EXISTING_BATCH_ID");
         }
 
         /// <summary>
@@ -35,10 +38,13 @@ namespace Energinet.DataHub.Wholesale.DomainTests.Features.Authorization.Fixture
         /// </summary>
         public WholesaleClient_V3 WholesaleClient { get; private set; } = null!;
 
+        public Guid ExistingBatchId { get; }
+
+        private WholesaleDomainConfiguration Configuration { get; }
+
         protected override async Task OnInitializeAsync()
         {
-            var configuration = new WholesaleDomainConfiguration();
-            WholesaleClient = await WholesaleClientFactory.CreateAsync(configuration, useAuthentication: true);
+            WholesaleClient = await WholesaleClientFactory.CreateAsync(Configuration, useAuthentication: true);
         }
 
         protected override Task OnDisposeAsync()
