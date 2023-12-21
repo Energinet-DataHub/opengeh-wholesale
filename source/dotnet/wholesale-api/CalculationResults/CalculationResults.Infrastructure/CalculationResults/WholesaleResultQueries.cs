@@ -50,7 +50,7 @@ public class WholesaleResultQueries : IWholesaleResultQueries
         var statement = new WholesaleResultQueryStatement(calculationId, _deltaTableOptions);
         await foreach (var calculationResult in GetInternalAsync(statement, calculation.PeriodStart.ToInstant(), calculation.PeriodEnd.ToInstant()).ConfigureAwait(false))
             yield return calculationResult;
-        _logger.LogDebug("Fetched all wholesale calculation results for calculation {CalculationId}", calculationId);
+        _logger.LogDebug("Fetched all wholesale calculation results for calculation {calculation_id}", calculationId);
     }
 
     public static bool BelongsToDifferentResults(DatabricksSqlRow row, DatabricksSqlRow otherSqlRow)
@@ -86,6 +86,6 @@ public class WholesaleResultQueries : IWholesaleResultQueries
             resultCount++;
         }
 
-        _logger.LogDebug("Fetched {ResultCount} calculation results", resultCount);
+        _logger.LogDebug("Fetched {result_count} calculation results", resultCount);
     }
 }
