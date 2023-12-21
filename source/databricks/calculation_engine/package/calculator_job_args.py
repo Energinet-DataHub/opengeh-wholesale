@@ -74,7 +74,7 @@ def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace
         unknown_args_text = ", ".join(unknown_args)
         raise Exception(f"Unknown args: {unknown_args_text}")
 
-    if type(args.calculation_grid_areas) is not list:
+    if type(args.grid_areas) is not list:
         raise Exception("Grid areas must be a list")
 
     return args
