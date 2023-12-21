@@ -18,10 +18,10 @@ module "b2c_web_api" {
   ip_restriction_allow_ip_range            = var.hosted_deployagent_public_ip_range
 
   app_settings = {
-    EXTERNAL_OPEN_ID_URL                                    = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-open-id-url)"
-    INTERNAL_OPEN_ID_URL                                    = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-open-id-url)"
-    BACKEND_BFF_APP_ID                                      = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-bff-app-id)"
-    SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_SEND     = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-send-connection-string)"
+    EXTERNAL_OPEN_ID_URL                                    = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=frontend-open-id-url)"
+    INTERNAL_OPEN_ID_URL                                    = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-open-id-url)"
+    BACKEND_BFF_APP_ID                                      = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-bff-app-id)"
+    SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_SEND     = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-send-connection-string)"
     DB_CONNECTION_STRING                                    = local.CONNECTION_STRING
     TIME_ZONE                                               = local.TIME_ZONE
     INCOMING_MESSAGES_QUEUE_NAME                            = azurerm_servicebus_queue.edi_incoming_messages_queue.name

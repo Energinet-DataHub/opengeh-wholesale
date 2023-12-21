@@ -24,16 +24,6 @@ variable "domain_name_short" {
   description = "Shortest possible edition of the domain name"
 }
 
-variable "shared_resources_keyvault_name" {
-  type        = string
-  description = "Name of the Core Key Vault, that contains shared secrets"
-}
-
-variable "shared_resources_resource_group_name" {
-  type        = string
-  description = "Resource group name of the Core Key Vaults location"
-}
-
 variable "developer_ad_group_name" {
   type        = string
   description = "(Optional) Name of the AD group containing developers to have read access to SQL database."

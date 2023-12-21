@@ -14,7 +14,7 @@ resource "azurerm_monitor_action_group" "edi" {
 resource "azurerm_monitor_scheduled_query_rules_alert" "edi_alert" {
   name                = "alert-edi-${lower(var.domain_name_short)}-${lower(var.environment_short)}-${lower(var.environment_instance)}"
   location            = azurerm_resource_group.this.location
-  resource_group_name = var.shared_resources_resource_group_name
+  resource_group_name = data.azurerm_resource_group.shared.name
 
   action {
     action_group = [azurerm_monitor_action_group.edi.id]

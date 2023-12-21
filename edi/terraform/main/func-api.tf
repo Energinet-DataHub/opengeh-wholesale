@@ -20,17 +20,17 @@ module "func_receiver" {
 
   app_settings = {
     # Shared resources logging
-    REQUEST_RESPONSE_LOGGING_CONNECTION_STRING = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-marketoplogs-primary-connection-string)",
-    REQUEST_RESPONSE_LOGGING_CONTAINER_NAME    = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=st-marketoplogs-container-name)",
-    B2C_TENANT_ID                              = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=b2c-tenant-id)",
-    BACKEND_SERVICE_APP_ID                     = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-b2b-app-id)",
+    REQUEST_RESPONSE_LOGGING_CONNECTION_STRING = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=st-marketoplogs-primary-connection-string)",
+    REQUEST_RESPONSE_LOGGING_CONTAINER_NAME    = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=st-marketoplogs-container-name)",
+    B2C_TENANT_ID                              = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=b2c-tenant-id)",
+    BACKEND_SERVICE_APP_ID                     = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-b2b-app-id)",
     # Endregion: Default Values
     DB_CONNECTION_STRING                                    = local.CONNECTION_STRING
-    EDI_INBOX_MESSAGE_QUEUE_NAME                            = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbq-edi-inbox-messagequeue-name)"
-    WHOLESALE_INBOX_MESSAGE_QUEUE_NAME                      = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbq-wholesale-inbox-messagequeue-name)"
-    SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_LISTENER = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-listen-connection-string)"
-    SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_MANAGE   = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-manage-connection-string)"
-    SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_SEND     = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-send-connection-string)"
+    EDI_INBOX_MESSAGE_QUEUE_NAME                            = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbq-edi-inbox-messagequeue-name)"
+    WHOLESALE_INBOX_MESSAGE_QUEUE_NAME                      = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbq-wholesale-inbox-messagequeue-name)"
+    SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_LISTENER = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-listen-connection-string)"
+    SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_MANAGE   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-manage-connection-string)"
+    SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_SEND     = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-send-connection-string)"
     INCOMING_MESSAGES_QUEUE_NAME                            = azurerm_servicebus_queue.edi_incoming_messages_queue.name
     FEATUREFLAG_ACTORMESSAGEQUEUE                           = true
     ALLOW_TEST_TOKENS                                       = var.allow_test_tokens

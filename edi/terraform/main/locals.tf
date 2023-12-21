@@ -5,6 +5,6 @@ locals {
   TIME_ZONE = "Europe/Copenhagen"
 
   # Integration event subscription details
-  INTEGRATION_EVENTS_TOPIC_NAME        = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbt-shres-integrationevent-received-name)"
+  INTEGRATION_EVENTS_TOPIC_NAME        = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-shres-integrationevent-received-name)"
   INTEGRATION_EVENTS_SUBSCRIPTION_NAME = "integration-event"
 }
