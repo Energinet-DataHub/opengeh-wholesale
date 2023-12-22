@@ -502,8 +502,8 @@ GRID_AREA_RESPONSIBLE = [
 def get_grid_loss_responsible(
     grid_areas: list[str], table_reader: TableReader
 ) -> GridLossResponsible:
-    grid_loss_responsible_df = _read_grid_loss_responsible(table_reader)
-    # grid_loss_responsible_df = _get_all_grid_loss_responsible()
+    # grid_loss_responsible_df = _read_grid_loss_responsible(table_reader)
+    grid_loss_responsible_df = _get_all_grid_loss_responsible()
 
     grid_loss_responsible_df = grid_loss_responsible_df.select(
         col(Colname.metering_point_id),
