@@ -26,6 +26,7 @@ from package.calculation.preparation.grid_loss_responsible import (
 )
 from package.codelists import MeteringPointType
 from package.constants import Colname
+from package.calculation_input import TableReader
 
 DEFAULT_FROM_TIME = "2000-01-01"
 
@@ -498,8 +499,11 @@ GRID_AREA_RESPONSIBLE = [
 # fmt: on
 
 
-def get_grid_loss_responsible(grid_areas: list[str]) -> GridLossResponsible:
-    grid_loss_responsible_df = _get_all_grid_loss_responsible()
+def get_grid_loss_responsible(
+    grid_areas: list[str], table_reader: TableReader
+) -> GridLossResponsible:
+    grid_loss_responsible_df = _read_grid_loss_responsible(table_reader)
+    # grid_loss_responsible_df = _get_all_grid_loss_responsible()
 
     grid_loss_responsible_df = grid_loss_responsible_df.select(
         col(Colname.metering_point_id),
@@ -513,6 +517,10 @@ def get_grid_loss_responsible(grid_areas: list[str]) -> GridLossResponsible:
     _throw_if_no_grid_loss_responsible(grid_areas, grid_loss_responsible_df)
 
     return GridLossResponsible(grid_loss_responsible_df)
+
+
+def _read_grid_loss_responsible(table_reader: TableReader):
+    return table_reader.read_grid_loss_responsible()
 
 
 def _throw_if_no_grid_loss_responsible(

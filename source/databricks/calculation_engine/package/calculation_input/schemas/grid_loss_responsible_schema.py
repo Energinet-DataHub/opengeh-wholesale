@@ -12,10 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .charge_link_periods_schema import charge_link_periods_schema
-from .charge_master_data_periods_schema import charge_master_data_periods_schema
-from .charge_price_points_schema import charge_price_points_schema
-from .imbalance_price_schema import imbalance_price_schema
-from .metering_point_period_schema import metering_point_period_schema
-from .time_series_point_schema import time_series_point_schema
-from .grid_loss_responsible_schema import grid_loss_responsible_schema
+from pyspark.sql.types import (
+    StructField,
+    StringType,
+    TimestampType,
+    StructType,
+)
+
+grid_loss_responsible_schema = StructType(
+    [
+        StructField("metering_point_id", StringType(), False),
+        StructField("grid_area_code", StringType(), False),
+        StructField("from_date", TimestampType(), False),
+        StructField("to_date", TimestampType(), True),
+        StructField("type", StringType(), False),
+        StructField("energy_supplier_id", StringType(), False),
+    ]
+)

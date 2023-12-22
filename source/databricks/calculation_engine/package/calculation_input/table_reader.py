@@ -33,6 +33,7 @@ from .schemas import (
     charge_price_points_schema,
     metering_point_period_schema,
     time_series_point_schema,
+    grid_loss_responsible_schema,
 )
 
 
@@ -130,6 +131,16 @@ class TableReader:
         assert_schema(df.schema, charge_price_points_schema)
 
         df = self._add_charge_key_column(df)
+        return df
+
+    def read_grid_loss_responsible(self) -> DataFrame:
+        path = (
+            f"{self._calculation_input_path}/{paths.GRID_LOSS_RESPONSIBLE_TABLE_NAME}"
+        )
+        df = self._spark.read.format("delta").load(path)
+
+        assert_schema(df.schema, grid_loss_responsible_schema)
+
         return df
 
     def _add_charge_key_column(self, charge_df: DataFrame) -> DataFrame:
