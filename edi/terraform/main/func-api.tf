@@ -1,5 +1,5 @@
 module "func_receiver" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=v13"
 
   name                                     = "api"
   project_name                             = var.domain_name_short
@@ -35,12 +35,12 @@ module "func_receiver" {
     FEATUREFLAG_ACTORMESSAGEQUEUE                           = true
     ALLOW_TEST_TOKENS                                       = var.allow_test_tokens
     INTEGRATION_EVENTS_TOPIC_NAME                           = local.INTEGRATION_EVENTS_TOPIC_NAME
-    INTEGRATION_EVENTS_SUBSCRIPTION_NAME = module.sbtsub_edi_integration_event_listener.name
+    INTEGRATION_EVENTS_SUBSCRIPTION_NAME                    = module.sbtsub_edi_integration_event_listener.name
   }
 }
 
 module "kvs_edi_api_base_url" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
 
   name         = "func-edi-api-base-url"
   value        = "https://${module.func_receiver.default_hostname}"

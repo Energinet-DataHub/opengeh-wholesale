@@ -1,5 +1,5 @@
 module "apimao_request_aggregated_measure_data" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api-operation?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api-operation?ref=v13"
 
   operation_id            = "request-aggregated-measure-data"
   api_management_api_name = module.apima_b2b.name

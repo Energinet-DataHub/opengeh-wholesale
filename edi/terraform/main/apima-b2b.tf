@@ -1,10 +1,8 @@
 module "apima_b2b" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api?ref=v13"
 
   name                       = "b2b"
   project_name               = var.domain_name_short
-  environment_short          = var.environment_short
-  environment_instance       = var.environment_instance
   api_management_name        = data.azurerm_key_vault_secret.apim_instance_name.value
   resource_group_name        = data.azurerm_key_vault_secret.apim_instance_resource_group_name.value
   display_name               = "B2B Api"
