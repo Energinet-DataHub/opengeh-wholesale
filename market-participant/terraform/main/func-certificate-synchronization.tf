@@ -1,5 +1,5 @@
 module "func_entrypoint_certificate_synchronization" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=v13"
 
   name                                     = "certificatesynchronization"
   project_name                             = var.domain_name_short
@@ -22,11 +22,11 @@ module "func_entrypoint_certificate_synchronization" {
   use_dotnet_isolated_runtime = true
 
   app_settings = {
-    CERTIFICATES_KEY_VAULT                     = module.kv_dh2_certificates.vault_uri
-    APIM_SERVICE_NAME                          = data.azurerm_key_vault_secret.apim_instance_id.value
+    CERTIFICATES_KEY_VAULT = module.kv_dh2_certificates.vault_uri
+    APIM_SERVICE_NAME      = data.azurerm_key_vault_secret.apim_instance_id.value
 
-    APIM_TENANT_ID                             = data.azurerm_subscription.this.tenant_id
-    APIM_SP_CLIENT_ID                          = azuread_application.app_market_participant.application_id
-    APIM_SP_CLIENT_SECRET                      = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_app_market_participant_password.name})"
+    APIM_TENANT_ID        = data.azurerm_subscription.this.tenant_id
+    APIM_SP_CLIENT_ID     = azuread_application.app_market_participant.application_id
+    APIM_SP_CLIENT_SECRET = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=${module.kvs_app_market_participant_password.name})"
   }
 }

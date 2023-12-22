@@ -1,5 +1,5 @@
 module "kv_dh2_certificates" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault?ref=v13"
 
   name                            = "cert"
   project_name                    = var.domain_name_short

@@ -1,5 +1,5 @@
 module "func_entrypoint_marketparticipant" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=v13"
 
   name                                     = "organization"
   project_name                             = var.domain_name_short
