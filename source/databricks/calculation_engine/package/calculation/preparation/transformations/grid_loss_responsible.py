@@ -519,7 +519,7 @@ def get_grid_loss_responsible(
     return GridLossResponsible(grid_loss_responsible_df)
 
 
-def _read_grid_loss_responsible(table_reader: TableReader):
+def _read_grid_loss_responsible(table_reader: TableReader) -> DataFrame:
     return table_reader.read_grid_loss_responsible()
 
 
