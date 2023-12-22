@@ -29,11 +29,6 @@ variable "domain_name_short" {
   description = "Shortest possible edition of the domain name."
 }
 
-variable "alert_email_notification" {
-  type        = string
-  description = "Email address for the teams channel that the alerts are sent to."
-}
-
 variable "hosted_deployagent_public_ip_range" {
   type        = string
   description = "(Optional) Comma-delimited string with IPs / CIDR block with deployagent's public IPs, so it can access network-protected resources (Keyvaults, Function apps etc)"
