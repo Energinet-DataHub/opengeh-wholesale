@@ -7,6 +7,6 @@ public sealed class Startup
 {
     public void Initialize(IConfiguration configuration, IServiceCollection services)
     {
-
+        // Add stuff here
     }
 }
