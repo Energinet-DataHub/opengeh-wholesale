@@ -1,10 +1,8 @@
 module "apima_bff" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api?ref=v13"
 
   name                       = "bff"
   project_name               = var.domain_name_short
-  environment_short          = var.environment_short
-  environment_instance       = var.environment_instance
   api_management_name        = data.azurerm_key_vault_secret.apim_instance_name.value
   resource_group_name        = data.azurerm_key_vault_secret.apim_instance_resource_group_name.value
   display_name               = "BFF Api"
@@ -123,7 +121,7 @@ resource "azurerm_api_management_authorization_server" "oauth_server_bff" {
 }
 
 module "kvs_app_bff_base_url" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
 
   name         = "app-bff-base-url"
   value        = "${data.azurerm_key_vault_secret.apim_gateway_url.value}/${module.apima_bff.path}"

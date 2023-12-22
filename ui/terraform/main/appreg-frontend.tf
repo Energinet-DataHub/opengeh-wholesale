@@ -71,7 +71,7 @@ resource "azuread_service_principal_delegated_permission_grant" "grant_frontend_
 }
 
 module "kvs_frontend_app_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
 
   name         = "frontend-app-id"
   value        = azuread_application.frontend_app.application_id
@@ -83,7 +83,7 @@ module "kvs_frontend_app_id" {
 #   'market-participant' deployment requires an invitation link (frontend application registration and static-site url) from 'ui'.
 # The dependency is broken by providing the value to 'market-participant' through a key value secret.
 module "kvs_b2c_invitation_flow_uri" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
 
   name         = "b2c-invitation-flow-uri"
   value        = local.b2c_authorization_invite_uri
