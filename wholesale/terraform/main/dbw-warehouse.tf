@@ -1,5 +1,6 @@
 # SQL warehouse to host Databricks SQL Statement Execution API
 resource "databricks_sql_endpoint" "this" {
+  provider         = databricks.dbw
   name             = "Wholesale SQL Endpoint"
   cluster_size     = "Small"
   max_num_clusters = 1
@@ -11,7 +12,7 @@ resource "databricks_sql_endpoint" "this" {
   }
 }
 module "kvs_databricks_sql_endpoint_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
 
   name         = "dbw-databricks-sql-endpoint-id"
   value        = resource.databricks_sql_endpoint.this.id

@@ -1,4 +1,5 @@
 resource "databricks_sql_global_config" "this" {
+  provider        = databricks.dbw
   security_policy = "DATA_ACCESS_CONTROL"
   data_access_config = {
     "spark.hadoop.fs.azure.account.auth.type.${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}.dfs.core.windows.net" : "OAuth",
