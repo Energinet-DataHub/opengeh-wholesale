@@ -1,5 +1,5 @@
 resource "azurerm_monitor_activity_log_alert" "main" {
-  name                = "ala-shared-servicenotifications-${lower(var.environment_short)}-${var.environment_instance}"
+  name                = "ala-shared-servicenotifications-${local.resources_suffix}"
   resource_group_name = azurerm_resource_group.this.name
 
   scopes = [

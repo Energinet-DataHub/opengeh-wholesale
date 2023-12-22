@@ -1,4 +1,4 @@
 resource "azurerm_resource_group" "this" {
-  name     = var.resource_group_name
+  name     = "rg-${local.resources_suffix}"
   location = "West Europe"
 }

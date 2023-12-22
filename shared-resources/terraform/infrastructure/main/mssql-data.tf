@@ -1,5 +1,5 @@
-module "mssql_data" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-server?ref=v12"
+module "mssql_data_additional" { # Needs to be a named like this or it would delete all databases
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-server?ref=v13"
 
   name                 = "data"
   project_name         = var.domain_name_short
@@ -15,8 +15,6 @@ module "mssql_data" {
 
   ad_group_directory_reader = var.ad_group_directory_reader
 
-  private_endpoint_subnet_id = module.snet_private_endpoints.id
-
   elastic_pool_max_size_gb      = 100
   public_network_access_enabled = true
 
@@ -31,37 +29,42 @@ module "mssql_data" {
     min_capacity = 0
     max_capacity = 100
   }
+  private_endpoint_subnet_id = data.azurerm_subnet.snet_private_endpoints.id
+
+  depends_on = [
+    module.ag_primary
+  ]
 }
 
 resource "azurerm_mssql_firewall_rule" "github_largerunner" {
   count = length(split(",", var.hosted_deployagent_public_ip_range))
 
   name             = "github_largerunner_${count.index}"
-  server_id        = module.mssql_data.id
+  server_id        = module.mssql_data_additional.id
   start_ip_address = cidrhost(split(",", var.hosted_deployagent_public_ip_range)[count.index], 0)  #First IP in range
   end_ip_address   = cidrhost(split(",", var.hosted_deployagent_public_ip_range)[count.index], -1) #Last IP in range
 }
 
 module "kvs_mssql_data_elastic_pool_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
 
   name         = "mssql-data-elastic-pool-id"
-  value        = module.mssql_data.elastic_pool_id
+  value        = module.mssql_data_additional.elastic_pool_id
   key_vault_id = module.kv_shared.id
 }
 
 module "kvs_mssql_data_url" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
 
   name         = "mssql-data-url"
-  value        = module.mssql_data.fully_qualified_domain_name
+  value        = module.mssql_data_additional.fully_qualified_domain_name
   key_vault_id = module.kv_shared.id
 }
 
 module "kvs_mssql_data_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
 
   name         = "mssql-data-name"
-  value        = module.mssql_data.name
+  value        = module.mssql_data_additional.name
   key_vault_id = module.kv_shared.id
 }

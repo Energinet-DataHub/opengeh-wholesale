@@ -1,5 +1,5 @@
 module "st_data_lake" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=v13"
 
   name                            = "datalake"
   project_name                    = var.domain_name_short
@@ -9,7 +9,7 @@ module "st_data_lake" {
   location                        = azurerm_resource_group.this.location
   account_replication_type        = "LRS"
   account_tier                    = "Standard"
-  private_endpoint_subnet_id      = module.snet_private_endpoints.id
+  private_endpoint_subnet_id      = data.azurerm_subnet.snet_private_endpoints.id
   private_dns_resource_group_name = module.dbw_shared.private_dns_zone_resource_group_name
   ip_rules                        = var.hosted_deployagent_public_ip_range
   role_assignments = [
@@ -21,7 +21,7 @@ module "st_data_lake" {
 }
 
 module "kvs_st_data_lake_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
 
   name         = "st-data-lake-name"
   value        = module.st_data_lake.name
@@ -29,7 +29,7 @@ module "kvs_st_data_lake_name" {
 }
 
 module "kvs_st_data_lake_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
 
   name         = "st-data-lake-id"
   value        = module.st_data_lake.id

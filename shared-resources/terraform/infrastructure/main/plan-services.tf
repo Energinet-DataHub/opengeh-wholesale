@@ -1,5 +1,5 @@
 module "plan_services" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service-plan?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service-plan?ref=v13"
 
   name                           = "services"
   project_name                   = var.domain_name_short
@@ -13,7 +13,7 @@ module "plan_services" {
 }
 
 module "kvs_plan_services_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
 
   name         = "plan-services-id"
   value        = module.plan_services.id
@@ -21,7 +21,7 @@ module "kvs_plan_services_id" {
 }
 
 module "kvs_plan_services_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
 
   name         = "plan-services-name"
   value        = module.plan_services.name

@@ -1,20 +1,5 @@
-module "snet_apim" {
-  source               = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/subnet?ref=v12"
-  name                 = "apim"
-  project_name         = var.domain_name_short
-  environment_short    = var.environment_short
-  environment_instance = var.environment_instance
-  resource_group_name  = var.virtual_network_resource_group_name
-  virtual_network_name = var.virtual_network_name
-  address_prefixes = [
-    var.apim_address_space
-  ]
-  enforce_private_link_endpoint_network_policies = true
-  enforce_private_link_service_network_policies  = true
-}
-
 module "apim_shared" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management?ref=v13"
 
   name                 = "shared"
   project_name         = var.domain_name_short
@@ -26,7 +11,7 @@ module "apim_shared" {
   publisher_email      = var.apim_publisher_email
   sku_name             = "Developer_1"
   virtual_network_type = "External"
-  subnet_id            = module.snet_apim.id
+  subnet_id            = data.azurerm_subnet.snet_apim.id
 
   policies = [
     {
@@ -116,7 +101,7 @@ resource "azurerm_api_management_logger" "apim_logger" {
 # The if-else constructor triggers a bug (named "Error: Provider produced inconsistent final plan") in the TF provider caused at TF apply time.
 # Once re-run, the Key vault secret is created as expected.
 module "kvs_apim_principal_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
 
   name         = "apim-principal-id"
   value        = module.apim_shared.identity[0].principal_id == null ? "" : module.apim_shared.identity[0].principal_id
@@ -124,7 +109,7 @@ module "kvs_apim_principal_id" {
 }
 
 module "kvs_apim_gateway_url" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
 
   name         = "apim-gateway-url"
   value        = module.apim_shared.gateway_url
@@ -132,7 +117,7 @@ module "kvs_apim_gateway_url" {
 }
 
 module "kvs_apim_logger_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
 
   name         = "apim-logger-id"
   value        = azurerm_api_management_logger.apim_logger.id
@@ -140,7 +125,7 @@ module "kvs_apim_logger_id" {
 }
 
 module "kvs_apim_instance_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
 
   name         = "apim-instance-id"
   value        = module.apim_shared.id
@@ -148,7 +133,7 @@ module "kvs_apim_instance_id" {
 }
 
 module "kvs_apim_instance_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
 
   name         = "apim-instance-name"
   value        = module.apim_shared.name
@@ -156,7 +141,7 @@ module "kvs_apim_instance_name" {
 }
 
 module "kvs_apim_instance_resource_group_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
 
   name         = "apim-instance-resource-group-name"
   value        = azurerm_resource_group.this.name
@@ -164,7 +149,7 @@ module "kvs_apim_instance_resource_group_name" {
 }
 
 module "kvs_b2c_tenant_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
 
   name         = "b2c-tenant-id"
   value        = var.apim_b2c_tenant_id
@@ -172,7 +157,7 @@ module "kvs_b2c_tenant_id" {
 }
 
 module "kvs_apim_oauth_server_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v12"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
 
   name         = "apim-oauth-server-name"
   value        = azurerm_api_management_authorization_server.oauth_server.name
