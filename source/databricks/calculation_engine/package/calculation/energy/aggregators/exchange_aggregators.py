@@ -137,22 +137,20 @@ def aggregate_net_exchange_per_ga(
     The result will only include exchange to/from grid areas specified in `calculation_grid_areas`.
     """
 
-    exchange_to = data.df.where(
+    exchange = data.df.where(
         F.col(Colname.metering_point_type) == MeteringPointType.EXCHANGE.value
     )
+
     exchange_to_group_by = [
         Colname.to_grid_area,
         Colname.time_window,
     ]
     exchange_to = (
-        T.aggregate_quantity_and_quality(exchange_to, exchange_to_group_by)
+        T.aggregate_quantity_and_quality(exchange, exchange_to_group_by)
         .withColumnRenamed(Colname.sum_quantity, to_sum)
         .withColumnRenamed(Colname.to_grid_area, Colname.grid_area)
     )
 
-    exchange_from = data.df.where(
-        F.col(Colname.metering_point_type) == MeteringPointType.EXCHANGE.value
-    )
     exchange_from_group_by = [
         Colname.from_grid_area,
         Colname.time_window,
@@ -161,7 +159,7 @@ def aggregate_net_exchange_per_ga(
     from_time_window = "from_time_window"
 
     exchange_from = (
-        T.aggregate_quantity_and_quality(exchange_from, exchange_from_group_by)
+        T.aggregate_quantity_and_quality(exchange, exchange_from_group_by)
         .withColumnRenamed(Colname.sum_quantity, from_sum)
         .withColumnRenamed(Colname.from_grid_area, Colname.grid_area)
         .withColumnRenamed(Colname.time_window, from_time_window)
