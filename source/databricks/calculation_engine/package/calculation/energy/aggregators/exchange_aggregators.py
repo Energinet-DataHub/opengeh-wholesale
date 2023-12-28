@@ -130,17 +130,15 @@ def aggregate_net_exchange_per_neighbour_ga(
 
 
 def aggregate_net_exchange_per_ga(
-    data: QuarterlyMeteringPointTimeSeries, calculation_grid_areas: list[str]
+    exchange_per_neighbour_ga: EnergyResults,
 ) -> EnergyResults:
     """
     Function to aggregate net exchange per grid area.
     The result will only include exchange to/from grid areas specified in `calculation_grid_areas`.
     """
 
-    df = aggregate_net_exchange_per_neighbour_ga(data, calculation_grid_areas).df
-
     result_df = T.aggregate_sum_quantity_and_qualities(
-        df, [Colname.grid_area, Colname.time_window]
+        exchange_per_neighbour_ga.df, [Colname.grid_area, Colname.time_window]
     )
 
     return EnergyResults(result_df)
