@@ -137,88 +137,10 @@ def aggregate_net_exchange_per_ga(
     The result will only include exchange to/from grid areas specified in `calculation_grid_areas`.
     """
 
-    exchange = data.df.where(
-        F.col(Colname.metering_point_type) == MeteringPointType.EXCHANGE.value
+    df = aggregate_net_exchange_per_neighbour_ga(data, calculation_grid_areas).df
+
+    result_df = T.aggregate_sum_quantity_and_qualities(
+        df, [Colname.grid_area, Colname.time_window]
     )
-
-    exchange_to_group_by = [
-        Colname.to_grid_area,
-        Colname.time_window,
-    ]
-    exchange_to = (
-        T.aggregate_quantity_and_quality(exchange, exchange_to_group_by)
-        .withColumnRenamed(Colname.sum_quantity, to_sum)
-        .withColumnRenamed(Colname.to_grid_area, Colname.grid_area)
-    )
-
-    exchange_from_group_by = [
-        Colname.from_grid_area,
-        Colname.time_window,
-    ]
-
-    from_time_window = "from_time_window"
-
-    exchange_from = (
-        T.aggregate_quantity_and_quality(exchange, exchange_from_group_by)
-        .withColumnRenamed(Colname.sum_quantity, from_sum)
-        .withColumnRenamed(Colname.from_grid_area, Colname.grid_area)
-        .withColumnRenamed(Colname.time_window, from_time_window)
-    )
-
-    from_grid_area = "from_grid_area"
-    to_qualities = "to_qualities"
-    from_qualities = "from_qualities"
-
-    joined = exchange_to.join(
-        exchange_from,
-        (exchange_to[Colname.grid_area] == exchange_from[Colname.grid_area])
-        & (exchange_to[Colname.time_window] == exchange_from[from_time_window]),
-        how="outer",
-    ).select(
-        exchange_to[Colname.grid_area],
-        exchange_to[Colname.time_window],
-        exchange_to[to_sum],
-        F.coalesce(exchange_to[Colname.qualities], F.array()).alias(to_qualities),
-        F.coalesce(exchange_from[Colname.qualities], F.array()).alias(from_qualities),
-        exchange_from[from_sum],
-        exchange_from[Colname.grid_area].alias(from_grid_area),
-        exchange_from[from_time_window],
-    )
-
-    result_df = (
-        joined
-        # Set null sums to 0 to avoid null values in the sum column
-        .withColumn(
-            to_sum,
-            F.when(joined[to_sum].isNotNull(), joined[to_sum]).otherwise(F.lit(0)),
-        )
-        .withColumn(
-            from_sum,
-            F.when(joined[from_sum].isNotNull(), joined[from_sum]).otherwise(F.lit(0)),
-        )
-        .withColumn(Colname.sum_quantity, F.col(to_sum) - F.col(from_sum))
-        # when().otherwise() cases to handle the case where a metering point exists with an from-grid-area, which never occurs as an to-grid-area
-        .withColumn(
-            Colname.grid_area,
-            F.when(
-                F.col(Colname.grid_area).isNotNull(), F.col(Colname.grid_area)
-            ).otherwise(F.col(from_grid_area)),
-        )
-        .withColumn(
-            Colname.time_window,
-            F.when(
-                F.col(Colname.time_window).isNotNull(), F.col(Colname.time_window)
-            ).otherwise(F.col(from_time_window)),
-        )
-        .select(
-            Colname.grid_area,
-            Colname.time_window,
-            Colname.sum_quantity,
-            # Include qualities from all to- and from- metering point time series
-            F.array_union(to_qualities, from_qualities).alias(Colname.qualities),
-        )
-    )
-
-    result_df = result_df.filter(F.col(Colname.grid_area).isin(calculation_grid_areas))
 
     return EnergyResults(result_df)
