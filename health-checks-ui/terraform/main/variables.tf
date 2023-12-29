@@ -24,8 +24,12 @@ variable "developer_ad_group_name" {
   default     = null
 }
 
-variable "hosted_deployagent_public_ip_range" {
-  type        = string
-  description = "(Optional) Comma-delimited string with IPs / CIDR block with deployagent's public IPs, so it can access network-protected resources (Keyvaults, Function apps etc)"
-  default     = null
+variable "ip_restrictions" {
+  type        = list(object({
+    ip_address  = string
+    name        = string
+    priority    = optional(number)
+  }))
+  description = "List of ip blocks allowed to access the domain services"
+  default     = []
 }

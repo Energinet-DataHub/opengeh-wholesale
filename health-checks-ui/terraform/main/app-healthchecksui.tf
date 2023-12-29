@@ -15,7 +15,8 @@ module "app_health_checks_ui" {
   health_check_alert_action_group_id       = data.azurerm_key_vault_secret.primary_action_group_id.value
   health_check_alert_enabled               = true
   dotnet_framework_version                 = "v7.0"
-  ip_restriction_allow_ip_range            = var.hosted_deployagent_public_ip_range
+  ip_restrictions                          = var.ip_restrictions
+  scm_ip_restrictions                      = var.ip_restrictions
 
   # Ensure that IHostedServices are not terminated due to unloading of the application in periods with no traffic
   always_on = true
