@@ -20,11 +20,13 @@ module "app_health_checks_ui" {
   # Ensure that IHostedServices are not terminated due to unloading of the application in periods with no traffic
   always_on = true
 
-  app_settings = {
+  app_settings                             = local.default_app_health_checks_ui_app_settings
+}
+
+locals {
+  default_app_health_checks_ui_app_settings = {
     # Health Checks to monitor
     # Ready - prefix with 0xx
-    "HealthChecksUI__HealthChecks__000__Name" = "health-checks-ui:::Health Check UI"
-    "HealthChecksUI__HealthChecks__000__Uri"  = "https://app-healthchecksui-health-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/ready"
     "HealthChecksUI__HealthChecks__001__Name" = "greenforce-frontend:::Web API"
     "HealthChecksUI__HealthChecks__001__Uri"  = "https://app-bff-fe-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/monitor/ready"
     "HealthChecksUI__HealthChecks__002__Name" = "geh-market-participant:::Web API"
@@ -105,7 +107,6 @@ module "app_health_checks_ui" {
     "HealthChecksUI__HealthChecks__223__Uri"  = "https://func-grid-loss-simulator-dh2brdg-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
     "HealthChecksUI__HealthChecks__224__Name" = "shared-resources:::func-healthcheck - live"
     "HealthChecksUI__HealthChecks__224__Uri"  = "https://func-healthchecks-shres-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
-
 
     # Polling Interval
     "HealthChecksUI__EvaluationTimeinSeconds" = 60
