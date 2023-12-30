@@ -12,7 +12,7 @@ module "st_dh2dropzone" {
   access_tier                     = "Hot"
   private_endpoint_subnet_id      = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   private_dns_resource_group_name = data.azurerm_resource_group.shared.name
-  ip_rules                        = var.datahub2_ip_whitelist != null ? format("%s,%s", var.hosted_deployagent_public_ip_range, var.datahub2_ip_whitelist) : var.hosted_deployagent_public_ip_range
+  ip_rules                        = var.datahub2_ip_whitelist != null ? format("%s,%s", local.IP_RESTRICTIONS_AS_STRING, var.datahub2_ip_whitelist) : local.IP_RESTRICTIONS_AS_STRING
   prevent_deletion                = true
 }
 

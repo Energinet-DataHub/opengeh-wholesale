@@ -29,12 +29,6 @@ variable "domain_name_short" {
   description = "Shortest possible edition of the domain name."
 }
 
-variable "hosted_deployagent_public_ip_range" {
-  type        = string
-  description = "(Optional) Comma-delimited string with IPs / CIDR block with deployagent's public IPs, so it can access network-protected resources (Keyvaults, Function apps etc)"
-  default     = null
-}
-
 variable "developers_security_group_object_id" {
   type        = string
   description = "(Optional) The Object ID of the Azure AD security group containing DataHub developers."
@@ -98,5 +92,15 @@ variable "datahub2_ip_whitelist" {
 variable "developer_object_ids" {
   type        = list(string)
   description = "List of developer IDs to give access"
+  default     = []
+}
+
+variable "ip_restrictions" {
+  type        = list(object({
+    ip_address  = string
+    name        = string
+    priority    = optional(number)
+  }))
+  description = "A list of IP restrictions defining allowed access to domain services. Each entry should include an 'ip_address' representing the allowed IP, a 'name' for identification, and an optional 'priority' for rule order. Defaults to `[]`."
   default     = []
 }

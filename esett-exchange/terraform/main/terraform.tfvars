@@ -1,9 +1,6 @@
 # This file contains values that are the same across all environments
 # For environment-specific values, refer to /env/<env_name>/environment.auto.tfvars
 ip_restrictions=[{
-  ip_address = "0.0.0.0/0"
-  name = "sauron_temp_fix"
-},{
   ip_address = "20.253.5.176/28"
   name = "github_largerunner"
 }, {
