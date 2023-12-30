@@ -9,7 +9,8 @@ module "bff" {
   location                                 = azurerm_resource_group.this.location
   vnet_integration_subnet_id               = data.azurerm_key_vault_secret.snet_vnet_integration_id.value
   private_endpoint_subnet_id               = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
-  ip_restriction_allow_ip_range            = var.hosted_deployagent_public_ip_range
+  ip_restrictions                          = var.ip_restrictions
+  scm_ip_restrictions                      = var.ip_restrictions
   app_service_plan_id                      = data.azurerm_key_vault_secret.plan_shared_id.value
   application_insights_instrumentation_key = data.azurerm_key_vault_secret.appi_shared_instrumentation_key.value
   health_check_path                        = "/monitor/ready"
@@ -18,14 +19,14 @@ module "bff" {
   dotnet_framework_version                 = "v6.0"
 
   app_settings = {
-    ApiClientSettings__MeteringPointBaseUrl     = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=app-metering-point-webapi-base-url)"
-    ApiClientSettings__ChargesBaseUrl           = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=app-charges-webapi-base-url)"
-    ApiClientSettings__MarketParticipantBaseUrl = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=app-markpart-webapi-base-url)"
-    ApiClientSettings__WholesaleBaseUrl         = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=app-wholesale-api-base-url)"
-    ApiClientSettings__ESettExchangeBaseUrl     = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=app-esett-webapi-base-url)"
-    ApiClientSettings__EdiB2CWebApiBaseUrl      = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=app-edi-b2cwebapi-base-url)"
-    EXTERNAL_OPEN_ID_URL                        = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=frontend-open-id-url)"
-    INTERNAL_OPEN_ID_URL                        = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-open-id-url)"
-    BACKEND_BFF_APP_ID                          = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=backend-bff-app-id)"
+    ApiClientSettings__MeteringPointBaseUrl     = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-metering-point-webapi-base-url)"
+    ApiClientSettings__ChargesBaseUrl           = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-charges-webapi-base-url)"
+    ApiClientSettings__MarketParticipantBaseUrl = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-markpart-webapi-base-url)"
+    ApiClientSettings__WholesaleBaseUrl         = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-wholesale-api-base-url)"
+    ApiClientSettings__ESettExchangeBaseUrl     = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-esett-webapi-base-url)"
+    ApiClientSettings__EdiB2CWebApiBaseUrl      = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-edi-b2cwebapi-base-url)"
+    EXTERNAL_OPEN_ID_URL                        = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=frontend-open-id-url)"
+    INTERNAL_OPEN_ID_URL                        = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-open-id-url)"
+    BACKEND_BFF_APP_ID                          = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-bff-app-id)"
   }
 }
