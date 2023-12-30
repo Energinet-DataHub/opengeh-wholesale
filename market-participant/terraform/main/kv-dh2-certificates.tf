@@ -10,5 +10,5 @@ module "kv_dh2_certificates" {
   enabled_for_template_deployment = true
   sku_name                        = "premium"
   private_endpoint_subnet_id      = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
-  ip_rules                        = var.hosted_deployagent_public_ip_range
+  ip_rules                        = local.ip_restrictions_as_string
 }

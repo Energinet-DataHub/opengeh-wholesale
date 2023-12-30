@@ -11,7 +11,7 @@ module "storage_esett_documents" {
   access_tier                = "Hot"
   account_tier               = "Standard"
   private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
-  ip_rules                   = local.IP_RESTRICTIONS_AS_STRING
+  ip_rules                   = local.ip_restrictions_as_string
   containers = [
     {
       name = local.ESETT_DOCUMENT_STORAGE_CONTAINER_NAME

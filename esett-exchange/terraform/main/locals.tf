@@ -9,5 +9,5 @@ locals {
   ENVIRONMENT_INSTANCE_NAME             = "${lower(var.environment_short)}-${lower(var.environment_instance)}"
   ECP_BOOTSTRAP_SERVERS                 = ""
   ECP_HEALTH_TOPIC                      = ""
-  IP_RESTRICTIONS_AS_STRING             = join(",", [for rule in var.ip_restrictions : "${rule.ip_address}"])
+  ip_restrictions_as_string             = join(",", [for rule in var.ip_restrictions : "${rule.ip_address}"])
 }

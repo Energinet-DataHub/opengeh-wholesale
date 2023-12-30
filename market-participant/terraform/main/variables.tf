@@ -24,16 +24,6 @@ variable "domain_name_short" {
   description = "Shortest possible edition of the domain name."
 }
 
-variable "shared_resources_keyvault_name" {
-  type        = string
-  description = "Name of the KeyVault, that contains the shared secrets"
-}
-
-variable "shared_resources_resource_group_name" {
-  type        = string
-  description = "Name of the Resource Group, that contains the shared resources."
-}
-
 variable "b2c_tenant" {
   type        = string
   description = "URL of the Active Directory Tenant."
@@ -51,19 +41,14 @@ variable "b2c_spn_secret" {
 
 variable "enable_health_check_alerts" {
   type        = bool
-  description = "Specify if health check alerts for Azure Functions and App Services should be enabled."
+  description = "Specify if health check alerts for Azure Functions and App Services should be enabled. Defaults to `true`"
+  default     = true
 }
 
 variable "developer_ad_group_name" {
   type        = string
   description = "(Optional) Name of the AD group containing developers to have read access to SQL database."
   default     = ""
-}
-
-variable "hosted_deployagent_public_ip_range" {
-  type        = string
-  description = "(Optional) Comma-delimited string with IPs / CIDR block with deployagent's public IPs, so it can access network-protected resources (Keyvaults, Function apps etc)"
-  default     = null
 }
 
 variable "sendgrid_api_key" {
@@ -91,4 +76,14 @@ variable "pim_sql_writer_ad_group_name" {
   type        = string
   description = "Name of the AD group with db_datawriter permissions on the SQL database."
   default     = null
+}
+
+variable "ip_restrictions" {
+  type        = list(object({
+    ip_address  = string
+    name        = string
+    priority    = optional(number)
+  }))
+  description = "A list of IP restrictions defining allowed access to domain services. Each entry should include an 'ip_address' representing the allowed IP, a 'name' for identification, and an optional 'priority' for rule order. Defaults to `[]`."
+  default     = []
 }
