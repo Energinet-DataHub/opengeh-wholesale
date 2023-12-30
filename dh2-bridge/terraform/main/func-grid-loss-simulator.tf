@@ -11,7 +11,8 @@ module "func_entrypoint_grid_loss_simulator" {
   private_endpoint_subnet_id               = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   app_service_plan_id                      = data.azurerm_key_vault_secret.plan_shared_id.value
   application_insights_instrumentation_key = data.azurerm_key_vault_secret.appi_shared_instrumentation_key.value
-  ip_restriction_allow_ip_range            = var.hosted_deployagent_public_ip_range
+  ip_restrictions                          = var.ip_restrictions
+  scm_ip_restrictions                      = var.ip_restrictions
   always_on                                = true
   health_check_path                        = "/api/monitor/ready"
   health_check_alert = {
@@ -27,8 +28,8 @@ module "func_entrypoint_grid_loss_simulator" {
     }
   ]
   app_settings = {
-    "ConsumeServiceBusSettings:HealthCheckConnectionString" = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-manage-connection-string)"
-    "PublisherOptions:ServiceBusConnectionString"           = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sb-domain-relay-send-connection-string)"
-    "PublisherOptions:TopicName"                            = "@Microsoft.KeyVault(VaultName=${var.shared_resources_keyvault_name};SecretName=sbt-shres-integrationevent-received-name)"
+    "ConsumeServiceBusSettings:HealthCheckConnectionString" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-manage-connection-string)"
+    "PublisherOptions:ServiceBusConnectionString"           = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-send-connection-string)"
+    "PublisherOptions:TopicName"                            = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-shres-integrationevent-received-name)"
   }
 }

@@ -7,4 +7,5 @@ locals {
   DH2BRIDGE_CERTIFICATE_THUMBPRINT            = "none"
   DH2_BRIDGE_RECIPIENT_PARTY_GLN              = "5790001330552"
   DH2_BRIDGE_SENDER_PARTY_GLN                 = "8200000008019"
+  ip_restrictions_as_string                   = join(",", [for rule in var.ip_restrictions : "${rule.ip_address}"])
 }
