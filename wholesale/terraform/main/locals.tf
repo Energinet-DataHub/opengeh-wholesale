@@ -15,4 +15,7 @@ locals {
 
   # Service Bus
   INTEGRATIONEVENTS_SUBSCRIPTION_NAME = "integration-event"
+
+  # IP restrictions
+  ip_restrictions_as_string = join(",", [for rule in var.ip_restrictions : "${rule.ip_address}"])
 }

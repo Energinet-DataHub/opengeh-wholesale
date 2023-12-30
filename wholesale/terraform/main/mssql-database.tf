@@ -1,6 +1,6 @@
 data "azurerm_mssql_server" "mssqlsrv" {
   name                = data.azurerm_key_vault_secret.mssql_data_name.value
-  resource_group_name = data.azurerm_resource_group.shared_resources.name
+  resource_group_name = data.azurerm_resource_group.shared.name
 }
 
 module "mssqldb_wholesale" {

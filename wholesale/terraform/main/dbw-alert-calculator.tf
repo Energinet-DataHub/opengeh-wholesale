@@ -1,7 +1,7 @@
 ﻿resource "azurerm_monitor_scheduled_query_rules_alert" "wholesale_calculator_job_alert" {
   name                = "alert-calculator-job-failed-${lower(var.domain_name_short)}-${lower(var.environment_short)}-${lower(var.environment_instance)}"
   location            = azurerm_resource_group.this.location
-  resource_group_name = var.shared_resources_resource_group_name
+  resource_group_name = data.azurerm_resource_group.shared.name
 
   action {
     action_group = [data.azurerm_key_vault_secret.primary_action_group_id.value]
