@@ -498,8 +498,13 @@ GRID_AREA_RESPONSIBLE = [
 # fmt: on
 
 
-def get_grid_loss_responsible(grid_areas: list[str]) -> GridLossResponsible:
+def get_grid_loss_responsible(
+    grid_areas: list[str], metering_point_periods_df: DataFrame
+) -> GridLossResponsible:
     grid_loss_responsible_df = _get_all_grid_loss_responsible()
+    grid_loss_responsible_df = grid_loss_responsible_df.join(
+        metering_point_periods_df, on=Colname.metering_point_id, how="inner"
+    )
 
     grid_loss_responsible_df = grid_loss_responsible_df.select(
         col(Colname.metering_point_id),
@@ -544,4 +549,7 @@ def _throw_if_no_grid_loss_responsible(
 
 def _get_all_grid_loss_responsible() -> DataFrame:
     spark = SparkSession.builder.getOrCreate()
-    return spark.createDataFrame(GRID_AREA_RESPONSIBLE, grid_loss_responsible_schema)
+    metering_points = spark.createDataFrame(
+        GRID_AREA_RESPONSIBLE, grid_loss_responsible_schema
+    )
+    return metering_points.select(Colname.metering_point_id)
