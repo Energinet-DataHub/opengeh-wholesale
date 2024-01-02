@@ -16,23 +16,32 @@ By having a conftest.py in this directory, we are able to add all packages
 defined in the geh_stream directory in our tests.
 """
 
+import os
+import shutil
+import subprocess
 from datetime import datetime
+from typing import Generator, Callable, Optional
 
+import pytest
 import yaml
 from azure.identity import ClientSecretCredential
 from delta import configure_spark_with_delta_pip
-import os
 from pyspark.sql import SparkSession
-import pytest
-import shutil
-import subprocess
-from typing import Generator, Callable, Optional
+from pyspark.sql.types import StructType
 
+from package.calculation_input.schemas import (
+    time_series_point_schema,
+    metering_point_period_schema,
+    charge_master_data_periods_schema,
+    charge_price_points_schema,
+    charge_link_periods_schema,
+)
 from package.datamigration.migration import _apply_migration
-from package.datamigration.uncommitted_migrations import _get_all_migrations
 from package.datamigration.migration_script_args import MigrationScriptArgs
+from package.datamigration.uncommitted_migrations import _get_all_migrations
+from package.infrastructure import paths
 from package.infrastructure.paths import OUTPUT_DATABASE_NAME, OUTPUT_FOLDER
-
+from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.integration_test_configuration import IntegrationTestConfiguration
 
 
@@ -281,4 +290,72 @@ def integration_test_configuration(tests_path: str) -> IntegrationTestConfigurat
     )
     raise Exception(
         "Failed to load integration test settings. Ensure that the Azure Key Vault URL is provided in the settings file or as an environment variable."
+    )
+
+
+@pytest.fixture(scope="session")
+def energy_input_data_written_to_delta(
+    spark: SparkSession, test_files_folder_path: str, calculation_input_path: str
+) -> None:
+    # Metering point periods
+    _write_input_test_data_to_table(
+        spark,
+        file_name=f"{test_files_folder_path}/MeteringPointsPeriods.csv",
+        table_name=paths.METERING_POINT_PERIODS_TABLE_NAME,
+        schema=metering_point_period_schema,
+        table_location=f"{calculation_input_path}/metering_point_periods",
+    )
+
+    # Time series points
+    _write_input_test_data_to_table(
+        spark,
+        file_name=f"{test_files_folder_path}/TimeSeriesPoints.csv",
+        table_name=paths.TIME_SERIES_POINTS_TABLE_NAME,
+        schema=time_series_point_schema,
+        table_location=f"{calculation_input_path}/time_series_points",
+    )
+
+
+@pytest.fixture(scope="session")
+def price_input_data_written_to_delta(
+    spark: SparkSession, test_files_folder_path: str, calculation_input_path: str
+) -> None:
+    # Charge master data periods
+    _write_input_test_data_to_table(
+        spark,
+        file_name=f"{test_files_folder_path}/ChargeMasterDataPeriods.csv",
+        table_name=paths.CHARGE_MASTER_DATA_PERIODS_TABLE_NAME,
+        schema=charge_master_data_periods_schema,
+        table_location=f"{calculation_input_path}/charge_masterdata_periods",
+    )
+
+    # Charge link periods
+    _write_input_test_data_to_table(
+        spark,
+        file_name=f"{test_files_folder_path}/ChargeLinkPeriods.csv",
+        table_name=paths.CHARGE_LINK_PERIODS_TABLE_NAME,
+        schema=charge_link_periods_schema,
+        table_location=f"{calculation_input_path}/charge_link_periods",
+    )
+
+    # Charge price points
+    _write_input_test_data_to_table(
+        spark,
+        file_name=f"{test_files_folder_path}/ChargePricePoints.csv",
+        table_name=paths.CHARGE_PRICE_POINTS_TABLE_NAME,
+        schema=charge_price_points_schema,
+        table_location=f"{calculation_input_path}/charge_price_points",
+    )
+
+
+def _write_input_test_data_to_table(
+    spark: SparkSession,
+    file_name: str,
+    table_name: str,
+    table_location: str,
+    schema: StructType,
+) -> None:
+    df = spark.read.csv(file_name, header=True, schema=schema)
+    write_dataframe_to_table(
+        spark, df, paths.INPUT_DATABASE_NAME, table_name, table_location, schema
     )
