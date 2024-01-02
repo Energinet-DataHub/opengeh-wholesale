@@ -27,7 +27,8 @@ resource "azurerm_api_management_custom_domain" "datahub3_custom_domains" {
   }
 
   gateway {
-    host_name    = "preprod.ebix.datahub3.dk"
-    key_vault_id = azurerm_key_vault_certificate.ebix_datahub3_certificate.versionless_secret_id
+    host_name                    = "preprod.ebix.datahub3.dk"
+    key_vault_id                 = azurerm_key_vault_certificate.ebix_datahub3_certificate.versionless_secret_id
+    negotiate_client_certificate = true
   }
 }
