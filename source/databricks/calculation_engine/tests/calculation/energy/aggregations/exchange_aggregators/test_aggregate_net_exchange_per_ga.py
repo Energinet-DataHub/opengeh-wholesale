@@ -17,6 +17,7 @@ from pyspark.sql import SparkSession
 
 from package.calculation.energy.aggregators.exchange_aggregators import (
     aggregate_net_exchange_per_ga,
+    aggregate_net_exchange_per_neighbour_ga,
 )
 import tests.calculation.energy.quarterly_metering_point_time_series_factories as factories
 from package.codelists import QuantityQuality, MeteringPointType
@@ -84,9 +85,10 @@ class TestWhenValidInput:
         expected_qualities = sorted([q.value for q in expected_qualities])
 
         # Act
-        actual = aggregate_net_exchange_per_ga(
+        exchange_per_neighbour_ga = aggregate_net_exchange_per_neighbour_ga(
             metering_point_time_series, [from_grid_area, to_grid_area]
         )
+        actual = aggregate_net_exchange_per_ga(exchange_per_neighbour_ga)
 
         # Assert
         actual_rows = actual.df.collect()
@@ -122,9 +124,10 @@ class TestWhenMeteringPointIsNeitherInToOrFromGridArea:
         metering_point_time_series = factories.create(spark, rows)
 
         # Act
-        actual = aggregate_net_exchange_per_ga(
+        exchange_per_neighbour_ga = aggregate_net_exchange_per_neighbour_ga(
             metering_point_time_series, all_grid_areas
         )
+        actual = aggregate_net_exchange_per_ga(exchange_per_neighbour_ga)
 
         # Assert
         actual_grid_areas = [row[Colname.grid_area] for row in actual.df.collect()]
@@ -157,9 +160,10 @@ class TestWhenInputHasDataNotBelongingToSelectedGridArea:
         metering_point_time_series = factories.create(spark, rows)
 
         # Act
-        actual = aggregate_net_exchange_per_ga(
+        exchange_per_neighbour_ga = aggregate_net_exchange_per_neighbour_ga(
             metering_point_time_series, [selected_grid_area]
         )
+        actual = aggregate_net_exchange_per_ga(exchange_per_neighbour_ga)
 
         # Assert
         actual_rows = actual.df.collect()
