@@ -25,6 +25,7 @@ from package.calculation.energy.energy_results import (
 )
 from package.calculation.energy.aggregators.exchange_aggregators import (
     aggregate_net_exchange_per_ga,
+    aggregate_net_exchange_per_neighbour_ga,
 )
 from package.calculation.preparation.quarterly_metering_point_time_series import (
     QuarterlyMeteringPointTimeSeries,
@@ -218,9 +219,10 @@ def add_row_of_data(
 @pytest.fixture(scope="module")
 def aggregated_data_frame(quarterly_metering_point_time_series):
     """Perform aggregation"""
-    return aggregate_net_exchange_per_ga(
+    exchange_per_neighbour_ga = aggregate_net_exchange_per_neighbour_ga(
         quarterly_metering_point_time_series, ALL_GRID_AREAS
     )
+    return aggregate_net_exchange_per_ga(exchange_per_neighbour_ga)
 
 
 def test_test_data_has_correct_row_count(quarterly_metering_point_time_series):

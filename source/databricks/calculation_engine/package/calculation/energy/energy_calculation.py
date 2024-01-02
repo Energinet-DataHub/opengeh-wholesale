@@ -143,8 +143,10 @@ def _calculate_net_exchange(
     result_writer: EnergyCalculationResultWriter,
     quarterly_metering_point_time_series: QuarterlyMeteringPointTimeSeries,
 ) -> EnergyResults:
+    exchange_per_neighbour_ga = exchange_aggr.aggregate_net_exchange_per_neighbour_ga(
+        quarterly_metering_point_time_series, batch_grid_areas
+    )
     if _is_aggregation_or_balance_fixing(process_type):
-        # Could the exchange_per_neighbour_ga be re-used for NET_EXCHANGE_PER_GA?
         exchange_per_neighbour_ga = (
             exchange_aggr.aggregate_net_exchange_per_neighbour_ga(
                 quarterly_metering_point_time_series, batch_grid_areas
@@ -159,7 +161,7 @@ def _calculate_net_exchange(
             )
 
     exchange_per_grid_area = exchange_aggr.aggregate_net_exchange_per_ga(
-        quarterly_metering_point_time_series, batch_grid_areas
+        exchange_per_neighbour_ga
     )
 
     with logging_configuration.start_span("net_exchange_per_ga"):

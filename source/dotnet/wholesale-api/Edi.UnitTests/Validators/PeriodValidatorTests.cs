@@ -195,9 +195,8 @@ public class PeriodValidatorTests
     public async Task Validate_WhenPeriodOverlapSummerDaylightSavingTime_ReturnsNoValidationErrors()
     {
         // Arrange
-        var now = SystemClock.Instance.GetCurrentInstant();
-        var winterTime = Instant.FromUtc(now.InUtc().Year, 2, 26, 23, 0, 0).ToString();
-        var summerTime = Instant.FromUtc(now.InUtc().Year, 3, 26, 22, 0, 0).ToString();
+        var winterTime = Instant.FromUtc(2023, 2, 26, 23, 0, 0).ToString();
+        var summerTime = Instant.FromUtc(2023, 3, 26, 22, 0, 0).ToString();
         var message = AggregatedTimeSeriesRequestBuilder
             .AggregatedTimeSeriesRequest()
             .WithStartDate(winterTime)
