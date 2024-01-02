@@ -6,7 +6,7 @@ module "stor_esett" {
   environment_instance      = var.environment_instance
   resource_group_name       = azurerm_resource_group.this.name
   location                  = azurerm_resource_group.this.location
-  ip_rules                  = var.hosted_deployagent_public_ip_range
+  ip_rules                  = local.ip_restrictions_as_string
   account_replication_type  = "LRS"
   access_tier               = "Hot"
   account_tier              = "Standard"

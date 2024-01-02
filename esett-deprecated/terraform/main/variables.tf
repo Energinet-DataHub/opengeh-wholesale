@@ -28,12 +28,6 @@ variable "cert_pwd_esett_biztalk_authentication_key1" {
   description = "Password for the Biztalk certificate"
 }
 
-variable "hosted_deployagent_public_ip_range" {
-  type        = string
-  description = "(Optional) Comma-delimited string with IPs / CIDR block with deployagent's public IPs, so it can access network-protected resources (Keyvaults, Function apps etc)"
-  default     = null
-}
-
 variable "developer_object_ids" {
   type        = list(string)
   description = "List of developer principal IDs"
@@ -49,4 +43,14 @@ variable "pim_sql_writer_ad_group_name" {
   type        = string
   description = "Name of the AD group with db_datawriter permissions on the SQL database."
   default     = null
+}
+
+variable "ip_restrictions" {
+  type        = list(object({
+    ip_address  = string
+    name        = string
+    priority    = optional(number)
+  }))
+  description = "A list of IP restrictions defining allowed access to domain services. Each entry should include an 'ip_address' representing the allowed IP, a 'name' for identification, and an optional 'priority' for rule order. Defaults to `[]`."
+  default     = []
 }
