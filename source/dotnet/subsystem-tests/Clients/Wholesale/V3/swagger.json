@@ -8,7 +8,7 @@
     "/v3/batches": {
       "post": {
         "tags": [
-          "Batch"
+          "Calculation"
         ],
         "summary": "Create a batch.",
         "operationId": "CreateBatch",
@@ -48,7 +48,7 @@
       },
       "get": {
         "tags": [
-          "Batch"
+          "Calculation"
         ],
         "summary": "Get batches that matches the criteria specified",
         "operationId": "SearchBatches",
@@ -129,7 +129,7 @@
     "/v3/batches/{batchId}": {
       "get": {
         "tags": [
-          "Batch"
+          "Calculation"
         ],
         "summary": "Returns a batch matching batchId.",
         "operationId": "GetBatch",

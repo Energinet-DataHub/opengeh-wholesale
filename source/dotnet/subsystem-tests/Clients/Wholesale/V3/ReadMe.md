@@ -7,11 +7,11 @@
 
 # How to generate the client code
 
-1. Delete the swagger.json file.
-2. Create VPN connection to u-001 using Azure VPN Client
-3. Rebuild the SubsystemTest project.
+1. Update the swagger.json file with the content of https://app-webapi-wholsal-d-we-001.azurewebsites.net/swagger/v3/swagger.json
+2. Rebuild the SubsystemTest project.
+3. Manually re-add the license header to the WholesaleClient.cs file.
 
-A new swagger.json file and WholesaleClient.cs file will be generated.
+The WholesaleClient.cs file will be updated in step 2.
 
 # How to build the client from a different swagger.json file, than the one specified in nswag.json
 

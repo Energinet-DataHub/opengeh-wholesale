@@ -3,14 +3,14 @@
   "defaultVariables": null,
   "documentGenerator": {
     "fromDocument": {
-      "url": "https://app-webapi-wholsal-u-001.azurewebsites.net/swagger/v3/swagger.json",
+      "url": "swagger.json",
       "output": "swagger.json",
       "newLineBehavior": "Auto"
     }
   },
   "codeGenerators": {
     "openApiToCSharpClient": {
-      "namespace": "Energinet.DataHub.Wholesale.DomainTests.Clients.v3",
+      "namespace": "Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3",
       "className": "{controller}WholesaleClient_V3",
       "output": "WholesaleClient.cs",
       "generateOptionalParameters": true,

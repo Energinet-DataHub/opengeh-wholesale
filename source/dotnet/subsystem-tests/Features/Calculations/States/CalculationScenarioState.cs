@@ -14,7 +14,7 @@
 
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
-using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
+using Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.States
 {

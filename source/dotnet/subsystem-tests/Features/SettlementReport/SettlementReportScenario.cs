@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
+using Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3;
 using Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReport.Fixtures;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;

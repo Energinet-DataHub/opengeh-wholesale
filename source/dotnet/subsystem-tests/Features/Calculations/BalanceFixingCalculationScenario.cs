@@ -38,9 +38,9 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
         [SubsystemFact]
         public void Given_CalculationInput()
         {
-            Fixture.ScenarioState.CalculationInput = new DomainTests.Clients.v3.BatchRequestDto
+            Fixture.ScenarioState.CalculationInput = new Clients.v3.BatchRequestDto
             {
-                ProcessType = DomainTests.Clients.v3.ProcessType.BalanceFixing,
+                ProcessType = Clients.v3.ProcessType.BalanceFixing,
                 GridAreaCodes = new List<string> { "543" },
                 StartDate = new DateTimeOffset(2022, 1, 11, 23, 0, 0, TimeSpan.Zero),
                 EndDate = new DateTimeOffset(2022, 1, 12, 23, 0, 0, TimeSpan.Zero),
@@ -72,7 +72,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
         {
             var actualWaitResult = await Fixture.WaitForCalculationStateAsync(
                 Fixture.ScenarioState.CalculationId,
-                waitForState: DomainTests.Clients.v3.BatchState.Completed,
+                waitForState: Clients.v3.BatchState.Completed,
                 waitTimeLimit: TimeSpan.FromMinutes(21));
 
             Fixture.ScenarioState.Batch = actualWaitResult.Batch;
@@ -82,7 +82,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
             actualWaitResult.IsState.Should().BeTrue();
             actualWaitResult.Batch.Should().NotBeNull();
 
-            actualWaitResult.Batch!.ExecutionState.Should().Be(DomainTests.Clients.v3.BatchState.Completed);
+            actualWaitResult.Batch!.ExecutionState.Should().Be(Clients.v3.BatchState.Completed);
         }
 
         [ScenarioStep(4)]

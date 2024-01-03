@@ -7,7 +7,22 @@
   </PropertyGroup>
 
   <Target Name="NSwag" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)' == 'Debug' ">
-    <Exec WorkingDirectory="$(ProjectDir)" EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" Command="if not exist Clients/Wholesale/V3/swagger.json $(NSwagExe_Net60) run Clients/Wholesale/V3/nswag.json /variables:Configuration=$(Configuration)" Condition="!Exists('Clients/Wholesale/V3/swagger.json')" />
+    <PropertyGroup>
+      <SwaggerConfiguration>Clients\Wholesale\V3\swagger.json</SwaggerConfiguration>
+      <WholesaleClient>Clients\Wholesale\V3\WholesaleClient.cs</WholesaleClient>
+    </PropertyGroup>
+    
+    <PropertyGroup>
+      <!-- True if the swagger.json file was updated after the generated client -->
+      <SwaggerConfigurationIsNewer>
+        $(([System.IO.File]::GetLastWriteTime('$(SwaggerConfiguration)') -gt ([System.IO.File]::GetLastWriteTime('$(WholesaleClient)')))
+      </SwaggerConfigurationIsNewer>
+    </PropertyGroup>
+
+    <Exec WorkingDirectory="$(ProjectDir)"
+          EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development"
+          Command="$(NSwagExe_Net60) run Clients/Wholesale/V3/nswag.json /variables:Configuration=$(Configuration)"
+          Condition="'$(SwaggerConfigurationIsNewer)' == 'true'" />
   </Target>
 
   <ItemGroup>

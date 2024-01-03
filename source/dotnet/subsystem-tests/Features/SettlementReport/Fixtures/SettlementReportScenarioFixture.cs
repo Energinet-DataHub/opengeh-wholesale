@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System.IO.Compression;
-using Energinet.DataHub.Wholesale.DomainTests.Clients.v3;
+using Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3;
 using Energinet.DataHub.Wholesale.SubsystemTests.Features.SettlementReport.States;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Configuration;
