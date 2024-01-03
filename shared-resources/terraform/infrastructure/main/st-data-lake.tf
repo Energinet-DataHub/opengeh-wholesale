@@ -10,7 +10,7 @@ module "st_data_lake" {
   account_replication_type        = "LRS"
   account_tier                    = "Standard"
   private_endpoint_subnet_id      = data.azurerm_subnet.snet_private_endpoints.id
-  private_dns_resource_group_name = module.dbw_shared.private_dns_zone_resource_group_name
+  private_dns_resource_group_name = azurerm_resource_group.this.name
   ip_rules                        = local.ip_restrictions_as_string
   role_assignments = [
     {
