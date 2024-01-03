@@ -7,7 +7,7 @@
 
 # How to generate the client code
 
-1. Update the swagger.json file with the content of https://app-webapi-wholsal-d-we-001.azurewebsites.net/swagger/v3/swagger.json
+1. Update the swagger.json file with the content of <https://app-webapi-wholsal-d-we-001.azurewebsites.net/swagger/v3/swagger.json>
 2. Rebuild the SubsystemTest project.
 3. Manually re-add the license header to the WholesaleClient.cs file.
 
