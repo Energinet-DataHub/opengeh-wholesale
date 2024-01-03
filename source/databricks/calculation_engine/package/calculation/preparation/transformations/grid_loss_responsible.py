@@ -18,7 +18,8 @@ defined in the geh_stream directory in our tests.
 import datetime
 
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import col
+from pyspark.sql.functions import col, lit
+from pyspark.sql.types import StructType, StructField, StringType, TimestampType
 
 from package.calculation.preparation.grid_loss_responsible import (
     GridLossResponsible,
@@ -503,6 +504,9 @@ def get_grid_loss_responsible(
 ) -> GridLossResponsible:
     grid_loss_responsible_df = _get_all_grid_loss_responsible()
 
+    grid_loss_responsible_df = grid_loss_responsible_df.select(
+        Colname.metering_point_id
+    )
     grid_loss_responsible_df = grid_loss_responsible_df.join(
         metering_point_periods_df,
         Colname.metering_point_id,
@@ -552,7 +556,4 @@ def _throw_if_no_grid_loss_responsible(
 
 def _get_all_grid_loss_responsible() -> DataFrame:
     spark = SparkSession.builder.getOrCreate()
-    metering_points = spark.createDataFrame(
-        GRID_AREA_RESPONSIBLE, grid_loss_responsible_schema
-    )
-    return metering_points.select(Colname.metering_point_id)
+    return spark.createDataFrame(GRID_AREA_RESPONSIBLE, grid_loss_responsible_schema)
