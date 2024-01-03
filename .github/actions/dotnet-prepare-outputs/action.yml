@@ -52,12 +52,12 @@ runs:
           --configuration Release \
           --output '${{ inputs.output_path }}\databasemigration'
 
-    - name: Publish Domain Tests
+    - name: Publish Subsystem Tests
       shell: bash
       run: |
         dotnet publish \
-          '.\source\dotnet\domain-tests\DomainTests.csproj' \
+          '.\source\dotnet\subsystem-tests\SubsystemTests.csproj' \
           --no-build \
           --no-restore \
           --configuration Release \
-          --output '${{ inputs.output_path }}\domaintests'
+          --output '${{ inputs.output_path }}\subsystemtests'
