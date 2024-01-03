@@ -37,7 +37,7 @@ def execute(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> N
             args.calculation_grid_areas,
         )
         grid_loss_responsible_df = prepared_data_reader.get_grid_loss_responsible(
-            args.calculation_grid_areas
+            args.calculation_grid_areas, metering_point_periods_df
         )
 
         metering_point_time_series = (
