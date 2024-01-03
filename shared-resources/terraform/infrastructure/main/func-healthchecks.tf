@@ -11,7 +11,8 @@ module "func_healthchecks" {
   private_endpoint_subnet_id                = module.kvs_snet_private_endpoints_id.value # See above
   app_service_plan_id                       = module.plan_services.id
   application_insights_instrumentation_key  = module.appi_shared.instrumentation_key
-  ip_restriction_allow_ip_range             = var.hosted_deployagent_public_ip_range
+  ip_restrictions                           = var.ip_restrictions
+  scm_ip_restrictions                       = var.ip_restrictions
   dotnet_framework_version                  = "v7.0"
   app_settings = {
     SHARED_KEYVAULT_NAME          = "${module.kv_shared.name}"

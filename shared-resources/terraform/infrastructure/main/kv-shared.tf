@@ -12,5 +12,5 @@ module "kv_shared" {
   allowed_subnet_ids = [
     data.azurerm_subnet.snet_vnet_integration.id,
   ]
-  ip_rules = var.hosted_deployagent_public_ip_range
+  ip_rules = local.ip_restrictions_as_string
 }

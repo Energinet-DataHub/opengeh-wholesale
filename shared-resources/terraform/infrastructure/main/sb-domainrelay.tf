@@ -8,7 +8,7 @@ module "sb_domain_relay" {
   resource_group_name           = azurerm_resource_group.this.name
   location                      = azurerm_resource_group.this.location
   private_endpoint_subnet_id    = data.azurerm_subnet.snet_private_endpoints.id
-  ip_restriction_allow_ip_range = var.hosted_deployagent_public_ip_range
+  ip_restriction_allow_ip_range = local.ip_restrictions_as_string
   auth_rules = [
     {
       name   = "listen",

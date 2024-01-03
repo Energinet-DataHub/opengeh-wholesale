@@ -11,7 +11,7 @@ module "st_data_lake" {
   account_tier                    = "Standard"
   private_endpoint_subnet_id      = data.azurerm_subnet.snet_private_endpoints.id
   private_dns_resource_group_name = module.dbw_shared.private_dns_zone_resource_group_name
-  ip_rules                        = var.hosted_deployagent_public_ip_range
+  ip_rules                        = local.ip_restrictions_as_string
   role_assignments = [
     {
       principal_id         = data.azurerm_client_config.current.object_id

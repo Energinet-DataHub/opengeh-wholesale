@@ -37,12 +37,12 @@ module "mssql_data_additional" { # Needs to be a named like this or it would del
 }
 
 resource "azurerm_mssql_firewall_rule" "github_largerunner" {
-  count = length(split(",", var.hosted_deployagent_public_ip_range))
+  count = length(split(",", local.ip_restrictions_as_string))
 
   name             = "github_largerunner_${count.index}"
   server_id        = module.mssql_data_additional.id
-  start_ip_address = cidrhost(split(",", var.hosted_deployagent_public_ip_range)[count.index], 0)  #First IP in range
-  end_ip_address   = cidrhost(split(",", var.hosted_deployagent_public_ip_range)[count.index], -1) #Last IP in range
+  start_ip_address = cidrhost(split(",", local.ip_restrictions_as_string)[count.index], 0)  #First IP in range
+  end_ip_address   = cidrhost(split(",", local.ip_restrictions_as_string)[count.index], -1) #Last IP in range
 }
 
 module "kvs_mssql_data_elastic_pool_id" {

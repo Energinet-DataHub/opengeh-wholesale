@@ -189,12 +189,6 @@ variable "ad_group_directory_reader" {
   default     = ""
 }
 
-variable "hosted_deployagent_public_ip_range" {
-  type        = string
-  description = "(Optional) Comma-delimited string with IPs / CIDR block with deployagent's public IPs, so it can access network-protected resources such as Keyvaults"
-  default     = null
-}
-
 variable "github_username" {
   type        = string
   description = "Username used to access Github from Databricks jobs."
@@ -215,4 +209,14 @@ variable "cert_ebix_datahub3_password" {
   type        = string
   description = "Password for the eBix Datahub 3 certificate."
   default     = null
+}
+
+variable "ip_restrictions" {
+  type        = list(object({
+    ip_address  = string
+    name        = string
+    priority    = optional(number)
+  }))
+  description = "A list of IP restrictions defining allowed access to domain services. Each entry should include an 'ip_address' representing the allowed IP, a 'name' for identification, and an optional 'priority' for rule order. Defaults to `[]`."
+  default     = []
 }
