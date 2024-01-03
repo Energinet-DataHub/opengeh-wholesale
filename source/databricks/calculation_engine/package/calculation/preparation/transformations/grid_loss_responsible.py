@@ -18,8 +18,7 @@ defined in the geh_stream directory in our tests.
 import datetime
 
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import col, lit
-from pyspark.sql.types import StructType, StructField, StringType, TimestampType
+from pyspark.sql.functions import col
 
 from package.calculation.preparation.grid_loss_responsible import (
     GridLossResponsible,
