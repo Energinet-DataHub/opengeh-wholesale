@@ -29,10 +29,10 @@ public class StartCalculationHandlerTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public async Task StartCalculationAsync_ActivatesDomainServiceAndCommits(
+    public async Task StartCalculationAsync_ActivatesInfrastructureServiceAndCommits(
         [Frozen] Mock<ICalculationRepository> batchRepositoryMock,
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
-        [Frozen] Mock<ICalculationInfrastructureService> calculationDomainServiceMock,
+        [Frozen] Mock<ICalculationInfrastructureService> calculationInfrastructureServiceMock,
         StartCalculationHandler sut)
     {
         // Arrange
@@ -48,7 +48,7 @@ public class StartCalculationHandlerTests
         unitOfWorkMock.Verify(x => x.CommitAsync());
         foreach (var batch in batches)
         {
-            calculationDomainServiceMock.Verify(x => x.StartAsync(batch.Id));
+            calculationInfrastructureServiceMock.Verify(x => x.StartAsync(batch.Id));
         }
     }
 

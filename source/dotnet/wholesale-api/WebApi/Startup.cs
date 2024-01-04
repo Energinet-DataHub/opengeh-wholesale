@@ -37,7 +37,7 @@ namespace Energinet.DataHub.Wholesale.WebApi;
 
 public class Startup
 {
-    private const string DomainName = "wholesale";
+    private const string SubsystemName = "wholesale";
 
     public Startup(IConfiguration configuration, IWebHostEnvironment environment)
     {
@@ -117,7 +117,7 @@ public class Startup
         serviceCollection.AddApplicationInsightsTelemetry(options => options.EnableAdaptiveSampling = false);
 
         serviceCollection.AddUserAuthentication<FrontendUser, FrontendUserProvider>();
-        serviceCollection.AddHttpLoggingScope(DomainName);
+        serviceCollection.AddHttpLoggingScope(SubsystemName);
     }
 
     public void Configure(IApplicationBuilder app)
