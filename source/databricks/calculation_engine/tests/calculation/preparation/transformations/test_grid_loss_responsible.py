@@ -15,11 +15,10 @@
 import pytest
 from pyspark.sql import SparkSession
 from unittest.mock import patch
-from pyspark.sql import types as t
-
 
 from package.calculation.preparation.transformations.grid_loss_responsible import (
     get_grid_loss_responsible,
+    grid_area_responsible_schema,
 )
 import metering_point_periods_factory as factory
 from package.codelists import MeteringPointType
@@ -51,17 +50,12 @@ def test__get_grid_loss_responsible__given_three_metering_point_period_dataframe
     )
     metering_point_period = factory.create(spark, data=[row1, row2, row3])
 
-    schema = t.StructType(
-        [
-            t.StructField(Colname.metering_point_id, t.StringType(), False),
-        ]
-    )
     grid_area_responsible = spark.createDataFrame(
         [
             (metering_point_id_1,),
             (metering_point_id_2,),
         ],
-        schema,
+        grid_area_responsible_schema,
     )
 
     # Act

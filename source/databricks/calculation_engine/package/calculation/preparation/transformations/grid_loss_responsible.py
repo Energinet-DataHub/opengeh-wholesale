@@ -19,11 +19,10 @@ import datetime
 
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import col
-import pyspark.sql.types as t
 
 from package.calculation.preparation.grid_loss_responsible import (
     GridLossResponsible,
-    grid_loss_responsible_schema,
+    grid_area_responsible_schema,
 )
 from package.codelists import MeteringPointType
 from package.constants import Colname
@@ -224,10 +223,5 @@ def _throw_if_no_grid_loss_responsible(
 
 
 def _get_all_grid_loss_responsible() -> DataFrame:
-    schema = t.StructType(
-        [
-            t.StructField(Colname.metering_point_id, t.StringType(), False),
-        ]
-    )
     spark = SparkSession.builder.getOrCreate()
-    return spark.createDataFrame(GRID_AREA_RESPONSIBLE, schema)
+    return spark.createDataFrame(GRID_AREA_RESPONSIBLE, grid_area_responsible_schema)
