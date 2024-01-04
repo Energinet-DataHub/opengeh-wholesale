@@ -13,7 +13,7 @@ module "st_dh2dropzone" {
   private_endpoint_subnet_id      = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
   private_dns_resource_group_name = azurerm_resource_group.this.name
   ip_rules                        = var.datahub2_ip_whitelist != null ? format("%s,%s", local.ip_restrictions_as_string, var.datahub2_ip_whitelist) : local.ip_restrictions_as_string
-  prevent_deletion                = false
+  prevent_deletion                = true
 }
 
 #---- Role assignments
