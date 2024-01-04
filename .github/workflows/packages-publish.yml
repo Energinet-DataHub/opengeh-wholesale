@@ -65,7 +65,7 @@ jobs:
 
       - name: Package content or build has changed
         id: changed-content
-        uses: tj-actions/changed-files@v35
+        uses: tj-actions/changed-files@v41
         with:
           files: |
             source/dotnet/wholesale-integration-events-package/**
