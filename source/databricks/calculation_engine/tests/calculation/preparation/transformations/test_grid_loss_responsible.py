@@ -46,7 +46,7 @@ def test__get_grid_loss_responsible__returns_non_empty_list(
     assert grid_loss_responsible.df.count() > 0
 
 
-def test__get_grid_loss_responsible__returns_non_empty_list2(
+def test__get_grid_loss_responsible__returns_two_rows(
     spark: SparkSession,
 ) -> None:
     # Arrange
@@ -62,12 +62,12 @@ def test__get_grid_loss_responsible__returns_non_empty_list2(
         metering_point_type=MeteringPointType.CONSUMPTION,
     )
     mtp = factory.create(spark, data=[row1, row2])
+
     # Act
     grid_loss_responsible = get_grid_loss_responsible(grid_areas, mtp)
 
     # Assert
-    print(grid_loss_responsible.df.count())
-    assert grid_loss_responsible.df.count() > 0
+    assert grid_loss_responsible.df.count() == 2
 
 
 @pytest.mark.acceptance_test
