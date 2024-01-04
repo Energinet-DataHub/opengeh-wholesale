@@ -10,7 +10,10 @@ resource "azurerm_portal_dashboard" "migration_availability_dashboard" {
       subscription_id                         = data.azurerm_subscription.this.subscription_id,
       shared_resources_resource_group_name    = data.azurerm_resource_group.shared.name,
       migration_resources_resource_group_name = azurerm_resource_group.this.name,
+      shared_storage_id                       = data.azurerm_key_vault_secret.st_data_lake_id.value,
       shared_storage_name                     = data.azurerm_key_vault_secret.st_data_lake_name.value,
-      migration_storage_name                  = module.st_migrations.name
+      migration_storage_id                    = module.st_migrations.id,
+      migration_storage_name                  = module.st_migrations.name,
+      log_analytics_workspace_id              = data.azurerm_key_vault_secret.log_shared_id.value
   })
 }

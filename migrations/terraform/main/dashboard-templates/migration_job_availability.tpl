@@ -44,7 +44,7 @@
                     "metrics": [
                       {
                         "resourceMetadata": {
-                          "id": "/subscriptions/${subscription_id}/resourceGroups/${shared_resources_resource_group_name}/providers/Microsoft.Storage/storageAccounts/${shared_storage_name}"
+                          "id": "${shared_storage_id}"
                         },
                         "name": "Availability",
                         "aggregationType": 4,
@@ -94,7 +94,7 @@
                     "metrics": [
                       {
                         "resourceMetadata": {
-                          "id": "/subscriptions/${subscription_id}/resourceGroups/${shared_resources_resource_group_name}/providers/Microsoft.Storage/storageAccounts/${shared_storage_name}"
+                          "id": "${shared_storage_id}"
                         },
                         "name": "Availability",
                         "aggregationType": 4,
@@ -152,7 +152,7 @@
                 "name": "Scope",
                 "value": {
                   "resourceIds": [
-                    "/subscriptions/${subscription_id}/resourceGroups/${shared_resources_resource_group_name}"
+                    "${log_analytics_workspace_id}"
                   ]
                 },
                 "isOptional": true
@@ -251,7 +251,7 @@
                 "name": "Scope",
                 "value": {
                   "resourceIds": [
-                    "/subscriptions/${subscription_id}/resourceGroups/${shared_resources_resource_group_name}"
+                    "${log_analytics_workspace_id}"
                   ]
                 },
                 "isOptional": true
@@ -404,7 +404,7 @@
                 "name": "Scope",
                 "value": {
                   "resourceIds": [
-                    "/subscriptions/${subscription_id}/resourceGroups/${shared_resources_resource_group_name}"
+                    "${log_analytics_workspace_id}"
                   ]
                 },
                 "isOptional": true
@@ -503,7 +503,7 @@
                 "name": "Scope",
                 "value": {
                   "resourceIds": [
-                    "/subscriptions/${subscription_id}/resourceGroups/${shared_resources_resource_group_name}"
+                    "${log_analytics_workspace_id}"
                   ]
                 },
                 "isOptional": true
@@ -676,7 +676,7 @@
                     "metrics": [
                       {
                         "resourceMetadata": {
-                          "id": "/subscriptions/${subscription_id}/resourceGroups/${migration_resources_resource_group_name}/providers/Microsoft.Storage/storageAccounts/${migration_storage_name}"
+                          "id": "${migration_storage_id}"
                         },
                         "name": "Availability",
                         "aggregationType": 4,
@@ -726,7 +726,7 @@
                     "metrics": [
                       {
                         "resourceMetadata": {
-                          "id": "/subscriptions/${subscription_id}/resourceGroups/${migration_resources_resource_group_name}/providers/Microsoft.Storage/storageAccounts/${migration_storage_name}"
+                          "id": "${migration_storage_id}"
                         },
                         "name": "Availability",
                         "aggregationType": 4,
@@ -784,7 +784,7 @@
                 "name": "Scope",
                 "value": {
                   "resourceIds": [
-                    "/subscriptions/${subscription_id}/resourceGroups/${shared_resources_resource_group_name}"
+                    "${log_analytics_workspace_id}"
                   ]
                 },
                 "isOptional": true
@@ -883,7 +883,7 @@
                 "name": "Scope",
                 "value": {
                   "resourceIds": [
-                    "/subscriptions/${subscription_id}/resourceGroups/${shared_resources_resource_group_name}"
+                    "${log_analytics_workspace_id}"
                   ]
                 },
                 "isOptional": true
