@@ -42,7 +42,7 @@ module "apimao_ebix_dequeuemessage" {
                 </set-body>
               </when>
               <when condition="@(context.Response.StatusCode == 400)">
-                <set-status code="500" />
+                <set-status code="200" />
                 <set-body template="liquid">
                   <soap-env:Envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/">
                     <soap-env:Body>

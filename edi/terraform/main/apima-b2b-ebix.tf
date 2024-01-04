@@ -309,11 +309,6 @@ module "apima_b2b_ebix" {
             </choose>
             <choose>
                 <when condition="@(context.Request.Method == "POST")">
-                    <check-header name="Content-Type" failed-check-httpcode="415" failed-check-error-message="Content-Type must be either application/ebix, text/xml or application/xml" ignore-case="true">
-                      <value>application/ebix</value>
-                      <value>text/xml</value>
-                      <value>application/xml</value>
-                    </check-header>
                     <set-variable name="bodySize" value="@(context.Request.Headers["Content-Length"][0])" />
                     <choose>
                         <when condition="@(int.Parse(context.Variables.GetValueOrDefault<string>("bodySize"))<52428800)">
@@ -387,6 +382,7 @@ module "apima_b2b_ebix" {
             <set-variable name="RequestId" value="@(context.RequestId)" />
             <choose>
               <when condition="@(context.Response.StatusCode >= 500 && context.Response.StatusCode < 600)">
+                <set-status code="200" />
                 <set-body template="liquid">
                   <soap-env:Envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/">
                     <soap-env:Body>
