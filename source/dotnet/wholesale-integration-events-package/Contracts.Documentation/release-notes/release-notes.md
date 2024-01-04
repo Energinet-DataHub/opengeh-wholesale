@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 6.0.1
+
+No changes.
+
 ## Version 6.0.0
 
 - Use `Common.DecimalValue` for `AmountPerChargeResultProducedV1` and `MonthlyAmountPerChargeResultProducedV1`. This is a breaking change because the namespace has changes in these two events.
