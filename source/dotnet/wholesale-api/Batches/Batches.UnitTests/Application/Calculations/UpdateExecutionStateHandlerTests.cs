@@ -25,9 +25,9 @@ public class UpdateExecutionStateHandlerTests
 {
     [Theory]
     [InlineAutoMoqData]
-    public async Task UpdateExecutionStateAsync_ActivatesDomainServiceAndCommits(
+    public async Task UpdateExecutionStateAsync_ActivatesCalculationExecutionStateInfrastructureServiceAndCommits(
         [Frozen] Mock<IUnitOfWork> unitOfWorkMock,
-        [Frozen] Mock<ICalculationExecutionStateInfrastructureService> calculationDomainServiceMock,
+        [Frozen] Mock<ICalculationExecutionStateInfrastructureService> calculationExecutionStateInfrastructureServiceMock,
         UpdateCalculationExecutionStateHandler sut)
     {
         // Arrange & Act
@@ -35,6 +35,6 @@ public class UpdateExecutionStateHandlerTests
 
         // Assert
         unitOfWorkMock.Verify(x => x.CommitAsync());
-        calculationDomainServiceMock.Verify(x => x.UpdateExecutionStateAsync());
+        calculationExecutionStateInfrastructureServiceMock.Verify(x => x.UpdateExecutionStateAsync());
     }
 }

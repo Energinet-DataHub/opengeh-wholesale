@@ -22,7 +22,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi.IntegrationTests", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Core", "wholesale-api\Test.Core\Test.Core.csproj", "{EFA0CC43-7B22-4842-9AC0-E0FDA4F844BA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DomainTests", "domain-tests\DomainTests.csproj", "{10888CA5-5DAE-4581-AC08-3A55BA9991CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SubsystemTests", "subsystem-tests\SubsystemTests.csproj", "{10888CA5-5DAE-4581-AC08-3A55BA9991CD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebApi", "WebApi", "{B64D5473-F242-4D51-80AA-46DE0CF39C8A}"
 EndProject
