@@ -498,11 +498,12 @@ GRID_AREA_RESPONSIBLE = [
 ]
 # fmt: on
 
-def _get_grid_loss_responsible(
-    grid_areas: list[str], metering_point_periods_df: DataFrame
-) -> GridLossResponsible:
-    grid_loss_responsible_df = _get_all_grid_loss_responsible()
 
+def _get_grid_loss_responsible(
+    grid_areas: list[str],
+    metering_point_periods_df: DataFrame,
+    grid_loss_responsible_df: DataFrame,
+) -> GridLossResponsible:
     grid_loss_responsible_df = grid_loss_responsible_df.select(
         Colname.metering_point_id
     )
@@ -526,16 +527,24 @@ def _get_grid_loss_responsible(
     return GridLossResponsible(grid_loss_responsible_df)
 
 
-def get_grid_loss_responsible(grid_areas: list[str]) -> GridLossResponsible:
+def get_grid_loss_responsible(
+    grid_areas: list[str], metering_point_periods_df: DataFrame
+) -> GridLossResponsible:
     grid_loss_responsible_df = _get_all_grid_loss_responsible()
-    return _get_grid_loss_responsible(grid_areas, grid_loss_responsible_df)
+    return _get_grid_loss_responsible(
+        grid_areas, metering_point_periods_df, grid_loss_responsible_df
+    )
 
 
 def read_grid_loss_responsible(
-    grid_areas: list[str], table_reader: TableReader
+    grid_areas: list[str],
+    metering_point_periods_df: DataFrame,
+    table_reader: TableReader,
 ) -> GridLossResponsible:
     grid_loss_responsible_df = table_reader.read_grid_loss_responsible()
-    return _get_grid_loss_responsible(grid_areas, grid_loss_responsible_df)
+    return _get_grid_loss_responsible(
+        grid_areas, metering_point_periods_df, grid_loss_responsible_df
+    )
 
 
 def _throw_if_no_grid_loss_responsible(
