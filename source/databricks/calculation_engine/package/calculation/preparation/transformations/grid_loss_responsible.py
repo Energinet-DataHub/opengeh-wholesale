@@ -189,7 +189,7 @@ def get_grid_loss_responsible(
         col(Colname.to_date),
         col(Colname.metering_point_type),
         col(Colname.energy_supplier_id),
-    ).distinct()
+    )
 
     _throw_if_no_grid_loss_responsible(grid_areas, grid_loss_responsible_df)
 
