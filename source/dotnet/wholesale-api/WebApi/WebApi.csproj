@@ -23,6 +23,15 @@ limitations under the License.
     <UserSecretsId>opengeh-wholesale-webapi</UserSecretsId>
   </PropertyGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <PropertyGroup>
+      <PowerShellCommand Condition=" '$(OS)' == 'Windows_NT' " >powershell</PowerShellCommand>
+      <PowerShellCommand Condition=" '$(OS)' == 'Unix' " >pwsh</PowerShellCommand>
+      <PowerShellScript>$(MSBuildProjectDirectory)\..\..\Assert-LoggingPlaceholder.ps1</PowerShellScript>
+    </PropertyGroup>
+    <Exec Command="$(PowerShellCommand) -NonInteractive -ExecutionPolicy Unrestricted -File $(PowerShellScript)" />
+  </Target>
+
   <ItemGroup>
     <PackageReference Include="Asp.Versioning.Mvc" Version="7.1.0" />
     <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="7.1.0" />
