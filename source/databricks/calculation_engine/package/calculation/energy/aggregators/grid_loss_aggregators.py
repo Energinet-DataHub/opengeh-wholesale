@@ -176,6 +176,8 @@ def apply_grid_loss_adjustment(
 
     result_df = results.df
     grid_loss_result_df = grid_loss_result.df
+    # grid_loss_result_df's energy supplier is always null
+    grid_loss_result_df = grid_loss_result_df.drop(Colname.energy_supplier_id)
 
     grid_loss_responsible_df = grid_loss_responsible.df.where(
         f.col(Colname.metering_point_type) == metering_point_type.value
@@ -202,8 +204,7 @@ def apply_grid_loss_adjustment(
         "left",
     ).select(
         Colname.grid_area,
-        # grid_loss_result_df's energy supplier is always null
-        grid_loss_responsible_df[Colname.energy_supplier_id],
+        Colname.energy_supplier_id,
         Colname.time_window,
         Colname.sum_quantity,
         Colname.qualities,

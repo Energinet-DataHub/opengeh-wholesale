@@ -498,10 +498,20 @@ GRID_AREA_RESPONSIBLE = [
 ]
 # fmt: on
 
-
 def _get_grid_loss_responsible(
-    grid_areas: list[str], grid_loss_responsible_df: DataFrame
+    grid_areas: list[str], metering_point_periods_df: DataFrame
 ) -> GridLossResponsible:
+    grid_loss_responsible_df = _get_all_grid_loss_responsible()
+
+    grid_loss_responsible_df = grid_loss_responsible_df.select(
+        Colname.metering_point_id
+    )
+    grid_loss_responsible_df = grid_loss_responsible_df.join(
+        metering_point_periods_df,
+        Colname.metering_point_id,
+        "inner",
+    )
+
     grid_loss_responsible_df = grid_loss_responsible_df.select(
         col(Colname.metering_point_id),
         col(Colname.grid_area),
