@@ -26,13 +26,14 @@ from package.codelists import MeteringPointType
 from package.constants import Colname
 
 
-def test__get_grid_loss_responsible__returns_non_empty_list(
+def test__get_grid_loss_responsible__given_three_metering_point_period_dataframes_on_the_same_grid_area__then_only_return_the_once_in_the_grid_area_responsible_list(
     spark: SparkSession,
 ) -> None:
     # Arrange
     grid_areas = ["804"]
     metering_point_id_1 = "571313180480500149"
     metering_point_id_2 = "571313180400100657"
+    metering_point_id_3 = "571313180400100888"
     row1 = factory.create_row(
         metering_point_id=metering_point_id_1,
         grid_area="804",
@@ -43,7 +44,12 @@ def test__get_grid_loss_responsible__returns_non_empty_list(
         grid_area="804",
         metering_point_type=MeteringPointType.CONSUMPTION,
     )
-    mtp = factory.create(spark, data=[row1, row2])
+    row3 = factory.create_row(
+        metering_point_id=metering_point_id_3,
+        grid_area="804",
+        metering_point_type=MeteringPointType.CONSUMPTION,
+    )
+    metering_point_period = factory.create(spark, data=[row1, row2, row3])
 
     schema = t.StructType(
         [
@@ -63,54 +69,20 @@ def test__get_grid_loss_responsible__returns_non_empty_list(
         "package.calculation.preparation.transformations.grid_loss_responsible._get_all_grid_loss_responsible",
         return_value=grid_area_responsible,
     ):
-        grid_loss_responsible = get_grid_loss_responsible(grid_areas, mtp)
-
-    # Assert
-    assert grid_loss_responsible.df.count() > 0
-
-
-def test__get_grid_loss_responsible__returns_two_rows(
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    grid_areas = ["804"]
-    metering_point_id_1 = "571313180480500149"
-    metering_point_id_2 = "571313180400100657"
-    row1 = factory.create_row(
-        metering_point_id=metering_point_id_1,
-        grid_area="804",
-        metering_point_type=MeteringPointType.PRODUCTION,
-    )
-    row2 = factory.create_row(
-        metering_point_id=metering_point_id_2,
-        grid_area="804",
-        metering_point_type=MeteringPointType.CONSUMPTION,
-    )
-    mtp = factory.create(spark, data=[row1, row2])
-
-    schema = t.StructType(
-        [
-            t.StructField(Colname.metering_point_id, t.StringType(), False),
-        ]
-    )
-    grid_area_responsible = spark.createDataFrame(
-        [
-            (metering_point_id_1,),
-            (metering_point_id_1,),
-            (metering_point_id_2,),
-        ],
-        schema,
-    )
-
-    # Act
-    with patch(
-        "package.calculation.preparation.transformations.grid_loss_responsible._get_all_grid_loss_responsible",
-        return_value=grid_area_responsible,
-    ):
-        grid_loss_responsible = get_grid_loss_responsible(grid_areas, mtp)
+        grid_loss_responsible = get_grid_loss_responsible(
+            grid_areas, metering_point_period
+        )
 
     # Assert
     assert grid_loss_responsible.df.count() == 2
+    assert (
+        grid_loss_responsible.df.collect()[0][Colname.metering_point_id]
+        == metering_point_id_1
+    )
+    assert (
+        grid_loss_responsible.df.collect()[1][Colname.metering_point_id]
+        == metering_point_id_2
+    )
 
 
 @pytest.mark.acceptance_test
