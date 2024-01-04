@@ -13,10 +13,9 @@ resource "azurerm_static_site" "ui" {
 }
 
 resource "azurerm_static_site_custom_domain" "this" {
-  count = var.frontend_url != null ? 1 : 0
-
-  static_site_id = azurerm_static_site.ui.id
-  domain_name    = local.frontend_url
+  static_site_id  = azurerm_static_site.ui.id
+  domain_name     = local.frontend_url
+  validation_type = "cname-delegation"
 }
 
 module "kvs_stapp_ui_web_app_api_key" {
