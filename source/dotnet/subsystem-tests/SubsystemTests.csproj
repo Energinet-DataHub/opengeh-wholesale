@@ -19,10 +19,7 @@
       </SwaggerConfigurationIsNewer>
     </PropertyGroup>
 
-    <Exec WorkingDirectory="$(ProjectDir)"
-          EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development"
-          Command="$(NSwagExe_Net60) run Clients/Wholesale/V3/nswag.json /variables:Configuration=$(Configuration)"
-          Condition="'$(SwaggerConfigurationIsNewer)' == 'true'" />
+    <Exec WorkingDirectory="$(ProjectDir)" EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" Command="$(NSwagExe_Net60) run Clients/Wholesale/V3/nswag.json /variables:Configuration=$(Configuration)" Condition="'$(SwaggerConfigurationIsNewer)' == 'true'" />
   </Target>
 
   <ItemGroup>
