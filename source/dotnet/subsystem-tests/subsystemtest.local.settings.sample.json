@@ -1,0 +1,32 @@
+﻿{
+  // Settings can be overridden per environment in Wholesale CD workflows.
+
+  // Use this on developer machine to toggle tests while developing them.
+  // Should be set 'false' using an environment variable on the build agent, to run these after deployment.
+  "SUBSYSTEMFACT_SKIP": true,
+
+  // B2C information that allows us to retrieve an access token from tests:
+  // => Key vault containing relevant B2C information (url's, usernames, secrets etc.)
+  "AZURE_B2CSECRETS_KEYVAULT_URL": "<B2C information key vault url>",
+  // => Environment part of key vault secret name, as some exists per environment.
+  "ENVIRONMENT_SHORT": "<short name of environment; e.g. 'u'>",
+  "ENVIRONMENT_INSTANCE": "<instance number of environment; e.g. '001'>",
+  // => User identification part of key vault secret name, as some has multiple settings.
+  "USER": "<user identification part of user related key vault secrets; e.g. 'dh' for 'B2C-u001-dh-username'>'",
+
+  // Address of endpoint that can get valid internal token with correct permissions: e.g. https://app-webapi-markpart-u-001.azurewebsites.net
+  "TOKEN_BASEADDRESS": "<Market Participant Web API base address in live environment>",
+
+  // Shared Key Vault name, used to retrieve informations to use:
+  //  - Service Bus
+  //  - Databricks workspace
+  "SHARED_KEYVAULT_NAME": "<key vault name>",
+
+  // Internal Key Vault name, used to retrieve informations to use:
+  //  - Databricks SQL Warehouse
+  "INTERNAL_KEYVAULT_NAME": "<key vault name>",
+
+  // Subsystem specific variables used in tests:
+  // => Web API settings
+  "WEBAPI_BASEADDRESS": "<Wholesale Web API base address in live environment>"
+}
