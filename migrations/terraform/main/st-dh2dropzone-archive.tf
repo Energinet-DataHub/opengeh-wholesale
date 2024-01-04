@@ -11,7 +11,6 @@ module "st_dh2dropzone_archive" {
   account_tier                    = "Standard"
   access_tier                     = "Cool"
   private_endpoint_subnet_id      = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
-  private_dns_resource_group_name = azurerm_resource_group.this.name
   ip_rules                        = local.ip_restrictions_as_string
   prevent_deletion                = true
 }
