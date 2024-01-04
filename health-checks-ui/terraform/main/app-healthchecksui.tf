@@ -66,6 +66,7 @@ locals {
     "HealthChecksUI__HealthChecks__023__Uri"  = "https://func-grid-loss-simulator-dh2brdg-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/ready"
     "HealthChecksUI__HealthChecks__024__Name" = "shared-resources:::func-healthcheck"
     "HealthChecksUI__HealthChecks__024__Uri"  = "https://func-healthchecks-shres-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/ready"
+    # Note: 025 is taken by Sauron in test_002 and prod_001 overrides
 
     # Live - prefix with 2xx
     "HealthChecksUI__HealthChecks__200__Name" = "health-checks-ui:::Health Check UI - live"
@@ -108,6 +109,7 @@ locals {
     "HealthChecksUI__HealthChecks__223__Uri"  = "https://func-grid-loss-simulator-dh2brdg-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
     "HealthChecksUI__HealthChecks__224__Name" = "shared-resources:::func-healthcheck - live"
     "HealthChecksUI__HealthChecks__224__Uri"  = "https://func-healthchecks-shres-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
+    # Note: 225 is taken by Sauron in test_002 and prod_001 overrides
 
     # Polling Interval
     "HealthChecksUI__EvaluationTimeinSeconds" = 60

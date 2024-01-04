@@ -12,6 +12,8 @@ module "app_health_checks_ui" {
     "HealthChecksUI__HealthChecks__018__Uri"  = "https://func-converter-esettdepr-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/ready"
     "HealthChecksUI__HealthChecks__018__Name" = "esett-deprecated:::EnrichmentIngestor Function"
     "HealthChecksUI__HealthChecks__018__Uri"  = "https://func-enrichmentingestor-esettdepr-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/ready"
+    "HealthChecksUI__HealthChecks__025__Name" = "sauron:::func-githubapi"
+    "HealthChecksUI__HealthChecks__025__Uri"  = "https://func-githubapi-sauron-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/ready"
     # Live - prefix with 2xx
     "HealthChecksUI__HealthChecks__214__Name" = "esett-deprecated:::Importer Function - live"
     "HealthChecksUI__HealthChecks__214__Uri"  = "https://func-dh2importer-esettdepr-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
@@ -25,5 +27,7 @@ module "app_health_checks_ui" {
     "HealthChecksUI__HealthChecks__218__Uri"  = "https://func-converter-esettdepr-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
     "HealthChecksUI__HealthChecks__218__Name" = "esett-deprecated:::EnrichmentIngestor Function - live"
     "HealthChecksUI__HealthChecks__218__Uri"  = "https://func-enrichmentingestor-esettdepr-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
+    "HealthChecksUI__HealthChecks__025__Name" = "sauron:::func-githubapi - live"
+    "HealthChecksUI__HealthChecks__025__Uri"  = "https://func-githubapi-sauron-${lower(var.environment_short)}-we-${lower(var.environment_instance)}.azurewebsites.net/api/monitor/live"
   })
 }
