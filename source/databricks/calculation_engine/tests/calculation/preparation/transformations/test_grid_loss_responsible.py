@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from datetime import datetime
 
 import pytest
 from pyspark.sql import SparkSession
@@ -77,6 +78,55 @@ def test__get_grid_loss_responsible__given_three_metering_point_period_dataframe
         grid_loss_responsible.df.collect()[1][Colname.metering_point_id]
         == metering_point_id_2
     )
+
+
+def test__get_grid_loss_responsible__given_metering_point_period_with_same_id_int_different_time_window__then_return_expected_amount(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    grid_areas = ["804"]
+    metering_point_id_1 = "571313180480500149"
+    metering_point_id_2 = "571313180400100657"
+    row1 = factory.create_row(
+        metering_point_id=metering_point_id_1,
+        grid_area="804",
+        metering_point_type=MeteringPointType.PRODUCTION,
+    )
+    row2 = factory.create_row(
+        metering_point_id=metering_point_id_2,
+        grid_area="804",
+        metering_point_type=MeteringPointType.CONSUMPTION,
+        from_date=datetime(2020, 1, 1, 0, 0),
+        to_date=datetime(2020, 1, 2, 0, 0),
+    )
+    row3 = factory.create_row(
+        metering_point_id=metering_point_id_2,
+        grid_area="804",
+        metering_point_type=MeteringPointType.CONSUMPTION,
+        from_date=datetime(2020, 1, 2, 0, 0),
+        to_date=datetime(2020, 1, 3, 0, 0),
+    )
+    metering_point_period = factory.create(spark, data=[row1, row2, row3])
+
+    grid_area_responsible = spark.createDataFrame(
+        [
+            (metering_point_id_1,),
+            (metering_point_id_2,),
+        ],
+        grid_area_responsible_schema,
+    )
+
+    # Act
+    with patch(
+        "package.calculation.preparation.transformations.grid_loss_responsible._get_all_grid_loss_responsible",
+        return_value=grid_area_responsible,
+    ):
+        grid_loss_responsible = get_grid_loss_responsible(
+            grid_areas, metering_point_period
+        )
+
+    # Assert
+    assert grid_loss_responsible.df.count() == 3
 
 
 @pytest.mark.acceptance_test
