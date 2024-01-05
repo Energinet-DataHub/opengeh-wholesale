@@ -15,7 +15,8 @@ module "func_receiver" {
   dotnet_framework_version                 = "v7.0"
   use_dotnet_isolated_runtime              = true
   health_check_path                        = "/api/monitor/ready"
-  ip_restriction_allow_ip_range            = var.hosted_deployagent_public_ip_range
+  ip_restrictions                          = var.ip_restrictions
+  scm_ip_restrictions                      = var.ip_restrictions
   client_certificate_mode                  = "Optional"
 
   app_settings = {

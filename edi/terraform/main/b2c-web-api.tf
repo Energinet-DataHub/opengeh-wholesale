@@ -15,7 +15,8 @@ module "b2c_web_api" {
   health_check_path                        = "/monitor/ready"
   health_check_alert_action_group_id       = data.azurerm_key_vault_secret.primary_action_group_id.value
   health_check_alert_enabled               = true
-  ip_restriction_allow_ip_range            = var.hosted_deployagent_public_ip_range
+  ip_restrictions                          = var.ip_restrictions
+  scm_ip_restrictions                      = var.ip_restrictions
 
   app_settings = {
     EXTERNAL_OPEN_ID_URL                                = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=frontend-open-id-url)"

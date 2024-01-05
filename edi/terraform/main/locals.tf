@@ -7,4 +7,7 @@ locals {
   # Integration event subscription details
   INTEGRATION_EVENTS_TOPIC_NAME        = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-shres-integrationevent-received-name)"
   INTEGRATION_EVENTS_SUBSCRIPTION_NAME = "integration-event"
+
+  # IP Whitelist
+  ip_restrictions_as_string = join(",", [for rule in var.ip_restrictions : "${rule.ip_address}"])
 }
