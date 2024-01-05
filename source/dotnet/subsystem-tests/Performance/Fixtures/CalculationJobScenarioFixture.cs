@@ -16,15 +16,15 @@ using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.Batches.Application.Model;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
-using Energinet.DataHub.Wholesale.SubsystemTests.Features.Databricks.States;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Extensions;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
+using Energinet.DataHub.Wholesale.SubsystemTests.Performance.States;
 using Microsoft.Azure.Databricks.Client;
 using Microsoft.Azure.Databricks.Client.Models;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Databricks.Fixtures
+namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance.Fixtures
 {
     public sealed class CalculationJobScenarioFixture : LazyFixtureBase
     {
@@ -49,9 +49,6 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Databricks.Fixture
             var calculatorJobId = await DatabricksClient.GetCalculatorJobIdAsync();
             var runParameters = new DatabricksCalculationParametersFactory()
                 .CreateParameters(calculationJobInput);
-
-            runParameters.PythonParams.Add("--metering_point_periods_table_name=metering_point_periods_performance_test");
-            runParameters.PythonParams.Add("--time_series_points_table_name=time_series_points_performance_test");
 
             var runId = await DatabricksClient
                 .Jobs
