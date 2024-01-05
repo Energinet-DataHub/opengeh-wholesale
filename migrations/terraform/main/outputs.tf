@@ -16,6 +16,18 @@ output "st_data_lake_name" {
   sensitive   = true
 }
 
+output "st_migrations_data_lake_name" {
+  description = "Migrations storage account data lake name."
+  value       = module.st_migrations.name
+  sensitive   = true
+}
+
+output "st_dh2_data_lake_name" {
+  description = "Datahub 2 storage account data lake name."
+  value       = module.st_dh2data.name
+  sensitive   = true
+}
+
 output "dbw_workspace_sql_endpoint_id" {
   description = "Databricks workspace sql endpoint id."
   value       = resource.databricks_sql_endpoint.migration_sql_endpoint.id
