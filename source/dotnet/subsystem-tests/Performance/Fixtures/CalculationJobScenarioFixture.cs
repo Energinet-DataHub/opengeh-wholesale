@@ -16,15 +16,15 @@ using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.Batches.Application.Model;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Batches.Infrastructure.Calculations;
-using Energinet.DataHub.Wholesale.SubsystemTests.Features.Databricks.States;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Extensions;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
+using Energinet.DataHub.Wholesale.SubsystemTests.Performance.States;
 using Microsoft.Azure.Databricks.Client;
 using Microsoft.Azure.Databricks.Client.Models;
 using Xunit.Abstractions;
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Databricks.Fixtures
+namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance.Fixtures
 {
     public sealed class CalculationJobScenarioFixture : LazyFixtureBase
     {
