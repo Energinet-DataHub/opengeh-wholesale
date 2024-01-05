@@ -16,7 +16,6 @@ from datetime import datetime
 from unittest.mock import patch
 
 import pyspark.sql.functions as F
-import pyspark.sql.types as t
 import pytest
 from azure.identity import ClientSecretCredential
 from pyspark.sql import SparkSession, DataFrame
@@ -28,11 +27,7 @@ from package.calculation.preparation import PreparedDataReader
 from package.calculation.preparation.transformations import grid_loss_responsible
 from package.calculation_input import TableReader
 from package.codelists.process_type import ProcessType
-from package.constants import (
-    EnergyResultColumnNames,
-    WholesaleResultColumnNames,
-    Colname,
-)
+from package.constants import EnergyResultColumnNames, WholesaleResultColumnNames
 from package.infrastructure import paths
 from . import configuration as C
 
@@ -80,15 +75,10 @@ def grid_loss_responsible_test_data(
     spark: SparkSession,
     test_files_folder_path: str,
 ) -> DataFrame:
-    schema = t.StructType(
-        [
-            t.StructField(Colname.metering_point_id, t.StringType(), False),
-        ]
-    )
     return spark.read.csv(
         f"{test_files_folder_path}/GridLossResponsible.csv",
         header=True,
-        schema=schema,
+        schema=grid_loss_responsible.grid_area_responsible_schema,
     )
 
 
