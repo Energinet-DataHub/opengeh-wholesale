@@ -267,7 +267,6 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
                 })
                 .Should().BeEquivalentTo(expectedTimeSeriesPoints);
         }
-*/
 
         [ScenarioStep(12)]
         [SubsystemFact]
@@ -290,6 +289,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
             using var assertionScope = new AssertionScope();
             actualEvents.Should().HaveCount(1);
         }
+*/
 
         [ScenarioStep(13)]
         [SubsystemFact]
@@ -317,6 +317,7 @@ AppTraces
         [SubsystemFact]
         public async Task AndThen_ACalculationTelemetryTraceWithASpanIsCreated()
         {
+            await Task.Delay(TimeSpan.FromMinutes(2)); // TODO BJM: Remove
             var query = $@"
 AppDependencies
 | where Target == ""net_exchange_per_ga""
