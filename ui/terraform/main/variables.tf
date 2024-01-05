@@ -57,11 +57,17 @@ variable "frontend_url" {
 }
 
 variable "ip_restrictions" {
-  type        = list(object({
-    ip_address  = string
-    name        = string
-    priority    = optional(number)
+  type = list(object({
+    ip_address = string
+    name       = string
+    priority   = optional(number)
   }))
   description = "A list of IP restrictions defining allowed access to domain services. Each entry should include an 'ip_address' representing the allowed IP, a 'name' for identification, and an optional 'priority' for rule order. Defaults to `[]`."
   default     = []
+}
+
+variable "txt_value" {
+  type        = string
+  description = "The value of the TXT record used for production"
+  default     = null
 }
