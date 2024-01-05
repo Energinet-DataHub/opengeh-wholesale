@@ -15,7 +15,7 @@
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Configuration;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Extensions;
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Databricks.Fixtures
+namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance.Fixtures
 {
     /// <summary>
     /// Responsible for retrieving settings necessary for performing performance tests of 'CalculationJob' in Databricks.

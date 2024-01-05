@@ -14,15 +14,15 @@
 
 using Energinet.DataHub.Wholesale.Batches.Application.Model;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
-using Energinet.DataHub.Wholesale.SubsystemTests.Features.Databricks.Fixtures;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
+using Energinet.DataHub.Wholesale.SubsystemTests.Performance.Fixtures;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using NodaTime;
 using Xunit;
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Databricks
+namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance
 {
     [TestCaseOrderer(
         ordererTypeName: "Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Orderers.ScenarioStepOrderer",
