@@ -16,7 +16,7 @@ using System.Diagnostics.CodeAnalysis;
 using Energinet.DataHub.Wholesale.Batches.Application.Model.Calculations;
 using Microsoft.Azure.Databricks.Client.Models;
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Databricks.States
+namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance.States
 {
     public class CalculationJobScenarioState
     {
