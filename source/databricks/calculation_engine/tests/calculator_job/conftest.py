@@ -23,9 +23,7 @@ from pyspark.sql import SparkSession, DataFrame
 import package.calculation as calculation
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.preparation import PreparedDataReader
-from package.calculation.preparation.grid_loss_responsible import (
-    grid_loss_responsible_schema,
-)
+
 from package.calculation.preparation.transformations import grid_loss_responsible
 from package.calculation_input import TableReader
 from package.codelists.process_type import ProcessType
@@ -80,7 +78,7 @@ def grid_loss_responsible_test_data(
     return spark.read.csv(
         f"{test_files_folder_path}/GridLossResponsible.csv",
         header=True,
-        schema=grid_loss_responsible_schema,
+        schema=grid_loss_responsible.grid_area_responsible_schema,
     )
 
 
