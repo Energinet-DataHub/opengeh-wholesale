@@ -48,6 +48,10 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
             ServiceBusClient = new ServiceBusClient(Configuration.ServiceBus.ConnectionString);
             ScenarioState = new CalculationScenarioState();
             LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
+
+            // TODO: Hack for early feedback
+            DiagnosticMessageSink.WriteDiagnosticMessage(
+                $"Log analytics workspace id: {Configuration.LogAnalyticsWorkspaceId}");
         }
 
         public CalculationScenarioState ScenarioState { get; }
@@ -143,6 +147,8 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
 
         public async Task<Response<LogsQueryResult>> QueryLogAnalyticsAsync(string query, QueryTimeRange queryTimeRange)
         {
+            DiagnosticMessageSink.WriteDiagnosticMessage(
+                $"Log analytics workspace id: {Configuration.LogAnalyticsWorkspaceId}");
             return await LogsQueryClient.QueryWorkspaceAsync(Configuration.LogAnalyticsWorkspaceId, query, queryTimeRange);
         }
 
