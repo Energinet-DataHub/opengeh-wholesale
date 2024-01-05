@@ -14,9 +14,12 @@
 
 using System.Diagnostics;
 using System.Globalization;
+using Azure;
 using Azure.Identity;
 using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
+using Azure.Monitor.Query;
+using Azure.Monitor.Query.Models;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
@@ -44,6 +47,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
             ServiceBusAdministrationClient = new ServiceBusAdministrationClient(Configuration.ServiceBus.FullyQualifiedNamespace, new DefaultAzureCredential());
             ServiceBusClient = new ServiceBusClient(Configuration.ServiceBus.ConnectionString);
             ScenarioState = new CalculationScenarioState();
+            LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
         }
 
         public CalculationScenarioState ScenarioState { get; }
@@ -63,6 +67,8 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
         private ServiceBusAdministrationClient ServiceBusAdministrationClient { get; }
 
         private ServiceBusClient ServiceBusClient { get; }
+
+        private LogsQueryClient LogsQueryClient { get; }
 
         public async Task<Guid> StartCalculationAsync(BatchRequestDto calculationInput)
         {
@@ -133,6 +139,11 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtu
                 """);
 
             return collectedIntegrationEvents;
+        }
+
+        public async Task<Response<LogsQueryResult>> QueryLogAnalyticsAsync(string query, QueryTimeRange queryTimeRange)
+        {
+            return await LogsQueryClient.QueryWorkspaceAsync(Configuration.LogAnalyticsWorkspaceId, query, queryTimeRange);
         }
 
         /// <summary>
