@@ -50,6 +50,9 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Databricks.Fixture
             var runParameters = new DatabricksCalculationParametersFactory()
                 .CreateParameters(calculationJobInput);
 
+            runParameters.PythonParams.Add("--metering_point_periods_table_name=metering_point_periods_performance_test");
+            runParameters.PythonParams.Add("--time_series_points_table_name=time_series_points_performance_test");
+
             var runId = await DatabricksClient
                 .Jobs
                 .RunNow(calculatorJobId, runParameters);
