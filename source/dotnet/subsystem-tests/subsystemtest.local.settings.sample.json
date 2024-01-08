@@ -8,9 +8,9 @@
   // B2C information that allows us to retrieve an access token from tests:
   "DH_E2E_USERNAME": "<user name>",
   "DH_E2E_PASSWORD": "<user password>",
-  "B2C_ROPC_AUTH_URL": "<url for ROPC flow>",
-  "B2C_FRONTEND_APP_ID": "<frontend app id>",
-  "B2C_BACKEND_BFF_APP_SCOPE": "<backend app scope>",
+  "B2C_ROPC_AUTH_URL": "<The URL used for ROPC flow>",
+  "B2C_FRONTEND_APP_ID": "<The application id of the frontend app>",
+  "B2C_BACKEND_BFF_APP_SCOPE": "<The scope of the backend bff app>",
 
   // Address of endpoint that can get valid internal token with correct permissions
   "TOKEN_BASEADDRESS": "<Market Participant Web API base address in live environment>",
