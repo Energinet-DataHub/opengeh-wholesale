@@ -1212,17 +1212,6 @@
                       {
                         "aggregationType": 7,
                         "metricVisualization": {
-                          "displayName": "Http 404"
-                        },
-                        "name": "Http404",
-                        "namespace": "microsoft.web/sites",
-                        "resourceMetadata": {
-                          "id": "${timeseriesapi_id}"
-                        }
-                      },
-                      {
-                        "aggregationType": 7,
-                        "metricVisualization": {
                           "displayName": "Http 406"
                         },
                         "name": "Http406",
@@ -1302,17 +1291,6 @@
                           "displayName": "Http 403"
                         },
                         "name": "Http403",
-                        "namespace": "microsoft.web/sites",
-                        "resourceMetadata": {
-                          "id": "${timeseriesapi_id}"
-                        }
-                      },
-                      {
-                        "aggregationType": 7,
-                        "metricVisualization": {
-                          "displayName": "Http 404"
-                        },
-                        "name": "Http404",
                         "namespace": "microsoft.web/sites",
                         "resourceMetadata": {
                           "id": "${timeseriesapi_id}"
