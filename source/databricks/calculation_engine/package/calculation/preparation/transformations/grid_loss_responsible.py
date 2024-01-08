@@ -43,7 +43,7 @@ def _utc(date: str | None) -> datetime.datetime | None:
 
 # fmt: off
 GRID_AREA_RESPONSIBLE = [
-    # u-001 and t-001
+    # dev-001 and test-001 (Manual test)
     ('571313180480500149',),
     ('570715000000682292',),
     ('571313154313676325',),
@@ -57,7 +57,7 @@ GRID_AREA_RESPONSIBLE = [
     ('571313153308031507',),
     ('571313158410300060',),
 
-    # test-001
+    # test-001 (Performance test)
     ("742819000000000000",),
     ("390504100000000000",),
     ("316656400000000000",),
