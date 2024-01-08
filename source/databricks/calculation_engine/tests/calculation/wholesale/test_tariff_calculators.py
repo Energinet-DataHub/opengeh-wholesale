@@ -19,7 +19,7 @@ import uuid
 from pyspark import Row
 from pyspark.sql import SparkSession
 import pytest
-from typing import Any, Union
+from typing import Any
 
 from package.calculation.wholesale.schemas.tariffs_schema import tariff_schema
 from package.codelists import (
@@ -56,7 +56,7 @@ DEFAULT_PERIOD_START_DATETIME = datetime(2019, 12, 31, 23)
 
 
 def _create_tariff_hour_row(
-    charge_key: Union[str, None] = None,
+    charge_key: str | None = None,
     charge_code: str = DEFAULT_CHARGE_CODE,
     charge_owner: str = DEFAULT_CHARGE_OWNER,
     charge_time: datetime = DEFAULT_CHARGE_TIME_HOUR_0,
@@ -64,7 +64,7 @@ def _create_tariff_hour_row(
     energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
     metering_point_id: str = DEFAULT_METERING_POINT_ID,
     metering_point_type: MeteringPointType = DEFAULT_METERING_POINT_TYPE,
-    settlement_method: Union[SettlementMethod, None] = DEFAULT_SETTLEMENT_METHOD,
+    settlement_method: SettlementMethod | None = DEFAULT_SETTLEMENT_METHOD,
     grid_area: str = DEFAULT_GRID_AREA,
     quantity: Decimal = DEFAULT_QUANTITY,
     quality: ChargeQuality = DEFAULT_QUALITY,
