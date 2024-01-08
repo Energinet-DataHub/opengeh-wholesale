@@ -174,16 +174,6 @@ variable "ad_group_directory_reader" {
   default     = ""
 }
 
-variable "github_username" {
-  type        = string
-  description = "Username used to access Github from Databricks jobs."
-}
-
-variable "github_personal_access_token" {
-  type        = string
-  description = "Personal access token for Github access"
-}
-
 variable "cert_b2b_datahub3_password" {
   type        = string
   description = "Password for the B2C Datahub 3 certificate."

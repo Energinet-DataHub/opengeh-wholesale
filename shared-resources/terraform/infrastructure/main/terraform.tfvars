@@ -12,4 +12,3 @@ ip_restrictions=[{
   ip_address = "20.120.143.248/29"
   name = "github_largerunner"
 }]
-github_username="dh-system-account"
