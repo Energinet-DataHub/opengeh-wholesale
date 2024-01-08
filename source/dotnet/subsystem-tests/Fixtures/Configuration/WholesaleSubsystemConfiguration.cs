@@ -34,7 +34,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Configuration
             var secretsConfiguration = Root.BuildSecretsConfiguration();
             ServiceBus = ServiceBusConfiguration.CreateFromConfiguration(secretsConfiguration);
             DatabricksWorkspace = DatabricksWorkspaceConfiguration.CreateFromConfiguration(secretsConfiguration);
-            LogAnalyticsWorkspaceId = secretsConfiguration.GetValue<string>("log-shared-id")!;
+            LogAnalyticsWorkspaceId = secretsConfiguration.GetValue<string>("log-shared-workspace-id")!;
         }
 
         /// <summary>
