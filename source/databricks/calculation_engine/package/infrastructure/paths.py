@@ -35,6 +35,7 @@ TEST = ""
 
 # Paths
 WHOLESALE_CONTAINER_NAME = "wholesale"
+INPUT_FOLDER = "calculation_input"
 OUTPUT_FOLDER = "calculation-output"
 BASIS_DATA_FOLDER = "basis_data"
 
@@ -47,8 +48,12 @@ def get_container_root_path(storage_account_name: str) -> str:
     return f"abfss://{WHOLESALE_CONTAINER_NAME}@{storage_account_name}.dfs.core.windows.net/"
 
 
-def get_calculation_input_path(storage_account_name: str) -> str:
-    return f"{get_container_root_path(storage_account_name)}calculation_input/"
+def get_calculation_input_path(
+    storage_account_name: str, folder_name: str | None
+) -> str:
+    return (
+        f"{get_container_root_path(storage_account_name)}{folder_name or INPUT_FOLDER}/"
+    )
 
 
 def get_basis_data_root_path(basis_data_type: BasisDataType, batch_id: str) -> str:
