@@ -8,6 +8,7 @@ module "appi_shared" {
   resource_group_name        = azurerm_resource_group.this.name
   location                   = azurerm_resource_group.this.location
   log_analytics_workspace_id = module.log_workspace_shared.id
+  storage_account_sourcemaps = module.st_source_maps.name
 }
 
 module "kvs_appi_shared_connection_string" {

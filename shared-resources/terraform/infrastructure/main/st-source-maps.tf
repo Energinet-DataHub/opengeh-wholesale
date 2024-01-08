@@ -10,7 +10,7 @@ module "st_source_maps" {
   account_replication_type   = "LRS"
   access_tier                = "Hot"
   account_tier               = "Standard"
-  private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
+  private_endpoint_subnet_id = data.azurerm_subnet.snet_private_endpoints.id
   ip_rules                   = local.ip_restrictions_as_string
 
   containers = [
@@ -20,7 +20,7 @@ module "st_source_maps" {
   ]
   role_assignments = [
     {
-      principal_id         = var.azure_ad_security_group_id
+      principal_id         = var.developers_security_group_object_id
       role_definition_name = "Storage Blob Data Reader"
     },
     {
@@ -35,5 +35,5 @@ module "kvs_st_source_maps_name" {
 
   name         = "st-sourcemaps-name"
   value        = module.st_source_maps.name
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+  key_vault_id = module.kv_shared.id
 }
