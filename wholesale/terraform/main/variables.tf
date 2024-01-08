@@ -66,6 +66,12 @@ variable "databricks_private_endpoints_subnet_address_prefix" {
   description = "The address prefix of the private endpoints subnet used by Databricks."
 }
 
+variable "calculation_input_folder" {
+  type        = string
+  description = "Name of input folder used by calculations running in Spark in Databricks."
+  default     = "calculation_input"
+}
+
 variable "github_username" {
   type        = string
   description = "Username used to access Github from Databricks jobs."
@@ -89,10 +95,10 @@ variable "pim_sql_writer_ad_group_name" {
 }
 
 variable "ip_restrictions" {
-  type        = list(object({
-    ip_address  = string
-    name        = string
-    priority    = optional(number)
+  type = list(object({
+    ip_address = string
+    name       = string
+    priority   = optional(number)
   }))
   description = "A list of IP restrictions defining allowed access to domain services. Each entry should include an 'ip_address' representing the allowed IP, a 'name' for identification, and an optional 'priority' for rule order. Defaults to `[]`."
   default     = []
