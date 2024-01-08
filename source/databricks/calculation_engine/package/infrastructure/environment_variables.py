@@ -23,6 +23,7 @@ from typing import Any
 class EnvironmentVariable(Enum):
     TIME_ZONE = "TIME_ZONE"
     DATA_STORAGE_ACCOUNT_NAME = "DATA_STORAGE_ACCOUNT_NAME"
+    CALCULATION_INPUT_FOLDER_NAME = "CALCULATION_INPUT_FOLDER_NAME"
     TENANT_ID = "TENANT_ID"
     SPN_APP_ID = "SPN_APP_ID"
     SPN_APP_SECRET = "SPN_APP_SECRET"
@@ -52,6 +53,10 @@ def get_storage_account_name() -> str:
 
 def get_time_zone() -> str:
     return get_env_variable_or_throw(EnvironmentVariable.TIME_ZONE)
+
+
+def get_calculation_input_folder_name() -> str:
+    return get_env_variable_or_throw(EnvironmentVariable.CALCULATION_INPUT_FOLDER_NAME)
 
 
 def get_env_variables_or_throw(environment_variable: list[EnvironmentVariable]) -> dict:
