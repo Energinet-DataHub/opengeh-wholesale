@@ -52,7 +52,7 @@ def job_environment_variables() -> dict:
     return {
         EnvironmentVariable.TIME_ZONE.value: "Europe/Copenhagen",
         EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME.value: "some_storage_account_name",
-        EnvironmentVariable.CALCULATION_INPUT_FOLDER_NAME: "calculation_input",
+        EnvironmentVariable.CALCULATION_INPUT_FOLDER_NAME.value: "calculation_input",
         EnvironmentVariable.TENANT_ID.value: "550e8400-e29b-41d4-a716-446655440000",
         EnvironmentVariable.SPN_APP_ID.value: "some_spn_app_id",
         EnvironmentVariable.SPN_APP_SECRET.value: "some_spn_app_secret",
@@ -185,12 +185,12 @@ class TestWhenMissingEnvVariables:
         # Arrange
         with patch("sys.argv", sys_argv_from_contract):
             for excluded_env_var in job_environment_variables.keys():
-                env_variabes_with_one_missing = {
+                env_variables_with_one_missing = {
                     key: value
                     for key, value in job_environment_variables.items()
                     if key != excluded_env_var
                 }
-                with patch.dict("os.environ", env_variabes_with_one_missing):
+                with patch.dict("os.environ", env_variables_with_one_missing):
                     with pytest.raises(SystemExit) as error:
                         # Act
                         get_calculator_args()
