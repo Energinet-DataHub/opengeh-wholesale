@@ -25,3 +25,11 @@ module "kvs_log_shared_id" {
   value        = module.log_workspace_shared.id
   key_vault_id = module.kv_shared.id
 }
+
+module "kvs_log_shared_workspace_id" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=v13"
+
+  name         = "log-shared-workspace-id"
+  value        = module.log_workspace_shared.workspace_id
+  key_vault_id = module.kv_shared.id
+}
