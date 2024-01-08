@@ -68,8 +68,8 @@ def get_env_variables_or_throw(environment_variable: list[EnvironmentVariable]) 
 
 
 def get_env_variable_or_throw(variable: EnvironmentVariable) -> Any:
-    env_variable = os.getenv(variable.value)
+    env_variable = os.getenv(variable.name)
     if env_variable is None:
-        raise ValueError(f"Environment variable not found: {variable.value}")
+        raise ValueError(f"Environment variable not found: {variable.name}")
 
     return env_variable

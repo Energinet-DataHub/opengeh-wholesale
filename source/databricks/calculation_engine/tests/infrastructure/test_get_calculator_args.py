@@ -50,12 +50,12 @@ def sys_argv_from_contract(contract_parameters) -> list[str]:
 @pytest.fixture(scope="session")
 def job_environment_variables() -> dict:
     return {
-        EnvironmentVariable.TIME_ZONE.value: "Europe/Copenhagen",
-        EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME.value: "some_storage_account_name",
-        EnvironmentVariable.CALCULATION_INPUT_FOLDER_NAME.value: "calculation_input",
-        EnvironmentVariable.TENANT_ID.value: "550e8400-e29b-41d4-a716-446655440000",
-        EnvironmentVariable.SPN_APP_ID.value: "some_spn_app_id",
-        EnvironmentVariable.SPN_APP_SECRET.value: "some_spn_app_secret",
+        EnvironmentVariable.TIME_ZONE.name: "Europe/Copenhagen",
+        EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME.name: "some_storage_account_name",
+        EnvironmentVariable.CALCULATION_INPUT_FOLDER_NAME.name: "calculation_input",
+        EnvironmentVariable.TENANT_ID.name: "550e8400-e29b-41d4-a716-446655440000",
+        EnvironmentVariable.SPN_APP_ID.name: "some_spn_app_id",
+        EnvironmentVariable.SPN_APP_SECRET.name: "some_spn_app_secret",
     }
 
 
@@ -117,7 +117,10 @@ class TestWhenInvokedWithValidParameters:
             == "abfss://wholesale@some_storage_account_name.dfs.core.windows.net/"
         )
         assert actual.time_zone == "Europe/Copenhagen"
-        assert actual.calculation_input_path == "calculation_input"
+        assert (
+            actual.calculation_input_path
+            == "abfss://wholesale@some_storage_account_name.dfs.core.windows.net/calculation_input/"
+        )
 
     def test_parses_optional_time_series_points_table_name(
         self,
