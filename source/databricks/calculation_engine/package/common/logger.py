@@ -13,27 +13,27 @@
 # limitations under the License.
 
 import logging
-from typing import Any, Union
+from typing import Any
 
 import package.infrastructure.logging_configuration as config
 
 
 class Logger:
-    def __init__(self, name: str, extras: Union[dict[str, Any], None] = None) -> None:
+    def __init__(self, name: str, extras: dict[str, Any] | None = None) -> None:
         self._logger = logging.getLogger(name)
         self._logger.setLevel(config.DEFAULT_LOG_LEVEL)
         self._extras = (extras or {}) | config.get_extras()
         # According to DataHub 3.0 guide book
         self._extras["CategoryName"] = "Energinet.DataHub." + name
 
-    def debug(self, message: str, extras: Union[dict[str, Any], None] = None) -> None:
+    def debug(self, message: str, extras: dict[str, Any] | None = None) -> None:
         extras = (extras or {}) | self._extras
         self._logger.debug(message, extra=extras)
 
-    def info(self, message: str, extras: Union[dict[str, Any], None] = None) -> None:
+    def info(self, message: str, extras: dict[str, Any] | None = None) -> None:
         extras = (extras or {}) | self._extras
         self._logger.info(message, extra=extras)
 
-    def warning(self, message: str, extras: Union[dict[str, Any], None] = None) -> None:
+    def warning(self, message: str, extras: dict[str, Any] | None = None) -> None:
         extras = (extras or {}) | self._extras
         self._logger.warning(message, extra=extras)

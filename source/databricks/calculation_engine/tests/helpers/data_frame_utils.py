@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Union
-
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
 
@@ -21,7 +19,7 @@ import pyspark.sql.functions as f
 def set_column(
     df: DataFrame,
     column_name: str,
-    column_value: Union[str, list],
+    column_value: str | list,
 ) -> DataFrame:
     """Set the column value of all rows in the data frame."""
     if isinstance(column_value, list):

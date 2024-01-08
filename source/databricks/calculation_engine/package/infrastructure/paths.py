@@ -14,7 +14,6 @@
 
 # Resource names and variables defined in the infrastructure repository (https://github.com/Energinet-DataHub/dh3-infrastructure)
 
-from typing import Union
 from package.codelists import BasisDataType
 
 # Input database and tables
@@ -64,7 +63,7 @@ def get_basis_data_path(
     basis_data_type: BasisDataType,
     batch_id: str,
     grid_area: str,
-    energy_supplier_id: Union[str, None] = None,
+    energy_supplier_id: str | None = None,
 ) -> str:
     basis_data_root_path = get_basis_data_root_path(basis_data_type, batch_id)
     if energy_supplier_id is None:

@@ -15,7 +15,7 @@
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as F
 import pytest
-from typing import Any, Union
+from typing import Any
 
 from . import configuration as C
 from package.codelists import (
@@ -153,7 +153,7 @@ def test__wholesale_result__is_created(
     wholesale_fixing_wholesale_results_df: DataFrame,
     charge_type: ChargeType,
     metering_point_type: MeteringPointType,
-    settlement_method: Union[SettlementMethod, Any],
+    settlement_method: SettlementMethod | Any,
 ) -> None:
     # Arrange
     result_df = (
