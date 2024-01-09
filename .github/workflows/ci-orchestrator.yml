@@ -37,19 +37,16 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.dotnet == 'true' }}
     uses: ./.github/workflows/ci-dotnet.yml
-    secrets: inherit
 
   ci_databricks:
     needs: changes
     if: ${{ needs.changes.outputs.databricks == 'true' }}
     uses: ./.github/workflows/ci-databricks.yml
-    secrets: inherit
 
   ci_packages:
     needs: changes
     if: ${{ needs.changes.outputs.packages == 'true' }}
     uses: ./.github/workflows/packages-publish.yml
-    secrets: inherit
 
   render_c4model_views:
     needs: changes
