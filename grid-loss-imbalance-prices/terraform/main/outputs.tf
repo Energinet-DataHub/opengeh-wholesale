@@ -1,5 +1,5 @@
 output "ms_grid_loss_imbalance_prices_connection_string" {
-  description = "Connection string for executing database migrations on the grid loss imbalance prices database"
+  description = "Connection string for executing database migrations on the grid loss imbalance prices database."
   value       = local.CONNECTION_STRING_DB_MIGRATIONS
   sensitive   = true
 }
