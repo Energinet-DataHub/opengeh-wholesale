@@ -14,6 +14,8 @@ on:
         value: ${{ jobs.changes.outputs.market_participant_ci }}
       dh2_bridge_ci:
         value: ${{ jobs.changes.outputs.dh2_bridge_ci }}
+      grid_loss_imbalance_prices_ci:
+        value: ${{ jobs.changes.outputs.grid_loss_imbalance_prices_ci }}
       esett_exchange_ci:
         value: ${{ jobs.changes.outputs.esett_exchange_ci }}
       migrations_ci:
@@ -45,6 +47,7 @@ jobs:
       edi_ci: ${{ steps.filter.outputs.edi_ci }}
       market_participant_ci: ${{ steps.filter.outputs.market_participant_ci }}
       dh2_bridge_ci: ${{ steps.filter.outputs.dh2_bridge_ci }}
+      grid_loss_imbalance_prices_ci: ${{ steps.filter.outputs.grid_loss_imbalance_prices_ci }}
       esett_exchange_ci: ${{ steps.filter.outputs.esett_exchange_ci }}
       migrations_ci: ${{ steps.filter.outputs.migrations_ci }}
       shared_resources_ci: ${{ steps.filter.outputs.shared_resources_ci }}
@@ -81,6 +84,12 @@ jobs:
             dh2_bridge_ci:
               - dh2-bridge/**
               - .github/workflows/dh2-bridge-*.yml
+              - .github/workflows/infrastructure-build-prerelease.yml
+              - .github/workflows/infrastructure-validate.yml
+              - .github/actions/terraform-validate/*
+            grid_loss_imbalance_prices_ci:
+              - grid-loss-imbalance-prices/**
+              - .github/workflows/grid-loss-imbalance-prices-*.yml
               - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*
