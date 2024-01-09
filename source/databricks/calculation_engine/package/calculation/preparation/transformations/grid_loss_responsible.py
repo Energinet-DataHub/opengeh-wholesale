@@ -243,4 +243,6 @@ def _throw_if_no_grid_loss_responsible(
 
 def _get_all_grid_loss_responsible() -> DataFrame:
     spark = SparkSession.builder.getOrCreate()
-    return spark.createDataFrame(GRID_AREA_RESPONSIBLE, grid_loss_responsible_metering_point_schema)
+    return spark.createDataFrame(
+        GRID_AREA_RESPONSIBLE, grid_loss_responsible_metering_point_schema
+    )
