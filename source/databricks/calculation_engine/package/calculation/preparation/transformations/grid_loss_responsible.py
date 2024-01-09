@@ -195,15 +195,6 @@ def _get_grid_loss_responsible(
 
 
 def get_grid_loss_responsible(
-    grid_areas: list[str], metering_point_periods_df: DataFrame
-) -> GridLossResponsible:
-    grid_loss_responsible_df = _get_all_grid_loss_responsible()
-    return _get_grid_loss_responsible(
-        grid_areas, metering_point_periods_df, grid_loss_responsible_df
-    )
-
-
-def read_grid_loss_responsible(
     grid_areas: list[str],
     metering_point_periods_df: DataFrame,
     table_reader: TableReader,
