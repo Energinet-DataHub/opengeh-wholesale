@@ -14,7 +14,7 @@
 
 import os
 import sys
-from typing import Union, Callable
+from typing import Callable
 
 from opentelemetry.trace import SpanKind, Status, StatusCode, Span
 
@@ -43,7 +43,7 @@ def start() -> None:
 def start_with_deps(
     *,
     cloud_role_name: str = "dbr-calculation-engine",
-    applicationinsights_connection_string: Union[str, None] = None,
+    applicationinsights_connection_string: str | None = None,
     cmd_line_args_reader: Callable[..., CalculatorArgs] = get_calculator_args,
     calculation_executor: Callable[..., None] = calculation.execute,
     is_storage_locked_checker: Callable[..., bool] = islocked,
@@ -84,7 +84,7 @@ def start_with_deps(
             sys.exit(4)
 
 
-def record_exception(exception: Union[SystemExit, Exception], span: Span) -> None:
+def record_exception(exception: SystemExit | Exception, span: Span) -> None:
     span.set_status(Status(StatusCode.ERROR))
     span.record_exception(
         exception,

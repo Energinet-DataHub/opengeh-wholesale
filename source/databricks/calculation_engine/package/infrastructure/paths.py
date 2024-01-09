@@ -14,8 +14,8 @@
 
 # Resource names and variables defined in the infrastructure repository (https://github.com/Energinet-DataHub/dh3-infrastructure)
 
-from typing import Union
 from package.codelists import BasisDataType
+import package.infrastructure.environment_variables as env_vars
 
 # Input database and tables
 INPUT_DATABASE_NAME = "wholesale"
@@ -35,7 +35,6 @@ TEST = ""
 
 # Paths
 WHOLESALE_CONTAINER_NAME = "wholesale"
-INPUT_FOLDER = "calculation_input"
 OUTPUT_FOLDER = "calculation-output"
 BASIS_DATA_FOLDER = "basis_data"
 
@@ -48,12 +47,9 @@ def get_container_root_path(storage_account_name: str) -> str:
     return f"abfss://{WHOLESALE_CONTAINER_NAME}@{storage_account_name}.dfs.core.windows.net/"
 
 
-def get_calculation_input_path(
-    storage_account_name: str, folder_name: str | None
-) -> str:
-    return (
-        f"{get_container_root_path(storage_account_name)}{folder_name or INPUT_FOLDER}/"
-    )
+def get_calculation_input_path(storage_account_name: str) -> str:
+    input_folder = env_vars.get_calculation_input_folder_name()
+    return f"{get_container_root_path(storage_account_name)}{input_folder}/"
 
 
 def get_basis_data_root_path(basis_data_type: BasisDataType, batch_id: str) -> str:
@@ -65,7 +61,7 @@ def get_basis_data_path(
     basis_data_type: BasisDataType,
     batch_id: str,
     grid_area: str,
-    energy_supplier_id: Union[str, None] = None,
+    energy_supplier_id: str | None = None,
 ) -> str:
     basis_data_root_path = get_basis_data_root_path(basis_data_type, batch_id)
     if energy_supplier_id is None:
