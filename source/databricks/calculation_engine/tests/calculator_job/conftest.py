@@ -21,6 +21,7 @@ from azure.identity import ClientSecretCredential
 from pyspark.sql import SparkSession, DataFrame
 
 import package.calculation as calculation
+from package import calculation_input
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.preparation import PreparedDataReader
 
@@ -98,8 +99,8 @@ def executed_balance_fixing(
     without awaiting the execution in each test."""
 
     with patch.object(
-        grid_loss_responsible,
-        grid_loss_responsible._get_all_grid_loss_responsible.__name__,
+        calculation_input,
+        TableReader.read_grid_loss_responsible.__name__,
         return_value=grid_loss_responsible_test_data,
     ):
         table_reader = TableReader(
@@ -127,8 +128,8 @@ def executed_wholesale_fixing(
     without awaiting the execution in each test."""
 
     with patch.object(
-        grid_loss_responsible,
-        grid_loss_responsible._get_all_grid_loss_responsible.__name__,
+        calculation_input,
+        TableReader.read_grid_loss_responsible.__name__,
         return_value=grid_loss_responsible_test_data,
     ):
         table_reader = TableReader(spark, calculation_input_path)
