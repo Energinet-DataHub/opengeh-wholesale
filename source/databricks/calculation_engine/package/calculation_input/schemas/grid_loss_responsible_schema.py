@@ -15,19 +15,7 @@
 from pyspark.sql.types import (
     StructField,
     StringType,
-    TimestampType,
     StructType,
-)
-
-grid_loss_responsible_schema = StructType(
-    [
-        StructField("metering_point_id", StringType(), False),
-        StructField("grid_area_code", StringType(), False),
-        StructField("from_date", TimestampType(), False),
-        StructField("to_date", TimestampType(), True),
-        StructField("type", StringType(), False),
-        StructField("energy_supplier_id", StringType(), False),
-    ]
 )
 
 grid_loss_responsible_metering_point_schema = StructType(

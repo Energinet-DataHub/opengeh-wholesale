@@ -19,11 +19,13 @@ from unittest.mock import patch
 
 from package import calculation_input
 from package.calculation.preparation.transformations.grid_loss_responsible import (
-    grid_loss_responsible_metering_point_schema,
     get_grid_loss_responsible,
 )
 import metering_point_periods_factory as factory
 from package.calculation_input import TableReader
+from package.calculation_input.schemas import (
+    grid_loss_responsible_metering_point_schema,
+)
 from package.codelists import MeteringPointType
 from package.constants import Colname
 

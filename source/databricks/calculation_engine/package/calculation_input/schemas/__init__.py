@@ -19,6 +19,5 @@ from .imbalance_price_schema import imbalance_price_schema
 from .metering_point_period_schema import metering_point_period_schema
 from .time_series_point_schema import time_series_point_schema
 from .grid_loss_responsible_schema import (
-    grid_loss_responsible_schema,
     grid_loss_responsible_metering_point_schema,
 )
