@@ -10,4 +10,11 @@ locals {
   ECP_BOOTSTRAP_SERVERS                 = ""
   ECP_HEALTH_TOPIC                      = ""
   ip_restrictions_as_string             = join(",", [for rule in var.ip_restrictions : "${rule.ip_address}"])
+  BIZ_TALK_SENDER_CODE                  = ""
+  BIZ_TALK_RECEIVER_CODE                = ""
+  BIZ_TALK_BIZ_TALK_ROOT_URL            = ""
+  BIZ_TALK_BIZ_TALK_END_POINT           = "/EL_DataHubService/IntegrationService.svc"
+  BIZ_TALK_BUSINESS_TYPE_CONSUMPTION    = "NBS-RECI"
+  BIZ_TALK_BUSINESS_TYPE_PRODUCTION     = "NBS-MGXI"
+  BIZ_TALK_BUSINESS_TYPE_EXCHANGE       = "NBS-MEPI"
 }
