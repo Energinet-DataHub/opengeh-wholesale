@@ -23,6 +23,7 @@ from typing import Any
 class EnvironmentVariable(Enum):
     TIME_ZONE = "TIME_ZONE"
     DATA_STORAGE_ACCOUNT_NAME = "DATA_STORAGE_ACCOUNT_NAME"
+    CALCULATION_INPUT_FOLDER_NAME = "CALCULATION_INPUT_FOLDER_NAME"
     TENANT_ID = "TENANT_ID"
     SPN_APP_ID = "SPN_APP_ID"
     SPN_APP_SECRET = "SPN_APP_SECRET"
@@ -54,6 +55,10 @@ def get_time_zone() -> str:
     return get_env_variable_or_throw(EnvironmentVariable.TIME_ZONE)
 
 
+def get_calculation_input_folder_name() -> str:
+    return get_env_variable_or_throw(EnvironmentVariable.CALCULATION_INPUT_FOLDER_NAME)
+
+
 def get_env_variables_or_throw(environment_variable: list[EnvironmentVariable]) -> dict:
     env_variables = dict()
     for env_var in environment_variable:
@@ -63,8 +68,8 @@ def get_env_variables_or_throw(environment_variable: list[EnvironmentVariable]) 
 
 
 def get_env_variable_or_throw(variable: EnvironmentVariable) -> Any:
-    env_variable = os.getenv(variable.value)
+    env_variable = os.getenv(variable.name)
     if env_variable is None:
-        raise ValueError(f"Environment variable not found: {variable.value}")
+        raise ValueError(f"Environment variable not found: {variable.name}")
 
     return env_variable
