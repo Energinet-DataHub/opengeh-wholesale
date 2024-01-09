@@ -57,7 +57,7 @@ jobs:
     if: ${{ needs.changes.outputs.grid_loss_imbalance_prices_ci == 'true' }}
     uses: ./.github/workflows/infrastructure-build-prerelease.yml
     with:
-      release_name_prefix: grid_loss_imbalance_prices_ci_infrastructure
+      release_name_prefix: grid_loss_imbalance_prices_infrastructure
       infrastructure_path: ./grid-loss-imbalance-prices/terraform
     secrets: inherit
 
