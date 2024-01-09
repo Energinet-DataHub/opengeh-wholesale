@@ -21,7 +21,7 @@ jobs:
   databricks_ci_build:
     uses: Energinet-DataHub/.github/.github/workflows/databricks-build-prerelease.yml@v12
     with:
-      python_version: 3.9.7
+      python_version: 3.11.7
       architecture: x64
       wheel_working_directory: ./source/databricks/calculation_engine
       should_include_assets: false  # Functionality is deprecated

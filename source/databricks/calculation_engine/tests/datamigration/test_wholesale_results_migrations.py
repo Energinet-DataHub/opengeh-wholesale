@@ -14,7 +14,6 @@
 
 from datetime import datetime
 from decimal import Decimal
-from typing import Union
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import array, col, lit
 import pytest
@@ -104,7 +103,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
 def test__migrated_table_rejects_invalid_data(
     spark: SparkSession,
     column_name: str,
-    invalid_column_value: Union[str, list],
+    invalid_column_value: str | list,
     migrations_executed: None,
 ) -> None:
     # Arrange
@@ -184,7 +183,7 @@ actor_eic = "1234567890123456"
 def test__migrated_table_accepts_valid_data(
     spark: SparkSession,
     column_name: str,
-    column_value: Union[str, list],
+    column_value: str | list,
     migrations_executed: None,
 ) -> None:
     # Arrange

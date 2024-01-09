@@ -17,7 +17,6 @@ from decimal import Decimal
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import array, lit, col
 import pytest
-from typing import Union
 import uuid
 
 from helpers.data_frame_utils import set_column
@@ -80,7 +79,7 @@ def _create_df(spark: SparkSession) -> DataFrame:
 def test__migrated_table_rejects_invalid_data(
     spark: SparkSession,
     column_name: str,
-    invalid_column_value: Union[str, list],
+    invalid_column_value: str | list,
     migrations_executed: None,
 ) -> None:
     # Arrange
@@ -138,7 +137,7 @@ max_decimal = Decimal(f"{'9'*15}.999")  # Precision=18 and scale=3
 def test__migrated_table_accepts_valid_data(
     spark: SparkSession,
     column_name: str,
-    column_value: Union[str, list],
+    column_value: str | list,
     migrations_executed: None,
 ) -> None:
     # Arrange
@@ -169,7 +168,7 @@ def test__migrated_table_accepts_valid_data(
 def test__migrated_table_accepts_enum_value(
     spark: SparkSession,
     column_name: str,
-    column_value: Union[str, list],
+    column_value: str | list,
     migrations_executed: None,
 ) -> None:
     """Test that all enum values are accepted by the delta table"""

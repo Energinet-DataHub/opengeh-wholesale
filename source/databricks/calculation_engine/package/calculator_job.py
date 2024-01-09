@@ -16,6 +16,8 @@ import os
 import sys
 from typing import Union, Callable
 from argparse import Namespace
+from typing import Callable
+
 from opentelemetry.trace import SpanKind, Status, StatusCode, Span
 
 import package.infrastructure.logging_configuration as config
@@ -46,7 +48,7 @@ def start() -> None:
 def start_with_deps(
     *,
     cloud_role_name: str = "dbr-calculation-engine",
-    applicationinsights_connection_string: Union[str, None] = None,
+    applicationinsights_connection_string: str | None = None,
     get_command_line_args: Callable[..., Namespace] = get_raw_command_line_args,
     create_job_args: Callable[..., CalculatorArgs] = create_calculation_args,
     calculation_executor: Callable[..., None] = calculation.execute,
@@ -92,7 +94,7 @@ def start_with_deps(
             sys.exit(4)
 
 
-def record_exception(exception: Union[SystemExit, Exception], span: Span) -> None:
+def record_exception(exception: SystemExit | Exception, span: Span) -> None:
     span.set_status(Status(StatusCode.ERROR))
     span.record_exception(
         exception,

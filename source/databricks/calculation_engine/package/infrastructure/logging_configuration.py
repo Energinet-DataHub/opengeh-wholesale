@@ -14,7 +14,7 @@
 import contextlib
 import logging
 import os
-from typing import Union, Any, Callable, Tuple, Dict, Iterator
+from typing import Any, Callable, Tuple, Dict, Iterator
 
 from azure.monitor.opentelemetry import configure_azure_monitor
 from opentelemetry import trace
@@ -23,14 +23,14 @@ from opentelemetry.trace import Span, Tracer
 DEFAULT_LOG_LEVEL: int = logging.INFO
 _EXTRAS: dict[str, Any] = {}
 _IS_INSTRUMENTED: bool = False
-_TRACER: Union[Tracer, None] = None
+_TRACER: Tracer | None = None
 
 
 def configure_logging(
     *,
     cloud_role_name: str,
-    applicationinsights_connection_string: Union[str, None] = None,
-    extras: Union[dict[str, Any], None] = None,
+    applicationinsights_connection_string: str | None = None,
+    extras: dict[str, Any] | None = None,
 ) -> None:
     """
     Configure logging to use OpenTelemetry and Azure Monitor.
@@ -82,7 +82,7 @@ def get_tracer() -> Tracer:
     return _TRACER
 
 
-def use_span(name: Union[str, None] = None) -> Callable[..., Any]:
+def use_span(name: str | None = None) -> Callable[..., Any]:
     """
     Decorator for creating spans.
     """
