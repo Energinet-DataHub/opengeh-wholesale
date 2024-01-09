@@ -27,6 +27,9 @@ from package.calculation.preparation import PreparedDataReader
 
 from package.calculation.preparation.transformations import grid_loss_responsible
 from package.calculation_input import TableReader
+from package.calculation_input.schemas import (
+    grid_loss_responsible_metering_point_schema,
+)
 from package.codelists.process_type import ProcessType
 from package.constants import EnergyResultColumnNames, WholesaleResultColumnNames
 from package.infrastructure import paths
@@ -79,7 +82,7 @@ def grid_loss_responsible_test_data(
     return spark.read.csv(
         f"{test_files_folder_path}/GridLossResponsible.csv",
         header=True,
-        schema=grid_loss_responsible.grid_loss_responsible_metering_point_schema,
+        schema=grid_loss_responsible_metering_point_schema,
     )
 
 
