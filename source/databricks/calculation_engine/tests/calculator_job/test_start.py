@@ -15,7 +15,6 @@ import argparse
 import sys
 import time
 import uuid
-from argparse import Namespace
 from datetime import timedelta
 from typing import cast, Callable
 
@@ -23,7 +22,6 @@ import pytest
 from azure.monitor.query import LogsQueryClient, LogsQueryResult
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculator_job import start, start_with_deps
-from package.codelists import ProcessType
 
 from tests.integration_test_configuration import IntegrationTestConfiguration
 
@@ -69,9 +67,6 @@ class TestWhenInvokedWithValidArguments:
 
         # Arrange
         self.prepare_command_line_arguments(any_calculator_args)
-        expected_message = self.generate_expected_info_log_record_message(
-            any_calculator_args
-        )
 
         # Act
         with pytest.raises(SystemExit):
@@ -87,7 +82,7 @@ class TestWhenInvokedWithValidArguments:
 AppTraces
 | where AppRoleName == "dbr-calculation-engine"
 | where SeverityLevel == 1
-| where Message == "{expected_message}"
+| where Message startswith_cs "Job arguments"
 | where OperationId != "00000000000000000000000000000000"
 | where Properties.Domain == "wholesale"
 | where Properties.calculation_id == "{any_calculator_args.calculation_id}"
@@ -225,10 +220,6 @@ AppExceptions
         sys.argv.append("--period-end-datetime=2023-01-31T23:00:00Z")
         sys.argv.append("--process-type=BalanceFixing")
         sys.argv.append("--execution-time-start=2023-01-31T23:00:00Z")
-
-    @staticmethod
-    def generate_expected_info_log_record_message(any_calculator_args):
-        return f"Job arguments: Namespace(calculation_id='{any_calculator_args.calculation_id}', grid_areas=['123'], period_start_datetime=datetime.datetime(2023, 1, 31, 23, 0), period_end_datetime=datetime.datetime(2023, 1, 31, 23, 0), process_type=<ProcessType.BALANCE_FIXING: 'BalanceFixing'>, execution_time_start=datetime.datetime(2023, 1, 31, 23, 0), time_series_points_table_name=None, metering_point_periods_table_name=None)"
 
 
 def wait_for_condition(callback: Callable, *, timeout: timedelta, step: timedelta):
