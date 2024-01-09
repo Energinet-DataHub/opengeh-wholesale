@@ -14,7 +14,6 @@
 
 import os
 import sys
-from typing import Union, Callable
 from argparse import Namespace
 from typing import Callable
 
