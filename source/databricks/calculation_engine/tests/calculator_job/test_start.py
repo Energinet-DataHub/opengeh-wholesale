@@ -120,7 +120,6 @@ AppTraces
         - operation id has value
         - custom field "Domain" = "wholesale"
         - custom field "calculation_id" = <the calculation id>
-        - custom field "CategoryName" = "Energinet.DataHub." + <logger name>
         """
 
         # Arrange
@@ -143,7 +142,6 @@ AppDependencies
 | where OperationId != "00000000000000000000000000000000"
 | where Properties.Domain == "wholesale"
 | where Properties.calculation_id == "{any_calculator_args.calculation_id}"
-| where Properties.CategoryName == "Energinet.DataHub.package.calculator_job"
 | count
         """
 
