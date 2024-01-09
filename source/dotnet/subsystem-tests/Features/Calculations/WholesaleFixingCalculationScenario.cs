@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Globalization;
-using Azure.Identity;
 using Azure.Monitor.Query;
 using Energinet.DataHub.Wholesale.Contracts.Events;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
@@ -103,7 +102,6 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
             actualCalculationDuration.Should().BeLessThanOrEqualTo(calculationTimeLimit);
         }
 
-/*
         [ScenarioStep(5)]
         [SubsystemFact]
         public async Task AndThen_IntegrationEventsAreReceivedWithinWaitTime()
@@ -289,7 +287,6 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations
             using var assertionScope = new AssertionScope();
             actualEvents.Should().HaveCount(1);
         }
-*/
 
         [ScenarioStep(13)]
         [SubsystemFact]
@@ -303,7 +300,7 @@ AppTraces
 | where OperationId != ""00000000000000000000000000000000""
 | where Properties.Domain == ""wholesale""
 | where Properties.calculation_id == ""{Fixture.ScenarioState.CalculationId}""
-| where Properties.CategoryName == ""Energinet.DataHub.calculation""
+| where Properties.CategoryName == ""Energinet.DataHub.package.calculator_job""
 | count";
 
             // Assert
@@ -317,7 +314,6 @@ AppTraces
         [SubsystemFact]
         public async Task AndThen_ACalculationTelemetryTraceWithASpanIsCreated()
         {
-            await Task.Delay(TimeSpan.FromMinutes(2)); // TODO BJM: Remove
             var query = $@"
 AppDependencies
 | where Target == ""net_exchange_per_ga""
