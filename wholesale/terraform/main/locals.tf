@@ -1,4 +1,8 @@
 locals {
+  # Databricks runtime version for migration and calculation jobs
+  # Python version for "13.3.x-scala2.12" is 3.10.12
+  spark_version = "13.3.x-scala2.12"
+
   # Storage
   STORAGE_CONTAINER_NAME = "wholesale"
   STORAGE_ACCOUNT_URI    = "https://${data.azurerm_key_vault_secret.st_shared_data_lake_name.value}.dfs.core.windows.net"

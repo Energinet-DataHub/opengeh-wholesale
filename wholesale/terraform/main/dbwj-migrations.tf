@@ -9,7 +9,7 @@ resource "databricks_job" "migrations_job" {
     max_retries = 1
 
     new_cluster {
-      spark_version = data.databricks_spark_version.latest_lts.id
+      spark_version = local.spark_version
       node_type_id  = "Standard_DS3_v2"
       autoscale {
         min_workers = 1
