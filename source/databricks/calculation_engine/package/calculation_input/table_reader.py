@@ -24,7 +24,6 @@ from package.codelists import (
     SettlementMethod,
 )
 from package.common import assert_schema
-from package.common.logger import Logger
 from package.constants import Colname
 from package.infrastructure import paths
 from .schemas import (
@@ -33,7 +32,7 @@ from .schemas import (
     charge_price_points_schema,
     metering_point_period_schema,
     time_series_point_schema,
-    grid_loss_responsible_schema,
+    grid_loss_responsible_metering_point_schema,
 )
 
 
@@ -139,7 +138,7 @@ class TableReader:
         )
         df = self._spark.read.format("delta").load(path)
 
-        assert_schema(df.schema, grid_loss_responsible_schema)
+        assert_schema(df.schema, grid_loss_responsible_metering_point_schema)
 
         return df
 

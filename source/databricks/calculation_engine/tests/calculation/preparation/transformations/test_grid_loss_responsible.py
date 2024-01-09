@@ -19,7 +19,7 @@ from unittest.mock import patch
 
 from package.calculation.preparation.transformations.grid_loss_responsible import (
     get_grid_loss_responsible,
-    grid_area_responsible_schema,
+    grid_loss_responsible_metering_point_schema,
 )
 import metering_point_periods_factory as factory
 from package.codelists import MeteringPointType
@@ -56,7 +56,7 @@ def test__get_grid_loss_responsible__given_three_metering_point_period_dataframe
             (metering_point_id_1,),
             (metering_point_id_2,),
         ],
-        grid_area_responsible_schema,
+        grid_loss_responsible_metering_point_schema,
     )
 
     # Act
@@ -113,7 +113,7 @@ def test__get_grid_loss_responsible__given_metering_point_period_with_same_id_in
             (metering_point_id_1,),
             (metering_point_id_2,),
         ],
-        grid_area_responsible_schema,
+        grid_loss_responsible_metering_point_schema,
     )
 
     # Act

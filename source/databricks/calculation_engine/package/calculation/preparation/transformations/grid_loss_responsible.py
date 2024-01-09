@@ -22,7 +22,7 @@ from pyspark.sql.functions import col
 
 from package.calculation.preparation.grid_loss_responsible import (
     GridLossResponsible,
-    grid_area_responsible_schema,
+    grid_loss_responsible_metering_point_schema,
 )
 from package.codelists import MeteringPointType
 from package.constants import Colname
@@ -243,4 +243,4 @@ def _throw_if_no_grid_loss_responsible(
 
 def _get_all_grid_loss_responsible() -> DataFrame:
     spark = SparkSession.builder.getOrCreate()
-    return spark.createDataFrame(GRID_AREA_RESPONSIBLE, grid_area_responsible_schema)
+    return spark.createDataFrame(GRID_AREA_RESPONSIBLE, grid_loss_responsible_metering_point_schema)

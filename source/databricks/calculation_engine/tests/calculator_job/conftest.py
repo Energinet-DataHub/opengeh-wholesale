@@ -78,7 +78,7 @@ def grid_loss_responsible_test_data(
     return spark.read.csv(
         f"{test_files_folder_path}/GridLossResponsible.csv",
         header=True,
-        schema=grid_loss_responsible.grid_area_responsible_schema,
+        schema=grid_loss_responsible.grid_loss_responsible_metering_point_schema,
     )
 
 

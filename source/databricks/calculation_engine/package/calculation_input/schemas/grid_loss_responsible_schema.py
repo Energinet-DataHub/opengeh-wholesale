@@ -29,3 +29,9 @@ grid_loss_responsible_schema = StructType(
         StructField("energy_supplier_id", StringType(), False),
     ]
 )
+
+grid_loss_responsible_metering_point_schema = StructType(
+    [
+        StructField("metering_point_id", StringType(), False),
+    ]
+)
