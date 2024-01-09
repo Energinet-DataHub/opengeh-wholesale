@@ -15,14 +15,17 @@
 import os
 import sys
 from typing import Union, Callable
-
+from argparse import Namespace
 from opentelemetry.trace import SpanKind, Status, StatusCode, Span
 
 import package.infrastructure.logging_configuration as config
 from package import calculation
 from package import calculation_input
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculator_job_args import get_calculator_args
+from package.calculator_job_args import (
+    create_calculation_args,
+    get_raw_command_line_args,
+)
 from package.infrastructure import initialize_spark
 from package.infrastructure.storage_account_access import islocked
 
@@ -44,7 +47,8 @@ def start_with_deps(
     *,
     cloud_role_name: str = "dbr-calculation-engine",
     applicationinsights_connection_string: Union[str, None] = None,
-    cmd_line_args_reader: Callable[..., CalculatorArgs] = get_calculator_args,
+    get_command_line_args: Callable[..., Namespace] = get_raw_command_line_args,
+    create_job_args: Callable[..., CalculatorArgs] = create_calculation_args,
     calculation_executor: Callable[..., None] = calculation.execute,
     is_storage_locked_checker: Callable[..., bool] = islocked,
 ) -> None:
@@ -62,11 +66,15 @@ def start_with_deps(
         # Try/except added to enable adding custom fields to the exception as
         # the span attributes do not appear to be included in the exception.
         try:
-            args = cmd_line_args_reader()
+            # Get the raw command line arguments
+            command_line_args = get_command_line_args()
 
             # Add calculation_id to structured logging data to be included in every log message.
-            config.add_extras({"calculation_id": args.calculation_id})
+            config.add_extras({"calculation_id": command_line_args.calculation_id})
             span.set_attributes(config.get_extras())
+
+            # Parse the command line arguments into a CalculatorArgs object
+            args = create_job_args(command_line_args)
 
             raise_if_storage_is_locked(is_storage_locked_checker, args)
 

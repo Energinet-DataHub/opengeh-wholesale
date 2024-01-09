@@ -11,20 +11,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import argparse
 import sys
 import time
 import uuid
-from datetime import timedelta, datetime
+from argparse import Namespace
+from datetime import timedelta
 from typing import cast, Callable
 
 import pytest
 from azure.monitor.query import LogsQueryClient, LogsQueryResult
-
 from package.calculation.calculator_args import CalculatorArgs
-import package.calculator_job
 from package.calculator_job import start, start_with_deps
 from package.codelists import ProcessType
-from package.common.logger import Logger
+
 from tests.integration_test_configuration import IntegrationTestConfiguration
 
 
@@ -39,8 +39,12 @@ class TestWhenInvokedWithInvalidArguments:
 
 class TestWhenInvokedWithValidArguments:
     def test_does_not_raise(self, any_calculator_args):
+        command_line_args = argparse.Namespace()
+        command_line_args.calculation_id = any_calculator_args.calculation_id
+
         start_with_deps(
-            cmd_line_args_reader=lambda: any_calculator_args,
+            get_command_line_args=lambda: command_line_args,
+            create_job_args=lambda args: any_calculator_args,
             calculation_executor=lambda args, reader: None,
             is_storage_locked_checker=lambda name, cred: False,
         )
@@ -57,20 +61,21 @@ class TestWhenInvokedWithValidArguments:
         - message <the message>
         - operation id has value
         - custom field "Domain" = "wholesale"
+        - custom field "calculation_id" = <the calculation id>
         - custom field "CategoryName" = "Energinet.DataHub." + <logger name>
 
         Debug level is not tested as it is not intended to be logged by default.
         """
 
         # Arrange
-        self.set_calculator_job_arguments(any_calculator_args)
-        self.set_system_arguments(any_calculator_args)
-        expected_message = _generate_expected_log_record_message(any_calculator_args)
+        self.prepare_command_line_arguments(any_calculator_args)
+        expected_message = self.generate_expected_info_log_record_message(
+            any_calculator_args
+        )
 
         # Act
         with pytest.raises(SystemExit):
             start_with_deps(
-                is_storage_locked_checker=lambda name, cred: False,
                 applicationinsights_connection_string=integration_test_configuration.get_applicationinsights_connection_string(),
             )
 
@@ -85,6 +90,7 @@ AppTraces
 | where Message == "{expected_message}"
 | where OperationId != "00000000000000000000000000000000"
 | where Properties.Domain == "wholesale"
+| where Properties.calculation_id == "{any_calculator_args.calculation_id}"
 | where Properties.CategoryName == "Energinet.DataHub.package.calculator_job_args"
 | count
         """
@@ -102,36 +108,15 @@ AppTraces
             assert_logged, timeout=timedelta(minutes=3), step=timedelta(seconds=10)
         )
 
-    @staticmethod
-    def set_calculator_job_arguments(any_calculator_args):
-        any_calculator_args.calculation_id = str(
-            uuid.uuid4()
-        )  # Ensure unique calculation id
-        any_calculator_args.calculation_process_type = ProcessType.BALANCE_FIXING
-
-    @staticmethod
-    def set_system_arguments(any_calculator_args):
-        sys.argv = []
-        sys.argv.append(f"--test=")
-        sys.argv.append(f"--calculation-id={str(any_calculator_args.calculation_id)}")
-        sys.argv.append("--grid-areas=[123]")
-        sys.argv.append(f"--period-start-datetime=2023-01-31T23:00:00Z")
-        sys.argv.append("--period-end-datetime=2023-01-31T23:00:00Z")
-        sys.argv.append(
-            f"--process-type={str(any_calculator_args.calculation_process_type.value)}"
-        )
-        sys.argv.append("--execution-time-start=2023-01-31T23:00:00Z")
-
-    def test_logs_exceptions_to_azure_monitor_with_expected_settings(
+    def test_add_trace_log_record_to_azure_monitor_with_expected_settings(
         self,
-        calculator_args: CalculatorArgs,
+        any_calculator_args: CalculatorArgs,
         integration_test_configuration: IntegrationTestConfiguration,
     ):
         """
         Assert that the calculator job logs to Azure Monitor with the expected settings:
-        - cloud role name = "dbr-calculation-engine"
-        - exception type = <exception type name>
-        - outer message <exception message>
+        - app role name = "dbr-calculation-engine"
+        - name = "calculation.create_calculation_arguments"
         - operation id has value
         - custom field "Domain" = "wholesale"
         - custom field "calculation_id" = <the calculation id>
@@ -139,17 +124,11 @@ AppTraces
         """
 
         # Arrange
-        calculator_args.calculation_id = str(uuid.uuid4())
+        self.prepare_command_line_arguments(any_calculator_args)
 
-        def raise_exception():
-            raise ValueError("Test exception")
-
+        # Act
         with pytest.raises(SystemExit):
-            # Act
             start_with_deps(
-                cmd_line_args_reader=lambda: calculator_args,
-                calculation_executor=lambda args, reader: raise_exception(),
-                is_storage_locked_checker=lambda name, cred: False,
                 applicationinsights_connection_string=integration_test_configuration.get_applicationinsights_connection_string(),
             )
 
@@ -158,14 +137,13 @@ AppTraces
         logs_client = LogsQueryClient(integration_test_configuration.credential)
 
         query = f"""
-AppExceptions
+AppDependencies
 | where AppRoleName == "dbr-calculation-engine"
-| where ExceptionType == "ValueError"
-| where OuterMessage == "Test exception"
+| where Name == "calculation.create_calculation_arguments"
 | where OperationId != "00000000000000000000000000000000"
 | where Properties.Domain == "wholesale"
-| where Properties.calculation_id == "{calculator_args.calculation_id}"
-| where Properties.CategoryName == "Energinet.DataHub.{package.calculator_job.__name__}"
+| where Properties.calculation_id == "{any_calculator_args.calculation_id}"
+| where Properties.CategoryName == "Energinet.DataHub.package.calculator_job"
 | count
         """
 
@@ -182,9 +160,77 @@ AppExceptions
             assert_logged, timeout=timedelta(minutes=3), step=timedelta(seconds=10)
         )
 
+    def test_adds_exception_log_record_to_azure_monitor_with_expected_settings(
+        self,
+        any_calculator_args: CalculatorArgs,
+        integration_test_configuration: IntegrationTestConfiguration,
+    ):
+        """
+        Assert that the calculator job logs to Azure Monitor with the expected settings:
+        - app role name = "dbr-calculation-engine"
+        - exception type = <exception type name>
+        - outer message <exception message>
+        - operation id has value
+        - custom field "Domain" = "wholesale"
+        - custom field "calculation_id" = <the calculation id>
+        - custom field "CategoryName" = "Energinet.DataHub." + <logger name>
+        """
 
-def _generate_expected_log_record_message(any_calculator_args):
-    return f"Job arguments: Namespace(calculation_id='{any_calculator_args.calculation_id}', grid_areas=['123'], period_start_datetime=datetime.datetime(2023, 1, 31, 23, 0), period_end_datetime=datetime.datetime(2023, 1, 31, 23, 0), process_type=<ProcessType.BALANCE_FIXING: 'BalanceFixing'>, execution_time_start=datetime.datetime(2023, 1, 31, 23, 0), time_series_points_table_name=None, metering_point_periods_table_name=None)"
+        # Arrange
+        self.prepare_command_line_arguments(any_calculator_args)
+
+        with pytest.raises(SystemExit):
+            # Act
+            start_with_deps(
+                applicationinsights_connection_string=integration_test_configuration.get_applicationinsights_connection_string(),
+            )
+
+        # Assert
+        # noinspection PyTypeChecker
+        logs_client = LogsQueryClient(integration_test_configuration.credential)
+
+        query = f"""
+AppExceptions
+| where AppRoleName == "dbr-calculation-engine"
+| where ExceptionType == "ValueError"
+| where OuterMessage == "Environment variable not found: TIME_ZONE"
+| where OperationId != "00000000000000000000000000000000"
+| where Properties.Domain == "wholesale"
+| where Properties.calculation_id == "{any_calculator_args.calculation_id}"
+| where Properties.CategoryName == "Energinet.DataHub.package.calculator_job"
+| count
+        """
+
+        workspace_id = integration_test_configuration.get_analytics_workspace_id()
+
+        def assert_logged():
+            actual = logs_client.query_workspace(
+                workspace_id, query, timespan=timedelta(minutes=5)
+            )
+            assert_row_count(actual, 1)
+
+        # Assert, but timeout if not succeeded
+        wait_for_condition(
+            assert_logged, timeout=timedelta(minutes=3), step=timedelta(seconds=10)
+        )
+
+    @staticmethod
+    def prepare_command_line_arguments(any_calculator_args):
+        any_calculator_args.calculation_id = str(
+            uuid.uuid4()
+        )  # Ensure unique calculation id
+        sys.argv = []
+        sys.argv.append("--dummy=")
+        sys.argv.append(f"--calculation-id={str(any_calculator_args.calculation_id)}")
+        sys.argv.append("--grid-areas=[123]")
+        sys.argv.append("--period-start-datetime=2023-01-31T23:00:00Z")
+        sys.argv.append("--period-end-datetime=2023-01-31T23:00:00Z")
+        sys.argv.append("--process-type=BalanceFixing")
+        sys.argv.append("--execution-time-start=2023-01-31T23:00:00Z")
+
+    @staticmethod
+    def generate_expected_info_log_record_message(any_calculator_args):
+        return f"Job arguments: Namespace(calculation_id='{any_calculator_args.calculation_id}', grid_areas=['123'], period_start_datetime=datetime.datetime(2023, 1, 31, 23, 0), period_end_datetime=datetime.datetime(2023, 1, 31, 23, 0), process_type=<ProcessType.BALANCE_FIXING: 'BalanceFixing'>, execution_time_start=datetime.datetime(2023, 1, 31, 23, 0), time_series_points_table_name=None, metering_point_periods_table_name=None)"
 
 
 def wait_for_condition(callback: Callable, *, timeout: timedelta, step: timedelta):

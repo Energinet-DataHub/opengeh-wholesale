@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import sys
+from argparse import Namespace
 
 import configargparse
 from configargparse import argparse
@@ -21,39 +22,46 @@ import package.infrastructure.environment_variables as env_vars
 from package.calculation.calculator_args import CalculatorArgs
 from package.codelists.process_type import ProcessType
 from package.common.logger import Logger
-from package.infrastructure import valid_date, valid_list, paths
+from package.infrastructure import valid_date, valid_list, paths, logging_configuration
 
 
-def get_calculator_args() -> CalculatorArgs:
-    job_args = _get_valid_args_or_throw(sys.argv[1:])
-
-    logger = Logger(__name__)
-    logger.info(f"Job arguments: {repr(job_args)}")
-
-    time_zone = env_vars.get_time_zone()
-    storage_account_name = env_vars.get_storage_account_name()
-    credential = env_vars.get_storage_account_credential()
-
-    calculator_args = CalculatorArgs(
-        data_storage_account_name=storage_account_name,
-        data_storage_account_credentials=credential,
-        wholesale_container_path=paths.get_container_root_path(storage_account_name),
-        calculation_input_path=paths.get_calculation_input_path(storage_account_name),
-        time_series_points_table_name=job_args.time_series_points_table_name,
-        metering_point_periods_table_name=job_args.metering_point_periods_table_name,
-        calculation_id=job_args.calculation_id,
-        calculation_grid_areas=job_args.grid_areas,
-        calculation_period_start_datetime=job_args.period_start_datetime,
-        calculation_period_end_datetime=job_args.period_end_datetime,
-        calculation_execution_time_start=job_args.execution_time_start,
-        calculation_process_type=job_args.process_type,
-        time_zone=time_zone,
-    )
-
-    return calculator_args
+def get_raw_command_line_args() -> Namespace:
+    return _parse_args_or_throw(sys.argv[1:])
 
 
-def _get_valid_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
+def create_calculation_args(job_args: Namespace) -> CalculatorArgs:
+    with logging_configuration.start_span("calculation.create_calculation_arguments"):
+        logger = Logger(__name__)
+        logger.info(f"Job arguments: {repr(job_args)}")
+
+        time_zone = env_vars.get_time_zone()
+        storage_account_name = env_vars.get_storage_account_name()
+        credential = env_vars.get_storage_account_credential()
+
+        calculator_args = CalculatorArgs(
+            data_storage_account_name=storage_account_name,
+            data_storage_account_credentials=credential,
+            wholesale_container_path=paths.get_container_root_path(
+                storage_account_name
+            ),
+            calculation_input_path=paths.get_calculation_input_path(
+                storage_account_name
+            ),
+            time_series_points_table_name=job_args.time_series_points_table_name,
+            metering_point_periods_table_name=job_args.metering_point_periods_table_name,
+            calculation_id=job_args.calculation_id,
+            calculation_grid_areas=job_args.grid_areas,
+            calculation_period_start_datetime=job_args.period_start_datetime,
+            calculation_period_end_datetime=job_args.period_end_datetime,
+            calculation_execution_time_start=job_args.execution_time_start,
+            calculation_process_type=job_args.process_type,
+            time_zone=time_zone,
+        )
+
+        return calculator_args
+
+
+def _parse_args_or_throw(command_line_args: list[str]) -> argparse.Namespace:
     p = configargparse.ArgParser(
         description="Performs domain calculations for submitted batches",
         formatter_class=configargparse.ArgumentDefaultsHelpFormatter,
