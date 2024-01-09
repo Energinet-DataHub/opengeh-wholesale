@@ -42,8 +42,9 @@ class PreparedDataReader:
     def get_grid_loss_responsible(
         self, grid_areas: list[str], metering_point_periods_df: DataFrame
     ) -> GridLossResponsible:
-        return T.get_grid_loss_responsible(grid_areas, metering_point_periods_df)
-        # return T.read_grid_loss_responsible(grid_areas, metering_point_periods_df, self._table_reader)
+        return T.get_grid_loss_responsible(
+            grid_areas, metering_point_periods_df, self._table_reader
+        )
 
     def get_charges(self) -> DataFrame:
         return T.read_charges(self._table_reader)
